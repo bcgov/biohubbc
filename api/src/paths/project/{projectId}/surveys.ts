@@ -64,7 +64,6 @@ GET.apiDoc = {
                     'biologist_last_name',
                     'start_date',
                     'geometry',
-                    'publish_date',
                     'survey_area_name',
                     'survey_name',
                     'revision_count'
@@ -94,11 +93,6 @@ GET.apiDoc = {
                       items: {
                         ...(geoJsonFeature as object)
                       }
-                    },
-                    publish_date: {
-                      oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
-                      nullable: true,
-                      description: 'Determines if the record has been published'
                     },
                     survey_area_name: {
                       type: 'string'
@@ -145,17 +139,27 @@ GET.apiDoc = {
                   }
                 },
                 permit: {
-                  description: 'Survey Permit',
                   type: 'object',
-                  required: ['permit_number', 'permit_type'],
+                  description: 'Survey Permit Information',
                   properties: {
-                    permit_number: {
-                      type: 'string',
-                      nullable: true
-                    },
-                    permit_type: {
-                      type: 'string',
-                      nullable: true
+                    permits: {
+                      description: 'Survey Permits',
+                      type: 'array',
+                      items: {
+                        required: ['permit_id', 'permit_number', 'permit_type'],
+                        properties: {
+                          permit_id: {
+                            type: 'number',
+                            minimum: 1
+                          },
+                          permit_number: {
+                            type: 'string'
+                          },
+                          permit_type: {
+                            type: 'string'
+                          }
+                        }
+                      }
                     }
                   }
                 },

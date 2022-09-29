@@ -1,4 +1,4 @@
-apiVersion: v1
+apiVersion: template.openshift.io/v1
 kind: Template
 metadata:
   resourceVersion: ''
@@ -25,7 +25,14 @@ parameters:
     description: APP host for application frontend
     value: ''
   - name: BACKBONE_API_HOST
-    description: API host for BioHub Platform Backbone
+    required: true
+    description: API host for BioHub Platform Backbone. Example "https://platform.com".
+  - name: BACKBONE_INTAKE_PATH
+    required: true
+    description: API path for BioHub Platform Backbone DwCA submission intake endpoint. Example "/api/path/to/intake".
+  - name: BACKBONE_INTAKE_ENABLED
+    required: true
+    description: Controls whether or not SIMS will submit DwCA datasets to the BioHub Platform Backbone. Set to "true" to enable it, will be disabled by default otherwise.
   - name: CHANGE_ID
     description: Change id of the project. This will help to pull image stream
     required: true
@@ -161,6 +168,10 @@ objects:
                   value: ${APP_HOST}
                 - name: BACKBONE_API_HOST
                   value: ${BACKBONE_API_HOST}
+                - name: BACKBONE_INTAKE_PATH
+                  value: ${BACKBONE_INTAKE_PATH}
+                - name: BACKBONE_INTAKE_ENABLED
+                  value: ${BACKBONE_INTAKE_ENABLED}
                 - name: ENABLE_FILE_VIRUS_SCAN
                   value: ${ENABLE_FILE_VIRUS_SCAN}
                 - name: CLAMAV_HOST

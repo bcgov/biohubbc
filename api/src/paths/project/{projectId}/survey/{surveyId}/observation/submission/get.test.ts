@@ -56,29 +56,6 @@ describe('getObservationSubmission', () => {
     }
   });
 
-  it('should throw a 400 error when no sql statement returned for getLatestSurveyOccurrenceSubmission', async () => {
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      }
-    });
-
-    sinon.stub(survey_queries, 'getLatestSurveyOccurrenceSubmissionSQL').returns(null);
-
-    try {
-      const result = observationSubmission.getOccurrenceSubmission();
-
-      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal(
-        'Failed to build SQL getLatestSurveyOccurrenceSubmissionSQL statement'
-      );
-    }
-  });
-
   it('should return an observation submission, on success with no rejected files', async () => {
     const mockQuery = sinon.stub();
 

@@ -89,7 +89,6 @@ const PublicProjectsListPage = () => {
             <TableRow>
               <TableCell>Name</TableCell>
               <TableCell>Type</TableCell>
-              <TableCell>Permits</TableCell>
               <TableCell>Contact Agency</TableCell>
               <TableCell>Start Date</TableCell>
               <TableCell>End Date</TableCell>
@@ -114,7 +113,6 @@ const PublicProjectsListPage = () => {
               <TableRow>
                 <TableCell>Name</TableCell>
                 <TableCell>Type</TableCell>
-                <TableCell>Permits</TableCell>
                 <TableCell>Contact Agency</TableCell>
                 <TableCell>Start Date</TableCell>
                 <TableCell>End Date</TableCell>
@@ -135,7 +133,6 @@ const PublicProjectsListPage = () => {
                     </Link>
                   </TableCell>
                   <TableCell>{row.project_type}</TableCell>
-                  <TableCell>{row.permits_list}</TableCell>
                   <TableCell>{row.coordinator_agency}</TableCell>
                   <TableCell>{getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, row.start_date)}</TableCell>
                   <TableCell>{getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, row.end_date)}</TableCell>

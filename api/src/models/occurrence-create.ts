@@ -1,7 +1,3 @@
-import { getLogger } from '../utils/logger';
-
-const defaultLog = getLogger('models/occurrence-create');
-
 /**
  * Pre-processes POST occurrences data
  *
@@ -21,8 +17,6 @@ export class PostOccurrence {
   eventDate: string;
 
   constructor(obj?: any) {
-    defaultLog.debug({ label: 'PostOccurrence', message: 'params', obj });
-
     this.associatedTaxa = obj?.associatedTaxa || null;
     this.lifeStage = obj?.lifeStage || null;
     this.sex = obj?.sex || null;

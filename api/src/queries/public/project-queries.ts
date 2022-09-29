@@ -1,7 +1,7 @@
 import { SQL, SQLStatement } from 'sql-template-strings';
 
 /**
- * SQL query to get a single public (published) project.
+ * SQL query to get a single public project.
  *
  * @param {number} projectId
  * @returns {SQLStatement} sql query object
@@ -22,21 +22,19 @@ export const getPublicProjectSQL = (projectId: number): SQLStatement | null => {
       project.end_date,
       project.caveats,
       project.comments,
-      project.geojson as geometry,
-      project.publish_timestamp as publish_date
+      project.geojson as geometry
     from
       project
     left outer join
       project_type
         on project.project_type_id = project_type.project_type_id
     where
-      project.project_id = ${projectId}
-    and project.publish_timestamp is not null;
+      project.project_id = ${projectId};
   `;
 };
 
 /**
- * SQL query to get public (published) project activities.
+ * SQL query to get public project activities.
  *
  * @param {string} projectId
  * @returns {SQLStatement} sql query object
@@ -57,14 +55,12 @@ export const getActivitiesByPublicProjectSQL = (projectId: number): SQLStatement
     ON
       p.project_id = pa.project_id
     WHERE
-      pa.project_id = ${projectId}
-    AND
-      p.publish_timestamp is not null;
+      pa.project_id = ${projectId};
   `;
 };
 
 /**
- * SQL query to get all public facing (published) projects.
+ * SQL query to get all public facing projects.
  *
  * @returns {SQLStatement} sql query object
  */
@@ -76,16 +72,11 @@ export const getPublicProjectListSQL = (): SQLStatement | null => {
       p.start_date,
       p.end_date,
       p.coordinator_agency_name as coordinator_agency,
-      pt.name as project_type,
-      string_agg(DISTINCT pp.number, ', ') as permits_list
+      pt.name as project_type
     from
       project as p
     left outer join project_type as pt
       on p.project_type_id = pt.project_type_id
-    left outer join permit as pp
-      on p.project_id = pp.project_id
-    where
-      p.publish_timestamp is not null
     group by
       p.project_id,
       p.name,
@@ -97,7 +88,7 @@ export const getPublicProjectListSQL = (): SQLStatement | null => {
 };
 
 /**
- * SQL query to get attachments for a single public (published) project.
+ * SQL query to get attachments for a single public project.
  *
  * @param {number} projectId
  * @returns {SQLStatement} sql query object
@@ -123,14 +114,12 @@ export const getPublicProjectAttachmentsSQL = (projectId: number): SQLStatement 
     on
       p.project_id = pa.project_id
     where
-      pa.project_id = ${projectId}
-    and
-      p.publish_timestamp is not null;
+      pa.project_id = ${projectId};
   `;
 };
 
 /**
- * SQL query to get report attachments for a single public (published) project.
+ * SQL query to get report attachments for a single public project.
  *
  * @param {number} projectId
  * @returns {SQLStatement} sql query object
@@ -155,14 +144,12 @@ export const getPublicProjectReportAttachmentsSQL = (projectId: number): SQLStat
     on
       p.project_id = pa.project_id
     where
-      pa.project_id = ${projectId}
-    and
-      p.publish_timestamp is not null;
+      pa.project_id = ${projectId};
   `;
 };
 
 /**
- * SQL query to get S3 key of an attachment for a single public (published) project.
+ * SQL query to get S3 key of an attachment for a single public project.
  *
  * @param {number} projectId
  * @param {number} attachmentId
@@ -187,7 +174,7 @@ export const getPublicProjectAttachmentS3KeySQL = (projectId: number, attachment
 };
 
 /**
- * SQL query to get S3 key of a report attachment for a single public (published) project.
+ * SQL query to get S3 key of a report attachment for a single public project.
  *
  * @param {number} projectId
  * @param {number} attachmentId

@@ -1,3 +1,5 @@
+/* eslint-disable */
+// @ts-nocheck
 import Box from '@material-ui/core/Box';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Table from '@material-ui/core/Table';
@@ -28,7 +30,7 @@ export interface IPublicProjectPermitsProps {
 }
 
 /**
- * Permits content for a public (published) project.
+ * Permits content for a public project.
  *
  * @return {*}
  */

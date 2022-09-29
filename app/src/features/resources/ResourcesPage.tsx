@@ -15,7 +15,7 @@ import { ConfigContext } from 'contexts/configContext';
 import React, { useContext } from 'react';
 
 /**
- * Page to display a list of resources.
+ * Page to display a list of resources
  *
  * @return {*}
  */
@@ -26,43 +26,99 @@ const ResourcesPage: React.FC = () => {
   const resources = [
     {
       id: '1',
-      name: 'Moose Aerial StratifiedRandomBlock Composition Survey 2.5',
-      url: `${s3PublicHostURL}/templates/Moose_Aerial_StratifiedRandomBlock_Composition_Recruitment_Survey_2.5.xlsx`,
+      name: 'Moose Aerial Non-SRB Recruitment Composition Survey 1.0',
+      url: `${s3PublicHostURL}/templates/Moose_Aerial_NonStratifiedRandomBlock_Recruit_Comp_Survey_1.0.xlsx`,
       type: mdiFileExcelOutline,
       lastModified: 'Today',
-      fileSize: '115 KB'
+      fileSize: '145 KB'
     },
     {
       id: '2',
-      name: 'Moose Recruitment Using Telemetry Survey 1.0',
-      url: `${s3PublicHostURL}/templates/Moose_Recruitment_Using_Telemetry_Survey_1.0.xlsx`,
+      name: 'Moose Aerial Stratified Random Block Recruitment Composition Survey 1.0',
+      url: `${s3PublicHostURL}/templates/Moose_Aerial_StratifiedRandomBlock_Recruit_Comp_Survey_1.0.xlsx`,
       type: mdiFileExcelOutline,
       lastModified: 'Today',
-      fileSize: '93 KB'
+      fileSize: '143 KB'
     },
     {
       id: '3',
-      name: 'Goat Aerial Population Composition Recruitment Survey 1.4',
-      url: `${s3PublicHostURL}/templates/Goat_Aerial_Population_Composition_Recruitment_Survey_1.4.xlsx`,
+      name: 'Moose Aerial Transect Distance Sampling Survey 1.0',
+      url: `${s3PublicHostURL}/templates/Moose_Aerial_Transect_Distance_Sampling_Survey_1.0.xlsx`,
       type: mdiFileExcelOutline,
       lastModified: 'Today',
-      fileSize: '165 KB'
+      fileSize: '143 KB'
     },
     {
       id: '4',
-      name: 'Sheep Aerial Population Composition Recruitment Survey 1.2',
-      url: `${s3PublicHostURL}/templates/Sheep_Aerial_Population_Composition_Recruitment_Survey_1.2.xlsx`,
+      name: 'Sheep Aerial Total Count Recruitment Composition Survey 1.0',
+      url: `${s3PublicHostURL}/templates/Sheep_Aerial_Population_Total_Count_Recuit_Comp_Survey_1.0.xlsx`,
       type: mdiFileExcelOutline,
       lastModified: 'Today',
-      fileSize: '109 KB'
+      fileSize: '131 KB'
     },
     {
       id: '5',
-      name: 'Moose Summary Statistics',
-      url: `${s3PublicHostURL}/templates/Moose_Summary_Statistics.xlsx`,
+      name: 'Mountain Goat Aerial Total Count Recruitment Composition Survey 1.0',
+      url: `${s3PublicHostURL}/templates/Goat_Aerial_Population_Total_Count_Recuit_Comp_Survey_1.0.xlsx`,
       type: mdiFileExcelOutline,
       lastModified: 'Today',
-      fileSize: '10 KB'
+      fileSize: '100 KB'
+    },
+    {
+      id: '6',
+      name: 'Moose Summary Results Template 1.0',
+      url: `${s3PublicHostURL}/templates/Moose_Summary_Results_1.0.xlsx`,
+      type: mdiFileExcelOutline,
+      lastModified: 'Today',
+      fileSize: '27 KB'
+    },
+    {
+      id: '7',
+      name: 'Sheep Summary Results Template 1.0',
+      url: `${s3PublicHostURL}/templates/Sheep_Summary_Results_1.0.xlsx`,
+      type: mdiFileExcelOutline,
+      lastModified: 'Today',
+      fileSize: '24 KB'
+    },
+    {
+      id: '8',
+      name: 'Goat Summary Results Template 1.0',
+      url: `${s3PublicHostURL}/templates/Goat_Summary_Results_1.0.xlsx`,
+      type: mdiFileExcelOutline,
+      lastModified: 'Today',
+      fileSize: '27 KB'
+    },
+    {
+      id: '9',
+      name: 'Elk Summary Results Template 1.0',
+      url: `${s3PublicHostURL}/templates/Elk_Summary_Results_1.0.xlsx`,
+      type: mdiFileExcelOutline,
+      lastModified: 'Today',
+      fileSize: '24 KB'
+    },
+    {
+      id: '10',
+      name: 'Elk Aerial Stratified Random Block Recruit Composition Survey 1.0',
+      url: `${s3PublicHostURL}/templates/Elk_Aerial_StratifiedRandomBlock_Recruit_Comp_Survey_1.0.xlsx`,
+      type: mdiFileExcelOutline,
+      lastModified: 'Today',
+      fileSize: '122 KB'
+    },
+    {
+      id: '11',
+      name: 'Elk Aerial Non Stratified Random Block Recruit Composition Survey 1.0',
+      url: `${s3PublicHostURL}/templates/Elk_Aerial_NonStratifiedRandomBlock_Recruit_Comp_Survey_1.0.xlsx`,
+      type: mdiFileExcelOutline,
+      lastModified: 'Today',
+      fileSize: '120 KB'
+    },
+    {
+      id: '12',
+      name: 'Elk Aerial Transect Distance Sampling Recruit Composition Survey 1.0',
+      url: `${s3PublicHostURL}/templates/Elk_Aerial_Transect_DistanceSampling_Recruit_Comp_Survey_1.0.xlsx`,
+      type: mdiFileExcelOutline,
+      lastModified: 'Today',
+      fileSize: '114 KB'
     }
   ];
 

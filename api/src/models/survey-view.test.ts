@@ -1,9 +1,12 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
+import { IPermitModel } from '../repositories/permit-repository';
 import {
   GetAncillarySpeciesData,
+  GetAttachmentsData,
   GetFocalSpeciesData,
   GetPermitData,
+  GetReportAttachmentsData,
   GetSurveyData,
   GetSurveyFundingSources,
   GetSurveyLocationData,
@@ -31,6 +34,10 @@ describe('GetSurveyData', () => {
       expect(data.start_date).to.equal(null);
     });
 
+    it('sets geojson', () => {
+      expect(data.geometry).to.eql([]);
+    });
+
     it('sets biologist_first_name', () => {
       expect(data.biologist_first_name).to.equal('');
     });
@@ -48,7 +55,9 @@ describe('GetSurveyData', () => {
       end_date: '2020/04/04',
       start_date: '2020/03/03',
       lead_first_name: 'first',
-      lead_last_name: 'last'
+      geojson: [{ data: 'data' }],
+      lead_last_name: 'last',
+      revision_count: 'count'
     };
 
     before(() => {
@@ -67,12 +76,20 @@ describe('GetSurveyData', () => {
       expect(data.start_date).to.equal(obj.start_date);
     });
 
+    it('sets geojson', () => {
+      expect(data.geometry).to.equal(obj.geojson);
+    });
+
     it('sets biologist_first_name', () => {
       expect(data.biologist_first_name).to.equal(obj.lead_first_name);
     });
 
     it('sets biologist_last_name', () => {
       expect(data.biologist_last_name).to.equal(obj.lead_last_name);
+    });
+
+    it('sets revision_count', function () {
+      expect(data.revision_count).to.equal('count');
     });
   });
 });
@@ -82,7 +99,7 @@ describe('GetFocalSpeciesData', () => {
     let data: GetFocalSpeciesData;
 
     before(() => {
-      data = new GetFocalSpeciesData([]);
+      data = new GetFocalSpeciesData();
     });
 
     it('sets focal_species', () => {
@@ -121,7 +138,7 @@ describe('GetAncillarySpeciesData', () => {
     let data: GetAncillarySpeciesData;
 
     before(() => {
-      data = new GetAncillarySpeciesData([]);
+      data = new GetAncillarySpeciesData();
     });
 
     it('sets ancillary_species', () => {
@@ -160,36 +177,39 @@ describe('GetPermitData', () => {
     let data: GetPermitData;
 
     before(() => {
-      data = new GetPermitData(null);
+      data = new GetPermitData(undefined);
     });
 
-    it('sets permit_number', () => {
-      expect(data.permit_number).to.equal('');
-    });
-
-    it('sets ancillary_species', () => {
-      expect(data.permit_type).to.equal('');
+    it('sets permits', () => {
+      expect(data.permits).to.eql([]);
     });
   });
 
   describe('All values provided', () => {
     let data: GetPermitData;
 
-    const obj = {
-      number: '12345',
-      type: 'permit_type'
-    };
+    const obj = [
+      {
+        permit_id: 1,
+        number: '12345',
+        type: 'permit_type'
+      }
+    ] as IPermitModel[];
 
     before(() => {
       data = new GetPermitData(obj);
     });
 
+    it('sets permit_id', () => {
+      expect(data.permits[0].permit_id).to.equal(obj[0].permit_id);
+    });
+
     it('sets permit_number', () => {
-      expect(data.permit_number).to.equal(obj.number);
+      expect(data.permits[0].permit_number).to.equal(obj[0].number);
     });
 
     it('sets permit_type', () => {
-      expect(data.permit_type).to.equal(obj.type);
+      expect(data.permits[0].permit_type).to.equal(obj[0].type);
     });
   });
 });
@@ -199,7 +219,7 @@ describe('GetSurveyFundingSources', () => {
     let data: GetSurveyFundingSources;
 
     before(() => {
-      data = new GetSurveyFundingSources([]);
+      data = new GetSurveyFundingSources();
     });
 
     it('sets funding_sources', () => {
@@ -434,7 +454,8 @@ describe('GetSurveyPurposeAndMethodologyData', () => {
       field_method_id: 2,
       ecological_season_id: 3,
       vantage_ids: [4, 5],
-      surveyed_all_areas: true
+      surveyed_all_areas: true,
+      revision_count: 'count'
     };
 
     before(() => {
@@ -463,6 +484,219 @@ describe('GetSurveyPurposeAndMethodologyData', () => {
 
     it('sets surveyed_all_areas', () => {
       expect(data.surveyed_all_areas).to.eql('true');
+    });
+
+    it('sets revision_count', function () {
+      expect(data.revision_count).to.equal('count');
+    });
+  });
+});
+
+describe('GetAttachmentsData', () => {
+  describe('No values provided', () => {
+    let data: GetAttachmentsData;
+
+    before(() => {
+      data = new GetAttachmentsData((null as unknown) as any[]);
+    });
+
+    it('sets attachmentDetails', function () {
+      expect(data.attachmentDetails).to.eql([]);
+    });
+  });
+
+  describe('Empty arrays as values provided', () => {
+    let data: GetAttachmentsData;
+
+    before(() => {
+      data = new GetAttachmentsData([]);
+    });
+
+    it('sets attachmentDetails', function () {
+      expect(data.attachmentDetails).to.eql([]);
+    });
+  });
+
+  describe('some attachmentDetails values provided', () => {
+    let data: GetAttachmentsData;
+
+    const attachmentDetails = [{ file_name: 1 }, { file_name: 2 }];
+
+    before(() => {
+      data = new GetAttachmentsData(attachmentDetails);
+    });
+
+    it('sets file_name', function () {
+      expect(data.attachmentDetails).to.eql([
+        {
+          file_name: 1,
+          file_type: undefined,
+          title: undefined,
+          description: undefined,
+          key: undefined,
+          file_size: undefined,
+          is_secure: 'false'
+        },
+        {
+          file_name: 2,
+          file_type: undefined,
+          title: undefined,
+          description: undefined,
+          key: undefined,
+          file_size: undefined,
+          is_secure: 'false'
+        }
+      ]);
+    });
+  });
+
+  describe('all attachmentDetails values provided', () => {
+    let data: GetAttachmentsData;
+
+    const attachmentDetails = [
+      {
+        file_name: 1,
+        file_type: 'type',
+        title: 'title',
+        description: 'descript',
+        security_token: 'key',
+        file_size: 'file_size',
+        key: 'key'
+      },
+      {
+        file_name: 2,
+        file_type: 'type',
+        title: 'title',
+        description: 'descript',
+        security_token: 'key',
+        file_size: 'file_size',
+        key: 'key'
+      }
+    ];
+
+    before(() => {
+      data = new GetAttachmentsData(attachmentDetails);
+    });
+
+    it('sets all fields', function () {
+      expect(data.attachmentDetails).to.eql([
+        {
+          file_name: 1,
+          file_type: 'type',
+          title: 'title',
+          description: 'descript',
+          key: '',
+          file_size: 'file_size',
+          is_secure: 'true'
+        },
+        {
+          file_name: 2,
+          file_type: 'type',
+          title: 'title',
+          description: 'descript',
+          key: '',
+          file_size: 'file_size',
+          is_secure: 'true'
+        }
+      ]);
+    });
+  });
+});
+
+describe('GetReportAttachmentsData', () => {
+  describe('No values provided', () => {
+    it('sets attachmentDetails', function () {
+      const data: GetReportAttachmentsData = new GetReportAttachmentsData((null as unknown) as any[]);
+
+      expect(data.attachmentDetails).to.eql([]);
+    });
+  });
+
+  describe('Empty arrays as values provided', () => {
+    it('sets attachmentDetails', function () {
+      const data: GetReportAttachmentsData = new GetReportAttachmentsData([]);
+
+      expect(data.attachmentDetails).to.eql([]);
+    });
+  });
+
+  describe('some attachmentDetails asdasdsadsasd values provided', () => {
+    it('sets file_name', function () {
+      const attachmentDetails = [{ file_name: 1 }, { file_name: 2 }];
+
+      const data: GetReportAttachmentsData = new GetReportAttachmentsData(attachmentDetails);
+      expect(data.attachmentDetails).to.eql([
+        {
+          file_name: 1,
+          title: undefined,
+          year: undefined,
+          description: undefined,
+          key: undefined,
+          file_size: undefined,
+          is_secure: 'false'
+        },
+        {
+          file_name: 2,
+          title: undefined,
+          year: undefined,
+          description: undefined,
+          key: undefined,
+          file_size: undefined,
+          is_secure: 'false'
+        }
+      ]);
+    });
+  });
+
+  describe('all attachmentDetails values provided', () => {
+    it('sets all fields', function () {
+      const attachmentDetails = [
+        {
+          file_name: 1,
+          title: 'title',
+          year: '1',
+          description: 'descript',
+          security_token: 'key',
+          file_size: 'size',
+          key: 'key',
+          authors: [{ author: 'author' }]
+        },
+        {
+          file_name: 2,
+          file_type: 'type',
+          title: 'title',
+          year: '2',
+          description: 'descript',
+          security_token: 'key',
+          file_size: 'size',
+          key: 'key',
+          authors: [{ author: 'author' }]
+        }
+      ];
+      const data: GetReportAttachmentsData = new GetReportAttachmentsData(attachmentDetails);
+
+      expect(data.attachmentDetails).to.eql([
+        {
+          file_name: 1,
+          title: 'title',
+          year: '1',
+          description: 'descript',
+          key: '',
+          file_size: 'size',
+          is_secure: 'true',
+          authors: [{ author: 'author' }]
+        },
+        {
+          file_name: 2,
+          title: 'title',
+          year: '2',
+          description: 'descript',
+          key: '',
+          file_size: 'size',
+          is_secure: 'true',
+          authors: [{ author: 'author' }]
+        }
+      ]);
     });
   });
 });

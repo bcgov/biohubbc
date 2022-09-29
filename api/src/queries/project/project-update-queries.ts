@@ -70,37 +70,12 @@ export const getIndigenousPartnershipsByProjectSQL = (projectId: number): SQLSta
 };
 
 /**
- * SQL query to get permits associated to a project.
- * @param {number} projectId
- * @returns {SQLStatement} sql query object
- */
-export const getPermitsByProjectSQL = (projectId: number): SQLStatement | null => {
-  if (!projectId) {
-    return null;
-  }
-
-  return SQL`
-    SELECT
-      number,
-      type
-    FROM
-      permit
-    WHERE
-      project_id = ${projectId};
-  `;
-};
-
-/**
  * SQL query to get coordinator information, for update purposes.
  *
  * @param {number} projectId
  * @return {*}  {(SQLStatement | null)}
  */
-export const getCoordinatorByProjectSQL = (projectId: number): SQLStatement | null => {
-  if (!projectId) {
-    return null;
-  }
-
+export const getCoordinatorByProjectSQL = (projectId: number): SQLStatement => {
   return SQL`
     SELECT
       coordinator_first_name,
@@ -238,11 +213,7 @@ export const putProjectSQL = (
  * @param {number} projectId
  * @return {*}  {(SQLStatement | null)}
  */
-export const getObjectivesByProjectSQL = (projectId: number): SQLStatement | null => {
-  if (!projectId) {
-    return null;
-  }
-
+export const getObjectivesByProjectSQL = (projectId: number): SQLStatement => {
   return SQL`
     SELECT
       objectives,
@@ -288,32 +259,4 @@ export const putProjectFundingSourceSQL = (
       RETURNING
         project_funding_source_id as id;
     `;
-};
-
-/**
- * SQL query to update the publish status of a project.
- *
- * @param {number} projectId
- * @param {boolean} publish
- * @returns {SQLStatement} sql query object
- */
-export const updateProjectPublishStatusSQL = (projectId: number, publish: boolean): SQLStatement | null => {
-  if (!projectId) {
-    return null;
-  }
-
-  const sqlStatement: SQLStatement = SQL`UPDATE project SET publish_timestamp = `;
-
-  if (publish === true) {
-    sqlStatement.append(SQL`
-    now() WHERE publish_timestamp IS NULL AND project_id = ${projectId}
-    `);
-  } else {
-    sqlStatement.append(SQL`
-      null WHERE project_id = ${projectId}
-    `);
-  }
-  sqlStatement.append(SQL` RETURNING project_id as id;`);
-
-  return sqlStatement;
 };

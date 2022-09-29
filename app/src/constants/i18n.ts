@@ -1,14 +1,14 @@
 export const CreateProjectI18N = {
-  cancelTitle: 'Cancel Create Project',
-  cancelText: 'Are you sure you want to cancel?',
+  cancelTitle: 'Cancel Project Creation',
+  cancelText: 'Are you sure you want to cancel? Changes you have made will not be saved.',
   createErrorTitle: 'Error Creating Project',
   createErrorText:
     'An error has occurred while attempting to create your project, please try again. If the error persists, please contact your system administrator.'
 };
 
 export const CreateSurveyI18N = {
-  cancelTitle: 'Cancel Create Survey',
-  cancelText: 'Are you sure you want to cancel?',
+  cancelTitle: 'Cancel Survey Creation',
+  cancelText: 'Are you sure you want to cancel? Changes you have made will not be saved.',
   createErrorTitle: 'Error Creating Survey',
   createErrorText:
     'An error has occurred while attempting to create your survey, please try again. If the error persists, please contact your system administrator.'
@@ -177,28 +177,12 @@ export const DeleteProjectI18N = {
     'An error has occurred while attempting to delete this project, its attachments and associated surveys/observations, please try again. If the error persists, please contact your system administrator.'
 };
 
-export const PublishProjectI18N = {
-  publishTitle: 'Publish Project',
-  publishText: 'Are you sure you want to publish this project?',
-  publishErrorTitle: 'Error Publishing Project',
-  publishErrorText:
-    'An error has occurred while attempting to publish this project, please try again. If the error persists, please contact your system administrator.'
-};
-
 export const DeleteSurveyI18N = {
   deleteTitle: 'Delete Survey',
   deleteText: 'Are you sure you want to delete this survey, its attachments and associated observations?',
   deleteErrorTitle: 'Error Deleting Project',
   deleteErrorText:
     'An error has occurred while attempting to delete this project, its attachments and associated surveys/observations, please try again. If the error persists, please contact your system administrator.'
-};
-
-export const PublishSurveyI18N = {
-  publishTitle: 'Publish Survey',
-  publishText: 'Are you sure you want to publish this survey?',
-  publishErrorTitle: 'Error Publishing Survey',
-  publishErrorText:
-    'An error has occurred while attempting to publish this survey, please try again. If the error persists, please contact your system administrator.'
 };
 
 export const EditReportMetaDataI18N = {

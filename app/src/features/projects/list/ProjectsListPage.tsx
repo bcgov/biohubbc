@@ -55,11 +55,8 @@ const useStyles = makeStyles((theme: Theme) => ({
   chipActive: {
     backgroundColor: theme.palette.success.main
   },
-  chipPublishedCompleted: {
+  chipCompleted: {
     backgroundColor: theme.palette.success.main
-  },
-  chipUnpublished: {
-    backgroundColor: theme.palette.text.disabled
   },
   chipDraft: {
     backgroundColor: theme.palette.info.main
@@ -91,18 +88,12 @@ const ProjectsListPage: React.FC = () => {
     let chipLabel;
     let chipStatusClass;
 
-    if (ProjectStatusType.UNPUBLISHED === status_name) {
-      chipLabel = 'Unpublished';
-      chipStatusClass = classes.chipUnpublished;
-    } else if (ProjectStatusType.PUBLISHED === status_name) {
-      chipLabel = 'Published';
-      chipStatusClass = classes.chipPublishedCompleted;
-    } else if (ProjectStatusType.ACTIVE === status_name) {
+    if (ProjectStatusType.ACTIVE === status_name) {
       chipLabel = 'Active';
       chipStatusClass = classes.chipActive;
     } else if (ProjectStatusType.COMPLETED === status_name) {
       chipLabel = 'Completed';
-      chipStatusClass = classes.chipPublishedCompleted;
+      chipStatusClass = classes.chipCompleted;
     } else if (ProjectStatusType.DRAFT === status_name) {
       chipLabel = 'Draft';
       chipStatusClass = classes.chipDraft;
@@ -262,7 +253,6 @@ const ProjectsListPage: React.FC = () => {
                 <TableCell>Start Date</TableCell>
                 <TableCell>End Date</TableCell>
                 <TableCell>Status</TableCell>
-                <TableCell>Publish Status</TableCell>
               </TableRow>
             </TableHead>
             <TableBody data-testid="project-table">
@@ -285,7 +275,6 @@ const ProjectsListPage: React.FC = () => {
                   <TableCell />
                   <TableCell />
                   <TableCell>{getChipIcon('Draft')}</TableCell>
-                  <TableCell>{getChipIcon('Unpublished')}</TableCell>
                 </TableRow>
               ))}
               {projects?.map((row) => (
@@ -301,12 +290,10 @@ const ProjectsListPage: React.FC = () => {
                     </Link>
                   </TableCell>
                   <TableCell>{row.project_type}</TableCell>
-                  <TableCell>{row.permits_list}</TableCell>
                   <TableCell>{row.coordinator_agency}</TableCell>
                   <TableCell>{getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, row.start_date)}</TableCell>
                   <TableCell>{getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, row.end_date)}</TableCell>
                   <TableCell>{getChipIcon(row.completion_status)}</TableCell>
-                  <TableCell>{getChipIcon(row.publish_status)}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

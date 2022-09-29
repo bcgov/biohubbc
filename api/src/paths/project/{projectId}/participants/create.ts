@@ -101,7 +101,9 @@ POST.apiDoc = {
 
 export function createProjectParticipants(): RequestHandler {
   return async (req, res) => {
-    if (!req.params.projectId) {
+    const projectId = Number(req.params.projectId);
+
+    if (!projectId) {
       throw new HTTP400('Missing required param `projectId`');
     }
 
@@ -112,8 +114,6 @@ export function createProjectParticipants(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const projectId = Number(req.params.projectId);
-
       const participants: { userIdentifier: string; identitySource: string; roleId: number }[] = req.body.participants;
 
       await connection.open();

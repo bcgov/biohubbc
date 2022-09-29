@@ -76,13 +76,14 @@ DELETE.apiDoc = {
 
 export function deleteProjectParticipant(): RequestHandler {
   return async (req, res) => {
-    defaultLog.debug({ label: 'deleteProjectParticipant', message: 'params', req_params: req.params });
+    const projectId = Number(req.params.projectId);
+    const projectParticipationId = Number(req.params.projectParticipationId);
 
-    if (!req.params.projectId) {
+    if (!projectId) {
       throw new HTTP400('Missing required path param `projectId`');
     }
 
-    if (!req.params.projectParticipationId) {
+    if (!projectParticipationId) {
       throw new HTTP400('Missing required path param `projectParticipationId`');
     }
 
@@ -94,10 +95,10 @@ export function deleteProjectParticipant(): RequestHandler {
       const projectService = new ProjectService(connection);
 
       // Check project lead roles before deleting user
-      const projectParticipantsResponse1 = await projectService.getProjectParticipants(Number(req.params.projectId));
+      const projectParticipantsResponse1 = await projectService.getProjectParticipants(projectId);
       const projectHasLeadResponse1 = doAllProjectsHaveAProjectLead(projectParticipantsResponse1);
 
-      const result = await deleteProjectParticipationRecord(Number(req.params.projectParticipationId), connection);
+      const result = await deleteProjectParticipationRecord(projectParticipationId, connection);
 
       if (!result || !result.system_user_id) {
         // The delete result is missing necesary data, fail the request
@@ -107,7 +108,7 @@ export function deleteProjectParticipant(): RequestHandler {
       // If Project Lead roles are invalide skip check to prevent removal of only Project Lead of project
       // (Project is already missing Project Lead and is in a bad state)
       if (projectHasLeadResponse1) {
-        const projectParticipantsResponse2 = await projectService.getProjectParticipants(Number(req.params.projectId));
+        const projectParticipantsResponse2 = await projectService.getProjectParticipants(projectId);
         const projectHasLeadResponse2 = doAllProjectsHaveAProjectLead(projectParticipantsResponse2);
 
         if (!projectHasLeadResponse2) {

@@ -8,24 +8,14 @@ export const getProjectForViewResponse: IGetProjectForViewResponse = {
     start_date: '1998-10-10',
     end_date: '2021-02-26',
     project_activities: [1],
-    completion_status: 'Active',
-    publish_date: '2021-01-26'
-  },
-  permit: {
-    permits: [
-      {
-        permit_number: '123',
-        permit_type: 'Permit type'
-      }
-    ]
+    completion_status: 'Active'
   },
   location: {
     location_description: 'Location description',
     geometry: []
   },
   objectives: {
-    objectives: 'Et ad et in culpa si',
-    caveats: 'sjwer bds'
+    objectives: 'Et ad et in culpa si'
   },
   coordinator: {
     first_name: 'Amanda',

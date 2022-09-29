@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import ProjectCoordinatorForm, {
   ProjectCoordinatorInitialValues,
   ProjectCoordinatorYupSchema
@@ -11,16 +11,18 @@ const handleSaveAndNext = jest.fn();
 const agencies = ['Agency 1', 'Agency 2', 'Agency 3'];
 
 const projectCoordinatorFilledValues = {
-  first_name: 'Nerea',
-  last_name: 'Oneal',
-  email_address: 'quxu@mailinator.com',
-  coordinator_agency: 'Agency 3',
-  share_contact_details: 'true'
+  coordinator: {
+    first_name: 'Nerea',
+    last_name: 'Oneal',
+    email_address: 'quxu@mailinator.com',
+    coordinator_agency: 'Agency 3',
+    share_contact_details: 'true'
+  }
 };
 
 describe('Project Contact Form', () => {
-  it('renders correctly the empty component correctly', () => {
-    const { asFragment } = render(
+  it('renders correctly the empty component correctly', async () => {
+    const { getByLabelText } = render(
       <Formik
         initialValues={ProjectCoordinatorInitialValues}
         validationSchema={ProjectCoordinatorYupSchema}
@@ -33,11 +35,13 @@ describe('Project Contact Form', () => {
       </Formik>
     );
 
-    expect(asFragment()).toMatchSnapshot();
+    await waitFor(() => {
+      expect(getByLabelText('First Name', { exact: false })).toBeVisible();
+    });
   });
 
-  it('renders correctly the filled component correctly', () => {
-    const { asFragment } = render(
+  it('renders correctly the filled component correctly', async () => {
+    const { getByLabelText, getByDisplayValue } = render(
       <Formik
         initialValues={projectCoordinatorFilledValues}
         validationSchema={ProjectCoordinatorYupSchema}
@@ -50,6 +54,9 @@ describe('Project Contact Form', () => {
       </Formik>
     );
 
-    expect(asFragment()).toMatchSnapshot();
+    await waitFor(() => {
+      expect(getByLabelText('First Name', { exact: false })).toBeVisible();
+      expect(getByDisplayValue('Nerea', { exact: false })).toBeVisible();
+    });
   });
 });

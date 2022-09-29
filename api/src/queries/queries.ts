@@ -3,7 +3,6 @@ import codes from './codes';
 import database from './database';
 import dwc from './dwc';
 import occurrence from './occurrence';
-import permit from './permit';
 import project from './project';
 import projectParticipation from './project-participation';
 import publicQueries from './public';
@@ -19,7 +18,6 @@ export const queries = {
   database,
   dwc,
   occurrence,
-  permit,
   project,
   projectParticipation,
   public: publicQueries,

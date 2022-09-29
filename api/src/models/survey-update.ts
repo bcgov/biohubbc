@@ -50,12 +50,10 @@ export class PutSurveySpeciesData {
 }
 
 export class PutSurveyPermitData {
-  permit_number: string;
-  permit_type: string;
+  permits: { permit_id?: number; permit_number: string; permit_type: string }[];
 
   constructor(obj?: any) {
-    this.permit_number = obj?.permit_number || null;
-    this.permit_type = obj?.permit_type || null;
+    this.permits = obj?.permits || [];
   }
 }
 

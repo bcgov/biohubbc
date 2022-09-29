@@ -12,7 +12,6 @@ import {
   GetLocationData,
   GetObjectivesData,
   GetPartnershipsData,
-  GetPermitData,
   GetProjectData
 } from '../models/project-view';
 import { queries } from '../queries/queries';
@@ -338,7 +337,6 @@ describe('ProjectService', () => {
           start_date: '1900-01-01',
           end_date: '2000-10-10',
           coordinator_agency: 'Agency 1',
-          permits_list: '3, 100',
           project_type: 'Aquatic Habitat'
         },
         {
@@ -347,7 +345,6 @@ describe('ProjectService', () => {
           start_date: '1900-01-01',
           end_date: '2000-12-31',
           coordinator_agency: 'Agency 2',
-          permits_list: '1, 4',
           project_type: 'Terrestrial Habitat'
         }
       ];
@@ -392,7 +389,7 @@ describe('ProjectService', () => {
     });
 
     it('returns empty array if there are no rows', async () => {
-      const mockQueryResponse = ({ rows: [] } as unknown) as QueryResult<any>;
+      const mockQueryResponse = ({} as unknown) as QueryResult<any>;
       const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
 
       sinon.stub(queries.project, 'getProjectListSQL').returns(SQL`valid sql`);
@@ -412,8 +409,6 @@ describe('ProjectService', () => {
           start_date: '1900-01-01',
           end_date: '2200-10-10',
           coordinator_agency: 'Agency 1',
-          publish_timestamp: '2010-01-01',
-          permits_list: '3, 100',
           project_type: 'Aquatic Habitat'
         },
         {
@@ -422,8 +417,6 @@ describe('ProjectService', () => {
           start_date: '1900-01-01',
           end_date: '2000-12-31',
           coordinator_agency: 'Agency 2',
-          publish_timestamp: '',
-          permits_list: '1, 4',
           project_type: 'Terrestrial Habitat'
         }
       ];
@@ -439,12 +432,10 @@ describe('ProjectService', () => {
       expect(result[0].id).to.equal(123);
       expect(result[0].name).to.equal('Project 1');
       expect(result[0].completion_status).to.equal('Active');
-      expect(result[0].publish_status).to.equal('Published');
 
       expect(result[1].id).to.equal(456);
       expect(result[1].name).to.equal('Project 2');
       expect(result[1].completion_status).to.equal('Completed');
-      expect(result[1].publish_status).to.equal('Unpublished');
     });
   });
 
@@ -494,7 +485,6 @@ describe('ProjectService', () => {
     sinon.stub(ProjectService.prototype, 'getPublicProjectData').resolves(new GetProjectData());
     sinon.stub(ProjectService.prototype, 'getObjectivesData').resolves(new GetObjectivesData());
     sinon.stub(ProjectService.prototype, 'getCoordinatorData').resolves(new GetCoordinatorData());
-    sinon.stub(ProjectService.prototype, 'getPermitData').resolves(new GetPermitData());
     sinon.stub(ProjectService.prototype, 'getLocationData').resolves(new GetLocationData());
     sinon.stub(ProjectService.prototype, 'getPartnershipsData').resolves(new GetPartnershipsData());
     sinon.stub(ProjectService.prototype, 'getIUCNClassificationData').resolves(new GetIUCNClassificationData());
@@ -505,5 +495,252 @@ describe('ProjectService', () => {
     const result = await projectService.getPublicProjectById(1);
 
     expect(result.id).to.equal(1);
+  });
+});
+
+describe('getProjectData', () => {
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  it('returns data if valid return', async () => {
+    const mockQueryResponse = ({ rows: [{ id: 1 }], rowCount: 0 } as unknown) as QueryResult<any>;
+
+    const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
+    const projectService = new ProjectService(mockDBConnection);
+
+    const response = await projectService.getProjectData(1);
+
+    expect(response).to.eql(new GetProjectData({ id: 1 }, [{ id: 1 }]));
+  });
+
+  it('returns null if response is empty', async () => {
+    const mockQueryResponse = ({ rowCount: 0 } as unknown) as QueryResult<any>;
+
+    const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
+    const projectService = new ProjectService(mockDBConnection);
+
+    try {
+      await projectService.getProjectData(1);
+      expect.fail();
+    } catch (actualError) {
+      expect((actualError as HTTPError).message).to.equal('Failed to get project data');
+      expect((actualError as HTTPError).status).to.equal(400);
+    }
+  });
+});
+
+describe('getObjectivesData', () => {
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  it('returns data if valid return', async () => {
+    const mockQueryResponse = ({ rows: [{ id: 1 }], rowCount: 0 } as unknown) as QueryResult<any>;
+
+    const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
+    const projectService = new ProjectService(mockDBConnection);
+
+    const response = await projectService.getObjectivesData(1);
+
+    expect(response).to.eql(new GetObjectivesData({ id: 1 }));
+  });
+
+  it('returns null if response is empty', async () => {
+    const mockQueryResponse = ({ rowCount: 0 } as unknown) as QueryResult<any>;
+
+    const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
+    const projectService = new ProjectService(mockDBConnection);
+
+    try {
+      await projectService.getObjectivesData(1);
+      expect.fail();
+    } catch (actualError) {
+      expect((actualError as HTTPError).message).to.equal('Failed to get project objectives data');
+      expect((actualError as HTTPError).status).to.equal(400);
+    }
+  });
+});
+
+describe('getCoordinatorData', () => {
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  it('returns data if valid return', async () => {
+    const mockQueryResponse = ({ rows: [{ id: 1 }], rowCount: 0 } as unknown) as QueryResult<any>;
+
+    const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
+    const projectService = new ProjectService(mockDBConnection);
+
+    const response = await projectService.getCoordinatorData(1);
+
+    expect(response).to.eql(new GetCoordinatorData({ id: 1 }));
+  });
+
+  it('returns null if response is empty', async () => {
+    const mockQueryResponse = ({ rowCount: 0 } as unknown) as QueryResult<any>;
+
+    const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
+    const projectService = new ProjectService(mockDBConnection);
+
+    try {
+      await projectService.getCoordinatorData(1);
+      expect.fail();
+    } catch (actualError) {
+      expect((actualError as HTTPError).message).to.equal('Failed to get project contact data');
+      expect((actualError as HTTPError).status).to.equal(400);
+    }
+  });
+});
+
+describe('getLocationData', () => {
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  it('returns data if valid return', async () => {
+    const mockQueryResponse = ({ rows: [{ id: 1 }], rowCount: 0 } as unknown) as QueryResult<any>;
+
+    const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
+    const projectService = new ProjectService(mockDBConnection);
+
+    const response = await projectService.getLocationData(1);
+
+    expect(response).to.eql(new GetLocationData([{ id: 1 }]));
+  });
+
+  it('returns null if response is empty', async () => {
+    const mockQueryResponse = ({ rowCount: 0 } as unknown) as QueryResult<any>;
+
+    const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
+    const projectService = new ProjectService(mockDBConnection);
+
+    try {
+      await projectService.getLocationData(1);
+      expect.fail();
+    } catch (actualError) {
+      expect((actualError as HTTPError).message).to.equal('Failed to get project data');
+      expect((actualError as HTTPError).status).to.equal(400);
+    }
+  });
+});
+
+describe('getIUCNClassificationData', () => {
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  it('returns data if valid return', async () => {
+    const mockQueryResponse = ({ rows: [{ id: 1 }], rowCount: 0 } as unknown) as QueryResult<any>;
+
+    const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
+    const projectService = new ProjectService(mockDBConnection);
+
+    const response = await projectService.getIUCNClassificationData(1);
+
+    expect(response).to.eql(new GetIUCNClassificationData([{ id: 1 }]));
+  });
+
+  it('returns null if response is empty', async () => {
+    const mockQueryResponse = ({ rowCount: 0 } as unknown) as QueryResult<any>;
+
+    const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
+    const projectService = new ProjectService(mockDBConnection);
+
+    try {
+      await projectService.getIUCNClassificationData(1);
+      expect.fail();
+    } catch (actualError) {
+      expect((actualError as HTTPError).message).to.equal('Failed to get project data');
+      expect((actualError as HTTPError).status).to.equal(400);
+    }
+  });
+});
+
+describe('getFundingData', () => {
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  it('returns data if valid return', async () => {
+    const mockQueryResponse = ({ rows: [{ id: 1 }], rowCount: 0 } as unknown) as QueryResult<any>;
+
+    const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
+    const projectService = new ProjectService(mockDBConnection);
+
+    const response = await projectService.getFundingData(1);
+
+    expect(response).to.eql(new GetFundingData([{ id: 1 }]));
+  });
+
+  it('returns null if response is empty', async () => {
+    const mockQueryResponse = ({} as unknown) as QueryResult<any>;
+
+    const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
+    const projectService = new ProjectService(mockDBConnection);
+
+    try {
+      await projectService.getFundingData(1);
+      expect.fail();
+    } catch (actualError) {
+      expect((actualError as HTTPError).message).to.equal('Failed to get project data');
+      expect((actualError as HTTPError).status).to.equal(400);
+    }
+  });
+});
+
+describe('getPartnershipsData', () => {
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  it('returns data if valid return', async () => {
+    sinon.stub(ProjectService.prototype, 'getIndigenousPartnershipsRows').resolves([]);
+    sinon.stub(ProjectService.prototype, 'getStakeholderPartnershipsRows').resolves([]);
+
+    const mockQueryResponse = ({ rows: [{ id: 1 }], rowCount: 0 } as unknown) as QueryResult<any>;
+
+    const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
+    const projectService = new ProjectService(mockDBConnection);
+
+    const response = await projectService.getPartnershipsData(1);
+
+    expect(response).to.eql(new GetPartnershipsData([], []));
+  });
+
+  it('throws error if indigenous partnership is empty', async () => {
+    sinon.stub(ProjectService.prototype, 'getIndigenousPartnershipsRows').resolves(undefined);
+    sinon.stub(ProjectService.prototype, 'getStakeholderPartnershipsRows').resolves([]);
+    const mockQueryResponse = ({} as unknown) as QueryResult<any>;
+
+    const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
+    const projectService = new ProjectService(mockDBConnection);
+
+    try {
+      await projectService.getPartnershipsData(1);
+      expect.fail();
+    } catch (actualError) {
+      expect((actualError as HTTPError).message).to.equal('Failed to get indigenous partnership data');
+      expect((actualError as HTTPError).status).to.equal(400);
+    }
+  });
+
+  it('throws error if stakeholder partnership is empty', async () => {
+    sinon.stub(ProjectService.prototype, 'getIndigenousPartnershipsRows').resolves([]);
+    sinon.stub(ProjectService.prototype, 'getStakeholderPartnershipsRows').resolves(undefined);
+
+    const mockQueryResponse = ({} as unknown) as QueryResult<any>;
+
+    const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
+    const projectService = new ProjectService(mockDBConnection);
+
+    try {
+      await projectService.getPartnershipsData(1);
+      expect.fail();
+    } catch (actualError) {
+      expect((actualError as HTTPError).message).to.equal('Failed to get stakeholder partnership data');
+      expect((actualError as HTTPError).status).to.equal(400);
+    }
   });
 });

@@ -15,7 +15,6 @@ describe('Header', () => {
 
     mockHasSystemRole
       .mockReturnValueOnce(true) // Return true when the `Projects` secure link is parsed
-      .mockReturnValueOnce(true) // Return true when the `Permits` secure link is parsed
       .mockReturnValueOnce(true) // Return true when the `Manage Users` secure link is parsed
       .mockReturnValueOnce(true); // Return true when the `Map` secure link is parsed
 
@@ -58,7 +57,6 @@ describe('Header', () => {
 
     mockHasSystemRole
       .mockReturnValueOnce(true) // Return true when the `Projects` secure link is parsed
-      .mockReturnValueOnce(true) // Return true when the `Permits` secure link is parsed
       .mockReturnValueOnce(true) // Return true when the `Manage Users` secure link is parsed
       .mockReturnValueOnce(true) // Return true when the `Map` secure link is parsed
       .mockReturnValueOnce(true); // Return true when the `Resources` secure link is parsed
@@ -93,7 +91,6 @@ describe('Header', () => {
     );
 
     expect(getByText('Projects')).toBeVisible();
-    expect(getByText('Permits')).toBeVisible();
     expect(getByText('Map')).toBeVisible();
     expect(getByText('Manage Users')).toBeVisible();
     expect(getByText('Resources')).toBeVisible();

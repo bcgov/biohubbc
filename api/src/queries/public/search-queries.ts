@@ -12,8 +12,6 @@ export const getPublicSpatialSearchResultsSQL = (): SQLStatement | null => {
       p.name,
       public.ST_asGeoJSON(p.geography) as geometry
     from
-      project as p
-    where
-      p.publish_timestamp is not null;
+      project as p;
   `;
 };

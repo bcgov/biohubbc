@@ -8,14 +8,13 @@ import Link from '@material-ui/core/Link';
 import Paper from '@material-ui/core/Paper';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import { mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import clsx from 'clsx';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
-import { DeleteProjectI18N, PublishProjectI18N } from 'constants/i18n';
+import { DeleteProjectI18N } from 'constants/i18n';
 import { ProjectStatusType } from 'constants/misc';
 import { SYSTEM_ROLE } from 'constants/roles';
 import { AuthStateContext } from 'contexts/authStateContext';
@@ -74,7 +73,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 export interface IProjectHeaderProps {
   projectWithDetails: IGetProjectForViewResponse;
-  refresh: () => void;
+  refresh?: () => void;
 }
 
 /**
@@ -84,7 +83,7 @@ export interface IProjectHeaderProps {
  * @return {*}
  */
 const ProjectHeader: React.FC<IProjectHeaderProps> = (props) => {
-  const { projectWithDetails, refresh } = props;
+  const { projectWithDetails } = props;
 
   const classes = useStyles();
   const history = useHistory();
@@ -113,27 +112,6 @@ const ProjectHeader: React.FC<IProjectHeaderProps> = (props) => {
     },
     onOk: () => {
       dialogContext.setErrorDialog({ open: false });
-    }
-  };
-
-  const publishProject = async (publish: boolean) => {
-    if (!projectWithDetails) {
-      return;
-    }
-
-    try {
-      const response = await biohubApi.project.publishProject(projectWithDetails.id, publish);
-
-      if (!response) {
-        showPublishErrorDialog({ open: true });
-        return;
-      }
-
-      await refresh();
-    } catch (error) {
-      const apiError = error as APIError;
-      showPublishErrorDialog({ dialogText: apiError.message, open: true });
-      return error;
     }
   };
 
@@ -169,18 +147,8 @@ const ProjectHeader: React.FC<IProjectHeaderProps> = (props) => {
     }
   };
 
-  const publishErrorDialogProps = {
-    ...deleteErrorDialogProps,
-    dialogTitle: PublishProjectI18N.publishErrorTitle,
-    dialogText: PublishProjectI18N.publishErrorText
-  };
-
   const showDeleteErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
     dialogContext.setErrorDialog({ ...deleteErrorDialogProps, ...textDialogProps, open: true });
-  };
-
-  const showPublishErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
-    dialogContext.setErrorDialog({ ...publishErrorDialogProps, ...textDialogProps, open: true });
   };
 
   const getChipIcon = (status_name: string) => {
@@ -203,10 +171,6 @@ const ProjectHeader: React.FC<IProjectHeaderProps> = (props) => {
     SYSTEM_ROLE.SYSTEM_ADMIN,
     SYSTEM_ROLE.PROJECT_CREATOR
   ]);
-  // Enable delete button if you a system admin OR a project admin and the project is not published
-  const enableDeleteProjectButton =
-    keycloakWrapper?.hasSystemRole([SYSTEM_ROLE.SYSTEM_ADMIN]) ||
-    (keycloakWrapper?.hasSystemRole([SYSTEM_ROLE.PROJECT_CREATOR]) && !projectWithDetails.project.publish_date);
 
   return (
     <Paper square={true}>
@@ -266,31 +230,10 @@ const ProjectHeader: React.FC<IProjectHeaderProps> = (props) => {
               onClick={() => history.push('users')}>
               Manage Project Team
             </Button>
-            <Button
-              variant="outlined"
-              disableElevation
-              className={classes.actionButton}
-              data-testid="publish-project-button"
-              aria-label={projectWithDetails.project.publish_date ? 'Unpublish Project' : 'Publish Project'}
-              onClick={() => {
-                publishProject(!projectWithDetails.project.publish_date);
-              }}>
-              {projectWithDetails.project.publish_date ? 'Unpublish' : 'Publish'}
-            </Button>
             {showDeleteProjectButton && (
-              <Tooltip
-                arrow
-                color="secondary"
-                title={!enableDeleteProjectButton ? 'Cannot delete a published project' : ''}>
-                <>
-                  <IconButton
-                    data-testid="delete-project-button"
-                    onClick={showDeleteProjectDialog}
-                    disabled={!enableDeleteProjectButton}>
-                    <Icon path={mdiTrashCanOutline} size={1} />
-                  </IconButton>
-                </>
-              </Tooltip>
+              <IconButton data-testid="delete-project-button" onClick={showDeleteProjectDialog}>
+                <Icon path={mdiTrashCanOutline} size={1} />
+              </IconButton>
             )}
           </Box>
         </Box>

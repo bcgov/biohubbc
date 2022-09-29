@@ -6,6 +6,7 @@ import SQL from 'sql-template-strings';
 import * as db from '../../../../database/db';
 import { HTTPError } from '../../../../errors/custom-error';
 import project_queries from '../../../../queries/project';
+import { PlatformService } from '../../../../services/platform-service';
 import { getMockDBConnection } from '../../../../__mocks__/db';
 import * as addFunding from './add';
 
@@ -169,6 +170,8 @@ describe('add a funding source', () => {
     });
 
     sinon.stub(project_queries, 'postProjectFundingSourceSQL').returns(SQL`something`);
+
+    sinon.stub(PlatformService.prototype, 'submitDwCAMetadataPackage').resolves();
 
     const result = addFunding.addFundingSource();
 

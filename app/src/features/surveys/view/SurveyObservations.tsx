@@ -24,7 +24,6 @@ import ComponentDialog from 'components/dialog/ComponentDialog';
 import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
 // import { ConfigContext } from 'contexts/configContext';
 import { DialogContext } from 'contexts/dialogContext';
-import ObservationSubmissionCSV from 'features/observations/components/ObservationSubmissionCSV';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useInterval } from 'hooks/useInterval';
 import { IGetObservationSubmissionResponse } from 'interfaces/useObservationApi.interface';
@@ -203,7 +202,7 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
     });
   };
 
-  // Action prop for the Alert MUI component to render the delete icon and associated action
+  // Action prop for the Alert MUI component to render the delete icon and associated actions
   const submissionAlertAction = () => (
     <Box>
       <IconButton aria-label="open" color="inherit" onClick={() => viewFileContents()}>
@@ -348,7 +347,7 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
           buttonOnClick={() => showUploadDialog()}
         />
 
-        <Box>
+        <Box pb={3}>
           {!submissionStatus && (
             <>
               <Box component={Divider} m={0} />
@@ -403,13 +402,6 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
               submissionStatus.status === 'Template Validated') && (
               <>
                 <Box px={3}>{displayAlertBox('info', mdiFileOutline, submissionStatus.inputFileName, '')}</Box>
-                <Box mt={1} overflow="hidden">
-                  <ObservationSubmissionCSV
-                    getCSVData={() => {
-                      return biohubApi.observation.getSubmissionCSVForView(projectId, surveyId, submissionStatus.id);
-                    }}
-                  />
-                </Box>
               </>
             )}
           {isValidating && submissionStatus && (

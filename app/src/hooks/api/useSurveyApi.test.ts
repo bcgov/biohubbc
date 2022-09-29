@@ -52,20 +52,6 @@ describe('useSurveyApi', () => {
     expect(result).toEqual('www.signedurl.com');
   });
 
-  it('getSurveyPermits works as expected', async () => {
-    mock.onGet(`/api/project/${projectId}/survey/permits/list`).reply(200, [
-      {
-        permit_number: '123',
-        permit_type: 'wildlife'
-      }
-    ]);
-
-    const result = await useSurveyApi(axios).getSurveyPermits(projectId);
-
-    expect(result[0].permit_number).toEqual('123');
-    expect(result[0].permit_type).toEqual('wildlife');
-  });
-
   it('getAvailableSurveyFundingSources works as expected', async () => {
     mock.onGet(`/api/project/${projectId}/survey/funding-sources/list`).reply(200, [
       {
@@ -136,7 +122,6 @@ describe('useSurveyApi', () => {
           species: ['species 1', 'species 2'],
           start_date: '2020/04/04',
           end_date: '2020/05/05',
-          publish_status: 'Published',
           completion_status: 'Completed'
         }
       }
@@ -265,33 +250,6 @@ describe('useSurveyApi', () => {
     });
   });
 
-  it('getSubmissionCSVForView works as expected', async () => {
-    const summaryId = 2;
-    const resultData = {
-      data: {
-        name: 'name',
-        headers: [],
-        rows: [[]]
-      }
-    };
-
-    mock
-      .onGet(`/api/project/${projectId}/survey/${surveyId}/summary/submission/${summaryId}/view`)
-      .reply(200, resultData);
-
-    const result = await useSurveyApi(axios).getSubmissionCSVForView(projectId, surveyId, summaryId);
-
-    expect(result).toEqual(resultData);
-  });
-
-  it('publishSurvey works as expected', async () => {
-    mock.onPut(`/api/project/${projectId}/survey/${surveyId}/publish`).reply(200, true);
-
-    const result = await useSurveyApi(axios).publishSurvey(projectId, surveyId, true);
-
-    expect(result).toEqual(true);
-  });
-
   it('deleteSummarySubmission works as expected', async () => {
     const summaryId = 2;
 
@@ -363,5 +321,13 @@ describe('useSurveyApi', () => {
     const result = await useSurveyApi(axios).getSurveyReportMetadata(projectId, surveyId, attachmentId);
 
     expect(result).toEqual('result 1');
+  });
+
+  it('uploadSurveyDataToBioHub works as expected', async () => {
+    mock.onPost(`/api/project/${projectId}/survey/${surveyId}/upload`).reply(200, true);
+
+    const result = await useSurveyApi(axios).uploadSurveyDataToBioHub(projectId, surveyId);
+
+    expect(result).toEqual(true);
   });
 });

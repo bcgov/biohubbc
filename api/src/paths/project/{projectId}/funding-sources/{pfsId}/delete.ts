@@ -5,6 +5,7 @@ import { getDBConnection } from '../../../../../database/db';
 import { HTTP400 } from '../../../../../errors/custom-error';
 import { queries } from '../../../../../queries/queries';
 import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
+import { PlatformService } from '../../../../../services/platform-service';
 import { getLogger } from '../../../../../utils/logger';
 import { deleteFundingSourceApiDocObject } from '../../../../../utils/shared-api-docs';
 
@@ -32,13 +33,14 @@ DELETE.apiDoc = deleteFundingSourceApiDocObject(
 
 export function deleteFundingSource(): RequestHandler {
   return async (req, res) => {
-    defaultLog.debug({ label: 'Delete project funding source', message: 'params', req_params: req.params });
+    const projectId = Number(req.params.projectId);
+    const pfsId = Number(req.params.pfsId);
 
-    if (!req.params.projectId) {
+    if (!projectId) {
       throw new HTTP400('Missing required path param `projectId`');
     }
 
-    if (!req.params.pfsId) {
+    if (!pfsId) {
       throw new HTTP400('Missing required path param `pfsId`');
     }
 
@@ -48,13 +50,10 @@ export function deleteFundingSource(): RequestHandler {
       await connection.open();
 
       const surveyFundingSourceDeleteStatement = queries.survey.deleteSurveyFundingSourceByProjectFundingSourceIdSQL(
-        Number(req.params.pfsId)
+        pfsId
       );
 
-      const deleteProjectFundingSourceSQLStatement = queries.project.deleteProjectFundingSourceSQL(
-        Number(req.params.projectId),
-        Number(req.params.pfsId)
-      );
+      const deleteProjectFundingSourceSQLStatement = queries.project.deleteProjectFundingSourceSQL(projectId, pfsId);
 
       if (!deleteProjectFundingSourceSQLStatement || !surveyFundingSourceDeleteStatement) {
         throw new HTTP400('Failed to build SQL delete statement');
@@ -69,6 +68,14 @@ export function deleteFundingSource(): RequestHandler {
 
       if (!projectFundingSourceDeleteResponse.rowCount) {
         throw new HTTP400('Failed to delete project funding source');
+      }
+
+      try {
+        const platformService = new PlatformService(connection);
+        await platformService.submitDwCAMetadataPackage(projectId);
+      } catch (error) {
+        // Don't fail the rest of the endpoint if submitting metadata fails
+        defaultLog.error({ label: 'deleteFundingSource->submitDwCAMetadataPackage', message: 'error', error });
       }
 
       await connection.commit();

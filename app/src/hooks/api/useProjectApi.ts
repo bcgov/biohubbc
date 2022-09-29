@@ -354,18 +354,6 @@ const useProjectApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Publish/unpublish a project.
-   *
-   * @param {number} projectId the project id
-   * @param {boolean} publish set to `true` to publish the project, `false` to unpublish the project.
-   * @return {*}  {Promise<any>}
-   */
-  const publishProject = async (projectId: number, publish: boolean): Promise<any> => {
-    const { data } = await axios.put(`/api/project/${projectId}/publish`, { publish: publish });
-    return data;
-  };
-
-  /**
    * Get project report metadata based on project ID, attachment ID, and attachmentType
    *
    * @param {number} projectId
@@ -461,7 +449,6 @@ const useProjectApi = (axios: AxiosInstance) => {
     deleteFundingSource,
     addFundingSource,
     deleteProject,
-    publishProject,
     makeAttachmentSecure,
     makeAttachmentUnsecure,
     getProjectReportMetadata,
@@ -475,14 +462,14 @@ const useProjectApi = (axios: AxiosInstance) => {
 export default useProjectApi;
 
 /**
- * Returns a set of supported api methods for working with public (published) project records.
+ * Returns a set of supported api methods for working with public project records.
  *
  * @param {AxiosInstance} axios
  * @return {*} object whose properties are supported api methods.
  */
 export const usePublicProjectApi = (axios: AxiosInstance) => {
   /**
-   * Get public facing (published) projects list.
+   * Get public facing projects list.
    *
    * @return {*}  {Promise<IGetProjectsListResponse[]>}
    */
@@ -493,7 +480,7 @@ export const usePublicProjectApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Get public (published) project details based on its ID for viewing purposes.
+   * Get public project details based on its ID for viewing purposes.
    *
    * @param {number} projectId
    * @return {*} {Promise<IGetProjectForViewResponse>}
@@ -505,7 +492,7 @@ export const usePublicProjectApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Get public (published) project attachments based on project ID
+   * Get public project attachments based on project ID
    *
    * @param {number} projectId
    * @returns {*} {Promise<IGetProjectAttachmentsResponse>}
@@ -517,7 +504,7 @@ export const usePublicProjectApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Get public (published) project attachment S3 url based on project and attachment ID
+   * Get public project attachment S3 url based on project and attachment ID
    *
    * @param {number} projectId
    * @param {number} attachmentId

@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteFieldVariableSize';
 import { Formik } from 'formik';
 import React from 'react';
@@ -39,8 +39,8 @@ const activity: IMultiAutocompleteFieldOption[] = [
 ];
 
 describe('ProjectDetailsForm', () => {
-  it('renders correctly with default empty values', () => {
-    const { asFragment } = render(
+  it('renders correctly with default empty values', async () => {
+    const { getByLabelText } = render(
       <Formik
         initialValues={ProjectDetailsFormInitialValues}
         validationSchema={ProjectDetailsFormYupSchema}
@@ -51,19 +51,23 @@ describe('ProjectDetailsForm', () => {
       </Formik>
     );
 
-    expect(asFragment()).toMatchSnapshot();
+    await waitFor(() => {
+      expect(getByLabelText('Project Name', { exact: false })).toBeVisible();
+    });
   });
 
-  it('renders correctly with existing details values', () => {
+  it('renders correctly with existing details values', async () => {
     const existingFormValues: IProjectDetailsForm = {
-      project_name: 'name 1',
-      project_type: 2,
-      project_activities: [2, 3],
-      start_date: '2021-03-14',
-      end_date: '2021-04-14'
+      project: {
+        project_name: 'name 1',
+        project_type: 2,
+        project_activities: [2, 3],
+        start_date: '2021-03-14',
+        end_date: '2021-04-14'
+      }
     };
 
-    const { asFragment } = render(
+    const { getByLabelText, getByText } = render(
       <Formik
         initialValues={existingFormValues}
         validationSchema={ProjectDetailsFormYupSchema}
@@ -74,6 +78,9 @@ describe('ProjectDetailsForm', () => {
       </Formik>
     );
 
-    expect(asFragment()).toMatchSnapshot();
+    await waitFor(() => {
+      expect(getByLabelText('Project Name', { exact: false })).toBeVisible();
+      expect(getByText('type 2', { exact: false })).toBeVisible();
+    });
   });
 });

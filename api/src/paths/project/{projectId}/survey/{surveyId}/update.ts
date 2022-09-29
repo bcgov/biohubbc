@@ -5,6 +5,7 @@ import { getDBConnection } from '../../../../../database/db';
 import { PutSurveyObject } from '../../../../../models/survey-update';
 import { geoJsonFeature } from '../../../../../openapi/schemas/geoJson';
 import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
+import { PlatformService } from '../../../../../services/platform-service';
 import { SurveyService } from '../../../../../services/survey-service';
 import { getLogger } from '../../../../../utils/logger';
 
@@ -116,13 +117,25 @@ PUT.apiDoc = {
             },
             permit: {
               type: 'object',
-              required: ['permit_number', 'permit_type'],
               properties: {
-                permit_number: {
-                  type: 'string'
-                },
-                permit_type: {
-                  type: 'string'
+                permits: {
+                  type: 'array',
+                  items: {
+                    type: 'object',
+                    required: ['permit_number', 'permit_type'],
+                    properties: {
+                      permit_id: {
+                        type: 'number',
+                        nullable: true
+                      },
+                      permit_number: {
+                        type: 'string'
+                      },
+                      permit_type: {
+                        type: 'string'
+                      }
+                    }
+                  }
                 }
               }
             },
@@ -282,7 +295,15 @@ export function updateSurvey(): RequestHandler {
 
       const surveyService = new SurveyService(connection);
 
-      await surveyService.updateSurvey(projectId, surveyId, sanitizedPutSurveyData);
+      await surveyService.updateSurvey(surveyId, sanitizedPutSurveyData);
+
+      try {
+        const platformService = new PlatformService(connection);
+        await platformService.submitDwCAMetadataPackage(projectId);
+      } catch (error) {
+        // Don't fail the rest of the endpoint if submitting metadata fails
+        defaultLog.error({ label: 'updateSurvey->submitDwCAMetadataPackage', message: 'error', error });
+      }
 
       await connection.commit();
 

@@ -9,11 +9,7 @@ import { SQL, SQLStatement } from 'sql-template-strings';
  * @param {number} projectId
  * @returns {SQLStatement} sql query object
  */
-export const getAllAssignablePermitsForASurveySQL = (projectId: number): SQLStatement | null => {
-  if (!projectId) {
-    return null;
-  }
-
+export const getAllAssignablePermitsForASurveySQL = (projectId: number): SQLStatement => {
   return SQL`
     SELECT
       number,
@@ -44,11 +40,7 @@ export const getSurveyIdsSQL = (projectId: number): SQLStatement => {
   `;
 };
 
-export const getSurveyBasicDataForViewSQL = (surveyId: number): SQLStatement | null => {
-  if (!surveyId) {
-    return null;
-  }
-
+export const getSurveyBasicDataForViewSQL = (surveyId: number): SQLStatement => {
   return SQL`
     SELECT
       s.survey_id as id,
@@ -65,7 +57,6 @@ export const getSurveyBasicDataForViewSQL = (surveyId: number): SQLStatement | n
       s.location_name,
       s.geojson as geometry,
       s.revision_count,
-      s.publish_timestamp as publish_date,
       per.number,
       per.type,
       max(os.occurrence_submission_id) as occurrence_submission_id,
@@ -105,17 +96,12 @@ export const getSurveyBasicDataForViewSQL = (surveyId: number): SQLStatement | n
       s.location_name,
       s.geojson,
       s.revision_count,
-      s.publish_timestamp,
       per.number,
       per.type;
   `;
 };
 
-export const getSurveyFundingSourcesDataForViewSQL = (surveyId: number): SQLStatement | null => {
-  if (!surveyId) {
-    return null;
-  }
-
+export const getSurveyFundingSourcesDataForViewSQL = (surveyId: number): SQLStatement => {
   return SQL`
     SELECT
       sfs.project_funding_source_id,
@@ -162,11 +148,7 @@ export const getSurveyFundingSourcesDataForViewSQL = (surveyId: number): SQLStat
   `;
 };
 
-export const getSurveyFocalSpeciesDataForViewSQL = (surveyId: number): SQLStatement | null => {
-  if (!surveyId) {
-    return null;
-  }
-
+export const getSurveyFocalSpeciesDataForViewSQL = (surveyId: number): SQLStatement => {
   return SQL`
     SELECT
       wldtaxonomic_units_id, is_focal
@@ -179,11 +161,7 @@ export const getSurveyFocalSpeciesDataForViewSQL = (surveyId: number): SQLStatem
   `;
 };
 
-export const getLatestOccurrenceSubmissionIdSQL = (surveyId: number): SQLStatement | null => {
-  if (!surveyId) {
-    return null;
-  }
-
+export const getLatestOccurrenceSubmissionIdSQL = (surveyId: number): SQLStatement => {
   return SQL`
     SELECT
       max(occurrence_submission_id) as id
@@ -194,11 +172,7 @@ export const getLatestOccurrenceSubmissionIdSQL = (surveyId: number): SQLStateme
     `;
 };
 
-export const getLatestSummaryResultIdSQL = (surveyId: number): SQLStatement | null => {
-  if (!surveyId) {
-    return null;
-  }
-
+export const getLatestSummaryResultIdSQL = (surveyId: number): SQLStatement => {
   return SQL`
     SELECT
       max(survey_summary_submission_id) as id
@@ -207,4 +181,57 @@ export const getLatestSummaryResultIdSQL = (surveyId: number): SQLStatement | nu
     WHERE
       survey_id = ${surveyId};
     `;
+};
+
+/**
+ * SQL query to get survey attachments.
+ *
+ * @param {number} surveyId
+ * @returns {SQLStatement} sql query object
+ */
+export const getAttachmentsBySurveySQL = (surveyId: number): SQLStatement => {
+  return SQL`
+    SELECT
+      *
+    FROM
+    survey_attachment
+    WHERE
+    survey_id = ${surveyId};
+  `;
+};
+
+/**
+ * SQL query to get survey reports.
+ *
+ * @param {number} surveyId
+ * @returns {SQLStatement} sql query object
+ */
+export const getReportAttachmentsBySurveySQL = (surveyId: number): SQLStatement => {
+  return SQL`
+    SELECT
+      pra.survey_report_attachment_id
+      , pra.survey_id
+      , pra.file_name
+      , pra.title
+      , pra.description
+      , pra.year
+      , pra."key"
+      , pra.file_size
+      , pra.security_token
+	    , array_remove(array_agg(pra2.first_name ||' '||pra2.last_name), null) authors
+    FROM
+    survey_report_attachment pra
+    LEFT JOIN survey_report_author pra2 ON pra2.survey_report_attachment_id = pra.survey_report_attachment_id
+    WHERE pra.survey_id = ${surveyId}
+    GROUP BY
+      pra.survey_report_attachment_id
+      , pra.survey_id
+      , pra.file_name
+      , pra.title
+      , pra.description
+      , pra.year
+      , pra."key"
+      , pra.file_size
+      , pra.security_token;
+  `;
 };

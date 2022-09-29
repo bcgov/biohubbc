@@ -12,11 +12,9 @@ import {
   getIndigenousPartnershipsByProjectSQL,
   getIUCNActionClassificationByProjectSQL,
   getObjectivesByProjectSQL,
-  getPermitsByProjectSQL,
   getProjectByProjectSQL,
   putProjectFundingSourceSQL,
-  putProjectSQL,
-  updateProjectPublishStatusSQL
+  putProjectSQL
 } from './project-update-queries';
 
 describe('getIndigenousPartnershipsByProjectSQL', () => {
@@ -28,20 +26,6 @@ describe('getIndigenousPartnershipsByProjectSQL', () => {
 
   it('valid projectId', () => {
     const response = getIndigenousPartnershipsByProjectSQL(1);
-
-    expect(response).to.not.be.null;
-  });
-});
-
-describe('getPermitsByProjectSQL', () => {
-  it('Null projectId', () => {
-    const response = getPermitsByProjectSQL((null as unknown) as number);
-
-    expect(response).to.be.null;
-  });
-
-  it('valid projectId', () => {
-    const response = getPermitsByProjectSQL(1);
 
     expect(response).to.not.be.null;
   });
@@ -62,12 +46,6 @@ describe('getIUCNActionClassificationByProjectSQL', () => {
 });
 
 describe('getCoordinatorByProjectSQL', () => {
-  it('Null projectId', () => {
-    const response = getCoordinatorByProjectSQL((null as unknown) as number);
-
-    expect(response).to.be.null;
-  });
-
   it('valid projectId', () => {
     const response = getCoordinatorByProjectSQL(1);
 
@@ -217,12 +195,6 @@ describe('putProjectSQL', () => {
 });
 
 describe('getObjectivesByProjectSQL', () => {
-  it('Null projectId', () => {
-    const response = getObjectivesByProjectSQL((null as unknown) as number);
-
-    expect(response).to.be.null;
-  });
-
   it('valid projectId', () => {
     const response = getObjectivesByProjectSQL(1);
 
@@ -269,32 +241,6 @@ describe('putProjectFundingSourceSQL', () => {
       expect(response?.values).to.deep.include(10000);
       expect(response?.values).to.deep.include('2020-02-02');
       expect(response?.values).to.deep.include('2020-03-02');
-    });
-  });
-});
-
-describe('updateProjectPublishStatusSQL', () => {
-  describe('with invalid parameters', () => {
-    it('returns null when project is null', () => {
-      const response = updateProjectPublishStatusSQL((null as unknown) as number, true);
-
-      expect(response).to.be.null;
-    });
-  });
-
-  describe('with valid parameters', () => {
-    it('returns a SQLStatement when there is a real date value', () => {
-      const response = updateProjectPublishStatusSQL(1, true);
-
-      expect(response).to.not.be.null;
-      expect(response?.values).to.deep.include(1);
-    });
-
-    it('returns a SQLStatement when the date value is null', () => {
-      const response = updateProjectPublishStatusSQL(1, false);
-
-      expect(response).to.not.be.null;
-      expect(response?.values).to.deep.include(1);
     });
   });
 });

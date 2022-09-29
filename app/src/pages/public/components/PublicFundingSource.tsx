@@ -13,7 +13,7 @@ export interface IPublicProjectFundingProps {
 }
 
 /**
- * Funding source content for a public (published) project.
+ * Funding source content for a public project.
  *
  * @return {*}
  */

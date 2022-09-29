@@ -75,6 +75,8 @@ services:
       - GCNOTIFY_SMS_URL=${GCNOTIFY_SMS_URL}
       - APP_HOST=${APP_HOST}
       - BACKBONE_API_HOST=${BACKBONE_API_HOST}
+      - BACKBONE_INTAKE_PATH=${BACKBONE_INTAKE_PATH}
+      - BACKBONE_INTAKE_ENABLED=${BACKBONE_INTAKE_ENABLED}
     volumes:
       - ./api:/opt/app-root/src
       - /opt/app-root/src/node_modules # prevents local node_modules overriding container node_modules

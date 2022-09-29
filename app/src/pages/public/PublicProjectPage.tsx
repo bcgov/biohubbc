@@ -16,7 +16,7 @@ import clsx from 'clsx';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { ProjectStatusType } from 'constants/misc';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import useCodes from 'hooks/useCodes';
+import useDataLoader from 'hooks/useDataLoader';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useLocation, useParams } from 'react-router';
@@ -59,7 +59,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 /**
- * Page to display a single Public (published) Project.
+ * Page to display a single Public Project.
  *
  * @return {*}
  */
@@ -68,7 +68,9 @@ const PublicProjectPage = () => {
   const biohubApi = useBiohubApi();
   const classes = useStyles();
   const location = useLocation();
-  const codes = useCodes();
+
+  const codesDataLoader = useDataLoader(() => biohubApi.codes.getAllCodeSets());
+  codesDataLoader.load();
 
   const [isLoadingProject, setIsLoadingProject] = useState(false);
   const [projectWithDetails, setProjectWithDetails] = useState<IGetProjectForViewResponse | null>(null);
@@ -106,7 +108,7 @@ const PublicProjectPage = () => {
     return <Chip size="small" className={clsx(classes.chip, chipStatusClass)} label={chipLabel} />;
   };
 
-  if (!projectWithDetails || !codes.isReady || !codes.data) {
+  if (!projectWithDetails || !codesDataLoader.data) {
     return <CircularProgress className="pageProgress" data-testid="loading_spinner" size={40} />;
   }
 
@@ -172,7 +174,11 @@ const PublicProjectPage = () => {
           </Box>
           <Box component="article" flex="1 1 auto">
             {location.pathname.includes('/details') && (
-              <PublicProjectDetails projectForViewData={projectWithDetails} codes={codes.data} refresh={getProject} />
+              <PublicProjectDetails
+                projectForViewData={projectWithDetails}
+                codes={codesDataLoader.data}
+                refresh={getProject}
+              />
             )}
             {location.pathname.includes('/attachments') && (
               <PublicProjectAttachments projectForViewData={projectWithDetails} />

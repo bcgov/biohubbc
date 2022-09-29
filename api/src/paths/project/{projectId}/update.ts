@@ -6,6 +6,7 @@ import { HTTP400 } from '../../../errors/custom-error';
 import { geoJsonFeature } from '../../../openapi/schemas/geoJson';
 import { projectIdResponseObject, projectUpdatePutRequestObject } from '../../../openapi/schemas/project';
 import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
+import { PlatformService } from '../../../services/platform-service';
 import { ProjectService } from '../../../services/project-service';
 import { getLogger } from '../../../utils/logger';
 
@@ -28,7 +29,6 @@ export const GET: Operation = [
 
 export enum GET_ENTITIES {
   coordinator = 'coordinator',
-  permit = 'permit',
   project = 'project',
   objectives = 'objectives',
   location = 'location',
@@ -86,7 +86,6 @@ GET.apiDoc = {
                   'project_activities',
                   'start_date',
                   'end_date',
-                  'publish_date',
                   'revision_count'
                 ],
                 nullable: true,
@@ -113,35 +112,8 @@ GET.apiDoc = {
                     format: 'date',
                     description: 'ISO 8601 date string for the project end date'
                   },
-                  publish_date: {
-                    description: 'Status of the project being published/unpublished',
-                    format: 'date',
-                    type: 'string'
-                  },
                   revision_count: {
                     type: 'number'
-                  }
-                }
-              },
-              permit: {
-                type: 'object',
-                required: ['permits'],
-                nullable: true,
-                properties: {
-                  permits: {
-                    type: 'array',
-                    items: {
-                      title: 'Project permit',
-                      type: 'object',
-                      properties: {
-                        permit_number: {
-                          type: 'string'
-                        },
-                        permit_type: {
-                          type: 'string'
-                        }
-                      }
-                    }
                   }
                 }
               },
@@ -430,7 +402,6 @@ PUT.apiDoc = {
 
 export interface IUpdateProject {
   coordinator: object | null;
-  permit: object | null;
   project: object | null;
   objectives: object | null;
   location: object | null;
@@ -466,6 +437,14 @@ export function updateProject(): RequestHandler {
       const projectService = new ProjectService(connection);
 
       await projectService.updateProject(projectId, entities);
+
+      try {
+        const platformService = new PlatformService(connection);
+        await platformService.submitDwCAMetadataPackage(projectId);
+      } catch (error) {
+        // Don't fail the rest of the endpoint if submitting metadata fails
+        defaultLog.error({ label: 'updateProject->submitDwCAMetadataPackage', message: 'error', error });
+      }
 
       await connection.commit();
 

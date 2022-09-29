@@ -22,27 +22,6 @@ export const deleteIndigenousPartnershipsSQL = (projectId: number): SQLStatement
 };
 
 /**
- * SQL query to delete permit rows associated to a project
- *
- * @param {projectId} projectId
- * @returns {SQLStatement} sql query object
- */
-export const deletePermitSQL = (projectId: number): SQLStatement | null => {
-  if (!projectId) {
-    return null;
-  }
-
-  const sqlStatement: SQLStatement = SQL`
-    DELETE
-      from permit
-    WHERE
-      project_id = ${projectId};
-  `;
-
-  return sqlStatement;
-};
-
-/**
  * SQL query to delete project stakeholder partnership rows
  *
  * @param {projectId} projectId

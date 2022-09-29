@@ -4,7 +4,7 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as db from '../../../database/db';
 import { HTTPError } from '../../../errors/custom-error';
-import { GetPermitData } from '../../../models/project-view';
+import { PlatformService } from '../../../services/platform-service';
 import { ProjectService } from '../../../services/project-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../__mocks__/db';
 import * as update from './update';
@@ -47,7 +47,6 @@ describe('update', () => {
       const sampleResponse = {
         id: 1,
         coordinator: undefined,
-        permit: new GetPermitData(),
         project: undefined,
         objectives: undefined,
         location: undefined,
@@ -61,7 +60,7 @@ describe('update', () => {
       };
 
       mockReq.query = {
-        entity: ['permit']
+        entity: ['coordinator']
       };
 
       sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
@@ -73,7 +72,7 @@ describe('update', () => {
       await requestHandler(mockReq, mockRes, mockNext);
 
       expect(mockRes.statusValue).to.equal(200);
-      expect(ProjectService.prototype.getProjectEntitiesById).called.calledWith(1, ['permit']);
+      expect(ProjectService.prototype.getProjectEntitiesById).called.calledWith(1, ['coordinator']);
       expect(mockRes.sendValue).to.equal(sampleResponse);
     });
   });
@@ -145,12 +144,10 @@ describe('update', () => {
           start_date: '2022-02-02',
           end_date: '2022-02-30',
           objectives: 'my objectives',
-          publish_date: '2022-02-02',
           revision_count: 0
         },
         iucn: {},
         contact: {},
-        permit: {},
         funding: {},
         partnerships: {},
         location: {}
@@ -159,6 +156,8 @@ describe('update', () => {
       sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
       sinon.stub(ProjectService.prototype, 'updateProject').resolves();
+
+      sinon.stub(PlatformService.prototype, 'submitDwCAMetadataPackage').resolves();
 
       const requestHandler = update.updateProject();
 

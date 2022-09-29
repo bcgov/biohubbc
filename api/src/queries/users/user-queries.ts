@@ -1,4 +1,5 @@
 import { SQL, SQLStatement } from 'sql-template-strings';
+import { SYSTEM_IDENTITY_SOURCE } from '../../constants/database';
 
 /**
  * SQL query to get a single user and their system roles, based on their user_identifier.
@@ -99,8 +100,12 @@ export const getUserListSQL = (): SQLStatement | null => {
       system_role sr
     ON
       sur.system_role_id = sr.system_role_id
+    LEFT JOIN
+    	user_identity_source uis
+    ON
+    	su.user_identity_source_id = uis.user_identity_source_id
     WHERE
-      su.record_end_date IS NULL
+      su.record_end_date IS NULL and uis.name not in (${SYSTEM_IDENTITY_SOURCE.DATABASE})
     GROUP BY
       su.system_user_id,
       su.record_end_date,
