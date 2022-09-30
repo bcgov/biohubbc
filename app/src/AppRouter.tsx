@@ -8,7 +8,7 @@ import AdminUsersRouter from 'features/admin/AdminUsersRouter';
 import ProjectsRouter from 'features/projects/ProjectsRouter';
 import ResourcesPage from 'features/resources/ResourcesPage';
 import SearchPage from 'features/search/SearchPage';
-import PublicLayout from 'layouts/PublicLayout';
+import BaseLayout from 'layouts/BaseLayout';
 import RequestSubmitted from 'pages/200/RequestSubmitted';
 import AccessDenied from 'pages/403/AccessDenied';
 import NotFoundPage from 'pages/404/NotFoundPage';
@@ -30,19 +30,19 @@ const AppRouter: React.FC = () => {
     <Switch>
       <Redirect from="/:url*(/+)" to={{ ...location, pathname: location.pathname.slice(0, -1) }} />
 
-      <AppRoute path="/page-not-found" title={getTitle('Page Not Found')} layout={PublicLayout}>
+      <AppRoute path="/page-not-found" title={getTitle('Page Not Found')} layout={BaseLayout}>
         <NotFoundPage />
       </AppRoute>
 
-      <AppRoute path="/forbidden" title={getTitle('Forbidden')} layout={PublicLayout}>
+      <AppRoute path="/forbidden" title={getTitle('Forbidden')} layout={BaseLayout}>
         <AccessDenied />
       </AppRoute>
 
-      <AppRoute path="/access-request" title={getTitle('Access Request')} layout={PublicLayout}>
+      <AppRoute path="/access-request" title={getTitle('Access Request')} layout={BaseLayout}>
         <AccessRequestPage />
       </AppRoute>
 
-      <AppRoute path="/request-submitted" title={getTitle('Request submitted')} layout={PublicLayout}>
+      <AppRoute path="/request-submitted" title={getTitle('Request submitted')} layout={BaseLayout}>
         <AuthenticatedRouteGuard>
           <RequestSubmitted />
         </AuthenticatedRouteGuard>
@@ -50,13 +50,13 @@ const AppRouter: React.FC = () => {
 
       <Redirect exact from="/admin" to="/admin/projects" />
 
-      <AppRoute path="/admin/projects" title={getTitle('Projects')} layout={PublicLayout}>
+      <AppRoute path="/admin/projects" title={getTitle('Projects')} layout={BaseLayout}>
         <AuthenticatedRouteGuard>
           <ProjectsRouter />
         </AuthenticatedRouteGuard>
       </AppRoute>
 
-      <AppRoute path="/admin/users" title={getTitle('Users')} layout={PublicLayout}>
+      <AppRoute path="/admin/users" title={getTitle('Users')} layout={BaseLayout}>
         <AuthenticatedRouteGuard>
           <SystemRoleRouteGuard validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN]}>
             <AdminUsersRouter />
@@ -64,19 +64,19 @@ const AppRouter: React.FC = () => {
         </AuthenticatedRouteGuard>
       </AppRoute>
 
-      <AppRoute path="/admin/search" title={getTitle('Search')} layout={PublicLayout}>
+      <AppRoute path="/admin/search" title={getTitle('Search')} layout={BaseLayout}>
         <AuthenticatedRouteGuard>
           <SearchPage />
         </AuthenticatedRouteGuard>
       </AppRoute>
 
-      <AppRoute path="/admin/resources" title={getTitle('Resources')} layout={PublicLayout}>
+      <AppRoute path="/admin/resources" title={getTitle('Resources')} layout={BaseLayout}>
         <AuthenticatedRouteGuard>
           <ResourcesPage />
         </AuthenticatedRouteGuard>
       </AppRoute>
 
-      <AppRoute path="/logout" title={getTitle('Logout')} layout={PublicLayout}>
+      <AppRoute path="/logout" title={getTitle('Logout')} layout={BaseLayout}>
         <AuthenticatedRouteGuard>
           <LogOutPage />
         </AuthenticatedRouteGuard>
