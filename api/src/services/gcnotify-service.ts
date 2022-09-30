@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { ApiError, ApiErrorType } from '../errors/custom-error';
+import { ApiError, ApiErrorType } from '../errors/api-error';
 import { IgcNotifyGenericMessage, IgcNotifyPostReturn } from '../models/gcnotify';
 
 const EMAIL_TEMPLATE = process.env.GCNOTIFY_ONBOARDING_REQUEST_EMAIL_TEMPLATE || '';

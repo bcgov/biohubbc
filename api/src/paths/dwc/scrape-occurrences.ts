@@ -2,7 +2,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../database/db';
-import { HTTP400 } from '../../errors/custom-error';
+import { HTTP400 } from '../../errors/http-error';
 import { PostOccurrence } from '../../models/occurrence-create';
 import { queries } from '../../queries/queries';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';

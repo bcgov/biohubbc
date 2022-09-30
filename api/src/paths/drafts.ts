@@ -1,7 +1,8 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { getDBConnection } from '../database/db';
-import { HTTP400 } from '../errors/custom-error';
+import { HTTP400 } from '../errors/http-error';
+
 import { draftResponseObject } from '../openapi/schemas/draft';
 import { queries } from '../queries/queries';
 import { authorizeRequestHandler } from '../request-handlers/security/authorization';

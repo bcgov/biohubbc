@@ -2,7 +2,7 @@ import AdmZip from 'adm-zip';
 import axios from 'axios';
 import FormData from 'form-data';
 import { URL } from 'url';
-import { HTTP400 } from '../errors/custom-error';
+import { HTTP400 } from '../errors/http-error';
 import { getFileFromS3 } from '../utils/file-utils';
 import { EmlService } from './eml-service';
 import { KeycloakService } from './keycloak-service';

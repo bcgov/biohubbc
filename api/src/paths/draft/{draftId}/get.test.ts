@@ -4,7 +4,8 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import SQL from 'sql-template-strings';
 import * as db from '../../../database/db';
-import { HTTPError } from '../../../errors/custom-error';
+import { HTTPError } from '../../../errors/http-error';
+
 import draft_queries from '../../../queries/project/draft';
 import { getMockDBConnection } from '../../../__mocks__/db';
 import * as viewDraftProject from './get';

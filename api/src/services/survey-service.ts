@@ -1,5 +1,5 @@
 import SQL from 'sql-template-strings';
-import { ApiGeneralError } from '../errors/custom-error';
+import { ApiGeneralError } from '../errors/api-error';
 import { PostProprietorData, PostSurveyObject } from '../models/survey-create';
 import { PutSurveyObject } from '../models/survey-update';
 import {

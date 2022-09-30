@@ -1,7 +1,7 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../constants/roles';
-import { HTTP400 } from '../../errors/custom-error';
+import { HTTP400 } from '../../errors/http-error';
 import { IgcNotifyPostReturn } from '../../models/gcnotify';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
 import { GCNotifyService } from '../../services/gcnotify-service';

@@ -7,7 +7,7 @@ import sinonChai from 'sinon-chai';
 import SQL from 'sql-template-strings';
 import { PROJECT_ROLE, SYSTEM_ROLE } from '../../constants/roles';
 import * as db from '../../database/db';
-import { HTTPError } from '../../errors/custom-error';
+import { HTTPError } from '../../errors/http-error';
 import { ProjectUserObject, UserObject } from '../../models/user';
 import project_participation_queries from '../../queries/project-participation';
 import { UserService } from '../../services/user-service';

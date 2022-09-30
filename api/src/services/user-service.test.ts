@@ -5,7 +5,7 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import SQL from 'sql-template-strings';
 import { SYSTEM_IDENTITY_SOURCE } from '../constants/database';
-import { ApiError } from '../errors/custom-error';
+import { ApiError } from '../errors/api-error';
 import { UserObject } from '../models/user';
 import { queries } from '../queries/queries';
 import { getMockDBConnection } from '../__mocks__/db';

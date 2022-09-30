@@ -1,7 +1,7 @@
 import moment from 'moment';
 import { PROJECT_ROLE } from '../constants/roles';
 import { COMPLETION_STATUS } from '../constants/status';
-import { HTTP400, HTTP409 } from '../errors/custom-error';
+import { HTTP400, HTTP409 } from '../errors/http-error';
 import { IPostIUCN, PostFundingSource, PostProjectObject } from '../models/project-create';
 import {
   IPutIUCN,

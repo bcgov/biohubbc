@@ -1,7 +1,8 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { getAPIUserDBConnection } from '../database/db';
-import { HTTP500 } from '../errors/custom-error';
+import { HTTP500 } from '../errors/http-error';
+
 import { CodeService } from '../services/code-service';
 import { getLogger } from '../utils/logger';
 

@@ -3,7 +3,7 @@ import { Operation } from 'express-openapi';
 import { ATTACHMENT_TYPE } from '../../../../../../../../constants/attachments';
 import { PROJECT_ROLE } from '../../../../../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../../../../../database/db';
-import { HTTP400 } from '../../../../../../../../errors/custom-error';
+import { HTTP400 } from '../../../../../../../../errors/http-error';
 import { PutReportAttachmentMetadata } from '../../../../../../../../models/project-survey-attachments';
 import { queries } from '../../../../../../../../queries/queries';
 import { authorizeRequestHandler } from '../../../../../../../../request-handlers/security/authorization';

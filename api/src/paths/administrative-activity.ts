@@ -2,7 +2,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { ACCESS_REQUEST_ADMIN_EMAIL } from '../constants/notifications';
 import { getAPIUserDBConnection, IDBConnection } from '../database/db';
-import { HTTP400, HTTP500 } from '../errors/custom-error';
+import { HTTP400, HTTP500 } from '../errors/http-error';
 import {
   administrativeActivityResponseObject,
   hasPendingAdministrativeActivitiesResponseObject
