@@ -18,7 +18,11 @@ import { AdministrativeActivityStatusType } from 'constants/misc';
 import { DialogContext } from 'contexts/dialogContext';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { IGetAccessRequestsListResponse } from 'interfaces/useAdminApi.interface';
+import {
+  IgcNotifyGenericMessage,
+  IgcNotifyRecipient,
+  IGetAccessRequestsListResponse
+} from 'interfaces/useAdminApi.interface';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import React, { useContext, useState } from 'react';
 import { getFormattedDate } from 'utils/Utils';
@@ -53,7 +57,6 @@ const AccessRequestList: React.FC<IAccessRequestListProps> = (props) => {
   const { accessRequests, codes, refresh } = props;
 
   const classes = useStyles();
-
   const biohubApi = useBiohubApi();
 
   const [activeReviewDialog, setActiveReviewDialog] = useState<{
@@ -82,6 +85,30 @@ const AccessRequestList: React.FC<IAccessRequestListProps> = (props) => {
     const updatedRequest = activeReviewDialog.request as IGetAccessRequestsListResponse;
 
     setActiveReviewDialog({ open: false, request: null });
+
+    console.log('updatedRequest', updatedRequest);
+
+    try {
+      await biohubApi.admin.sendGCNotification(
+        {
+          emailAddress: 'kjartanreinarsson@gmail.com', //updatedRequest.data.email
+          userId: updatedRequest.id
+        } as IgcNotifyRecipient,
+        {
+          subject: 'SIMS: Your request for access has been approved.',
+          header: 'Your request for access to the Species Inventory Management System has been approved.',
+          body1: 'This is an automated message from the BioHub Species Inventory Management System',
+          body2: ' ',
+          footer: ' '
+        } as IgcNotifyGenericMessage
+      );
+    } catch (error) {
+      dialogContext.setErrorDialog({
+        ...defaultErrorDialogProps,
+        open: true,
+        dialogErrorDetails: (error as APIError).errors
+      });
+    }
 
     try {
       await biohubApi.admin.approveAccessRequest(
