@@ -6,7 +6,7 @@ import Header from 'components/layout/Header';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import React from 'react';
 
-const PublicLayout: React.FC = (props) => {
+const BaseLayout: React.FC = (props) => {
   function isSupportedBrowser() {
     if (
       navigator.userAgent.indexOf('Chrome') !== -1 ||
@@ -42,4 +42,4 @@ const PublicLayout: React.FC = (props) => {
   );
 };
 
-export default PublicLayout;
+export default BaseLayout;

@@ -2,27 +2,27 @@ import { render } from '@testing-library/react';
 import { createMemoryHistory } from 'history';
 import React from 'react';
 import { Router } from 'react-router-dom';
-import PublicLayout from './PublicLayout';
+import BaseLayout from './BaseLayout';
 
 const history = createMemoryHistory();
 
-describe('PublicLayout', () => {
+describe('BaseLayout', () => {
   it('renders correctly', () => {
     process.env.REACT_APP_NODE_ENV = 'local';
 
     const { getByText } = render(
       <Router history={history}>
-        <PublicLayout>
+        <BaseLayout>
           <div>
-            <p>The public layout content</p>
+            <p>The base layout content</p>
           </div>
-        </PublicLayout>
+        </BaseLayout>
       </Router>
     );
 
     expect(
       getByText('This is an unsupported browser. Some functionality may not work as expected.')
     ).toBeInTheDocument();
-    expect(getByText('The public layout content')).toBeInTheDocument();
+    expect(getByText('The base layout content')).toBeInTheDocument();
   });
 });

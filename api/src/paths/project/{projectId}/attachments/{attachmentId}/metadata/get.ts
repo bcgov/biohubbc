@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { PROJECT_ROLE, SYSTEM_ROLE } from '../../../../../../constants/roles';
+import { PROJECT_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
 import { HTTP400 } from '../../../../../../errors/custom-error';
 import { GetReportAttachmentMetadata } from '../../../../../../models/project-survey-attachments';
@@ -30,7 +30,7 @@ GET.apiDoc = {
   tags: ['attachment'],
   security: [
     {
-      Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_CREATOR]
+      Bearer: []
     }
   ],
   parameters: [
