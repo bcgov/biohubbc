@@ -2,27 +2,23 @@ import AWS from 'aws-sdk';
 import { GetObjectOutput } from 'aws-sdk/clients/s3';
 import { RequestHandler } from 'express';
 import { IDBConnection } from '../database/db';
-import { insertSubmissionMessage, insertSubmissionStatus } from '../paths/dwc/validate';
+import { generateHeaderErrorMessage, generateRowErrorMessage, insertSubmissionMessage, insertSubmissionStatus } from '../paths/dwc/validate';
 import { getTemplateMethodologySpeciesRecord } from '../paths/xlsx/validate';
+import { SubmissionRepository } from '../repositories/submission-repsitory';
 import { ValidationRepository } from '../repositories/validation-repository';
 import { getLogger } from '../utils/logger';
-import { MediaFile } from '../utils/media/media-file';
+import { ICsvState } from '../utils/media/csv/csv-file';
+import { IMediaState, MediaFile } from '../utils/media/media-file';
 import { parseUnknownMedia } from '../utils/media/media-utils';
+import { ValidationSchemaParser } from '../utils/media/validation/validation-schema-parser';
 import { XLSXCSV } from '../utils/media/xlsx/xlsx-file';
 import { DBService } from './service';
 
 const defaultLog = getLogger('services/dwc-service');
 
-export class ValidationService extends DBService {
-  validationRepository: ValidationRepository;
-
-  constructor(connection: IDBConnection) {
-    super(connection);
-
-    this.validationRepository = new ValidationRepository(connection);
-  }
-
-  async create(): Promise<void> {}
+interface ICsvMediaState {
+  csv_state: ICsvState[]
+  media_state: IMediaState
 }
 
 const OBJECT_STORE_BUCKET_NAME = process.env.OBJECT_STORE_BUCKET_NAME || '';
@@ -37,21 +33,19 @@ const S3 = new AWS.S3({
   region: 'ca-central-1'
 });
 
-export class FileProcessingService extends DBService {
+export class ValidationService extends DBService {
+  validationRepository: ValidationRepository
+  submissionRepository: SubmissionRepository
+
   constructor(connection: IDBConnection) {
     super(connection);
+    this.validationRepository = new ValidationRepository(connection)
+    this.submissionRepository = new SubmissionRepository(connection)
   }
 
   async processFile(): Promise<void> {}
 
-  // general setup
-  // process_step1_getOccurrenceSubmission(): RequestHandler {
-  //     return async (req, res, next) => {}
-  // }
-  // process_step2_getOccurrenceSubmissionInputS3Key(): RequestHandler {
-  //     return async (req, res, next) => {}
-  // }
-
+  // S3 service?
   getS3File(key: string, versionId?: string): Promise<GetObjectOutput> {
     return S3.getObject({
       Bucket: OBJECT_STORE_BUCKET_NAME,
@@ -60,7 +54,7 @@ export class FileProcessingService extends DBService {
     }).promise();
   }
 
-  // how do we want errors
+  // validation service?
   prepXLSX(file: any): XLSXCSV {
     defaultLog.debug({ label: 'prepXLSX', message: 's3File' });
     try {
@@ -112,14 +106,14 @@ export class FileProcessingService extends DBService {
     }
   }
 
-  async getValidationSchema(file: XLSXCSV): Promise<any> {
+  // validation service
+  async getValidationSchemaParser(file: XLSXCSV): Promise<any> {
     const template_id = file.workbook.rawWorkbook.Custprops.sims_template_id;
     const field_method_id = file.workbook.rawWorkbook.Custprops.sims_csm_id;
-
-    const templateMethodologySpeciesRecord = await getTemplateMethodologySpeciesRecord(
+    
+    const templateMethodologySpeciesRecord = await this.validationRepository.getTemplateMethodologySpeciesRecord(
       Number(field_method_id),
-      Number(template_id),
-      this.connection
+      Number(template_id)
     );
 
     const validationSchema = templateMethodologySpeciesRecord?.validation;
@@ -127,63 +121,88 @@ export class FileProcessingService extends DBService {
       throw 'Unable to fetch an appropriate template validation schema for your submission';
     }
 
+    
     return validationSchema;
   }
+  
+  // validation service
+  getValidationRules(schema: any) {
+    const validationSchemaParser = new ValidationSchemaParser(schema)
+    return validationSchemaParser;
+  }
+
+  // validation service
+  validateXLSX(file: XLSXCSV, parser: ValidationSchemaParser) {
+    const mediaState = file.isMediaValid(parser);
+
+    if (!mediaState.isValid) {
+      throw 'Media is no valid'
+    }
+
+    const csvState: ICsvState[] = file.isContentValid(parser);
+    return {
+      csv_state: csvState,
+      media_state: mediaState
+    } as ICsvMediaState;
+  }
+
+  async persistValidationResults(submissionId: number, csvState: ICsvState[], mediaState: IMediaState, statusTypeObject: any) {
+    defaultLog.debug({ label: 'persistValidationResults', message: 'validationResults' });
+    
+    let submissionStatusType = statusTypeObject.initialSubmissionStatusType;
+    if (!mediaState.isValid || csvState.some((item) => !item.isValid)) {
+      // At least 1 error exists
+      submissionStatusType = 'Rejected';
+    }
+
+    const submissionStatusId = await this.submissionRepository.insertSubmissionStatus(
+      submissionId,
+      submissionStatusType
+    );
+
+    const promises: Promise<any>[] = [];
+
+    mediaState.fileErrors?.forEach((fileError) => {
+      promises.push(
+        this.submissionRepository.insertSubmissionMessage(submissionStatusId, 'Error', `${fileError}`, 'Miscellaneous')
+      );
+    });
+
+    csvState?.forEach((csvStateItem) => {
+      csvStateItem.headerErrors?.forEach((headerError) => {
+        promises.push(
+          this.submissionRepository.insertSubmissionMessage(
+            submissionStatusId,
+            'Error',
+            generateHeaderErrorMessage(csvStateItem.fileName, headerError),
+            headerError.errorCode
+          )
+        );
+      });
+
+      csvStateItem.rowErrors?.forEach((rowError) => {
+        promises.push(
+          this.submissionRepository.insertSubmissionMessage(
+            submissionStatusId,
+            'Error',
+            generateRowErrorMessage(csvStateItem.fileName, rowError),
+            rowError.errorCode
+          )
+        );  
+      });
+
+      if (!mediaState.isValid || csvState?.some((item) => !item.isValid)) {
+        // At least 1 error exists, skip remaining steps
+        throw 'An error exists, skip remaining steps';
+      }
+    });
+
+    await Promise.all(promises);
+  }
+
+  
 
   sendResponse(): Promise<any> {
     return Promise.resolve();
-  }
-
-  process_step5_persistParseErrors(): RequestHandler {
-    return async (req, res, next) => {};
-  }
-
-  process_step6_sendResponse(): RequestHandler {
-    return async (req, res, next) => {};
-  }
-
-  // xlsx validation
-  process_step7_getValidationSchema(): RequestHandler {
-    return async (req, res, next) => {};
-  }
-  process_step8_getValidationRules(): RequestHandler {
-    return async (req, res, next) => {};
-  }
-  process_step9_validateXLSX(): RequestHandler {
-    return async (req, res, next) => {};
-  }
-  process_step10_persistValidationResults(): RequestHandler {
-    return async (req, res, next) => {};
-  }
-
-  // xlsx transform functions
-  process_step11_getTransofrmationSchema(): RequestHandler {
-    return async (req, res, next) => {};
-  }
-  process_step12_getTransformationRules(): RequestHandler {
-    return async (req, res, next) => {};
-  }
-  process_step13_transformXLSX(): RequestHandler {
-    return async (req, res, next) => {};
-  }
-  process_step14_persistTransformationResults(): RequestHandler {
-    return async (req, res, next) => {};
-  }
-
-  // scrape functions
-  process_step15_getOccurrenceSubmission(): RequestHandler {
-    return async (req, res, next) => {};
-  }
-  process_step16_getSubmissionOutputS3Key(): RequestHandler {
-    return async (req, res, next) => {};
-  }
-  process_step17_getS3File(): RequestHandler {
-    return async (req, res, next) => {};
-  }
-  process_step18_prepDWCArchive(): RequestHandler {
-    return async (req, res, next) => {};
-  }
-  process_step19_scrapeAndUploadOccurrences(): RequestHandler {
-    return async (req, res, next) => {};
   }
 }
