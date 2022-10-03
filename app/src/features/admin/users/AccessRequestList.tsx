@@ -86,12 +86,10 @@ const AccessRequestList: React.FC<IAccessRequestListProps> = (props) => {
 
     setActiveReviewDialog({ open: false, request: null });
 
-    console.log('updatedRequest', updatedRequest);
-
     try {
       await biohubApi.admin.sendGCNotification(
         {
-          emailAddress: 'kjartanreinarsson@gmail.com', //updatedRequest.data.email
+          emailAddress: updatedRequest.data.email,
           userId: updatedRequest.id
         } as IgcNotifyRecipient,
         {

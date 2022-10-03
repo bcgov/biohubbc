@@ -98,10 +98,12 @@ POST.apiDoc = {
                 type: 'string'
               },
               reference: {
-                type: 'string'
+                type: 'string',
+                nullable: true
               },
               scheduled_for: {
-                type: 'string'
+                type: 'string',
+                nullable: true
               },
               template: {
                 type: 'object'
@@ -154,6 +156,7 @@ export function sendNotification(): RequestHandler {
         response = await gcnotifyService.sendPhoneNumberGCNotification(recipient.phoneNumber, message);
       }
 
+      //TODO: send an email or sms depending on users ID and data
       // if (recipient.userId) {
       //   defaultLog.error({ label: 'send gcnotify', message: 'email and sms from Id not implemented yet' });
       // }
