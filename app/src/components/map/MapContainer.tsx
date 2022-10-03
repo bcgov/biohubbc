@@ -61,19 +61,6 @@ export interface IClusteredPointGeometries {
 }
 
 /*
-export const MapBounds: React.FC<IMapBoundsProps> = (props) => {
-  const map = useMap();
-  const { bounds } = props;
-
-  if (bounds && bounds.length) {
-    map.fitBounds(bounds);
-  }
-
-  return null;
-};
-*/
-
-/*
   Because different OpenMaps layers are identified using different keys
   - Parks and NRM regions use the key SHAPE
   - ENV regions and WMU use the key GEOMETRY
@@ -415,7 +402,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       scrollWheelZoom={scrollWheelZoom || false}>
       <FullScreenScrollingEventHandler bounds={bounds} scrollWheelZoom={Boolean(scrollWheelZoom)} />
 
-      {/*<MapBounds bounds={bounds} /> probably safe to remove?*/}
       <SetMapBounds bounds={bounds} />
       <GetMapBounds onChange={(newBounds, newZoom) => props.onBoundsChange?.(newBounds, newZoom)} />
 

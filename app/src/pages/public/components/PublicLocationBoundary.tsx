@@ -5,6 +5,7 @@ import InferredLocationDetails, { IInferredLayers } from 'components/boundary/In
 import MapContainer from 'components/map/MapContainer';
 import { Feature } from 'geojson';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
+import { LatLngBoundsExpression } from 'leaflet';
 import React, { useEffect, useState } from 'react';
 import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
 
@@ -29,7 +30,7 @@ const PublicLocationBoundary: React.FC<IPublicLocationBoundaryProps> = (props) =
     env: [],
     wmu: []
   });
-  const [bounds, setBounds] = useState<any[] | undefined>([]);
+  const [bounds, setBounds] = useState<LatLngBoundsExpression | undefined>(undefined);
   const [nonEditableGeometries, setNonEditableGeometries] = useState<any[]>([]);
 
   useEffect(() => {

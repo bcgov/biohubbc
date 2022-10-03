@@ -19,6 +19,7 @@ import MapContainer from 'components/map/MapContainer';
 import { ProjectSurveyAttachmentValidExtensions } from 'constants/attachments';
 import { FormikContextType } from 'formik';
 import { Feature } from 'geojson';
+import { LatLngBoundsExpression } from 'leaflet';
 import get from 'lodash-es/get';
 import React, { useEffect, useState } from 'react';
 import {
@@ -61,7 +62,7 @@ export interface IMapBoundaryProps {
   name: string;
   title: string;
   mapId: string;
-  bounds: any[];
+  bounds: LatLngBoundsExpression | undefined
   formikProps: FormikContextType<any>;
 }
 
@@ -80,7 +81,7 @@ const MapBoundary: React.FC<IMapBoundaryProps> = (props) => {
 
   const [openUploadBoundary, setOpenUploadBoundary] = useState(false);
   const [shouldUpdateBounds, setShouldUpdateBounds] = useState<boolean>(false);
-  const [updatedBounds, setUpdatedBounds] = useState<any[][] | undefined>(undefined);
+  const [updatedBounds, setUpdatedBounds] = useState<LatLngBoundsExpression | undefined>(undefined);
   const [selectedLayer, setSelectedLayer] = useState('');
   const [inferredLayersInfo, setInferredLayersInfo] = useState<IInferredLayers>({
     parks: [],
@@ -198,6 +199,7 @@ const MapBoundary: React.FC<IMapBoundaryProps> = (props) => {
             drawControls={{
               initialFeatures: get(values, name) && [get(values, name)],
             }}
+            onDrawChange={(newGeo) => setFieldValue(name, newGeo)}
             bounds={(shouldUpdateBounds && updatedBounds) || bounds}
             selectedLayer={selectedLayer}
             setInferredLayersInfo={setInferredLayersInfo}

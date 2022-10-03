@@ -52,7 +52,7 @@ const StudyAreaForm = () => {
         name="location.geometry"
         title="Study Area Boundary"
         mapId="study_area_form_map"
-        bounds={[]}
+        bounds={undefined} // @TODO Perhaps leave this in to explicitly define bounds as undefined...?
         formikProps={formikProps}
       />
     </form>

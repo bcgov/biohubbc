@@ -28,6 +28,7 @@ import {
   IGetProjectForViewResponse,
   UPDATE_GET_ENTITIES
 } from 'interfaces/useProjectApi.interface';
+import { LatLngBoundsExpression } from 'leaflet';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
 import ProjectStepComponents from 'utils/ProjectStepComponents';
@@ -96,7 +97,7 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
     env: [],
     wmu: []
   });
-  const [bounds, setBounds] = useState<any[] | undefined>([]);
+  const [bounds, setBounds] = useState<LatLngBoundsExpression | undefined>(undefined);
   const [nonEditableGeometries, setNonEditableGeometries] = useState<any[]>([]);
   const [showFullScreenViewMapDialog, setShowFullScreenViewMapDialog] = useState<boolean>(false);
 
