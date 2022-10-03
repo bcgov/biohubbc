@@ -29,7 +29,7 @@ import { getSurveyAttachmentS3Keys } from '../paths/project/{projectId}/survey/{
 import { GET_ENTITIES, IUpdateProject } from '../paths/project/{projectId}/update';
 import { queries } from '../queries/queries';
 import { deleteFileFromS3 } from '../utils/file-utils';
-import { DBService } from './service';
+import { DBService } from './db-service';
 
 export class ProjectService extends DBService {
   /**

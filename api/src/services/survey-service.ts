@@ -17,8 +17,8 @@ import {
   SurveySupplementaryData
 } from '../models/survey-view';
 import { queries } from '../queries/queries';
+import { DBService } from './db-service';
 import { PermitService } from './permit-service';
-import { DBService } from './service';
 import { TaxonomyService } from './taxonomy-service';
 
 export class SurveyService extends DBService {

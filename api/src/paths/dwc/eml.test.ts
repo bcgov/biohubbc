@@ -4,7 +4,6 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as db from '../../database/db';
 import { HTTPError } from '../../errors/http-error';
-
 import { EmlService } from '../../services/eml-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../__mocks__/db';
 import { getProjectEml } from './eml';

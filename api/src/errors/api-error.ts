@@ -75,7 +75,7 @@ export class ApiExecuteSQLError extends ApiError {
  * @class ApiBuildSQLError
  * @extends {ApiError}
  */
- export class ApiBuildSQLError extends ApiError {
+export class ApiBuildSQLError extends ApiError {
   constructor(message: string, errors?: (string | object)[]) {
     super(ApiErrorType.BUILD_SQL, message, errors);
   }

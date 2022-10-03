@@ -4,7 +4,9 @@ import { PROJECT_ROLE } from '../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../database/db';
 import { HTTP400, HTTP500 } from '../../errors/http-error';
 import { queries } from '../../queries/queries';
+import { SUBMISSION_MESSAGE_TYPE, SUBMISSION_STATUS_TYPE } from '../../repositories/error-repository';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
+import { ErrorService } from '../../services/error-service';
 import { getFileFromS3 } from '../../utils/file-utils';
 import { getLogger } from '../../utils/logger';
 import { ICsvState, IHeaderError, IRowError } from '../../utils/media/csv/csv-file';
@@ -108,6 +110,15 @@ export const getValidateAPIDoc = (basicDescription: string, successDescription: 
   };
 };
 
+//NOTES:
+//  Do we want a validation service, or an error service?
+// Currently, a failed validation is a submission status state
+// option 1: we keep it the way it is, and tailor the error message ... ie SQL, or other custom message
+// option 2: create a validation service, to group all validation related functions ... some reuse between dwc and xlsx validation
+// option 3: create an error-service, to manage all kinds of errors ... submission as a starting point
+// or some combination.
+// Both option 2 and 3 could help introduce more granular error messages and message types
+
 POST.apiDoc = {
   ...getValidateAPIDoc(
     'Validates a Darwin Core (DWC) Archive survey observation submission.',
@@ -148,8 +159,17 @@ export function getOccurrenceSubmission(): RequestHandler {
       req['occurrence_submission'] = response.rows[0];
 
       next();
-    } catch (error) {
+    } catch (error: any) {
       defaultLog.error({ label: 'getOccurrenceSubmission', message: 'error', error });
+
+      const errorService = new ErrorService(connection);
+
+      await errorService.insertSubmissionStatusAndMessage(
+        req['occurrence_submission'].occurrence_submission_id,
+        SUBMISSION_STATUS_TYPE.FAILED_VALIDATION,
+        SUBMISSION_MESSAGE_TYPE.ERROR,
+        error.message
+      );
       throw error;
     } finally {
       connection.release();

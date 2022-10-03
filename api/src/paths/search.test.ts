@@ -6,7 +6,6 @@ import SQL from 'sql-template-strings';
 import { SYSTEM_ROLE } from '../constants/roles';
 import * as db from '../database/db';
 import { HTTPError } from '../errors/http-error';
-
 import search_queries from '../queries/search';
 import * as authorization from '../request-handlers/security/authorization';
 import { getMockDBConnection } from '../__mocks__/db';

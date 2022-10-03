@@ -4,9 +4,9 @@ import FormData from 'form-data';
 import { URL } from 'url';
 import { HTTP400 } from '../errors/http-error';
 import { getFileFromS3 } from '../utils/file-utils';
+import { DBService } from './db-service';
 import { EmlService } from './eml-service';
 import { KeycloakService } from './keycloak-service';
-import { DBService } from './service';
 import { SurveyService } from './survey-service';
 
 export interface IDwCADataset {
