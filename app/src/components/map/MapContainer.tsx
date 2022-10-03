@@ -1,4 +1,4 @@
-import { Feature } from 'geojson';
+import { Feature, FeatureCollection, GeoJsonProperties, Geometry } from 'geojson';
 import L, { LatLngBoundsExpression, LeafletEventHandlerFnMap } from 'leaflet';
 import 'leaflet-draw/dist/leaflet.draw.css';
 import 'leaflet-fullscreen/dist/leaflet.fullscreen.css';
@@ -8,7 +8,7 @@ import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 import 'leaflet/dist/leaflet.css';
 import { throttle } from 'lodash-es';
-import React, { Fragment, ReactElement, useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   FeatureGroup,
   GeoJSON,
@@ -33,6 +33,7 @@ import DrawControls, { IDrawControlsOnChange, IDrawControlsProps } from './compo
 import FullScreenScrollingEventHandler from './components/FullScreenScrollingEventHandler';
 import EventHandler from './components/EventHandler';
 import BaseLayerControls from './components/BaseLayerControls';
+import AdditionalLayers, { IAdditionalLayers } from './components/AdditionalLayers';
 
 /*
   Get leaflet icons working
@@ -45,10 +46,6 @@ L.Icon.Default.mergeOptions({
   iconUrl: icon,
   shadowUrl: iconShadow
 });
-
-export interface IMapBoundsProps {
-  bounds?: any[];
-}
 
 export interface INonEditableGeometries {
   feature: Feature;
@@ -187,6 +184,7 @@ export interface IMapContainerProps {
   drawControls?: IDrawControlsProps;
   onDrawChange?: IDrawControlsOnChange;
   scrollWheelZoom?: boolean;
+  classes?: { map: string };
   bounds?: LatLngBoundsExpression;
   zoom?: number;
   eventHandlers?: LeafletEventHandlerFnMap;
@@ -195,10 +193,9 @@ export interface IMapContainerProps {
   geometryState?: { geometry: Feature[]; setGeometry: (geometry: Feature[]) => void };
   nonEditableGeometries?: INonEditableGeometries[];
   clusteredPointGeometries?: IClusteredPointGeometries[];
-  classes?: any;
   selectedLayer?: string;
   setInferredLayersInfo?: (inferredLayersInfo: any) => void;
-  additionalLayers?: ReactElement[];
+  additionalLayers?: IAdditionalLayers
 }
 
 const MapContainer: React.FC<IMapContainerProps> = (props) => {
@@ -255,10 +252,10 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
    * @param {Feature[]} geos
    * @return {*}  {Promise<any>[]}
    */
-  const changeProjections = (geos: Feature[]): Promise<any>[] => {
+  const changeProjections = (geos: Feature[]): Promise<Feature>[] => {
     const reprojector = new ReProjector();
 
-    return geos.map((geo) => reprojector.feature(geo).from('EPSG:4326').to('EPSG:3005').project());
+    return geos.map((geo: Feature) => reprojector.feature(geo).from('EPSG:4326').to('EPSG:3005').project() as Promise<Feature>);
   };
 
   /**
@@ -339,7 +336,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       // Convert all geometries to BC Albers projection
       const reprojectedGeometries = await Promise.all(changeProjections(mapGeometries));
 
-      const wfsPromises: Promise<any>[] = [];
+      const wfsPromises: Promise<{ features?: Feature[] }>[] = [];
       reprojectedGeometries.forEach((projectedGeo) => {
         let filterCriteria = '';
         const coordinatesString = generateCoordinatesString(projectedGeo.geometry);
@@ -359,16 +356,15 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
             requestBody.append('CQL_FILTER', filterData);
 
             wfsPromises.push(
-              biohubApi.external.post(url, requestBody).catch(() => {
-                /* catch and ignore errors */
-              })
+              /* catch and ignore errors */
+              biohubApi.external.post(url, requestBody).catch(() => {})
             );
           }
         });
       });
       const wfsResult = await Promise.all(wfsPromises);
 
-      wfsResult.forEach((item: any) => {
+      wfsResult.forEach((item: { features?: Feature[] }) => {
         item?.features?.forEach((feature: Feature) => {
           inferredLayersInfo = getInferredLayersInfoByWFSFeature(feature, inferredLayersInfo);
         });
@@ -433,7 +429,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         </MarkerClusterGroup>
       )}
 
-      {nonEditableGeometries?.map((nonEditableGeo: any) => (
+      {nonEditableGeometries?.map((nonEditableGeo: INonEditableGeometries) => (
         <GeoJSON key={uuidv4()} data={nonEditableGeo.feature}>
           {nonEditableGeo.popupComponent}
         </GeoJSON>
@@ -450,14 +446,11 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         />
       )}
 
-      {/* Render any additional layer feature groups */}
-      {additionalLayers &&
-        additionalLayers.map((additionalLayer: ReactElement, index: number) => (
-          <Fragment key={index}>{additionalLayer}</Fragment>
-        ))}
+      {additionalLayers && (
+        <AdditionalLayers layers={additionalLayers} />
+      )}
 
       <LayersControl position="bottomright">
-        
         <BaseLayerControls />
       </LayersControl>
     </LeafletMapContainer>
