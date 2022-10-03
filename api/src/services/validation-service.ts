@@ -1,7 +1,12 @@
+import AWS from 'aws-sdk';
+import { GetObjectOutput } from 'aws-sdk/clients/s3';
 import { RequestHandler } from "express";
 import { IDBConnection } from "../database/db";
 import { ValidationRepository } from "../repositories/validation-repository";
 import { getLogger } from "../utils/logger";
+import { MediaFile } from '../utils/media/media-file';
+import { parseUnknownMedia } from '../utils/media/media-utils';
+import { XLSXCSV } from '../utils/media/xlsx/xlsx-file';
 import { DBService } from "./service";
 
 const defaultLog = getLogger('services/dwc-service');
@@ -20,6 +25,18 @@ export class ValidationService extends DBService {
     }
 }
 
+const OBJECT_STORE_BUCKET_NAME = process.env.OBJECT_STORE_BUCKET_NAME || '';
+const OBJECT_STORE_URL = process.env.OBJECT_STORE_URL || 'nrs.objectstore.gov.bc.ca';
+const AWS_ENDPOINT = new AWS.Endpoint(OBJECT_STORE_URL);
+const S3 = new AWS.S3({
+    endpoint: AWS_ENDPOINT.href,
+    accessKeyId: process.env.OBJECT_STORE_ACCESS_KEY_ID,
+    secretAccessKey: process.env.OBJECT_STORE_SECRET_KEY_ID,
+    signatureVersion: 'v4',
+    s3ForcePathStyle: true,
+    region: 'ca-central-1'
+  });
+
 export class FileProcessingService extends DBService {
     constructor(connection: IDBConnection) {
         super(connection);
@@ -30,23 +47,51 @@ export class FileProcessingService extends DBService {
     }
 
     // general setup
-    process_step1_getOccurrenceSubmission(): RequestHandler {
-        return async (req, res, next) => {
-            
+    // process_step1_getOccurrenceSubmission(): RequestHandler {
+    //     return async (req, res, next) => {}
+    // }
+    // process_step2_getOccurrenceSubmissionInputS3Key(): RequestHandler {
+    //     return async (req, res, next) => {}
+    // }
+
+    getS3File(key: string, versionId?: string): Promise<GetObjectOutput> {
+        return S3.getObject({
+            Bucket: OBJECT_STORE_BUCKET_NAME,
+            Key: key,
+            VersionId: versionId
+          }).promise();
+    }
+
+    prepXLSX(file: any): XLSXCSV {
+        const parsedMedia = parseUnknownMedia(file);
+
+        if (!parsedMedia) {
+            throw 'Failed to parse submission, file was empty';
         }
+    
+        if (!(parsedMedia instanceof MediaFile)) {
+            throw 'Failed to parse submission, not a valid XLSX CSV file';
+        }
+
+        const xlsxCsv = new XLSXCSV(parsedMedia);
+
+        const template_id = xlsxCsv.workbook.rawWorkbook.Custprops.sims_template_id;
+        const csm_id = xlsxCsv.workbook.rawWorkbook.Custprops.sims_csm_id;
+        
+        if (!template_id || !csm_id) {
+            throw 'Failed to parse submission, template identification properties are missing';
+        }
+
+        return xlsxCsv
     }
 
-    process_step2_getOccurrenceSubmissionInputS3Key(): RequestHandler {
-        return async (req, res, next) => {}
-    }
+    // process_step3_getS3File(): RequestHandler {
+    //     return async (req, res, next) => {}
+    // }
 
-    process_step3_getS3File(): RequestHandler {
-        return async (req, res, next) => {}
-    }
-
-    process_step4_prepXLSX(): RequestHandler {
-        return async (req, res, next) => {}
-    }
+    // process_step4_prepXLSX(): RequestHandler {
+    //     return async (req, res, next) => {}
+    // }
 
     process_step5_persistParseErrors(): RequestHandler {
         return async (req, res, next) => {}
