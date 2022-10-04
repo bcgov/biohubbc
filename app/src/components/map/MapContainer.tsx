@@ -48,20 +48,19 @@ export interface IClusteredPointGeometries {
 export interface IMapContainerProps {
   mapId: string;
   drawControls?: IDrawControlsProps;
-  onDrawChange?: IDrawControlsOnChange;
   scrollWheelZoom?: boolean;
-  classes?: { map: string };
+  classes?: Record<string, any>
   bounds?: LatLngBoundsExpression;
   zoom?: number;
   eventHandlers?: LeafletEventHandlerFnMap;
-  onBoundsChange?: IMapBoundsOnChange;
   selectedLayer?: string;
-  setInferredLayersInfo?: (inferredLayersInfo: any) => void;
   nonEditableGeometries?: INonEditableGeometries[];
   additionalLayers?: IAdditionalLayers;
-
   geometryState?: { geometry: Feature[]; setGeometry: (geometry: Feature[]) => void };
   clusteredPointGeometries?: IClusteredPointGeometries[];
+  setInferredLayersInfo?: (inferredLayersInfo: any) => void;
+  onBoundsChange?: IMapBoundsOnChange;
+  onDrawChange?: IDrawControlsOnChange;
 }
 
 const MapContainer: React.FC<IMapContainerProps> = (props) => {
@@ -70,7 +69,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     mapId,
     drawControls,
     onDrawChange,
-    geometryState, // encodes `onDrawChange` (I think?)
+    geometryState,
     nonEditableGeometries,
     clusteredPointGeometries,
     bounds,

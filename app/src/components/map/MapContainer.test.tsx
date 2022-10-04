@@ -3,6 +3,7 @@ import bbox from '@turf/bbox';
 import { Feature } from 'geojson';
 import { createMemoryHistory } from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import { LatLngBoundsExpression } from 'leaflet';
 import React from 'react';
 import { Router } from 'react-router-dom';
 import MapContainer, { INonEditableGeometries } from './MapContainer';
@@ -153,7 +154,7 @@ describe('MapContainer', () => {
   });
 
   test('matches the snapshot with draw controls hidden', () => {
-    const { asFragment } = render(<MapContainer mapId="myMap" classes={classes} hideDrawControls={true} />);
+    const { asFragment } = render(<MapContainer mapId="myMap" classes={classes} />);
 
     expect(asFragment()).toMatchSnapshot();
   });
@@ -164,7 +165,7 @@ describe('MapContainer', () => {
         mapId="myMap"
         classes={classes}
         geometryState={{ geometry, setGeometry }}
-        showDrawControls={{ marker: true }}
+        drawControls={{ options: { draw: {}}}}
       />
     );
 
@@ -178,7 +179,7 @@ describe('MapContainer', () => {
 
   test('sets the bounds of the geo being passed in successfully', () => {
     const bboxCoords = bbox(geometry[0]);
-    const bounds = [
+    const bounds: LatLngBoundsExpression = [
       [bboxCoords[1], bboxCoords[0]],
       [bboxCoords[3], bboxCoords[2]]
     ];
