@@ -1,16 +1,22 @@
+import AdmZip from 'adm-zip';
 import AWS from 'aws-sdk';
 import { GetObjectOutput } from 'aws-sdk/clients/s3';
-import { RequestHandler } from 'express';
+import { SUBMISSION_STATUS_TYPE } from '../constants/status';
 import { IDBConnection } from '../database/db';
-import { generateHeaderErrorMessage, generateRowErrorMessage, insertSubmissionMessage, insertSubmissionStatus } from '../paths/dwc/validate';
-import { getTemplateMethodologySpeciesRecord } from '../paths/xlsx/validate';
+import { PostOccurrence } from '../models/occurrence-create';
+import { getHeadersAndRowsFromFile, uploadScrapedOccurrence } from '../paths/dwc/scrape-occurrences';
+import { generateHeaderErrorMessage, generateRowErrorMessage, insertSubmissionMessage, insertSubmissionStatus, updateSurveyOccurrenceSubmissionWithOutputKey } from '../paths/dwc/validate';
 import { SubmissionRepository } from '../repositories/submission-repsitory';
 import { ValidationRepository } from '../repositories/validation-repository';
+import { uploadBufferToS3 } from '../utils/file-utils';
 import { getLogger } from '../utils/logger';
 import { ICsvState } from '../utils/media/csv/csv-file';
-import { IMediaState, MediaFile } from '../utils/media/media-file';
+import { DWCArchive } from '../utils/media/dwc/dwc-archive-file';
+import { ArchiveFile, IMediaState, MediaFile } from '../utils/media/media-file';
 import { parseUnknownMedia } from '../utils/media/media-utils';
 import { ValidationSchemaParser } from '../utils/media/validation/validation-schema-parser';
+import { TransformationSchemaParser } from '../utils/media/xlsx/transformation/transformation-schema-parser';
+import { XLSXTransformation } from '../utils/media/xlsx/transformation/xlsx-transformation';
 import { XLSXCSV } from '../utils/media/xlsx/xlsx-file';
 import { DBService } from './service';
 
@@ -19,6 +25,11 @@ const defaultLog = getLogger('services/dwc-service');
 interface ICsvMediaState {
   csv_state: ICsvState[]
   media_state: IMediaState
+}
+
+interface IFileBuffer { 
+  name: string
+  buffer: Buffer
 }
 
 const OBJECT_STORE_BUCKET_NAME = process.env.OBJECT_STORE_BUCKET_NAME || '';
@@ -107,7 +118,7 @@ export class ValidationService extends DBService {
   }
 
   // validation service
-  async getValidationSchemaParser(file: XLSXCSV): Promise<any> {
+  async getValidationSchema(file: XLSXCSV): Promise<any> {
     const template_id = file.workbook.rawWorkbook.Custprops.sims_template_id;
     const field_method_id = file.workbook.rawWorkbook.Custprops.sims_csm_id;
     
@@ -120,7 +131,6 @@ export class ValidationService extends DBService {
     if (!validationSchema) {
       throw 'Unable to fetch an appropriate template validation schema for your submission';
     }
-
     
     return validationSchema;
   }
@@ -200,9 +210,155 @@ export class ValidationService extends DBService {
     await Promise.all(promises);
   }
 
-  
-
   sendResponse(): Promise<any> {
     return Promise.resolve();
+  }
+
+  // ---------------------- TRANSFORMATION SERVICE?
+  async getTranformationSchema(file: XLSXCSV): Promise<any> {
+    const template_id = file.workbook.rawWorkbook.Custprops.sims_template_id;
+    const field_method_id = file.workbook.rawWorkbook.Custprops.sims_csm_id;
+    
+    const templateMethodologySpeciesRecord = await this.validationRepository.getTemplateMethodologySpeciesRecord(
+      Number(field_method_id),
+      Number(template_id)
+    );
+
+    const validationSchema = templateMethodologySpeciesRecord?.transform;
+    if (!validationSchema) {
+      throw 'Unable to fetch an appropriate template validation schema for your submission';
+    }
+    
+    return validationSchema;
+  }
+
+  async getTransformationRules(schema: any) {
+    const validationSchemaParser = new TransformationSchemaParser(schema)
+    return validationSchemaParser;
+  }
+
+  async transformXLSX(file: XLSXCSV, parser: TransformationSchemaParser): Promise<IFileBuffer[]> {
+    const xlsxTransformation = new XLSXTransformation(parser, file);
+    const transformedData = await xlsxTransformation.transform();
+    const worksheets = xlsxTransformation.dataToSheet(transformedData);
+
+    const fileBuffers: IFileBuffer[] = Object.entries(worksheets).map(([fileName, worksheet]) => {
+      return {
+        name: fileName,
+        buffer: file.worksheetToBuffer(worksheet)
+      };
+    });
+
+    return fileBuffers;
+  }
+
+  async persistTransformationResults(submissionId: number, fileBuffers: IFileBuffer[], s3Key: string, xlsxCsv: XLSXCSV) {
+
+    // Build the archive zip file
+    const dwcArchiveZip = new AdmZip();
+    fileBuffers.forEach((file) => dwcArchiveZip.addFile(`${file.name}.csv`, file.buffer));
+
+    // Remove the filename from original s3Key
+    // project/1/survey/1/submission/file_name.txt -> project/1/survey/1/submission
+    const outputS3KeyPrefix = s3Key.split('/').slice(0, -1).join('/');
+
+    const outputFileName = `${xlsxCsv.rawFile.name}.zip`;
+    const outputS3Key = `${outputS3KeyPrefix}/${outputFileName}`;
+
+    // Upload transformed archive to s3
+    await uploadBufferToS3(dwcArchiveZip.toBuffer(), 'application/zip', outputS3Key);
+
+    await updateSurveyOccurrenceSubmissionWithOutputKey(
+      submissionId,
+      outputFileName,
+      outputS3Key,
+      this.connection
+    );
+
+    await this.submissionRepository.insertSubmissionStatus(submissionId, SUBMISSION_STATUS_TYPE.TEMPLATE_TRANSFORMED)
+  }
+
+
+  // ---------------------- SCRAPE FUNCTIONS
+  // need to get a fresh copy of the occurrence submission
+  async prepDWCArchive(s3File: any) {
+    const parsedMedia = parseUnknownMedia(s3File);
+    if (!parsedMedia) {
+      throw 'Failed to parse submission, file was empty';
+    }
+
+    if (!(parsedMedia instanceof ArchiveFile)) {
+      throw 'Failed to parse submission, not a valid DwC Archive Zip file';
+    }
+
+    const dwcArchive = new DWCArchive(parsedMedia);
+    return dwcArchive;
+  }
+
+  async scrapeAndUploadOccurrences(submissionId: number, archive: DWCArchive) {
+    const {
+      occurrenceRows,
+      occurrenceIdHeader,
+      associatedTaxaHeader,
+      eventRows,
+      lifeStageHeader,
+      sexHeader,
+      individualCountHeader,
+      organismQuantityHeader,
+      organismQuantityTypeHeader,
+      occurrenceHeaders,
+      eventIdHeader,
+      eventDateHeader,
+      eventVerbatimCoordinatesHeader,
+      taxonRows,
+      taxonIdHeader,
+      vernacularNameHeader
+    } = getHeadersAndRowsFromFile(archive);
+
+    const scrapedOccurrences = occurrenceRows?.map((row: any) => {
+        const occurrenceId = row[occurrenceIdHeader];
+        const associatedTaxa = row[associatedTaxaHeader];
+        const lifeStage = row[lifeStageHeader];
+        const sex = row[sexHeader];
+        const individualCount = row[individualCountHeader];
+        const organismQuantity = row[organismQuantityHeader];
+        const organismQuantityType = row[organismQuantityTypeHeader];
+
+        const data = { headers: occurrenceHeaders, rows: row };
+
+        let verbatimCoordinates;
+        let eventDate;
+        let vernacularName;
+
+        eventRows?.forEach((eventRow: any) => {
+          if (eventRow[eventIdHeader] === occurrenceId) {
+            eventDate = eventRow[eventDateHeader];
+            verbatimCoordinates = eventRow[eventVerbatimCoordinatesHeader];
+          }
+        });
+
+        taxonRows?.forEach((taxonRow: any) => {
+          if (taxonRow[taxonIdHeader] === occurrenceId) {
+            vernacularName = taxonRow[vernacularNameHeader];
+          }
+        });
+
+        return new PostOccurrence({
+          associatedTaxa: associatedTaxa,
+          lifeStage: lifeStage,
+          sex: sex,
+          individualCount: individualCount,
+          vernacularName: vernacularName,
+          data,
+          verbatimCoordinates: verbatimCoordinates,
+          organismQuantity: organismQuantity,
+          organismQuantityType: organismQuantityType,
+          eventDate: eventDate
+        });
+    });
+
+    await Promise.all(scrapedOccurrences?.map((scrappedOccurrence) =>{
+      uploadScrapedOccurrence(submissionId, scrappedOccurrence, this.connection)
+    }) || [])
   }
 }

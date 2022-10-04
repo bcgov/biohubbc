@@ -230,7 +230,7 @@ export const uploadScrapedOccurrence = async (
   }
 };
 
-const getHeadersAndRowsFromFile = (dwcArchive: DWCArchive) => {
+export const getHeadersAndRowsFromFile = (dwcArchive: DWCArchive) => {
   const eventHeaders = dwcArchive.worksheets.event?.getHeaders();
   const eventRows = dwcArchive.worksheets.event?.getRows();
 
