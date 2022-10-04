@@ -91,16 +91,22 @@ const ProjectObjectives: React.FC<IProjectObjectivesProps> = (props) => {
     setObjectivesDataForUpdate(objectivesResponseData);
 
     setObjectivesFormData({
-      objectives: objectivesResponseData.objectives,
-      caveats: objectivesResponseData.caveats
+      objectives: {
+        objectives: objectivesResponseData.objectives
+      }
     });
 
     setOpenEditDialog(true);
   };
 
   const handleDialogEditSave = async (values: IProjectObjectivesForm) => {
+    const projectObjectivesData = {
+      ...values.objectives,
+      revision_count: objectivesDataForUpdate.revision_count
+    };
+
     const projectData = {
-      objectives: { ...values, revision_count: objectivesDataForUpdate.revision_count }
+      objectives: projectObjectivesData
     };
 
     try {
@@ -141,7 +147,6 @@ const ProjectObjectives: React.FC<IProjectObjectivesProps> = (props) => {
         <Divider></Divider>
         <Box mt={2}>
           <ReadMoreField text={objectives.objectives} maxCharLength={850} />
-          {objectives.caveats && <ReadMoreField text={objectives.caveats} maxCharLength={850} />}
         </Box>
       </Box>
     </>

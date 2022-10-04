@@ -52,20 +52,6 @@ describe('useSurveyApi', () => {
     expect(result).toEqual('www.signedurl.com');
   });
 
-  it('getSurveyPermits works as expected', async () => {
-    mock.onGet(`/api/project/${projectId}/survey/permits/list`).reply(200, [
-      {
-        permit_number: '123',
-        permit_type: 'wildlife'
-      }
-    ]);
-
-    const result = await useSurveyApi(axios).getSurveyPermits(projectId);
-
-    expect(result[0].permit_number).toEqual('123');
-    expect(result[0].permit_type).toEqual('wildlife');
-  });
-
   it('getAvailableSurveyFundingSources works as expected', async () => {
     mock.onGet(`/api/project/${projectId}/survey/funding-sources/list`).reply(200, [
       {

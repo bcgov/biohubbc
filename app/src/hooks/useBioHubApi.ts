@@ -9,8 +9,8 @@ import useExternalApi from './api/useExternalApi';
 import useN8NApi from './api/useN8NApi';
 import useObservationApi from './api/useObservationApi';
 import usePermitApi from './api/usePermitApi';
-import useProjectApi, { usePublicProjectApi } from './api/useProjectApi';
-import useSearchApi, { usePublicSearchApi } from './api/useSearchApi';
+import useProjectApi from './api/useProjectApi';
+import useSearchApi from './api/useSearchApi';
 import useSurveyApi from './api/useSurveyApi';
 import useTaxonomyApi from './api/useTaxonomyApi';
 import useUserApi from './api/useUserApi';
@@ -49,11 +49,6 @@ export const useBiohubApi = () => {
 
   const external = useExternalApi(axios);
 
-  const publicApis = {
-    project: usePublicProjectApi(apiAxios),
-    search: usePublicSearchApi(apiAxios)
-  };
-
   return {
     project,
     permit,
@@ -66,7 +61,6 @@ export const useBiohubApi = () => {
     user,
     admin,
     n8n,
-    external,
-    public: publicApis
+    external
   };
 };

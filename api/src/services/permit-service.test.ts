@@ -1,313 +1,245 @@
 import chai, { expect } from 'chai';
-import { QueryResult } from 'pg';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import SQL from 'sql-template-strings';
-import { HTTPError } from '../errors/custom-error';
-import permit_queries from '../queries/permit';
+import { SYSTEM_ROLE } from '../constants/roles';
+import { ApiGeneralError } from '../errors/custom-error';
+import { UserObject } from '../models/user';
+import { IPermitModel, PermitRepository } from '../repositories/permit-repository';
 import { getMockDBConnection } from '../__mocks__/db';
 import { PermitService } from './permit-service';
+import { UserService } from './user-service';
 
 chai.use(sinonChai);
 
 describe('PermitService', () => {
-  describe('getAllPermits', () => {
-    afterEach(() => {
-      sinon.restore();
-    });
+  it('constructs', () => {
+    const mockDBConnection = getMockDBConnection();
 
-    it('should throw a 400 error when no sql statement returned for permits', async () => {
-      const mockDBConnection = getMockDBConnection();
-      const systemUserId = 22;
+    const permitService = new PermitService(mockDBConnection);
 
-      sinon.stub(permit_queries, 'getAllPermitsSQL').returns(null);
-
-      const permitService = new PermitService(mockDBConnection);
-
-      try {
-        await permitService.getAllPermits(systemUserId);
-
-        expect.fail();
-      } catch (actualError) {
-        expect((actualError as HTTPError).status).to.equal(400);
-        expect((actualError as HTTPError).message).to.equal('Failed to build SQL get statement');
-      }
-    });
-
-    it('should return null when permits response has no rows', async () => {
-      const mockQueryResponse = (null as unknown) as QueryResult<any>;
-      const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
-
-      const systemUserId = 22;
-
-      sinon.stub(permit_queries, 'getAllPermitsSQL').returns(SQL`some query`);
-
-      const permitService = new PermitService(mockDBConnection);
-
-      try {
-        await permitService.getAllPermits(systemUserId);
-
-        expect.fail();
-      } catch (actualError) {
-        expect((actualError as HTTPError).status).to.equal(400);
-        expect((actualError as HTTPError).message).to.equal('Failed to get all user permits');
-      }
-    });
-
-    it('should return all permits on success', async () => {
-      const allPermits = [
-        {
-          id: 1,
-          number: '123',
-          type: 'scientific',
-          coordinator_agency: 'agency',
-          project_name: 'project 1'
-        },
-        {
-          id: 2,
-          number: '12345',
-          type: 'wildlife',
-          coordinator_agency: 'agency 2',
-          project_name: null
-        }
-      ];
-
-      const mockQueryResponse = ({ rows: allPermits } as unknown) as QueryResult<any>;
-      const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
-
-      const systemUserId = 22;
-
-      sinon.stub(permit_queries, 'getAllPermitsSQL').returns(SQL`some query`);
-
-      const permitService = new PermitService(mockDBConnection);
-      const result = await permitService.getAllPermits(systemUserId);
-
-      expect(result).to.eql(allPermits);
-    });
+    expect(permitService).to.be.instanceof(PermitService);
   });
 
-  describe('getNonSamplingPermits', () => {
+  describe('getPermitByUser', () => {
     afterEach(() => {
       sinon.restore();
     });
 
-    it('should throw a 400 error when no sql statement returned for non-sampling permits', async () => {
-      const mockDBConnection = getMockDBConnection();
-      const systemUserId = 22;
-
-      sinon.stub(permit_queries, 'getNonSamplingPermitsSQL').returns(null);
-
-      const permitService = new PermitService(mockDBConnection);
-
-      try {
-        await permitService.getNonSamplingPermits(systemUserId);
-
-        expect.fail();
-      } catch (actualError) {
-        expect((actualError as HTTPError).status).to.equal(400);
-        expect((actualError as HTTPError).message).to.equal('Failed to build SQL get statement');
-      }
-    });
-
-    it('should throw a 400 error when permits response has no rows', async () => {
-      const mockQueryResponse = (null as unknown) as QueryResult<any>;
-      const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
-
-      const systemUserId = 22;
-
-      sinon.stub(permit_queries, 'getNonSamplingPermitsSQL').returns(SQL`some query`);
-
-      const permitService = new PermitService(mockDBConnection);
-
-      try {
-        await permitService.getNonSamplingPermits(systemUserId);
-
-        expect.fail();
-      } catch (actualError) {
-        expect((actualError as HTTPError).status).to.equal(400);
-        expect((actualError as HTTPError).message).to.equal('Failed to get all user permits');
-      }
-    });
-
-    it('should return non-sampling permits on success', async () => {
-      const nonSamplingPermits = [
+    it('Gets permit by admin user id', async () => {
+      const mockPermitResponse: IPermitModel[] = [
         {
           permit_id: 1,
-          number: '123',
-          type: 'scientific'
-        },
-        {
-          permit_id: 2,
-          number: '12345',
-          type: 'wildlife'
+          survey_id: 1,
+          number: 'permit number',
+          type: 'permit type',
+          create_date: new Date().toISOString(),
+          create_user: 1,
+          update_date: null,
+          update_user: null,
+          revision_count: 0
         }
       ];
 
-      const mockQueryResponse = ({ rows: nonSamplingPermits } as unknown) as QueryResult<any>;
-      const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
+      const mockUserObject: UserObject = {
+        id: 1,
+        user_identifier: 'test_user',
+        record_end_date: '',
+        role_ids: [],
+        role_names: [SYSTEM_ROLE.SYSTEM_ADMIN]
+      };
 
-      const systemUserId = 22;
-
-      sinon.stub(permit_queries, 'getNonSamplingPermitsSQL').returns(SQL`some query`);
-
+      const mockDBConnection = getMockDBConnection();
       const permitService = new PermitService(mockDBConnection);
-      const result = await permitService.getNonSamplingPermits(systemUserId);
 
-      expect(result).to.eql(nonSamplingPermits);
+      const getAllPermits = sinon.stub(PermitRepository.prototype, 'getAllPermits').resolves(mockPermitResponse);
+
+      const getUserByIdStub = sinon.stub(UserService.prototype, 'getUserById').resolves(mockUserObject);
+
+      const response = await permitService.getPermitByUser(mockUserObject.id);
+
+      expect(getAllPermits).to.be.calledOnce;
+      expect(getUserByIdStub).to.be.calledOnceWith(mockUserObject.id);
+      expect(response).to.eql(mockPermitResponse);
     });
-  });
 
-  describe('createNoSamplePermits', () => {
-    const sampleReq = {
-      keycloak_token: {},
-      body: {
-        coordinator: {
-          first_name: 'first',
-          last_name: 'last',
-          email_address: 'email@example.com',
-          coordinator_agency: 'agency',
-          share_contact_details: true
-        },
-        permit: {
-          permits: [
-            {
-              permit_number: 'number',
-              permit_type: 'type'
-            }
-          ]
+    it('Gets permit by data admin user id', async () => {
+      const mockPermitResponse: IPermitModel[] = [
+        {
+          permit_id: 1,
+          survey_id: 1,
+          number: 'permit number',
+          type: 'permit type',
+          create_date: new Date().toISOString(),
+          create_user: 1,
+          update_date: null,
+          update_user: null,
+          revision_count: 0
         }
-      }
-    } as any;
+      ];
 
-    afterEach(() => {
-      sinon.restore();
+      const mockUserObject: UserObject = {
+        id: 1,
+        user_identifier: 'test_user',
+        record_end_date: '',
+        role_ids: [],
+        role_names: [SYSTEM_ROLE.DATA_ADMINISTRATOR]
+      };
+
+      const mockDBConnection = getMockDBConnection();
+      const permitService = new PermitService(mockDBConnection);
+
+      const getAllPermits = sinon.stub(PermitRepository.prototype, 'getAllPermits').resolves(mockPermitResponse);
+
+      const getUserByIdStub = sinon.stub(UserService.prototype, 'getUserById').resolves(mockUserObject);
+
+      const response = await permitService.getPermitByUser(mockUserObject.id);
+
+      expect(getAllPermits).to.be.calledOnce;
+      expect(getUserByIdStub).to.be.calledOnceWith(mockUserObject.id);
+      expect(response).to.eql(mockPermitResponse);
     });
 
-    it('should throw a 400 error when no permit passed in request body', async () => {
-      const mockDBConnection = getMockDBConnection();
+    it('Gets permit by non-admin user id', async () => {
+      const mockPermitResponse: IPermitModel[] = [
+        {
+          permit_id: 1,
+          survey_id: 1,
+          number: 'permit number',
+          type: 'permit type',
+          create_date: new Date().toISOString(),
+          create_user: 1,
+          update_date: null,
+          update_user: null,
+          revision_count: 0
+        }
+      ];
 
+      const mockUserObject: UserObject = {
+        id: 1,
+        user_identifier: 'test_user',
+        record_end_date: '',
+        role_ids: [],
+        role_names: []
+      };
+
+      const mockDBConnection = getMockDBConnection();
       const permitService = new PermitService(mockDBConnection);
+
+      const getPermitByUser = sinon.stub(PermitRepository.prototype, 'getPermitByUser').resolves(mockPermitResponse);
+
+      const getUserByIdStub = sinon.stub(UserService.prototype, 'getUserById').resolves(mockUserObject);
+
+      const response = await permitService.getPermitByUser(mockUserObject.id);
+
+      expect(getPermitByUser).to.be.calledOnce;
+      expect(getUserByIdStub).to.be.calledOnceWith(mockUserObject.id);
+      expect(response).to.eql(mockPermitResponse);
+    });
+
+    it('throws api error if user not found', async () => {
+      const mockDBConnection = getMockDBConnection();
+      const permitService = new PermitService(mockDBConnection);
+
+      sinon.stub(UserService.prototype, 'getUserById').resolves();
 
       try {
-        await permitService.createNoSamplePermits({ ...sampleReq.body, permit: null });
-
+        await permitService.getPermitByUser(1);
         expect.fail();
       } catch (actualError) {
-        expect((actualError as HTTPError).status).to.equal(400);
-        expect((actualError as HTTPError).message).to.equal('Missing request body param `permit`');
-      }
-    });
-
-    it('should throw a 400 error when no coordinator passed in request body', async () => {
-      const mockDBConnection = getMockDBConnection();
-
-      const permitService = new PermitService(mockDBConnection);
-
-      try {
-        await permitService.createNoSamplePermits({ ...sampleReq.body, coordinator: null });
-
-        expect.fail();
-      } catch (actualError) {
-        expect((actualError as HTTPError).status).to.equal(400);
-        expect((actualError as HTTPError).message).to.equal('Missing request body param `coordinator`');
-      }
-    });
-
-    it('should return the inserted ids on success', async () => {
-      const mockDBConnection = getMockDBConnection();
-
-      const permitService = new PermitService(mockDBConnection);
-
-      sinon.stub(PermitService.prototype, 'insertNoSamplePermit').resolves(20);
-
-      const result = await permitService.createNoSamplePermits(sampleReq.body);
-
-      expect(result).to.eql([20]);
-    });
-
-    it('should throw an error when a failure occurs', async () => {
-      const expectedError = new Error('cannot process request');
-
-      const mockDBConnection = getMockDBConnection();
-
-      const permitService = new PermitService(mockDBConnection);
-
-      sinon.stub(PermitService.prototype, 'insertNoSamplePermit').rejects(expectedError);
-
-      try {
-        await permitService.createNoSamplePermits(sampleReq.body);
-
-        expect.fail();
-      } catch (actualError) {
-        expect((actualError as HTTPError).message).to.equal(expectedError.message);
+        expect((actualError as ApiGeneralError).message).to.equal('Failed to acquire user');
       }
     });
   });
 
-  describe('insertNoSamplePermit', () => {
-    afterEach(() => {
-      sinon.restore();
-    });
-
-    const permitData = {
-      permit_number: 'number',
-      permit_type: 'type'
-    };
-
-    const coordinatorData = {
-      first_name: 'first',
-      last_name: 'last',
-      email_address: 'email@example.com',
-      coordinator_agency: 'agency',
-      share_contact_details: true
-    };
-
-    it('should throw an error when cannot generate post sql statement', async () => {
+  describe('getPermitBySurveyId', () => {
+    it('fetches permits by survey id', async () => {
       const mockDBConnection = getMockDBConnection();
 
-      sinon.stub(permit_queries, 'postPermitNoSamplingSQL').returns(null);
+      const mockResponse = [
+        {
+          permit_id: 2,
+          survey_id: 1,
+          number: '12345',
+          type: 'permit type',
+          create_date: new Date().toISOString(),
+          create_user: 3,
+          update_date: null,
+          update_user: null,
+          revision_count: 0
+        }
+      ];
+
+      const getPermitBySurveyIdStub = sinon
+        .stub(PermitRepository.prototype, 'getPermitBySurveyId')
+        .resolves(mockResponse);
 
       const permitService = new PermitService(mockDBConnection);
 
-      try {
-        await permitService.insertNoSamplePermit(permitData, coordinatorData);
+      const response = await permitService.getPermitBySurveyId(1);
 
-        expect.fail();
-      } catch (actualError) {
-        expect((actualError as HTTPError).status).to.equal(400);
-        expect((actualError as HTTPError).message).to.equal('Failed to build SQL insert statement');
-      }
+      expect(getPermitBySurveyIdStub).to.have.been.calledOnceWith(1);
+
+      expect(response).to.equal(mockResponse);
     });
+  });
 
-    it('should throw a HTTP 400 error when failed to insert non-sampling permits cause result is null', async () => {
-      const mockQueryResponse = (null as unknown) as QueryResult<any>;
-      const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
+  describe('createSurveyPermit', () => {
+    it('creates a new surevy permit', async () => {
+      const mockDBConnection = getMockDBConnection();
 
-      sinon.stub(permit_queries, 'postPermitNoSamplingSQL').returns(SQL`some`);
+      const mockResponse = 2;
+
+      const createSurveyPermitStub = sinon
+        .stub(PermitRepository.prototype, 'createSurveyPermit')
+        .resolves(mockResponse);
 
       const permitService = new PermitService(mockDBConnection);
 
-      try {
-        await permitService.insertNoSamplePermit(permitData, coordinatorData);
+      const response = await permitService.createSurveyPermit(1, '12345', 'permit type');
 
-        expect.fail();
-      } catch (actualError) {
-        expect((actualError as HTTPError).status).to.equal(400);
-        expect((actualError as HTTPError).message).to.equal('Failed to insert non-sampling permit data');
-      }
+      expect(createSurveyPermitStub).to.have.been.calledOnceWith(1, '12345', 'permit type');
+
+      expect(response).to.equal(mockResponse);
     });
+  });
 
-    it('should return the result id on success', async () => {
-      const mockQueryResponse = ({ rows: [{ id: 12 }] } as unknown) as QueryResult<any>;
-      const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
+  describe('updateSurveyPermit', () => {
+    it('updates an existing survey permit', async () => {
+      const mockDBConnection = getMockDBConnection();
 
-      sinon.stub(permit_queries, 'postPermitNoSamplingSQL').returns(SQL`some`);
+      const mockResponse = 2;
+
+      const updateSurveyPermitStub = sinon
+        .stub(PermitRepository.prototype, 'updateSurveyPermit')
+        .resolves(mockResponse);
 
       const permitService = new PermitService(mockDBConnection);
 
-      const res = await permitService.insertNoSamplePermit(permitData, coordinatorData);
+      const response = await permitService.updateSurveyPermit(1, 2, '12345', 'permit type');
 
-      expect(res).to.equal(12);
+      expect(updateSurveyPermitStub).to.have.been.calledOnceWith(1, 2, '12345', 'permit type');
+
+      expect(response).to.equal(mockResponse);
+    });
+  });
+
+  describe('deleteSurveyPermit', () => {
+    it('deletes an existing survey permit', async () => {
+      const mockDBConnection = getMockDBConnection();
+
+      const mockResponse = 2;
+
+      const deleteSurveyPermitStub = sinon
+        .stub(PermitRepository.prototype, 'deleteSurveyPermit')
+        .resolves(mockResponse);
+
+      const permitService = new PermitService(mockDBConnection);
+
+      const response = await permitService.deleteSurveyPermit(1, 2);
+
+      expect(deleteSurveyPermitStub).to.have.been.calledOnceWith(1, 2);
+
+      expect(response).to.equal(mockResponse);
     });
   });
 });

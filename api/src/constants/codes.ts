@@ -1,3 +1,5 @@
+// Note, more recent additions to this list may not be in order based on their `id`. If adding a new item to this list,
+// double check what the highest id is (don't assume its based on the item at the bottom of this list).
 export const coordinator_agency = [
   { id: 1, name: 'A Rocha Canada' },
   { id: 2, name: 'Aarde Environmental Ltd.' },
@@ -153,7 +155,9 @@ export const coordinator_agency = [
   { id: 152, name: 'Michigan State University' },
   { id: 153, name: 'Mid Vancouver Island Habitat Enhancement Society' },
   { id: 154, name: 'Ministry of Environment & Climate Change Strategy' },
+  { id: 267, name: 'Ministry of Forests' },
   { id: 155, name: 'Ministry of Forests, Lands, Natural Resource Operations & Rural Development' },
+  { id: 266, name: 'Ministry of Lands, Water, and Resource Stewardship' },
   { id: 156, name: 'Ministry of Transportation & Infrastructure' },
   { id: 157, name: 'Minnow Environmental Inc.' },
   { id: 158, name: 'Montana Fish, Wildlife & Parks' },

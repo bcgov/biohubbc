@@ -7,13 +7,17 @@ import React from 'react';
 import yup from 'utils/YupSchema';
 
 export interface IProjectPartnershipsForm {
-  indigenous_partnerships: number[];
-  stakeholder_partnerships: string[];
+  partnerships: {
+    indigenous_partnerships: number[];
+    stakeholder_partnerships: string[];
+  };
 }
 
 export const ProjectPartnershipsFormInitialValues: IProjectPartnershipsForm = {
-  indigenous_partnerships: [],
-  stakeholder_partnerships: []
+  partnerships: {
+    indigenous_partnerships: [],
+    stakeholder_partnerships: []
+  }
 };
 
 export const ProjectPartnershipsFormYupSchema = yup.object().shape({});
@@ -38,7 +42,7 @@ const ProjectPartnershipsForm: React.FC<IProjectPartnershipsFormProps> = (props)
       <Grid container spacing={3} direction="column">
         <Grid item xs={12}>
           <MultiAutocompleteFieldVariableSize
-            id={'indigenous_partnerships'}
+            id={'partnerships.indigenous_partnerships'}
             label={'Indigenous Partnerships'}
             options={props.first_nations}
             required={false}
@@ -46,7 +50,7 @@ const ProjectPartnershipsForm: React.FC<IProjectPartnershipsFormProps> = (props)
         </Grid>
         <Grid item xs={12}>
           <MultiAutocompleteFieldVariableSize
-            id={'stakeholder_partnerships'}
+            id={'partnerships.stakeholder_partnerships'}
             label={'Other Partnerships'}
             options={props.stakeholder_partnerships}
             required={false}

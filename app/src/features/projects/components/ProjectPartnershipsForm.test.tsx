@@ -32,7 +32,7 @@ const stakeholder_partnerships: IMultiAutocompleteFieldOption[] = [
 
 describe('ProjectPartnershipsForm', () => {
   it('renders correctly with default empty values', () => {
-    const { asFragment } = render(
+    const { getByLabelText } = render(
       <Formik
         initialValues={ProjectPartnershipsFormInitialValues}
         validationSchema={ProjectPartnershipsFormYupSchema}
@@ -45,16 +45,19 @@ describe('ProjectPartnershipsForm', () => {
       </Formik>
     );
 
-    expect(asFragment()).toMatchSnapshot();
+    expect(getByLabelText('Indigenous Partnerships', { exact: false })).toBeVisible();
+    expect(getByLabelText('Other Partnerships', { exact: false })).toBeVisible();
   });
 
   it('renders correctly with existing funding values', () => {
     const existingFormValues: IProjectPartnershipsForm = {
-      indigenous_partnerships: [1, 2],
-      stakeholder_partnerships: ['partner 1']
+      partnerships: {
+        indigenous_partnerships: [1, 2],
+        stakeholder_partnerships: [(1 as unknown) as string]
+      }
     };
 
-    const { asFragment } = render(
+    const { getByLabelText, getByText } = render(
       <Formik
         initialValues={existingFormValues}
         validationSchema={ProjectPartnershipsFormYupSchema}
@@ -67,6 +70,10 @@ describe('ProjectPartnershipsForm', () => {
       </Formik>
     );
 
-    expect(asFragment()).toMatchSnapshot();
+    expect(getByLabelText('Indigenous Partnerships', { exact: false })).toBeVisible();
+    expect(getByLabelText('Other Partnerships', { exact: false })).toBeVisible();
+    expect(getByText('nation 1')).toBeVisible();
+    expect(getByText('nation 2')).toBeVisible();
+    expect(getByText('partner 1', { exact: false })).toBeVisible();
   });
 });

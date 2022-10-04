@@ -122,17 +122,22 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
     setLocationDataForUpdate(locationResponseData);
 
     setLocationFormData({
-      location_description: locationResponseData.location_description,
-      geometry: locationResponseData.geometry
+      location: {
+        location_description: locationResponseData.location_description,
+        geometry: locationResponseData.geometry
+      }
     });
 
     setOpenEditDialog(true);
   };
 
   const handleDialogEditSave = async (values: IProjectLocationForm) => {
-    const projectData = {
-      location: { ...values, revision_count: locationDataForUpdate.revision_count }
+    const projectLocationData = {
+      ...values.location,
+      revision_count: locationDataForUpdate.revision_count
     };
+
+    const projectData = { location: projectLocationData };
 
     try {
       await biohubApi.project.updateProject(id, projectData);

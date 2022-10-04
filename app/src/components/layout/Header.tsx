@@ -224,37 +224,26 @@ const Header: React.FC = () => {
           </Box>
         </Toolbar>
 
-        <Box className={classes.mainNav}>
-          <Toolbar variant="dense" className={classes.mainNavToolbar} role="navigation" aria-label="Main Navigation">
-            <UnAuthGuard>
-              <Link to="/" id="menu_projects">
-                Projects
-              </Link>
-              <Link to="/search" id="menu_search">
-                Map
-              </Link>
-            </UnAuthGuard>
-            <AuthGuard>
+        <AuthGuard>
+          <Box className={classes.mainNav}>
+            <Toolbar variant="dense" className={classes.mainNavToolbar} role="navigation" aria-label="Main Navigation">
               <Link to="/admin/projects" id="menu_projects">
                 Projects
-              </Link>
-              <Link to="/admin/permits" id="menu_permits">
-                Permits
               </Link>
               <Link to="/admin/search" id="menu_search">
                 Map
               </Link>
-            </AuthGuard>
-            <Link to="/resources" id="menu_resources">
-              Resources
-            </Link>
-            <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN]}>
-              <Link to="/admin/users" id="menu_admin_users">
-                Manage Users
+              <Link to="/admin/resources" id="menu_resources">
+                Resources
               </Link>
-            </SystemRoleGuard>
-          </Toolbar>
-        </Box>
+              <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN]}>
+                <Link to="/admin/users" id="menu_admin_users">
+                  Manage Users
+                </Link>
+              </SystemRoleGuard>
+            </Toolbar>
+          </Box>
+        </AuthGuard>
       </AppBar>
 
       <Dialog open={open}>
