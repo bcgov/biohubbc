@@ -5,7 +5,7 @@ import { useDeepCompareEffect } from 'hooks/useDeepCompareEffect';
 import * as L from 'leaflet';
 import 'leaflet-draw';
 import 'leaflet/dist/leaflet.css';
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 /*
  * Supported draw events.
@@ -81,8 +81,8 @@ export interface IDrawControlsProps {
 const DrawControls: React.FC<React.PropsWithChildren<IDrawControlsProps>> = (props) => {
   const context = useLeafletContext();
   // const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [deleteEvent, setDeleteEvent] = useState<L.LeafletEvent | null>(null)
-  const showDeleteModal = Boolean(deleteEvent)
+  const [deleteEvent, setDeleteEvent] = useState<L.LeafletEvent | null>(null);
+  const showDeleteModal = Boolean(deleteEvent);
 
   /**
    * Fetch the layer used by the draw controls.
@@ -210,10 +210,10 @@ const DrawControls: React.FC<React.PropsWithChildren<IDrawControlsProps>> = (pro
     map.on(eventHandlers.onEdited, onDrawEditDelete);
     map.on(eventHandlers.onDeleted, (event) => {
       if (props.useConfirmModal) {
-        setDeleteEvent(event)
-        return
+        setDeleteEvent(event);
+        return;
       }
-      onDrawEditDelete(event)
+      onDrawEditDelete(event);
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.options, props.onChange, props.clearOnDraw]);

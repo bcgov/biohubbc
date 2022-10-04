@@ -1,4 +1,6 @@
-import { Feature,  } from 'geojson';
+import { getFeatureDetails, layerContentHandlers, wfsInferredLayers } from 'components/map/wfs-utils';
+import { Feature } from 'geojson';
+import { useBiohubApi } from 'hooks/useBioHubApi';
 import L, { LatLngBoundsExpression, LeafletEventHandlerFnMap } from 'leaflet';
 import 'leaflet-draw/dist/leaflet.draw.css';
 import 'leaflet-fullscreen/dist/leaflet.fullscreen.css';
@@ -9,28 +11,17 @@ import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 import 'leaflet/dist/leaflet.css';
 import { throttle } from 'lodash-es';
 import React, { useCallback, useEffect, useState } from 'react';
-import {
-  FeatureGroup,
-  GeoJSON,
-  LayersControl,
-  MapContainer as LeafletMapContainer,
-  Marker
-} from 'react-leaflet';
+import { FeatureGroup, GeoJSON, LayersControl, MapContainer as LeafletMapContainer, Marker } from 'react-leaflet';
 import MarkerClusterGroup from 'react-leaflet-cluster';
+import { determineMapGeometries } from 'utils/mapLayersHelpers';
 import { v4 as uuidv4 } from 'uuid';
-
-import {
-  determineMapGeometries
-} from 'utils/mapLayersHelpers';
-import WFSFeatureGroup, { IWFSParams } from './WFSFeatureGroup';
+import AdditionalLayers, { IAdditionalLayers } from './components/AdditionalLayers';
+import BaseLayerControls from './components/BaseLayerControls';
 import { GetMapBounds, IMapBoundsOnChange, SetMapBounds } from './components/Bounds';
 import DrawControls, { IDrawControlsOnChange, IDrawControlsProps } from './components/DrawControls';
-import FullScreenScrollingEventHandler from './components/FullScreenScrollingEventHandler';
 import EventHandler from './components/EventHandler';
-import BaseLayerControls from './components/BaseLayerControls';
-import AdditionalLayers, { IAdditionalLayers } from './components/AdditionalLayers';
-import { getFeatureDetails, layerContentHandlers, wfsInferredLayers } from 'components/map/wfs-utils';
-import { useBiohubApi } from 'hooks/useBioHubApi';
+import FullScreenScrollingEventHandler from './components/FullScreenScrollingEventHandler';
+import WFSFeatureGroup, { IWFSParams } from './WFSFeatureGroup';
 
 /*
   Get leaflet icons working
@@ -63,12 +54,12 @@ export interface IMapContainerProps {
   bounds?: LatLngBoundsExpression;
   zoom?: number;
   eventHandlers?: LeafletEventHandlerFnMap;
-  onBoundsChange?: IMapBoundsOnChange
+  onBoundsChange?: IMapBoundsOnChange;
   selectedLayer?: string;
   setInferredLayersInfo?: (inferredLayersInfo: any) => void;
   nonEditableGeometries?: INonEditableGeometries[];
-  additionalLayers?: IAdditionalLayers
-  
+  additionalLayers?: IAdditionalLayers;
+
   geometryState?: { geometry: Feature[]; setGeometry: (geometry: Feature[]) => void };
   clusteredPointGeometries?: IClusteredPointGeometries[];
 }
@@ -108,7 +99,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
   useEffect(() => {
     if (!geometryState?.geometry.length || !nonEditableGeometries?.length) {
-      if(setInferredLayersInfo) {
+      if (setInferredLayersInfo) {
         setInferredLayersInfo({
           parks: [],
           nrm: [],
@@ -129,12 +120,12 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
   const throttledGetFeatureDetails = useCallback(
     throttle(async (typeNames: string[], wfsParams?: IWFSParams) => {
       // Get map geometries based on whether boundary is non editable or drawn/uploaded
-	    const mapGeometries: Feature[] = determineMapGeometries(geometryState?.geometry, nonEditableGeometries);
-      
-      const inferredLayers = await getFeatureDetails(biohubApi.external.post)(typeNames, mapGeometries, wfsParams)
+      const mapGeometries: Feature[] = determineMapGeometries(geometryState?.geometry, nonEditableGeometries);
+
+      const inferredLayers = await getFeatureDetails(biohubApi.external.post)(typeNames, mapGeometries, wfsParams);
 
       if (setInferredLayersInfo) {
-        setInferredLayersInfo(inferredLayers); 
+        setInferredLayersInfo(inferredLayers);
       }
     }, 300),
     [geometryState?.geometry, nonEditableGeometries]
@@ -200,9 +191,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         />
       )}
 
-      {additionalLayers && (
-        <AdditionalLayers layers={additionalLayers} />
-      )}
+      {additionalLayers && <AdditionalLayers layers={additionalLayers} />}
 
       <LayersControl position="bottomright">
         <BaseLayerControls />

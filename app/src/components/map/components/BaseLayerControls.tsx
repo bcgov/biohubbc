@@ -1,5 +1,5 @@
+import React from 'react';
 import { LayersControl, TileLayer } from 'react-leaflet';
-import React from 'react'
 
 const BaseLayerControls: React.FC = () => {
   return (

@@ -62,7 +62,7 @@ export interface IMapBoundaryProps {
   name: string;
   title: string;
   mapId: string;
-  bounds: LatLngBoundsExpression | undefined
+  bounds: LatLngBoundsExpression | undefined;
   formikProps: FormikContextType<any>;
 }
 
@@ -197,7 +197,7 @@ const MapBoundary: React.FC<IMapBoundaryProps> = (props) => {
             }}
             // Need to explicitly pass drawControls prop, since MapEditControls (which uses geomtryState prop to determine drawing controls) is no longer used.
             drawControls={{
-              initialFeatures: get(values, name) && [get(values, name)],
+              initialFeatures: get(values, name) && [get(values, name)]
             }}
             onDrawChange={(newGeo) => setFieldValue(name, newGeo)}
             bounds={(shouldUpdateBounds && updatedBounds) || bounds}

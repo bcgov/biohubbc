@@ -158,7 +158,7 @@ export function getKeyByValue(object: any, value: any) {
  * @param {LatLngBounds} bounds
  * @return {*}  {Feature<Polygon>}
  */
- export function getFeatureObjectFromLatLngBounds(bounds: LatLngBounds): Feature<Polygon> {
+export function getFeatureObjectFromLatLngBounds(bounds: LatLngBounds): Feature<Polygon> {
   const southWest = bounds.getSouthWest();
   const northEast = bounds.getNorthEast();
 

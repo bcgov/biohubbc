@@ -1,7 +1,11 @@
-import React from 'react'
-import { Feature } from "geojson";
-import { ReProjector } from "reproj-helper";
-import { getInferredLayersInfoByProjectedGeometry, getInferredLayersInfoByWFSFeature, getLayerTypesToSkipByProjectedGeometry } from "utils/mapLayersHelpers";
+import { Feature } from 'geojson';
+import React from 'react';
+import { ReProjector } from 'reproj-helper';
+import {
+  getInferredLayersInfoByProjectedGeometry,
+  getInferredLayersInfoByWFSFeature,
+  getLayerTypesToSkipByProjectedGeometry
+} from 'utils/mapLayersHelpers';
 import { defaultWFSParams, IWFSParams } from './WFSFeatureGroup';
 
 /**
@@ -11,9 +15,11 @@ import { defaultWFSParams, IWFSParams } from './WFSFeatureGroup';
  * @return {*}  {Promise<any>[]}
  */
 export const changeProjections = (geos: Feature[]): Promise<Feature>[] => {
-	const reprojector = new ReProjector();
+  const reprojector = new ReProjector();
 
-	return geos.map((geo: Feature) => reprojector.feature(geo).from('EPSG:4326').to('EPSG:3005').project() as Promise<Feature>);
+  return geos.map(
+    (geo: Feature) => reprojector.feature(geo).from('EPSG:4326').to('EPSG:3005').project() as Promise<Feature>
+  );
 };
 
 /**
@@ -28,49 +34,48 @@ export const changeProjections = (geos: Feature[]): Promise<Feature>[] => {
  *
  */
 export const generateCoordinatesString = (projectedGeometry: any) => {
-	const coordinatesArray = projectedGeometry.coordinates;
-	const geometryType = projectedGeometry.type;
-	let coordinatesString = '';
+  const coordinatesArray = projectedGeometry.coordinates;
+  const geometryType = projectedGeometry.type;
+  let coordinatesString = '';
 
-	if (geometryType === 'MultiPolygon') {
-		coordinatesString += '(((';
+  if (geometryType === 'MultiPolygon') {
+    coordinatesString += '(((';
 
-		coordinatesArray.forEach((coordinateArray: any[], arrayIndex: number) => {
-			coordinateArray[0].forEach((coordinatePoint: any[], index: number) => {
-				coordinatesString += `${coordinatePoint[0]} ${coordinatePoint[1]}`;
+    coordinatesArray.forEach((coordinateArray: any[], arrayIndex: number) => {
+      coordinateArray[0].forEach((coordinatePoint: any[], index: number) => {
+        coordinatesString += `${coordinatePoint[0]} ${coordinatePoint[1]}`;
 
-				if (index !== coordinateArray[0].length - 1) {
-					coordinatesString += ',';
-				} else if (arrayIndex !== coordinatesArray.length - 1) {
-					coordinatesString += ')),';
-				}
-			});
+        if (index !== coordinateArray[0].length - 1) {
+          coordinatesString += ',';
+        } else if (arrayIndex !== coordinatesArray.length - 1) {
+          coordinatesString += ')),';
+        }
+      });
 
-			if (arrayIndex !== coordinatesArray.length - 1) {
-				coordinatesString += '((';
-			}
-		});
+      if (arrayIndex !== coordinatesArray.length - 1) {
+        coordinatesString += '((';
+      }
+    });
 
-		coordinatesString += ')))';
-	} else if (geometryType === 'Polygon') {
-		coordinatesString += '((';
+    coordinatesString += ')))';
+  } else if (geometryType === 'Polygon') {
+    coordinatesString += '((';
 
-		coordinatesArray[0].forEach((coordinatePoint: any[], index: number) => {
-			coordinatesString += `${coordinatePoint[0]} ${coordinatePoint[1]}`;
+    coordinatesArray[0].forEach((coordinatePoint: any[], index: number) => {
+      coordinatesString += `${coordinatePoint[0]} ${coordinatePoint[1]}`;
 
-			if (index !== coordinatesArray[0].length - 1) {
-				coordinatesString += ',';
-			} else {
-				coordinatesString += '))';
-			}
-		});
-	} else if (geometryType === 'Point') {
-		coordinatesString += `(${coordinatesArray[0]} ${coordinatesArray[1]})`;
-	}
+      if (index !== coordinatesArray[0].length - 1) {
+        coordinatesString += ',';
+      } else {
+        coordinatesString += '))';
+      }
+    });
+  } else if (geometryType === 'Point') {
+    coordinatesString += `(${coordinatesArray[0]} ${coordinatesArray[1]})`;
+  }
 
-	return coordinatesString;
+  return coordinatesString;
 };
-
 
 /**
  * Construct a WFS url to fetch layer information.
@@ -81,76 +86,79 @@ export const generateCoordinatesString = (projectedGeometry: any) => {
  * @return {*}
  */
 const buildWFSURL = (typeName: string, wfsParams: IWFSParams = defaultWFSParams) => {
-	const params = { ...defaultWFSParams, ...wfsParams };
+  const params = { ...defaultWFSParams, ...wfsParams };
 
-	return `${params.url}?service=WFS&&version=${params.version}&request=${params.request}&typeName=${typeName}&outputFormat=${params.outputFormat}&srsName=${params.srsName}`;
+  return `${params.url}?service=WFS&&version=${params.version}&request=${params.request}&typeName=${typeName}&outputFormat=${params.outputFormat}&srsName=${params.srsName}`;
 };
 
 /*
 	Function to get WFS feature details based on the existing map geometries
 	and layer types/filter criteria
 */
-export const getFeatureDetails = (externalApiPost: (url: string, body: any) => Promise<any>) => async (typeNames: string[], mapGeometries: Feature[], wfsParams?: IWFSParams) => {
-	const parksInfo: Set<string> = new Set(); // Parks and Eco-Reserves
-	const nrmInfo: Set<string> = new Set(); // NRM Regions
-	const envInfo: Set<string> = new Set(); // ENV Regions
-	const wmuInfo: Set<string> = new Set(); // Wildlife Management Units
-	let inferredLayersInfo = {
-		parksInfo,
-		nrmInfo,
-		envInfo,
-		wmuInfo
-	};
+export const getFeatureDetails = (externalApiPost: (url: string, body: any) => Promise<any>) => async (
+  typeNames: string[],
+  mapGeometries: Feature[],
+  wfsParams?: IWFSParams
+) => {
+  const parksInfo: Set<string> = new Set(); // Parks and Eco-Reserves
+  const nrmInfo: Set<string> = new Set(); // NRM Regions
+  const envInfo: Set<string> = new Set(); // ENV Regions
+  const wmuInfo: Set<string> = new Set(); // Wildlife Management Units
+  let inferredLayersInfo = {
+    parksInfo,
+    nrmInfo,
+    envInfo,
+    wmuInfo
+  };
 
-	// Convert all geometries to BC Albers projection
-	const reprojectedGeometries = await Promise.all(changeProjections(mapGeometries));
+  // Convert all geometries to BC Albers projection
+  const reprojectedGeometries = await Promise.all(changeProjections(mapGeometries));
 
-	const wfsPromises: Promise<{ features?: Feature[] }>[] = [];
-	reprojectedGeometries.forEach((projectedGeo) => {
-		let filterCriteria = '';
-		const coordinatesString = generateCoordinatesString(projectedGeo.geometry);
+  const wfsPromises: Promise<{ features?: Feature[] }>[] = [];
+  reprojectedGeometries.forEach((projectedGeo) => {
+    let filterCriteria = '';
+    const coordinatesString = generateCoordinatesString(projectedGeo.geometry);
 
-		filterCriteria = `${projectedGeo.geometry.type}${coordinatesString}`;
-		inferredLayersInfo = getInferredLayersInfoByProjectedGeometry(projectedGeo, inferredLayersInfo);
-		const layerTypesToSkip = getLayerTypesToSkipByProjectedGeometry(projectedGeo);
+    filterCriteria = `${projectedGeo.geometry.type}${coordinatesString}`;
+    inferredLayersInfo = getInferredLayersInfoByProjectedGeometry(projectedGeo, inferredLayersInfo);
+    const layerTypesToSkip = getLayerTypesToSkipByProjectedGeometry(projectedGeo);
 
-		// Make Open Maps API call to retrieve intersecting features based on geometry and filter criteria
-		typeNames.forEach((typeName: string) => {
-			if (!layerTypesToSkip.includes(typeName)) {
-				const url = buildWFSURL(typeName, wfsParams);
-				const geoFilterType = layerGeoFilterTypeMappings[typeName];
-				const filterData = `INTERSECTS(${geoFilterType}, ${filterCriteria})`;
+    // Make Open Maps API call to retrieve intersecting features based on geometry and filter criteria
+    typeNames.forEach((typeName: string) => {
+      if (!layerTypesToSkip.includes(typeName)) {
+        const url = buildWFSURL(typeName, wfsParams);
+        const geoFilterType = layerGeoFilterTypeMappings[typeName];
+        const filterData = `INTERSECTS(${geoFilterType}, ${filterCriteria})`;
 
-				const requestBody = new URLSearchParams();
-				requestBody.append('CQL_FILTER', filterData);
+        const requestBody = new URLSearchParams();
+        requestBody.append('CQL_FILTER', filterData);
 
-				wfsPromises.push(
-					/* catch and ignore errors */
-					externalApiPost(url, requestBody).catch(() => {})
-				);
-			}
-		});
-	});
-	const wfsResult = await Promise.all(wfsPromises);
+        wfsPromises.push(
+          /* catch and ignore errors */
+          externalApiPost(url, requestBody).catch(() => {})
+        );
+      }
+    });
+  });
+  const wfsResult = await Promise.all(wfsPromises);
 
-	wfsResult.forEach((item: { features?: Feature[] }) => {
-		item?.features?.forEach((feature: Feature) => {
-			inferredLayersInfo = getInferredLayersInfoByWFSFeature(feature, inferredLayersInfo);
-		});
-	});
+  wfsResult.forEach((item: { features?: Feature[] }) => {
+    item?.features?.forEach((feature: Feature) => {
+      inferredLayersInfo = getInferredLayersInfoByWFSFeature(feature, inferredLayersInfo);
+    });
+  });
 
-	if (!inferredLayersInfo) {
-		return;
-	}
+  if (!inferredLayersInfo) {
+    return;
+  }
 
-	return {
-		parks: Array.from(inferredLayersInfo.parksInfo),
-		nrm: Array.from(inferredLayersInfo.nrmInfo),
-		env: Array.from(inferredLayersInfo.envInfo),
-		wmu: Array.from(inferredLayersInfo.wmuInfo)
-	};
-}
-
+  return {
+    parks: Array.from(inferredLayersInfo.parksInfo),
+    nrm: Array.from(inferredLayersInfo.nrmInfo),
+    env: Array.from(inferredLayersInfo.envInfo),
+    wmu: Array.from(inferredLayersInfo.wmuInfo)
+  };
+};
 
 /*
   Because different OpenMaps layers are identified using different keys
