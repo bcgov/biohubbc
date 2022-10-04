@@ -80,7 +80,6 @@ export interface IDrawControlsProps {
 
 const DrawControls: React.FC<React.PropsWithChildren<IDrawControlsProps>> = (props) => {
   const context = useLeafletContext();
-  // const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteEvent, setDeleteEvent] = useState<L.LeafletEvent | null>(null);
   const showDeleteModal = Boolean(deleteEvent);
 
@@ -245,11 +244,9 @@ const DrawControls: React.FC<React.PropsWithChildren<IDrawControlsProps>> = (pro
       open={showDeleteModal}
       onClose={() => {
         setDeleteEvent(null);
-        // drawGeometries(props.geometry);
       }}
       onNo={() => {
         setDeleteEvent(null);
-        // drawGeometries(props.geometry);
       }}
       onYes={() => {
         onDrawEditDelete(deleteEvent || undefined);
