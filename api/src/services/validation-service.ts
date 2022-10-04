@@ -61,7 +61,24 @@ export class ValidationService extends DBService {
     console.log("_________ START _________")
     console.log(`Submission ID: ${submissionId}`);
     const occurrenceSubmission = await this.occurrenceRepository.getOccurrenceSubmission(submissionId)
+    const s3InputKey = occurrenceSubmission?.input_key || "";
+    const s3File = await this.getS3File(s3InputKey);
+    const xlsx = await this.prepXLSX(s3File);
+    // persist parse errors
+    this.getValidationSchema(xlsx).then(async (schema) => {
+      const schemaParser = await this.getValidationRules(schema);
+      const csvState = await this.validateXLSX(xlsx, schemaParser);
+      await this.persistValidationResults(submissionId, csvState.csv_state, csvState.media_state, {initialSubmissionStatusType: ''})
+      const xlsxSchema = await this.getTransformationSchema(xlsx);
+      const xlsxParser = await this.getTransformationRules(xlsxSchema);
+      const fileBuffer = await this.transformXLSX(xlsx, xlsxParser);
+      this.persistTransformationResults(submissionId, fileBuffer, s3InputKey, xlsx);
+      console.log("______________ CSV STATE ______________")
+      console.log(csvState)
+    })
 
+    console.log("_________ END _________")
+    return this.sendResponse()
   }
 
   // S3 service?
@@ -144,7 +161,7 @@ export class ValidationService extends DBService {
   }
   
   // validation service
-  getValidationRules(schema: any) {
+  getValidationRules(schema: any): ValidationSchemaParser {
     const validationSchemaParser = new ValidationSchemaParser(schema)
     return validationSchemaParser;
   }
@@ -223,7 +240,7 @@ export class ValidationService extends DBService {
   }
 
   // ---------------------- TRANSFORMATION SERVICE?
-  async getTranformationSchema(file: XLSXCSV): Promise<any> {
+  async getTransformationSchema(file: XLSXCSV): Promise<any> {
     const template_id = file.workbook.rawWorkbook.Custprops.sims_template_id;
     const field_method_id = file.workbook.rawWorkbook.Custprops.sims_csm_id;
     
@@ -240,7 +257,7 @@ export class ValidationService extends DBService {
     return validationSchema;
   }
 
-  async getTransformationRules(schema: any) {
+  getTransformationRules(schema: any): TransformationSchemaParser {
     const validationSchemaParser = new TransformationSchemaParser(schema)
     return validationSchemaParser;
   }
@@ -260,7 +277,7 @@ export class ValidationService extends DBService {
     return fileBuffers;
   }
 
-  async persistTransformationResults(submissionId: number, fileBuffers: IFileBuffer[], s3Key: string, xlsxCsv: XLSXCSV) {
+  async persistTransformationResults(submissionId: number, fileBuffers: IFileBuffer[], s3OutputKey: string, xlsxCsv: XLSXCSV) {
 
     // Build the archive zip file
     const dwcArchiveZip = new AdmZip();
@@ -268,7 +285,7 @@ export class ValidationService extends DBService {
 
     // Remove the filename from original s3Key
     // project/1/survey/1/submission/file_name.txt -> project/1/survey/1/submission
-    const outputS3KeyPrefix = s3Key.split('/').slice(0, -1).join('/');
+    const outputS3KeyPrefix = s3OutputKey.split('/').slice(0, -1).join('/');
 
     const outputFileName = `${xlsxCsv.rawFile.name}.zip`;
     const outputS3Key = `${outputS3KeyPrefix}/${outputFileName}`;
