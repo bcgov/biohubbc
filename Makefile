@@ -35,6 +35,8 @@ n8n-setup: | build-n8n-setup run-n8n-setup ## Performs all commands necessary to
 n8n-export: | build-n8n-export run-n8n-export ## Performs all commands necessary to export the latest n8n credentials and workflows
 clamav: | build-clamav run-clamav ## Performs all commands necessary to run clamav
 
+fix: | lint-fix format-fix ## Performs both lint-fix and format-fix commands
+
 ## ------------------------------------------------------------------------------
 ## Setup/Cleanup Commands
 ## ------------------------------------------------------------------------------
