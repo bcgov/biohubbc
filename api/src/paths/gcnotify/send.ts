@@ -1,9 +1,8 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../constants/roles';
-import { IgcNotifyPostReturn } from '../../models/gcnotify';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
-import { GCNotifyService } from '../../services/gcnotify-service';
+import { GCNotifyService, IgcNotifyPostReturn } from '../../services/gcnotify-service';
 import { getLogger } from '../../utils/logger';
 
 const defaultLog = getLogger('paths/gcnotify');

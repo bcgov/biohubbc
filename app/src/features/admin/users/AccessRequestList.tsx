@@ -18,11 +18,7 @@ import { AdministrativeActivityStatusType } from 'constants/misc';
 import { DialogContext } from 'contexts/dialogContext';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import {
-  IgcNotifyGenericMessage,
-  IgcNotifyRecipient,
-  IGetAccessRequestsListResponse
-} from 'interfaces/useAdminApi.interface';
+import { IGetAccessRequestsListResponse } from 'interfaces/useAdminApi.interface';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import React, { useContext, useState } from 'react';
 import { getFormattedDate } from 'utils/Utils';
@@ -90,15 +86,16 @@ const AccessRequestList: React.FC<IAccessRequestListProps> = (props) => {
       await biohubApi.admin.sendGCNotification(
         {
           emailAddress: updatedRequest.data.email,
+          phoneNumber: '',
           userId: updatedRequest.id
-        } as IgcNotifyRecipient,
+        },
         {
           subject: 'SIMS: Your request for access has been approved.',
           header: 'Your request for access to the Species Inventory Management System has been approved.',
           body1: 'This is an automated message from the BioHub Species Inventory Management System',
           body2: '',
           footer: ''
-        } as IgcNotifyGenericMessage
+        }
       );
     } catch (error) {
       dialogContext.setErrorDialog({
@@ -135,15 +132,16 @@ const AccessRequestList: React.FC<IAccessRequestListProps> = (props) => {
       await biohubApi.admin.sendGCNotification(
         {
           emailAddress: updatedRequest.data.email,
+          phoneNumber: '',
           userId: updatedRequest.id
-        } as IgcNotifyRecipient,
+        },
         {
           subject: 'SIMS: Your request for access has been denied.',
           header: 'Your request for access to the Species Inventory Management System has been denied.',
           body1: 'This is an automated message from the BioHub Species Inventory Management System',
           body2: '',
           footer: ''
-        } as IgcNotifyGenericMessage
+        }
       );
     } catch (error) {
       dialogContext.setErrorDialog({
