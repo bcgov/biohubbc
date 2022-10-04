@@ -132,6 +132,28 @@ const AccessRequestList: React.FC<IAccessRequestListProps> = (props) => {
     setActiveReviewDialog({ open: false, request: null });
 
     try {
+      await biohubApi.admin.sendGCNotification(
+        {
+          emailAddress: updatedRequest.data.email,
+          userId: updatedRequest.id
+        } as IgcNotifyRecipient,
+        {
+          subject: 'SIMS: Your request for access has been denied.',
+          header: 'Your request for access to the Species Inventory Management System has been denied.',
+          body1: 'This is an automated message from the BioHub Species Inventory Management System',
+          body2: ' ',
+          footer: ' '
+        } as IgcNotifyGenericMessage
+      );
+    } catch (error) {
+      dialogContext.setErrorDialog({
+        ...defaultErrorDialogProps,
+        open: true,
+        dialogErrorDetails: (error as APIError).errors
+      });
+    }
+
+    try {
       await biohubApi.admin.denyAccessRequest(updatedRequest.id);
 
       refresh();
