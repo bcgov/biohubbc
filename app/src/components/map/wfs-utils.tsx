@@ -1,11 +1,8 @@
 import React from 'react'
 import { Feature } from "geojson";
-import { useBiohubApi } from "hooks/useBioHubApi";
 import { ReProjector } from "reproj-helper";
 import { getInferredLayersInfoByProjectedGeometry, getInferredLayersInfoByWFSFeature, getLayerTypesToSkipByProjectedGeometry } from "utils/mapLayersHelpers";
 import { defaultWFSParams, IWFSParams } from './WFSFeatureGroup';
-
-const biohubApi = useBiohubApi();
 
 /**
  * Alter the projection of an array of features, from EPSG:4326 to EPSG:3005 (BC Albers).
@@ -93,7 +90,7 @@ const buildWFSURL = (typeName: string, wfsParams: IWFSParams = defaultWFSParams)
 	Function to get WFS feature details based on the existing map geometries
 	and layer types/filter criteria
 */
-export const getFeatureDetails = async (typeNames: string[], mapGeometries: Feature[], wfsParams?: IWFSParams) => {
+export const getFeatureDetails = (externalApiPost: (url: string, body: any) => Promise<any>) => async (typeNames: string[], mapGeometries: Feature[], wfsParams?: IWFSParams) => {
 	const parksInfo: Set<string> = new Set(); // Parks and Eco-Reserves
 	const nrmInfo: Set<string> = new Set(); // NRM Regions
 	const envInfo: Set<string> = new Set(); // ENV Regions
@@ -129,7 +126,7 @@ export const getFeatureDetails = async (typeNames: string[], mapGeometries: Feat
 
 				wfsPromises.push(
 					/* catch and ignore errors */
-					biohubApi.external.post(url, requestBody).catch(() => {})
+					externalApiPost(url, requestBody).catch(() => {})
 				);
 			}
 		});

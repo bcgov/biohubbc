@@ -30,6 +30,7 @@ import EventHandler from './components/EventHandler';
 import BaseLayerControls from './components/BaseLayerControls';
 import AdditionalLayers, { IAdditionalLayers } from './components/AdditionalLayers';
 import { getFeatureDetails, layerContentHandlers, wfsInferredLayers } from 'components/map/wfs-utils';
+import { useBiohubApi } from 'hooks/useBioHubApi';
 
 /*
   Get leaflet icons working
@@ -90,6 +91,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     additionalLayers
   } = props;
 
+  const biohubApi = useBiohubApi();
+
   const [preDefinedGeometry, setPreDefinedGeometry] = useState<Feature>();
 
   // Add a geometry defined from an existing overlay feature (via its popup)
@@ -128,7 +131,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       // Get map geometries based on whether boundary is non editable or drawn/uploaded
 	    const mapGeometries: Feature[] = determineMapGeometries(geometryState?.geometry, nonEditableGeometries);
       
-      const inferredLayers = await getFeatureDetails(typeNames, mapGeometries, wfsParams)
+      const inferredLayers = await getFeatureDetails(biohubApi.external.post)(typeNames, mapGeometries, wfsParams)
 
       if (setInferredLayersInfo) {
         setInferredLayersInfo(inferredLayers); 
