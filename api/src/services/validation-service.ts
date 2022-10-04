@@ -5,7 +5,8 @@ import { SUBMISSION_STATUS_TYPE } from '../constants/status';
 import { IDBConnection } from '../database/db';
 import { PostOccurrence } from '../models/occurrence-create';
 import { getHeadersAndRowsFromFile, uploadScrapedOccurrence } from '../paths/dwc/scrape-occurrences';
-import { generateHeaderErrorMessage, generateRowErrorMessage, insertSubmissionMessage, insertSubmissionStatus, updateSurveyOccurrenceSubmissionWithOutputKey } from '../paths/dwc/validate';
+import { generateHeaderErrorMessage, generateRowErrorMessage, updateSurveyOccurrenceSubmissionWithOutputKey } from '../paths/dwc/validate';
+import { OccurrenceRepository } from '../repositories/occurrence-repository';
 import { SubmissionRepository } from '../repositories/submission-repsitory';
 import { ValidationRepository } from '../repositories/validation-repository';
 import { uploadBufferToS3 } from '../utils/file-utils';
@@ -47,14 +48,21 @@ const S3 = new AWS.S3({
 export class ValidationService extends DBService {
   validationRepository: ValidationRepository
   submissionRepository: SubmissionRepository
+  occurrenceRepository: OccurrenceRepository
 
   constructor(connection: IDBConnection) {
     super(connection);
-    this.validationRepository = new ValidationRepository(connection)
-    this.submissionRepository = new SubmissionRepository(connection)
+    this.validationRepository = new ValidationRepository(connection);
+    this.submissionRepository = new SubmissionRepository(connection);
+    this.occurrenceRepository = new OccurrenceRepository(connection);
   }
 
-  async processFile(): Promise<void> {}
+  async processFile(submissionId: number): Promise<void> {
+    console.log("_________ START _________")
+    console.log(`Submission ID: ${submissionId}`);
+    const occurrenceSubmission = await this.occurrenceRepository.getOccurrenceSubmission(submissionId)
+
+  }
 
   // S3 service?
   getS3File(key: string, versionId?: string): Promise<GetObjectOutput> {
@@ -99,23 +107,23 @@ export class ValidationService extends DBService {
   }
 
   // should be part of new error service
-  async persistParseErrors(submissionId: number, parseError: string) {
-    defaultLog.debug({ label: 'persistParseErrors', message: 'parseError', parseError });
+  // async persistParseErrors(submissionId: number, parseError: string) {
+  //   defaultLog.debug({ label: 'persistParseErrors', message: 'parseError', parseError });
 
-    try {
-      await this.connection.open();
+  //   try {
+  //     await this.connection.open();
 
-      const statusId = await insertSubmissionStatus(submissionId, 'Rejected', this.connection);
-      insertSubmissionMessage(statusId, 'Error', parseError, 'Miscellaneous', this.connection);
-      await this.connection.commit();
-    } catch (error) {
-      defaultLog.error({ label: 'persistParseErrors', message: 'error', error });
-      await this.connection.rollback();
-      throw error;
-    } finally {
-      this.connection.release();
-    }
-  }
+  //     const statusId = await insertSubmissionStatus(submissionId, 'Rejected', this.connection);
+  //     insertSubmissionMessage(statusId, 'Error', parseError, 'Miscellaneous', this.connection);
+  //     await this.connection.commit();
+  //   } catch (error) {
+  //     defaultLog.error({ label: 'persistParseErrors', message: 'error', error });
+  //     await this.connection.rollback();
+  //     throw error;
+  //   } finally {
+  //     this.connection.release();
+  //   }
+  // }
 
   // validation service
   async getValidationSchema(file: XLSXCSV): Promise<any> {
