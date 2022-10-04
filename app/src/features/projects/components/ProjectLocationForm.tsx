@@ -45,7 +45,7 @@ const ProjectLocationForm = () => {
           name="geometry"
           title="Project Boundary *"
           mapId="project_location_form_map"
-          bounds={undefined} // @TODO this could be commented out
+          bounds={undefined}
           formikProps={formikProps}
         />
       </Grid>
