@@ -4,9 +4,8 @@ import { GetObjectOutput } from 'aws-sdk/clients/s3';
 import { SUBMISSION_STATUS_TYPE } from '../constants/status';
 import { IDBConnection } from '../database/db';
 import { PostOccurrence } from '../models/occurrence-create';
-import { getHeadersAndRowsFromFile, uploadScrapedOccurrence } from '../paths/dwc/scrape-occurrences';
+import { getHeadersAndRowsFromFile } from '../paths/dwc/scrape-occurrences';
 import { generateHeaderErrorMessage, generateRowErrorMessage, updateSurveyOccurrenceSubmissionWithOutputKey } from '../paths/dwc/validate';
-import { OccurrenceRepository } from '../repositories/occurrence-repository';
 import { SubmissionRepository } from '../repositories/submission-repsitory';
 import { ValidationRepository } from '../repositories/validation-repository';
 import { uploadBufferToS3 } from '../utils/file-utils';
@@ -19,6 +18,7 @@ import { ValidationSchemaParser } from '../utils/media/validation/validation-sch
 import { TransformationSchemaParser } from '../utils/media/xlsx/transformation/transformation-schema-parser';
 import { XLSXTransformation } from '../utils/media/xlsx/transformation/xlsx-transformation';
 import { XLSXCSV } from '../utils/media/xlsx/xlsx-file';
+import { OccurrenceService } from './occurrence-service';
 import { DBService } from './service';
 
 const defaultLog = getLogger('services/dwc-service');
@@ -48,36 +48,43 @@ const S3 = new AWS.S3({
 export class ValidationService extends DBService {
   validationRepository: ValidationRepository
   submissionRepository: SubmissionRepository
-  occurrenceRepository: OccurrenceRepository
+  occurrenceService: OccurrenceService
 
   constructor(connection: IDBConnection) {
     super(connection);
     this.validationRepository = new ValidationRepository(connection);
     this.submissionRepository = new SubmissionRepository(connection);
-    this.occurrenceRepository = new OccurrenceRepository(connection);
+    this.occurrenceService = new OccurrenceService(connection);
   }
 
   async processFile(submissionId: number): Promise<void> {
     console.log("_________ START _________")
     console.log(`Submission ID: ${submissionId}`);
-    const occurrenceSubmission = await this.occurrenceRepository.getOccurrenceSubmission(submissionId)
+    let occurrenceSubmission = await this.occurrenceService.getOccurrenceSubmission(submissionId)
     const s3InputKey = occurrenceSubmission?.input_key || "";
-    const s3File = await this.getS3File(s3InputKey);
+    let s3File = await this.getS3File(s3InputKey);
     const xlsx = await this.prepXLSX(s3File);
     // persist parse errors
     this.getValidationSchema(xlsx).then(async (schema) => {
+      console.log("______________ TRANSOFMRATION START ______________")
       const schemaParser = await this.getValidationRules(schema);
       const csvState = await this.validateXLSX(xlsx, schemaParser);
-      await this.persistValidationResults(submissionId, csvState.csv_state, csvState.media_state, {initialSubmissionStatusType: ''})
+      await this.persistValidationResults(submissionId, csvState.csv_state, csvState.media_state, {initialSubmissionStatusType: 'Template Validated'})
       const xlsxSchema = await this.getTransformationSchema(xlsx);
       const xlsxParser = await this.getTransformationRules(xlsxSchema);
       const fileBuffer = await this.transformXLSX(xlsx, xlsxParser);
-      this.persistTransformationResults(submissionId, fileBuffer, s3InputKey, xlsx);
-      console.log("______________ CSV STATE ______________")
-      console.log(csvState)
+      await this.persistTransformationResults(submissionId, fileBuffer, s3InputKey, xlsx);
+      
+      // scrape functions
+      occurrenceSubmission = await this.occurrenceService.getOccurrenceSubmission(submissionId)
+      const s3OutputKey = occurrenceSubmission?.output_key || "";
+      s3File = await this.getS3File(s3OutputKey);
+      const archive = await this.prepDWCArchive(s3File);
+      await this.scrapeAndUploadOccurrences(submissionId, archive)
+
+      console.log("______________ TRANSOFMRATION DONE ______________")
     })
 
-    console.log("_________ END _________")
     return this.sendResponse()
   }
 
@@ -146,7 +153,7 @@ export class ValidationService extends DBService {
   async getValidationSchema(file: XLSXCSV): Promise<any> {
     const template_id = file.workbook.rawWorkbook.Custprops.sims_template_id;
     const field_method_id = file.workbook.rawWorkbook.Custprops.sims_csm_id;
-    
+
     const templateMethodologySpeciesRecord = await this.validationRepository.getTemplateMethodologySpeciesRecord(
       Number(field_method_id),
       Number(template_id)
@@ -249,12 +256,12 @@ export class ValidationService extends DBService {
       Number(template_id)
     );
 
-    const validationSchema = templateMethodologySpeciesRecord?.transform;
-    if (!validationSchema) {
-      throw 'Unable to fetch an appropriate template validation schema for your submission';
+    const transformationSchema = templateMethodologySpeciesRecord?.transform;
+    if (!transformationSchema) {
+      throw 'Unable to fetch an appropriate transform template schema for your submission';
     }
-    
-    return validationSchema;
+
+    return transformationSchema;
   }
 
   getTransformationRules(schema: any): TransformationSchemaParser {
@@ -383,7 +390,7 @@ export class ValidationService extends DBService {
     });
 
     await Promise.all(scrapedOccurrences?.map((scrappedOccurrence) =>{
-      uploadScrapedOccurrence(submissionId, scrappedOccurrence, this.connection)
+      this.occurrenceService.insertPostOccurrences(submissionId, scrappedOccurrence)
     }) || [])
   }
 }

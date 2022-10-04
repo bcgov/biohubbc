@@ -149,7 +149,9 @@ export function processFile(): RequestHandler {
       await connection.rollback()
       throw error;
     } finally {
-      connection.release()
+      console.log("Finally called")
+      // creating a race condition 
+      // await connection.release()
     }
   }
 
