@@ -21,32 +21,6 @@ export const POST: Operation = [
       ]
     };
   }),
-  //general set up
-  // getOccurrenceSubmission(),
-  // getOccurrenceSubmissionInputS3Key(),
-  // getS3File(),
-  // prepXLSX(),
-  // persistParseErrors(),
-  // sendResponse(),
-
-  // //xlsx validate
-  // getValidationSchema(),
-  // getValidationRules(),
-  // validateXLSX(),
-  // persistValidationResults({ initialSubmissionStatusType: 'Template Validated' }),
-
-  // //xlsx transform functions
-  // getTransformationSchema(),
-  // getTransformationRules(),
-  // transformXLSX(),
-  // persistTransformationResults(),
-
-  // //scrape functions
-  // getOccurrenceSubmission(),
-  // getSubmissionOutputS3Key(),
-  // getS3File(),
-  // prepDWCArchive(),
-  // scrapeAndUploadOccurrences(),
   processFile()
 ];
 
@@ -145,5 +119,4 @@ export function processFile(): RequestHandler {
       // await connection.release()
     }
   }
-
 }

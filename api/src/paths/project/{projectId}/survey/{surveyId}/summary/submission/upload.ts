@@ -4,7 +4,6 @@ import { PROJECT_ROLE } from '../../../../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../../../../database/db';
 import { HTTP400 } from '../../../../../../../errors/custom-error';
 import { generateHeaderErrorMessage, generateRowErrorMessage } from '../../../../../../../paths/dwc/validate';
-import { validateXLSX } from '../../../../../../../paths/xlsx/validate';
 import { queries } from '../../../../../../../queries/queries';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
 import { generateS3FileKey, scanFileForVirus, uploadFileToS3 } from '../../../../../../../utils/file-utils';
@@ -221,6 +220,36 @@ export function uploadMedia(): RequestHandler {
       throw error;
     } finally {
       connection.release();
+    }
+  };
+}
+
+export function validateXLSX(): RequestHandler {
+  return async (req, res, next) => {
+    defaultLog.debug({ label: 'validateXLSX', message: 'xlsx' });
+
+    try {
+      const xlsxCsv: XLSXCSV = req['xlsx'];
+
+      const validationSchemaParser: ValidationSchemaParser = req['validationSchemaParser'];
+
+      const mediaState: IMediaState = xlsxCsv.isMediaValid(validationSchemaParser);
+
+      req['mediaState'] = mediaState;
+
+      if (!mediaState.isValid) {
+        // The file itself is invalid, skip remaining validation
+        return next();
+      }
+
+      const csvState: ICsvState[] = xlsxCsv.isContentValid(validationSchemaParser);
+
+      req['csvState'] = csvState;
+
+      next();
+    } catch (error) {
+      defaultLog.error({ label: 'validateXLSX', message: 'error', error });
+      throw error;
     }
   };
 }

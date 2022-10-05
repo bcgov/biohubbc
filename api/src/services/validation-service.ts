@@ -55,8 +55,33 @@ export class ValidationService extends DBService {
     this.occurrenceService = new OccurrenceService(connection);
   }
 
+  async transformFile(submissionId: number): Promise<void> {
+    let occurrenceSubmission = await this.occurrenceService.getOccurrenceSubmission(submissionId)
+    const s3InputKey = occurrenceSubmission?.input_key || "";
+    let s3File = await this.getS3File(s3InputKey);
+    const xlsx = await this.prepXLSX(s3File);
+    // TODO this needs to be updated
+    this.persistParseErrors()
+    this.templateTransformation(submissionId, xlsx, s3InputKey)
+    
+    return this.sendResponse()
+  }
+
+  async validateFile(submissionId: number): Promise<void> {
+    let occurrenceSubmission = await this.occurrenceService.getOccurrenceSubmission(submissionId)
+    const s3InputKey = occurrenceSubmission?.input_key || "";
+    let s3File = await this.getS3File(s3InputKey);
+    const xlsx = await this.prepXLSX(s3File);
+    // TODO this needs to be updated
+    this.persistParseErrors()
+
+    // NO AWAIT the user doesn't need to wait for this step to finish
+    this.templateValidation(submissionId, xlsx);
+
+    return this.sendResponse()
+  }
+
   async processFile(submissionId: number): Promise<void> {
-    console.log("_________ START _________")
     let occurrenceSubmission = await this.occurrenceService.getOccurrenceSubmission(submissionId)
     const s3InputKey = occurrenceSubmission?.input_key || "";
     let s3File = await this.getS3File(s3InputKey);
@@ -64,30 +89,41 @@ export class ValidationService extends DBService {
     // TODO this needs to be updated
     this.persistParseErrors()
     
-    // don't wait for this, let it run in the background
-    this.getValidationSchema(xlsx).then(async (schema) => {
-      console.log("______________ TRANSOFMRATION START ______________")
-      // template validation
-      const schemaParser = await this.getValidationRules(schema);
-      const csvState = await this.validateXLSX(xlsx, schemaParser);
-      await this.persistValidationResults(submissionId, csvState.csv_state, csvState.media_state, {initialSubmissionStatusType: 'Template Validated'})
-
-      // template transformation
-      const xlsxSchema = await this.getTransformationSchema(xlsx);
-      const xlsxParser = await this.getTransformationRules(xlsxSchema);
-      const fileBuffer = await this.transformXLSX(xlsx, xlsxParser);
-      await this.persistTransformationResults(submissionId, fileBuffer, s3InputKey, xlsx);
-      
-      // occurrence scraping
-      occurrenceSubmission = await this.occurrenceService.getOccurrenceSubmission(submissionId)
-      const s3OutputKey = occurrenceSubmission?.output_key || "";
-      s3File = await this.getS3File(s3OutputKey);
-      const archive = await this.prepDWCArchive(s3File);
-      await this.occurrenceService.scrapeAndUploadOccurrences(submissionId, archive)
-      console.log("______________ TRANSOFMRATION DONE ______________")
-    })
+    // NO AWAIT the user doesn't need to wait for this step to finish
+    this.xlsxValidationAndTransform(submissionId, xlsx, s3InputKey);
 
     return this.sendResponse()
+  }
+
+  async xlsxValidationAndTransform(submissionId: number, xlsx: XLSXCSV, s3InputKey: string) {
+    console.log("______________ TRANSOFMRATION START ______________")
+    // template validation
+    await this.templateValidation(submissionId, xlsx);
+
+    // template transformation
+    await this.templateTransformation(submissionId, xlsx, s3InputKey);
+    
+    // occurrence scraping
+    const occurrenceSubmission = await this.occurrenceService.getOccurrenceSubmission(submissionId)
+    const s3OutputKey = occurrenceSubmission?.output_key || "";
+    const s3File = await this.getS3File(s3OutputKey);
+    const archive = await this.prepDWCArchive(s3File);
+    await this.occurrenceService.scrapeAndUploadOccurrences(submissionId, archive)
+    console.log("______________ TRANSOFMRATION DONE ______________")
+  }
+
+  async templateValidation(submissionId: number, xlsx: XLSXCSV) {
+    const schema = await this.getValidationSchema(xlsx)
+    const schemaParser = await this.getValidationRules(schema);
+    const csvState = await this.validateXLSX(xlsx, schemaParser);
+    await this.persistValidationResults(submissionId, csvState.csv_state, csvState.media_state, {initialSubmissionStatusType: 'Template Validated'})
+  }
+
+  async templateTransformation(submissionId: number, xlsx: XLSXCSV, s3InputKey: string) {
+    const xlsxSchema = await this.getTransformationSchema(xlsx);
+    const xlsxParser = await this.getTransformationRules(xlsxSchema);
+    const fileBuffer = await this.transformXLSX(xlsx, xlsxParser);
+    await this.persistTransformationResults(submissionId, fileBuffer, s3InputKey, xlsx);
   }
 
   // S3 service?
@@ -181,7 +217,7 @@ export class ValidationService extends DBService {
     const mediaState = file.isMediaValid(parser);
 
     if (!mediaState.isValid) {
-      throw 'Media is no valid'
+      throw 'Media is not valid'
     }
 
     const csvState: ICsvState[] = file.isContentValid(parser);
