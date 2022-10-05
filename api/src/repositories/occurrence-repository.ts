@@ -46,5 +46,19 @@ export class OccurrenceRepository extends BaseRepository {
       throw new HTTP400('Failed to insert occurrence data');
     }
   }
+
+  async getOccurrencesForView(submissionId: number): Promise<any[]> {
+    const sqlStatement = queries.occurrence.getOccurrencesForViewSQL(submissionId);
+    if (!sqlStatement) {
+      throw new HTTP400('Failed to build SQL get occurrences for view statement');
+    }
+
+    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
+
+    if (!response || !response.rows) {
+      throw new HTTP400('Failed to get occurrences view data');
+    }
+    return response.rows
+  }
   
 }

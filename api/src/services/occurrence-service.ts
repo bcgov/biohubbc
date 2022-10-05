@@ -139,4 +139,25 @@ export class OccurrenceService extends DBService {
     this.occurrenceRepository.insertPostOccurrences(submissionId, occurrences)
   }
 
+  async getOccurrences(submissionId: number): Promise<any[]> {
+    const occurrenceData = await this.occurrenceRepository.getOccurrencesForView(submissionId);
+    return occurrenceData.map(occurrence => {
+      const feature =
+      (occurrence.geometry && { type: 'Feature', geometry: JSON.parse(occurrence.geometry), properties: {} }) || null;
+
+    return {
+      geometry: feature,
+      taxonId: occurrence.taxonid,
+      occurrenceId: occurrence.occurrence_id,
+      individualCount: Number(occurrence.individualcount),
+      lifeStage: occurrence.lifestage,
+      sex: occurrence.sex,
+      organismQuantity: Number(occurrence.organismquantity),
+      organismQuantityType: occurrence.organismquantitytype,
+      vernacularName: occurrence.vernacularname,
+      eventDate: occurrence.eventdate
+    };
+    })
+  }
+
 }
