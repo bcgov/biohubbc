@@ -168,7 +168,7 @@ const useObservationApi = (axios: AxiosInstance) => {
    * @return {*}
    */
   const processOccurrences = async (projectId: number, submissionId: number) => {
-    console.log("Process some stuff")
+    console.log('Process some stuff');
     const { data } = await axios.post(`/api/xlsx/process`, {
       project_id: projectId,
       occurrence_submission_id: submissionId

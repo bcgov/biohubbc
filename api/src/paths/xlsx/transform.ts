@@ -92,29 +92,29 @@ POST.apiDoc = {
 
 export function transform(): RequestHandler {
   return async (req, res, next) => {
-    const submissionId = req.body.occurrence_submission_id
+    const submissionId = req.body.occurrence_submission_id;
     if (!submissionId) {
-      throw new HTTP400('Missing required paramter `occurrence field`')
+      throw new HTTP400('Missing required paramter `occurrence field`');
     }
 
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      await connection.open()
+      await connection.open();
 
-      const service = new ValidationService(connection)
-      await service.transformFile(submissionId)
+      const service = new ValidationService(connection);
+      await service.transformFile(submissionId);
 
-      await connection.commit()
-      res.status(200).json({status: 'success'})
+      await connection.commit();
+      res.status(200).json({ status: 'success' });
     } catch (error) {
       defaultLog.error({ label: 'xlsx process', message: 'error', error });
-      await connection.rollback()
+      await connection.rollback();
       throw error;
     } finally {
-      console.log("Finally called") 
-      // creating a race condition 
+      console.log('Finally called');
+      // creating a race condition
       // await connection.release()
     }
-  }
+  };
 }

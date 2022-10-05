@@ -27,13 +27,13 @@ export class OccurrenceRepository extends BaseRepository {
   }
 
   /**
- * Upload scraped occurrence data.
- *
- * @param {number} occurrenceSubmissionId
- * @param {any} scrapedOccurrence
- * @return {*}
- */
-   async insertPostOccurrences(occurrenceSubmissionId: number, scrapedOccurrence: PostOccurrence) {
+   * Upload scraped occurrence data.
+   *
+   * @param {number} occurrenceSubmissionId
+   * @param {any} scrapedOccurrence
+   * @return {*}
+   */
+  async insertPostOccurrences(occurrenceSubmissionId: number, scrapedOccurrence: PostOccurrence) {
     const sqlStatement = queries.occurrence.postOccurrenceSQL(occurrenceSubmissionId, scrapedOccurrence);
 
     if (!sqlStatement) {
@@ -58,40 +58,39 @@ export class OccurrenceRepository extends BaseRepository {
     if (!response || !response.rows) {
       throw new HTTP400('Failed to get occurrences view data');
     }
-    return response.rows
+    return response.rows;
   }
 
   /**
- * Update existing `occurrence_submission` record with outputKey and outputFileName.
- *
- * @param {number} submissionId
- * @param {string} outputFileName
- * @param {string} outputKey
- * @param {IDBConnection} connection
- * @return {*}  {Promise<void>}
- */
-async updateSurveyOccurrenceSubmissionWithOutputKey(
-  submissionId: number,
-  outputFileName: string,
-  outputKey: string,
-): Promise<any> {
-  const updateSqlStatement = queries.survey.updateSurveyOccurrenceSubmissionSQL({
-    submissionId,
-    outputFileName,
-    outputKey
-  });
+   * Update existing `occurrence_submission` record with outputKey and outputFileName.
+   *
+   * @param {number} submissionId
+   * @param {string} outputFileName
+   * @param {string} outputKey
+   * @param {IDBConnection} connection
+   * @return {*}  {Promise<void>}
+   */
+  async updateSurveyOccurrenceSubmissionWithOutputKey(
+    submissionId: number,
+    outputFileName: string,
+    outputKey: string
+  ): Promise<any> {
+    const updateSqlStatement = queries.survey.updateSurveyOccurrenceSubmissionSQL({
+      submissionId,
+      outputFileName,
+      outputKey
+    });
 
-  if (!updateSqlStatement) {
-    throw new HTTP400('Failed to build SQL update statement');
+    if (!updateSqlStatement) {
+      throw new HTTP400('Failed to build SQL update statement');
+    }
+
+    const updateResponse = await this.connection.query(updateSqlStatement.text, updateSqlStatement.values);
+
+    if (!updateResponse || !updateResponse.rowCount) {
+      throw new HTTP400('Failed to update survey occurrence submission record');
+    }
+
+    return updateResponse;
   }
-
-  const updateResponse = await this.connection.query(updateSqlStatement.text, updateSqlStatement.values);
-
-  if (!updateResponse || !updateResponse.rowCount) {
-    throw new HTTP400('Failed to update survey occurrence submission record');
-  }
-
-  return updateResponse;
-};
-  
 }
