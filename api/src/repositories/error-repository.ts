@@ -25,7 +25,7 @@ export class ErrorRepository extends BaseRepository {
   ): Promise<{ submission_status_id: number; submission_status_type_id: number }> {
     const sqlStatement = SQL`
       INSERT INTO submission_status (
-        submission_id,
+        occurrence_submission_id,
         submission_status_type_id,
         event_timestamp
       ) VALUES (
@@ -75,7 +75,7 @@ export class ErrorRepository extends BaseRepository {
     const sqlStatement = SQL`
         INSERT INTO submission_message (
           submission_status_id,
-          submission_message_type_id,
+          submission_message_type_id,         
           event_timestamp,
           message
         ) VALUES (

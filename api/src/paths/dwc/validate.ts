@@ -416,7 +416,7 @@ export function persistValidationResults(statusTypeObject: any): RequestHandler 
       let submissionStatusType = statusTypeObject.initialSubmissionStatusType;
       if (!mediaState.isValid || csvState?.some((item) => !item.isValid)) {
         // At least 1 error exists
-        submissionStatusType = 'Rejected';
+        submissionStatusType = SUBMISSION_STATUS_TYPE.REJECTED;
       }
 
       const errorService = new ErrorService(connection);
@@ -468,7 +468,6 @@ export function persistValidationResults(statusTypeObject: any): RequestHandler 
         // At least 1 error exists, skip remaining steps
         return res.status(200).json({ status: 'failed' });
       }
-
       return next();
     } catch (error: any) {
       defaultLog.error({ label: 'persistValidationResults', message: 'error', error });
@@ -483,6 +482,7 @@ export function persistValidationResults(statusTypeObject: any): RequestHandler 
         SUBMISSION_MESSAGE_TYPE.ERROR,
         error.message
       );
+
       await connection.rollback();
       throw error;
     } finally {

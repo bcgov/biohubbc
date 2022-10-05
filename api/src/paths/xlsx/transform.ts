@@ -2,7 +2,7 @@ import AdmZip from 'adm-zip';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../constants/roles';
-import { SUBMISSION_STATUS_TYPE } from '../../constants/status';
+import { SUBMISSION_MESSAGE_TYPE, SUBMISSION_STATUS_TYPE } from '../../constants/status';
 import { getDBConnection } from '../../database/db';
 import {
   getOccurrenceSubmission,
@@ -163,8 +163,17 @@ export function getTransformationSchema(): RequestHandler {
       req['transformationSchema'] = transformationSchema;
 
       next();
-    } catch (error) {
+    } catch (error: any) {
       defaultLog.debug({ label: 'getTransformationSchema', message: 'error', error });
+
+      const errorService = new ErrorService(connection);
+
+      await errorService.insertSubmissionStatusAndMessage(
+        req['occurrence_submission'].occurrence_submission_id,
+        SUBMISSION_STATUS_TYPE.FAILED_GET_TRANSFORMATION_RULES,
+        SUBMISSION_MESSAGE_TYPE.ERROR,
+        error.message
+      );
       await connection.rollback();
       throw error;
     } finally {
@@ -196,6 +205,8 @@ export function transformXLSX(): RequestHandler {
   return async (req, res, next) => {
     defaultLog.debug({ label: 'transformXLSX', message: 'xlsx transform' });
 
+    const connection = getDBConnection(req['keycloak_token']);
+
     try {
       const xlsxCsv: XLSXCSV = req['xlsx'];
 
@@ -217,8 +228,17 @@ export function transformXLSX(): RequestHandler {
       req['fileBuffers'] = fileBuffers;
 
       next();
-    } catch (error) {
+    } catch (error: any) {
       defaultLog.debug({ label: 'transformXLSX', message: 'error', error });
+
+      const errorService = new ErrorService(connection);
+
+      await errorService.insertSubmissionStatusAndMessage(
+        req['occurrence_submission'].occurrence_submission_id,
+        SUBMISSION_STATUS_TYPE.FAILED_TRANSFORM_XLSX,
+        SUBMISSION_MESSAGE_TYPE.ERROR,
+        error.message
+      );
       throw error;
     }
   };
@@ -272,7 +292,15 @@ export function persistTransformationResults(): RequestHandler {
         await connection.commit();
 
         next();
-      } catch (error) {
+      } catch (error: any) {
+        const errorService = new ErrorService(connection);
+
+        await errorService.insertSubmissionStatusAndMessage(
+          req['occurrence_submission'].occurrence_submission_id,
+          SUBMISSION_STATUS_TYPE.FAILED_PERSIST_TRANSFORMATION_RESULTS,
+          SUBMISSION_MESSAGE_TYPE.ERROR,
+          error.message
+        );
         await connection.rollback();
         throw error;
       } finally {

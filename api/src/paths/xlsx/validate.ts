@@ -62,6 +62,8 @@ export function prepXLSX(): RequestHandler {
   return async (req, res, next) => {
     defaultLog.debug({ label: 'prepXLSX', message: 's3File' });
 
+    const connection = getDBConnection(req['keycloak_token']);
+
     try {
       const s3File = req['s3File'];
 
@@ -91,8 +93,17 @@ export function prepXLSX(): RequestHandler {
       req['xlsx'] = xlsxCsv;
 
       next();
-    } catch (error) {
+    } catch (error: any) {
       defaultLog.error({ label: 'prepXLSX', message: 'error', error });
+
+      const errorService = new ErrorService(connection);
+
+      await errorService.insertSubmissionStatusAndMessage(
+        req['occurrence_submission'].occurrence_submission_id,
+        SUBMISSION_STATUS_TYPE.FAILED_PREP_XLSX,
+        SUBMISSION_MESSAGE_TYPE.ERROR,
+        error.message
+      );
       throw error;
     }
   };
@@ -141,8 +152,17 @@ export function getValidationSchema(): RequestHandler {
       req['validationSchema'] = validationSchema;
 
       next();
-    } catch (error) {
+    } catch (error: any) {
       defaultLog.error({ label: 'getValidationSchema', message: 'error', error });
+
+      const errorService = new ErrorService(connection);
+
+      await errorService.insertSubmissionStatusAndMessage(
+        req['occurrence_submission'].occurrence_submission_id,
+        SUBMISSION_STATUS_TYPE.FAILED_GET_VALIDATION_RULES,
+        SUBMISSION_MESSAGE_TYPE.ERROR,
+        error.message
+      );
       await connection.rollback();
       throw error;
     } finally {
@@ -154,6 +174,8 @@ export function getValidationSchema(): RequestHandler {
 export function validateXLSX(): RequestHandler {
   return async (req, res, next) => {
     defaultLog.debug({ label: 'validateXLSX', message: 'xlsx' });
+
+    const connection = getDBConnection(req['keycloak_token']);
 
     try {
       const xlsxCsv: XLSXCSV = req['xlsx'];
@@ -174,8 +196,17 @@ export function validateXLSX(): RequestHandler {
       req['csvState'] = csvState;
 
       next();
-    } catch (error) {
+    } catch (error: any) {
       defaultLog.error({ label: 'validateXLSX', message: 'error', error });
+
+      const errorService = new ErrorService(connection);
+
+      await errorService.insertSubmissionStatusAndMessage(
+        req['occurrence_submission'].occurrence_submission_id,
+        SUBMISSION_STATUS_TYPE.FAILED_PREP_XLSX,
+        SUBMISSION_MESSAGE_TYPE.ERROR,
+        error.message
+      );
       throw error;
     }
   };

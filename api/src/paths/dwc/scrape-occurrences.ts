@@ -1,11 +1,13 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../constants/roles';
+import { SUBMISSION_MESSAGE_TYPE, SUBMISSION_STATUS_TYPE } from '../../constants/status';
 import { getDBConnection, IDBConnection } from '../../database/db';
 import { HTTP400 } from '../../errors/http-error';
 import { PostOccurrence } from '../../models/occurrence-create';
 import { queries } from '../../queries/queries';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
+import { ErrorService } from '../../services/error-service';
 import { getLogger } from '../../utils/logger';
 import { DWCArchive } from '../../utils/media/dwc/dwc-archive-file';
 import { getOccurrenceSubmission, getS3File, prepDWCArchive, sendResponse } from './validate';
@@ -194,8 +196,17 @@ export function scrapeAndUploadOccurrences(): RequestHandler {
       await connection.commit();
 
       next();
-    } catch (error) {
+    } catch (error: any) {
       defaultLog.error({ label: 'scrapeAndUploadOccurrences', message: 'error', error });
+
+      const errorService = new ErrorService(connection);
+
+      await errorService.insertSubmissionStatusAndMessage(
+        req['occurrence_submission'].occurrence_submission_id,
+        SUBMISSION_STATUS_TYPE.FAILED_GET_OCCURRENCE,
+        SUBMISSION_MESSAGE_TYPE.ERROR,
+        error.message
+      );
       await connection.rollback();
       throw error;
     } finally {
