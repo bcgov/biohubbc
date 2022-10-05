@@ -189,7 +189,7 @@ export const getValidRangeFieldsValidator = (config?: ColumnRangeValidatorConfig
           // Add an error if the cell value is not in the correct range provided in the array
           csvWorksheet.csvValidation.addRowErrors([
             {
-              errorCode: SUBMISSION_MESSAGE_TYPE.INVALID_VALUE,
+              errorCode: SUBMISSION_MESSAGE_TYPE.OUT_OF_RANGE,
               message: `Invalid value: ${rowValueForColumn}. Value must be between ${config.column_range_validator.min_value} and ${config.column_range_validator.max_value} `,
               col: config.columnName,
               row: rowIndex + 2
