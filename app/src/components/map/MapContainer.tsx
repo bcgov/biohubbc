@@ -56,7 +56,7 @@ export interface IMapContainerProps {
   selectedLayer?: string;
   nonEditableGeometries?: INonEditableGeometries[];
   additionalLayers?: IAdditionalLayers;
-  geometryState?: { geometry: Feature[]; setGeometry: (geometry: Feature[]) => void };
+  // geometryState?: { geometry: Feature[]; setGeometry: (geometry: Feature[]) => void };
   clusteredPointGeometries?: IClusteredPointGeometries[];
   setInferredLayersInfo?: (inferredLayersInfo: any) => void;
   onBoundsChange?: IMapBoundsOnChange;
@@ -69,7 +69,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     mapId,
     drawControls,
     onDrawChange,
-    geometryState,
+    // geometryState,
     nonEditableGeometries,
     clusteredPointGeometries,
     bounds,
@@ -87,17 +87,17 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
   // Add a geometry defined from an existing overlay feature (via its popup)
   useEffect(() => {
-    if (!preDefinedGeometry) {
+    if (!preDefinedGeometry || !drawControls || !drawControls.onChange) {
       return;
     }
 
-    geometryState?.setGeometry([...geometryState.geometry, preDefinedGeometry]);
+    drawControls.onChange([...(drawControls.initialFeatures || []), preDefinedGeometry]);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [preDefinedGeometry]);
 
   useEffect(() => {
-    if (!geometryState?.geometry.length || !nonEditableGeometries?.length) {
+    if (!drawControls?.initialFeatures?.length || !nonEditableGeometries?.length) {
       if (setInferredLayersInfo) {
         setInferredLayersInfo({
           parks: [],
@@ -110,7 +110,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
     throttledGetFeatureDetails(wfsInferredLayers);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [geometryState?.geometry, nonEditableGeometries]);
+  }, [drawControls?.initialFeatures, nonEditableGeometries]);
 
   /*
     Function to get WFS feature details based on the existing map geometries
@@ -119,7 +119,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
   const throttledGetFeatureDetails = useCallback(
     throttle(async (typeNames: string[], wfsParams?: IWFSParams) => {
       // Get map geometries based on whether boundary is non editable or drawn/uploaded
-      const mapGeometries: Feature[] = determineMapGeometries(geometryState?.geometry, nonEditableGeometries);
+      const mapGeometries: Feature[] = determineMapGeometries(drawControls?.initialFeatures, nonEditableGeometries);
 
       const inferredLayers = await getFeatureDetails(biohubApi.external.post)(typeNames, mapGeometries, wfsParams);
 
@@ -127,7 +127,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         setInferredLayersInfo(inferredLayers);
       }
     }, 300),
-    [geometryState?.geometry, nonEditableGeometries]
+    [drawControls?.initialFeatures, nonEditableGeometries]
   );
 
   return (
@@ -146,7 +146,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       <GetMapBounds onChange={(newBounds, newZoom) => props.onBoundsChange?.(newBounds, newZoom)} />
 
       {drawControls && (
-        <FeatureGroup key="draw-control-feature-group">
+        <FeatureGroup data-id="draw-control-feature-group" key="draw-control-feature-group">
           <DrawControls
             {...props.drawControls}
             options={{
@@ -185,7 +185,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
           minZoom={7}
           featureKeyHandler={layerContentHandlers[selectedLayer].featureKeyHandler}
           popupContentHandler={layerContentHandlers[selectedLayer].popupContentHandler}
-          existingGeometry={geometryState?.geometry}
+          existingGeometry={drawControls?.initialFeatures}
           onSelectGeometry={setPreDefinedGeometry}
         />
       )}
