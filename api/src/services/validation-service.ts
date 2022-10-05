@@ -3,8 +3,6 @@ import AWS from 'aws-sdk';
 import { GetObjectOutput } from 'aws-sdk/clients/s3';
 import { SUBMISSION_STATUS_TYPE } from '../constants/status';
 import { IDBConnection } from '../database/db';
-import { PostOccurrence } from '../models/occurrence-create';
-import { getHeadersAndRowsFromFile } from '../paths/dwc/scrape-occurrences';
 import { generateHeaderErrorMessage, generateRowErrorMessage, updateSurveyOccurrenceSubmissionWithOutputKey } from '../paths/dwc/validate';
 import { SubmissionRepository } from '../repositories/submission-repsitory';
 import { ValidationRepository } from '../repositories/validation-repository';
@@ -69,15 +67,18 @@ export class ValidationService extends DBService {
     // don't wait for this, let it run in the background
     this.getValidationSchema(xlsx).then(async (schema) => {
       console.log("______________ TRANSOFMRATION START ______________")
+      // template validation
       const schemaParser = await this.getValidationRules(schema);
       const csvState = await this.validateXLSX(xlsx, schemaParser);
       await this.persistValidationResults(submissionId, csvState.csv_state, csvState.media_state, {initialSubmissionStatusType: 'Template Validated'})
+
+      // template transformation
       const xlsxSchema = await this.getTransformationSchema(xlsx);
       const xlsxParser = await this.getTransformationRules(xlsxSchema);
       const fileBuffer = await this.transformXLSX(xlsx, xlsxParser);
       await this.persistTransformationResults(submissionId, fileBuffer, s3InputKey, xlsx);
       
-      // scrape functions
+      // occurrence scraping
       occurrenceSubmission = await this.occurrenceService.getOccurrenceSubmission(submissionId)
       const s3OutputKey = occurrenceSubmission?.output_key || "";
       s3File = await this.getS3File(s3OutputKey);
