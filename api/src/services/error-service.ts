@@ -1,5 +1,6 @@
+import { SUBMISSION_MESSAGE_TYPE, SUBMISSION_STATUS_TYPE } from '../constants/status';
 import { IDBConnection } from '../database/db';
-import { ErrorRepository, SUBMISSION_MESSAGE_TYPE, SUBMISSION_STATUS_TYPE } from '../repositories/error-repository';
+import { ErrorRepository } from '../repositories/error-repository';
 import { DBService } from './db-service';
 
 export class ErrorService extends DBService {
@@ -65,5 +66,27 @@ export class ErrorService extends DBService {
     submission_status_type_id: number;
   }> {
     return this.errorRepository.insertSubmissionStatus(submissionId, submissionStatusType);
+  }
+
+  /**
+   * Insert a submission m record.
+   *
+   * @param {number} submissionId
+   * @param {SUBMISSION_STATUS_TYPE} submissionStatusType
+   * @return {*}  {Promise<{
+   *     submission_status_id: number;
+   *     submission_status_type_id: number;
+   *   }>}
+   * @memberof SubmissionService
+   */
+  async insertSubmissionMessage(
+    submissionStatusId: number,
+    submissionMessageType: SUBMISSION_MESSAGE_TYPE,
+    submissionMessage: string
+  ): Promise<{
+    submission_message_id: number;
+    submission_message_type_id: number;
+  }> {
+    return this.errorRepository.insertSubmissionMessage(submissionStatusId, submissionMessageType, submissionMessage);
   }
 }

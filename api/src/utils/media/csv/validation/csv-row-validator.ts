@@ -1,3 +1,4 @@
+import { SUBMISSION_MESSAGE_TYPE } from '../../../../constants/status';
 import { CSVValidator } from '../csv-file';
 
 /**
@@ -16,7 +17,7 @@ export const getRequiredFieldsValidator = (requiredFieldsByHeader?: string[]): C
       csvWorksheet.csvValidation.addRowErrors(
         requiredFieldsByHeader.map((requiredFieldByHeader) => {
           return {
-            errorCode: 'Missing Required Field',
+            errorCode: SUBMISSION_MESSAGE_TYPE.MISSING_REQUIRED_FIELD,
             message: `Missing required value for column`,
             col: requiredFieldByHeader,
             row: 2
@@ -45,7 +46,7 @@ export const getRequiredFieldsValidator = (requiredFieldsByHeader?: string[]): C
         if (rowValueForColumn === undefined || rowValueForColumn === null || rowValueForColumn === '') {
           csvWorksheet.csvValidation.addRowErrors([
             {
-              errorCode: 'Missing Required Field',
+              errorCode: SUBMISSION_MESSAGE_TYPE.MISSING_REQUIRED_FIELD,
               message: `Missing required value for column`,
               col: requiredFieldByHeader,
               row: rowIndex + 2
@@ -117,7 +118,7 @@ export const getCodeValueFieldsValidator = (config?: ColumnCodeValidatorConfig):
       if (!allowedCodeValuesLowerCase.includes(rowValueForColumn?.toLowerCase())) {
         csvWorksheet.csvValidation.addRowErrors([
           {
-            errorCode: 'Invalid Value',
+            errorCode: SUBMISSION_MESSAGE_TYPE.INVALID_VALUE,
             message: `Invalid value: ${rowValueForColumn}. Must be one of [${allowedCodeValues.join(', ')}]`,
             col: config.columnName,
             row: rowIndex + 2
@@ -171,7 +172,7 @@ export const getValidRangeFieldsValidator = (config?: ColumnRangeValidatorConfig
       if (isNaN(rowValueForColumn)) {
         csvWorksheet.csvValidation.addRowErrors([
           {
-            errorCode: 'Invalid Value',
+            errorCode: SUBMISSION_MESSAGE_TYPE.INVALID_VALUE,
             message: `Invalid value: ${row[columnIndex]}. Value must be a number `,
             col: config.columnName,
             row: rowIndex + 2
@@ -188,7 +189,7 @@ export const getValidRangeFieldsValidator = (config?: ColumnRangeValidatorConfig
           // Add an error if the cell value is not in the correct range provided in the array
           csvWorksheet.csvValidation.addRowErrors([
             {
-              errorCode: 'Out of Range',
+              errorCode: SUBMISSION_MESSAGE_TYPE.INVALID_VALUE,
               message: `Invalid value: ${rowValueForColumn}. Value must be between ${config.column_range_validator.min_value} and ${config.column_range_validator.max_value} `,
               col: config.columnName,
               row: rowIndex + 2
@@ -201,7 +202,7 @@ export const getValidRangeFieldsValidator = (config?: ColumnRangeValidatorConfig
           // Add an error if the cell value is not in the correct range provided in the array
           csvWorksheet.csvValidation.addRowErrors([
             {
-              errorCode: 'Out of Range',
+              errorCode: SUBMISSION_MESSAGE_TYPE.OUT_OF_RANGE,
               message: `Invalid value: ${rowValueForColumn}. Value must be less than ${config.column_range_validator.max_value} `,
               col: config.columnName,
               row: rowIndex + 2
@@ -214,7 +215,7 @@ export const getValidRangeFieldsValidator = (config?: ColumnRangeValidatorConfig
           // Add an error if the cell value is not in the correct range provided in the array
           csvWorksheet.csvValidation.addRowErrors([
             {
-              errorCode: 'Out of Range',
+              errorCode: SUBMISSION_MESSAGE_TYPE.OUT_OF_RANGE,
               message: `Invalid value: ${rowValueForColumn}. Value must be greater than ${config.column_range_validator.min_value} `,
               col: config.columnName,
               row: rowIndex + 2
@@ -271,7 +272,7 @@ export const getNumericFieldsValidator = (config?: ColumnNumericValidatorConfig)
       if (isNaN(rowValueForColumn)) {
         csvWorksheet.csvValidation.addRowErrors([
           {
-            errorCode: 'Invalid Value',
+            errorCode: SUBMISSION_MESSAGE_TYPE.INVALID_VALUE,
             message: `Invalid value: ${row[columnIndex]}. Value must be a number `,
             col: config.columnName,
             row: rowIndex + 2
@@ -339,7 +340,7 @@ export const getValidFormatFieldsValidator = (config?: ColumnFormatValidatorConf
       if (!regex.test(rowValueForColumn)) {
         csvWorksheet.csvValidation.addRowErrors([
           {
-            errorCode: 'Unexpected Format',
+            errorCode: SUBMISSION_MESSAGE_TYPE.UNEXPECTED_FORMAT,
             message: `Unexpected Format: ${rowValueForColumn}. ${config.column_format_validator.expected_format}`,
             col: config.columnName,
             row: rowIndex + 2

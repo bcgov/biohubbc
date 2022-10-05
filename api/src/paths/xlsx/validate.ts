@@ -1,10 +1,12 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../constants/roles';
+import { SUBMISSION_MESSAGE_TYPE, SUBMISSION_STATUS_TYPE } from '../../constants/status';
 import { getDBConnection, IDBConnection } from '../../database/db';
 import { HTTP400 } from '../../errors/http-error';
 import { queries } from '../../queries/queries';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
+import { ErrorService } from '../../services/error-service';
 import { getLogger } from '../../utils/logger';
 import { ICsvState } from '../../utils/media/csv/csv-file';
 import { IMediaState, MediaFile } from '../../utils/media/media-file';
@@ -17,8 +19,6 @@ import {
   getS3File,
   getValidateAPIDoc,
   getValidationRules,
-  insertSubmissionMessage,
-  insertSubmissionStatus,
   persistParseErrors,
   persistValidationResults,
   sendResponse
@@ -105,6 +105,8 @@ export function getValidationSchema(): RequestHandler {
     try {
       await connection.open();
 
+      const errorService = new ErrorService(connection);
+
       const xlsxCsv = req['xlsx'];
       const template_id = xlsxCsv.workbook.rawWorkbook.Custprops.sims_template_id;
       const field_method_id = xlsxCsv.workbook.rawWorkbook.Custprops.sims_csm_id;
@@ -120,18 +122,15 @@ export function getValidationSchema(): RequestHandler {
       if (!validationSchema) {
         // no schema to validate the template, generate error
 
-        const submissionStatusId = await insertSubmissionStatus(
+        const submissionStatusId = await errorService.insertSubmissionStatus(
           req.body.occurrence_submission_id,
-          'System Error',
-          connection
+          SUBMISSION_STATUS_TYPE.SYSTEM_ERROR
         );
 
-        await insertSubmissionMessage(
-          submissionStatusId,
-          'Error',
-          `Unable to fetch an appropriate template validation schema for your submission`,
-          'Missing Validation Schema',
-          connection
+        await errorService.insertSubmissionMessage(
+          submissionStatusId.submission_status_id,
+          SUBMISSION_MESSAGE_TYPE.MISSING_VALIDATION_SCHEMA,
+          `Unable to fetch an appropriate template validation schema for your submission`
         );
 
         await connection.commit();

@@ -8,11 +8,11 @@ import {
   getOccurrenceSubmission,
   getOccurrenceSubmissionInputS3Key,
   getS3File,
-  insertSubmissionStatus,
   sendResponse,
   updateSurveyOccurrenceSubmissionWithOutputKey
 } from '../../paths/dwc/validate';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
+import { ErrorService } from '../../services/error-service';
 import { uploadBufferToS3 } from '../../utils/file-utils';
 import { getLogger } from '../../utils/logger';
 import { TransformationSchemaParser } from '../../utils/media/xlsx/transformation/transformation-schema-parser';
@@ -254,6 +254,8 @@ export function persistTransformationResults(): RequestHandler {
       try {
         await connection.open();
 
+        const errorService = new ErrorService(connection);
+
         // Update occurrence submission record to include the transformed output file name and s3 key
         await updateSurveyOccurrenceSubmissionWithOutputKey(
           req.body.occurrence_submission_id,
@@ -262,10 +264,9 @@ export function persistTransformationResults(): RequestHandler {
           connection
         );
 
-        await insertSubmissionStatus(
+        await errorService.insertSubmissionStatus(
           req.body.occurrence_submission_id,
-          SUBMISSION_STATUS_TYPE.TEMPLATE_TRANSFORMED,
-          connection
+          SUBMISSION_STATUS_TYPE.TEMPLATE_TRANSFORMED
         );
 
         await connection.commit();

@@ -2,6 +2,7 @@ import { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import xlsx from 'xlsx';
+import { SUBMISSION_MESSAGE_TYPE } from '../../../constants/status';
 import { CSVValidation, CSVWorkBook, CSVWorksheet, IHeaderError, IRowError } from './csv-file';
 
 describe('CSVWorkBook', () => {
@@ -150,13 +151,13 @@ describe('CSVValidation', () => {
       expect(csvValidation).not.to.be.null;
 
       const headerError1: IHeaderError = {
-        errorCode: 'Duplicate Header',
+        errorCode: SUBMISSION_MESSAGE_TYPE.DUPLICATE_HEADER,
         message: 'a header error',
         col: 0
       };
 
       const headerError2: IHeaderError = {
-        errorCode: 'Unknown Header',
+        errorCode: SUBMISSION_MESSAGE_TYPE.UNKNOWN_HEADER,
         message: 'a second header error',
         col: 1
       };
@@ -178,14 +179,14 @@ describe('CSVValidation', () => {
       expect(csvValidation).not.to.be.null;
 
       const rowError1: IRowError = {
-        errorCode: 'Missing Required Field',
+        errorCode: SUBMISSION_MESSAGE_TYPE.MISSING_REQUIRED_FIELD,
         message: 'a row error',
         col: 'col1',
         row: 1
       };
 
       const rowError2: IRowError = {
-        errorCode: 'Missing Required Field',
+        errorCode: SUBMISSION_MESSAGE_TYPE.MISSING_REQUIRED_FIELD,
         message: 'a second row error',
         col: 'col1',
         row: 2
@@ -210,13 +211,13 @@ describe('CSVValidation', () => {
       const fileError1 = 'a file error';
 
       const headerError1: IHeaderError = {
-        errorCode: 'Duplicate Header',
+        errorCode: SUBMISSION_MESSAGE_TYPE.DUPLICATE_HEADER,
         message: 'a header error',
         col: 0
       };
 
       const rowError1: IRowError = {
-        errorCode: 'Missing Required Field',
+        errorCode: SUBMISSION_MESSAGE_TYPE.MISSING_REQUIRED_FIELD,
         message: 'a row error',
         col: 'col1',
         row: 1

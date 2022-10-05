@@ -1,42 +1,7 @@
 import SQL from 'sql-template-strings';
+import { SUBMISSION_MESSAGE_TYPE, SUBMISSION_STATUS_TYPE } from '../constants/status';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { BaseRepository } from './base-repository';
-
-export enum SUBMISSION_STATUS_TYPE {
-  'PUBLISHED' = 'Published',
-  'REJECTED' = 'Rejected',
-  'SYSTEM_ERROR' = 'System Error',
-  //Success
-  'OUT_DATED_RECORD' = 'Out Dated Record',
-  'INGESTED' = 'Ingested',
-  'UPLOADED' = 'Uploaded',
-  'VALIDATED' = 'Validated',
-  'SECURED' = 'Secured',
-  'EML_INGESTED' = 'EML Ingested',
-  'EML_TO_JSON' = 'EML To JSON',
-  'METADATA_TO_ES' = 'Metadata To ES',
-  'NORMALIZED' = 'Normalized',
-  'SPATIAL_TRANSFORM_UNSECURE' = 'Spatial Transform Unsecure',
-  'SPATIAL_TRANSFORM_SECURE' = 'Spatial Transform Secure',
-  //Failure
-  'FAILED_INGESTION' = 'Failed Ingestion',
-  'FAILED_UPLOAD' = 'Failed Upload',
-  'FAILED_VALIDATION' = 'Failed Validation',
-  'FAILED_SECURITY' = 'Failed Security',
-  'FAILED_EML_INGESTION' = 'Failed EML Ingestion',
-  'FAILED_EML_TO_JSON' = 'Failed EML To JSON',
-  'FAILED_METADATA_TO_ES' = 'Failed Metadata To ES',
-  'FAILED_NORMALIZATION' = 'Failed Normalization',
-  'FAILED_SPATIAL_TRANSFORM_UNSECURE' = 'Failed Spatial Transform Unsecure',
-  'FAILED_SPATIAL_TRANSFORM_SECURE' = 'Failed Spatial Transform Secure'
-}
-
-export enum SUBMISSION_MESSAGE_TYPE {
-  'NOTICE' = 'Notice',
-  'ERROR' = 'Error',
-  'WARNING' = 'Warning',
-  'DEBUG' = 'Debug'
-}
 
 /**
  * A repository class for accessing permit data.

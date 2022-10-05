@@ -1,10 +1,10 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../constants/roles';
+import { SUBMISSION_MESSAGE_TYPE, SUBMISSION_STATUS_TYPE } from '../../constants/status';
 import { getDBConnection, IDBConnection } from '../../database/db';
 import { HTTP400, HTTP500 } from '../../errors/http-error';
 import { queries } from '../../queries/queries';
-import { SUBMISSION_MESSAGE_TYPE, SUBMISSION_STATUS_TYPE } from '../../repositories/error-repository';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
 import { ErrorService } from '../../services/error-service';
 import { getFileFromS3 } from '../../utils/file-utils';
@@ -166,7 +166,7 @@ export function getOccurrenceSubmission(): RequestHandler {
 
       await errorService.insertSubmissionStatusAndMessage(
         req['occurrence_submission'].occurrence_submission_id,
-        SUBMISSION_STATUS_TYPE.FAILED_VALIDATION,
+        SUBMISSION_STATUS_TYPE.FAILED_GET_OCCURRENCE,
         SUBMISSION_MESSAGE_TYPE.ERROR,
         error.message
       );
@@ -180,6 +180,7 @@ export function getOccurrenceSubmission(): RequestHandler {
 export function getOccurrenceSubmissionInputS3Key(): RequestHandler {
   return async (req, res, next) => {
     defaultLog.debug({ label: 'getSubmissionS3Key', message: 'params', files: req.body });
+
     const occurrence_submission = req['occurrence_submission'];
 
     req['s3Key'] = occurrence_submission.input_key;
@@ -191,6 +192,8 @@ export function getOccurrenceSubmissionInputS3Key(): RequestHandler {
 export function getS3File(): RequestHandler {
   return async (req, res, next) => {
     defaultLog.debug({ label: 'getS3File', message: 'params', files: req.body });
+
+    const connection = getDBConnection(req['keycloak_token']);
 
     try {
       const s3Key = req['s3Key'];
@@ -204,8 +207,17 @@ export function getS3File(): RequestHandler {
       req['s3File'] = s3File;
 
       next();
-    } catch (error) {
+    } catch (error: any) {
       defaultLog.error({ label: 'getS3File', message: 'error', error });
+
+      const errorService = new ErrorService(connection);
+
+      await errorService.insertSubmissionStatusAndMessage(
+        req['occurrence_submission'].occurrence_submission_id,
+        SUBMISSION_STATUS_TYPE.FAILED_GET_FILE_FROM_S3,
+        SUBMISSION_MESSAGE_TYPE.ERROR,
+        error.message
+      );
       throw error;
     }
   };
@@ -214,6 +226,8 @@ export function getS3File(): RequestHandler {
 export function prepDWCArchive(): RequestHandler {
   return async (req, res, next) => {
     defaultLog.debug({ label: 'prepDWCArchive', message: 's3File' });
+
+    const connection = getDBConnection(req['keycloak_token']);
 
     try {
       const s3File = req['s3File'];
@@ -237,8 +251,17 @@ export function prepDWCArchive(): RequestHandler {
       req['dwcArchive'] = dwcArchive;
 
       next();
-    } catch (error) {
+    } catch (error: any) {
       defaultLog.error({ label: 'prepDWCArchive', message: 'error', error });
+
+      const errorService = new ErrorService(connection);
+
+      await errorService.insertSubmissionStatusAndMessage(
+        req['occurrence_submission'].occurrence_submission_id,
+        SUBMISSION_STATUS_TYPE.FAILED_PREP_DWC_ARCHIVE,
+        SUBMISSION_MESSAGE_TYPE.ERROR,
+        error.message
+      );
       throw error;
     }
   };
@@ -259,21 +282,30 @@ export function persistParseErrors(): RequestHandler {
 
     try {
       await connection.open();
+      const errorService = new ErrorService(connection);
 
-      const submissionStatusId = await insertSubmissionStatus(
-        req.body.occurrence_submission_id,
-        'Rejected',
-        connection
+      await errorService.insertSubmissionStatusAndMessage(
+        req['occurrence_submission'].occurrence_submission_id,
+        SUBMISSION_STATUS_TYPE.REJECTED,
+        SUBMISSION_MESSAGE_TYPE.PARSE_ERROR,
+        'Miscellaneous'
       );
-
-      await insertSubmissionMessage(submissionStatusId, 'Error', parseError, 'Miscellaneous', connection);
 
       await connection.commit();
 
       // archive is not parsable, don't continue to next step and return early
       return res.status(200).json({ status: 'failed' });
-    } catch (error) {
+    } catch (error: any) {
       defaultLog.error({ label: 'persistParseErrors', message: 'error', error });
+
+      const errorService = new ErrorService(connection);
+
+      await errorService.insertSubmissionStatusAndMessage(
+        req['occurrence_submission'].occurrence_submission_id,
+        SUBMISSION_STATUS_TYPE.FAILED_PERSIST_PARSE_ERRORS,
+        SUBMISSION_MESSAGE_TYPE.ERROR,
+        error.message
+      );
       await connection.rollback();
       throw error;
     } finally {
@@ -302,8 +334,19 @@ export function getValidationRules(): RequestHandler {
       req['validationSchemaParser'] = validationSchemaParser;
 
       next();
-    } catch (error) {
+    } catch (error: any) {
       defaultLog.error({ label: 'getValidationRules', message: 'error', error });
+
+      const connection = getDBConnection(req['keycloak_token']);
+
+      const errorService = new ErrorService(connection);
+
+      await errorService.insertSubmissionStatusAndMessage(
+        req['occurrence_submission'].occurrence_submission_id,
+        SUBMISSION_STATUS_TYPE.FAILED_GET_VALIDATION_RULES,
+        SUBMISSION_MESSAGE_TYPE.ERROR,
+        error.message
+      );
       throw error;
     }
   };
@@ -332,8 +375,19 @@ function validateDWCArchive(): RequestHandler {
       req['csvState'] = csvState;
 
       next();
-    } catch (error) {
+    } catch (error: any) {
       defaultLog.error({ label: 'validateDWCArchive', message: 'error', error });
+
+      const connection = getDBConnection(req['keycloak_token']);
+
+      const errorService = new ErrorService(connection);
+
+      await errorService.insertSubmissionStatusAndMessage(
+        req['occurrence_submission'].occurrence_submission_id,
+        SUBMISSION_STATUS_TYPE.FAILED_VALIDATE_DWC_ARCHIVE,
+        SUBMISSION_MESSAGE_TYPE.ERROR,
+        error.message
+      );
       throw error;
     }
   };
@@ -365,41 +419,42 @@ export function persistValidationResults(statusTypeObject: any): RequestHandler 
         submissionStatusType = 'Rejected';
       }
 
-      const submissionStatusId = await insertSubmissionStatus(
+      const errorService = new ErrorService(connection);
+
+      const submissionStatusId = await errorService.insertSubmissionStatus(
         req.body.occurrence_submission_id,
-        submissionStatusType,
-        connection
+        submissionStatusType
       );
 
       const promises: Promise<any>[] = [];
 
       mediaState.fileErrors?.forEach((fileError) => {
         promises.push(
-          insertSubmissionMessage(submissionStatusId, 'Error', `${fileError}`, 'Miscellaneous', connection)
+          errorService.insertSubmissionMessage(
+            submissionStatusId.submission_status_id,
+            SUBMISSION_MESSAGE_TYPE.MISCELLANEOUS,
+            `${fileError}`
+          )
         );
       });
 
       csvState?.forEach((csvStateItem) => {
         csvStateItem.headerErrors?.forEach((headerError) => {
           promises.push(
-            insertSubmissionMessage(
-              submissionStatusId,
-              'Error',
-              generateHeaderErrorMessage(csvStateItem.fileName, headerError),
+            errorService.insertSubmissionMessage(
+              submissionStatusId.submission_status_id,
               headerError.errorCode,
-              connection
+              generateHeaderErrorMessage(csvStateItem.fileName, headerError)
             )
           );
         });
 
         csvStateItem.rowErrors?.forEach((rowError) => {
           promises.push(
-            insertSubmissionMessage(
-              submissionStatusId,
-              'Error',
-              generateRowErrorMessage(csvStateItem.fileName, rowError),
+            errorService.insertSubmissionMessage(
+              submissionStatusId.submission_status_id,
               rowError.errorCode,
-              connection
+              generateRowErrorMessage(csvStateItem.fileName, rowError)
             )
           );
         });
@@ -415,8 +470,19 @@ export function persistValidationResults(statusTypeObject: any): RequestHandler 
       }
 
       return next();
-    } catch (error) {
+    } catch (error: any) {
       defaultLog.error({ label: 'persistValidationResults', message: 'error', error });
+
+      const connection = getDBConnection(req['keycloak_token']);
+
+      const errorService = new ErrorService(connection);
+
+      await errorService.insertSubmissionStatusAndMessage(
+        req['occurrence_submission'].occurrence_submission_id,
+        SUBMISSION_STATUS_TYPE.FAILED_PERSIST_VALIDATION_RESULTS,
+        SUBMISSION_MESSAGE_TYPE.ERROR,
+        error.message
+      );
       await connection.rollback();
       throw error;
     } finally {
@@ -450,8 +516,19 @@ export function updateOccurrenceSubmission(): RequestHandler {
       await connection.commit();
 
       next();
-    } catch (error) {
+    } catch (error: any) {
       defaultLog.debug({ label: 'updateOccurrenceSubmission', message: 'error', error });
+
+      const connection = getDBConnection(req['keycloak_token']);
+
+      const errorService = new ErrorService(connection);
+
+      await errorService.insertSubmissionStatusAndMessage(
+        req['occurrence_submission'].occurrence_submission_id,
+        SUBMISSION_STATUS_TYPE.FAILED_UPDATE_OCCURRENCE_SUBMISSION,
+        SUBMISSION_MESSAGE_TYPE.ERROR,
+        error.message
+      );
       await connection.rollback();
       throw error;
     } finally {
@@ -465,70 +542,6 @@ export function sendResponse(): RequestHandler {
     return res.status(200).json({ status: 'success' });
   };
 }
-
-/**
- * Insert a record into the submission_status table.
- *
- * @param {number} occurrenceSubmissionId
- * @param {string} submissionStatusType
- * @param {IDBConnection} connection
- * @return {*}  {Promise<number>}
- */
-export const insertSubmissionStatus = async (
-  occurrenceSubmissionId: number,
-  submissionStatusType: string,
-  connection: IDBConnection
-): Promise<number> => {
-  const sqlStatement = queries.survey.insertOccurrenceSubmissionStatusSQL(occurrenceSubmissionId, submissionStatusType);
-
-  if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL insert statement');
-  }
-
-  const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
-  const result = (response && response.rows && response.rows[0]) || null;
-
-  if (!result || !result.id) {
-    throw new HTTP400('Failed to insert survey submission status data');
-  }
-
-  return result.id;
-};
-
-/**
- * Insert a record into the submission_message table.
- *
- * @param {number} submissionStatusId
- * @param {string} submissionMessageType
- * @param {string} message
- * @param {IDBConnection} connection
- * @return {*}  {Promise<void>}
- */
-export const insertSubmissionMessage = async (
-  submissionStatusId: number,
-  submissionMessageType: string,
-  message: string,
-  errorCode: string,
-  connection: IDBConnection
-): Promise<void> => {
-  const sqlStatement = queries.survey.insertOccurrenceSubmissionMessageSQL(
-    submissionStatusId,
-    submissionMessageType,
-    message,
-    errorCode
-  );
-
-  if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL insert statement');
-  }
-
-  const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
-  if (!response || !response.rowCount) {
-    throw new HTTP400('Failed to insert survey submission message data');
-  }
-};
 
 /**
  * Update existing `occurrence_submission` record with outputKey and outputFileName.
