@@ -60,5 +60,38 @@ export class OccurrenceRepository extends BaseRepository {
     }
     return response.rows
   }
+
+  /**
+ * Update existing `occurrence_submission` record with outputKey and outputFileName.
+ *
+ * @param {number} submissionId
+ * @param {string} outputFileName
+ * @param {string} outputKey
+ * @param {IDBConnection} connection
+ * @return {*}  {Promise<void>}
+ */
+async updateSurveyOccurrenceSubmissionWithOutputKey(
+  submissionId: number,
+  outputFileName: string,
+  outputKey: string,
+): Promise<any> {
+  const updateSqlStatement = queries.survey.updateSurveyOccurrenceSubmissionSQL({
+    submissionId,
+    outputFileName,
+    outputKey
+  });
+
+  if (!updateSqlStatement) {
+    throw new HTTP400('Failed to build SQL update statement');
+  }
+
+  const updateResponse = await this.connection.query(updateSqlStatement.text, updateSqlStatement.values);
+
+  if (!updateResponse || !updateResponse.rowCount) {
+    throw new HTTP400('Failed to update survey occurrence submission record');
+  }
+
+  return updateResponse;
+};
   
 }

@@ -1,14 +1,11 @@
 import AdmZip from 'adm-zip';
-import AWS from 'aws-sdk';
-import { GetObjectOutput } from 'aws-sdk/clients/s3';
 import { SUBMISSION_STATUS_TYPE } from '../constants/status';
 import { IDBConnection } from '../database/db';
-import { generateHeaderErrorMessage, generateRowErrorMessage, updateSurveyOccurrenceSubmissionWithOutputKey } from '../paths/dwc/validate';
 import { SubmissionRepository } from '../repositories/submission-repsitory';
 import { ValidationRepository } from '../repositories/validation-repository';
-import { uploadBufferToS3 } from '../utils/file-utils';
+import { getFileFromS3, uploadBufferToS3 } from '../utils/file-utils';
 import { getLogger } from '../utils/logger';
-import { ICsvState } from '../utils/media/csv/csv-file';
+import { ICsvState, IHeaderError, IRowError } from '../utils/media/csv/csv-file';
 import { DWCArchive } from '../utils/media/dwc/dwc-archive-file';
 import { ArchiveFile, IMediaState, MediaFile } from '../utils/media/media-file';
 import { parseUnknownMedia } from '../utils/media/media-utils';
@@ -31,17 +28,10 @@ interface IFileBuffer {
   buffer: Buffer
 }
 
-const OBJECT_STORE_BUCKET_NAME = process.env.OBJECT_STORE_BUCKET_NAME || '';
-const OBJECT_STORE_URL = process.env.OBJECT_STORE_URL || 'nrs.objectstore.gov.bc.ca';
-const AWS_ENDPOINT = new AWS.Endpoint(OBJECT_STORE_URL);
-const S3 = new AWS.S3({
-  endpoint: AWS_ENDPOINT.href,
-  accessKeyId: process.env.OBJECT_STORE_ACCESS_KEY_ID,
-  secretAccessKey: process.env.OBJECT_STORE_SECRET_KEY_ID,
-  signatureVersion: 'v4',
-  s3ForcePathStyle: true,
-  region: 'ca-central-1'
-});
+enum InitialSubmissionStatus {
+  DarwinCoreValidated = "Darwin Core Validated",
+  TemplateValidated = "Template Validated"
+}
 
 export class ValidationService extends DBService {
   validationRepository: ValidationRepository
@@ -58,7 +48,7 @@ export class ValidationService extends DBService {
   async transformFile(submissionId: number): Promise<void> {
     let occurrenceSubmission = await this.occurrenceService.getOccurrenceSubmission(submissionId)
     const s3InputKey = occurrenceSubmission?.input_key || "";
-    let s3File = await this.getS3File(s3InputKey);
+    let s3File = await getFileFromS3(s3InputKey);
     const xlsx = await this.prepXLSX(s3File);
     // TODO this needs to be updated
     this.persistParseErrors()
@@ -70,23 +60,45 @@ export class ValidationService extends DBService {
   }
 
   async validateFile(submissionId: number): Promise<void> {
-    let occurrenceSubmission = await this.occurrenceService.getOccurrenceSubmission(submissionId)
+    const occurrenceSubmission = await this.occurrenceService.getOccurrenceSubmission(submissionId)
     const s3InputKey = occurrenceSubmission?.input_key || "";
-    let s3File = await this.getS3File(s3InputKey);
+    const s3File = await getFileFromS3(s3InputKey);
     const xlsx = await this.prepXLSX(s3File);
     // TODO this needs to be updated
     this.persistParseErrors()
 
     // NO AWAIT the user doesn't need to wait for this step to finish
-    this.templateValidation(submissionId, xlsx);
+    this.templateValidation(submissionId, xlsx, InitialSubmissionStatus.TemplateValidated);
 
     return this.sendResponse()
   }
 
-  async processFile(submissionId: number): Promise<void> {
-    let occurrenceSubmission = await this.occurrenceService.getOccurrenceSubmission(submissionId)
+  async processDWCFile(submissionId: number): Promise<void> {
+    // prep dwc
+    const occurrenceSubmission = await this.occurrenceService.getOccurrenceSubmission(submissionId)
     const s3InputKey = occurrenceSubmission?.input_key || "";
-    let s3File = await this.getS3File(s3InputKey);
+    const s3File = getFileFromS3(s3InputKey);
+    const archive = this.prepDWCArchive(s3File)
+    this.persistParseErrors()
+
+    // validate dwc
+    const validationSchema = {};
+    const rules = this.getValidationRules(validationSchema)
+    const csvState = this.validateDWCArchive(archive, rules)
+
+    // update submission
+    const outputOccurrence = await this.occurrenceService.getOccurrenceSubmission(submissionId)
+    const s3OutputKey = outputOccurrence?.output_key || "";
+    await this.persistValidationResults(submissionId, csvState.csv_state, csvState.media_state, {initialSubmissionStatusType: InitialSubmissionStatus.DarwinCoreValidated})
+    await this.occurrenceService.updateSurveyOccurrenceSubmission(submissionId, archive.rawFile.fileName, s3OutputKey);
+
+    return this.sendResponse();
+  }
+
+  async processFile(submissionId: number): Promise<void> {
+    const occurrenceSubmission = await this.occurrenceService.getOccurrenceSubmission(submissionId)
+    const s3InputKey = occurrenceSubmission?.input_key || "";
+    const s3File = await getFileFromS3(s3InputKey);
     const xlsx = await this.prepXLSX(s3File);
     // TODO this needs to be updated
     this.persistParseErrors()
@@ -98,31 +110,29 @@ export class ValidationService extends DBService {
   }
 
   async xlsxValidationAndTransform(submissionId: number, xlsx: XLSXCSV, s3InputKey: string) {
-    console.log("______________ TRANSOFMRATION START ______________")
     // template validation
-    await this.templateValidation(submissionId, xlsx);
+    await this.templateValidation(submissionId, xlsx, InitialSubmissionStatus.TemplateValidated);
 
     // template transformation
     await this.templateTransformation(submissionId, xlsx, s3InputKey);
     
     // occurrence scraping
     await this.templateScrapeAndUploadOccurrences(submissionId);
-    console.log("______________ TRANSOFMRATION DONE ______________")
   }
 
   async templateScrapeAndUploadOccurrences(submissionId: number) {
     const occurrenceSubmission = await this.occurrenceService.getOccurrenceSubmission(submissionId)
     const s3OutputKey = occurrenceSubmission?.output_key || "";
-    const s3File = await this.getS3File(s3OutputKey);
+    const s3File = await getFileFromS3(s3OutputKey);
     const archive = await this.prepDWCArchive(s3File);
     await this.occurrenceService.scrapeAndUploadOccurrences(submissionId, archive)
   }
 
-  async templateValidation(submissionId: number, xlsx: XLSXCSV) {
+  async templateValidation(submissionId: number, xlsx: XLSXCSV, initalSubmissionStatus: string) {
     const schema = await this.getValidationSchema(xlsx)
     const schemaParser = await this.getValidationRules(schema);
     const csvState = await this.validateXLSX(xlsx, schemaParser);
-    await this.persistValidationResults(submissionId, csvState.csv_state, csvState.media_state, {initialSubmissionStatusType: 'Template Validated'})
+    await this.persistValidationResults(submissionId, csvState.csv_state, csvState.media_state, {initialSubmissionStatusType: initalSubmissionStatus})
   }
 
   async templateTransformation(submissionId: number, xlsx: XLSXCSV, s3InputKey: string) {
@@ -132,14 +142,6 @@ export class ValidationService extends DBService {
     await this.persistTransformationResults(submissionId, fileBuffer, s3InputKey, xlsx);
   }
 
-  // S3 service?
-  getS3File(key: string, versionId?: string): Promise<GetObjectOutput> {
-    return S3.getObject({
-      Bucket: OBJECT_STORE_BUCKET_NAME,
-      Key: key,
-      VersionId: versionId
-    }).promise();
-  }
 
   // validation service?
   prepXLSX(file: any): XLSXCSV {
@@ -261,7 +263,7 @@ export class ValidationService extends DBService {
           this.submissionRepository.insertSubmissionMessage(
             submissionStatusId,
             'Error',
-            generateHeaderErrorMessage(csvStateItem.fileName, headerError),
+            this.generateHeaderErrorMessage(csvStateItem.fileName, headerError),
             headerError.errorCode
           )
         );
@@ -272,7 +274,7 @@ export class ValidationService extends DBService {
           this.submissionRepository.insertSubmissionMessage(
             submissionStatusId,
             'Error',
-            generateRowErrorMessage(csvStateItem.fileName, rowError),
+            this.generateRowErrorMessage(csvStateItem.fileName, rowError),
             rowError.errorCode
           )
         );  
@@ -291,7 +293,6 @@ export class ValidationService extends DBService {
     return Promise.resolve();
   }
 
-  // ---------------------- TRANSFORMATION SERVICE?
   async getTransformationSchema(file: XLSXCSV): Promise<any> {
     const template_id = file.workbook.rawWorkbook.Custprops.sims_template_id;
     const field_method_id = file.workbook.rawWorkbook.Custprops.sims_csm_id;
@@ -345,20 +346,18 @@ export class ValidationService extends DBService {
     // Upload transformed archive to s3
     await uploadBufferToS3(dwcArchiveZip.toBuffer(), 'application/zip', outputS3Key);
 
-    await updateSurveyOccurrenceSubmissionWithOutputKey(
+    this.occurrenceService.updateSurveyOccurrenceSubmission(
       submissionId,
       outputFileName,
-      outputS3Key,
-      this.connection
+      outputS3Key
     );
 
     await this.submissionRepository.insertSubmissionStatus(submissionId, SUBMISSION_STATUS_TYPE.TEMPLATE_TRANSFORMED)
   }
 
+  prepDWCArchive(s3File: any): DWCArchive {
+    defaultLog.debug({ label: 'prepDWCArchive', message: 's3File' });
 
-  // ---------------------- SCRAPE FUNCTIONS
-  // need to get a fresh copy of the occurrence submission
-  async prepDWCArchive(s3File: any) {
     const parsedMedia = parseUnknownMedia(s3File);
     if (!parsedMedia) {
       throw 'Failed to parse submission, file was empty';
@@ -370,5 +369,28 @@ export class ValidationService extends DBService {
 
     const dwcArchive = new DWCArchive(parsedMedia);
     return dwcArchive;
+  }
+
+  validateDWCArchive(dwc: DWCArchive, parser: ValidationSchemaParser) {
+    defaultLog.debug({ label: 'validateDWCArchive', message: 'dwcArchive' });
+    const mediaState = dwc.isMediaValid(parser)
+    if (!mediaState.isValid) {
+      throw 'Some error';
+    }
+
+    const csvState: ICsvState[] = dwc.isContentValid(parser);
+
+    return {
+      csv_state: csvState,
+      media_state: mediaState
+    } as ICsvMediaState;
+  }
+
+  generateHeaderErrorMessage(fileName: string, headerError: IHeaderError): string {
+    return `${fileName} - ${headerError.message} - Column: ${headerError.col}`;
+  }
+  
+  generateRowErrorMessage(fileName: string, rowError: IRowError): string {
+    return `${fileName} - ${rowError.message} - Column: ${rowError.col} - Row: ${rowError.row}`;
   }
 }

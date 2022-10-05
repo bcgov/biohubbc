@@ -3,12 +3,11 @@ import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../../../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../../../../database/db';
 import { HTTP400 } from '../../../../../../../errors/custom-error';
-import { generateHeaderErrorMessage, generateRowErrorMessage } from '../../../../../../../paths/dwc/validate';
 import { queries } from '../../../../../../../queries/queries';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
 import { generateS3FileKey, scanFileForVirus, uploadFileToS3 } from '../../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../../utils/logger';
-import { ICsvState } from '../../../../../../../utils/media/csv/csv-file';
+import { ICsvState, IHeaderError, IRowError } from '../../../../../../../utils/media/csv/csv-file';
 import { IMediaState, MediaFile } from '../../../../../../../utils/media/media-file';
 import { parseUnknownMedia } from '../../../../../../../utils/media/media-utils';
 import { ValidationSchemaParser } from '../../../../../../../utils/media/validation/validation-schema-parser';
@@ -730,3 +729,11 @@ export const insertSummarySubmissionMessage = async (
     throw new HTTP400('Failed to insert summary submission message data');
   }
 };
+
+export function generateHeaderErrorMessage(fileName: string, headerError: IHeaderError): string {
+  return `${fileName} - ${headerError.message} - Column: ${headerError.col}`;
+}
+
+export function generateRowErrorMessage(fileName: string, rowError: IRowError): string {
+  return `${fileName} - ${rowError.message} - Column: ${rowError.col} - Row: ${rowError.row}`;
+}

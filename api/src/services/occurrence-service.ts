@@ -1,6 +1,5 @@
 import { IDBConnection } from '../database/db';
 import { PostOccurrence } from '../models/occurrence-create';
-import { getHeadersAndRowsFromFile } from '../paths/dwc/scrape-occurrences';
 import { IOccurrenceSubmission, OccurrenceRepository } from '../repositories/occurrence-repository';
 import { DWCArchive } from '../utils/media/dwc/dwc-archive-file';
 import { DBService } from './service';
@@ -75,7 +74,7 @@ export class OccurrenceService extends DBService {
       taxonRows,
       taxonIdHeader,
       vernacularNameHeader
-    } = getHeadersAndRowsFromFile(archive);
+    } = this.getHeadersAndRowsFromDWCArchive(archive);
 
     return occurrenceRows?.map((row: any) => {
         const occurrenceId = row[occurrenceIdHeader];
@@ -158,6 +157,10 @@ export class OccurrenceService extends DBService {
       eventDate: occurrence.eventdate
     };
     })
+  }
+
+  async updateSurveyOccurrenceSubmission(submissionId: number, fileName: string, key: string): Promise<any> {
+    this.occurrenceRepository.updateSurveyOccurrenceSubmissionWithOutputKey(submissionId, fileName, key)
   }
 
 }
