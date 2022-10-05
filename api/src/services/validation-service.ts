@@ -59,12 +59,14 @@ export class ValidationService extends DBService {
 
   async processFile(submissionId: number): Promise<void> {
     console.log("_________ START _________")
-    console.log(`Submission ID: ${submissionId}`);
     let occurrenceSubmission = await this.occurrenceService.getOccurrenceSubmission(submissionId)
     const s3InputKey = occurrenceSubmission?.input_key || "";
     let s3File = await this.getS3File(s3InputKey);
     const xlsx = await this.prepXLSX(s3File);
-    // persist parse errors
+    // TODO this needs to be updated
+    this.persistParseErrors()
+    
+    // don't wait for this, let it run in the background
     this.getValidationSchema(xlsx).then(async (schema) => {
       console.log("______________ TRANSOFMRATION START ______________")
       const schemaParser = await this.getValidationRules(schema);
@@ -80,8 +82,7 @@ export class ValidationService extends DBService {
       const s3OutputKey = occurrenceSubmission?.output_key || "";
       s3File = await this.getS3File(s3OutputKey);
       const archive = await this.prepDWCArchive(s3File);
-      await this.scrapeAndUploadOccurrences(submissionId, archive)
-
+      await this.occurrenceService.scrapeAndUploadOccurrences(submissionId, archive)
       console.log("______________ TRANSOFMRATION DONE ______________")
     })
 
@@ -130,6 +131,7 @@ export class ValidationService extends DBService {
     }
   }
 
+  async persistParseErrors() {}
   // should be part of new error service
   // async persistParseErrors(submissionId: number, parseError: string) {
   //   defaultLog.debug({ label: 'persistParseErrors', message: 'parseError', parseError });
@@ -325,72 +327,5 @@ export class ValidationService extends DBService {
 
     const dwcArchive = new DWCArchive(parsedMedia);
     return dwcArchive;
-  }
-
-  async scrapeAndUploadOccurrences(submissionId: number, archive: DWCArchive) {
-    const {
-      occurrenceRows,
-      occurrenceIdHeader,
-      associatedTaxaHeader,
-      eventRows,
-      lifeStageHeader,
-      sexHeader,
-      individualCountHeader,
-      organismQuantityHeader,
-      organismQuantityTypeHeader,
-      occurrenceHeaders,
-      eventIdHeader,
-      eventDateHeader,
-      eventVerbatimCoordinatesHeader,
-      taxonRows,
-      taxonIdHeader,
-      vernacularNameHeader
-    } = getHeadersAndRowsFromFile(archive);
-
-    const scrapedOccurrences = occurrenceRows?.map((row: any) => {
-        const occurrenceId = row[occurrenceIdHeader];
-        const associatedTaxa = row[associatedTaxaHeader];
-        const lifeStage = row[lifeStageHeader];
-        const sex = row[sexHeader];
-        const individualCount = row[individualCountHeader];
-        const organismQuantity = row[organismQuantityHeader];
-        const organismQuantityType = row[organismQuantityTypeHeader];
-
-        const data = { headers: occurrenceHeaders, rows: row };
-
-        let verbatimCoordinates;
-        let eventDate;
-        let vernacularName;
-
-        eventRows?.forEach((eventRow: any) => {
-          if (eventRow[eventIdHeader] === occurrenceId) {
-            eventDate = eventRow[eventDateHeader];
-            verbatimCoordinates = eventRow[eventVerbatimCoordinatesHeader];
-          }
-        });
-
-        taxonRows?.forEach((taxonRow: any) => {
-          if (taxonRow[taxonIdHeader] === occurrenceId) {
-            vernacularName = taxonRow[vernacularNameHeader];
-          }
-        });
-
-        return new PostOccurrence({
-          associatedTaxa: associatedTaxa,
-          lifeStage: lifeStage,
-          sex: sex,
-          individualCount: individualCount,
-          vernacularName: vernacularName,
-          data,
-          verbatimCoordinates: verbatimCoordinates,
-          organismQuantity: organismQuantity,
-          organismQuantityType: organismQuantityType,
-          eventDate: eventDate
-        });
-    });
-
-    await Promise.all(scrapedOccurrences?.map((scrappedOccurrence) =>{
-      this.occurrenceService.insertPostOccurrences(submissionId, scrappedOccurrence)
-    }) || [])
   }
 }

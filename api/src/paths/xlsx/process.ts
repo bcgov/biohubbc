@@ -117,15 +117,6 @@ POST.apiDoc = {
   }
 };
 
-export function sendResponse(): RequestHandler {
-  console.log('_____________________ SEND RESPONSE _____________________');
-  return async (_req, res, next) => {
-    res.status(200).json({ status: 'success' });
-    defaultLog.info({ label: 'xlsx process', message: `success sent` });
-    next();
-  };
-}
-
 export function processFile(): RequestHandler {
   return async (req, res) => {
     const submissionId = req.body.occurrence_submission_id
