@@ -1,11 +1,13 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../constants/roles';
+import { SUBMISSION_MESSAGE_TYPE, SUBMISSION_STATUS_TYPE } from '../../constants/status';
 import { getDBConnection } from '../../database/db';
 import { HTTP400 } from '../../errors/http-error';
 import { GetOccurrencesViewData } from '../../models/occurrence-view';
 import { queries } from '../../queries/queries';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
+import { ErrorService } from '../../services/error-service';
 import { getLogger } from '../../utils/logger';
 
 const defaultLog = getLogger('paths/dwc/view-occurrences');
@@ -118,8 +120,17 @@ export function getOccurrencesForView(): RequestHandler {
       await connection.commit();
 
       return res.status(200).json(result.occurrences);
-    } catch (error) {
+    } catch (error: any) {
       defaultLog.error({ label: 'getOccurrencesForView', message: 'error', error });
+
+      const errorService = new ErrorService(connection);
+
+      await errorService.insertSubmissionStatusAndMessage(
+        req['occurrence_submission'].occurrence_submission_id,
+        SUBMISSION_STATUS_TYPE.FAILED_GET_OCCURRENCE,
+        SUBMISSION_MESSAGE_TYPE.ERROR,
+        error.message
+      );
       throw error;
     } finally {
       connection.release();
