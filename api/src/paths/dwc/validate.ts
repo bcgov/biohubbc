@@ -117,7 +117,6 @@ POST.apiDoc = {
 };
 
 export function getOccurrenceSubmission(): RequestHandler {
-  console.log("_______________________________ GET SOME STUFF __________________________________")
   return async (req, res, next) => {
     defaultLog.debug({ label: 'getOccurrenceSubmission', message: 'params', files: req.body });
 

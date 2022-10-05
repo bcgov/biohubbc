@@ -62,8 +62,10 @@ export class ValidationService extends DBService {
     const xlsx = await this.prepXLSX(s3File);
     // TODO this needs to be updated
     this.persistParseErrors()
+
+    // NO AWAIT the user doesn't need to wait for this step to finish
     this.templateTransformation(submissionId, xlsx, s3InputKey)
-    
+
     return this.sendResponse()
   }
 
@@ -104,12 +106,16 @@ export class ValidationService extends DBService {
     await this.templateTransformation(submissionId, xlsx, s3InputKey);
     
     // occurrence scraping
+    await this.templateScrapeAndUploadOccurrences(submissionId);
+    console.log("______________ TRANSOFMRATION DONE ______________")
+  }
+
+  async templateScrapeAndUploadOccurrences(submissionId: number) {
     const occurrenceSubmission = await this.occurrenceService.getOccurrenceSubmission(submissionId)
     const s3OutputKey = occurrenceSubmission?.output_key || "";
     const s3File = await this.getS3File(s3OutputKey);
     const archive = await this.prepDWCArchive(s3File);
     await this.occurrenceService.scrapeAndUploadOccurrences(submissionId, archive)
-    console.log("______________ TRANSOFMRATION DONE ______________")
   }
 
   async templateValidation(submissionId: number, xlsx: XLSXCSV) {

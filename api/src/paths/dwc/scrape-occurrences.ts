@@ -6,9 +6,9 @@ import { HTTP400 } from '../../errors/custom-error';
 import { PostOccurrence } from '../../models/occurrence-create';
 import { queries } from '../../queries/queries';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
+import { ValidationService } from '../../services/validation-service';
 import { getLogger } from '../../utils/logger';
 import { DWCArchive } from '../../utils/media/dwc/dwc-archive-file';
-import { getOccurrenceSubmission, getS3File, prepDWCArchive, sendResponse } from './validate';
 
 const defaultLog = getLogger('paths/dwc/scrape-occurrences');
 
@@ -24,12 +24,7 @@ export const POST: Operation = [
       ]
     };
   }),
-  getOccurrenceSubmission(),
-  getSubmissionOutputS3Key(),
-  getS3File(),
-  prepDWCArchive(),
-  scrapeAndUploadOccurrences(),
-  sendResponse()
+  scrapeAndUpload()
 ];
 
 POST.apiDoc = {
@@ -99,6 +94,36 @@ POST.apiDoc = {
     }
   }
 };
+
+export function scrapeAndUpload(): RequestHandler {
+  return async (req, res, next) => {
+    const submissionId = req.body.occurrence_submission_id
+    if (!submissionId) {
+      throw new HTTP400('Missing required paramter `occurrence field`')
+    }
+    
+    const connection = getDBConnection(req['keycloak_token']);
+
+    try {
+      await connection.open()
+
+      const service = new ValidationService(connection)
+      await service.templateScrapeAndUploadOccurrences(submissionId)
+
+      await connection.commit()
+
+      res.status(200).json({status: 'success'})
+    } catch (error) {
+      defaultLog.error({ label: 'xlsx process', message: 'error', error });
+      await connection.rollback()
+      throw error;
+    } finally {
+      console.log("Finally called")
+      // creating a race condition 
+      // await connection.release()
+    }
+  }
+}
 
 export function getSubmissionOutputS3Key(): RequestHandler {
   return async (req, res, next) => {
