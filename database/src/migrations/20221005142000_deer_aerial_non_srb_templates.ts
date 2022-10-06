@@ -14,7 +14,7 @@ enum TEMPLATE_NAME {
 }
 
 const validationSchema = [
-  //Common Survey Methodology: Composition, Transect, Population Recruitment
+  //Common Survey Methodology: SRB, Composition, Transect, Recruitment
   {
     v_schema: JSON.stringify(deer_aerial_non_srb_validation),
     field_method: COMMON_SURVEY_METHODOLOGY.ENCOUNTER_TRANSECTS,
