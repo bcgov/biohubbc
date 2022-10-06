@@ -109,7 +109,6 @@ export function scrapeAndUpload(): RequestHandler {
       await service.templateScrapeAndUploadOccurrences(submissionId);
 
       await connection.commit();
-
     } catch (error) {
       defaultLog.error({ label: 'xlsx process', message: 'error', error });
       await connection.rollback();

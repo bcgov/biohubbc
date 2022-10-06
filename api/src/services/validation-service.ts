@@ -76,12 +76,10 @@ export class ValidationService extends DBService {
     const csvState = this.validateDWCArchive(archive, rules);
 
     // update submission
-    const outputOccurrence = await this.occurrenceService.getOccurrenceSubmission(submissionId);
-    const s3OutputKey = outputOccurrence?.output_key || '';
     await this.persistValidationResults(submissionId, csvState.csv_state, csvState.media_state, {
       initialSubmissionStatusType: InitialSubmissionStatus.DarwinCoreValidated
     });
-    await this.occurrenceService.updateSurveyOccurrenceSubmission(submissionId, archive.rawFile.fileName, s3OutputKey);
+    await this.occurrenceService.updateSurveyOccurrenceSubmission(submissionId, archive.rawFile.fileName, s3InputKey);
   }
 
   async processFile(submissionId: number) {

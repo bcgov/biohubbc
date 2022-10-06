@@ -108,7 +108,6 @@ export function processDWCFile(): RequestHandler {
     }
 
     res.status(200).json({ status: 'success' });
-  
     const connection = getDBConnection(req['keycloak_token']);
     try {
       await connection.open();
@@ -117,7 +116,6 @@ export function processDWCFile(): RequestHandler {
       await service.processDWCFile(submissionId);
 
       await connection.commit();
-
     } catch (error) {
       defaultLog.error({ label: 'xlsx process', message: 'error', error });
       await connection.rollback();
