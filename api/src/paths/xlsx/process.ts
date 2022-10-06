@@ -98,8 +98,9 @@ export function processFile(): RequestHandler {
       throw new HTTP400('Missing required paramter `occurrence field`');
     }
 
-    const connection = getDBConnection(req['keycloak_token']);
+    res.status(200).json({ status: 'success' });
 
+    const connection = getDBConnection(req['keycloak_token']);    
     try {
       await connection.open();
 
@@ -108,15 +109,12 @@ export function processFile(): RequestHandler {
 
       await connection.commit();
 
-      res.status(200).json({ status: 'success' });
     } catch (error) {
       defaultLog.error({ label: 'xlsx process', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {
-      console.log('Finally called');
-      // creating a race condition
-      // await connection.release()
+      connection.release()
     }
   };
 }

@@ -45,41 +45,30 @@ export class ValidationService extends DBService {
     this.occurrenceService = new OccurrenceService(connection);
   }
 
-  async transformFile(submissionId: number): Promise<void> {
+  async transformFile(submissionId: number) {
     const occurrenceSubmission = await this.occurrenceService.getOccurrenceSubmission(submissionId);
     const s3InputKey = occurrenceSubmission?.input_key || '';
     const s3File = await getFileFromS3(s3InputKey);
     const xlsx = await this.prepXLSX(s3File);
-    // TODO this needs to be updated
-    this.persistParseErrors();
 
-    // NO AWAIT the user doesn't need to wait for this step to finish
-    this.templateTransformation(submissionId, xlsx, s3InputKey);
-
-    return this.sendResponse();
+    await this.templateTransformation(submissionId, xlsx, s3InputKey);
   }
 
-  async validateFile(submissionId: number): Promise<void> {
+  async validateFile(submissionId: number) {
     const occurrenceSubmission = await this.occurrenceService.getOccurrenceSubmission(submissionId);
     const s3InputKey = occurrenceSubmission?.input_key || '';
     const s3File = await getFileFromS3(s3InputKey);
     const xlsx = await this.prepXLSX(s3File);
-    // TODO this needs to be updated
-    this.persistParseErrors();
 
-    // NO AWAIT the user doesn't need to wait for this step to finish
-    this.templateValidation(submissionId, xlsx, InitialSubmissionStatus.TemplateValidated);
-
-    return this.sendResponse();
+    await this.templateValidation(submissionId, xlsx, InitialSubmissionStatus.TemplateValidated);
   }
 
-  async processDWCFile(submissionId: number): Promise<void> {
+  async processDWCFile(submissionId: number) {
     // prep dwc
     const occurrenceSubmission = await this.occurrenceService.getOccurrenceSubmission(submissionId);
     const s3InputKey = occurrenceSubmission?.input_key || '';
-    const s3File = getFileFromS3(s3InputKey);
+    const s3File = await getFileFromS3(s3InputKey);
     const archive = this.prepDWCArchive(s3File);
-    this.persistParseErrors();
 
     // validate dwc
     const validationSchema = {};
@@ -93,31 +82,20 @@ export class ValidationService extends DBService {
       initialSubmissionStatusType: InitialSubmissionStatus.DarwinCoreValidated
     });
     await this.occurrenceService.updateSurveyOccurrenceSubmission(submissionId, archive.rawFile.fileName, s3OutputKey);
-
-    return this.sendResponse();
   }
 
-  async processFile(submissionId: number): Promise<void> {
+  async processFile(submissionId: number) {
     const occurrenceSubmission = await this.occurrenceService.getOccurrenceSubmission(submissionId);
     const s3InputKey = occurrenceSubmission?.input_key || '';
     const s3File = await getFileFromS3(s3InputKey);
     const xlsx = await this.prepXLSX(s3File);
-    // TODO this needs to be updated
-    this.persistParseErrors();
 
-    // NO AWAIT the user doesn't need to wait for this step to finish
-    this.xlsxValidationAndTransform(submissionId, xlsx, s3InputKey);
-
-    return this.sendResponse();
-  }
-
-  async xlsxValidationAndTransform(submissionId: number, xlsx: XLSXCSV, s3InputKey: string) {
     // template validation
     await this.templateValidation(submissionId, xlsx, InitialSubmissionStatus.TemplateValidated);
-
+  
     // template transformation
     await this.templateTransformation(submissionId, xlsx, s3InputKey);
-
+  
     // occurrence scraping
     await this.templateScrapeAndUploadOccurrences(submissionId);
   }
@@ -131,7 +109,7 @@ export class ValidationService extends DBService {
   }
 
   async templateValidation(submissionId: number, xlsx: XLSXCSV, initalSubmissionStatus: string) {
-    const schema = await this.getValidationSchema(xlsx);
+    const schema = await this.getValidationSchema(xlsx)
     const schemaParser = await this.getValidationRules(schema);
     const csvState = await this.validateXLSX(xlsx, schemaParser);
     await this.persistValidationResults(submissionId, csvState.csv_state, csvState.media_state, {
