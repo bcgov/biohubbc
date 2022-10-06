@@ -1,25 +1,11 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../constants/roles';
+import { getDBConnection } from '../../database/db';
+import { HTTP400 } from '../../errors/custom-error';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
+import { ValidationService } from '../../services/validation-service';
 import { getLogger } from '../../utils/logger';
-import { getSubmissionOutputS3Key, scrapeAndUploadOccurrences } from '../dwc/scrape-occurrences';
-import {
-  getOccurrenceSubmission,
-  getOccurrenceSubmissionInputS3Key,
-  getS3File,
-  getValidationRules,
-  persistParseErrors,
-  persistValidationResults,
-  prepDWCArchive
-} from '../dwc/validate';
-import {
-  getTransformationRules,
-  getTransformationSchema,
-  persistTransformationResults,
-  transformXLSX
-} from './transform';
-import { getValidationSchema, prepXLSX, validateXLSX } from './validate';
 
 const defaultLog = getLogger('paths/xlsx/process');
 
@@ -35,32 +21,7 @@ export const POST: Operation = [
       ]
     };
   }),
-  //general set up
-  getOccurrenceSubmission(),
-  getOccurrenceSubmissionInputS3Key(),
-  getS3File(),
-  prepXLSX(),
-  persistParseErrors(),
-  sendResponse(),
-
-  //xlsx validate
-  getValidationSchema(),
-  getValidationRules(),
-  validateXLSX(),
-  persistValidationResults({ initialSubmissionStatusType: 'Template Validated' }),
-
-  //xlsx transform functions
-  getTransformationSchema(),
-  getTransformationRules(),
-  transformXLSX(),
-  persistTransformationResults(),
-
-  //scrape functions
-  getOccurrenceSubmission(),
-  getSubmissionOutputS3Key(),
-  getS3File(),
-  prepDWCArchive(),
-  scrapeAndUploadOccurrences()
+  processFile()
 ];
 
 POST.apiDoc = {
@@ -130,10 +91,29 @@ POST.apiDoc = {
   }
 };
 
-export function sendResponse(): RequestHandler {
-  return async (_req, res, next) => {
+export function processFile(): RequestHandler {
+  return async (req, res) => {
+    const submissionId = req.body.occurrence_submission_id;
+    if (!submissionId) {
+      throw new HTTP400('Missing required paramter `occurrence field`');
+    }
+
     res.status(200).json({ status: 'success' });
-    defaultLog.info({ label: 'xlsx process', message: `success sent` });
-    next();
+
+    const connection = getDBConnection(req['keycloak_token']);
+    try {
+      await connection.open();
+
+      const service = new ValidationService(connection);
+      await service.processFile(submissionId);
+
+      await connection.commit();
+    } catch (error) {
+      defaultLog.error({ label: 'xlsx process', message: 'error', error });
+      await connection.rollback();
+      throw error;
+    } finally {
+      connection.release();
+    }
   };
 }

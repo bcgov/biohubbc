@@ -1,24 +1,13 @@
-import AdmZip from 'adm-zip';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../constants/roles';
 import { SUBMISSION_MESSAGE_TYPE, SUBMISSION_STATUS_TYPE } from '../../constants/status';
 import { getDBConnection } from '../../database/db';
-import {
-  getOccurrenceSubmission,
-  getOccurrenceSubmissionInputS3Key,
-  getS3File,
-  sendResponse,
-  updateSurveyOccurrenceSubmissionWithOutputKey
-} from '../../paths/dwc/validate';
-import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
 import { ErrorService } from '../../services/error-service';
-import { uploadBufferToS3 } from '../../utils/file-utils';
+import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
+import { ValidationService } from '../../services/validation-service';
 import { getLogger } from '../../utils/logger';
-import { TransformationSchemaParser } from '../../utils/media/xlsx/transformation/transformation-schema-parser';
-import { XLSXTransformation } from '../../utils/media/xlsx/transformation/xlsx-transformation';
-import { XLSXCSV } from '../../utils/media/xlsx/xlsx-file';
-import { getTemplateMethodologySpeciesRecord, prepXLSX } from './validate';
+import { HTTP400 } from '../../errors/http-error';
 
 const defaultLog = getLogger('paths/xlsx/transform');
 
@@ -34,16 +23,7 @@ export const POST: Operation = [
       ]
     };
   }),
-  getOccurrenceSubmission(),
-  getOccurrenceSubmissionInputS3Key(),
-  getS3File(),
-  prepXLSX(),
-  persistParseErrors(),
-  getTransformationSchema(),
-  getTransformationRules(),
-  transformXLSX(),
-  persistTransformationResults(),
-  sendResponse()
+  transform()
 ];
 
 POST.apiDoc = {
@@ -112,59 +92,25 @@ POST.apiDoc = {
   }
 };
 
-export function persistParseErrors(): RequestHandler {
+export function transform(): RequestHandler {
   return async (req, res, next) => {
-    const parseError = req['parseError'];
-
-    if (!parseError) {
-      // no errors to persist, skip to next step
-      return next();
+    const submissionId = req.body.occurrence_submission_id;
+    if (!submissionId) {
+      throw new HTTP400('Missing required paramter `occurrence field`');
     }
 
-    // file is not parsable, don't continue to next step and return early
-    // TODO add new status for "Transformation Failed" and insert new status record?
-    return res.status(200).json({ status: 'failed', reason: 'Unable to parse submission' });
-  };
-}
-
-export function getTransformationSchema(): RequestHandler {
-  return async (req, res, next) => {
-    defaultLog.debug({ label: 'getTransformationSchema', message: 'xlsx transform' });
+    res.status(200).json({ status: 'success' });
 
     const connection = getDBConnection(req['keycloak_token']);
-
     try {
       await connection.open();
 
-      const xlsxCsv = req['xlsx'];
-      const template_id = xlsxCsv.workbook.rawWorkbook.Custprops.sims_template_id;
-      const field_method_id = xlsxCsv.workbook.rawWorkbook.Custprops.sims_csm_id;
-
-      const templateMethodologySpeciesRecord = await getTemplateMethodologySpeciesRecord(
-        Number(field_method_id),
-        Number(template_id),
-        connection
-      );
+      const service = new ValidationService(connection);
+      await service.transformFile(submissionId);
 
       await connection.commit();
-
-      const transformationSchema = templateMethodologySpeciesRecord?.transform;
-
-      if (!transformationSchema) {
-        // TODO handle errors if no transformation schema is found?
-        // No schema to validate the template, insert error?
-        // See `xlsx/validate/getValidationSchema()`
-        return res.status(200).json({
-          status: 'failed',
-          reason: 'Unable to fetch an appropriate transformation schema for your submission'
-        });
-      }
-
-      req['transformationSchema'] = transformationSchema;
-
-      next();
-    } catch (error: any) {
-      defaultLog.debug({ label: 'getTransformationSchema', message: 'error', error });
+    } catch (error) {
+      defaultLog.debug({ label: 'transform xlsx', message: 'error', error });
 
       const errorService = new ErrorService(connection);
 
@@ -172,143 +118,12 @@ export function getTransformationSchema(): RequestHandler {
         req['occurrence_submission'].occurrence_submission_id,
         SUBMISSION_STATUS_TYPE.FAILED_GET_TRANSFORMATION_RULES,
         SUBMISSION_MESSAGE_TYPE.ERROR,
-        error.message
+        "" //error.message
       );
       await connection.rollback();
       throw error;
     } finally {
       connection.release();
-    }
-  };
-}
-
-export function getTransformationRules(): RequestHandler {
-  return async (req, res, next) => {
-    defaultLog.debug({ label: 'getTransformationRules', message: 'xlsx transform' });
-
-    try {
-      const transformationSchema: JSON = req['transformationSchema'];
-
-      const transformationSchemaParser = new TransformationSchemaParser(transformationSchema);
-
-      req['transformationSchemaParser'] = transformationSchemaParser;
-
-      next();
-    } catch (error) {
-      defaultLog.debug({ label: 'getTransformationRules', message: 'error', error });
-      throw error;
-    }
-  };
-}
-
-export function transformXLSX(): RequestHandler {
-  return async (req, res, next) => {
-    defaultLog.debug({ label: 'transformXLSX', message: 'xlsx transform' });
-
-    const connection = getDBConnection(req['keycloak_token']);
-
-    try {
-      const xlsxCsv: XLSXCSV = req['xlsx'];
-
-      const transformationSchemaParser: TransformationSchemaParser = req['transformationSchemaParser'];
-
-      const xlsxTransformation = new XLSXTransformation(transformationSchemaParser, xlsxCsv);
-
-      const transformedData = await xlsxTransformation.transform();
-
-      const worksheets = xlsxTransformation.dataToSheet(transformedData);
-
-      const fileBuffers = Object.entries(worksheets).map(([fileName, worksheet]) => {
-        return {
-          name: fileName,
-          buffer: xlsxCsv.worksheetToBuffer(worksheet)
-        };
-      });
-
-      req['fileBuffers'] = fileBuffers;
-
-      next();
-    } catch (error: any) {
-      defaultLog.debug({ label: 'transformXLSX', message: 'error', error });
-
-      const errorService = new ErrorService(connection);
-
-      await errorService.insertSubmissionStatusAndMessage(
-        req['occurrence_submission'].occurrence_submission_id,
-        SUBMISSION_STATUS_TYPE.FAILED_TRANSFORM_XLSX,
-        SUBMISSION_MESSAGE_TYPE.ERROR,
-        error.message
-      );
-      throw error;
-    }
-  };
-}
-
-export function persistTransformationResults(): RequestHandler {
-  return async (req, res, next) => {
-    try {
-      defaultLog.debug({ label: 'persistTransformationResults', message: 'xlsx transform' });
-      const fileBuffers: { name: string; buffer: Buffer }[] = req['fileBuffers'];
-
-      // Build the archive zip file
-      const dwcArchiveZip = new AdmZip();
-      fileBuffers.forEach((file) => dwcArchiveZip.addFile(`${file.name}.csv`, file.buffer));
-
-      // Build output s3Key based on the original input s3Key
-      const s3Key: string = req['s3Key'];
-
-      // Remove the filename from original s3Key
-      // project/1/survey/1/submission/file_name.txt -> project/1/survey/1/submission
-      const outputS3KeyPrefix = s3Key.split('/').slice(0, -1).join('/');
-
-      const xlsxCsv: XLSXCSV = req['xlsx'];
-      const outputFileName = `${xlsxCsv.rawFile.name}.zip`;
-
-      const outputS3Key = `${outputS3KeyPrefix}/${outputFileName}`;
-
-      // Upload transformed archive to s3
-      await uploadBufferToS3(dwcArchiveZip.toBuffer(), 'application/zip', outputS3Key);
-
-      const connection = getDBConnection(req['keycloak_token']);
-
-      try {
-        await connection.open();
-
-        const errorService = new ErrorService(connection);
-
-        // Update occurrence submission record to include the transformed output file name and s3 key
-        await updateSurveyOccurrenceSubmissionWithOutputKey(
-          req.body.occurrence_submission_id,
-          outputFileName,
-          outputS3Key,
-          connection
-        );
-
-        await errorService.insertSubmissionStatus(
-          req.body.occurrence_submission_id,
-          SUBMISSION_STATUS_TYPE.TEMPLATE_TRANSFORMED
-        );
-
-        await connection.commit();
-
-        next();
-      } catch (error: any) {
-        const errorService = new ErrorService(connection);
-
-        await errorService.insertSubmissionStatusAndMessage(
-          req['occurrence_submission'].occurrence_submission_id,
-          SUBMISSION_STATUS_TYPE.FAILED_PERSIST_TRANSFORMATION_RESULTS,
-          SUBMISSION_MESSAGE_TYPE.ERROR,
-          error.message
-        );
-        await connection.rollback();
-        throw error;
-      } finally {
-        connection.release();
-      }
-    } catch (error) {
-      defaultLog.debug({ label: 'persistTransformationResults', message: 'error', error });
-      throw error;
     }
   };
 }

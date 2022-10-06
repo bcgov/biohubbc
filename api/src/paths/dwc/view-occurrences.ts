@@ -4,10 +4,9 @@ import { PROJECT_ROLE } from '../../constants/roles';
 import { SUBMISSION_MESSAGE_TYPE, SUBMISSION_STATUS_TYPE } from '../../constants/status';
 import { getDBConnection } from '../../database/db';
 import { HTTP400 } from '../../errors/http-error';
-import { GetOccurrencesViewData } from '../../models/occurrence-view';
-import { queries } from '../../queries/queries';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
 import { ErrorService } from '../../services/error-service';
+import { OccurrenceService } from '../../services/occurrence-service';
 import { getLogger } from '../../utils/logger';
 
 const defaultLog = getLogger('paths/dwc/view-occurrences');
@@ -102,25 +101,12 @@ export function getOccurrencesForView(): RequestHandler {
 
     try {
       await connection.open();
-
-      const sqlStatement = queries.occurrence.getOccurrencesForViewSQL(Number(req.body.occurrence_submission_id));
-
-      if (!sqlStatement) {
-        throw new HTTP400('Failed to build SQL get occurrences for view statement');
-      }
-
-      const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
-      if (!response || !response.rows) {
-        throw new HTTP400('Failed to get occurrences view data');
-      }
-
-      const result = new GetOccurrencesViewData(response.rows);
-
+      const service = new OccurrenceService(connection);
+      const occurrenceData = await service.getOccurrences(req.body.occurrence_submission_id);
       await connection.commit();
 
-      return res.status(200).json(result.occurrences);
-    } catch (error: any) {
+      return res.status(200).json(occurrenceData);
+    } catch (error) {
       defaultLog.error({ label: 'getOccurrencesForView', message: 'error', error });
 
       const errorService = new ErrorService(connection);
@@ -129,7 +115,7 @@ export function getOccurrencesForView(): RequestHandler {
         req['occurrence_submission'].occurrence_submission_id,
         SUBMISSION_STATUS_TYPE.FAILED_GET_OCCURRENCE,
         SUBMISSION_MESSAGE_TYPE.ERROR,
-        error.message
+        "" //error.message
       );
       throw error;
     } finally {

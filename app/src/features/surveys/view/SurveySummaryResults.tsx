@@ -133,6 +133,7 @@ const SurveySummaryResults = () => {
   };
 
   const showUploadDialog = () => {
+    console.log('ARE WE IN THE RIGHT SPOT?');
     if (submission) {
       // already have summary data, prompt user to confirm override
       dialogContext.setYesNoDialog({

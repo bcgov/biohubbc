@@ -44,7 +44,7 @@ describe('getOccurrenceSubmission', () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
     try {
-      const result = validate.getOccurrenceSubmission();
+      const result = validate.processDWCFile();
       await result(
         { ...sampleReq, body: { ...sampleReq.body, occurrence_submission_id: null } },
         (null as unknown) as any,
