@@ -10,7 +10,7 @@ import { ValidationRepository } from './validation-repository';
 
 chai.use(sinonChai);
 
-describe.only('ValidationRepository', () => {
+describe('ValidationRepository', () => {
   afterEach(() => {
     sinon.restore();
   });
