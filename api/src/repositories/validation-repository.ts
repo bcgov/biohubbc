@@ -8,7 +8,6 @@ export class ValidationRepository extends BaseRepository {
    *
    * @param {number} fieldMethodId
    * @param {number} templateId
-   * @param {IDBConnection} connection
    * @return {*}  {Promise<void>}
    */
   async getTemplateMethodologySpeciesRecord(fieldMethodId: number, templateId: number): Promise<any> {

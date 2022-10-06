@@ -15,6 +15,13 @@ export interface IOccurrenceSubmission {
 }
 
 export class OccurrenceRepository extends BaseRepository {
+
+  /**
+   * Gets an `occurrence_submission` for an id or null if nothing is found
+   *
+   * @param {number} submissionId
+   * @return {*}  {Promise<IOccurrenceSubmission | null>}
+   */
   async getOccurrenceSubmission(submissionId: number): Promise<IOccurrenceSubmission | null> {
     let response: IOccurrenceSubmission | null = null;
     const sql = queries.survey.getSurveyOccurrenceSubmissionSQL(submissionId);
@@ -47,6 +54,12 @@ export class OccurrenceRepository extends BaseRepository {
     }
   }
 
+  /**
+   * Gets a list of `occurrence` for a `occurrence_submission` id.
+   *
+   * @param {number} submissionId
+   * @return {*}  {Promise<any[]>}
+   */
   async getOccurrencesForView(submissionId: number): Promise<any[]> {
     const sqlStatement = queries.occurrence.getOccurrencesForViewSQL(submissionId);
     if (!sqlStatement) {
@@ -67,7 +80,6 @@ export class OccurrenceRepository extends BaseRepository {
    * @param {number} submissionId
    * @param {string} outputFileName
    * @param {string} outputKey
-   * @param {IDBConnection} connection
    * @return {*}  {Promise<void>}
    */
   async updateSurveyOccurrenceSubmissionWithOutputKey(

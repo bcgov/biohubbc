@@ -12,6 +12,12 @@ export class OccurrenceService extends DBService {
     this.occurrenceRepository = new OccurrenceRepository(connection);
   }
 
+  /**
+   * Builds object full of headers expected for a DwC file
+   *
+   * @param {DWCArchive} dwcArchive
+   * @return {*} {any}
+   */
   getHeadersAndRowsFromDWCArchive(dwcArchive: DWCArchive): any {
     const eventHeaders = dwcArchive.worksheets.event?.getHeaders();
     const eventRows = dwcArchive.worksheets.event?.getRows();
@@ -56,6 +62,12 @@ export class OccurrenceService extends DBService {
     };
   }
 
+  /**
+   * Scrapes occurrences from a DwC file
+   *
+   * @param {DWCArchive} archive
+   * @return {PostOccurrence[]} {PostOccurrence[]}
+   */
   scrapeArchiveForOccurrences(archive: DWCArchive): PostOccurrence[] {
     const {
       occurrenceRows,
@@ -121,15 +133,35 @@ export class OccurrenceService extends DBService {
     );
   }
 
+  /**
+   *  Scrapes a DwC Archive and inserts `occurrence` for a `occurrence_submission`
+   *
+   * @param {number} submissionId
+   * @param {DWCArchive} archive
+   * @return {*}
+   */
   async scrapeAndUploadOccurrences(submissionId: number, archive: DWCArchive) {
     const scrapedOccurrences = this.scrapeArchiveForOccurrences(archive);
     this.insertPostOccurrences(submissionId, scrapedOccurrences);
   }
 
+  /**
+   *  Gets a `occurrence_submission` for an id.
+   *
+   * @param {number} submissionId
+   * @return {*} {Promise<IOccurrenceSubmission | null>}
+   */
   async getOccurrenceSubmission(submissionId: number): Promise<IOccurrenceSubmission | null> {
     return this.occurrenceRepository.getOccurrenceSubmission(submissionId);
   }
 
+  /**
+   * Inserts a list of `occurrence` for a submission.
+   *
+   * @param {number} submissionId
+   * @param {PostOccurrence[]} postOccurrences
+   * @return {*}
+   */
   async insertPostOccurrences(submissionId: number, postOccurrences: PostOccurrence[]) {
     await Promise.all(
       postOccurrences?.map((scrapedOccurrence) => {
@@ -138,10 +170,23 @@ export class OccurrenceService extends DBService {
     );
   }
 
-  async insertPostOccurrence(submissionId: number, occurrences: PostOccurrence) {
-    this.occurrenceRepository.insertPostOccurrences(submissionId, occurrences);
+  /**
+   * Inserts a `occurrence` for a submission.
+   *
+   * @param {number} submissionId
+   * @param {PostOccurrence} postOccurrence
+   * @return {*} 
+   */
+  async insertPostOccurrence(submissionId: number, postOccurrence: PostOccurrence) {
+    this.occurrenceRepository.insertPostOccurrences(submissionId, postOccurrence);
   }
 
+  /**
+   * Gets list `occurrence` and maps them for use on a map
+   *
+   * @param {number} submissionId
+   * @return {*} {Promise<any[]>}
+   */
   async getOccurrences(submissionId: number): Promise<any[]> {
     const occurrenceData = await this.occurrenceRepository.getOccurrencesForView(submissionId);
     return occurrenceData.map((occurrence) => {
@@ -162,7 +207,15 @@ export class OccurrenceService extends DBService {
       };
     });
   }
-
+  
+  /**
+   * Updates `occurrence_submission` output key field.
+   *
+   * @param {number} submissionId
+   * @param {string} fileName
+   * @param {string} key
+   * @return {*} {Promise<any>}
+   */
   async updateSurveyOccurrenceSubmission(submissionId: number, fileName: string, key: string): Promise<any> {
     this.occurrenceRepository.updateSurveyOccurrenceSubmissionWithOutputKey(submissionId, fileName, key);
   }
