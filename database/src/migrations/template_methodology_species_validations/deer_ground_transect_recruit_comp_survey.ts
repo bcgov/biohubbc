@@ -50,7 +50,7 @@ export const deerGroundTransectRecruitCompJSON = {
               'Block ID/SU ID',
               'Transect ID',
               'Transect Length (km)',
-              'Transect Start UTM Zone ',
+              'Transect Start UTM Zone',
               'Transect Start Easting',
               'Transect Start Northing',
               'Datum',
