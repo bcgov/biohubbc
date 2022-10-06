@@ -90,10 +90,10 @@ export class ValidationService extends DBService {
 
     // template validation
     await this.templateValidation(submissionId, xlsx, InitialSubmissionStatus.TemplateValidated);
-  
+
     // template transformation
     await this.templateTransformation(submissionId, xlsx, s3InputKey);
-  
+
     // occurrence scraping
     await this.templateScrapeAndUploadOccurrences(submissionId);
   }
@@ -107,7 +107,7 @@ export class ValidationService extends DBService {
   }
 
   async templateValidation(submissionId: number, xlsx: XLSXCSV, initalSubmissionStatus: string) {
-    const schema = await this.getValidationSchema(xlsx)
+    const schema = await this.getValidationSchema(xlsx);
     const schemaParser = await this.getValidationRules(schema);
     const csvState = await this.validateXLSX(xlsx, schemaParser);
     await this.persistValidationResults(submissionId, csvState.csv_state, csvState.media_state, {
@@ -311,8 +311,10 @@ export class ValidationService extends DBService {
     // Upload transformed archive to s3
     await uploadBufferToS3(dwcArchiveZip.toBuffer(), 'application/zip', outputS3Key);
 
-    this.occurrenceService.updateSurveyOccurrenceSubmission(submissionId, outputFileName, outputS3Key);
+    // update occurrence submission
+    await this.occurrenceService.updateSurveyOccurrenceSubmission(submissionId, outputFileName, outputS3Key);
 
+    // insert tempalte validated status
     await this.submissionRepository.insertSubmissionStatus(submissionId, SUBMISSION_STATUS_TYPE.TEMPLATE_TRANSFORMED);
   }
 

@@ -8,7 +8,7 @@ export class ValidationRepository extends BaseRepository {
    *
    * @param {number} fieldMethodId
    * @param {number} templateId
-   * @return {*}  {Promise<void>}
+   * @return {*}  {Promise<any>}
    */
   async getTemplateMethodologySpeciesRecord(fieldMethodId: number, templateId: number): Promise<any> {
     const sqlStatement = queries.survey.getTemplateMethodologySpeciesRecordSQL(fieldMethodId, templateId);

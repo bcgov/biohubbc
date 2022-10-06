@@ -9,38 +9,34 @@ import { queries } from '../queries/queries';
 import { OccurrenceRepository } from '../repositories/occurrence-repository';
 import { getMockDBConnection } from '../__mocks__/db';
 
-
-
 chai.use(sinonChai);
 
-describe.only('OccurrenceRepository', () => {
+describe('OccurrenceRepository', () => {
   afterEach(() => {
     sinon.restore();
   });
 
   describe('getOccurrenceSubmission', () => {
     it('should return a submission', async () => {
-      const mockResponse = {rows: [{occurrence_submission_id: 1}]} as any as Promise<QueryResult<any>>;
+      const mockResponse = ({ rows: [{ occurrence_submission_id: 1 }] } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({
         query: async () => {
           return mockResponse;
         }
       });
       const repo = new OccurrenceRepository(dbConnection);
-      const response = await repo.getOccurrenceSubmission(1)
+      const response = await repo.getOccurrenceSubmission(1);
 
       expect(response).to.not.be.null;
       expect(response).to.eql({ occurrence_submission_id: 1 });
     });
 
     it('should return null', async () => {
-      const mockQuery = sinon
-      .stub(queries.survey, 'getSurveyOccurrenceSubmissionSQL')
-      .returns(null);
+      const mockQuery = sinon.stub(queries.survey, 'getSurveyOccurrenceSubmissionSQL').returns(null);
 
       const dbConnection = getMockDBConnection();
       const repo = new OccurrenceRepository(dbConnection);
-      const response = await repo.getOccurrenceSubmission(1)
+      const response = await repo.getOccurrenceSubmission(1);
 
       expect(mockQuery).to.be.calledOnce;
       expect(response).to.be.null;
@@ -49,22 +45,20 @@ describe.only('OccurrenceRepository', () => {
 
   describe('getOccurrencesForView', () => {
     it('should return list of occurrences', async () => {
-      const mockResponse = {rows: [{occurrence_id: 1}]} as any as Promise<QueryResult<any>>;
+      const mockResponse = ({ rows: [{ occurrence_id: 1 }] } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({
         query: async () => {
           return mockResponse;
         }
       });
       const repo = new OccurrenceRepository(dbConnection);
-      const response = await repo.getOccurrencesForView(1)
+      const response = await repo.getOccurrencesForView(1);
 
-      expect(response).to.have.length.greaterThan(0)
+      expect(response).to.have.length.greaterThan(0);
     });
 
     it('should throw `Failed to build SQL` error', async () => {
-      const mockQuery = sinon
-      .stub(queries.occurrence, 'getOccurrencesForViewSQL')
-      .returns(null);
+      const mockQuery = sinon.stub(queries.occurrence, 'getOccurrencesForViewSQL').returns(null);
 
       const dbConnection = getMockDBConnection();
       const repo = new OccurrenceRepository(dbConnection);
@@ -73,12 +67,12 @@ describe.only('OccurrenceRepository', () => {
         expect(mockQuery).to.be.calledOnce;
         expect.fail();
       } catch (error) {
-        expect((error as HTTP400).message).to.equal('Failed to build SQL get occurrences for view statement')
+        expect((error as HTTP400).message).to.equal('Failed to build SQL get occurrences for view statement');
       }
     });
 
     it('should throw `Failed to get occurrences` error', async () => {
-      const mockResponse = {} as any as Promise<QueryResult<any>>;
+      const mockResponse = ({} as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({
         query: async () => {
           return mockResponse;
@@ -89,39 +83,39 @@ describe.only('OccurrenceRepository', () => {
         await repo.getOccurrencesForView(1);
         expect.fail();
       } catch (error) {
-        expect((error as HTTP400).message).to.equal('Failed to get occurrences view data')
+        expect((error as HTTP400).message).to.equal('Failed to get occurrences view data');
       }
     });
   });
 
   describe('insertPostOccurrences', () => {
     it('should succeed with valid data', async () => {
-      const mockResponse = {rowCount: 1, rows: [{occurrence_submission_id: 1}]} as any as Promise<QueryResult<any>>;
+      const mockResponse = ({ rowCount: 1, rows: [{ occurrence_submission_id: 1 }] } as any) as Promise<
+        QueryResult<any>
+      >;
       const postOccurrence = new PostOccurrence({
-        associatedTaxa: "",
-        lifeStage: "",
-        sex: "",
+        associatedTaxa: '',
+        lifeStage: '',
+        sex: '',
         data: {},
-        verbatimCoordinates: "",
+        verbatimCoordinates: '',
         individualCount: 1,
-        vernacularName: "",
-        organismQuantity: "",
-        organismQuantityType: "",
-        eventDate: ""
+        vernacularName: '',
+        organismQuantity: '',
+        organismQuantityType: '',
+        eventDate: ''
       });
       const dbConnection = getMockDBConnection({
         query: () => mockResponse
       });
       const repo = new OccurrenceRepository(dbConnection);
-      const response = await repo.insertPostOccurrences(1, postOccurrence)
-      expect(response).to.be.eql({occurrence_submission_id: 1});
+      const response = await repo.insertPostOccurrences(1, postOccurrence);
+      expect(response).to.be.eql({ occurrence_submission_id: 1 });
     });
 
     it('should throw `Failed to build SQL` error', async () => {
       const postOccurrence = new PostOccurrence({});
-      const mockQuery = sinon
-      .stub(queries.occurrence, 'postOccurrenceSQL')
-      .returns(null);
+      const mockQuery = sinon.stub(queries.occurrence, 'postOccurrenceSQL').returns(null);
       const dbConnection = getMockDBConnection();
       const repo = new OccurrenceRepository(dbConnection);
       try {
@@ -129,13 +123,13 @@ describe.only('OccurrenceRepository', () => {
         expect(mockQuery).to.be.calledOnce;
         expect.fail();
       } catch (error) {
-        expect((error as HTTP400).message).to.equal('Failed to build SQL post statement')
+        expect((error as HTTP400).message).to.equal('Failed to build SQL post statement');
       }
-    })
+    });
 
     it('should throw `Failed to insert` error', async () => {
       const postOccurrence = new PostOccurrence({});
-      const mockResponse = {} as any as Promise<QueryResult<any>>;
+      const mockResponse = ({} as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({
         query: async () => {
           return mockResponse;
@@ -146,35 +140,35 @@ describe.only('OccurrenceRepository', () => {
         await repo.insertPostOccurrences(1, postOccurrence);
         expect.fail();
       } catch (error) {
-        expect((error as HTTP400).message).to.equal('Failed to insert occurrence data')
+        expect((error as HTTP400).message).to.equal('Failed to insert occurrence data');
       }
-    })
+    });
   });
 
   describe('updateSurveyOccurrenceSubmissionWithOutputKey', () => {
-    it ('should succeed with valid data', async () => {
-      const mockResponse = {rowCount: 1, rows: [{id: 1}]} as any as Promise<QueryResult<any>>;
+    it('should succeed with valid data', async () => {
+      const mockResponse = ({ rowCount: 1, rows: [{ id: 1 }] } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({
         query: () => mockResponse
       });
       const repo = new OccurrenceRepository(dbConnection);
-      const response = await repo.updateSurveyOccurrenceSubmissionWithOutputKey(1, "fileName", "outputkey");
-      expect(response).to.be.eql({id: 1});
+      const response = await repo.updateSurveyOccurrenceSubmissionWithOutputKey(1, 'fileName', 'outputkey');
+      expect(response).to.be.eql({ id: 1 });
     });
 
     it('should throw `Failed to build SQL` error', async () => {
-        const dbConnection = getMockDBConnection();
-        const repo = new OccurrenceRepository(dbConnection);
-        try { 
-          await repo.updateSurveyOccurrenceSubmissionWithOutputKey(1, "", "")
-          expect.fail()
-        } catch(error) {
-          expect((error as HTTP400).message).to.equal('Failed to build SQL update statement')
-        }
-    })
+      const dbConnection = getMockDBConnection();
+      const repo = new OccurrenceRepository(dbConnection);
+      try {
+        await repo.updateSurveyOccurrenceSubmissionWithOutputKey(1, '', '');
+        expect.fail();
+      } catch (error) {
+        expect((error as HTTP400).message).to.equal('Failed to build SQL update statement');
+      }
+    });
 
     it('should throw `Failed to update` error', async () => {
-      const mockResponse = {} as any as Promise<QueryResult<any>>;
+      const mockResponse = ({} as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({
         query: async () => {
           return mockResponse;
@@ -182,11 +176,11 @@ describe.only('OccurrenceRepository', () => {
       });
       const repo = new OccurrenceRepository(dbConnection);
       try {
-        await repo.updateSurveyOccurrenceSubmissionWithOutputKey(1, "file", "key")
+        await repo.updateSurveyOccurrenceSubmissionWithOutputKey(1, 'file', 'key');
         expect.fail();
       } catch (error) {
-        expect((error as HTTP400).message).to.equal('Failed to update survey occurrence submission record')
+        expect((error as HTTP400).message).to.equal('Failed to update survey occurrence submission record');
       }
-    })
+    });
   });
 });

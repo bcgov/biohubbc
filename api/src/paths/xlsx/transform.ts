@@ -112,7 +112,7 @@ export function transform(): RequestHandler {
       await connection.rollback();
       throw error;
     } finally {
-      connection.release()
+      connection.release();
     }
   };
 }

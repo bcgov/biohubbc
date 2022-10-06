@@ -15,7 +15,6 @@ export interface IOccurrenceSubmission {
 }
 
 export class OccurrenceRepository extends BaseRepository {
-
   /**
    * Gets an `occurrence_submission` for an id or null if nothing is found
    *
@@ -98,7 +97,7 @@ export class OccurrenceRepository extends BaseRepository {
       throw new HTTP400('Failed to build SQL update statement');
     }
 
-    const updateResponse = await (await this.connection.query(updateSqlStatement.text, updateSqlStatement.values));
+    const updateResponse = await await this.connection.query(updateSqlStatement.text, updateSqlStatement.values);
 
     if (!updateResponse || !updateResponse.rowCount) {
       throw new HTTP400('Failed to update survey occurrence submission record');

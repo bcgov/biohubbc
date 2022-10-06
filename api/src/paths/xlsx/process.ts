@@ -100,7 +100,7 @@ export function processFile(): RequestHandler {
 
     res.status(200).json({ status: 'success' });
 
-    const connection = getDBConnection(req['keycloak_token']);    
+    const connection = getDBConnection(req['keycloak_token']);
     try {
       await connection.open();
 
@@ -108,13 +108,12 @@ export function processFile(): RequestHandler {
       await service.processFile(submissionId);
 
       await connection.commit();
-
     } catch (error) {
       defaultLog.error({ label: 'xlsx process', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {
-      connection.release()
+      connection.release();
     }
   };
 }

@@ -100,7 +100,7 @@ export function scrapeAndUpload(): RequestHandler {
     }
 
     res.status(200).json({ status: 'success' });
-    
+
     const connection = getDBConnection(req['keycloak_token']);
     try {
       await connection.open();
@@ -114,7 +114,7 @@ export function scrapeAndUpload(): RequestHandler {
       await connection.rollback();
       throw error;
     } finally {
-      connection.release()
+      connection.release();
     }
   };
 }

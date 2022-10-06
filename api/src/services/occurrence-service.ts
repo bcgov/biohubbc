@@ -175,7 +175,7 @@ export class OccurrenceService extends DBService {
    *
    * @param {number} submissionId
    * @param {PostOccurrence} postOccurrence
-   * @return {*} 
+   * @return {*}
    */
   async insertPostOccurrence(submissionId: number, postOccurrence: PostOccurrence) {
     this.occurrenceRepository.insertPostOccurrences(submissionId, postOccurrence);
@@ -207,7 +207,7 @@ export class OccurrenceService extends DBService {
       };
     });
   }
-  
+
   /**
    * Updates `occurrence_submission` output key field.
    *
@@ -217,6 +217,6 @@ export class OccurrenceService extends DBService {
    * @return {*} {Promise<any>}
    */
   async updateSurveyOccurrenceSubmission(submissionId: number, fileName: string, key: string): Promise<any> {
-    this.occurrenceRepository.updateSurveyOccurrenceSubmissionWithOutputKey(submissionId, fileName, key);
+    return this.occurrenceRepository.updateSurveyOccurrenceSubmissionWithOutputKey(submissionId, fileName, key);
   }
 }
