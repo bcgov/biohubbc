@@ -38,9 +38,8 @@ export class OccurrenceRepository extends BaseRepository {
    *
    * @param {number} occurrenceSubmissionId
    * @param {any} scrapedOccurrence
-   * @return {*}
    */
-  async insertPostOccurrences(occurrenceSubmissionId: number, scrapedOccurrence: PostOccurrence) {
+  async insertPostOccurrences(occurrenceSubmissionId: number, scrapedOccurrence: PostOccurrence): Promise<any> {
     const sqlStatement = queries.occurrence.postOccurrenceSQL(occurrenceSubmissionId, scrapedOccurrence);
 
     if (!sqlStatement) {
@@ -52,6 +51,8 @@ export class OccurrenceRepository extends BaseRepository {
     if (!response || !response.rowCount) {
       throw new HTTP400('Failed to insert occurrence data');
     }
+
+    return response.rows[0];
   }
 
   /**
@@ -80,7 +81,7 @@ export class OccurrenceRepository extends BaseRepository {
    * @param {number} submissionId
    * @param {string} outputFileName
    * @param {string} outputKey
-   * @return {*}  {Promise<void>}
+   * @return {*}  {Promise<any>}
    */
   async updateSurveyOccurrenceSubmissionWithOutputKey(
     submissionId: number,
@@ -97,12 +98,12 @@ export class OccurrenceRepository extends BaseRepository {
       throw new HTTP400('Failed to build SQL update statement');
     }
 
-    const updateResponse = await this.connection.query(updateSqlStatement.text, updateSqlStatement.values);
+    const updateResponse = await (await this.connection.query(updateSqlStatement.text, updateSqlStatement.values));
 
     if (!updateResponse || !updateResponse.rowCount) {
       throw new HTTP400('Failed to update survey occurrence submission record');
     }
 
-    return updateResponse;
+    return updateResponse.rows[0];
   }
 }
