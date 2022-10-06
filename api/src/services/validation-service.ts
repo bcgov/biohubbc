@@ -254,10 +254,6 @@ export class ValidationService extends DBService {
     await Promise.all(promises);
   }
 
-  sendResponse(): Promise<any> {
-    return Promise.resolve();
-  }
-
   async getTransformationSchema(file: XLSXCSV): Promise<any> {
     const template_id = file.workbook.rawWorkbook.Custprops.sims_template_id;
     const field_method_id = file.workbook.rawWorkbook.Custprops.sims_csm_id;
