@@ -2,7 +2,7 @@ import { IDBConnection } from '../database/db';
 import { PostOccurrence } from '../models/occurrence-create';
 import { IOccurrenceSubmission, OccurrenceRepository } from '../repositories/occurrence-repository';
 import { DWCArchive } from '../utils/media/dwc/dwc-archive-file';
-import { DBService } from './service';
+import { DBService } from './db-service';
 
 export class OccurrenceService extends DBService {
   occurrenceRepository: OccurrenceRepository;

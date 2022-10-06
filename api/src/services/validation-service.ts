@@ -14,7 +14,7 @@ import { TransformationSchemaParser } from '../utils/media/xlsx/transformation/t
 import { XLSXTransformation } from '../utils/media/xlsx/transformation/xlsx-transformation';
 import { XLSXCSV } from '../utils/media/xlsx/xlsx-file';
 import { OccurrenceService } from './occurrence-service';
-import { DBService } from './service';
+import { DBService } from './db-service';
 
 const defaultLog = getLogger('services/dwc-service');
 

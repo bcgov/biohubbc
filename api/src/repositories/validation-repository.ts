@@ -1,4 +1,4 @@
-import { HTTP400 } from '../errors/custom-error';
+import { HTTP400 } from '../errors/http-error';
 import { queries } from '../queries/queries';
 import { BaseRepository } from './base-repository';
 
