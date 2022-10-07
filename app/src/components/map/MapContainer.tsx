@@ -57,6 +57,7 @@ export interface IMapContainerProps {
   nonEditableGeometries?: INonEditableGeometries[];
   additionalLayers?: IAdditionalLayers;
   clusteredPointGeometries?: IClusteredPointGeometries[];
+  confirmDeletion?: boolean
   setInferredLayersInfo?: (inferredLayersInfo: any) => void;
   onBoundsChange?: IMapBoundsOnChange;
   onDrawChange?: IDrawControlsOnChange;
@@ -76,7 +77,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     selectedLayer,
     eventHandlers,
     setInferredLayersInfo,
-    additionalLayers
+    additionalLayers,
+    confirmDeletion
   } = props;
 
   const biohubApi = useBiohubApi();
@@ -154,6 +156,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
               draw: { ...props.drawControls?.options?.draw, circle: false, circlemarker: false }
             }}
             onChange={onDrawChange}
+            confirmDeletion={confirmDeletion === undefined ? true : confirmDeletion}
           />
         </FeatureGroup>
       )}

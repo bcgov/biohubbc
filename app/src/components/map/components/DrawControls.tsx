@@ -75,7 +75,7 @@ export interface IDrawControlsProps {
   /**
    * If true, a modal will appear to confirm deletions.
    */
-  useConfirmModal?: boolean;
+  confirmDeletion?: boolean;
 }
 
 const DrawControls: React.FC<React.PropsWithChildren<IDrawControlsProps>> = (props) => {
@@ -171,8 +171,9 @@ const DrawControls: React.FC<React.PropsWithChildren<IDrawControlsProps>> = (pro
    * @param {Feature[]} [features]
    * @return {*}
    */
-  const drawFeatures = (features?: Feature[]) => {
-    if (!features) {
+  const drawInitialFeatures = () => {
+    const features: Feature[] = props.initialFeatures || []
+    if (features.length === 0) {
       return;
     }
 
@@ -196,6 +197,11 @@ const DrawControls: React.FC<React.PropsWithChildren<IDrawControlsProps>> = (pro
     });
   };
 
+  const cancelRemoveFeatures = () => {
+    setDeleteEvent(null)
+    drawInitialFeatures()
+  }
+
   useEffect(() => {
     const { map } = context;
 
@@ -208,7 +214,7 @@ const DrawControls: React.FC<React.PropsWithChildren<IDrawControlsProps>> = (pro
     map.on(eventHandlers.onCreated, onDrawCreate as L.LeafletEventHandlerFn);
     map.on(eventHandlers.onEdited, onDrawEditDelete);
     map.on(eventHandlers.onDeleted, (event) => {
-      if (props.useConfirmModal) {
+      if (props.confirmDeletion) {
         setDeleteEvent(event);
         return;
       }
@@ -218,7 +224,7 @@ const DrawControls: React.FC<React.PropsWithChildren<IDrawControlsProps>> = (pro
   }, [props.options, props.onChange, props.clearOnDraw]);
 
   useDeepCompareEffect(() => {
-    drawFeatures(props.initialFeatures);
+    drawInitialFeatures();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.initialFeatures]);
 
@@ -233,7 +239,7 @@ const DrawControls: React.FC<React.PropsWithChildren<IDrawControlsProps>> = (pro
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.options]);
 
-  if (!props.useConfirmModal) {
+  if (!props.confirmDeletion) {
     return null;
   }
 
@@ -242,12 +248,8 @@ const DrawControls: React.FC<React.PropsWithChildren<IDrawControlsProps>> = (pro
       dialogTitle="Delete Geometries"
       dialogText="Are you sure you want to delete the selected geometries?"
       open={showDeleteModal}
-      onClose={() => {
-        setDeleteEvent(null);
-      }}
-      onNo={() => {
-        setDeleteEvent(null);
-      }}
+      onClose={() => cancelRemoveFeatures()}
+      onNo={() => cancelRemoveFeatures()}
       onYes={() => {
         onDrawEditDelete(deleteEvent || undefined);
         setDeleteEvent(null);
