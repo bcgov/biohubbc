@@ -1,4 +1,4 @@
-import { Feature } from 'geojson';
+import { Feature, Geometry, MultiPolygon, Point, Polygon, Position } from 'geojson';
 import React from 'react';
 import { ReProjector } from 'reproj-helper';
 import {
@@ -23,6 +23,35 @@ export const changeProjections = (geos: Feature[]): Promise<Feature>[] => {
 };
 
 /**
+ * Asserts whether a Geometry object is a MultiPolygon or not.
+ * @param geometry A geo-json Geometry object.
+ * @returns `true` if `geometry.type === 'MultiPolygon'`, false otherwise.
+ */
+const isMultiPolygon = (geometry: Geometry): geometry is MultiPolygon => {
+  return geometry.type === 'MultiPolygon'
+}
+
+/**
+ * Asserts whether a Geometry object is a Polygon or not.
+ * @param geometry A geo-json Geometry object.
+ * @returns `true` if `geometry.type === 'Polygon'`, false otherwise.
+ */
+const isPolygon = (geometry: Geometry): geometry is Polygon => {
+  return geometry.type === 'Polygon'
+}
+
+/**
+ * Asserts whether a Geometry object is a Point or not.
+ * @param geometry A geo-json Geometry object.
+ * @returns `true` if `geometry.type === 'Point'`, false otherwise.
+ */
+const isPoint = (geometry: Geometry): geometry is Point => {
+  return geometry.type === 'Point'
+}
+
+
+
+/**
  * Generate the coordinates string for the reprojected geometries based on geometry type
  *
  * This is needed because the query for filtering results by geometry and layer(s) intersection
@@ -33,16 +62,15 @@ export const changeProjections = (geos: Feature[]): Promise<Feature>[] => {
  * @returns {string} formatted coordinates string
  *
  */
-export const generateCoordinatesString = (projectedGeometry: any) => {
-  const coordinatesArray = projectedGeometry.coordinates;
-  const geometryType = projectedGeometry.type;
+export const generateCoordinatesString = (projectedGeometry: Geometry) => {
   let coordinatesString = '';
 
-  if (geometryType === 'MultiPolygon') {
+  if (isMultiPolygon(projectedGeometry)) {
+    const coordinatesArray: Position[][][] = projectedGeometry.coordinates;
     coordinatesString += '(((';
 
-    coordinatesArray.forEach((coordinateArray: any[], arrayIndex: number) => {
-      coordinateArray[0].forEach((coordinatePoint: any[], index: number) => {
+    coordinatesArray.forEach((coordinateArray: Position[][], arrayIndex: number) => {
+      coordinateArray[0].forEach((coordinatePoint: Position, index: number) => {
         coordinatesString += `${coordinatePoint[0]} ${coordinatePoint[1]}`;
 
         if (index !== coordinateArray[0].length - 1) {
@@ -58,10 +86,11 @@ export const generateCoordinatesString = (projectedGeometry: any) => {
     });
 
     coordinatesString += ')))';
-  } else if (geometryType === 'Polygon') {
+  } else if (isPolygon(projectedGeometry)) {
     coordinatesString += '((';
+    const coordinatesArray: Position[][] = projectedGeometry.coordinates;
 
-    coordinatesArray[0].forEach((coordinatePoint: any[], index: number) => {
+    coordinatesArray[0].forEach((coordinatePoint: Position, index: number) => {
       coordinatesString += `${coordinatePoint[0]} ${coordinatePoint[1]}`;
 
       if (index !== coordinatesArray[0].length - 1) {
@@ -70,7 +99,8 @@ export const generateCoordinatesString = (projectedGeometry: any) => {
         coordinatesString += '))';
       }
     });
-  } else if (geometryType === 'Point') {
+  } else if (isPoint(projectedGeometry)) {
+    const coordinatesArray: Position = projectedGeometry.coordinates;
     coordinatesString += `(${coordinatesArray[0]} ${coordinatesArray[1]})`;
   }
 
@@ -95,7 +125,7 @@ const buildWFSURL = (typeName: string, wfsParams: IWFSParams = defaultWFSParams)
 	Function to get WFS feature details based on the existing map geometries
 	and layer types/filter criteria
 */
-export const getFeatureDetails = (externalApiPost: (url: string, body: any) => Promise<any>) => async (
+export const createGetFeatureDetails = (externalApiPost: (url: string, body: any) => Promise<any>) => async (
   typeNames: string[],
   mapGeometries: Feature[],
   wfsParams?: IWFSParams
@@ -116,6 +146,7 @@ export const getFeatureDetails = (externalApiPost: (url: string, body: any) => P
 
   const wfsPromises: Promise<{ features?: Feature[] }>[] = [];
   reprojectedGeometries.forEach((projectedGeo) => {
+    console.log('projectedGeo:', projectedGeo)
     let filterCriteria = '';
     const coordinatesString = generateCoordinatesString(projectedGeo.geometry);
 
