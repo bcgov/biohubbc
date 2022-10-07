@@ -1,4 +1,4 @@
-import { getFeatureDetails, layerContentHandlers, wfsInferredLayers } from 'components/map/wfs-utils';
+import { createGetFeatureDetails, layerContentHandlers, wfsInferredLayers } from 'components/map/wfs-utils';
 import { Feature } from 'geojson';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import L, { LatLngBoundsExpression, LeafletEventHandlerFnMap } from 'leaflet';
@@ -56,7 +56,6 @@ export interface IMapContainerProps {
   selectedLayer?: string;
   nonEditableGeometries?: INonEditableGeometries[];
   additionalLayers?: IAdditionalLayers;
-  // geometryState?: { geometry: Feature[]; setGeometry: (geometry: Feature[]) => void };
   clusteredPointGeometries?: IClusteredPointGeometries[];
   setInferredLayersInfo?: (inferredLayersInfo: any) => void;
   onBoundsChange?: IMapBoundsOnChange;
@@ -69,7 +68,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     mapId,
     drawControls,
     onDrawChange,
-    // geometryState,
     nonEditableGeometries,
     clusteredPointGeometries,
     bounds,
@@ -121,7 +119,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       // Get map geometries based on whether boundary is non editable or drawn/uploaded
       const mapGeometries: Feature[] = determineMapGeometries(drawControls?.initialFeatures, nonEditableGeometries);
 
-      const inferredLayers = await getFeatureDetails(biohubApi.external.post)(typeNames, mapGeometries, wfsParams);
+      const getFeatureDetails = createGetFeatureDetails(biohubApi.external.post);
+      const inferredLayers = await getFeatureDetails(typeNames, mapGeometries, wfsParams);
 
       if (setInferredLayersInfo) {
         setInferredLayersInfo(inferredLayers);
@@ -151,10 +150,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
             {...props.drawControls}
             options={{
               ...props.drawControls?.options,
-              /**
-               * @TODO Open question: Do we want to disable circle markers like we do in backbone?
-               */
-              draw: { ...props.drawControls?.options?.draw, circlemarker: false } // Always disable circlemarker
+              draw: { ...props.drawControls?.options?.draw, circle: false } // Always disable circlemarker
             }}
             onChange={onDrawChange}
           />

@@ -181,14 +181,11 @@ const MapBoundary: React.FC<IMapBoundaryProps> = (props) => {
           <Box position="relative" height={500}>
             <MapContainer
               mapId={mapId}
-              /*
-              geometryState={{
-                geometry: get(values, name),
-                setGeometry: (_newGeo: Feature[]) => {} // setFieldValue(name, newGeo)
-              }}
-              */
               drawControls={{
-                initialFeatures: get(values, name) && [get(values, name)]
+                initialFeatures: get(values, name),
+                options: {
+                  draw: { circle: false }
+                }
               }}
               onDrawChange={(newGeo: Feature[]) => setFieldValue(name, newGeo)}
               bounds={(shouldUpdateBounds && updatedBounds) || bounds}
