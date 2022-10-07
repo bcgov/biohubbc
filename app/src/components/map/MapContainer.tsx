@@ -150,7 +150,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
             {...props.drawControls}
             options={{
               ...props.drawControls?.options,
-              draw: { ...props.drawControls?.options?.draw, circle: false } // Always disable circlemarker
+              // Always disable circlemarker
+              draw: { ...props.drawControls?.options?.draw, circle: false, circlemarker: false }
             }}
             onChange={onDrawChange}
           />
