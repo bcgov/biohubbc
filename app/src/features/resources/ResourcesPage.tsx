@@ -119,6 +119,22 @@ const ResourcesPage: React.FC = () => {
       type: mdiFileExcelOutline,
       lastModified: 'Today',
       fileSize: '114 KB'
+    },
+    {
+      id: '13',
+      name: 'Deer Aerial Non Stratified Random Block Recruit Composition Survey 1.0',
+      url: `${s3PublicHostURL}/templates/Deer_Aerial_NonStratifiedRandomBlock_Recruit_Comp_Survey_1.0.xlsx`,
+      type: mdiFileExcelOutline,
+      lastModified: 'Today',
+      fileSize: '108 KB'
+    },
+    {
+      id: '14',
+      name: 'Deer Ground Transect Recruit Composition Survey 1.0',
+      url: `${s3PublicHostURL}/templates/Deer_Ground_Transect_Recruit_Comp_Survey_1.0.xlsx`,
+      type: mdiFileExcelOutline,
+      lastModified: 'Today',
+      fileSize: '114 KB'
     }
   ];
 
