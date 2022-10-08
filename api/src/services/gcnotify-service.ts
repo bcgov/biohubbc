@@ -1,6 +1,45 @@
 import axios from 'axios';
 import { ApiError, ApiErrorType } from '../errors/custom-error';
-import { IgcNotifyGenericMessage, IgcNotifyPostReturn } from '../models/gcnotify';
+
+export interface IgcNotifyPostReturn {
+  content: object;
+  id: string;
+  reference: string;
+  scheduled_for: string;
+  template: object;
+  uri: string;
+}
+
+export interface IgcNotifyGenericMessage {
+  subject: string;
+  header: string;
+  body1: string;
+  body2: string;
+  footer: string;
+}
+
+export interface ISendGCNotifyEmailMessage {
+  email_address: string;
+  template_id: string;
+  personalisation: {
+    subject: string;
+    header: string;
+    main_body1: string;
+    main_body2: string;
+    footer: string;
+  };
+}
+
+export interface ISendGCNotifySMSMessage {
+  phone_number: string;
+  template_id: string;
+  personalisation: {
+    header: string;
+    main_body1: string;
+    main_body2: string;
+    footer: string;
+  };
+}
 
 const EMAIL_TEMPLATE = process.env.GCNOTIFY_ONBOARDING_REQUEST_EMAIL_TEMPLATE || '';
 const SMS_TEMPLATE = process.env.GCNOTIFY_ONBOARDING_REQUEST_SMS_TEMPLATE || '';
@@ -24,7 +63,7 @@ export class GCNotifyService {
    * @returns {IgcNotifyPostReturn}
    */
   async sendEmailGCNotification(emailAddress: string, message: IgcNotifyGenericMessage): Promise<IgcNotifyPostReturn> {
-    const data = {
+    const data: ISendGCNotifyEmailMessage = {
       email_address: emailAddress,
       template_id: EMAIL_TEMPLATE,
       personalisation: {
@@ -56,7 +95,7 @@ export class GCNotifyService {
    * @returns {IgcNotifyPostReturn}
    */
   async sendPhoneNumberGCNotification(sms: string, message: IgcNotifyGenericMessage): Promise<IgcNotifyPostReturn> {
-    const data = {
+    const data: ISendGCNotifySMSMessage = {
       phone_number: sms,
       template_id: SMS_TEMPLATE,
       personalisation: {

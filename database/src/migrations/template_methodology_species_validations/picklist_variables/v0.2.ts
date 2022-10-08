@@ -299,6 +299,8 @@ const HabitatSlope = [
 
 const Topography = [{ name: 'Flat' }, { name: 'Slope' }, { name: 'Steep' }];
 
+const VehicleMethod = [{ name: 'Motorized Vehicle' }, { name: 'On Foot' }, { name: 'Bicycle' }];
+
 const SheepSpecies = [
   { name: 'Bighorn Sheep' },
   { name: 'Ovis canadensis' },
@@ -320,6 +322,13 @@ const MooseSpecies = [
   { name: 'M-ALAM' },
   { name: 'Caribou' },
   { name: 'Elk' }
+];
+
+const DeerSpecies = [
+  { name: 'White-Tailed Deer' },
+  { name: 'Mule Deer' },
+  { name: 'Black-Tailed Deer' },
+  { name: 'Fallow Deer' }
 ];
 
 const ElkSpecies = [{ name: 'Elk' }, { name: 'Rocky Mountain Elk' }, { name: 'Roosevelt Elk' }];
@@ -395,7 +404,8 @@ export const defaultPicklist = {
   signAge: SignAge,
   habitat: Habitat,
   habitatSlope: HabitatSlope,
-  topography: Topography
+  topography: Topography,
+  vehicleMethod: VehicleMethod
 };
 
 export const SheepItems = {
@@ -417,4 +427,9 @@ export const ElkItems = {
   ...defaultPicklist,
   species: ElkSpecies,
   habitat: ElkHabitat
+};
+
+export const DeerItems = {
+  ...defaultPicklist,
+  species: DeerSpecies
 };

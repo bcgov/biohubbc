@@ -4,8 +4,7 @@ import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { ApiError } from '../errors/custom-error';
-import { IgcNotifyGenericMessage } from '../models/gcnotify';
-import { GCNotifyService } from './gcnotify-service';
+import { GCNotifyService, IgcNotifyGenericMessage } from './gcnotify-service';
 
 chai.use(sinonChai);
 
