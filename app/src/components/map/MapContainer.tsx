@@ -49,7 +49,7 @@ export interface IMapContainerProps {
   mapId: string;
   drawControls?: IDrawControlsProps;
   scrollWheelZoom?: boolean;
-  classes?: Record<string, any>
+  classes?: Record<string, any>;
   bounds?: LatLngBoundsExpression;
   zoom?: number;
   eventHandlers?: LeafletEventHandlerFnMap;
@@ -57,7 +57,7 @@ export interface IMapContainerProps {
   nonEditableGeometries?: INonEditableGeometries[];
   additionalLayers?: IAdditionalLayers;
   clusteredPointGeometries?: IClusteredPointGeometries[];
-  confirmDeletion?: boolean
+  confirmDeletion?: boolean;
   setInferredLayersInfo?: (inferredLayersInfo: any) => void;
   onBoundsChange?: IMapBoundsOnChange;
   onDrawChange?: IDrawControlsOnChange;

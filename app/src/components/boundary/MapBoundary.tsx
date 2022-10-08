@@ -138,7 +138,7 @@ const MapBoundary: React.FC<IMapBoundaryProps> = (props) => {
               startIcon={<Icon path={mdiTrayArrowUp} size={1} />}
               onClick={() => setOpenUploadBoundary(true)}>
               Import Boundary
-            </Button>            
+            </Button>
             <Box ml={2}>
               <FormControl variant="outlined" size="small" className={classes.mapLayerControl}>
                 <InputLabel id="layer">Map Layers</InputLabel>
@@ -168,7 +168,7 @@ const MapBoundary: React.FC<IMapBoundaryProps> = (props) => {
                 <Button size="large" variant="outlined" onClick={() => setSelectedLayer('')}>
                   Hide Layer
                 </Button>
-              )}              
+              )}
             </Box>
           </Box>
           {get(errors, name) && (
@@ -182,7 +182,7 @@ const MapBoundary: React.FC<IMapBoundaryProps> = (props) => {
             <MapContainer
               mapId={mapId}
               drawControls={{
-                initialFeatures: get(values, name),
+                initialFeatures: get(values, name)
               }}
               onDrawChange={(newGeo: Feature[]) => setFieldValue(name, newGeo)}
               bounds={(shouldUpdateBounds && updatedBounds) || bounds}

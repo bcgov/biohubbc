@@ -83,9 +83,9 @@ describe('CreateSurveyPage', () => {
   it('renders the initial default page correctly', async () => {
     mockBiohubApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
     mockBiohubApi().codes.getAllCodeSets.mockResolvedValue(codes);
-    mockBiohubApi().survey.getSurveyPermits.mockResolvedValue({ permits: [
-      { id: 1, permit_number: 'abcd1', permit_type: 'Wildlife permit' }
-    ]});
+    mockBiohubApi().survey.getSurveyPermits.mockResolvedValue({
+      permits: [{ id: 1, permit_number: 'abcd1', permit_type: 'Wildlife permit' }]
+    });
     mockBiohubApi().survey.getAvailableSurveyFundingSources.mockResolvedValue(
       getProjectForViewResponse.funding.fundingSources
     );
@@ -127,7 +127,7 @@ describe('CreateSurveyPage', () => {
         { id: 1, permit_number: '123', permit_type: 'Scientific' },
         { id: 2, permit_number: '456', permit_type: 'Wildlife' }
       ]
-    })
+    });
 
     mockBiohubApi().taxonomy.getSpeciesFromIds.mockResolvedValue({
       searchResponse: [

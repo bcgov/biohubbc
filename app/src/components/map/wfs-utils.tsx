@@ -28,8 +28,8 @@ export const changeProjections = (geos: Feature[]): Promise<Feature>[] => {
  * @returns `true` if `geometry.type === 'MultiPolygon'`, false otherwise.
  */
 const isMultiPolygon = (geometry: Geometry): geometry is MultiPolygon => {
-  return geometry.type === 'MultiPolygon'
-}
+  return geometry.type === 'MultiPolygon';
+};
 
 /**
  * Asserts whether a Geometry object is a Polygon or not.
@@ -37,8 +37,8 @@ const isMultiPolygon = (geometry: Geometry): geometry is MultiPolygon => {
  * @returns `true` if `geometry.type === 'Polygon'`, false otherwise.
  */
 const isPolygon = (geometry: Geometry): geometry is Polygon => {
-  return geometry.type === 'Polygon'
-}
+  return geometry.type === 'Polygon';
+};
 
 /**
  * Asserts whether a Geometry object is a Point or not.
@@ -46,10 +46,8 @@ const isPolygon = (geometry: Geometry): geometry is Polygon => {
  * @returns `true` if `geometry.type === 'Point'`, false otherwise.
  */
 const isPoint = (geometry: Geometry): geometry is Point => {
-  return geometry.type === 'Point'
-}
-
-
+  return geometry.type === 'Point';
+};
 
 /**
  * Generate the coordinates string for the reprojected geometries based on geometry type
@@ -146,7 +144,7 @@ export const createGetFeatureDetails = (externalApiPost: (url: string, body: any
 
   const wfsPromises: Promise<{ features?: Feature[] }>[] = [];
   reprojectedGeometries.forEach((projectedGeo) => {
-    console.log('projectedGeo:', projectedGeo)
+    console.log('projectedGeo:', projectedGeo);
     let filterCriteria = '';
     const coordinatesString = generateCoordinatesString(projectedGeo.geometry);
 

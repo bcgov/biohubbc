@@ -172,7 +172,7 @@ const DrawControls: React.FC<React.PropsWithChildren<IDrawControlsProps>> = (pro
    * @return {*}
    */
   const drawInitialFeatures = () => {
-    const features: Feature[] = props.initialFeatures || []
+    const features: Feature[] = props.initialFeatures || [];
     if (features.length === 0) {
       return;
     }
@@ -198,9 +198,9 @@ const DrawControls: React.FC<React.PropsWithChildren<IDrawControlsProps>> = (pro
   };
 
   const cancelRemoveFeatures = () => {
-    setDeleteEvent(null)
-    drawInitialFeatures()
-  }
+    setDeleteEvent(null);
+    drawInitialFeatures();
+  };
 
   useEffect(() => {
     const { map } = context;

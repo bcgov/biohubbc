@@ -163,12 +163,7 @@ describe('MapContainer', () => {
 
   test('draws a marker successfully on the map and updates the geometry', () => {
     const { getByText, getByRole } = render(
-      <MapContainer
-        mapId="myMap"
-        classes={classes}
-        drawControls={{ initialFeatures }}
-        onDrawChange={onDrawChange}
-      />
+      <MapContainer mapId="myMap" classes={classes} drawControls={{ initialFeatures }} onDrawChange={onDrawChange} />
     );
 
     fireEvent.click(getByText('Draw a marker'));
@@ -201,12 +196,7 @@ describe('MapContainer', () => {
 
   test('edits geometries as expected', async () => {
     const { getByText } = render(
-      <MapContainer
-        mapId="myMap"
-        classes={classes}
-        drawControls={{ initialFeatures }}
-        onDrawChange={onDrawChange}
-      />
+      <MapContainer mapId="myMap" classes={classes} drawControls={{ initialFeatures }} onDrawChange={onDrawChange} />
     );
 
     fireEvent.click(getByText('Edit layers'));
@@ -220,12 +210,7 @@ describe('MapContainer', () => {
 
   test('deletes geometries currently present on the map successfully when user confirms', async () => {
     const { getByText } = render(
-      <MapContainer
-        mapId="myMap"
-        classes={classes}
-        drawControls={{ initialFeatures }}
-        onDrawChange={onDrawChange}
-      />
+      <MapContainer mapId="myMap" classes={classes} drawControls={{ initialFeatures }} onDrawChange={onDrawChange} />
     );
 
     fireEvent.click(getByText('Delete layers'));
@@ -235,12 +220,8 @@ describe('MapContainer', () => {
     });
 
     render(
-      <MapContainer
-        mapId="myMap"
-        classes={classes}
-        drawControls={{ initialFeatures }}
-        onDrawChange={onDrawChange}
-      />);
+      <MapContainer mapId="myMap" classes={classes} drawControls={{ initialFeatures }} onDrawChange={onDrawChange} />
+    );
 
     await waitFor(() => {
       fireEvent.click(getByText('Yes'));
@@ -251,12 +232,7 @@ describe('MapContainer', () => {
 
   test('does not delete geometries present on the map when user does not confirm by clicking no', async () => {
     const { getByText } = render(
-      <MapContainer
-        mapId="myMap"
-        classes={classes}
-        drawControls={{ initialFeatures }}
-        onDrawChange={onDrawChange}
-      />
+      <MapContainer mapId="myMap" classes={classes} drawControls={{ initialFeatures }} onDrawChange={onDrawChange} />
     );
 
     fireEvent.click(getByText('Delete layers'));
@@ -266,12 +242,7 @@ describe('MapContainer', () => {
     });
 
     render(
-      <MapContainer
-        mapId="myMap"
-        classes={classes}
-        drawControls={{ initialFeatures }}
-        onDrawChange={onDrawChange}
-      />
+      <MapContainer mapId="myMap" classes={classes} drawControls={{ initialFeatures }} onDrawChange={onDrawChange} />
     );
 
     await waitFor(() => {
@@ -283,12 +254,7 @@ describe('MapContainer', () => {
 
   test('does not delete geometries present on the map when user does not confirm by clicking out of the dialog', async () => {
     const { getByText, getAllByRole } = render(
-      <MapContainer
-        mapId="myMap"
-        classes={classes}
-        drawControls={{ initialFeatures }}
-        onDrawChange={onDrawChange}
-      />
+      <MapContainer mapId="myMap" classes={classes} drawControls={{ initialFeatures }} onDrawChange={onDrawChange} />
     );
 
     fireEvent.click(getByText('Delete layers'));
@@ -298,12 +264,7 @@ describe('MapContainer', () => {
     });
 
     render(
-      <MapContainer
-        mapId="myMap"
-        classes={classes}
-        drawControls={{ initialFeatures }}
-        onDrawChange={onDrawChange}
-      />
+      <MapContainer mapId="myMap" classes={classes} drawControls={{ initialFeatures }} onDrawChange={onDrawChange} />
     );
 
     await waitFor(() => {
