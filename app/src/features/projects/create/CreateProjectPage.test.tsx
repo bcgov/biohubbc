@@ -14,6 +14,7 @@ import { ProjectLocationFormInitialValues } from 'features/projects/components/P
 import { ProjectObjectivesFormInitialValues } from 'features/projects/components/ProjectObjectivesForm';
 import { ProjectPartnershipsFormInitialValues } from 'features/projects/components/ProjectPartnershipsForm';
 import CreateProjectPage from 'features/projects/create/CreateProjectPage';
+import { Feature } from 'geojson';
 import { createMemoryHistory } from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
@@ -31,6 +32,9 @@ const mockUseBiohubApi = {
     createDraft: jest.fn<Promise<object>, []>(),
     updateDraft: jest.fn<Promise<object>, []>(),
     getDraft: jest.fn()
+  },
+  external: {
+    post: jest.fn<Promise<{ features?: Feature[] }>, []>()
   }
 };
 
@@ -67,6 +71,16 @@ describe('CreateProjectPage', () => {
     mockBiohubApi().codes.getAllCodeSets.mockResolvedValue(({
       coordinator_agency: [{ id: 1, name: 'A Rocha Canada' }]
     } as unknown) as IGetAllCodeSetsResponse);
+
+    mockBiohubApi().external.post.mockResolvedValue({
+      features: [
+        {
+          type: 'Feature',
+          geometry: { type: 'Point', coordinates: [0, 0] },
+          properties: {}
+        }
+      ]
+    });
 
     const { getByText } = renderContainer();
 
