@@ -119,15 +119,20 @@ const buildWFSURL = (typeName: string, wfsParams: IWFSParams = defaultWFSParams)
   return `${params.url}?service=WFS&&version=${params.version}&request=${params.request}&typeName=${typeName}&outputFormat=${params.outputFormat}&srsName=${params.srsName}`;
 };
 
+export interface IWFSFeatureDetails {
+  parks?: string[];
+  nrm?: string[];
+  env?: string[];
+  wmu?: string[];
+}
+
 /*
 	Function to get WFS feature details based on the existing map geometries
 	and layer types/filter criteria
 */
-export const createGetFeatureDetails = (externalApiPost: (url: string, body: any) => Promise<any>) => async (
-  typeNames: string[],
-  mapGeometries: Feature[],
-  wfsParams?: IWFSParams
-) => {
+export const createGetFeatureDetails = (
+  externalApiPost: (url: string, body: any) => Promise<{ features?: Feature[] }>
+) => async (typeNames: string[], mapGeometries: Feature[], wfsParams?: IWFSParams): Promise<IWFSFeatureDetails> => {
   const parksInfo: Set<string> = new Set(); // Parks and Eco-Reserves
   const nrmInfo: Set<string> = new Set(); // NRM Regions
   const envInfo: Set<string> = new Set(); // ENV Regions
@@ -144,7 +149,6 @@ export const createGetFeatureDetails = (externalApiPost: (url: string, body: any
 
   const wfsPromises: Promise<{ features?: Feature[] }>[] = [];
   reprojectedGeometries.forEach((projectedGeo) => {
-    console.log('projectedGeo:', projectedGeo);
     let filterCriteria = '';
     const coordinatesString = generateCoordinatesString(projectedGeo.geometry);
 
@@ -164,7 +168,7 @@ export const createGetFeatureDetails = (externalApiPost: (url: string, body: any
 
         wfsPromises.push(
           /* catch and ignore errors */
-          externalApiPost(url, requestBody).catch(() => {})
+          externalApiPost(url, requestBody).catch(() => {}) as Promise<{ features?: Feature[] }>
         );
       }
     });
@@ -178,7 +182,7 @@ export const createGetFeatureDetails = (externalApiPost: (url: string, body: any
   });
 
   if (!inferredLayersInfo) {
-    return;
+    return {};
   }
 
   return {

@@ -1,4 +1,9 @@
-import { createGetFeatureDetails, layerContentHandlers, wfsInferredLayers } from 'components/map/wfs-utils';
+import {
+  createGetFeatureDetails,
+  IWFSFeatureDetails,
+  layerContentHandlers,
+  wfsInferredLayers
+} from 'components/map/wfs-utils';
 import { Feature } from 'geojson';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import L, { LatLngBoundsExpression, LeafletEventHandlerFnMap } from 'leaflet';
@@ -122,7 +127,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       const mapGeometries: Feature[] = determineMapGeometries(drawControls?.initialFeatures, nonEditableGeometries);
 
       const getFeatureDetails = createGetFeatureDetails(biohubApi.external.post);
-      const inferredLayers = await getFeatureDetails(typeNames, mapGeometries, wfsParams);
+      const inferredLayers: IWFSFeatureDetails = await getFeatureDetails(typeNames, mapGeometries, wfsParams);
 
       if (setInferredLayersInfo) {
         setInferredLayersInfo(inferredLayers);
