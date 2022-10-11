@@ -1,4 +1,4 @@
-import { IFileProcessException, SUBMISSION_MESSAGE_TYPE, SUBMISSION_STATUS_TYPE } from '../constants/status';
+import { SUBMISSION_MESSAGE_TYPE } from '../constants/status';
 import { HTTP400 } from '../errors/http-error';
 import { PostOccurrence } from '../models/occurrence-create';
 import { queries } from '../queries/queries';
@@ -31,10 +31,7 @@ export class OccurrenceRepository extends BaseRepository {
     }
 
     if (!response) {
-      throw {
-        status: SUBMISSION_STATUS_TYPE.FAILED_GET_OCCURRENCE,
-        messages: SUBMISSION_MESSAGE_TYPE.INVALID_VALUE
-      } as IFileProcessException
+      throw SUBMISSION_MESSAGE_TYPE.FAILED_GET_OCCURRENCE
     }
     return response;
   }

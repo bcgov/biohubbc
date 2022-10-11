@@ -82,7 +82,8 @@ if (!updateSqlStatement) {
 
 Do we need more messages?
 - SUBMISSION_MESSAGE_TYPE.FAILED_UPDATE_OCCURRENCE_SUBMISSION used multiple times
-
+- INVALID MEDIA 
+- failed to upload to S3
 */
 
 /**

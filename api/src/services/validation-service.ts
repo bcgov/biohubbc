@@ -81,7 +81,6 @@ export class ValidationService extends DBService {
     try {
       const occurrenceSubmission = await this.occurrenceService.getOccurrenceSubmission(submissionId);
       const s3InputKey = occurrenceSubmission.input_key;
-      // this needs to throw
       const s3File = await getFileFromS3(s3InputKey);
       const xlsx = await this.prepXLSX(s3File);
       
@@ -96,23 +95,16 @@ export class ValidationService extends DBService {
       
     } catch (error: IFileProcessException | any) {
       console.log("")
+      console.log("PARENT CATCH")
       console.log("")
-      console.log("")
-      console.log(error)
-      switch(error) {
-        case SUBMISSION_STATUS_TYPE.FAILED_GET_OCCURRENCE:
-          await this.errorService.insertSubmissionStatus(submissionId, error)
 
+      if (error.status && error.message) {
         this.errorService.insertSubmissionStatusAndMessage(
           submissionId,
-          SUBMISSION_STATUS_TYPE.REJECTED,
-          SUBMISSION_MESSAGE_TYPE.DUPLICATE_HEADER,
+          error.status,
+          error.message,
           ""
         );
-
-          break;
-        default:
-          throw error;
       }
 
       console.log('');
