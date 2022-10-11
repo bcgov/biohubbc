@@ -42,9 +42,11 @@ export enum SUBMISSION_STATUS_TYPE {
   'FAILED_TRANSFORM_XLSX' = 'Failed to transform XLSX',
   'FAILED_VALIDATE_DWC_ARCHIVE' = 'Failed to validate DarwinCore Archive',
   'FAILED_PERSIST_VALIDATION_RESULTS' = 'Failed to persist validation results',
-  'FAILED_UPDATE_OCCURRENCE_SUBMISSION' = 'Failed to update occurrence submission'
+  'FAILED_UPDATE_OCCURRENCE_SUBMISSION' = 'Failed to update occurrence submission',
+  'INVALID_MEDIA' = 'Media is not valid'
 }
 
+// this appears in the validation of the files data (missing column, inccorect type)
 export enum SUBMISSION_MESSAGE_TYPE {
   //message types that match the submission_message_type table
 

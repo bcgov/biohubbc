@@ -54,7 +54,26 @@ export enum ClassGrouping {
   WARNING = 'Warning'
 }
 
-const finalStatus = ['Rejected', 'Darwin Core Validated', 'Template Validated', 'Template Transformed', 'System Error'];
+const finalStatus = [
+  'Rejected', 
+  'Darwin Core Validated', 
+  'Template Validated', 
+  'Template Transformed', 
+  'System Error',
+  // 'Failed to Get Occurrence Submission',
+  // 'Failed to get file from S3',
+  // 'Failed to parse submission',
+  // 'Failed to prep DarwinCore Archive',
+  // 'Failed to prep XLSX',
+  // 'Failed to persist parse errors',
+  // 'Failed to get validation rules',
+  // 'Failed to get transformation rules',
+  // 'Failed to persist transformation results',
+  // 'Failed to transform XLSX',
+  // 'Failed to validate DarwinCore Archive',
+  // 'Failed to persist validation results',
+  // 'Failed to update occurrence submission'
+];
 
 const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
   const biohubApi = useBiohubApi();
@@ -121,7 +140,10 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
 
         setOccurrenceSubmissionId(submission.id);
       }
-
+      console.log("_____________")
+      console.log("_____________")
+      console.log("_____________")
+      console.log(submission)
       return submission;
     });
   }, [biohubApi.observation, projectId, surveyId]);
@@ -382,9 +404,9 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
             </Box>
           )}
 
-          {!isValidating && submissionStatus?.status === 'Rejected' && (
+          {!isValidating && submissionStatus?.status !== 'Template Validated' || submissionStatus?.status !== 'Darwin Core Validated' && (
             <Box px={3} pb={3}>
-              {displayAlertBox('error', mdiAlertCircleOutline, submissionStatus.inputFileName, 'Validation Failed')}
+              {displayAlertBox('error', mdiAlertCircleOutline, `${submissionStatus?.inputFileName}`, `Validation Failed - ${submissionStatus?.status}`)}
               <Box my={3}>
                 <Typography data-testid="observations-error-details" variant="body1">
                   Resolve the following errors in your local file and re-import.

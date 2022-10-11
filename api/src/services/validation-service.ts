@@ -15,6 +15,7 @@ import { XLSXTransformation } from '../utils/media/xlsx/transformation/xlsx-tran
 import { XLSXCSV } from '../utils/media/xlsx/xlsx-file';
 import { OccurrenceService } from './occurrence-service';
 import { DBService } from './db-service';
+import { ErrorService } from './error-service';
 
 const defaultLog = getLogger('services/dwc-service');
 
@@ -37,12 +38,14 @@ export class ValidationService extends DBService {
   validationRepository: ValidationRepository;
   submissionRepository: SubmissionRepository;
   occurrenceService: OccurrenceService;
+  errorService: ErrorService;
 
   constructor(connection: IDBConnection) {
     super(connection);
     this.validationRepository = new ValidationRepository(connection);
     this.submissionRepository = new SubmissionRepository(connection);
     this.occurrenceService = new OccurrenceService(connection);
+    this.errorService = new ErrorService(connection);
   }
 
   async transformFile(submissionId: number) {
@@ -83,19 +86,60 @@ export class ValidationService extends DBService {
   }
 
   async processFile(submissionId: number) {
-    const occurrenceSubmission = await this.occurrenceService.getOccurrenceSubmission(submissionId);
-    const s3InputKey = occurrenceSubmission?.input_key || '';
-    const s3File = await getFileFromS3(s3InputKey);
-    const xlsx = await this.prepXLSX(s3File);
+    try {
+      const occurrenceSubmission = await this.occurrenceService.getOccurrenceSubmission(submissionId);
+      if (!occurrenceSubmission) {
+        throw SUBMISSION_STATUS_TYPE.FAILED_GET_OCCURRENCE;
+      }
+      const s3InputKey = occurrenceSubmission?.input_key || '';
+      
+      const s3File = await getFileFromS3(s3InputKey);
+      
+      const xlsx = await this.prepXLSX(s3File);
 
-    // template validation
-    await this.templateValidation(submissionId, xlsx, InitialSubmissionStatus.TemplateValidated);
+      // template validation
+      await this.templateValidation(submissionId, xlsx, InitialSubmissionStatus.TemplateValidated);
 
-    // template transformation
-    await this.templateTransformation(submissionId, xlsx, s3InputKey);
+      // template transformation
+      await this.templateTransformation(submissionId, xlsx, s3InputKey);
 
-    // occurrence scraping
-    await this.templateScrapeAndUploadOccurrences(submissionId);
+      // occurrence scraping
+      await this.templateScrapeAndUploadOccurrences(submissionId);
+    } catch (error) {
+      console.log("")
+      console.log("")
+      console.log("")
+      console.log(error)
+        // switch(error) {
+        //   case SUBMISSION_STATUS_TYPE.FAILED_GET_OCCURRENCE:
+        //     await this.errorService.insertSubmissionStatus(submissionId, error)
+        //     await this.errorService.insertSubmissionStatusAndMessage(
+        //       submissionId,
+        //       SUBMISSION_STATUS_TYPE.REJECTED,
+        //       SUBMISSION_MESSAGE_TYPE.ERROR,
+        //       SUBMISSION_STATUS_TYPE.FAILED_GET_OCCURRENCE
+        //     );
+        //     break;
+        //   case SUBMISSION_STATUS_TYPE.FAILED_PREP_XLSX:
+        //     await this.errorService.insertSubmissionStatus(submissionId, error)
+        //     break;
+        //   case SUBMISSION_STATUS_TYPE.FAILED_PARSE_SUBMISSION:
+        //     await this.errorService.insertSubmissionStatus(submissionId, error)
+        //     break;
+        //   case SUBMISSION_STATUS_TYPE.FAILED_GET_VALIDATION_RULES:
+        //     await this.errorService.insertSubmissionStatus(submissionId, error)
+        //     break;
+        //   case SUBMISSION_STATUS_TYPE.FAILED_GET_TRANSFORMATION_RULES:
+        //     await this.errorService.insertSubmissionStatus(submissionId, error)
+        //     break;
+        //   default:
+        //     throw error;
+        // }
+
+        console.log("")
+        console.log("")
+        console.log("")
+    }
   }
 
   async templateScrapeAndUploadOccurrences(submissionId: number) {
@@ -122,40 +166,31 @@ export class ValidationService extends DBService {
     await this.persistTransformationResults(submissionId, fileBuffer, s3InputKey, xlsx);
   }
 
-  // validation service?
   prepXLSX(file: any): XLSXCSV {
     defaultLog.debug({ label: 'prepXLSX', message: 's3File' });
-    try {
-      const parsedMedia = parseUnknownMedia(file);
+    const parsedMedia = parseUnknownMedia(file);
 
-      if (!parsedMedia) {
-        // parseError on req
-        throw 'Failed to parse submission, file was empty';
-      }
-
-      if (!(parsedMedia instanceof MediaFile)) {
-        // parseError on req
-        throw 'Failed to parse submission, not a valid XLSX CSV file';
-      }
-
-      const xlsxCsv = new XLSXCSV(parsedMedia);
-
-      const template_id = xlsxCsv.workbook.rawWorkbook.Custprops.sims_template_id;
-      const csm_id = xlsxCsv.workbook.rawWorkbook.Custprops.sims_csm_id;
-
-      if (!template_id || !csm_id) {
-        // parseError on req
-        throw 'Failed to parse submission, template identification properties are missing';
-      }
-
-      return xlsxCsv;
-    } catch (error) {
-      defaultLog.error({ label: 'prepXLSX', message: 'error', error });
-      throw error;
+    if (!parsedMedia) {
+      throw SUBMISSION_STATUS_TYPE.FAILED_PREP_XLSX;
     }
-  }
 
-  async persistParseErrors() {}
+    if (!(parsedMedia instanceof MediaFile)) {
+      // throw 'Failed to parse submission, not a valid XLSX CSV file';
+      throw SUBMISSION_STATUS_TYPE.FAILED_PARSE_SUBMISSION;
+    }
+
+    const xlsxCsv = new XLSXCSV(parsedMedia);
+
+    const template_id = xlsxCsv.workbook.rawWorkbook.Custprops.sims_template_id;
+    const csm_id = xlsxCsv.workbook.rawWorkbook.Custprops.sims_csm_id;
+
+    if (!template_id || !csm_id) {
+      // throw 'Failed to parse submission, template identification properties are missing';
+      throw SUBMISSION_STATUS_TYPE.FAILED_PARSE_SUBMISSION;
+    }
+
+    return xlsxCsv;
+  }
 
   async getValidationSchema(file: XLSXCSV): Promise<any> {
     const template_id = file.workbook.rawWorkbook.Custprops.sims_template_id;
@@ -168,7 +203,7 @@ export class ValidationService extends DBService {
 
     const validationSchema = templateMethodologySpeciesRecord?.validation;
     if (!validationSchema) {
-      throw 'Unable to fetch an appropriate template validation schema for your submission';
+      throw SUBMISSION_STATUS_TYPE.FAILED_GET_VALIDATION_RULES;
     }
 
     return validationSchema;
@@ -185,7 +220,8 @@ export class ValidationService extends DBService {
     const mediaState = file.isMediaValid(parser);
 
     if (!mediaState.isValid) {
-      throw 'Media is not valid';
+      // throw 'Media is not valid';
+      throw SUBMISSION_STATUS_TYPE.INVALID_MEDIA;
     }
 
     const csvState: ICsvState[] = file.isContentValid(parser);
@@ -204,6 +240,7 @@ export class ValidationService extends DBService {
     defaultLog.debug({ label: 'persistValidationResults', message: 'validationResults' });
 
     let submissionStatusType = statusTypeObject.initialSubmissionStatusType;
+    let parseError = false;
     if (!mediaState.isValid || csvState.some((item) => !item.isValid)) {
       // At least 1 error exists
       submissionStatusType = 'Rejected';
@@ -247,11 +284,16 @@ export class ValidationService extends DBService {
 
       if (!mediaState.isValid || csvState?.some((item) => !item.isValid)) {
         // At least 1 error exists, skip remaining steps
-        throw 'An error exists, skip remaining steps';
+        parseError = true;
       }
     });
 
+    // we wan't to track all csv issues
     await Promise.all(promises);
+
+    if (parseError) {
+      throw SUBMISSION_STATUS_TYPE.FAILED_PARSE_SUBMISSION;
+    }
   }
 
   async getTransformationSchema(file: XLSXCSV): Promise<any> {
@@ -265,7 +307,8 @@ export class ValidationService extends DBService {
 
     const transformationSchema = templateMethodologySpeciesRecord?.transform;
     if (!transformationSchema) {
-      throw 'Unable to fetch an appropriate transform template schema for your submission';
+      // throw 'Unable to fetch an appropriate transform template schema for your submission';
+      throw SUBMISSION_STATUS_TYPE.FAILED_GET_TRANSFORMATION_RULES;
     }
 
     return transformationSchema;

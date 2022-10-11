@@ -31,6 +31,7 @@ export async function up(knex: Knex): Promise<void> {
     insert into submission_status_type (name, record_effective_date, description) values ('Failed to validate DarwinCore Archive', now(), 'Validation failed on validating Darwin Core Archive');
     insert into submission_status_type (name, record_effective_date, description) values ('Failed to persist validation results', now(), 'Validation failed on persisting validation results');
     insert into submission_status_type (name, record_effective_date, description) values ('Failed to update occurrence submission', now(), 'Process failed on updating occurrence submission');
+    insert into submission_status_type (name, record_effective_date, description) values ('Media it not valid', now(), 'Media it not valid');
 
 
     -- inserting new submission message types
