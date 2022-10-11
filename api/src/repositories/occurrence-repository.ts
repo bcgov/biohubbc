@@ -107,7 +107,7 @@ export class OccurrenceRepository extends BaseRepository {
     const updateResponse = await await this.connection.query(updateSqlStatement.text, updateSqlStatement.values);
 
     if (!updateResponse || !updateResponse.rowCount) {
-      throw new HTTP400('Failed to update survey occurrence submission record');
+      throw SUBMISSION_MESSAGE_TYPE.FAILED_UPDATE_OCCURRENCE_SUBMISSION;
     }
 
     return updateResponse.rows[0];

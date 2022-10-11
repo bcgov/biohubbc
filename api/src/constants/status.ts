@@ -71,6 +71,26 @@ export enum SUBMISSION_MESSAGE_TYPE {
   'INVALID_MEDIA' = 'Media is not valid'
 }
 
+
+/*
+
+What do we do with SQL errors like this?
+if (!updateSqlStatement) {
+  throw new HTTP400('Failed to build SQL update statement');
+}
+
+
+Do we need more messages?
+- SUBMISSION_MESSAGE_TYPE.FAILED_UPDATE_OCCURRENCE_SUBMISSION used multiple times
+
+*/
+
+/**
+ * Submission Status Types and messages.
+ *
+ * Used to track proper status and messages during file process/ validation 
+ *
+ */
 export interface IFileProcessException {
   status: SUBMISSION_STATUS_TYPE
   messages: SUBMISSION_MESSAGE_TYPE

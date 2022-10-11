@@ -1,3 +1,4 @@
+import { SUBMISSION_MESSAGE_TYPE } from '../constants/status';
 import { HTTP400 } from '../errors/http-error';
 import { queries } from '../queries/queries';
 import { BaseRepository } from './base-repository';
@@ -25,7 +26,7 @@ export class SubmissionRepository extends BaseRepository {
     const result = (response && response.rows && response.rows[0]) || null;
 
     if (!result || !result.id) {
-      throw new HTTP400('Failed to insert survey submission status data');
+      throw SUBMISSION_MESSAGE_TYPE.FAILED_UPDATE_OCCURRENCE_SUBMISSION;
     }
 
     return result.id;

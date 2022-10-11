@@ -140,17 +140,37 @@ export class ValidationService extends DBService {
   }
 
   async templateValidation(submissionId: number, xlsx: XLSXCSV, statusType: SUBMISSION_STATUS_TYPE) {
-    const schema = await this.getValidationSchema(xlsx);
-    const schemaParser = await this.getValidationRules(schema);
-    const csvState = await this.validateXLSX(xlsx, schemaParser);
-    await this.persistValidationResults(submissionId, csvState.csv_state, csvState.media_state, statusType);
+    try {
+      const schema = await this.getValidationSchema(xlsx);
+      const schemaParser = await this.getValidationRules(schema);
+      const csvState = await this.validateXLSX(xlsx, schemaParser);
+      await this.persistValidationResults(submissionId, csvState.csv_state, csvState.media_state, statusType);
+    } catch (error: SUBMISSION_MESSAGE_TYPE | any) {
+      if (Object.values(SUBMISSION_MESSAGE_TYPE).includes(error)) {
+        throw {
+          status: SUBMISSION_STATUS_TYPE.FAILED_VALIDATION,
+          messages: error
+        } as IFileProcessException;
+      }
+      throw error;
+    }
   }
 
   async templateTransformation(submissionId: number, xlsx: XLSXCSV, s3InputKey: string) {
-    const xlsxSchema = await this.getTransformationSchema(xlsx);
-    const xlsxParser = await this.getTransformationRules(xlsxSchema);
-    const fileBuffer = await this.transformXLSX(xlsx, xlsxParser);
-    await this.persistTransformationResults(submissionId, fileBuffer, s3InputKey, xlsx);
+    try {
+      const xlsxSchema = await this.getTransformationSchema(xlsx);
+      const xlsxParser = await this.getTransformationRules(xlsxSchema);
+      const fileBuffer = await this.transformXLSX(xlsx, xlsxParser);
+      await this.persistTransformationResults(submissionId, fileBuffer, s3InputKey, xlsx);
+    } catch (error: SUBMISSION_MESSAGE_TYPE | any) {
+      if (Object.values(SUBMISSION_MESSAGE_TYPE).includes(error)) {
+        throw {
+          status: SUBMISSION_STATUS_TYPE.FAILED_TRANSFORMED,
+          messages: error
+        } as IFileProcessException;
+      }
+      throw error;
+    }
   }
 
   prepXLSX(file: any): XLSXCSV {
@@ -190,7 +210,7 @@ export class ValidationService extends DBService {
 
     const validationSchema = templateMethodologySpeciesRecord?.validation;
     if (!validationSchema) {
-      throw SUBMISSION_STATUS_TYPE.FAILED_VALIDATION;
+      throw SUBMISSION_MESSAGE_TYPE.FAILED_GET_VALIDATION_RULES;
     }
 
     return validationSchema;
@@ -208,7 +228,7 @@ export class ValidationService extends DBService {
 
     if (!mediaState.isValid) {
       // throw 'Media is not valid';
-      throw SUBMISSION_STATUS_TYPE.INVALID_MEDIA;
+      throw SUBMISSION_MESSAGE_TYPE.INVALID_MEDIA;
     }
 
     const csvState: ICsvState[] = file.isContentValid(parser);
@@ -223,7 +243,7 @@ export class ValidationService extends DBService {
     csvState: ICsvState[],
     mediaState: IMediaState,
     statusType: SUBMISSION_STATUS_TYPE
-  ) {
+  ): Promise<boolean> {
     defaultLog.debug({ label: 'persistValidationResults', message: 'validationResults' });
 
     let submissionStatusType = statusType;
@@ -278,9 +298,12 @@ export class ValidationService extends DBService {
     // track all file contents validation errors
     await Promise.all(promises);
 
-    if (parseError) {
-      throw SUBMISSION_STATUS_TYPE.FAILED_VALIDATION;
-    }
+    // if (parseError) {
+    //   // shouldn't continue with process but instead 
+    //   throw SUBMISSION_MESSAGE_TYPE.PARSE_ERROR;
+    // }
+
+    return parseError;
   }
 
   async getTransformationSchema(file: XLSXCSV): Promise<any> {
@@ -295,7 +318,7 @@ export class ValidationService extends DBService {
     const transformationSchema = templateMethodologySpeciesRecord?.transform;
     if (!transformationSchema) {
       // throw 'Unable to fetch an appropriate transform template schema for your submission';
-      throw SUBMISSION_STATUS_TYPE.FAILED_TRANSFORMED;
+      throw SUBMISSION_MESSAGE_TYPE.FAILED_GET_TRANSFORMATION_RULES;
     }
 
     return transformationSchema;
