@@ -13,15 +13,9 @@ export const SetMapBounds: React.FC<React.PropsWithChildren<ISetMapBoundsProps>>
   // Set bounds if provided, ignore zoom
   if (props.bounds) {
     map.fitBounds(props.bounds);
-
-    return null;
-  }
-
-  // Set zoom if provided
-  if (props.zoom) {
+  } else if (props.zoom) {
+    // Set zoom if provided
     map.setZoom(props.zoom);
-
-    return null;
   }
 
   return null;
