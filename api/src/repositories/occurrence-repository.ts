@@ -1,3 +1,4 @@
+import { IFileProcessException, SUBMISSION_MESSAGE_TYPE, SUBMISSION_STATUS_TYPE } from '../constants/status';
 import { HTTP400 } from '../errors/http-error';
 import { PostOccurrence } from '../models/occurrence-create';
 import { queries } from '../queries/queries';
@@ -21,7 +22,7 @@ export class OccurrenceRepository extends BaseRepository {
    * @param {number} submissionId
    * @return {*}  {Promise<IOccurrenceSubmission | null>}
    */
-  async getOccurrenceSubmission(submissionId: number): Promise<IOccurrenceSubmission | null> {
+  async getOccurrenceSubmission(submissionId: number): Promise<IOccurrenceSubmission> {
     let response: IOccurrenceSubmission | null = null;
     const sql = queries.survey.getSurveyOccurrenceSubmissionSQL(submissionId);
 
@@ -29,6 +30,12 @@ export class OccurrenceRepository extends BaseRepository {
       response = (await this.connection.query<IOccurrenceSubmission>(sql.text, sql.values)).rows[0];
     }
 
+    if (!response) {
+      throw {
+        status: SUBMISSION_STATUS_TYPE.FAILED_GET_OCCURRENCE,
+        messages: [SUBMISSION_MESSAGE_TYPE.INVALID_VALUE]
+      } as IFileProcessException
+    }
     return response;
   }
 

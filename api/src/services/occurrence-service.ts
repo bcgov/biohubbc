@@ -151,7 +151,7 @@ export class OccurrenceService extends DBService {
    * @param {number} submissionId
    * @return {*} {Promise<IOccurrenceSubmission | null>}
    */
-  async getOccurrenceSubmission(submissionId: number): Promise<IOccurrenceSubmission | null> {
+  async getOccurrenceSubmission(submissionId: number): Promise<IOccurrenceSubmission> {
     return this.occurrenceRepository.getOccurrenceSubmission(submissionId);
   }
 

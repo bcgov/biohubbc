@@ -63,3 +63,8 @@ export enum SUBMISSION_MESSAGE_TYPE {
   'ERROR' = 'Error',
   'PARSE_ERROR' = 'Parse error'
 }
+
+export interface IFileProcessException {
+  status: SUBMISSION_STATUS_TYPE
+  messages: SUBMISSION_MESSAGE_TYPE[]
+}

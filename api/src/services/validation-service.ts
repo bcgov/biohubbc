@@ -1,5 +1,5 @@
 import AdmZip from 'adm-zip';
-import { SUBMISSION_STATUS_TYPE } from '../constants/status';
+import { IFileProcessException, SUBMISSION_MESSAGE_TYPE, SUBMISSION_STATUS_TYPE } from '../constants/status';
 import { IDBConnection } from '../database/db';
 import { SubmissionRepository } from '../repositories/submission-repsitory';
 import { ValidationRepository } from '../repositories/validation-repository';
@@ -28,12 +28,6 @@ interface IFileBuffer {
   name: string;
   buffer: Buffer;
 }
-
-enum InitialSubmissionStatus {
-  DarwinCoreValidated = 'Darwin Core Validated',
-  TemplateValidated = 'Template Validated'
-}
-
 export class ValidationService extends DBService {
   validationRepository: ValidationRepository;
   submissionRepository: SubmissionRepository;
@@ -63,7 +57,7 @@ export class ValidationService extends DBService {
     const s3File = await getFileFromS3(s3InputKey);
     const xlsx = await this.prepXLSX(s3File);
 
-    await this.templateValidation(submissionId, xlsx, InitialSubmissionStatus.TemplateValidated);
+    await this.templateValidation(submissionId, xlsx, SUBMISSION_STATUS_TYPE.TEMPLATE_TRANSFORMED);
   }
 
   async processDWCFile(submissionId: number) {
@@ -79,62 +73,61 @@ export class ValidationService extends DBService {
     const csvState = this.validateDWCArchive(archive, rules);
 
     // update submission
-    await this.persistValidationResults(submissionId, csvState.csv_state, csvState.media_state, {
-      initialSubmissionStatusType: InitialSubmissionStatus.DarwinCoreValidated
-    });
+    await this.persistValidationResults(submissionId, csvState.csv_state, csvState.media_state, SUBMISSION_STATUS_TYPE.DARWIN_CORE_VALIDATED);
     await this.occurrenceService.updateSurveyOccurrenceSubmission(submissionId, archive.rawFile.fileName, s3InputKey);
   }
 
   async processFile(submissionId: number) {
     try {
       const occurrenceSubmission = await this.occurrenceService.getOccurrenceSubmission(submissionId);
-      if (!occurrenceSubmission) {
-        throw SUBMISSION_STATUS_TYPE.FAILED_GET_OCCURRENCE;
-      }
-      const s3InputKey = occurrenceSubmission?.input_key || '';
-      
+      const s3InputKey = occurrenceSubmission.input_key || '';
+      // this needs to throw
       const s3File = await getFileFromS3(s3InputKey);
-      
+
+
+
       const xlsx = await this.prepXLSX(s3File);
 
       // template validation
-      await this.templateValidation(submissionId, xlsx, InitialSubmissionStatus.TemplateValidated);
+      await this.templateValidation(submissionId, xlsx, SUBMISSION_STATUS_TYPE.TEMPLATE_VALIDATED);
 
       // template transformation
       await this.templateTransformation(submissionId, xlsx, s3InputKey);
 
       // occurrence scraping
       await this.templateScrapeAndUploadOccurrences(submissionId);
-    } catch (error) {
+    } catch (error: IFileProcessException | any) {
       console.log("")
       console.log("")
       console.log("")
       console.log(error)
-        // switch(error) {
-        //   case SUBMISSION_STATUS_TYPE.FAILED_GET_OCCURRENCE:
-        //     await this.errorService.insertSubmissionStatus(submissionId, error)
-        //     await this.errorService.insertSubmissionStatusAndMessage(
-        //       submissionId,
-        //       SUBMISSION_STATUS_TYPE.REJECTED,
-        //       SUBMISSION_MESSAGE_TYPE.ERROR,
-        //       SUBMISSION_STATUS_TYPE.FAILED_GET_OCCURRENCE
-        //     );
-        //     break;
-        //   case SUBMISSION_STATUS_TYPE.FAILED_PREP_XLSX:
-        //     await this.errorService.insertSubmissionStatus(submissionId, error)
-        //     break;
-        //   case SUBMISSION_STATUS_TYPE.FAILED_PARSE_SUBMISSION:
-        //     await this.errorService.insertSubmissionStatus(submissionId, error)
-        //     break;
-        //   case SUBMISSION_STATUS_TYPE.FAILED_GET_VALIDATION_RULES:
-        //     await this.errorService.insertSubmissionStatus(submissionId, error)
-        //     break;
-        //   case SUBMISSION_STATUS_TYPE.FAILED_GET_TRANSFORMATION_RULES:
-        //     await this.errorService.insertSubmissionStatus(submissionId, error)
-        //     break;
-        //   default:
-        //     throw error;
-        // }
+      switch(error) {
+        case SUBMISSION_STATUS_TYPE.FAILED_GET_OCCURRENCE:
+          await this.errorService.insertSubmissionStatus(submissionId, error)
+
+        this.errorService.insertSubmissionStatusAndMessage(
+          submissionId,
+          SUBMISSION_STATUS_TYPE.REJECTED,
+          SUBMISSION_MESSAGE_TYPE.DUPLICATE_HEADER,
+          ""
+        );
+
+          break;
+        case SUBMISSION_STATUS_TYPE.FAILED_PREP_XLSX:
+          await this.errorService.insertSubmissionStatus(submissionId, error)
+          break;
+        case SUBMISSION_STATUS_TYPE.FAILED_PARSE_SUBMISSION:
+          await this.errorService.insertSubmissionStatus(submissionId, error)
+          break;
+        case SUBMISSION_STATUS_TYPE.FAILED_GET_VALIDATION_RULES:
+          await this.errorService.insertSubmissionStatus(submissionId, error)
+          break;
+        case SUBMISSION_STATUS_TYPE.FAILED_GET_TRANSFORMATION_RULES:
+          await this.errorService.insertSubmissionStatus(submissionId, error)
+          break;
+        default:
+          throw error;
+      }
 
         console.log("")
         console.log("")
@@ -150,13 +143,11 @@ export class ValidationService extends DBService {
     await this.occurrenceService.scrapeAndUploadOccurrences(submissionId, archive);
   }
 
-  async templateValidation(submissionId: number, xlsx: XLSXCSV, initalSubmissionStatus: string) {
+  async templateValidation(submissionId: number, xlsx: XLSXCSV, statusType: SUBMISSION_STATUS_TYPE) {
     const schema = await this.getValidationSchema(xlsx);
     const schemaParser = await this.getValidationRules(schema);
     const csvState = await this.validateXLSX(xlsx, schemaParser);
-    await this.persistValidationResults(submissionId, csvState.csv_state, csvState.media_state, {
-      initialSubmissionStatusType: initalSubmissionStatus
-    });
+    await this.persistValidationResults(submissionId, csvState.csv_state, csvState.media_state, statusType);
   }
 
   async templateTransformation(submissionId: number, xlsx: XLSXCSV, s3InputKey: string) {
@@ -235,15 +226,15 @@ export class ValidationService extends DBService {
     submissionId: number,
     csvState: ICsvState[],
     mediaState: IMediaState,
-    statusTypeObject: any
+    statusType: SUBMISSION_STATUS_TYPE
   ) {
     defaultLog.debug({ label: 'persistValidationResults', message: 'validationResults' });
 
-    let submissionStatusType = statusTypeObject.initialSubmissionStatusType;
+    let submissionStatusType = statusType;
     let parseError = false;
     if (!mediaState.isValid || csvState.some((item) => !item.isValid)) {
       // At least 1 error exists
-      submissionStatusType = 'Rejected';
+      submissionStatusType = SUBMISSION_STATUS_TYPE.REJECTED;
     }
 
     const submissionStatusId = await this.submissionRepository.insertSubmissionStatus(
@@ -288,7 +279,7 @@ export class ValidationService extends DBService {
       }
     });
 
-    // we wan't to track all csv issues
+    // track all file contents validation errors
     await Promise.all(promises);
 
     if (parseError) {
