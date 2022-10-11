@@ -80,22 +80,20 @@ export class ValidationService extends DBService {
   async processFile(submissionId: number) {
     try {
       const occurrenceSubmission = await this.occurrenceService.getOccurrenceSubmission(submissionId);
-      const s3InputKey = occurrenceSubmission.input_key || '';
+      const s3InputKey = occurrenceSubmission.input_key;
       // this needs to throw
       const s3File = await getFileFromS3(s3InputKey);
-
-
-
       const xlsx = await this.prepXLSX(s3File);
-
+      
       // template validation
       await this.templateValidation(submissionId, xlsx, SUBMISSION_STATUS_TYPE.TEMPLATE_VALIDATED);
-
+      
       // template transformation
-      await this.templateTransformation(submissionId, xlsx, s3InputKey);
+      await this.templateTransformation(submissionId, xlsx, s3InputKey);      
 
       // occurrence scraping
       await this.templateScrapeAndUploadOccurrences(submissionId);
+      
     } catch (error: IFileProcessException | any) {
       console.log("")
       console.log("")
@@ -124,11 +122,21 @@ export class ValidationService extends DBService {
   }
 
   async templateScrapeAndUploadOccurrences(submissionId: number) {
-    const occurrenceSubmission = await this.occurrenceService.getOccurrenceSubmission(submissionId);
-    const s3OutputKey = occurrenceSubmission?.output_key || '';
-    const s3File = await getFileFromS3(s3OutputKey);
-    const archive = await this.prepDWCArchive(s3File);
-    await this.occurrenceService.scrapeAndUploadOccurrences(submissionId, archive);
+    try {
+      const occurrenceSubmission = await this.occurrenceService.getOccurrenceSubmission(submissionId);
+      const s3OutputKey = occurrenceSubmission.output_key;
+      const s3File = await getFileFromS3(s3OutputKey);
+      const archive = await this.prepDWCArchive(s3File);
+      await this.occurrenceService.scrapeAndUploadOccurrences(submissionId, archive);
+    } catch (error: SUBMISSION_MESSAGE_TYPE | any) {
+      if (Object.values(SUBMISSION_MESSAGE_TYPE).includes(error)) {
+        throw {
+          status: SUBMISSION_STATUS_TYPE.FAILED_PROCESSING_OCCURRENCE_DATA,
+          messages: error
+        } as IFileProcessException;
+      }
+      throw error;
+    }
   }
 
   async templateValidation(submissionId: number, xlsx: XLSXCSV, statusType: SUBMISSION_STATUS_TYPE) {
@@ -345,11 +353,11 @@ export class ValidationService extends DBService {
 
     const parsedMedia = parseUnknownMedia(s3File);
     if (!parsedMedia) {
-      throw 'Failed to parse submission, file was empty';
+      throw SUBMISSION_MESSAGE_TYPE.FAILED_PREP_DWC_ARCHIVE;
     }
 
     if (!(parsedMedia instanceof ArchiveFile)) {
-      throw 'Failed to parse submission, not a valid DwC Archive Zip file';
+      throw SUBMISSION_MESSAGE_TYPE.INVALID_MEDIA;
     }
 
     const dwcArchive = new DWCArchive(parsedMedia);

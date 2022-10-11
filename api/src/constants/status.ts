@@ -73,5 +73,5 @@ export enum SUBMISSION_MESSAGE_TYPE {
 
 export interface IFileProcessException {
   status: SUBMISSION_STATUS_TYPE
-  messages: SUBMISSION_MESSAGE_TYPE[]
+  messages: SUBMISSION_MESSAGE_TYPE
 }

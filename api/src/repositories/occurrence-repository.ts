@@ -33,7 +33,7 @@ export class OccurrenceRepository extends BaseRepository {
     if (!response) {
       throw {
         status: SUBMISSION_STATUS_TYPE.FAILED_GET_OCCURRENCE,
-        messages: [SUBMISSION_MESSAGE_TYPE.INVALID_VALUE]
+        messages: SUBMISSION_MESSAGE_TYPE.INVALID_VALUE
       } as IFileProcessException
     }
     return response;

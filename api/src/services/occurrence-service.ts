@@ -1,3 +1,4 @@
+import { SUBMISSION_MESSAGE_TYPE } from '../constants/status';
 import { IDBConnection } from '../database/db';
 import { PostOccurrence } from '../models/occurrence-create';
 import { IOccurrenceSubmission, OccurrenceRepository } from '../repositories/occurrence-repository';
@@ -141,8 +142,12 @@ export class OccurrenceService extends DBService {
    * @return {*}
    */
   async scrapeAndUploadOccurrences(submissionId: number, archive: DWCArchive) {
-    const scrapedOccurrences = this.scrapeArchiveForOccurrences(archive);
-    this.insertPostOccurrences(submissionId, scrapedOccurrences);
+    try {
+      const scrapedOccurrences = this.scrapeArchiveForOccurrences(archive);
+      this.insertPostOccurrences(submissionId, scrapedOccurrences);
+    } catch (error) {
+      throw SUBMISSION_MESSAGE_TYPE.FAILED_UPDATE_OCCURRENCE_SUBMISSION;
+    }
   }
 
   /**

@@ -48,6 +48,34 @@ export class ErrorService extends DBService {
   }
 
   /**
+   * Inserts both the status and multiple messages for a submission
+   *
+   * @param {number} submissionId
+   * @param {SUBMISSION_STATUS_TYPE} submissionStatusType
+   * @param {SUBMISSION_MESSAGE_TYPE[]} submissionMessageType
+   * @param {string} submissionMessage
+   * @return {*}  {Promise<{
+   *     submission_status_id: number;
+   *     submission_message_id: number;
+   *   }>}
+   * @memberof SubmissionService
+   */
+  async insertSubmissionStatusAndMessages(
+    submissionId: number,
+    submissionStatusType: SUBMISSION_STATUS_TYPE,
+    submissionMessageType: SUBMISSION_MESSAGE_TYPE[],
+    submissionMessage: string
+  ): Promise<{
+    submission_status_id: number;
+    submission_message_id: number;
+  }> {
+    return {
+      submission_status_id: 1,
+      submission_message_id: 1
+    };
+  }
+
+  /**
    * Insert a submission status record.
    *
    * @param {number} submissionId
