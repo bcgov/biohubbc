@@ -92,11 +92,11 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
   // Add a geometry defined from an existing overlay feature (via its popup)
   useEffect(() => {
-    if (!preDefinedGeometry || !drawControls || !drawControls.onChange) {
+    if (!preDefinedGeometry || !drawControls || !onDrawChange) {
       return;
     }
 
-    drawControls.onChange([...(drawControls.initialFeatures || []), preDefinedGeometry]);
+    onDrawChange([...(drawControls.initialFeatures || []), preDefinedGeometry]);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [preDefinedGeometry]);
