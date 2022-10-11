@@ -1,7 +1,6 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { IEditReportMetaForm } from 'components/attachments/EditReportMetaForm';
-import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
 import { IProjectCoordinatorForm } from 'features/projects/components/ProjectCoordinatorForm';
 import { IProjectDetailsForm } from 'features/projects/components/ProjectDetailsForm';
 import { IProjectFundingForm } from 'features/projects/components/ProjectFundingForm';
@@ -29,15 +28,6 @@ describe('useProjectApi', () => {
   const projectId = 1;
   const attachmentId = 1;
   const attachmentType = 'type';
-  const attachmentMeta: IReportMetaForm = {
-    title: 'upload file',
-    authors: [{ first_name: 'John', last_name: 'Smith' }],
-    description: 'file abstract',
-    year_published: 2000,
-    attachmentFile: new File(['foo'], 'foo.txt', {
-      type: 'text/plain'
-    })
-  };
 
   const attachmentMetaForUpdate: IEditReportMetaForm = {
     title: 'upload file',
