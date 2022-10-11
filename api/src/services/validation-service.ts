@@ -13,9 +13,9 @@ import { ValidationSchemaParser } from '../utils/media/validation/validation-sch
 import { TransformationSchemaParser } from '../utils/media/xlsx/transformation/transformation-schema-parser';
 import { XLSXTransformation } from '../utils/media/xlsx/transformation/xlsx-transformation';
 import { XLSXCSV } from '../utils/media/xlsx/xlsx-file';
-import { OccurrenceService } from './occurrence-service';
 import { DBService } from './db-service';
 import { ErrorService } from './error-service';
+import { OccurrenceService } from './occurrence-service';
 
 const defaultLog = getLogger('services/dwc-service');
 
@@ -92,9 +92,9 @@ export class ValidationService extends DBService {
         throw SUBMISSION_STATUS_TYPE.FAILED_GET_OCCURRENCE;
       }
       const s3InputKey = occurrenceSubmission?.input_key || '';
-      
+
       const s3File = await getFileFromS3(s3InputKey);
-      
+
       const xlsx = await this.prepXLSX(s3File);
 
       // template validation
@@ -106,39 +106,39 @@ export class ValidationService extends DBService {
       // occurrence scraping
       await this.templateScrapeAndUploadOccurrences(submissionId);
     } catch (error) {
-      console.log("")
-      console.log("")
-      console.log("")
-      console.log(error)
-        // switch(error) {
-        //   case SUBMISSION_STATUS_TYPE.FAILED_GET_OCCURRENCE:
-        //     await this.errorService.insertSubmissionStatus(submissionId, error)
-        //     await this.errorService.insertSubmissionStatusAndMessage(
-        //       submissionId,
-        //       SUBMISSION_STATUS_TYPE.REJECTED,
-        //       SUBMISSION_MESSAGE_TYPE.ERROR,
-        //       SUBMISSION_STATUS_TYPE.FAILED_GET_OCCURRENCE
-        //     );
-        //     break;
-        //   case SUBMISSION_STATUS_TYPE.FAILED_PREP_XLSX:
-        //     await this.errorService.insertSubmissionStatus(submissionId, error)
-        //     break;
-        //   case SUBMISSION_STATUS_TYPE.FAILED_PARSE_SUBMISSION:
-        //     await this.errorService.insertSubmissionStatus(submissionId, error)
-        //     break;
-        //   case SUBMISSION_STATUS_TYPE.FAILED_GET_VALIDATION_RULES:
-        //     await this.errorService.insertSubmissionStatus(submissionId, error)
-        //     break;
-        //   case SUBMISSION_STATUS_TYPE.FAILED_GET_TRANSFORMATION_RULES:
-        //     await this.errorService.insertSubmissionStatus(submissionId, error)
-        //     break;
-        //   default:
-        //     throw error;
-        // }
+      console.log('');
+      console.log('');
+      console.log('');
+      console.log(error);
+      // switch(error) {
+      //   case SUBMISSION_STATUS_TYPE.FAILED_GET_OCCURRENCE:
+      //     await this.errorService.insertSubmissionStatus(submissionId, error)
+      //     await this.errorService.insertSubmissionStatusAndMessage(
+      //       submissionId,
+      //       SUBMISSION_STATUS_TYPE.REJECTED,
+      //       SUBMISSION_MESSAGE_TYPE.ERROR,
+      //       SUBMISSION_STATUS_TYPE.FAILED_GET_OCCURRENCE
+      //     );
+      //     break;
+      //   case SUBMISSION_STATUS_TYPE.FAILED_PREP_XLSX:
+      //     await this.errorService.insertSubmissionStatus(submissionId, error)
+      //     break;
+      //   case SUBMISSION_STATUS_TYPE.FAILED_PARSE_SUBMISSION:
+      //     await this.errorService.insertSubmissionStatus(submissionId, error)
+      //     break;
+      //   case SUBMISSION_STATUS_TYPE.FAILED_GET_VALIDATION_RULES:
+      //     await this.errorService.insertSubmissionStatus(submissionId, error)
+      //     break;
+      //   case SUBMISSION_STATUS_TYPE.FAILED_GET_TRANSFORMATION_RULES:
+      //     await this.errorService.insertSubmissionStatus(submissionId, error)
+      //     break;
+      //   default:
+      //     throw error;
+      // }
 
-        console.log("")
-        console.log("")
-        console.log("")
+      console.log('');
+      console.log('');
+      console.log('');
     }
   }
 

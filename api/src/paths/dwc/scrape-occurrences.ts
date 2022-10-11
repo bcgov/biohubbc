@@ -5,8 +5,8 @@ import { SUBMISSION_MESSAGE_TYPE, SUBMISSION_STATUS_TYPE } from '../../constants
 import { getDBConnection } from '../../database/db';
 import { HTTP400 } from '../../errors/http-error';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
-import { ValidationService } from '../../services/validation-service';
 import { ErrorService } from '../../services/error-service';
+import { ValidationService } from '../../services/validation-service';
 import { getLogger } from '../../utils/logger';
 
 const defaultLog = getLogger('paths/dwc/scrape-occurrences');
