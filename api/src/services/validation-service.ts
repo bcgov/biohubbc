@@ -13,9 +13,9 @@ import { ValidationSchemaParser } from '../utils/media/validation/validation-sch
 import { TransformationSchemaParser } from '../utils/media/xlsx/transformation/transformation-schema-parser';
 import { XLSXTransformation } from '../utils/media/xlsx/transformation/xlsx-transformation';
 import { XLSXCSV } from '../utils/media/xlsx/xlsx-file';
-import { OccurrenceService } from './occurrence-service';
 import { DBService } from './db-service';
 import { ErrorService } from './error-service';
+import { OccurrenceService } from './occurrence-service';
 
 const defaultLog = getLogger('services/dwc-service');
 
@@ -129,9 +129,9 @@ export class ValidationService extends DBService {
           throw error;
       }
 
-        console.log("")
-        console.log("")
-        console.log("")
+      console.log('');
+      console.log('');
+      console.log('');
     }
   }
 

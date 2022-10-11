@@ -6,8 +6,8 @@ import { getDBConnection } from '../../database/db';
 import { HTTP400 } from '../../errors/http-error';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
 import { ErrorService } from '../../services/error-service';
-import { getLogger } from '../../utils/logger';
 import { ValidationService } from '../../services/validation-service';
+import { getLogger } from '../../utils/logger';
 import { getValidateAPIDoc } from '../dwc/validate';
 
 const defaultLog = getLogger('paths/xlsx/validate');
@@ -61,7 +61,7 @@ export function validate(): RequestHandler {
         req['occurrence_submission'].occurrence_submission_id,
         SUBMISSION_STATUS_TYPE.FAILED_GET_VALIDATION_RULES,
         SUBMISSION_MESSAGE_TYPE.ERROR,
-        "" //error.message
+        '' //error.message
       );
       await connection.rollback();
       throw error;

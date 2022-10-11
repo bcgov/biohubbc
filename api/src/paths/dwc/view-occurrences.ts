@@ -115,7 +115,7 @@ export function getOccurrencesForView(): RequestHandler {
         req['occurrence_submission'].occurrence_submission_id,
         SUBMISSION_STATUS_TYPE.FAILED_GET_OCCURRENCE,
         SUBMISSION_MESSAGE_TYPE.ERROR,
-        "" //error.message
+        '' //error.message
       );
       throw error;
     } finally {

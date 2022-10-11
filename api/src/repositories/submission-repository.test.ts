@@ -18,16 +18,19 @@ describe('SubmissionRepository', () => {
   describe('insertSubmissionStatus', () => {
     it('should succeed with valid data', async () => {
       const mockResponse = ({
-        rows: [{
-        id: 1
-      }]} as any) as Promise<QueryResult<any>>;
+        rows: [
+          {
+            id: 1
+          }
+        ]
+      } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({
         query: () => mockResponse
       });
-      
+
       const repo = new SubmissionRepository(dbConnection);
-      const response = await repo.insertSubmissionStatus(1, "validated")
-      
+      const response = await repo.insertSubmissionStatus(1, 'validated');
+
       expect(response).to.be.eql(1);
     });
 
@@ -37,7 +40,7 @@ describe('SubmissionRepository', () => {
       const repo = new SubmissionRepository(dbConnection);
 
       try {
-        await repo.insertSubmissionStatus(1, "validated");
+        await repo.insertSubmissionStatus(1, 'validated');
         expect(mockQuery).to.be.calledOnce;
         expect.fail();
       } catch (error) {
@@ -46,15 +49,15 @@ describe('SubmissionRepository', () => {
     });
 
     it('should throw `Failed to insert` error', async () => {
-      const mockResponse = ({rows: [{}]} as any) as Promise<QueryResult<any>>;
+      const mockResponse = ({ rows: [{}] } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({
         query: () => mockResponse
       });
-      
+
       const repo = new SubmissionRepository(dbConnection);
-      
+
       try {
-        await repo.insertSubmissionStatus(1, "validated");
+        await repo.insertSubmissionStatus(1, 'validated');
         expect.fail();
       } catch (error) {
         expect((error as HTTP400).message).to.be.eql('Failed to insert survey submission status data');
@@ -69,7 +72,7 @@ describe('SubmissionRepository', () => {
       const repo = new SubmissionRepository(dbConnection);
 
       try {
-        await repo.insertSubmissionMessage(1, "validated", "", "");
+        await repo.insertSubmissionMessage(1, 'validated', '', '');
         expect(mockQuery).to.be.calledOnce;
         expect.fail();
       } catch (error) {
@@ -78,19 +81,19 @@ describe('SubmissionRepository', () => {
     });
 
     it('should throw `Failed to insert` error', async () => {
-      const mockResponse = ({rows: [{}]} as any) as Promise<QueryResult<any>>;
+      const mockResponse = ({ rows: [{}] } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({
         query: () => mockResponse
       });
-      
+
       const repo = new SubmissionRepository(dbConnection);
-      
+
       try {
-        await repo.insertSubmissionMessage(1, "validated", "message", "error");
+        await repo.insertSubmissionMessage(1, 'validated', 'message', 'error');
         expect.fail();
       } catch (error) {
         expect((error as HTTP400).message).to.be.eql('Failed to insert survey submission message data');
       }
     });
-  })
+  });
 });

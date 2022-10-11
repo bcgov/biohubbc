@@ -55,11 +55,11 @@ export enum ClassGrouping {
 }
 
 const finalStatus = [
-  'Rejected', 
-  'Darwin Core Validated', 
-  'Template Validated', 
-  'Template Transformed', 
-  'System Error',
+  'Rejected',
+  'Darwin Core Validated',
+  'Template Validated',
+  'Template Transformed',
+  'System Error'
   // 'Failed to Get Occurrence Submission',
   // 'Failed to get file from S3',
   // 'Failed to parse submission',
@@ -140,10 +140,10 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
 
         setOccurrenceSubmissionId(submission.id);
       }
-      console.log("_____________")
-      console.log("_____________")
-      console.log("_____________")
-      console.log(submission)
+      console.log('_____________');
+      console.log('_____________');
+      console.log('_____________');
+      console.log(submission);
       return submission;
     });
   }, [biohubApi.observation, projectId, surveyId]);
@@ -404,20 +404,26 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
             </Box>
           )}
 
-          {!isValidating && submissionStatus?.status !== 'Template Validated' || submissionStatus?.status !== 'Darwin Core Validated' && (
-            <Box px={3} pb={3}>
-              {displayAlertBox('error', mdiAlertCircleOutline, `${submissionStatus?.inputFileName}`, `Validation Failed - ${submissionStatus?.status}`)}
-              <Box my={3}>
-                <Typography data-testid="observations-error-details" variant="body1">
-                  Resolve the following errors in your local file and re-import.
-                </Typography>
+          {(!isValidating && submissionStatus?.status !== 'Template Validated') ||
+            (submissionStatus?.status !== 'Darwin Core Validated' && (
+              <Box px={3} pb={3}>
+                {displayAlertBox(
+                  'error',
+                  mdiAlertCircleOutline,
+                  `${submissionStatus?.inputFileName}`,
+                  `Validation Failed - ${submissionStatus?.status}`
+                )}
+                <Box my={3}>
+                  <Typography data-testid="observations-error-details" variant="body1">
+                    Resolve the following errors in your local file and re-import.
+                  </Typography>
+                </Box>
+                <Box>
+                  {displayMessages(submissionErrors, messageGrouping, mdiAlertCircleOutline)}
+                  {displayMessages(submissionWarnings, messageGrouping, mdiInformationOutline)}
+                </Box>
               </Box>
-              <Box>
-                {displayMessages(submissionErrors, messageGrouping, mdiAlertCircleOutline)}
-                {displayMessages(submissionWarnings, messageGrouping, mdiInformationOutline)}
-              </Box>
-            </Box>
-          )}
+            ))}
           {!isValidating &&
             submissionStatus &&
             (submissionStatus.status === 'Darwin Core Validated' ||

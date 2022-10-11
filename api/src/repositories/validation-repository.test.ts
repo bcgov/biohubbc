@@ -21,17 +21,20 @@ describe('ValidationRepository', () => {
       const fieldMethodId = 10;
 
       const mockResponse = ({
-        rows: [{
-        field_method_id: fieldMethodId,
-        template_id: templateId,
-        validation: {},
-        transform: {}
-      }]} as any) as Promise<QueryResult<any>>;
+        rows: [
+          {
+            field_method_id: fieldMethodId,
+            template_id: templateId,
+            validation: {},
+            transform: {}
+          }
+        ]
+      } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({
         query: () => mockResponse
       });
       const repo = new ValidationRepository(dbConnection);
-      const response = await repo.getTemplateMethodologySpeciesRecord(fieldMethodId, templateId)
+      const response = await repo.getTemplateMethodologySpeciesRecord(fieldMethodId, templateId);
       expect(response.field_method_id).to.be.eql(fieldMethodId);
       expect(response.template_id).to.be.eql(templateId);
     });
