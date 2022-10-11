@@ -54,15 +54,6 @@ export function validate(): RequestHandler {
       await connection.commit();
     } catch (error) {
       defaultLog.error({ label: 'validate xlsx', message: 'error', error });
-
-      const errorService = new ErrorService(connection);
-
-      await errorService.insertSubmissionStatusAndMessage(
-        req['occurrence_submission'].occurrence_submission_id,
-        SUBMISSION_STATUS_TYPE.FAILED_GET_VALIDATION_RULES,
-        SUBMISSION_MESSAGE_TYPE.ERROR,
-        '' //error.message
-      );
       await connection.rollback();
       throw error;
     } finally {

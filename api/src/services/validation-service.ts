@@ -113,18 +113,6 @@ export class ValidationService extends DBService {
         );
 
           break;
-        case SUBMISSION_STATUS_TYPE.FAILED_PREP_XLSX:
-          await this.errorService.insertSubmissionStatus(submissionId, error)
-          break;
-        case SUBMISSION_STATUS_TYPE.FAILED_PARSE_SUBMISSION:
-          await this.errorService.insertSubmissionStatus(submissionId, error)
-          break;
-        case SUBMISSION_STATUS_TYPE.FAILED_GET_VALIDATION_RULES:
-          await this.errorService.insertSubmissionStatus(submissionId, error)
-          break;
-        case SUBMISSION_STATUS_TYPE.FAILED_GET_TRANSFORMATION_RULES:
-          await this.errorService.insertSubmissionStatus(submissionId, error)
-          break;
         default:
           throw error;
       }
@@ -162,12 +150,12 @@ export class ValidationService extends DBService {
     const parsedMedia = parseUnknownMedia(file);
 
     if (!parsedMedia) {
-      throw SUBMISSION_STATUS_TYPE.FAILED_PREP_XLSX;
+      throw SUBMISSION_STATUS_TYPE.INVALID_MEDIA;
     }
 
     if (!(parsedMedia instanceof MediaFile)) {
       // throw 'Failed to parse submission, not a valid XLSX CSV file';
-      throw SUBMISSION_STATUS_TYPE.FAILED_PARSE_SUBMISSION;
+      throw SUBMISSION_STATUS_TYPE.INVALID_MEDIA;
     }
 
     const xlsxCsv = new XLSXCSV(parsedMedia);
@@ -177,7 +165,7 @@ export class ValidationService extends DBService {
 
     if (!template_id || !csm_id) {
       // throw 'Failed to parse submission, template identification properties are missing';
-      throw SUBMISSION_STATUS_TYPE.FAILED_PARSE_SUBMISSION;
+      throw SUBMISSION_STATUS_TYPE.FAILED_GET_OCCURRENCE;
     }
 
     return xlsxCsv;
@@ -194,7 +182,7 @@ export class ValidationService extends DBService {
 
     const validationSchema = templateMethodologySpeciesRecord?.validation;
     if (!validationSchema) {
-      throw SUBMISSION_STATUS_TYPE.FAILED_GET_VALIDATION_RULES;
+      throw SUBMISSION_STATUS_TYPE.FAILED_VALIDATION;
     }
 
     return validationSchema;
@@ -283,7 +271,7 @@ export class ValidationService extends DBService {
     await Promise.all(promises);
 
     if (parseError) {
-      throw SUBMISSION_STATUS_TYPE.FAILED_PARSE_SUBMISSION;
+      throw SUBMISSION_STATUS_TYPE.FAILED_VALIDATION;
     }
   }
 
@@ -299,7 +287,7 @@ export class ValidationService extends DBService {
     const transformationSchema = templateMethodologySpeciesRecord?.transform;
     if (!transformationSchema) {
       // throw 'Unable to fetch an appropriate transform template schema for your submission';
-      throw SUBMISSION_STATUS_TYPE.FAILED_GET_TRANSFORMATION_RULES;
+      throw SUBMISSION_STATUS_TYPE.FAILED_TRANSFORMED;
     }
 
     return transformationSchema;
