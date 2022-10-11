@@ -88,6 +88,11 @@ const openAPIFramework = initialize({
   // If `next` is not included express will silently skip calling the `errorMiddleware` entirely.
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   errorMiddleware: function (error, req, res, next) {
+    if (res.headersSent) {
+      // response has already been sent
+      return;
+    }
+
     // Ensure all errors (intentionally thrown or not) are in the same format as specified by the schema
     const httpError = ensureHTTPError(error);
 
