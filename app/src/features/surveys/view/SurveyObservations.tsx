@@ -75,6 +75,41 @@ const finalStatus = [
   // 'Failed to update occurrence submission'
 ];
 
+export enum SUBMISSION_MESSAGE_TYPE {
+  //message types that match the submission_message_type table, and API
+
+  'DUPLICATE_HEADER' = 'Duplicate header',
+  'UNKNOWN_HEADER' = 'Unknown Header',
+  'MISSING_REQUIRED_HEADER' = 'Missing Required Header',
+  'MISSING_RECOMMENDED_HEADER' = 'Missing Recommended Header',
+  'MISCELLANEOUS' = 'Miscellaneous',
+  'MISSING_REQUIRED_FIELD' = 'Missing Required Field',
+  'UNEXPECTED_FORMAT' = 'Unexpected Format',
+  'OUT_OF_RANGE' = 'Out of Range',
+  'INVALID_VALUE' = 'Invalid Value',
+  'MISSING_VALIDATION_SCHEMA' = 'Missing Validation Schema',
+  'ERROR' = 'Error',
+  'PARSE_ERROR' = 'Parse error',
+
+  'FAILED_GET_OCCURRENCE' = 'Failed to Get Occurrence Submission',
+  'FAILED_GET_FILE_FROM_S3' = 'Failed to get file from S3',
+  'FAILED_UPLOAD_FILE_TO_S3' = 'Failed to upload file to S3',
+  'FAILED_PARSE_SUBMISSION' = 'Failed to parse submission',
+  'FAILED_PREP_DWC_ARCHIVE' = 'Failed to prep DarwinCore Archive',
+  'FAILED_PREP_XLSX' = 'Failed to prep XLSX',
+  'FAILED_PERSIST_PARSE_ERRORS' = 'Failed to persist parse errors',
+  'FAILED_GET_VALIDATION_RULES' = 'Failed to get validation rules',
+  'FAILED_GET_TRANSFORMATION_RULES' = 'Failed to get transformation rules',
+  'FAILED_PERSIST_TRANSFORMATION_RESULTS' = 'Failed to persist transformation results',
+  'FAILED_TRANSFORM_XLSX' = 'Failed to transform XLSX',
+  'FAILED_VALIDATE_DWC_ARCHIVE' = 'Failed to validate DarwinCore Archive',
+  'FAILED_PERSIST_VALIDATION_RESULTS' = 'Failed to persist validation results',
+  'FAILED_UPDATE_OCCURRENCE_SUBMISSION' = 'Failed to update occurrence submission',
+  'FAILED_TO_GET_TRANSFORM_SCHEMA' = 'Unable to get transform schema for submission',
+  'INVALID_MEDIA' = 'Media is invalid',
+  'UNSUPPORTED_FILE_TYPE' = 'File submitted is not a supported type'
+}
+
 const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
   const biohubApi = useBiohubApi();
   const urlParams = useParams();
@@ -238,32 +273,59 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
 
   const messageGrouping: MessageGrouping = {
     mandatory: {
-      type: ['Missing Required Field', 'Missing Required Header', 'Duplicate Header'],
+      type: [
+        SUBMISSION_MESSAGE_TYPE.MISSING_REQUIRED_FIELD,
+        SUBMISSION_MESSAGE_TYPE.MISSING_REQUIRED_HEADER,
+        SUBMISSION_MESSAGE_TYPE.DUPLICATE_HEADER
+      ],
       label: 'Mandatory fields have not been filled out'
     },
     recommended: {
-      type: ['Missing Recommended Header'],
+      type: [SUBMISSION_MESSAGE_TYPE.MISSING_RECOMMENDED_HEADER],
       label: 'Recommended fields have not been filled out'
     },
     value_not_from_list: {
-      type: ['Invalid Value'],
+      type: [SUBMISSION_MESSAGE_TYPE.INVALID_VALUE],
       label: "Values have not been selected from the field's dropdown list"
     },
     unsupported_header: {
-      type: ['Unknown Header'],
+      type: [SUBMISSION_MESSAGE_TYPE.UNKNOWN_HEADER],
       label: 'Column headers are not supported'
     },
     out_of_range: {
-      type: ['Out of Range'],
+      type: [SUBMISSION_MESSAGE_TYPE.OUT_OF_RANGE],
       label: 'Values are out of range'
     },
     formatting_errors: {
-      type: ['Unexpected Format'],
+      type: [SUBMISSION_MESSAGE_TYPE.UNEXPECTED_FORMAT],
       label: 'Unexpected formats in the values provided'
     },
-    miscellaneous: { type: ['Miscellaneous'], label: 'Miscellaneous errors exist in your file' },
-    system_error: { type: ['Missing Validation Schema'], label: 'Contact your system administrator' },
-    failed_s3: { type: ['Failed to get file from S3'], label: 'Contact your system administrator' }
+    miscellaneous: { type: [SUBMISSION_MESSAGE_TYPE.MISCELLANEOUS], label: 'Miscellaneous errors exist in your file' },
+    system_error: {
+      type: [
+        SUBMISSION_MESSAGE_TYPE.FAILED_GET_FILE_FROM_S3,
+        SUBMISSION_MESSAGE_TYPE.ERROR,
+        SUBMISSION_MESSAGE_TYPE.PARSE_ERROR,
+        SUBMISSION_MESSAGE_TYPE.FAILED_GET_OCCURRENCE,
+        SUBMISSION_MESSAGE_TYPE.FAILED_UPLOAD_FILE_TO_S3,
+        SUBMISSION_MESSAGE_TYPE.FAILED_PARSE_SUBMISSION,
+        SUBMISSION_MESSAGE_TYPE.FAILED_PREP_DWC_ARCHIVE,
+        SUBMISSION_MESSAGE_TYPE.FAILED_PREP_XLSX,
+        SUBMISSION_MESSAGE_TYPE.FAILED_PERSIST_PARSE_ERRORS,
+        SUBMISSION_MESSAGE_TYPE.FAILED_GET_VALIDATION_RULES,
+        SUBMISSION_MESSAGE_TYPE.FAILED_GET_TRANSFORMATION_RULES,
+        SUBMISSION_MESSAGE_TYPE.FAILED_PERSIST_TRANSFORMATION_RESULTS,
+        SUBMISSION_MESSAGE_TYPE.FAILED_TRANSFORM_XLSX,
+        SUBMISSION_MESSAGE_TYPE.FAILED_VALIDATE_DWC_ARCHIVE,
+        SUBMISSION_MESSAGE_TYPE.FAILED_PERSIST_VALIDATION_RESULTS,
+        SUBMISSION_MESSAGE_TYPE.FAILED_UPDATE_OCCURRENCE_SUBMISSION,
+        SUBMISSION_MESSAGE_TYPE.FAILED_TO_GET_TRANSFORM_SCHEMA,
+        SUBMISSION_MESSAGE_TYPE.UNSUPPORTED_FILE_TYPE,
+        SUBMISSION_MESSAGE_TYPE.INVALID_MEDIA,
+        SUBMISSION_MESSAGE_TYPE.MISSING_VALIDATION_SCHEMA
+      ],
+      label: 'Contact your system administrator'
+    }
   };
 
   type SubmissionErrors = { [key: string]: string[] };
