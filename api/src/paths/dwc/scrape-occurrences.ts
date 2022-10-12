@@ -115,16 +115,13 @@ export function scrapeAndUpload(): RequestHandler {
       next();
     } catch (error: any) {
       defaultLog.error({ label: 'scrapeAndUploadOccurrences', message: 'error', error });
-
-      const errorService = new ErrorService(connection);
-
-      await errorService.insertSubmissionStatusAndMessage(
-        req['occurrence_submission'].occurrence_submission_id,
-        SUBMISSION_STATUS_TYPE.FAILED_OCCURRENCE_PREPERATION,
-        SUBMISSION_MESSAGE_TYPE.ERROR,
-        error.message
-      );
+      // Unexpected error occured, rolling DB back to safe state
       await connection.rollback();
+
+      // We still want to track that the submission failed to present to the user
+      const errorService = new ErrorService(connection)
+      await errorService.insertSubmissionStatus(submissionId, SUBMISSION_STATUS_TYPE.SYSTEM_ERROR)
+      await connection.commit();
       throw error;
     } finally {
       connection.release();

@@ -1,9 +1,11 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../constants/roles';
+import { SUBMISSION_STATUS_TYPE } from '../../constants/status';
 import { getDBConnection } from '../../database/db';
 import { HTTP400 } from '../../errors/http-error';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
+import { ErrorService } from '../../services/error-service';
 import { ValidationService } from '../../services/validation-service';
 import { getLogger } from '../../utils/logger';
 
@@ -109,7 +111,14 @@ export function transform(): RequestHandler {
       await connection.commit();
     } catch (error) {
       defaultLog.debug({ label: 'transform xlsx', message: 'error', error });
+      // Unexpected error occured, rolling DB back to safe state
       await connection.rollback();
+
+      // We still want to track that the submission failed to present to the user
+      const errorService = new ErrorService(connection)
+      await errorService.insertSubmissionStatus(submissionId, SUBMISSION_STATUS_TYPE.SYSTEM_ERROR)
+      await connection.commit();
+      throw error;
       throw error;
     } finally {
       connection.release();

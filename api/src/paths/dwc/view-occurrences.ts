@@ -1,7 +1,7 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../constants/roles';
-import { SUBMISSION_MESSAGE_TYPE, SUBMISSION_STATUS_TYPE } from '../../constants/status';
+import { SUBMISSION_STATUS_TYPE } from '../../constants/status';
 import { getDBConnection } from '../../database/db';
 import { HTTP400 } from '../../errors/http-error';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
@@ -94,7 +94,7 @@ POST.apiDoc = {
 export function getOccurrencesForView(): RequestHandler {
   return async (req, res) => {
     const connection = getDBConnection(req['keycloak_token']);
-
+    const submissionId = req.body.occurrence_submission_id;
     if (!req.body || !req.body.occurrence_submission_id) {
       throw new HTTP400('Missing required request body param `occurrence_submission_id`');
     }
@@ -109,14 +109,13 @@ export function getOccurrencesForView(): RequestHandler {
     } catch (error) {
       defaultLog.error({ label: 'getOccurrencesForView', message: 'error', error });
 
-      const errorService = new ErrorService(connection);
+      // Unexpected error occured, rolling DB back to safe state
+      await connection.rollback();
 
-      await errorService.insertSubmissionStatusAndMessage(
-        req['occurrence_submission'].occurrence_submission_id,
-        SUBMISSION_STATUS_TYPE.FAILED_OCCURRENCE_PREPERATION,
-        SUBMISSION_MESSAGE_TYPE.ERROR,
-        '' //error.message
-      );
+      // We still want to track that the submission failed to present to the user
+      const errorService = new ErrorService(connection)
+      await errorService.insertSubmissionStatus(submissionId, SUBMISSION_STATUS_TYPE.SYSTEM_ERROR)
+      await connection.commit();
       throw error;
     } finally {
       connection.release();
