@@ -81,9 +81,11 @@ export async function uploadBufferToS3(
     Key: key,
     ACL: S3_ROLE.AUTH_READ,
     Metadata: metadata
-  }).promise().catch(error => {
-    throw SUBMISSION_MESSAGE_TYPE.FAILED_GET_FILE_FROM_S3;
-  });
+  })
+    .promise()
+    .catch((error) => {
+      throw SUBMISSION_MESSAGE_TYPE.FAILED_GET_FILE_FROM_S3;
+    });
 }
 
 /**
@@ -99,9 +101,11 @@ export async function getFileFromS3(key: string, versionId?: string): Promise<Ge
     Bucket: OBJECT_STORE_BUCKET_NAME,
     Key: key,
     VersionId: versionId
-  }).promise().catch(error => {
-    throw SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_GET_FILE_FROM_S3)
-  });
+  })
+    .promise()
+    .catch((error) => {
+      throw SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_GET_FILE_FROM_S3);
+    });
 }
 
 /**

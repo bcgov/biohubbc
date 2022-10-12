@@ -38,16 +38,6 @@ export enum SUBMISSION_STATUS_TYPE {
   'FAILED_PROCESSING_OCCURRENCE_DATA' = 'Failed to process occurrence data'
 }
 
-/*
-
-'Rejected',
-  'Darwin Core Validated',
-  'Template Validated',
-  'Template Transformed',
-  'System Error'
-
-*/
-
 // this appears in the validation of the files data (missing column, inccorect type)
 export enum SUBMISSION_MESSAGE_TYPE {
   //message types that match the submission_message_type table
@@ -64,7 +54,6 @@ export enum SUBMISSION_MESSAGE_TYPE {
   'MISSING_VALIDATION_SCHEMA' = 'Missing Validation Schema',
   'ERROR' = 'Error',
   'PARSE_ERROR' = 'Parse error',
-
   'FAILED_GET_OCCURRENCE' = 'Failed to Get Occurrence Submission',
   'FAILED_GET_FILE_FROM_S3' = 'Failed to get file from S3',
   'FAILED_UPLOAD_FILE_TO_S3' = 'Failed to upload file to S3',
@@ -83,12 +72,3 @@ export enum SUBMISSION_MESSAGE_TYPE {
   'INVALID_MEDIA' = 'Media is invalid',
   'UNSUPPORTED_FILE_TYPE' = 'File submitted is not a supported type'
 }
-
-
-/*
-
-What do we do with SQL errors like this?
-if (!updateSqlStatement) {
-  throw new HTTP400('Failed to build SQL update statement');
-}
-*/
