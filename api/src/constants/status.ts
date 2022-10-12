@@ -38,6 +38,16 @@ export enum SUBMISSION_STATUS_TYPE {
   'FAILED_PROCESSING_OCCURRENCE_DATA' = 'Failed to process occurrence data'
 }
 
+/*
+
+'Rejected',
+  'Darwin Core Validated',
+  'Template Validated',
+  'Template Transformed',
+  'System Error'
+
+*/
+
 // this appears in the validation of the files data (missing column, inccorect type)
 export enum SUBMISSION_MESSAGE_TYPE {
   //message types that match the submission_message_type table

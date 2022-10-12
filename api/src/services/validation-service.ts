@@ -80,8 +80,6 @@ export class ValidationService extends DBService {
 
   async processFile(submissionId: number) {
     try {
-      // template preperation
-      const submissionPrep = await this.templatePreperation(submissionId);
       const messages: MessageError[] = [
       new MessageError(SUBMISSION_MESSAGE_TYPE.FAILED_GET_OCCURRENCE),
       new MessageError(SUBMISSION_MESSAGE_TYPE.FAILED_GET_FILE_FROM_S3),
@@ -100,9 +98,11 @@ export class ValidationService extends DBService {
       new MessageError(SUBMISSION_MESSAGE_TYPE.FAILED_TO_GET_TRANSFORM_SCHEMA),
       new MessageError(SUBMISSION_MESSAGE_TYPE.INVALID_MEDIA),
       new MessageError(SUBMISSION_MESSAGE_TYPE.UNSUPPORTED_FILE_TYPE)
-      ]
-      throw new SubmissionError({status: SUBMISSION_STATUS_TYPE.REJECTED, messages})
-
+    ]
+    throw new SubmissionError({status: SUBMISSION_STATUS_TYPE.REJECTED, messages})
+    // template preperation
+    const submissionPrep = await this.templatePreperation(submissionId);
+    
       // template validation
       await this.templateValidation(submissionId, submissionPrep.xlsx, SUBMISSION_STATUS_TYPE.TEMPLATE_VALIDATED);
       
@@ -110,11 +110,7 @@ export class ValidationService extends DBService {
       await this.templateTransformation(submissionId, submissionPrep.xlsx, submissionPrep.s3InputKey);
 
       // occurrence scraping
-      try {
-        await this.templateScrapeAndUploadOccurrences(submissionId);
-      } catch (error) {
-        
-      }
+      await this.templateScrapeAndUploadOccurrences(submissionId);
       
     } catch (error) {
       console.log("")
