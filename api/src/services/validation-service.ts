@@ -74,7 +74,7 @@ export class ValidationService extends DBService {
     const csvState = this.validateDWCArchive(archive, rules);
 
     // update submission
-    await this.persistValidationResults(submissionId, csvState.csv_state, csvState.media_state, SUBMISSION_STATUS_TYPE.DARWIN_CORE_VALIDATED);
+    await this.persistValidationResults(csvState.csv_state, csvState.media_state);
     await this.occurrenceService.updateSurveyOccurrenceSubmission(submissionId, archive.rawFile.fileName, s3InputKey);
   }
 
@@ -105,7 +105,7 @@ export class ValidationService extends DBService {
       }
 
       // if (error.status && error.message) {
-      //   this.errorService.insertSubmissionStatusAndMessage(
+        // this.errorService.insertSubmissionStatusAndMessage(
       //     submissionId,
       //     error.status,
       //     error.message,
@@ -157,7 +157,7 @@ export class ValidationService extends DBService {
       const schema = await this.getValidationSchema(xlsx);
       const schemaParser = await this.getValidationRules(schema);
       const csvState = await this.validateXLSX(xlsx, schemaParser);
-      await this.persistValidationResults(submissionId, csvState.csv_state, csvState.media_state, statusType);
+      await this.persistValidationResults(csvState.csv_state, csvState.media_state);
     } catch (error: SUBMISSION_MESSAGE_TYPE | any) {
       if (Object.values(SUBMISSION_MESSAGE_TYPE).includes(error)) {
         throw {
@@ -252,53 +252,39 @@ export class ValidationService extends DBService {
   }
 
   async persistValidationResults(
-    submissionId: number,
     csvState: ICsvState[],
     mediaState: IMediaState,
-    statusType: SUBMISSION_STATUS_TYPE
   ): Promise<boolean> {
     defaultLog.debug({ label: 'persistValidationResults', message: 'validationResults' });
 
-    let submissionStatusType = statusType;
     let parseError = false;
-    if (!mediaState.isValid || csvState.some((item) => !item.isValid)) {
-      // At least 1 error exists
-      submissionStatusType = SUBMISSION_STATUS_TYPE.REJECTED;
-    }
-
-    const submissionStatusId = await this.submissionRepository.insertSubmissionStatus(
-      submissionId,
-      submissionStatusType
-    );
-
-    const promises: Promise<any>[] = [];
+    const errors: MessageError[] = []
 
     mediaState.fileErrors?.forEach((fileError) => {
-      promises.push(
-        this.submissionRepository.insertSubmissionMessage(submissionStatusId, 'Error', `${fileError}`, 'Miscellaneous')
+      errors.push(
+        new MessageError(
+          SUBMISSION_MESSAGE_TYPE.ERROR, 
+          `${fileError}`, 
+          'Miscellaneous')
       );
     });
 
     csvState?.forEach((csvStateItem) => {
       csvStateItem.headerErrors?.forEach((headerError) => {
-        promises.push(
-          this.submissionRepository.insertSubmissionMessage(
-            submissionStatusId,
-            'Error',
-            this.generateHeaderErrorMessage(csvStateItem.fileName, headerError),
-            headerError.errorCode
-          )
+        errors.push(
+          new MessageError(
+            SUBMISSION_MESSAGE_TYPE.ERROR, 
+            this.generateHeaderErrorMessage(csvStateItem.fileName, headerError), 
+            headerError.errorCode)
         );
       });
 
       csvStateItem.rowErrors?.forEach((rowError) => {
-        promises.push(
-          this.submissionRepository.insertSubmissionMessage(
-            submissionStatusId,
-            'Error',
+        errors.push(
+          new MessageError(
+            SUBMISSION_MESSAGE_TYPE.ERROR,
             this.generateRowErrorMessage(csvStateItem.fileName, rowError),
-            rowError.errorCode
-          )
+            rowError.errorCode)
         );
       });
 
@@ -308,12 +294,8 @@ export class ValidationService extends DBService {
       }
     });
 
-    // track all file contents validation errors
-    await Promise.all(promises);
-
     if (parseError) {
-      // shouldn't continue with process but instead 
-      throw SUBMISSION_MESSAGE_TYPE.PARSE_ERROR;
+      throw new SubmissionError({messages: errors})
     }
 
     return parseError;

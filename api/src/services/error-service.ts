@@ -1,6 +1,7 @@
 import { SUBMISSION_MESSAGE_TYPE, SUBMISSION_STATUS_TYPE } from '../constants/status';
 import { IDBConnection } from '../database/db';
 import { ErrorRepository } from '../repositories/error-repository';
+import { SubmissionError } from '../utils/submission-error';
 import { DBService } from './db-service';
 
 export class ErrorService extends DBService {
@@ -48,34 +49,6 @@ export class ErrorService extends DBService {
   }
 
   /**
-   * Inserts both the status and multiple messages for a submission
-   *
-   * @param {number} submissionId
-   * @param {SUBMISSION_STATUS_TYPE} submissionStatusType
-   * @param {SUBMISSION_MESSAGE_TYPE[]} submissionMessageType
-   * @param {string} submissionMessage
-   * @return {*}  {Promise<{
-   *     submission_status_id: number;
-   *     submission_message_id: number;
-   *   }>}
-   * @memberof SubmissionService
-   */
-  async insertSubmissionStatusAndMessages(
-    submissionId: number,
-    submissionStatusType: SUBMISSION_STATUS_TYPE,
-    submissionMessageType: SUBMISSION_MESSAGE_TYPE[],
-    submissionMessage: string
-  ): Promise<{
-    submission_status_id: number;
-    submission_message_id: number;
-  }> {
-    return {
-      submission_status_id: 1,
-      submission_message_id: 1
-    };
-  }
-
-  /**
    * Insert a submission status record.
    *
    * @param {number} submissionId
@@ -116,5 +89,16 @@ export class ErrorService extends DBService {
     submission_message_type_id: number;
   }> {
     return this.errorRepository.insertSubmissionMessage(submissionStatusId, submissionMessageType, submissionMessage);
+  }
+
+  async insertSubmissionError(submissionId: number, error: SubmissionError) {
+    const submission_status_id = (await this.errorRepository.insertSubmissionStatus(submissionId, error.status))
+      .submission_status_id;
+    const promises = error.submissionMessages.map(message => {
+      return this.errorRepository.insertSubmissionMessage(submission_status_id, message.type, message.description)
+    });
+
+    await Promise.all(promises)
+      
   }
 }
