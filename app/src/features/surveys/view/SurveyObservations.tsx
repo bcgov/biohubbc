@@ -59,7 +59,12 @@ const finalStatus = [
   'Darwin Core Validated',
   'Template Validated',
   'Template Transformed',
-  'System Error'
+  'System Error',
+  'Failed to prepare submission',
+  'Media is not valid',
+  'Failed to validate',
+  'Failed to transform',
+  'Failed to process occurrence data'
   // 'Failed to Get Occurrence Submission',
   // 'Failed to get file from S3',
   // 'Failed to parse submission',
@@ -462,7 +467,16 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
             </Box>
           )}
 
-          {!isValidating && submissionStatus?.status === 'Rejected' && (
+          { !isValidating 
+          && (
+            submissionStatus?.status === 'Rejected' 
+            || submissionStatus?.status === 'Failed to prepare submission'
+            || submissionStatus?.status === 'Media is not valid'
+            || submissionStatus?.status ==='Failed to validate'
+            || submissionStatus?.status ==='Failed to transform'
+            || submissionStatus?.status ==='Failed to process occurrence data'
+          )
+          && (
             <Box px={3} pb={3}>
               {displayAlertBox('error', mdiAlertCircleOutline, submissionStatus.inputFileName, 'Validation Failed')}
               <Box my={3}>

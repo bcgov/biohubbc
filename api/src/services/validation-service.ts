@@ -60,6 +60,9 @@ export class ValidationService extends DBService {
     try {
       const submissionPrep = await this.templatePreperation(submissionId);
       await this.templateTransformation(submissionId, submissionPrep.xlsx, submissionPrep.s3InputKey);
+
+      // insert tempalte validated status
+      await this.submissionRepository.insertSubmissionStatus(submissionId, SUBMISSION_STATUS_TYPE.TEMPLATE_TRANSFORMED);
     } catch (error) {
       if (error instanceof SubmissionError) {
         await this.errorService.insertSubmissionError(submissionId, error);
@@ -72,7 +75,10 @@ export class ValidationService extends DBService {
   async validateFile(submissionId: number) {
     try {
       const submissionPrep = await this.templatePreperation(submissionId);
-      await this.templateValidation(submissionId, submissionPrep.xlsx, SUBMISSION_STATUS_TYPE.TEMPLATE_TRANSFORMED);
+      await this.templateValidation(submissionId, submissionPrep.xlsx);
+
+      // insert tempalte validated status
+      await this.submissionRepository.insertSubmissionStatus(submissionId, SUBMISSION_STATUS_TYPE.TEMPLATE_VALIDATED);
     } catch (error) {
       if (error instanceof SubmissionError) {
         await this.errorService.insertSubmissionError(submissionId, error);
@@ -93,6 +99,7 @@ export class ValidationService extends DBService {
       // update submission
       await this.persistValidationResults(csvState.csv_state, csvState.media_state);
       await this.occurrenceService.updateSurveyOccurrenceSubmission(submissionId, dwcPrep.archive.rawFile.fileName, dwcPrep.s3InputKey);
+
     } catch (error) {
       if (error instanceof SubmissionError) {
         await this.errorService.insertSubmissionError(submissionId, error);
@@ -104,50 +111,27 @@ export class ValidationService extends DBService {
 
   async processFile(submissionId: number) {
     try {
-      const messages: MessageError[] = [
-        new MessageError(SUBMISSION_MESSAGE_TYPE.FAILED_GET_OCCURRENCE),
-        new MessageError(SUBMISSION_MESSAGE_TYPE.FAILED_GET_FILE_FROM_S3),
-        new MessageError(SUBMISSION_MESSAGE_TYPE.FAILED_UPLOAD_FILE_TO_S3),
-        new MessageError(SUBMISSION_MESSAGE_TYPE.FAILED_PARSE_SUBMISSION),
-        new MessageError(SUBMISSION_MESSAGE_TYPE.FAILED_PREP_DWC_ARCHIVE),
-        new MessageError(SUBMISSION_MESSAGE_TYPE.FAILED_PREP_XLSX),
-        new MessageError(SUBMISSION_MESSAGE_TYPE.FAILED_PERSIST_PARSE_ERRORS),
-        new MessageError(SUBMISSION_MESSAGE_TYPE.FAILED_GET_VALIDATION_RULES),
-        new MessageError(SUBMISSION_MESSAGE_TYPE.FAILED_GET_TRANSFORMATION_RULES),
-        new MessageError(SUBMISSION_MESSAGE_TYPE.FAILED_PERSIST_TRANSFORMATION_RESULTS),
-        new MessageError(SUBMISSION_MESSAGE_TYPE.FAILED_TRANSFORM_XLSX),
-        new MessageError(SUBMISSION_MESSAGE_TYPE.FAILED_VALIDATE_DWC_ARCHIVE),
-        new MessageError(SUBMISSION_MESSAGE_TYPE.FAILED_PERSIST_VALIDATION_RESULTS),
-        new MessageError(SUBMISSION_MESSAGE_TYPE.FAILED_UPDATE_OCCURRENCE_SUBMISSION),
-        new MessageError(SUBMISSION_MESSAGE_TYPE.FAILED_TO_GET_TRANSFORM_SCHEMA),
-        new MessageError(SUBMISSION_MESSAGE_TYPE.INVALID_MEDIA),
-        new MessageError(SUBMISSION_MESSAGE_TYPE.UNSUPPORTED_FILE_TYPE)
-      ];
-      throw new SubmissionError({ status: SUBMISSION_STATUS_TYPE.REJECTED, messages });
       // template preperation
       const submissionPrep = await this.templatePreperation(submissionId);
 
       // template validation
-      await this.templateValidation(submissionId, submissionPrep.xlsx, SUBMISSION_STATUS_TYPE.TEMPLATE_VALIDATED);
-
+      await this.templateValidation(submissionId, submissionPrep.xlsx);
+      // insert tempalte validated status
+      await this.submissionRepository.insertSubmissionStatus(submissionId, SUBMISSION_STATUS_TYPE.TEMPLATE_VALIDATED);
+      
       // template transformation
       await this.templateTransformation(submissionId, submissionPrep.xlsx, submissionPrep.s3InputKey);
+      // insert tempalte validated status
+      await this.submissionRepository.insertSubmissionStatus(submissionId, SUBMISSION_STATUS_TYPE.TEMPLATE_TRANSFORMED);
 
       // occurrence scraping
       await this.templateScrapeAndUploadOccurrences(submissionId);
     } catch (error) {
-      console.log('');
-      console.log('PARENT CATCH');
-      console.log('');
-
       if (error instanceof SubmissionError) {
         await this.errorService.insertSubmissionError(submissionId, error);
       } else {
         throw error;
       }
-      console.log('');
-      console.log('');
-      console.log('');
     }
   }
 
@@ -213,7 +197,7 @@ export class ValidationService extends DBService {
     }
   }
 
-  async templateValidation(submissionId: number, xlsx: XLSXCSV, statusType: SUBMISSION_STATUS_TYPE) {
+  async templateValidation(submissionId: number, xlsx: XLSXCSV) {
     try {
       const schema = await this.getValidationSchema(xlsx);
       const schemaParser = await this.getValidationRules(schema);

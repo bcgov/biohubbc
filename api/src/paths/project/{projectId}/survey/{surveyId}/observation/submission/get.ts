@@ -1,6 +1,7 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../../../../../../constants/roles';
+import { SUBMISSION_STATUS_TYPE } from '../../../../../../../constants/status';
 import { getDBConnection } from '../../../../../../../database/db';
 import { HTTP400 } from '../../../../../../../errors/http-error';
 import { queries } from '../../../../../../../queries/queries';
@@ -142,7 +143,14 @@ export function getOccurrenceSubmission(): RequestHandler {
 
       const errorStatus = occurrenceSubmissionData.rows[0].submission_status_type_name;
 
-      if (errorStatus === 'Rejected' || errorStatus === 'System Error') {
+      if (
+        errorStatus === SUBMISSION_STATUS_TYPE.REJECTED ||
+        errorStatus === SUBMISSION_STATUS_TYPE.SYSTEM_ERROR ||
+        errorStatus === SUBMISSION_STATUS_TYPE.FAILED_OCCURRENCE_PREPERATION ||
+        errorStatus === SUBMISSION_STATUS_TYPE.FAILED_VALIDATION ||
+        errorStatus === SUBMISSION_STATUS_TYPE.FAILED_TRANSFORMED ||
+        errorStatus === SUBMISSION_STATUS_TYPE.FAILED_PROCESSING_OCCURRENCE_DATA
+        ) {
         const occurrence_submission_id = occurrenceSubmissionData.rows[0].id;
 
         const getSubmissionErrorListSQLStatement = queries.survey.getOccurrenceSubmissionMessagesSQL(

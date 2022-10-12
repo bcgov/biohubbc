@@ -30,18 +30,15 @@ export enum SUBMISSION_STATUS_TYPE {
   'SYSTEM_ERROR' = 'System Error',
 
   //Failure
-
-  'FAILED_OCCURRENCE_PREPERATION' = 'Failed to prepare occurrence submission',
+  'FAILED_OCCURRENCE_PREPERATION' = 'Failed to prepare submission',
   'INVALID_MEDIA' = 'Media is not valid',
   'FAILED_VALIDATION' = 'Failed to validate',
   'FAILED_TRANSFORMED' = 'Failed to transform',
   'FAILED_PROCESSING_OCCURRENCE_DATA' = 'Failed to process occurrence data'
 }
 
-// this appears in the validation of the files data (missing column, inccorect type)
 export enum SUBMISSION_MESSAGE_TYPE {
   //message types that match the submission_message_type table
-
   'DUPLICATE_HEADER' = 'Duplicate header',
   'UNKNOWN_HEADER' = 'Unknown Header',
   'MISSING_REQUIRED_HEADER' = 'Missing Required Header',
