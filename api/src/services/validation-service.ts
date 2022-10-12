@@ -1,5 +1,5 @@
 import AdmZip from 'adm-zip';
-import { IFileProcessException, SUBMISSION_MESSAGE_TYPE, SUBMISSION_STATUS_TYPE } from '../constants/status';
+import { SUBMISSION_MESSAGE_TYPE, SUBMISSION_STATUS_TYPE } from '../constants/status';
 import { IDBConnection } from '../database/db';
 import { SubmissionRepository } from '../repositories/submission-repsitory';
 import { ValidationRepository } from '../repositories/validation-repository';
@@ -82,6 +82,26 @@ export class ValidationService extends DBService {
     try {
       // template preperation
       const submissionPrep = await this.templatePreperation(submissionId);
+      const messages: MessageError[] = [
+      new MessageError(SUBMISSION_MESSAGE_TYPE.FAILED_GET_OCCURRENCE),
+      new MessageError(SUBMISSION_MESSAGE_TYPE.FAILED_GET_FILE_FROM_S3),
+      new MessageError(SUBMISSION_MESSAGE_TYPE.FAILED_UPLOAD_FILE_TO_S3),
+      new MessageError(SUBMISSION_MESSAGE_TYPE.FAILED_PARSE_SUBMISSION),
+      new MessageError(SUBMISSION_MESSAGE_TYPE.FAILED_PREP_DWC_ARCHIVE),
+      new MessageError(SUBMISSION_MESSAGE_TYPE.FAILED_PREP_XLSX),
+      new MessageError(SUBMISSION_MESSAGE_TYPE.FAILED_PERSIST_PARSE_ERRORS),
+      new MessageError(SUBMISSION_MESSAGE_TYPE.FAILED_GET_VALIDATION_RULES),
+      new MessageError(SUBMISSION_MESSAGE_TYPE.FAILED_GET_TRANSFORMATION_RULES),
+      new MessageError(SUBMISSION_MESSAGE_TYPE.FAILED_PERSIST_TRANSFORMATION_RESULTS),
+      new MessageError(SUBMISSION_MESSAGE_TYPE.FAILED_TRANSFORM_XLSX),
+      new MessageError(SUBMISSION_MESSAGE_TYPE.FAILED_VALIDATE_DWC_ARCHIVE),
+      new MessageError(SUBMISSION_MESSAGE_TYPE.FAILED_PERSIST_VALIDATION_RESULTS),
+      new MessageError(SUBMISSION_MESSAGE_TYPE.FAILED_UPDATE_OCCURRENCE_SUBMISSION),
+      new MessageError(SUBMISSION_MESSAGE_TYPE.FAILED_TO_GET_TRANSFORM_SCHEMA),
+      new MessageError(SUBMISSION_MESSAGE_TYPE.INVALID_MEDIA),
+      new MessageError(SUBMISSION_MESSAGE_TYPE.UNSUPPORTED_FILE_TYPE)
+      ]
+      throw new SubmissionError({status: SUBMISSION_STATUS_TYPE.REJECTED, messages})
 
       // template validation
       await this.templateValidation(submissionId, submissionPrep.xlsx, SUBMISSION_STATUS_TYPE.TEMPLATE_VALIDATED);
@@ -135,12 +155,10 @@ export class ValidationService extends DBService {
       const s3File = await getFileFromS3(s3OutputKey);
       const archive = await this.prepDWCArchive(s3File);
       await this.occurrenceService.scrapeAndUploadOccurrences(submissionId, archive);
-    } catch (error: SUBMISSION_MESSAGE_TYPE | any) {
-      if (Object.values(SUBMISSION_MESSAGE_TYPE).includes(error)) {
-        throw {
-          status: SUBMISSION_STATUS_TYPE.FAILED_PROCESSING_OCCURRENCE_DATA,
-          messages: error
-        } as IFileProcessException;
+    } catch (error) {
+
+      if (error instanceof SubmissionError) {
+        error.setStatus(SUBMISSION_STATUS_TYPE.FAILED_PROCESSING_OCCURRENCE_DATA)
       }
       throw error;
     }
@@ -152,12 +170,9 @@ export class ValidationService extends DBService {
       const schemaParser = await this.getValidationRules(schema);
       const csvState = await this.validateXLSX(xlsx, schemaParser);
       await this.persistValidationResults(csvState.csv_state, csvState.media_state);
-    } catch (error: SUBMISSION_MESSAGE_TYPE | any) {
-      if (Object.values(SUBMISSION_MESSAGE_TYPE).includes(error)) {
-        throw {
-          status: SUBMISSION_STATUS_TYPE.FAILED_VALIDATION,
-          messages: error
-        } as IFileProcessException;
+    } catch (error) {
+      if (error instanceof SubmissionError) {
+        error.setStatus(SUBMISSION_STATUS_TYPE.FAILED_VALIDATION)
       }
       throw error;
     }
@@ -169,12 +184,9 @@ export class ValidationService extends DBService {
       const xlsxParser = await this.getTransformationRules(xlsxSchema);
       const fileBuffer = await this.transformXLSX(xlsx, xlsxParser);
       await this.persistTransformationResults(submissionId, fileBuffer, s3InputKey, xlsx);
-    } catch (error: SUBMISSION_MESSAGE_TYPE | any) {
-      if (Object.values(SUBMISSION_MESSAGE_TYPE).includes(error)) {
-        throw {
-          status: SUBMISSION_STATUS_TYPE.FAILED_TRANSFORMED,
-          messages: error
-        } as IFileProcessException;
+    } catch (error) {
+      if (error instanceof SubmissionError) {
+        error.setStatus(SUBMISSION_STATUS_TYPE.FAILED_TRANSFORMED)
       }
       throw error;
     }
@@ -185,7 +197,7 @@ export class ValidationService extends DBService {
     const parsedMedia = parseUnknownMedia(file);
 
     if (!parsedMedia) {
-      throw SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.INVALID_MEDIA);
+      throw SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.UNSUPPORTED_FILE_TYPE);
     }
 
     if (!(parsedMedia instanceof MediaFile)) {
@@ -198,7 +210,7 @@ export class ValidationService extends DBService {
     const csm_id = xlsxCsv.workbook.rawWorkbook.Custprops.sims_csm_id;
 
     if (!template_id || !csm_id) {
-      throw SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_PARSE_SUBMISSION);
+      throw SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_TO_GET_TRANSFORM_SCHEMA);
     }
 
     return xlsxCsv;
@@ -215,7 +227,7 @@ export class ValidationService extends DBService {
 
     const validationSchema = templateMethodologySpeciesRecord?.validation;
     if (!validationSchema) {
-      throw SUBMISSION_MESSAGE_TYPE.FAILED_GET_VALIDATION_RULES;
+      throw SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_GET_VALIDATION_RULES);
     }
 
     return validationSchema;
@@ -232,7 +244,7 @@ export class ValidationService extends DBService {
     const mediaState = file.isMediaValid(parser);
 
     if (!mediaState.isValid) {
-      throw SUBMISSION_MESSAGE_TYPE.INVALID_MEDIA;
+      throw SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.INVALID_MEDIA);
     }
 
     const csvState: ICsvState[] = file.isContentValid(parser);
