@@ -262,7 +262,8 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
       label: 'Unexpected formats in the values provided'
     },
     miscellaneous: { type: ['Miscellaneous'], label: 'Miscellaneous errors exist in your file' },
-    system_error: { type: ['Missing Validation Schema'], label: 'Contact your system administrator' }
+    system_error: { type: ['Missing Validation Schema'], label: 'Contact your system administrator' },
+    failed_s3: { type: ['Failed to get file from S3'], label: 'Contact your system administrator' }
   };
 
   type SubmissionErrors = { [key: string]: string[] };
@@ -390,6 +391,21 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
                 submissionStatus.inputFileName,
                 'Validation Failed to Start'
               )}
+              <Box my={3}>
+                <Typography data-testid="observations-error-details" variant="body1">
+                  Resolve the following errors in your local file and re-import.
+                </Typography>
+              </Box>
+              <Box>
+                {displayMessages(submissionErrors, messageGrouping, mdiAlertCircleOutline)}
+                {displayMessages(submissionWarnings, messageGrouping, mdiInformationOutline)}
+              </Box>
+            </Box>
+          )}
+
+          {!isValidating && submissionStatus?.status === 'Rejected' && (
+            <Box px={3} pb={3}>
+              {displayAlertBox('error', mdiAlertCircleOutline, submissionStatus.inputFileName, 'Validation Failed')}
               <Box my={3}>
                 <Typography data-testid="observations-error-details" variant="body1">
                   Resolve the following errors in your local file and re-import.

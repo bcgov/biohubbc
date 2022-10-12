@@ -74,7 +74,6 @@ export enum SUBMISSION_MESSAGE_TYPE {
   'UNSUPPORTED_FILE_TYPE' = 'File submitted is not a supported type (xlsx, DwC archive)'
 }
 
-
 /*
 
 What do we do with SQL errors like this?
@@ -92,10 +91,10 @@ Do we need more messages?
 /**
  * Submission Status Types and messages.
  *
- * Used to track proper status and messages during file process/ validation 
+ * Used to track proper status and messages during file process/ validation
  *
  */
 export interface IFileProcessException {
-  status: SUBMISSION_STATUS_TYPE
-  messages: SUBMISSION_MESSAGE_TYPE
+  status: SUBMISSION_STATUS_TYPE;
+  messages: SUBMISSION_MESSAGE_TYPE;
 }
