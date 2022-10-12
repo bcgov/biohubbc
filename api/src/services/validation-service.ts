@@ -114,21 +114,38 @@ export class ValidationService extends DBService {
   async processFile(submissionId: number) {
     try {
       // template preperation
+      console.log("____")
+      console.log("____")
+      console.log("____")
       const submissionPrep = await this.templatePreperation(submissionId);
 
+      console.log("PREP DONE")
       // template validation
       await this.templateValidation(submissionId, submissionPrep.xlsx);
+      console.log("Validation done, insert Status")
       // insert tempalte validated status
       await this.submissionRepository.insertSubmissionStatus(submissionId, SUBMISSION_STATUS_TYPE.TEMPLATE_VALIDATED);
 
       // template transformation
       await this.templateTransformation(submissionId, submissionPrep.xlsx, submissionPrep.s3InputKey);
+      console.log("TRANSFORMED")
       // insert tempalte validated status
       await this.submissionRepository.insertSubmissionStatus(submissionId, SUBMISSION_STATUS_TYPE.TEMPLATE_TRANSFORMED);
 
       // occurrence scraping
       await this.templateScrapeAndUploadOccurrences(submissionId);
+      console.log("____")
+      console.log("____")
+      console.log("____")
     } catch (error) {
+      console.log("")
+      console.log("")
+      console.log("")
+      console.log("AND ERROR OCCURED")
+      console.log("")
+      console.log("")
+      console.log("")
+      console.log("")
       if (error instanceof SubmissionError) {
         await this.errorService.insertSubmissionError(submissionId, error);
       } else {
@@ -344,7 +361,7 @@ export class ValidationService extends DBService {
 
     const transformationSchema = templateMethodologySpeciesRecord?.transform;
     if (!transformationSchema) {
-      throw SUBMISSION_MESSAGE_TYPE.FAILED_GET_TRANSFORMATION_RULES;
+      throw SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_GET_TRANSFORMATION_RULES)
     }
 
     return transformationSchema;
@@ -402,11 +419,11 @@ export class ValidationService extends DBService {
 
     const parsedMedia = parseUnknownMedia(s3File);
     if (!parsedMedia) {
-      throw SUBMISSION_MESSAGE_TYPE.UNSUPPORTED_FILE_TYPE;
+      throw SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.INVALID_MEDIA);
     }
 
     if (!(parsedMedia instanceof ArchiveFile)) {
-      throw SUBMISSION_MESSAGE_TYPE.UNSUPPORTED_FILE_TYPE;
+      throw SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.UNSUPPORTED_FILE_TYPE);
     }
 
     const dwcArchive = new DWCArchive(parsedMedia);

@@ -3,6 +3,7 @@ import { IDBConnection } from '../database/db';
 import { PostOccurrence } from '../models/occurrence-create';
 import { IOccurrenceSubmission, OccurrenceRepository } from '../repositories/occurrence-repository';
 import { DWCArchive } from '../utils/media/dwc/dwc-archive-file';
+import { SubmissionErrorFromMessageType } from '../utils/submission-error';
 import { DBService } from './db-service';
 
 export class OccurrenceService extends DBService {
@@ -146,7 +147,7 @@ export class OccurrenceService extends DBService {
       const scrapedOccurrences = this.scrapeArchiveForOccurrences(archive);
       this.insertPostOccurrences(submissionId, scrapedOccurrences);
     } catch (error) {
-      throw SUBMISSION_MESSAGE_TYPE.FAILED_UPDATE_OCCURRENCE_SUBMISSION;
+      throw SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_UPDATE_OCCURRENCE_SUBMISSION);
     }
   }
 
