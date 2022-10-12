@@ -115,7 +115,6 @@ export class ValidationService extends DBService {
   async templatePreperation(submissionId: number): Promise<{s3InputKey: string, xlsx: XLSXCSV}> {
     try {
       const occurrenceSubmission = await this.occurrenceService.getOccurrenceSubmission(submissionId);
-      throw SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_GET_FILE_FROM_S3);
       const s3InputKey = occurrenceSubmission.input_key;
       const s3File = await getFileFromS3(s3InputKey);
       const xlsx = await this.prepXLSX(s3File);

@@ -69,9 +69,9 @@ export enum SUBMISSION_MESSAGE_TYPE {
   'FAILED_VALIDATE_DWC_ARCHIVE' = 'Failed to validate DarwinCore Archive',
   'FAILED_PERSIST_VALIDATION_RESULTS' = 'Failed to persist validation results',
   'FAILED_UPDATE_OCCURRENCE_SUBMISSION' = 'Failed to update occurrence submission',
-  'FAILED_TO_GET_TRANSFORM_SCHEMA' = 'Unable to fetch appropriate transform tempalte schema for your submission',
-  'INVALID_MEDIA' = 'Media is in invalid',
-  'UNSUPPORTED_FILE_TYPE' = 'File submitted is not a supported type (xlsx, DwC archive)'
+  'FAILED_TO_GET_TRANSFORM_SCHEMA' = 'Unable to get transform schema for submission',
+  'INVALID_MEDIA' = 'Media is invalid',
+  'UNSUPPORTED_FILE_TYPE' = 'File submitted is not a supported type'
 }
 
 
