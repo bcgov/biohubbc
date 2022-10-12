@@ -1,7 +1,7 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../constants/roles';
-import { SUBMISSION_MESSAGE_TYPE, SUBMISSION_STATUS_TYPE } from '../../constants/status';
+import { SUBMISSION_STATUS_TYPE } from '../../constants/status';
 import { getDBConnection } from '../../database/db';
 import { HTTP400 } from '../../errors/http-error';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
@@ -108,7 +108,7 @@ export function scrapeAndUpload(): RequestHandler {
       await connection.open();
 
       const service = new ValidationService(connection);
-      await service.templateScrapeAndUploadOccurrences(submissionId);
+      await service.scrapeOccurrences(submissionId);
 
       await connection.commit();
 

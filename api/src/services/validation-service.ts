@@ -43,39 +43,63 @@ export class ValidationService extends DBService {
     this.errorService = new ErrorService(connection);
   }
 
-  async transformFile(submissionId: number) {
-    const occurrenceSubmission = await this.occurrenceService.getOccurrenceSubmission(submissionId);
-    const s3InputKey = occurrenceSubmission?.input_key || '';
-    const s3File = await getFileFromS3(s3InputKey);
-    const xlsx = await this.prepXLSX(s3File);
 
-    await this.templateTransformation(submissionId, xlsx, s3InputKey);
+  async scrapeOccurrences(submissionId: number) {
+    try {
+      await this.templateScrapeAndUploadOccurrences(submissionId)
+    } catch (error) {
+      if (error instanceof SubmissionError) {
+        await this.errorService.insertSubmissionError(submissionId, error);
+      } else {
+        throw error
+      }
+    }
+  }
+
+  async transformFile(submissionId: number) {
+    try {
+      const submissionPrep = await this.templatePreperation(submissionId);
+      await this.templateTransformation(submissionId, submissionPrep.xlsx, submissionPrep.s3InputKey);
+    } catch (error) {
+      if (error instanceof SubmissionError) {
+        await this.errorService.insertSubmissionError(submissionId, error);
+      } else {
+        throw error
+      }
+    }
   }
 
   async validateFile(submissionId: number) {
-    const occurrenceSubmission = await this.occurrenceService.getOccurrenceSubmission(submissionId);
-    const s3InputKey = occurrenceSubmission?.input_key || '';
-    const s3File = await getFileFromS3(s3InputKey);
-    const xlsx = await this.prepXLSX(s3File);
-
-    await this.templateValidation(submissionId, xlsx, SUBMISSION_STATUS_TYPE.TEMPLATE_TRANSFORMED);
+    try {
+      const submissionPrep = await this.templatePreperation(submissionId);
+      await this.templateValidation(submissionId, submissionPrep.xlsx, SUBMISSION_STATUS_TYPE.TEMPLATE_TRANSFORMED);
+    } catch (error) {
+      if (error instanceof SubmissionError) {
+        await this.errorService.insertSubmissionError(submissionId, error);
+      } else {
+        throw error
+      }
+    }
   }
 
   async processDWCFile(submissionId: number) {
-    // prep dwc
-    const occurrenceSubmission = await this.occurrenceService.getOccurrenceSubmission(submissionId);
-    const s3InputKey = occurrenceSubmission?.input_key || '';
-    const s3File = await getFileFromS3(s3InputKey);
-    const archive = this.prepDWCArchive(s3File);
+    try {
+      // prep dwc
+      const dwcPrep = await this.dwcPreperation(submissionId);
+  
+      // validate dwc
+      const csvState = this.validateDWC(dwcPrep.archive);
 
-    // validate dwc
-    const validationSchema = {};
-    const rules = this.getValidationRules(validationSchema);
-    const csvState = this.validateDWCArchive(archive, rules);
-
-    // update submission
-    await this.persistValidationResults(csvState.csv_state, csvState.media_state);
-    await this.occurrenceService.updateSurveyOccurrenceSubmission(submissionId, archive.rawFile.fileName, s3InputKey);
+      // update submission
+      await this.persistValidationResults(csvState.csv_state, csvState.media_state);
+      await this.occurrenceService.updateSurveyOccurrenceSubmission(submissionId, dwcPrep.archive.rawFile.fileName, dwcPrep.s3InputKey);
+    } catch (error) {
+      if (error instanceof SubmissionError) {
+        await this.errorService.insertSubmissionError(submissionId, error);
+      } else {
+        throw error
+      }
+    }
   }
 
   async processFile(submissionId: number) {
@@ -125,6 +149,37 @@ export class ValidationService extends DBService {
       console.log('');
       console.log('');
       console.log('');
+    }
+  }
+
+  validateDWC(archive: DWCArchive): ICsvMediaState {
+    try {
+      const validationSchema = {};
+      const rules = this.getValidationRules(validationSchema);
+      const csvState = this.validateDWCArchive(archive, rules);
+    
+      return csvState as ICsvMediaState;
+    } catch (error) {
+      if (error instanceof SubmissionError) {
+        error.setStatus(SUBMISSION_STATUS_TYPE.FAILED_VALIDATION)
+      }
+      throw error;
+    }
+  }
+
+  async dwcPreperation(submissionId: number): Promise<{archive: DWCArchive, s3InputKey: string}> {
+    try {
+      const occurrenceSubmission = await this.occurrenceService.getOccurrenceSubmission(submissionId);
+      const s3InputKey = occurrenceSubmission.input_key;
+      const s3File = await getFileFromS3(s3InputKey);
+      const archive = this.prepDWCArchive(s3File);
+  
+      return {archive, s3InputKey};
+    } catch (error) {
+      if (error instanceof SubmissionError) {
+        error.setStatus(SUBMISSION_STATUS_TYPE.FAILED_PROCESSING_OCCURRENCE_DATA);
+      }
+      throw error;
     }
   }
 
