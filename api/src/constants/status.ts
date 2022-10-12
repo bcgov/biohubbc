@@ -69,32 +69,7 @@ export enum SUBMISSION_MESSAGE_TYPE {
   'FAILED_VALIDATE_DWC_ARCHIVE' = 'Failed to validate DarwinCore Archive',
   'FAILED_PERSIST_VALIDATION_RESULTS' = 'Failed to persist validation results',
   'FAILED_UPDATE_OCCURRENCE_SUBMISSION' = 'Failed to update occurrence submission',
-  'FAILED_TO_GET_TRANSFORM_SCHEMA' = 'Unable to fetch appropriate transform tempalte schema for your submission',
-  'INVALID_MEDIA' = 'Media is in invalid',
-  'UNSUPPORTED_FILE_TYPE' = 'File submitted is not a supported type (xlsx, DwC archive)'
-}
-
-/*
-
-What do we do with SQL errors like this?
-if (!updateSqlStatement) {
-  throw new HTTP400('Failed to build SQL update statement');
-}
-
-
-Do we need more messages?
-- SUBMISSION_MESSAGE_TYPE.FAILED_UPDATE_OCCURRENCE_SUBMISSION used multiple times
-- INVALID MEDIA 
-- failed to upload to S3
-*/
-
-/**
- * Submission Status Types and messages.
- *
- * Used to track proper status and messages during file process/ validation
- *
- */
-export interface IFileProcessException {
-  status: SUBMISSION_STATUS_TYPE;
-  messages: SUBMISSION_MESSAGE_TYPE;
+  'FAILED_TO_GET_TRANSFORM_SCHEMA' = 'Unable to get transform schema for submission',
+  'INVALID_MEDIA' = 'Media is invalid',
+  'UNSUPPORTED_FILE_TYPE' = 'File submitted is not a supported type'
 }
