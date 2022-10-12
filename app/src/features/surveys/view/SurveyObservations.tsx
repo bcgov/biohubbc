@@ -338,6 +338,7 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
 
   if (messageList) {
     Object.entries(messageGrouping).forEach(([key, value]) => {
+      console.log('messageList: ', messageList);
       messageList.forEach((message) => {
         if (value.type.includes(message.type)) {
           if (message.class === ClassGrouping.ERROR) {
@@ -399,6 +400,7 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
   }
 
   function displayMessages(list: SubmissionErrors | SubmissionWarnings, msgGroup: MessageGrouping, iconName: string) {
+    console.log(list);
     return (
       <Box>
         {Object.entries(list).map(([key, value], index) => (
@@ -447,12 +449,7 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
 
           {!isValidating && submissionStatus?.status === 'System Error' && (
             <Box px={3} pb={3}>
-              {displayAlertBox(
-                'error',
-                mdiAlertCircleOutline,
-                submissionStatus.inputFileName,
-                'Validation Failed to Start'
-              )}
+              {displayAlertBox('error', mdiAlertCircleOutline, submissionStatus.inputFileName, 'System Error')}
               <Box my={3}>
                 <Typography data-testid="observations-error-details" variant="body1">
                   Resolve the following errors in your local file and re-import.
