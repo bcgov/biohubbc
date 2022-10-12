@@ -113,7 +113,7 @@ export function getOccurrencesForView(): RequestHandler {
 
       await errorService.insertSubmissionStatusAndMessage(
         req['occurrence_submission'].occurrence_submission_id,
-        SUBMISSION_STATUS_TYPE.FAILED_GET_OCCURRENCE,
+        SUBMISSION_STATUS_TYPE.FAILED_OCCURRENCE_PREPERATION,
         SUBMISSION_MESSAGE_TYPE.ERROR,
         '' //error.message
       );
