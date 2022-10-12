@@ -43,15 +43,14 @@ export class ValidationService extends DBService {
     this.errorService = new ErrorService(connection);
   }
 
-
   async scrapeOccurrences(submissionId: number) {
     try {
-      await this.templateScrapeAndUploadOccurrences(submissionId)
+      await this.templateScrapeAndUploadOccurrences(submissionId);
     } catch (error) {
       if (error instanceof SubmissionError) {
         await this.errorService.insertSubmissionError(submissionId, error);
       } else {
-        throw error
+        throw error;
       }
     }
   }
@@ -67,7 +66,7 @@ export class ValidationService extends DBService {
       if (error instanceof SubmissionError) {
         await this.errorService.insertSubmissionError(submissionId, error);
       } else {
-        throw error
+        throw error;
       }
     }
   }
@@ -83,7 +82,7 @@ export class ValidationService extends DBService {
       if (error instanceof SubmissionError) {
         await this.errorService.insertSubmissionError(submissionId, error);
       } else {
-        throw error
+        throw error;
       }
     }
   }
@@ -92,19 +91,22 @@ export class ValidationService extends DBService {
     try {
       // prep dwc
       const dwcPrep = await this.dwcPreperation(submissionId);
-  
+
       // validate dwc
       const csvState = this.validateDWC(dwcPrep.archive);
 
       // update submission
       await this.persistValidationResults(csvState.csv_state, csvState.media_state);
-      await this.occurrenceService.updateSurveyOccurrenceSubmission(submissionId, dwcPrep.archive.rawFile.fileName, dwcPrep.s3InputKey);
-
+      await this.occurrenceService.updateSurveyOccurrenceSubmission(
+        submissionId,
+        dwcPrep.archive.rawFile.fileName,
+        dwcPrep.s3InputKey
+      );
     } catch (error) {
       if (error instanceof SubmissionError) {
         await this.errorService.insertSubmissionError(submissionId, error);
       } else {
-        throw error
+        throw error;
       }
     }
   }
@@ -118,7 +120,7 @@ export class ValidationService extends DBService {
       await this.templateValidation(submissionId, submissionPrep.xlsx);
       // insert tempalte validated status
       await this.submissionRepository.insertSubmissionStatus(submissionId, SUBMISSION_STATUS_TYPE.TEMPLATE_VALIDATED);
-      
+
       // template transformation
       await this.templateTransformation(submissionId, submissionPrep.xlsx, submissionPrep.s3InputKey);
       // insert tempalte validated status
@@ -140,24 +142,24 @@ export class ValidationService extends DBService {
       const validationSchema = {};
       const rules = this.getValidationRules(validationSchema);
       const csvState = this.validateDWCArchive(archive, rules);
-    
+
       return csvState as ICsvMediaState;
     } catch (error) {
       if (error instanceof SubmissionError) {
-        error.setStatus(SUBMISSION_STATUS_TYPE.FAILED_VALIDATION)
+        error.setStatus(SUBMISSION_STATUS_TYPE.FAILED_VALIDATION);
       }
       throw error;
     }
   }
 
-  async dwcPreperation(submissionId: number): Promise<{archive: DWCArchive, s3InputKey: string}> {
+  async dwcPreperation(submissionId: number): Promise<{ archive: DWCArchive; s3InputKey: string }> {
     try {
       const occurrenceSubmission = await this.occurrenceService.getOccurrenceSubmission(submissionId);
       const s3InputKey = occurrenceSubmission.input_key;
       const s3File = await getFileFromS3(s3InputKey);
       const archive = this.prepDWCArchive(s3File);
-  
-      return {archive, s3InputKey};
+
+      return { archive, s3InputKey };
     } catch (error) {
       if (error instanceof SubmissionError) {
         error.setStatus(SUBMISSION_STATUS_TYPE.FAILED_PROCESSING_OCCURRENCE_DATA);
@@ -166,7 +168,7 @@ export class ValidationService extends DBService {
     }
   }
 
-  async templatePreperation(submissionId: number): Promise<{s3InputKey: string, xlsx: XLSXCSV}> {
+  async templatePreperation(submissionId: number): Promise<{ s3InputKey: string; xlsx: XLSXCSV }> {
     try {
       const occurrenceSubmission = await this.occurrenceService.getOccurrenceSubmission(submissionId);
       const s3InputKey = occurrenceSubmission.input_key;

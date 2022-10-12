@@ -115,8 +115,8 @@ export function transform(): RequestHandler {
       await connection.rollback();
 
       // We still want to track that the submission failed to present to the user
-      const errorService = new ErrorService(connection)
-      await errorService.insertSubmissionStatus(submissionId, SUBMISSION_STATUS_TYPE.SYSTEM_ERROR)
+      const errorService = new ErrorService(connection);
+      await errorService.insertSubmissionStatus(submissionId, SUBMISSION_STATUS_TYPE.SYSTEM_ERROR);
       await connection.commit();
       throw error;
       throw error;

@@ -150,7 +150,7 @@ export function getOccurrenceSubmission(): RequestHandler {
         errorStatus === SUBMISSION_STATUS_TYPE.FAILED_VALIDATION ||
         errorStatus === SUBMISSION_STATUS_TYPE.FAILED_TRANSFORMED ||
         errorStatus === SUBMISSION_STATUS_TYPE.FAILED_PROCESSING_OCCURRENCE_DATA
-        ) {
+      ) {
         const occurrence_submission_id = occurrenceSubmissionData.rows[0].id;
 
         const getSubmissionErrorListSQLStatement = queries.survey.getOccurrenceSubmissionMessagesSQL(

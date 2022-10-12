@@ -467,29 +467,26 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
             </Box>
           )}
 
-          { !isValidating 
-          && (
-            submissionStatus?.status === 'Rejected' 
-            || submissionStatus?.status === 'Failed to prepare submission'
-            || submissionStatus?.status === 'Media is not valid'
-            || submissionStatus?.status ==='Failed to validate'
-            || submissionStatus?.status ==='Failed to transform'
-            || submissionStatus?.status ==='Failed to process occurrence data'
-          )
-          && (
-            <Box px={3} pb={3}>
-              {displayAlertBox('error', mdiAlertCircleOutline, submissionStatus.inputFileName, 'Validation Failed')}
-              <Box my={3}>
-                <Typography data-testid="observations-error-details" variant="body1">
-                  Resolve the following errors in your local file and re-import.
-                </Typography>
+          {!isValidating &&
+            (submissionStatus?.status === 'Rejected' ||
+              submissionStatus?.status === 'Failed to prepare submission' ||
+              submissionStatus?.status === 'Media is not valid' ||
+              submissionStatus?.status === 'Failed to validate' ||
+              submissionStatus?.status === 'Failed to transform' ||
+              submissionStatus?.status === 'Failed to process occurrence data') && (
+              <Box px={3} pb={3}>
+                {displayAlertBox('error', mdiAlertCircleOutline, submissionStatus.inputFileName, 'Validation Failed')}
+                <Box my={3}>
+                  <Typography data-testid="observations-error-details" variant="body1">
+                    Resolve the following errors in your local file and re-import.
+                  </Typography>
+                </Box>
+                <Box>
+                  {displayMessages(submissionErrors, messageGrouping, mdiAlertCircleOutline)}
+                  {displayMessages(submissionWarnings, messageGrouping, mdiInformationOutline)}
+                </Box>
               </Box>
-              <Box>
-                {displayMessages(submissionErrors, messageGrouping, mdiAlertCircleOutline)}
-                {displayMessages(submissionWarnings, messageGrouping, mdiInformationOutline)}
-              </Box>
-            </Box>
-          )}
+            )}
 
           {(!isValidating && submissionStatus?.status !== 'Template Validated') ||
             (submissionStatus?.status !== 'Darwin Core Validated' && (
