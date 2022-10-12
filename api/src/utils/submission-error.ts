@@ -1,5 +1,9 @@
 import { SUBMISSION_MESSAGE_TYPE, SUBMISSION_STATUS_TYPE } from "../constants/status";
 
+export const SubmissionErrorFromMessageType = (type: SUBMISSION_MESSAGE_TYPE): SubmissionError => {
+  const message = new MessageError(type);
+  return new SubmissionError({messages: [message]});
+}
 export class MessageError extends Error{
   type: SUBMISSION_MESSAGE_TYPE
   description: string

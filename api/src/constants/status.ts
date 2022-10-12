@@ -57,6 +57,7 @@ export enum SUBMISSION_MESSAGE_TYPE {
 
   'FAILED_GET_OCCURRENCE' = 'Failed to Get Occurrence Submission',
   'FAILED_GET_FILE_FROM_S3' = 'Failed to get file from S3',
+  'FAILED_UPLOAD_FILE_TO_S3' = 'Failed to upload file to S3',
   'FAILED_PARSE_SUBMISSION' = 'Failed to parse submission',
   'FAILED_PREP_DWC_ARCHIVE' = 'Failed to prep DarwinCore Archive',
   'FAILED_PREP_XLSX' = 'Failed to prep XLSX',
@@ -68,7 +69,9 @@ export enum SUBMISSION_MESSAGE_TYPE {
   'FAILED_VALIDATE_DWC_ARCHIVE' = 'Failed to validate DarwinCore Archive',
   'FAILED_PERSIST_VALIDATION_RESULTS' = 'Failed to persist validation results',
   'FAILED_UPDATE_OCCURRENCE_SUBMISSION' = 'Failed to update occurrence submission',
-  'INVALID_MEDIA' = 'Media is not valid'
+  'FAILED_TO_GET_TRANSFORM_SCHEMA' = 'Unable to fetch appropriate transform tempalte schema for your submission',
+  'INVALID_MEDIA' = 'Media is in invalid',
+  'UNSUPPORTED_FILE_TYPE' = 'File submitted is not a supported type (xlsx, DwC archive)'
 }
 
 

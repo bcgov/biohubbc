@@ -13,7 +13,7 @@ import { ValidationSchemaParser } from '../utils/media/validation/validation-sch
 import { TransformationSchemaParser } from '../utils/media/xlsx/transformation/transformation-schema-parser';
 import { XLSXTransformation } from '../utils/media/xlsx/transformation/xlsx-transformation';
 import { XLSXCSV } from '../utils/media/xlsx/xlsx-file';
-import { MessageError, SubmissionError } from '../utils/submission-error';
+import { MessageError, SubmissionError, SubmissionErrorFromMessageType } from '../utils/submission-error';
 import { DBService } from './db-service';
 import { ErrorService } from './error-service';
 import { OccurrenceService } from './occurrence-service';
@@ -80,7 +80,8 @@ export class ValidationService extends DBService {
 
   async processFile(submissionId: number) {
     try {
-      const submissionPrep = await this.submissionPreperation(submissionId);
+      // template preperation
+      const submissionPrep = await this.templatePreperation(submissionId);
 
       // template validation
       await this.templateValidation(submissionId, submissionPrep.xlsx, SUBMISSION_STATUS_TYPE.TEMPLATE_VALIDATED);
@@ -101,34 +102,28 @@ export class ValidationService extends DBService {
       console.log("")
 
       if (error instanceof SubmissionError) {
-        console.log("LOOK AT ME GO MOM")
+        await this.errorService.insertSubmissionError(submissionId, error);
+      } else {
+        throw error
       }
-
-      // if (error.status && error.message) {
-        // this.errorService.insertSubmissionStatusAndMessage(
-      //     submissionId,
-      //     error.status,
-      //     error.message,
-      //     error.message
-      //   );
-      // }
       console.log('');
       console.log('');
       console.log('');
     }
   }
 
-  async submissionPreperation(submissionId: number): Promise<{s3InputKey: string, xlsx: XLSXCSV}> {
+  async templatePreperation(submissionId: number): Promise<{s3InputKey: string, xlsx: XLSXCSV}> {
     try {
       const occurrenceSubmission = await this.occurrenceService.getOccurrenceSubmission(submissionId);
+      throw SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_GET_FILE_FROM_S3);
       const s3InputKey = occurrenceSubmission.input_key;
       const s3File = await getFileFromS3(s3InputKey);
       const xlsx = await this.prepXLSX(s3File);
 
       return {s3InputKey: s3InputKey, xlsx: xlsx}
     } catch (error) {
-      if (error instanceof MessageError) {
-        throw new SubmissionError({status: SUBMISSION_STATUS_TYPE.FAILED_GET_OCCURRENCE, messages: [error]});
+      if (error instanceof SubmissionError) {
+        error.setStatus(SUBMISSION_STATUS_TYPE.FAILED_GET_OCCURRENCE)
       }
       throw error;
     }
@@ -191,12 +186,11 @@ export class ValidationService extends DBService {
     const parsedMedia = parseUnknownMedia(file);
 
     if (!parsedMedia) {
-      throw new MessageError(SUBMISSION_MESSAGE_TYPE.INVALID_MEDIA);
+      throw SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.INVALID_MEDIA);
     }
 
     if (!(parsedMedia instanceof MediaFile)) {
-      // throw 'Failed to parse submission, not a valid XLSX CSV file';
-      throw new MessageError(SUBMISSION_MESSAGE_TYPE.INVALID_MEDIA);
+      throw SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.INVALID_MEDIA);
     }
 
     const xlsxCsv = new XLSXCSV(parsedMedia);
@@ -205,8 +199,7 @@ export class ValidationService extends DBService {
     const csm_id = xlsxCsv.workbook.rawWorkbook.Custprops.sims_csm_id;
 
     if (!template_id || !csm_id) {
-      // throw 'Failed to parse submission, template identification properties are missing';
-      throw new MessageError(SUBMISSION_MESSAGE_TYPE.FAILED_PARSE_SUBMISSION)
+      throw SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_PARSE_SUBMISSION);
     }
 
     return xlsxCsv;
@@ -240,7 +233,6 @@ export class ValidationService extends DBService {
     const mediaState = file.isMediaValid(parser);
 
     if (!mediaState.isValid) {
-      // throw 'Media is not valid';
       throw SUBMISSION_MESSAGE_TYPE.INVALID_MEDIA;
     }
 
@@ -312,7 +304,6 @@ export class ValidationService extends DBService {
 
     const transformationSchema = templateMethodologySpeciesRecord?.transform;
     if (!transformationSchema) {
-      // throw 'Unable to fetch an appropriate transform template schema for your submission';
       throw SUBMISSION_MESSAGE_TYPE.FAILED_GET_TRANSFORMATION_RULES;
     }
 
@@ -371,11 +362,11 @@ export class ValidationService extends DBService {
 
     const parsedMedia = parseUnknownMedia(s3File);
     if (!parsedMedia) {
-      throw SUBMISSION_MESSAGE_TYPE.FAILED_PREP_DWC_ARCHIVE;
+      throw SUBMISSION_MESSAGE_TYPE.UNSUPPORTED_FILE_TYPE;
     }
 
     if (!(parsedMedia instanceof ArchiveFile)) {
-      throw SUBMISSION_MESSAGE_TYPE.INVALID_MEDIA;
+      throw SUBMISSION_MESSAGE_TYPE.UNSUPPORTED_FILE_TYPE;
     }
 
     const dwcArchive = new DWCArchive(parsedMedia);
@@ -386,7 +377,7 @@ export class ValidationService extends DBService {
     defaultLog.debug({ label: 'validateDWCArchive', message: 'dwcArchive' });
     const mediaState = dwc.isMediaValid(parser);
     if (!mediaState.isValid) {
-      throw 'Some error';
+      throw SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.INVALID_MEDIA)
     }
 
     const csvState: ICsvState[] = dwc.isContentValid(parser);
