@@ -140,9 +140,7 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
 
         setOccurrenceSubmissionId(submission.id);
       }
-      console.log('_____________');
-      console.log('_____________');
-      console.log('_____________');
+
       console.log(submission);
       return submission;
     });
