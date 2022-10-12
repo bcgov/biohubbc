@@ -157,8 +157,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
             {...props.drawControls}
             options={{
               ...props.drawControls?.options,
-              // Always disable circlemarker
-              draw: { ...props.drawControls?.options?.draw, circle: false, circlemarker: false }
+              // Always disable circle, circlemarker and line
+              draw: { ...props.drawControls?.options?.draw, circle: false, circlemarker: false, polyline: false }
             }}
             onChange={onDrawChange}
             confirmDeletion={confirmDeletion === undefined ? true : confirmDeletion}
