@@ -2,6 +2,7 @@ import { SUBMISSION_MESSAGE_TYPE } from '../constants/status';
 import { HTTP400 } from '../errors/http-error';
 import { PostOccurrence } from '../models/occurrence-create';
 import { queries } from '../queries/queries';
+import { MessageError } from '../utils/submission-error';
 import { BaseRepository } from './base-repository';
 
 export interface IOccurrenceSubmission {
@@ -31,7 +32,7 @@ export class OccurrenceRepository extends BaseRepository {
     }
 
     if (!response) {
-      throw SUBMISSION_MESSAGE_TYPE.FAILED_GET_OCCURRENCE
+      throw new MessageError(SUBMISSION_MESSAGE_TYPE.FAILED_GET_OCCURRENCE)
     }
     return response;
   }

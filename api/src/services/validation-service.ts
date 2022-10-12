@@ -13,6 +13,7 @@ import { ValidationSchemaParser } from '../utils/media/validation/validation-sch
 import { TransformationSchemaParser } from '../utils/media/xlsx/transformation/transformation-schema-parser';
 import { XLSXTransformation } from '../utils/media/xlsx/transformation/xlsx-transformation';
 import { XLSXCSV } from '../utils/media/xlsx/xlsx-file';
+import { MessageError, SubmissionError } from '../utils/submission-error';
 import { DBService } from './db-service';
 import { ErrorService } from './error-service';
 import { OccurrenceService } from './occurrence-service';
@@ -79,37 +80,57 @@ export class ValidationService extends DBService {
 
   async processFile(submissionId: number) {
     try {
-      const occurrenceSubmission = await this.occurrenceService.getOccurrenceSubmission(submissionId);
-      const s3InputKey = occurrenceSubmission.input_key;
-      const s3File = await getFileFromS3(s3InputKey);
-      const xlsx = await this.prepXLSX(s3File);
-      
+      const submissionPrep = await this.submissionPreperation(submissionId);
+
       // template validation
-      await this.templateValidation(submissionId, xlsx, SUBMISSION_STATUS_TYPE.TEMPLATE_VALIDATED);
+      await this.templateValidation(submissionId, submissionPrep.xlsx, SUBMISSION_STATUS_TYPE.TEMPLATE_VALIDATED);
       
       // template transformation
-      await this.templateTransformation(submissionId, xlsx, s3InputKey);      
+      await this.templateTransformation(submissionId, submissionPrep.xlsx, submissionPrep.s3InputKey);
 
       // occurrence scraping
-      await this.templateScrapeAndUploadOccurrences(submissionId);
+      try {
+        await this.templateScrapeAndUploadOccurrences(submissionId);
+      } catch (error) {
+        
+      }
       
-    } catch (error: IFileProcessException | any) {
+    } catch (error) {
       console.log("")
       console.log("PARENT CATCH")
       console.log("")
 
-      if (error.status && error.message) {
-        this.errorService.insertSubmissionStatusAndMessage(
-          submissionId,
-          error.status,
-          error.message,
-          ""
-        );
+      if (error instanceof SubmissionError) {
+        console.log("LOOK AT ME GO MOM")
       }
 
+      // if (error.status && error.message) {
+      //   this.errorService.insertSubmissionStatusAndMessage(
+      //     submissionId,
+      //     error.status,
+      //     error.message,
+      //     error.message
+      //   );
+      // }
       console.log('');
       console.log('');
       console.log('');
+    }
+  }
+
+  async submissionPreperation(submissionId: number): Promise<{s3InputKey: string, xlsx: XLSXCSV}> {
+    try {
+      const occurrenceSubmission = await this.occurrenceService.getOccurrenceSubmission(submissionId);
+      const s3InputKey = occurrenceSubmission.input_key;
+      const s3File = await getFileFromS3(s3InputKey);
+      const xlsx = await this.prepXLSX(s3File);
+
+      return {s3InputKey: s3InputKey, xlsx: xlsx}
+    } catch (error) {
+      if (error instanceof MessageError) {
+        throw new SubmissionError({status: SUBMISSION_STATUS_TYPE.FAILED_GET_OCCURRENCE, messages: [error]});
+      }
+      throw error;
     }
   }
 
@@ -170,12 +191,12 @@ export class ValidationService extends DBService {
     const parsedMedia = parseUnknownMedia(file);
 
     if (!parsedMedia) {
-      throw SUBMISSION_STATUS_TYPE.INVALID_MEDIA;
+      throw new MessageError(SUBMISSION_MESSAGE_TYPE.INVALID_MEDIA);
     }
 
     if (!(parsedMedia instanceof MediaFile)) {
       // throw 'Failed to parse submission, not a valid XLSX CSV file';
-      throw SUBMISSION_STATUS_TYPE.INVALID_MEDIA;
+      throw new MessageError(SUBMISSION_MESSAGE_TYPE.INVALID_MEDIA);
     }
 
     const xlsxCsv = new XLSXCSV(parsedMedia);
@@ -185,7 +206,7 @@ export class ValidationService extends DBService {
 
     if (!template_id || !csm_id) {
       // throw 'Failed to parse submission, template identification properties are missing';
-      throw SUBMISSION_STATUS_TYPE.FAILED_GET_OCCURRENCE;
+      throw new MessageError(SUBMISSION_MESSAGE_TYPE.FAILED_PARSE_SUBMISSION)
     }
 
     return xlsxCsv;
@@ -290,10 +311,10 @@ export class ValidationService extends DBService {
     // track all file contents validation errors
     await Promise.all(promises);
 
-    // if (parseError) {
-    //   // shouldn't continue with process but instead 
-    //   throw SUBMISSION_MESSAGE_TYPE.PARSE_ERROR;
-    // }
+    if (parseError) {
+      // shouldn't continue with process but instead 
+      throw SUBMISSION_MESSAGE_TYPE.PARSE_ERROR;
+    }
 
     return parseError;
   }

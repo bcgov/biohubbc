@@ -1,13 +1,23 @@
 import { SUBMISSION_MESSAGE_TYPE, SUBMISSION_STATUS_TYPE } from "../constants/status";
 
-export class MessageError extends Error {
+export class MessageError extends Error{
   type: SUBMISSION_MESSAGE_TYPE
   description: string
+  errorCode: string
 
-  constructor(type: SUBMISSION_MESSAGE_TYPE, description: string) {
-    super(type);
+  constructor(type: SUBMISSION_MESSAGE_TYPE, description?: string, errorCode?: string) {
+    super(type)
     this.type = type
-    this.description = description
+    this.description = type
+    this.errorCode = type
+
+    if (description) {
+      this.description = description
+    }
+
+    if (errorCode) {
+      this.errorCode = errorCode
+    }
   }
 }
 
@@ -15,9 +25,15 @@ export class SubmissionError extends Error {
   status: SUBMISSION_STATUS_TYPE
   submissionMessages: MessageError[]
 
-  constructor(status: SUBMISSION_STATUS_TYPE, messages: MessageError[]) {
-    super(status);
-    this.status = status;
-    this.submissionMessages = messages;
+  constructor(params: {status?: SUBMISSION_STATUS_TYPE, messages?: MessageError[]}) {
+    const {status, messages} = params;
+    super(status || SUBMISSION_STATUS_TYPE.REJECTED);
+
+    this.status = status || SUBMISSION_STATUS_TYPE.REJECTED;
+    this.submissionMessages = messages || [];
+  }
+
+  setStatus(status: SUBMISSION_STATUS_TYPE) {
+    this.status = status
   }
 }

@@ -99,6 +99,7 @@ export async function getFileFromS3(key: string, versionId?: string): Promise<Ge
     Key: key,
     VersionId: versionId
   }).promise().catch(error => {
+    // should be more generic of an error
     throw SUBMISSION_MESSAGE_TYPE.FAILED_GET_FILE_FROM_S3;
   });
 }
