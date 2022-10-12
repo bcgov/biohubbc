@@ -31,7 +31,6 @@ export enum SUBMISSION_STATUS_TYPE {
 
   //Failure
 
-  'FAILED_GET_OCCURRENCE' = 'Failed to Get Occurrence Submission',
   'FAILED_OCCURRENCE_PREPERATION' = 'Failed to prepare occurrence submission',
   'INVALID_MEDIA' = 'Media is not valid',
   'FAILED_VALIDATION' = 'Failed to validate',

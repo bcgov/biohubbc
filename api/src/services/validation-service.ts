@@ -123,7 +123,7 @@ export class ValidationService extends DBService {
       return {s3InputKey: s3InputKey, xlsx: xlsx}
     } catch (error) {
       if (error instanceof SubmissionError) {
-        error.setStatus(SUBMISSION_STATUS_TYPE.FAILED_GET_OCCURRENCE)
+        error.setStatus(SUBMISSION_STATUS_TYPE.FAILED_OCCURRENCE_PREPERATION)
       }
       throw error;
     }
