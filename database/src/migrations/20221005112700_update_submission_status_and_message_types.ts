@@ -18,7 +18,7 @@ export async function up(knex: Knex): Promise<void> {
     -- inserting new submission status types
 
 
-    insert into submission_status_type (name, record_effective_date, description) values ('Failed to Get Occurrence Submission', now(), 'Validation failed on getting the occurrence submission');
+    insert into submission_status_type (name, record_effective_date, description) values ('Failed to prepare submission', now(), 'Validation failed on preparing the occurrence submission');
     insert into submission_status_type (name, record_effective_date, description) values ('Media is not valid', now(), 'Media it not valid');
     insert into submission_status_type (name, record_effective_date, description) values ('Failed to validate', now(), 'Failed to validate');
     insert into submission_status_type (name, record_effective_date, description) values ('Failed to transform', now(), 'Failed to transform');
@@ -38,17 +38,10 @@ export async function up(knex: Knex): Promise<void> {
     insert into submission_message_type (name, record_effective_date, description, submission_message_class_id) values ('Failed to validate DarwinCore Archive', now(), 'Validation failed on validating Darwin Core Archive',(select submission_message_class_id from submission_message_class where name = 'Error'));
     insert into submission_message_type (name, record_effective_date, description, submission_message_class_id) values ('Failed to persist validation results', now(), 'Validation failed on persisting validation results',(select submission_message_class_id from submission_message_class where name = 'Error'));
     insert into submission_message_type (name, record_effective_date, description, submission_message_class_id) values ('Failed to update occurrence submission', now(), 'Process failed on updating occurrence submission',(select submission_message_class_id from submission_message_class where name = 'Error'));
-    insert into submission_message_type (name, record_effective_date, description, submission_message_class_id) values ('Failed to get file from S3'', now(), 'Failed to get file from S3'',(select submission_message_class_id from submission_message_class where name = 'Error'));
+    insert into submission_message_type (name, record_effective_date, description, submission_message_class_id) values ('Failed to get file from S3', now(), 'Failed to get file from S3',(select submission_message_class_id from submission_message_class where name = 'Error'));
     insert into submission_message_type (name, record_effective_date, description, submission_message_class_id) values ('Media is invalid', now(), 'Media is invalid',(select submission_message_class_id from submission_message_class where name = 'Error'));
-    insert into submission_message_type (name, record_effective_date, description, submission_message_class_id) values ('Unable to fetch appropriate transform tempalte schema for your submission', now(), 'Unable to fetch appropriate transform tempalte schema for your submission',(select submission_message_class_id from submission_message_class where name = 'Error'));
-    insert into submission_message_type (name, record_effective_date, description, submission_message_class_id) values ('File submitted is not a supported type (xlsx, DwC archive)', now(), 'File submitted is not a supported type (xlsx, DwC archive)',(select submission_message_class_id from submission_message_class where name = 'Error'));
-    
-    insert into submission_message_type (name, record_effective_date, description, submission_message_class_id) values ('File submitted is not a supported type (xlsx, DwC archive)', now(), 'File submitted is not a supported type (xlsx, DwC archive)',(select submission_message_class_id from submission_message_class where name = 'Error'));
-    insert into submission_message_type (name, record_effective_date, description, submission_message_class_id) values ('File submitted is not a supported type (xlsx, DwC archive)', now(), 'File submitted is not a supported type (xlsx, DwC archive)',(select submission_message_class_id from submission_message_class where name = 'Error'));
-    insert into submission_message_type (name, record_effective_date, description, submission_message_class_id) values ('File submitted is not a supported type (xlsx, DwC archive)', now(), 'File submitted is not a supported type (xlsx, DwC archive)',(select submission_message_class_id from submission_message_class where name = 'Error'));
-    insert into submission_message_type (name, record_effective_date, description, submission_message_class_id) values ('File submitted is not a supported type (xlsx, DwC archive)', now(), 'File submitted is not a supported type (xlsx, DwC archive)',(select submission_message_class_id from submission_message_class where name = 'Error'));
-    insert into submission_message_type (name, record_effective_date, description, submission_message_class_id) values ('File submitted is not a supported type (xlsx, DwC archive)', now(), 'File submitted is not a supported type (xlsx, DwC archive)',(select submission_message_class_id from submission_message_class where name = 'Error'));
-
+    insert into submission_message_type (name, record_effective_date, description, submission_message_class_id) values ('Unable to get transform schema for submission', now(), 'Unable to get transform schema for submission',(select submission_message_class_id from submission_message_class where name = 'Error'));
+    insert into submission_message_type (name, record_effective_date, description, submission_message_class_id) values ('File submitted is not a supported type', now(), 'File submitted is not a supported type',(select submission_message_class_id from submission_message_class where name = 'Error'));
 
 
   `);

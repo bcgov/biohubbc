@@ -92,7 +92,7 @@ export class ErrorService extends DBService {
   }
 
   async insertSubmissionError(submissionId: number, error: SubmissionError) {
-    const submission_status_id = (await this.errorRepository.insertSubmissionStatus(submissionId, error.status))
+    const submission_status_id = (await this.errorRepository.insertSubmissionStatus(submissionId, SUBMISSION_STATUS_TYPE.REJECTED))
       .submission_status_id;
     const promises = error.submissionMessages.map(message => {
       return this.errorRepository.insertSubmissionMessage(submission_status_id, message.type, message.description)
