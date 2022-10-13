@@ -27,13 +27,24 @@ const mockUseBiohubApi = {
     getAllCodeSets: jest.fn<Promise<IGetAllCodeSetsResponse>, []>()
   },
   survey: {
-    getSurveyPermits: jest.fn<Promise<ISurveyPermits[]>, []>(),
+    getSurveyPermits: jest.fn<Promise<ISurveyPermits>, []>(),
     getAvailableSurveyFundingSources: jest.fn<Promise<ISurveyAvailableFundingSources[]>, []>(),
     createSurvey: jest.fn<Promise<ICreateSurveyResponse>, []>()
   },
   taxonomy: {
     searchSpecies: jest.fn().mockResolvedValue({ searchResponse: [] }),
     getSpeciesFromIds: jest.fn().mockResolvedValue({ searchResponse: [] })
+  },
+  external: {
+    post: jest.fn().mockResolvedValue({
+      features: [
+        {
+          type: 'Feature',
+          geometry: { type: 'Point', coordinates: [0, 0] },
+          properties: {}
+        }
+      ]
+    })
   }
 };
 
@@ -72,9 +83,9 @@ describe('CreateSurveyPage', () => {
   it('renders the initial default page correctly', async () => {
     mockBiohubApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
     mockBiohubApi().codes.getAllCodeSets.mockResolvedValue(codes);
-    mockBiohubApi().survey.getSurveyPermits.mockResolvedValue([
-      { permit_number: 'abcd1', permit_type: 'Wildlife permit' }
-    ]);
+    mockBiohubApi().survey.getSurveyPermits.mockResolvedValue({
+      permits: [{ id: 1, permit_number: 'abcd1', permit_type: 'Wildlife permit' }]
+    });
     mockBiohubApi().survey.getAvailableSurveyFundingSources.mockResolvedValue(
       getProjectForViewResponse.funding.fundingSources
     );
@@ -111,10 +122,12 @@ describe('CreateSurveyPage', () => {
 
     mockBiohubApi().codes.getAllCodeSets.mockResolvedValue(codes);
 
-    mockBiohubApi().survey.getSurveyPermits.mockResolvedValue([
-      { permit_number: '123', permit_type: 'Scientific' },
-      { permit_number: '456', permit_type: 'Wildlife' }
-    ]);
+    mockBiohubApi().survey.getSurveyPermits.mockResolvedValue({
+      permits: [
+        { id: 1, permit_number: '123', permit_type: 'Scientific' },
+        { id: 2, permit_number: '456', permit_type: 'Wildlife' }
+      ]
+    });
 
     mockBiohubApi().taxonomy.getSpeciesFromIds.mockResolvedValue({
       searchResponse: [
@@ -155,10 +168,12 @@ describe('CreateSurveyPage', () => {
     it('calls history.push() if the user clicks `Yes`', async () => {
       mockBiohubApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
       mockBiohubApi().codes.getAllCodeSets.mockResolvedValue(codes);
-      mockBiohubApi().survey.getSurveyPermits.mockResolvedValue([
-        { permit_number: '123', permit_type: 'Scientific' },
-        { permit_number: '456', permit_type: 'Wildlife' }
-      ]);
+      mockBiohubApi().survey.getSurveyPermits.mockResolvedValue({
+        permits: [
+          { id: 1, permit_number: '123', permit_type: 'Scientific' },
+          { id: 2, permit_number: '456', permit_type: 'Wildlife' }
+        ]
+      });
       mockBiohubApi().survey.getAvailableSurveyFundingSources.mockResolvedValue([
         {
           ...getProjectForViewResponse.funding.fundingSources[0],
@@ -207,10 +222,12 @@ describe('CreateSurveyPage', () => {
     it('does nothing if the user clicks `No` or away from the dialog', async () => {
       mockBiohubApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
       mockBiohubApi().codes.getAllCodeSets.mockResolvedValue(codes);
-      mockBiohubApi().survey.getSurveyPermits.mockResolvedValue([
-        { permit_number: '123', permit_type: 'Scientific' },
-        { permit_number: '456', permit_type: 'Wildlife' }
-      ]);
+      mockBiohubApi().survey.getSurveyPermits.mockResolvedValue({
+        permits: [
+          { id: 1, permit_number: '123', permit_type: 'Scientific' },
+          { id: 2, permit_number: '456', permit_type: 'Wildlife' }
+        ]
+      });
       mockBiohubApi().survey.getAvailableSurveyFundingSources.mockResolvedValue([
         {
           ...getProjectForViewResponse.funding.fundingSources[0],

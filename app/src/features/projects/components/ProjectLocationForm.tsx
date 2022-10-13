@@ -44,7 +44,7 @@ const ProjectLocationForm = () => {
         name="location.geometry"
         title="Define Project Boundary"
         mapId="project_location_form_map"
-        bounds={[]}
+        bounds={undefined}
         formikProps={formikProps}
       />
       <Box mt={4}>

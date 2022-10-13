@@ -24,6 +24,7 @@ import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
+import { LatLngBoundsExpression } from 'leaflet';
 import React, { useCallback, useEffect, useState } from 'react';
 import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
 
@@ -77,7 +78,7 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
     env: [],
     wmu: []
   });
-  const [bounds, setBounds] = useState<any[] | undefined>([]);
+  const [bounds, setBounds] = useState<LatLngBoundsExpression | undefined>(undefined);
   const [nonEditableGeometries, setNonEditableGeometries] = useState<any[]>([]);
   const [showFullScreenViewMapDialog, setShowFullScreenViewMapDialog] = useState<boolean>(false);
 
@@ -189,7 +190,6 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
         map={
           <MapContainer
             mapId="project_location_form_map"
-            hideDrawControls={true}
             scrollWheelZoom={true}
             nonEditableGeometries={nonEditableGeometries}
             bounds={bounds}
@@ -226,7 +226,6 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
         <Box mt={2} height={350} position="relative">
           <MapContainer
             mapId="survey_study_area_map"
-            hideDrawControls={true}
             nonEditableGeometries={nonEditableGeometries}
             bounds={bounds}
             setInferredLayersInfo={setInferredLayersInfo}

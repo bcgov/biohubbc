@@ -1,7 +1,3 @@
-import { getLogger } from '../utils/logger';
-
-const defaultLog = getLogger('models/user');
-
 export class UserObject {
   id: number;
   user_identifier: string;
@@ -10,8 +6,6 @@ export class UserObject {
   role_names: string[];
 
   constructor(obj?: any) {
-    defaultLog.debug({ label: 'UserObject', message: 'params', obj });
-
     this.id = obj?.system_user_id || null;
     this.user_identifier = obj?.user_identifier || null;
     this.record_end_date = obj?.record_end_date || null;
@@ -27,8 +21,6 @@ export class ProjectUserObject {
   project_role_names: string[];
 
   constructor(obj?: any) {
-    defaultLog.debug({ label: 'ProjectUserObject', message: 'params', obj });
-
     this.project_id = obj?.project_id || null;
     this.system_user_id = obj?.system_user_id || null;
     this.project_role_ids = (obj?.project_role_ids?.length && obj.project_role_ids) || [];
