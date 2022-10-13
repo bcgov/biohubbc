@@ -313,14 +313,14 @@ export class ValidationService extends DBService {
     const errors: MessageError[] = [];
 
     mediaState.fileErrors?.forEach((fileError) => {
-      errors.push(new MessageError(SUBMISSION_MESSAGE_TYPE.ERROR, `${fileError}`, 'Miscellaneous'));
+      errors.push(new MessageError(SUBMISSION_MESSAGE_TYPE.INVALID_MEDIA, `${fileError}`, 'Miscellaneous'));
     });
 
     csvState?.forEach((csvStateItem) => {
       csvStateItem.headerErrors?.forEach((headerError) => {
         errors.push(
           new MessageError(
-            SUBMISSION_MESSAGE_TYPE.ERROR,
+            SUBMISSION_MESSAGE_TYPE.INVALID_VALUE,
             this.generateHeaderErrorMessage(csvStateItem.fileName, headerError),
             headerError.errorCode
           )
@@ -330,7 +330,7 @@ export class ValidationService extends DBService {
       csvStateItem.rowErrors?.forEach((rowError) => {
         errors.push(
           new MessageError(
-            SUBMISSION_MESSAGE_TYPE.ERROR,
+            SUBMISSION_MESSAGE_TYPE.INVALID_VALUE,
             this.generateRowErrorMessage(csvStateItem.fileName, rowError),
             rowError.errorCode
           )

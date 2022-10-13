@@ -49,8 +49,6 @@ export enum SUBMISSION_MESSAGE_TYPE {
   'OUT_OF_RANGE' = 'Out of Range',
   'INVALID_VALUE' = 'Invalid Value',
   'MISSING_VALIDATION_SCHEMA' = 'Missing Validation Schema',
-  'ERROR' = 'Error',
-  'PARSE_ERROR' = 'Parse error',
   'FAILED_GET_OCCURRENCE' = 'Failed to Get Occurrence Submission',
   'FAILED_GET_FILE_FROM_S3' = 'Failed to get file from S3',
   'FAILED_UPLOAD_FILE_TO_S3' = 'Failed to upload file to S3',
