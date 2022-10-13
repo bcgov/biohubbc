@@ -114,38 +114,23 @@ export class ValidationService extends DBService {
   async processFile(submissionId: number) {
     try {
       // template preperation
-      console.log('____');
-      console.log('____');
-      console.log('____');
       const submissionPrep = await this.templatePreperation(submissionId);
-
-      console.log('PREP DONE');
+      
       // template validation
       await this.templateValidation(submissionId, submissionPrep.xlsx);
-      console.log('Validation done, insert Status');
+
       // insert tempalte validated status
       await this.submissionRepository.insertSubmissionStatus(submissionId, SUBMISSION_STATUS_TYPE.TEMPLATE_VALIDATED);
 
       // template transformation
       await this.templateTransformation(submissionId, submissionPrep.xlsx, submissionPrep.s3InputKey);
-      console.log('TRANSFORMED');
+
       // insert tempalte validated status
       await this.submissionRepository.insertSubmissionStatus(submissionId, SUBMISSION_STATUS_TYPE.TEMPLATE_TRANSFORMED);
 
       // occurrence scraping
       await this.templateScrapeAndUploadOccurrences(submissionId);
-      console.log('____');
-      console.log('____');
-      console.log('____');
     } catch (error) {
-      console.log('');
-      console.log('');
-      console.log('');
-      console.log('AND ERROR OCCURED');
-      console.log('');
-      console.log('');
-      console.log('');
-      console.log('');
       if (error instanceof SubmissionError) {
         await this.errorService.insertSubmissionError(submissionId, error);
       } else {
@@ -248,18 +233,20 @@ export class ValidationService extends DBService {
     defaultLog.debug({ label: 'prepXLSX', message: 's3File' });
     const parsedMedia = parseUnknownMedia(file);
 
+    // not sure how to trigger these through testing
     if (!parsedMedia) {
       throw SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.UNSUPPORTED_FILE_TYPE);
     }
 
+    // not sure how to trigger these through testing
     if (!(parsedMedia instanceof MediaFile)) {
       throw SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.INVALID_MEDIA);
     }
 
     const xlsxCsv = new XLSXCSV(parsedMedia);
 
-    const template_id = xlsxCsv.workbook.rawWorkbook.Custprops.sims_template_id;
-    const csm_id = xlsxCsv.workbook.rawWorkbook.Custprops.sims_csm_id;
+    const template_id = xlsxCsv.workbook.rawWorkbook.Custprops?.sims_template_id;
+    const csm_id = xlsxCsv.workbook.rawWorkbook.Custprops?.sims_csm_id;
 
     if (!template_id || !csm_id) {
       throw SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_TO_GET_TRANSFORM_SCHEMA);
