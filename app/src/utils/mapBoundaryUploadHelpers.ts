@@ -2,6 +2,7 @@ import { gpx, kml } from '@tmcw/togeojson';
 import bbox from '@turf/bbox';
 import { FormikContextType } from 'formik';
 import { Feature } from 'geojson';
+import { LatLngBoundsExpression } from 'leaflet';
 import get from 'lodash-es/get';
 import shp from 'shpjs';
 import { v4 as uuidv4 } from 'uuid';
@@ -128,7 +129,7 @@ export const handleKMLUpload = async <T>(file: File, name: string, formikProps: 
 /**
  * @param geometries geometry values on map
  */
-export const calculateUpdatedMapBounds = (geometries: Feature[]): any[][] | undefined => {
+export const calculateUpdatedMapBounds = (geometries: Feature[]): LatLngBoundsExpression | undefined => {
   /*
     If no geometries, we do not need to set bounds
 
