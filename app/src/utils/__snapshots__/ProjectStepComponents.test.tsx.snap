@@ -1459,17 +1459,6 @@ exports[`ProjectStepComponents renders the project location 1`] = `
                       class="leaflet-draw-toolbar leaflet-bar leaflet-draw-toolbar-top"
                     >
                       <a
-                        class="leaflet-draw-draw-polyline"
-                        href="#"
-                        title="Draw a polyline"
-                      >
-                        <span
-                          class="sr-only"
-                        >
-                          Draw a polyline
-                        </span>
-                      </a>
-                      <a
                         class="leaflet-draw-draw-polygon"
                         href="#"
                         title="Draw a polygon"
@@ -1567,7 +1556,7 @@ exports[`ProjectStepComponents renders the project location 1`] = `
                         <div>
                           <input
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_44"
+                            name="leaflet-base-layers_43"
                             type="radio"
                           />
                           <span>
@@ -1580,7 +1569,7 @@ exports[`ProjectStepComponents renders the project location 1`] = `
                           <input
                             checked="checked"
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_44"
+                            name="leaflet-base-layers_43"
                             type="radio"
                           />
                           <span>

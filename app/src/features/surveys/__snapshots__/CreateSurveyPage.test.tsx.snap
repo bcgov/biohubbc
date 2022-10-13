@@ -1612,17 +1612,6 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                                 class="leaflet-draw-toolbar leaflet-bar leaflet-draw-toolbar-top"
                               >
                                 <a
-                                  class="leaflet-draw-draw-polyline"
-                                  href="#"
-                                  title="Draw a polyline"
-                                >
-                                  <span
-                                    class="sr-only"
-                                  >
-                                    Draw a polyline
-                                  </span>
-                                </a>
-                                <a
                                   class="leaflet-draw-draw-polygon"
                                   href="#"
                                   title="Draw a polygon"
@@ -1720,7 +1709,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                                   <div>
                                     <input
                                       class="leaflet-control-layers-selector"
-                                      name="leaflet-base-layers_88"
+                                      name="leaflet-base-layers_85"
                                       type="radio"
                                     />
                                     <span>
@@ -1733,7 +1722,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                                     <input
                                       checked="checked"
                                       class="leaflet-control-layers-selector"
-                                      name="leaflet-base-layers_88"
+                                      name="leaflet-base-layers_85"
                                       type="radio"
                                     />
                                     <span>
