@@ -94,15 +94,6 @@ export const getValidateAPIDoc = (basicDescription: string, successDescription: 
   };
 };
 
-//NOTES:
-//  Do we want a validation service, or an error service?
-// Currently, a failed validation is a submission status state
-// option 1: we keep it the way it is, and tailor the error message ... ie SQL, or other custom message
-// option 2: create a validation service, to group all validation related functions ... some reuse between dwc and xlsx validation
-// option 3: create an error-service, to manage all kinds of errors ... submission as a starting point
-// or some combination.
-// Both option 2 and 3 could help introduce more granular error messages and message types
-
 POST.apiDoc = {
   ...getValidateAPIDoc(
     'Validates a Darwin Core (DWC) Archive survey observation submission.',

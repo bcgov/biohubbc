@@ -3,7 +3,8 @@ import { describe } from 'mocha';
 import { QueryResult } from 'pg';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import { HTTP400 } from '../errors/custom-error';
+import { HTTP400 } from '../errors/http-error';
+
 import { PostOccurrence } from '../models/occurrence-create';
 import { queries } from '../queries/queries';
 import { OccurrenceRepository } from '../repositories/occurrence-repository';
