@@ -491,7 +491,7 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
                   'error',
                   mdiAlertCircleOutline,
                   submissionStatus.inputFileName,
-                  SUBMISSION_STATUS_TYPE.FAILED_VALIDATION
+                  `Validation error: ${submissionStatus?.status}`
                 )}
                 <Box my={3}>
                   <Typography data-testid="observations-error-details" variant="body1">
@@ -507,7 +507,8 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
           {!isValidating &&
             submissionStatus &&
             (submissionStatus.status === SUBMISSION_STATUS_TYPE.DARWIN_CORE_VALIDATED ||
-              submissionStatus.status === SUBMISSION_STATUS_TYPE.TEMPLATE_VALIDATED) && (
+              submissionStatus.status === SUBMISSION_STATUS_TYPE.TEMPLATE_VALIDATED ||
+              submissionStatus.status === SUBMISSION_STATUS_TYPE.TEMPLATE_TRANSFORMED) && (
               <>
                 <Box px={3}>{displayAlertBox('info', mdiFileOutline, submissionStatus.inputFileName, '')}</Box>
               </>
