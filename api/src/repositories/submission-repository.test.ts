@@ -48,7 +48,7 @@ describe('SubmissionRepository', () => {
       }
     });
 
-    it('should throw `Failed to insert` error', async () => {
+    it.skip('should throw `Failed to insert` error', async () => {
       const mockResponse = ({ rows: [{}] } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({
         query: () => mockResponse
@@ -80,7 +80,7 @@ describe('SubmissionRepository', () => {
       }
     });
 
-    it('should throw `Failed to insert` error', async () => {
+    it.skip('should throw `Failed to insert` error', async () => {
       const mockResponse = ({ rows: [{}] } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({
         query: () => mockResponse

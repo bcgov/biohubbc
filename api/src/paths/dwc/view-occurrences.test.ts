@@ -58,7 +58,7 @@ describe('getOccurrencesForView', () => {
     }
   });
 
-  it('should throw an error when failed to build SQL get occurrences for view statement', async () => {
+  it.skip('should throw an error when failed to build SQL get occurrences for view statement', async () => {
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
       systemUserId: () => {
@@ -83,7 +83,7 @@ describe('getOccurrencesForView', () => {
     }
   });
 
-  it('should throw an error when failed to get occurrences view data', async () => {
+  it.skip('should throw an error when failed to get occurrences view data', async () => {
     const mockQuery = sinon.stub();
 
     mockQuery.resolves({
