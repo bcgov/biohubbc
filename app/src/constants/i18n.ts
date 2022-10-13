@@ -195,7 +195,7 @@ export const EditReportMetaDataI18N = {
 export const AddSystemUserI18N = {
   addUserErrorTitle: 'Error Adding System User',
   addUserErrorText:
-    'An error has occurred while attempting to add the system user. If the error persists, please contact your system administrator.'
+    'An error has occurred while attempting to add the system user. This user has already been granted this role. If the error persists, please contact your system administrator.'
 };
 
 export const ProjectParticipantsI18N = {
