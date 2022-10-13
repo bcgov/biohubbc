@@ -141,7 +141,7 @@ POST.apiDoc = {
 export function sendNotification(): RequestHandler {
   return async (req, res) => {
     const recipient = req.body?.recipient || null;
-    const message = { ...req.body?.message, footer: `To access the site, ${APP_HOST}` } || null;
+    const message = { ...req.body?.message, footer: `To access the site, [${APP_HOST}](${APP_HOST})` } || null;
 
     try {
       const gcnotifyService = new GCNotifyService();
