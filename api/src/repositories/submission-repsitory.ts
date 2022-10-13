@@ -27,7 +27,7 @@ export class SubmissionRepository extends BaseRepository {
     const result = (response && response.rows && response.rows[0]) || null;
 
     if (!result || !result.id) {
-      throw SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_UPDATE_OCCURRENCE_SUBMISSION)
+      throw SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_UPDATE_OCCURRENCE_SUBMISSION);
     }
 
     return result.id;

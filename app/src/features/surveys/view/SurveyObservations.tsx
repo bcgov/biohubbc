@@ -65,20 +65,27 @@ const finalStatus = [
   'Failed to validate',
   'Failed to transform',
   'Failed to process occurrence data'
-  // 'Failed to Get Occurrence Submission',
-  // 'Failed to get file from S3',
-  // 'Failed to parse submission',
-  // 'Failed to prep DarwinCore Archive',
-  // 'Failed to prep XLSX',
-  // 'Failed to persist parse errors',
-  // 'Failed to get validation rules',
-  // 'Failed to get transformation rules',
-  // 'Failed to persist transformation results',
-  // 'Failed to transform XLSX',
-  // 'Failed to validate DarwinCore Archive',
-  // 'Failed to persist validation results',
-  // 'Failed to update occurrence submission'
 ];
+
+export enum SUBMISSION_STATUS_TYPE {
+  SUBMITTED = 'Submitted',
+  'TEMPLATE_VALIDATED' = 'Template Validated',
+  'DARWIN_CORE_VALIDATED' = 'Darwin Core Validated',
+  'TEMPLATE_TRANSFORMED' = 'Template Transformed',
+  'SUBMISSION_DATA_INGESTED' = 'Submission Data Ingested',
+  'SECURED' = 'Secured',
+  'AWAITING CURRATION' = 'Awaiting Curration',
+  'REJECTED' = 'Rejected',
+  'ON HOLD' = 'On Hold',
+  'SYSTEM_ERROR' = 'System Error',
+
+  //Failure
+  'FAILED_OCCURRENCE_PREPERATION' = 'Failed to prepare submission',
+  'INVALID_MEDIA' = 'Media is not valid',
+  'FAILED_VALIDATION' = 'Failed to validate',
+  'FAILED_TRANSFORMED' = 'Failed to transform',
+  'FAILED_PROCESSING_OCCURRENCE_DATA' = 'Failed to process occurrence data'
+}
 
 export enum SUBMISSION_MESSAGE_TYPE {
   //message types that match the submission_message_type table, and API
@@ -452,9 +459,14 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
             </>
           )}
 
-          {!isValidating && submissionStatus?.status === 'System Error' && (
+          {!isValidating && submissionStatus?.status === SUBMISSION_STATUS_TYPE.SYSTEM_ERROR && (
             <Box px={3} pb={3}>
-              {displayAlertBox('error', mdiAlertCircleOutline, submissionStatus.inputFileName, 'System Error')}
+              {displayAlertBox(
+                'error',
+                mdiAlertCircleOutline,
+                submissionStatus.inputFileName,
+                SUBMISSION_STATUS_TYPE.SYSTEM_ERROR
+              )}
               <Box my={3}>
                 <Typography data-testid="observations-error-details" variant="body1">
                   Resolve the following errors in your local file and re-import.
@@ -468,34 +480,18 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
           )}
 
           {!isValidating &&
-            (submissionStatus?.status === 'Rejected' ||
-              submissionStatus?.status === 'Failed to prepare submission' ||
-              submissionStatus?.status === 'Media is not valid' ||
-              submissionStatus?.status === 'Failed to validate' ||
-              submissionStatus?.status === 'Failed to transform' ||
-              submissionStatus?.status === 'Failed to process occurrence data') && (
-              <Box px={3} pb={3}>
-                {displayAlertBox('error', mdiAlertCircleOutline, submissionStatus.inputFileName, 'Validation Failed')}
-                <Box my={3}>
-                  <Typography data-testid="observations-error-details" variant="body1">
-                    Resolve the following errors in your local file and re-import.
-                  </Typography>
-                </Box>
-                <Box>
-                  {displayMessages(submissionErrors, messageGrouping, mdiAlertCircleOutline)}
-                  {displayMessages(submissionWarnings, messageGrouping, mdiInformationOutline)}
-                </Box>
-              </Box>
-            )}
-
-          {(!isValidating && submissionStatus?.status !== 'Template Validated') ||
-            (submissionStatus?.status !== 'Darwin Core Validated' && (
+            (submissionStatus?.status === SUBMISSION_STATUS_TYPE.REJECTED ||
+              submissionStatus?.status === SUBMISSION_STATUS_TYPE.FAILED_OCCURRENCE_PREPERATION ||
+              submissionStatus?.status === SUBMISSION_STATUS_TYPE.INVALID_MEDIA ||
+              submissionStatus?.status === SUBMISSION_STATUS_TYPE.FAILED_VALIDATION ||
+              submissionStatus?.status === SUBMISSION_STATUS_TYPE.FAILED_TRANSFORMED ||
+              submissionStatus?.status === SUBMISSION_STATUS_TYPE.FAILED_PROCESSING_OCCURRENCE_DATA) && (
               <Box px={3} pb={3}>
                 {displayAlertBox(
                   'error',
                   mdiAlertCircleOutline,
-                  `${submissionStatus?.inputFileName}`,
-                  `Validation Failed - ${submissionStatus?.status}`
+                  submissionStatus.inputFileName,
+                  SUBMISSION_STATUS_TYPE.FAILED_VALIDATION
                 )}
                 <Box my={3}>
                   <Typography data-testid="observations-error-details" variant="body1">
@@ -507,11 +503,11 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
                   {displayMessages(submissionWarnings, messageGrouping, mdiInformationOutline)}
                 </Box>
               </Box>
-            ))}
+            )}
           {!isValidating &&
             submissionStatus &&
-            (submissionStatus.status === 'Darwin Core Validated' ||
-              submissionStatus.status === 'Template Validated') && (
+            (submissionStatus.status === SUBMISSION_STATUS_TYPE.DARWIN_CORE_VALIDATED ||
+              submissionStatus.status === SUBMISSION_STATUS_TYPE.TEMPLATE_VALIDATED) && (
               <>
                 <Box px={3}>{displayAlertBox('info', mdiFileOutline, submissionStatus.inputFileName, '')}</Box>
               </>
