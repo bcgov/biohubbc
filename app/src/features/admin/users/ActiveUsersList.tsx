@@ -18,7 +18,7 @@ import Icon from '@mdi/react';
 import EditDialog from 'components/dialog/EditDialog';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { CustomMenuButton, CustomMenuIconButton } from 'components/toolbar/ActionToolbars';
-import { DeleteSystemUserI18N } from 'constants/i18n';
+import { AddSystemUserI18N } from 'constants/i18n';
 import { DialogContext, ISnackbarProps } from 'contexts/dialogContext';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -67,8 +67,8 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
   const [openAddUserDialog, setOpenAddUserDialog] = useState(false);
 
   const defaultErrorDialogProps = {
-    dialogTitle: DeleteSystemUserI18N.deleteErrorTitle,
-    dialogText: DeleteSystemUserI18N.deleteErrorText,
+    dialogTitle: AddSystemUserI18N.addUserErrorTitle,
+    dialogText: AddSystemUserI18N.addUserErrorText,
     open: false,
     onClose: () => {
       dialogContext.setErrorDialog({ open: false });
