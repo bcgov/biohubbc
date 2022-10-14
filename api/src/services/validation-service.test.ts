@@ -7,7 +7,8 @@ import { SUBMISSION_MESSAGE_TYPE, SUBMISSION_STATUS_TYPE } from '../constants/st
 import { ValidationRepository } from '../repositories/validation-repository';
 import * as FileUtils from '../utils/file-utils';
 import { ICsvState } from '../utils/media/csv/csv-file';
-import { IMediaState, MediaFile } from '../utils/media/media-file';
+// import { DWCArchive } from '../utils/media/dwc/dwc-archive-file';
+import { ArchiveFile, IMediaState, MediaFile } from '../utils/media/media-file';
 import * as MediaUtils from '../utils/media/media-utils';
 import { ValidationSchemaParser } from '../utils/media/validation/validation-schema-parser';
 import { TransformationSchemaParser } from '../utils/media/xlsx/transformation/transformation-schema-parser';
@@ -21,9 +22,17 @@ chai.use(sinonChai);
 
 // const s3File = {
 //   fieldname: 'media',
-//   originalname: 'test.txt',
+//   originalname: 'test.csv',
 //   encoding: '7bit',
-//   mimetype: 'text/plain',
+//   mimetype: 'text/csv',
+//   size: 340
+// };
+
+// const s3Archive = {
+//   fieldname: 'media',
+//   originalname: 'test.zip',
+//   encoding: '7bit',
+//   mimetype: 'application/zip',
 //   size: 340
 // };
 
@@ -461,6 +470,10 @@ describe('ValidationService', () => {
     afterEach(() => {
       sinon.restore();
     });
+
+    it('should', () => {});
+    it('should', () => {});
+    it('should', () => {});
   });
 
   describe('dwcPreparation', () => {
@@ -481,9 +494,50 @@ describe('ValidationService', () => {
     });
   });
 
-  describe('prepDWCArchive', () => {
+  describe.only('prepDWCArchive', () => {
     afterEach(() => {
       sinon.restore();
+    });
+
+    it('should return a DWCArchive', async () => {
+      const dbConnection = getMockDBConnection();
+      const service = new ValidationService(dbConnection);
+      const fileName = "test file"
+      const parse = sinon.stub(MediaUtils, 'parseUnknownMedia').returns(new ArchiveFile(fileName, "", Buffer.from([]), []));
+
+      const archive = await service.prepDWCArchive({} as ArchiveFile);
+      expect(archive.rawFile.fileName).to.be.eql(fileName);
+      expect(parse).to.be.calledOnce;
+    });
+
+    it('should throw Media is invalid error', async () => {
+      const dbConnection = getMockDBConnection();
+      const service = new ValidationService(dbConnection);
+      const parse = sinon.stub(MediaUtils, 'parseUnknownMedia').returns(null);
+
+      try {
+        await service.prepDWCArchive({} as ArchiveFile);
+        expect.fail();
+      } catch (error) {
+        expect(parse).to.be.calledOnce;
+        expect(error instanceof SubmissionError).to.be.true;
+        expect((error as SubmissionError).submissionMessages[0].type).to.be.eql(SUBMISSION_MESSAGE_TYPE.INVALID_MEDIA);
+      }
+    });
+
+    it('should throw File submitted is not a supported type error', async () => {
+      const dbConnection = getMockDBConnection();
+      const service = new ValidationService(dbConnection);
+      const parse = sinon.stub(MediaUtils, 'parseUnknownMedia').returns(new MediaFile("", "", Buffer.from([])));
+
+      try {
+        await service.prepDWCArchive({} as ArchiveFile);
+        expect.fail();
+      } catch (error) {
+        expect(parse).to.be.calledOnce;
+        expect(error instanceof SubmissionError).to.be.true;
+        expect((error as SubmissionError).submissionMessages[0].type).to.be.eql(SUBMISSION_MESSAGE_TYPE.UNSUPPORTED_FILE_TYPE);
+      }
     });
   });
 
@@ -498,5 +552,11 @@ describe('ValidationService', () => {
       sinon.restore();
     });
 
+    it('should run without error', async () => {
+      const dbConnection = getMockDBConnection();
+      const service = new ValidationService(dbConnection);
+      const xlsx = new XLSXCSV(buildFile("", {template_id: 1, csm_id: 1}))
+      await service.persistTransformationResults(1, [], "outputKey", xlsx);
+    });
   });
 });

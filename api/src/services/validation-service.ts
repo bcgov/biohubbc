@@ -354,6 +354,7 @@ export class ValidationService extends DBService {
     return transformationSchema;
   }
 
+  // does this need a new error? could be an issue if we aren't maintaining things here
   getTransformationRules(schema: any): TransformationSchemaParser {
     const validationSchemaParser = new TransformationSchemaParser(schema);
     return validationSchemaParser;
