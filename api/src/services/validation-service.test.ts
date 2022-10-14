@@ -4,9 +4,9 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { SUBMISSION_MESSAGE_TYPE, SUBMISSION_STATUS_TYPE } from '../constants/status';
 import * as FileUtils from '../utils/file-utils';
-import { MediaFile } from '../utils/media/media-file';
+import { ICsvState } from '../utils/media/csv/csv-file';
+import { IMediaState, MediaFile } from '../utils/media/media-file';
 import  * as MediaUtils from '../utils/media/media-utils';
-import { ValidationSchemaParser } from '../utils/media/validation/validation-schema-parser';
 import { XLSXCSV } from '../utils/media/xlsx/xlsx-file';
 import { SubmissionError } from '../utils/submission-error';
 import { getMockDBConnection } from '../__mocks__/db';
@@ -73,7 +73,7 @@ describe.only('ValidationService', () => {
     });
   });
 
-  describe('templatePreperation', () => {
+  describe('templatePreparation', () => {
     afterEach(() => {
       sinon.restore();
     });
@@ -96,7 +96,7 @@ describe.only('ValidationService', () => {
   
       const dbConnection = getMockDBConnection();
       const service = new ValidationService(dbConnection);
-      const results = await service.templatePreperation(1)
+      const results = await service.templatePreparation(1)
       
       expect(results.xlsx).to.not.be.empty;
       expect(results.xlsx instanceof XLSXCSV).to.be.true;
@@ -122,7 +122,7 @@ describe.only('ValidationService', () => {
       try {
         const dbConnection = getMockDBConnection();
         const service = new ValidationService(dbConnection);
-        await service.templatePreperation(1);
+        await service.templatePreparation(1);
   
         expect.fail()
       } catch (error) {
@@ -218,25 +218,62 @@ describe.only('ValidationService', () => {
     });
   });
 
-  describe.only('validateXLSX', () => {
-    it('should return csv state object', () => {});
+  // describe.only('validateXLSX', () => {
+  //   it('should return csv state object', () => {});
 
-    it('should throw Media is invalid error', () => {
-      const file = new MediaFile("test.txt", "text/plain", Buffer.of(0));
-      const xlsxCsv = new XLSXCSV(file)
-      const parser = new ValidationSchemaParser("what if I put this here")
+  //   it('should throw Media is invalid error', () => {
+  //     const file = new MediaFile("test.txt", "text/plain", Buffer.of(0));
+  //     const xlsxCsv = new XLSXCSV(file)
+  //     const parser = new ValidationSchemaParser("what if I put this here")
+  //     const dbConnection = getMockDBConnection();
+  //     const service = new ValidationService(dbConnection);
+      
+  //     const temp = service.validateXLSX(xlsxCsv, parser);
+  //     console.log(temp)
+      
+  //   });
+  // });
+
+  describe.only('persistValidationResults', () => {
+    it('should throw a submission error with multiple messages attached', async () => {
       const dbConnection = getMockDBConnection();
       const service = new ValidationService(dbConnection);
-      
-      const temp = service.validateXLSX(xlsxCsv, parser);
-      console.log(temp)
-      
+      const csvState: ICsvState[] = [
+        {
+          fileName: "",
+          isValid: false,
+          headerErrors: [
+            {
+              errorCode: SUBMISSION_MESSAGE_TYPE.MISSING_REQUIRED_HEADER,
+              message: "",
+              col: "Effort & Effects"
+            }
+          ],
+          rowErrors: [
+            {
+              errorCode: SUBMISSION_MESSAGE_TYPE.INVALID_VALUE,
+              message: "No bueno",
+              col: "Block SU",
+              row: 1
+            }
+          ]
+        }
+      ];
+      const mediaState: IMediaState = {
+        fileName: "Test.xlsx",
+        isValid: true
+      };
+      try {
+        await service.persistValidationResults(csvState, mediaState)
+        expect.fail();
+      } catch (error) {
+        console.log(error)
+      }
     });
-  });
 
-  describe('persistValidationResults', () => {
-    it('')
-    it('should throw Submission Error with mutliple error messages', () => {});
+    it('should throw Submission Error with multiple error messages', () => {
+
+    });
   });
 
 /*

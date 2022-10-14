@@ -1,7 +1,7 @@
 import AdmZip from 'adm-zip';
 import { SUBMISSION_MESSAGE_TYPE, SUBMISSION_STATUS_TYPE } from '../constants/status';
 import { IDBConnection } from '../database/db';
-import { SubmissionRepository } from '../repositories/submission-repsitory';
+import { SubmissionRepository } from '../repositories/submission-repository';
 import { ValidationRepository } from '../repositories/validation-repository';
 import { getFileFromS3, uploadBufferToS3 } from '../utils/file-utils';
 import { getLogger } from '../utils/logger';
@@ -57,10 +57,10 @@ export class ValidationService extends DBService {
 
   async transformFile(submissionId: number) {
     try {
-      const submissionPrep = await this.templatePreperation(submissionId);
+      const submissionPrep = await this.templatePreparation(submissionId);
       await this.templateTransformation(submissionId, submissionPrep.xlsx, submissionPrep.s3InputKey);
 
-      // insert tempalte validated status
+      // insert template validated status
       await this.submissionRepository.insertSubmissionStatus(submissionId, SUBMISSION_STATUS_TYPE.TEMPLATE_TRANSFORMED);
     } catch (error) {
       if (error instanceof SubmissionError) {
@@ -73,10 +73,10 @@ export class ValidationService extends DBService {
 
   async validateFile(submissionId: number) {
     try {
-      const submissionPrep = await this.templatePreperation(submissionId);
+      const submissionPrep = await this.templatePreparation(submissionId);
       await this.templateValidation(submissionPrep.xlsx);
 
-      // insert tempalte validated status
+      // insert template validated status
       await this.submissionRepository.insertSubmissionStatus(submissionId, SUBMISSION_STATUS_TYPE.TEMPLATE_VALIDATED);
     } catch (error) {
       if (error instanceof SubmissionError) {
@@ -90,7 +90,7 @@ export class ValidationService extends DBService {
   async processDWCFile(submissionId: number) {
     try {
       // prep dwc
-      const dwcPrep = await this.dwcPreperation(submissionId);
+      const dwcPrep = await this.dwcPreparation(submissionId);
 
       // validate dwc
       const csvState = this.validateDWC(dwcPrep.archive);
@@ -113,19 +113,19 @@ export class ValidationService extends DBService {
 
   async processFile(submissionId: number) {
     try {
-      // template preperation
-      const submissionPrep = await this.templatePreperation(submissionId);
+      // template preparation
+      const submissionPrep = await this.templatePreparation(submissionId);
 
       // template validation
       await this.templateValidation(submissionPrep.xlsx);
 
-      // insert tempalte validated status
+      // insert template validated status
       await this.submissionRepository.insertSubmissionStatus(submissionId, SUBMISSION_STATUS_TYPE.TEMPLATE_VALIDATED);
 
       // template transformation
       await this.templateTransformation(submissionId, submissionPrep.xlsx, submissionPrep.s3InputKey);
 
-      // insert tempalte validated status
+      // insert template validated status
       await this.submissionRepository.insertSubmissionStatus(submissionId, SUBMISSION_STATUS_TYPE.TEMPLATE_TRANSFORMED);
 
       // occurrence scraping
@@ -154,7 +154,7 @@ export class ValidationService extends DBService {
     }
   }
 
-  async dwcPreperation(submissionId: number): Promise<{ archive: DWCArchive; s3InputKey: string }> {
+  async dwcPreparation(submissionId: number): Promise<{ archive: DWCArchive; s3InputKey: string }> {
     try {
       const occurrenceSubmission = await this.occurrenceService.getOccurrenceSubmission(submissionId);
       const s3InputKey = occurrenceSubmission.input_key;
@@ -170,7 +170,7 @@ export class ValidationService extends DBService {
     }
   }
 
-  async templatePreperation(submissionId: number): Promise<{ s3InputKey: string; xlsx: XLSXCSV }> {
+  async templatePreparation(submissionId: number): Promise<{ s3InputKey: string; xlsx: XLSXCSV }> {
     try {
       const occurrenceSubmission = await this.occurrenceService.getOccurrenceSubmission(submissionId);
       const s3InputKey = occurrenceSubmission.input_key;
