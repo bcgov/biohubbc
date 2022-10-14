@@ -5,7 +5,8 @@ import sinonChai from 'sinon-chai';
 import { SUBMISSION_MESSAGE_TYPE, SUBMISSION_STATUS_TYPE } from '../constants/status';
 import * as FileUtils from '../utils/file-utils';
 import { MediaFile } from '../utils/media/media-file';
-import * as MediaUtils from '../utils/media/media-utils';
+import  * as MediaUtils from '../utils/media/media-utils';
+import { ValidationSchemaParser } from '../utils/media/validation/validation-schema-parser';
 import { XLSXCSV } from '../utils/media/xlsx/xlsx-file';
 import { SubmissionError } from '../utils/submission-error';
 import { getMockDBConnection } from '../__mocks__/db';
@@ -14,120 +15,123 @@ import { ValidationService } from './validation-service';
 
 chai.use(sinonChai);
 
-describe.only('templateValidation', () => {
+describe.only('ValidationService', () => {
   afterEach(() => {
     sinon.restore();
   });
 
-  // what is this really testing...
-  it('should persist validation results', async () => {
-    const file = new MediaFile('test.txt', 'text/plain', Buffer.of(0));
-    const xlsxCsv = new XLSXCSV(file);
-    sinon.stub(FileUtils, 'getFileFromS3').resolves('file from s3' as any);
+  describe('', () => {
 
-    const getValidation = sinon.stub(ValidationService.prototype, 'getValidationSchema').resolves('');
-    const getRules = sinon.stub(ValidationService.prototype, 'getValidationRules').resolves('');
-    const validate = sinon.stub(ValidationService.prototype, 'validateXLSX').resolves({});
-    const persistResults = sinon.stub(ValidationService.prototype, 'persistValidationResults').resolves(true);
-
-    const dbConnection = getMockDBConnection();
-    const service = new ValidationService(dbConnection);
-    await service.templateValidation(xlsxCsv);
-
-    expect(getValidation).to.be.calledOnce;
-    expect(getRules).to.be.calledOnce;
-    expect(validate).to.be.calledOnce;
-    expect(persistResults).to.be.calledOnce;
   });
 
-  it('should throw Failed to validate error', async () => {
-    const file = new MediaFile('test.txt', 'text/plain', Buffer.of(0));
-    const xlsxCsv = new XLSXCSV(file);
-    sinon.stub(FileUtils, 'getFileFromS3').resolves('file from s3' as any);
-
-    sinon.stub(ValidationService.prototype, 'getValidationSchema').throws(new SubmissionError({}));
-    sinon.stub(ValidationService.prototype, 'getValidationRules').resolves({});
-    sinon.stub(ValidationService.prototype, 'validateXLSX').resolves({});
-    sinon.stub(ValidationService.prototype, 'persistValidationResults').resolves(true);
-
-    try {
+  describe('templateValidation', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+  
+    it('should persist validation results', async () => {
+      const file = new MediaFile("test.txt", "text/plain", Buffer.of(0));
+      const xlsxCsv = new XLSXCSV(file)
+      sinon.stub(FileUtils, 'getFileFromS3').resolves("file from s3" as any);
+  
+      const getValidation = sinon.stub(ValidationService.prototype, 'getValidationSchema').resolves("");
+      const getRules = sinon.stub(ValidationService.prototype, 'getValidationRules').resolves("");
+      const validate = sinon.stub(ValidationService.prototype, 'validateXLSX').resolves({});
+      const persistResults = sinon.stub(ValidationService.prototype, 'persistValidationResults').resolves(true);
+  
       const dbConnection = getMockDBConnection();
       const service = new ValidationService(dbConnection);
       await service.templateValidation(xlsxCsv);
-      expect.fail();
-    } catch (error) {
-      expect(error instanceof SubmissionError).to.be.true;
-      if (error instanceof SubmissionError) {
-        expect(error.status).to.be.eql(SUBMISSION_STATUS_TYPE.FAILED_VALIDATION);
+  
+      expect(getValidation).to.be.calledOnce;
+      expect(getRules).to.be.calledOnce;
+      expect(validate).to.be.calledOnce;
+      expect(persistResults).to.be.calledOnce;
+    });
+  
+    it('should throw Failed to validate error', async () => {
+      const file = new MediaFile("test.txt", "text/plain", Buffer.of(0));
+      const xlsxCsv = new XLSXCSV(file)
+      sinon.stub(FileUtils, 'getFileFromS3').resolves("file from s3" as any);
+  
+      sinon.stub(ValidationService.prototype, 'getValidationSchema').throws(new SubmissionError({}))
+      sinon.stub(ValidationService.prototype, 'getValidationRules').resolves({});
+      sinon.stub(ValidationService.prototype, 'validateXLSX').resolves({});
+      sinon.stub(ValidationService.prototype, 'persistValidationResults').resolves(true);
+  
+      try {
+        const dbConnection = getMockDBConnection();
+        const service = new ValidationService(dbConnection);
+        await service.templateValidation(xlsxCsv)
+        expect.fail()
+      } catch (error) {
+        expect(error instanceof SubmissionError).to.be.true;
+        if(error instanceof SubmissionError) {
+          expect(error.status).to.be.eql(SUBMISSION_STATUS_TYPE.FAILED_VALIDATION);
+        }
       }
-    }
-  });
-});
-
-describe('templatePreperation', () => {
-  afterEach(() => {
-    sinon.restore();
-  });
-
-  it('should return valid S3 key and xlsx object', async () => {
-    const file = new MediaFile('test.txt', 'text/plain', Buffer.of(0));
-    const s3Key = 's3 key';
-    sinon.stub(FileUtils, 'getFileFromS3').resolves('file from s3' as any);
-    sinon.stub(ValidationService.prototype, 'prepXLSX').resolves(new XLSXCSV(file));
-    sinon.stub(OccurrenceService.prototype, 'getOccurrenceSubmission').resolves({
-      occurrence_submission_id: 1,
-      survey_id: 1,
-      template_methodology_species_id: 1,
-      source: '',
-      input_key: s3Key,
-      input_file_name: '',
-      output_key: '',
-      output_file_name: ''
     });
-
-    const dbConnection = getMockDBConnection();
-    const service = new ValidationService(dbConnection);
-    const results = await service.templatePreperation(1);
-
-    expect(results.xlsx).to.not.be.empty;
-    expect(results.xlsx instanceof XLSXCSV).to.be.true;
-    expect(results.s3InputKey).to.be.eql(s3Key);
   });
 
-  it('throws Failed to prepare submission error', async () => {
-    const file = new MediaFile('test.txt', 'text/plain', Buffer.of(0));
-    const s3Key = 's3 key';
-    sinon.stub(FileUtils, 'getFileFromS3').throws(new SubmissionError({}));
-    sinon.stub(ValidationService.prototype, 'prepXLSX').resolves(new XLSXCSV(file));
-    sinon.stub(OccurrenceService.prototype, 'getOccurrenceSubmission').resolves({
-      occurrence_submission_id: 1,
-      survey_id: 1,
-      template_methodology_species_id: 1,
-      source: '',
-      input_key: s3Key,
-      input_file_name: '',
-      output_key: '',
-      output_file_name: ''
+  describe('templatePreperation', () => {
+    afterEach(() => {
+      sinon.restore();
     });
-
-    try {
+  
+    it('should return valid S3 key and xlsx object', async () => {
+      const file = new MediaFile("test.txt", "text/plain", Buffer.of(0));
+      const s3Key = "s3 key"
+      sinon.stub(FileUtils, 'getFileFromS3').resolves("file from s3" as any);
+      sinon.stub(ValidationService.prototype, 'prepXLSX').resolves(new XLSXCSV(file));
+      sinon.stub(OccurrenceService.prototype, 'getOccurrenceSubmission').resolves({
+        occurrence_submission_id: 1,
+        survey_id: 1,
+        template_methodology_species_id: 1,
+        source: "",
+        input_key: s3Key,
+        input_file_name: "",
+        output_key: "",
+        output_file_name: "",
+      });
+  
       const dbConnection = getMockDBConnection();
       const service = new ValidationService(dbConnection);
-      await service.templatePreperation(1);
-
-      expect.fail();
-    } catch (error) {
-      expect(error instanceof SubmissionError).to.be.true;
-      if (error instanceof SubmissionError) {
-        expect(error.status).to.be.eql(SUBMISSION_STATUS_TYPE.FAILED_OCCURRENCE_PREPERATION);
+      const results = await service.templatePreperation(1)
+      
+      expect(results.xlsx).to.not.be.empty;
+      expect(results.xlsx instanceof XLSXCSV).to.be.true;
+      expect(results.s3InputKey).to.be.eql(s3Key);
+    });
+  
+    it('throws Failed to prepare submission error', async () => {
+      const file = new MediaFile("test.txt", "text/plain", Buffer.of(0));
+      const s3Key = "s3 key"
+      sinon.stub(FileUtils, 'getFileFromS3').throws(new SubmissionError({}))
+      sinon.stub(ValidationService.prototype, 'prepXLSX').resolves(new XLSXCSV(file));
+      sinon.stub(OccurrenceService.prototype, 'getOccurrenceSubmission').resolves({
+        occurrence_submission_id: 1,
+        survey_id: 1,
+        template_methodology_species_id: 1,
+        source: "",
+        input_key: s3Key,
+        input_file_name: "",
+        output_key: "",
+        output_file_name: "",
+      });
+  
+      try {
+        const dbConnection = getMockDBConnection();
+        const service = new ValidationService(dbConnection);
+        await service.templatePreperation(1);
+  
+        expect.fail()
+      } catch (error) {
+        expect(error instanceof SubmissionError).to.be.true;
+        if(error instanceof SubmissionError) {
+          expect(error.status).to.be.eql(SUBMISSION_STATUS_TYPE.FAILED_OCCURRENCE_PREPERATION);
+        }
       }
-    }
-  });
-});
-
-describe('ValidationService', () => {
-  afterEach(() => {
-    sinon.restore();
+    });
   });
 
   describe('prepXLSX', () => {
@@ -214,7 +218,28 @@ describe('ValidationService', () => {
     });
   });
 
-  /*
+  describe.only('validateXLSX', () => {
+    it('should return csv state object', () => {});
+
+    it('should throw Media is invalid error', () => {
+      const file = new MediaFile("test.txt", "text/plain", Buffer.of(0));
+      const xlsxCsv = new XLSXCSV(file)
+      const parser = new ValidationSchemaParser("what if I put this here")
+      const dbConnection = getMockDBConnection();
+      const service = new ValidationService(dbConnection);
+      
+      const temp = service.validateXLSX(xlsxCsv, parser);
+      console.log(temp)
+      
+    });
+  });
+
+  describe('persistValidationResults', () => {
+    it('')
+    it('should throw Submission Error with mutliple error messages', () => {});
+  });
+
+/*
   processFile
     templatePreperation
     templateValidation
