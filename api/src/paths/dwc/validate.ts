@@ -104,25 +104,26 @@ POST.apiDoc = {
 
 export function processDWCFile(): RequestHandler {
   return async (req, res, next) => {
-    console.log('request is : ', req);
     const submissionId = req.body.occurrence_submission_id;
+
     if (!submissionId) {
-      throw new HTTP400('Missing required paramter `occurrence field`');
+      throw new HTTP400('Missing required parameter `occurrence field`');
     }
 
     res.status(200).json({ status: 'success' });
+
     const connection = getDBConnection(req['keycloak_token']);
     try {
       await connection.open();
 
       const service = new ValidationService(connection);
+
       await service.processDWCFile(submissionId);
 
       await connection.commit();
-
-      return res.status(200).json({ status: 'failed' });
     } catch (error: any) {
       defaultLog.error({ label: 'persistParseErrors', message: 'error', error });
+
       // Unexpected error occured, rolling DB back to safe state
       await connection.rollback();
 

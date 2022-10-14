@@ -14,7 +14,7 @@ import { ValidationService } from './validation-service';
 
 chai.use(sinonChai);
 
-describe.only('templateValidation', () => {
+describe('templateValidation', () => {
   afterEach(() => {
     sinon.restore();
   });
