@@ -6,7 +6,7 @@ import sinonChai from 'sinon-chai';
 import { HTTP400 } from '../errors/http-error';
 import { queries } from '../queries/queries';
 import { getMockDBConnection } from '../__mocks__/db';
-import { SubmissionRepository } from './submission-repsitory';
+import { SubmissionRepository } from './submission-repository';
 
 chai.use(sinonChai);
 

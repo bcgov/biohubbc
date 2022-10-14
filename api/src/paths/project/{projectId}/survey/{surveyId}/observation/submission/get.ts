@@ -146,7 +146,7 @@ export function getOccurrenceSubmission(): RequestHandler {
       if (
         errorStatus === SUBMISSION_STATUS_TYPE.REJECTED ||
         errorStatus === SUBMISSION_STATUS_TYPE.SYSTEM_ERROR ||
-        errorStatus === SUBMISSION_STATUS_TYPE.FAILED_OCCURRENCE_PREPERATION ||
+        errorStatus === SUBMISSION_STATUS_TYPE.FAILED_OCCURRENCE_PREPARATION ||
         errorStatus === SUBMISSION_STATUS_TYPE.FAILED_VALIDATION ||
         errorStatus === SUBMISSION_STATUS_TYPE.FAILED_TRANSFORMED ||
         errorStatus === SUBMISSION_STATUS_TYPE.FAILED_PROCESSING_OCCURRENCE_DATA

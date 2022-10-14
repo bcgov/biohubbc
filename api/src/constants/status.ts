@@ -30,7 +30,7 @@ export enum SUBMISSION_STATUS_TYPE {
   'SYSTEM_ERROR' = 'System Error',
 
   //Failure
-  'FAILED_OCCURRENCE_PREPERATION' = 'Failed to prepare submission',
+  'FAILED_OCCURRENCE_PREPARATION' = 'Failed to prepare submission',
   'INVALID_MEDIA' = 'Media is not valid',
   'FAILED_VALIDATION' = 'Failed to validate',
   'FAILED_TRANSFORMED' = 'Failed to transform',
