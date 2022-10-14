@@ -14,8 +14,8 @@ import { OccurrenceService } from './occurrence-service';
 import { ValidationService } from './validation-service';
 
 chai.use(sinonChai);
-
-describe.only('ValidationService', () => {
+// 35% covered
+describe('ValidationService', () => {
   afterEach(() => {
     sinon.restore();
   });
@@ -218,7 +218,7 @@ describe.only('ValidationService', () => {
     });
   });
 
-  // describe.only('validateXLSX', () => {
+  // describe('validateXLSX', () => {
   //   it('should return csv state object', () => {});
 
   //   it('should throw Media is invalid error', () => {
@@ -234,7 +234,7 @@ describe.only('ValidationService', () => {
   //   });
   // });
 
-  describe.only('persistValidationResults', () => {
+  describe('persistValidationResults', () => {
     it('should throw a submission error with multiple messages attached', async () => {
       const dbConnection = getMockDBConnection();
       const service = new ValidationService(dbConnection);
@@ -267,21 +267,36 @@ describe.only('ValidationService', () => {
         await service.persistValidationResults(csvState, mediaState)
         expect.fail();
       } catch (error) {
-        console.log(error)
+        if (error instanceof SubmissionError) {
+          expect(error.status).to.be.eql(SUBMISSION_STATUS_TYPE.REJECTED);
+
+          error.submissionMessages.forEach(e => {
+            expect(e.type).to.be.eql(SUBMISSION_MESSAGE_TYPE.INVALID_VALUE);
+          })
+        }
       }
     });
 
-    it('should throw Submission Error with multiple error messages', () => {
-
+    it('should return false if no errors are present', async () => {
+      const dbConnection = getMockDBConnection();
+      const service = new ValidationService(dbConnection);
+      const csvState: ICsvState[] = [];
+      const mediaState: IMediaState = {
+        fileName: "Test.xlsx",
+        isValid: true
+      };
+      const response = await service.persistValidationResults(csvState, mediaState)
+      // no errors found, data is valid
+      expect(response).to.be.false;
     });
   });
 
 /*
   processFile
-    templatePreperation
+    templatePreparation
     templateValidation
     templateTransformation
-    templateScrapeAnduploadOccurrences
+    templateScrapeAndUploadOccurrences
 
   processDWCFile
     dwcPreparation
@@ -298,7 +313,7 @@ describe.only('ValidationService', () => {
   getTransformationSchema
   getTransformationRules
   transformXLSX
-  persistTransofmrationResults
+  persistTransformationResults
   prepDWCArchive
   validateDWCArchive
   generateHeaderErrorMessage

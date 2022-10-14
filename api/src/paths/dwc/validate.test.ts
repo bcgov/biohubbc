@@ -117,7 +117,7 @@ describe('dwc/validate', () => {
       });
     });
 
-    describe.only('response validation', () => {
+    describe('response validation', () => {
       const responseValidator = new OpenAPIResponseValidator((POST.apiDoc as unknown) as OpenAPIResponseValidatorArgs);
 
       describe('should throw an error when', () => {
