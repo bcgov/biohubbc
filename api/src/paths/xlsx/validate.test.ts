@@ -14,7 +14,7 @@ import { POST } from './validate';
 
 chai.use(sinonChai);
 
-describe('dwc/validate', () => {
+describe('xlsx/validate', () => {
   describe('openApiSchema', () => {
     describe('request validation', () => {
       const requestValidator = new OpenAPIRequestValidator((POST.apiDoc as unknown) as OpenAPIRequestValidatorArgs);
@@ -137,7 +137,7 @@ describe('dwc/validate', () => {
     });
   });
 
-  describe('validate DarwinCore', () => {
+  describe('validate XLSX', () => {
     afterEach(() => {
       sinon.restore();
     });
@@ -146,7 +146,7 @@ describe('dwc/validate', () => {
       const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
       mockReq.body = {};
 
-      const requestHandler = validate.processDWCFile();
+      const requestHandler = validate.validate();
 
       try {
         await requestHandler(mockReq, mockRes, mockNext);
@@ -166,22 +166,22 @@ describe('dwc/validate', () => {
       };
       mockReq['keycloak_token'] = 'token';
 
-      const processDWCStub = sinon.stub(ValidationService.prototype, 'processDWCFile').resolves();
+      const validateFileStub = sinon.stub(ValidationService.prototype, 'validateFile').resolves();
 
-      const requestHandler = validate.processDWCFile();
+      const requestHandler = validate.validate();
       await requestHandler(mockReq, mockRes, mockNext);
       expect(mockRes.statusValue).to.equal(200);
-      expect(processDWCStub).to.have.been.calledOnceWith(mockReq.body.occurrence_submission_id);
+      expect(validateFileStub).to.have.been.calledOnceWith(mockReq.body.occurrence_submission_id);
       expect(mockRes.jsonValue).to.eql({ status: 'success' });
     });
 
-    it('catches an error on processDWCFile', async () => {
+    it('catches an error on validateFile', async () => {
       const dbConnectionObj = getMockDBConnection({ rollback: sinon.stub(), release: sinon.stub() });
       sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-      const processDWCStub = sinon
-        .stub(ValidationService.prototype, 'processDWCFile')
-        .throws(new Error('test processDWCFile error'));
+      const validateFileStub = sinon
+        .stub(ValidationService.prototype, 'validateFile')
+        .throws(new Error('test validateFile error'));
       const errorServiceStub = sinon.stub(ErrorService.prototype, 'insertSubmissionStatus').resolves();
 
       const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
@@ -191,17 +191,17 @@ describe('dwc/validate', () => {
         occurrence_submission_id: '123-456-789'
       };
 
-      const requestHandler = validate.processDWCFile();
+      const requestHandler = validate.validate();
 
       try {
         await requestHandler(mockReq, mockRes, mockNext);
         expect.fail();
       } catch (actualError) {
-        expect(processDWCStub).to.have.been.calledOnce;
+        expect(validateFileStub).to.have.been.calledOnce;
         expect(errorServiceStub).to.have.been.calledOnce;
         expect(dbConnectionObj.rollback).to.have.been.calledOnce;
         expect(dbConnectionObj.release).to.have.been.calledOnce;
-        expect((actualError as Error).message).to.equal('test processDWCFile error');
+        expect((actualError as Error).message).to.equal('test validateFile error');
       }
     });
 
@@ -209,9 +209,9 @@ describe('dwc/validate', () => {
       const dbConnectionObj = getMockDBConnection({ rollback: sinon.stub(), release: sinon.stub() });
       sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-      const processDWCStub = sinon
-        .stub(ValidationService.prototype, 'processDWCFile')
-        .throws(new Error('test processDWCFile error'));
+      const validateFileStub = sinon
+        .stub(ValidationService.prototype, 'validateFile')
+        .throws(new Error('test validateFile error'));
       const errorServiceStub = sinon
         .stub(ErrorService.prototype, 'insertSubmissionStatus')
         .throws(new Error('test insertSubmissionStatus error'));
@@ -223,13 +223,13 @@ describe('dwc/validate', () => {
         occurrence_submission_id: '123-456-789'
       };
 
-      const requestHandler = validate.processDWCFile();
+      const requestHandler = validate.validate();
 
       try {
         await requestHandler(mockReq, mockRes, mockNext);
         expect.fail();
       } catch (actualError) {
-        expect(processDWCStub).to.have.been.calledOnce;
+        expect(validateFileStub).to.have.been.calledOnce;
         expect(errorServiceStub).to.have.been.calledOnce;
         expect(dbConnectionObj.rollback).to.have.been.calledOnce;
         expect(dbConnectionObj.release).to.have.been.calledOnce;
