@@ -104,6 +104,7 @@ POST.apiDoc = {
 
 export function processDWCFile(): RequestHandler {
   return async (req, res, next) => {
+    console.log('request is : ', req);
     const submissionId = req.body.occurrence_submission_id;
     if (!submissionId) {
       throw new HTTP400('Missing required paramter `occurrence field`');

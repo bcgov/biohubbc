@@ -115,7 +115,7 @@ export class ValidationService extends DBService {
     try {
       // template preperation
       const submissionPrep = await this.templatePreperation(submissionId);
-      
+
       // template validation
       await this.templateValidation(submissionId, submissionPrep.xlsx);
 
