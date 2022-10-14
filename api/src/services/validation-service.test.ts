@@ -52,8 +52,8 @@ const buildFile = (fileName: string, customProps: {template_id?: number, csm_id?
     return new MediaFile(fileName, 'text/csv', buffer);
 }
 
-// 35% covered
-describe.only('ValidationService', () => {
+// 40% covered
+describe('ValidationService', () => {
   afterEach(() => {
     sinon.restore();
   });
@@ -67,7 +67,7 @@ describe.only('ValidationService', () => {
       const dbConnection = getMockDBConnection();
       const service = new ValidationService(dbConnection);
       sinon.stub(ValidationRepository.prototype, 'getTemplateMethodologySpeciesRecord').resolves({
-        validation: {}
+        validation: {id: 1}
       });
 
       const file = new XLSXCSV(buildFile("testFile", {template_id: 1, csm_id: 1}))
@@ -92,7 +92,43 @@ describe.only('ValidationService', () => {
         }
       }
     })
-  })
+  });
+
+  describe.only('getTransformationSchema', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('should return valid schema', async () => {
+      const dbConnection = getMockDBConnection();
+      const service = new ValidationService(dbConnection);
+      sinon.stub(ValidationRepository.prototype, 'getTemplateMethodologySpeciesRecord').resolves({
+        transform: {id: 1}
+      });
+
+      const file = new XLSXCSV(buildFile("testFile", {template_id: 1, csm_id: 1}))
+      const schema = await service.getTransformationSchema(file);
+      expect(schema).to.be.not.null;
+    })
+
+    it('should throw Failed to get transformation rules error', async () => {
+      const dbConnection = getMockDBConnection();
+      const service = new ValidationService(dbConnection);
+      sinon.stub(ValidationRepository.prototype, 'getTemplateMethodologySpeciesRecord').resolves({});
+
+      try {
+        
+        const file = new XLSXCSV(buildFile("testFile", {template_id: 1, csm_id: 1}))
+        await service.getTransformationSchema(file);
+        expect.fail()
+      } catch (error) {
+        expect(error instanceof SubmissionError).to.be.true;
+        if (error instanceof SubmissionError) {
+          expect(error.submissionMessages[0].type).to.be.eql(SUBMISSION_MESSAGE_TYPE.FAILED_GET_TRANSFORMATION_RULES);
+        }
+      }
+    })
+  });
 
   describe('templateValidation', () => {
     afterEach(() => {
@@ -422,12 +458,6 @@ describe.only('ValidationService', () => {
   });
 
   describe('prepDWCArchive', () => {
-    afterEach(() => {
-      sinon.restore();
-    });
-  });
-
-  describe('templateTransformation', () => {
     afterEach(() => {
       sinon.restore();
     });
