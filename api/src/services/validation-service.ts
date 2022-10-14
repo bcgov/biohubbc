@@ -74,7 +74,7 @@ export class ValidationService extends DBService {
   async validateFile(submissionId: number) {
     try {
       const submissionPrep = await this.templatePreperation(submissionId);
-      await this.templateValidation(submissionId, submissionPrep.xlsx);
+      await this.templateValidation(submissionPrep.xlsx);
 
       // insert tempalte validated status
       await this.submissionRepository.insertSubmissionStatus(submissionId, SUBMISSION_STATUS_TYPE.TEMPLATE_VALIDATED);
@@ -117,7 +117,7 @@ export class ValidationService extends DBService {
       const submissionPrep = await this.templatePreperation(submissionId);
       
       // template validation
-      await this.templateValidation(submissionId, submissionPrep.xlsx);
+      await this.templateValidation(submissionPrep.xlsx);
 
       // insert tempalte validated status
       await this.submissionRepository.insertSubmissionStatus(submissionId, SUBMISSION_STATUS_TYPE.TEMPLATE_VALIDATED);
@@ -201,7 +201,7 @@ export class ValidationService extends DBService {
     }
   }
 
-  async templateValidation(submissionId: number, xlsx: XLSXCSV) {
+  async templateValidation(xlsx: XLSXCSV) {
     try {
       const schema = await this.getValidationSchema(xlsx);
       const schemaParser = await this.getValidationRules(schema);

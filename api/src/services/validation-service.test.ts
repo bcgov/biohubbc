@@ -14,28 +14,54 @@ import { ValidationService } from './validation-service';
 
 chai.use(sinonChai);
 
-// const dbConnection = getMockDBConnection({
-//   systemUserId: () => {
-//     return 20;
-//   }
-// });
-
-// const sampleReq = {
-//   keycloak_token: {},
-//   body: {
-//     occurrence_submission_id: 1
-//   }
-// } as any;
-
 describe.only('templateValidation', () => {
   afterEach(() => {
     sinon.restore();
   });
 
-  it('should persist validation results', () => {
-    
+  // what is this really testing...
+  it('should persist validation results', async () => {
+    const file = new MediaFile("test.txt", "text/plain", Buffer.of(0));
+    const xlsxCsv = new XLSXCSV(file)
+    sinon.stub(FileUtils, 'getFileFromS3').resolves("file from s3" as any);
+
+    const getValidation = sinon.stub(ValidationService.prototype, 'getValidationSchema').resolves("");
+    const getRules = sinon.stub(ValidationService.prototype, 'getValidationRules').resolves("");
+    const validate = sinon.stub(ValidationService.prototype, 'validateXLSX').resolves({});
+    const persistResults = sinon.stub(ValidationService.prototype, 'persistValidationResults').resolves(true);
+
+    const dbConnection = getMockDBConnection();
+    const service = new ValidationService(dbConnection);
+    await service.templateValidation(xlsxCsv)
+
+    expect(getValidation).to.be.calledOnce;
+    expect(getRules).to.be.calledOnce;
+    expect(validate).to.be.calledOnce;
+    expect(persistResults).to.be.calledOnce;
   });
-  it('should throw Failed to validate error', () => {});
+
+  it('should throw Failed to validate error', async () => {
+    const file = new MediaFile("test.txt", "text/plain", Buffer.of(0));
+    const xlsxCsv = new XLSXCSV(file)
+    sinon.stub(FileUtils, 'getFileFromS3').resolves("file from s3" as any);
+
+    sinon.stub(ValidationService.prototype, 'getValidationSchema').throws(new SubmissionError({}))
+    sinon.stub(ValidationService.prototype, 'getValidationRules').resolves({});
+    sinon.stub(ValidationService.prototype, 'validateXLSX').resolves({});
+    sinon.stub(ValidationService.prototype, 'persistValidationResults').resolves(true);
+
+    try {
+      const dbConnection = getMockDBConnection();
+      const service = new ValidationService(dbConnection);
+      await service.templateValidation(xlsxCsv)
+      expect.fail()
+    } catch (error) {
+      expect(error instanceof SubmissionError).to.be.true;
+      if(error instanceof SubmissionError) {
+        expect(error.status).to.be.eql(SUBMISSION_STATUS_TYPE.FAILED_VALIDATION);
+      }
+    }
+  });
 });
 
 describe('templatePreperation', () => {
