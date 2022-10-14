@@ -265,6 +265,8 @@ export class ValidationService extends DBService {
     );
 
     const validationSchema = templateMethodologySpeciesRecord?.validation;
+    console.log(templateMethodologySpeciesRecord)
+    console.log(`VALIDATION SCHEMA: ${validationSchema}`)
     if (!validationSchema) {
       throw SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_GET_VALIDATION_RULES);
     }

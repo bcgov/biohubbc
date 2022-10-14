@@ -2,11 +2,14 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
+import xlsx from 'xlsx';
 import { SUBMISSION_MESSAGE_TYPE, SUBMISSION_STATUS_TYPE } from '../constants/status';
+import { ValidationRepository } from '../repositories/validation-repository';
 import * as FileUtils from '../utils/file-utils';
 import { ICsvState } from '../utils/media/csv/csv-file';
 import { IMediaState, MediaFile } from '../utils/media/media-file';
 import * as MediaUtils from '../utils/media/media-utils';
+import { ValidationSchemaParser } from '../utils/media/validation/validation-schema-parser';
 import { XLSXCSV } from '../utils/media/xlsx/xlsx-file';
 import { SubmissionError } from '../utils/submission-error';
 import { getMockDBConnection } from '../__mocks__/db';
@@ -14,19 +17,92 @@ import { OccurrenceService } from './occurrence-service';
 import { ValidationService } from './validation-service';
 
 chai.use(sinonChai);
+
+// const s3File = {
+//   fieldname: 'media',
+//   originalname: 'test.txt',
+//   encoding: '7bit',
+//   mimetype: 'text/plain',
+//   size: 340
+// };
+
+const buildFile = (fileName: string, customProps: {template_id?: number, csm_id?: number}) => {
+  const newWorkbook = xlsx.utils.book_new();
+  newWorkbook.Custprops = {};
+
+  if (customProps.csm_id && customProps.template_id) {
+    newWorkbook.Custprops['sims_template_id'] = customProps.template_id;
+    newWorkbook.Custprops['sims_csm_id'] = customProps.csm_id;
+  }
+
+    const ws_name = 'SheetJS';
+
+    // make worksheet 
+    const ws_data = [
+      ['S', 'h', 'e', 'e', 't', 'J', 'S'],
+      [1, 2, 3, 4, 5]
+    ];
+    const ws = xlsx.utils.aoa_to_sheet(ws_data);
+
+    // Add the worksheet to the workbook
+    xlsx.utils.book_append_sheet(newWorkbook, ws, ws_name);
+
+    const buffer = xlsx.write(newWorkbook, { type: 'buffer' });
+
+    return new MediaFile(fileName, 'text/csv', buffer);
+}
+
 // 35% covered
 describe.only('ValidationService', () => {
   afterEach(() => {
     sinon.restore();
   });
 
+  describe.only('getValidationSchema', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('should return valid schema', async () => {
+      const dbConnection = getMockDBConnection();
+      const service = new ValidationService(dbConnection);
+      sinon.stub(ValidationRepository.prototype, 'getTemplateMethodologySpeciesRecord').resolves({
+        validation: {}
+      });
+
+      const file = new XLSXCSV(buildFile("testFile", {template_id: 1, csm_id: 1}))
+      const schema = await service.getValidationSchema(file);
+      expect(schema).to.be.not.null;
+    })
+
+    it('should throw Failed to get validation rules error', async () => {
+      const dbConnection = getMockDBConnection();
+      const service = new ValidationService(dbConnection);
+      sinon.stub(ValidationRepository.prototype, 'getTemplateMethodologySpeciesRecord').resolves({});
+
+      try {
+        
+        const file = new XLSXCSV(buildFile("testFile", {template_id: 1, csm_id: 1}))
+        await service.getValidationSchema(file);
+        expect.fail()
+      } catch (error) {
+        expect(error instanceof SubmissionError).to.be.true;
+        if (error instanceof SubmissionError) {
+          expect(error.submissionMessages[0].type).to.be.eql(SUBMISSION_MESSAGE_TYPE.FAILED_GET_VALIDATION_RULES);
+        }
+      }
+    })
+  })
+
   describe('templateValidation', () => {
     afterEach(() => {
       sinon.restore();
     });
 
-    it('should persist validation results', async () => {
+    it('should complete without error', async () => {
       const file = new MediaFile('test.txt', 'text/plain', Buffer.of(0));
+
+      
       const xlsxCsv = new XLSXCSV(file);
       sinon.stub(FileUtils, 'getFileFromS3').resolves('file from s3' as any);
 
@@ -294,6 +370,33 @@ describe.only('ValidationService', () => {
     });
   });
 
+  describe('getValidationRules', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('should return validation schema parser', () => {
+      const dbConnection = getMockDBConnection();
+      const service = new ValidationService(dbConnection);
+
+      const parser = service.getValidationRules({});
+      expect(parser instanceof ValidationSchemaParser).to.be.true
+      // expect(parser.)
+    });
+
+    it('should fail with invalid json', () => {
+      const dbConnection = getMockDBConnection();
+      const service = new ValidationService(dbConnection);
+
+      try {
+        
+        service.getValidationRules("---");
+        expect.fail()
+      } catch (error) {
+      }
+    });
+  });
+
   describe('processDWCFile', () => {
     afterEach(() => {
       sinon.restore();
@@ -307,12 +410,6 @@ describe.only('ValidationService', () => {
   });
 
   describe('validateDWC', () => {
-    afterEach(() => {
-      sinon.restore();
-    });
-  });
-
-  describe('updateSurveyOccurrenceSubmission', () => {
     afterEach(() => {
       sinon.restore();
     });
@@ -349,6 +446,12 @@ describe.only('ValidationService', () => {
   });
 
   describe('transformXLSX', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+  });
+  
+  describe('persistTransformationResults', () => {
     afterEach(() => {
       sinon.restore();
     });
