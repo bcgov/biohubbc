@@ -10,6 +10,7 @@ import { ICsvState } from '../utils/media/csv/csv-file';
 import { IMediaState, MediaFile } from '../utils/media/media-file';
 import * as MediaUtils from '../utils/media/media-utils';
 import { ValidationSchemaParser } from '../utils/media/validation/validation-schema-parser';
+import { TransformationSchemaParser } from '../utils/media/xlsx/transformation/transformation-schema-parser';
 import { XLSXCSV } from '../utils/media/xlsx/xlsx-file';
 import { SubmissionError } from '../utils/submission-error';
 import { getMockDBConnection } from '../__mocks__/db';
@@ -52,13 +53,13 @@ const buildFile = (fileName: string, customProps: {template_id?: number, csm_id?
     return new MediaFile(fileName, 'text/csv', buffer);
 }
 
-// 40% covered
+// 44% covered
 describe('ValidationService', () => {
   afterEach(() => {
     sinon.restore();
   });
 
-  describe.only('getValidationSchema', () => {
+  describe('getValidationSchema', () => {
     afterEach(() => {
       sinon.restore();
     });
@@ -94,7 +95,7 @@ describe('ValidationService', () => {
     })
   });
 
-  describe.only('getTransformationSchema', () => {
+  describe('getTransformationSchema', () => {
     afterEach(() => {
       sinon.restore();
     });
@@ -417,7 +418,6 @@ describe('ValidationService', () => {
 
       const parser = service.getValidationRules({});
       expect(parser instanceof ValidationSchemaParser).to.be.true
-      // expect(parser.)
     });
 
     it('should fail with invalid json', () => {
@@ -425,8 +425,32 @@ describe('ValidationService', () => {
       const service = new ValidationService(dbConnection);
 
       try {
-        
         service.getValidationRules("---");
+        expect.fail()
+      } catch (error) {
+      }
+    });
+  });
+
+  describe('getTransformationRules', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('should return validation schema parser', () => {
+      const dbConnection = getMockDBConnection();
+      const service = new ValidationService(dbConnection);
+
+      const parser = service.getTransformationRules({});
+      expect(parser instanceof TransformationSchemaParser).to.be.true
+    });
+
+    it('should fail with invalid json', () => {
+      const dbConnection = getMockDBConnection();
+      const service = new ValidationService(dbConnection);
+
+      try {
+        service.getTransformationRules("---");
         expect.fail()
       } catch (error) {
       }
@@ -463,18 +487,6 @@ describe('ValidationService', () => {
     });
   });
 
-  describe('getTransformationSchema', () => {
-    afterEach(() => {
-      sinon.restore();
-    });
-  });
-
-  describe('getTransformationRules', () => {
-    afterEach(() => {
-      sinon.restore();
-    });
-  });
-
   describe('transformXLSX', () => {
     afterEach(() => {
       sinon.restore();
@@ -485,9 +497,6 @@ describe('ValidationService', () => {
     afterEach(() => {
       sinon.restore();
     });
+
   });
-  // it('', async () => {
-  // const dbConnection = getMockDBConnection();
-  // const service = new ValidationService(dbConnection);
-  // });
 });
