@@ -180,7 +180,7 @@ export class ValidationService extends DBService {
       return { s3InputKey: s3InputKey, xlsx: xlsx };
     } catch (error) {
       if (error instanceof SubmissionError) {
-        error.setStatus(SUBMISSION_STATUS_TYPE.FAILED_OCCURRENCE_PREPERATION);
+        error.setStatus(SUBMISSION_STATUS_TYPE.FAILED_OCCURRENCE_PREPARATION);
       }
       throw error;
     }
@@ -397,7 +397,7 @@ export class ValidationService extends DBService {
     // update occurrence submission
     await this.occurrenceService.updateSurveyOccurrenceSubmission(submissionId, outputFileName, outputS3Key);
 
-    // insert tempalte validated status
+    // insert template validated status
     await this.submissionRepository.insertSubmissionStatus(submissionId, SUBMISSION_STATUS_TYPE.TEMPLATE_TRANSFORMED);
   }
 
