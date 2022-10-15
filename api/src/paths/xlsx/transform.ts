@@ -96,7 +96,7 @@ export function transform(): RequestHandler {
   return async (req, res, next) => {
     const submissionId = req.body.occurrence_submission_id;
     if (!submissionId) {
-      throw new HTTP400('Missing required paramter `occurrence field`');
+      throw new HTTP400('Missing required parameter `occurrence field`');
     }
 
     res.status(200).json({ status: 'success' });
@@ -118,7 +118,6 @@ export function transform(): RequestHandler {
       const errorService = new ErrorService(connection);
       await errorService.insertSubmissionStatus(submissionId, SUBMISSION_STATUS_TYPE.SYSTEM_ERROR);
       await connection.commit();
-      throw error;
       throw error;
     } finally {
       connection.release();
