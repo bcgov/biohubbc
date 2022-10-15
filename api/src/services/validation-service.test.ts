@@ -7,11 +7,13 @@ import { SUBMISSION_MESSAGE_TYPE, SUBMISSION_STATUS_TYPE } from '../constants/st
 import { ValidationRepository } from '../repositories/validation-repository';
 import * as FileUtils from '../utils/file-utils';
 import { ICsvState } from '../utils/media/csv/csv-file';
+import { DWCArchive } from '../utils/media/dwc/dwc-archive-file';
 // import { DWCArchive } from '../utils/media/dwc/dwc-archive-file';
 import { ArchiveFile, IMediaState, MediaFile } from '../utils/media/media-file';
 import * as MediaUtils from '../utils/media/media-utils';
 import { ValidationSchemaParser } from '../utils/media/validation/validation-schema-parser';
 import { TransformationSchemaParser } from '../utils/media/xlsx/transformation/transformation-schema-parser';
+import { XLSXTransformation } from '../utils/media/xlsx/transformation/xlsx-transformation';
 import { XLSXCSV } from '../utils/media/xlsx/xlsx-file';
 import { SubmissionError, SubmissionErrorFromMessageType } from '../utils/submission-error';
 import { getMockDBConnection } from '../__mocks__/db';
@@ -35,6 +37,11 @@ chai.use(sinonChai);
 //   mimetype: 'application/zip',
 //   size: 340
 // };
+
+const mockService = () => {
+  const dbConnection = getMockDBConnection();
+  return new ValidationService(dbConnection);
+}
 
 const buildFile = (fileName: string, customProps: { template_id?: number; csm_id?: number }) => {
   const newWorkbook = xlsx.utils.book_new();
@@ -74,8 +81,7 @@ describe.skip('ValidationService', () => {
     });
 
     it('should return valid schema', async () => {
-      const dbConnection = getMockDBConnection();
-      const service = new ValidationService(dbConnection);
+      const service = mockService()
       sinon.stub(ValidationRepository.prototype, 'getTemplateMethodologySpeciesRecord').resolves({
         validation: { id: 1 }
       });
@@ -86,8 +92,7 @@ describe.skip('ValidationService', () => {
     });
 
     it('should throw Failed to get validation rules error', async () => {
-      const dbConnection = getMockDBConnection();
-      const service = new ValidationService(dbConnection);
+      const service = mockService()
       sinon.stub(ValidationRepository.prototype, 'getTemplateMethodologySpeciesRecord').resolves({});
 
       try {
@@ -109,8 +114,7 @@ describe.skip('ValidationService', () => {
     });
 
     it('should return valid schema', async () => {
-      const dbConnection = getMockDBConnection();
-      const service = new ValidationService(dbConnection);
+      const service = mockService()
       sinon.stub(ValidationRepository.prototype, 'getTemplateMethodologySpeciesRecord').resolves({
         transform: { id: 1 }
       });
@@ -121,8 +125,7 @@ describe.skip('ValidationService', () => {
     });
 
     it('should throw Failed to get transformation rules error', async () => {
-      const dbConnection = getMockDBConnection();
-      const service = new ValidationService(dbConnection);
+      const service = mockService()
       sinon.stub(ValidationRepository.prototype, 'getTemplateMethodologySpeciesRecord').resolves({});
 
       try {
@@ -154,8 +157,7 @@ describe.skip('ValidationService', () => {
       const validate = sinon.stub(ValidationService.prototype, 'validateXLSX').resolves({});
       const persistResults = sinon.stub(ValidationService.prototype, 'persistValidationResults').resolves(true);
 
-      const dbConnection = getMockDBConnection();
-      const service = new ValidationService(dbConnection);
+      const service = mockService()
       await service.templateValidation(xlsxCsv);
 
       expect(getValidation).to.be.calledOnce;
@@ -209,8 +211,7 @@ describe.skip('ValidationService', () => {
         output_file_name: ''
       });
 
-      const dbConnection = getMockDBConnection();
-      const service = new ValidationService(dbConnection);
+      const service = mockService()
       const results = await service.templatePreparation(1);
 
       expect(results.xlsx).to.not.be.empty;
@@ -267,8 +268,7 @@ describe.skip('ValidationService', () => {
         }
       });
 
-      const dbConnection = getMockDBConnection();
-      const service = new ValidationService(dbConnection);
+      const service = mockService()
       try {
         const xlsx = service.prepXLSX(file);
         expect(xlsx).to.not.be.empty;
@@ -282,8 +282,7 @@ describe.skip('ValidationService', () => {
       const file = new MediaFile('test.txt', 'text/plain', Buffer.of(0));
       const parse = sinon.stub(MediaUtils, 'parseUnknownMedia').returns(null);
 
-      const dbConnection = getMockDBConnection();
-      const service = new ValidationService(dbConnection);
+      const service = mockService()
       try {
         service.prepXLSX(file);
         expect.fail();
@@ -301,8 +300,7 @@ describe.skip('ValidationService', () => {
       const file = new MediaFile('test.txt', 'text/plain', Buffer.of(0));
       const parse = sinon.stub(MediaUtils, 'parseUnknownMedia').returns(('a file' as unknown) as MediaFile);
 
-      const dbConnection = getMockDBConnection();
-      const service = new ValidationService(dbConnection);
+      const service = mockService()
       try {
         service.prepXLSX(file);
         expect.fail();
@@ -320,8 +318,7 @@ describe.skip('ValidationService', () => {
       const file = new MediaFile('test.txt', 'text/plain', Buffer.of(0));
       const parse = sinon.stub(MediaUtils, 'parseUnknownMedia').returns(file);
 
-      const dbConnection = getMockDBConnection();
-      const service = new ValidationService(dbConnection);
+      const service = mockService()
       try {
         service.prepXLSX(file);
         expect.fail();
@@ -342,8 +339,7 @@ describe.skip('ValidationService', () => {
     });
 
     it('should throw a submission error with multiple messages attached', async () => {
-      const dbConnection = getMockDBConnection();
-      const service = new ValidationService(dbConnection);
+      const service = mockService()
       const csvState: ICsvState[] = [
         {
           fileName: '',
@@ -384,8 +380,7 @@ describe.skip('ValidationService', () => {
     });
 
     it('should return false if no errors are present', async () => {
-      const dbConnection = getMockDBConnection();
-      const service = new ValidationService(dbConnection);
+      const service = mockService()
       const csvState: ICsvState[] = [];
       const mediaState: IMediaState = {
         fileName: 'Test.xlsx',
@@ -403,16 +398,14 @@ describe.skip('ValidationService', () => {
     });
 
     it('should return validation schema parser', () => {
-      const dbConnection = getMockDBConnection();
-      const service = new ValidationService(dbConnection);
+      const service = mockService()
 
       const parser = service.getValidationRules({});
       expect(parser instanceof ValidationSchemaParser).to.be.true;
     });
 
     it('should fail with invalid json', () => {
-      const dbConnection = getMockDBConnection();
-      const service = new ValidationService(dbConnection);
+      const service = mockService()
 
       try {
         service.getValidationRules('---');
@@ -427,16 +420,14 @@ describe.skip('ValidationService', () => {
     });
 
     it('should return validation schema parser', () => {
-      const dbConnection = getMockDBConnection();
-      const service = new ValidationService(dbConnection);
+      const service = mockService()
 
       const parser = service.getTransformationRules({});
       expect(parser instanceof TransformationSchemaParser).to.be.true;
     });
 
     it('should fail with invalid json', () => {
-      const dbConnection = getMockDBConnection();
-      const service = new ValidationService(dbConnection);
+      const service = mockService()
 
       try {
         service.getTransformationRules('---');
@@ -459,6 +450,14 @@ describe.skip('ValidationService', () => {
     afterEach(() => {
       sinon.restore();
     });
+
+    it('should return archive and input key', () => {
+      const service = mockService();
+    });
+    it('should throw Failed to process occurrence data with S3 messages', () => {});
+    it('should throw Failed to process occurrence data with S3 messages', () => {});
+    it('should throw Failed to process occurrence data with S3 messages', () => {});
+
   });
 
   describe('validateDWC', () => {
@@ -471,6 +470,39 @@ describe.skip('ValidationService', () => {
     afterEach(() => {
       sinon.restore();
     });
+
+    it('should return valid ICsvMediaState object', () => {
+      const service = mockService();
+
+      const mock = sinon.stub(DWCArchive.prototype, 'isMediaValid').returns({
+        isValid: true,
+        fileName: ""
+      });
+
+      const dwcArchive = new DWCArchive(new ArchiveFile("", "", Buffer.from([]), []))
+      const csvMediaState = service.validateDWCArchive(dwcArchive, {} as ValidationSchemaParser)
+      expect(mock).to.be.calledOnce;
+      expect(csvMediaState).has.property("csv_state");
+      expect(csvMediaState).has.property("media_state");
+    });
+
+    it('should throw Media is invalid error', () => {
+      const service = mockService()
+      const mock = sinon.stub(DWCArchive.prototype, 'isMediaValid').returns({
+        isValid: false,
+        fileName: ""
+      });
+
+      try {
+        const dwcArchive = new DWCArchive(new ArchiveFile("", "", Buffer.from([]), []))
+        service.validateDWCArchive(dwcArchive, {} as ValidationSchemaParser)
+        expect(mock).to.be.calledOnce;
+        expect.fail();
+      } catch (error) {
+        expect(error instanceof SubmissionError).to.be.true;
+        expect((error as SubmissionError).submissionMessages[0].type).to.be.eql(SUBMISSION_MESSAGE_TYPE.INVALID_MEDIA)
+      }
+    });
   });
 
   describe('prepDWCArchive', () => {
@@ -479,8 +511,7 @@ describe.skip('ValidationService', () => {
     });
 
     it('should return a DWCArchive', async () => {
-      const dbConnection = getMockDBConnection();
-      const service = new ValidationService(dbConnection);
+      const service = mockService()
       const fileName = 'test file';
       const parse = sinon
         .stub(MediaUtils, 'parseUnknownMedia')
@@ -492,8 +523,7 @@ describe.skip('ValidationService', () => {
     });
 
     it('should throw Media is invalid error', async () => {
-      const dbConnection = getMockDBConnection();
-      const service = new ValidationService(dbConnection);
+      const service = mockService()
       const parse = sinon.stub(MediaUtils, 'parseUnknownMedia').returns(null);
 
       try {
@@ -507,8 +537,7 @@ describe.skip('ValidationService', () => {
     });
 
     it('should throw File submitted is not a supported type error', async () => {
-      const dbConnection = getMockDBConnection();
-      const service = new ValidationService(dbConnection);
+      const service = mockService()
       const parse = sinon.stub(MediaUtils, 'parseUnknownMedia').returns(new MediaFile('', '', Buffer.from([])));
 
       try {
@@ -528,6 +557,19 @@ describe.skip('ValidationService', () => {
     afterEach(() => {
       sinon.restore();
     });
+
+    it('should return buffer of worksheets', async () => {
+      const service = mockService()
+      const xlsx = new XLSXCSV(buildFile("", {template_id: 1, csm_id: 1}))
+
+      const transformation = sinon.stub(XLSXTransformation.prototype, 'transform').resolves({})
+      const dataToSheet = sinon.stub(XLSXTransformation.prototype, 'dataToSheet').returns({})
+
+      const fileBuffer = await service.transformXLSX(xlsx, new TransformationSchemaParser({}))
+      expect(transformation).to.be.calledOnce;
+      expect(dataToSheet).to.be.calledOnce;
+      expect(fileBuffer).to.be.eql([])
+    });
   });
 
   describe('persistTransformationResults', () => {
@@ -536,10 +578,9 @@ describe.skip('ValidationService', () => {
     });
 
     it('should run without error', async () => {
-      const dbConnection = getMockDBConnection();
-      const service = new ValidationService(dbConnection);
-      const xlsx = new XLSXCSV(buildFile('', { template_id: 1, csm_id: 1 }));
-
+      const service = mockService()
+      const xlsx = new XLSXCSV(buildFile("", {template_id: 1, csm_id: 1}))
+      
       const s3 = sinon.stub(FileUtils, 'uploadBufferToS3').resolves();
       const occurrence = sinon.stub(OccurrenceService.prototype, 'updateSurveyOccurrenceSubmission').resolves();
       const submission = sinon.stub(service.submissionRepository, 'insertSubmissionStatus').resolves(1);
@@ -555,13 +596,10 @@ describe.skip('ValidationService', () => {
     });
 
     it('should throw Failed to upload file to S3 error', async () => {
-      const dbConnection = getMockDBConnection();
-      const service = new ValidationService(dbConnection);
-      const xlsx = new XLSXCSV(buildFile('', { template_id: 1, csm_id: 1 }));
-
-      const s3 = sinon
-        .stub(FileUtils, 'uploadBufferToS3')
-        .throws(SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_UPLOAD_FILE_TO_S3));
+      const service = mockService()
+      const xlsx = new XLSXCSV(buildFile("", {template_id: 1, csm_id: 1}))
+      
+      const s3 = sinon.stub(FileUtils, 'uploadBufferToS3').throws(SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_UPLOAD_FILE_TO_S3))
       const occurrence = sinon.stub(OccurrenceService.prototype, 'updateSurveyOccurrenceSubmission').resolves();
       const submission = sinon.stub(service.submissionRepository, 'insertSubmissionStatus').resolves(1);
 
@@ -579,14 +617,11 @@ describe.skip('ValidationService', () => {
     });
 
     it('should throw Failed to update occurrence submission error', async () => {
-      const dbConnection = getMockDBConnection();
-      const service = new ValidationService(dbConnection);
-      const xlsx = new XLSXCSV(buildFile('', { template_id: 1, csm_id: 1 }));
-
-      const s3 = sinon.stub(FileUtils, 'uploadBufferToS3').resolves();
-      const occurrence = sinon
-        .stub(OccurrenceService.prototype, 'updateSurveyOccurrenceSubmission')
-        .throws(SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_UPDATE_OCCURRENCE_SUBMISSION));
+      const service = mockService()
+      const xlsx = new XLSXCSV(buildFile("", {template_id: 1, csm_id: 1}))
+      
+      const s3 = sinon.stub(FileUtils, 'uploadBufferToS3').resolves()
+      const occurrence = sinon.stub(OccurrenceService.prototype, 'updateSurveyOccurrenceSubmission').throws(SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_UPDATE_OCCURRENCE_SUBMISSION))
       const submission = sinon.stub(service.submissionRepository, 'insertSubmissionStatus').resolves(1);
 
       try {
@@ -603,15 +638,12 @@ describe.skip('ValidationService', () => {
     });
 
     it('should throw Failed to update occurrence submission error', async () => {
-      const dbConnection = getMockDBConnection();
-      const service = new ValidationService(dbConnection);
-      const xlsx = new XLSXCSV(buildFile('', { template_id: 1, csm_id: 1 }));
-
-      const s3 = sinon.stub(FileUtils, 'uploadBufferToS3').resolves();
-      const occurrence = sinon.stub(OccurrenceService.prototype, 'updateSurveyOccurrenceSubmission').resolves();
-      const submission = sinon
-        .stub(service.submissionRepository, 'insertSubmissionStatus')
-        .throws(SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_UPDATE_OCCURRENCE_SUBMISSION));
+      const service = mockService()
+      const xlsx = new XLSXCSV(buildFile("", {template_id: 1, csm_id: 1}))
+      
+      const s3 = sinon.stub(FileUtils, 'uploadBufferToS3').resolves()
+      const occurrence = sinon.stub(OccurrenceService.prototype, 'updateSurveyOccurrenceSubmission').resolves()
+      const submission = sinon.stub(service.submissionRepository, 'insertSubmissionStatus').throws(SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_UPDATE_OCCURRENCE_SUBMISSION));
 
       try {
         await service.persistTransformationResults(1, [], 'outputKey', xlsx);
