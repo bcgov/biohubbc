@@ -22,7 +22,7 @@ import { ValidationService } from './validation-service';
 
 chai.use(sinonChai);
 
-// const s3File = {
+// const mockS3File = {
 //   fieldname: 'media',
 //   originalname: 'test.csv',
 //   encoding: '7bit',
@@ -41,6 +41,17 @@ chai.use(sinonChai);
 const mockService = () => {
   const dbConnection = getMockDBConnection();
   return new ValidationService(dbConnection);
+}
+
+const mockOccurrenceSubmission = {
+  occurrence_submission_id: 1,
+  survey_id: 1,
+  template_methodology_species_id: 1,
+  source: "",
+  input_key: "",
+  input_file_name: "",
+  output_key: "",
+  output_file_name: "",
 }
 
 const buildFile = (fileName: string, customProps: { template_id?: number; csm_id?: number }) => {
@@ -70,7 +81,7 @@ const buildFile = (fileName: string, customProps: { template_id?: number; csm_id
 };
 
 // 53% covered
-describe.skip('ValidationService', () => {
+describe.only('ValidationService', () => {
   afterEach(() => {
     sinon.restore();
   });
@@ -446,13 +457,23 @@ describe.skip('ValidationService', () => {
     it('should', () => {});
   });
 
-  describe('dwcPreparation', () => {
+  describe.only('dwcPreparation', () => {
     afterEach(() => {
       sinon.restore();
     });
 
-    it('should return archive and input key', () => {
+    it('should return archive and input key', async () => {
       const service = mockService();
+      const archive = new DWCArchive(new ArchiveFile("", "", Buffer.from([]), []))
+      const occurrence = sinon.stub(service.occurrenceService, 'getOccurrenceSubmission').resolves(mockOccurrenceSubmission);
+      const s3 = sinon.stub(FileUtils, 'getFileFromS3').resolves();
+      const prep = sinon.stub(service, 'prepDWCArchive').returns(archive);
+
+      await service.dwcPreparation(1)
+      expect(occurrence).to.be.calledOnce;
+      expect(s3).to.be.calledOnce;
+      expect(prep).to.be.calledOnce;
+
     });
     it('should throw Failed to process occurrence data with S3 messages', () => {});
     it('should throw Failed to process occurrence data with S3 messages', () => {});
