@@ -71,4 +71,19 @@ describe('ValidationRepository', () => {
       }
     });
   });
+
+  it('should succeed with valid data', async () => {
+    const templateId = 1;
+    const fieldMethodId = 10;
+
+    const mockResponse = ({
+      rows: []
+    } as any) as Promise<QueryResult<any>>;
+    const dbConnection = getMockDBConnection({
+      query: () => mockResponse
+    });
+    const repo = new ValidationRepository(dbConnection);
+    const response = await repo.getTemplateMethodologySpeciesRecord(fieldMethodId, templateId);
+    expect(response).to.be.eql(null);
+  });
 });

@@ -81,7 +81,7 @@ const buildFile = (fileName: string, customProps: { template_id?: number; csm_id
 };
 
 // 53% covered
-describe.only('ValidationService', () => {
+describe('ValidationService', () => {
   afterEach(() => {
     sinon.restore();
   });
@@ -457,7 +457,7 @@ describe.only('ValidationService', () => {
     it('should', () => {});
   });
 
-  describe.only('dwcPreparation', () => {
+  describe('dwcPreparation', () => {
     afterEach(() => {
       sinon.restore();
     });
@@ -601,7 +601,7 @@ describe.only('ValidationService', () => {
     it('should run without error', async () => {
       const service = mockService()
       const xlsx = new XLSXCSV(buildFile("", {template_id: 1, csm_id: 1}))
-      
+
       const s3 = sinon.stub(FileUtils, 'uploadBufferToS3').resolves();
       const occurrence = sinon.stub(OccurrenceService.prototype, 'updateSurveyOccurrenceSubmission').resolves();
       const submission = sinon.stub(service.submissionRepository, 'insertSubmissionStatus').resolves(1);
@@ -619,7 +619,7 @@ describe.only('ValidationService', () => {
     it('should throw Failed to upload file to S3 error', async () => {
       const service = mockService()
       const xlsx = new XLSXCSV(buildFile("", {template_id: 1, csm_id: 1}))
-      
+
       const s3 = sinon.stub(FileUtils, 'uploadBufferToS3').throws(SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_UPLOAD_FILE_TO_S3))
       const occurrence = sinon.stub(OccurrenceService.prototype, 'updateSurveyOccurrenceSubmission').resolves();
       const submission = sinon.stub(service.submissionRepository, 'insertSubmissionStatus').resolves(1);
@@ -640,7 +640,7 @@ describe.only('ValidationService', () => {
     it('should throw Failed to update occurrence submission error', async () => {
       const service = mockService()
       const xlsx = new XLSXCSV(buildFile("", {template_id: 1, csm_id: 1}))
-      
+
       const s3 = sinon.stub(FileUtils, 'uploadBufferToS3').resolves()
       const occurrence = sinon.stub(OccurrenceService.prototype, 'updateSurveyOccurrenceSubmission').throws(SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_UPDATE_OCCURRENCE_SUBMISSION))
       const submission = sinon.stub(service.submissionRepository, 'insertSubmissionStatus').resolves(1);
@@ -661,7 +661,7 @@ describe.only('ValidationService', () => {
     it('should throw Failed to update occurrence submission error', async () => {
       const service = mockService()
       const xlsx = new XLSXCSV(buildFile("", {template_id: 1, csm_id: 1}))
-      
+
       const s3 = sinon.stub(FileUtils, 'uploadBufferToS3').resolves()
       const occurrence = sinon.stub(OccurrenceService.prototype, 'updateSurveyOccurrenceSubmission').resolves()
       const submission = sinon.stub(service.submissionRepository, 'insertSubmissionStatus').throws(SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_UPDATE_OCCURRENCE_SUBMISSION));
