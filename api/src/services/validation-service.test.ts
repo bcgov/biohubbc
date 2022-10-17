@@ -719,7 +719,7 @@ describe('ValidationService', () => {
     });
   });
 
-  describe.only('processFile', ()=>{
+  describe('processFile', ()=>{
     afterEach(() => {
       sinon.restore();
     });
@@ -862,9 +862,63 @@ describe('ValidationService', () => {
     });
   });
 
-  describe('validateDWC', () => {
+  describe.only('validateDWC', () => {
     afterEach(() => {
       sinon.restore();
+    });
+
+    it('should return valid ICsvMediaState', async () => {
+      const service = mockService();
+      const mockDWCArchive = new DWCArchive(new ArchiveFile("test", "application/zip", Buffer.from([]), [buildFile("test", {})]))
+
+      const response = await service.validateDWC(mockDWCArchive)
+      expect(response.media_state.isValid).to.be.true;
+      expect(response.media_state.fileErrors).is.empty;
+    });
+
+    it('should return file validation errors', async () => {
+      const service = mockService();
+      const mockDWCArchive = new DWCArchive(new ArchiveFile("test", "application/zip", Buffer.from([]), [buildFile("test", {})]))
+      const mockState = {
+        fileName: "test",
+        isValid: false,
+        headerErrors: [{
+          errorCode: SUBMISSION_MESSAGE_TYPE.DUPLICATE_HEADER,
+          message: "Duplicate header found",
+          col: 1
+        }],
+        rowErrors: [
+          {
+            errorCode: SUBMISSION_MESSAGE_TYPE.MISSING_REQUIRED_FIELD,
+            message: "Missing required field",
+            col: "1",
+            row: 1
+          }
+        ]
+      } as ICsvState;
+      sinon.stub(DWCArchive.prototype, 'isContentValid').returns([mockState])
+      const response = await service.validateDWC(mockDWCArchive)
+      expect(response.csv_state).is.not.empty;
+      expect(response.csv_state[0].headerErrors).is.not.empty;
+      expect(response.csv_state[0].rowErrors).is.not.empty;
+    });
+    
+    it('should throw Failed to validate error', async () => {
+      const service = mockService();
+      const mockDWCArchive = new DWCArchive(new ArchiveFile("test", "application/zip", Buffer.from([]), [buildFile("test", {})]))
+      const mockState = {
+        fileName: "",
+        fileErrors: ["some file error"],
+        isValid: false
+      } as IMediaState
+      sinon.stub(DWCArchive.prototype, 'isMediaValid').returns(mockState)
+      try {
+        await service.validateDWC(mockDWCArchive)
+        expect.fail()
+      } catch (error) {
+        expect(error instanceof SubmissionError).to.be.true;
+        expect((error as SubmissionError).submissionMessages[0].type).to.be.eql(SUBMISSION_MESSAGE_TYPE.INVALID_MEDIA);
+      }
     });
   });
 
