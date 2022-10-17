@@ -175,7 +175,7 @@ export class ValidationService extends DBService {
       const occurrenceSubmission = await this.occurrenceService.getOccurrenceSubmission(submissionId);
       const s3InputKey = occurrenceSubmission.input_key;
       const s3File = await getFileFromS3(s3InputKey);
-      const xlsx = await this.prepXLSX(s3File);
+      const xlsx = this.prepXLSX(s3File);
 
       return { s3InputKey: s3InputKey, xlsx: xlsx };
     } catch (error) {

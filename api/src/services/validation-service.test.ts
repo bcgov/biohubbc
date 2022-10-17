@@ -209,7 +209,7 @@ describe('ValidationService', () => {
       const file = new MediaFile('test.txt', 'text/plain', Buffer.of(0));
       const s3Key = 's3 key';
       sinon.stub(FileUtils, 'getFileFromS3').resolves('file from s3' as any);
-      sinon.stub(ValidationService.prototype, 'prepXLSX').resolves(new XLSXCSV(file));
+      sinon.stub(ValidationService.prototype, 'prepXLSX').returns(new XLSXCSV(file));
       sinon.stub(OccurrenceService.prototype, 'getOccurrenceSubmission').resolves({
         occurrence_submission_id: 1,
         survey_id: 1,
