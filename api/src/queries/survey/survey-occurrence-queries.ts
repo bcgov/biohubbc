@@ -140,8 +140,6 @@ export const updateSurveyOccurrenceSubmissionSQL = (data: {
   return sqlStatement;
 };
 
-//TODO: this query is breaking!
-
 /**
  * SQL query to get latest occurrence submission for a survey.
  *

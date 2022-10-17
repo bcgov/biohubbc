@@ -465,8 +465,6 @@ describe('ValidationService', () => {
         .stub(service, 'templateScrapeAndUploadOccurrences')
         .throws(SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_UPDATE_OCCURRENCE_SUBMISSION));
       const insertError = sinon.stub(service.errorService, 'insertSubmissionError').resolves();
-
-      // expect.fail();
       try {
         await service.scrapeOccurrences(1);
         expect(scrapeUpload).to.be.calledOnce;
@@ -831,7 +829,7 @@ describe('ValidationService', () => {
 
       try {
         await service.dwcPreparation(1);
-        expect.fail;
+        expect.fail();
       } catch (error) {
         expect(error instanceof SubmissionError).to.be.true;
         expect((error as SubmissionError).status).to.be.eql(SUBMISSION_STATUS_TYPE.FAILED_PROCESSING_OCCURRENCE_DATA);
@@ -852,7 +850,7 @@ describe('ValidationService', () => {
 
       try {
         await service.dwcPreparation(1);
-        expect.fail;
+        expect.fail();
       } catch (error) {
         expect(error instanceof SubmissionError).to.be.true;
         expect((error as SubmissionError).status).to.be.eql(SUBMISSION_STATUS_TYPE.FAILED_PROCESSING_OCCURRENCE_DATA);
@@ -872,7 +870,7 @@ describe('ValidationService', () => {
 
       try {
         await service.dwcPreparation(1);
-        expect.fail;
+        expect.fail();
       } catch (error) {
         expect(error instanceof SubmissionError).to.be.true;
         expect((error as SubmissionError).status).to.be.eql(SUBMISSION_STATUS_TYPE.FAILED_PROCESSING_OCCURRENCE_DATA);
