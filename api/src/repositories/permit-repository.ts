@@ -1,5 +1,6 @@
 import SQL from 'sql-template-strings';
 import { PROJECT_ROLE } from '../constants/roles';
+import { ApiExecuteSQLError } from '../errors/api-error';
 import { BaseRepository } from './base-repository';
 
 export interface IPermitModel {
@@ -31,18 +32,27 @@ export class PermitRepository extends BaseRepository {
    */
   async getPermitBySurveyId(surveyId: number): Promise<IPermitModel[]> {
     const sqlStatement = SQL`
-      SELECT 
-        p.* 
-      FROM 
+      SELECT
+        p.*
+      FROM
         permit p
-      WHERE 
+      WHERE
         p.survey_id = ${surveyId}
       ;
       `;
 
     const response = await this.connection.sql<IPermitModel>(sqlStatement);
 
-    return response.rows;
+    const result = (response && response.rows) || null;
+
+    if (!result) {
+      throw new ApiExecuteSQLError('Failed to get permit by Id', [
+        'PermitRepository->getPermitBySurveyId',
+        'rows was null or undefined, expected rows != null'
+      ]);
+    }
+
+    return result;
   }
 
   /**
@@ -54,31 +64,40 @@ export class PermitRepository extends BaseRepository {
    */
   async getPermitByUser(systemUserId: number): Promise<IPermitModel[]> {
     const sqlStatement = SQL`
-    SELECT 
-      p.* 
-    FROM 
+    SELECT
+      p.*
+    FROM
       permit p
       , survey s
       , project p2
       , project_participation pp
-      , project_role pr  
-    WHERE 
+      , project_role pr
+    WHERE
       p.survey_id = s.survey_id
-    AND 
-      s.project_id = p2.project_id 
-    AND 
-      p2.project_id = pp.project_id 
-    AND 
+    AND
+      s.project_id = p2.project_id
+    AND
+      p2.project_id = pp.project_id
+    AND
       pr."name" in ('${PROJECT_ROLE.PROJECT_LEAD}', '${PROJECT_ROLE.PROJECT_EDITOR}')
-    AND 
-      pp.project_role_id = pr.project_role_id 
-    AND 
+    AND
+      pp.project_role_id = pr.project_role_id
+    AND
       pp.system_user_id = ${systemUserId};
       `;
 
     const response = await this.connection.sql<IPermitModel>(sqlStatement);
 
-    return response.rows;
+    const result = (response && response.rows) || null;
+
+    if (!result) {
+      throw new ApiExecuteSQLError('Failed to get permit by user Id', [
+        'PermitRepository->getPermitByUser',
+        'rows was null or undefined, expected rows != null'
+      ]);
+    }
+
+    return result;
   }
 
   /**
@@ -90,13 +109,22 @@ export class PermitRepository extends BaseRepository {
    */
   async getAllPermits(): Promise<IPermitModel[]> {
     const sqlStatement = SQL`
-      SELECT 
-        p.* 
-      FROM 
+      SELECT
+        p.*
+      FROM
         permit p;
     `;
 
     const response = await this.connection.sql<IPermitModel>(sqlStatement);
+
+    const result = (response && response.rows) || null;
+
+    if (!result) {
+      throw new ApiExecuteSQLError('Failed to get all permits', [
+        'PermitRepository->getAllPermits',
+        'rows was null or undefined, expected rows != null'
+      ]);
+    }
 
     return response.rows;
   }
@@ -119,12 +147,12 @@ export class PermitRepository extends BaseRepository {
   ): Promise<number> {
     const sqlStatement = SQL`
       UPDATE permit
-      SET 
+      SET
         "number" = ${permitNumber}
         , type = ${permitType}
-      WHERE 
+      WHERE
         permit_id = ${permitId}
-      AND 
+      AND
         survey_id = ${surveyId}
       RETURNING permit_id
       ;
@@ -133,6 +161,13 @@ export class PermitRepository extends BaseRepository {
     const response = await this.connection.sql(sqlStatement);
 
     const result = (response && response.rows && response.rows[0]) || null;
+
+    if (!result) {
+      throw new ApiExecuteSQLError('Failed to get update Survey Permit', [
+        'PermitRepository->updateSurveyPermit',
+        'row[0] was null or undefined, expected row[0] != null'
+      ]);
+    }
 
     return result.permit_id;
   }
@@ -148,9 +183,9 @@ export class PermitRepository extends BaseRepository {
    */
   async createSurveyPermit(surveyId: number, permitNumber: string, permitType: string): Promise<number> {
     const sqlStatement = SQL`
-      INSERT INTO 
-        permit (survey_id, "number", type) 
-      VALUES 
+      INSERT INTO
+        permit (survey_id, "number", type)
+      VALUES
         (${surveyId}, ${permitNumber}, ${permitType})
       RETURNING permit_id
       ;
@@ -159,6 +194,13 @@ export class PermitRepository extends BaseRepository {
     const response = await this.connection.sql(sqlStatement);
 
     const result = (response && response.rows && response.rows[0]) || null;
+
+    if (!result) {
+      throw new ApiExecuteSQLError('Failed to get Create Survey Permit', [
+        'PermitRepository->createSurveyPermit',
+        'row[0] was null or undefined, expected row[0] != null'
+      ]);
+    }
 
     return result.permit_id;
   }
@@ -173,11 +215,11 @@ export class PermitRepository extends BaseRepository {
    */
   async deleteSurveyPermit(surveyId: number, permitId: number): Promise<number> {
     const sqlStatement = SQL`
-      DELETE FROM 
+      DELETE FROM
         permit
-      WHERE 
+      WHERE
         permit_id = ${permitId}
-      AND 
+      AND
         survey_id =  ${surveyId}
       RETURNING permit_id
       ;
@@ -186,6 +228,13 @@ export class PermitRepository extends BaseRepository {
     const response = await this.connection.sql(sqlStatement);
 
     const result = (response && response.rows && response.rows[0]) || null;
+
+    if (!result) {
+      throw new ApiExecuteSQLError('Failed to get Delete Survey Permit', [
+        'PermitRepository->deleteSurveyPermit',
+        'row[0] was null or undefined, expected row[0] != null'
+      ]);
+    }
 
     return result.permit_id;
   }

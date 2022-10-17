@@ -60,8 +60,12 @@ export class SubmissionRepository extends BaseRepository {
 
     const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
 
-    if (!response || !response.rowCount) {
+    const result = (response && response.rows && response.rows[0]) || null;
+
+    if (!result || !result.submission_message_id) {
       throw new HTTP400('Failed to insert survey submission message data');
     }
+
+    return result;
   };
 }

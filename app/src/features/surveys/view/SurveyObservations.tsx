@@ -80,7 +80,7 @@ export enum SUBMISSION_STATUS_TYPE {
   'SYSTEM_ERROR' = 'System Error',
 
   //Failure
-  'FAILED_OCCURRENCE_PREPERATION' = 'Failed to prepare submission',
+  'FAILED_OCCURRENCE_PREPARATION' = 'Failed to prepare submission',
   'INVALID_MEDIA' = 'Media is not valid',
   'FAILED_VALIDATION' = 'Failed to validate',
   'FAILED_TRANSFORMED' = 'Failed to transform',
@@ -481,7 +481,7 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
 
           {!isValidating &&
             (submissionStatus?.status === SUBMISSION_STATUS_TYPE.REJECTED ||
-              submissionStatus?.status === SUBMISSION_STATUS_TYPE.FAILED_OCCURRENCE_PREPERATION ||
+              submissionStatus?.status === SUBMISSION_STATUS_TYPE.FAILED_OCCURRENCE_PREPARATION ||
               submissionStatus?.status === SUBMISSION_STATUS_TYPE.INVALID_MEDIA ||
               submissionStatus?.status === SUBMISSION_STATUS_TYPE.FAILED_VALIDATION ||
               submissionStatus?.status === SUBMISSION_STATUS_TYPE.FAILED_TRANSFORMED ||

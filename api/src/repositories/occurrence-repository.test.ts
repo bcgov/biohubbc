@@ -31,15 +31,19 @@ describe('OccurrenceRepository', () => {
       expect(response).to.eql({ occurrence_submission_id: 1 });
     });
 
-    it.skip('should return null', async () => {
+    it('should return null', async () => {
       const mockQuery = sinon.stub(queries.survey, 'getSurveyOccurrenceSubmissionSQL').returns(null);
 
       const dbConnection = getMockDBConnection();
       const repo = new OccurrenceRepository(dbConnection);
-      const response = await repo.getOccurrenceSubmission(1);
 
-      expect(mockQuery).to.be.calledOnce;
-      expect(response).to.be.null;
+      try {
+        await repo.getOccurrenceSubmission(1);
+        expect(mockQuery).to.be.calledOnce;
+        expect.fail();
+      } catch (error) {
+        expect((error as Error).message).to.equal('Rejected');
+      }
     });
   });
 
@@ -127,7 +131,7 @@ describe('OccurrenceRepository', () => {
       }
     });
 
-    it.skip('should throw `Failed to insert` error', async () => {
+    it('should throw `Failed to insert` error', async () => {
       const postOccurrence = new PostOccurrence({});
       const mockResponse = ({} as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({
@@ -167,7 +171,7 @@ describe('OccurrenceRepository', () => {
       }
     });
 
-    it.skip('should throw `Failed to update` error', async () => {
+    it('should throw `Failed to update` error', async () => {
       const mockResponse = ({} as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({
         query: async () => {
@@ -179,7 +183,7 @@ describe('OccurrenceRepository', () => {
         await repo.updateSurveyOccurrenceSubmissionWithOutputKey(1, 'file', 'key');
         expect.fail();
       } catch (error) {
-        expect((error as HTTP400).message).to.equal('Failed to update survey occurrence submission record');
+        expect((error as HTTP400).message).to.equal('Rejected');
       }
     });
   });
