@@ -99,7 +99,6 @@ export const updateSurveyOccurrenceSubmissionSQL = (data: {
   outputFileName?: string;
   outputKey?: string;
 }): SQLStatement | null => {
-  console.log('data in updateSurveyOccurrenceSubmissionSQL: ', data);
   if (!data.submissionId || (!data.inputFileName && !data.inputKey && !data.outputFileName && !data.outputKey)) {
     return null;
   }

@@ -68,7 +68,7 @@ describe('getOccurrencesForView', () => {
     });
 
     sinon.stub(occurrence_queries, 'getOccurrencesForViewSQL').returns(null);
-    sinon.stub(ErrorService.prototype, 'insertSubmissionStatus').resolves()
+    sinon.stub(ErrorService.prototype, 'insertSubmissionStatus').resolves();
 
     try {
       const result = view_occurrences.getOccurrencesForView();
@@ -101,7 +101,7 @@ describe('getOccurrencesForView', () => {
     });
 
     sinon.stub(occurrence_queries, 'getOccurrencesForViewSQL').returns(SQL`something`);
-    sinon.stub(ErrorService.prototype, 'insertSubmissionStatus').resolves()
+    sinon.stub(ErrorService.prototype, 'insertSubmissionStatus').resolves();
 
     try {
       const result = view_occurrences.getOccurrencesForView();
