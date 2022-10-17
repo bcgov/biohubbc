@@ -48,9 +48,9 @@ const mockOccurrenceSubmission = {
   survey_id: 1,
   template_methodology_species_id: 1,
   source: "",
-  input_key: "",
+  input_key: "input key",
   input_file_name: "",
-  output_key: "",
+  output_key: "output key",
   output_file_name: "",
 }
 
@@ -80,8 +80,12 @@ const buildFile = (fileName: string, customProps: { template_id?: number; csm_id
   return new MediaFile(fileName, 'text/csv', buffer);
 };
 
-// 53% covered
-describe.only('ValidationService', () => {
+// const buildArchive = (fileName: string, customProps: { template_id?: number; csm_id?: number }) => {
+//   return new ArchiveFile(fileName, 'application/zip', Buffer.from([]), [buildFile(fileName, customProps)])
+// }
+
+// 63% covered
+describe('ValidationService', () => {
   afterEach(() => {
     sinon.restore();
   });
@@ -447,17 +451,61 @@ describe.only('ValidationService', () => {
     });
   });
 
+  describe('scrapeOccurrences', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('should run without issue', async () => {
+      const service = mockService();
+      const scrapeUpload = sinon.stub(service, 'templateScrapeAndUploadOccurrences').resolves();
+
+      await service.scrapeOccurrences(1)
+      expect(scrapeUpload).to.be.calledOnce;
+    });
+
+    it('should insert submission error', async () => {
+      const service = mockService();
+      const scrapeUpload = sinon.stub(service, 'templateScrapeAndUploadOccurrences').throws(SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_UPDATE_OCCURRENCE_SUBMISSION))
+      const insertError = sinon.stub(service.errorService, 'insertSubmissionError').resolves();
+
+      // expect.fail();
+      try {
+        await service.scrapeOccurrences(1)
+        expect(scrapeUpload).to.be.calledOnce;
+      } catch (error) {
+        console.log(error)
+        expect(error instanceof SubmissionError).to.be.true;
+        expect(insertError).to.be.calledOnce;
+      }
+    });
+
+    it('should throw error', async () => {
+      const service = mockService();
+      const scrapeUpload = sinon.stub(service, 'templateScrapeAndUploadOccurrences').throws(new Error())
+      const insertError = sinon.stub(service.errorService, 'insertSubmissionError').resolves();
+
+      try {
+        
+        await service.scrapeOccurrences(1);
+        expect(scrapeUpload).to.be.calledOnce;
+        expect.fail();
+      } catch (error) {
+        expect(error instanceof SubmissionError).to.be.false;
+        expect(insertError).not.be.calledOnce;
+      }
+    });
+  });
+
   describe('processDWCFile', () => {
     afterEach(() => {
       sinon.restore();
     });
 
-    it('should', () => {});
-    it('should', () => {});
-    it('should', () => {});
+    it('should run without issue', () => {});
   });
 
-  describe.only('dwcPreparation', () => {
+  describe('dwcPreparation', () => {
     afterEach(() => {
       sinon.restore();
     });
@@ -469,16 +517,62 @@ describe.only('ValidationService', () => {
       const s3 = sinon.stub(FileUtils, 'getFileFromS3').resolves();
       const prep = sinon.stub(service, 'prepDWCArchive').returns(archive);
 
-      await service.dwcPreparation(1)
+      const results = await service.dwcPreparation(1)
+      expect(results.s3InputKey).to.not.be.empty;
       expect(occurrence).to.be.calledOnce;
       expect(s3).to.be.calledOnce;
       expect(prep).to.be.calledOnce;
-
     });
-    it('should throw Failed to process occurrence data with S3 messages', () => {});
-    it('should throw Failed to process occurrence data with S3 messages', () => {});
-    it('should throw Failed to process occurrence data with S3 messages', () => {});
 
+    it('should throw Failed to process occurrence error', async () => {
+      const service = mockService();
+      const archive = new DWCArchive(new ArchiveFile("", "", Buffer.from([]), []))
+      sinon.stub(service.occurrenceService, 'getOccurrenceSubmission').throws(SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_GET_OCCURRENCE));
+      sinon.stub(FileUtils, 'getFileFromS3').resolves();
+      sinon.stub(service, 'prepDWCArchive').returns(archive);
+
+      try {
+        await service.dwcPreparation(1)
+        expect.fail;
+      } catch (error) {
+        expect(error instanceof SubmissionError).to.be.true;
+        expect((error as SubmissionError).status).to.be.eql(SUBMISSION_STATUS_TYPE.FAILED_PROCESSING_OCCURRENCE_DATA);
+        expect((error as SubmissionError).submissionMessages[0].type).to.be.eql(SUBMISSION_MESSAGE_TYPE.FAILED_GET_OCCURRENCE);
+      }
+    });
+
+    it('should throw Failed to process occurrence data with S3 messages', async () => {
+      const service = mockService();
+      const archive = new DWCArchive(new ArchiveFile("", "", Buffer.from([]), []))
+      sinon.stub(service.occurrenceService, 'getOccurrenceSubmission').resolves(mockOccurrenceSubmission);
+      sinon.stub(FileUtils, 'getFileFromS3').throws(SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_GET_FILE_FROM_S3));
+      sinon.stub(service, 'prepDWCArchive').returns(archive);
+
+      try {
+        await service.dwcPreparation(1)
+        expect.fail;
+      } catch (error) {
+        expect(error instanceof SubmissionError).to.be.true;
+        expect((error as SubmissionError).status).to.be.eql(SUBMISSION_STATUS_TYPE.FAILED_PROCESSING_OCCURRENCE_DATA);
+        expect((error as SubmissionError).submissionMessages[0].type).to.be.eql(SUBMISSION_MESSAGE_TYPE.FAILED_GET_FILE_FROM_S3);
+      }
+    });
+
+    it('should throw Media is invalid error', async () => {
+      const service = mockService();
+      sinon.stub(service.occurrenceService, 'getOccurrenceSubmission').resolves(mockOccurrenceSubmission);
+      sinon.stub(FileUtils, 'getFileFromS3').resolves();
+      sinon.stub(service, 'prepDWCArchive').throws(SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.INVALID_MEDIA));
+
+      try {
+        await service.dwcPreparation(1)
+        expect.fail;
+      } catch (error) {
+        expect(error instanceof SubmissionError).to.be.true;
+        expect((error as SubmissionError).status).to.be.eql(SUBMISSION_STATUS_TYPE.FAILED_PROCESSING_OCCURRENCE_DATA);
+        expect((error as SubmissionError).submissionMessages[0].type).to.be.eql(SUBMISSION_MESSAGE_TYPE.INVALID_MEDIA);
+      }
+    });
   });
 
   describe('validateDWC', () => {
