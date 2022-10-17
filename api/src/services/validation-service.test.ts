@@ -80,7 +80,7 @@ const buildFile = (fileName: string, customProps: { template_id?: number; csm_id
   return new MediaFile(fileName, 'text/csv', buffer);
 };
 
-// 53% covered
+// 63% covered
 describe('ValidationService', () => {
   afterEach(() => {
     sinon.restore();
@@ -547,7 +547,7 @@ describe('ValidationService', () => {
         await service.transformFile(1);
         expect(prep).to.be.calledOnce;
       } catch (error) {
-        expect(error instanceof SubmissionError).to.be.true;
+        expect(error instanceof SubmissionError).to.be.false;
         expect(transform).not.to.be.calledOnce;
         expect(submissionStatus).not.to.be.calledOnce;
         expect(insertError).not.to.be.calledOnce;
@@ -556,7 +556,7 @@ describe('ValidationService', () => {
     });
   });
 
-  describe.only('validateFile', ()=>{
+  describe('validateFile', ()=>{
     afterEach(() => {
       sinon.restore();
     });
@@ -627,7 +627,100 @@ describe('ValidationService', () => {
       sinon.restore();
     });
 
-    it('should run without issue', () => {});
+    it('should run without issue', async () => {
+      const service = mockService();
+      const mockPrep = {
+        s3InputKey: "",
+        archive: new DWCArchive(new ArchiveFile("test", "application/zip", Buffer.from([]), [buildFile("test", {})]))
+      };
+      const mockState = {
+        csv_state: [],
+        media_state: {
+          fileName: "test",
+          fileErrors: [],
+          isValid: true
+        }
+      }
+
+      const prep = sinon.stub(service, 'dwcPreparation').resolves(mockPrep);
+      const state = sinon.stub(service, 'validateDWC').returns(mockState);
+      const persistResults = sinon.stub(service, 'persistValidationResults').resolves();
+      const update = sinon.stub(service.occurrenceService, 'updateSurveyOccurrenceSubmission').resolves()
+
+      await service.processDWCFile(1);
+      expect(prep).to.be.calledOnce;
+      expect(state).to.be.calledOnce;
+      expect(persistResults).to.be.calledOnce;
+      expect(update).to.be.calledOnce;
+    });
+
+    it('should insert submission error from prep failure', async () => {
+      const service = mockService();
+      const mockPrep = {
+        s3InputKey: "",
+        archive: new DWCArchive(new ArchiveFile("test", "application/zip", Buffer.from([]), [buildFile("test", {})]))
+      };
+      const mockState = {
+        csv_state: [],
+        media_state: {
+          fileName: "test",
+          fileErrors: [],
+          isValid: true
+        }
+      }
+
+      const prep = sinon.stub(service, 'dwcPreparation').resolves(mockPrep)
+      const state = sinon.stub(service, 'validateDWC').returns(mockState);
+      const persistResults = sinon.stub(service, 'persistValidationResults').resolves();
+      const update = sinon.stub(service.occurrenceService, 'updateSurveyOccurrenceSubmission').throws(SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_UPDATE_OCCURRENCE_SUBMISSION))
+      const insertError = sinon.stub(service.errorService, 'insertSubmissionError').resolves()
+      
+      await service.processDWCFile(1);
+      expect(prep).to.be.calledOnce;
+      expect(state).to.be.calledOnce;
+      expect(persistResults).to.be.calledOnce;
+      expect(update).to.be.calledOnce;
+
+      expect(insertError).to.be.calledOnce;
+    });
+
+    it('should throw unrecognized error', async () => {
+      const service = mockService();
+      const mockPrep = {
+        s3InputKey: "",
+        archive: new DWCArchive(new ArchiveFile("test", "application/zip", Buffer.from([]), [buildFile("test", {})]))
+      };
+      const mockState = {
+        csv_state: [],
+        media_state: {
+          fileName: "test",
+          fileErrors: [],
+          isValid: true
+        }
+      }
+
+      const prep = sinon.stub(service, 'dwcPreparation').resolves(mockPrep)
+      const state = sinon.stub(service, 'validateDWC').returns(mockState);
+      const persistResults = sinon.stub(service, 'persistValidationResults').resolves();
+      const update = sinon.stub(service.occurrenceService, 'updateSurveyOccurrenceSubmission').throws()
+      const insertError = sinon.stub(service.errorService, 'insertSubmissionError').resolves()
+      
+      try {
+        await service.processDWCFile(1);
+        expect(prep).to.be.calledOnce;
+        expect(state).to.be.calledOnce;
+        expect(persistResults).to.be.calledOnce;
+        expect(update).to.be.calledOnce;
+      } catch (error) {
+        expect(error instanceof SubmissionError).to.be.false;
+        expect(insertError).not.to.be.calledOnce;
+      }
+
+    });
+  });
+
+  describe('processFile', ()=>{
+
   });
 
   describe('dwcPreparation', () => {
