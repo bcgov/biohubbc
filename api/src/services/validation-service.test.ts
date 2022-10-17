@@ -41,18 +41,18 @@ chai.use(sinonChai);
 const mockService = () => {
   const dbConnection = getMockDBConnection();
   return new ValidationService(dbConnection);
-}
+};
 
 const mockOccurrenceSubmission = {
   occurrence_submission_id: 1,
   survey_id: 1,
   template_methodology_species_id: 1,
-  source: "",
-  input_key: "",
-  input_file_name: "",
-  output_key: "",
-  output_file_name: "",
-}
+  source: '',
+  input_key: '',
+  input_file_name: '',
+  output_key: '',
+  output_file_name: ''
+};
 
 const buildFile = (fileName: string, customProps: { template_id?: number; csm_id?: number }) => {
   const newWorkbook = xlsx.utils.book_new();
@@ -81,7 +81,7 @@ const buildFile = (fileName: string, customProps: { template_id?: number; csm_id
 };
 
 // 53% covered
-describe.only('ValidationService', () => {
+describe('ValidationService', () => {
   afterEach(() => {
     sinon.restore();
   });
@@ -92,7 +92,7 @@ describe.only('ValidationService', () => {
     });
 
     it('should return valid schema', async () => {
-      const service = mockService()
+      const service = mockService();
       sinon.stub(ValidationRepository.prototype, 'getTemplateMethodologySpeciesRecord').resolves({
         validation: { id: 1 }
       });
@@ -103,7 +103,7 @@ describe.only('ValidationService', () => {
     });
 
     it('should throw Failed to get validation rules error', async () => {
-      const service = mockService()
+      const service = mockService();
       sinon.stub(ValidationRepository.prototype, 'getTemplateMethodologySpeciesRecord').resolves({});
 
       try {
@@ -125,7 +125,7 @@ describe.only('ValidationService', () => {
     });
 
     it('should return valid schema', async () => {
-      const service = mockService()
+      const service = mockService();
       sinon.stub(ValidationRepository.prototype, 'getTemplateMethodologySpeciesRecord').resolves({
         transform: { id: 1 }
       });
@@ -136,7 +136,7 @@ describe.only('ValidationService', () => {
     });
 
     it('should throw Failed to get transformation rules error', async () => {
-      const service = mockService()
+      const service = mockService();
       sinon.stub(ValidationRepository.prototype, 'getTemplateMethodologySpeciesRecord').resolves({});
 
       try {
@@ -168,7 +168,7 @@ describe.only('ValidationService', () => {
       const validate = sinon.stub(ValidationService.prototype, 'validateXLSX').resolves({});
       const persistResults = sinon.stub(ValidationService.prototype, 'persistValidationResults').resolves(true);
 
-      const service = mockService()
+      const service = mockService();
       await service.templateValidation(xlsxCsv);
 
       expect(getValidation).to.be.calledOnce;
@@ -222,7 +222,7 @@ describe.only('ValidationService', () => {
         output_file_name: ''
       });
 
-      const service = mockService()
+      const service = mockService();
       const results = await service.templatePreparation(1);
 
       expect(results.xlsx).to.not.be.empty;
@@ -279,7 +279,7 @@ describe.only('ValidationService', () => {
         }
       });
 
-      const service = mockService()
+      const service = mockService();
       try {
         const xlsx = service.prepXLSX(file);
         expect(xlsx).to.not.be.empty;
@@ -293,7 +293,7 @@ describe.only('ValidationService', () => {
       const file = new MediaFile('test.txt', 'text/plain', Buffer.of(0));
       const parse = sinon.stub(MediaUtils, 'parseUnknownMedia').returns(null);
 
-      const service = mockService()
+      const service = mockService();
       try {
         service.prepXLSX(file);
         expect.fail();
@@ -311,7 +311,7 @@ describe.only('ValidationService', () => {
       const file = new MediaFile('test.txt', 'text/plain', Buffer.of(0));
       const parse = sinon.stub(MediaUtils, 'parseUnknownMedia').returns(('a file' as unknown) as MediaFile);
 
-      const service = mockService()
+      const service = mockService();
       try {
         service.prepXLSX(file);
         expect.fail();
@@ -329,7 +329,7 @@ describe.only('ValidationService', () => {
       const file = new MediaFile('test.txt', 'text/plain', Buffer.of(0));
       const parse = sinon.stub(MediaUtils, 'parseUnknownMedia').returns(file);
 
-      const service = mockService()
+      const service = mockService();
       try {
         service.prepXLSX(file);
         expect.fail();
@@ -350,7 +350,7 @@ describe.only('ValidationService', () => {
     });
 
     it('should throw a submission error with multiple messages attached', async () => {
-      const service = mockService()
+      const service = mockService();
       const csvState: ICsvState[] = [
         {
           fileName: '',
@@ -391,7 +391,7 @@ describe.only('ValidationService', () => {
     });
 
     it('should return false if no errors are present', async () => {
-      const service = mockService()
+      const service = mockService();
       const csvState: ICsvState[] = [];
       const mediaState: IMediaState = {
         fileName: 'Test.xlsx',
@@ -409,14 +409,14 @@ describe.only('ValidationService', () => {
     });
 
     it('should return validation schema parser', () => {
-      const service = mockService()
+      const service = mockService();
 
       const parser = service.getValidationRules({});
       expect(parser instanceof ValidationSchemaParser).to.be.true;
     });
 
     it('should fail with invalid json', () => {
-      const service = mockService()
+      const service = mockService();
 
       try {
         service.getValidationRules('---');
@@ -431,14 +431,14 @@ describe.only('ValidationService', () => {
     });
 
     it('should return validation schema parser', () => {
-      const service = mockService()
+      const service = mockService();
 
       const parser = service.getTransformationRules({});
       expect(parser instanceof TransformationSchemaParser).to.be.true;
     });
 
     it('should fail with invalid json', () => {
-      const service = mockService()
+      const service = mockService();
 
       try {
         service.getTransformationRules('---');
@@ -464,21 +464,21 @@ describe.only('ValidationService', () => {
 
     it('should return archive and input key', async () => {
       const service = mockService();
-      const archive = new DWCArchive(new ArchiveFile("", "", Buffer.from([]), []))
-      const occurrence = sinon.stub(service.occurrenceService, 'getOccurrenceSubmission').resolves(mockOccurrenceSubmission);
+      const archive = new DWCArchive(new ArchiveFile('', '', Buffer.from([]), []));
+      const occurrence = sinon
+        .stub(service.occurrenceService, 'getOccurrenceSubmission')
+        .resolves(mockOccurrenceSubmission);
       const s3 = sinon.stub(FileUtils, 'getFileFromS3').resolves();
       const prep = sinon.stub(service, 'prepDWCArchive').returns(archive);
 
-      await service.dwcPreparation(1)
+      await service.dwcPreparation(1);
       expect(occurrence).to.be.calledOnce;
       expect(s3).to.be.calledOnce;
       expect(prep).to.be.calledOnce;
-
     });
     it('should throw Failed to process occurrence data with S3 messages', () => {});
     it('should throw Failed to process occurrence data with S3 messages', () => {});
     it('should throw Failed to process occurrence data with S3 messages', () => {});
-
   });
 
   describe('validateDWC', () => {
@@ -497,31 +497,31 @@ describe.only('ValidationService', () => {
 
       const mock = sinon.stub(DWCArchive.prototype, 'isMediaValid').returns({
         isValid: true,
-        fileName: ""
+        fileName: ''
       });
 
-      const dwcArchive = new DWCArchive(new ArchiveFile("", "", Buffer.from([]), []))
-      const csvMediaState = service.validateDWCArchive(dwcArchive, {} as ValidationSchemaParser)
+      const dwcArchive = new DWCArchive(new ArchiveFile('', '', Buffer.from([]), []));
+      const csvMediaState = service.validateDWCArchive(dwcArchive, {} as ValidationSchemaParser);
       expect(mock).to.be.calledOnce;
-      expect(csvMediaState).has.property("csv_state");
-      expect(csvMediaState).has.property("media_state");
+      expect(csvMediaState).has.property('csv_state');
+      expect(csvMediaState).has.property('media_state');
     });
 
     it('should throw Media is invalid error', () => {
-      const service = mockService()
+      const service = mockService();
       const mock = sinon.stub(DWCArchive.prototype, 'isMediaValid').returns({
         isValid: false,
-        fileName: ""
+        fileName: ''
       });
 
       try {
-        const dwcArchive = new DWCArchive(new ArchiveFile("", "", Buffer.from([]), []))
-        service.validateDWCArchive(dwcArchive, {} as ValidationSchemaParser)
+        const dwcArchive = new DWCArchive(new ArchiveFile('', '', Buffer.from([]), []));
+        service.validateDWCArchive(dwcArchive, {} as ValidationSchemaParser);
         expect(mock).to.be.calledOnce;
         expect.fail();
       } catch (error) {
         expect(error instanceof SubmissionError).to.be.true;
-        expect((error as SubmissionError).submissionMessages[0].type).to.be.eql(SUBMISSION_MESSAGE_TYPE.INVALID_MEDIA)
+        expect((error as SubmissionError).submissionMessages[0].type).to.be.eql(SUBMISSION_MESSAGE_TYPE.INVALID_MEDIA);
       }
     });
   });
@@ -532,7 +532,7 @@ describe.only('ValidationService', () => {
     });
 
     it('should return a DWCArchive', async () => {
-      const service = mockService()
+      const service = mockService();
       const fileName = 'test file';
       const parse = sinon
         .stub(MediaUtils, 'parseUnknownMedia')
@@ -544,7 +544,7 @@ describe.only('ValidationService', () => {
     });
 
     it('should throw Media is invalid error', async () => {
-      const service = mockService()
+      const service = mockService();
       const parse = sinon.stub(MediaUtils, 'parseUnknownMedia').returns(null);
 
       try {
@@ -558,7 +558,7 @@ describe.only('ValidationService', () => {
     });
 
     it('should throw File submitted is not a supported type error', async () => {
-      const service = mockService()
+      const service = mockService();
       const parse = sinon.stub(MediaUtils, 'parseUnknownMedia').returns(new MediaFile('', '', Buffer.from([])));
 
       try {
@@ -580,16 +580,16 @@ describe.only('ValidationService', () => {
     });
 
     it('should return buffer of worksheets', async () => {
-      const service = mockService()
-      const xlsx = new XLSXCSV(buildFile("", {template_id: 1, csm_id: 1}))
+      const service = mockService();
+      const xlsx = new XLSXCSV(buildFile('', { template_id: 1, csm_id: 1 }));
 
-      const transformation = sinon.stub(XLSXTransformation.prototype, 'transform').resolves({})
-      const dataToSheet = sinon.stub(XLSXTransformation.prototype, 'dataToSheet').returns({})
+      const transformation = sinon.stub(XLSXTransformation.prototype, 'transform').resolves({});
+      const dataToSheet = sinon.stub(XLSXTransformation.prototype, 'dataToSheet').returns({});
 
-      const fileBuffer = await service.transformXLSX(xlsx, new TransformationSchemaParser({}))
+      const fileBuffer = await service.transformXLSX(xlsx, new TransformationSchemaParser({}));
       expect(transformation).to.be.calledOnce;
       expect(dataToSheet).to.be.calledOnce;
-      expect(fileBuffer).to.be.eql([])
+      expect(fileBuffer).to.be.eql([]);
     });
   });
 
@@ -599,9 +599,9 @@ describe.only('ValidationService', () => {
     });
 
     it('should run without error', async () => {
-      const service = mockService()
-      const xlsx = new XLSXCSV(buildFile("", {template_id: 1, csm_id: 1}))
-      
+      const service = mockService();
+      const xlsx = new XLSXCSV(buildFile('', { template_id: 1, csm_id: 1 }));
+
       const s3 = sinon.stub(FileUtils, 'uploadBufferToS3').resolves();
       const occurrence = sinon.stub(OccurrenceService.prototype, 'updateSurveyOccurrenceSubmission').resolves();
       const submission = sinon.stub(service.submissionRepository, 'insertSubmissionStatus').resolves(1);
@@ -617,10 +617,12 @@ describe.only('ValidationService', () => {
     });
 
     it('should throw Failed to upload file to S3 error', async () => {
-      const service = mockService()
-      const xlsx = new XLSXCSV(buildFile("", {template_id: 1, csm_id: 1}))
-      
-      const s3 = sinon.stub(FileUtils, 'uploadBufferToS3').throws(SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_UPLOAD_FILE_TO_S3))
+      const service = mockService();
+      const xlsx = new XLSXCSV(buildFile('', { template_id: 1, csm_id: 1 }));
+
+      const s3 = sinon
+        .stub(FileUtils, 'uploadBufferToS3')
+        .throws(SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_UPLOAD_FILE_TO_S3));
       const occurrence = sinon.stub(OccurrenceService.prototype, 'updateSurveyOccurrenceSubmission').resolves();
       const submission = sinon.stub(service.submissionRepository, 'insertSubmissionStatus').resolves(1);
 
@@ -638,11 +640,13 @@ describe.only('ValidationService', () => {
     });
 
     it('should throw Failed to update occurrence submission error', async () => {
-      const service = mockService()
-      const xlsx = new XLSXCSV(buildFile("", {template_id: 1, csm_id: 1}))
-      
-      const s3 = sinon.stub(FileUtils, 'uploadBufferToS3').resolves()
-      const occurrence = sinon.stub(OccurrenceService.prototype, 'updateSurveyOccurrenceSubmission').throws(SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_UPDATE_OCCURRENCE_SUBMISSION))
+      const service = mockService();
+      const xlsx = new XLSXCSV(buildFile('', { template_id: 1, csm_id: 1 }));
+
+      const s3 = sinon.stub(FileUtils, 'uploadBufferToS3').resolves();
+      const occurrence = sinon
+        .stub(OccurrenceService.prototype, 'updateSurveyOccurrenceSubmission')
+        .throws(SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_UPDATE_OCCURRENCE_SUBMISSION));
       const submission = sinon.stub(service.submissionRepository, 'insertSubmissionStatus').resolves(1);
 
       try {
@@ -659,12 +663,14 @@ describe.only('ValidationService', () => {
     });
 
     it('should throw Failed to update occurrence submission error', async () => {
-      const service = mockService()
-      const xlsx = new XLSXCSV(buildFile("", {template_id: 1, csm_id: 1}))
-      
-      const s3 = sinon.stub(FileUtils, 'uploadBufferToS3').resolves()
-      const occurrence = sinon.stub(OccurrenceService.prototype, 'updateSurveyOccurrenceSubmission').resolves()
-      const submission = sinon.stub(service.submissionRepository, 'insertSubmissionStatus').throws(SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_UPDATE_OCCURRENCE_SUBMISSION));
+      const service = mockService();
+      const xlsx = new XLSXCSV(buildFile('', { template_id: 1, csm_id: 1 }));
+
+      const s3 = sinon.stub(FileUtils, 'uploadBufferToS3').resolves();
+      const occurrence = sinon.stub(OccurrenceService.prototype, 'updateSurveyOccurrenceSubmission').resolves();
+      const submission = sinon
+        .stub(service.submissionRepository, 'insertSubmissionStatus')
+        .throws(SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_UPDATE_OCCURRENCE_SUBMISSION));
 
       try {
         await service.persistTransformationResults(1, [], 'outputKey', xlsx);

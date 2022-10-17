@@ -10,7 +10,7 @@ import { ErrorService } from './error-service';
 
 chai.use(sinonChai);
 
-describe.only('ErrorService', () => {
+describe('ErrorService', () => {
   afterEach(() => {
     sinon.restore();
   });
