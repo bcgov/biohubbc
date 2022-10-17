@@ -719,8 +719,77 @@ describe('ValidationService', () => {
     });
   });
 
-  describe('processFile', ()=>{
+  describe.only('processFile', ()=>{
+    afterEach(() => {
+      sinon.restore();
+    });
 
+    it('should run without error', async () => {
+      const service = mockService();
+      const mockPrep = {
+        s3InputKey: "input key",
+        xlsx: new XLSXCSV(buildFile("test file", {}))
+      }
+
+      const prep = sinon.stub(service, 'templatePreparation').resolves(mockPrep)
+      const validate = sinon.stub(service, 'templateValidation').resolves()
+      const transform = sinon.stub(service, 'templateTransformation').resolves();
+      const upload = sinon.stub(service, 'templateScrapeAndUploadOccurrences').resolves()
+      const status = sinon.stub(service.submissionRepository, 'insertSubmissionStatus').resolves()
+
+      await service.processFile(1)
+      expect(prep).to.be.calledOnce;
+      expect(validate).to.be.calledOnce;
+      expect(transform).to.be.calledOnce;
+      expect(upload).to.be.calledOnce;
+      expect(status).to.be.calledTwice;
+    });
+
+    it('should insert submission error', async () => {
+      const service = mockService();
+      const mockPrep = {
+        s3InputKey: "input key",
+        xlsx: new XLSXCSV(buildFile("test file", {}))
+      }
+
+      const prep = sinon.stub(service, 'templatePreparation').resolves(mockPrep)
+      const validate = sinon.stub(service, 'templateValidation').resolves()
+      const transform = sinon.stub(service, 'templateTransformation').throws(SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_TRANSFORM_XLSX));
+      const insertError = sinon.stub(service.errorService, 'insertSubmissionError').resolves()
+      sinon.stub(service, 'templateScrapeAndUploadOccurrences').resolves()
+      sinon.stub(service.submissionRepository, 'insertSubmissionStatus').resolves()
+
+      await service.processFile(1)
+      expect(prep).to.be.calledOnce;
+      expect(validate).to.be.calledOnce;
+      expect(transform).to.be.calledOnce;
+      expect(insertError).to.be.calledOnce;
+    });
+
+    it('should throw unrecognized error', async () => {
+      const service = mockService();
+      const mockPrep = {
+        s3InputKey: "input key",
+        xlsx: new XLSXCSV(buildFile("test file", {}))
+      }
+
+      const prep = sinon.stub(service, 'templatePreparation').resolves(mockPrep)
+      const validate = sinon.stub(service, 'templateValidation').resolves()
+      const transform = sinon.stub(service, 'templateTransformation').throws();
+      const insertError = sinon.stub(service.errorService, 'insertSubmissionError').resolves()
+      sinon.stub(service, 'templateScrapeAndUploadOccurrences').resolves()
+      sinon.stub(service.submissionRepository, 'insertSubmissionStatus').resolves()
+
+      try {
+        await service.validateFile(1);
+        expect(prep).to.be.calledOnce;
+        expect(validate).to.be.calledOnce;
+        expect(transform).to.be.calledOnce;
+      } catch (error) {
+        expect(error instanceof SubmissionError).to.be.false;
+        expect(insertError).not.to.be.calledOnce;
+      }
+    })
   });
 
   describe('dwcPreparation', () => {
