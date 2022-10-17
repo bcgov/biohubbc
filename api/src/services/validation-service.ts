@@ -145,7 +145,7 @@ export class ValidationService extends DBService {
       const rules = this.getValidationRules(validationSchema);
       const csvState = this.validateDWCArchive(archive, rules);
 
-      return csvState as ICsvMediaState;
+      return csvState;
     } catch (error) {
       if (error instanceof SubmissionError) {
         error.setStatus(SUBMISSION_STATUS_TYPE.FAILED_VALIDATION);
@@ -191,7 +191,7 @@ export class ValidationService extends DBService {
       const occurrenceSubmission = await this.occurrenceService.getOccurrenceSubmission(submissionId);
       const s3OutputKey = occurrenceSubmission.output_key;
       const s3File = await getFileFromS3(s3OutputKey);
-      const archive = await this.prepDWCArchive(s3File);
+      const archive = this.prepDWCArchive(s3File);
       await this.occurrenceService.scrapeAndUploadOccurrences(submissionId, archive);
     } catch (error) {
       if (error instanceof SubmissionError) {
@@ -204,8 +204,8 @@ export class ValidationService extends DBService {
   async templateValidation(xlsx: XLSXCSV) {
     try {
       const schema = await this.getValidationSchema(xlsx);
-      const schemaParser = await this.getValidationRules(schema);
-      const csvState = await this.validateXLSX(xlsx, schemaParser);
+      const schemaParser = this.getValidationRules(schema);
+      const csvState = this.validateXLSX(xlsx, schemaParser);
       await this.persistValidationResults(csvState.csv_state, csvState.media_state);
     } catch (error) {
       if (error instanceof SubmissionError) {
@@ -218,7 +218,7 @@ export class ValidationService extends DBService {
   async templateTransformation(submissionId: number, xlsx: XLSXCSV, s3InputKey: string) {
     try {
       const xlsxSchema = await this.getTransformationSchema(xlsx);
-      const xlsxParser = await this.getTransformationRules(xlsxSchema);
+      const xlsxParser = this.getTransformationRules(xlsxSchema);
       const fileBuffer = await this.transformXLSX(xlsx, xlsxParser);
       await this.persistTransformationResults(submissionId, fileBuffer, s3InputKey, xlsx);
     } catch (error) {
@@ -418,7 +418,7 @@ export class ValidationService extends DBService {
     return dwcArchive;
   }
 
-  validateDWCArchive(dwc: DWCArchive, parser: ValidationSchemaParser) {
+  validateDWCArchive(dwc: DWCArchive, parser: ValidationSchemaParser): ICsvMediaState {
     defaultLog.debug({ label: 'validateDWCArchive', message: 'dwcArchive' });
     const mediaState = dwc.isMediaValid(parser);
     if (!mediaState.isValid) {
@@ -430,7 +430,7 @@ export class ValidationService extends DBService {
     return {
       csv_state: csvState,
       media_state: mediaState
-    } as ICsvMediaState;
+    }
   }
 
   generateHeaderErrorMessage(fileName: string, headerError: IHeaderError): string {
