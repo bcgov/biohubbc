@@ -6,6 +6,7 @@ import SQL from 'sql-template-strings';
 import * as db from '../../database/db';
 import { HTTPError } from '../../errors/http-error';
 import occurrence_queries from '../../queries/occurrence';
+import { ErrorService } from '../../services/error-service';
 import { getMockDBConnection } from '../../__mocks__/db';
 import * as view_occurrences from './view-occurrences';
 
@@ -58,7 +59,7 @@ describe('getOccurrencesForView', () => {
     }
   });
 
-  it.skip('should throw an error when failed to build SQL get occurrences for view statement', async () => {
+  it('should throw an error when failed to build SQL get occurrences for view statement', async () => {
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
       systemUserId: () => {
@@ -67,6 +68,7 @@ describe('getOccurrencesForView', () => {
     });
 
     sinon.stub(occurrence_queries, 'getOccurrencesForViewSQL').returns(null);
+    sinon.stub(ErrorService.prototype, 'insertSubmissionStatus').resolves()
 
     try {
       const result = view_occurrences.getOccurrencesForView();
@@ -83,7 +85,7 @@ describe('getOccurrencesForView', () => {
     }
   });
 
-  it.skip('should throw an error when failed to get occurrences view data', async () => {
+  it('should throw an error when failed to get occurrences view data', async () => {
     const mockQuery = sinon.stub();
 
     mockQuery.resolves({
@@ -99,6 +101,7 @@ describe('getOccurrencesForView', () => {
     });
 
     sinon.stub(occurrence_queries, 'getOccurrencesForViewSQL').returns(SQL`something`);
+    sinon.stub(ErrorService.prototype, 'insertSubmissionStatus').resolves()
 
     try {
       const result = view_occurrences.getOccurrencesForView();

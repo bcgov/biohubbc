@@ -1244,12 +1244,10 @@ describe('ValidationService', () => {
       const occurrence = sinon.stub(OccurrenceService.prototype, 'updateSurveyOccurrenceSubmission').resolves();
       const submission = sinon.stub(service.submissionRepository, 'insertSubmissionStatus').resolves(1);
 
-      try {
-        await service.persistTransformationResults(1, [], 'outputKey', xlsx);
-        expect(s3).to.be.calledOnce;
-        expect(occurrence).to.be.calledOnce;
-        expect(submission).to.be.calledOnce;
-      } catch (error) {}
+      await service.persistTransformationResults(1, [], 'outputKey', xlsx);
+      expect(s3).to.be.calledOnce;
+      expect(occurrence).to.be.calledOnce;
+      expect(submission).to.be.calledOnce;
     });
 
     it('should throw Failed to upload file to S3 error', async () => {
