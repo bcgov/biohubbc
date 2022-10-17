@@ -430,7 +430,7 @@ export class ValidationService extends DBService {
     return {
       csv_state: csvState,
       media_state: mediaState
-    }
+    };
   }
 
   generateHeaderErrorMessage(fileName: string, headerError: IHeaderError): string {
