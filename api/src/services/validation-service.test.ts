@@ -416,11 +416,13 @@ describe('ValidationService', () => {
 
     it('should fail with invalid json', () => {
       const service = mockService()
-
+      sinon.stub(service, 'getValidationRules').throws(new Error('ValidationSchemaParser - provided json was not valid JSON'))
       try {
         service.getValidationRules('---');
         expect.fail();
-      } catch (error) {}
+      } catch (error) {
+        expect((error as Error).message).to.be.eql('ValidationSchemaParser - provided json was not valid JSON')
+      }
     });
   });
 
@@ -438,11 +440,13 @@ describe('ValidationService', () => {
 
     it('should fail with invalid json', () => {
       const service = mockService()
-
+      sinon.stub(service, 'getTransformationRules').throws(new Error('TransformationSchemaParser - provided validationSchema was not valid JSON'))
       try {
         service.getTransformationRules('---');
         expect.fail();
-      } catch (error) {}
+      } catch (error) {
+        expect((error as Error).message).to.be.eql('TransformationSchemaParser - provided validationSchema was not valid JSON')
+      }
     });
   });
 
@@ -469,7 +473,6 @@ describe('ValidationService', () => {
         await service.scrapeOccurrences(1)
         expect(scrapeUpload).to.be.calledOnce;
       } catch (error) {
-        console.log(error)
         expect(error instanceof SubmissionError).to.be.true;
         expect(insertError).to.be.calledOnce;
       }
@@ -819,7 +822,7 @@ describe('ValidationService', () => {
 
       try {
         await service.dwcPreparation(1)
-        expect.fail;
+        expect.fail();
       } catch (error) {
         expect(error instanceof SubmissionError).to.be.true;
         expect((error as SubmissionError).status).to.be.eql(SUBMISSION_STATUS_TYPE.FAILED_PROCESSING_OCCURRENCE_DATA);
@@ -836,7 +839,7 @@ describe('ValidationService', () => {
 
       try {
         await service.dwcPreparation(1)
-        expect.fail;
+        expect.fail();
       } catch (error) {
         expect(error instanceof SubmissionError).to.be.true;
         expect((error as SubmissionError).status).to.be.eql(SUBMISSION_STATUS_TYPE.FAILED_PROCESSING_OCCURRENCE_DATA);
@@ -852,7 +855,7 @@ describe('ValidationService', () => {
 
       try {
         await service.dwcPreparation(1)
-        expect.fail;
+        expect.fail();
       } catch (error) {
         expect(error instanceof SubmissionError).to.be.true;
         expect((error as SubmissionError).status).to.be.eql(SUBMISSION_STATUS_TYPE.FAILED_PROCESSING_OCCURRENCE_DATA);
@@ -1209,7 +1212,6 @@ describe('ValidationService', () => {
         expect(occurrence).to.be.calledOnce;
         expect(submission).to.be.calledOnce;
       } catch (error) {
-        console.log(error);
       }
     });
 

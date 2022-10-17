@@ -188,7 +188,6 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
         setOccurrenceSubmissionId(submission.id);
       }
 
-      console.log(submission);
       return submission;
     });
   }, [biohubApi.observation, projectId, surveyId]);
@@ -350,7 +349,6 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
 
   if (messageList) {
     Object.entries(messageGrouping).forEach(([key, value]) => {
-      console.log('messageList: ', messageList);
       messageList.forEach((message) => {
         if (value.type.includes(message.type)) {
           if (message.class === ClassGrouping.ERROR) {
@@ -412,7 +410,6 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
   }
 
   function displayMessages(list: SubmissionErrors | SubmissionWarnings, msgGroup: MessageGrouping, iconName: string) {
-    console.log(list);
     return (
       <Box>
         {Object.entries(list).map(([key, value], index) => (
