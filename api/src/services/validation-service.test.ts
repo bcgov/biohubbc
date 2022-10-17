@@ -80,12 +80,8 @@ const buildFile = (fileName: string, customProps: { template_id?: number; csm_id
   return new MediaFile(fileName, 'text/csv', buffer);
 };
 
-// const buildArchive = (fileName: string, customProps: { template_id?: number; csm_id?: number }) => {
-//   return new ArchiveFile(fileName, 'application/zip', Buffer.from([]), [buildFile(fileName, customProps)])
-// }
-
 // 63% covered
-describe('ValidationService', () => {
+describe.only('ValidationService', () => {
   afterEach(() => {
     sinon.restore();
   });
@@ -493,6 +489,135 @@ describe('ValidationService', () => {
       } catch (error) {
         expect(error instanceof SubmissionError).to.be.false;
         expect(insertError).not.be.calledOnce;
+      }
+    });
+  });
+
+  describe('transformFile', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('should run without issue', async () => {
+      const service = mockService();
+      const mockPrep = {
+        s3InputKey: "",
+        xlsx: new XLSXCSV(buildFile("test file", {}))
+      }
+      const prep = sinon.stub(service, 'templatePreparation').resolves(mockPrep);
+      const transform = sinon.stub(service, 'templateTransformation').resolves();
+      const submissionStatus = sinon.stub(service.submissionRepository, 'insertSubmissionStatus').resolves();
+
+      await service.transformFile(1);
+      expect(prep).to.be.calledOnce;
+      expect(transform).to.be.calledOnce;
+      expect(submissionStatus).to.be.calledOnce;
+    });
+
+    it('should insert submission error', async () => {
+      const service = mockService();
+      const prep = sinon.stub(service, 'templatePreparation').throws(SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_GET_OCCURRENCE))
+      const transform = sinon.stub(service, 'templateTransformation').resolves();
+      const submissionStatus = sinon.stub(service.submissionRepository, 'insertSubmissionStatus').resolves();
+      const insertError = sinon.stub(service.errorService, 'insertSubmissionError').resolves();
+
+      try {
+        await service.transformFile(1);
+        expect(prep).to.be.calledOnce;
+      } catch (error) {
+        expect(error instanceof SubmissionError).to.be.true;
+        expect(transform).not.to.be.calledOnce;
+        expect(submissionStatus).not.to.be.calledOnce;
+        expect(insertError).to.be.calledOnce;
+      }
+    });
+
+    it('should throw error', async () => {
+      const service = mockService();
+      const mockPrep = {
+        s3InputKey: "",
+        xlsx: new XLSXCSV(buildFile("test file", {}))
+      }
+      const prep = sinon.stub(service, 'templatePreparation').resolves(mockPrep);
+      const transform = sinon.stub(service, 'templateTransformation').resolves();
+      const submissionStatus = sinon.stub(service.submissionRepository, 'insertSubmissionStatus').resolves();
+      const insertError = sinon.stub(service.errorService, 'insertSubmissionError').throws()
+
+      try {
+        await service.transformFile(1);
+        expect(prep).to.be.calledOnce;
+      } catch (error) {
+        expect(error instanceof SubmissionError).to.be.true;
+        expect(transform).not.to.be.calledOnce;
+        expect(submissionStatus).not.to.be.calledOnce;
+        expect(insertError).not.to.be.calledOnce;
+        expect.fail();
+      }
+    });
+  });
+
+  describe.only('validateFile', ()=>{
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('should run without issue', async () => {
+      const service = mockService();
+      const mockPrep = {
+        s3InputKey: "",
+        xlsx: new XLSXCSV(buildFile("test file", {}))
+      }
+      const prep = sinon.stub(service, 'templatePreparation').resolves(mockPrep);
+      const validation = sinon.stub(service, 'templateValidation').resolves();
+      const submissionStatus = sinon.stub(service.submissionRepository, 'insertSubmissionStatus').resolves();
+
+      await service.validateFile(1);
+      expect(prep).to.be.calledOnce;
+      expect(validation).to.be.calledOnce;
+      expect(submissionStatus).to.be.calledOnce;
+    });
+
+    it('should insert submission error', async () => {
+      const service = mockService();
+      const mockPrep = {
+        s3InputKey: "",
+        xlsx: new XLSXCSV(buildFile("test file", {}))
+      }
+      const prep = sinon.stub(service, 'templatePreparation').resolves(mockPrep);
+      const validation = sinon.stub(service, 'templateValidation').throws(SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.MISSING_VALIDATION_SCHEMA));
+      const submissionStatus = sinon.stub(service.submissionRepository, 'insertSubmissionStatus').resolves();
+      const insertError = sinon.stub(service.errorService, 'insertSubmissionError').resolves()
+
+      try {
+        await service.validateFile(1);
+        expect(prep).to.be.calledOnce;
+      } catch (error) {
+        expect(error instanceof SubmissionError).to.be.true;
+        expect(insertError).to.be.calledOnce;
+        expect(validation).not.to.be.calledOnce;
+        expect(submissionStatus).not.to.be.calledOnce;
+      }
+    });
+
+    it('should throw', async () => {
+      const service = mockService();
+      const mockPrep = {
+        s3InputKey: "",
+        xlsx: new XLSXCSV(buildFile("test file", {}))
+      }
+      const prep = sinon.stub(service, 'templatePreparation').resolves(mockPrep);
+      const validation = sinon.stub(service, 'templateValidation').throws(new Error());
+      const submissionStatus = sinon.stub(service.submissionRepository, 'insertSubmissionStatus').resolves();
+      const insertError = sinon.stub(service.errorService, 'insertSubmissionError').resolves()
+
+      try {
+        await service.validateFile(1);
+        expect(prep).to.be.calledOnce;
+        expect(validation).to.be.calledOnce;
+      } catch (error) {
+        expect(error instanceof SubmissionError).to.be.false;
+        expect(insertError).not.to.be.calledOnce;
+        expect(submissionStatus).not.to.be.calledOnce;
       }
     });
   });
