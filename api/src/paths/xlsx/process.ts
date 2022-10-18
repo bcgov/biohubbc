@@ -98,8 +98,6 @@ POST.apiDoc = {
 
 export function processFile(): RequestHandler {
   return async (req, res) => {
-    console.log('PROCESS FILE END POINT');
-
     const submissionId = req.body.occurrence_submission_id;
     const surveyId = req.body.survey_id;
     if (!submissionId) {

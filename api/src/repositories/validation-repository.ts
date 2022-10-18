@@ -16,7 +16,7 @@ export class ValidationRepository extends BaseRepository {
    */
   async getTemplateMethodologySpeciesRecord(
     templateName: string,
-    templateVersion: number,
+    templateVersion: string,
     surveyIntendedOutcomeId: number,
     surveyFieldMethodId: number,
     surveySpecies: number[]
@@ -24,6 +24,9 @@ export class ValidationRepository extends BaseRepository {
     const templateRow = await this.getTemplateNameVersionId(templateName, templateVersion);
 
     console.log('templateRow:', templateRow);
+    console.log('surveyIntendedOutcomeId:', surveyIntendedOutcomeId);
+    console.log('surveyFieldMethodId:', surveyFieldMethodId);
+    console.log('surveySpecies:', surveySpecies);
 
     const sqlStatement = SQL`
     SELECT
@@ -37,12 +40,10 @@ export class ValidationRepository extends BaseRepository {
     AND
       tms.field_method_id = ${surveyFieldMethodId}
     AND
-      tms.wldtaxonomic_units_id = ${surveySpecies[0]}
+      tms.wldtaxonomic_units_id = ${surveySpecies[0] + 1}
     ;
   `;
     const response = await this.connection.query<ITemplateMethodologyData>(sqlStatement.text, sqlStatement.values);
-
-    console.log('response:', response);
 
     if (!response) {
       throw new HTTP400('Failed to query template methodology species table');
@@ -51,7 +52,7 @@ export class ValidationRepository extends BaseRepository {
     return response && response.rows && response.rows[0];
   }
 
-  async getTemplateNameVersionId(templateName: string, templateVersion: number): Promise<{ template_id: number }> {
+  async getTemplateNameVersionId(templateName: string, templateVersion: string): Promise<{ template_id: number }> {
     const sqlStatement = SQL`
       SELECT
         t.template_id

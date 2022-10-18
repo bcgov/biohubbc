@@ -115,14 +115,9 @@ export class ValidationService extends DBService {
   }
 
   async processFile(submissionId: number, surveyId: number) {
-    console.log('submissionId:', submissionId);
-    console.log('surveyId:', surveyId);
-
     try {
       // template preparation
       const submissionPrep = await this.templatePreparation(submissionId);
-
-      console.log('submissionPrep:', submissionPrep);
 
       // template validation
       await this.templateValidation(submissionPrep.xlsx, surveyId);
@@ -182,20 +177,11 @@ export class ValidationService extends DBService {
     try {
       const occurrenceSubmission = await this.occurrenceService.getOccurrenceSubmission(submissionId);
 
-      console.log('occurrenceSubmission:', occurrenceSubmission);
-
       const s3InputKey = occurrenceSubmission.input_key;
-
-      console.log('s3InputKey:', s3InputKey);
 
       const s3File = await getFileFromS3(s3InputKey);
 
-      console.log('s3File:', s3File);
-
       const xlsx = this.prepXLSX(s3File);
-
-      console.log('xlsx:', xlsx);
-
 
       return { s3InputKey: s3InputKey, xlsx: xlsx };
     } catch (error) {
@@ -287,7 +273,7 @@ export class ValidationService extends DBService {
 
     return this.validationRepository.getTemplateMethodologySpeciesRecord(
       templateName,
-      Number(templateVersion),
+      templateVersion,
       surveyIntendedOutcomeId,
       surveyFieldMethodId,
       surveySpecies
