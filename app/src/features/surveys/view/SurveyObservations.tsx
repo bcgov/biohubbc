@@ -155,7 +155,7 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
               });
             });
           } else {
-            biohubApi.observation.processOccurrences(projectId, result.submissionId);
+            biohubApi.observation.processOccurrences(projectId, result.submissionId, surveyId);
           }
         });
     };

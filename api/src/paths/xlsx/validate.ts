@@ -8,7 +8,6 @@ import { authorizeRequestHandler } from '../../request-handlers/security/authori
 import { ErrorService } from '../../services/error-service';
 import { ValidationService } from '../../services/validation-service';
 import { getLogger } from '../../utils/logger';
-import { getValidateAPIDoc } from '../dwc/validate';
 
 const defaultLog = getLogger('paths/xlsx/validate');
 
@@ -28,16 +27,78 @@ export const POST: Operation = [
 ];
 
 POST.apiDoc = {
-  ...getValidateAPIDoc(
-    'Validates an XLSX survey observation submission.',
-    'Validate XLSX survey observation submission OK',
-    ['survey', 'observation', 'xlsx']
-  )
+  description: 'Validates an XLSX survey observation submission.',
+  tags: ['survey', 'observation', 'xlsx'],
+  security: [
+    {
+      Bearer: []
+    }
+  ],
+  requestBody: {
+    description: 'Request body',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'object',
+          required: ['project_id', 'occurrence_submission_id'],
+          properties: {
+            project_id: {
+              type: 'number'
+            },
+            occurrence_submission_id: {
+              description: 'A survey occurrence submission ID',
+              type: 'number',
+              example: 1
+            },
+            survey_id: {
+              type: 'number'
+            }
+          }
+        }
+      }
+    }
+  },
+  responses: {
+    200: {
+      description: 'Validate XLSX survey observation submission OK',
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            properties: {
+              status: {
+                type: 'string'
+              },
+              reason: {
+                type: 'string'
+              }
+            }
+          }
+        }
+      }
+    },
+    400: {
+      $ref: '#/components/responses/400'
+    },
+    401: {
+      $ref: '#/components/responses/401'
+    },
+    403: {
+      $ref: '#/components/responses/403'
+    },
+    500: {
+      $ref: '#/components/responses/500'
+    },
+    default: {
+      $ref: '#/components/responses/default'
+    }
+  }
 };
 
 export function validate(): RequestHandler {
-  return async (req, res, next) => {
+  return async (req, res) => {
     const submissionId = req.body.occurrence_submission_id;
+    const surveyId = req.body.survey_id;
     if (!submissionId) {
       throw new HTTP400('Missing required parameter `occurrence field`');
     }
@@ -48,8 +109,8 @@ export function validate(): RequestHandler {
     try {
       await connection.open();
 
-      const service = new ValidationService(connection);
-      await service.validateFile(submissionId);
+      const validationService = new ValidationService(connection);
+      await validationService.validateFile(submissionId, surveyId);
 
       await connection.commit();
     } catch (error) {
