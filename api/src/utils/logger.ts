@@ -1,5 +1,6 @@
 import winston from 'winston';
-import { ApiError, HTTPError } from '../errors/custom-error';
+import { ApiError } from '../errors/api-error';
+import { HTTPError } from '../errors/http-error';
 
 /**
  * Logger input.

@@ -1,7 +1,7 @@
 import moment from 'moment';
 import { PROJECT_ROLE } from '../constants/roles';
 import { COMPLETION_STATUS } from '../constants/status';
-import { HTTP400, HTTP409 } from '../errors/custom-error';
+import { HTTP400, HTTP409 } from '../errors/http-error';
 import { IPostIUCN, PostFundingSource, PostProjectObject } from '../models/project-create';
 import {
   IPutIUCN,
@@ -29,7 +29,7 @@ import { getSurveyAttachmentS3Keys } from '../paths/project/{projectId}/survey/{
 import { GET_ENTITIES, IUpdateProject } from '../paths/project/{projectId}/update';
 import { queries } from '../queries/queries';
 import { deleteFileFromS3 } from '../utils/file-utils';
-import { DBService } from './service';
+import { DBService } from './db-service';
 
 export class ProjectService extends DBService {
   /**

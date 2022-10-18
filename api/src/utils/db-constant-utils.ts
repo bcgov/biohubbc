@@ -1,5 +1,5 @@
 import { IDBConnection } from '../database/db';
-import { HTTP400 } from '../errors/custom-error';
+import { HTTP400 } from '../errors/http-error';
 import { queries } from '../queries/queries';
 
 /**

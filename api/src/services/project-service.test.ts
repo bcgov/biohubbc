@@ -4,7 +4,7 @@ import { QueryResult } from 'pg';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import SQL from 'sql-template-strings';
-import { HTTPError } from '../errors/custom-error';
+import { HTTPError } from '../errors/http-error';
 import {
   GetCoordinatorData,
   GetFundingData,

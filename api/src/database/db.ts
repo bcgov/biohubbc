@@ -1,7 +1,7 @@
 import knex, { Knex } from 'knex';
 import * as pg from 'pg';
 import { SQLStatement } from 'sql-template-strings';
-import { ApiExecuteSQLError, ApiGeneralError } from '../errors/custom-error';
+import { ApiExecuteSQLError, ApiGeneralError } from '../errors/api-error';
 import { queries } from '../queries/queries';
 import { getUserIdentifier, getUserIdentitySource } from '../utils/keycloak-utils';
 import { getLogger } from '../utils/logger';
