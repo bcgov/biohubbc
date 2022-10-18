@@ -585,7 +585,7 @@ describe('GetAttachmentsData', () => {
           file_type: 'type',
           title: 'title',
           description: 'descript',
-          key: '',
+          key: 'key',
           file_size: 'file_size',
           is_secure: 'true'
         },
@@ -594,7 +594,7 @@ describe('GetAttachmentsData', () => {
           file_type: 'type',
           title: 'title',
           description: 'descript',
-          key: '',
+          key: 'key',
           file_size: 'file_size',
           is_secure: 'true'
         }
@@ -681,7 +681,7 @@ describe('GetReportAttachmentsData', () => {
           title: 'title',
           year: '1',
           description: 'descript',
-          key: '',
+          key: 'key',
           file_size: 'size',
           is_secure: 'true',
           authors: [{ author: 'author' }]
@@ -691,7 +691,7 @@ describe('GetReportAttachmentsData', () => {
           title: 'title',
           year: '2',
           description: 'descript',
-          key: '',
+          key: 'key',
           file_size: 'size',
           is_secure: 'true',
           authors: [{ author: 'author' }]

@@ -2,14 +2,12 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../../../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../../../../database/db';
-import { HTTP400 } from '../../../../../../../errors/custom-error';
-import { generateHeaderErrorMessage, generateRowErrorMessage } from '../../../../../../../paths/dwc/validate';
-import { validateXLSX } from '../../../../../../../paths/xlsx/validate';
+import { HTTP400 } from '../../../../../../../errors/http-error';
 import { queries } from '../../../../../../../queries/queries';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
 import { generateS3FileKey, scanFileForVirus, uploadFileToS3 } from '../../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../../utils/logger';
-import { ICsvState } from '../../../../../../../utils/media/csv/csv-file';
+import { ICsvState, IHeaderError, IRowError } from '../../../../../../../utils/media/csv/csv-file';
 import { IMediaState, MediaFile } from '../../../../../../../utils/media/media-file';
 import { parseUnknownMedia } from '../../../../../../../utils/media/media-utils';
 import { ValidationSchemaParser } from '../../../../../../../utils/media/validation/validation-schema-parser';
@@ -221,6 +219,36 @@ export function uploadMedia(): RequestHandler {
       throw error;
     } finally {
       connection.release();
+    }
+  };
+}
+
+export function validateXLSX(): RequestHandler {
+  return async (req, res, next) => {
+    defaultLog.debug({ label: 'validateXLSX', message: 'xlsx' });
+
+    try {
+      const xlsxCsv: XLSXCSV = req['xlsx'];
+
+      const validationSchemaParser: ValidationSchemaParser = req['validationSchemaParser'];
+
+      const mediaState: IMediaState = xlsxCsv.isMediaValid(validationSchemaParser);
+
+      req['mediaState'] = mediaState;
+
+      if (!mediaState.isValid) {
+        // The file itself is invalid, skip remaining validation
+        return next();
+      }
+
+      const csvState: ICsvState[] = xlsxCsv.isContentValid(validationSchemaParser);
+
+      req['csvState'] = csvState;
+
+      next();
+    } catch (error) {
+      defaultLog.error({ label: 'validateXLSX', message: 'error', error });
+      throw error;
     }
   };
 }
@@ -701,3 +729,11 @@ export const insertSummarySubmissionMessage = async (
     throw new HTTP400('Failed to insert summary submission message data');
   }
 };
+
+export function generateHeaderErrorMessage(fileName: string, headerError: IHeaderError): string {
+  return `${fileName} - ${headerError.message} - Column: ${headerError.col}`;
+}
+
+export function generateRowErrorMessage(fileName: string, rowError: IRowError): string {
+  return `${fileName} - ${rowError.message} - Column: ${rowError.col} - Row: ${rowError.row}`;
+}

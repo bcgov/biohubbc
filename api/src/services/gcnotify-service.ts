@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { ApiError, ApiErrorType } from '../errors/custom-error';
+import { ApiError, ApiErrorType } from '../errors/api-error';
 
 export interface IgcNotifyPostReturn {
   content: object;

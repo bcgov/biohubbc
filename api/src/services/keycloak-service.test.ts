@@ -2,7 +2,7 @@ import axios from 'axios';
 import chai, { expect } from 'chai';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import { ApiGeneralError } from '../errors/custom-error';
+import { ApiGeneralError } from '../errors/api-error';
 import { KeycloakService } from './keycloak-service';
 
 chai.use(sinonChai);

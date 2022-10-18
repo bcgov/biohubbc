@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import * as db from '../../database/db';
-import { ApiGeneralError } from '../../errors/custom-error';
+import { ApiGeneralError } from '../../errors/api-error';
 import { IPermitModel } from '../../repositories/permit-repository';
 import { PermitService } from '../../services/permit-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../__mocks__/db';

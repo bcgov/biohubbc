@@ -2,6 +2,8 @@ import AWS from 'aws-sdk';
 import { DeleteObjectOutput, GetObjectOutput, ManagedUpload, Metadata } from 'aws-sdk/clients/s3';
 import clamd from 'clamdjs';
 import { S3_ROLE } from '../constants/roles';
+import { SUBMISSION_MESSAGE_TYPE } from '../constants/status';
+import { SubmissionErrorFromMessageType } from './submission-error';
 
 const ClamAVScanner =
   (process.env.ENABLE_FILE_VIRUS_SCAN === 'true' &&
@@ -79,7 +81,11 @@ export async function uploadBufferToS3(
     Key: key,
     ACL: S3_ROLE.AUTH_READ,
     Metadata: metadata
-  }).promise();
+  })
+    .promise()
+    .catch((error) => {
+      throw SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_UPLOAD_FILE_TO_S3);
+    });
 }
 
 /**
@@ -95,7 +101,11 @@ export async function getFileFromS3(key: string, versionId?: string): Promise<Ge
     Bucket: OBJECT_STORE_BUCKET_NAME,
     Key: key,
     VersionId: versionId
-  }).promise();
+  })
+    .promise()
+    .catch((error) => {
+      throw SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_GET_FILE_FROM_S3);
+    });
 }
 
 /**

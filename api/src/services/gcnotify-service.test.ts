@@ -3,7 +3,7 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import { ApiError } from '../errors/custom-error';
+import { ApiError } from '../errors/api-error';
 import { GCNotifyService, IgcNotifyGenericMessage } from './gcnotify-service';
 
 chai.use(sinonChai);
