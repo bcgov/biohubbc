@@ -54,7 +54,73 @@ export enum ClassGrouping {
   WARNING = 'Warning'
 }
 
-const finalStatus = ['Rejected', 'Darwin Core Validated', 'Template Validated', 'Template Transformed', 'System Error'];
+const finalStatus = [
+  'Rejected',
+  'Darwin Core Validated',
+  'Template Validated',
+  'Template Transformed',
+  'System Error',
+  'Failed to prepare submission',
+  'Media is not valid',
+  'Failed to validate',
+  'Failed to transform',
+  'Failed to process occurrence data'
+];
+
+export enum SUBMISSION_STATUS_TYPE {
+  SUBMITTED = 'Submitted',
+  'TEMPLATE_VALIDATED' = 'Template Validated',
+  'DARWIN_CORE_VALIDATED' = 'Darwin Core Validated',
+  'TEMPLATE_TRANSFORMED' = 'Template Transformed',
+  'SUBMISSION_DATA_INGESTED' = 'Submission Data Ingested',
+  'SECURED' = 'Secured',
+  'AWAITING CURRATION' = 'Awaiting Curration',
+  'REJECTED' = 'Rejected',
+  'ON HOLD' = 'On Hold',
+  'SYSTEM_ERROR' = 'System Error',
+
+  //Failure
+  'FAILED_OCCURRENCE_PREPARATION' = 'Failed to prepare submission',
+  'INVALID_MEDIA' = 'Media is not valid',
+  'FAILED_VALIDATION' = 'Failed to validate',
+  'FAILED_TRANSFORMED' = 'Failed to transform',
+  'FAILED_PROCESSING_OCCURRENCE_DATA' = 'Failed to process occurrence data'
+}
+
+export enum SUBMISSION_MESSAGE_TYPE {
+  //message types that match the submission_message_type table, and API
+
+  'DUPLICATE_HEADER' = 'Duplicate header',
+  'UNKNOWN_HEADER' = 'Unknown Header',
+  'MISSING_REQUIRED_HEADER' = 'Missing Required Header',
+  'MISSING_RECOMMENDED_HEADER' = 'Missing Recommended Header',
+  'MISCELLANEOUS' = 'Miscellaneous',
+  'MISSING_REQUIRED_FIELD' = 'Missing Required Field',
+  'UNEXPECTED_FORMAT' = 'Unexpected Format',
+  'OUT_OF_RANGE' = 'Out of Range',
+  'INVALID_VALUE' = 'Invalid Value',
+  'MISSING_VALIDATION_SCHEMA' = 'Missing Validation Schema',
+  'ERROR' = 'Error',
+  'PARSE_ERROR' = 'Parse error',
+
+  'FAILED_GET_OCCURRENCE' = 'Failed to Get Occurrence Submission',
+  'FAILED_GET_FILE_FROM_S3' = 'Failed to get file from S3',
+  'FAILED_UPLOAD_FILE_TO_S3' = 'Failed to upload file to S3',
+  'FAILED_PARSE_SUBMISSION' = 'Failed to parse submission',
+  'FAILED_PREP_DWC_ARCHIVE' = 'Failed to prep DarwinCore Archive',
+  'FAILED_PREP_XLSX' = 'Failed to prep XLSX',
+  'FAILED_PERSIST_PARSE_ERRORS' = 'Failed to persist parse errors',
+  'FAILED_GET_VALIDATION_RULES' = 'Failed to get validation rules',
+  'FAILED_GET_TRANSFORMATION_RULES' = 'Failed to get transformation rules',
+  'FAILED_PERSIST_TRANSFORMATION_RESULTS' = 'Failed to persist transformation results',
+  'FAILED_TRANSFORM_XLSX' = 'Failed to transform XLSX',
+  'FAILED_VALIDATE_DWC_ARCHIVE' = 'Failed to validate DarwinCore Archive',
+  'FAILED_PERSIST_VALIDATION_RESULTS' = 'Failed to persist validation results',
+  'FAILED_UPDATE_OCCURRENCE_SUBMISSION' = 'Failed to update occurrence submission',
+  'FAILED_TO_GET_TRANSFORM_SCHEMA' = 'Unable to get transform schema for submission',
+  'INVALID_MEDIA' = 'Media is invalid',
+  'UNSUPPORTED_FILE_TYPE' = 'File submitted is not a supported type'
+}
 
 const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
   const biohubApi = useBiohubApi();
@@ -218,31 +284,59 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
 
   const messageGrouping: MessageGrouping = {
     mandatory: {
-      type: ['Missing Required Field', 'Missing Required Header', 'Duplicate Header'],
+      type: [
+        SUBMISSION_MESSAGE_TYPE.MISSING_REQUIRED_FIELD,
+        SUBMISSION_MESSAGE_TYPE.MISSING_REQUIRED_HEADER,
+        SUBMISSION_MESSAGE_TYPE.DUPLICATE_HEADER
+      ],
       label: 'Mandatory fields have not been filled out'
     },
     recommended: {
-      type: ['Missing Recommended Header'],
+      type: [SUBMISSION_MESSAGE_TYPE.MISSING_RECOMMENDED_HEADER],
       label: 'Recommended fields have not been filled out'
     },
     value_not_from_list: {
-      type: ['Invalid Value'],
+      type: [SUBMISSION_MESSAGE_TYPE.INVALID_VALUE],
       label: "Values have not been selected from the field's dropdown list"
     },
     unsupported_header: {
-      type: ['Unknown Header'],
+      type: [SUBMISSION_MESSAGE_TYPE.UNKNOWN_HEADER],
       label: 'Column headers are not supported'
     },
     out_of_range: {
-      type: ['Out of Range'],
+      type: [SUBMISSION_MESSAGE_TYPE.OUT_OF_RANGE],
       label: 'Values are out of range'
     },
     formatting_errors: {
-      type: ['Unexpected Format'],
+      type: [SUBMISSION_MESSAGE_TYPE.UNEXPECTED_FORMAT],
       label: 'Unexpected formats in the values provided'
     },
-    miscellaneous: { type: ['Miscellaneous'], label: 'Miscellaneous errors exist in your file' },
-    system_error: { type: ['Missing Validation Schema'], label: 'Contact your system administrator' }
+    miscellaneous: { type: [SUBMISSION_MESSAGE_TYPE.MISCELLANEOUS], label: 'Miscellaneous errors exist in your file' },
+    system_error: {
+      type: [
+        SUBMISSION_MESSAGE_TYPE.FAILED_GET_FILE_FROM_S3,
+        SUBMISSION_MESSAGE_TYPE.ERROR,
+        SUBMISSION_MESSAGE_TYPE.PARSE_ERROR,
+        SUBMISSION_MESSAGE_TYPE.FAILED_GET_OCCURRENCE,
+        SUBMISSION_MESSAGE_TYPE.FAILED_UPLOAD_FILE_TO_S3,
+        SUBMISSION_MESSAGE_TYPE.FAILED_PARSE_SUBMISSION,
+        SUBMISSION_MESSAGE_TYPE.FAILED_PREP_DWC_ARCHIVE,
+        SUBMISSION_MESSAGE_TYPE.FAILED_PREP_XLSX,
+        SUBMISSION_MESSAGE_TYPE.FAILED_PERSIST_PARSE_ERRORS,
+        SUBMISSION_MESSAGE_TYPE.FAILED_GET_VALIDATION_RULES,
+        SUBMISSION_MESSAGE_TYPE.FAILED_GET_TRANSFORMATION_RULES,
+        SUBMISSION_MESSAGE_TYPE.FAILED_PERSIST_TRANSFORMATION_RESULTS,
+        SUBMISSION_MESSAGE_TYPE.FAILED_TRANSFORM_XLSX,
+        SUBMISSION_MESSAGE_TYPE.FAILED_VALIDATE_DWC_ARCHIVE,
+        SUBMISSION_MESSAGE_TYPE.FAILED_PERSIST_VALIDATION_RESULTS,
+        SUBMISSION_MESSAGE_TYPE.FAILED_UPDATE_OCCURRENCE_SUBMISSION,
+        SUBMISSION_MESSAGE_TYPE.FAILED_TO_GET_TRANSFORM_SCHEMA,
+        SUBMISSION_MESSAGE_TYPE.UNSUPPORTED_FILE_TYPE,
+        SUBMISSION_MESSAGE_TYPE.INVALID_MEDIA,
+        SUBMISSION_MESSAGE_TYPE.MISSING_VALIDATION_SCHEMA
+      ],
+      label: 'Contact your system administrator'
+    }
   };
 
   type SubmissionErrors = { [key: string]: string[] };
@@ -362,13 +456,13 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
             </>
           )}
 
-          {!isValidating && submissionStatus?.status === 'System Error' && (
+          {!isValidating && submissionStatus?.status === SUBMISSION_STATUS_TYPE.SYSTEM_ERROR && (
             <Box px={3} pb={3}>
               {displayAlertBox(
                 'error',
                 mdiAlertCircleOutline,
                 submissionStatus.inputFileName,
-                'Validation Failed to Start'
+                SUBMISSION_STATUS_TYPE.SYSTEM_ERROR
               )}
               <Box my={3}>
                 <Typography data-testid="observations-error-details" variant="body1">
@@ -382,24 +476,36 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
             </Box>
           )}
 
-          {!isValidating && submissionStatus?.status === 'Rejected' && (
-            <Box px={3} pb={3}>
-              {displayAlertBox('error', mdiAlertCircleOutline, submissionStatus.inputFileName, 'Validation Failed')}
-              <Box my={3}>
-                <Typography data-testid="observations-error-details" variant="body1">
-                  Resolve the following errors in your local file and re-import.
-                </Typography>
+          {!isValidating &&
+            (submissionStatus?.status === SUBMISSION_STATUS_TYPE.REJECTED ||
+              submissionStatus?.status === SUBMISSION_STATUS_TYPE.FAILED_OCCURRENCE_PREPARATION ||
+              submissionStatus?.status === SUBMISSION_STATUS_TYPE.INVALID_MEDIA ||
+              submissionStatus?.status === SUBMISSION_STATUS_TYPE.FAILED_VALIDATION ||
+              submissionStatus?.status === SUBMISSION_STATUS_TYPE.FAILED_TRANSFORMED ||
+              submissionStatus?.status === SUBMISSION_STATUS_TYPE.FAILED_PROCESSING_OCCURRENCE_DATA) && (
+              <Box px={3} pb={3}>
+                {displayAlertBox(
+                  'error',
+                  mdiAlertCircleOutline,
+                  submissionStatus.inputFileName,
+                  `Validation error: ${submissionStatus?.status}`
+                )}
+                <Box my={3}>
+                  <Typography data-testid="observations-error-details" variant="body1">
+                    Resolve the following errors in your local file and re-import.
+                  </Typography>
+                </Box>
+                <Box>
+                  {displayMessages(submissionErrors, messageGrouping, mdiAlertCircleOutline)}
+                  {displayMessages(submissionWarnings, messageGrouping, mdiInformationOutline)}
+                </Box>
               </Box>
-              <Box>
-                {displayMessages(submissionErrors, messageGrouping, mdiAlertCircleOutline)}
-                {displayMessages(submissionWarnings, messageGrouping, mdiInformationOutline)}
-              </Box>
-            </Box>
-          )}
+            )}
           {!isValidating &&
             submissionStatus &&
-            (submissionStatus.status === 'Darwin Core Validated' ||
-              submissionStatus.status === 'Template Validated') && (
+            (submissionStatus.status === SUBMISSION_STATUS_TYPE.DARWIN_CORE_VALIDATED ||
+              submissionStatus.status === SUBMISSION_STATUS_TYPE.TEMPLATE_VALIDATED ||
+              submissionStatus.status === SUBMISSION_STATUS_TYPE.TEMPLATE_TRANSFORMED) && (
               <>
                 <Box px={3}>{displayAlertBox('info', mdiFileOutline, submissionStatus.inputFileName, '')}</Box>
               </>

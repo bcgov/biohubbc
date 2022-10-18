@@ -4,7 +4,7 @@ import OpenAPIResponseValidator, { OpenAPIResponseValidatorArgs } from 'openapi-
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as db from '../../../../../database/db';
-import { HTTPError } from '../../../../../errors/custom-error';
+import { HTTPError } from '../../../../../errors/http-error';
 import { SurveyObject } from '../../../../../models/survey-view';
 import { SurveyService } from '../../../../../services/survey-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../__mocks__/db';

@@ -1,6 +1,6 @@
 import axios from 'axios';
 import qs from 'qs';
-import { ApiGeneralError } from '../errors/custom-error';
+import { ApiGeneralError } from '../errors/api-error';
 
 type KeycloakUserData = {
   id: string;

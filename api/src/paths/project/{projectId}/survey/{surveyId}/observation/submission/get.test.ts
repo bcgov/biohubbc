@@ -3,8 +3,9 @@ import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import SQL from 'sql-template-strings';
+import { SUBMISSION_MESSAGE_TYPE } from '../../../../../../../constants/status';
 import * as db from '../../../../../../../database/db';
-import { HTTPError } from '../../../../../../../errors/custom-error';
+import { HTTPError } from '../../../../../../../errors/http-error';
 import survey_queries from '../../../../../../../queries/survey';
 import { getMockDBConnection } from '../../../../../../../__mocks__/db';
 import * as observationSubmission from './get';
@@ -149,14 +150,14 @@ describe('getObservationSubmission', () => {
       .resolves({
         rows: [
           {
-            errorCode: 'Missing Required Header',
+            errorCode: SUBMISSION_MESSAGE_TYPE.MISSING_REQUIRED_HEADER,
             id: 1,
             message: 'occurrence.txt - Missing Required Header - associatedTaxa - Missing required header',
             status: 'Rejected',
             type: 'Error'
           },
           {
-            errorCode: 'Missing Required Header',
+            errorCode: SUBMISSION_MESSAGE_TYPE.MISSING_REQUIRED_HEADER,
             id: 2,
             message: 'occurrence.txt - Missing Required Header - associatedTaxa - Missing required header',
             status: 'Rejected',
@@ -186,14 +187,14 @@ describe('getObservationSubmission', () => {
       status: 'Rejected',
       messages: [
         {
-          errorCode: 'Missing Required Header',
+          errorCode: SUBMISSION_MESSAGE_TYPE.MISSING_REQUIRED_HEADER,
           id: 1,
           message: 'occurrence.txt - Missing Required Header - associatedTaxa - Missing required header',
           status: 'Rejected',
           type: 'Error'
         },
         {
-          errorCode: 'Missing Required Header',
+          errorCode: SUBMISSION_MESSAGE_TYPE.MISSING_REQUIRED_HEADER,
           id: 2,
           message: 'occurrence.txt - Missing Required Header - associatedTaxa - Missing required header',
           status: 'Rejected',

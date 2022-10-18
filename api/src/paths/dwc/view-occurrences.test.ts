@@ -4,8 +4,9 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import SQL from 'sql-template-strings';
 import * as db from '../../database/db';
-import { HTTPError } from '../../errors/custom-error';
+import { HTTPError } from '../../errors/http-error';
 import occurrence_queries from '../../queries/occurrence';
+import { ErrorService } from '../../services/error-service';
 import { getMockDBConnection } from '../../__mocks__/db';
 import * as view_occurrences from './view-occurrences';
 
@@ -67,6 +68,7 @@ describe('getOccurrencesForView', () => {
     });
 
     sinon.stub(occurrence_queries, 'getOccurrencesForViewSQL').returns(null);
+    sinon.stub(ErrorService.prototype, 'insertSubmissionStatus').resolves();
 
     try {
       const result = view_occurrences.getOccurrencesForView();
@@ -99,6 +101,7 @@ describe('getOccurrencesForView', () => {
     });
 
     sinon.stub(occurrence_queries, 'getOccurrencesForViewSQL').returns(SQL`something`);
+    sinon.stub(ErrorService.prototype, 'insertSubmissionStatus').resolves();
 
     try {
       const result = view_occurrences.getOccurrencesForView();

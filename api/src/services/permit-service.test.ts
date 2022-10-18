@@ -2,7 +2,7 @@ import chai, { expect } from 'chai';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { SYSTEM_ROLE } from '../constants/roles';
-import { ApiGeneralError } from '../errors/custom-error';
+import { ApiGeneralError } from '../errors/api-error';
 import { UserObject } from '../models/user';
 import { IPermitModel, PermitRepository } from '../repositories/permit-repository';
 import { getMockDBConnection } from '../__mocks__/db';

@@ -4,7 +4,7 @@ import * as pg from 'pg';
 import Sinon from 'sinon';
 import SQL from 'sql-template-strings';
 import { SYSTEM_IDENTITY_SOURCE } from '../constants/database';
-import { HTTPError } from '../errors/custom-error';
+import { HTTPError } from '../errors/http-error';
 import { setSystemUserContextSQL } from '../queries/database/user-context-queries';
 import * as db from './db';
 import { getAPIUserDBConnection, getDBConnection, getDBPool, getKnex, IDBConnection, initDBPool } from './db';
