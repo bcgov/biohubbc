@@ -107,31 +107,6 @@ POST.apiDoc = {
   }
 };
 
-export enum SUMMARY_CLASS {
-  STUDY_AREA = 'study area',
-  POPULATION_UNIT = 'population unit',
-  BLOCK_SAMPLE_UNIT_ID = 'block/sample unit',
-  PARAMETER = 'parameter',
-  STRATUM = 'stratum',
-  OBSERVED = 'observed',
-  ESTIMATED = 'estimated',
-  SIGHTABILITY_MODEL = 'sightability model',
-  SIGHTABILITY_CORRECTION_FACTOR = 'sightability correction factor',
-  SE = 'se',
-  COEFFICIENT_VARIATION = 'coefficient of variation (%)',
-  CONFIDENCE_LEVEL = 'confidence level (%)',
-  LOWER_CONFIDENCE_LEVEL = 'lower cl',
-  UPPER_CONFIDENCE_LEVEL = 'upper cl',
-  TOTAL_SURVEY_AREA = 'total survey area (km2)',
-  AREA_FLOWN = 'area flown (km2)',
-  TOTAL_KILOMETERS_SURVEYED = 'total kilometers surveyed (km)',
-  BEST_PARAMETER_VALUE_FLAG = 'best parameter value flag',
-  OUTLIER_BLOCKS_REMOVED = 'outlier blocks removed',
-  TOTAL_MARKED_ANIMALS_OBSERVED = 'total marked animals observed',
-  MARKER_ANIMALS_AVAILABLE = 'marked animals available',
-  PARAMETER_COMMENTS = 'parameter comments'
-}
-
 /**
  * Uploads a media file to S3 and inserts a matching record in the `summary_submission` table.
  *
@@ -221,6 +196,12 @@ export function uploadMedia(): RequestHandler {
       connection.release();
     }
   };
+}
+
+function validate(): RequestHandler {
+  return async (req, res, next) => {
+    //
+  }
 }
 
 export function validateXLSX(): RequestHandler {
@@ -382,205 +363,7 @@ export function getValidationRules(): RequestHandler {
     defaultLog.debug({ label: 'getValidationRules', message: 's3File' });
 
     try {
-      const validationSchema = {
-        name: '',
-        description: '',
-        defaultFile: {
-          description: '',
-          columns: [
-            {
-              name: 'Observed',
-              description: '',
-              validations: [
-                {
-                  column_numeric_validator: {
-                    name: '',
-                    description: ''
-                  }
-                }
-              ]
-            },
-            {
-              name: 'Estimated',
-              description: '',
-              validations: [
-                {
-                  column_numeric_validator: {
-                    name: '',
-                    description: ''
-                  }
-                }
-              ]
-            },
-            {
-              name: 'Sightability Correction Factor',
-              description: '',
-              validations: [
-                {
-                  column_numeric_validator: {
-                    name: '',
-                    description: ''
-                  }
-                }
-              ]
-            },
-            {
-              name: 'SE',
-              description: '',
-              validations: [
-                {
-                  column_numeric_validator: {
-                    name: '',
-                    description: ''
-                  }
-                }
-              ]
-            },
-            {
-              name: 'Coefficient of Variation (%)',
-              description: '',
-              validations: [
-                {
-                  column_numeric_validator: {
-                    name: '',
-                    description: ''
-                  }
-                }
-              ]
-            },
-            {
-              name: 'Confidence Level (%)',
-              description: '',
-              validations: [
-                {
-                  column_numeric_validator: {
-                    name: '',
-                    description: ''
-                  }
-                }
-              ]
-            },
-            {
-              name: 'Area Flown (km2)',
-              description: '',
-              validations: [
-                {
-                  column_numeric_validator: {
-                    name: '',
-                    description: ''
-                  }
-                }
-              ]
-            },
-            {
-              name: 'Total Survey Area (km2)',
-              description: '',
-              validations: [
-                {
-                  column_numeric_validator: {
-                    name: '',
-                    description: ''
-                  }
-                }
-              ]
-            },
-            {
-              name: 'Total Kilometers Surveyed (km)',
-              description: '',
-              validations: [
-                {
-                  column_numeric_validator: {
-                    name: '',
-                    description: ''
-                  }
-                }
-              ]
-            },
-            {
-              name: 'Best Parameter Value Flag',
-              description: '',
-              validations: [
-                {
-                  column_code_validator: {
-                    name: '',
-                    description: '',
-                    allowed_code_values: [
-                      { name: 'Yes', description: '' },
-                      { name: 'No', description: '' },
-                      { name: 'Unknown', description: '' },
-                      { name: 'Not Evaluated', description: '' }
-                    ]
-                  }
-                }
-              ]
-            },
-            {
-              name: 'Total Marked Animals Observed',
-              description: '',
-              validations: [
-                {
-                  column_numeric_validator: {
-                    name: '',
-                    description: ''
-                  }
-                }
-              ]
-            },
-            {
-              name: 'Marked Animals Available',
-              description: '',
-              validations: [
-                {
-                  column_numeric_validator: {
-                    name: '',
-                    description: ''
-                  }
-                }
-              ]
-            }
-          ],
-          validations: [
-            {
-              file_duplicate_columns_validator: {}
-            },
-            {
-              file_required_columns_validator: {
-                required_columns: [
-                  'Study Area',
-                  'Population Unit',
-                  'Block/Sample Unit',
-                  'Parameter',
-                  'Stratum',
-                  'Observed',
-                  'Estimated',
-                  'Sightability Model',
-                  'Sightability Correction Factor',
-                  'SE',
-                  'Coefficient of Variation (%)',
-                  'Confidence Level (%)',
-                  'Lower CL',
-                  'Upper CL',
-                  'Total Survey Area (km2)',
-                  'Area Flown (km2)',
-                  'Total Kilometers Surveyed (km)',
-                  'Best Parameter Value Flag',
-                  'Outlier Blocks Removed',
-                  'Total Marked Animals Observed',
-                  'Marked Animals Available',
-                  'Parameter Comments'
-                ]
-              }
-            }
-          ]
-        },
-        validations: [
-          {
-            mimetype_validator: {
-              reg_exps: ['text\\/csv', 'application\\/vnd.*']
-            }
-          }
-        ]
-      };
+      const validationSchema = '{}'; // get schema using new service method.
 
       const validationSchemaParser = new ValidationSchemaParser(validationSchema);
 
