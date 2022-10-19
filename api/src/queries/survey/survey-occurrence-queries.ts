@@ -288,6 +288,7 @@ export const insertOccurrenceSubmissionStatusSQL = (
 
 /**
  * SQL query to insert the occurrence submission message.
+ * @TODO this method duplicates ErrorRepository.insertSubmissionMessage
  *
  * @param {number} occurrenceSubmissionId
  * @param {string} submissionStatusType

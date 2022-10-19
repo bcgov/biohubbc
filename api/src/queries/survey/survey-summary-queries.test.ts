@@ -42,6 +42,10 @@ describe('getSummarySubmissionMessagesSQL', () => {
 
 describe('insertSurveySummarySubmissionMessageSQL', () => {
   it('returns null response when null summarySubmissionId provided', () => {
+    /**
+     * @TODO move all tests for insertSurveySummarySubmissionMessageSQL to
+     * error repository (testing ErrorRepository.insertSummarySubmissionMessage, which supersedes this function)
+     */
     const response = insertSurveySummarySubmissionMessageSQL(
       (null as unknown) as number,
       'type',

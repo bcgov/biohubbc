@@ -46,24 +46,41 @@ export class SummaryValidationService extends DBService {
     this.errorService = new ErrorService(connection);
   }
 
-  async validateFile(submissionId: number, surveyId: number) {
+  /**
+   * done = TRUE
+   * Validates a summary submission file based on given summary submission ID and survey ID.
+   * @param summarySubmissionId 
+   * @param surveyId 
+   */
+  async validateFile(summarySubmissionId: number, surveyId: number) {
     try {
-      const submissionPrep = await this.summaryTemplatePreparation(submissionId);
-      await this.summaryTemplateValidation(submissionPrep.xlsx, surveyId);
+      // First, prep XLSX
+      const submissionPrep = await this.summaryTemplatePreparation(summarySubmissionId);
 
-      // insert template validated status
-      await this.submissionRepository.insertSubmissionStatus(submissionId, SUBMISSION_STATUS_TYPE.TEMPLATE_VALIDATED);
+      // Next, validate the summary template
+      await this.summaryTemplateValidation(submissionPrep.xlsx, surveyId);
     } catch (error) {
       if (error instanceof SubmissionError) {
-        await this.errorService.insertSubmissionError(submissionId, error);
+        // If any summary submission parsing or file errors are thrown, persist them
+        await this.errorService.insertSummarySubmissionError(summarySubmissionId, error);
       } else {
         throw error;
       }
     }
   }
 
-  async summaryTemplatePreparation(submissionId: number): Promise<{ s3InputKey: string; xlsx: XLSXCSV }> {
+  /**
+   * done = false
+   * Prepares a summary template XLSX
+   * @param summarySubmissionId 
+   * @returns 
+   */
+  async summaryTemplatePreparation(summarySubmissionId: number): Promise<{ s3InputKey: string; xlsx: XLSXCSV }> {
     try {
+      /**
+       * @TODO Move the code from /summary/submission/get.ts into a new method called getSurveySummarySubmission in the submission
+       * repository. Next, call this method instead of calling the occurrenceService method
+       */
       const occurrenceSubmission = await this.occurrenceService.getOccurrenceSubmission(submissionId);
       const s3InputKey = occurrenceSubmission.input_key;
       const s3File = await getFileFromS3(s3InputKey);
@@ -78,6 +95,12 @@ export class SummaryValidationService extends DBService {
     }
   }
 
+  /**
+   * done = false
+   * 
+   * @param xlsx 
+   * @param surveyId 
+   */
   async summaryTemplateValidation(xlsx: XLSXCSV, surveyId: number) {
     try {
       const schema = await this.getValidationSchema(xlsx, surveyId);
@@ -92,46 +115,69 @@ export class SummaryValidationService extends DBService {
     }
   }
 
+  /**
+   * done = TRUE
+   * 
+   * @param file 
+   * @returns 
+   */
   prepXLSX(file: any): XLSXCSV {
     defaultLog.debug({ label: 'prepXLSX', message: 's3File' });
     const parsedMedia = parseUnknownMedia(file);
 
-    // not sure how to trigger these through testing
+    // @TODO not sure how to trigger these through testing
     if (!parsedMedia) {
       throw SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.UNSUPPORTED_FILE_TYPE);
     }
 
-    // not sure how to trigger these through testing
+    // @TODO not sure how to trigger these through testing
     if (!(parsedMedia instanceof MediaFile)) {
-      throw SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.INVALID_MEDIA);
+      throw SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.INVALID_XLSX_CSV);
     }
 
     const xlsxCsv = new XLSXCSV(parsedMedia);
 
-    const template_id = xlsxCsv.workbook.rawWorkbook.Custprops?.sims_template_id;
-    const csm_id = xlsxCsv.workbook.rawWorkbook.Custprops?.sims_csm_id;
+    const sims_name = xlsxCsv.workbook.rawWorkbook.Custprops?.sims_name;
+    const sims_version = xlsxCsv.workbook.rawWorkbook.Custprops?.sims_version;
 
-    if (!template_id || !csm_id) {
-      throw SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_TO_GET_TRANSFORM_SCHEMA);
+    if (!sims_name || !sims_version) {
+      throw SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_TO_GET_TEMPLATE_NAME_VERSION);
     }
 
     return xlsxCsv;
   }
 
+  /**
+   * done = TRUE
+   * 
+   * @param file 
+   * @param surveyId 
+   * @returns 
+   */
   async getSummaryTemplateSpeciesRecord(file: XLSXCSV, surveyId: number): Promise<ISummaryTemplateSpeciesData> {
-    const summaryTemplateName: string = file.workbook.rawWorkbook.Custprops.sims_name;
-    const summaryTemplateVersion: string = file.workbook.rawWorkbook.Custprops.sims_version;
+    // Summary template name
+    const sims_name: string = file.workbook.rawWorkbook.Custprops.sims_name;
+    
+    // Summary template version
+    const sims_version: string = file.workbook.rawWorkbook.Custprops.sims_version;
 
     const surveyData = await this.surveyService.getSurveyById(surveyId);
     const surveySpecies = surveyData.species.focal_species;
   
     return this.summaryValidationRepository.getSummaryTemplateSpeciesRecord(
-      summaryTemplateName,
-      summaryTemplateVersion,
+      sims_name,
+      sims_version,
       surveySpecies[0]
     );
   }
 
+  /**
+   * done = TRUE
+   * 
+   * @param file 
+   * @param surveyId 
+   * @returns 
+   */
   async getValidationSchema(file: XLSXCSV, surveyId: number): Promise<string> {
     const summaryTemplateSpeciesRecord = await this.getSummaryTemplateSpeciesRecord(file, surveyId)
 
@@ -143,13 +189,23 @@ export class SummaryValidationService extends DBService {
     return validationSchema;
   }
 
-  // validation service
+  /**
+   * done = TRUE
+   * 
+   * @param schema 
+   * @returns 
+   */
   getValidationRules(schema: string | object): ValidationSchemaParser {
     const validationSchemaParser = new ValidationSchemaParser(schema);
     return validationSchemaParser;
   }
 
-  // validation service
+  /**
+   * done = TRUE
+   * @param file 
+   * @param parser 
+   * @returns 
+   */
   validateXLSX(file: XLSXCSV, parser: ValidationSchemaParser) {
     const mediaState = file.isMediaValid(parser);
 
@@ -164,6 +220,13 @@ export class SummaryValidationService extends DBService {
     } as ICsvMediaState;
   }
 
+  /**
+   * done = false
+   * 
+   * @param csvState 
+   * @param mediaState 
+   * @returns 
+   */
   async persistValidationResults(csvState: ICsvState[], mediaState: IMediaState): Promise<boolean> {
     defaultLog.debug({ label: 'persistValidationResults', message: 'validationResults' });
 
@@ -208,10 +271,24 @@ export class SummaryValidationService extends DBService {
     return parseError;
   }
 
+  /**
+   * done = true
+   * 
+   * @param fileName 
+   * @param headerError 
+   * @returns 
+   */
   generateHeaderErrorMessage(fileName: string, headerError: IHeaderError): string {
     return `${fileName} - ${headerError.message} - Column: ${headerError.col}`;
   }
 
+  /**
+   * done = true
+   * 
+   * @param fileName 
+   * @param rowError 
+   * @returns 
+   */
   generateRowErrorMessage(fileName: string, rowError: IRowError): string {
     return `${fileName} - ${rowError.message} - Column: ${rowError.col} - Row: ${rowError.row}`;
   }

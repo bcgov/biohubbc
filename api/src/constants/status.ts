@@ -64,6 +64,8 @@ export enum SUBMISSION_MESSAGE_TYPE {
   'FAILED_PERSIST_VALIDATION_RESULTS' = 'Failed to persist validation results',
   'FAILED_UPDATE_OCCURRENCE_SUBMISSION' = 'Failed to update occurrence submission',
   'FAILED_TO_GET_TRANSFORM_SCHEMA' = 'Unable to get transform schema for submission',
+  'FAILED_TO_GET_TEMPLATE_NAME_VERSION' = 'Missing name or version number from template.',
   'INVALID_MEDIA' = 'Media is invalid',
+  'INVALID_XLSX_CSV' = 'Media is not a valid XLSX CSV file.',
   'UNSUPPORTED_FILE_TYPE' = 'File submitted is not a supported type'
 }

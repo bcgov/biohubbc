@@ -28,8 +28,8 @@ export const POST: Operation = [
     };
   }),
   uploadMedia(),
-  prepXLSX(),
-  persistSummaryParseErrors(),
+  // prepXLSX(),
+  // persistSummaryParseErrors(),
   getValidationRules(),
   validateXLSX(),
   persistSummaryValidationResults(),
@@ -200,7 +200,9 @@ export function uploadMedia(): RequestHandler {
 
 function validate(): RequestHandler {
   return async (req, res, next) => {
-    //
+    const s3File = req['s3File'];
+
+
   }
 }
 
@@ -480,6 +482,7 @@ export const uploadScrapedSummarySubmission = async (
 
 /**
  * Insert a record into the survey_summary_submission_message table.
+ * @depricated See submission-repository method
  *
  * @param {number} submissionStatusId
  * @param {string} submissionMessageType
@@ -488,6 +491,7 @@ export const uploadScrapedSummarySubmission = async (
  * @param {IDBConnection} connection
  * @return {*}  {Promise<void>}
  */
+/*
 export const insertSummarySubmissionMessage = async (
   submissionStatusId: number,
   submissionMessageType: string,
@@ -512,6 +516,7 @@ export const insertSummarySubmissionMessage = async (
     throw new HTTP400('Failed to insert summary submission message data');
   }
 };
+*/
 
 export function generateHeaderErrorMessage(fileName: string, headerError: IHeaderError): string {
   return `${fileName} - ${headerError.message} - Column: ${headerError.col}`;

@@ -38,6 +38,9 @@ export class SummaryValidationRepository extends BaseRepository {
   }
 
   /**
+   * @TODO jsdoc
+   * @TODO use window function in order to conditional include the wild taxonomic units clause (specifically when
+   * the species parameter isn't undefined.)
    * 
    * @param templateName 
    * @param templateVersion 

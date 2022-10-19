@@ -51,7 +51,7 @@ export class ErrorRepository extends BaseRepository {
 
     if (response.rowCount !== 1) {
       throw new ApiExecuteSQLError('Failed to insert submission status record', [
-        'SubmissionRepository->insertSubmissionStatus',
+        'ErrorRepository->insertSubmissionStatus',
         'rowCount was null or undefined, expected rowCount = 1'
       ]);
     }
@@ -102,11 +102,54 @@ export class ErrorRepository extends BaseRepository {
 
     if (response.rowCount !== 1) {
       throw new ApiExecuteSQLError('Failed to insert submission message record', [
-        'SubmissionRepository->insertSubmissionMessage',
+        'ErrorRepository->insertSubmissionMessage',
         'rowCount was null or undefined, expected rowCount = 1'
       ]);
     }
 
     return response.rows[0];
   }
+
+  /**
+   * done = TRUE
+   * Insert a record into the survey_summary_submission_message table.
+   * @TODO jsdoc.
+   */
+   insertSummarySubmissionMessage = async (
+    summarySubmissionId: number,
+    summarySubmissionMessageType: string,
+    summarySubmissionMessage: string
+  ): Promise<void> => {
+    const sqlStatement = SQL`
+      INSERT INTO survey_summary_submission_message (
+        survey_summary_submission_id,
+        submission_message_type_id,
+        event_timestamp,
+        message
+      ) VALUES (
+        ${summarySubmissionId},
+        (
+          SELECT
+            submission_message_type_id
+          FROM
+            summary_submission_message_type
+          WHERE
+            name = ${summarySubmissionMessageType}
+        ),
+        now(),
+        ${summarySubmissionMessage}
+      )
+      RETURNING
+        submission_message_id;
+    `;
+    
+    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
+
+    if (response.rowCount !== 1) {
+      throw new ApiExecuteSQLError('Failed to insert summary submission message record', [
+        'ErrorRepository->insertSummarySubmissionMessage',
+        'rowCount was null or undefined, expected rowCount = 1'
+      ]);
+    }
+  };
 }

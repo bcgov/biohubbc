@@ -212,49 +212,6 @@ export const insertSurveySummaryDetailsSQL = (
 };
 
 /**
- * SQL query to insert the occurrence submission message.
- *
- * @param {number} summarySubmissionId
- * @param {string} summarySubmissionMessageType
- * @param {string} summarySubmissionMessage
- * @param {string} errorCode
- * @returns {SQLStatement} sql query object
- */
-export const insertSurveySummarySubmissionMessageSQL = (
-  summarySubmissionId: number,
-  summarySubmissionMessageType: string,
-  summarySubmissionMessage: string,
-  errorCode: string
-): SQLStatement | null => {
-  if (!summarySubmissionId || !summarySubmissionMessageType || !summarySubmissionMessage || !errorCode) {
-    return null;
-  }
-
-  return SQL`
-    INSERT INTO survey_summary_submission_message (
-      survey_summary_submission_id,
-      submission_message_type_id,
-      event_timestamp,
-      message
-    ) VALUES (
-      ${summarySubmissionId},
-      (
-        SELECT
-          submission_message_type_id
-        FROM
-          summary_submission_message_type
-        WHERE
-          name = ${errorCode}
-      ),
-      now(),
-      ${summarySubmissionMessage}
-    )
-    RETURNING
-      submission_message_id;
-  `;
-};
-
-/**
  * SQL query to get the list of messages for an summary submission.
  *
  * @param {number} summarySubmissionId
