@@ -1,4 +1,4 @@
-import SQL from 'sql-template-strings';
+import SQL, { SQLStatement } from 'sql-template-strings';
 import { HTTP400 } from '../errors/http-error';
 import { BaseRepository } from './base-repository';
 
@@ -28,21 +28,42 @@ export class ValidationRepository extends BaseRepository {
     console.log('surveyFieldMethodId:', surveyFieldMethodId);
     console.log('surveySpecies:', surveySpecies);
 
-    const sqlStatement = SQL`
+    const sqlStatement: SQLStatement = SQL`
     SELECT
       *
     FROM
       template_methodology_species tms
     WHERE
       tms.template_id = ${templateRow.template_id}
-    AND
-      tms.intended_outcome_id = ${surveyIntendedOutcomeId}
-    AND
+    and
+	    (
+      tms.intended_outcome_id =  ${surveyIntendedOutcomeId}
+      or
+      tms.intended_outcome_id = null
+      )
+    and
+      (
       tms.field_method_id = ${surveyFieldMethodId}
-    AND
-      tms.wldtaxonomic_units_id = ${surveySpecies[0] + 1}
-    ;
-  `;
+      or
+      tms.field_method_id = null
+      )
+    and
+      (
+      tms.wldtaxonomic_units_id in (${surveySpecies[0]}`;
+
+    for (let i = 1; i < surveySpecies.length; i++) {
+      sqlStatement.append(`, `);
+      sqlStatement.append(`${surveySpecies[i]}`);
+    }
+
+    sqlStatement.append(`)
+      or
+      tms.wldtaxonomic_units_id = null
+      )
+    ;`);
+
+    console.log('sqlStatement:', sqlStatement);
+
     const response = await this.connection.query<ITemplateMethodologyData>(sqlStatement.text, sqlStatement.values);
 
     if (!response) {
