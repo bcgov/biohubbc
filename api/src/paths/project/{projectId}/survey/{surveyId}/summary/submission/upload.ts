@@ -5,6 +5,7 @@ import { getDBConnection, IDBConnection } from '../../../../../../../database/db
 import { HTTP400 } from '../../../../../../../errors/http-error';
 import { queries } from '../../../../../../../queries/queries';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
+import { SummaryService } from '../../../../../../../services/summary-service';
 import { generateS3FileKey, scanFileForVirus, uploadFileToS3 } from '../../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../../utils/logger';
 import { ICsvState, IHeaderError, IRowError } from '../../../../../../../utils/media/csv/csv-file';
@@ -27,8 +28,7 @@ export const POST: Operation = [
       ]
     };
   }),
-  uploadAndValidate(),
-  returnSummarySubmissionId()
+  uploadAndValidate()
 ];
 
 POST.apiDoc = {
@@ -144,6 +144,7 @@ function uploadAndValidate(): RequestHandler {
       const rawMediaFile = rawMediaArray[0];
 
       await connection.open();
+      const summaryService = new SummaryService(connection)
 
       // Scan file for viruses using ClamAV
       const virusScanResult = await scanFileForVirus(rawMediaFile);
@@ -152,23 +153,21 @@ function uploadAndValidate(): RequestHandler {
         throw new HTTP400('Malicious content detected, upload cancelled');
       }
 
-      const response = await insertSurveySummarySubmission(
-        Number(req.params.surveyId),
+      const surveyId = Number(req.params.surveyId)
+      const summarySubmissionId = (await summaryService.insertSurveySummarySubmission(
+        surveyId,
         'BioHub',
-        rawMediaFile.originalname,
-        connection
-      );
-
-      const summarySubmissionId = response.rows[0].id;
+        rawMediaFile.originalname
+      )).survey_summary_submission_id;
 
       const key = generateS3FileKey({
         projectId: Number(req.params.projectId),
-        surveyId: Number(req.params.surveyId),
+        surveyId: surveyId,
         folder: `summaryresults/${summarySubmissionId}`,
         fileName: rawMediaFile.originalname
       });
 
-      await updateSurveySummarySubmissionWithKey(summarySubmissionId, key, connection);
+      await summaryService.updateSurveySummarySubmissionWithKey(summarySubmissionId, key);
 
       await connection.commit();
 
@@ -178,12 +177,13 @@ function uploadAndValidate(): RequestHandler {
         email: (req['auth_payload'] && req['auth_payload'].email) || ''
       };
 
+      // Upload submission to S3
       await uploadFileToS3(rawMediaFile, key, metadata);
-
-      req['s3File'] = rawMediaFile;
-
-      req['summarySubmissionId'] = summarySubmissionId;
-      next();
+      
+      // Validate submission
+      await summaryService.validateFile(summarySubmissionId, surveyId)
+      
+      return res.status(200).json({ summarySubmissionId });
     } catch (error) {
       defaultLog.error({ label: 'uploadMedia', message: 'error', error });
       await connection.rollback();
@@ -191,13 +191,5 @@ function uploadAndValidate(): RequestHandler {
     } finally {
       connection.release();
     }
-  };
-}
-
-function returnSummarySubmissionId(): RequestHandler {
-  return async (req, res) => {
-    const summarySubmissionId = req['summarySubmissionId'];
-
-    return res.status(200).json({ summarySubmissionId });
   };
 }

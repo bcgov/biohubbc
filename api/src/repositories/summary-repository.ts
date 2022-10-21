@@ -73,9 +73,9 @@ export class SummaryRepository extends BaseRepository {
    * Query to get latest summary submission for a survey.
    *
    * @param {number} surveyId
-   * @returns {SQLStatement} sql query object
+   * @returns {*} {Promise<ISurveySummaryDetails>}
    */
-  async getLatestSurveySummarySubmission (surveyId: number): Promise<ISurveySummaryDetails> {
+  async getLatestSurveySummarySubmission(surveyId: number): Promise<ISurveySummaryDetails> {
     const sqlStatement = SQL`
       SELECT
         sss.survey_summary_submission_id as id,

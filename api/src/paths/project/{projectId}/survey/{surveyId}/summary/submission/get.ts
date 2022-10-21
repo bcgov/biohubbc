@@ -6,6 +6,7 @@ import { HTTP400 } from '../../../../../../../errors/http-error';
 import { queries } from '../../../../../../../queries/queries';
 import { SummaryRepository } from '../../../../../../../repositories/summary-repository';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
+import { SummaryService } from '../../../../../../../services/summary-service';
 import { getLogger } from '../../../../../../../utils/logger';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/summary/submission/get');
@@ -111,9 +112,9 @@ export function getSurveySummarySubmission(): RequestHandler {
   
     try {
       await connection.open();
-      const summaryRepository = new SummaryRepository(connection)
+      const summaryService = new SummaryService(connection)
       
-      const summarySubmissionData = await summaryRepository.getLatestSurveySummarySubmission(surveyId)
+      const summarySubmissionData = await summaryService.getLatestSurveySummarySubmission(surveyId)
 
       if (summarySubmissionData.delete_timestamp) {
         return res.status(200).json(null);

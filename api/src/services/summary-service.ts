@@ -2,7 +2,7 @@ import AdmZip from 'adm-zip';
 import { SUBMISSION_MESSAGE_TYPE, SUBMISSION_STATUS_TYPE } from '../constants/status';
 import { IDBConnection } from '../database/db';
 import { SubmissionRepository } from '../repositories/submission-repository';
-import { ISummarySubmissionMessagesResponse, ISummaryTemplateSpeciesData, SummaryRepository } from '../repositories/summary-repository';
+import { ISummarySubmissionMessagesResponse, ISummarySubmissionResponse, ISummaryTemplateSpeciesData, ISurveySummaryDetails, SummaryRepository } from '../repositories/summary-repository';
 import { getFileFromS3, uploadBufferToS3 } from '../utils/file-utils';
 import { getLogger } from '../utils/logger';
 import { ICsvState, IHeaderError, IRowError } from '../utils/media/csv/csv-file';
@@ -137,6 +137,26 @@ export class SummaryService extends DBService {
   }
 
   /**
+   * Gets the record for a single summary submission.
+   *
+   * @param {number} surveyId
+   * @returns {*} {Promise<ISurveySummaryDetails>}
+   */
+  async findSummarySubmissionById (summarySubmissionId: number): Promise<ISummarySubmissionResponse> {
+    return this.summaryRepository.findSummarySubmissionById(summarySubmissionId)
+  }
+
+  /**
+   * Gets latest summary submission for a survey.
+   *
+   * @param {number} surveyId
+   * @returns {*} {Promise<ISurveySummaryDetails>}
+   */
+   async getLatestSurveySummarySubmission (surveyId: number): Promise<ISurveySummaryDetails> {
+    return this.summaryRepository.getLatestSurveySummarySubmission(surveyId)
+  }
+
+  /**
    * done = true
    * @TODO jsdoc
    * Prepares a summary template XLSX
@@ -145,7 +165,7 @@ export class SummaryService extends DBService {
    */
   private async summaryTemplatePreparation(summarySubmissionId: number): Promise<{ s3InputKey: string; xlsx: XLSXCSV }> {
     try {
-      const summarySubmission = await this.summaryRepository.findSummarySubmissionById(summarySubmissionId);
+      const summarySubmission = await this.findSummarySubmissionById(summarySubmissionId);
       const s3InputKey = summarySubmission.key; // S3 key
       const s3File = await getFileFromS3(s3InputKey);
       const xlsx = this.prepXLSX(s3File);
