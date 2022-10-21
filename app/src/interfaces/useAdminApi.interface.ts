@@ -40,3 +40,11 @@ export interface IgcNotifyRecipient {
   phoneNumber: string;
   userId: number;
 }
+
+export interface ITemplateData {
+  template_id: number;
+  name: string;
+  version: string;
+  description: string;
+  key: string;
+}

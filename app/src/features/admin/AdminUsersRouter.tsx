@@ -2,6 +2,7 @@ import AdminUsersLayout from 'features/admin/AdminUsersLayout';
 import React from 'react';
 import { Redirect, Switch } from 'react-router';
 import AppRoute from 'utils/AppRoute';
+import ManageTemplatesPage from './users/ManageTemplatesPage';
 import ManageUsersPage from './users/ManageUsersPage';
 import UsersDetailPage from './users/UsersDetailPage';
 
@@ -16,6 +17,10 @@ const AdminUsersRouter: React.FC = (props) => {
     <Switch>
       <AppRoute exact path="/admin/users" layout={AdminUsersLayout}>
         <ManageUsersPage />
+      </AppRoute>
+
+      <AppRoute exact path="/admin/templates" layout={AdminUsersLayout}>
+        <ManageTemplatesPage />
       </AppRoute>
 
       <AppRoute exact path="/admin/users/:id" layout={AdminUsersLayout}>

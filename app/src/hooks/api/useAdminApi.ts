@@ -4,7 +4,8 @@ import {
   IAccessRequestDataObject,
   IgcNotifyGenericMessage,
   IgcNotifyRecipient,
-  IGetAccessRequestsListResponse
+  IGetAccessRequestsListResponse,
+  ITemplateData
 } from 'interfaces/useAdminApi.interface';
 import qs from 'qs';
 
@@ -134,6 +135,12 @@ const useAdminApi = (axios: AxiosInstance) => {
     return status === 200;
   };
 
+  const getTemplates = async (): Promise<ITemplateData[]> => {
+    const { data } = await axios.get('/api/template/list');
+
+    return data.templates;
+  };
+
   return {
     sendGCNotification,
     getAdministrativeActivities,
@@ -142,7 +149,8 @@ const useAdminApi = (axios: AxiosInstance) => {
     createAdministrativeActivity,
     hasPendingAdministrativeActivities,
     addSystemUserRoles,
-    addSystemUser
+    addSystemUser,
+    getTemplates
   };
 };
 
