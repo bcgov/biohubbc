@@ -2,7 +2,7 @@ import AdmZip from 'adm-zip';
 import { SUBMISSION_MESSAGE_TYPE, SUBMISSION_STATUS_TYPE } from '../constants/status';
 import { IDBConnection } from '../database/db';
 import { SubmissionRepository } from '../repositories/submission-repository';
-import { ISummaryTemplateSpeciesData, SummaryRepository } from '../repositories/summary-repository';
+import { ISummarySubmissionMessagesResponse, ISummaryTemplateSpeciesData, SummaryRepository } from '../repositories/summary-repository';
 import { getFileFromS3, uploadBufferToS3 } from '../utils/file-utils';
 import { getLogger } from '../utils/logger';
 import { ICsvState, IHeaderError, IRowError } from '../utils/media/csv/csv-file';
@@ -18,6 +18,7 @@ import { DBService } from './db-service';
 import { ErrorService } from './error-service';
 import { SurveyService } from './survey-service';
 import { OccurrenceService } from './occurrence-service';
+import { PostSummaryDetails } from '../models/summaryresults-create';
 
 const defaultLog = getLogger('services/summary-validation-service');
 
@@ -70,39 +71,106 @@ export class SummaryService extends DBService {
   }
 
   /**
-   * done = false
+   * Update existing `survey_summary_submission` record with key.
+   *
+   * @param {number} submissionId
+   * @param {string} key
+   * @return {*}  {Promise<{ survey_summary_submission_id: number }>}
+   */
+  async updateSurveySummarySubmissionWithKey(
+    summarySubmissionId: number,
+    key: string,
+  ): Promise<{ survey_summary_submission_id: number }> {
+    return this.summaryRepository.updateSurveySummarySubmissionWithKey(summarySubmissionId, key);
+  };
+
+  /**
+   * Inserts a new record into the `survey_summary_submission` table.
+   *
+   * @param {number} surveyId
+   * @param {string} source
+   * @param {string} file_name
+   * @return {*}  {Promise<{ survey_summary_submission_id: number }>}
+   */
+  async insertSurveySummarySubmission (
+    surveyId: number,
+    source: string,
+    file_name: string,
+  ): Promise<{ survey_summary_submission_id: number }> {
+    return this.summaryRepository.insertSurveySummarySubmission(surveyId, source, file_name)
+  };
+
+  /**
+   *Soft deletes the summary submission entry by ID
+   *
+   * @param {number} summarySubmissionId
+   * @returns {*} {{ delete_timestamp: string }}
+   */
+  async deleteSummarySubmission(summarySubmissionId: number): Promise<{ delete_timestamp: string }> {
+    return this.summaryRepository.deleteSummarySubmission(summarySubmissionId);
+  }
+
+  /**
+   * Upload scraped summary submission data.
+   *
+   * @param {number} summarySubmissionId
+   * @param {any} scrapedSummaryDetail
+   * @return {*} {Promise<{ survey_summary_detail_id: number }>}
+   */
+  async uploadScrapedSummarySubmission(
+    summarySubmissionId: number,
+    scrapedSummaryDetail: PostSummaryDetails,
+  ) {
+    return this.summaryRepository.insertSurveySummaryDetails(summarySubmissionId, scrapedSummaryDetail)
+  };
+
+  /**
+   * Gets the list of messages for a summary submission.
+   *
+   * @param {number} summarySubmissionId
+   * @returns {*} {Promise<ISummarySubmissionMessagesResponse[]>}
+   */
+  async getSummarySubmissionMessages (
+    summarySubmissionId: number
+  ): Promise<ISummarySubmissionMessagesResponse[]> {
+    return this.summaryRepository.getSummarySubmissionMessages(summarySubmissionId) || []
+  }
+
+  /**
+   * done = true
+   * @TODO jsdoc
    * Prepares a summary template XLSX
    * @param summarySubmissionId 
    * @returns 
    */
-  async summaryTemplatePreparation(summarySubmissionId: number): Promise<{ s3InputKey: string; xlsx: XLSXCSV }> {
+  private async summaryTemplatePreparation(summarySubmissionId: number): Promise<{ s3InputKey: string; xlsx: XLSXCSV }> {
     try {
       const summarySubmission = await this.summaryRepository.findSummarySubmissionById(summarySubmissionId);
-      const s3InputKey = summarySubmission.input_key;
+      const s3InputKey = summarySubmission.key; // S3 key
       const s3File = await getFileFromS3(s3InputKey);
       const xlsx = this.prepXLSX(s3File);
 
       return { s3InputKey: s3InputKey, xlsx: xlsx };
     } catch (error) {
       if (error instanceof SubmissionError) {
-        error.setStatus(SUBMISSION_STATUS_TYPE.FAILED_OCCURRENCE_PREPARATION);
+        error.setStatus(SUBMISSION_STATUS_TYPE.FAILED_SUMMARY_PREPARATION);
       }
       throw error;
     }
   }
 
   /**
-   * done = false
+   * done = True
    * 
    * @param xlsx 
    * @param surveyId 
    */
-  async summaryTemplateValidation(xlsx: XLSXCSV, surveyId: number) {
+  private async summaryTemplateValidation(xlsx: XLSXCSV, surveyId: number) {
     try {
       const schema = await this.getValidationSchema(xlsx, surveyId);
       const schemaParser = this.getValidationRules(schema);
       const csvState = this.validateXLSX(xlsx, schemaParser);
-      await this.persistValidationResults(csvState.csv_state, csvState.media_state);
+      await this.persistSummaryValidationResults(csvState.csv_state, csvState.media_state);
     } catch (error) {
       if (error instanceof SubmissionError) {
         error.setStatus(SUBMISSION_STATUS_TYPE.FAILED_VALIDATION);
@@ -113,11 +181,11 @@ export class SummaryService extends DBService {
 
   /**
    * done = TRUE
-   * 
+   * @todo jsdoc
    * @param file 
    * @returns 
    */
-  prepXLSX(file: any): XLSXCSV {
+  private prepXLSX(file: any): XLSXCSV {
     defaultLog.debug({ label: 'prepXLSX', message: 's3File' });
     const parsedMedia = parseUnknownMedia(file);
 
@@ -145,12 +213,12 @@ export class SummaryService extends DBService {
 
   /**
    * done = TRUE
-   * 
+   * @todo jsdoc
    * @param file 
    * @param surveyId 
    * @returns 
    */
-  async getSummaryTemplateSpeciesRecord(file: XLSXCSV, surveyId: number): Promise<ISummaryTemplateSpeciesData> {
+  private async getSummaryTemplateSpeciesRecord(file: XLSXCSV, surveyId: number): Promise<ISummaryTemplateSpeciesData> {
     const speciesData = await this.surveyService.getSpeciesData(surveyId);
 
     // Summary template name and version
@@ -171,7 +239,7 @@ export class SummaryService extends DBService {
    * @param surveyId 
    * @returns 
    */
-  async getValidationSchema(file: XLSXCSV, surveyId: number): Promise<string> {
+  private async getValidationSchema(file: XLSXCSV, surveyId: number): Promise<string> {
     const summaryTemplateSpeciesRecord = await this.getSummaryTemplateSpeciesRecord(file, surveyId)
 
     const validationSchema = summaryTemplateSpeciesRecord?.validation;
@@ -188,7 +256,7 @@ export class SummaryService extends DBService {
    * @param schema 
    * @returns 
    */
-  getValidationRules(schema: string | object): ValidationSchemaParser {
+  private getValidationRules(schema: string | object): ValidationSchemaParser {
     const validationSchemaParser = new ValidationSchemaParser(schema);
     return validationSchemaParser;
   }
@@ -199,7 +267,7 @@ export class SummaryService extends DBService {
    * @param parser 
    * @returns 
    */
-  validateXLSX(file: XLSXCSV, parser: ValidationSchemaParser) {
+  private validateXLSX(file: XLSXCSV, parser: ValidationSchemaParser) {
     const mediaState = file.isMediaValid(parser);
 
     if (!mediaState.isValid) {
@@ -214,14 +282,14 @@ export class SummaryService extends DBService {
   }
 
   /**
-   * done = false
+   * done = True?
    * 
    * @param csvState 
    * @param mediaState 
    * @returns 
    */
-  async persistValidationResults(csvState: ICsvState[], mediaState: IMediaState): Promise<boolean> {
-    defaultLog.debug({ label: 'persistValidationResults', message: 'validationResults' });
+  private async persistSummaryValidationResults(csvState: ICsvState[], mediaState: IMediaState): Promise<boolean> {
+    defaultLog.debug({ label: 'persistSummaryValidationResults', message: 'validationResults' });
 
     let parseError = false;
     const errors: MessageError[] = [];
@@ -271,7 +339,7 @@ export class SummaryService extends DBService {
    * @param headerError 
    * @returns 
    */
-  generateHeaderErrorMessage(fileName: string, headerError: IHeaderError): string {
+  private generateHeaderErrorMessage(fileName: string, headerError: IHeaderError): string {
     return `${fileName} - ${headerError.message} - Column: ${headerError.col}`;
   }
 
@@ -282,7 +350,7 @@ export class SummaryService extends DBService {
    * @param rowError 
    * @returns 
    */
-  generateRowErrorMessage(fileName: string, rowError: IRowError): string {
+  private generateRowErrorMessage(fileName: string, rowError: IRowError): string {
     return `${fileName} - ${rowError.message} - Column: ${rowError.col} - Row: ${rowError.row}`;
   }
 }

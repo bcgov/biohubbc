@@ -4,6 +4,7 @@ import { PROJECT_ROLE } from '../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../database/db';
 import { HTTP400 } from '../../../../../../../errors/http-error';
 import { queries } from '../../../../../../../queries/queries';
+import { SummaryRepository } from '../../../../../../../repositories/summary-repository';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
 import { getLogger } from '../../../../../../../utils/logger';
 
@@ -106,38 +107,24 @@ export function getSurveySummarySubmission(): RequestHandler {
     }
 
     const connection = getDBConnection(req['keycloak_token']);
-
+    const surveyId = Number(req.params.surveyId)
+  
     try {
-      const getSurveySummarySubmissionSQLStatement = queries.survey.getLatestSurveySummarySubmissionSQL(
-        Number(req.params.surveyId)
-      );
-
-      if (!getSurveySummarySubmissionSQLStatement) {
-        throw new HTTP400('Failed to build getLatestSurveySummarySubmissionSQLStatement statement');
-      }
-
       await connection.open();
+      const summaryRepository = new SummaryRepository(connection)
+      
+      const summarySubmissionData = await summaryRepository.getLatestSurveySummarySubmission(surveyId)
 
-      const summarySubmissionData = await connection.query(
-        getSurveySummarySubmissionSQLStatement.text,
-        getSurveySummarySubmissionSQLStatement.values
-      );
-
-      if (
-        !summarySubmissionData ||
-        !summarySubmissionData.rows ||
-        !summarySubmissionData.rows[0] ||
-        summarySubmissionData.rows[0].delete_timestamp
-      ) {
+      if (summarySubmissionData.delete_timestamp) {
         return res.status(200).json(null);
       }
 
       let messageList: any[] = [];
 
-      const errorStatus = summarySubmissionData.rows[0].submission_message_class_name;
+      const errorStatus = summarySubmissionData.submission_message_class_name;
 
       if (errorStatus === 'Error') {
-        const summary_submission_id = summarySubmissionData.rows[0].id;
+        const summary_submission_id = summarySubmissionData.id;
 
         const getSummarySubmissionErrorListSQLStatement = queries.survey.getSummarySubmissionMessagesSQL(
           Number(summary_submission_id)
@@ -157,15 +144,11 @@ export function getSurveySummarySubmission(): RequestHandler {
 
       await connection.commit();
 
-      const getSummarySubmissionData =
-        (summarySubmissionData &&
-          summarySubmissionData.rows &&
-          summarySubmissionData.rows[0] && {
-            id: summarySubmissionData.rows[0].id,
-            fileName: summarySubmissionData.rows[0].file_name,
-            messages: messageList
-          }) ||
-        null;
+      const getSummarySubmissionData = {
+        id: summarySubmissionData.id,
+        fileName: summarySubmissionData.file_name,
+        messages: messageList
+      } || null;
 
       return res.status(200).json(getSummarySubmissionData);
     } catch (error) {

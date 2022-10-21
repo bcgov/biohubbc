@@ -34,7 +34,8 @@ export enum SUBMISSION_STATUS_TYPE {
   'INVALID_MEDIA' = 'Media is not valid',
   'FAILED_VALIDATION' = 'Failed to validate',
   'FAILED_TRANSFORMED' = 'Failed to transform',
-  'FAILED_PROCESSING_OCCURRENCE_DATA' = 'Failed to process occurrence data'
+  'FAILED_PROCESSING_OCCURRENCE_DATA' = 'Failed to process occurrence data',
+  'FAILED_SUMMARY_PREPARATION' = 'Failed to prepare summary submission'
 }
 
 export enum SUBMISSION_MESSAGE_TYPE {
@@ -68,4 +69,10 @@ export enum SUBMISSION_MESSAGE_TYPE {
   'INVALID_MEDIA' = 'Media is invalid',
   'INVALID_XLSX_CSV' = 'Media is not a valid XLSX CSV file.',
   'UNSUPPORTED_FILE_TYPE' = 'File submitted is not a supported type'
+}
+
+export enum MESSAGE_CLASS_NAME {
+  NOTICE = 'Notice',
+  ERROR = 'Error',
+  WARNING = 'Warning'
 }
