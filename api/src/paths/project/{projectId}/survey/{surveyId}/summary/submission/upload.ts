@@ -1,18 +1,12 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../../../../../../constants/roles';
-import { getDBConnection, IDBConnection } from '../../../../../../../database/db';
+import { getDBConnection } from '../../../../../../../database/db';
 import { HTTP400 } from '../../../../../../../errors/http-error';
-import { queries } from '../../../../../../../queries/queries';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
 import { SummaryService } from '../../../../../../../services/summary-service';
 import { generateS3FileKey, scanFileForVirus, uploadFileToS3 } from '../../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../../utils/logger';
-import { ICsvState, IHeaderError, IRowError } from '../../../../../../../utils/media/csv/csv-file';
-import { IMediaState, MediaFile } from '../../../../../../../utils/media/media-file';
-import { parseUnknownMedia } from '../../../../../../../utils/media/media-utils';
-import { ValidationSchemaParser } from '../../../../../../../utils/media/validation/validation-schema-parser';
-import { XLSXCSV } from '../../../../../../../utils/media/xlsx/xlsx-file';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/summary/upload');
 

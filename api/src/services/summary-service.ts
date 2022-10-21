@@ -1,17 +1,13 @@
-import AdmZip from 'adm-zip';
 import { SUBMISSION_MESSAGE_TYPE, SUBMISSION_STATUS_TYPE } from '../constants/status';
 import { IDBConnection } from '../database/db';
 import { SubmissionRepository } from '../repositories/submission-repository';
 import { ISummarySubmissionMessagesResponse, ISummarySubmissionResponse, ISummaryTemplateSpeciesData, ISurveySummaryDetails, SummaryRepository } from '../repositories/summary-repository';
-import { getFileFromS3, uploadBufferToS3 } from '../utils/file-utils';
+import { getFileFromS3 } from '../utils/file-utils';
 import { getLogger } from '../utils/logger';
 import { ICsvState, IHeaderError, IRowError } from '../utils/media/csv/csv-file';
-import { DWCArchive } from '../utils/media/dwc/dwc-archive-file';
-import { ArchiveFile, IMediaState, MediaFile } from '../utils/media/media-file';
+import { IMediaState, MediaFile } from '../utils/media/media-file';
 import { parseUnknownMedia } from '../utils/media/media-utils';
 import { ValidationSchemaParser } from '../utils/media/validation/validation-schema-parser';
-import { TransformationSchemaParser } from '../utils/media/xlsx/transformation/transformation-schema-parser';
-import { XLSXTransformation } from '../utils/media/xlsx/transformation/xlsx-transformation';
 import { XLSXCSV } from '../utils/media/xlsx/xlsx-file';
 import { MessageError, SubmissionError, SubmissionErrorFromMessageType } from '../utils/submission-error';
 import { DBService } from './db-service';
@@ -27,10 +23,6 @@ interface ICsvMediaState {
   media_state: IMediaState;
 }
 
-interface IFileBuffer {
-  name: string;
-  buffer: Buffer;
-}
 export class SummaryService extends DBService {
   summaryRepository: SummaryRepository;
   submissionRepository: SubmissionRepository;
@@ -52,8 +44,9 @@ export class SummaryService extends DBService {
    * Validates a summary submission file based on given summary submission ID and survey ID.
    * @param summarySubmissionId 
    * @param surveyId 
+   * @return {*} {Promise<void>}
    */
-  async validateFile(summarySubmissionId: number, surveyId: number) {
+  async validateFile(summarySubmissionId: number, surveyId: number): Promise<void> {
     try {
       // First, prep XLSX
       const submissionPrep = await this.summaryTemplatePreparation(summarySubmissionId);

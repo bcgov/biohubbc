@@ -3,8 +3,7 @@ import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../database/db';
 import { HTTP400 } from '../../../../../../../errors/http-error';
-import { queries } from '../../../../../../../queries/queries';
-import { SummaryRepository } from '../../../../../../../repositories/summary-repository';
+import { ISummarySubmissionMessagesResponse } from '../../../../../../../repositories/summary-repository';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
 import { SummaryService } from '../../../../../../../services/summary-service';
 import { getLogger } from '../../../../../../../utils/logger';
@@ -114,40 +113,25 @@ export function getSurveySummarySubmission(): RequestHandler {
       await connection.open();
       const summaryService = new SummaryService(connection)
       
-      const summarySubmissionData = await summaryService.getLatestSurveySummarySubmission(surveyId)
+      const summarySubmissionDetails = await summaryService.getLatestSurveySummarySubmission(surveyId)
 
-      if (summarySubmissionData.delete_timestamp) {
+      if (summarySubmissionDetails.delete_timestamp) {
         return res.status(200).json(null);
       }
 
-      let messageList: any[] = [];
-
-      const errorStatus = summarySubmissionData.submission_message_class_name;
+      let messageList: ISummarySubmissionMessagesResponse[] = [];
+      const errorStatus = summarySubmissionDetails.submission_message_class_name;
 
       if (errorStatus === 'Error') {
-        const summary_submission_id = summarySubmissionData.id;
-
-        const getSummarySubmissionErrorListSQLStatement = queries.survey.getSummarySubmissionMessagesSQL(
-          Number(summary_submission_id)
-        );
-
-        if (!getSummarySubmissionErrorListSQLStatement) {
-          throw new HTTP400('Failed to build SQL getSummarySubmissionMessagesSQL statement');
-        }
-
-        const summarySubmissionErrorListData = await connection.query(
-          getSummarySubmissionErrorListSQLStatement.text,
-          getSummarySubmissionErrorListSQLStatement.values
-        );
-
-        messageList = (summarySubmissionErrorListData && summarySubmissionErrorListData.rows) || [];
+        const summary_submission_id = summarySubmissionDetails.id;
+        messageList = await summaryService.getSummarySubmissionMessages(summary_submission_id)
       }
 
       await connection.commit();
 
       const getSummarySubmissionData = {
-        id: summarySubmissionData.id,
-        fileName: summarySubmissionData.file_name,
+        id: summarySubmissionDetails.id,
+        fileName: summarySubmissionDetails.file_name,
         messages: messageList
       } || null;
 
