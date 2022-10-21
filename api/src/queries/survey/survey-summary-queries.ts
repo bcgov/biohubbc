@@ -35,50 +35,6 @@ export const insertSurveySummarySubmissionSQL = (
 };
 
 /**
- * SQL query to get latest summary submission for a survey.
- *
- * @param {number} surveyId
- * @returns {SQLStatement} sql query object
- */
-export const getLatestSurveySummarySubmissionSQL = (surveyId: number): SQLStatement | null => {
-  if (!surveyId) {
-    return null;
-  }
-
-  return SQL`
-    SELECT
-      sss.survey_summary_submission_id as id,
-      sss.key,
-      sss.file_name,
-      sss.delete_timestamp,
-      sssm.submission_message_type_id,
-      sssm.message,
-      ssmt.name as submission_message_type_name,
-      ssmt.summary_submission_message_class_id,
-      ssmc.name as submission_message_class_name
-    FROM
-      survey_summary_submission as sss
-    LEFT OUTER JOIN
-      survey_summary_submission_message as sssm
-    ON
-      sss.survey_summary_submission_id = sssm.survey_summary_submission_id
-    LEFT OUTER JOIN
-      summary_submission_message_type as ssmt
-    ON
-      sssm.submission_message_type_id = ssmt.submission_message_type_id
-    LEFT OUTER JOIN
-      summary_submission_message_class as ssmc
-    ON
-      ssmt.summary_submission_message_class_id = ssmc.summary_submission_message_class_id
-    WHERE
-      sss.survey_id = ${surveyId}
-    ORDER BY
-      sss.event_timestamp DESC
-    LIMIT 1;
-    `;
-};
-
-/**
  * SQL query to soft delete the summary submission entry by ID
  *
  * @param {number} summarySubmissionId

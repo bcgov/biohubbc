@@ -2,7 +2,7 @@ import AdmZip from 'adm-zip';
 import { SUBMISSION_MESSAGE_TYPE, SUBMISSION_STATUS_TYPE } from '../constants/status';
 import { IDBConnection } from '../database/db';
 import { SubmissionRepository } from '../repositories/submission-repository';
-import { ISummaryTemplateSpeciesData, SummaryValidationRepository } from '../repositories/summary-validation-repository';
+import { ISummaryTemplateSpeciesData, SummaryRepository } from '../repositories/summary-repository';
 import { getFileFromS3, uploadBufferToS3 } from '../utils/file-utils';
 import { getLogger } from '../utils/logger';
 import { ICsvState, IHeaderError, IRowError } from '../utils/media/csv/csv-file';
@@ -30,8 +30,8 @@ interface IFileBuffer {
   name: string;
   buffer: Buffer;
 }
-export class SummaryValidationService extends DBService {
-  summaryValidationRepository: SummaryValidationRepository;
+export class SummaryService extends DBService {
+  summaryRepository: SummaryRepository;
   submissionRepository: SubmissionRepository;
   surveyService: SurveyService;
   occurrenceService: OccurrenceService;
@@ -39,7 +39,7 @@ export class SummaryValidationService extends DBService {
 
   constructor(connection: IDBConnection) {
     super(connection);
-    this.summaryValidationRepository = new SummaryValidationRepository(connection);
+    this.summaryRepository = new SummaryRepository(connection);
     this.submissionRepository = new SubmissionRepository(connection);
     this.occurrenceService = new OccurrenceService(connection);
     this.surveyService = new SurveyService(connection);
@@ -77,12 +77,8 @@ export class SummaryValidationService extends DBService {
    */
   async summaryTemplatePreparation(summarySubmissionId: number): Promise<{ s3InputKey: string; xlsx: XLSXCSV }> {
     try {
-      /**
-       * @TODO Move the code from /summary/submission/get.ts into a new method called getSurveySummarySubmission in the submission
-       * repository. Next, call this method instead of calling the occurrenceService method
-       */
-      const occurrenceSubmission = await this.occurrenceService.getOccurrenceSubmission(submissionId);
-      const s3InputKey = occurrenceSubmission.input_key;
+      const summarySubmission = await this.summaryRepository.findSummarySubmissionById(summarySubmissionId);
+      const s3InputKey = summarySubmission.input_key;
       const s3File = await getFileFromS3(s3InputKey);
       const xlsx = this.prepXLSX(s3File);
 
@@ -155,19 +151,16 @@ export class SummaryValidationService extends DBService {
    * @returns 
    */
   async getSummaryTemplateSpeciesRecord(file: XLSXCSV, surveyId: number): Promise<ISummaryTemplateSpeciesData> {
-    // Summary template name
+    const speciesData = await this.surveyService.getSpeciesData(surveyId);
+
+    // Summary template name and version
     const sims_name: string = file.workbook.rawWorkbook.Custprops.sims_name;
-    
-    // Summary template version
     const sims_version: string = file.workbook.rawWorkbook.Custprops.sims_version;
 
-    const surveyData = await this.surveyService.getSurveyById(surveyId);
-    const surveySpecies = surveyData.species.focal_species;
-  
-    return this.summaryValidationRepository.getSummaryTemplateSpeciesRecord(
+    return this.summaryRepository.getSummaryTemplateSpeciesRecord(
       sims_name,
       sims_version,
-      surveySpecies[0]
+      speciesData.focal_species[0]
     );
   }
 
