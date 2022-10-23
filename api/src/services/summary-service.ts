@@ -16,7 +16,7 @@ import { SurveyService } from './survey-service';
 import { OccurrenceService } from './occurrence-service';
 import { PostSummaryDetails } from '../models/summaryresults-create';
 
-const defaultLog = getLogger('services/summary-validation-service');
+const defaultLog = getLogger('services/summary-service');
 
 interface ICsvMediaState {
   csv_state: ICsvState[];
@@ -47,6 +47,7 @@ export class SummaryService extends DBService {
    * @return {*} {Promise<void>}
    */
   async validateFile(summarySubmissionId: number, surveyId: number): Promise<void> {
+    defaultLog.debug({ label: 'validateFile' });
     try {
       // First, prep XLSX
       const submissionPrep = await this.summaryTemplatePreparation(summarySubmissionId);
@@ -74,6 +75,7 @@ export class SummaryService extends DBService {
     summarySubmissionId: number,
     key: string,
   ): Promise<{ survey_summary_submission_id: number }> {
+    defaultLog.debug({ label: 'updateSurveySummarySubmissionWithKey' });
     return this.summaryRepository.updateSurveySummarySubmissionWithKey(summarySubmissionId, key);
   };
 
@@ -85,11 +87,12 @@ export class SummaryService extends DBService {
    * @param {string} file_name
    * @return {*}  {Promise<{ survey_summary_submission_id: number }>}
    */
-  async insertSurveySummarySubmission (
+  async insertSurveySummarySubmission(
     surveyId: number,
     source: string,
     file_name: string,
   ): Promise<{ survey_summary_submission_id: number }> {
+    defaultLog.debug({ label: 'insertSurveySummarySubmission' });
     return this.summaryRepository.insertSurveySummarySubmission(surveyId, source, file_name)
   };
 
@@ -157,6 +160,7 @@ export class SummaryService extends DBService {
    * @returns 
    */
   private async summaryTemplatePreparation(summarySubmissionId: number): Promise<{ s3InputKey: string; xlsx: XLSXCSV }> {
+    defaultLog.debug({ label: 'summaryTemplatePreparation' });
     try {
       const summarySubmission = await this.findSummarySubmissionById(summarySubmissionId);
       const s3InputKey = summarySubmission.key; // S3 key
@@ -179,6 +183,7 @@ export class SummaryService extends DBService {
    * @param surveyId 
    */
   private async summaryTemplateValidation(xlsx: XLSXCSV, surveyId: number) {
+    defaultLog.debug({ label: 'summaryTemplateValidation' });
     try {
       const schema = await this.getValidationSchema(xlsx, surveyId);
       const schemaParser = this.getValidationRules(schema);
@@ -232,6 +237,7 @@ export class SummaryService extends DBService {
    * @returns 
    */
   private async getSummaryTemplateSpeciesRecord(file: XLSXCSV, surveyId: number): Promise<ISummaryTemplateSpeciesData> {
+    defaultLog.debug({ label: 'getSummaryTemplateSpeciesRecord' });
     const speciesData = await this.surveyService.getSpeciesData(surveyId);
 
     // Summary template name and version
@@ -253,6 +259,7 @@ export class SummaryService extends DBService {
    * @returns 
    */
   private async getValidationSchema(file: XLSXCSV, surveyId: number): Promise<string> {
+    defaultLog.debug({ label: 'getValidationSchema' });
     const summaryTemplateSpeciesRecord = await this.getSummaryTemplateSpeciesRecord(file, surveyId)
 
     const validationSchema = summaryTemplateSpeciesRecord?.validation;
@@ -270,6 +277,7 @@ export class SummaryService extends DBService {
    * @returns 
    */
   private getValidationRules(schema: string | object): ValidationSchemaParser {
+    defaultLog.debug({ label: 'getValidationRules' });
     const validationSchemaParser = new ValidationSchemaParser(schema);
     return validationSchemaParser;
   }
@@ -281,6 +289,7 @@ export class SummaryService extends DBService {
    * @returns 
    */
   private validateXLSX(file: XLSXCSV, parser: ValidationSchemaParser) {
+    defaultLog.debug({ label: 'validateXLSX' });
     const mediaState = file.isMediaValid(parser);
 
     if (!mediaState.isValid) {
