@@ -115,7 +115,7 @@ export function getSurveySummarySubmission(): RequestHandler {
       
       const summarySubmissionDetails = await summaryService.getLatestSurveySummarySubmission(surveyId)
 
-      if (summarySubmissionDetails.delete_timestamp) {
+      if (!summarySubmissionDetails || summarySubmissionDetails.delete_timestamp) {
         return res.status(200).json(null);
       }
 

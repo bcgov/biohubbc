@@ -1,8 +1,11 @@
 import { SUBMISSION_MESSAGE_TYPE, SUBMISSION_STATUS_TYPE } from '../constants/status';
 import { IDBConnection } from '../database/db';
 import { ErrorRepository } from '../repositories/error-repository';
+import { getLogger } from '../utils/logger';
 import { SubmissionError } from '../utils/submission-error';
 import { DBService } from './db-service';
+
+const defaultLog = getLogger('services/error-service');
 
 export class ErrorService extends DBService {
   errorRepository: ErrorRepository;
@@ -109,6 +112,7 @@ export class ErrorService extends DBService {
    * @param error 
    */
   async insertSummarySubmissionError(summarySubmissionId: number, error: SubmissionError): Promise<void> {
+    defaultLog.debug({ label: 'insertSummarySubmissionError', summarySubmissionId, error });
     const promises = error.submissionMessages.map((message) => {
       return this.errorRepository.insertSummarySubmissionMessage(summarySubmissionId, message.type, message.description);
     });

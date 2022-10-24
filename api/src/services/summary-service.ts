@@ -266,7 +266,7 @@ export class SummaryService extends DBService {
     if (!validationSchema) {
       throw SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_GET_VALIDATION_RULES);
     }
-
+    defaultLog.debug({ label: 'getValidationSchema', schema: validationSchema });
     return validationSchema;
   }
 
