@@ -1,7 +1,10 @@
 import SQL from 'sql-template-strings';
-import { SUBMISSION_MESSAGE_TYPE, SUBMISSION_STATUS_TYPE } from '../constants/status';
+import { SUBMISSION_MESSAGE_TYPE, SUBMISSION_STATUS_TYPE, SUMMARY_SUBMISSION_MESSAGE_TYPE } from '../constants/status';
 import { ApiExecuteSQLError } from '../errors/api-error';
+import { getLogger } from '../utils/logger';
 import { BaseRepository } from './base-repository';
+
+const defaultLog = getLogger('repositories/error-repository');
 
 /**
  * A repository class for accessing permit data.
@@ -117,9 +120,10 @@ export class ErrorRepository extends BaseRepository {
    */
    insertSummarySubmissionMessage = async (
     summarySubmissionId: number,
-    summarySubmissionMessageType: string,
+    summarySubmissionMessageType: SUMMARY_SUBMISSION_MESSAGE_TYPE,
     summarySubmissionMessage: string
   ): Promise<void> => {
+    defaultLog.debug({ label: 'insertSummarySubmissionMessage', summarySubmissionId, summarySubmissionMessageType, summarySubmissionMessage })
     const sqlStatement = SQL`
       INSERT INTO survey_summary_submission_message (
         survey_summary_submission_id,

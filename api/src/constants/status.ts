@@ -38,8 +38,26 @@ export enum SUBMISSION_STATUS_TYPE {
   'FAILED_SUMMARY_PREPARATION' = 'Failed to prepare summary submission'
 }
 
+export enum SUMMARY_SUBMISSION_MESSAGE_TYPE {
+  'DUPLICATE_HEADER' = 'Duplicate header',
+  'UNKNOWN_HEADER' = 'Unknown Header',
+  'MISSING_REQUIRED_HEADER' = 'Missing Required Header',
+  'MISSING_RECOMMENDED_HEADER' = 'Missing Recommended Header',
+  'MISCELLANEOUS' = 'Miscellaneous',
+  'MISSING_REQUIRED_FIELD' = 'Missing Required Field',
+  'UNEXPECTED_FORMAT' = 'Unexpected Format',
+  'OUT_OF_RANGE' = 'Out of Range',
+  'INVALID_VALUE' = 'Invalid Value',
+  'MISSING_VALIDATION_SCHEMA' = 'Missing Validation Schema',
+  'INVALID_MEDIA' = 'Media is Invalid',
+  'INVALID_XLSX_CSV' = 'XLSX CSV is Invalid',
+  'FAILED_TO_GET_TEMPLATE_NAME_VERSION' = 'Missing Name or Version Number',
+  'FAILED_GET_VALIDATION_RULES' = 'Failed to Get Validation Rules',
+  'UNSUPPORTED_FILE_TYPE' = 'Unsupported File Type'
+}
+
+// Message types that match the submission_message_type table
 export enum SUBMISSION_MESSAGE_TYPE {
-  //message types that match the submission_message_type table
   'DUPLICATE_HEADER' = 'Duplicate header',
   'UNKNOWN_HEADER' = 'Unknown Header',
   'MISSING_REQUIRED_HEADER' = 'Missing Required Header',
@@ -65,10 +83,11 @@ export enum SUBMISSION_MESSAGE_TYPE {
   'FAILED_PERSIST_VALIDATION_RESULTS' = 'Failed to persist validation results',
   'FAILED_UPDATE_OCCURRENCE_SUBMISSION' = 'Failed to update occurrence submission',
   'FAILED_TO_GET_TRANSFORM_SCHEMA' = 'Unable to get transform schema for submission',
-  'FAILED_TO_GET_TEMPLATE_NAME_VERSION' = 'Missing name or version number from template.',
+  'FAILED_TO_GET_TEMPLATE_NAME_VERSION' = 'Missing name or version number.',
   'INVALID_MEDIA' = 'Media is invalid',
   'INVALID_XLSX_CSV' = 'Media is not a valid XLSX CSV file.',
   'UNSUPPORTED_FILE_TYPE' = 'File submitted is not a supported type'
+  /** @TODO Add any newly written types to migration */
 }
 
 export enum MESSAGE_CLASS_NAME {

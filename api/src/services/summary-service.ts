@@ -1,4 +1,4 @@
-import { SUBMISSION_MESSAGE_TYPE, SUBMISSION_STATUS_TYPE } from '../constants/status';
+import { SUBMISSION_STATUS_TYPE, SUMMARY_SUBMISSION_MESSAGE_TYPE } from '../constants/status';
 import { IDBConnection } from '../database/db';
 import { SubmissionRepository } from '../repositories/submission-repository';
 import { ISummarySubmissionMessagesResponse, ISummarySubmissionResponse, ISummaryTemplateSpeciesData, ISurveySummaryDetails, SummaryRepository } from '../repositories/summary-repository';
@@ -9,7 +9,7 @@ import { IMediaState, MediaFile } from '../utils/media/media-file';
 import { parseUnknownMedia } from '../utils/media/media-utils';
 import { ValidationSchemaParser } from '../utils/media/validation/validation-schema-parser';
 import { XLSXCSV } from '../utils/media/xlsx/xlsx-file';
-import { MessageError, SubmissionError, SubmissionErrorFromMessageType } from '../utils/submission-error';
+import { MessageError, SubmissionError, SummarySubmissionErrorFromMessageType, SummarySubmissionError } from '../utils/submission-error';
 import { DBService } from './db-service';
 import { ErrorService } from './error-service';
 import { SurveyService } from './survey-service';
@@ -55,7 +55,7 @@ export class SummaryService extends DBService {
       // Next, validate the summary template
       await this.summaryTemplateValidation(submissionPrep.xlsx, surveyId);
     } catch (error) {
-      if (error instanceof SubmissionError) {
+      if (error instanceof SummarySubmissionError) {
         // If any summary submission parsing or file errors are thrown, persist them
         await this.errorService.insertSummarySubmissionError(summarySubmissionId, error);
       } else {
@@ -209,12 +209,12 @@ export class SummaryService extends DBService {
 
     // @TODO not sure how to trigger these through testing
     if (!parsedMedia) {
-      throw SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.UNSUPPORTED_FILE_TYPE);
+      throw SummarySubmissionErrorFromMessageType(SUMMARY_SUBMISSION_MESSAGE_TYPE.UNSUPPORTED_FILE_TYPE);
     }
 
     // @TODO not sure how to trigger these through testing
     if (!(parsedMedia instanceof MediaFile)) {
-      throw SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.INVALID_XLSX_CSV);
+      throw SummarySubmissionErrorFromMessageType(SUMMARY_SUBMISSION_MESSAGE_TYPE.INVALID_XLSX_CSV);
     }
 
     const xlsxCsv = new XLSXCSV(parsedMedia);
@@ -223,7 +223,7 @@ export class SummaryService extends DBService {
     const sims_version = xlsxCsv.workbook.rawWorkbook.Custprops?.sims_version;
 
     if (!sims_name || !sims_version) {
-      throw SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_TO_GET_TEMPLATE_NAME_VERSION);
+      throw SummarySubmissionErrorFromMessageType(SUMMARY_SUBMISSION_MESSAGE_TYPE.FAILED_TO_GET_TEMPLATE_NAME_VERSION);
     }
 
     return xlsxCsv;
@@ -237,12 +237,20 @@ export class SummaryService extends DBService {
    * @returns 
    */
   private async getSummaryTemplateSpeciesRecord(file: XLSXCSV, surveyId: number): Promise<ISummaryTemplateSpeciesData> {
-    defaultLog.debug({ label: 'getSummaryTemplateSpeciesRecord' });
     const speciesData = await this.surveyService.getSpeciesData(surveyId);
-
+    
     // Summary template name and version
     const sims_name: string = file.workbook.rawWorkbook.Custprops.sims_name;
     const sims_version: string = file.workbook.rawWorkbook.Custprops.sims_version;
+    defaultLog.debug({
+      label: 'getSummaryTemplateSpeciesRecord',
+      data: {
+        surveyId,
+        species: speciesData,
+        sims_name,
+        sims_version
+      }
+    });
 
     return this.summaryRepository.getSummaryTemplateSpeciesRecord(
       sims_name,
@@ -263,10 +271,10 @@ export class SummaryService extends DBService {
     const summaryTemplateSpeciesRecord = await this.getSummaryTemplateSpeciesRecord(file, surveyId)
 
     const validationSchema = summaryTemplateSpeciesRecord?.validation;
-    if (!validationSchema) {
-      throw SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_GET_VALIDATION_RULES);
-    }
     defaultLog.debug({ label: 'getValidationSchema', schema: validationSchema });
+    if (!validationSchema) {
+      throw SummarySubmissionErrorFromMessageType(SUMMARY_SUBMISSION_MESSAGE_TYPE.FAILED_GET_VALIDATION_RULES);
+    }
     return validationSchema;
   }
 
@@ -293,7 +301,7 @@ export class SummaryService extends DBService {
     const mediaState = file.isMediaValid(parser);
 
     if (!mediaState.isValid) {
-      throw SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.INVALID_MEDIA);
+      throw SummarySubmissionErrorFromMessageType(SUMMARY_SUBMISSION_MESSAGE_TYPE.INVALID_MEDIA);
     }
 
     const csvState: ICsvState[] = file.isContentValid(parser);
@@ -314,17 +322,17 @@ export class SummaryService extends DBService {
     defaultLog.debug({ label: 'persistSummaryValidationResults', message: 'validationResults' });
 
     let parseError = false;
-    const errors: MessageError[] = [];
+    const errors: MessageError<SUMMARY_SUBMISSION_MESSAGE_TYPE>[] = [];
 
     mediaState.fileErrors?.forEach((fileError) => {
-      errors.push(new MessageError(SUBMISSION_MESSAGE_TYPE.INVALID_MEDIA, `${fileError}`, 'Miscellaneous'));
+      errors.push(new MessageError(SUMMARY_SUBMISSION_MESSAGE_TYPE.INVALID_MEDIA, `${fileError}`, 'Miscellaneous'));
     });
 
     csvState?.forEach((csvStateItem) => {
       csvStateItem.headerErrors?.forEach((headerError) => {
         errors.push(
           new MessageError(
-            SUBMISSION_MESSAGE_TYPE.INVALID_VALUE,
+            SUMMARY_SUBMISSION_MESSAGE_TYPE.INVALID_VALUE,
             this.generateHeaderErrorMessage(csvStateItem.fileName, headerError),
             headerError.errorCode
           )
@@ -334,7 +342,7 @@ export class SummaryService extends DBService {
       csvStateItem.rowErrors?.forEach((rowError) => {
         errors.push(
           new MessageError(
-            SUBMISSION_MESSAGE_TYPE.INVALID_VALUE,
+            SUMMARY_SUBMISSION_MESSAGE_TYPE.INVALID_VALUE,
             this.generateRowErrorMessage(csvStateItem.fileName, rowError),
             rowError.errorCode
           )
@@ -348,7 +356,7 @@ export class SummaryService extends DBService {
     });
 
     if (parseError) {
-      throw new SubmissionError({ messages: errors });
+      throw new SummarySubmissionError({ messages: errors });
     }
 
     return parseError;
