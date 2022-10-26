@@ -57,7 +57,7 @@ export class SummaryService extends DBService {
     } catch (error) {
       if (error instanceof SummarySubmissionError) {
         // If any summary submission parsing or file errors are thrown, persist them
-        await this.errorService.insertSummarySubmissionError(summarySubmissionId, error);
+        await this.insertSummarySubmissionError(summarySubmissionId, error);
       } else {
         throw error;
       }
@@ -182,11 +182,28 @@ export class SummaryService extends DBService {
    * @param xlsx 
    * @param surveyId 
    */
-  private async summaryTemplateValidation(xlsx: XLSXCSV, surveyId: number) {
+  private async summaryTemplateValidation(xlsx: XLSXCSV, surveyId: number, summarySubmissionId?: number) {
     defaultLog.debug({ label: 'summaryTemplateValidation' });
     try {
-      const schema = await this.getValidationSchema(xlsx, surveyId);
-      const schemaParser = this.getValidationRules(schema);
+      const { summaryTemplateSpeciesRecord, counts } = await this.getSummaryTemplateSpeciesRecord(xlsx, surveyId)
+      const validationSchema = summaryTemplateSpeciesRecord?.validation;
+
+      // If no validation schema is found, throw an error and abort validation.
+      if (!validationSchema) {
+        throw SummarySubmissionErrorFromMessageType(SUMMARY_SUBMISSION_MESSAGE_TYPE.FAILED_GET_VALIDATION_RULES);
+      }
+
+      // If summarySubmissionId is given, log the particular validation schema that was found.
+      if (summarySubmissionId) {
+        const { summary_template_species_id } = summaryTemplateSpeciesRecord
+        this.summaryRepository.insertSummarySubmissionMessage(
+          summarySubmissionId,
+          SUMMARY_SUBMISSION_MESSAGE_TYPE.FOUND_VALIDATION,
+          `Found validation having summary template species id '${summary_template_species_id}' among ${counts} record(s).`
+        )
+      }
+
+      const schemaParser = this.getValidationRules(validationSchema);
       const csvState = this.validateXLSX(xlsx, schemaParser);
       await this.persistSummaryValidationResults(csvState.csv_state, csvState.media_state);
     } catch (error) {
@@ -236,7 +253,7 @@ export class SummaryService extends DBService {
    * @param surveyId 
    * @returns 
    */
-  private async getSummaryTemplateSpeciesRecord(file: XLSXCSV, surveyId: number): Promise<ISummaryTemplateSpeciesData> {
+  private async getSummaryTemplateSpeciesRecord(file: XLSXCSV, surveyId: number): Promise<{ summaryTemplateSpeciesRecord: ISummaryTemplateSpeciesData, counts: number }> {
     const speciesData = await this.surveyService.getSpeciesData(surveyId);
     
     // Summary template name and version
@@ -257,25 +274,6 @@ export class SummaryService extends DBService {
       sims_version,
       speciesData.focal_species[0]
     );
-  }
-
-  /**
-   * done = TRUE
-   * 
-   * @param file 
-   * @param surveyId 
-   * @returns 
-   */
-  private async getValidationSchema(file: XLSXCSV, surveyId: number): Promise<string> {
-    defaultLog.debug({ label: 'getValidationSchema' });
-    const summaryTemplateSpeciesRecord = await this.getSummaryTemplateSpeciesRecord(file, surveyId)
-
-    const validationSchema = summaryTemplateSpeciesRecord?.validation;
-    defaultLog.debug({ label: 'getValidationSchema', schema: validationSchema });
-    if (!validationSchema) {
-      throw SummarySubmissionErrorFromMessageType(SUMMARY_SUBMISSION_MESSAGE_TYPE.FAILED_GET_VALIDATION_RULES);
-    }
-    return validationSchema;
   }
 
   /**
@@ -360,6 +358,20 @@ export class SummaryService extends DBService {
     }
 
     return parseError;
+  }
+
+  /**
+   * done = TRUE
+   * @param summarySubmissionId 
+   * @param error 
+   */
+  async insertSummarySubmissionError(summarySubmissionId: number, error: SummarySubmissionError): Promise<void> {
+    defaultLog.debug({ label: 'insertSummarySubmissionError', summarySubmissionId, error });
+    const promises = error.summarySubmissionMessages.map((message) => {
+      return this.summaryRepository.insertSummarySubmissionMessage(summarySubmissionId, message.type, message.description);
+    });
+
+    await Promise.all(promises);
   }
 
   /**

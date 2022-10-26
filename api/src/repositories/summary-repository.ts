@@ -1,12 +1,20 @@
 import SQL from 'sql-template-strings';
-import { MESSAGE_CLASS_NAME } from '../constants/status';
+import { MESSAGE_CLASS_NAME, SUMMARY_SUBMISSION_MESSAGE_TYPE } from '../constants/status';
+import { ApiExecuteSQLError } from '../errors/api-error';
 import { HTTP400 } from '../errors/http-error';
 import { PostSummaryDetails } from '../models/summaryresults-create';
+import { getLogger } from '../utils/logger';
 import { BaseRepository } from './base-repository';
 
 export interface ISummaryTemplateSpeciesData {
   summary_template_species_id: number;
+  summary_template_id: number;
+  wldtaxonomic_units_id: number | null;
   validation: string;
+  create_user: number;
+  update_date: string | null;
+  update_user: number | null;
+  revision_count: number;
 }
 
 export interface ISurveySummaryDetails {
@@ -42,6 +50,8 @@ export interface ISummarySubmissionMessagesResponse {
   type: string;
   message: string;
 }
+
+const defaultLog = getLogger('repositories/summary-repository');
 
 export class SummaryRepository extends BaseRepository {
   /**
@@ -365,7 +375,7 @@ export class SummaryRepository extends BaseRepository {
     templateName: string,
     templateVersion: string,
     species: number
-  ): Promise<ISummaryTemplateSpeciesData> {
+  ): Promise<{ summaryTemplateSpeciesRecord: ISummaryTemplateSpeciesData, counts: number }> {
     const templateRow = await this.getSummaryTemplateIdFromNameVersion(templateName, templateVersion);
 
     const sqlStatement = SQL`
@@ -375,9 +385,11 @@ export class SummaryRepository extends BaseRepository {
         summary_template_species sts
       WHERE
         sts.summary_template_id = ${templateRow.summary_template_id}
-      AND
-        sts.wldtaxonomic_units_id = ${species}
-      ;
+      AND (
+        sts.wldtaxonomic_units_id IN (${species})
+      OR
+        sts.wldtaxonomic_units_id IS NULL
+      );
     `;
     const response = await this.connection.query<ISummaryTemplateSpeciesData>(sqlStatement.text, sqlStatement.values);
 
@@ -385,6 +397,80 @@ export class SummaryRepository extends BaseRepository {
       throw new HTTP400('Failed to query summary template species table');
     }
 
-    return response && response.rows && response.rows[0];
+    
+    const filterRecords = <T extends Record<string, any>>(records: T[], search: Partial<T>) => {
+      const constrain = (rs: T[], fields: string[], depth = 0): T[] => {
+        if (fields.length === 0) {
+            return rs
+        }
+        const acc: T[][] = []
+        for (let i = 0; i < fields.length; i ++) {
+            const fs = fields.filter((_f, index) => index !== i)
+            const f = fields[i]
+            acc.push(constrain(rs.filter((r) => r[f] === search[f]), fs, depth + 1))
+            // If searched field is not undefined, search again with relaxed constraint
+            if (search[f]) {
+                acc.push(constrain(rs, fs, depth + 1))
+            }
+        }
+
+        return acc.sort((a, b) => b.length - a.length)[0]
+      }
+
+      return constrain(records, Object.keys(search))
+        .sort((a, b) => Object.values(b).filter(Boolean).length - Object.values(b).filter(Boolean).length)
+    }
+
+    const results = (response?.rows || [])
+    const filtered = filterRecords<ISummaryTemplateSpeciesData>(results, { wldtaxonomic_units_id: species })
+
+    return {
+      summaryTemplateSpeciesRecord: filtered[0],
+      counts: filtered.length
+    };
   }
+
+  /**
+   * done = TRUE
+   * Insert a record into the survey_summary_submission_message table.
+   * @TODO jsdoc.
+   */
+  insertSummarySubmissionMessage = async (
+    summarySubmissionId: number,
+    summarySubmissionMessageType: SUMMARY_SUBMISSION_MESSAGE_TYPE,
+    summarySubmissionMessage: string
+  ): Promise<void> => {
+    defaultLog.debug({ label: 'insertSummarySubmissionMessage', summarySubmissionId, summarySubmissionMessageType, summarySubmissionMessage })
+    const sqlStatement = SQL`
+      INSERT INTO survey_summary_submission_message (
+        survey_summary_submission_id,
+        submission_message_type_id,
+        event_timestamp,
+        message
+      ) VALUES (
+        ${summarySubmissionId},
+        (
+          SELECT
+            submission_message_type_id
+          FROM
+            summary_submission_message_type
+          WHERE
+            name = ${summarySubmissionMessageType}
+        ),
+        now(),
+        ${summarySubmissionMessage}
+      )
+      RETURNING
+        submission_message_id;
+    `;
+    
+    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
+
+    if (response.rowCount !== 1) {
+      throw new ApiExecuteSQLError('Failed to insert summary submission message record', [
+        'ErrorRepository->insertSummarySubmissionMessage',
+        'rowCount was null or undefined, expected rowCount = 1'
+      ]);
+    }
+  };
 }

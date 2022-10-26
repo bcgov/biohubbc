@@ -103,21 +103,4 @@ export class ErrorService extends DBService {
 
     await Promise.all(promises);
   }
-
-  /**
-   * done = TRUE
-   * @TODO jsdoc - Comment on reason why we call this method in ErrorService instead of SubmissionService (because)
-   * summary submissions don't have a notion of status; they either fail with errors or pass valiation).
-   * @param summarySubmissionId 
-   * @param error 
-   */
-  async insertSummarySubmissionError(summarySubmissionId: number, error: SummarySubmissionError): Promise<void> {
-    defaultLog.debug({ label: 'insertSummarySubmissionError', summarySubmissionId, error });
-    const promises = error.summarySubmissionMessages.map((message) => {
-      return this.errorRepository.insertSummarySubmissionMessage(summarySubmissionId, message.type, message.description);
-    });
-
-    await Promise.all(promises);
-    defaultLog.debug({ label: 'insertSummarySubmissionError', done: true });
-  }
 }

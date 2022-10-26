@@ -39,7 +39,7 @@ export enum SUBMISSION_STATUS_TYPE {
 }
 
 export enum SUMMARY_SUBMISSION_MESSAGE_TYPE {
-  'DUPLICATE_HEADER' = 'Duplicate header',
+  'DUPLICATE_HEADER' = 'Duplicate Header',
   'UNKNOWN_HEADER' = 'Unknown Header',
   'MISSING_REQUIRED_HEADER' = 'Missing Required Header',
   'MISSING_RECOMMENDED_HEADER' = 'Missing Recommended Header',
@@ -53,7 +53,8 @@ export enum SUMMARY_SUBMISSION_MESSAGE_TYPE {
   'INVALID_XLSX_CSV' = 'XLSX CSV is Invalid',
   'FAILED_TO_GET_TEMPLATE_NAME_VERSION' = 'Missing Name or Version Number',
   'FAILED_GET_VALIDATION_RULES' = 'Failed to Get Validation Rules',
-  'UNSUPPORTED_FILE_TYPE' = 'Unsupported File Type'
+  'UNSUPPORTED_FILE_TYPE' = 'Unsupported File Type',
+  'FOUND_VALIDATION' = 'Found Validation'
 }
 
 // Message types that match the submission_message_type table
