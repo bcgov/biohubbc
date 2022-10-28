@@ -382,27 +382,41 @@ export const getKnex = <TRecord extends Record<string, any> = any, TResult = Rec
   return knex<TRecord, TResult>({ client: DB_CLIENT });
 };
 
-const asyncErrorWrapper = <T,>(errorHandler: (err: any) => T) =>
-    <A extends any[], R>(fn: (...args: A) => R) =>
-        async (...args: A): Promise<R | T> => {
-            try {
-                return await fn(...args);
-            } catch (err) {
-              throw errorHandler(err);
-            }
-        };
+/**
+ * This function takes an error handler and returns a wrapper function designed to catch any errors thrown by the wrapped function.
+ *
+ * @param errorHandler function used to parse/ handle errors that are thrown
+ * @returns Promise<T> this returns anything that the internal function is retuning
+ */
+const asyncErrorWrapper = <T>(errorHandler: (err: any) => T) => <A extends any[], R>(fn: (...args: A) => R) => async (
+  ...args: A
+): Promise<R | T> => {
+  try {
+    return await fn(...args);
+  } catch (err) {
+    throw errorHandler(err);
+  }
+};
 
-  const asyncError = asyncErrorWrapper(err => {
-    return parseError(err)
-  });
+/**
+ * asyncError is a wrapper function that will run parseError when ever the wrapped function throws an exception
+ */
+const asyncError = asyncErrorWrapper((err) => {
+  return parseError(err);
+});
 
-
+/**
+ * This function parses the passed in error and translates them into a human readable error
+ *
+ * @param error error to be parsed
+ * @returns an error to throw
+ */
 const parseError = (error: any): any => {
   switch (error.message) {
-    case "CONCURRENCY_EXCEPTION":
+    case 'CONCURRENCY_EXCEPTION':
       return new ApiGeneralError('Failed to update stale project data');
     default:
       // don't know what this is, just throw it anyway
       return error;
   }
-}
+};
