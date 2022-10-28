@@ -1,8 +1,8 @@
 export enum SUMMARY_TEMPLATE_NAME {
-  MOOSE_SUMMARY_RESULTS = 'Moose Summary Results Template',
-  SHEEP_SUMMARY_RESULTS = 'Sheep Summary Results Template',
-  GOAT_SUMMARY_RESULTS = 'Goat Summary Results Template',
-  ELK_SUMMARY_RESULTS = 'Elk Summary Results Template',
+	MOOSE_SUMMARY_RESULTS = 'Moose Summary Results Template',
+	SHEEP_SUMMARY_RESULTS = 'Sheep Summary Results Template',
+	GOAT_SUMMARY_RESULTS = 'Goat Summary Results Template',
+	ELK_SUMMARY_RESULTS = 'Elk Summary Results Template',
 }
 
 export const summaryTemplateValidationJson = {

@@ -4,6 +4,7 @@ import { ApiExecuteSQLError } from '../errors/api-error';
 import { HTTP400 } from '../errors/http-error';
 import { PostSummaryDetails } from '../models/summaryresults-create';
 import { getLogger } from '../utils/logger';
+import { filterRecords } from '../utils/validation-utils';
 import { BaseRepository } from './base-repository';
 
 export interface ISummaryTemplateSpeciesData {
@@ -54,11 +55,12 @@ export interface ISummarySubmissionMessagesResponse {
 const defaultLog = getLogger('repositories/summary-repository');
 
 export class SummaryRepository extends BaseRepository {
+
   /**
-   * Query to get the record for a single summary submission.
+   * Query to find the record for a single summary submission by summarySubmissionId.
    *
-   * @param {number} surveyId
-   * @returns {SQLStatement} sql query object
+   * @param {number} summarySubmissionId
+   * @returns {Promise<ISummarySubmissionResponse>} The summary submission record
    */
    async findSummarySubmissionById (summarySubmissionId: number): Promise<ISummarySubmissionResponse> {
     const sqlStatement = SQL`
@@ -80,10 +82,10 @@ export class SummaryRepository extends BaseRepository {
   };
 
   /**
-   * Query to get latest summary submission for a survey.
+   * Finds the latest summary submission for a given survey.
    *
-   * @param {number} surveyId
-   * @returns {*} {Promise<ISurveySummaryDetails>}
+   * @param {number} surveyId the ID of the survey
+   * @returns {{Promise<ISurveySummaryDetails>}} the latest survey summary record for the given survey 
    */
   async getLatestSurveySummarySubmission(surveyId: number): Promise<ISurveySummaryDetails> {
     const sqlStatement = SQL`
@@ -128,11 +130,11 @@ export class SummaryRepository extends BaseRepository {
   };
 
   /**
-   * Query to insert a survey summary submission row.
+   * Updates a survey summary submission record with an S3 key.
    * 
-   * @param {number} summarySubmissionId
-   * @param {string} key
-   * @return {*}  {Promise<{ survey_summary_submission_id: number }>}
+   * @param {number} summarySubmissionId the ID of the record to update
+   * @param {string} key S3 key
+   * @return {Promise<{ survey_summary_submission_id: number }>} The ID of the updated record
    */
   async updateSurveySummarySubmissionWithKey (
     summarySubmissionId: number,
@@ -157,12 +159,12 @@ export class SummaryRepository extends BaseRepository {
   };
 
   /**
-   * Query to insert a survey summary submission row.
+   * Inserts a survey summary submission record.
    *
-   * @param {number} surveyId
-   * @param {string} source
-   * @param {string} file_name
-   * @return {*}  {Promise<{ survey_summary_submission_id: number }>}
+   * @param {number} surveyId the ID of the survey.
+   * @param {string} source the source of the record.
+   * @param {string} file_name the file name of the submission.
+   * @return {Promise<{ survey_summary_submission_id: number }>} the ID of the inserted record.
    */
   async insertSurveySummarySubmission (
     surveyId: number,
@@ -194,11 +196,11 @@ export class SummaryRepository extends BaseRepository {
   };
 
   /**
-   * Query to insert a survey summary submission row.
+   * Inserts a record for survey summary details.
    *
-   * @param {number} summarySubmissionId
-   * @param {string} summaryDetails
-   * @return {*}  {Promise<{ survey_summary_detail_id: number }>}
+   * @param {number} summarySubmissionId the ID of the summary submission
+   * @param {string} summaryDetails the details being inserted
+   * @return {Promise<{ survey_summary_detail_id: number }>} the ID of the details record.
    */
   async insertSurveySummaryDetails (
     summarySubmissionId: number,
@@ -267,10 +269,10 @@ export class SummaryRepository extends BaseRepository {
   };
 
   /**
-   * Query to soft delete the summary submission entry by ID
+   * Soft deletes a summary submission entry by ID
    *
-   * @param {number} summarySubmissionId
-   * @returns {*} {{ delete_timestamp: string }}
+   * @param {number} summarySubmissionId the ID of the summary submission
+   * @returns {{ delete_timestamp: string }} the timestamp that the record was soft deleted at.
    */
   async deleteSummarySubmission(summarySubmissionId: number): Promise<{ delete_timestamp: string }> {
     const sqlStatement = SQL`
@@ -294,10 +296,10 @@ export class SummaryRepository extends BaseRepository {
   };
 
 /**
- * Query to get the list of messages for a summary submission.
+ * Retreives the list of messages for a summary submission.
  *
- * @param {number} summarySubmissionId
- * @returns {*} {Promise<ISummarySubmissionMessagesResponse[]>}
+ * @param {number} summarySubmissionId the ID of the summary submission.
+ * @returns {Promise<ISummarySubmissionMessagesResponse[]>} all messages for the given summary submission.
  */
  async getSummarySubmissionMessages (
   summarySubmissionId: number
@@ -362,20 +364,18 @@ export class SummaryRepository extends BaseRepository {
   }
 
   /**
-   * @TODO jsdoc
-   * @TODO should we use "template" language? Is this not just a submission?
-   * @TODO use window function in order to conditional include the wild taxonomic units clause (specifically when
-   * the species parameter isn't undefined.)
-   * 
-   * @param templateName 
-   * @param templateVersion 
-   * @returns 
+   * Reetrieves all summary template species records that are constrained by the given
+   * template name, version and survey focal species.
+   * @param {number} templateName The name of the template.
+   * @param {number} templateVersion The version of the template.
+   * @param {number} [species] the wild taxonomic species code.
+   * @returns {ISummaryTemplateSpeciesData[]}
    */
-  async getSummaryTemplateSpeciesRecord(
+  async getSummaryTemplateSpeciesRecords(
     templateName: string,
     templateVersion: string,
-    species: number
-  ): Promise<{ summaryTemplateSpeciesRecord: ISummaryTemplateSpeciesData, counts: number }> {
+    species?: number
+  ): Promise<ISummaryTemplateSpeciesData[]> {
     const templateRow = await this.getSummaryTemplateIdFromNameVersion(templateName, templateVersion);
 
     const sqlStatement = SQL`
@@ -397,43 +397,17 @@ export class SummaryRepository extends BaseRepository {
       throw new HTTP400('Failed to query summary template species table');
     }
 
-    
-    const filterRecords = <T extends Record<string, any>>(records: T[], search: Partial<T>) => {
-      const constrain = (rs: T[], fields: string[], depth = 0): T[] => {
-        if (fields.length === 0) {
-            return rs
-        }
-        const acc: T[][] = []
-        for (let i = 0; i < fields.length; i ++) {
-            const fs = fields.filter((_f, index) => index !== i)
-            const f = fields[i]
-            acc.push(constrain(rs.filter((r) => r[f] === search[f]), fs, depth + 1))
-            // If searched field is not undefined, search again with relaxed constraint
-            if (search[f]) {
-                acc.push(constrain(rs, fs, depth + 1))
-            }
-        }
-
-        return acc.sort((a, b) => b.length - a.length)[0]
-      }
-
-      return constrain(records, Object.keys(search))
-        .sort((a, b) => Object.values(b).filter(Boolean).length - Object.values(b).filter(Boolean).length)
-    }
-
-    const results = (response?.rows || [])
-    const filtered = filterRecords<ISummaryTemplateSpeciesData>(results, { wldtaxonomic_units_id: species })
-
-    return {
-      summaryTemplateSpeciesRecord: filtered[0],
-      counts: filtered.length
-    };
+    return filterRecords<ISummaryTemplateSpeciesData>(
+      (response?.rows || []),
+      { wldtaxonomic_units_id: species || null }
+    );
   }
 
   /**
-   * done = TRUE
    * Insert a record into the survey_summary_submission_message table.
-   * @TODO jsdoc.
+   * @param summarySubmissionId the ID of the summary submission record.
+   * @param summarySubmissionMessageType the message type.
+   * @param summarySubmissionMessage the full message.
    */
   insertSummarySubmissionMessage = async (
     summarySubmissionId: number,
