@@ -413,6 +413,7 @@ const asyncError = asyncErrorWrapper((err) => {
  */
 const parseError = (error: any): any => {
   switch (error.message) {
+    // error thrown by DB trigger 
     case 'CONCURRENCY_EXCEPTION':
       return new ApiGeneralError('Failed to update stale project data');
     default:
