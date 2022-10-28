@@ -8,8 +8,9 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
 import EditDialog from 'components/dialog/EditDialog';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
+import YesNoDialog from 'components/dialog/YesNoDialog';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
-import { CreateProjectDraftI18N, CreateProjectI18N } from 'constants/i18n';
+import { CreateProjectDraftI18N, CreateProjectI18N, DeleteProjectDraftI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
 import ProjectDraftForm, {
   IProjectDraftForm,
@@ -86,6 +87,7 @@ const CreateProjectPage: React.FC = () => {
 
   // Whether or not to show the 'Save as draft' dialog
   const [openDraftDialog, setOpenDraftDialog] = useState(false);
+  const [openDeleteDraftDialog, setOpenDeleteDraftDialog] = useState(false);
 
   const [draft, setDraft] = useState({ id: 0, date: '' });
 
@@ -112,6 +114,16 @@ const CreateProjectPage: React.FC = () => {
     onOk: () => {
       dialogContext.setErrorDialog({ open: false });
     }
+  };
+
+  const showDeleteDraftErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
+    dialogContext.setErrorDialog({
+      dialogTitle: DeleteProjectDraftI18N.draftErrorTitle,
+      dialogText: DeleteProjectDraftI18N.draftErrorText,
+      ...defaultErrorDialogProps,
+      ...textDialogProps,
+      open: true
+    });
   };
 
   const showDraftErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
@@ -196,7 +208,8 @@ const CreateProjectPage: React.FC = () => {
 
     try {
       await biohubApi.draft.deleteDraft(draftId);
-    } catch (error) {
+    } catch (error: any) {
+      showDeleteDraftErrorDialog({ dialogError: error });
       return error;
     }
   };
@@ -248,6 +261,14 @@ const CreateProjectPage: React.FC = () => {
     return true;
   };
 
+  const handleDeleteDraft = async () => {
+    await deleteDraft();
+
+    setEnableCancelCheck(false);
+
+    history.push(`/admin/projects/`);
+  };
+
   if (!codesDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
@@ -270,6 +291,15 @@ const CreateProjectPage: React.FC = () => {
         onSave={(values) => handleSubmitDraft(values)}
       />
 
+      <YesNoDialog
+        dialogTitle="Delete Draft"
+        dialogText="Are you sure you want to delete this draft?"
+        open={openDeleteDraftDialog}
+        onClose={() => setOpenDeleteDraftDialog(false)}
+        onNo={() => setOpenDeleteDraftDialog(false)}
+        onYes={() => handleDeleteDraft()}
+      />
+
       <Container maxWidth="xl">
         <Box py={5}>
           <Box mb={3} display="flex" justifyContent="space-between" alignItems="flex-start">
@@ -288,6 +318,16 @@ const CreateProjectPage: React.FC = () => {
                 className={classes.actionButton}>
                 Save Draft
               </Button>
+              {queryParams.draftId && (
+                <Button
+                  color="primary"
+                  size="large"
+                  variant="outlined"
+                  onClick={() => setOpenDeleteDraftDialog(true)}
+                  className={classes.actionButton}>
+                  Delete Draft
+                </Button>
+              )}
               <Button
                 color="primary"
                 size="large"
