@@ -99,9 +99,9 @@ export class SummaryService extends DBService {
    * Soft deletes the summary submission entry by ID
    *
    * @param {number} summarySubmissionId
-   * @returns {{ delete_timestamp: string }}
+   * @returns {Promise<number | null>} row count if delete is successful, null otherwise.
    */
-  async deleteSummarySubmission(summarySubmissionId: number): Promise<{ delete_timestamp: string }> {
+  async deleteSummarySubmission(summarySubmissionId: number): Promise<number | null> {
     return this.summaryRepository.deleteSummarySubmission(summarySubmissionId);
   }
 

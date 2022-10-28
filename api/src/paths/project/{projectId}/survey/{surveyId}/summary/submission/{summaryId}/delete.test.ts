@@ -6,6 +6,7 @@ import SQL from 'sql-template-strings';
 import * as db from '../../../../../../../../database/db';
 import { HTTPError } from '../../../../../../../../errors/http-error';
 import survey_queries from '../../../../../../../../queries/survey';
+import { SummaryService } from '../../../../../../../../services/summary-service';
 import { getMockDBConnection } from '../../../../../../../../__mocks__/db';
 import * as delete_submission from './delete';
 
@@ -90,27 +91,6 @@ describe('deleteSummarySubmission', () => {
     }
   });
 
-  it('should throw a 400 error when no sql statement returned for deleteSummarySubmissionSQL', async () => {
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      }
-    });
-
-    sinon.stub(survey_queries, 'deleteSummarySubmissionSQL').returns(null);
-
-    try {
-      const result = delete_submission.deleteSummarySubmission();
-
-      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal('Failed to build SQL delete statement');
-    }
-  });
-
   it('should return null when no rowCount', async () => {
     const mockQuery = sinon.stub();
 
@@ -124,7 +104,7 @@ describe('deleteSummarySubmission', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_queries, 'deleteSummarySubmissionSQL').returns(SQL`something`);
+    sinon.stub(SummaryService, 'deleteSummarySubmission').resolves([]);
 
     const result = delete_submission.deleteSummarySubmission();
 

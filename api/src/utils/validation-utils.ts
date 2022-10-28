@@ -21,6 +21,8 @@ export const filterRecords = <T extends Record<string, any>>(records: T[], searc
 				}
 		}
 
+		// Return the set (the one containing more constraints and the one containing relaxed constraints)
+		// which yeilds more records.
 		return acc.sort((a, b) => b.length - a.length)[0]
 	}
 

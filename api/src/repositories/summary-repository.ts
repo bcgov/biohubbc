@@ -272,9 +272,9 @@ export class SummaryRepository extends BaseRepository {
    * Soft deletes a summary submission entry by ID
    *
    * @param {number} summarySubmissionId the ID of the summary submission
-   * @returns {{ delete_timestamp: string }} the timestamp that the record was soft deleted at.
+   * @returns {Promise<number | null>} row count if delete is successful, null otherwise.
    */
-  async deleteSummarySubmission(summarySubmissionId: number): Promise<{ delete_timestamp: string }> {
+  async deleteSummarySubmission(summarySubmissionId: number): Promise<number | null> {
     const sqlStatement = SQL`
       UPDATE
         survey_summary_submission
@@ -292,7 +292,7 @@ export class SummaryRepository extends BaseRepository {
       throw new HTTP400('Failed to soft delete survey summary submission');
     }
 
-    return response && response.rows && response.rows[0];
+    return (response && response.rowCount) || null;
   };
 
 /**
