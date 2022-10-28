@@ -192,7 +192,6 @@ export const getDBConnection = function (keycloakToken: object): IDBConnection {
    * @throws {Error} if called when the DBPool has not been initialized via `initDBPool`
    */
   const _open = async () => {
-    
     // throw new Error("OPEN ERROR MESSAGE");
 
     if (_client || _isOpen) {
@@ -346,13 +345,13 @@ export const getDBConnection = function (keycloakToken: object): IDBConnection {
   };
 
   return {
-    open: dbErrorWrapper(_open),
-    query: _query,
-    sql: _sql,
-    knex: _knex,
-    release: _release,
-    commit: _commit,
-    rollback: _rollback,
+    open: asyncError(_open),
+    query: asyncError(_query),
+    sql: asyncError(_sql),
+    knex: asyncError(_knex),
+    release: asyncError(_release),
+    commit: asyncError(_commit),
+    rollback: asyncError(_rollback),
     systemUserId: _getSystemUserID
   };
 };
@@ -383,52 +382,27 @@ export const getKnex = <TRecord extends Record<string, any> = any, TResult = Rec
   return knex<TRecord, TResult>({ client: DB_CLIENT });
 };
 
-// const makeErrorWrapper1 = (errorHandler: (err: any) => void) =>
-//         <A extends any[], R>(fn: (...a: A) => R) =>
-//             (...a: A): R => {
-//                 try {
-//                   console.log("WRAPPER FUNCTION RUNNING")
-//                   // throw new Error("WRAPPER ERROR I GUESS....")
-//                   return fn(...a);
-//                 } catch (err) {
-//                   console.log("MAKE ERROR 1 WORKING")
-//                   throw errorHandler(err);
-//                 }
-//             };
-// const errorToUndefined = makeErrorWrapper(err => undefined)
-// const errorToException = makeErrorWrapper1(err => parseError(err))
+const asyncErrorWrapper = <T,>(errorHandler: (err: any) => T) =>
+    <A extends any[], R>(fn: (...args: A) => R) =>
+        async (...args: A): Promise<R | T> => {
+            try {
+                return await fn(...args);
+            } catch (err) {
+              throw errorHandler(err);
+            }
+        };
 
-const dbErrorWrapper = <F extends (...args: any[]) => any>(fn: F): F => {
-  return <F>function (...args: any[]) {
-    console.log(args)
-    try {
-      console.log("_____")
-      console.log("_____")
-      console.log("DB ERROR WRAPPER")
-      // throw new Error("C'mon")
-      return fn(args);
-    } catch (error) {
-      console.log("_____")
-      console.log("_____")
-      console.log("CAUGHT DB ERROR")
-      throw parseError(error as Error)
-    }
-  }
-}
+  const asyncError = asyncErrorWrapper(err => {
+    return parseError(err)
+  });
 
 
-const parseError = (error: Error): any => {
-  console.log("Parse and error please...")
-  console.log("__________________________")
-  console.log(error.name)
-  console.log(error.message)
-
-  switch (error.name) {
-    case "STALE":
-      throw new Error("Very special STALE message error")
-      break;
+const parseError = (error: any): any => {
+  switch (error.message) {
+    case "CONCURRENCY_EXCEPTION":
+      return new ApiGeneralError('Failed to update stale project data');
     default:
       // don't know what this is, just throw it anyway
-      throw error;
+      return error;
   }
 }
