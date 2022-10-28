@@ -343,14 +343,14 @@ export const getDBConnection = function (keycloakToken: object): IDBConnection {
   };
 
   return {
-    open: asyncError(_open),
-    query: asyncError(_query),
-    sql: asyncError(_sql),
-    knex: asyncError(_knex),
-    release: asyncError(_release),
-    commit: asyncError(_commit),
-    rollback: asyncError(_rollback),
-    systemUserId: _getSystemUserID
+    open: asyncErrorWrapper(_open),
+    query: asyncErrorWrapper(_query),
+    sql: asyncErrorWrapper(_sql),
+    knex: asyncErrorWrapper(_knex),
+    release: syncErrorWrapper(_release),
+    commit: asyncErrorWrapper(_commit),
+    rollback: asyncErrorWrapper(_rollback),
+    systemUserId: syncErrorWrapper(_getSystemUserID)
   };
 };
 
@@ -381,27 +381,36 @@ export const getKnex = <TRecord extends Record<string, any> = any, TResult = Rec
 };
 
 /**
- * This function takes an error handler and returns a wrapper function designed to catch any errors thrown by the wrapped function.
+ * An asynchronous wrapper function that will catch any exceptions thrown by the wrapped function
  *
- * @param errorHandler function used to parse/ handle errors that are thrown
- * @returns Promise<T> this returns anything that the internal function is retuning
+ * @param fn the function to be wrapped
+ * @returns Promise<WrapperReturn> A Promise with the wrapped functions return value
  */
-const asyncErrorWrapper = <T>(errorHandler: (err: any) => T) => <A extends any[], R>(fn: (...args: A) => R) => async (
-  ...args: A
-): Promise<R | T> => {
+const asyncErrorWrapper = <WrapperArgs extends any[], WrapperReturn>(
+  fn: (...args: WrapperArgs) => Promise<WrapperReturn>
+) => async (...args: WrapperArgs): Promise<WrapperReturn> => {
   try {
     return await fn(...args);
   } catch (err) {
-    throw errorHandler(err);
+    throw parseError(err);
   }
 };
 
 /**
- * asyncError is a wrapper function that will run parseError when ever the wrapped function throws an exception
+ * A synchronous wrapper function that will catch any exceptions thrown by the wrapped function
+ *
+ * @param fn the function to be wrapped
+ * @returns WrapperReturn The wrapped functions return value
  */
-const asyncError = asyncErrorWrapper((err) => {
-  return parseError(err);
-});
+const syncErrorWrapper = <WrapperArgs extends any[], WrapperReturn>(fn: (...args: WrapperArgs) => WrapperReturn) => (
+  ...args: WrapperArgs
+): WrapperReturn => {
+  try {
+    return fn(...args);
+  } catch (err) {
+    throw parseError(err);
+  }
+};
 
 /**
  * This function parses the passed in error and translates them into a human readable error
@@ -409,13 +418,14 @@ const asyncError = asyncErrorWrapper((err) => {
  * @param error error to be parsed
  * @returns an error to throw
  */
-const parseError = (error: any): any => {
+const parseError = (error: any) => {
   switch (error.message) {
-    // error thrown by DB trigger 
+    // error thrown by DB trigger based on revision_count
+    // will be thrown if two updates to the same record are made concurrently
     case 'CONCURRENCY_EXCEPTION':
-      return new ApiGeneralError('Failed to update stale project data');
+      throw new ApiExecuteSQLError('Failed to update stale data', [error]);
     default:
-      // don't know what this is, just return it anyway
-      return error;
+      // Generic error thrown if not captured above
+      throw new ApiExecuteSQLError('Failed to execute SQL', [error]);
   }
 };
