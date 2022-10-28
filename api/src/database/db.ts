@@ -192,8 +192,6 @@ export const getDBConnection = function (keycloakToken: object): IDBConnection {
    * @throws {Error} if called when the DBPool has not been initialized via `initDBPool`
    */
   const _open = async () => {
-    // throw new Error("OPEN ERROR MESSAGE");
-
     if (_client || _isOpen) {
       return;
     }
@@ -417,7 +415,7 @@ const parseError = (error: any): any => {
     case 'CONCURRENCY_EXCEPTION':
       return new ApiGeneralError('Failed to update stale project data');
     default:
-      // don't know what this is, just throw it anyway
+      // don't know what this is, just return it anyway
       return error;
   }
 };
