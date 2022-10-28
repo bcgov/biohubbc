@@ -1,11 +1,17 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
-import SQL, { SQLStatement } from 'sql-template-strings';
-import { appendSQLColumns, appendSQLColumnsEqualValues, appendSQLValues } from './sql-utils';
+import { filterRecords } from './validation-utils';
 
-describe('test', () => {
-	it('tests', async () => {
-		const records = [
+describe('filterRecords', () => {
+	it('should filter records', async () => {
+		interface ISpeciesTemplateRecord {
+			intended_outcome: number | null;
+			species: number | null;
+			field_method: number | null;
+			ecological_season: number | null;
+		}
+
+		const records: ISpeciesTemplateRecord[] = [
 			{
 				intended_outcome: 1,
 				species: 2,
@@ -30,7 +36,7 @@ describe('test', () => {
 				field_method: 3,
 				ecological_season: 4
 			},
-			{ // Expect this one
+			{
 				intended_outcome: null,
 				species: 2,
 				field_method: null,
@@ -45,5 +51,20 @@ describe('test', () => {
 		];
 
 		const search = { 'intended_outcome': null, 'species': 2, 'field_method': 3, 'ecological_season': 4 };
+		const filtered = filterRecords(records, search)
+
+		expect(filtered.length).to.equal(2)
+		expect(filtered[0]).to.equal({
+			intended_outcome: null,
+			species: 2,
+			field_method: null,
+			ecological_season: 4
+		})
+		expect(filtered[1]).to.equal({
+			intended_outcome: null,
+			species: null,
+			field_method: null,
+			ecological_season: null
+		})
 	})
 })
