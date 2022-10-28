@@ -240,10 +240,6 @@ const Header: React.FC = () => {
                 <Link to="/admin/users" id="menu_admin_users">
                   Manage Users
                 </Link>
-
-                <Link to="/admin/templates" id="menu_admin_templates">
-                  Manage Templates
-                </Link>
               </SystemRoleGuard>
             </Toolbar>
           </Box>
