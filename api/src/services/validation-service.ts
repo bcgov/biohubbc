@@ -102,6 +102,9 @@ export class ValidationService extends DBService {
         dwcPrep.archive.rawFile.fileName,
         dwcPrep.s3InputKey
       );
+
+      // insert validated status
+      await this.submissionRepository.insertSubmissionStatus(submissionId, SUBMISSION_STATUS_TYPE.TEMPLATE_VALIDATED);
     } catch (error) {
       if (error instanceof SubmissionError) {
         await this.errorService.insertSubmissionError(submissionId, error);
@@ -144,7 +147,7 @@ export class ValidationService extends DBService {
       const validationSchema = {};
       const rules = this.getValidationRules(validationSchema);
       const csvState = this.validateDWCArchive(archive, rules);
-
+            
       return csvState;
     } catch (error) {
       if (error instanceof SubmissionError) {

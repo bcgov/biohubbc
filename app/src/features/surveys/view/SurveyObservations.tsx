@@ -143,11 +143,6 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
             return;
           }
 
-          // if (config?.N8N_HOST) {
-          //   biohubApi.n8n.initiateOccurrenceSubmissionProcessing(projectId, result.submissionId, file.type);
-          //   return;
-          // }
-
           if (file.type === 'application/x-zip-compressed' || file.type === 'application/zip') {
             biohubApi.observation.initiateDwCSubmissionValidation(projectId, result.submissionId).then(() => {
               biohubApi.observation.initiateScrapeOccurrences(projectId, result.submissionId).then(() => {
