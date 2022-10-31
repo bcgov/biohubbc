@@ -225,4 +225,8 @@ export class OccurrenceService extends DBService {
   async updateSurveyOccurrenceSubmission(submissionId: number, fileName: string, key: string): Promise<any> {
     return this.occurrenceRepository.updateSurveyOccurrenceSubmissionWithOutputKey(submissionId, fileName, key);
   }
+
+  async updateDWCSourceForOccurrenceSubmission(submissionId: number, jsonData: string): Promise<number> {
+    return await this.occurrenceRepository.updateDWCSourceForOccurrenceSubmission(submissionId, jsonData);
+  }
 }
