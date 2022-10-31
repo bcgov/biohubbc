@@ -1167,7 +1167,7 @@ exports[`ProjectPage renders correctly with no end date 1`] = `
               class="MuiBox-root MuiBox-root-479"
             >
               <div
-                class="leaflet-container leaflet-grab leaflet-touch-drag"
+                class="leaflet-container leaflet-touch leaflet-grab leaflet-touch-drag leaflet-touch-zoom"
                 id="project_location_form_map"
                 style="height: 100%; position: relative;"
                 tabindex="0"
@@ -1190,7 +1190,6 @@ exports[`ProjectPage renders correctly with no end date 1`] = `
                         <img
                           alt=""
                           class="leaflet-tile"
-                          role="presentation"
                           src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/5/10/4"
                           style="width: 256px; height: 256px; left: -159px; top: -31px;"
                         />
@@ -1198,10 +1197,10 @@ exports[`ProjectPage renders correctly with no end date 1`] = `
                     </div>
                   </div>
                   <div
-                    class="leaflet-pane leaflet-shadow-pane"
+                    class="leaflet-pane leaflet-overlay-pane"
                   />
                   <div
-                    class="leaflet-pane leaflet-overlay-pane"
+                    class="leaflet-pane leaflet-shadow-pane"
                   />
                   <div
                     class="leaflet-pane leaflet-marker-pane"
@@ -1223,22 +1222,32 @@ exports[`ProjectPage renders correctly with no end date 1`] = `
                       class="leaflet-control-zoom leaflet-bar leaflet-control"
                     >
                       <a
+                        aria-disabled="false"
                         aria-label="Zoom in"
                         class="leaflet-control-zoom-in"
                         href="#"
                         role="button"
                         title="Zoom in"
                       >
-                        +
+                        <span
+                          aria-hidden="true"
+                        >
+                          +
+                        </span>
                       </a>
                       <a
+                        aria-disabled="false"
                         aria-label="Zoom out"
                         class="leaflet-control-zoom-out"
                         href="#"
                         role="button"
                         title="Zoom out"
                       >
-                        −
+                        <span
+                          aria-hidden="true"
+                        >
+                          −
+                        </span>
                       </a>
                     </div>
                     <div
@@ -1267,6 +1276,7 @@ exports[`ProjectPage renders correctly with no end date 1`] = `
                       <a
                         class="leaflet-control-layers-toggle"
                         href="#"
+                        role="button"
                         title="Layers"
                       />
                       <section
@@ -1276,29 +1286,29 @@ exports[`ProjectPage renders correctly with no end date 1`] = `
                           class="leaflet-control-layers-base"
                         >
                           <label>
-                            <div>
+                            <span>
                               <input
                                 class="leaflet-control-layers-selector"
-                                name="leaflet-base-layers_133"
+                                name="leaflet-base-layers_150"
                                 type="radio"
                               />
                               <span>
                                  BC Government
                               </span>
-                            </div>
+                            </span>
                           </label>
                           <label>
-                            <div>
+                            <span>
                               <input
                                 checked="checked"
                                 class="leaflet-control-layers-selector"
-                                name="leaflet-base-layers_133"
+                                name="leaflet-base-layers_150"
                                 type="radio"
                               />
                               <span>
                                  Esri Imagery
                               </span>
-                            </div>
+                            </span>
                           </label>
                         </div>
                         <div
@@ -1315,11 +1325,38 @@ exports[`ProjectPage renders correctly with no end date 1`] = `
                     >
                       <a
                         href="https://leafletjs.com"
-                        title="A JS library for interactive maps"
+                        title="A JavaScript library for interactive maps"
                       >
-                        Leaflet
+                        <svg
+                          aria-hidden="true"
+                          class="leaflet-attribution-flag"
+                          height="8"
+                          viewBox="0 0 12 8"
+                          width="12"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M0 0h12v4H0z"
+                            fill="#4C7BE1"
+                          />
+                          <path
+                            d="M0 4h12v3H0z"
+                            fill="#FFD500"
+                          />
+                          <path
+                            d="M0 7h12v1H0z"
+                            fill="#E0BC00"
+                          />
+                        </svg>
+                         Leaflet
                       </a>
-                       | © 
+                       
+                      <span
+                        aria-hidden="true"
+                      >
+                        |
+                      </span>
+                       © 
                       <a
                         href="https://www.esri.com/en-us/arcgis/products/location-services/services/basemaps"
                       >
@@ -2522,7 +2559,7 @@ exports[`ProjectPage renders project page when project is loaded (project is act
               class="MuiBox-root MuiBox-root-57"
             >
               <div
-                class="leaflet-container leaflet-grab leaflet-touch-drag"
+                class="leaflet-container leaflet-touch leaflet-grab leaflet-touch-drag leaflet-touch-zoom"
                 id="project_location_form_map"
                 style="height: 100%; position: relative;"
                 tabindex="0"
@@ -2545,7 +2582,6 @@ exports[`ProjectPage renders project page when project is loaded (project is act
                         <img
                           alt=""
                           class="leaflet-tile"
-                          role="presentation"
                           src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/5/10/4"
                           style="width: 256px; height: 256px; left: -159px; top: -31px;"
                         />
@@ -2553,10 +2589,10 @@ exports[`ProjectPage renders project page when project is loaded (project is act
                     </div>
                   </div>
                   <div
-                    class="leaflet-pane leaflet-shadow-pane"
+                    class="leaflet-pane leaflet-overlay-pane"
                   />
                   <div
-                    class="leaflet-pane leaflet-overlay-pane"
+                    class="leaflet-pane leaflet-shadow-pane"
                   />
                   <div
                     class="leaflet-pane leaflet-marker-pane"
@@ -2578,22 +2614,32 @@ exports[`ProjectPage renders project page when project is loaded (project is act
                       class="leaflet-control-zoom leaflet-bar leaflet-control"
                     >
                       <a
+                        aria-disabled="false"
                         aria-label="Zoom in"
                         class="leaflet-control-zoom-in"
                         href="#"
                         role="button"
                         title="Zoom in"
                       >
-                        +
+                        <span
+                          aria-hidden="true"
+                        >
+                          +
+                        </span>
                       </a>
                       <a
+                        aria-disabled="false"
                         aria-label="Zoom out"
                         class="leaflet-control-zoom-out"
                         href="#"
                         role="button"
                         title="Zoom out"
                       >
-                        −
+                        <span
+                          aria-hidden="true"
+                        >
+                          −
+                        </span>
                       </a>
                     </div>
                     <div
@@ -2622,6 +2668,7 @@ exports[`ProjectPage renders project page when project is loaded (project is act
                       <a
                         class="leaflet-control-layers-toggle"
                         href="#"
+                        role="button"
                         title="Layers"
                       />
                       <section
@@ -2631,29 +2678,29 @@ exports[`ProjectPage renders project page when project is loaded (project is act
                           class="leaflet-control-layers-base"
                         >
                           <label>
-                            <div>
+                            <span>
                               <input
                                 class="leaflet-control-layers-selector"
-                                name="leaflet-base-layers_33"
+                                name="leaflet-base-layers_34"
                                 type="radio"
                               />
                               <span>
                                  BC Government
                               </span>
-                            </div>
+                            </span>
                           </label>
                           <label>
-                            <div>
+                            <span>
                               <input
                                 checked="checked"
                                 class="leaflet-control-layers-selector"
-                                name="leaflet-base-layers_33"
+                                name="leaflet-base-layers_34"
                                 type="radio"
                               />
                               <span>
                                  Esri Imagery
                               </span>
-                            </div>
+                            </span>
                           </label>
                         </div>
                         <div
@@ -2670,11 +2717,38 @@ exports[`ProjectPage renders project page when project is loaded (project is act
                     >
                       <a
                         href="https://leafletjs.com"
-                        title="A JS library for interactive maps"
+                        title="A JavaScript library for interactive maps"
                       >
-                        Leaflet
+                        <svg
+                          aria-hidden="true"
+                          class="leaflet-attribution-flag"
+                          height="8"
+                          viewBox="0 0 12 8"
+                          width="12"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M0 0h12v4H0z"
+                            fill="#4C7BE1"
+                          />
+                          <path
+                            d="M0 4h12v3H0z"
+                            fill="#FFD500"
+                          />
+                          <path
+                            d="M0 7h12v1H0z"
+                            fill="#E0BC00"
+                          />
+                        </svg>
+                         Leaflet
                       </a>
-                       | © 
+                       
+                      <span
+                        aria-hidden="true"
+                      >
+                        |
+                      </span>
+                       © 
                       <a
                         href="https://www.esri.com/en-us/arcgis/products/location-services/services/basemaps"
                       >
@@ -3877,7 +3951,7 @@ exports[`ProjectPage renders project page when project is loaded (project is com
               class="MuiBox-root MuiBox-root-117"
             >
               <div
-                class="leaflet-container leaflet-grab leaflet-touch-drag"
+                class="leaflet-container leaflet-touch leaflet-grab leaflet-touch-drag leaflet-touch-zoom"
                 id="project_location_form_map"
                 style="height: 100%; position: relative;"
                 tabindex="0"
@@ -3900,7 +3974,6 @@ exports[`ProjectPage renders project page when project is loaded (project is com
                         <img
                           alt=""
                           class="leaflet-tile"
-                          role="presentation"
                           src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/5/10/4"
                           style="width: 256px; height: 256px; left: -159px; top: -31px;"
                         />
@@ -3908,10 +3981,10 @@ exports[`ProjectPage renders project page when project is loaded (project is com
                     </div>
                   </div>
                   <div
-                    class="leaflet-pane leaflet-shadow-pane"
+                    class="leaflet-pane leaflet-overlay-pane"
                   />
                   <div
-                    class="leaflet-pane leaflet-overlay-pane"
+                    class="leaflet-pane leaflet-shadow-pane"
                   />
                   <div
                     class="leaflet-pane leaflet-marker-pane"
@@ -3933,22 +4006,32 @@ exports[`ProjectPage renders project page when project is loaded (project is com
                       class="leaflet-control-zoom leaflet-bar leaflet-control"
                     >
                       <a
+                        aria-disabled="false"
                         aria-label="Zoom in"
                         class="leaflet-control-zoom-in"
                         href="#"
                         role="button"
                         title="Zoom in"
                       >
-                        +
+                        <span
+                          aria-hidden="true"
+                        >
+                          +
+                        </span>
                       </a>
                       <a
+                        aria-disabled="false"
                         aria-label="Zoom out"
                         class="leaflet-control-zoom-out"
                         href="#"
                         role="button"
                         title="Zoom out"
                       >
-                        −
+                        <span
+                          aria-hidden="true"
+                        >
+                          −
+                        </span>
                       </a>
                     </div>
                     <div
@@ -3977,6 +4060,7 @@ exports[`ProjectPage renders project page when project is loaded (project is com
                       <a
                         class="leaflet-control-layers-toggle"
                         href="#"
+                        role="button"
                         title="Layers"
                       />
                       <section
@@ -3986,29 +4070,29 @@ exports[`ProjectPage renders project page when project is loaded (project is com
                           class="leaflet-control-layers-base"
                         >
                           <label>
-                            <div>
+                            <span>
                               <input
                                 class="leaflet-control-layers-selector"
-                                name="leaflet-base-layers_49"
+                                name="leaflet-base-layers_54"
                                 type="radio"
                               />
                               <span>
                                  BC Government
                               </span>
-                            </div>
+                            </span>
                           </label>
                           <label>
-                            <div>
+                            <span>
                               <input
                                 checked="checked"
                                 class="leaflet-control-layers-selector"
-                                name="leaflet-base-layers_49"
+                                name="leaflet-base-layers_54"
                                 type="radio"
                               />
                               <span>
                                  Esri Imagery
                               </span>
-                            </div>
+                            </span>
                           </label>
                         </div>
                         <div
@@ -4025,11 +4109,38 @@ exports[`ProjectPage renders project page when project is loaded (project is com
                     >
                       <a
                         href="https://leafletjs.com"
-                        title="A JS library for interactive maps"
+                        title="A JavaScript library for interactive maps"
                       >
-                        Leaflet
+                        <svg
+                          aria-hidden="true"
+                          class="leaflet-attribution-flag"
+                          height="8"
+                          viewBox="0 0 12 8"
+                          width="12"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M0 0h12v4H0z"
+                            fill="#4C7BE1"
+                          />
+                          <path
+                            d="M0 4h12v3H0z"
+                            fill="#FFD500"
+                          />
+                          <path
+                            d="M0 7h12v1H0z"
+                            fill="#E0BC00"
+                          />
+                        </svg>
+                         Leaflet
                       </a>
-                       | © 
+                       
+                      <span
+                        aria-hidden="true"
+                      >
+                        |
+                      </span>
+                       © 
                       <a
                         href="https://www.esri.com/en-us/arcgis/products/location-services/services/basemaps"
                       >

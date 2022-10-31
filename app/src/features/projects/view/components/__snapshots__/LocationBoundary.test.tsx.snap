@@ -57,7 +57,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a single pol
       class="MuiBox-root MuiBox-root-18"
     >
       <div
-        class="leaflet-container leaflet-grab leaflet-touch-drag"
+        class="leaflet-container leaflet-touch leaflet-grab leaflet-touch-drag leaflet-touch-zoom"
         id="project_location_form_map"
         style="height: 100%; position: relative;"
         tabindex="0"
@@ -80,16 +80,12 @@ exports[`LocationBoundary matches the snapshot when the geometry is a single pol
                 <img
                   alt=""
                   class="leaflet-tile"
-                  role="presentation"
                   src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/0/0/0"
                   style="width: 256px; height: 256px; left: -38px; top: -79px;"
                 />
               </div>
             </div>
           </div>
-          <div
-            class="leaflet-pane leaflet-shadow-pane"
-          />
           <div
             class="leaflet-pane leaflet-overlay-pane"
           >
@@ -117,6 +113,9 @@ exports[`LocationBoundary matches the snapshot when the geometry is a single pol
             </svg>
           </div>
           <div
+            class="leaflet-pane leaflet-shadow-pane"
+          />
+          <div
             class="leaflet-pane leaflet-marker-pane"
           />
           <div
@@ -136,22 +135,32 @@ exports[`LocationBoundary matches the snapshot when the geometry is a single pol
               class="leaflet-control-zoom leaflet-bar leaflet-control"
             >
               <a
+                aria-disabled="false"
                 aria-label="Zoom in"
                 class="leaflet-control-zoom-in"
                 href="#"
                 role="button"
                 title="Zoom in"
               >
-                +
+                <span
+                  aria-hidden="true"
+                >
+                  +
+                </span>
               </a>
               <a
+                aria-disabled="true"
                 aria-label="Zoom out"
                 class="leaflet-control-zoom-out leaflet-disabled"
                 href="#"
                 role="button"
                 title="Zoom out"
               >
-                −
+                <span
+                  aria-hidden="true"
+                >
+                  −
+                </span>
               </a>
             </div>
             <div
@@ -180,6 +189,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a single pol
               <a
                 class="leaflet-control-layers-toggle"
                 href="#"
+                role="button"
                 title="Layers"
               />
               <section
@@ -189,29 +199,29 @@ exports[`LocationBoundary matches the snapshot when the geometry is a single pol
                   class="leaflet-control-layers-base"
                 >
                   <label>
-                    <div>
+                    <span>
                       <input
                         class="leaflet-control-layers-selector"
-                        name="leaflet-base-layers_67"
+                        name="leaflet-base-layers_74"
                         type="radio"
                       />
                       <span>
                          BC Government
                       </span>
-                    </div>
+                    </span>
                   </label>
                   <label>
-                    <div>
+                    <span>
                       <input
                         checked="checked"
                         class="leaflet-control-layers-selector"
-                        name="leaflet-base-layers_67"
+                        name="leaflet-base-layers_74"
                         type="radio"
                       />
                       <span>
                          Esri Imagery
                       </span>
-                    </div>
+                    </span>
                   </label>
                 </div>
                 <div
@@ -228,11 +238,38 @@ exports[`LocationBoundary matches the snapshot when the geometry is a single pol
             >
               <a
                 href="https://leafletjs.com"
-                title="A JS library for interactive maps"
+                title="A JavaScript library for interactive maps"
               >
-                Leaflet
+                <svg
+                  aria-hidden="true"
+                  class="leaflet-attribution-flag"
+                  height="8"
+                  viewBox="0 0 12 8"
+                  width="12"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M0 0h12v4H0z"
+                    fill="#4C7BE1"
+                  />
+                  <path
+                    d="M0 4h12v3H0z"
+                    fill="#FFD500"
+                  />
+                  <path
+                    d="M0 7h12v1H0z"
+                    fill="#E0BC00"
+                  />
+                </svg>
+                 Leaflet
               </a>
-               | © 
+               
+              <span
+                aria-hidden="true"
+              >
+                |
+              </span>
+               © 
               <a
                 href="https://www.esri.com/en-us/arcgis/products/location-services/services/basemaps"
               >
@@ -377,7 +414,7 @@ exports[`LocationBoundary matches the snapshot when there is no geometry 1`] = `
       class="MuiBox-root MuiBox-root-11"
     >
       <div
-        class="leaflet-container leaflet-grab leaflet-touch-drag"
+        class="leaflet-container leaflet-touch leaflet-grab leaflet-touch-drag leaflet-touch-zoom"
         id="project_location_form_map"
         style="height: 100%; position: relative;"
         tabindex="0"
@@ -400,7 +437,6 @@ exports[`LocationBoundary matches the snapshot when there is no geometry 1`] = `
                 <img
                   alt=""
                   class="leaflet-tile"
-                  role="presentation"
                   src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/5/10/4"
                   style="width: 256px; height: 256px; left: -159px; top: -31px;"
                 />
@@ -408,10 +444,10 @@ exports[`LocationBoundary matches the snapshot when there is no geometry 1`] = `
             </div>
           </div>
           <div
-            class="leaflet-pane leaflet-shadow-pane"
+            class="leaflet-pane leaflet-overlay-pane"
           />
           <div
-            class="leaflet-pane leaflet-overlay-pane"
+            class="leaflet-pane leaflet-shadow-pane"
           />
           <div
             class="leaflet-pane leaflet-marker-pane"
@@ -433,22 +469,32 @@ exports[`LocationBoundary matches the snapshot when there is no geometry 1`] = `
               class="leaflet-control-zoom leaflet-bar leaflet-control"
             >
               <a
+                aria-disabled="false"
                 aria-label="Zoom in"
                 class="leaflet-control-zoom-in"
                 href="#"
                 role="button"
                 title="Zoom in"
               >
-                +
+                <span
+                  aria-hidden="true"
+                >
+                  +
+                </span>
               </a>
               <a
+                aria-disabled="false"
                 aria-label="Zoom out"
                 class="leaflet-control-zoom-out"
                 href="#"
                 role="button"
                 title="Zoom out"
               >
-                −
+                <span
+                  aria-hidden="true"
+                >
+                  −
+                </span>
               </a>
             </div>
             <div
@@ -477,6 +523,7 @@ exports[`LocationBoundary matches the snapshot when there is no geometry 1`] = `
               <a
                 class="leaflet-control-layers-toggle"
                 href="#"
+                role="button"
                 title="Layers"
               />
               <section
@@ -486,29 +533,29 @@ exports[`LocationBoundary matches the snapshot when there is no geometry 1`] = `
                   class="leaflet-control-layers-base"
                 >
                   <label>
-                    <div>
+                    <span>
                       <input
                         class="leaflet-control-layers-selector"
-                        name="leaflet-base-layers_49"
+                        name="leaflet-base-layers_54"
                         type="radio"
                       />
                       <span>
                          BC Government
                       </span>
-                    </div>
+                    </span>
                   </label>
                   <label>
-                    <div>
+                    <span>
                       <input
                         checked="checked"
                         class="leaflet-control-layers-selector"
-                        name="leaflet-base-layers_49"
+                        name="leaflet-base-layers_54"
                         type="radio"
                       />
                       <span>
                          Esri Imagery
                       </span>
-                    </div>
+                    </span>
                   </label>
                 </div>
                 <div
@@ -525,11 +572,38 @@ exports[`LocationBoundary matches the snapshot when there is no geometry 1`] = `
             >
               <a
                 href="https://leafletjs.com"
-                title="A JS library for interactive maps"
+                title="A JavaScript library for interactive maps"
               >
-                Leaflet
+                <svg
+                  aria-hidden="true"
+                  class="leaflet-attribution-flag"
+                  height="8"
+                  viewBox="0 0 12 8"
+                  width="12"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M0 0h12v4H0z"
+                    fill="#4C7BE1"
+                  />
+                  <path
+                    d="M0 4h12v3H0z"
+                    fill="#FFD500"
+                  />
+                  <path
+                    d="M0 7h12v1H0z"
+                    fill="#E0BC00"
+                  />
+                </svg>
+                 Leaflet
               </a>
-               | © 
+               
+              <span
+                aria-hidden="true"
+              >
+                |
+              </span>
+               © 
               <a
                 href="https://www.esri.com/en-us/arcgis/products/location-services/services/basemaps"
               >
@@ -645,7 +719,7 @@ exports[`LocationBoundary matches the snapshot when there is no location descrip
       class="MuiBox-root MuiBox-root-4"
     >
       <div
-        class="leaflet-container leaflet-grab leaflet-touch-drag"
+        class="leaflet-container leaflet-touch leaflet-grab leaflet-touch-drag leaflet-touch-zoom"
         id="project_location_form_map"
         style="height: 100%; position: relative;"
         tabindex="0"
@@ -668,7 +742,6 @@ exports[`LocationBoundary matches the snapshot when there is no location descrip
                 <img
                   alt=""
                   class="leaflet-tile"
-                  role="presentation"
                   src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/5/10/4"
                   style="width: 256px; height: 256px; left: -159px; top: -31px;"
                 />
@@ -676,10 +749,10 @@ exports[`LocationBoundary matches the snapshot when there is no location descrip
             </div>
           </div>
           <div
-            class="leaflet-pane leaflet-shadow-pane"
+            class="leaflet-pane leaflet-overlay-pane"
           />
           <div
-            class="leaflet-pane leaflet-overlay-pane"
+            class="leaflet-pane leaflet-shadow-pane"
           />
           <div
             class="leaflet-pane leaflet-marker-pane"
@@ -701,22 +774,32 @@ exports[`LocationBoundary matches the snapshot when there is no location descrip
               class="leaflet-control-zoom leaflet-bar leaflet-control"
             >
               <a
+                aria-disabled="false"
                 aria-label="Zoom in"
                 class="leaflet-control-zoom-in"
                 href="#"
                 role="button"
                 title="Zoom in"
               >
-                +
+                <span
+                  aria-hidden="true"
+                >
+                  +
+                </span>
               </a>
               <a
+                aria-disabled="false"
                 aria-label="Zoom out"
                 class="leaflet-control-zoom-out"
                 href="#"
                 role="button"
                 title="Zoom out"
               >
-                −
+                <span
+                  aria-hidden="true"
+                >
+                  −
+                </span>
               </a>
             </div>
             <div
@@ -745,6 +828,7 @@ exports[`LocationBoundary matches the snapshot when there is no location descrip
               <a
                 class="leaflet-control-layers-toggle"
                 href="#"
+                role="button"
                 title="Layers"
               />
               <section
@@ -754,29 +838,29 @@ exports[`LocationBoundary matches the snapshot when there is no location descrip
                   class="leaflet-control-layers-base"
                 >
                   <label>
-                    <div>
+                    <span>
                       <input
                         class="leaflet-control-layers-selector"
-                        name="leaflet-base-layers_33"
+                        name="leaflet-base-layers_34"
                         type="radio"
                       />
                       <span>
                          BC Government
                       </span>
-                    </div>
+                    </span>
                   </label>
                   <label>
-                    <div>
+                    <span>
                       <input
                         checked="checked"
                         class="leaflet-control-layers-selector"
-                        name="leaflet-base-layers_33"
+                        name="leaflet-base-layers_34"
                         type="radio"
                       />
                       <span>
                          Esri Imagery
                       </span>
-                    </div>
+                    </span>
                   </label>
                 </div>
                 <div
@@ -793,11 +877,38 @@ exports[`LocationBoundary matches the snapshot when there is no location descrip
             >
               <a
                 href="https://leafletjs.com"
-                title="A JS library for interactive maps"
+                title="A JavaScript library for interactive maps"
               >
-                Leaflet
+                <svg
+                  aria-hidden="true"
+                  class="leaflet-attribution-flag"
+                  height="8"
+                  viewBox="0 0 12 8"
+                  width="12"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M0 0h12v4H0z"
+                    fill="#4C7BE1"
+                  />
+                  <path
+                    d="M0 4h12v3H0z"
+                    fill="#FFD500"
+                  />
+                  <path
+                    d="M0 7h12v1H0z"
+                    fill="#E0BC00"
+                  />
+                </svg>
+                 Leaflet
               </a>
-               | © 
+               
+              <span
+                aria-hidden="true"
+              >
+                |
+              </span>
+               © 
               <a
                 href="https://www.esri.com/en-us/arcgis/products/location-services/services/basemaps"
               >

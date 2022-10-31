@@ -161,19 +161,6 @@ describe('MapContainer', () => {
     expect(asFragment()).toMatchSnapshot();
   });
 
-  test('draws a marker successfully on the map and updates the geometry', () => {
-    const { getByText, getByRole } = render(
-      <MapContainer mapId="myMap" classes={classes} drawControls={{ initialFeatures }} onDrawChange={onDrawChange} />
-    );
-
-    fireEvent.click(getByText('Draw a marker'));
-
-    // Click on existing geometry on map to place a marker in that location
-    fireEvent.click(getByRole('presentation'));
-
-    expect(onDrawChange).toHaveBeenCalled();
-  });
-
   test('sets the bounds of the geo being passed in successfully', () => {
     const bboxCoords = bbox(initialFeatures[0]);
     const bounds: LatLngBoundsExpression = [

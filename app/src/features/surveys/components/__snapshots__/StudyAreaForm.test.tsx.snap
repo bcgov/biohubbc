@@ -173,7 +173,7 @@ exports[`Study Area Form renders correctly the empty component correctly 1`] = `
           class="MuiBox-root MuiBox-root-12"
         >
           <div
-            class="leaflet-container leaflet-grab leaflet-touch-drag"
+            class="leaflet-container leaflet-touch leaflet-grab leaflet-touch-drag leaflet-touch-zoom"
             id="study_area_form_map"
             style="height: 100%; position: relative;"
             tabindex="0"
@@ -196,7 +196,6 @@ exports[`Study Area Form renders correctly the empty component correctly 1`] = `
                     <img
                       alt=""
                       class="leaflet-tile"
-                      role="presentation"
                       src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/5/10/4"
                       style="width: 256px; height: 256px; left: -159px; top: -31px;"
                     />
@@ -204,10 +203,10 @@ exports[`Study Area Form renders correctly the empty component correctly 1`] = `
                 </div>
               </div>
               <div
-                class="leaflet-pane leaflet-shadow-pane"
+                class="leaflet-pane leaflet-overlay-pane"
               />
               <div
-                class="leaflet-pane leaflet-overlay-pane"
+                class="leaflet-pane leaflet-shadow-pane"
               />
               <div
                 class="leaflet-pane leaflet-marker-pane"
@@ -229,22 +228,32 @@ exports[`Study Area Form renders correctly the empty component correctly 1`] = `
                   class="leaflet-control-zoom leaflet-bar leaflet-control"
                 >
                   <a
+                    aria-disabled="false"
                     aria-label="Zoom in"
                     class="leaflet-control-zoom-in"
                     href="#"
                     role="button"
                     title="Zoom in"
                   >
-                    +
+                    <span
+                      aria-hidden="true"
+                    >
+                      +
+                    </span>
                   </a>
                   <a
+                    aria-disabled="false"
                     aria-label="Zoom out"
                     class="leaflet-control-zoom-out"
                     href="#"
                     role="button"
                     title="Zoom out"
                   >
-                    −
+                    <span
+                      aria-hidden="true"
+                    >
+                      −
+                    </span>
                   </a>
                 </div>
                 <div
@@ -355,6 +364,7 @@ exports[`Study Area Form renders correctly the empty component correctly 1`] = `
                   <a
                     class="leaflet-control-layers-toggle"
                     href="#"
+                    role="button"
                     title="Layers"
                   />
                   <section
@@ -364,29 +374,29 @@ exports[`Study Area Form renders correctly the empty component correctly 1`] = `
                       class="leaflet-control-layers-base"
                     >
                       <label>
-                        <div>
+                        <span>
                           <input
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_43"
+                            name="leaflet-base-layers_44"
                             type="radio"
                           />
                           <span>
                              BC Government
                           </span>
-                        </div>
+                        </span>
                       </label>
                       <label>
-                        <div>
+                        <span>
                           <input
                             checked="checked"
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_43"
+                            name="leaflet-base-layers_44"
                             type="radio"
                           />
                           <span>
                              Esri Imagery
                           </span>
-                        </div>
+                        </span>
                       </label>
                     </div>
                     <div
@@ -403,11 +413,38 @@ exports[`Study Area Form renders correctly the empty component correctly 1`] = `
                 >
                   <a
                     href="https://leafletjs.com"
-                    title="A JS library for interactive maps"
+                    title="A JavaScript library for interactive maps"
                   >
-                    Leaflet
+                    <svg
+                      aria-hidden="true"
+                      class="leaflet-attribution-flag"
+                      height="8"
+                      viewBox="0 0 12 8"
+                      width="12"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M0 0h12v4H0z"
+                        fill="#4C7BE1"
+                      />
+                      <path
+                        d="M0 4h12v3H0z"
+                        fill="#FFD500"
+                      />
+                      <path
+                        d="M0 7h12v1H0z"
+                        fill="#E0BC00"
+                      />
+                    </svg>
+                     Leaflet
                   </a>
-                   | © 
+                   
+                  <span
+                    aria-hidden="true"
+                  >
+                    |
+                  </span>
+                   © 
                   <a
                     href="https://www.esri.com/en-us/arcgis/products/location-services/services/basemaps"
                   >
@@ -597,7 +634,7 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
           class="MuiBox-root MuiBox-root-24"
         >
           <div
-            class="leaflet-container leaflet-grab leaflet-touch-drag"
+            class="leaflet-container leaflet-touch leaflet-grab leaflet-touch-drag leaflet-touch-zoom"
             id="study_area_form_map"
             style="height: 100%; position: relative;"
             tabindex="0"
@@ -620,13 +657,15 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
                     <img
                       alt=""
                       class="leaflet-tile"
-                      role="presentation"
                       src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/5/10/4"
                       style="width: 256px; height: 256px; left: -159px; top: -31px;"
                     />
                   </div>
                 </div>
               </div>
+              <div
+                class="leaflet-pane leaflet-overlay-pane"
+              />
               <div
                 class="leaflet-pane leaflet-shadow-pane"
               >
@@ -638,14 +677,12 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
                 />
               </div>
               <div
-                class="leaflet-pane leaflet-overlay-pane"
-              />
-              <div
                 class="leaflet-pane leaflet-marker-pane"
               >
                 <img
-                  alt=""
+                  alt="Marker"
                   class="leaflet-marker-icon leaflet-zoom-hide leaflet-interactive"
+                  role="button"
                   src="marker-icon.png"
                   style="margin-left: -12px; margin-top: -41px; width: 25px; height: 41px; left: 5771px; top: 1274px; z-index: 1274;"
                   tabindex="0"
@@ -668,22 +705,32 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
                   class="leaflet-control-zoom leaflet-bar leaflet-control"
                 >
                   <a
+                    aria-disabled="false"
                     aria-label="Zoom in"
                     class="leaflet-control-zoom-in"
                     href="#"
                     role="button"
                     title="Zoom in"
                   >
-                    +
+                    <span
+                      aria-hidden="true"
+                    >
+                      +
+                    </span>
                   </a>
                   <a
+                    aria-disabled="false"
                     aria-label="Zoom out"
                     class="leaflet-control-zoom-out"
                     href="#"
                     role="button"
                     title="Zoom out"
                   >
-                    −
+                    <span
+                      aria-hidden="true"
+                    >
+                      −
+                    </span>
                   </a>
                 </div>
                 <div
@@ -794,6 +841,7 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
                   <a
                     class="leaflet-control-layers-toggle"
                     href="#"
+                    role="button"
                     title="Layers"
                   />
                   <section
@@ -803,29 +851,29 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
                       class="leaflet-control-layers-base"
                     >
                       <label>
-                        <div>
+                        <span>
                           <input
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_68"
+                            name="leaflet-base-layers_73"
                             type="radio"
                           />
                           <span>
                              BC Government
                           </span>
-                        </div>
+                        </span>
                       </label>
                       <label>
-                        <div>
+                        <span>
                           <input
                             checked="checked"
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_68"
+                            name="leaflet-base-layers_73"
                             type="radio"
                           />
                           <span>
                              Esri Imagery
                           </span>
-                        </div>
+                        </span>
                       </label>
                     </div>
                     <div
@@ -842,11 +890,38 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
                 >
                   <a
                     href="https://leafletjs.com"
-                    title="A JS library for interactive maps"
+                    title="A JavaScript library for interactive maps"
                   >
-                    Leaflet
+                    <svg
+                      aria-hidden="true"
+                      class="leaflet-attribution-flag"
+                      height="8"
+                      viewBox="0 0 12 8"
+                      width="12"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M0 0h12v4H0z"
+                        fill="#4C7BE1"
+                      />
+                      <path
+                        d="M0 4h12v3H0z"
+                        fill="#FFD500"
+                      />
+                      <path
+                        d="M0 7h12v1H0z"
+                        fill="#E0BC00"
+                      />
+                    </svg>
+                     Leaflet
                   </a>
-                   | © 
+                   
+                  <span
+                    aria-hidden="true"
+                  >
+                    |
+                  </span>
+                   © 
                   <a
                     href="https://www.esri.com/en-us/arcgis/products/location-services/services/basemaps"
                   >
@@ -1072,7 +1147,7 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
           class="MuiBox-root MuiBox-root-37"
         >
           <div
-            class="leaflet-container leaflet-grab leaflet-touch-drag"
+            class="leaflet-container leaflet-touch leaflet-grab leaflet-touch-drag leaflet-touch-zoom"
             id="study_area_form_map"
             style="height: 100%; position: relative;"
             tabindex="0"
@@ -1095,13 +1170,15 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
                     <img
                       alt=""
                       class="leaflet-tile"
-                      role="presentation"
                       src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/5/10/4"
                       style="width: 256px; height: 256px; left: -159px; top: -31px;"
                     />
                   </div>
                 </div>
               </div>
+              <div
+                class="leaflet-pane leaflet-overlay-pane"
+              />
               <div
                 class="leaflet-pane leaflet-shadow-pane"
               >
@@ -1113,14 +1190,12 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
                 />
               </div>
               <div
-                class="leaflet-pane leaflet-overlay-pane"
-              />
-              <div
                 class="leaflet-pane leaflet-marker-pane"
               >
                 <img
-                  alt=""
+                  alt="Marker"
                   class="leaflet-marker-icon leaflet-zoom-hide leaflet-interactive"
+                  role="button"
                   src="marker-icon.png"
                   style="margin-left: -12px; margin-top: -41px; width: 25px; height: 41px; left: 5771px; top: 1274px; z-index: 1274;"
                   tabindex="0"
@@ -1143,22 +1218,32 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
                   class="leaflet-control-zoom leaflet-bar leaflet-control"
                 >
                   <a
+                    aria-disabled="false"
                     aria-label="Zoom in"
                     class="leaflet-control-zoom-in"
                     href="#"
                     role="button"
                     title="Zoom in"
                   >
-                    +
+                    <span
+                      aria-hidden="true"
+                    >
+                      +
+                    </span>
                   </a>
                   <a
+                    aria-disabled="false"
                     aria-label="Zoom out"
                     class="leaflet-control-zoom-out"
                     href="#"
                     role="button"
                     title="Zoom out"
                   >
-                    −
+                    <span
+                      aria-hidden="true"
+                    >
+                      −
+                    </span>
                   </a>
                 </div>
                 <div
@@ -1269,6 +1354,7 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
                   <a
                     class="leaflet-control-layers-toggle"
                     href="#"
+                    role="button"
                     title="Layers"
                   />
                   <section
@@ -1278,29 +1364,29 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
                       class="leaflet-control-layers-base"
                     >
                       <label>
-                        <div>
+                        <span>
                           <input
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_91"
+                            name="leaflet-base-layers_98"
                             type="radio"
                           />
                           <span>
                              BC Government
                           </span>
-                        </div>
+                        </span>
                       </label>
                       <label>
-                        <div>
+                        <span>
                           <input
                             checked="checked"
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_91"
+                            name="leaflet-base-layers_98"
                             type="radio"
                           />
                           <span>
                              Esri Imagery
                           </span>
-                        </div>
+                        </span>
                       </label>
                     </div>
                     <div
@@ -1317,11 +1403,38 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
                 >
                   <a
                     href="https://leafletjs.com"
-                    title="A JS library for interactive maps"
+                    title="A JavaScript library for interactive maps"
                   >
-                    Leaflet
+                    <svg
+                      aria-hidden="true"
+                      class="leaflet-attribution-flag"
+                      height="8"
+                      viewBox="0 0 12 8"
+                      width="12"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M0 0h12v4H0z"
+                        fill="#4C7BE1"
+                      />
+                      <path
+                        d="M0 4h12v3H0z"
+                        fill="#FFD500"
+                      />
+                      <path
+                        d="M0 7h12v1H0z"
+                        fill="#E0BC00"
+                      />
+                    </svg>
+                     Leaflet
                   </a>
-                   | © 
+                   
+                  <span
+                    aria-hidden="true"
+                  >
+                    |
+                  </span>
+                   © 
                   <a
                     href="https://www.esri.com/en-us/arcgis/products/location-services/services/basemaps"
                   >
