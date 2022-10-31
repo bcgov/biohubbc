@@ -3,7 +3,7 @@
 exports[`WFSFeatureGroup matches the snapshot with wildlife management units layer showing 1`] = `
 <DocumentFragment>
   <div
-    class="leaflet-container leaflet-touch leaflet-grab leaflet-touch-drag leaflet-touch-zoom"
+    class="leaflet-container leaflet-grab leaflet-touch-drag"
     id="test-map"
     style="height: 100%; position: relative;"
     tabindex="0"
@@ -16,10 +16,10 @@ exports[`WFSFeatureGroup matches the snapshot with wildlife management units lay
         class="leaflet-pane leaflet-tile-pane"
       />
       <div
-        class="leaflet-pane leaflet-overlay-pane"
+        class="leaflet-pane leaflet-shadow-pane"
       />
       <div
-        class="leaflet-pane leaflet-shadow-pane"
+        class="leaflet-pane leaflet-overlay-pane"
       />
       <div
         class="leaflet-pane leaflet-marker-pane"
@@ -41,32 +41,22 @@ exports[`WFSFeatureGroup matches the snapshot with wildlife management units lay
           class="leaflet-control-zoom leaflet-bar leaflet-control"
         >
           <a
-            aria-disabled="false"
             aria-label="Zoom in"
             class="leaflet-control-zoom-in"
             href="#"
             role="button"
             title="Zoom in"
           >
-            <span
-              aria-hidden="true"
-            >
-              +
-            </span>
+            +
           </a>
           <a
-            aria-disabled="true"
             aria-label="Zoom out"
             class="leaflet-control-zoom-out leaflet-disabled"
             href="#"
             role="button"
             title="Zoom out"
           >
-            <span
-              aria-hidden="true"
-            >
-              −
-            </span>
+            −
           </a>
         </div>
       </div>
@@ -84,30 +74,9 @@ exports[`WFSFeatureGroup matches the snapshot with wildlife management units lay
         >
           <a
             href="https://leafletjs.com"
-            title="A JavaScript library for interactive maps"
+            title="A JS library for interactive maps"
           >
-            <svg
-              aria-hidden="true"
-              class="leaflet-attribution-flag"
-              height="8"
-              viewBox="0 0 12 8"
-              width="12"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M0 0h12v4H0z"
-                fill="#4C7BE1"
-              />
-              <path
-                d="M0 4h12v3H0z"
-                fill="#FFD500"
-              />
-              <path
-                d="M0 7h12v1H0z"
-                fill="#E0BC00"
-              />
-            </svg>
-             Leaflet
+            Leaflet
           </a>
         </div>
       </div>

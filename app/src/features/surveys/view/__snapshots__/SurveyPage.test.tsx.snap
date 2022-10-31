@@ -1170,7 +1170,7 @@ exports[`SurveyPage renders correctly with no end date 1`] = `
               class="MuiBox-root MuiBox-root-239"
             >
               <div
-                class="leaflet-container leaflet-touch leaflet-grab leaflet-touch-drag leaflet-touch-zoom"
+                class="leaflet-container leaflet-grab leaflet-touch-drag"
                 id="survey_study_area_map"
                 style="height: 100%; position: relative;"
                 tabindex="0"
@@ -1193,12 +1193,16 @@ exports[`SurveyPage renders correctly with no end date 1`] = `
                         <img
                           alt=""
                           class="leaflet-tile"
+                          role="presentation"
                           src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/0/0/0"
                           style="width: 256px; height: 256px; left: -38px; top: -79px;"
                         />
                       </div>
                     </div>
                   </div>
+                  <div
+                    class="leaflet-pane leaflet-shadow-pane"
+                  />
                   <div
                     class="leaflet-pane leaflet-overlay-pane"
                   >
@@ -1226,9 +1230,6 @@ exports[`SurveyPage renders correctly with no end date 1`] = `
                     </svg>
                   </div>
                   <div
-                    class="leaflet-pane leaflet-shadow-pane"
-                  />
-                  <div
                     class="leaflet-pane leaflet-marker-pane"
                   />
                   <div
@@ -1248,32 +1249,22 @@ exports[`SurveyPage renders correctly with no end date 1`] = `
                       class="leaflet-control-zoom leaflet-bar leaflet-control"
                     >
                       <a
-                        aria-disabled="false"
                         aria-label="Zoom in"
                         class="leaflet-control-zoom-in"
                         href="#"
                         role="button"
                         title="Zoom in"
                       >
-                        <span
-                          aria-hidden="true"
-                        >
-                          +
-                        </span>
+                        +
                       </a>
                       <a
-                        aria-disabled="true"
                         aria-label="Zoom out"
                         class="leaflet-control-zoom-out leaflet-disabled"
                         href="#"
                         role="button"
                         title="Zoom out"
                       >
-                        <span
-                          aria-hidden="true"
-                        >
-                          −
-                        </span>
+                        −
                       </a>
                     </div>
                     <div
@@ -1302,7 +1293,6 @@ exports[`SurveyPage renders correctly with no end date 1`] = `
                       <a
                         class="leaflet-control-layers-toggle"
                         href="#"
-                        role="button"
                         title="Layers"
                       />
                       <section
@@ -1312,29 +1302,29 @@ exports[`SurveyPage renders correctly with no end date 1`] = `
                           class="leaflet-control-layers-base"
                         >
                           <label>
-                            <span>
+                            <div>
                               <input
                                 class="leaflet-control-layers-selector"
-                                name="leaflet-base-layers_129"
+                                name="leaflet-base-layers_120"
                                 type="radio"
                               />
                               <span>
                                  BC Government
                               </span>
-                            </span>
+                            </div>
                           </label>
                           <label>
-                            <span>
+                            <div>
                               <input
                                 checked="checked"
                                 class="leaflet-control-layers-selector"
-                                name="leaflet-base-layers_129"
+                                name="leaflet-base-layers_120"
                                 type="radio"
                               />
                               <span>
                                  Esri Imagery
                               </span>
-                            </span>
+                            </div>
                           </label>
                         </div>
                         <div
@@ -1351,38 +1341,11 @@ exports[`SurveyPage renders correctly with no end date 1`] = `
                     >
                       <a
                         href="https://leafletjs.com"
-                        title="A JavaScript library for interactive maps"
+                        title="A JS library for interactive maps"
                       >
-                        <svg
-                          aria-hidden="true"
-                          class="leaflet-attribution-flag"
-                          height="8"
-                          viewBox="0 0 12 8"
-                          width="12"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M0 0h12v4H0z"
-                            fill="#4C7BE1"
-                          />
-                          <path
-                            d="M0 4h12v3H0z"
-                            fill="#FFD500"
-                          />
-                          <path
-                            d="M0 7h12v1H0z"
-                            fill="#E0BC00"
-                          />
-                        </svg>
-                         Leaflet
+                        Leaflet
                       </a>
-                       
-                      <span
-                        aria-hidden="true"
-                      >
-                        |
-                      </span>
-                       © 
+                       | © 
                       <a
                         href="https://www.esri.com/en-us/arcgis/products/location-services/services/basemaps"
                       >
@@ -2573,7 +2536,7 @@ exports[`SurveyPage renders survey page when survey is loaded 1`] = `
               class="MuiBox-root MuiBox-root-177"
             >
               <div
-                class="leaflet-container leaflet-touch leaflet-grab leaflet-touch-drag leaflet-touch-zoom"
+                class="leaflet-container leaflet-grab leaflet-touch-drag"
                 id="survey_study_area_map"
                 style="height: 100%; position: relative;"
                 tabindex="0"
@@ -2596,12 +2559,16 @@ exports[`SurveyPage renders survey page when survey is loaded 1`] = `
                         <img
                           alt=""
                           class="leaflet-tile"
+                          role="presentation"
                           src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/0/0/0"
                           style="width: 256px; height: 256px; left: -38px; top: -79px;"
                         />
                       </div>
                     </div>
                   </div>
+                  <div
+                    class="leaflet-pane leaflet-shadow-pane"
+                  />
                   <div
                     class="leaflet-pane leaflet-overlay-pane"
                   >
@@ -2629,9 +2596,6 @@ exports[`SurveyPage renders survey page when survey is loaded 1`] = `
                     </svg>
                   </div>
                   <div
-                    class="leaflet-pane leaflet-shadow-pane"
-                  />
-                  <div
                     class="leaflet-pane leaflet-marker-pane"
                   />
                   <div
@@ -2651,32 +2615,22 @@ exports[`SurveyPage renders survey page when survey is loaded 1`] = `
                       class="leaflet-control-zoom leaflet-bar leaflet-control"
                     >
                       <a
-                        aria-disabled="false"
                         aria-label="Zoom in"
                         class="leaflet-control-zoom-in"
                         href="#"
                         role="button"
                         title="Zoom in"
                       >
-                        <span
-                          aria-hidden="true"
-                        >
-                          +
-                        </span>
+                        +
                       </a>
                       <a
-                        aria-disabled="true"
                         aria-label="Zoom out"
                         class="leaflet-control-zoom-out leaflet-disabled"
                         href="#"
                         role="button"
                         title="Zoom out"
                       >
-                        <span
-                          aria-hidden="true"
-                        >
-                          −
-                        </span>
+                        −
                       </a>
                     </div>
                     <div
@@ -2705,7 +2659,6 @@ exports[`SurveyPage renders survey page when survey is loaded 1`] = `
                       <a
                         class="leaflet-control-layers-toggle"
                         href="#"
-                        role="button"
                         title="Layers"
                       />
                       <section
@@ -2715,29 +2668,29 @@ exports[`SurveyPage renders survey page when survey is loaded 1`] = `
                           class="leaflet-control-layers-base"
                         >
                           <label>
-                            <span>
+                            <div>
                               <input
                                 class="leaflet-control-layers-selector"
-                                name="leaflet-base-layers_100"
+                                name="leaflet-base-layers_93"
                                 type="radio"
                               />
                               <span>
                                  BC Government
                               </span>
-                            </span>
+                            </div>
                           </label>
                           <label>
-                            <span>
+                            <div>
                               <input
                                 checked="checked"
                                 class="leaflet-control-layers-selector"
-                                name="leaflet-base-layers_100"
+                                name="leaflet-base-layers_93"
                                 type="radio"
                               />
                               <span>
                                  Esri Imagery
                               </span>
-                            </span>
+                            </div>
                           </label>
                         </div>
                         <div
@@ -2754,38 +2707,11 @@ exports[`SurveyPage renders survey page when survey is loaded 1`] = `
                     >
                       <a
                         href="https://leafletjs.com"
-                        title="A JavaScript library for interactive maps"
+                        title="A JS library for interactive maps"
                       >
-                        <svg
-                          aria-hidden="true"
-                          class="leaflet-attribution-flag"
-                          height="8"
-                          viewBox="0 0 12 8"
-                          width="12"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M0 0h12v4H0z"
-                            fill="#4C7BE1"
-                          />
-                          <path
-                            d="M0 4h12v3H0z"
-                            fill="#FFD500"
-                          />
-                          <path
-                            d="M0 7h12v1H0z"
-                            fill="#E0BC00"
-                          />
-                        </svg>
-                         Leaflet
+                        Leaflet
                       </a>
-                       
-                      <span
-                        aria-hidden="true"
-                      >
-                        |
-                      </span>
-                       © 
+                       | © 
                       <a
                         href="https://www.esri.com/en-us/arcgis/products/location-services/services/basemaps"
                       >
