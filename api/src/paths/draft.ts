@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { PROJECT_ROLE } from '../constants/roles';
+import { PROJECT_ROLE, SYSTEM_ROLE } from '../constants/roles';
 import { getDBConnection } from '../database/db';
 import { HTTP400 } from '../errors/http-error';
 import { draftResponseObject } from '../openapi/schemas/draft';
@@ -13,7 +13,11 @@ const defaultLog = getLogger('paths/draft');
 export const PUT: Operation = [
   authorizeRequestHandler((req) => {
     return {
-      and: [
+      or: [
+        {
+          validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR],
+          discriminator: 'SystemRole'
+        },
         {
           validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD],
           projectId: Number(req.params.projectId),
@@ -28,7 +32,11 @@ export const PUT: Operation = [
 export const POST: Operation = [
   authorizeRequestHandler((req) => {
     return {
-      and: [
+      or: [
+        {
+          validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR],
+          discriminator: 'SystemRole'
+        },
         {
           validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD],
           projectId: Number(req.params.projectId),
