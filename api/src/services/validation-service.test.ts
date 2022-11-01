@@ -657,12 +657,16 @@ describe('ValidationService', () => {
       const state = sinon.stub(service, 'validateDWC').returns(mockState);
       const persistResults = sinon.stub(service, 'persistValidationResults').resolves();
       const update = sinon.stub(service.occurrenceService, 'updateSurveyOccurrenceSubmission').resolves();
+      const submissionStatus = sinon.stub(service.submissionRepository, 'insertSubmissionStatus').resolves();
+      sinon.stub(service, 'templateScrapeAndUploadOccurrences').resolves();
+      sinon.stub(service, 'parseDWCToJSON').resolves();
 
       await service.processDWCFile(1);
       expect(prep).to.be.calledOnce;
       expect(state).to.be.calledOnce;
       expect(persistResults).to.be.calledOnce;
       expect(update).to.be.calledOnce;
+      expect(submissionStatus).to.be.called;
     });
 
     it('should insert submission error from prep failure', async () => {
