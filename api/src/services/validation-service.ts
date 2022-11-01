@@ -89,7 +89,6 @@ export class ValidationService extends DBService {
 
   async processDWCFile(submissionId: number) {
     try {
-      console.log("START THE PROCESS")
       // prep dwc
       const dwcPrep = await this.dwcPreparation(submissionId);
       // validate dwc
