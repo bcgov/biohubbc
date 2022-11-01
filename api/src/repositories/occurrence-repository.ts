@@ -22,7 +22,6 @@ export class OccurrenceRepository extends BaseRepository {
     try {
       const sql = queries.dwc.updateDWCSourceForOccurrenceSubmissionSQL(submissionId, jsonData)
       const response = await this.connection.sql<{occurrence_submission_id: number}>(sql)
-      console.log(response);
 
       if (!response.rowCount) {
         throw SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_UPDATE_OCCURRENCE_SUBMISSION);

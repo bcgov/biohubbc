@@ -144,10 +144,8 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
           }
 
           if (file.type === 'application/x-zip-compressed' || file.type === 'application/zip') {
-            biohubApi.observation.initiateDwCSubmissionValidation(projectId, result.submissionId).then(() => {
-              biohubApi.observation.initiateScrapeOccurrences(projectId, result.submissionId).then(() => {
-                props.refresh();
-              });
+            biohubApi.observation.processDWCFile(projectId, result.submissionId).then(() => {
+              props.refresh()
             });
           } else {
             biohubApi.observation.processOccurrences(projectId, result.submissionId);

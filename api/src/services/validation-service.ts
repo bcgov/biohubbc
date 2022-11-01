@@ -89,12 +89,11 @@ export class ValidationService extends DBService {
 
   async processDWCFile(submissionId: number) {
     try {
+      console.log("START THE PROCESS")
       // prep dwc
       const dwcPrep = await this.dwcPreparation(submissionId);
-
       // validate dwc
       const csvState = this.validateDWC(dwcPrep.archive);
-
       // update submission
       await this.persistValidationResults(csvState.csv_state, csvState.media_state);
       await this.occurrenceService.updateSurveyOccurrenceSubmission(
@@ -105,9 +104,10 @@ export class ValidationService extends DBService {
 
       // Parse Archive into JSON file for custom validation
       await this.parseDWCToJSON(submissionId,  dwcPrep.archive)
-
       // insert validated status
       await this.submissionRepository.insertSubmissionStatus(submissionId, SUBMISSION_STATUS_TYPE.TEMPLATE_VALIDATED);
+
+      await this.templateScrapeAndUploadOccurrences(submissionId)
     } catch (error) {
       if (error instanceof SubmissionError) {
         await this.errorService.insertSubmissionError(submissionId, error);

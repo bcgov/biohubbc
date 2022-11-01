@@ -112,7 +112,7 @@ export function processFile(): RequestHandler {
       await connection.commit();
     } catch (error) {
       defaultLog.error({ label: 'xlsx process', message: 'error', error });
-      // Unexpected error occured, rolling DB back to safe state
+      // Unexpected error occurred, rolling DB back to safe state
       await connection.rollback();
 
       // We still want to track that the submission failed to present to the user
