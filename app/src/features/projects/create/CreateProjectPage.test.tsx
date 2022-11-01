@@ -31,6 +31,7 @@ const mockUseBiohubApi = {
   draft: {
     createDraft: jest.fn<Promise<object>, []>(),
     updateDraft: jest.fn<Promise<object>, []>(),
+    deleteDraft: jest.fn(),
     getDraft: jest.fn()
   },
   external: {
@@ -172,6 +173,190 @@ describe('CreateProjectPage', () => {
   describe('draft project', () => {
     afterEach(() => {
       jest.restoreAllMocks();
+    });
+
+    describe('Delete Draft Button', () => {
+      it('does not display delete draft button if not in draft', async () => {
+        const { queryByText } = render(
+          <MemoryRouter>
+            <CreateProjectPage />
+          </MemoryRouter>
+        );
+
+        await waitFor(() => {
+          expect(queryByText('Delete Draft', { exact: false })).not.toBeInTheDocument();
+        });
+      });
+
+      it('does display delete draft button if in draft', async () => {
+        mockBiohubApi().codes.getAllCodeSets.mockResolvedValue(({
+          coordinator_agency: [{ id: 1, name: 'A Rocha Canada' }]
+        } as unknown) as IGetAllCodeSetsResponse);
+
+        mockBiohubApi().draft.getDraft.mockResolvedValue({
+          id: 1,
+          name: 'My draft',
+          data: {
+            coordinator: {
+              first_name: 'Draft first name',
+              last_name: 'Draft last name',
+              email_address: 'draftemail@example.com',
+              coordinator_agency: '',
+              share_contact_details: 'false'
+            },
+            project: ProjectDetailsFormInitialValues.project,
+            objectives: ProjectObjectivesFormInitialValues.objectives,
+            location: ProjectLocationFormInitialValues.location,
+            iucn: ProjectIUCNFormInitialValues.iucn,
+            funding: ProjectFundingFormInitialValues.funding,
+            partnerships: ProjectPartnershipsFormInitialValues.partnerships
+          }
+        });
+
+        const { queryByText } = render(
+          <MemoryRouter initialEntries={['?draftId=1']}>
+            <CreateProjectPage />
+          </MemoryRouter>
+        );
+
+        await waitFor(() => {
+          expect(queryByText('Delete Draft', { exact: false })).toBeInTheDocument();
+        });
+      });
+
+      it('dispalys a Delete draft Yes/No Dialog', async () => {
+        mockBiohubApi().codes.getAllCodeSets.mockResolvedValue(({
+          coordinator_agency: [{ id: 1, name: 'A Rocha Canada' }]
+        } as unknown) as IGetAllCodeSetsResponse);
+
+        mockBiohubApi().draft.getDraft.mockResolvedValue({
+          id: 1,
+          name: 'My draft',
+          data: {
+            coordinator: {
+              first_name: 'Draft first name',
+              last_name: 'Draft last name',
+              email_address: 'draftemail@example.com',
+              coordinator_agency: '',
+              share_contact_details: 'false'
+            },
+            project: ProjectDetailsFormInitialValues.project,
+            objectives: ProjectObjectivesFormInitialValues.objectives,
+            location: ProjectLocationFormInitialValues.location,
+            iucn: ProjectIUCNFormInitialValues.iucn,
+            funding: ProjectFundingFormInitialValues.funding,
+            partnerships: ProjectPartnershipsFormInitialValues.partnerships
+          }
+        });
+
+        const { getByText, findAllByText } = render(
+          <MemoryRouter initialEntries={['?draftId=1']}>
+            <CreateProjectPage />
+          </MemoryRouter>
+        );
+
+        const deleteButton = await findAllByText('Delete Draft', { exact: false });
+
+        fireEvent.click(deleteButton[0]);
+
+        await waitFor(() => {
+          expect(getByText('Are you sure you want to delete this draft?', { exact: false })).toBeInTheDocument();
+        });
+      });
+
+      it('closes dialog on No click', async () => {
+        mockBiohubApi().codes.getAllCodeSets.mockResolvedValue(({
+          coordinator_agency: [{ id: 1, name: 'A Rocha Canada' }]
+        } as unknown) as IGetAllCodeSetsResponse);
+
+        mockBiohubApi().draft.getDraft.mockResolvedValue({
+          id: 1,
+          name: 'My draft',
+          data: {
+            coordinator: {
+              first_name: 'Draft first name',
+              last_name: 'Draft last name',
+              email_address: 'draftemail@example.com',
+              coordinator_agency: '',
+              share_contact_details: 'false'
+            },
+            project: ProjectDetailsFormInitialValues.project,
+            objectives: ProjectObjectivesFormInitialValues.objectives,
+            location: ProjectLocationFormInitialValues.location,
+            iucn: ProjectIUCNFormInitialValues.iucn,
+            funding: ProjectFundingFormInitialValues.funding,
+            partnerships: ProjectPartnershipsFormInitialValues.partnerships
+          }
+        });
+
+        const { getByText, findAllByText, getByTestId, queryByText } = render(
+          <MemoryRouter initialEntries={['?draftId=1']}>
+            <CreateProjectPage />
+          </MemoryRouter>
+        );
+
+        const deleteButton = await findAllByText('Delete Draft', { exact: false });
+
+        fireEvent.click(deleteButton[0]);
+
+        await waitFor(() => {
+          expect(getByText('Are you sure you want to delete this draft?')).toBeInTheDocument();
+        });
+
+        const NoButton = await getByTestId('no-button');
+        fireEvent.click(NoButton);
+
+        await waitFor(() => {
+          expect(queryByText('Are you sure you want to delete this draft?')).not.toBeInTheDocument();
+        });
+      });
+
+      it('deletes draft on Yes click', async () => {
+        mockBiohubApi().codes.getAllCodeSets.mockResolvedValue(({
+          coordinator_agency: [{ id: 1, name: 'A Rocha Canada' }]
+        } as unknown) as IGetAllCodeSetsResponse);
+
+        mockBiohubApi().draft.getDraft.mockResolvedValue({
+          id: 1,
+          name: 'My draft',
+          data: {
+            coordinator: {
+              first_name: 'Draft first name',
+              last_name: 'Draft last name',
+              email_address: 'draftemail@example.com',
+              coordinator_agency: '',
+              share_contact_details: 'false'
+            },
+            project: ProjectDetailsFormInitialValues.project,
+            objectives: ProjectObjectivesFormInitialValues.objectives,
+            location: ProjectLocationFormInitialValues.location,
+            iucn: ProjectIUCNFormInitialValues.iucn,
+            funding: ProjectFundingFormInitialValues.funding,
+            partnerships: ProjectPartnershipsFormInitialValues.partnerships
+          }
+        });
+
+        const { getByText, findAllByText, getByTestId } = render(
+          <MemoryRouter initialEntries={['?draftId=1']}>
+            <CreateProjectPage />
+          </MemoryRouter>
+        );
+
+        const deleteButton = await findAllByText('Delete Draft', { exact: false });
+
+        fireEvent.click(deleteButton[0]);
+
+        await waitFor(() => {
+          expect(getByText('Are you sure you want to delete this draft?')).toBeInTheDocument();
+        });
+
+        const YesButton = await getByTestId('yes-button');
+        fireEvent.click(YesButton);
+
+        await waitFor(() => {
+          expect(mockBiohubApi().draft.deleteDraft).toBeCalled();
+        });
+      });
     });
 
     it('preloads draft data and populates on form fields', async () => {
