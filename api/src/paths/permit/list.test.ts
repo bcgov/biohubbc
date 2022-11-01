@@ -1,64 +1,88 @@
-import chai, { expect } from 'chai';
+import { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
-import sinonChai from 'sinon-chai';
 import * as db from '../../database/db';
-import { HTTPError } from '../../errors/custom-error';
+import { ApiGeneralError } from '../../errors/api-error';
+import { IPermitModel } from '../../repositories/permit-repository';
 import { PermitService } from '../../services/permit-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../__mocks__/db';
-import { getAllPermits } from './list';
+import * as list from './list';
 
-chai.use(sinonChai);
+describe('listUserPermits', () => {
+  afterEach(() => {
+    sinon.restore();
+  });
 
-describe('permit-list', () => {
-  describe('getAllPermits', () => {
-    afterEach(() => {
-      sinon.restore();
+  it('returns a list of permits', async () => {
+    const dbConnectionObj = getMockDBConnection({ systemUserId: () => 3 });
+
+    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
+
+    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+
+    const mockPermit1: IPermitModel = {
+      permit_id: 1,
+      survey_id: 1,
+      number: '123456',
+      type: 'permit type',
+      create_date: new Date().toISOString(),
+      create_user: 1,
+      update_date: null,
+      update_user: null,
+      revision_count: 0
+    };
+
+    const mockPermit2: IPermitModel = {
+      permit_id: 2,
+      survey_id: 2,
+      number: '654321',
+      type: 'permit type',
+      create_date: new Date().toISOString(),
+      create_user: 2,
+      update_date: new Date().toISOString(),
+      update_user: 2,
+      revision_count: 1
+    };
+
+    const getPermitByUserStub = sinon
+      .stub(PermitService.prototype, 'getPermitByUser')
+      .resolves([mockPermit1, mockPermit2]);
+
+    const requestHandler = list.listUserPermits();
+
+    await requestHandler(mockReq, mockRes, mockNext);
+
+    expect(getPermitByUserStub).to.have.been.calledOnceWith(3);
+
+    expect(mockRes.statusValue).to.equal(200);
+    expect(mockRes.jsonValue).to.eql({ permits: [mockPermit1, mockPermit2] });
+  });
+
+  it('should throw an error if getPermitByUser throws an Error', async () => {
+    const dbConnectionObj = getMockDBConnection({
+      commit: sinon.stub(),
+      rollback: sinon.stub(),
+      release: sinon.stub(),
+      systemUserId: () => 3
     });
 
-    it('catches error, calls rollback, and re-throws error', async () => {
-      const dbConnectionObj = getMockDBConnection({ rollback: sinon.stub(), release: sinon.stub() });
-      sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
+    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-      sinon.stub(PermitService.prototype, 'getAllPermits').rejects(new Error('a test error'));
+    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
-      const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+    mockReq.query = {};
 
-      try {
-        const requestHandler = getAllPermits();
+    sinon.stub(PermitService.prototype, 'getPermitByUser').throws(('error' as unknown) as ApiGeneralError);
 
-        await requestHandler(mockReq, mockRes, mockNext);
-        expect.fail();
-      } catch (actualError) {
-        expect(dbConnectionObj.rollback).to.have.been.called;
-        expect(dbConnectionObj.release).to.have.been.called;
-        expect((actualError as HTTPError).message).to.equal('a test error');
-      }
-    });
+    try {
+      const requestHandler = list.listUserPermits();
 
-    it('gets non sample permits', async () => {
-      const dbConnectionObj = getMockDBConnection();
-
-      sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
-
-      sinon
-        .stub(PermitService.prototype, 'getAllPermits')
-        .resolves([{ id: '1', number: '2', type: '3', coordinator_agency: '4', project_name: '5' }]);
-
-      const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
-
-      try {
-        const requestHandler = getAllPermits();
-
-        await requestHandler(mockReq, mockRes, mockNext);
-      } catch (actualError) {
-        expect.fail();
-      }
-
-      expect(mockRes.statusValue).to.equal(200);
-      expect(mockRes.jsonValue).to.eql([
-        { id: '1', number: '2', type: '3', coordinator_agency: '4', project_name: '5' }
-      ]);
-    });
+      await requestHandler(mockReq, mockRes, mockNext);
+      expect.fail();
+    } catch (actualError) {
+      expect(dbConnectionObj.commit).to.not.be.called;
+      expect(dbConnectionObj.rollback).to.be.calledOnce;
+      expect(dbConnectionObj.release).to.be.calledOnce;
+    }
   });
 });

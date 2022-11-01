@@ -1,6 +1,7 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
 import xlsx from 'xlsx';
+import { SUBMISSION_MESSAGE_TYPE } from '../../../../constants/status';
 import { CSVWorksheet } from '../csv-file';
 import {
   getCodeValueFieldsValidator,
@@ -55,13 +56,13 @@ describe('getRequiredFieldsValidator', () => {
     expect(csvWorkSheet.csvValidation.rowErrors).to.eql([
       {
         col: 'Header1',
-        errorCode: 'Missing Required Field',
+        errorCode: SUBMISSION_MESSAGE_TYPE.MISSING_REQUIRED_FIELD,
         message: 'Missing required value for column',
         row: 2
       },
       {
         col: 'Header2',
-        errorCode: 'Missing Required Field',
+        errorCode: SUBMISSION_MESSAGE_TYPE.MISSING_REQUIRED_FIELD,
         message: 'Missing required value for column',
         row: 2
       }
@@ -85,7 +86,7 @@ describe('getRequiredFieldsValidator', () => {
     expect(csvWorkSheet.csvValidation.rowErrors).to.eql([
       {
         col: 'Header1',
-        errorCode: 'Missing Required Field',
+        errorCode: SUBMISSION_MESSAGE_TYPE.MISSING_REQUIRED_FIELD,
         message: 'Missing required value for column',
         row: 2
       }
@@ -181,7 +182,7 @@ describe('getCodeValueFieldsValidator', () => {
     expect(csvWorkSheet.csvValidation.rowErrors).to.eql([
       {
         col: 'Header1',
-        errorCode: 'Invalid Value',
+        errorCode: SUBMISSION_MESSAGE_TYPE.INVALID_VALUE,
         message: 'Invalid value: invalidCode. Must be one of [Code1, Code2]',
         row: 2
       }
@@ -304,7 +305,7 @@ describe('getValidRangeFieldsValidator', () => {
     expect(csvWorkSheet.csvValidation.rowErrors).to.eql([
       {
         col: 'Header1',
-        errorCode: 'Out of Range',
+        errorCode: SUBMISSION_MESSAGE_TYPE.OUT_OF_RANGE,
         message: 'Invalid value: 11. Value must be between 1 and 10 ',
         row: 2
       }
@@ -331,7 +332,7 @@ describe('getValidRangeFieldsValidator', () => {
     expect(csvWorkSheet.csvValidation.rowErrors).to.eql([
       {
         col: 'Header1',
-        errorCode: 'Out of Range',
+        errorCode: SUBMISSION_MESSAGE_TYPE.OUT_OF_RANGE,
         message: 'Invalid value: 1. Value must be between 5 and 10 ',
         row: 2
       }
@@ -357,7 +358,7 @@ describe('getValidRangeFieldsValidator', () => {
     expect(csvWorkSheet.csvValidation.rowErrors).to.eql([
       {
         col: 'Header1',
-        errorCode: 'Out of Range',
+        errorCode: SUBMISSION_MESSAGE_TYPE.OUT_OF_RANGE,
         message: 'Invalid value: 11. Value must be less than 10 ',
         row: 2
       }
@@ -383,7 +384,7 @@ describe('getValidRangeFieldsValidator', () => {
     expect(csvWorkSheet.csvValidation.rowErrors).to.eql([
       {
         col: 'Header1',
-        errorCode: 'Out of Range',
+        errorCode: SUBMISSION_MESSAGE_TYPE.OUT_OF_RANGE,
         message: 'Invalid value: 4. Value must be greater than 5 ',
         row: 2
       }
@@ -410,7 +411,7 @@ describe('getValidRangeFieldsValidator', () => {
     expect(csvWorkSheet.csvValidation.rowErrors).to.eql([
       {
         col: 'Header1',
-        errorCode: 'Invalid Value',
+        errorCode: SUBMISSION_MESSAGE_TYPE.INVALID_VALUE,
         message: 'Invalid value: a. Value must be a number ',
         row: 2
       }
@@ -467,7 +468,7 @@ describe('getNumericFieldsValidator', () => {
     expect(csvWorkSheet.csvValidation.rowErrors).to.eql([
       {
         col: 'Header1',
-        errorCode: 'Invalid Value',
+        errorCode: SUBMISSION_MESSAGE_TYPE.INVALID_VALUE,
         message: 'Invalid value: a. Value must be a number ',
         row: 2
       }
@@ -571,7 +572,7 @@ describe('getValidFormatFieldsValidator', () => {
     expect(csvWorkSheet.csvValidation.rowErrors).to.eql([
       {
         col: 'Header1',
-        errorCode: 'Unexpected Format',
+        errorCode: SUBMISSION_MESSAGE_TYPE.UNEXPECTED_FORMAT,
         message: 'Unexpected Format: WPT 1. Must be in the format "WPT X": WPT 11 (case sensitive)',
         row: 2
       }
@@ -598,7 +599,7 @@ describe('getValidFormatFieldsValidator', () => {
     expect(csvWorkSheet.csvValidation.rowErrors).to.eql([
       {
         col: 'Header1',
-        errorCode: 'Unexpected Format',
+        errorCode: SUBMISSION_MESSAGE_TYPE.UNEXPECTED_FORMAT,
         message: 'Unexpected Format: WXT1. Must be in the format "WPT X": WPT 11 (case sensitive)',
         row: 2
       }

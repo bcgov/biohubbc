@@ -1,11 +1,13 @@
 import SQL from 'sql-template-strings';
-import { ApiGeneralError } from '../errors/custom-error';
+import { ApiGeneralError } from '../errors/api-error';
 import { PostProprietorData, PostSurveyObject } from '../models/survey-create';
 import { PutSurveyObject } from '../models/survey-update';
 import {
   GetAncillarySpeciesData,
+  GetAttachmentsData,
   GetFocalSpeciesData,
   GetPermitData,
+  GetReportAttachmentsData,
   GetSurveyData,
   GetSurveyFundingSources,
   GetSurveyLocationData,
@@ -15,7 +17,8 @@ import {
   SurveySupplementaryData
 } from '../models/survey-view';
 import { queries } from '../queries/queries';
-import { DBService } from './service';
+import { DBService } from './db-service';
+import { PermitService } from './permit-service';
 import { TaxonomyService } from './taxonomy-service';
 
 export class SurveyService extends DBService {
@@ -126,22 +129,9 @@ export class SurveyService extends DBService {
   }
 
   async getPermitData(surveyId: number): Promise<GetPermitData> {
-    const sqlStatement = SQL`
-      SELECT
-        number,
-        type
-      FROM
-        permit
-      WHERE
-        survey_id = ${surveyId};
-      `;
+    const permitService = new PermitService(this.connection);
 
-    const response = await this.connection.query<{ number: string; type: string }>(
-      sqlStatement.text,
-      sqlStatement.values
-    );
-
-    const result = response.rows?.[0];
+    const result = await permitService.getPermitBySurveyId(surveyId);
 
     return new GetPermitData(result);
   }
@@ -162,7 +152,6 @@ export class SurveyService extends DBService {
 
   async getSurveyFundingSourcesData(surveyId: number): Promise<GetSurveyFundingSources> {
     const sqlStatement = queries.survey.getSurveyFundingSourcesDataForViewSQL(surveyId);
-
     if (!sqlStatement) {
       throw new ApiGeneralError('Failed to build SQL get statement');
     }
@@ -213,7 +202,6 @@ export class SurveyService extends DBService {
 
   async getOccurrenceSubmissionId(surveyId: number) {
     const sqlStatement = queries.survey.getLatestOccurrenceSubmissionIdSQL(surveyId);
-
     if (!sqlStatement) {
       throw new ApiGeneralError('Failed to build SQL get statement');
     }
@@ -232,7 +220,6 @@ export class SurveyService extends DBService {
    */
   async getLatestSurveyOccurrenceSubmission(surveyId: number) {
     const sqlStatement = queries.survey.getLatestSurveyOccurrenceSubmissionSQL(surveyId);
-
     if (!sqlStatement) {
       throw new ApiGeneralError('Failed to build SQL get statement');
     }
@@ -287,17 +274,14 @@ export class SurveyService extends DBService {
     );
 
     // Handle inserting any permit associated to this survey
-    if (postSurveyData.permit.permit_number) {
-      promises.push(
-        this.insertOrAssociatePermitToSurvey(
-          this.connection.systemUserId() as number,
-          projectId,
-          surveyId,
-          postSurveyData.permit.permit_number,
-          postSurveyData.permit.permit_type
+    const permitService = new PermitService(this.connection);
+    promises.push(
+      Promise.all(
+        postSurveyData.permit.permits.map((permit) =>
+          permitService.createSurveyPermit(surveyId, permit.permit_number, permit.permit_type)
         )
-      );
-    }
+      )
+    );
 
     // Handle inserting any funding sources associated to this survey
     promises.push(
@@ -323,16 +307,29 @@ export class SurveyService extends DBService {
     return surveyId;
   }
 
+  async getAttachmentsData(surveyId: number): Promise<GetAttachmentsData> {
+    const sqlStatement = queries.survey.getAttachmentsBySurveySQL(surveyId);
+
+    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
+    const result = (response && response.rows) || null;
+
+    return new GetAttachmentsData(result);
+  }
+
+  async getReportAttachmentsData(surveyId: number): Promise<GetReportAttachmentsData> {
+    const sqlStatement = queries.survey.getReportAttachmentsBySurveySQL(surveyId);
+
+    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
+    const result = (response && response.rows) || null;
+
+    return new GetReportAttachmentsData(result);
+  }
+
   async insertSurveyData(projectId: number, surveyData: PostSurveyObject): Promise<number> {
     const sqlStatement = queries.survey.postSurveySQL(projectId, surveyData);
 
-    if (!sqlStatement) {
-      throw new ApiGeneralError('Failed to build survey SQL insert statement');
-    }
-
     const response = await this.connection.sql(sqlStatement);
-
-    const result = response.rows[0] || null;
+    const result = (response && response.rows && response.rows[0]) || null;
 
     if (!result) {
       throw new ApiGeneralError('Failed to insert survey data');
@@ -343,10 +340,6 @@ export class SurveyService extends DBService {
 
   async insertFocalSpecies(focal_species_id: number, surveyId: number): Promise<number> {
     const sqlStatement = queries.survey.postFocalSpeciesSQL(focal_species_id, surveyId);
-
-    if (!sqlStatement) {
-      throw new ApiGeneralError('Failed to build SQL insert statement');
-    }
 
     const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
     const result = (response && response.rows && response.rows[0]) || null;
@@ -361,10 +354,6 @@ export class SurveyService extends DBService {
   async insertAncillarySpecies(ancillary_species_id: number, surveyId: number): Promise<number> {
     const sqlStatement = queries.survey.postAncillarySpeciesSQL(ancillary_species_id, surveyId);
 
-    if (!sqlStatement) {
-      throw new ApiGeneralError('Failed to build SQL insert statement');
-    }
-
     const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
     const result = (response && response.rows && response.rows[0]) || null;
 
@@ -377,10 +366,6 @@ export class SurveyService extends DBService {
 
   async insertVantageCodes(vantage_code_id: number, surveyId: number): Promise<number> {
     const sqlStatement = queries.survey.postVantageCodesSQL(vantage_code_id, surveyId);
-
-    if (!sqlStatement) {
-      throw new ApiGeneralError('Failed to build SQL insert statement');
-    }
 
     const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
     const result = (response && response.rows && response.rows[0]) || null;
@@ -398,10 +383,6 @@ export class SurveyService extends DBService {
     }
 
     const sqlStatement = queries.survey.postSurveyProprietorSQL(surveyId, survey_proprietor);
-
-    if (!sqlStatement) {
-      throw new ApiGeneralError('Failed to build SQL insert statement');
-    }
 
     const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
     const result = (response && response.rows && response.rows[0]) || null;
@@ -438,10 +419,6 @@ export class SurveyService extends DBService {
   async insertSurveyFundingSource(funding_source_id: number, surveyId: number) {
     const sqlStatement = queries.survey.insertSurveyFundingSourceSQL(surveyId, funding_source_id);
 
-    if (!sqlStatement) {
-      throw new ApiGeneralError('Failed to build SQL statement for insertSurveyFundingSource');
-    }
-
     const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
 
     if (!response) {
@@ -449,7 +426,7 @@ export class SurveyService extends DBService {
     }
   }
 
-  async updateSurvey(projectId: number, surveyId: number, putSurveyData: PutSurveyObject): Promise<void> {
+  async updateSurvey(surveyId: number, putSurveyData: PutSurveyObject): Promise<void> {
     const promises: Promise<any>[] = [];
 
     if (putSurveyData?.survey_details || putSurveyData?.purpose_and_methodology || putSurveyData?.location) {
@@ -465,7 +442,7 @@ export class SurveyService extends DBService {
     }
 
     if (putSurveyData?.permit) {
-      promises.push(this.updateSurveyPermitData(projectId, surveyId, putSurveyData));
+      promises.push(this.updateSurveyPermitData(surveyId, putSurveyData));
     }
 
     if (putSurveyData?.funding) {
@@ -481,10 +458,6 @@ export class SurveyService extends DBService {
 
   async updateSurveyDetailsData(surveyId: number, surveyData: PutSurveyObject) {
     const updateSurveyQueryBuilder = queries.survey.putSurveyDetailsSQL(surveyId, surveyData);
-
-    if (!updateSurveyQueryBuilder) {
-      throw new ApiGeneralError('Failed to build SQL update statement');
-    }
 
     const result = await this.connection.knex(updateSurveyQueryBuilder);
 
@@ -516,31 +489,53 @@ export class SurveyService extends DBService {
   }
 
   /**
-   * To update a survey permit, we need to unassociate (not delete) the old permit from the survey and then associate
-   * the new permit to the survey. Associating a new permit to the survey is done by either inserting a brand new
-   * permit record into the permit table and setting the survey id column OR updating an existing permit record by
-   * setting the survey id column.
+   * Compares incoming survey permit data against the existing survey permits, if any, and determines which need to be
+   * deleted, added, or updated.
    *
-   * @param {number} projectId
    * @param {number} surveyId
    * @param {PutSurveyObject} surveyData
-   * @return {*}
    * @memberof SurveyService
    */
-  async updateSurveyPermitData(projectId: number, surveyId: number, surveyData: PutSurveyObject) {
-    await this.unassociatePermitFromSurvey(surveyId);
+  async updateSurveyPermitData(surveyId: number, surveyData: PutSurveyObject) {
+    const permitService = new PermitService(this.connection);
 
-    if (!surveyData.permit.permit_number) {
-      return;
+    // Get any existing permits for this survey
+    const existingPermits = await permitService.getPermitBySurveyId(surveyId);
+
+    // Compare the array of existing permits to the array of incoming permits (by permit id) and collect any
+    // existing permits that are not in the incoming permit array.
+    const existingPermitsToDelete = existingPermits.filter((existingPermit) => {
+      // Find all existing permits (by permit id) that have no matching incoming permit id
+      return !surveyData.permit.permits.find((incomingPermit) => incomingPermit.permit_id === existingPermit.permit_id);
+    });
+
+    // Delete from the database all existing survey permits that have been removed
+    if (existingPermitsToDelete.length) {
+      const promises: Promise<any>[] = [];
+
+      existingPermitsToDelete.forEach((permit) => {
+        promises.push(permitService.deleteSurveyPermit(surveyId, permit.permit_id));
+      });
+
+      await Promise.all(promises);
     }
 
-    return this.insertOrAssociatePermitToSurvey(
-      this.connection.systemUserId() as number,
-      projectId,
-      surveyId,
-      surveyData.permit.permit_number,
-      surveyData.permit.permit_type
-    );
+    // The remaining permits are either new, and can be created, or updates to existing permits
+    const promises: Promise<any>[] = [];
+
+    surveyData.permit.permits.forEach((permit) => {
+      if (permit.permit_id) {
+        // Has a permit_id, indicating this is an update to an existing permit
+        promises.push(
+          permitService.updateSurveyPermit(surveyId, permit.permit_id, permit.permit_number, permit.permit_type)
+        );
+      } else {
+        // No permit_id, indicating this is a new permit which needs to be created
+        promises.push(permitService.createSurveyPermit(surveyId, permit.permit_number, permit.permit_type));
+      }
+    });
+
+    return Promise.all(promises);
   }
 
   async unassociatePermitFromSurvey(surveyId: number) {

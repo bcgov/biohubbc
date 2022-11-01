@@ -3,8 +3,7 @@ import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as db from '../../../database/db';
-import { HTTPError } from '../../../errors/custom-error';
-import { GetPermitData } from '../../../models/project-view';
+import { HTTPError } from '../../../errors/http-error';
 import { PlatformService } from '../../../services/platform-service';
 import { ProjectService } from '../../../services/project-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../__mocks__/db';
@@ -48,7 +47,6 @@ describe('update', () => {
       const sampleResponse = {
         id: 1,
         coordinator: undefined,
-        permit: new GetPermitData(),
         project: undefined,
         objectives: undefined,
         location: undefined,
@@ -62,7 +60,7 @@ describe('update', () => {
       };
 
       mockReq.query = {
-        entity: ['permit']
+        entity: ['coordinator']
       };
 
       sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
@@ -74,7 +72,7 @@ describe('update', () => {
       await requestHandler(mockReq, mockRes, mockNext);
 
       expect(mockRes.statusValue).to.equal(200);
-      expect(ProjectService.prototype.getProjectEntitiesById).called.calledWith(1, ['permit']);
+      expect(ProjectService.prototype.getProjectEntitiesById).called.calledWith(1, ['coordinator']);
       expect(mockRes.sendValue).to.equal(sampleResponse);
     });
   });
@@ -150,7 +148,6 @@ describe('update', () => {
         },
         iucn: {},
         contact: {},
-        permit: {},
         funding: {},
         partnerships: {},
         location: {}

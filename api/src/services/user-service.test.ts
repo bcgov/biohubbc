@@ -5,7 +5,7 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import SQL from 'sql-template-strings';
 import { SYSTEM_IDENTITY_SOURCE } from '../constants/database';
-import { ApiError } from '../errors/custom-error';
+import { ApiError } from '../errors/api-error';
 import { UserObject } from '../models/user';
 import { queries } from '../queries/queries';
 import { getMockDBConnection } from '../__mocks__/db';
@@ -540,23 +540,6 @@ describe('UserService', () => {
         expect.fail();
       } catch (actualError) {
         expect((actualError as ApiError).message).to.equal('Failed to build SQL delete statement');
-      }
-    });
-
-    it('throws an error if the query response has no rowCount', async function () {
-      const mockQueryResponse = ({ rowCount: 0 } as unknown) as QueryResult<any>;
-      const mockDBConnection = getMockDBConnection({ systemUserId: () => 1, query: async () => mockQueryResponse });
-
-      const mockUsersByIdSQLResponse = SQL`Test SQL Statement`;
-      sinon.stub(queries.users, 'deleteAllSystemRolesSQL').returns(mockUsersByIdSQLResponse);
-
-      const userService = new UserService(mockDBConnection);
-
-      try {
-        await userService.deleteUserSystemRoles(1);
-        expect.fail();
-      } catch (actualError) {
-        expect((actualError as ApiError).message).to.equal('Failed to delete user system roles');
       }
     });
 

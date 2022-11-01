@@ -1,10 +1,5 @@
 import { AxiosInstance } from 'axios';
-import {
-  ICreatePermitsRequest,
-  ICreatePermitsResponse,
-  IGetNonSamplingPermit,
-  IGetPermitsListResponse
-} from 'interfaces/usePermitApi.interface';
+import { IGetPermitsListResponse } from 'interfaces/usePermitApi.interface';
 
 /**
  * Returns a set of supported api methods for working with permits as their own entities.
@@ -25,34 +20,8 @@ const usePermitApi = (axios: AxiosInstance) => {
     return data;
   };
 
-  /**
-   * Get a list of non-sampling permits
-   *
-   * @param {AxiosInstance} axios
-   * @returns {*} {Promise<IGetNonSamplingPermit[]>}
-   */
-  const getNonSamplingPermits = async (): Promise<IGetNonSamplingPermit[]> => {
-    const { data } = await axios.get(`/api/permit/get-no-sampling`);
-
-    return data;
-  };
-
-  /**
-   * Create permits (non-sampling).
-   *
-   * @param {ICreatePermitsRequest} permitsData
-   * @return {*}  {Promise<ICreatePermitsResponse[]>}
-   */
-  const createPermits = async (permitsData: ICreatePermitsRequest): Promise<ICreatePermitsResponse[]> => {
-    const { data } = await axios.post('/api/permit/create-no-sampling', permitsData);
-
-    return data;
-  };
-
   return {
-    getPermitsList,
-    createPermits,
-    getNonSamplingPermits
+    getPermitsList
   };
 };
 

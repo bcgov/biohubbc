@@ -117,13 +117,25 @@ PUT.apiDoc = {
             },
             permit: {
               type: 'object',
-              required: ['permit_number', 'permit_type'],
               properties: {
-                permit_number: {
-                  type: 'string'
-                },
-                permit_type: {
-                  type: 'string'
+                permits: {
+                  type: 'array',
+                  items: {
+                    type: 'object',
+                    required: ['permit_number', 'permit_type'],
+                    properties: {
+                      permit_id: {
+                        type: 'number',
+                        nullable: true
+                      },
+                      permit_number: {
+                        type: 'string'
+                      },
+                      permit_type: {
+                        type: 'string'
+                      }
+                    }
+                  }
                 }
               }
             },
@@ -283,7 +295,7 @@ export function updateSurvey(): RequestHandler {
 
       const surveyService = new SurveyService(connection);
 
-      await surveyService.updateSurvey(projectId, surveyId, sanitizedPutSurveyData);
+      await surveyService.updateSurvey(surveyId, sanitizedPutSurveyData);
 
       try {
         const platformService = new PlatformService(connection);

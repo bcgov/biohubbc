@@ -4,10 +4,10 @@ exports[`ProjectStepComponents renders the project IUCN with the codes values 1`
 <DocumentFragment>
   <form>
     <div
-      class="MuiBox-root MuiBox-root-32"
+      class="MuiBox-root MuiBox-root-28"
     >
       <div
-        class="MuiBox-root MuiBox-root-33"
+        class="MuiBox-root MuiBox-root-29"
       >
         <button
           aria-label="Add Another"
@@ -48,10 +48,10 @@ exports[`ProjectStepComponents renders the project IUCN without the codes values
 <DocumentFragment>
   <form>
     <div
-      class="MuiBox-root MuiBox-root-36"
+      class="MuiBox-root MuiBox-root-30"
     >
       <div
-        class="MuiBox-root MuiBox-root-37"
+        class="MuiBox-root MuiBox-root-31"
       >
         <button
           aria-label="Add Another"
@@ -99,13 +99,13 @@ exports[`ProjectStepComponents renders the project contact 1`] = `
       >
         <div
           class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-          data-testid="first_name"
+          data-testid="coordinator.first_name"
         >
           <label
             class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
             data-shrink="false"
-            for="first_name"
-            id="first_name-label"
+            for="coordinator.first_name"
+            id="coordinator.first_name-label"
           >
             First Name
             <span
@@ -121,18 +121,18 @@ exports[`ProjectStepComponents renders the project contact 1`] = `
             <input
               aria-invalid="false"
               class="MuiInputBase-input MuiOutlinedInput-input"
-              id="first_name"
-              name="first_name"
+              id="coordinator.first_name"
+              name="coordinator.first_name"
               required=""
               type="text"
               value=""
             />
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-2 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-1 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-4"
+                class="PrivateNotchedOutline-legendLabelled-3"
               >
                 <span>
                   First Name *
@@ -147,13 +147,13 @@ exports[`ProjectStepComponents renders the project contact 1`] = `
       >
         <div
           class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-          data-testid="last_name"
+          data-testid="coordinator.last_name"
         >
           <label
             class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
             data-shrink="false"
-            for="last_name"
-            id="last_name-label"
+            for="coordinator.last_name"
+            id="coordinator.last_name-label"
           >
             Last Name
             <span
@@ -169,18 +169,18 @@ exports[`ProjectStepComponents renders the project contact 1`] = `
             <input
               aria-invalid="false"
               class="MuiInputBase-input MuiOutlinedInput-input"
-              id="last_name"
-              name="last_name"
+              id="coordinator.last_name"
+              name="coordinator.last_name"
               required=""
               type="text"
               value=""
             />
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-2 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-1 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-4"
+                class="PrivateNotchedOutline-legendLabelled-3"
               >
                 <span>
                   Last Name *
@@ -195,13 +195,13 @@ exports[`ProjectStepComponents renders the project contact 1`] = `
       >
         <div
           class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-          data-testid="email_address"
+          data-testid="coordinator.email_address"
         >
           <label
             class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
             data-shrink="false"
-            for="email_address"
-            id="email_address-label"
+            for="coordinator.email_address"
+            id="coordinator.email_address-label"
           >
             Business Email Address
             <span
@@ -217,18 +217,18 @@ exports[`ProjectStepComponents renders the project contact 1`] = `
             <input
               aria-invalid="false"
               class="MuiInputBase-input MuiOutlinedInput-input"
-              id="email_address"
-              name="email_address"
+              id="coordinator.email_address"
+              name="coordinator.email_address"
               required=""
               type="text"
               value=""
             />
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-2 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-1 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-4"
+                class="PrivateNotchedOutline-legendLabelled-3"
               >
                 <span>
                   Business Email Address *
@@ -310,10 +310,10 @@ exports[`ProjectStepComponents renders the project contact 1`] = `
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-2 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-1 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-4"
+                  class="PrivateNotchedOutline-legendLabelled-3"
                 >
                   <span>
                     Contact Agency *
@@ -326,23 +326,23 @@ exports[`ProjectStepComponents renders the project contact 1`] = `
       </div>
     </div>
     <div
-      class="MuiBox-root MuiBox-root-6"
+      class="MuiBox-root MuiBox-root-5"
     >
       <fieldset
         class="MuiFormControl-root"
       >
         <legend
-          class="MuiBox-root MuiBox-root-7 makeStyles-legend-1"
+          class="MuiTypography-root MuiTypography-h5"
         >
           Share Contact Details
         </legend>
         <p
           class="MuiTypography-root MuiTypography-body1 MuiTypography-colorTextSecondary"
         >
-          Do you want the project contact’s name and email address visible to the public?
+          Do you want the project contact's name and email address visible to the public?
         </p>
         <div
-          class="MuiBox-root MuiBox-root-8"
+          class="MuiBox-root MuiBox-root-6"
         >
           <div
             aria-label="Share Contact Details"
@@ -354,21 +354,21 @@ exports[`ProjectStepComponents renders the project contact 1`] = `
             >
               <span
                 aria-disabled="false"
-                class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-9 MuiRadio-root MuiRadio-colorPrimary PrivateSwitchBase-checked-10 Mui-checked MuiIconButton-colorPrimary"
+                class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-7 MuiRadio-root MuiRadio-colorPrimary PrivateSwitchBase-checked-8 Mui-checked MuiIconButton-colorPrimary"
               >
                 <span
                   class="MuiIconButton-label"
                 >
                   <input
                     checked=""
-                    class="PrivateSwitchBase-input-12"
-                    name="share_contact_details"
+                    class="PrivateSwitchBase-input-10"
+                    name="coordinator.share_contact_details"
                     required=""
                     type="radio"
                     value="false"
                   />
                   <div
-                    class="PrivateRadioButtonIcon-root-13 PrivateRadioButtonIcon-checked-15"
+                    class="PrivateRadioButtonIcon-root-11 PrivateRadioButtonIcon-checked-13"
                   >
                     <svg
                       aria-hidden="true"
@@ -382,7 +382,7 @@ exports[`ProjectStepComponents renders the project contact 1`] = `
                     </svg>
                     <svg
                       aria-hidden="true"
-                      class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-14 MuiSvgIcon-fontSizeSmall"
+                      class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-12 MuiSvgIcon-fontSizeSmall"
                       focusable="false"
                       viewBox="0 0 24 24"
                     >
@@ -407,20 +407,20 @@ exports[`ProjectStepComponents renders the project contact 1`] = `
             >
               <span
                 aria-disabled="false"
-                class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-9 MuiRadio-root MuiRadio-colorPrimary MuiIconButton-colorPrimary"
+                class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-7 MuiRadio-root MuiRadio-colorPrimary MuiIconButton-colorPrimary"
               >
                 <span
                   class="MuiIconButton-label"
                 >
                   <input
-                    class="PrivateSwitchBase-input-12"
-                    name="share_contact_details"
+                    class="PrivateSwitchBase-input-10"
+                    name="coordinator.share_contact_details"
                     required=""
                     type="radio"
                     value="true"
                   />
                   <div
-                    class="PrivateRadioButtonIcon-root-13"
+                    class="PrivateRadioButtonIcon-root-11"
                   >
                     <svg
                       aria-hidden="true"
@@ -434,7 +434,7 @@ exports[`ProjectStepComponents renders the project contact 1`] = `
                     </svg>
                     <svg
                       aria-hidden="true"
-                      class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-14 MuiSvgIcon-fontSizeSmall"
+                      class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-12 MuiSvgIcon-fontSizeSmall"
                       focusable="false"
                       viewBox="0 0 24 24"
                     >
@@ -476,13 +476,13 @@ exports[`ProjectStepComponents renders the project details with the codes values
       >
         <div
           class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-          data-testid="project_name"
+          data-testid="project.project_name"
         >
           <label
             class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
             data-shrink="false"
-            for="project_name"
-            id="project_name-label"
+            for="project.project_name"
+            id="project.project_name-label"
           >
             Project Name
             <span
@@ -498,18 +498,18 @@ exports[`ProjectStepComponents renders the project details with the codes values
             <input
               aria-invalid="false"
               class="MuiInputBase-input MuiOutlinedInput-input"
-              id="project_name"
-              name="project_name"
+              id="project.project_name"
+              name="project.project_name"
               required=""
               type="text"
               value=""
             />
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-16 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-14 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-18"
+                class="PrivateNotchedOutline-legendLabelled-16"
               >
                 <span>
                   Project Name *
@@ -524,7 +524,6 @@ exports[`ProjectStepComponents renders the project details with the codes values
       >
         <div
           class="MuiFormControl-root MuiFormControl-fullWidth"
-          style="width: 100%;"
         >
           <label
             class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
@@ -558,7 +557,7 @@ exports[`ProjectStepComponents renders the project details with the codes values
             <input
               aria-hidden="true"
               class="MuiSelect-nativeInput"
-              name="project_type"
+              name="project.project_type"
               required=""
               tabindex="-1"
               value=""
@@ -575,10 +574,10 @@ exports[`ProjectStepComponents renders the project details with the codes values
             </svg>
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-16 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-14 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-18"
+                class="PrivateNotchedOutline-legendLabelled-16"
               >
                 <span>
                   Project Type
@@ -586,9 +585,6 @@ exports[`ProjectStepComponents renders the project details with the codes values
               </legend>
             </fieldset>
           </div>
-          <p
-            class="MuiFormHelperText-root MuiFormHelperText-contained Mui-required"
-          />
         </div>
       </div>
       <div
@@ -597,7 +593,7 @@ exports[`ProjectStepComponents renders the project details with the codes values
         <div
           aria-expanded="false"
           class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
-          data-testid="project_activities"
+          data-testid="project.project_activities"
           role="combobox"
         >
           <div
@@ -606,8 +602,8 @@ exports[`ProjectStepComponents renders the project details with the codes values
             <label
               class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
               data-shrink="false"
-              for="project_activities"
-              id="project_activities-label"
+              for="project.project_activities"
+              id="project.project_activities-label"
             >
               Project Activities
             </label>
@@ -620,8 +616,8 @@ exports[`ProjectStepComponents renders the project details with the codes values
                 autocapitalize="none"
                 autocomplete="off"
                 class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
-                id="project_activities"
-                name="project_activities"
+                id="project.project_activities"
+                name="project.project_activities"
                 spellcheck="false"
                 type="text"
                 value=""
@@ -682,10 +678,10 @@ exports[`ProjectStepComponents renders the project details with the codes values
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-16 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-14 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-18"
+                  class="PrivateNotchedOutline-legendLabelled-16"
                 >
                   <span>
                     Project Activities
@@ -697,98 +693,102 @@ exports[`ProjectStepComponents renders the project details with the codes values
         </div>
       </div>
       <div
-        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item"
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-6"
       >
         <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-6"
+          class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item"
         >
           <div
-            class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+            class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-6"
           >
-            <label
-              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined Mui-required Mui-required"
-              data-shrink="true"
-              for="start_date"
-              id="start_date-label"
-            >
-              Start Date
-              <span
-                aria-hidden="true"
-                class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
-              >
-                 *
-              </span>
-            </label>
             <div
-              class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl"
+              class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
             >
-              <input
-                aria-invalid="false"
-                class="MuiInputBase-input MuiOutlinedInput-input"
-                data-testid="start-date"
-                id="start_date"
-                max="2100-12-31"
-                min="1900-01-01"
-                name="start_date"
-                required=""
-                type="date"
-                value=""
-              />
-              <fieldset
-                aria-hidden="true"
-                class="PrivateNotchedOutline-root-16 MuiOutlinedInput-notchedOutline"
+              <label
+                class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined Mui-required Mui-required"
+                data-shrink="true"
+                for="start_date"
+                id="start_date-label"
               >
-                <legend
-                  class="PrivateNotchedOutline-legendLabelled-18 PrivateNotchedOutline-legendNotched-19"
+                Start Date
+                <span
+                  aria-hidden="true"
+                  class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
                 >
-                  <span>
-                    Start Date *
-                  </span>
-                </legend>
-              </fieldset>
+                   *
+                </span>
+              </label>
+              <div
+                class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl"
+              >
+                <input
+                  aria-invalid="false"
+                  class="MuiInputBase-input MuiOutlinedInput-input"
+                  data-testid="start-date"
+                  id="start_date"
+                  max="2100-12-31"
+                  min="1900-01-01"
+                  name="project.start_date"
+                  required=""
+                  type="date"
+                  value=""
+                />
+                <fieldset
+                  aria-hidden="true"
+                  class="PrivateNotchedOutline-root-14 MuiOutlinedInput-notchedOutline"
+                >
+                  <legend
+                    class="PrivateNotchedOutline-legendLabelled-16 PrivateNotchedOutline-legendNotched-17"
+                  >
+                    <span>
+                      Start Date *
+                    </span>
+                  </legend>
+                </fieldset>
+              </div>
             </div>
           </div>
-        </div>
-        <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-6"
-        >
           <div
-            class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+            class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-6"
           >
-            <label
-              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined"
-              data-shrink="true"
-              for="end_date"
-              id="end_date-label"
-            >
-              End Date
-            </label>
             <div
-              class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl"
+              class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
             >
-              <input
-                aria-invalid="false"
-                class="MuiInputBase-input MuiOutlinedInput-input"
-                data-testid="end-date"
-                id="end_date"
-                max="2100-12-31"
-                min="1900-01-01"
-                name="end_date"
-                type="date"
-                value=""
-              />
-              <fieldset
-                aria-hidden="true"
-                class="PrivateNotchedOutline-root-16 MuiOutlinedInput-notchedOutline"
+              <label
+                class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined"
+                data-shrink="true"
+                for="end_date"
+                id="end_date-label"
               >
-                <legend
-                  class="PrivateNotchedOutline-legendLabelled-18 PrivateNotchedOutline-legendNotched-19"
+                End Date
+              </label>
+              <div
+                class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl"
+              >
+                <input
+                  aria-invalid="false"
+                  class="MuiInputBase-input MuiOutlinedInput-input"
+                  data-testid="end-date"
+                  id="end_date"
+                  max="2100-12-31"
+                  min="1900-01-01"
+                  name="project.end_date"
+                  type="date"
+                  value=""
+                />
+                <fieldset
+                  aria-hidden="true"
+                  class="PrivateNotchedOutline-root-14 MuiOutlinedInput-notchedOutline"
                 >
-                  <span>
-                    End Date
-                  </span>
-                </legend>
-              </fieldset>
+                  <legend
+                    class="PrivateNotchedOutline-legendLabelled-16 PrivateNotchedOutline-legendNotched-17"
+                  >
+                    <span>
+                      End Date
+                    </span>
+                  </legend>
+                </fieldset>
+              </div>
             </div>
           </div>
         </div>
@@ -809,13 +809,13 @@ exports[`ProjectStepComponents renders the project details without the codes val
       >
         <div
           class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-          data-testid="project_name"
+          data-testid="project.project_name"
         >
           <label
             class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
             data-shrink="false"
-            for="project_name"
-            id="project_name-label"
+            for="project.project_name"
+            id="project.project_name-label"
           >
             Project Name
             <span
@@ -831,18 +831,18 @@ exports[`ProjectStepComponents renders the project details without the codes val
             <input
               aria-invalid="false"
               class="MuiInputBase-input MuiOutlinedInput-input"
-              id="project_name"
-              name="project_name"
+              id="project.project_name"
+              name="project.project_name"
               required=""
               type="text"
               value=""
             />
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-21 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-19 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-23"
+                class="PrivateNotchedOutline-legendLabelled-21"
               >
                 <span>
                   Project Name *
@@ -857,7 +857,6 @@ exports[`ProjectStepComponents renders the project details without the codes val
       >
         <div
           class="MuiFormControl-root MuiFormControl-fullWidth"
-          style="width: 100%;"
         >
           <label
             class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
@@ -891,7 +890,7 @@ exports[`ProjectStepComponents renders the project details without the codes val
             <input
               aria-hidden="true"
               class="MuiSelect-nativeInput"
-              name="project_type"
+              name="project.project_type"
               required=""
               tabindex="-1"
               value=""
@@ -908,10 +907,10 @@ exports[`ProjectStepComponents renders the project details without the codes val
             </svg>
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-21 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-19 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-23"
+                class="PrivateNotchedOutline-legendLabelled-21"
               >
                 <span>
                   Project Type
@@ -919,9 +918,6 @@ exports[`ProjectStepComponents renders the project details without the codes val
               </legend>
             </fieldset>
           </div>
-          <p
-            class="MuiFormHelperText-root MuiFormHelperText-contained Mui-required"
-          />
         </div>
       </div>
       <div
@@ -930,7 +926,7 @@ exports[`ProjectStepComponents renders the project details without the codes val
         <div
           aria-expanded="false"
           class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
-          data-testid="project_activities"
+          data-testid="project.project_activities"
           role="combobox"
         >
           <div
@@ -939,8 +935,8 @@ exports[`ProjectStepComponents renders the project details without the codes val
             <label
               class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
               data-shrink="false"
-              for="project_activities"
-              id="project_activities-label"
+              for="project.project_activities"
+              id="project.project_activities-label"
             >
               Project Activities
             </label>
@@ -953,8 +949,8 @@ exports[`ProjectStepComponents renders the project details without the codes val
                 autocapitalize="none"
                 autocomplete="off"
                 class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
-                id="project_activities"
-                name="project_activities"
+                id="project.project_activities"
+                name="project.project_activities"
                 spellcheck="false"
                 type="text"
                 value=""
@@ -1015,10 +1011,10 @@ exports[`ProjectStepComponents renders the project details without the codes val
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-21 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-19 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-23"
+                  class="PrivateNotchedOutline-legendLabelled-21"
                 >
                   <span>
                     Project Activities
@@ -1030,98 +1026,102 @@ exports[`ProjectStepComponents renders the project details without the codes val
         </div>
       </div>
       <div
-        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item"
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-6"
       >
         <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-6"
+          class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item"
         >
           <div
-            class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+            class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-6"
           >
-            <label
-              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined Mui-required Mui-required"
-              data-shrink="true"
-              for="start_date"
-              id="start_date-label"
-            >
-              Start Date
-              <span
-                aria-hidden="true"
-                class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
-              >
-                 *
-              </span>
-            </label>
             <div
-              class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl"
+              class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
             >
-              <input
-                aria-invalid="false"
-                class="MuiInputBase-input MuiOutlinedInput-input"
-                data-testid="start-date"
-                id="start_date"
-                max="2100-12-31"
-                min="1900-01-01"
-                name="start_date"
-                required=""
-                type="date"
-                value=""
-              />
-              <fieldset
-                aria-hidden="true"
-                class="PrivateNotchedOutline-root-21 MuiOutlinedInput-notchedOutline"
+              <label
+                class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined Mui-required Mui-required"
+                data-shrink="true"
+                for="start_date"
+                id="start_date-label"
               >
-                <legend
-                  class="PrivateNotchedOutline-legendLabelled-23 PrivateNotchedOutline-legendNotched-24"
+                Start Date
+                <span
+                  aria-hidden="true"
+                  class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
                 >
-                  <span>
-                    Start Date *
-                  </span>
-                </legend>
-              </fieldset>
+                   *
+                </span>
+              </label>
+              <div
+                class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl"
+              >
+                <input
+                  aria-invalid="false"
+                  class="MuiInputBase-input MuiOutlinedInput-input"
+                  data-testid="start-date"
+                  id="start_date"
+                  max="2100-12-31"
+                  min="1900-01-01"
+                  name="project.start_date"
+                  required=""
+                  type="date"
+                  value=""
+                />
+                <fieldset
+                  aria-hidden="true"
+                  class="PrivateNotchedOutline-root-19 MuiOutlinedInput-notchedOutline"
+                >
+                  <legend
+                    class="PrivateNotchedOutline-legendLabelled-21 PrivateNotchedOutline-legendNotched-22"
+                  >
+                    <span>
+                      Start Date *
+                    </span>
+                  </legend>
+                </fieldset>
+              </div>
             </div>
           </div>
-        </div>
-        <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-6"
-        >
           <div
-            class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+            class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-6"
           >
-            <label
-              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined"
-              data-shrink="true"
-              for="end_date"
-              id="end_date-label"
-            >
-              End Date
-            </label>
             <div
-              class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl"
+              class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
             >
-              <input
-                aria-invalid="false"
-                class="MuiInputBase-input MuiOutlinedInput-input"
-                data-testid="end-date"
-                id="end_date"
-                max="2100-12-31"
-                min="1900-01-01"
-                name="end_date"
-                type="date"
-                value=""
-              />
-              <fieldset
-                aria-hidden="true"
-                class="PrivateNotchedOutline-root-21 MuiOutlinedInput-notchedOutline"
+              <label
+                class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined"
+                data-shrink="true"
+                for="end_date"
+                id="end_date-label"
               >
-                <legend
-                  class="PrivateNotchedOutline-legendLabelled-23 PrivateNotchedOutline-legendNotched-24"
+                End Date
+              </label>
+              <div
+                class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl"
+              >
+                <input
+                  aria-invalid="false"
+                  class="MuiInputBase-input MuiOutlinedInput-input"
+                  data-testid="end-date"
+                  id="end_date"
+                  max="2100-12-31"
+                  min="1900-01-01"
+                  name="project.end_date"
+                  type="date"
+                  value=""
+                />
+                <fieldset
+                  aria-hidden="true"
+                  class="PrivateNotchedOutline-root-19 MuiOutlinedInput-notchedOutline"
                 >
-                  <span>
-                    End Date
-                  </span>
-                </legend>
-              </fieldset>
+                  <legend
+                    class="PrivateNotchedOutline-legendLabelled-21 PrivateNotchedOutline-legendNotched-22"
+                  >
+                    <span>
+                      End Date
+                    </span>
+                  </legend>
+                </fieldset>
+              </div>
             </div>
           </div>
         </div>
@@ -1135,71 +1135,48 @@ exports[`ProjectStepComponents renders the project funding with the codes values
 <DocumentFragment>
   <form>
     <div
-      class="MuiBox-root MuiBox-root-43"
+      class="MuiBox-root MuiBox-root-36"
     >
-      <header
-        class="MuiBox-root MuiBox-root-44"
+      <button
+        aria-label="Add Funding Source"
+        class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
+        data-testid="add-button"
+        tabindex="0"
+        title="Add Funding Source"
+        type="button"
       >
-        <h3
-          class="MuiTypography-root MuiTypography-h3"
-        >
-          Funding Sources (0)
-        </h3>
-        <button
-          aria-label="Add Funding Source"
-          class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
-          data-testid="add-button"
-          tabindex="0"
-          title="Add Funding Source"
-          type="button"
+        <span
+          class="MuiButton-label"
         >
           <span
-            class="MuiButton-label"
+            class="MuiButton-startIcon MuiButton-iconSizeMedium"
           >
-            <span
-              class="MuiButton-startIcon MuiButton-iconSizeMedium"
+            <svg
+              role="presentation"
+              style="width: 1.5rem; height: 1.5rem;"
+              viewBox="0 0 24 24"
             >
-              <svg
-                role="presentation"
-                style="width: 1.5rem; height: 1.5rem;"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"
-                  style="fill: currentColor;"
-                />
-              </svg>
-            </span>
-            Add Funding Source
+              <path
+                d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"
+                style="fill: currentColor;"
+              />
+            </svg>
           </span>
-          <span
-            class="MuiTouchRipple-root"
-          />
-        </button>
-      </header>
+          Add Funding Source
+        </span>
+        <span
+          class="MuiTouchRipple-root"
+        />
+      </button>
       <div
-        class="MuiBox-root MuiBox-root-45"
+        class="MuiBox-root MuiBox-root-37"
       >
         <div
-          class="MuiBox-root MuiBox-root-46"
+          class="MuiBox-root MuiBox-root-38"
         >
           <ul
             class="MuiList-root MuiList-dense"
-          >
-            <div
-              class="MuiPaper-root MuiListItem-root MuiListItem-dense MuiListItem-gutters MuiPaper-elevation1 MuiPaper-rounded"
-            >
-              <div
-                class="MuiBox-root MuiBox-root-47"
-              >
-                <h6
-                  class="MuiTypography-root MuiTypography-subtitle2"
-                >
-                  No Funding Sources
-                </h6>
-              </div>
-            </div>
-          </ul>
+          />
         </div>
       </div>
     </div>
@@ -1211,71 +1188,48 @@ exports[`ProjectStepComponents renders the project funding without the codes val
 <DocumentFragment>
   <form>
     <div
-      class="MuiBox-root MuiBox-root-53"
+      class="MuiBox-root MuiBox-root-43"
     >
-      <header
-        class="MuiBox-root MuiBox-root-54"
+      <button
+        aria-label="Add Funding Source"
+        class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
+        data-testid="add-button"
+        tabindex="0"
+        title="Add Funding Source"
+        type="button"
       >
-        <h3
-          class="MuiTypography-root MuiTypography-h3"
-        >
-          Funding Sources (0)
-        </h3>
-        <button
-          aria-label="Add Funding Source"
-          class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
-          data-testid="add-button"
-          tabindex="0"
-          title="Add Funding Source"
-          type="button"
+        <span
+          class="MuiButton-label"
         >
           <span
-            class="MuiButton-label"
+            class="MuiButton-startIcon MuiButton-iconSizeMedium"
           >
-            <span
-              class="MuiButton-startIcon MuiButton-iconSizeMedium"
+            <svg
+              role="presentation"
+              style="width: 1.5rem; height: 1.5rem;"
+              viewBox="0 0 24 24"
             >
-              <svg
-                role="presentation"
-                style="width: 1.5rem; height: 1.5rem;"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"
-                  style="fill: currentColor;"
-                />
-              </svg>
-            </span>
-            Add Funding Source
+              <path
+                d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"
+                style="fill: currentColor;"
+              />
+            </svg>
           </span>
-          <span
-            class="MuiTouchRipple-root"
-          />
-        </button>
-      </header>
+          Add Funding Source
+        </span>
+        <span
+          class="MuiTouchRipple-root"
+        />
+      </button>
       <div
-        class="MuiBox-root MuiBox-root-55"
+        class="MuiBox-root MuiBox-root-44"
       >
         <div
-          class="MuiBox-root MuiBox-root-56"
+          class="MuiBox-root MuiBox-root-45"
         >
           <ul
             class="MuiList-root MuiList-dense"
-          >
-            <div
-              class="MuiPaper-root MuiListItem-root MuiListItem-dense MuiListItem-gutters MuiPaper-elevation1 MuiPaper-rounded"
-            >
-              <div
-                class="MuiBox-root MuiBox-root-57"
-              >
-                <h6
-                  class="MuiTypography-root MuiTypography-subtitle2"
-                >
-                  No Funding Sources
-                </h6>
-              </div>
-            </div>
-          </ul>
+          />
         </div>
       </div>
     </div>
@@ -1287,79 +1241,27 @@ exports[`ProjectStepComponents renders the project location 1`] = `
 <DocumentFragment>
   <form>
     <div
-      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
+      class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
     >
+      <h3
+        class="MuiTypography-root MuiTypography-h5"
+      >
+        Define Project Boundary
+      </h3>
+      <p
+        class="MuiTypography-root MuiTypography-body1 MuiTypography-colorTextSecondary"
+        style="max-width: 90ch;"
+      >
+        Import or select a boundary from existing map layers. To select an existing boundary, choose a map layer below and click a boundary on the map.
+      </p>
       <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+        class="MuiBox-root MuiBox-root-58"
       >
         <div
-          class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-          data-testid="location_description"
-        >
-          <label
-            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
-            data-shrink="false"
-            for="location_description"
-            id="location_description-label"
-          >
-            Location Description
-          </label>
-          <div
-            class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-multiline MuiOutlinedInput-multiline"
-          >
-            <textarea
-              aria-invalid="false"
-              class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputMultiline MuiOutlinedInput-inputMultiline"
-              id="location_description"
-              name="location_description"
-              rows="4"
-            />
-            <fieldset
-              aria-hidden="true"
-              class="PrivateNotchedOutline-root-68 MuiOutlinedInput-notchedOutline"
-            >
-              <legend
-                class="PrivateNotchedOutline-legendLabelled-70"
-              >
-                <span>
-                  Location Description
-                </span>
-              </legend>
-            </fieldset>
-          </div>
-        </div>
-      </div>
-      <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-      >
-        <p
-          class="MuiTypography-root makeStyles-bold-73 MuiTypography-body1"
-        >
-          Project Boundary *
-        </p>
-        <div
-          class="MuiBox-root MuiBox-root-76"
-        >
-          <p
-            class="MuiTypography-root MuiTypography-body1"
-          >
-            Define your boundary by selecting a boundary from an existing layer or by uploading KML file or shapefile.
-          </p>
-          <div
-            class="MuiBox-root MuiBox-root-77"
-          >
-            <p
-              class="MuiTypography-root MuiTypography-body1"
-            >
-              To select a boundary from an existing layer, select a layer from the dropdown, click a boundary on the map and click 'Add Boundary'.
-            </p>
-          </div>
-        </div>
-        <div
-          class="MuiBox-root MuiBox-root-78"
+          class="MuiBox-root MuiBox-root-59"
         >
           <button
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-outlinedSizeLarge MuiButton-sizeLarge"
             data-testid="boundary_file-upload"
             tabindex="0"
             type="button"
@@ -1368,7 +1270,7 @@ exports[`ProjectStepComponents renders the project location 1`] = `
               class="MuiButton-label"
             >
               <span
-                class="MuiButton-startIcon MuiButton-iconSizeMedium"
+                class="MuiButton-startIcon MuiButton-iconSizeLarge"
               >
                 <svg
                   role="presentation"
@@ -1381,34 +1283,33 @@ exports[`ProjectStepComponents renders the project location 1`] = `
                   />
                 </svg>
               </span>
-              Upload Boundary
+              Import Boundary
             </span>
             <span
               class="MuiTouchRipple-root"
             />
           </button>
           <div
-            class="MuiBox-root MuiBox-root-79"
+            class="MuiBox-root MuiBox-root-60"
           >
             <div
-              class="MuiFormControl-root"
-              style="width: 100%;"
+              class="MuiFormControl-root makeStyles-mapLayerControl-57"
             >
               <label
-                class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
+                class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-marginDense MuiInputLabel-outlined"
                 data-shrink="false"
                 id="layer"
               >
-                Select Layer
+                Map Layers
               </label>
               <div
-                class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
+                class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl MuiInputBase-marginDense MuiOutlinedInput-marginDense"
               >
                 <div
                   aria-haspopup="listbox"
                   aria-label="Layer"
                   aria-labelledby="layer layer"
-                  class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
+                  class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputMarginDense MuiOutlinedInput-inputMarginDense"
                   id="layer"
                   role="button"
                   tabindex="0"
@@ -1436,25 +1337,29 @@ exports[`ProjectStepComponents renders the project location 1`] = `
                 </svg>
                 <fieldset
                   aria-hidden="true"
-                  class="PrivateNotchedOutline-root-68 MuiOutlinedInput-notchedOutline"
+                  class="PrivateNotchedOutline-root-61 MuiOutlinedInput-notchedOutline"
                 >
                   <legend
-                    class="PrivateNotchedOutline-legendLabelled-70"
+                    class="PrivateNotchedOutline-legendLabelled-63"
                   >
                     <span>
-                      Select Layer
+                      Map Layers
                     </span>
                   </legend>
                 </fieldset>
               </div>
             </div>
           </div>
+          <div
+            class="MuiBox-root MuiBox-root-65"
+          />
         </div>
+      </div>
+      <div
+        class="MuiPaper-root MuiPaper-outlined MuiPaper-rounded"
+      >
         <div
-          class="MuiBox-root MuiBox-root-80"
-        />
-        <div
-          class="MuiBox-root MuiBox-root-81"
+          class="MuiBox-root MuiBox-root-66"
         >
           <div
             class="leaflet-container leaflet-grab leaflet-touch-drag"
@@ -1471,7 +1376,7 @@ exports[`ProjectStepComponents renders the project location 1`] = `
               >
                 <div
                   class="leaflet-layer "
-                  style="z-index: 1;"
+                  style="z-index: 2;"
                 >
                   <div
                     class="leaflet-tile-container leaflet-zoom-animated"
@@ -1481,7 +1386,7 @@ exports[`ProjectStepComponents renders the project location 1`] = `
                       alt=""
                       class="leaflet-tile"
                       role="presentation"
-                      src="https://maps.gov.bc.ca/arcgis/rest/services/province/roads_wm/MapServer/tile/5/10/4"
+                      src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/5/10/4"
                       style="width: 256px; height: 256px; left: -159px; top: -31px;"
                     />
                   </div>
@@ -1575,6 +1480,17 @@ exports[`ProjectStepComponents renders the project location 1`] = `
                           Draw a rectangle
                         </span>
                       </a>
+                      <a
+                        class="leaflet-draw-draw-marker"
+                        href="#"
+                        title="Draw a marker"
+                      >
+                        <span
+                          class="sr-only"
+                        >
+                          Draw a marker
+                        </span>
+                      </a>
                     </div>
                     <ul
                       class="leaflet-draw-actions"
@@ -1639,9 +1555,8 @@ exports[`ProjectStepComponents renders the project location 1`] = `
                       <label>
                         <div>
                           <input
-                            checked="checked"
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_42"
+                            name="leaflet-base-layers_43"
                             type="radio"
                           />
                           <span>
@@ -1652,8 +1567,9 @@ exports[`ProjectStepComponents renders the project location 1`] = `
                       <label>
                         <div>
                           <input
+                            checked="checked"
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_42"
+                            name="leaflet-base-layers_43"
                             type="radio"
                           />
                           <span>
@@ -1680,10 +1596,62 @@ exports[`ProjectStepComponents renders the project location 1`] = `
                   >
                     Leaflet
                   </a>
+                   | © 
+                  <a
+                    href="https://www.esri.com/en-us/arcgis/products/location-services/services/basemaps"
+                  >
+                    ESRI Basemap
+                  </a>
                 </div>
               </div>
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="MuiBox-root MuiBox-root-67"
+    >
+      <h3
+        class="MuiTypography-root MuiTypography-h5"
+        style="margin-bottom: 20px;"
+      >
+        Describe the location of this project
+      </h3>
+      <div
+        class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+        data-testid="location.location_description"
+      >
+        <label
+          class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
+          data-shrink="false"
+          for="location.location_description"
+          id="location.location_description-label"
+        >
+          Location Description
+        </label>
+        <div
+          class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-multiline MuiOutlinedInput-multiline"
+        >
+          <textarea
+            aria-invalid="false"
+            class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputMultiline MuiOutlinedInput-inputMultiline"
+            id="location.location_description"
+            name="location.location_description"
+            rows="4"
+          />
+          <fieldset
+            aria-hidden="true"
+            class="PrivateNotchedOutline-root-61 MuiOutlinedInput-notchedOutline"
+          >
+            <legend
+              class="PrivateNotchedOutline-legendLabelled-63"
+            >
+              <span>
+                Location Description
+              </span>
+            </legend>
+          </fieldset>
         </div>
       </div>
     </div>
@@ -1702,13 +1670,13 @@ exports[`ProjectStepComponents renders the project objectives 1`] = `
       >
         <div
           class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-          data-testid="objectives"
+          data-testid="objectives.objectives"
         >
           <label
             class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
             data-shrink="false"
-            for="objectives"
-            id="objectives-label"
+            for="objectives.objectives"
+            id="objectives.objectives-label"
           >
             Objectives
             <span
@@ -1724,60 +1692,20 @@ exports[`ProjectStepComponents renders the project objectives 1`] = `
             <textarea
               aria-invalid="false"
               class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputMultiline MuiOutlinedInput-inputMultiline"
-              id="objectives"
-              name="objectives"
+              id="objectives.objectives"
+              name="objectives.objectives"
               required=""
               rows="4"
             />
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-26 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-24 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-28"
+                class="PrivateNotchedOutline-legendLabelled-26"
               >
                 <span>
                   Objectives *
-                </span>
-              </legend>
-            </fieldset>
-          </div>
-        </div>
-      </div>
-      <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-      >
-        <div
-          class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-          data-testid="caveats"
-        >
-          <label
-            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
-            data-shrink="false"
-            for="caveats"
-            id="caveats-label"
-          >
-            Caveats (Optional)
-          </label>
-          <div
-            class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-multiline MuiOutlinedInput-multiline"
-          >
-            <textarea
-              aria-invalid="false"
-              class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputMultiline MuiOutlinedInput-inputMultiline"
-              id="caveats"
-              name="caveats"
-              rows="4"
-            />
-            <fieldset
-              aria-hidden="true"
-              class="PrivateNotchedOutline-root-26 MuiOutlinedInput-notchedOutline"
-            >
-              <legend
-                class="PrivateNotchedOutline-legendLabelled-28"
-              >
-                <span>
-                  Caveats (Optional)
                 </span>
               </legend>
             </fieldset>
@@ -1801,7 +1729,7 @@ exports[`ProjectStepComponents renders the project partnerships with the codes v
         <div
           aria-expanded="false"
           class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
-          data-testid="indigenous_partnerships"
+          data-testid="partnerships.indigenous_partnerships"
           role="combobox"
         >
           <div
@@ -1810,8 +1738,8 @@ exports[`ProjectStepComponents renders the project partnerships with the codes v
             <label
               class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
               data-shrink="false"
-              for="indigenous_partnerships"
-              id="indigenous_partnerships-label"
+              for="partnerships.indigenous_partnerships"
+              id="partnerships.indigenous_partnerships-label"
             >
               Indigenous Partnerships
             </label>
@@ -1824,8 +1752,8 @@ exports[`ProjectStepComponents renders the project partnerships with the codes v
                 autocapitalize="none"
                 autocomplete="off"
                 class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
-                id="indigenous_partnerships"
-                name="indigenous_partnerships"
+                id="partnerships.indigenous_partnerships"
+                name="partnerships.indigenous_partnerships"
                 spellcheck="false"
                 type="text"
                 value=""
@@ -1886,10 +1814,10 @@ exports[`ProjectStepComponents renders the project partnerships with the codes v
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-59 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-47 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-61"
+                  class="PrivateNotchedOutline-legendLabelled-49"
                 >
                   <span>
                     Indigenous Partnerships
@@ -1906,7 +1834,7 @@ exports[`ProjectStepComponents renders the project partnerships with the codes v
         <div
           aria-expanded="false"
           class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
-          data-testid="stakeholder_partnerships"
+          data-testid="partnerships.stakeholder_partnerships"
           role="combobox"
         >
           <div
@@ -1915,8 +1843,8 @@ exports[`ProjectStepComponents renders the project partnerships with the codes v
             <label
               class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
               data-shrink="false"
-              for="stakeholder_partnerships"
-              id="stakeholder_partnerships-label"
+              for="partnerships.stakeholder_partnerships"
+              id="partnerships.stakeholder_partnerships-label"
             >
               Other Partnerships
             </label>
@@ -1929,8 +1857,8 @@ exports[`ProjectStepComponents renders the project partnerships with the codes v
                 autocapitalize="none"
                 autocomplete="off"
                 class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
-                id="stakeholder_partnerships"
-                name="stakeholder_partnerships"
+                id="partnerships.stakeholder_partnerships"
+                name="partnerships.stakeholder_partnerships"
                 spellcheck="false"
                 type="text"
                 value=""
@@ -1991,10 +1919,10 @@ exports[`ProjectStepComponents renders the project partnerships with the codes v
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-59 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-47 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-61"
+                  class="PrivateNotchedOutline-legendLabelled-49"
                 >
                   <span>
                     Other Partnerships
@@ -2022,7 +1950,7 @@ exports[`ProjectStepComponents renders the project partnerships without the code
         <div
           aria-expanded="false"
           class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
-          data-testid="indigenous_partnerships"
+          data-testid="partnerships.indigenous_partnerships"
           role="combobox"
         >
           <div
@@ -2031,8 +1959,8 @@ exports[`ProjectStepComponents renders the project partnerships without the code
             <label
               class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
               data-shrink="false"
-              for="indigenous_partnerships"
-              id="indigenous_partnerships-label"
+              for="partnerships.indigenous_partnerships"
+              id="partnerships.indigenous_partnerships-label"
             >
               Indigenous Partnerships
             </label>
@@ -2045,8 +1973,8 @@ exports[`ProjectStepComponents renders the project partnerships without the code
                 autocapitalize="none"
                 autocomplete="off"
                 class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
-                id="indigenous_partnerships"
-                name="indigenous_partnerships"
+                id="partnerships.indigenous_partnerships"
+                name="partnerships.indigenous_partnerships"
                 spellcheck="false"
                 type="text"
                 value=""
@@ -2107,10 +2035,10 @@ exports[`ProjectStepComponents renders the project partnerships without the code
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-64 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-52 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-66"
+                  class="PrivateNotchedOutline-legendLabelled-54"
                 >
                   <span>
                     Indigenous Partnerships
@@ -2127,7 +2055,7 @@ exports[`ProjectStepComponents renders the project partnerships without the code
         <div
           aria-expanded="false"
           class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
-          data-testid="stakeholder_partnerships"
+          data-testid="partnerships.stakeholder_partnerships"
           role="combobox"
         >
           <div
@@ -2136,8 +2064,8 @@ exports[`ProjectStepComponents renders the project partnerships without the code
             <label
               class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
               data-shrink="false"
-              for="stakeholder_partnerships"
-              id="stakeholder_partnerships-label"
+              for="partnerships.stakeholder_partnerships"
+              id="partnerships.stakeholder_partnerships-label"
             >
               Other Partnerships
             </label>
@@ -2150,8 +2078,8 @@ exports[`ProjectStepComponents renders the project partnerships without the code
                 autocapitalize="none"
                 autocomplete="off"
                 class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
-                id="stakeholder_partnerships"
-                name="stakeholder_partnerships"
+                id="partnerships.stakeholder_partnerships"
+                name="partnerships.stakeholder_partnerships"
                 spellcheck="false"
                 type="text"
                 value=""
@@ -2212,10 +2140,10 @@ exports[`ProjectStepComponents renders the project partnerships without the code
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-64 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-52 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-66"
+                  class="PrivateNotchedOutline-legendLabelled-54"
                 >
                   <span>
                     Other Partnerships

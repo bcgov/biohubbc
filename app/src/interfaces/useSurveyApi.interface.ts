@@ -99,7 +99,13 @@ export interface SurveyUpdateObject {
     focal_species: number[];
     ancillary_species: number[];
   };
-  permit?: ISurveyPermits;
+  permit?: {
+    permits: {
+      permit_id?: number;
+      permit_number: string;
+      permit_type: string;
+    }[];
+  };
   purpose_and_methodology?: {
     intended_outcome_id: number;
     additional_details: string;
@@ -179,8 +185,11 @@ export interface IGetSurveyAttachmentsResponse {
 }
 
 export interface ISurveyPermits {
-  permit_number: string;
-  permit_type: string;
+  permits: {
+    id: number;
+    permit_number: string;
+    permit_type: string;
+  }[];
 }
 
 export interface ISurveyLocation {

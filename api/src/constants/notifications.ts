@@ -1,4 +1,4 @@
-import { IgcNotifyGenericMessage } from '../models/gcnotify';
+import { IgcNotifyGenericMessage } from '../services/gcnotify-service';
 
 //admin email template for new access requests
 export const ACCESS_REQUEST_ADMIN_EMAIL: IgcNotifyGenericMessage = {

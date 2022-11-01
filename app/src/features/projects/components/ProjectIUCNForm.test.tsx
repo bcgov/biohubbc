@@ -49,7 +49,7 @@ const subClassifications2: IIUCNSubClassification2Option[] = [
 
 describe('ProjectIUCNForm', () => {
   it('renders correctly with default empty values', () => {
-    const { asFragment } = render(
+    const { queryByLabelText } = render(
       <Formik
         initialValues={ProjectIUCNFormInitialValues}
         validationSchema={ProjectIUCNFormYupSchema}
@@ -65,22 +65,24 @@ describe('ProjectIUCNForm', () => {
         )}
       </Formik>
     );
-
-    expect(asFragment()).toMatchSnapshot();
+    expect(queryByLabelText('Classification')).toBe(null);
+    expect(queryByLabelText('Sub-classification')).toBe(null);
   });
 
   it('renders correctly with existing details values', () => {
     const existingFormValues: IProjectIUCNForm = {
-      classificationDetails: [
-        {
-          classification: 1,
-          subClassification1: 3,
-          subClassification2: 5
-        }
-      ]
+      iucn: {
+        classificationDetails: [
+          {
+            classification: 1,
+            subClassification1: 3,
+            subClassification2: 5
+          }
+        ]
+      }
     };
 
-    const { asFragment } = render(
+    const { getByLabelText, getByText, getAllByLabelText } = render(
       <Formik
         initialValues={existingFormValues}
         validationSchema={ProjectIUCNFormYupSchema}
@@ -97,11 +99,15 @@ describe('ProjectIUCNForm', () => {
       </Formik>
     );
 
-    expect(asFragment()).toMatchSnapshot();
+    expect(getByLabelText('Classification')).toBeVisible();
+    expect(getAllByLabelText('Sub-classification').length).toEqual(2);
+    expect(getByText('Class 1')).toBeVisible();
+    expect(getByText('A Sub-class 1', { exact: false })).toBeVisible();
+    expect(getByText('A Sub-class 2', { exact: false })).toBeVisible();
   });
 
   it('changes fields on the IUCN menu items as expected', async () => {
-    const { asFragment, getAllByRole, getByRole, queryByTestId, getByText } = render(
+    const { getByLabelText, getAllByRole, getByRole, queryByTestId, getByText, getAllByLabelText } = render(
       <Formik
         initialValues={ProjectIUCNFormInitialValues}
         validationSchema={ProjectIUCNFormYupSchema}
@@ -139,7 +145,11 @@ describe('ProjectIUCNForm', () => {
     fireEvent.click(subClassification2Listbox.getByText(/A Sub-class 2/i));
 
     await waitFor(() => {
-      expect(asFragment()).toMatchSnapshot();
+      expect(getByLabelText('Classification')).toBeVisible();
+      expect(getAllByLabelText('Sub-classification').length).toEqual(2);
+      expect(getByText('Class 1')).toBeVisible();
+      expect(getByText('A Sub-class 1', { exact: false })).toBeVisible();
+      expect(getByText('A Sub-class 2', { exact: false })).toBeVisible();
     });
   });
 
@@ -172,18 +182,20 @@ describe('ProjectIUCNForm', () => {
 
   it('renders correctly with error on the iucn classifications due to duplicates', () => {
     const existingFormValues: IProjectIUCNForm = {
-      classificationDetails: [
-        {
-          classification: 1,
-          subClassification1: 3,
-          subClassification2: 5
-        },
-        {
-          classification: 1,
-          subClassification1: 3,
-          subClassification2: 5
-        }
-      ]
+      iucn: {
+        classificationDetails: [
+          {
+            classification: 1,
+            subClassification1: 3,
+            subClassification2: 5
+          },
+          {
+            classification: 1,
+            subClassification1: 3,
+            subClassification2: 5
+          }
+        ]
+      }
     };
 
     const { getAllByText, getByText } = render(
@@ -192,7 +204,7 @@ describe('ProjectIUCNForm', () => {
         validationSchema={ProjectIUCNFormYupSchema}
         validateOnBlur={true}
         validateOnChange={false}
-        initialErrors={{ classificationDetails: 'Error is here' }}
+        initialErrors={{ iucn: { classificationDetails: 'Error is here' } }}
         onSubmit={async () => {}}>
         {() => (
           <ProjectIUCNForm
@@ -210,63 +222,17 @@ describe('ProjectIUCNForm', () => {
     expect(getByText('Error is here')).toBeVisible();
   });
 
-  it('renders correctly with error on the iucn classification individual fields', () => {
-    const existingFormValues: IProjectIUCNForm = {
-      classificationDetails: [
-        {
-          classification: 1,
-          subClassification1: 3,
-          subClassification2: 5
-        }
-      ]
-    };
-
-    const { getByText } = render(
-      <Formik
-        initialValues={existingFormValues}
-        validationSchema={ProjectIUCNFormYupSchema}
-        validateOnBlur={true}
-        validateOnChange={false}
-        initialErrors={{
-          classificationDetails: [
-            {
-              classification: 'Error here',
-              subClassification1: 'Error here too',
-              subClassification2: 'Error again here too'
-            }
-          ]
-        }}
-        initialTouched={{
-          classificationDetails: [{ classification: true, subClassification1: true, subClassification2: true }]
-        }}
-        onSubmit={async () => {}}>
-        {() => (
-          <ProjectIUCNForm
-            classifications={classifications}
-            subClassifications1={subClassifications1}
-            subClassifications2={subClassifications2}
-          />
-        )}
-      </Formik>
-    );
-
-    expect(getByText('Class 1')).toBeVisible();
-    expect(getByText('A Sub-class 1')).toBeVisible();
-    expect(getByText('A Sub-class 2')).toBeVisible();
-    expect(getByText('Error here')).toBeVisible();
-    expect(getByText('Error here too')).toBeVisible();
-    expect(getByText('Error again here too')).toBeVisible();
-  });
-
   it('deletes existing iucn classifications when delete icon is clicked', async () => {
     const existingFormValues: IProjectIUCNForm = {
-      classificationDetails: [
-        {
-          classification: 1,
-          subClassification1: 3,
-          subClassification2: 5
-        }
-      ]
+      iucn: {
+        classificationDetails: [
+          {
+            classification: 1,
+            subClassification1: 3,
+            subClassification2: 5
+          }
+        ]
+      }
     };
 
     const { getByTestId, queryByTestId } = render(

@@ -64,7 +64,11 @@ const SelectWithSubtextField: React.FC<ISelectWithSubtextField> = (props) => {
 
   return (
     <ThemeProvider theme={selectWithSubtextTheme}>
-      <FormControl fullWidth variant="outlined" required={props.required}>
+      <FormControl
+        fullWidth
+        variant="outlined"
+        required={props.required}
+        error={get(touched, props.name) && Boolean(get(errors, props.name))}>
         <InputLabel id={`${props.name}-label`}>{props.label}</InputLabel>
         <Select
           name={props.name}
@@ -72,7 +76,6 @@ const SelectWithSubtextField: React.FC<ISelectWithSubtextField> = (props) => {
           label={props.label}
           value={get(values, props.name)}
           onChange={handleChange}
-          error={get(touched, props.name) && Boolean(get(errors, props.name))}
           displayEmpty
           inputProps={{ id: props.id, 'aria-label': props.label }}
           renderValue={(value) => {

@@ -6,8 +6,6 @@ import IconButton from '@material-ui/core/IconButton';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
-import { Theme } from '@material-ui/core/styles/createMuiTheme';
-import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
 import { mdiArrowRight, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
@@ -16,15 +14,6 @@ import { FieldArray, useFormikContext } from 'formik';
 import React from 'react';
 import yup from 'utils/YupSchema';
 
-const useStyles = makeStyles((theme: Theme) => ({
-  iucnInputContainer: {
-    overflow: 'hidden'
-  },
-  iucnInput: {
-    width: '250px'
-  }
-}));
-
 export interface IProjectIUCNFormArrayItem {
   classification: number;
   subClassification1: number;
@@ -32,7 +21,9 @@ export interface IProjectIUCNFormArrayItem {
 }
 
 export interface IProjectIUCNForm {
-  classificationDetails: IProjectIUCNFormArrayItem[];
+  iucn: {
+    classificationDetails: IProjectIUCNFormArrayItem[];
+  };
 }
 
 export const ProjectIUCNFormArrayItemInitialValues: IProjectIUCNFormArrayItem = {
@@ -42,7 +33,9 @@ export const ProjectIUCNFormArrayItemInitialValues: IProjectIUCNFormArrayItem = 
 };
 
 export const ProjectIUCNFormInitialValues: IProjectIUCNForm = {
-  classificationDetails: []
+  iucn: {
+    classificationDetails: []
+  }
 };
 
 export interface IIUCNSubClassification1Option extends IMultiAutocompleteFieldOption {
@@ -54,16 +47,18 @@ export interface IIUCNSubClassification2Option extends IMultiAutocompleteFieldOp
 }
 
 export const ProjectIUCNFormYupSchema = yup.object().shape({
-  classificationDetails: yup
-    .array()
-    .of(
-      yup.object().shape({
-        classification: yup.number().required('You must specify a classification'),
-        subClassification1: yup.number().required('You must specify a sub-classification'),
-        subClassification2: yup.number().required('You must specify a sub-classification')
-      })
-    )
-    .isUniqueIUCNClassificationDetail('IUCN Classifications must be unique')
+  iucn: yup.object().shape({
+    classificationDetails: yup
+      .array()
+      .of(
+        yup.object().shape({
+          classification: yup.number().required('You must specify a classification'),
+          subClassification1: yup.number().required('You must specify a sub-classification'),
+          subClassification2: yup.number().required('You must specify a sub-classification')
+        })
+      )
+      .isUniqueIUCNClassificationDetail('IUCN Classifications must be unique')
+  })
 });
 
 export interface IProjectIUCNFormProps {
@@ -78,17 +73,15 @@ export interface IProjectIUCNFormProps {
  * @return {*}
  */
 const ProjectIUCNForm: React.FC<IProjectIUCNFormProps> = (props) => {
-  const classes = useStyles();
-
   const { values, handleChange, handleSubmit, getFieldMeta, errors } = useFormikContext<IProjectIUCNForm>();
 
   return (
     <form onSubmit={handleSubmit}>
       <FieldArray
-        name="classificationDetails"
+        name="iucn.classificationDetails"
         render={(arrayHelpers: any) => (
           <Box>
-            {values.classificationDetails.map((classificationDetail, index) => {
+            {values.iucn.classificationDetails.map((classificationDetail, index) => {
               const classificationMeta = getFieldMeta(`classificationDetails.[${index}].classification`);
               const subClassification1Meta = getFieldMeta(`classificationDetails.[${index}].subClassification1`);
               const subClassification2Meta = getFieldMeta(`classificationDetails.[${index}].subClassification2`);
@@ -101,105 +94,93 @@ const ProjectIUCNForm: React.FC<IProjectIUCNFormProps> = (props) => {
                   mb={1}
                   data-testid="iucn-classification-grid"
                   key={index}>
-                  <Box display="flex" alignItems="center" className={classes.iucnInputContainer} mr={1}>
-                    <Box className={classes.iucnInput} py={1}>
-                      <FormControl variant="outlined" fullWidth>
-                        <InputLabel id="classification">Classification</InputLabel>
-                        <Select
-                          id={`classificationDetails.[${index}].classification`}
-                          name={`classificationDetails.[${index}].classification`}
-                          labelId="classification"
-                          label="Classification"
-                          value={classificationDetail.classification}
-                          onChange={(e: any) => {
-                            classificationDetail.subClassification1 = ('' as unknown) as number;
-                            classificationDetail.subClassification2 = ('' as unknown) as number;
-                            handleChange(e);
-                          }}
-                          error={classificationMeta.touched && Boolean(classificationMeta.error)}
-                          inputProps={{ 'aria-label': 'Classification' }}>
-                          {props.classifications.map((item: any) => (
+                  <Box display="flex" alignItems="center" py={1} width="250px">
+                    <FormControl variant="outlined" fullWidth>
+                      <InputLabel id="classification">Classification</InputLabel>
+                      <Select
+                        id={`classificationDetails.[${index}].classification`}
+                        name={`iucn.classificationDetails.[${index}].classification`}
+                        labelId="classification"
+                        label="Classification"
+                        value={classificationDetail.classification}
+                        onChange={(e: any) => {
+                          classificationDetail.subClassification1 = ('' as unknown) as number;
+                          classificationDetail.subClassification2 = ('' as unknown) as number;
+                          handleChange(e);
+                        }}
+                        error={classificationMeta.touched && Boolean(classificationMeta.error)}
+                        inputProps={{ 'aria-label': 'Classification' }}>
+                        {props.classifications.map((item: any) => (
+                          <MenuItem key={item.value} value={item.value}>
+                            {item.label}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                      <FormHelperText>{classificationMeta.touched && classificationMeta.error}</FormHelperText>
+                    </FormControl>
+                  </Box>
+                  <Box flex="0 0 auto" width="40px" textAlign="center">
+                    <Icon path={mdiArrowRight} size={0.75}></Icon>
+                  </Box>
+                  <Box display="flex" alignItems="center" py={1} width="250px">
+                    <FormControl variant="outlined" fullWidth>
+                      <InputLabel id="subClassification1">Sub-classification</InputLabel>
+                      <Select
+                        id={`classificationDetails.[${index}].subClassification1`}
+                        name={`iucn.classificationDetails.[${index}].subClassification1`}
+                        labelId="subClassification1"
+                        label="Sub-classification"
+                        value={classificationDetail.subClassification1}
+                        onChange={(e: any) => {
+                          classificationDetail.subClassification2 = ('' as unknown) as number;
+                          handleChange(e);
+                        }}
+                        disabled={!classificationDetail.classification}
+                        error={subClassification1Meta.touched && Boolean(subClassification1Meta.error)}
+                        inputProps={{ 'aria-label': 'subClassification1' }}>
+                        {props.subClassifications1
+                          // Only show the sub-classification 1 categories whose iucn1_id matches the classification id
+                          .filter((item: any) => item.iucn1_id === classificationDetail.classification)
+                          .map((item: any) => (
                             <MenuItem key={item.value} value={item.value}>
                               {item.label}
                             </MenuItem>
                           ))}
-                        </Select>
-                        <FormHelperText>{classificationMeta.touched && classificationMeta.error}</FormHelperText>
-                      </FormControl>
-                    </Box>
-
-                    <Box mx={1}>
+                      </Select>
+                      <FormHelperText>{subClassification1Meta.touched && subClassification1Meta.error}</FormHelperText>
+                    </FormControl>
+                    <Box flex="0 0 auto" width="40px" textAlign="center">
                       <Icon path={mdiArrowRight} size={0.75}></Icon>
-                    </Box>
-
-                    <Box className={classes.iucnInput} py={1}>
-                      <FormControl variant="outlined" fullWidth>
-                        <InputLabel id="subClassification1">Sub-classification</InputLabel>
-                        <Select
-                          id={`classificationDetails.[${index}].subClassification1`}
-                          name={`classificationDetails.[${index}].subClassification1`}
-                          labelId="subClassification1"
-                          label="Sub-classification"
-                          value={classificationDetail.subClassification1}
-                          onChange={(e: any) => {
-                            classificationDetail.subClassification2 = ('' as unknown) as number;
-                            handleChange(e);
-                          }}
-                          disabled={!classificationDetail.classification}
-                          error={subClassification1Meta.touched && Boolean(subClassification1Meta.error)}
-                          inputProps={{ 'aria-label': 'subClassification1' }}>
-                          {props.subClassifications1
-                            // Only show the sub-classification 1 categories whose iucn1_id matches the classification id
-                            .filter((item: any) => item.iucn1_id === classificationDetail.classification)
-                            .map((item: any) => (
-                              <MenuItem key={item.value} value={item.value}>
-                                {item.label}
-                              </MenuItem>
-                            ))}
-                        </Select>
-                        <FormHelperText>
-                          {subClassification1Meta.touched && subClassification1Meta.error}
-                        </FormHelperText>
-                      </FormControl>
-                    </Box>
-
-                    <Box mx={1}>
-                      <Icon path={mdiArrowRight} size={0.75}></Icon>
-                    </Box>
-
-                    <Box className={classes.iucnInput} py={1}>
-                      <FormControl variant="outlined" fullWidth>
-                        <InputLabel id="subClassification2">Sub-classification</InputLabel>
-                        <Select
-                          id={`classificationDetails.[${index}].subClassification2`}
-                          name={`classificationDetails.[${index}].subClassification2`}
-                          labelId="subClassification2"
-                          label="Sub-classification"
-                          value={classificationDetail.subClassification2}
-                          onChange={handleChange}
-                          disabled={!classificationDetail.subClassification1}
-                          error={subClassification2Meta.touched && Boolean(subClassification2Meta.error)}
-                          inputProps={{ 'aria-label': 'subClassification2' }}>
-                          {props.subClassifications2
-                            // Only show the sub-classification 2 categories whose iucn1_id matches the sub-classification 1 iucn2_id
-                            .filter((item: any) => item.iucn2_id === classificationDetail.subClassification1)
-                            .map((item: any) => (
-                              <MenuItem key={item.value} value={item.value}>
-                                {item.label}
-                              </MenuItem>
-                            ))}
-                        </Select>
-                        <FormHelperText>
-                          {subClassification2Meta.touched && subClassification2Meta.error}
-                        </FormHelperText>
-                      </FormControl>
                     </Box>
                   </Box>
-
-                  <Box ml={0.5}>
+                  <Box display="flex" alignItems="center" py={1} width="250px">
+                    <FormControl variant="outlined" fullWidth>
+                      <InputLabel id="subClassification2">Sub-classification</InputLabel>
+                      <Select
+                        id={`classificationDetails.[${index}].subClassification2`}
+                        name={`iucn.classificationDetails.[${index}].subClassification2`}
+                        labelId="subClassification2"
+                        label="Sub-classification"
+                        value={classificationDetail.subClassification2}
+                        onChange={handleChange}
+                        disabled={!classificationDetail.subClassification1}
+                        error={subClassification2Meta.touched && Boolean(subClassification2Meta.error)}
+                        inputProps={{ 'aria-label': 'subClassification2' }}>
+                        {props.subClassifications2
+                          // Only show the sub-classification 2 categories whose iucn1_id matches the sub-classification 1 iucn2_id
+                          .filter((item: any) => item.iucn2_id === classificationDetail.subClassification1)
+                          .map((item: any) => (
+                            <MenuItem key={item.value} value={item.value}>
+                              {item.label}
+                            </MenuItem>
+                          ))}
+                      </Select>
+                      <FormHelperText>{subClassification2Meta.touched && subClassification2Meta.error}</FormHelperText>
+                    </FormControl>
+                  </Box>
+                  <Box flex="0 0 auto" mx={1}>
                     <IconButton
                       data-testid="delete-icon"
-                      color="primary"
                       aria-label="delete"
                       onClick={() => arrayHelpers.remove(index)}>
                       <Icon path={mdiTrashCanOutline} size={1} />
@@ -209,9 +190,11 @@ const ProjectIUCNForm: React.FC<IProjectIUCNFormProps> = (props) => {
               );
             })}
 
-            {errors?.classificationDetails && !Array.isArray(errors?.classificationDetails) && (
+            {errors?.iucn?.classificationDetails && !Array.isArray(errors?.iucn?.classificationDetails) && (
               <Box pb={2}>
-                <Typography style={{ fontSize: '12px', color: '#f44336' }}>{errors.classificationDetails}</Typography>
+                <Typography style={{ fontSize: '12px', color: '#f44336' }}>
+                  {errors.iucn?.classificationDetails}
+                </Typography>
               </Box>
             )}
 

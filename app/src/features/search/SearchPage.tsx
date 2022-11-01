@@ -6,12 +6,10 @@ import centerOfMass from '@turf/center-of-mass';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import MapContainer, { IClusteredPointGeometries } from 'components/map/MapContainer';
 import { SearchFeaturePopup } from 'components/map/SearchFeaturePopup';
-import { AuthStateContext } from 'contexts/authStateContext';
 import { DialogContext } from 'contexts/dialogContext';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
-import { isAuthenticated } from 'utils/authUtils';
 import { generateValidGeometryCollection } from 'utils/mapBoundaryUploadHelpers';
 
 /**
@@ -26,7 +24,6 @@ const SearchPage: React.FC = () => {
   const [geometries, setGeometries] = useState<IClusteredPointGeometries[]>([]);
 
   const dialogContext = useContext(DialogContext);
-  const { keycloakWrapper } = useContext(AuthStateContext);
 
   const showFilterErrorDialog = useCallback(
     (textDialogProps?: Partial<IErrorDialogProps>) => {
@@ -46,9 +43,7 @@ const SearchPage: React.FC = () => {
 
   const getSearchResults = useCallback(async () => {
     try {
-      const response = isAuthenticated(keycloakWrapper)
-        ? await biohubApi.search.getSearchResults()
-        : await biohubApi.public.search.getSearchResults();
+      const response = await biohubApi.search.getSearchResults();
 
       if (!response) {
         setPerformSearch(false);
@@ -76,7 +71,7 @@ const SearchPage: React.FC = () => {
         dialogErrorDetails: apiError?.errors
       });
     }
-  }, [biohubApi.search, biohubApi.public.search, showFilterErrorDialog, keycloakWrapper]);
+  }, [biohubApi.search, showFilterErrorDialog]);
 
   useEffect(() => {
     if (performSearch) {
@@ -100,7 +95,6 @@ const SearchPage: React.FC = () => {
                 <MapContainer
                   mapId="search_boundary_map"
                   scrollWheelZoom={true}
-                  hideDrawControls={true}
                   clusteredPointGeometries={geometries}
                 />
               </Box>

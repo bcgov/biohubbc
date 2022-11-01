@@ -4,7 +4,7 @@ import { SYSTEM_IDENTITY_SOURCE } from '../../../../constants/database';
 import { EXTERNAL_BCEID_IDENTITY_SOURCES, EXTERNAL_IDIR_IDENTITY_SOURCES } from '../../../../constants/keycloak';
 import { SYSTEM_ROLE } from '../../../../constants/roles';
 import { getDBConnection } from '../../../../database/db';
-import { HTTP400 } from '../../../../errors/custom-error';
+import { HTTP400 } from '../../../../errors/http-error';
 import { authorizeRequestHandler } from '../../../../request-handlers/security/authorization';
 import { UserService } from '../../../../services/user-service';
 import { convertUserIdentitySource } from '../../../../utils/keycloak-utils';

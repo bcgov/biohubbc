@@ -6,7 +6,7 @@ import sinonChai from 'sinon-chai';
 import SQL from 'sql-template-strings';
 import { SYSTEM_ROLE } from '../../../constants/roles';
 import * as db from '../../../database/db';
-import { HTTPError } from '../../../errors/custom-error';
+import { HTTPError } from '../../../errors/http-error';
 import project_queries from '../../../queries/project';
 import survey_queries from '../../../queries/survey';
 import * as file_utils from '../../../utils/file-utils';
@@ -60,27 +60,6 @@ describe('deleteProject', () => {
     } catch (actualError) {
       expect((actualError as HTTPError).status).to.equal(400);
       expect((actualError as HTTPError).message).to.equal('Missing required path param: `projectId`');
-    }
-  });
-
-  it('should throw a 400 error when no sql statement returned for getProjectSQL', async () => {
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      }
-    });
-
-    sinon.stub(project_queries, 'getProjectSQL').returns(null);
-
-    try {
-      const result = delete_project.deleteProject();
-
-      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal('Failed to build SQL get statement');
     }
   });
 

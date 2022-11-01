@@ -12,7 +12,6 @@ import {
   getIndigenousPartnershipsByProjectSQL,
   getIUCNActionClassificationByProjectSQL,
   getObjectivesByProjectSQL,
-  getPermitsByProjectSQL,
   getProjectByProjectSQL,
   putProjectFundingSourceSQL,
   putProjectSQL
@@ -27,20 +26,6 @@ describe('getIndigenousPartnershipsByProjectSQL', () => {
 
   it('valid projectId', () => {
     const response = getIndigenousPartnershipsByProjectSQL(1);
-
-    expect(response).to.not.be.null;
-  });
-});
-
-describe('getPermitsByProjectSQL', () => {
-  it('Null projectId', () => {
-    const response = getPermitsByProjectSQL((null as unknown) as number);
-
-    expect(response).to.be.null;
-  });
-
-  it('valid projectId', () => {
-    const response = getPermitsByProjectSQL(1);
 
     expect(response).to.not.be.null;
   });
@@ -61,12 +46,6 @@ describe('getIUCNActionClassificationByProjectSQL', () => {
 });
 
 describe('getCoordinatorByProjectSQL', () => {
-  it('Null projectId', () => {
-    const response = getCoordinatorByProjectSQL((null as unknown) as number);
-
-    expect(response).to.be.null;
-  });
-
   it('valid projectId', () => {
     const response = getCoordinatorByProjectSQL(1);
 
@@ -216,12 +195,6 @@ describe('putProjectSQL', () => {
 });
 
 describe('getObjectivesByProjectSQL', () => {
-  it('Null projectId', () => {
-    const response = getObjectivesByProjectSQL((null as unknown) as number);
-
-    expect(response).to.be.null;
-  });
-
   it('valid projectId', () => {
     const response = getObjectivesByProjectSQL(1);
 

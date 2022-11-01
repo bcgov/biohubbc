@@ -28,6 +28,7 @@ import {
   IGetProjectForViewResponse,
   UPDATE_GET_ENTITIES
 } from 'interfaces/useProjectApi.interface';
+import { LatLngBoundsExpression } from 'leaflet';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
 import ProjectStepComponents from 'utils/ProjectStepComponents';
@@ -96,7 +97,7 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
     env: [],
     wmu: []
   });
-  const [bounds, setBounds] = useState<any[] | undefined>([]);
+  const [bounds, setBounds] = useState<LatLngBoundsExpression | undefined>(undefined);
   const [nonEditableGeometries, setNonEditableGeometries] = useState<any[]>([]);
   const [showFullScreenViewMapDialog, setShowFullScreenViewMapDialog] = useState<boolean>(false);
 
@@ -121,17 +122,22 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
     setLocationDataForUpdate(locationResponseData);
 
     setLocationFormData({
-      location_description: locationResponseData.location_description,
-      geometry: locationResponseData.geometry
+      location: {
+        location_description: locationResponseData.location_description,
+        geometry: locationResponseData.geometry
+      }
     });
 
     setOpenEditDialog(true);
   };
 
   const handleDialogEditSave = async (values: IProjectLocationForm) => {
-    const projectData = {
-      location: { ...values, revision_count: locationDataForUpdate.revision_count }
+    const projectLocationData = {
+      ...values.location,
+      revision_count: locationDataForUpdate.revision_count
     };
+
+    const projectData = { location: projectLocationData };
 
     try {
       await biohubApi.project.updateProject(id, projectData);
@@ -186,7 +192,6 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
         map={
           <MapContainer
             mapId="project_location_form_map"
-            hideDrawControls={true}
             scrollWheelZoom={true}
             nonEditableGeometries={nonEditableGeometries}
             bounds={bounds}
@@ -213,7 +218,6 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
         <Box mt={2} height={350} position="relative">
           <MapContainer
             mapId="project_location_form_map"
-            hideDrawControls={true}
             nonEditableGeometries={nonEditableGeometries}
             bounds={bounds}
             setInferredLayersInfo={setInferredLayersInfo}

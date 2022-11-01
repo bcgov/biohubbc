@@ -5,7 +5,7 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import SQL from 'sql-template-strings';
 import * as db from '../../../../../database/db';
-import { HTTPError } from '../../../../../errors/custom-error';
+import { HTTPError } from '../../../../../errors/http-error';
 import survey_queries from '../../../../../queries/survey';
 import { PlatformService } from '../../../../../services/platform-service';
 import * as file_utils from '../../../../../utils/file-utils';

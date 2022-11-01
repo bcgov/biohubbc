@@ -1,7 +1,7 @@
-import { ApiBuildSQLError, ApiExecuteSQLError } from '../errors/custom-error';
+import { ApiBuildSQLError, ApiExecuteSQLError } from '../errors/api-error';
 import { UserObject } from '../models/user';
 import { queries } from '../queries/queries';
-import { DBService } from './service';
+import { DBService } from './db-service';
 
 export type ListSystemUsers = {
   id: number;
@@ -198,13 +198,7 @@ export class UserService extends DBService {
       throw new ApiBuildSQLError('Failed to build SQL delete statement');
     }
 
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
-
-    console.log(response);
-
-    if (!response.rowCount) {
-      throw new ApiExecuteSQLError('Failed to delete user system roles');
-    }
+    await this.connection.query(sqlStatement.text, sqlStatement.values);
   }
 
   /**

@@ -53,7 +53,6 @@ const AccessRequestList: React.FC<IAccessRequestListProps> = (props) => {
   const { accessRequests, codes, refresh } = props;
 
   const classes = useStyles();
-
   const biohubApi = useBiohubApi();
 
   const [activeReviewDialog, setActiveReviewDialog] = useState<{
@@ -84,6 +83,29 @@ const AccessRequestList: React.FC<IAccessRequestListProps> = (props) => {
     setActiveReviewDialog({ open: false, request: null });
 
     try {
+      await biohubApi.admin.sendGCNotification(
+        {
+          emailAddress: updatedRequest.data.email,
+          phoneNumber: '',
+          userId: updatedRequest.id
+        },
+        {
+          subject: 'SIMS: Your request for access has been approved.',
+          header: 'Your request for access to the Species Inventory Management System has been approved.',
+          body1: 'This is an automated message from the BioHub Species Inventory Management System',
+          body2: '',
+          footer: ''
+        }
+      );
+    } catch (error) {
+      dialogContext.setErrorDialog({
+        ...defaultErrorDialogProps,
+        open: true,
+        dialogErrorDetails: (error as APIError).errors
+      });
+    }
+
+    try {
       await biohubApi.admin.approveAccessRequest(
         updatedRequest.id,
         updatedRequest.data.username,
@@ -105,6 +127,29 @@ const AccessRequestList: React.FC<IAccessRequestListProps> = (props) => {
     const updatedRequest = activeReviewDialog.request as IGetAccessRequestsListResponse;
 
     setActiveReviewDialog({ open: false, request: null });
+
+    try {
+      await biohubApi.admin.sendGCNotification(
+        {
+          emailAddress: updatedRequest.data.email,
+          phoneNumber: '',
+          userId: updatedRequest.id
+        },
+        {
+          subject: 'SIMS: Your request for access has been denied.',
+          header: 'Your request for access to the Species Inventory Management System has been denied.',
+          body1: 'This is an automated message from the BioHub Species Inventory Management System',
+          body2: '',
+          footer: ''
+        }
+      );
+    } catch (error) {
+      dialogContext.setErrorDialog({
+        ...defaultErrorDialogProps,
+        open: true,
+        dialogErrorDetails: (error as APIError).errors
+      });
+    }
 
     try {
       await biohubApi.admin.denyAccessRequest(updatedRequest.id);

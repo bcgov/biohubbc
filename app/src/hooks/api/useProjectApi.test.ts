@@ -1,7 +1,6 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { IEditReportMetaForm } from 'components/attachments/EditReportMetaForm';
-import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
 import { IProjectCoordinatorForm } from 'features/projects/components/ProjectCoordinatorForm';
 import { IProjectDetailsForm } from 'features/projects/components/ProjectDetailsForm';
 import { IProjectFundingForm } from 'features/projects/components/ProjectFundingForm';
@@ -9,10 +8,10 @@ import { IProjectIUCNForm } from 'features/projects/components/ProjectIUCNForm';
 import { IProjectLocationForm } from 'features/projects/components/ProjectLocationForm';
 import { IProjectObjectivesForm } from 'features/projects/components/ProjectObjectivesForm';
 import { IProjectPartnershipsForm } from 'features/projects/components/ProjectPartnershipsForm';
-import { IProjectPermitForm } from 'features/projects/components/ProjectPermitForm';
+import { IProjectPermitForm } from 'features/surveys/SurveyPermitForm';
 import { UPDATE_GET_ENTITIES } from 'interfaces/useProjectApi.interface';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
-import useProjectApi, { usePublicProjectApi } from './useProjectApi';
+import useProjectApi from './useProjectApi';
 
 describe('useProjectApi', () => {
   let mock: any;
@@ -29,15 +28,6 @@ describe('useProjectApi', () => {
   const projectId = 1;
   const attachmentId = 1;
   const attachmentType = 'type';
-  const attachmentMeta: IReportMetaForm = {
-    title: 'upload file',
-    authors: [{ first_name: 'John', last_name: 'Smith' }],
-    description: 'file abstract',
-    year_published: 2000,
-    attachmentFile: new File(['foo'], 'foo.txt', {
-      type: 'text/plain'
-    })
-  };
 
   const attachmentMetaForUpdate: IEditReportMetaForm = {
     title: 'upload file',
@@ -135,44 +125,10 @@ describe('useProjectApi', () => {
     expect(result).toEqual(response);
   });
 
-  it('getProjectsList works as expected (public)', async () => {
-    const response = [
-      {
-        id: 1,
-        name: 'project name',
-        objectives: 'objectives',
-        location_description: 'location',
-        start_date: '2020/04/04',
-        end_date: '2020/05/05',
-        caveats: 'caveat',
-        comments: 'comment',
-        coordinator_first_name: 'first',
-        coordinator_last_name: 'last',
-        coordinator_email_address: 'email@example.com',
-        coordinator_agency_name: 'agency',
-        focal_species_name_list: 'focal'
-      }
-    ];
-
-    mock.onGet(`/api/public/project/list`).reply(200, response);
-
-    const result = await usePublicProjectApi(axios).getProjectsList();
-
-    expect(result).toEqual(response);
-  });
-
   it('getProjectForView works as expected', async () => {
     mock.onGet(`/api/project/${projectId}/view`).reply(200, getProjectForViewResponse);
 
     const result = await useProjectApi(axios).getProjectForView(projectId);
-
-    expect(result).toEqual(getProjectForViewResponse);
-  });
-
-  it('getProjectForView works as expected (public)', async () => {
-    mock.onGet(`/api/public/project/${projectId}/view`).reply(200, getProjectForViewResponse);
-
-    const result = await usePublicProjectApi(axios).getProjectForView(projectId);
 
     expect(result).toEqual(getProjectForViewResponse);
   });
@@ -259,7 +215,7 @@ describe('useProjectApi', () => {
 
     mock.onPost(`/api/project/${projectId}/attachments/upload`).reply(200, 'result 1');
 
-    const result = await useProjectApi(axios).uploadProjectAttachments(projectId, file, attachmentType, attachmentMeta);
+    const result = await useProjectApi(axios).uploadProjectAttachments(projectId, file);
 
     expect(result).toEqual('result 1');
   });
@@ -285,18 +241,6 @@ describe('useProjectApi', () => {
     expect(result).toEqual({ id: 1 });
   });
 
-  it('getAttachmentSignedURL works as expected for public access', async () => {
-    mock
-      .onGet(`/api/public/project/${projectId}/attachments/${attachmentId}/getSignedUrl`, {
-        query: { attachmentType: 'Other' }
-      })
-      .reply(200, 'www.signedurl.com');
-
-    const result = await usePublicProjectApi(axios).getAttachmentSignedURL(projectId, attachmentId, 'Other');
-
-    expect(result).toEqual('www.signedurl.com');
-  });
-
   it('getAttachmentSignedURL works as expected for authenticated access', async () => {
     mock
       .onGet(`/api/project/${projectId}/attachments/${attachmentId}/getSignedUrl`, {
@@ -309,36 +253,13 @@ describe('useProjectApi', () => {
     expect(result).toEqual('www.signedurl.com');
   });
 
-  it('getProjectAttachments works as expected', async () => {
-    mock.onGet(`/api/public/project/${projectId}/attachments/list`).reply(200, {
-      attachmentsList: [
-        {
-          id: 1,
-          fileName: 'filename',
-          lastModified: '2020/04/04',
-          size: 3028
-        }
-      ]
-    });
-
-    const result = await usePublicProjectApi(axios).getProjectAttachments(projectId);
-
-    expect(result.attachmentsList).toEqual([
-      {
-        id: 1,
-        fileName: 'filename',
-        lastModified: '2020/04/04',
-        size: 3028
-      }
-    ]);
-  });
-
   it('updateProjectAttachmentMetadata works as expected', async () => {
     mock.onPut(`/api/project/${projectId}/attachments/${attachmentId}/metadata/update`).reply(200, 'result 1');
 
     const result = await useProjectApi(axios).updateProjectReportMetadata(
       projectId,
       attachmentId,
+      attachmentType,
       attachmentMetaForUpdate,
       attachmentMetaForUpdate.revision_count
     );

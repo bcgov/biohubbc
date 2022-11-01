@@ -249,7 +249,7 @@ exports[`SurveyPage renders correctly with no end date 1`] = `
             class="MuiPaper-root MuiBox-root MuiBox-root-203 MuiPaper-elevation1 MuiPaper-rounded"
           >
             <h2
-              class="MuiTypography-root MuiTypography-h2"
+              class="MuiTypography-root MuiTypography-h4"
             >
               Survey Details
             </h2>
@@ -264,7 +264,7 @@ exports[`SurveyPage renders correctly with no end date 1`] = `
                   style="justify-content: space-between;"
                 >
                   <h3
-                    class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+                    class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
                   >
                     General Information
                   </h3>
@@ -398,7 +398,7 @@ exports[`SurveyPage renders correctly with no end date 1`] = `
                   style="justify-content: space-between;"
                 >
                   <h3
-                    class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+                    class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
                   >
                     Permits
                   </h3>
@@ -496,7 +496,7 @@ exports[`SurveyPage renders correctly with no end date 1`] = `
                   style="justify-content: space-between;"
                 >
                   <h3
-                    class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+                    class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
                   >
                     Funding Sources
                   </h3>
@@ -609,7 +609,7 @@ exports[`SurveyPage renders correctly with no end date 1`] = `
                   style="justify-content: space-between;"
                 >
                   <h3
-                    class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+                    class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
                   >
                     Purpose and Methodology Data
                   </h3>
@@ -756,7 +756,7 @@ exports[`SurveyPage renders correctly with no end date 1`] = `
                   style="justify-content: space-between;"
                 >
                   <h3
-                    class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+                    class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
                   >
                     Proprietary Data
                   </h3>
@@ -876,11 +876,11 @@ exports[`SurveyPage renders correctly with no end date 1`] = `
                 class="MuiToolbar-root MuiToolbar-regular MuiToolbar-gutters"
                 style="justify-content: space-between;"
               >
-                <h2
-                  class="MuiTypography-root MuiTypography-h2 MuiTypography-colorInherit"
+                <h3
+                  class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
                 >
                   Observations
-                </h2>
+                </h3>
                 <div
                   class="MuiBox-root MuiBox-root-245"
                 >
@@ -977,11 +977,11 @@ exports[`SurveyPage renders correctly with no end date 1`] = `
                 class="MuiToolbar-root MuiToolbar-regular MuiToolbar-gutters"
                 style="justify-content: space-between;"
               >
-                <h2
-                  class="MuiTypography-root MuiTypography-h2 MuiTypography-colorInherit"
+                <h3
+                  class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
                 >
                   Documents
-                </h2>
+                </h3>
                 <div
                   class="MuiBox-root MuiBox-root-229"
                 >
@@ -1122,11 +1122,11 @@ exports[`SurveyPage renders correctly with no end date 1`] = `
               class="MuiToolbar-root MuiToolbar-regular"
               style="justify-content: space-between;"
             >
-              <h2
-                class="MuiTypography-root MuiTypography-h2 MuiTypography-colorInherit"
+              <h3
+                class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
               >
                 Study Area
-              </h2>
+              </h3>
               <div
                 class="MuiBox-root MuiBox-root-238"
               >
@@ -1184,7 +1184,7 @@ exports[`SurveyPage renders correctly with no end date 1`] = `
                   >
                     <div
                       class="leaflet-layer "
-                      style="z-index: 1;"
+                      style="z-index: 2;"
                     >
                       <div
                         class="leaflet-tile-container leaflet-zoom-animated"
@@ -1194,7 +1194,7 @@ exports[`SurveyPage renders correctly with no end date 1`] = `
                           alt=""
                           class="leaflet-tile"
                           role="presentation"
-                          src="https://maps.gov.bc.ca/arcgis/rest/services/province/roads_wm/MapServer/tile/0/0/0"
+                          src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/0/0/0"
                           style="width: 256px; height: 256px; left: -38px; top: -79px;"
                         />
                       </div>
@@ -1279,23 +1279,7 @@ exports[`SurveyPage renders correctly with no end date 1`] = `
                   </div>
                   <div
                     class="leaflet-top leaflet-right"
-                  >
-                    <div
-                      class="leaflet-draw leaflet-control"
-                    />
-                    <div
-                      class="leaflet-draw leaflet-control"
-                    />
-                    <div
-                      class="leaflet-draw leaflet-control"
-                    />
-                    <div
-                      class="leaflet-draw leaflet-control"
-                    />
-                    <div
-                      class="leaflet-draw leaflet-control"
-                    />
-                  </div>
+                  />
                   <div
                     class="leaflet-bottom leaflet-left"
                   />
@@ -1320,9 +1304,8 @@ exports[`SurveyPage renders correctly with no end date 1`] = `
                           <label>
                             <div>
                               <input
-                                checked="checked"
                                 class="leaflet-control-layers-selector"
-                                name="leaflet-base-layers_133"
+                                name="leaflet-base-layers_120"
                                 type="radio"
                               />
                               <span>
@@ -1333,8 +1316,9 @@ exports[`SurveyPage renders correctly with no end date 1`] = `
                           <label>
                             <div>
                               <input
+                                checked="checked"
                                 class="leaflet-control-layers-selector"
-                                name="leaflet-base-layers_133"
+                                name="leaflet-base-layers_120"
                                 type="radio"
                               />
                               <span>
@@ -1360,6 +1344,12 @@ exports[`SurveyPage renders correctly with no end date 1`] = `
                         title="A JS library for interactive maps"
                       >
                         Leaflet
+                      </a>
+                       | © 
+                      <a
+                        href="https://www.esri.com/en-us/arcgis/products/location-services/services/basemaps"
+                      >
+                        ESRI Basemap
                       </a>
                     </div>
                   </div>
@@ -1409,12 +1399,6 @@ exports[`SurveyPage renders correctly with no end date 1`] = `
                 study area
               </p>
             </div>
-            <div
-              class="MuiBox-root MuiBox-root-242"
-            />
-            <div
-              class="MuiBox-root MuiBox-root-243"
-            />
             <div
               class="MuiBox-root MuiBox-root-244"
             >
@@ -1634,7 +1618,7 @@ exports[`SurveyPage renders survey page when survey is loaded 1`] = `
             class="MuiPaper-root MuiBox-root MuiBox-root-141 MuiPaper-elevation1 MuiPaper-rounded"
           >
             <h2
-              class="MuiTypography-root MuiTypography-h2"
+              class="MuiTypography-root MuiTypography-h4"
             >
               Survey Details
             </h2>
@@ -1649,7 +1633,7 @@ exports[`SurveyPage renders survey page when survey is loaded 1`] = `
                   style="justify-content: space-between;"
                 >
                   <h3
-                    class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+                    class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
                   >
                     General Information
                   </h3>
@@ -1780,7 +1764,7 @@ exports[`SurveyPage renders survey page when survey is loaded 1`] = `
                   style="justify-content: space-between;"
                 >
                   <h3
-                    class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+                    class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
                   >
                     Permits
                   </h3>
@@ -1878,7 +1862,7 @@ exports[`SurveyPage renders survey page when survey is loaded 1`] = `
                   style="justify-content: space-between;"
                 >
                   <h3
-                    class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+                    class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
                   >
                     Funding Sources
                   </h3>
@@ -1991,7 +1975,7 @@ exports[`SurveyPage renders survey page when survey is loaded 1`] = `
                   style="justify-content: space-between;"
                 >
                   <h3
-                    class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+                    class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
                   >
                     Purpose and Methodology Data
                   </h3>
@@ -2138,7 +2122,7 @@ exports[`SurveyPage renders survey page when survey is loaded 1`] = `
                   style="justify-content: space-between;"
                 >
                   <h3
-                    class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+                    class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
                   >
                     Proprietary Data
                   </h3>
@@ -2258,11 +2242,11 @@ exports[`SurveyPage renders survey page when survey is loaded 1`] = `
                 class="MuiToolbar-root MuiToolbar-regular MuiToolbar-gutters"
                 style="justify-content: space-between;"
               >
-                <h2
-                  class="MuiTypography-root MuiTypography-h2 MuiTypography-colorInherit"
+                <h3
+                  class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
                 >
                   Observations
-                </h2>
+                </h3>
                 <div
                   class="MuiBox-root MuiBox-root-183"
                 >
@@ -2359,11 +2343,11 @@ exports[`SurveyPage renders survey page when survey is loaded 1`] = `
                 class="MuiToolbar-root MuiToolbar-regular MuiToolbar-gutters"
                 style="justify-content: space-between;"
               >
-                <h2
-                  class="MuiTypography-root MuiTypography-h2 MuiTypography-colorInherit"
+                <h3
+                  class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
                 >
                   Documents
-                </h2>
+                </h3>
                 <div
                   class="MuiBox-root MuiBox-root-167"
                 >
@@ -2504,11 +2488,11 @@ exports[`SurveyPage renders survey page when survey is loaded 1`] = `
               class="MuiToolbar-root MuiToolbar-regular"
               style="justify-content: space-between;"
             >
-              <h2
-                class="MuiTypography-root MuiTypography-h2 MuiTypography-colorInherit"
+              <h3
+                class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
               >
                 Study Area
-              </h2>
+              </h3>
               <div
                 class="MuiBox-root MuiBox-root-176"
               >
@@ -2566,7 +2550,7 @@ exports[`SurveyPage renders survey page when survey is loaded 1`] = `
                   >
                     <div
                       class="leaflet-layer "
-                      style="z-index: 1;"
+                      style="z-index: 2;"
                     >
                       <div
                         class="leaflet-tile-container leaflet-zoom-animated"
@@ -2576,7 +2560,7 @@ exports[`SurveyPage renders survey page when survey is loaded 1`] = `
                           alt=""
                           class="leaflet-tile"
                           role="presentation"
-                          src="https://maps.gov.bc.ca/arcgis/rest/services/province/roads_wm/MapServer/tile/0/0/0"
+                          src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/0/0/0"
                           style="width: 256px; height: 256px; left: -38px; top: -79px;"
                         />
                       </div>
@@ -2661,23 +2645,7 @@ exports[`SurveyPage renders survey page when survey is loaded 1`] = `
                   </div>
                   <div
                     class="leaflet-top leaflet-right"
-                  >
-                    <div
-                      class="leaflet-draw leaflet-control"
-                    />
-                    <div
-                      class="leaflet-draw leaflet-control"
-                    />
-                    <div
-                      class="leaflet-draw leaflet-control"
-                    />
-                    <div
-                      class="leaflet-draw leaflet-control"
-                    />
-                    <div
-                      class="leaflet-draw leaflet-control"
-                    />
-                  </div>
+                  />
                   <div
                     class="leaflet-bottom leaflet-left"
                   />
@@ -2702,9 +2670,8 @@ exports[`SurveyPage renders survey page when survey is loaded 1`] = `
                           <label>
                             <div>
                               <input
-                                checked="checked"
                                 class="leaflet-control-layers-selector"
-                                name="leaflet-base-layers_102"
+                                name="leaflet-base-layers_93"
                                 type="radio"
                               />
                               <span>
@@ -2715,8 +2682,9 @@ exports[`SurveyPage renders survey page when survey is loaded 1`] = `
                           <label>
                             <div>
                               <input
+                                checked="checked"
                                 class="leaflet-control-layers-selector"
-                                name="leaflet-base-layers_102"
+                                name="leaflet-base-layers_93"
                                 type="radio"
                               />
                               <span>
@@ -2742,6 +2710,12 @@ exports[`SurveyPage renders survey page when survey is loaded 1`] = `
                         title="A JS library for interactive maps"
                       >
                         Leaflet
+                      </a>
+                       | © 
+                      <a
+                        href="https://www.esri.com/en-us/arcgis/products/location-services/services/basemaps"
+                      >
+                        ESRI Basemap
                       </a>
                     </div>
                   </div>
@@ -2791,12 +2765,6 @@ exports[`SurveyPage renders survey page when survey is loaded 1`] = `
                 study area
               </p>
             </div>
-            <div
-              class="MuiBox-root MuiBox-root-180"
-            />
-            <div
-              class="MuiBox-root MuiBox-root-181"
-            />
             <div
               class="MuiBox-root MuiBox-root-182"
             >

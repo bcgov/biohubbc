@@ -1,7 +1,6 @@
 import { AxiosInstance, CancelTokenSource } from 'axios';
 import { IEditReportMetaForm } from 'components/attachments/EditReportMetaForm';
 import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
-import { IGetSubmissionCSVForViewResponse } from 'interfaces/useObservationApi.interface';
 import { IGetReportMetaData, IUploadAttachmentResponse } from 'interfaces/useProjectApi.interface';
 import { IGetSummaryResultsResponse, IUploadSummaryResultsResponse } from 'interfaces/useSummaryResultsApi.interface';
 import {
@@ -10,7 +9,6 @@ import {
   IGetSurveyAttachmentsResponse,
   IGetSurveyForViewResponse,
   ISurveyAvailableFundingSources,
-  ISurveyPermits,
   SurveyUpdateObject,
   SurveyViewObject
 } from 'interfaces/useSurveyApi.interface';
@@ -254,19 +252,6 @@ const useSurveyApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Get permits that have not already been assigned to a survey, by project ID
-   * Note: This is because a survey can have exactly one permit assigned to it and permits cannot be used more than once
-   *
-   * @param {number} projectId
-   * @returns {*} {Promise<SurveyPermits[]>}
-   */
-  const getSurveyPermits = async (projectId: number): Promise<ISurveyPermits[]> => {
-    const { data } = await axios.get(`/api/project/${projectId}/survey/permits/list`);
-
-    return data;
-  };
-
-  /**
    * Get funding sources for a survey by project ID
    *
    * @param {number} projectId
@@ -448,25 +433,6 @@ const useSurveyApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Get observation submission csv data/details by submission id.
-   * @param {number} projectId
-   * @param {number} surveyId
-   * @param {number} summaryId
-   * @return {*}  {Promise<IGetSubmissionCSVForViewResponse>}
-   */
-  const getSubmissionCSVForView = async (
-    projectId: number,
-    surveyId: number,
-    summaryId: number
-  ): Promise<IGetSubmissionCSVForViewResponse> => {
-    const { data } = await axios.get(
-      `/api/project/${projectId}/survey/${surveyId}/summary/submission/${summaryId}/view`
-    );
-
-    return data;
-  };
-
-  /**
    * Get survey report metadata based on project ID, surveyID, attachment ID, and attachmentType
    *
    * @param {number} projectId
@@ -522,9 +488,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
     getSurveyAttachmentSignedURL,
     getObservationSubmissionSignedURL,
     deleteSurvey,
-    getSurveyPermits,
     getAvailableSurveyFundingSources,
-    getSubmissionCSVForView,
     makeAttachmentUnsecure,
     makeAttachmentSecure,
     getSummarySubmissionSignedURL,

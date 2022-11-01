@@ -1,4 +1,5 @@
-import { envToNrmRegionsMapping, INonEditableGeometries } from 'components/map/MapContainer';
+import { INonEditableGeometries } from 'components/map/MapContainer';
+import { envToNrmRegionsMapping } from 'components/map/wfs-utils';
 import { Feature } from 'geojson';
 import { getKeyByValue } from './Utils';
 

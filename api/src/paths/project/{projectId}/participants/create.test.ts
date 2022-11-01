@@ -4,7 +4,7 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { SYSTEM_IDENTITY_SOURCE } from '../../../../constants/database';
 import * as db from '../../../../database/db';
-import { HTTPError } from '../../../../errors/custom-error';
+import { HTTPError } from '../../../../errors/http-error';
 import { UserService } from '../../../../services/user-service';
 import { getMockDBConnection } from '../../../../__mocks__/db';
 import * as create_project_participants from './create';

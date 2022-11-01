@@ -9,11 +9,11 @@ exports[`LocationBoundary matches the snapshot when the geometry is a single pol
       class="MuiToolbar-root MuiToolbar-regular"
       style="justify-content: space-between;"
     >
-      <h2
-        class="MuiTypography-root MuiTypography-h2 MuiTypography-colorInherit"
+      <h3
+        class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
       >
         Project Location
-      </h2>
+      </h3>
       <div
         class="MuiBox-root MuiBox-root-17"
       >
@@ -71,7 +71,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a single pol
           >
             <div
               class="leaflet-layer "
-              style="z-index: 1;"
+              style="z-index: 2;"
             >
               <div
                 class="leaflet-tile-container leaflet-zoom-animated"
@@ -81,7 +81,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a single pol
                   alt=""
                   class="leaflet-tile"
                   role="presentation"
-                  src="https://maps.gov.bc.ca/arcgis/rest/services/province/roads_wm/MapServer/tile/0/0/0"
+                  src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/0/0/0"
                   style="width: 256px; height: 256px; left: -38px; top: -79px;"
                 />
               </div>
@@ -166,14 +166,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a single pol
           </div>
           <div
             class="leaflet-top leaflet-right"
-          >
-            <div
-              class="leaflet-draw leaflet-control"
-            />
-            <div
-              class="leaflet-draw leaflet-control"
-            />
-          </div>
+          />
           <div
             class="leaflet-bottom leaflet-left"
           />
@@ -198,9 +191,8 @@ exports[`LocationBoundary matches the snapshot when the geometry is a single pol
                   <label>
                     <div>
                       <input
-                        checked="checked"
                         class="leaflet-control-layers-selector"
-                        name="leaflet-base-layers_70"
+                        name="leaflet-base-layers_67"
                         type="radio"
                       />
                       <span>
@@ -211,8 +203,9 @@ exports[`LocationBoundary matches the snapshot when the geometry is a single pol
                   <label>
                     <div>
                       <input
+                        checked="checked"
                         class="leaflet-control-layers-selector"
-                        name="leaflet-base-layers_70"
+                        name="leaflet-base-layers_67"
                         type="radio"
                       />
                       <span>
@@ -238,6 +231,12 @@ exports[`LocationBoundary matches the snapshot when the geometry is a single pol
                 title="A JS library for interactive maps"
               >
                 Leaflet
+              </a>
+               | © 
+              <a
+                href="https://www.esri.com/en-us/arcgis/products/location-services/services/basemaps"
+              >
+                ESRI Basemap
               </a>
             </div>
           </div>
@@ -287,12 +286,6 @@ exports[`LocationBoundary matches the snapshot when the geometry is a single pol
         Location description
       </p>
     </div>
-    <div
-      class="MuiBox-root MuiBox-root-21"
-    />
-    <div
-      class="MuiBox-root MuiBox-root-22"
-    />
     <button
       aria-label="Show Expanded Location"
       class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
@@ -336,11 +329,11 @@ exports[`LocationBoundary matches the snapshot when there is no geometry 1`] = `
       class="MuiToolbar-root MuiToolbar-regular"
       style="justify-content: space-between;"
     >
-      <h2
-        class="MuiTypography-root MuiTypography-h2 MuiTypography-colorInherit"
+      <h3
+        class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
       >
         Project Location
-      </h2>
+      </h3>
       <div
         class="MuiBox-root MuiBox-root-10"
       >
@@ -398,7 +391,7 @@ exports[`LocationBoundary matches the snapshot when there is no geometry 1`] = `
           >
             <div
               class="leaflet-layer "
-              style="z-index: 1;"
+              style="z-index: 2;"
             >
               <div
                 class="leaflet-tile-container leaflet-zoom-animated"
@@ -408,7 +401,7 @@ exports[`LocationBoundary matches the snapshot when there is no geometry 1`] = `
                   alt=""
                   class="leaflet-tile"
                   role="presentation"
-                  src="https://maps.gov.bc.ca/arcgis/rest/services/province/roads_wm/MapServer/tile/5/10/4"
+                  src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/5/10/4"
                   style="width: 256px; height: 256px; left: -159px; top: -31px;"
                 />
               </div>
@@ -470,14 +463,7 @@ exports[`LocationBoundary matches the snapshot when there is no geometry 1`] = `
           </div>
           <div
             class="leaflet-top leaflet-right"
-          >
-            <div
-              class="leaflet-draw leaflet-control"
-            />
-            <div
-              class="leaflet-draw leaflet-control"
-            />
-          </div>
+          />
           <div
             class="leaflet-bottom leaflet-left"
           />
@@ -502,9 +488,8 @@ exports[`LocationBoundary matches the snapshot when there is no geometry 1`] = `
                   <label>
                     <div>
                       <input
-                        checked="checked"
                         class="leaflet-control-layers-selector"
-                        name="leaflet-base-layers_51"
+                        name="leaflet-base-layers_49"
                         type="radio"
                       />
                       <span>
@@ -515,8 +500,9 @@ exports[`LocationBoundary matches the snapshot when there is no geometry 1`] = `
                   <label>
                     <div>
                       <input
+                        checked="checked"
                         class="leaflet-control-layers-selector"
-                        name="leaflet-base-layers_51"
+                        name="leaflet-base-layers_49"
                         type="radio"
                       />
                       <span>
@@ -543,6 +529,12 @@ exports[`LocationBoundary matches the snapshot when there is no geometry 1`] = `
               >
                 Leaflet
               </a>
+               | © 
+              <a
+                href="https://www.esri.com/en-us/arcgis/products/location-services/services/basemaps"
+              >
+                ESRI Basemap
+              </a>
             </div>
           </div>
         </div>
@@ -562,12 +554,6 @@ exports[`LocationBoundary matches the snapshot when there is no geometry 1`] = `
         Location description
       </p>
     </div>
-    <div
-      class="MuiBox-root MuiBox-root-13"
-    />
-    <div
-      class="MuiBox-root MuiBox-root-14"
-    />
     <button
       aria-label="Show Expanded Location"
       class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
@@ -611,11 +597,11 @@ exports[`LocationBoundary matches the snapshot when there is no location descrip
       class="MuiToolbar-root MuiToolbar-regular"
       style="justify-content: space-between;"
     >
-      <h2
-        class="MuiTypography-root MuiTypography-h2 MuiTypography-colorInherit"
+      <h3
+        class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
       >
         Project Location
-      </h2>
+      </h3>
       <div
         class="MuiBox-root MuiBox-root-3"
       >
@@ -673,7 +659,7 @@ exports[`LocationBoundary matches the snapshot when there is no location descrip
           >
             <div
               class="leaflet-layer "
-              style="z-index: 1;"
+              style="z-index: 2;"
             >
               <div
                 class="leaflet-tile-container leaflet-zoom-animated"
@@ -683,7 +669,7 @@ exports[`LocationBoundary matches the snapshot when there is no location descrip
                   alt=""
                   class="leaflet-tile"
                   role="presentation"
-                  src="https://maps.gov.bc.ca/arcgis/rest/services/province/roads_wm/MapServer/tile/5/10/4"
+                  src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/5/10/4"
                   style="width: 256px; height: 256px; left: -159px; top: -31px;"
                 />
               </div>
@@ -745,14 +731,7 @@ exports[`LocationBoundary matches the snapshot when there is no location descrip
           </div>
           <div
             class="leaflet-top leaflet-right"
-          >
-            <div
-              class="leaflet-draw leaflet-control"
-            />
-            <div
-              class="leaflet-draw leaflet-control"
-            />
-          </div>
+          />
           <div
             class="leaflet-bottom leaflet-left"
           />
@@ -777,9 +756,8 @@ exports[`LocationBoundary matches the snapshot when there is no location descrip
                   <label>
                     <div>
                       <input
-                        checked="checked"
                         class="leaflet-control-layers-selector"
-                        name="leaflet-base-layers_34"
+                        name="leaflet-base-layers_33"
                         type="radio"
                       />
                       <span>
@@ -790,8 +768,9 @@ exports[`LocationBoundary matches the snapshot when there is no location descrip
                   <label>
                     <div>
                       <input
+                        checked="checked"
                         class="leaflet-control-layers-selector"
-                        name="leaflet-base-layers_34"
+                        name="leaflet-base-layers_33"
                         type="radio"
                       />
                       <span>
@@ -818,6 +797,12 @@ exports[`LocationBoundary matches the snapshot when there is no location descrip
               >
                 Leaflet
               </a>
+               | © 
+              <a
+                href="https://www.esri.com/en-us/arcgis/products/location-services/services/basemaps"
+              >
+                ESRI Basemap
+              </a>
             </div>
           </div>
         </div>
@@ -837,12 +822,6 @@ exports[`LocationBoundary matches the snapshot when there is no location descrip
         No Description
       </p>
     </div>
-    <div
-      class="MuiBox-root MuiBox-root-6"
-    />
-    <div
-      class="MuiBox-root MuiBox-root-7"
-    />
     <button
       aria-label="Show Expanded Location"
       class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"

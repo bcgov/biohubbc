@@ -22,7 +22,7 @@ export const StudyAreaInitialValues: IStudyAreaForm = {
 
 export const StudyAreaYupSchema = yup.object().shape({
   location: yup.object().shape({
-    survey_area_name: yup.string().required('Required'),
+    survey_area_name: yup.string().required('Survey Area Name is Required'),
     geometry: yup.mixed()
   })
 });
@@ -52,7 +52,7 @@ const StudyAreaForm = () => {
         name="location.geometry"
         title="Study Area Boundary"
         mapId="study_area_form_map"
-        bounds={[]}
+        bounds={undefined}
         formikProps={formikProps}
       />
     </form>
