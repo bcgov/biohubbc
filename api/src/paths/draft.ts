@@ -113,7 +113,7 @@ POST.apiDoc = {
 };
 
 PUT.apiDoc = {
-  description: 'Update a Draft.',
+  description: 'Update a Draft',
   tags: ['draft'],
   security: [
     {
