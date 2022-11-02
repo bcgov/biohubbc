@@ -112,7 +112,6 @@ describe('MapContainer', () => {
         nonEditableGeometries={nonEditableGeometries}
       />
     );
-
     expect(asFragment()).toMatchSnapshot();
   });
 
