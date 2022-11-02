@@ -169,7 +169,8 @@ const ProjectHeader: React.FC<IProjectHeaderProps> = (props) => {
   // Show delete button if you are a system admin or a project admin
   const showDeleteProjectButton = keycloakWrapper?.hasSystemRole([
     SYSTEM_ROLE.SYSTEM_ADMIN,
-    SYSTEM_ROLE.PROJECT_CREATOR
+    SYSTEM_ROLE.PROJECT_CREATOR,
+    SYSTEM_ROLE.DATA_ADMINISTRATOR
   ]);
 
   return (
