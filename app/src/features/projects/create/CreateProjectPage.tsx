@@ -351,6 +351,7 @@ const CreateProjectPage: React.FC = () => {
               handleSubmit={createProject}
               handleCancel={handleCancel}
               handleDraft={setOpenDraftDialog}
+              handleDeleteDraft={setOpenDeleteDraftDialog}
               codes={codesDataLoader.data}
               formikRef={formikRef}
             />
