@@ -136,8 +136,6 @@ describe('OccurrenceService', () => {
     });
   });
 
-  describe('getOccurrences', () => {});
-
   describe('updateSurveyOccurrenceSubmission', () => {
     it('should return a submission id', async () => {
       const service = mockService();
@@ -157,9 +155,4 @@ describe('OccurrenceService', () => {
       expect(id).to.be.eql(1);
     });
   });
-
-  // it('', async () => {
-  //   const dbConnection = getMockDBConnection();
-  //   const service = new OccurrenceService(dbConnection);
-  // });
 });

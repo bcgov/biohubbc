@@ -183,7 +183,7 @@ const useObservationApi = (axios: AxiosInstance) => {
    * @param {number} submissionId
    * @return {*}
    */
-   const processDWCFile = async (projectId: number, submissionId: number) => {
+  const processDWCFile = async (projectId: number, submissionId: number) => {
     const { data } = await axios.post(`api/dwc/process`, {
       project_id: projectId,
       occurrence_submission_id: submissionId
