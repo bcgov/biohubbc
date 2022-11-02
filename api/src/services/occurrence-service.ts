@@ -225,4 +225,15 @@ export class OccurrenceService extends DBService {
   async updateSurveyOccurrenceSubmission(submissionId: number, fileName: string, key: string): Promise<any> {
     return this.occurrenceRepository.updateSurveyOccurrenceSubmissionWithOutputKey(submissionId, fileName, key);
   }
+
+  /**
+   * Updates `darwin_core_source` with passed a stringified json object.
+   *
+   * @param {number} submissionId
+   * @param {string} jsonData
+   * @return {*} {Promise<number>}
+   */
+  async updateDWCSourceForOccurrenceSubmission(submissionId: number, jsonData: string): Promise<number> {
+    return await this.occurrenceRepository.updateDWCSourceForOccurrenceSubmission(submissionId, jsonData);
+  }
 }

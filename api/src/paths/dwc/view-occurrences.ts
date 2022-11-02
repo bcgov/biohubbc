@@ -109,7 +109,7 @@ export function getOccurrencesForView(): RequestHandler {
     } catch (error) {
       defaultLog.error({ label: 'getOccurrencesForView', message: 'error', error });
 
-      // Unexpected error occured, rolling DB back to safe state
+      // Unexpected error occurred, rolling DB back to safe state
       await connection.rollback();
 
       // We still want to track that the submission failed to present to the user
