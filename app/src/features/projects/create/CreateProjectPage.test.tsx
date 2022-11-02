@@ -213,14 +213,14 @@ describe('CreateProjectPage', () => {
           }
         });
 
-        const { queryByText } = render(
+        const { queryAllByText } = render(
           <MemoryRouter initialEntries={['?draftId=1']}>
             <CreateProjectPage />
           </MemoryRouter>
         );
 
         await waitFor(() => {
-          expect(queryByText('Delete Draft', { exact: false })).toBeInTheDocument();
+          expect(queryAllByText('Delete Draft', { exact: false }).length).toEqual(2);
         });
       });
 
