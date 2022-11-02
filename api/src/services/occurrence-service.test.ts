@@ -46,115 +46,114 @@ describe('OccurrenceService', () => {
 
   describe('scrapeAndUploadOccurrences', () => {
     it('should run without error', async () => {
-      const service = mockService()
+      const service = mockService();
       const data: PostOccurrence = {
-        associatedTaxa: "",
-        lifeStage: "",
-        sex: "",
+        associatedTaxa: '',
+        lifeStage: '',
+        sex: '',
         data: {},
-        verbatimCoordinates: "",
+        verbatimCoordinates: '',
         individualCount: 1,
-        vernacularName: "",
-        organismQuantity: "",
-        organismQuantityType: "",
-        eventDate: "",
+        vernacularName: '',
+        organismQuantity: '',
+        organismQuantityType: '',
+        eventDate: ''
       };
-      sinon.stub(service, 'scrapeArchiveForOccurrences').returns([data, data])
-      const insertMany = sinon.stub(service, 'insertPostOccurrences').resolves()
-      await service.scrapeAndUploadOccurrences(1, new DWCArchive(new ArchiveFile('', '', Buffer.from([]), [])))
+      sinon.stub(service, 'scrapeArchiveForOccurrences').returns([data, data]);
+      const insertMany = sinon.stub(service, 'insertPostOccurrences').resolves();
+      await service.scrapeAndUploadOccurrences(1, new DWCArchive(new ArchiveFile('', '', Buffer.from([]), [])));
       expect(insertMany).to.be.calledOnce;
     });
 
     it('should throw Failed to Update Occurrence error', async () => {
-      const service = mockService()
+      const service = mockService();
       const data: PostOccurrence = {
-        associatedTaxa: "",
-        lifeStage: "",
-        sex: "",
+        associatedTaxa: '',
+        lifeStage: '',
+        sex: '',
         data: {},
-        verbatimCoordinates: "",
+        verbatimCoordinates: '',
         individualCount: 1,
-        vernacularName: "",
-        organismQuantity: "",
-        organismQuantityType: "",
-        eventDate: "",
+        vernacularName: '',
+        organismQuantity: '',
+        organismQuantityType: '',
+        eventDate: ''
       };
-      sinon.stub(service, 'scrapeArchiveForOccurrences').returns([data, data])
-      sinon.stub(service, 'insertPostOccurrences').throws(new HTTP400('Failed to insert occurrence data'))
+      sinon.stub(service, 'scrapeArchiveForOccurrences').returns([data, data]);
+      sinon.stub(service, 'insertPostOccurrences').throws(new HTTP400('Failed to insert occurrence data'));
 
       try {
-        await service.scrapeAndUploadOccurrences(1, new DWCArchive(new ArchiveFile('', '', Buffer.from([]), [])))
+        await service.scrapeAndUploadOccurrences(1, new DWCArchive(new ArchiveFile('', '', Buffer.from([]), [])));
         expect.fail();
       } catch (error) {
         expect(error instanceof SubmissionError).to.be.true;
-        expect((error as SubmissionError).submissionMessages[0].type).to.be.eql(SUBMISSION_MESSAGE_TYPE.FAILED_UPDATE_OCCURRENCE_SUBMISSION);
+        expect((error as SubmissionError).submissionMessages[0].type).to.be.eql(
+          SUBMISSION_MESSAGE_TYPE.FAILED_UPDATE_OCCURRENCE_SUBMISSION
+        );
       }
     });
   });
 
   describe('insertPostOccurrences', () => {
     it('should run without issue', async () => {
-      const service = mockService()
-      const insert = sinon.stub(OccurrenceRepository.prototype, 'insertPostOccurrences').resolves()
+      const service = mockService();
+      const insert = sinon.stub(OccurrenceRepository.prototype, 'insertPostOccurrences').resolves();
       const data: PostOccurrence = {
-        associatedTaxa: "",
-        lifeStage: "",
-        sex: "",
+        associatedTaxa: '',
+        lifeStage: '',
+        sex: '',
         data: {},
-        verbatimCoordinates: "",
+        verbatimCoordinates: '',
         individualCount: 1,
-        vernacularName: "",
-        organismQuantity: "",
-        organismQuantityType: "",
-        eventDate: "",
+        vernacularName: '',
+        organismQuantity: '',
+        organismQuantityType: '',
+        eventDate: ''
       };
       await service.insertPostOccurrences(1, [data, data]);
       expect(insert).to.be.calledTwice;
-    })
+    });
   });
 
   describe('insertPostOccurrence', () => {
     it('should run without issue', async () => {
-      const service = mockService()
-      const insert = sinon.stub(OccurrenceRepository.prototype, 'insertPostOccurrences').resolves()
+      const service = mockService();
+      const insert = sinon.stub(OccurrenceRepository.prototype, 'insertPostOccurrences').resolves();
       const data: PostOccurrence = {
-        associatedTaxa: "",
-        lifeStage: "",
-        sex: "",
+        associatedTaxa: '',
+        lifeStage: '',
+        sex: '',
         data: {},
-        verbatimCoordinates: "",
+        verbatimCoordinates: '',
         individualCount: 1,
-        vernacularName: "",
-        organismQuantity: "",
-        organismQuantityType: "",
-        eventDate: "",
+        vernacularName: '',
+        organismQuantity: '',
+        organismQuantityType: '',
+        eventDate: ''
       };
       await service.insertPostOccurrence(1, data);
       expect(insert).to.be.called;
-    })
+    });
   });
 
-  describe('getOccurrences', () => {
-
-  });
+  describe('getOccurrences', () => {});
 
   describe('updateSurveyOccurrenceSubmission', () => {
     it('should return a submission id', async () => {
-      const service = mockService()
-      sinon.stub(OccurrenceRepository.prototype, 'updateSurveyOccurrenceSubmissionWithOutputKey').resolves({})
+      const service = mockService();
+      sinon.stub(OccurrenceRepository.prototype, 'updateSurveyOccurrenceSubmissionWithOutputKey').resolves({});
 
-      const result = await service.updateSurveyOccurrenceSubmission(1, 'file name', 'key')
+      const result = await service.updateSurveyOccurrenceSubmission(1, 'file name', 'key');
       expect(result).to.be.eql({});
     });
   });
 
-
   describe('updateDWCSourceForOccurrenceSubmission', () => {
     it('should return a submission id', async () => {
-      const service = mockService()
-      sinon.stub(OccurrenceRepository.prototype, 'updateDWCSourceForOccurrenceSubmission').resolves(1)
+      const service = mockService();
+      sinon.stub(OccurrenceRepository.prototype, 'updateDWCSourceForOccurrenceSubmission').resolves(1);
 
-      const id = await service.updateDWCSourceForOccurrenceSubmission(1, '{}')
+      const id = await service.updateDWCSourceForOccurrenceSubmission(1, '{}');
       expect(id).to.be.eql(1);
     });
   });

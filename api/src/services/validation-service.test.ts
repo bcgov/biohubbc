@@ -1330,18 +1330,23 @@ describe('ValidationService', () => {
     });
 
     it('should run without error', async () => {
-      const service = mockService()
+      const service = mockService();
       const occurrence = sinon.stub(OccurrenceService.prototype, 'updateDWCSourceForOccurrenceSubmission');
 
-      await service.parseDWCToJSON(1, new DWCArchive(new ArchiveFile('test', 'application/zip', Buffer.from([]), [buildFile('test', {})])))
+      await service.parseDWCToJSON(
+        1,
+        new DWCArchive(new ArchiveFile('test', 'application/zip', Buffer.from([]), [buildFile('test', {})]))
+      );
       expect(occurrence).to.be.called;
     });
 
     it('should return a valid JSON object', async () => {
-      const service = mockService()
-      const result = service.normalizeDWCArchive(new DWCArchive(new ArchiveFile('test', 'application/zip', Buffer.from([]), [buildFile('test', {})])))
-        const obj = JSON.parse(result)
-        expect(typeof obj === 'object').to.be.true
+      const service = mockService();
+      const result = service.normalizeDWCArchive(
+        new DWCArchive(new ArchiveFile('test', 'application/zip', Buffer.from([]), [buildFile('test', {})]))
+      );
+      const obj = JSON.parse(result);
+      expect(typeof obj === 'object').to.be.true;
     });
   });
 });

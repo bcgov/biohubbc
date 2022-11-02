@@ -17,16 +17,15 @@ export interface IOccurrenceSubmission {
 }
 
 export class OccurrenceRepository extends BaseRepository {
-
   async updateDWCSourceForOccurrenceSubmission(submissionId: number, jsonData: string): Promise<number> {
     try {
-      const sql = queries.dwc.updateDWCSourceForOccurrenceSubmissionSQL(submissionId, jsonData)
-      const response = await this.connection.sql<{occurrence_submission_id: number}>(sql)
+      const sql = queries.dwc.updateDWCSourceForOccurrenceSubmissionSQL(submissionId, jsonData);
+      const response = await this.connection.sql<{ occurrence_submission_id: number }>(sql);
 
       if (!response.rowCount) {
         throw SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_UPDATE_OCCURRENCE_SUBMISSION);
       }
-      return response.rows[0].occurrence_submission_id
+      return response.rows[0].occurrence_submission_id;
     } catch (error) {
       throw SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_UPDATE_OCCURRENCE_SUBMISSION);
     }

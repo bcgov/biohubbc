@@ -102,11 +102,11 @@ export class ValidationService extends DBService {
       );
 
       // Parse Archive into JSON file for custom validation
-      await this.parseDWCToJSON(submissionId,  dwcPrep.archive)
+      await this.parseDWCToJSON(submissionId, dwcPrep.archive);
       // insert validated status
       await this.submissionRepository.insertSubmissionStatus(submissionId, SUBMISSION_STATUS_TYPE.TEMPLATE_VALIDATED);
 
-      await this.templateScrapeAndUploadOccurrences(submissionId)
+      await this.templateScrapeAndUploadOccurrences(submissionId);
     } catch (error) {
       if (error instanceof SubmissionError) {
         await this.errorService.insertSubmissionError(submissionId, error);
@@ -149,7 +149,7 @@ export class ValidationService extends DBService {
       const validationSchema = {};
       const rules = this.getValidationRules(validationSchema);
       const csvState = this.validateDWCArchive(archive, rules);
-            
+
       return csvState;
     } catch (error) {
       if (error instanceof SubmissionError) {
@@ -298,7 +298,6 @@ export class ValidationService extends DBService {
     } as ICsvMediaState;
   }
 
-
   /**
    * Return normalized dwca file data
    *
@@ -306,7 +305,7 @@ export class ValidationService extends DBService {
    * @return {*}  {string}
    * @memberof DarwinCoreService
    */
-   normalizeDWCArchive(dwcArchiveFile: DWCArchive): string {
+  normalizeDWCArchive(dwcArchiveFile: DWCArchive): string {
     const normalized = {};
 
     Object.entries(dwcArchiveFile.worksheets).forEach(([key, value]) => {
@@ -319,10 +318,9 @@ export class ValidationService extends DBService {
   }
 
   async parseDWCToJSON(submissionId: number, archive: DWCArchive) {
-    const json = this.normalizeDWCArchive(archive)
-    await this.occurrenceService.updateDWCSourceForOccurrenceSubmission(submissionId, json)
+    const json = this.normalizeDWCArchive(archive);
+    await this.occurrenceService.updateDWCSourceForOccurrenceSubmission(submissionId, json);
   }
-
 
   async persistValidationResults(csvState: ICsvState[], mediaState: IMediaState): Promise<boolean> {
     defaultLog.debug({ label: 'persistValidationResults', message: 'validationResults' });

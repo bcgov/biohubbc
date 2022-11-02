@@ -192,7 +192,9 @@ describe('OccurrenceRepository', () => {
 
   describe('updateDWCSourceForOccurrenceSubmission', () => {
     it('should return submission id', async () => {
-      const mockResponse = ({ rows: [{ occurrence_submission_id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
+      const mockResponse = ({ rows: [{ occurrence_submission_id: 1 }], rowCount: 1 } as any) as Promise<
+        QueryResult<any>
+      >;
       const dbConnection = getMockDBConnection({
         sql: async () => {
           return mockResponse;
@@ -218,8 +220,10 @@ describe('OccurrenceRepository', () => {
         expect.fail();
       } catch (error) {
         expect(error instanceof SubmissionError).to.be.true;
-        expect((error as SubmissionError).submissionMessages[0].type).to.be.eql(SUBMISSION_MESSAGE_TYPE.FAILED_UPDATE_OCCURRENCE_SUBMISSION)
+        expect((error as SubmissionError).submissionMessages[0].type).to.be.eql(
+          SUBMISSION_MESSAGE_TYPE.FAILED_UPDATE_OCCURRENCE_SUBMISSION
+        );
       }
     });
-  })
+  });
 });

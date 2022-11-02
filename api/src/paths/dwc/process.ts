@@ -117,7 +117,7 @@ export function processDWCFile(): RequestHandler {
       await connection.open();
 
       const service = new ValidationService(connection);
-      console.log("PROCESS DWC INSTEAD OF VALIDATE")
+      console.log('PROCESS DWC INSTEAD OF VALIDATE');
       await service.processDWCFile(submissionId);
 
       await connection.commit();
