@@ -61,8 +61,6 @@ const phases = {
     tag: tag,
     env: 'build',
     elasticsearchURL: 'https://elasticsearch-af2668-dev.apps.silver.devops.gov.bc.ca',
-    elasticsearchEmlIndex: 'eml',
-    s3KeyPrefix: 'platform',
     tz: config.timezone.api,
     branch: branch,
     logLevel: (isStaticDeployment && 'info') || 'debug'
@@ -102,6 +100,7 @@ const phases = {
     version: `${version}`,
     tag: `test-${version}`,
     host: staticUrlsAPI.test,
+    appHost: staticUrls.test,
     backboneApiHost: 'https://api-test-biohub-platform.apps.silver.devops.gov.bc.ca',
     backboneIntakePath: '/api/dwc/submission/intake',
     backboneIntakeEnabled: false,
