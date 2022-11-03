@@ -8,7 +8,7 @@ const defaultHost = 'biohubbc-af2668-api.apps.silver.devops.gov.bc.ca';
 const defaultHostAPP = 'biohubbc-af2668-dev.apps.silver.devops.gov.bc.ca';
 
 const appName = (config.module && config.module['app']) || 'biohubbc-app';
-const name = (config.module && config.module['api']) || 'biohubbc-api';
+const apiName = (config.module && config.module['api']) || 'biohubbc-api';
 const dbName = (config.module && config.module['db']) || 'biohubbc-db';
 
 const changeId = options.pr || `${Math.floor(Date.now() * 1000) / 60.0}`; // aka pull-request or branch
@@ -52,12 +52,12 @@ options = processOptions(options);
 const phases = {
   build: {
     namespace: 'af2668-tools',
-    name: `${name}`,
+    name: `${apiName}`,
     dbName: `${dbName}`,
     phase: 'build',
     changeId: changeId,
     suffix: `-build-${changeId}`,
-    instance: `${name}-build-${changeId}`,
+    instance: `${apiName}-build-${changeId}`,
     version: `${version}-${changeId}`,
     tag: tag,
     env: 'build',
@@ -68,17 +68,17 @@ const phases = {
   },
   dev: {
     namespace: 'af2668-dev',
-    name: `${name}`,
+    name: `${apiName}`,
     dbName: `${dbName}`,
     phase: 'dev',
     changeId: deployChangeId,
     suffix: `-dev-${deployChangeId}`,
-    instance: `${name}-dev-${deployChangeId}`,
+    instance: `${apiName}-dev-${deployChangeId}`,
     version: `${deployChangeId}-${changeId}`,
     tag: `dev-${version}-${deployChangeId}`,
     host:
       (isStaticDeployment && (staticUrlsAPI.dev || defaultHost)) ||
-      `${name}-${changeId}-af2668-dev.apps.silver.devops.gov.bc.ca`,
+      `${apiName}-${changeId}-af2668-dev.apps.silver.devops.gov.bc.ca`,
     appHost:
       (isStaticDeployment && (staticUrls.dev || defaultHostAPP)) ||
       `${appName}-${changeId}-af2668-dev.apps.silver.devops.gov.bc.ca`,
@@ -95,12 +95,12 @@ const phases = {
   },
   test: {
     namespace: 'af2668-test',
-    name: `${name}`,
+    name: `${apiName}`,
     dbName: `${dbName}`,
     phase: 'test',
     changeId: deployChangeId,
     suffix: `-test`,
-    instance: `${name}-test`,
+    instance: `${apiName}-test`,
     version: `${version}`,
     tag: `test-${version}`,
     host: staticUrlsAPI.test,
@@ -118,12 +118,12 @@ const phases = {
   },
   prod: {
     namespace: 'af2668-prod',
-    name: `${name}`,
+    name: `${apiName}`,
     dbName: `${dbName}`,
     phase: 'prod',
     changeId: deployChangeId,
     suffix: `-prod`,
-    instance: `${name}-prod`,
+    instance: `${apiName}-prod`,
     version: `${version}`,
     tag: `prod-${version}`,
     host: staticUrlsAPI.prod,
