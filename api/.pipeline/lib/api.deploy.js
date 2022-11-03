@@ -17,6 +17,7 @@ const apiDeploy = async (settings) => {
   const oc = new OpenShiftClientX(Object.assign({ namespace: phases[phase].namespace }, options));
 
   const templatesLocalBaseUrl = oc.toFileUrl(path.resolve(__dirname, '../../openshift'));
+
   const changeId = phases[phase].changeId;
 
   let objects = [];
@@ -35,14 +36,16 @@ const apiDeploy = async (settings) => {
         BACKBONE_INTAKE_ENABLED: phases[phase].backboneIntakeEnabled,
         NODE_ENV: phases[phase].env || 'dev',
         ELASTICSEARCH_URL: phases[phase].elasticsearchURL,
+        S3_KEY_PREFIX: phases[phase].s3KeyPrefix,
+        TZ: phases[phase].tz,
         KEYCLOAK_ADMIN_USERNAME: 'sims-svc',
         KEYCLOAK_SECRET: 'keycloak-admin-password',
         KEYCLOAK_SECRET_ADMIN_PASSWORD: 'keycloak_admin_password',
         DB_SERVICE_NAME: `${phases[phase].dbName}-postgresql${phases[phase].suffix}`,
         CERTIFICATE_URL: phases[phase].certificateURL,
-        KEYCLOAK_HOST: phases[phase].sso.url,
-        KEYCLOAK_CLIENT_ID: phases[phase].sso.clientId,
-        KEYCLOAK_REALM: phases[phase].sso.realm,
+        // KEYCLOAK_HOST: phases[phase].sso.url,
+        // KEYCLOAK_CLIENT_ID: phases[phase].sso.clientId,
+        // KEYCLOAK_REALM: phases[phase].sso.realm,
         REPLICAS: phases[phase].replicas || 1,
         REPLICA_MAX: phases[phase].maxReplicas || 1,
         LOG_LEVEL: phases[phase].logLevel || 'info'
