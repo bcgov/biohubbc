@@ -86,7 +86,7 @@ describe('OccurrenceService', () => {
         await service.scrapeAndUploadOccurrences(1, new DWCArchive(new ArchiveFile('', '', Buffer.from([]), [])));
         expect.fail();
       } catch (error) {
-        expect(error instanceof SubmissionError).to.be.true;
+        expect(error).to.be.instanceOf(SubmissionError)
         expect((error as SubmissionError).submissionMessages[0].type).to.be.eql(
           SUBMISSION_MESSAGE_TYPE.FAILED_UPDATE_OCCURRENCE_SUBMISSION
         );
