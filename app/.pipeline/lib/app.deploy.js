@@ -10,7 +10,7 @@ const appDeploy = (settings) => {
 
   const oc = new OpenShiftClientX(Object.assign({ namespace: phases[phase].namespace }, options));
 
-  const templatesLocalBaseUrl = oc.toFileUrl(path.resolve(__dirname, '../templates'));
+  const templatesLocalBaseUrl = oc.toFileUrl(path.resolve(__dirname, '../../openshift'));
 
   const changeId = phases[phase].changeId;
 
