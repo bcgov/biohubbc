@@ -2,10 +2,9 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import SQL from 'sql-template-strings';
 import * as db from '../../../../../../../../database/db';
 import { HTTPError } from '../../../../../../../../errors/http-error';
-import survey_queries from '../../../../../../../../queries/survey';
+import { SummaryService } from '../../../../../../../../services/summary-service';
 import * as file_utils from '../../../../../../../../utils/file-utils';
 import { getMockDBConnection } from '../../../../../../../../__mocks__/db';
 import * as get_signed_url from './getSignedUrl';
@@ -102,7 +101,7 @@ describe('getSingleSubmissionURL', () => {
       }
     });
 
-    sinon.stub(survey_queries, 'getSurveySummarySubmissionSQL').returns(null);
+    sinon.stub(SummaryService.prototype, 'findSummarySubmissionById').throws();
 
     try {
       const result = get_signed_url.getSingleSummarySubmissionURL();
@@ -128,7 +127,7 @@ describe('getSingleSubmissionURL', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_queries, 'getSurveySummarySubmissionSQL').returns(SQL`some query`);
+    sinon.stub(SummaryService.prototype, 'findSummarySubmissionById').throws();
     sinon.stub(file_utils, 'getS3SignedURL').resolves(null);
 
     const result = get_signed_url.getSingleSummarySubmissionURL();
@@ -151,7 +150,20 @@ describe('getSingleSubmissionURL', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_queries, 'getSurveySummarySubmissionSQL').returns(SQL`some query`);
+    sinon.stub(SummaryService.prototype, 'findSummarySubmissionById').resolves({
+      survey_summary_submission_id: 1,
+      survey_id: 1,
+      source: 'source',
+      event_timestamp: null,
+      delete_timestamp: null,
+      key: 'myurlsigned.com',
+      file_name: 'filename',
+      create_user: 1,
+      update_date: null,
+      update_user: null,
+      revision_count: 1,
+      summary_template_species_id: 1
+    });
     sinon.stub(file_utils, 'getS3SignedURL').resolves('myurlsigned.com');
 
     const result = get_signed_url.getSingleSummarySubmissionURL();

@@ -2,10 +2,8 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import SQL from 'sql-template-strings';
 import * as db from '../../../../../../../../database/db';
 import { HTTPError } from '../../../../../../../../errors/http-error';
-import survey_queries from '../../../../../../../../queries/survey';
 import { SummaryService } from '../../../../../../../../services/summary-service';
 import { getMockDBConnection } from '../../../../../../../../__mocks__/db';
 import * as delete_submission from './delete';
@@ -104,7 +102,7 @@ describe('deleteSummarySubmission', () => {
       query: mockQuery
     });
 
-    sinon.stub(SummaryService, 'deleteSummarySubmission').resolves([]);
+    sinon.stub(SummaryService.prototype, 'deleteSummarySubmission').resolves(null);
 
     const result = delete_submission.deleteSummarySubmission();
 
@@ -126,7 +124,7 @@ describe('deleteSummarySubmission', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_queries, 'deleteSummarySubmissionSQL').returns(SQL`something`);
+    sinon.stub(SummaryService.prototype, 'deleteSummarySubmission').resolves(1);
 
     const result = delete_submission.deleteSummarySubmission();
 
