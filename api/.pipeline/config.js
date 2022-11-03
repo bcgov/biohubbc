@@ -68,7 +68,7 @@ const phases = {
     logLevel: (isStaticDeployment && 'info') || 'debug'
   },
   dev: {
-    namespace: 'a0ec71-dev',
+    namespace: 'af2668-dev',
     name: `${name}`,
     dbName: `${dbName}`,
     phase: 'dev',
@@ -89,7 +89,7 @@ const phases = {
     logLevel: (isStaticDeployment && 'info') || 'debug'
   },
   test: {
-    namespace: 'a0ec71-test',
+    namespace: 'af2668-test',
     name: `${name}`,
     dbName: `${dbName}`,
     phase: 'test',
