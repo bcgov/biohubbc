@@ -1,14 +1,15 @@
 'use strict';
+
+let process = require('process');
+
 let options = require('pipeline-cli').Util.parseArguments();
 
 // The root config for common values
 const config = require('../../.config/config.json');
 
-const defaultHost = 'biohubbc-af2668-dev.apps.silver.devops.gov.bc.ca';
-const defaultHostAPI = 'biohubbc-af2668-api-dev.apps.silver.devops.gov.bc.ca';
-
-const name = (config.module && config.module['app']) || 'biohubbc-app';
-const apiName = (config.module && config.module['api']) || 'biohubbc-api';
+const appName = config.module.app;
+const apiName = config.module.api;
+const dbName = config.module.db;
 
 const changeId = options.pr || `${Math.floor(Date.now() * 1000) / 60.0}`; // aka pull-request or branch
 const version = config.version || '1.0.0';
@@ -20,15 +21,10 @@ const deployChangeId = (isStaticDeployment && 'deploy') || changeId;
 const branch = (isStaticDeployment && options.branch) || null;
 const tag = (branch && `build-${version}-${changeId}-${branch}`) || `build-${version}-${changeId}`;
 
-const staticBranches = config.staticBranches || [];
-const staticUrls = config.staticUrls || {};
-const staticUrlsAPI = config.staticUrlsAPI || {};
-const staticUrlsN8N = config.staticUrlsN8N || {};
-
+const staticUrlsAPI = config.staticUrlsAPI;
+const staticUrls = config.staticUrls;
 const maxUploadNumFiles = 10;
 const maxUploadFileSize = 52428800; // (bytes)
-
-const sso = config.sso;
 
 const processOptions = (options) => {
   const result = { ...options };
@@ -57,86 +53,83 @@ options = processOptions(options);
 const phases = {
   build: {
     namespace: 'af2668-tools',
-    name: `${name}`,
+    name: `${apiName}`,
+    dbName: `${dbName}`,
     phase: 'build',
     changeId: changeId,
     suffix: `-build-${changeId}`,
-    instance: `${name}-build-${changeId}`,
+    instance: `${apiName}-build-${changeId}`,
     version: `${version}-${changeId}`,
     tag: tag,
     env: 'build',
-    branch: branch
+    branch: branch,
+    logLevel: (isStaticDeployment && 'info') || 'debug'
   },
   dev: {
     namespace: 'af2668-dev',
     name: `${name}`,
+    dbName: `${dbName}`,
     phase: 'dev',
     changeId: deployChangeId,
     suffix: `-dev-${deployChangeId}`,
-    instance: `${name}-dev-${deployChangeId}`,
+    instance: `${apiName}-dev-${deployChangeId}`,
     version: `${deployChangeId}-${changeId}`,
     tag: `dev-${version}-${deployChangeId}`,
-    host:
-      (isStaticDeployment && (staticUrls.dev || defaultHost)) ||
-      `${name}-${changeId}-af2668-dev.apps.silver.devops.gov.bc.ca`,
-    apiHost:
-      (isStaticDeployment && (staticUrlsAPI.dev || defaultHostAPI)) ||
-      `${apiName}-${changeId}-af2668-dev.apps.silver.devops.gov.bc.ca`,
+    host: (isStaticDeployment && staticUrlsAPI.dev) || `${apiName}-${changeId}-af2668-dev.apps.silver.devops.gov.bc.ca`,
+    appHost: (isStaticDeployment && staticUrls.dev) || `${appName}-${changeId}-af2668-dev.apps.silver.devops.gov.bc.ca`,
     n8nHost: '', // staticUrlsN8N.dev, // Disable until nginx is setup: https://quartech.atlassian.net/browse/BHBC-1435
-    siteminderLogoutURL: config.siteminderLogoutURL.dev,
-    maxUploadNumFiles,
-    maxUploadFileSize,
     env: 'dev',
-    sso: sso.dev,
+    sso: config.sso.dev,
     replicas: 1,
-    maxReplicas: 1
+    maxReplicas: 2,
+    logLevel: (isStaticDeployment && 'info') || 'debug'
   },
   test: {
     namespace: 'af2668-test',
     name: `${name}`,
+    dbName: `${dbName}`,
     phase: 'test',
     changeId: deployChangeId,
     suffix: `-test`,
-    instance: `${name}-test`,
+    instance: `${apiName}-test`,
     version: `${version}`,
     tag: `test-${version}`,
-    host: staticUrls.test,
-    apiHost: staticUrlsAPI.test || defaultHostAPI,
+    host: staticUrlsAPI.test,
+    appHost: staticUrls.test,
     n8nHost: '', // staticUrlsN8N.test, // Disable until nginx is setup: https://quartech.atlassian.net/browse/BHBC-1435
     siteminderLogoutURL: config.siteminderLogoutURL.test,
     maxUploadNumFiles,
     maxUploadFileSize,
     env: 'test',
-    sso: sso.test,
+    sso: config.sso.test,
     replicas: 3,
-    maxReplicas: 5
+    maxReplicas: 5,
+    logLevel: 'info'
   },
   prod: {
     namespace: 'af2668-prod',
     name: `${name}`,
+    dbName: `${dbName}`,
     phase: 'prod',
     changeId: deployChangeId,
     suffix: `-prod`,
-    instance: `${name}-prod`,
+    instance: `${apiName}-prod`,
     version: `${version}`,
     tag: `prod-${version}`,
-    host: staticUrls.prod,
-    apiHost: staticUrlsAPI.prod || defaultHostAPI,
-    n8nHost: '', // staticUrlsN8N.prod, // Disable until nginx is setup: https://quartech.atlassian.net/browse/BHBC-1435
-    siteminderLogoutURL: config.siteminderLogoutURL.prod,
-    maxUploadNumFiles,
-    maxUploadFileSize,
+    host: staticUrlsAPI.prod,
+    appHost: staticUrls.prod,
     env: 'prod',
     sso: sso.prod,
     replicas: 3,
-    maxReplicas: 6
+    maxReplicas: 6,
+    logLevel: 'info'
   }
 };
 
 // This callback forces the node process to exit as failure.
-process.on('unhandledRejection', (reason) => {
-  console.log(reason);
+process.on('unhandledRejection', (reason, promise) => {
+  console.log('Unhandled Rejection at:', promise, 'reason:', reason);
   process.exit(1);
 });
 
-module.exports = exports = { phases, options, staticBranches };
+module.exports = exports = { phases, options };

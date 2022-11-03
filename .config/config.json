@@ -17,11 +17,6 @@
     "api": "biohubbc-api",
     "app": "biohubbc-app"
   },
-  "staticBranches": [
-    "dev",
-    "test",
-    "prod"
-  ],
   "staticUrls": {
     "dev": "dev-biohubbc.apps.silver.devops.gov.bc.ca",
     "test": "test-biohubbc.apps.silver.devops.gov.bc.ca",
