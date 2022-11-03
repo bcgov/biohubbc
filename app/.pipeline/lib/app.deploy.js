@@ -34,9 +34,6 @@ const appDeploy = (settings) => {
         REACT_APP_KEYCLOAK_HOST: phases[phase].sso.url,
         REACT_APP_KEYCLOAK_REALM: phases[phase].sso.realm,
         REACT_APP_KEYCLOAK_CLIENT_ID: phases[phase].sso.clientId,
-        SSO_URL: phases[phase].sso.url,
-        SSO_CLIENT_ID: phases[phase].sso.clientId,
-        SSO_REALM: phases[phase].sso.realm,
         REPLICAS: phases[phase].replicas || 1,
         REPLICA_MAX: phases[phase].maxReplicas || 1
       }
