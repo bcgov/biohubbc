@@ -14,11 +14,11 @@ import { sheepRecruitmentCompositionJSON } from './template_methodology_species_
 const DB_SCHEMA = process.env.DB_SCHEMA;
 
 const taxonIdLists = {
-  moose: ['4146', '6896', '6897', '6898'],
-  goat: ['4164'],
-  sheep: ['473', '474', '475', '4165', '6904', '8618'],
-  elk: ['2226', '2227', '4148', '6901'],
-  deer: ['477', '6902', '4147', '4149', '4689', '8619']
+  moose: ['4147', '6897', '6898', '6899'],
+  goat: ['4165'],
+  sheep: ['474', '475', '476', '4166', '6905', '8619'],
+  elk: ['2227', '2228', '4149', '6901'],
+  deer: ['478', '6903', '4148', '4150', '8620']
 };
 
 /**
@@ -78,7 +78,7 @@ export async function up(knex: Knex): Promise<void> {
     knex,
     'Elk Aerial Transect Distance Sampling Recruitment Composition Survey',
     [COMMON_SURVEY_METHODOLOGY.ENCOUNTER_TRANSECTS],
-    taxonIdLists.goat,
+    taxonIdLists.elk,
     JSON.stringify(elkAerialTransectDistanceJSON)
   );
 
@@ -170,23 +170,3 @@ const CreateTemplateRows = async (
     ;
   `);
 };
-
-// const updateTemplateIds = async (
-//   knex: Knex,
-//   templateId: number,
-//   fieldMethod: string | null,
-//   intendedOutcome: string | null,
-//   wldTaxon: string
-// ) => {
-//   await knex.raw(`
-//     UPDATE
-//       ${DB_SCHEMA}.template_methodology_species tms
-//     SET
-//       intended_outcome_id = ${intendedOutcome},
-//       field_method_id = (select field_method_id from field_method where name = '${fieldMethod}'),
-//       wldtaxonomic_units_id = ${wldTaxon}
-//     WHERE
-//       template_methodology_species_id = ${templateId}
-//     ;
-//   `);
-// };

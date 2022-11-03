@@ -1,4 +1,5 @@
-import SQL, { SQLStatement } from 'sql-template-strings';
+import SQL from 'sql-template-strings';
+import { getKnex } from '../database/db';
 import { HTTP400 } from '../errors/http-error';
 import { BaseRepository } from './base-repository';
 
@@ -23,48 +24,31 @@ export class ValidationRepository extends BaseRepository {
   ): Promise<ITemplateMethodologyData> {
     const templateRow = await this.getTemplateNameVersionId(templateName, templateVersion);
 
-    console.log('templateRow:', templateRow);
-    console.log('surveyIntendedOutcomeId:', surveyIntendedOutcomeId);
-    console.log('surveyFieldMethodId:', surveyFieldMethodId);
-    console.log('surveySpecies:', surveySpecies);
+    // console.log('templateRow:', templateRow);
+    // console.log('surveyIntendedOutcomeId:', surveyIntendedOutcomeId);
+    // console.log('surveyFieldMethodId:', surveyFieldMethodId);
+    // console.log('surveySpecies:', surveySpecies);
 
-    const sqlStatement: SQLStatement = SQL`
-    SELECT
-      *
-    FROM
-      template_methodology_species tms
-    WHERE
-      tms.template_id = ${templateRow.template_id}
-    and
-	    (
-      tms.intended_outcome_id =  ${surveyIntendedOutcomeId}
-      or
-      tms.intended_outcome_id = null
+    const queryBuilder = getKnex()
+      .select(
+        'template_methodology_species.template_methodology_species_id',
+        'template_methodology_species.validation',
+        'template_methodology_species.transform'
       )
-    and
-      (
-      tms.field_method_id = ${surveyFieldMethodId}
-      or
-      tms.field_method_id = null
+      .from('template_methodology_species')
+      .where('template_methodology_species.template_id', templateRow.template_id)
+      .and.whereIn(
+        'template_methodology_species.wldtaxonomic_units_id',
+        (Array.isArray(surveySpecies) && surveySpecies) || [surveySpecies]
       )
-    and
-      (
-      tms.wldtaxonomic_units_id in (${surveySpecies[0]}`;
+      .and.where('template_methodology_species.field_method_id', surveyFieldMethodId)
+      .or.where('template_methodology_species.field_method_id', null);
 
-    for (let i = 1; i < surveySpecies.length; i++) {
-      sqlStatement.append(`, `);
-      sqlStatement.append(`${surveySpecies[i]}`);
-    }
+    // console.log('queryBuilder:', queryBuilder.toSQL().toNative());
 
-    sqlStatement.append(`)
-      or
-      tms.wldtaxonomic_units_id = null
-      )
-    ;`);
+    const response = await this.connection.knex<ITemplateMethodologyData>(queryBuilder);
 
-    console.log('sqlStatement:', sqlStatement);
-
-    const response = await this.connection.query<ITemplateMethodologyData>(sqlStatement.text, sqlStatement.values);
+    // console.log('response:', response);
 
     if (!response) {
       throw new HTTP400('Failed to query template methodology species table');
