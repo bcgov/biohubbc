@@ -40,7 +40,7 @@ POST.apiDoc = {
       'application/json': {
         schema: {
           type: 'object',
-          required: ['project_id', 'occurrence_submission_id'],
+          required: ['occurrence_submission_id', 'survey_id'],
           properties: {
             project_id: {
               type: 'number'

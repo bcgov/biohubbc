@@ -272,14 +272,12 @@ export class ValidationService extends DBService {
 
     const surveyData = await this.surveyService.getSurveyById(surveyId);
 
-    const surveyIntendedOutcomeId = surveyData.purpose_and_methodology.intended_outcome_id;
     const surveyFieldMethodId = surveyData.purpose_and_methodology.field_method_id;
     const surveySpecies = surveyData.species.focal_species;
 
     return this.validationRepository.getTemplateMethodologySpeciesRecord(
       templateName,
       templateVersion,
-      surveyIntendedOutcomeId,
       surveyFieldMethodId,
       surveySpecies
     );

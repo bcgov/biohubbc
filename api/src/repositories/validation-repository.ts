@@ -13,19 +13,22 @@ export class ValidationRepository extends BaseRepository {
   /**
    * Get a template_methodology_species record from the template_methodologies_species table
    *
-   * @return {*}  {Promise<any>}
+   * @param {string} templateName
+   * @param {string} templateVersion
+   * @param {number} surveyFieldMethodId
+   * @param {number[]} surveySpecies
+   * @return {*}  {Promise<ITemplateMethodologyData>}
+   * @memberof ValidationRepository
    */
   async getTemplateMethodologySpeciesRecord(
     templateName: string,
     templateVersion: string,
-    surveyIntendedOutcomeId: number,
     surveyFieldMethodId: number,
     surveySpecies: number[]
   ): Promise<ITemplateMethodologyData> {
     const templateRow = await this.getTemplateNameVersionId(templateName, templateVersion);
 
     // console.log('templateRow:', templateRow);
-    // console.log('surveyIntendedOutcomeId:', surveyIntendedOutcomeId);
     // console.log('surveyFieldMethodId:', surveyFieldMethodId);
     // console.log('surveySpecies:', surveySpecies);
 
@@ -57,6 +60,14 @@ export class ValidationRepository extends BaseRepository {
     return response && response.rows && response.rows[0];
   }
 
+  /**
+   * Get the Template Id from a Template name and Version number
+   *
+   * @param {string} templateName
+   * @param {string} templateVersion
+   * @return {*}  {Promise<{ template_id: number }>}
+   * @memberof ValidationRepository
+   */
   async getTemplateNameVersionId(templateName: string, templateVersion: string): Promise<{ template_id: number }> {
     const sqlStatement = SQL`
       SELECT
