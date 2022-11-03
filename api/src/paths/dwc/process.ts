@@ -9,7 +9,7 @@ import { ErrorService } from '../../services/error-service';
 import { ValidationService } from '../../services/validation-service';
 import { getLogger } from '../../utils/logger';
 
-const defaultLog = getLogger('paths/dwc/validate');
+const defaultLog = getLogger('paths/dwc/process');
 
 export const POST: Operation = [
   authorizeRequestHandler((req) => {
@@ -96,8 +96,8 @@ export const getValidateAPIDoc = (basicDescription: string, successDescription: 
 
 POST.apiDoc = {
   ...getValidateAPIDoc(
-    'Validates a Darwin Core (DWC) Archive survey observation submission.',
-    'Validate Darwin Core (DWC) Archive survey observation submission OK',
+    'Validates and processes a Darwin Core (DWC) Archive survey observation submission.',
+    'Validate and process a Darwin Core (DWC) Archive survey observation submission OK',
     ['survey', 'observation', 'dwc']
   )
 };

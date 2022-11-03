@@ -3,10 +3,12 @@ import { describe } from 'mocha';
 import { QueryResult } from 'pg';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
+import { SUBMISSION_MESSAGE_TYPE } from '../constants/status';
 import { HTTP400 } from '../errors/http-error';
 import { PostOccurrence } from '../models/occurrence-create';
 import { queries } from '../queries/queries';
 import { OccurrenceRepository } from '../repositories/occurrence-repository';
+import { SubmissionError } from '../utils/submission-error';
 import { getMockDBConnection } from '../__mocks__/db';
 
 chai.use(sinonChai);
@@ -184,6 +186,43 @@ describe('OccurrenceRepository', () => {
         expect.fail();
       } catch (error) {
         expect((error as HTTP400).message).to.equal('Rejected');
+      }
+    });
+  });
+
+  describe('updateDWCSourceForOccurrenceSubmission', () => {
+    it('should return submission id', async () => {
+      const mockResponse = ({ rows: [{ occurrence_submission_id: 1 }], rowCount: 1 } as any) as Promise<
+        QueryResult<any>
+      >;
+      const dbConnection = getMockDBConnection({
+        sql: async () => {
+          return mockResponse;
+        }
+      });
+
+      const repo = new OccurrenceRepository(dbConnection);
+      const id = await repo.updateDWCSourceForOccurrenceSubmission(1, '{}');
+      expect(id).to.be.eql(1);
+    });
+
+    it('should throw Failed to update occurrence submission error', async () => {
+      const mockResponse = ({ rows: [] } as any) as Promise<QueryResult<any>>;
+      const dbConnection = getMockDBConnection({
+        sql: async () => {
+          return mockResponse;
+        }
+      });
+
+      try {
+        const repo = new OccurrenceRepository(dbConnection);
+        await repo.updateDWCSourceForOccurrenceSubmission(1, '{}');
+        expect.fail();
+      } catch (error) {
+        expect(error instanceof SubmissionError).to.be.true;
+        expect((error as SubmissionError).submissionMessages[0].type).to.be.eql(
+          SUBMISSION_MESSAGE_TYPE.FAILED_UPDATE_OCCURRENCE_SUBMISSION
+        );
       }
     });
   });
