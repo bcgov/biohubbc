@@ -44,6 +44,13 @@ parameters:
   - name: APP_PORT_DEFAULT_NAME
     description: Default port resource name
     value: '7100-tcp'
+  - name: SSO_URL
+    description: Key clock login url
+    value: 'https://oidc.gov.bc.ca/auth'
+  - name: SSO_CLIENT_ID
+    description: Client Id for application
+    value: 'lucy'
+  - name: SSO_REALM
   - name: REACT_APP_KEYCLOAK_HOST
     description: Key clock login url
     value: 'https://oidc.gov.bc.ca/auth'
