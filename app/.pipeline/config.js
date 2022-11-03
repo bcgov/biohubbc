@@ -7,9 +7,8 @@ let options = require('pipeline-cli').Util.parseArguments();
 // The root config for common values
 const config = require('../../.config/config.json');
 
-const appName = config.module.app;
+const name = config.module.app;
 const apiName = config.module.api;
-const dbName = config.module.db;
 
 const changeId = options.pr || `${Math.floor(Date.now() * 1000) / 60.0}`; // aka pull-request or branch
 const version = config.version || '1.0.0';
@@ -21,8 +20,9 @@ const deployChangeId = (isStaticDeployment && 'deploy') || changeId;
 const branch = (isStaticDeployment && options.branch) || null;
 const tag = (branch && `build-${version}-${changeId}-${branch}`) || `build-${version}-${changeId}`;
 
-const staticUrlsAPI = config.staticUrlsAPI;
-const staticUrls = config.staticUrls;
+const staticUrls = config.staticUrls || {};
+const staticUrlsAPI = config.staticUrlsAPI || {};
+
 const maxUploadNumFiles = 10;
 const maxUploadFileSize = 52428800; // (bytes)
 
@@ -53,12 +53,11 @@ options = processOptions(options);
 const phases = {
   build: {
     namespace: 'af2668-tools',
-    name: `${apiName}`,
-    dbName: `${dbName}`,
+    name: `${name}`,
     phase: 'build',
     changeId: changeId,
     suffix: `-build-${changeId}`,
-    instance: `${apiName}-build-${changeId}`,
+    instance: `${name}-build-${changeId}`,
     version: `${version}-${changeId}`,
     tag: tag,
     env: 'build',
@@ -68,34 +67,32 @@ const phases = {
   dev: {
     namespace: 'af2668-dev',
     name: `${name}`,
-    dbName: `${dbName}`,
     phase: 'dev',
     changeId: deployChangeId,
     suffix: `-dev-${deployChangeId}`,
-    instance: `${apiName}-dev-${deployChangeId}`,
+    instance: `${name}-dev-${deployChangeId}`,
     version: `${deployChangeId}-${changeId}`,
     tag: `dev-${version}-${deployChangeId}`,
-    host: (isStaticDeployment && staticUrlsAPI.dev) || `${apiName}-${changeId}-af2668-dev.apps.silver.devops.gov.bc.ca`,
-    appHost: (isStaticDeployment && staticUrls.dev) || `${appName}-${changeId}-af2668-dev.apps.silver.devops.gov.bc.ca`,
-    n8nHost: '', // staticUrlsN8N.dev, // Disable until nginx is setup: https://quartech.atlassian.net/browse/BHBC-1435
+    host: (isStaticDeployment && staticUrls.dev) || `${name}-${changeId}-af2668-dev.apps.silver.devops.gov.bc.ca`,
+    apiHost:
+      (isStaticDeployment && staticUrlsAPI.dev) || `${apiName}-${changeId}-af2668-dev.apps.silver.devops.gov.bc.ca`,
+    siteminderLogoutURL: config.siteminderLogoutURL.dev,
     env: 'dev',
     sso: config.sso.dev,
     replicas: 1,
-    maxReplicas: 2,
-    logLevel: (isStaticDeployment && 'info') || 'debug'
+    maxReplicas: 2
   },
   test: {
     namespace: 'af2668-test',
     name: `${name}`,
-    dbName: `${dbName}`,
     phase: 'test',
     changeId: deployChangeId,
     suffix: `-test`,
-    instance: `${apiName}-test`,
+    instance: `${name}-test`,
     version: `${version}`,
     tag: `test-${version}`,
-    host: staticUrlsAPI.test,
-    appHost: staticUrls.test,
+    host: staticUrls.test,
+    apiHost: staticUrlsAPI.test,
     n8nHost: '', // staticUrlsN8N.test, // Disable until nginx is setup: https://quartech.atlassian.net/browse/BHBC-1435
     siteminderLogoutURL: config.siteminderLogoutURL.test,
     maxUploadNumFiles,
@@ -109,17 +106,18 @@ const phases = {
   prod: {
     namespace: 'af2668-prod',
     name: `${name}`,
-    dbName: `${dbName}`,
     phase: 'prod',
     changeId: deployChangeId,
     suffix: `-prod`,
-    instance: `${apiName}-prod`,
+    instance: `${name}-prod`,
     version: `${version}`,
     tag: `prod-${version}`,
-    host: staticUrlsAPI.prod,
-    appHost: staticUrls.prod,
+    host: staticUrls.prod,
+    apiHost: staticUrlsAPI.prod,
+    siteminderLogoutURL: config.siteminderLogoutURL.prod,
+
     env: 'prod',
-    sso: sso.prod,
+    sso: config.sso.prod,
     replicas: 3,
     maxReplicas: 6,
     logLevel: 'info'
