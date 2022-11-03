@@ -36,7 +36,7 @@ const apiDeploy = async (settings) => {
         BACKBONE_INTAKE_ENABLED: phases[phase].backboneIntakeEnabled,
         NODE_ENV: phases[phase].env || 'dev',
         ELASTICSEARCH_URL: phases[phase].elasticsearchURL,
-        S3_KEY_PREFIX: phases[phase].s3KeyPrefix,
+        //S3_KEY_PREFIX: phases[phase].s3KeyPrefix,
         TZ: phases[phase].tz,
         KEYCLOAK_ADMIN_USERNAME: 'sims-svc',
         KEYCLOAK_SECRET: 'keycloak-admin-password',
