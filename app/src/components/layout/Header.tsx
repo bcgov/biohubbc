@@ -1,6 +1,7 @@
 import AppBar from '@material-ui/core/AppBar';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
+import Container from '@material-ui/core/Container';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -19,7 +20,7 @@ import headerImageSmall from 'assets/images/gov-bc-logo-vert.png';
 import { AuthGuard, SystemRoleGuard, UnAuthGuard } from 'components/security/Guards';
 import { SYSTEM_ROLE } from 'constants/roles';
 import { AuthStateContext } from 'contexts/authStateContext';
-import { ConfigContext } from 'contexts/configContext';
+// import { ConfigContext } from 'contexts/configContext';
 import { SYSTEM_IDENTITY_SOURCE } from 'hooks/useKeycloakWrapper';
 import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
@@ -116,7 +117,7 @@ function getDisplayName(userName: string, identitySource: string) {
 
 const Header: React.FC = () => {
   const classes = useStyles();
-  const config = useContext(ConfigContext);
+  // const config = useContext(ConfigContext);
 
   const { keycloakWrapper } = useContext(AuthStateContext);
 
@@ -183,65 +184,70 @@ const Header: React.FC = () => {
     return <span aria-label="This application is currently in beta phase of development">Beta</span>;
   };
 
-  const EnvironmentLabel = () => {
-    if (config?.REACT_APP_NODE_ENV === 'prod') {
-      return <></>;
-    }
+  // const EnvironmentLabel = () => {
+  //   if (config?.REACT_APP_NODE_ENV === 'prod') {
+  //     return <></>;
+  //   }
 
-    return (
-      <span aria-label={`This application is currently being run in the ${config?.REACT_APP_NODE_ENV} environment`}>
-        & {config?.REACT_APP_NODE_ENV}
-      </span>
-    );
-  };
+  //   return (
+  //     <span aria-label={`This application is currently being run in the ${config?.REACT_APP_NODE_ENV} environment`}>
+  //       & {config?.REACT_APP_NODE_ENV}
+  //     </span>
+  //   );
+  // };
 
   return (
     <>
-      <AppBar position="sticky" style={{ boxShadow: 'none' }}>
-        <Toolbar className={classes.govHeaderToolbar}>
-          <Box display="flex" justifyContent="space-between" width="100%">
-            <Link to="/projects" className={classes.brand} aria-label="Go to SIMS Home">
-              <picture>
-                <source srcSet={headerImageLarge} media="(min-width: 1200px)"></source>
-                <source srcSet={headerImageSmall} media="(min-width: 600px)"></source>
-                <img src={headerImageSmall} alt={'Government of British Columbia'} />
-              </picture>
-              <span>
-                Species Inventory Management System
-                <sup className={classes.appPhaseTag}>
-                  <BetaLabel />
-                  &nbsp;
-                  <EnvironmentLabel />
-                </sup>
-              </span>
-            </Link>
-            <UnAuthGuard>
-              <PublicViewUser />
-            </UnAuthGuard>
-            <AuthGuard>
-              <LoggedInUser />
-            </AuthGuard>
-          </Box>
+      <AppBar position="sticky">
+        <Toolbar disableGutters className={classes.govHeaderToolbar}>
+          <Container maxWidth="xl">
+            <Box display="flex" justifyContent="space-between" width="100%">
+              <Link to="/projects" className={classes.brand} aria-label="Go to SIMS Home">
+                <picture>
+                  <source srcSet={headerImageLarge} media="(min-width: 1200px)"></source>
+                  <source srcSet={headerImageSmall} media="(min-width: 600px)"></source>
+                  <img src={headerImageSmall} alt={'Government of British Columbia'} />
+                </picture>
+                <span>
+                  Species Inventory Management System
+                  <sup className={classes.appPhaseTag}>
+                    <BetaLabel />
+                  </sup>
+                </span>
+              </Link>
+              <UnAuthGuard>
+                <PublicViewUser />
+              </UnAuthGuard>
+              <AuthGuard>
+                <LoggedInUser />
+              </AuthGuard>
+            </Box>
+          </Container>
         </Toolbar>
 
         <AuthGuard>
           <Box className={classes.mainNav}>
-            <Toolbar variant="dense" className={classes.mainNavToolbar} role="navigation" aria-label="Main Navigation">
-              <Link to="/admin/projects" id="menu_projects">
-                Projects
-              </Link>
-              <Link to="/admin/search" id="menu_search">
-                Map
-              </Link>
-              <Link to="/admin/resources" id="menu_resources">
-                Resources
-              </Link>
-              <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN]}>
-                <Link to="/admin/users" id="menu_admin_users">
-                  Manage Users
+            <Container maxWidth="xl">
+              <Toolbar variant="dense" disableGutters className={classes.mainNavToolbar} role="navigation" aria-label="Main Navigation">
+                <Link to="/admin/dashboard" id="menu_dashboard">
+                  Dashboard
                 </Link>
-              </SystemRoleGuard>
-            </Toolbar>
+                <Link to="/admin/projects" id="menu_projects">
+                  Projects
+                </Link>
+                <Link to="/admin/search" id="menu_search">
+                  Map
+                </Link>
+                <Link to="/admin/resources" id="menu_resources">
+                  Resources
+                </Link>
+                <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN]}>
+                  <Link to="/admin/users" id="menu_admin_users">
+                    Manage Users
+                  </Link>
+                </SystemRoleGuard>
+              </Toolbar>
+            </Container>
           </Box>
         </AuthGuard>
       </AppBar>

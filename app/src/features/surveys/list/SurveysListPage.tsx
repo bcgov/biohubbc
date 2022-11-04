@@ -1,5 +1,4 @@
-import Box from '@material-ui/core/Box';
-import Paper from '@material-ui/core/Paper';
+import Divider from '@material-ui/core/Divider';
 import { mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
 import SurveysList from 'components/surveys/SurveysList';
@@ -49,18 +48,16 @@ const SurveysListPage: React.FC<ISurveysListPageProps> = (props) => {
 
   return (
     <>
-      <Paper>
-        <H2ButtonToolbar
-          label="Surveys"
-          buttonLabel="Create Survey"
-          buttonTitle="Create Survey"
-          buttonStartIcon={<Icon path={mdiPlus} size={1} />}
-          buttonOnClick={() => navigateToCreateSurveyPage(projectForViewData.id)}
-        />
-        <Box px={3} pb={2}>
-          <SurveysList projectId={projectForViewData.id} surveysList={surveys} />
-        </Box>
-      </Paper>
+      <H2ButtonToolbar
+        label="Surveys"
+        buttonLabel="Create Survey"
+        buttonTitle="Create Survey"
+        buttonStartIcon={<Icon path={mdiPlus} size={0.8} />}
+        buttonProps={{variant: 'contained'}}
+        buttonOnClick={() => navigateToCreateSurveyPage(projectForViewData.id)}
+      />
+      <Divider></Divider>
+      <SurveysList projectId={projectForViewData.id} surveysList={surveys} />
     </>
   );
 };

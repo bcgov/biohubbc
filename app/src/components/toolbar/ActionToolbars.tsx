@@ -36,7 +36,7 @@ export const H3ButtonToolbar: React.FC<IButtonToolbarProps> = (props) => {
         endIcon={props.buttonEndIcon}
         onClick={() => props.buttonOnClick()}
         {...props.buttonProps}>
-        <strong>{props.buttonLabel}</strong>
+        {props.buttonLabel}
       </Button>
     </ActionToolbar>
   );
@@ -50,7 +50,6 @@ export const H2ButtonToolbar: React.FC<IButtonToolbarProps> = (props) => {
       <Button
         id={id}
         data-testid={id}
-        variant="outlined"
         color="primary"
         title={props.buttonTitle}
         aria-label={props.buttonTitle}
@@ -58,7 +57,7 @@ export const H2ButtonToolbar: React.FC<IButtonToolbarProps> = (props) => {
         endIcon={props.buttonEndIcon}
         onClick={() => props.buttonOnClick()}
         {...props.buttonProps}>
-        <strong>{props.buttonLabel}</strong>
+        {props.buttonLabel}
       </Button>
     </ActionToolbar>
   );
@@ -85,6 +84,7 @@ export interface ICustomMenuButtonProps {
   buttonTitle: string;
   buttonStartIcon?: ReactNode;
   buttonEndIcon?: ReactNode;
+  buttonVariant?: string;
   buttonProps?: Partial<ButtonProps> & { 'data-testid'?: string };
   menuItems: IMenuToolbarItem[];
 }
@@ -132,7 +132,7 @@ export const CustomMenuButton: React.FC<ICustomMenuButtonProps> = (props) => {
         anchorEl={anchorEl}
         getContentAnchorEl={null}
         anchorOrigin={{
-          vertical: 'bottom',
+          vertical: 'top',
           horizontal: 'right'
         }}
         transformOrigin={{
@@ -243,7 +243,7 @@ interface IActionToolbarProps {
 const ActionToolbar: React.FC<IActionToolbarProps> = (props) => {
   return (
     <Toolbar {...props.toolbarProps} style={{ justifyContent: 'space-between' }}>
-      <Typography {...props.labelProps} color="inherit" variant="h5" component="h3">
+      <Typography {...props.labelProps} color="inherit" variant="h4">
         {props.label}
       </Typography>
       <Box>{props.children}</Box>
