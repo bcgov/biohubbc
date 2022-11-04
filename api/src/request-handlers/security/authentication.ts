@@ -9,9 +9,6 @@ const defaultLog = getLogger('request-handlers/security/authentication');
 const KEYCLOAK_URL = `${process.env.KEYCLOAK_HOST}/realms/${process.env.KEYCLOAK_REALM}/protocol/openid-connect/certs`;
 const KEYCLOAK_ISSUER = `${process.env.KEYCLOAK_HOST}/realms/${process.env.KEYCLOAK_REALM}`;
 
-console.log('URL: ', KEYCLOAK_URL);
-console.log('Keycloak_issuer', KEYCLOAK_ISSUER);
-
 /**
  * Authenticate the request by validating the authorization bearer token (JWT).
  *

@@ -54,15 +54,12 @@ parameters:
     value: 'America/Vancouver'
   - name: KEYCLOAK_HOST
     description: Key clock login url
-    value: 'https://oidc.gov.bc.ca/auth'
     required: true
   - name: KEYCLOAK_REALM
     description: Realm identifier or name
-    value: '35r1iman'
     required: true
   - name: KEYCLOAK_CLIENT_ID
     description: Client Id for application
-    value: 'biohubbc'
     required: true
   - name: KEYCLOAK_ADMIN_USERNAME
     description: keycloak host admin username
