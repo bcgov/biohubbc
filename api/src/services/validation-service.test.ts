@@ -4,7 +4,7 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import xlsx from 'xlsx';
 import { SUBMISSION_MESSAGE_TYPE, SUBMISSION_STATUS_TYPE } from '../constants/status';
-import { ValidationRepository } from '../repositories/validation-repository';
+import { ITemplateMethodologyData } from '../repositories/validation-repository';
 import * as FileUtils from '../utils/file-utils';
 import { ICsvState } from '../utils/media/csv/csv-file';
 import { DWCArchive } from '../utils/media/dwc/dwc-archive-file';
@@ -92,22 +92,26 @@ describe('ValidationService', () => {
 
     it('should return valid schema', async () => {
       const service = mockService();
-      sinon.stub(ValidationRepository.prototype, 'getTemplateMethodologySpeciesRecord').resolves({
-        validation: { id: 1 }
+      sinon.stub(ValidationService.prototype, 'getTemplateMethodologySpeciesRecord').resolves({
+        template_methodology_species_id: 1,
+        validation: '{}',
+        transform: '{}'
       });
 
       const file = new XLSXCSV(buildFile('testFile', { template_id: 1, csm_id: 1 }));
-      const schema = await service.getValidationSchema(file);
+      const schema = await service.getValidationSchema(file, 1);
       expect(schema).to.be.not.null;
     });
 
     it('should throw Failed to get validation rules error', async () => {
       const service = mockService();
-      sinon.stub(ValidationRepository.prototype, 'getTemplateMethodologySpeciesRecord').resolves({});
+      sinon
+        .stub(ValidationService.prototype, 'getTemplateMethodologySpeciesRecord')
+        .resolves(({} as unknown) as ITemplateMethodologyData);
 
       try {
         const file = new XLSXCSV(buildFile('testFile', { template_id: 1, csm_id: 1 }));
-        await service.getValidationSchema(file);
+        await service.getValidationSchema(file, 1);
         expect.fail();
       } catch (error) {
         expect(error instanceof SubmissionError).to.be.true;
@@ -125,22 +129,26 @@ describe('ValidationService', () => {
 
     it('should return valid schema', async () => {
       const service = mockService();
-      sinon.stub(ValidationRepository.prototype, 'getTemplateMethodologySpeciesRecord').resolves({
-        transform: { id: 1 }
+      sinon.stub(ValidationService.prototype, 'getTemplateMethodologySpeciesRecord').resolves({
+        template_methodology_species_id: 1,
+        validation: '{}',
+        transform: '{}'
       });
 
       const file = new XLSXCSV(buildFile('testFile', { template_id: 1, csm_id: 1 }));
-      const schema = await service.getTransformationSchema(file);
+      const schema = await service.getTransformationSchema(file, 1);
       expect(schema).to.be.not.null;
     });
 
     it('should throw Failed to get transformation rules error', async () => {
       const service = mockService();
-      sinon.stub(ValidationRepository.prototype, 'getTemplateMethodologySpeciesRecord').resolves({});
+      sinon
+        .stub(ValidationService.prototype, 'getTemplateMethodologySpeciesRecord')
+        .resolves(({} as unknown) as ITemplateMethodologyData);
 
       try {
         const file = new XLSXCSV(buildFile('testFile', { template_id: 1, csm_id: 1 }));
-        await service.getTransformationSchema(file);
+        await service.getTransformationSchema(file, 1);
         expect.fail();
       } catch (error) {
         expect(error instanceof SubmissionError).to.be.true;
@@ -168,7 +176,7 @@ describe('ValidationService', () => {
       const persistResults = sinon.stub(ValidationService.prototype, 'persistValidationResults').resolves(true);
 
       const service = mockService();
-      await service.templateValidation(xlsxCsv);
+      await service.templateValidation(xlsxCsv, 1);
 
       expect(getValidation).to.be.calledOnce;
       expect(getRules).to.be.calledOnce;
@@ -189,7 +197,7 @@ describe('ValidationService', () => {
       try {
         const dbConnection = getMockDBConnection();
         const service = new ValidationService(dbConnection);
-        await service.templateValidation(xlsxCsv);
+        await service.templateValidation(xlsxCsv, 1);
         expect.fail();
       } catch (error) {
         expect(error instanceof SubmissionError).to.be.true;
@@ -515,7 +523,7 @@ describe('ValidationService', () => {
       const transform = sinon.stub(service, 'templateTransformation').resolves();
       const submissionStatus = sinon.stub(service.submissionRepository, 'insertSubmissionStatus').resolves();
 
-      await service.transformFile(1);
+      await service.transformFile(1, 1);
       expect(prep).to.be.calledOnce;
       expect(transform).to.be.calledOnce;
       expect(submissionStatus).to.be.calledOnce;
@@ -531,7 +539,7 @@ describe('ValidationService', () => {
       const insertError = sinon.stub(service.errorService, 'insertSubmissionError').resolves();
 
       try {
-        await service.transformFile(1);
+        await service.transformFile(1, 1);
         expect(prep).to.be.calledOnce;
       } catch (error) {
         expect(error instanceof SubmissionError).to.be.true;
@@ -553,7 +561,7 @@ describe('ValidationService', () => {
       const insertError = sinon.stub(service.errorService, 'insertSubmissionError').throws();
 
       try {
-        await service.transformFile(1);
+        await service.transformFile(1, 1);
         expect(prep).to.be.calledOnce;
       } catch (error) {
         expect(error instanceof SubmissionError).to.be.false;
@@ -580,7 +588,7 @@ describe('ValidationService', () => {
       const validation = sinon.stub(service, 'templateValidation').resolves();
       const submissionStatus = sinon.stub(service.submissionRepository, 'insertSubmissionStatus').resolves();
 
-      await service.validateFile(1);
+      await service.validateFile(1, 1);
       expect(prep).to.be.calledOnce;
       expect(validation).to.be.calledOnce;
       expect(submissionStatus).to.be.calledOnce;
@@ -600,7 +608,7 @@ describe('ValidationService', () => {
       const insertError = sinon.stub(service.errorService, 'insertSubmissionError').resolves();
 
       try {
-        await service.validateFile(1);
+        await service.validateFile(1, 1);
         expect(prep).to.be.calledOnce;
       } catch (error) {
         expect(error instanceof SubmissionError).to.be.true;
@@ -622,7 +630,7 @@ describe('ValidationService', () => {
       const insertError = sinon.stub(service.errorService, 'insertSubmissionError').resolves();
 
       try {
-        await service.validateFile(1);
+        await service.validateFile(1, 1);
         expect(prep).to.be.calledOnce;
         expect(validation).to.be.calledOnce;
       } catch (error) {
@@ -753,7 +761,7 @@ describe('ValidationService', () => {
       const upload = sinon.stub(service, 'templateScrapeAndUploadOccurrences').resolves();
       const status = sinon.stub(service.submissionRepository, 'insertSubmissionStatus').resolves();
 
-      await service.processFile(1);
+      await service.processFile(1, 1);
       expect(prep).to.be.calledOnce;
       expect(validate).to.be.calledOnce;
       expect(transform).to.be.calledOnce;
@@ -777,7 +785,7 @@ describe('ValidationService', () => {
       sinon.stub(service, 'templateScrapeAndUploadOccurrences').resolves();
       sinon.stub(service.submissionRepository, 'insertSubmissionStatus').resolves();
 
-      await service.processFile(1);
+      await service.processFile(1, 1);
       expect(prep).to.be.calledOnce;
       expect(validate).to.be.calledOnce;
       expect(transform).to.be.calledOnce;
@@ -799,7 +807,7 @@ describe('ValidationService', () => {
       sinon.stub(service.submissionRepository, 'insertSubmissionStatus').resolves();
 
       try {
-        await service.validateFile(1);
+        await service.validateFile(1, 1);
         expect(prep).to.be.calledOnce;
         expect(validate).to.be.calledOnce;
         expect(transform).to.be.calledOnce;
@@ -1025,7 +1033,7 @@ describe('ValidationService', () => {
       const transform = sinon.stub(service, 'transformXLSX').resolves([fileBuffer]);
       const persistResults = sinon.stub(service, 'persistTransformationResults').resolves();
 
-      await service.templateTransformation(1, xlsxCsv, '');
+      await service.templateTransformation(1, xlsxCsv, '', 1);
 
       expect(getTransformation).to.be.calledOnce;
       expect(getRules).to.be.calledOnce;
@@ -1054,7 +1062,7 @@ describe('ValidationService', () => {
         .throws(SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_UPLOAD_FILE_TO_S3));
 
       try {
-        await service.templateTransformation(1, xlsxCsv, '');
+        await service.templateTransformation(1, xlsxCsv, '', 1);
         expect(getTransformation).to.be.calledOnce;
         expect(getRules).to.be.calledOnce;
         expect(transform).to.be.calledOnce;

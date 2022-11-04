@@ -28,10 +28,6 @@ export class ValidationRepository extends BaseRepository {
   ): Promise<ITemplateMethodologyData> {
     const templateRow = await this.getTemplateNameVersionId(templateName, templateVersion);
 
-    // console.log('templateRow:', templateRow);
-    // console.log('surveyFieldMethodId:', surveyFieldMethodId);
-    // console.log('surveySpecies:', surveySpecies);
-
     const queryBuilder = getKnex()
       .select(
         'template_methodology_species.template_methodology_species_id',
@@ -47,17 +43,13 @@ export class ValidationRepository extends BaseRepository {
       .and.where('template_methodology_species.field_method_id', surveyFieldMethodId)
       .or.where('template_methodology_species.field_method_id', null);
 
-    // console.log('queryBuilder:', queryBuilder.toSQL().toNative());
-
     const response = await this.connection.knex<ITemplateMethodologyData>(queryBuilder);
 
-    // console.log('response:', response);
-
-    if (!response) {
+    if (!response || !response.rows) {
       throw new HTTP400('Failed to query template methodology species table');
     }
 
-    return response && response.rows && response.rows[0];
+    return response.rows[0];
   }
 
   /**
