@@ -110,7 +110,7 @@ describe('ValidationService', () => {
         await service.getValidationSchema(file);
         expect.fail();
       } catch (error) {
-        expect(error).to.be.instanceof(SubmissionError)
+        expect(error).to.be.instanceof(SubmissionError);
         if (error instanceof SubmissionError) {
           expect(error.submissionMessages[0].type).to.be.eql(SUBMISSION_MESSAGE_TYPE.FAILED_GET_VALIDATION_RULES);
         }
@@ -225,7 +225,7 @@ describe('ValidationService', () => {
       const results = await service.templatePreparation(1);
 
       expect(results.xlsx).to.not.be.empty;
-      expect(results.xlsx).to.be.instanceOf(XLSXCSV)
+      expect(results.xlsx).to.be.instanceOf(XLSXCSV);
       expect(results.s3InputKey).to.be.eql(s3Key);
     });
 
@@ -282,7 +282,7 @@ describe('ValidationService', () => {
       try {
         const xlsx = service.prepXLSX(file);
         expect(xlsx).to.not.be.empty;
-        expect(xlsx).to.be.instanceOf(XLSXCSV)
+        expect(xlsx).to.be.instanceOf(XLSXCSV);
       } catch (error) {
         expect(parse).to.be.calledOnce;
       }
@@ -411,7 +411,7 @@ describe('ValidationService', () => {
       const service = mockService();
 
       const parser = service.getValidationRules({});
-      expect(parser).to.be.instanceOf(ValidationSchemaParser)
+      expect(parser).to.be.instanceOf(ValidationSchemaParser);
     });
 
     it('should fail with invalid json', () => {
@@ -437,7 +437,7 @@ describe('ValidationService', () => {
       const service = mockService();
 
       const parser = service.getTransformationRules({});
-      expect(parser).to.be.instanceOf(TransformationSchemaParser)
+      expect(parser).to.be.instanceOf(TransformationSchemaParser);
     });
 
     it('should fail with invalid json', () => {
@@ -494,7 +494,7 @@ describe('ValidationService', () => {
         expect(scrapeUpload).to.be.calledOnce;
         expect.fail();
       } catch (error) {
-        expect(error).not.to.be.instanceOf(SubmissionError)
+        expect(error).not.to.be.instanceOf(SubmissionError);
         expect(insertError).not.be.calledOnce;
       }
     });
@@ -556,7 +556,7 @@ describe('ValidationService', () => {
         await service.transformFile(1);
         expect(prep).to.be.calledOnce;
       } catch (error) {
-        expect(error).to.be.instanceOf(SubmissionError)
+        expect(error).to.be.instanceOf(SubmissionError);
         expect(transform).not.to.be.calledOnce;
         expect(submissionStatus).not.to.be.calledOnce;
         expect(insertError).not.to.be.calledOnce;
@@ -626,7 +626,7 @@ describe('ValidationService', () => {
         expect(prep).to.be.calledOnce;
         expect(validation).to.be.calledOnce;
       } catch (error) {
-        expect(error).not.to.be.instanceOf(SubmissionError)
+        expect(error).not.to.be.instanceOf(SubmissionError);
         expect(insertError).not.to.be.calledOnce;
         expect(submissionStatus).not.to.be.calledOnce;
       }
@@ -729,7 +729,7 @@ describe('ValidationService', () => {
         expect(persistResults).to.be.calledOnce;
         expect(update).to.be.calledOnce;
       } catch (error) {
-        expect(error).not.to.be.instanceOf(SubmissionError)
+        expect(error).not.to.be.instanceOf(SubmissionError);
         expect(insertError).not.to.be.calledOnce;
       }
     });
@@ -804,7 +804,7 @@ describe('ValidationService', () => {
         expect(validate).to.be.calledOnce;
         expect(transform).to.be.calledOnce;
       } catch (error) {
-        expect(error).not.to.be.instanceOf(SubmissionError)
+        expect(error).not.to.be.instanceOf(SubmissionError);
         expect(insertError).not.to.be.calledOnce;
       }
     });

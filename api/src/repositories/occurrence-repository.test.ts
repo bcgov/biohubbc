@@ -219,7 +219,7 @@ describe('OccurrenceRepository', () => {
         await repo.updateDWCSourceForOccurrenceSubmission(1, '{}');
         expect.fail();
       } catch (error) {
-        expect(error).to.be.instanceOf(SubmissionError)
+        expect(error).to.be.instanceOf(SubmissionError);
         expect((error as SubmissionError).submissionMessages[0].type).to.be.eql(
           SUBMISSION_MESSAGE_TYPE.FAILED_UPDATE_OCCURRENCE_SUBMISSION
         );
