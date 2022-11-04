@@ -76,7 +76,7 @@ describe('xlsx/validate', () => {
         });
 
         describe('survey_id and occurrence_submission_id', () => {
-          it('have invalid type', async () => {
+          it('have invalid type ', async () => {
             const request = {
               headers: { 'content-type': 'application/json' },
               body: { survey_id: 'not a number', occurrence_submission_id: 'not a number' }
