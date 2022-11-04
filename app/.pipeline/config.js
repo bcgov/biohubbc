@@ -1,14 +1,14 @@
 'use strict';
+
+let process = require('process');
+
 let options = require('pipeline-cli').Util.parseArguments();
 
 // The root config for common values
 const config = require('../../.config/config.json');
 
-const defaultHost = 'biohubbc-af2668-dev.apps.silver.devops.gov.bc.ca';
-const defaultHostAPI = 'biohubbc-af2668-api-dev.apps.silver.devops.gov.bc.ca';
-
-const name = (config.module && config.module['app']) || 'biohubbc-app';
-const apiName = (config.module && config.module['api']) || 'biohubbc-api';
+const name = config.module.app;
+const apiName = config.module.api;
 
 const changeId = options.pr || `${Math.floor(Date.now() * 1000) / 60.0}`; // aka pull-request or branch
 const version = config.version || '1.0.0';
@@ -20,15 +20,11 @@ const deployChangeId = (isStaticDeployment && 'deploy') || changeId;
 const branch = (isStaticDeployment && options.branch) || null;
 const tag = (branch && `build-${version}-${changeId}-${branch}`) || `build-${version}-${changeId}`;
 
-const staticBranches = config.staticBranches || [];
 const staticUrls = config.staticUrls || {};
 const staticUrlsAPI = config.staticUrlsAPI || {};
-const staticUrlsN8N = config.staticUrlsN8N || {};
 
 const maxUploadNumFiles = 10;
 const maxUploadFileSize = 52428800; // (bytes)
-
-const sso = config.sso;
 
 const processOptions = (options) => {
   const result = { ...options };
@@ -65,7 +61,8 @@ const phases = {
     version: `${version}-${changeId}`,
     tag: tag,
     env: 'build',
-    branch: branch
+    branch: branch,
+    logLevel: (isStaticDeployment && 'info') || 'debug'
   },
   dev: {
     namespace: 'af2668-dev',
@@ -76,20 +73,14 @@ const phases = {
     instance: `${name}-dev-${deployChangeId}`,
     version: `${deployChangeId}-${changeId}`,
     tag: `dev-${version}-${deployChangeId}`,
-    host:
-      (isStaticDeployment && (staticUrls.dev || defaultHost)) ||
-      `${name}-${changeId}-af2668-dev.apps.silver.devops.gov.bc.ca`,
+    host: (isStaticDeployment && staticUrls.dev) || `${name}-${changeId}-af2668-dev.apps.silver.devops.gov.bc.ca`,
     apiHost:
-      (isStaticDeployment && (staticUrlsAPI.dev || defaultHostAPI)) ||
-      `${apiName}-${changeId}-af2668-dev.apps.silver.devops.gov.bc.ca`,
-    n8nHost: '', // staticUrlsN8N.dev, // Disable until nginx is setup: https://quartech.atlassian.net/browse/BHBC-1435
+      (isStaticDeployment && staticUrlsAPI.dev) || `${apiName}-${changeId}-af2668-dev.apps.silver.devops.gov.bc.ca`,
     siteminderLogoutURL: config.siteminderLogoutURL.dev,
-    maxUploadNumFiles,
-    maxUploadFileSize,
     env: 'dev',
-    sso: sso.dev,
+    sso: config.sso.dev,
     replicas: 1,
-    maxReplicas: 1
+    maxReplicas: 2
   },
   test: {
     namespace: 'af2668-test',
@@ -101,15 +92,16 @@ const phases = {
     version: `${version}`,
     tag: `test-${version}`,
     host: staticUrls.test,
-    apiHost: staticUrlsAPI.test || defaultHostAPI,
+    apiHost: staticUrlsAPI.test,
     n8nHost: '', // staticUrlsN8N.test, // Disable until nginx is setup: https://quartech.atlassian.net/browse/BHBC-1435
     siteminderLogoutURL: config.siteminderLogoutURL.test,
     maxUploadNumFiles,
     maxUploadFileSize,
     env: 'test',
-    sso: sso.test,
+    sso: config.sso.test,
     replicas: 3,
-    maxReplicas: 5
+    maxReplicas: 5,
+    logLevel: 'info'
   },
   prod: {
     namespace: 'af2668-prod',
@@ -121,22 +113,21 @@ const phases = {
     version: `${version}`,
     tag: `prod-${version}`,
     host: staticUrls.prod,
-    apiHost: staticUrlsAPI.prod || defaultHostAPI,
-    n8nHost: '', // staticUrlsN8N.prod, // Disable until nginx is setup: https://quartech.atlassian.net/browse/BHBC-1435
+    apiHost: staticUrlsAPI.prod,
     siteminderLogoutURL: config.siteminderLogoutURL.prod,
-    maxUploadNumFiles,
-    maxUploadFileSize,
+
     env: 'prod',
-    sso: sso.prod,
+    sso: config.sso.prod,
     replicas: 3,
-    maxReplicas: 6
+    maxReplicas: 6,
+    logLevel: 'info'
   }
 };
 
 // This callback forces the node process to exit as failure.
-process.on('unhandledRejection', (reason) => {
-  console.log(reason);
+process.on('unhandledRejection', (reason, promise) => {
+  console.log('Unhandled Rejection at:', promise, 'reason:', reason);
   process.exit(1);
 });
 
-module.exports = exports = { phases, options, staticBranches };
+module.exports = exports = { phases, options };
