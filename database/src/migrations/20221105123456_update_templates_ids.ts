@@ -37,7 +37,7 @@ export async function up(knex: Knex): Promise<void> {
   permutateTemplates(
     knex,
     'Moose Composition Survey',
-    [COMMON_SURVEY_METHODOLOGY.COMPOSITION],
+    [COMMON_SURVEY_METHODOLOGY.COMPOSITION, null],
     taxonIdLists.moose,
     JSON.stringify(mooseCompositionJSON)
   );

@@ -40,8 +40,10 @@ export class ValidationRepository extends BaseRepository {
         'template_methodology_species.wldtaxonomic_units_id',
         (Array.isArray(surveySpecies) && surveySpecies) || [surveySpecies]
       )
-      .and.where('template_methodology_species.field_method_id', surveyFieldMethodId)
-      .or.where('template_methodology_species.field_method_id', null);
+      .and.where(function (qb) {
+        qb.or.where('template_methodology_species.field_method_id', surveyFieldMethodId);
+        qb.or.where('template_methodology_species.field_method_id', null);
+      });
 
     const response = await this.connection.knex<ITemplateMethodologyData>(queryBuilder);
 
