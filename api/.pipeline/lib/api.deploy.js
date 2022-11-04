@@ -41,7 +41,6 @@ const apiDeploy = async (settings) => {
         KEYCLOAK_SECRET: 'keycloak-admin-password',
         KEYCLOAK_SECRET_ADMIN_PASSWORD: 'keycloak_admin_password',
         DB_SERVICE_NAME: `${phases[phase].dbName}-postgresql${phases[phase].suffix}`,
-        CERTIFICATE_URL: phases[phase].certificateURL,
         REPLICAS: phases[phase].replicas || 1,
         REPLICA_MAX: phases[phase].maxReplicas || 1,
         LOG_LEVEL: phases[phase].logLevel || 'info'

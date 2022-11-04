@@ -32,11 +32,6 @@
     "test": "n8n-af2668-test.apps.silver.devops.gov.bc.ca",
     "prod": "n8n-af2668-prod.apps.silver.devops.gov.bc.ca"
   },
-  "certificateURL": {
-    "dev": "https://dev.oidc.gov.bc.ca/auth/realms/35r1iman/protocol/openid-connect/certs",
-    "test": "https://test.oidc.gov.bc.ca/auth/realms/35r1iman/protocol/openid-connect/certs",
-    "prod": "https://oidc.gov.bc.ca/auth/realms/35r1iman/protocol/openid-connect/certs"
-  },
   "siteminderLogoutURL": {
     "dev": "https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi",
     "test": "https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi",

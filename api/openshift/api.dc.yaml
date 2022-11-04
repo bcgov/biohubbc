@@ -52,10 +52,6 @@ parameters:
     description: Application timezone
     required: false
     value: 'America/Vancouver'
-  - name: CERTIFICATE_URL
-    description: Authentication certificate urls
-    required: true
-    value: 'https://oidc.gov.bc.ca/auth/realms/35r1iman/protocol/openid-connect/certs'
   - name: KEYCLOAK_HOST
     description: Key clock login url
     value: 'https://oidc.gov.bc.ca/auth'
@@ -203,8 +199,6 @@ objects:
                       name: ${DB_SERVICE_NAME}
                 - name: DB_PORT
                   value: '5432'
-                - name: KEYCLOAK_URL
-                  value: ${CERTIFICATE_URL}
                 - name: KEYCLOAK_HOST
                   value: ${KEYCLOAK_HOST}
                 - name: KEYCLOAK_CLIENT_ID
