@@ -28,16 +28,36 @@ describe('OccurrenceService', () => {
     it('should return valid information', () => {
       const service = mockService();
       const dwc = new DWCArchive(new ArchiveFile("test", "zip", Buffer.from([]), []));
-      const worksheets = sinon.stub(dwc, 'worksheets').returns({
+      sinon.stub(dwc, 'worksheets').value({
         event: {
-          getHeaders: () => {id: 1, }
+          getHeaders: () => {
+          return ["id",
+          "verbatimCoordinates",
+          "eventDate"]
+          },
+          getRows: () => []
         },
-        occurrence: {},
-        taxon: {}
+        occurrence: {
+          getHeaders: () => {
+            return ["id",
+            "associatedTaxa",
+            "lifeStage",
+            "sex",
+            "individualCount",
+            "organismQuantity",
+            "organismQuantityType"]
+          },
+          getRows: () => []
+        },
+        taxon: {
+          getHeaders: () => {
+            return ["id",
+            "vernacularName"]
+          },
+          getRows: () => []
+        }
       });
       const data = service.getHeadersAndRowsFromDWCArchive(dwc);
-      
-      console.log(data)
       expect(data).to.have.keys([
         "occurrenceRows",
         "occurrenceIdHeader",
@@ -55,7 +75,25 @@ describe('OccurrenceService', () => {
         "taxonRows",
         "taxonIdHeader",
         "vernacularNameHeader"
-      ])
+      ]);
+
+      // -1 implies that the header doesn't exist in the file
+      expect(data["occurrenceRows"]).not.to.be.eql(-1);
+      expect(data["occurrenceIdHeader"]).not.to.be.eql(-1);
+      expect(data["associatedTaxaHeader"]).not.to.be.eql(-1);
+      expect(data["eventRows"]).not.to.be.eql(-1);
+      expect(data["lifeStageHeader"]).not.to.be.eql(-1);
+      expect(data["sexHeader"]).not.to.be.eql(-1);
+      expect(data["individualCountHeader"]).not.to.be.eql(-1);
+      expect(data["organismQuantityHeader"]).not.to.be.eql(-1);
+      expect(data["organismQuantityTypeHeader"]).not.to.be.eql(-1);
+      expect(data["occurrenceHeaders"]).not.to.be.eql(-1);
+      expect(data["eventIdHeader"]).not.to.be.eql(-1);
+      expect(data["eventDateHeader"]).not.to.be.eql(-1);
+      expect(data["eventVerbatimCoordinatesHeader"]).not.to.be.eql(-1);
+      expect(data["taxonRows"]).not.to.be.eql(-1);
+      expect(data["taxonIdHeader"]).not.to.be.eql(-1);
+      expect(data["vernacularNameHeader"]).not.to.be.eql(-1);
     });
 
     it('should return object with undefined values', () => {

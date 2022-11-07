@@ -23,7 +23,7 @@ export class OccurrenceService extends DBService {
   getHeadersAndRowsFromDWCArchive(dwcArchive: DWCArchive): any {
     const eventHeaders = dwcArchive.worksheets.event?.getHeaders();
     const eventRows = dwcArchive.worksheets.event?.getRows();
-    console.log(eventHeaders)
+
     const eventIdHeader = eventHeaders?.indexOf('id') as number;
     const eventVerbatimCoordinatesHeader = eventHeaders?.indexOf('verbatimCoordinates') as number;
     const eventDateHeader = eventHeaders?.indexOf('eventDate') as number;
