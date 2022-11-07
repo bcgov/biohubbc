@@ -28,10 +28,16 @@ describe('OccurrenceService', () => {
     it('should return valid information', () => {
       const service = mockService();
       const dwc = new DWCArchive(new ArchiveFile("test", "zip", Buffer.from([]), []));
+      const worksheets = sinon.stub(dwc, 'worksheets').returns({
+        event: {
+          getHeaders: () => {id: 1, }
+        },
+        occurrence: {},
+        taxon: {}
+      });
       const data = service.getHeadersAndRowsFromDWCArchive(dwc);
       
-      sinon.stub(dwc.worksheets.event as any, 'getHeaders').returns({id: 10})
-
+      console.log(data)
       expect(data).to.have.keys([
         "occurrenceRows",
         "occurrenceIdHeader",
