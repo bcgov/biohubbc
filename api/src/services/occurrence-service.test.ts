@@ -24,10 +24,73 @@ describe('OccurrenceService', () => {
     return new OccurrenceService(dbConnection);
   };
 
-  describe('Get Headers and Rows From DWC Archive', () => {
+  describe.only('Get Headers and Rows From DWC Archive', () => {
     it('should return valid information', () => {
+      const service = mockService();
+      const dwc = new DWCArchive(new ArchiveFile("test", "zip", Buffer.from([]), []));
+      const data = service.getHeadersAndRowsFromDWCArchive(dwc);
       
+      sinon.stub(dwc.worksheets.event as any, 'getHeaders').returns({id: 10})
+
+      expect(data).to.have.keys([
+        "occurrenceRows",
+        "occurrenceIdHeader",
+        "associatedTaxaHeader",
+        "eventRows",
+        "lifeStageHeader",
+        "sexHeader",
+        "individualCountHeader",
+        "organismQuantityHeader",
+        "organismQuantityTypeHeader",
+        "occurrenceHeaders",
+        "eventIdHeader",
+        "eventDateHeader",
+        "eventVerbatimCoordinatesHeader",
+        "taxonRows",
+        "taxonIdHeader",
+        "vernacularNameHeader"
+      ])
     });
+
+    it('should return object with undefined values', () => {
+      const service = mockService();
+      const dwc = new DWCArchive(new ArchiveFile("test", "zip", Buffer.from([]), []));
+      const data = service.getHeadersAndRowsFromDWCArchive(dwc);
+      expect(data).to.have.keys([
+        "occurrenceRows",
+        "occurrenceIdHeader",
+        "associatedTaxaHeader",
+        "eventRows",
+        "lifeStageHeader",
+        "sexHeader",
+        "individualCountHeader",
+        "organismQuantityHeader",
+        "organismQuantityTypeHeader",
+        "occurrenceHeaders",
+        "eventIdHeader",
+        "eventDateHeader",
+        "eventVerbatimCoordinatesHeader",
+        "taxonRows",
+        "taxonIdHeader",
+        "vernacularNameHeader"
+      ]);
+      expect(data["occurrenceRows"]).to.be.undefined;
+      expect(data["occurrenceIdHeader"]).to.be.undefined;
+      expect(data["associatedTaxaHeader"]).to.be.undefined;
+      expect(data["eventRows"]).to.be.undefined;
+      expect(data["lifeStageHeader"]).to.be.undefined;
+      expect(data["sexHeader"]).to.be.undefined;
+      expect(data["individualCountHeader"]).to.be.undefined;
+      expect(data["organismQuantityHeader"]).to.be.undefined;
+      expect(data["organismQuantityTypeHeader"]).to.be.undefined;
+      expect(data["occurrenceHeaders"]).to.be.undefined;
+      expect(data["eventIdHeader"]).to.be.undefined;
+      expect(data["eventDateHeader"]).to.be.undefined;
+      expect(data["eventVerbatimCoordinatesHeader"]).to.be.undefined;
+      expect(data["taxonRows"]).to.be.undefined;
+      expect(data["taxonIdHeader"]).to.be.undefined;
+      expect(data["vernacularNameHeader"]).to.be.undefined;
+    })
   });
   
   it('should return a post occurrence', async () => {
