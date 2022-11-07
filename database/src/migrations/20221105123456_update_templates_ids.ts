@@ -116,7 +116,7 @@ export async function up(knex: Knex): Promise<void> {
 }
 
 /*
-  TEMPLATE NAMES
+  TEMPLATE NAMES:
     Moose SRB or Composition Survey
     Moose Recruitment Survey
     Goat Composition or Recruitment Survey
