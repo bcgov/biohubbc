@@ -24,6 +24,12 @@ describe('OccurrenceService', () => {
     return new OccurrenceService(dbConnection);
   };
 
+  describe('Get Headers and Rows From DWC Archive', () => {
+    it('should return valid information', () => {
+      
+    });
+  });
+  
   it('should return a post occurrence', async () => {
     const submissionId = 1;
     const repo = sinon.stub(OccurrenceRepository.prototype, 'getOccurrenceSubmission').resolves({
