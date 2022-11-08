@@ -82,6 +82,7 @@ export class DWCArchive {
           break;
         case DWC_CLASS.META:
           this.extra[DWC_CLASS.META] = rawFile;
+          break;
       }
     }
   }

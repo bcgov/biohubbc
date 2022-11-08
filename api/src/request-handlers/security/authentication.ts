@@ -1,22 +1,22 @@
 import { Request } from 'express';
-import { decode, GetPublicKeyOrSecret, Secret, verify, VerifyErrors } from 'jsonwebtoken';
+import { decode, verify } from 'jsonwebtoken';
 import { JwksClient } from 'jwks-rsa';
 import { HTTP401 } from '../../errors/http-error';
 import { getLogger } from '../../utils/logger';
 
 const defaultLog = getLogger('request-handlers/security/authentication');
 
-const KEYCLOAK_URL =
-  process.env.KEYCLOAK_URL || 'https://dev.oidc.gov.bc.ca/auth/realms/35r1iman/protocol/openid-connect/certs';
+const KEYCLOAK_URL = `${process.env.KEYCLOAK_HOST}/realms/${process.env.KEYCLOAK_REALM}/protocol/openid-connect/certs`;
+const KEYCLOAK_ISSUER = `${process.env.KEYCLOAK_HOST}/realms/${process.env.KEYCLOAK_REALM}`;
 
 /**
  * Authenticate the request by validating the authorization bearer token (JWT).
  *
  * Assign the bearer token to `req.keycloak_token`.
  *
- * @param {*} req
+ * @param {Request} req
  * @return {*} {Promise<true>} true if the token is authenticated
- * @throws {HTTP401} if the token is not authenticated
+ * @throws {HTTP401} if the bearer token is missing or invalid
  */
 export const authenticateRequest = async function (req: Request): Promise<true> {
   try {
@@ -72,7 +72,7 @@ export const authenticateRequest = async function (req: Request): Promise<true> 
     const signingKey = key.getPublicKey();
 
     // Verify token using public signing key
-    const verifiedToken = verifyToken(tokenString, signingKey);
+    const verifiedToken = verify(tokenString, signingKey, { issuer: [KEYCLOAK_ISSUER] });
 
     if (!verifiedToken) {
       throw new HTTP401('Access Denied');
@@ -89,43 +89,18 @@ export const authenticateRequest = async function (req: Request): Promise<true> 
 };
 
 /**
- * Verify jwt token.
+ * optionally authenticate the request by validating the authorization bearer token (JWT), if one exists on the request.
  *
- * @param {string} tokenString
- * @param {(Secret | GetPublicKeyOrSecret)} secretOrPublicKey
- * @return {*} The decoded token, or null.
- */
-const verifyToken = function (tokenString: string, secretOrPublicKey: Secret | GetPublicKeyOrSecret): any {
-  return verify(tokenString, secretOrPublicKey, verifyTokenCallback);
-};
-
-/**
- * Callback that returns the decoded token, or null.
+ * If a valid token exists, assign the bearer token to `req.keycloak_token`, return true.
  *
- * @param {(VerifyErrors | null)} verificationError
- * @param {(object | undefined)} verifiedToken
- * @return {*} {(object | null | undefined)}
+ * If a valid token does not exist, return true.
+ *
+ * Why? This authentication method should be used for endpoints where authentication is optional, but the response is
+ * different based on whether or not the request is authenticated.
+ *
+ * @param {Request} req
+ * @return {*} {Promise<true>}
  */
-const verifyTokenCallback = function (
-  verificationError: VerifyErrors | null,
-  verifiedToken: object | undefined
-): object | null | undefined {
-  if (verificationError) {
-    defaultLog.warn({ label: 'verifyToken', message: 'jwt verification error', verificationError });
-    return null;
-  }
-
-  // Verify that the token came from the expected issuer
-  // Example: when running in prod, only accept tokens from `sso.pathfinder...` and not `sso-dev.pathfinder...`, etc
-  if (!KEYCLOAK_URL.includes(verifiedToken?.['iss'])) {
-    defaultLog.warn({
-      label: 'verifyToken',
-      message: 'jwt verification error: issuer mismatch',
-      'actual token issuer': verifiedToken?.['iss'],
-      'expected to be a substring of': KEYCLOAK_URL
-    });
-    return null;
-  }
-
-  return verifiedToken;
+export const authenticateRequestOptional = async function (req: Request): Promise<true> {
+  return authenticateRequest(req).catch(() => true);
 };
