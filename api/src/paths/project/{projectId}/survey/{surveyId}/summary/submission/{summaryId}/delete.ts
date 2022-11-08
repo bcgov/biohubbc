@@ -114,10 +114,10 @@ export function deleteSummarySubmission(): RequestHandler {
       await connection.open()
       const summaryService = new SummaryService(connection)
   
-      await summaryService.deleteSummarySubmission(Number(req.params.summaryId))
+      const result = await summaryService.deleteSummarySubmission(Number(req.params.summaryId))
       await connection.commit();
 
-      return res.status(200).json(1);
+      return res.status(200).json(result);
     } catch (error) {
       defaultLog.error({ label: 'deleteSummarySubmission', message: 'error', error });
       await connection.rollback();

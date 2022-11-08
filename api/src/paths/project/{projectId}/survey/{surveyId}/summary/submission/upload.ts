@@ -102,7 +102,7 @@ POST.apiDoc = {
  *
  * @return {*}  {RequestHandler}
  */
-function uploadAndValidate(): RequestHandler {
+export function uploadAndValidate(): RequestHandler {
   return async (req, res, next) => {
     const rawMediaArray: Express.Multer.File[] = req.files as Express.Multer.File[];
 

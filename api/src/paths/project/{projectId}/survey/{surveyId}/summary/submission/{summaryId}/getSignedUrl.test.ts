@@ -3,7 +3,7 @@ import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as db from '../../../../../../../../database/db';
-import { HTTPError } from '../../../../../../../../errors/http-error';
+import { HTTP400, HTTPError } from '../../../../../../../../errors/http-error';
 import { SummaryService } from '../../../../../../../../services/summary-service';
 import * as file_utils from '../../../../../../../../utils/file-utils';
 import { getMockDBConnection } from '../../../../../../../../__mocks__/db';
@@ -93,7 +93,7 @@ describe('getSingleSubmissionURL', () => {
     }
   });
 
-  it('should throw a 400 error when no sql statement returned', async () => {
+  it('should throw a 400 error when no submission URL is found', async () => {
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
       systemUserId: () => {
@@ -101,7 +101,8 @@ describe('getSingleSubmissionURL', () => {
       }
     });
 
-    sinon.stub(SummaryService.prototype, 'findSummarySubmissionById').throws();
+    sinon.stub(SummaryService.prototype, 'findSummarySubmissionById')
+      .throws(new HTTP400('Failed to query survey summary submission table'));
 
     try {
       const result = get_signed_url.getSingleSummarySubmissionURL();
@@ -110,7 +111,7 @@ describe('getSingleSubmissionURL', () => {
       expect.fail();
     } catch (actualError) {
       expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal('Failed to build SQL get statement');
+      expect((actualError as HTTPError).message).to.equal('Failed to query survey summary submission table');
     }
   });
 
@@ -127,7 +128,6 @@ describe('getSingleSubmissionURL', () => {
       query: mockQuery
     });
 
-    sinon.stub(SummaryService.prototype, 'findSummarySubmissionById').throws();
     sinon.stub(file_utils, 'getS3SignedURL').resolves(null);
 
     const result = get_signed_url.getSingleSummarySubmissionURL();

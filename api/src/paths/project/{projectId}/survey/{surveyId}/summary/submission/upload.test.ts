@@ -2,11 +2,11 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import SQL from 'sql-template-strings';
 import * as db from '../../../../../../../database/db';
-import { HTTPError } from '../../../../../../../errors/http-error';
-import survey_queries from '../../../../../../../queries/survey';
+import { HTTP400, HTTPError } from '../../../../../../../errors/http-error';
+import { SummaryService } from '../../../../../../../services/summary-service';
 import * as file_utils from '../../../../../../../utils/file-utils';
+import { XLSXCSV } from '../../../../../../../utils/media/xlsx/xlsx-file';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../../__mocks__/db';
 import * as upload from './upload';
 
@@ -31,7 +31,7 @@ describe('uploadSummarySubmission', () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
     try {
-      const requestHandler = upload.uploadMedia();
+      const requestHandler = upload.uploadAndValidate();
 
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
@@ -62,7 +62,7 @@ describe('uploadSummarySubmission', () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
     try {
-      const requestHandler = upload.uploadMedia();
+      const requestHandler = upload.uploadAndValidate();
 
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
@@ -94,7 +94,7 @@ describe('uploadSummarySubmission', () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
     try {
-      const requestHandler = upload.uploadMedia();
+      const requestHandler = upload.uploadAndValidate();
 
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
@@ -126,48 +126,13 @@ describe('uploadSummarySubmission', () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
     try {
-      const requestHandler = upload.uploadMedia();
+      const requestHandler = upload.uploadAndValidate();
 
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
       expect((actualError as HTTPError).status).to.equal(400);
       expect((actualError as HTTPError).message).to.equal('Missing required path param: surveyId');
-    }
-  });
-
-  it('should throw a 400 error when no sql statement returned', async () => {
-    const dbConnectionObj = getMockDBConnection();
-
-    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
-
-    mockReq.params = {
-      projectId: '1',
-      surveyId: '2'
-    };
-    mockReq.files = [
-      {
-        fieldname: 'media',
-        originalname: 'test.txt',
-        encoding: '7bit',
-        mimetype: 'text/plain',
-        size: 340
-      }
-    ] as any;
-
-    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
-
-    sinon.stub(survey_queries, 'insertSurveySummarySubmissionSQL').returns(null);
-    sinon.stub(file_utils, 'scanFileForVirus').resolves(true);
-
-    const requestHandler = upload.uploadMedia();
-
-    try {
-      await requestHandler(mockReq, mockRes, mockNext);
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal('Failed to build SQL insert statement');
     }
   });
 
@@ -194,7 +159,7 @@ describe('uploadSummarySubmission', () => {
 
     sinon.stub(file_utils, 'scanFileForVirus').resolves(false);
 
-    const requestHandler = upload.uploadMedia();
+    const requestHandler = upload.uploadAndValidate();
 
     try {
       await requestHandler(mockReq, mockRes, mockNext);
@@ -234,9 +199,10 @@ describe('uploadSummarySubmission', () => {
     });
 
     sinon.stub(file_utils, 'scanFileForVirus').resolves(true);
-    sinon.stub(survey_queries, 'insertSurveySummarySubmissionSQL').returns(SQL`some query`);
+    sinon.stub(SummaryService.prototype, 'insertSurveySummarySubmission')
+      .throws(new HTTP400('Failed to insert survey summary submission record'))
 
-    const requestHandler = upload.uploadMedia();
+    const requestHandler = upload.uploadAndValidate();
 
     try {
       await requestHandler(mockReq, mockRes, mockNext);
@@ -244,49 +210,6 @@ describe('uploadSummarySubmission', () => {
     } catch (actualError) {
       expect((actualError as HTTPError).status).to.equal(400);
       expect((actualError as HTTPError).message).to.equal('Failed to insert survey summary submission record');
-    }
-  });
-
-  it('should throw a 400 error when it fails to get the update SQL', async () => {
-    const dbConnectionObj = getMockDBConnection();
-
-    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
-
-    mockReq.params = {
-      projectId: '1',
-      surveyId: '2'
-    };
-    mockReq.files = [
-      {
-        fieldname: 'media',
-        originalname: 'test.txt',
-        encoding: '7bit',
-        mimetype: 'text/plain',
-        size: 340
-      }
-    ] as any;
-
-    const mockQuery = sinon.stub();
-
-    mockQuery.onCall(0).resolves({ rowCount: 1, rows: [{ id: 1 }] });
-
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      query: mockQuery
-    });
-
-    sinon.stub(file_utils, 'scanFileForVirus').resolves(true);
-    sinon.stub(survey_queries, 'insertSurveySummarySubmissionSQL').returns(SQL`some query`);
-    sinon.stub(survey_queries, 'updateSurveySummarySubmissionWithKeySQL').returns(null);
-
-    const requestHandler = upload.uploadMedia();
-
-    try {
-      await requestHandler(mockReq, mockRes, mockNext);
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal('Failed to build SQL update statement');
     }
   });
 
@@ -320,10 +243,10 @@ describe('uploadSummarySubmission', () => {
     });
 
     sinon.stub(file_utils, 'scanFileForVirus').resolves(true);
-    sinon.stub(survey_queries, 'insertSurveySummarySubmissionSQL').returns(SQL`some query`);
-    sinon.stub(survey_queries, 'updateSurveySummarySubmissionWithKeySQL').returns(SQL`some query`);
+    sinon.stub(SummaryService.prototype, 'updateSurveySummarySubmissionWithKey')
+      .throws(new HTTP400('Failed to update survey summary submission record'))
 
-    const requestHandler = upload.uploadMedia();
+    const requestHandler = upload.uploadAndValidate();
 
     try {
       await requestHandler(mockReq, mockRes, mockNext);
@@ -363,11 +286,11 @@ describe('uploadSummarySubmission', () => {
     });
 
     sinon.stub(file_utils, 'scanFileForVirus').resolves(true);
-    sinon.stub(survey_queries, 'insertSurveySummarySubmissionSQL').returns(SQL`some query`);
-    sinon.stub(survey_queries, 'updateSurveySummarySubmissionWithKeySQL').returns(SQL`some query`);
+    // sinon.stub(survey_queries, 'insertSurveySummarySubmissionSQL').returns(SQL`some query`);
+    // sinon.stub(survey_queries, 'updateSurveySummarySubmissionWithKeySQL').returns(SQL`some query`);
     sinon.stub(file_utils, 'uploadFileToS3').rejects('Failed to insert occurrence submission data');
 
-    const requestHandler = upload.uploadMedia();
+    const requestHandler = upload.uploadAndValidate();
 
     try {
       await requestHandler(mockReq, mockRes, mockNext);
@@ -409,17 +332,21 @@ describe('uploadSummarySubmission', () => {
       query: mockQuery
     });
 
-    sinon.stub(file_utils, 'scanFileForVirus').resolves(true);
-    sinon.stub(survey_queries, 'insertSurveySummarySubmissionSQL').returns(SQL`some query`);
-    sinon.stub(survey_queries, 'updateSurveySummarySubmissionWithKeySQL').returns(SQL`some query`);
-
+    sinon.stub(file_utils, 'scanFileForVirus').resolves(true);    
+    sinon.stub(SummaryService.prototype, 'insertSurveySummarySubmission').resolves({ survey_summary_submission_id: 14 })
     sinon.stub(file_utils, 'uploadFileToS3').resolves({ key: 'projects/1/surveys/1/test.txt' } as any);
+    // sinon.stub(file_utils, 'getFileFromS3').resolves({ key: 'projects/1/surveys/1/test.txt' } as any);
+    sinon.stub(SummaryService.prototype, 'summaryTemplateValidation').resolves()
+    sinon.stub(SummaryService.prototype, 'prepXLSX').returns({} as XLSXCSV)
+    sinon.stub(SummaryService.prototype, 'summaryTemplatePreparation').resolves({
+      s3InputKey: 'projects/1/surveys/1/test.txt', xlsx: {} as XLSXCSV
+    })
 
-    const requestHandler = upload.uploadMedia();
+    const requestHandler = upload.uploadAndValidate();
 
     await requestHandler(mockReq, mockRes, mockNext);
 
-    expect(mockNext).to.have.been.called;
+    expect(mockRes.statusValue).to.equal(200);
   });
 
   it('should return with a 200 if errors messages exist and they are persisted', async () => {
@@ -440,7 +367,6 @@ describe('uploadSummarySubmission', () => {
         size: 340
       }
     ] as any;
-    mockReq['parseError'] = 'some error exists';
 
     const mockQuery = sinon.stub();
 
@@ -451,48 +377,12 @@ describe('uploadSummarySubmission', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_queries, 'insertSurveySummarySubmissionMessageSQL').returns(SQL`some query`);
-
-    const requestHandler = upload.persistSummaryParseErrors();
+    const requestHandler = upload.uploadAndValidate();
 
     await requestHandler(mockReq, mockRes, mockNext);
 
     expect(mockRes.statusValue).to.equal(200);
-  });
-
-  it('should move on the next step is there are no errors to be persisted', async () => {
-    const dbConnectionObj = getMockDBConnection();
-
-    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
-
-    mockReq.params = {
-      projectId: '1',
-      surveyId: '2'
-    };
-    mockReq.files = [
-      {
-        fieldname: 'media',
-        originalname: 'test.txt',
-        encoding: '7bit',
-        mimetype: 'text/plain',
-        size: 340
-      }
-    ] as any;
-
-    const mockQuery = sinon.stub();
-
-    mockQuery.resolves({ rowCount: 1, rows: [{ id: 1 }] });
-
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      query: mockQuery
-    });
-
-    const requestHandler = upload.persistSummaryParseErrors();
-
-    await requestHandler(mockReq, mockRes, mockNext);
-
-    expect(mockNext).to.have.been.called;
+    expect(mockRes.jsonValue).to.eql({ summarySubmissionId: 14 });
   });
 
   it('should throw an error if there are errors when persisting error messages', async () => {
@@ -524,9 +414,9 @@ describe('uploadSummarySubmission', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_queries, 'insertSurveySummarySubmissionMessageSQL').returns(SQL`some query`);
+    // sinon.stub(survey_queries, 'insertSurveySummarySubmissionMessageSQL').returns(SQL`some query`);
 
-    const requestHandler = upload.persistSummaryParseErrors();
+    const requestHandler = upload.uploadAndValidate();
 
     try {
       await requestHandler(mockReq, mockRes, mockNext);

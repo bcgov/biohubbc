@@ -156,7 +156,7 @@ export class SummaryService extends DBService {
    * @param summarySubmissionId 
    * @returns {Promise<{ s3InputKey: string; xlsx: XLSXCSV }>}
    */
-  private async summaryTemplatePreparation(summarySubmissionId: number): Promise<{ s3InputKey: string; xlsx: XLSXCSV }> {
+  async summaryTemplatePreparation(summarySubmissionId: number): Promise<{ s3InputKey: string; xlsx: XLSXCSV }> {
     defaultLog.debug({ label: 'summaryTemplatePreparation' });
     try {
       const summarySubmission = await this.findSummarySubmissionById(summarySubmissionId);
@@ -181,7 +181,7 @@ export class SummaryService extends DBService {
    * @param {number} surveyId
    * @param {number} [summarySubmissionId]
    */
-  private async summaryTemplateValidation(xlsx: XLSXCSV, surveyId: number, summarySubmissionId?: number) {
+  async summaryTemplateValidation(xlsx: XLSXCSV, surveyId: number, summarySubmissionId?: number) {
     defaultLog.debug({ label: 'summaryTemplateValidation' });
     try {
       const summaryTemplateSpeciesRecords = await this.getSummaryTemplateSpeciesRecords(xlsx, surveyId)
@@ -220,7 +220,7 @@ export class SummaryService extends DBService {
    * @param {any} file
    * @returns {XLSXCSV}
    */
-  private prepXLSX(file: any): XLSXCSV {
+  prepXLSX(file: any): XLSXCSV {
     defaultLog.debug({ label: 'prepXLSX', message: 's3File' });
     const parsedMedia = parseUnknownMedia(file);
 
