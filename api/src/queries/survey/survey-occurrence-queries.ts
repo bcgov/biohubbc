@@ -373,30 +373,3 @@ export const getOccurrenceSubmissionMessagesSQL = (occurrenceSubmissionId: numbe
     ORDER BY sm.submission_message_id;
   `;
 };
-
-/**
- * SQL query to get a template methodology species id.
- *
- * @param {number} fieldMethodId
- * @param {number} templateId
- * @return {*}  {(SQLStatement | null)}
- */
-export const getTemplateMethodologySpeciesRecordSQL = (
-  fieldMethodId: number,
-  templateId: number
-): SQLStatement | null => {
-  if (!fieldMethodId || !templateId) {
-    return null;
-  }
-
-  return SQL`
-    SELECT *
-    FROM
-      template_methodology_species tms
-    WHERE
-      tms.field_method_id = ${fieldMethodId}
-    AND
-      tms.template_id = ${templateId}
-    ;
-    `;
-};
