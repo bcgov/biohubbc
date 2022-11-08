@@ -24,6 +24,45 @@ describe('OccurrenceService', () => {
     return new OccurrenceService(dbConnection);
   };
 
+  describe('scrapeAndArchiveForOccurrences', () => {
+    it('should return an empty array', () => {
+      const service = mockService();
+      const dwc = new DWCArchive(new ArchiveFile('test', 'zip', Buffer.from([]), []));
+
+      const results = service.scrapeArchiveForOccurrences(dwc);
+      expect(results).to.have.lengthOf(0);
+    });
+
+    it('should return a list of valid `PostOccurrence`', () => {
+      const service = mockService();
+      const dwc = new DWCArchive(new ArchiveFile('test', 'zip', Buffer.from([]), []));
+
+      sinon.stub(OccurrenceService.prototype, 'getHeadersAndRowsFromDWCArchive').returns({
+        occurrenceRows: [[1, 2, 3, 4, 5, 6, 7]],
+        eventRows: [[1, 1, 1]],
+        taxonsRows: [[1]],
+        eventIdHeader: 0,
+        eventVerbatimCoordinatesHeader: 1,
+        eventDateHeader: 2,
+        occurrenceIdHeader: 0,
+        associatedTaxaHeader: 1,
+        lifeStageHeader: 2,
+        sexHeader: 3,
+        individualCountHeader: 4,
+        organismQuantityHeader: 5,
+        organismQuantityTypeHeader: 6,
+        taxonIdHeader: 0,
+        vernacularNameHeader: 1
+      });
+
+      const results = service.scrapeArchiveForOccurrences(dwc);
+      expect(results).to.have.lengthOf(1);
+      results.forEach(item => {
+        expect(item).to.be.instanceOf(PostOccurrence);
+      })
+    });
+  });
+
   describe('Get Headers and Rows From DWC Archive', () => {
     it('should return valid information', () => {
       const service = mockService();
