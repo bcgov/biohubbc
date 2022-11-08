@@ -227,7 +227,7 @@ const ProjectHeader: React.FC<IProjectHeaderProps> = (props) => {
               <Typography variant="h1" className={classes.projectTitle}>
                 Project: <span>{projectWithDetails.project.project_name}</span>
               </Typography>
-              <Box mt={1} display="flex" alignItems="center">
+              <Box mt={2} display="flex" alignItems="center">
                 {/* {getChipIcon(projectWithDetails.project.completion_status)} */}
                 <Typography component="span" variant="subtitle1" color="textSecondary" style={{display: 'flex', alignItems: 'center'}}>
                   {projectWithDetails.project.end_date ? (

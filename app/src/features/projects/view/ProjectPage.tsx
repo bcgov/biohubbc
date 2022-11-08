@@ -137,7 +137,7 @@ const ProjectPage: React.FC = () => {
 
           <Grid container spacing={3}>
             <Grid item md={12} lg={4} xl={3}>
-              <Paper elevation={0}>
+              <Paper elevation={1}>
                 <Box className={classes.projectOverview}>
                   <Toolbar>
                     <Typography variant="h4" component="h3">Project Details</Typography>
@@ -207,17 +207,17 @@ const ProjectPage: React.FC = () => {
             </Grid>
             <Grid item md={12} lg={8} xl={9}>
               <Box mb={3}>
-                <Paper elevation={0}>
+                <Paper elevation={1}>
                   <SurveysListPage projectForViewData={projectWithDetails} />
                 </Paper>
               </Box>
               <Box mb={3}>
-                <Paper elevation={0}>
+                <Paper elevation={1}>
                   <ProjectAttachments projectForViewData={projectWithDetails} />
                 </Paper>
               </Box>
               <Box>
-                <Paper elevation={0}>
+                <Paper elevation={1}>
                   <Box pb={3} px={3}>
                     <LocationBoundary projectForViewData={projectWithDetails} codes={codes} refresh={getProject} />
                   </Box>

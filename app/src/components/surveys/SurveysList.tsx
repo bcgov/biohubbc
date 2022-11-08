@@ -18,6 +18,8 @@ import moment from 'moment';
 import React, { useState } from 'react';
 // import { handleChangePage, handleChangeRowsPerPage } from 'utils/tablePaginationUtils';
 // import { getFormattedDateRangeString } from 'utils/Utils';
+import { mdiAlertCircle } from '@mdi/js';
+import Icon from '@mdi/react';
 
 const useStyles = makeStyles((theme: Theme) => ({
   surveyTable: {
@@ -101,7 +103,7 @@ const SurveysList: React.FC<ISurveysListProps> = (props) => {
                   </TableCell> */}
                   <TableCell>
 
-                    <Chip color="secondary" label="Pending Review"/>
+                    <Chip size="small" color="secondary" label="Pending Review" icon={<Icon path={mdiAlertCircle} size={0.8} />} />
 
                     <Box hidden>
                       {getChipIcon(getSurveyCompletionStatusType(row))}

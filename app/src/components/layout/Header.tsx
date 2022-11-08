@@ -198,7 +198,7 @@ const Header: React.FC = () => {
 
   return (
     <>
-      <AppBar position="sticky">
+      <AppBar position="sticky" elevation={0}>
         <Toolbar disableGutters className={classes.govHeaderToolbar}>
           <Container maxWidth="xl">
             <Box display="flex" justifyContent="space-between" width="100%">

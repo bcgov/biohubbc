@@ -1,3 +1,4 @@
+import Box from '@material-ui/core/Box';
 import Divider from '@material-ui/core/Divider';
 import { mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
@@ -57,7 +58,9 @@ const SurveysListPage: React.FC<ISurveysListPageProps> = (props) => {
         buttonOnClick={() => navigateToCreateSurveyPage(projectForViewData.id)}
       />
       <Divider></Divider>
-      <SurveysList projectId={projectForViewData.id} surveysList={surveys} />
+      <Box px={1}>
+        <SurveysList projectId={projectForViewData.id} surveysList={surveys} />
+      </Box>
     </>
   );
 };

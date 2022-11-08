@@ -18,6 +18,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import { grey } from '@material-ui/core/colors';
 import {
+  mdiAlertCircle,
   mdiDotsVertical,
   mdiInformationOutline,
   mdiLockOpenVariantOutline,
@@ -381,9 +382,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
           <Table className={classes.attachmentsTable} aria-label="attachments-list-table">
             <TableHead>
               <TableRow>
-                <TableCell width="55">
-                </TableCell>
-                <TableCell width="70" padding="checkbox">
+                <TableCell width="60px" padding="checkbox">
                   <Checkbox color="primary"/>
                 </TableCell>
                 <TableCell>Name</TableCell>
@@ -397,9 +396,6 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
                 props.attachmentsList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => {
                   return (
                     <TableRow key={`${row.fileName}-${index}`}>
-                      <TableCell>
-                        <Icon className={classes.attachmentsTableLockIcon} path={row.securityToken ? mdiLockOutline : mdiLockOpenVariantOutline} size={1} />
-                      </TableCell>
                       <TableCell padding="checkbox">
                         <Checkbox color="primary"/>
                       </TableCell>
@@ -412,7 +408,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
                       <TableCell>
 
                         {/* Pending Review State */}
-                        <Chip color="secondary" label="Pending Review" onClick={openDrawer}/>
+                        <Chip size="small" color="secondary" label="Pending Review" icon={<Icon path={mdiAlertCircle} size={0.8} />} onClick={openDrawer} /> 
 
                         {/* Submitted State */}
                         {/* <Chip color="primary" label="Submitted"/> */}
