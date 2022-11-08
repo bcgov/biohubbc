@@ -50,6 +50,9 @@ POST.apiDoc = {
               description: 'A survey occurrence submission ID',
               type: 'number',
               example: 1
+            },
+            survey_id: {
+              type: 'number'
             }
           }
         }
@@ -96,6 +99,7 @@ POST.apiDoc = {
 export function processFile(): RequestHandler {
   return async (req, res) => {
     const submissionId = req.body.occurrence_submission_id;
+    const surveyId = req.body.survey_id;
     if (!submissionId) {
       throw new HTTP400('Missing required parameter `occurrence field`');
     }
@@ -106,8 +110,8 @@ export function processFile(): RequestHandler {
     try {
       await connection.open();
 
-      const service = new ValidationService(connection);
-      await service.processFile(submissionId);
+      const validationService = new ValidationService(connection);
+      await validationService.processFile(submissionId, surveyId);
 
       await connection.commit();
     } catch (error) {
