@@ -120,9 +120,9 @@ export function getSurveySummarySubmission(): RequestHandler {
       }
 
       let messageList: ISummarySubmissionMessagesResponse[] = [];
-      const errorStatus = summarySubmissionDetails.submission_message_class_name;
+      const messageClass = summarySubmissionDetails.submission_message_class_name;
 
-      if (errorStatus === 'Error') {
+      if (messageClass === 'Error') {
         const summary_submission_id = summarySubmissionDetails.id;
         messageList = await summaryService.getSummarySubmissionMessages(summary_submission_id)
       }
