@@ -34,20 +34,28 @@ describe('ProjectService', () => {
 
   describe('getProjectEntitiesById', () => {
     it('should get all project data', async () => {
-      const service = mockService()
-      const mockCoordinator = sinon.stub(ProjectService.prototype, 'getCoordinatorData').resolves(new GetCoordinatorData({
-        coordinator_first_name: "First",
-        coordinator_last_name: "Last",
-        coordinator_email_address: "email@email.com",
-        coordinator_agency_name: "agency",
-        coordinator_public: true,
-        revision_count: 1,
-      }));
-      const mockPartnership = sinon.stub(ProjectService.prototype, 'getPartnershipsData').resolves(new GetPartnershipsData([], []));
-      const mockLocation = sinon.stub(ProjectService.prototype, 'getLocationData').resolves(new GetLocationData(null))
-      const mockIUNCClassifications = sinon.stub(ProjectService.prototype, 'getIUCNClassificationData').resolves(new GetIUCNClassificationData([]))
-      const mockObjectives = sinon.stub(ProjectService.prototype, 'getObjectivesData').resolves(new GetObjectivesData(null))
-      const mockProject = sinon.stub(ProjectService.prototype, 'getProjectData').resolves(new GetProjectData(null, []))
+      const service = mockService();
+      const mockCoordinator = sinon.stub(ProjectService.prototype, 'getCoordinatorData').resolves(
+        new GetCoordinatorData({
+          coordinator_first_name: 'First',
+          coordinator_last_name: 'Last',
+          coordinator_email_address: 'email@email.com',
+          coordinator_agency_name: 'agency',
+          coordinator_public: true,
+          revision_count: 1
+        })
+      );
+      const mockPartnership = sinon
+        .stub(ProjectService.prototype, 'getPartnershipsData')
+        .resolves(new GetPartnershipsData([], []));
+      const mockLocation = sinon.stub(ProjectService.prototype, 'getLocationData').resolves(new GetLocationData(null));
+      const mockIUNCClassifications = sinon
+        .stub(ProjectService.prototype, 'getIUCNClassificationData')
+        .resolves(new GetIUCNClassificationData([]));
+      const mockObjectives = sinon
+        .stub(ProjectService.prototype, 'getObjectivesData')
+        .resolves(new GetObjectivesData(null));
+      const mockProject = sinon.stub(ProjectService.prototype, 'getProjectData').resolves(new GetProjectData(null, []));
 
       await service.getProjectEntitiesById(1, [
         GET_ENTITIES.coordinator,
@@ -68,25 +76,30 @@ describe('ProjectService', () => {
     });
 
     it('should get project and coordinator information', async () => {
-      const service = mockService()
-      const mockCoordinator = sinon.stub(ProjectService.prototype, 'getCoordinatorData').resolves(new GetCoordinatorData({
-        coordinator_first_name: "First",
-        coordinator_last_name: "Last",
-        coordinator_email_address: "email@email.com",
-        coordinator_agency_name: "agency",
-        coordinator_public: true,
-        revision_count: 1,
-      }));
-      const mockPartnership = sinon.stub(ProjectService.prototype, 'getPartnershipsData').resolves(new GetPartnershipsData([], []));
-      const mockLocation = sinon.stub(ProjectService.prototype, 'getLocationData').resolves(new GetLocationData(null))
-      const mockIUNCClassifications = sinon.stub(ProjectService.prototype, 'getIUCNClassificationData').resolves(new GetIUCNClassificationData([]))
-      const mockObjectives = sinon.stub(ProjectService.prototype, 'getObjectivesData').resolves(new GetObjectivesData(null))
-      const mockProject = sinon.stub(ProjectService.prototype, 'getProjectData').resolves(new GetProjectData(null, []))
+      const service = mockService();
+      const mockCoordinator = sinon.stub(ProjectService.prototype, 'getCoordinatorData').resolves(
+        new GetCoordinatorData({
+          coordinator_first_name: 'First',
+          coordinator_last_name: 'Last',
+          coordinator_email_address: 'email@email.com',
+          coordinator_agency_name: 'agency',
+          coordinator_public: true,
+          revision_count: 1
+        })
+      );
+      const mockPartnership = sinon
+        .stub(ProjectService.prototype, 'getPartnershipsData')
+        .resolves(new GetPartnershipsData([], []));
+      const mockLocation = sinon.stub(ProjectService.prototype, 'getLocationData').resolves(new GetLocationData(null));
+      const mockIUNCClassifications = sinon
+        .stub(ProjectService.prototype, 'getIUCNClassificationData')
+        .resolves(new GetIUCNClassificationData([]));
+      const mockObjectives = sinon
+        .stub(ProjectService.prototype, 'getObjectivesData')
+        .resolves(new GetObjectivesData(null));
+      const mockProject = sinon.stub(ProjectService.prototype, 'getProjectData').resolves(new GetProjectData(null, []));
 
-      await service.getProjectEntitiesById(1, [
-        GET_ENTITIES.coordinator,
-        GET_ENTITIES.project
-      ]);
+      await service.getProjectEntitiesById(1, [GET_ENTITIES.coordinator, GET_ENTITIES.project]);
 
       expect(mockCoordinator).to.be.called;
       expect(mockPartnership).not.to.be.called;
@@ -107,18 +120,18 @@ describe('ProjectService', () => {
         await service.getProjectData(1);
         expect.fail();
       } catch (error) {
-        expect((error as HTTP400).message).to.be.eql("Failed to get project data")
+        expect((error as HTTP400).message).to.be.eql('Failed to get project data');
       }
     });
 
     it('should return `GetProjectData`', async () => {
-      const mockQueryResponse = {rows: [{id: 1}]} as QueryResult<any>;
+      const mockQueryResponse = { rows: [{ id: 1 }] } as QueryResult<any>;
       const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
       const service = new ProjectService(mockDBConnection);
 
       const result = await service.getProjectData(1);
       expect(result).to.be.instanceOf(GetProjectData);
-    })
+    });
   });
 
   describe('getObjectivesData', () => {
@@ -131,18 +144,18 @@ describe('ProjectService', () => {
         await service.getObjectivesData(1);
         expect.fail();
       } catch (error) {
-        expect((error as HTTP400).message).to.be.eql("Failed to get project objectives data")
+        expect((error as HTTP400).message).to.be.eql('Failed to get project objectives data');
       }
     });
 
     it('should return `GetObjectiveData`', async () => {
-      const mockQueryResponse = {rows: [{id: 1}]} as QueryResult<any>;
+      const mockQueryResponse = { rows: [{ id: 1 }] } as QueryResult<any>;
       const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
       const service = new ProjectService(mockDBConnection);
 
       const result = await service.getObjectivesData(1);
       expect(result).to.be.instanceOf(GetObjectivesData);
-    })
+    });
   });
 
   describe('getCoordinatorData', () => {
@@ -155,20 +168,19 @@ describe('ProjectService', () => {
         await service.getCoordinatorData(1);
         expect.fail();
       } catch (error) {
-        expect((error as HTTP400).message).to.be.eql("Failed to get project contact data")
+        expect((error as HTTP400).message).to.be.eql('Failed to get project contact data');
       }
     });
 
     it('should return `GetCoordinator`', async () => {
-      const mockQueryResponse = {rows: [{id: 1}]} as QueryResult<any>;
+      const mockQueryResponse = { rows: [{ id: 1 }] } as QueryResult<any>;
       const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
       const service = new ProjectService(mockDBConnection);
 
       const result = await service.getCoordinatorData(1);
       expect(result).to.be.instanceOf(GetCoordinatorData);
-    })
+    });
   });
-
 
   describe('getLocationData', () => {
     it('should throw `Failed to get project data` error', async () => {
@@ -180,18 +192,18 @@ describe('ProjectService', () => {
         await service.getLocationData(1);
         expect.fail();
       } catch (error) {
-        expect((error as HTTP400).message).to.be.eql("Failed to get project data")
+        expect((error as HTTP400).message).to.be.eql('Failed to get project data');
       }
     });
 
     it('should return `GetLocationData`', async () => {
-      const mockQueryResponse = {rows: [{id: 1}]} as QueryResult<any>;
+      const mockQueryResponse = { rows: [{ id: 1 }] } as QueryResult<any>;
       const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
       const service = new ProjectService(mockDBConnection);
 
       const result = await service.getLocationData(1);
       expect(result).to.be.instanceOf(GetLocationData);
-    })
+    });
   });
 
   describe('getIUCNClassificationData', () => {
@@ -204,18 +216,18 @@ describe('ProjectService', () => {
         await service.getIUCNClassificationData(1);
         expect.fail();
       } catch (error) {
-        expect((error as HTTP400).message).to.be.eql("Failed to get project data")
+        expect((error as HTTP400).message).to.be.eql('Failed to get project data');
       }
     });
 
     it('should return `GetIUNCClassificationData`', async () => {
-      const mockQueryResponse = {rows: [{id: 1}]} as QueryResult<any>;
+      const mockQueryResponse = { rows: [{ id: 1 }] } as QueryResult<any>;
       const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
       const service = new ProjectService(mockDBConnection);
 
       const result = await service.getIUCNClassificationData(1);
       expect(result).to.be.instanceOf(GetIUCNClassificationData);
-    })
+    });
   });
 
   describe('getFundingData', () => {
@@ -228,18 +240,18 @@ describe('ProjectService', () => {
         await service.getFundingData(1);
         expect.fail();
       } catch (error) {
-        expect((error as HTTP400).message).to.be.eql("Failed to get project data")
+        expect((error as HTTP400).message).to.be.eql('Failed to get project data');
       }
     });
 
     it('should return `GetFundingData`', async () => {
-      const mockQueryResponse = {rows: [{id: 1}]} as QueryResult<any>;
+      const mockQueryResponse = { rows: [{ id: 1 }] } as QueryResult<any>;
       const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
       const service = new ProjectService(mockDBConnection);
 
       const result = await service.getFundingData(1);
       expect(result).to.be.instanceOf(GetFundingData);
-    })
+    });
   });
 
   describe('getPartnershipsData', () => {
@@ -249,20 +261,20 @@ describe('ProjectService', () => {
       sinon.stub(service, 'getStakeholderPartnershipsRows').resolves([]);
 
       const results = await service.getPartnershipsData(1);
-      expect(results).to.be.instanceOf(GetPartnershipsData)
+      expect(results).to.be.instanceOf(GetPartnershipsData);
     });
-    
+
     it('should throw `Failed to get indigenous partnership data', async () => {
       const service = mockService();
       sinon.stub(service, 'getIndigenousPartnershipsRows').resolves(undefined);
       sinon.stub(service, 'getStakeholderPartnershipsRows').resolves([]);
 
       try {
-        await service.getPartnershipsData(1)
+        await service.getPartnershipsData(1);
       } catch (error) {
-        expect((error as HTTP400).message).to.eql("Failed to get indigenous partnership data")
+        expect((error as HTTP400).message).to.eql('Failed to get indigenous partnership data');
       }
-    })
+    });
 
     it('should throw `Failed to get stakeholder partnership data', async () => {
       const service = mockService();
@@ -270,13 +282,12 @@ describe('ProjectService', () => {
       sinon.stub(service, 'getStakeholderPartnershipsRows').resolves(undefined);
 
       try {
-        await service.getPartnershipsData(1)
+        await service.getPartnershipsData(1);
       } catch (error) {
-        expect((error as HTTP400).message).to.eql("Failed to get stakeholder partnership data")
+        expect((error as HTTP400).message).to.eql('Failed to get stakeholder partnership data');
       }
-    })
+    });
   });
-
 
   describe('ensureProjectParticipant', () => {
     afterEach(() => {

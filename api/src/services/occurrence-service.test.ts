@@ -57,9 +57,9 @@ describe('OccurrenceService', () => {
 
       const results = service.scrapeArchiveForOccurrences(dwc);
       expect(results).to.have.lengthOf(1);
-      results.forEach(item => {
+      results.forEach((item) => {
         expect(item).to.be.instanceOf(PostOccurrence);
-      })
+      });
     });
   });
 
