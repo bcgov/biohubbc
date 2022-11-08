@@ -114,7 +114,7 @@ describe('ValidationService', () => {
         await service.getValidationSchema(file, 1);
         expect.fail();
       } catch (error) {
-        expect(error instanceof SubmissionError).to.be.true;
+        expect(error).to.be.instanceof(SubmissionError);
         if (error instanceof SubmissionError) {
           expect(error.submissionMessages[0].type).to.be.eql(SUBMISSION_MESSAGE_TYPE.FAILED_GET_VALIDATION_RULES);
         }
@@ -151,7 +151,7 @@ describe('ValidationService', () => {
         await service.getTransformationSchema(file, 1);
         expect.fail();
       } catch (error) {
-        expect(error instanceof SubmissionError).to.be.true;
+        expect(error).to.be.instanceOf(SubmissionError);
         if (error instanceof SubmissionError) {
           expect(error.submissionMessages[0].type).to.be.eql(SUBMISSION_MESSAGE_TYPE.FAILED_GET_TRANSFORMATION_RULES);
         }
@@ -200,7 +200,7 @@ describe('ValidationService', () => {
         await service.templateValidation(xlsxCsv, 1);
         expect.fail();
       } catch (error) {
-        expect(error instanceof SubmissionError).to.be.true;
+        expect(error).to.be.instanceOf(SubmissionError);
         if (error instanceof SubmissionError) {
           expect(error.status).to.be.eql(SUBMISSION_STATUS_TYPE.FAILED_VALIDATION);
         }
@@ -233,7 +233,7 @@ describe('ValidationService', () => {
       const results = await service.templatePreparation(1);
 
       expect(results.xlsx).to.not.be.empty;
-      expect(results.xlsx instanceof XLSXCSV).to.be.true;
+      expect(results.xlsx).to.be.instanceOf(XLSXCSV);
       expect(results.s3InputKey).to.be.eql(s3Key);
     });
 
@@ -260,7 +260,7 @@ describe('ValidationService', () => {
 
         expect.fail();
       } catch (error) {
-        expect(error instanceof SubmissionError).to.be.true;
+        expect(error).to.be.instanceOf(SubmissionError);
         if (error instanceof SubmissionError) {
           expect(error.status).to.be.eql(SUBMISSION_STATUS_TYPE.FAILED_OCCURRENCE_PREPARATION);
         }
@@ -290,7 +290,7 @@ describe('ValidationService', () => {
       try {
         const xlsx = service.prepXLSX(file);
         expect(xlsx).to.not.be.empty;
-        expect(xlsx instanceof XLSXCSV).to.be.true;
+        expect(xlsx).to.be.instanceOf(XLSXCSV);
       } catch (error) {
         expect(parse).to.be.calledOnce;
       }
@@ -309,7 +309,7 @@ describe('ValidationService', () => {
           expect(error.submissionMessages[0].type).to.be.eql(SUBMISSION_MESSAGE_TYPE.UNSUPPORTED_FILE_TYPE);
         }
 
-        expect(error instanceof SubmissionError).to.be.true;
+        expect(error).to.be.instanceOf(SubmissionError);
         expect(parse).to.be.calledOnce;
       }
     });
@@ -327,7 +327,7 @@ describe('ValidationService', () => {
           expect(error.submissionMessages[0].type).to.be.eql(SUBMISSION_MESSAGE_TYPE.INVALID_MEDIA);
         }
 
-        expect(error instanceof SubmissionError).to.be.true;
+        expect(error).to.be.instanceOf(SubmissionError);
         expect(parse).to.be.calledOnce;
       }
     });
@@ -345,7 +345,7 @@ describe('ValidationService', () => {
           expect(error.submissionMessages[0].type).to.be.eql(SUBMISSION_MESSAGE_TYPE.FAILED_TO_GET_TRANSFORM_SCHEMA);
         }
 
-        expect(error instanceof SubmissionError).to.be.true;
+        expect(error).to.be.instanceOf(SubmissionError);
         expect(parse).to.be.calledOnce;
       }
     });
@@ -419,7 +419,7 @@ describe('ValidationService', () => {
       const service = mockService();
 
       const parser = service.getValidationRules({});
-      expect(parser instanceof ValidationSchemaParser).to.be.true;
+      expect(parser).to.be.instanceOf(ValidationSchemaParser);
     });
 
     it('should fail with invalid json', () => {
@@ -445,7 +445,7 @@ describe('ValidationService', () => {
       const service = mockService();
 
       const parser = service.getTransformationRules({});
-      expect(parser instanceof TransformationSchemaParser).to.be.true;
+      expect(parser).to.be.instanceOf(TransformationSchemaParser);
     });
 
     it('should fail with invalid json', () => {
@@ -487,7 +487,7 @@ describe('ValidationService', () => {
         await service.scrapeOccurrences(1);
         expect(scrapeUpload).to.be.calledOnce;
       } catch (error) {
-        expect(error instanceof SubmissionError).to.be.true;
+        expect(error).to.be.instanceOf(SubmissionError);
         expect(insertError).to.be.calledOnce;
       }
     });
@@ -502,7 +502,7 @@ describe('ValidationService', () => {
         expect(scrapeUpload).to.be.calledOnce;
         expect.fail();
       } catch (error) {
-        expect(error instanceof SubmissionError).to.be.false;
+        expect(error).not.to.be.instanceOf(SubmissionError);
         expect(insertError).not.be.calledOnce;
       }
     });
@@ -542,7 +542,7 @@ describe('ValidationService', () => {
         await service.transformFile(1, 1);
         expect(prep).to.be.calledOnce;
       } catch (error) {
-        expect(error instanceof SubmissionError).to.be.true;
+        expect(error).to.be.instanceOf(SubmissionError);
         expect(transform).not.to.be.calledOnce;
         expect(submissionStatus).not.to.be.calledOnce;
         expect(insertError).to.be.calledOnce;
@@ -564,7 +564,7 @@ describe('ValidationService', () => {
         await service.transformFile(1, 1);
         expect(prep).to.be.calledOnce;
       } catch (error) {
-        expect(error instanceof SubmissionError).to.be.false;
+        expect(error).to.be.instanceOf(SubmissionError);
         expect(transform).not.to.be.calledOnce;
         expect(submissionStatus).not.to.be.calledOnce;
         expect(insertError).not.to.be.calledOnce;
@@ -611,7 +611,7 @@ describe('ValidationService', () => {
         await service.validateFile(1, 1);
         expect(prep).to.be.calledOnce;
       } catch (error) {
-        expect(error instanceof SubmissionError).to.be.true;
+        expect(error).to.be.instanceOf(SubmissionError);
         expect(insertError).to.be.calledOnce;
         expect(validation).not.to.be.calledOnce;
         expect(submissionStatus).not.to.be.calledOnce;
@@ -634,7 +634,7 @@ describe('ValidationService', () => {
         expect(prep).to.be.calledOnce;
         expect(validation).to.be.calledOnce;
       } catch (error) {
-        expect(error instanceof SubmissionError).to.be.false;
+        expect(error).not.to.be.instanceOf(SubmissionError);
         expect(insertError).not.to.be.calledOnce;
         expect(submissionStatus).not.to.be.calledOnce;
       }
@@ -737,7 +737,7 @@ describe('ValidationService', () => {
         expect(persistResults).to.be.calledOnce;
         expect(update).to.be.calledOnce;
       } catch (error) {
-        expect(error instanceof SubmissionError).to.be.false;
+        expect(error).not.to.be.instanceOf(SubmissionError);
         expect(insertError).not.to.be.calledOnce;
       }
     });
@@ -812,7 +812,7 @@ describe('ValidationService', () => {
         expect(validate).to.be.calledOnce;
         expect(transform).to.be.calledOnce;
       } catch (error) {
-        expect(error instanceof SubmissionError).to.be.false;
+        expect(error).not.to.be.instanceOf(SubmissionError);
         expect(insertError).not.to.be.calledOnce;
       }
     });
@@ -852,7 +852,7 @@ describe('ValidationService', () => {
         await service.dwcPreparation(1);
         expect.fail();
       } catch (error) {
-        expect(error instanceof SubmissionError).to.be.true;
+        expect(error).to.be.instanceOf(SubmissionError);
         expect((error as SubmissionError).status).to.be.eql(SUBMISSION_STATUS_TYPE.FAILED_PROCESSING_OCCURRENCE_DATA);
         expect((error as SubmissionError).submissionMessages[0].type).to.be.eql(
           SUBMISSION_MESSAGE_TYPE.FAILED_GET_OCCURRENCE
@@ -873,7 +873,7 @@ describe('ValidationService', () => {
         await service.dwcPreparation(1);
         expect.fail();
       } catch (error) {
-        expect(error instanceof SubmissionError).to.be.true;
+        expect(error).to.be.instanceOf(SubmissionError);
         expect((error as SubmissionError).status).to.be.eql(SUBMISSION_STATUS_TYPE.FAILED_PROCESSING_OCCURRENCE_DATA);
         expect((error as SubmissionError).submissionMessages[0].type).to.be.eql(
           SUBMISSION_MESSAGE_TYPE.FAILED_GET_FILE_FROM_S3
@@ -893,7 +893,7 @@ describe('ValidationService', () => {
         await service.dwcPreparation(1);
         expect.fail();
       } catch (error) {
-        expect(error instanceof SubmissionError).to.be.true;
+        expect(error).to.be.instanceOf(SubmissionError);
         expect((error as SubmissionError).status).to.be.eql(SUBMISSION_STATUS_TYPE.FAILED_PROCESSING_OCCURRENCE_DATA);
         expect((error as SubmissionError).submissionMessages[0].type).to.be.eql(SUBMISSION_MESSAGE_TYPE.INVALID_MEDIA);
       }
@@ -962,7 +962,7 @@ describe('ValidationService', () => {
         await service.validateDWC(mockDWCArchive);
         expect.fail();
       } catch (error) {
-        expect(error instanceof SubmissionError).to.be.true;
+        expect(error).to.be.instanceOf(SubmissionError);
         expect((error as SubmissionError).submissionMessages[0].type).to.be.eql(SUBMISSION_MESSAGE_TYPE.INVALID_MEDIA);
       }
     });
@@ -1009,7 +1009,7 @@ describe('ValidationService', () => {
         expect(scrape).not.to.be.calledOnce;
         expect.fail();
       } catch (error) {
-        expect(error instanceof SubmissionError).to.be.true;
+        expect(error).to.be.instanceOf(SubmissionError);
       }
     });
   });
@@ -1069,7 +1069,7 @@ describe('ValidationService', () => {
         expect(persistResults).to.be.calledOnce;
         expect.fail();
       } catch (error) {
-        expect(error instanceof SubmissionError).to.be.true;
+        expect(error).to.be.instanceOf(SubmissionError);
       }
     });
   });
@@ -1100,7 +1100,7 @@ describe('ValidationService', () => {
         await service.validateXLSX(xlsx, parser);
         expect.fail();
       } catch (error) {
-        expect(error instanceof SubmissionError).to.be.true;
+        expect(error).to.be.instanceOf(SubmissionError);
         expect((error as SubmissionError).submissionMessages[0].type).to.be.eql(SUBMISSION_MESSAGE_TYPE.INVALID_MEDIA);
       }
     });
@@ -1170,7 +1170,7 @@ describe('ValidationService', () => {
         expect(mock).to.be.calledOnce;
         expect.fail();
       } catch (error) {
-        expect(error instanceof SubmissionError).to.be.true;
+        expect(error).to.be.instanceOf(SubmissionError);
         expect((error as SubmissionError).submissionMessages[0].type).to.be.eql(SUBMISSION_MESSAGE_TYPE.INVALID_MEDIA);
       }
     });
@@ -1202,7 +1202,7 @@ describe('ValidationService', () => {
         expect.fail();
       } catch (error) {
         expect(parse).to.be.calledOnce;
-        expect(error instanceof SubmissionError).to.be.true;
+        expect(error).to.be.instanceOf(SubmissionError);
         expect((error as SubmissionError).submissionMessages[0].type).to.be.eql(SUBMISSION_MESSAGE_TYPE.INVALID_MEDIA);
       }
     });
@@ -1216,7 +1216,7 @@ describe('ValidationService', () => {
         expect.fail();
       } catch (error) {
         expect(parse).to.be.calledOnce;
-        expect(error instanceof SubmissionError).to.be.true;
+        expect(error).to.be.instanceOf(SubmissionError);
         expect((error as SubmissionError).submissionMessages[0].type).to.be.eql(
           SUBMISSION_MESSAGE_TYPE.UNSUPPORTED_FILE_TYPE
         );
