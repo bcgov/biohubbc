@@ -110,184 +110,91 @@ describe('ProjectService', () => {
     });
   });
 
-  describe('getProjectData', () => {
-    it('should throw `Failed to get project data` error', async () => {
-      const mockQueryResponse = (null as unknown) as QueryResult<any>;
+  describe('getIndigenousPartnershipsRows', () => {
+    it('should return row information', async () => {
+      const mockQueryResponse = ({ rows: [{id: 1}] } as unknown) as QueryResult<any>;
       const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
       const service = new ProjectService(mockDBConnection);
 
-      try {
-        await service.getProjectData(1);
-        expect.fail();
-      } catch (error) {
-        expect((error as HTTP400).message).to.be.eql('Failed to get project data');
-      }
+      const results = await service.getIndigenousPartnershipsRows(1);
+      expect(results).to.have.length(1);
     });
 
-    it('should return `GetProjectData`', async () => {
-      const mockQueryResponse = { rows: [{ id: 1 }] } as QueryResult<any>;
-      const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
-      const service = new ProjectService(mockDBConnection);
-
-      const result = await service.getProjectData(1);
-      expect(result).to.be.instanceOf(GetProjectData);
-    });
-  });
-
-  describe('getObjectivesData', () => {
-    it('should throw `Failed to get project objective data` error', async () => {
-      const mockQueryResponse = (null as unknown) as QueryResult<any>;
-      const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
-      const service = new ProjectService(mockDBConnection);
-
-      try {
-        await service.getObjectivesData(1);
-        expect.fail();
-      } catch (error) {
-        expect((error as HTTP400).message).to.be.eql('Failed to get project objectives data');
-      }
-    });
-
-    it('should return `GetObjectiveData`', async () => {
-      const mockQueryResponse = { rows: [{ id: 1 }] } as QueryResult<any>;
-      const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
-      const service = new ProjectService(mockDBConnection);
-
-      const result = await service.getObjectivesData(1);
-      expect(result).to.be.instanceOf(GetObjectivesData);
-    });
-  });
-
-  describe('getCoordinatorData', () => {
-    it('should throw `Failed to get project contact data` error', async () => {
-      const mockQueryResponse = (null as unknown) as QueryResult<any>;
-      const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
-      const service = new ProjectService(mockDBConnection);
-
-      try {
-        await service.getCoordinatorData(1);
-        expect.fail();
-      } catch (error) {
-        expect((error as HTTP400).message).to.be.eql('Failed to get project contact data');
-      }
-    });
-
-    it('should return `GetCoordinator`', async () => {
-      const mockQueryResponse = { rows: [{ id: 1 }] } as QueryResult<any>;
-      const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
-      const service = new ProjectService(mockDBConnection);
-
-      const result = await service.getCoordinatorData(1);
-      expect(result).to.be.instanceOf(GetCoordinatorData);
-    });
-  });
-
-  describe('getLocationData', () => {
-    it('should throw `Failed to get project data` error', async () => {
-      const mockQueryResponse = (null as unknown) as QueryResult<any>;
-      const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
-      const service = new ProjectService(mockDBConnection);
-
-      try {
-        await service.getLocationData(1);
-        expect.fail();
-      } catch (error) {
-        expect((error as HTTP400).message).to.be.eql('Failed to get project data');
-      }
-    });
-
-    it('should return `GetLocationData`', async () => {
-      const mockQueryResponse = { rows: [{ id: 1 }] } as QueryResult<any>;
-      const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
-      const service = new ProjectService(mockDBConnection);
-
-      const result = await service.getLocationData(1);
-      expect(result).to.be.instanceOf(GetLocationData);
-    });
-  });
-
-  describe('getIUCNClassificationData', () => {
-    it('should throw `Failed to get project data` error', async () => {
-      const mockQueryResponse = (null as unknown) as QueryResult<any>;
-      const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
-      const service = new ProjectService(mockDBConnection);
-
-      try {
-        await service.getIUCNClassificationData(1);
-        expect.fail();
-      } catch (error) {
-        expect((error as HTTP400).message).to.be.eql('Failed to get project data');
-      }
-    });
-
-    it('should return `GetIUNCClassificationData`', async () => {
-      const mockQueryResponse = { rows: [{ id: 1 }] } as QueryResult<any>;
-      const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
-      const service = new ProjectService(mockDBConnection);
-
-      const result = await service.getIUCNClassificationData(1);
-      expect(result).to.be.instanceOf(GetIUCNClassificationData);
-    });
-  });
-
-  describe('getFundingData', () => {
-    it('should throw `Failed to get project data` error', async () => {
-      const mockQueryResponse = (null as unknown) as QueryResult<any>;
-      const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
-      const service = new ProjectService(mockDBConnection);
-
-      try {
-        await service.getFundingData(1);
-        expect.fail();
-      } catch (error) {
-        expect((error as HTTP400).message).to.be.eql('Failed to get project data');
-      }
-    });
-
-    it('should return `GetFundingData`', async () => {
-      const mockQueryResponse = { rows: [{ id: 1 }] } as QueryResult<any>;
-      const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
-      const service = new ProjectService(mockDBConnection);
-
-      const result = await service.getFundingData(1);
-      expect(result).to.be.instanceOf(GetFundingData);
-    });
-  });
-
-  describe('getPartnershipsData', () => {
-    it('should return `GetPartnershipsData`', async () => {
+    it('should throw `Failed to build SQL get statement`', async () => {
       const service = mockService();
-      sinon.stub(service, 'getIndigenousPartnershipsRows').resolves([]);
-      sinon.stub(service, 'getStakeholderPartnershipsRows').resolves([]);
-
-      const results = await service.getPartnershipsData(1);
-      expect(results).to.be.instanceOf(GetPartnershipsData);
-    });
-
-    it('should throw `Failed to get indigenous partnership data', async () => {
-      const service = mockService();
-      sinon.stub(service, 'getIndigenousPartnershipsRows').resolves(undefined);
-      sinon.stub(service, 'getStakeholderPartnershipsRows').resolves([]);
+      sinon.stub(queries.project, 'getIndigenousPartnershipsByProjectSQL').returns(null)
 
       try {
-        await service.getPartnershipsData(1);
+        await service.getIndigenousPartnershipsRows(1)
+        expect.fail();
       } catch (error) {
-        expect((error as HTTP400).message).to.eql('Failed to get indigenous partnership data');
+        expect((error as HTTP400).message).to.eql("Failed to build SQL get statement")
       }
     });
 
-    it('should throw `Failed to get stakeholder partnership data', async () => {
+    it('should return an empty array when no rows found', async () => {
+      const mockQueryResponse = ({rows: []} as unknown) as QueryResult<any>;
+      const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
+      const service = new ProjectService(mockDBConnection);
+
+      const results = await service.getIndigenousPartnershipsRows(1);
+      expect(results).to.have.length(0);
+    });
+
+    it('should return a null value', async () => {
+      const mockQueryResponse = (null as unknown) as QueryResult<any>;
+      const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
+      const service = new ProjectService(mockDBConnection);
+
+      const results = await service.getIndigenousPartnershipsRows(1);
+      expect(results).to.have.be.null;
+    });
+  })
+
+  describe('getStakeholderPartnershipsRows', () => {
+    it('should return row information', async () => {
+      const mockQueryResponse = ({ rows: [{id: 1}] } as unknown) as QueryResult<any>;
+      const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
+      const service = new ProjectService(mockDBConnection);
+
+      const results = await service.getStakeholderPartnershipsRows(1);
+      expect(results).to.have.length(1);
+    });
+
+    it('should throw `Failed to build SQL get statement`', async () => {
       const service = mockService();
-      sinon.stub(service, 'getIndigenousPartnershipsRows').resolves([]);
-      sinon.stub(service, 'getStakeholderPartnershipsRows').resolves(undefined);
+      sinon.stub(queries.project, 'getStakeholderPartnershipsByProjectSQL').returns(null)
 
       try {
-        await service.getPartnershipsData(1);
+        await service.getStakeholderPartnershipsRows(1)
+        expect.fail();
       } catch (error) {
-        expect((error as HTTP400).message).to.eql('Failed to get stakeholder partnership data');
+        expect((error as HTTP400).message).to.eql("Failed to build SQL get statement")
       }
     });
-  });
+
+    it('should return an empty array when no rows found', async () => {
+      const mockQueryResponse = ({rows: []} as unknown) as QueryResult<any>;
+      const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
+      const service = new ProjectService(mockDBConnection);
+
+      const results = await service.getStakeholderPartnershipsRows(1);
+      expect(results).to.have.length(0);
+    });
+
+    it('should return a null value', async () => {
+      const mockQueryResponse = (null as unknown) as QueryResult<any>;
+      const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
+      const service = new ProjectService(mockDBConnection);
+
+      const results = await service.getStakeholderPartnershipsRows(1);
+      expect(results).to.have.be.null;
+    });
+  })
+
+  describe('getAttachmentsData', () => {
+    
+  })
 
   describe('ensureProjectParticipant', () => {
     afterEach(() => {
