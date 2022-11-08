@@ -14,13 +14,97 @@ import {
   GetPartnershipsData,
   GetProjectData
 } from '../models/project-view';
+import { GET_ENTITIES } from '../paths/project/{projectId}/update';
 import { queries } from '../queries/queries';
 import { getMockDBConnection } from '../__mocks__/db';
 import { ProjectService } from './project-service';
 
 chai.use(sinonChai);
+// 184-270,384-386,396-820,833,853
 
-describe('ProjectService', () => {
+const mockService = () => {
+  const dbConnection = getMockDBConnection();
+  return new ProjectService(dbConnection);
+};
+
+describe.only('ProjectService', () => {
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  describe('getProjectEntitiesById', () => {
+    it('should get all project data', async () => {
+      const service = mockService()
+      const mockCoordinator = sinon.stub(ProjectService.prototype, 'getCoordinatorData').resolves(new GetCoordinatorData({
+        coordinator_first_name: "First",
+        coordinator_last_name: "Last",
+        coordinator_email_address: "email@email.com",
+        coordinator_agency_name: "agency",
+        coordinator_public: true,
+        revision_count: 1,
+      }));
+      const mockPartnership = sinon.stub(ProjectService.prototype, 'getPartnershipsData').resolves(new GetPartnershipsData([], []));
+      const mockLocation = sinon.stub(ProjectService.prototype, 'getLocationData').resolves(new GetLocationData(null))
+      const mockIUNCClassifications = sinon.stub(ProjectService.prototype, 'getIUCNClassificationData').resolves(new GetIUCNClassificationData([]))
+      const mockObjectives = sinon.stub(ProjectService.prototype, 'getObjectivesData').resolves(new GetObjectivesData(null))
+      const mockProject = sinon.stub(ProjectService.prototype, 'getProjectData').resolves(new GetProjectData(null, []))
+
+      await service.getProjectEntitiesById(1, [
+        GET_ENTITIES.coordinator,
+        GET_ENTITIES.funding,
+        GET_ENTITIES.iucn,
+        GET_ENTITIES.location,
+        GET_ENTITIES.objectives,
+        GET_ENTITIES.partnerships,
+        GET_ENTITIES.project
+      ]);
+
+      expect(mockCoordinator).to.be.called;
+      expect(mockPartnership).to.be.called;
+      expect(mockLocation).to.be.called;
+      expect(mockIUNCClassifications).to.be.called;
+      expect(mockObjectives).to.be.called;
+      expect(mockProject).to.be.calledTwice;
+    });
+
+    it('should get project and coordinator information', async () => {
+      const service = mockService()
+      const mockCoordinator = sinon.stub(ProjectService.prototype, 'getCoordinatorData').resolves(new GetCoordinatorData({
+        coordinator_first_name: "First",
+        coordinator_last_name: "Last",
+        coordinator_email_address: "email@email.com",
+        coordinator_agency_name: "agency",
+        coordinator_public: true,
+        revision_count: 1,
+      }));
+      const mockPartnership = sinon.stub(ProjectService.prototype, 'getPartnershipsData').resolves(new GetPartnershipsData([], []));
+      const mockLocation = sinon.stub(ProjectService.prototype, 'getLocationData').resolves(new GetLocationData(null))
+      const mockIUNCClassifications = sinon.stub(ProjectService.prototype, 'getIUCNClassificationData').resolves(new GetIUCNClassificationData([]))
+      const mockObjectives = sinon.stub(ProjectService.prototype, 'getObjectivesData').resolves(new GetObjectivesData(null))
+      const mockProject = sinon.stub(ProjectService.prototype, 'getProjectData').resolves(new GetProjectData(null, []))
+
+      await service.getProjectEntitiesById(1, [
+        GET_ENTITIES.coordinator,
+        GET_ENTITIES.project
+      ]);
+
+      expect(mockCoordinator).to.be.called;
+      expect(mockPartnership).not.to.be.called;
+      expect(mockLocation).not.to.be.called;
+      expect(mockIUNCClassifications).not.to.be.called;
+      expect(mockObjectives).not.to.be.called;
+      expect(mockProject).to.be.called;
+    });
+  });
+
+  describe('getProjectData', () => {
+    it('should return `GetProjectData`', async () => {
+      const service = mockService();
+      const mockResults = new GetProjectData()
+      const results = await service.getProjectData(1);
+    })
+  });
+
   describe('ensureProjectParticipant', () => {
     afterEach(() => {
       sinon.restore();
