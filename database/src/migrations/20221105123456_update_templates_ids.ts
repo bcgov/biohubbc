@@ -1,5 +1,6 @@
 import { Knex } from 'knex';
 import { COMMON_SURVEY_METHODOLOGY } from './common/template.enum';
+import { permutateTemplates } from './common/Utils';
 import { deerAerialNonSRBRecruitCompJSON } from './template_methodology_species_validations/20221021/deer_aerial_non_srb_recruit_comp_survey';
 import { deerGroundTransectRecruitCompJSON } from './template_methodology_species_validations/20221021/deer_ground_transect_recruit_comp_survey';
 import { elkAerialTransectDistanceJSON } from './template_methodology_species_validations/20221021/elk_aerial_transect_distance_1';
@@ -135,38 +136,3 @@ export async function up(knex: Knex): Promise<void> {
 export async function down(knex: Knex): Promise<void> {
   await knex.raw(``);
 }
-
-const permutateTemplates = async (
-  knex: Knex,
-  templateName: string,
-  fieldMethod: any[],
-  wldTaxon: string[],
-  validationSchema: string
-) => {
-  wldTaxon.forEach((taxon) => {
-    fieldMethod.forEach((field) => {
-      CreateTemplateRows(knex, templateName, field, taxon, validationSchema);
-    });
-  });
-};
-
-const CreateTemplateRows = async (
-  knex: Knex,
-  templateName: string,
-  fieldMethod: string | null,
-  wldTaxon: string,
-  validationSchema: string
-) => {
-  await knex.raw(`
-    INSERT INTO
-      ${DB_SCHEMA}.template_methodology_species (field_method_id, template_id, wldtaxonomic_units_id, validation)
-    VALUES
-      (
-        (select field_method_id from field_method where name = '${fieldMethod}'),
-        (select template_id from template where name = '${templateName}'),
-        '${wldTaxon}',
-        '${validationSchema}'
-      )
-    ;
-  `);
-};
