@@ -176,6 +176,22 @@ const useObservationApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  /**
+   * Validates and processes a submitted Darwin Core File
+   *
+   * @param {number} projectId
+   * @param {number} submissionId
+   * @return {*}
+   */
+  const processDWCFile = async (projectId: number, submissionId: number) => {
+    const { data } = await axios.post(`api/dwc/process`, {
+      project_id: projectId,
+      occurrence_submission_id: submissionId
+    });
+
+    return data;
+  };
+
   return {
     uploadObservationSubmission,
     getObservationSubmission,
@@ -185,7 +201,8 @@ const useObservationApi = (axios: AxiosInstance) => {
     initiateXLSXSubmissionTransform,
     initiateScrapeOccurrences,
     getOccurrencesForView,
-    processOccurrences
+    processOccurrences,
+    processDWCFile
   };
 };
 

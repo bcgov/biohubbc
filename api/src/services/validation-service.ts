@@ -91,10 +91,8 @@ export class ValidationService extends DBService {
     try {
       // prep dwc
       const dwcPrep = await this.dwcPreparation(submissionId);
-
       // validate dwc
       const csvState = this.validateDWC(dwcPrep.archive);
-
       // update submission
       await this.persistValidationResults(csvState.csv_state, csvState.media_state);
       await this.occurrenceService.updateSurveyOccurrenceSubmission(
@@ -102,6 +100,13 @@ export class ValidationService extends DBService {
         dwcPrep.archive.rawFile.fileName,
         dwcPrep.s3InputKey
       );
+
+      // Parse Archive into JSON file for custom validation
+      await this.parseDWCToJSON(submissionId, dwcPrep.archive);
+      // insert validated status
+      await this.submissionRepository.insertSubmissionStatus(submissionId, SUBMISSION_STATUS_TYPE.TEMPLATE_VALIDATED);
+
+      await this.templateScrapeAndUploadOccurrences(submissionId);
     } catch (error) {
       if (error instanceof SubmissionError) {
         await this.errorService.insertSubmissionError(submissionId, error);
@@ -291,6 +296,30 @@ export class ValidationService extends DBService {
       csv_state: csvState,
       media_state: mediaState
     } as ICsvMediaState;
+  }
+
+  /**
+   * Return normalized dwca file data
+   *
+   * @param {DWCArchive} dwcArchiveFile
+   * @return {*}  {string}
+   * @memberof DarwinCoreService
+   */
+  normalizeDWCArchive(dwcArchiveFile: DWCArchive): string {
+    const normalized = {};
+
+    Object.entries(dwcArchiveFile.worksheets).forEach(([key, value]) => {
+      if (value) {
+        normalized[key] = value.getRowObjects();
+      }
+    });
+
+    return JSON.stringify(normalized);
+  }
+
+  async parseDWCToJSON(submissionId: number, archive: DWCArchive) {
+    const json = this.normalizeDWCArchive(archive);
+    await this.occurrenceService.updateDWCSourceForOccurrenceSubmission(submissionId, json);
   }
 
   async persistValidationResults(csvState: ICsvState[], mediaState: IMediaState): Promise<boolean> {
