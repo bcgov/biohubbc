@@ -657,12 +657,16 @@ describe('ValidationService', () => {
       const state = sinon.stub(service, 'validateDWC').returns(mockState);
       const persistResults = sinon.stub(service, 'persistValidationResults').resolves();
       const update = sinon.stub(service.occurrenceService, 'updateSurveyOccurrenceSubmission').resolves();
+      const submissionStatus = sinon.stub(service.submissionRepository, 'insertSubmissionStatus').resolves();
+      sinon.stub(service, 'templateScrapeAndUploadOccurrences').resolves();
+      sinon.stub(service, 'parseDWCToJSON').resolves();
 
       await service.processDWCFile(1);
       expect(prep).to.be.calledOnce;
       expect(state).to.be.calledOnce;
       expect(persistResults).to.be.calledOnce;
       expect(update).to.be.calledOnce;
+      expect(submissionStatus).to.be.called;
     });
 
     it('should insert submission error from prep failure', async () => {
@@ -1317,6 +1321,32 @@ describe('ValidationService', () => {
           SUBMISSION_MESSAGE_TYPE.FAILED_UPDATE_OCCURRENCE_SUBMISSION
         );
       }
+    });
+  });
+
+  describe('ParseDWCToJSON', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('should run without error', async () => {
+      const service = mockService();
+      const occurrence = sinon.stub(OccurrenceService.prototype, 'updateDWCSourceForOccurrenceSubmission');
+
+      await service.parseDWCToJSON(
+        1,
+        new DWCArchive(new ArchiveFile('test', 'application/zip', Buffer.from([]), [buildFile('test', {})]))
+      );
+      expect(occurrence).to.be.called;
+    });
+
+    it('should return a valid JSON object', async () => {
+      const service = mockService();
+      const result = service.normalizeDWCArchive(
+        new DWCArchive(new ArchiveFile('test', 'application/zip', Buffer.from([]), [buildFile('test', {})]))
+      );
+      const obj = JSON.parse(result);
+      expect(typeof obj === 'object').to.be.true;
     });
   });
 });

@@ -4,6 +4,7 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
 import { ScrollToFormikError } from 'components/formik/ScrollToFormikError';
 import { Formik, FormikProps } from 'formik';
+import { useQuery } from 'hooks/useQuery';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { ICreateProjectRequest } from 'interfaces/useProjectApi.interface';
 import React from 'react';
@@ -60,6 +61,7 @@ export interface ICreateProjectForm {
   handleSubmit: (formikData: ICreateProjectRequest) => void;
   handleCancel: () => void;
   handleDraft: (value: React.SetStateAction<boolean>) => void;
+  handleDeleteDraft: (value: React.SetStateAction<boolean>) => void;
   formikRef: React.RefObject<FormikProps<ICreateProjectRequest>>;
 }
 
@@ -89,6 +91,7 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
   const { codes, formikRef } = props;
 
   const classes = useStyles();
+  const queryParams = useQuery();
 
   const handleSubmit = async (formikData: ICreateProjectRequest) => {
     props.handleSubmit(formikData);
@@ -100,6 +103,10 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
 
   const handleDraft = () => {
     props.handleDraft(true);
+  };
+
+  const handleDeleteDraft = () => {
+    props.handleDeleteDraft(true);
   };
 
   return (
@@ -261,6 +268,16 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
         <Button color="primary" size="large" variant="outlined" onClick={handleDraft} className={classes.actionButton}>
           Save Draft
         </Button>
+        {queryParams.draftId && (
+          <Button
+            color="primary"
+            size="large"
+            variant="outlined"
+            onClick={handleDeleteDraft}
+            className={classes.actionButton}>
+            Delete Draft
+          </Button>
+        )}
         <Button color="primary" size="large" variant="outlined" onClick={handleCancel} className={classes.actionButton}>
           Cancel
         </Button>
