@@ -412,7 +412,7 @@ export const deerGroundTransectRecruitCompJSON = {
           validations: basicNumericValidator()
         },
         {
-          name: 'Adilt Females',
+          name: 'Adult Females',
           description: '',
           validations: basicNumericValidator()
         },

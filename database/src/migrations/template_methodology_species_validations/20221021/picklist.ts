@@ -7,7 +7,7 @@ const yN = [
 const yND = [
   { name: 'Y', description: 'Yes' },
   { name: 'N', description: 'No' },
-  { name: "Didn''t Listen", description: "Didn''t Listen" }
+  { name: "Didn't Listen", description: "Didn't Listen" }
 ];
 
 const AircraftType = [

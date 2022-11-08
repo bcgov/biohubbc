@@ -402,7 +402,7 @@ export const deerAerialNonSRBRecruitCompJSON = {
           validations: basicNumericValidator()
         },
         {
-          name: 'Adilt Females',
+          name: 'Adult Females',
           description: '',
           validations: basicNumericValidator()
         },

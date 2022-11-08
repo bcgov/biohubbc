@@ -53,7 +53,7 @@ describe('ValidationRepository', () => {
       expect(response.transform).to.be.eql('{}');
     });
 
-    it('should throw `Failed to build SQL` error', async () => {
+    it('should throw an error', async () => {
       sinon.stub(ValidationRepository.prototype, 'getTemplateNameVersionId').resolves({ template_id: 1 });
 
       const mockResponse = ({} as any) as Promise<QueryResult<any>>;
@@ -77,7 +77,7 @@ describe('ValidationRepository', () => {
       sinon.restore();
     });
 
-    it('should throw `Failed to build SQL` error', async () => {
+    it('should throw an error', async () => {
       const mockResponse = (null as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({
         query: async () => mockResponse
