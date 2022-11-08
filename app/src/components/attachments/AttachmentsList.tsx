@@ -19,11 +19,11 @@ import TableRow from '@material-ui/core/TableRow';
 import { grey } from '@material-ui/core/colors';
 import {
   mdiDotsVertical,
-  mdiDownload,
   mdiInformationOutline,
   mdiLockOpenVariantOutline,
   mdiLockOutline,
-  mdiTrashCanOutline
+  mdiTrashCanOutline,
+  mdiTrayArrowDown
 } from '@mdi/js';
 import Icon from '@mdi/react';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
@@ -404,7 +404,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
                         <Checkbox color="primary"/>
                       </TableCell>
                       <TableCell scope="row">
-                        <Link style={{'fontWeight': 'bold'}} underline="always" component="button" variant="body2" onClick={() => openAttachment(row)}>
+                        <Link style={{'fontWeight': 'bold'}} underline="always" component="button" onClick={() => openAttachment(row)}>
                           {row.fileName}
                         </Link>
                       </TableCell>
@@ -541,9 +541,9 @@ const AttachmentItemMenuButton: React.FC<IAttachmentItemMenuButtonProps> = (prop
               }}
               data-testid="attachment-action-menu-download">
               <ListItemIcon>
-                <Icon path={mdiDownload} size={1} />
+                <Icon path={mdiTrayArrowDown} size={0.875} />
               </ListItemIcon>
-              Download File
+              Download Document
             </MenuItem>
             {props.attachment.fileType === AttachmentType.REPORT && (
               <MenuItem
@@ -553,9 +553,9 @@ const AttachmentItemMenuButton: React.FC<IAttachmentItemMenuButtonProps> = (prop
                 }}
                 data-testid="attachment-action-menu-details">
                 <ListItemIcon>
-                  <Icon path={mdiInformationOutline} size={1} />
+                  <Icon path={mdiInformationOutline} size={0.8} />
                 </ListItemIcon>
-                View Details
+                View Document Details
               </MenuItem>
             )}
             <MenuItem
@@ -565,9 +565,9 @@ const AttachmentItemMenuButton: React.FC<IAttachmentItemMenuButtonProps> = (prop
               }}
               data-testid="attachment-action-menu-delete">
               <ListItemIcon>
-                <Icon path={mdiTrashCanOutline} size={1} />
+                <Icon path={mdiTrashCanOutline} size={0.8} />
               </ListItemIcon>
-              Delete File
+              Delete Document
             </MenuItem>
           </Menu>
         </Box>

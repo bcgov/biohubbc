@@ -224,12 +224,12 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
             onClick={handleClick}>
             Submit Documents
           </Button>
-          <Menu
+          <Menu style={{marginTop: '8px'}}
             id="attachmentsMenu"
             anchorEl={anchorEl}
             getContentAnchorEl={null}
             anchorOrigin={{
-              vertical: 'top',
+              vertical: 'bottom',
               horizontal: 'right'
             }}
             transformOrigin={{

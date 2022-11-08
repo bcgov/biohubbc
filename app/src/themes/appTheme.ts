@@ -1,6 +1,6 @@
 import { createMuiTheme } from '@material-ui/core/styles';
 // import createBreakpoints from '@material-ui/core/styles/createBreakpoints'
-// import { grey } from '@material-ui/core/colors';
+import { grey } from '@material-ui/core/colors';
 import 'styles.scss';
 
 // const breakpoints = createBreakpoints({})
@@ -150,15 +150,21 @@ const appTheme = createMuiTheme({
         },
         '& .MuiTableCell-root:first-child': {
           paddingLeft: '24px'
+        },
+        '& .MuiLink-root': {
+          fontFamily: 'inherit',
+          fontSize: 'inherit'
         }
       }
     },
     MuiTableCell: {
       root: {
-        fontSize: '0.9rem',
+        fontSize: '0.9rem'
       },
       head: {
-        fontSize: '0.875rem'
+        fontSize: '0.875rem',
+        fontWeight: 700,
+        color: grey[600]
       }
     },
     MuiTab: {

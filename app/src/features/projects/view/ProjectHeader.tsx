@@ -279,20 +279,20 @@ const ProjectHeader: React.FC<IProjectHeaderProps> = (props) => {
               >
                 <MenuItem onClick={() => history.push('users')}>
                   <ListItemIcon>
-                    <Icon path={mdiAccountMultipleOutline} size={1} />
+                    <Icon path={mdiAccountMultipleOutline} size={0.8} />
                   </ListItemIcon>
                   <Typography variant="inherit">Manage Project Team</Typography>
                 </MenuItem>
                 <MenuItem>
                   <ListItemIcon>
-                    <Icon path={mdiPencilOutline} size={1} />
+                    <Icon path={mdiPencilOutline} size={0.8} />
                   </ListItemIcon>
                   <Typography variant="inherit">Edit Project Details</Typography>
                 </MenuItem>
                 {showDeleteProjectButton && (
                   <MenuItem onClick={showDeleteProjectDialog}>
                     <ListItemIcon>
-                      <Icon path={mdiTrashCanOutline} size={1} />
+                      <Icon path={mdiTrashCanOutline} size={0.8} />
                     </ListItemIcon>
                     <Typography variant="inherit">Delete Project</Typography>
                   </MenuItem>
