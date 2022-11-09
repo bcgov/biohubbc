@@ -6,13 +6,19 @@ import * as db from '../../../../../../../database/db';
 import { HTTP400, HTTPError } from '../../../../../../../errors/http-error';
 import { SummaryService } from '../../../../../../../services/summary-service';
 import * as file_utils from '../../../../../../../utils/file-utils';
+import { IMediaState } from '../../../../../../../utils/media/media-file';
 import { XLSXCSV } from '../../../../../../../utils/media/xlsx/xlsx-file';
+import { SubmissionError } from '../../../../../../../utils/submission-error';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../../__mocks__/db';
 import * as upload from './upload';
 
 chai.use(sinonChai);
 
 describe('uploadSummarySubmission', () => {
+  beforeEach(() => {
+    // sinon.spy(DateTimeSelector.prototype, 'updateDatetime')
+  });
+
   afterEach(() => {
     sinon.restore();
   });
@@ -335,7 +341,6 @@ describe('uploadSummarySubmission', () => {
     sinon.stub(file_utils, 'scanFileForVirus').resolves(true);    
     sinon.stub(SummaryService.prototype, 'insertSurveySummarySubmission').resolves({ survey_summary_submission_id: 14 })
     sinon.stub(file_utils, 'uploadFileToS3').resolves({ key: 'projects/1/surveys/1/test.txt' } as any);
-    // sinon.stub(file_utils, 'getFileFromS3').resolves({ key: 'projects/1/surveys/1/test.txt' } as any);
     sinon.stub(SummaryService.prototype, 'summaryTemplateValidation').resolves()
     sinon.stub(SummaryService.prototype, 'prepXLSX').returns({} as XLSXCSV)
     sinon.stub(SummaryService.prototype, 'summaryTemplatePreparation').resolves({
@@ -371,15 +376,37 @@ describe('uploadSummarySubmission', () => {
     const mockQuery = sinon.stub();
 
     mockQuery.resolves({ rowCount: 1, rows: [{ id: 1 }] });
-
+    
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
       query: mockQuery
     });
 
+    const csv_state: IMediaState = {
+      isValid: false,
+      fileName: 'test.txt'
+    }
+
+    sinon.stub(file_utils, 'scanFileForVirus').resolves(true);    
+    sinon.stub(SummaryService.prototype, 'insertSurveySummarySubmission').resolves({ survey_summary_submission_id: 14 })
+    sinon.stub(file_utils, 'uploadFileToS3').resolves({ key: 'projects/1/surveys/1/test.txt' } as any);
+    sinon.stub(SummaryService.prototype, 'summaryTemplateValidation').resolves()
+    sinon.stub(SummaryService.prototype, 'prepXLSX').returns({} as XLSXCSV)
+    sinon.stub(SummaryService.prototype, 'validateXLSX').resolves({ csv_state })
+    sinon.stub(SummaryService.prototype, 'summaryTemplatePreparation').resolves({
+      s3InputKey: 'projects/1/surveys/1/test.txt', xlsx: {} as XLSXCSV
+    })
+
     const requestHandler = upload.uploadAndValidate();
 
     await requestHandler(mockReq, mockRes, mockNext);
+
+    // expect insertSummarySubmissionMessage to be called
+    // expect(sinon.stub(SummaryService.prototype, 'insertSummarySubmissionError')).to.be.called
+
+    // expect persistSummaryValidationResults to returned true
+    expect(sinon.stub(SummaryService.prototype, 'persistSummaryValidationResults')).to.have.thrown(SubmissionError);
+
 
     expect(mockRes.statusValue).to.equal(200);
     expect(mockRes.jsonValue).to.eql({ summarySubmissionId: 14 });

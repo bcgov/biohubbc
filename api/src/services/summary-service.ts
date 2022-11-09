@@ -254,7 +254,7 @@ export class SummaryService extends DBService {
    * @param surveyId 
    * @returns {Promise<ISummaryTemplateSpeciesData[]>}
    */
-  private async getSummaryTemplateSpeciesRecords(file: XLSXCSV, surveyId: number): Promise<ISummaryTemplateSpeciesData[]> {
+  async getSummaryTemplateSpeciesRecords(file: XLSXCSV, surveyId: number): Promise<ISummaryTemplateSpeciesData[]> {
     const speciesData = await this.surveyService.getSpeciesData(surveyId);
     
     // Summary template name and version
@@ -283,7 +283,7 @@ export class SummaryService extends DBService {
    * @param {string | object} schema 
    * @returns {ValidationSchemaParser}
    */
-  private getValidationRules(schema: string | object): ValidationSchemaParser {
+  getValidationRules(schema: string | object): ValidationSchemaParser {
     defaultLog.debug({ label: 'getValidationRules' });
     const validationSchemaParser = new ValidationSchemaParser(schema);
     return validationSchemaParser;
@@ -293,9 +293,9 @@ export class SummaryService extends DBService {
    * Validates a given XLSX file.
    * @param {XLSXCSV} file 
    * @param {ValidationSchemaParser} parser 
-   * @returns 
+   * @returns {ICsvMediaState}
    */
-  private validateXLSX(file: XLSXCSV, parser: ValidationSchemaParser) {
+  validateXLSX(file: XLSXCSV, parser: ValidationSchemaParser): ICsvMediaState {
     defaultLog.debug({ label: 'validateXLSX' });
     const mediaState = file.isMediaValid(parser);
 
@@ -315,9 +315,8 @@ export class SummaryService extends DBService {
    * 
    * @param {ICsvState[]} csvState 
    * @param {IMediaState} mediaState 
-   * @returns {Promise<boolean>} `true` if there is a parse error, `false` otherwise.
    */
-  private async persistSummaryValidationResults(csvState: ICsvState[], mediaState: IMediaState): Promise<boolean> {
+  async persistSummaryValidationResults(csvState: ICsvState[], mediaState: IMediaState): Promise<void> {
     defaultLog.debug({ label: 'persistSummaryValidationResults', message: 'validationResults' });
 
     let parseError = false;
@@ -357,8 +356,6 @@ export class SummaryService extends DBService {
     if (parseError) {
       throw new SummarySubmissionError({ messages: errors });
     }
-
-    return parseError;
   }
 
   /**
@@ -383,7 +380,7 @@ export class SummaryService extends DBService {
    * @param headerError 
    * @returns {string}
    */
-  private generateHeaderErrorMessage(fileName: string, headerError: IHeaderError): string {
+  generateHeaderErrorMessage(fileName: string, headerError: IHeaderError): string {
     return `${fileName} - ${headerError.message} - Column: ${headerError.col}`;
   }
 
@@ -394,7 +391,7 @@ export class SummaryService extends DBService {
    * @param rowError 
    * @returns {string}
    */
-  private generateRowErrorMessage(fileName: string, rowError: IRowError): string {
+  generateRowErrorMessage(fileName: string, rowError: IRowError): string {
     return `${fileName} - ${rowError.message} - Column: ${rowError.col} - Row: ${rowError.row}`;
   }
 }
