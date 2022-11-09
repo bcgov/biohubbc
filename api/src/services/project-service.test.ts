@@ -12,7 +12,9 @@ import {
   GetLocationData,
   GetObjectivesData,
   GetPartnershipsData,
-  GetProjectData
+  GetProjectData,
+  GetAttachmentsData,
+  GetReportAttachmentsData
 } from '../models/project-view';
 import { GET_ENTITIES } from '../paths/project/{projectId}/update';
 import { queries } from '../queries/queries';
@@ -193,7 +195,67 @@ describe('ProjectService', () => {
   })
 
   describe('getAttachmentsData', () => {
-    
+    it('should return row attachments data', async () => {
+      const mockQueryResponse = ({ rows: [{id: 1}] } as unknown) as QueryResult<any>;
+      const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
+      const service = new ProjectService(mockDBConnection);
+
+      const results = await service.getAttachmentsData(1);
+      expect(results).to.eql(new GetAttachmentsData([{id: 1}]));
+    });
+
+    it('should throw `Failed to build SQL get statement`', async () => {
+      const service = mockService();
+      sinon.stub(queries.project, 'getAttachmentsByProjectSQL').returns(null)
+
+      try {
+        await service.getAttachmentsData(1)
+        expect.fail();
+      } catch (error) {
+        expect((error as HTTP400).message).to.eql("Failed to build SQL get statement")
+      }
+    });
+
+    it('should return an empty object when no rows are found', async () => {
+      const mockQueryResponse = ({rows: []} as unknown) as QueryResult<any>;
+      const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
+      const service = new ProjectService(mockDBConnection);
+
+      const results = await service.getAttachmentsData(1);
+      expect(results).to.eql(new GetAttachmentsData([]));
+    });
+  });
+
+  describe('getReportAttachmentsData', () => {
+    it('should return row attachments data', async () => {
+      const mockQueryResponse = ({ rows: [{id: 1}] } as unknown) as QueryResult<any>;
+      const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
+      const service = new ProjectService(mockDBConnection);
+
+      const results = await service.getReportAttachmentsData(1);
+      expect(results).to.eql(new GetReportAttachmentsData([{id: 1}]));
+    });
+
+    it('should throw `Failed to build SQL get statement`', async () => {
+      const service = mockService();
+      sinon.stub(queries.project, 'getReportAttachmentsByProjectSQL').returns(null)
+
+      try {
+        await service.getReportAttachmentsData(1)
+        expect.fail();
+      } catch (error) {
+        expect((error as HTTP400).message).to.eql("Failed to build SQL get statement")
+      }
+    });
+
+    it('should return an empty object when no rows are found', async () => {
+      const mockQueryResponse = ({rows: []} as unknown) as QueryResult<any>;
+      const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
+      const service = new ProjectService(mockDBConnection);
+
+      const results = await service.getReportAttachmentsData(1);
+      expect(results).to.eql(new GetReportAttachmentsData([]));
+    });
   })
 
   describe('ensureProjectParticipant', () => {
