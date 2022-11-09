@@ -95,9 +95,10 @@ describe('useObservationApi', () => {
   it('initiateXLSXSubmissionTransform works as expected', async () => {
     const projectId = 1;
     const submissionId = 2;
+    const surveyId = 3;
     mock.onPost(`/api/xlsx/transform`).reply(200, true);
 
-    const result = await useObservationApi(axios).initiateXLSXSubmissionTransform(projectId, submissionId);
+    const result = await useObservationApi(axios).initiateXLSXSubmissionTransform(projectId, submissionId, surveyId);
 
     expect(result).toEqual(true);
   });
@@ -105,9 +106,11 @@ describe('useObservationApi', () => {
   it('initiateXLSXSubmissionValidation works as expected', async () => {
     const projectId = 1;
     const submissionId = 2;
+    const surveyId = 3;
+
     mock.onPost(`/api/xlsx/validate`).reply(200, true);
 
-    const result = await useObservationApi(axios).initiateXLSXSubmissionValidation(projectId, submissionId);
+    const result = await useObservationApi(axios).initiateXLSXSubmissionValidation(projectId, submissionId, surveyId);
 
     expect(result).toEqual(true);
   });
@@ -146,9 +149,11 @@ describe('useObservationApi', () => {
   it('processOccurrences works as expected', async () => {
     const projectId = 1;
     const submissionId = 2;
+    const surveyId = 3;
+
     mock.onPost(`/api/xlsx/process`).reply(200, true);
 
-    const result = await useObservationApi(axios).processOccurrences(projectId, submissionId);
+    const result = await useObservationApi(axios).processOccurrences(projectId, submissionId, surveyId);
 
     expect(result).toEqual(true);
   });

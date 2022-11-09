@@ -2,7 +2,7 @@ import AdmZip from 'adm-zip';
 import { SUBMISSION_MESSAGE_TYPE, SUBMISSION_STATUS_TYPE } from '../constants/status';
 import { IDBConnection } from '../database/db';
 import { SubmissionRepository } from '../repositories/submission-repository';
-import { ValidationRepository } from '../repositories/validation-repository';
+import { ITemplateMethodologyData, ValidationRepository } from '../repositories/validation-repository';
 import { getFileFromS3, uploadBufferToS3 } from '../utils/file-utils';
 import { getLogger } from '../utils/logger';
 import { ICsvState, IHeaderError, IRowError } from '../utils/media/csv/csv-file';
@@ -17,6 +17,7 @@ import { MessageError, SubmissionError, SubmissionErrorFromMessageType } from '.
 import { DBService } from './db-service';
 import { ErrorService } from './error-service';
 import { OccurrenceService } from './occurrence-service';
+import { SurveyService } from './survey-service';
 
 const defaultLog = getLogger('services/validation-service');
 
@@ -32,6 +33,7 @@ interface IFileBuffer {
 export class ValidationService extends DBService {
   validationRepository: ValidationRepository;
   submissionRepository: SubmissionRepository;
+  surveyService: SurveyService;
   occurrenceService: OccurrenceService;
   errorService: ErrorService;
 
@@ -39,6 +41,7 @@ export class ValidationService extends DBService {
     super(connection);
     this.validationRepository = new ValidationRepository(connection);
     this.submissionRepository = new SubmissionRepository(connection);
+    this.surveyService = new SurveyService(connection);
     this.occurrenceService = new OccurrenceService(connection);
     this.errorService = new ErrorService(connection);
   }
@@ -55,10 +58,10 @@ export class ValidationService extends DBService {
     }
   }
 
-  async transformFile(submissionId: number) {
+  async transformFile(submissionId: number, surveyId: number) {
     try {
       const submissionPrep = await this.templatePreparation(submissionId);
-      await this.templateTransformation(submissionId, submissionPrep.xlsx, submissionPrep.s3InputKey);
+      await this.templateTransformation(submissionId, submissionPrep.xlsx, submissionPrep.s3InputKey, surveyId);
 
       // insert template validated status
       await this.submissionRepository.insertSubmissionStatus(submissionId, SUBMISSION_STATUS_TYPE.TEMPLATE_TRANSFORMED);
@@ -71,10 +74,10 @@ export class ValidationService extends DBService {
     }
   }
 
-  async validateFile(submissionId: number) {
+  async validateFile(submissionId: number, surveyId: number) {
     try {
       const submissionPrep = await this.templatePreparation(submissionId);
-      await this.templateValidation(submissionPrep.xlsx);
+      await this.templateValidation(submissionPrep.xlsx, surveyId);
 
       // insert template validated status
       await this.submissionRepository.insertSubmissionStatus(submissionId, SUBMISSION_STATUS_TYPE.TEMPLATE_VALIDATED);
@@ -116,19 +119,19 @@ export class ValidationService extends DBService {
     }
   }
 
-  async processFile(submissionId: number) {
+  async processFile(submissionId: number, surveyId: number) {
     try {
       // template preparation
       const submissionPrep = await this.templatePreparation(submissionId);
 
       // template validation
-      await this.templateValidation(submissionPrep.xlsx);
+      await this.templateValidation(submissionPrep.xlsx, surveyId);
 
       // insert template validated status
       await this.submissionRepository.insertSubmissionStatus(submissionId, SUBMISSION_STATUS_TYPE.TEMPLATE_VALIDATED);
 
       // template transformation
-      await this.templateTransformation(submissionId, submissionPrep.xlsx, submissionPrep.s3InputKey);
+      await this.templateTransformation(submissionId, submissionPrep.xlsx, submissionPrep.s3InputKey, surveyId);
 
       // insert template validated status
       await this.submissionRepository.insertSubmissionStatus(submissionId, SUBMISSION_STATUS_TYPE.TEMPLATE_TRANSFORMED);
@@ -178,8 +181,11 @@ export class ValidationService extends DBService {
   async templatePreparation(submissionId: number): Promise<{ s3InputKey: string; xlsx: XLSXCSV }> {
     try {
       const occurrenceSubmission = await this.occurrenceService.getOccurrenceSubmission(submissionId);
+
       const s3InputKey = occurrenceSubmission.input_key;
+
       const s3File = await getFileFromS3(s3InputKey);
+
       const xlsx = this.prepXLSX(s3File);
 
       return { s3InputKey: s3InputKey, xlsx: xlsx };
@@ -206,9 +212,9 @@ export class ValidationService extends DBService {
     }
   }
 
-  async templateValidation(xlsx: XLSXCSV) {
+  async templateValidation(xlsx: XLSXCSV, surveyId: number) {
     try {
-      const schema = await this.getValidationSchema(xlsx);
+      const schema = await this.getValidationSchema(xlsx, surveyId);
       const schemaParser = this.getValidationRules(schema);
       const csvState = this.validateXLSX(xlsx, schemaParser);
       await this.persistValidationResults(csvState.csv_state, csvState.media_state);
@@ -220,9 +226,9 @@ export class ValidationService extends DBService {
     }
   }
 
-  async templateTransformation(submissionId: number, xlsx: XLSXCSV, s3InputKey: string) {
+  async templateTransformation(submissionId: number, xlsx: XLSXCSV, s3InputKey: string, surveyId: number) {
     try {
-      const xlsxSchema = await this.getTransformationSchema(xlsx);
+      const xlsxSchema = await this.getTransformationSchema(xlsx, surveyId);
       const xlsxParser = this.getTransformationRules(xlsxSchema);
       const fileBuffer = await this.transformXLSX(xlsx, xlsxParser);
       await this.persistTransformationResults(submissionId, fileBuffer, s3InputKey, xlsx);
@@ -250,24 +256,35 @@ export class ValidationService extends DBService {
 
     const xlsxCsv = new XLSXCSV(parsedMedia);
 
-    const template_id = xlsxCsv.workbook.rawWorkbook.Custprops?.sims_template_id;
-    const csm_id = xlsxCsv.workbook.rawWorkbook.Custprops?.sims_csm_id;
+    const templateName = xlsxCsv.workbook.rawWorkbook.Custprops?.sims_name;
+    const templateVersion = xlsxCsv.workbook.rawWorkbook.Custprops?.sims_version;
 
-    if (!template_id || !csm_id) {
+    if (!templateName || !templateVersion) {
       throw SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_TO_GET_TRANSFORM_SCHEMA);
     }
 
     return xlsxCsv;
   }
 
-  async getValidationSchema(file: XLSXCSV): Promise<any> {
-    const template_id = file.workbook.rawWorkbook.Custprops.sims_template_id;
-    const field_method_id = file.workbook.rawWorkbook.Custprops.sims_csm_id;
+  async getTemplateMethodologySpeciesRecord(file: XLSXCSV, surveyId: number): Promise<ITemplateMethodologyData> {
+    const templateName = file.workbook.rawWorkbook.Custprops.sims_name;
+    const templateVersion = file.workbook.rawWorkbook.Custprops.sims_version;
 
-    const templateMethodologySpeciesRecord = await this.validationRepository.getTemplateMethodologySpeciesRecord(
-      Number(field_method_id),
-      Number(template_id)
+    const surveyData = await this.surveyService.getSurveyById(surveyId);
+
+    const surveyFieldMethodId = surveyData.purpose_and_methodology.field_method_id;
+    const surveySpecies = surveyData.species.focal_species;
+
+    return this.validationRepository.getTemplateMethodologySpeciesRecord(
+      templateName,
+      templateVersion,
+      surveyFieldMethodId,
+      surveySpecies
     );
+  }
+
+  async getValidationSchema(file: XLSXCSV, surveyId: number): Promise<any> {
+    const templateMethodologySpeciesRecord = await this.getTemplateMethodologySpeciesRecord(file, surveyId);
 
     const validationSchema = templateMethodologySpeciesRecord?.validation;
     if (!validationSchema) {
@@ -366,14 +383,8 @@ export class ValidationService extends DBService {
     return parseError;
   }
 
-  async getTransformationSchema(file: XLSXCSV): Promise<any> {
-    const template_id = file.workbook.rawWorkbook.Custprops.sims_template_id;
-    const field_method_id = file.workbook.rawWorkbook.Custprops.sims_csm_id;
-
-    const templateMethodologySpeciesRecord = await this.validationRepository.getTemplateMethodologySpeciesRecord(
-      Number(field_method_id),
-      Number(template_id)
-    );
+  async getTransformationSchema(file: XLSXCSV, surveyId: number): Promise<any> {
+    const templateMethodologySpeciesRecord = await this.getTemplateMethodologySpeciesRecord(file, surveyId);
 
     const transformationSchema = templateMethodologySpeciesRecord?.transform;
     if (!transformationSchema) {
