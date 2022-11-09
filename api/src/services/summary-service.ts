@@ -249,7 +249,6 @@ export class SummaryService extends DBService {
   /**
    * Reetrieves all summary template species records that are constrained by the template
    * name, version and survey focal species.
-   * @todo jsdoc
    * @param file 
    * @param surveyId 
    * @returns {Promise<ISummaryTemplateSpeciesData[]>}

@@ -4,7 +4,6 @@ import { ApiExecuteSQLError } from '../errors/api-error';
 import { HTTP400 } from '../errors/http-error';
 import { PostSummaryDetails } from '../models/summaryresults-create';
 import { getLogger } from '../utils/logger';
-import { filterRecords } from '../utils/validation-utils';
 import { BaseRepository } from './base-repository';
 
 export interface ISummaryTemplateSpeciesData {
@@ -397,10 +396,7 @@ export class SummaryRepository extends BaseRepository {
       throw new HTTP400('Failed to query summary template species table');
     }
 
-    return filterRecords<ISummaryTemplateSpeciesData>(
-      (response?.rows || []),
-      { wldtaxonomic_units_id: species || null }
-    );
+    return response.rows
   }
 
   /**
