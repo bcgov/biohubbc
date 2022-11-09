@@ -8,7 +8,6 @@ import { SummaryService } from '../../../../../../../services/summary-service';
 import * as file_utils from '../../../../../../../utils/file-utils';
 import { IMediaState } from '../../../../../../../utils/media/media-file';
 import { XLSXCSV } from '../../../../../../../utils/media/xlsx/xlsx-file';
-import { SubmissionError } from '../../../../../../../utils/submission-error';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../../__mocks__/db';
 import * as upload from './upload';
 
@@ -388,7 +387,10 @@ describe('uploadSummarySubmission', () => {
     sinon.stub(file_utils, 'scanFileForVirus').resolves(true);    
     sinon.stub(SummaryService.prototype, 'insertSurveySummarySubmission').resolves({ survey_summary_submission_id: 14 })
     sinon.stub(file_utils, 'uploadFileToS3').resolves({ key: 'projects/1/surveys/1/test.txt' } as any);
-    sinon.stub(SummaryService.prototype, 'summaryTemplateValidation').resolves()
+    
+    // We want summaryTemplateValidation to find that vaiateXLSX failed, thus persisting a parse error
+    // sinon.stub(SummaryService.prototype, 'summaryTemplateValidation').resolves()
+    
     sinon.stub(SummaryService.prototype, 'prepXLSX').returns({} as XLSXCSV)
     sinon.stub(SummaryService.prototype, 'validateXLSX').resolves({ csv_state })
     sinon.stub(SummaryService.prototype, 'summaryTemplatePreparation').resolves({
@@ -403,7 +405,7 @@ describe('uploadSummarySubmission', () => {
     // expect(sinon.stub(SummaryService.prototype, 'insertSummarySubmissionError')).to.be.called
 
     // expect persistSummaryValidationResults to returned true
-    expect(sinon.stub(SummaryService.prototype, 'persistSummaryValidationResults')).to.have.thrown(SubmissionError);
+    expect(sinon.stub(SummaryService.prototype, 'persistSummaryValidationResults')).to.have.called;
 
 
     expect(mockRes.statusValue).to.equal(200);
