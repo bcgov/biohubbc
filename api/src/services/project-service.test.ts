@@ -4,8 +4,9 @@ import { QueryResult } from 'pg';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import SQL from 'sql-template-strings';
+import { PROJECT_ROLE } from '../constants/roles';
 import { HTTP400, HTTPError } from '../errors/http-error';
-import { PostProjectObject } from '../models/project-create';
+import { PostFundingSource, PostProjectObject } from '../models/project-create';
 import {
   GetCoordinatorData,
   GetFundingData,
@@ -466,7 +467,268 @@ describe('ProjectService', () => {
         expect((error as HTTP400).message).to.be.eql('Failed to insert project boundary data');
       }
     });
-  })
+  });
+
+  describe('insertFundingSource', () => {
+    it('should return an id', async () => {
+      const mockQueryResponse = ({ rows: [{id: 1}], rowCount: 1 } as unknown) as QueryResult<any>;
+      const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
+      const service = new ProjectService(mockDBConnection);
+      const mockData = mockProjectData();
+      const data = new PostFundingSource(mockData.funding);
+      const id = await service.insertFundingSource(data, 1);
+
+      expect(id).to.be.eql(1);
+    });
+
+    it('should throw `Failed to build SQL insert statement` error', async () => {
+      const mockQueryResponse = ({ rows: [{id: 1}], rowCount: 1 } as unknown) as QueryResult<any>;
+      const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
+      const service = new ProjectService(mockDBConnection);
+      const mockData = mockProjectData();
+      const data = new PostFundingSource(mockData.funding);
+      sinon.stub(queries.project, 'postProjectFundingSourceSQL').returns(null);
+
+
+      try {
+      await service.insertFundingSource(data, 1);
+        expect.fail();
+      } catch (error) {
+        expect((error as HTTP400).message).to.be.eql('Failed to build SQL insert statement');
+      }
+    });
+
+    it('should throw `Failed to insert project funding data` error', async () => {
+      const mockQueryResponse = ({ rows: [], rowCount: 0 } as unknown) as QueryResult<any>;
+      const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
+      const service = new ProjectService(mockDBConnection);
+      const mockData = mockProjectData();
+      const data = new PostFundingSource(mockData.funding);
+
+      try {
+        await service.insertFundingSource(data, 1);
+        expect.fail();
+      } catch (error) {
+        expect((error as HTTP400).message).to.be.eql('Failed to insert project funding data');
+      }
+    });
+  });
+
+  describe('insertIndigenousNation', () => {
+    it('should return an id', async () => {
+      const mockQueryResponse = ({ rows: [{id: 1}], rowCount: 1 } as unknown) as QueryResult<any>;
+      const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
+      const service = new ProjectService(mockDBConnection);
+      const id = await service.insertIndigenousNation(1, 1);
+
+      expect(id).to.be.eql(1);
+    });
+
+    it('should throw `Failed to build SQL insert statement` error', async () => {
+      const mockQueryResponse = ({ rows: [{id: 1}], rowCount: 1 } as unknown) as QueryResult<any>;
+      const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
+      const service = new ProjectService(mockDBConnection);
+      sinon.stub(queries.project, 'postProjectIndigenousNationSQL').returns(null);
+
+
+      try {
+        await service.insertIndigenousNation(1, 1);
+        expect.fail();
+      } catch (error) {
+        expect((error as HTTP400).message).to.be.eql('Failed to build SQL insert statement');
+      }
+    });
+
+    it('should throw `Failed to insert project first nations partnership data` error', async () => {
+      const mockQueryResponse = ({ rows: [], rowCount: 0 } as unknown) as QueryResult<any>;
+      const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
+      const service = new ProjectService(mockDBConnection);
+
+      try {
+        await service.insertIndigenousNation(1, 1);
+        expect.fail();
+      } catch (error) {
+        expect((error as HTTP400).message).to.be.eql('Failed to insert project first nations partnership data');
+      }
+    });
+  });
+
+  describe('insertStakeholderPartnership', () => {
+    it('should return an id', async () => {
+      const mockQueryResponse = ({ rows: [{id: 1}], rowCount: 1 } as unknown) as QueryResult<any>;
+      const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
+      const service = new ProjectService(mockDBConnection);
+      const id = await service.insertStakeholderPartnership("Acme Inc.", 1);
+
+      expect(id).to.be.eql(1);
+    });
+
+    it('should throw `Failed to build SQL insert statement` error', async () => {
+      const mockQueryResponse = ({ rows: [{id: 1}], rowCount: 1 } as unknown) as QueryResult<any>;
+      const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
+      const service = new ProjectService(mockDBConnection);
+      sinon.stub(queries.project, 'postProjectStakeholderPartnershipSQL').returns(null);
+
+
+      try {
+        await service.insertStakeholderPartnership("Acme Inc.", 1);
+        expect.fail();
+      } catch (error) {
+        expect((error as HTTP400).message).to.be.eql('Failed to build SQL insert statement');
+      }
+    });
+
+    it('should throw `Failed to insert project stakeholder partnership data` error', async () => {
+      const mockQueryResponse = ({ rows: [], rowCount: 0 } as unknown) as QueryResult<any>;
+      const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
+      const service = new ProjectService(mockDBConnection);
+
+      try {
+        await service.insertStakeholderPartnership("Acme Inc.", 1);
+        expect.fail();
+      } catch (error) {
+        expect((error as HTTP400).message).to.be.eql('Failed to insert project stakeholder partnership data');
+      }
+    });
+  });
+
+  describe('insertClassificationDetail', () => {
+    it('should return an id', async () => {
+      const mockQueryResponse = ({ rows: [{id: 1}], rowCount: 1 } as unknown) as QueryResult<any>;
+      const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
+      const service = new ProjectService(mockDBConnection);
+      const id = await service.insertClassificationDetail(1, 1);
+
+      expect(id).to.be.eql(1);
+    });
+
+    it('should throw `Failed to build SQL insert statement` error', async () => {
+      const mockQueryResponse = ({ rows: [{id: 1}], rowCount: 1 } as unknown) as QueryResult<any>;
+      const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
+      const service = new ProjectService(mockDBConnection);
+      sinon.stub(queries.project, 'postProjectIUCNSQL').returns(null);
+
+
+      try {
+        await service.insertClassificationDetail(1, 1);
+        expect.fail();
+      } catch (error) {
+        expect((error as HTTP400).message).to.be.eql('Failed to build SQL insert statement');
+      }
+    });
+
+    it('should throw `Failed to insert project IUCN data` error', async () => {
+      const mockQueryResponse = ({ rows: [], rowCount: 0 } as unknown) as QueryResult<any>;
+      const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
+      const service = new ProjectService(mockDBConnection);
+
+      try {
+        await service.insertClassificationDetail(1, 1);
+        expect.fail();
+      } catch (error) {
+        expect((error as HTTP400).message).to.be.eql('Failed to insert project IUCN data');
+      }
+    });
+  });
+
+  describe('insertActivity', () => {
+    it('should return an id', async () => {
+      const mockQueryResponse = ({ rows: [{id: 1}], rowCount: 1 } as unknown) as QueryResult<any>;
+      const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
+      const service = new ProjectService(mockDBConnection);
+      const id = await service.insertActivity(1, 1);
+
+      expect(id).to.be.eql(1);
+    });
+
+    it('should throw `Failed to build SQL insert statement` error', async () => {
+      const mockQueryResponse = ({ rows: [{id: 1}], rowCount: 1 } as unknown) as QueryResult<any>;
+      const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
+      const service = new ProjectService(mockDBConnection);
+      sinon.stub(queries.project, 'postProjectActivitySQL').returns(null);
+
+
+      try {
+        await service.insertActivity(1, 1);
+        expect.fail();
+      } catch (error) {
+        expect((error as HTTP400).message).to.be.eql('Failed to build SQL insert statement');
+      }
+    });
+
+    it('should throw `Failed to insert project activity data` error', async () => {
+      const mockQueryResponse = ({ rows: [], rowCount: 0 } as unknown) as QueryResult<any>;
+      const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
+      const service = new ProjectService(mockDBConnection);
+
+      try {
+        await service.insertActivity(1, 1);
+        expect.fail();
+      } catch (error) {
+        expect((error as HTTP400).message).to.be.eql('Failed to insert project activity data');
+      }
+    });
+  });
+
+  describe('insertParticipantRole', () => {
+    it('should run without issue', async () => {
+      const mockQueryResponse = ({ rows: [{id: 1}], rowCount: 1 } as unknown) as QueryResult<any>;
+      const mockDBConnection = getMockDBConnection({ 
+        query: async () => mockQueryResponse,
+        systemUserId: () => 1
+      });
+      const service = new ProjectService(mockDBConnection);
+      await service.insertParticipantRole(1, PROJECT_ROLE.PROJECT_LEAD);
+    });
+
+    it('should throw `Failed to identify system user ID`', async () => {
+      const mockQueryResponse = ({ rows: [{id: 1}], rowCount: 1 } as unknown) as QueryResult<any>;
+      const mockDBConnection = getMockDBConnection({ 
+        query: async () => mockQueryResponse,
+        systemUserId: () => null
+      });
+      const service = new ProjectService(mockDBConnection);
+
+      try {
+        await service.insertParticipantRole(1, PROJECT_ROLE.PROJECT_LEAD);
+        expect.fail();
+      } catch (error) {
+        expect((error as HTTP400).message).to.be.eql('Failed to identify system user ID');
+      }
+    });
+
+    it('should throw `Failed to build SQL insert statement`', async () => {
+      const mockQueryResponse = ({ rows: [{id: 1}], rowCount: 1 } as unknown) as QueryResult<any>;
+      const mockDBConnection = getMockDBConnection({ 
+        query: async () => mockQueryResponse,
+        systemUserId: () => 1
+      });
+      const service = new ProjectService(mockDBConnection);
+      sinon.stub(queries.projectParticipation, 'addProjectRoleByRoleNameSQL').returns(null);
+      try {
+        await service.insertParticipantRole(1, PROJECT_ROLE.PROJECT_LEAD);
+        expect.fail();
+      } catch (error) {
+        expect((error as HTTP400).message).to.be.eql('Failed to build SQL insert statement');
+      }
+    });
+
+    it('should throw `Failed to insert project team member`', async () => {
+      const mockQueryResponse = ({ rows: [], rowCount: 0 } as unknown) as QueryResult<any>;
+      const mockDBConnection = getMockDBConnection({ 
+        query: async () => mockQueryResponse,
+        systemUserId: () => 1
+      });
+      const service = new ProjectService(mockDBConnection);
+
+      try {
+        await service.insertParticipantRole(1, PROJECT_ROLE.PROJECT_LEAD);
+        expect.fail();
+      } catch (error) {
+        expect((error as HTTP400).message).to.be.eql('Failed to insert project team member');
+      }
+    });
+  });
 
   describe('getReportAttachmentsData', () => {
     it('should return row attachments data', async () => {
