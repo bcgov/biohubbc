@@ -91,9 +91,9 @@ export function getSingleSummarySubmissionURL(): RequestHandler {
 
     try {
       await connection.open();
-      const summaryService = new SummaryService(connection)
+      const summaryService = new SummaryService(connection);
 
-      const summarySubmission = await summaryService.findSummarySubmissionById(Number(req.params.summaryId))
+      const summarySubmission = await summaryService.findSummarySubmissionById(Number(req.params.summaryId));
       await connection.commit();
 
       const s3Key = summarySubmission.key;

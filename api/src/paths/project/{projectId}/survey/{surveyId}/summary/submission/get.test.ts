@@ -91,7 +91,7 @@ describe('getSummarySubmission', () => {
         type: 'Miscellaneous',
         message: 'another error message'
       }
-    ]
+    ];
 
     const submission = {
       id: 13,
@@ -103,7 +103,7 @@ describe('getSummarySubmission', () => {
       submission_message_type_name: 'Miscellaneous',
       summary_submission_message_class_id: 1,
       submission_message_class_name: MESSAGE_CLASS_NAME.ERROR
-    }
+    };
 
     sinon.stub(SummaryService.prototype, 'getLatestSurveySummarySubmission').resolves(submission);
     sinon.stub(SummaryService.prototype, 'getSummarySubmissionMessages').resolves(messages);

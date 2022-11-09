@@ -204,8 +204,9 @@ describe('uploadSummarySubmission', () => {
     });
 
     sinon.stub(file_utils, 'scanFileForVirus').resolves(true);
-    sinon.stub(SummaryService.prototype, 'insertSurveySummarySubmission')
-      .throws(new HTTP400('Failed to insert survey summary submission record'))
+    sinon
+      .stub(SummaryService.prototype, 'insertSurveySummarySubmission')
+      .throws(new HTTP400('Failed to insert survey summary submission record'));
 
     const requestHandler = upload.uploadAndValidate();
 
@@ -248,8 +249,9 @@ describe('uploadSummarySubmission', () => {
     });
 
     sinon.stub(file_utils, 'scanFileForVirus').resolves(true);
-    sinon.stub(SummaryService.prototype, 'updateSurveySummarySubmissionWithKey')
-      .throws(new HTTP400('Failed to update survey summary submission record'))
+    sinon
+      .stub(SummaryService.prototype, 'updateSurveySummarySubmissionWithKey')
+      .throws(new HTTP400('Failed to update survey summary submission record'));
 
     const requestHandler = upload.uploadAndValidate();
 
@@ -335,14 +337,17 @@ describe('uploadSummarySubmission', () => {
       query: mockQuery
     });
 
-    sinon.stub(file_utils, 'scanFileForVirus').resolves(true);    
-    sinon.stub(SummaryService.prototype, 'insertSurveySummarySubmission').resolves({ survey_summary_submission_id: 14 })
+    sinon.stub(file_utils, 'scanFileForVirus').resolves(true);
+    sinon
+      .stub(SummaryService.prototype, 'insertSurveySummarySubmission')
+      .resolves({ survey_summary_submission_id: 14 });
     sinon.stub(file_utils, 'uploadFileToS3').resolves({ key: 'projects/1/surveys/1/test.txt' } as any);
-    sinon.stub(SummaryService.prototype, 'summaryTemplateValidation').resolves()
-    sinon.stub(SummaryService.prototype, 'prepXLSX').returns({} as XLSXCSV)
+    sinon.stub(SummaryService.prototype, 'summaryTemplateValidation').resolves();
+    sinon.stub(SummaryService.prototype, 'prepXLSX').returns({} as XLSXCSV);
     sinon.stub(SummaryService.prototype, 'summaryTemplatePreparation').resolves({
-      s3InputKey: 'projects/1/surveys/1/test.txt', xlsx: {} as XLSXCSV
-    })
+      s3InputKey: 'projects/1/surveys/1/test.txt',
+      xlsx: {} as XLSXCSV
+    });
 
     const requestHandler = upload.uploadAndValidate();
 
@@ -373,7 +378,7 @@ describe('uploadSummarySubmission', () => {
     const mockQuery = sinon.stub();
 
     mockQuery.resolves({ rowCount: 1, rows: [{ id: 1 }] });
-    
+
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
       query: mockQuery
@@ -382,20 +387,23 @@ describe('uploadSummarySubmission', () => {
     const csv_state: IMediaState = {
       isValid: false,
       fileName: 'test.txt'
-    }
+    };
 
-    sinon.stub(file_utils, 'scanFileForVirus').resolves(true);    
-    sinon.stub(SummaryService.prototype, 'insertSurveySummarySubmission').resolves({ survey_summary_submission_id: 14 })
+    sinon.stub(file_utils, 'scanFileForVirus').resolves(true);
+    sinon
+      .stub(SummaryService.prototype, 'insertSurveySummarySubmission')
+      .resolves({ survey_summary_submission_id: 14 });
     sinon.stub(file_utils, 'uploadFileToS3').resolves({ key: 'projects/1/surveys/1/test.txt' } as any);
-    
+
     // We want summaryTemplateValidation to find that vaiateXLSX failed, thus persisting a parse error
     // sinon.stub(SummaryService.prototype, 'summaryTemplateValidation').resolves()
-    
-    sinon.stub(SummaryService.prototype, 'prepXLSX').returns({} as XLSXCSV)
-    sinon.stub(SummaryService.prototype, 'validateXLSX').resolves({ csv_state })
+
+    sinon.stub(SummaryService.prototype, 'prepXLSX').returns({} as XLSXCSV);
+    sinon.stub(SummaryService.prototype, 'validateXLSX').resolves({ csv_state });
     sinon.stub(SummaryService.prototype, 'summaryTemplatePreparation').resolves({
-      s3InputKey: 'projects/1/surveys/1/test.txt', xlsx: {} as XLSXCSV
-    })
+      s3InputKey: 'projects/1/surveys/1/test.txt',
+      xlsx: {} as XLSXCSV
+    });
 
     const requestHandler = upload.uploadAndValidate();
 
@@ -406,7 +414,6 @@ describe('uploadSummarySubmission', () => {
 
     // expect persistSummaryValidationResults to returned true
     expect(sinon.stub(SummaryService.prototype, 'persistSummaryValidationResults')).to.have.called;
-
 
     expect(mockRes.statusValue).to.equal(200);
     expect(mockRes.jsonValue).to.eql({ summarySubmissionId: 14 });

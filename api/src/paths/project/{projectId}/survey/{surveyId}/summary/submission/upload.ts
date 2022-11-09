@@ -138,7 +138,7 @@ export function uploadAndValidate(): RequestHandler {
       const rawMediaFile = rawMediaArray[0];
 
       await connection.open();
-      const summaryService = new SummaryService(connection)
+      const summaryService = new SummaryService(connection);
 
       // Scan file for viruses using ClamAV
       const virusScanResult = await scanFileForVirus(rawMediaFile);
@@ -147,12 +147,10 @@ export function uploadAndValidate(): RequestHandler {
         throw new HTTP400('Malicious content detected, upload cancelled');
       }
 
-      const surveyId = Number(req.params.surveyId)
-      const summarySubmissionId = (await summaryService.insertSurveySummarySubmission(
-        surveyId,
-        'BioHub',
-        rawMediaFile.originalname
-      )).survey_summary_submission_id;
+      const surveyId = Number(req.params.surveyId);
+      const summarySubmissionId = (
+        await summaryService.insertSurveySummarySubmission(surveyId, 'BioHub', rawMediaFile.originalname)
+      ).survey_summary_submission_id;
 
       const key = generateS3FileKey({
         projectId: Number(req.params.projectId),
@@ -173,10 +171,10 @@ export function uploadAndValidate(): RequestHandler {
 
       // Upload submission to S3
       await uploadFileToS3(rawMediaFile, key, metadata);
-      
+
       // Validate submission
-      await summaryService.validateFile(summarySubmissionId, surveyId)
-      
+      await summaryService.validateFile(summarySubmissionId, surveyId);
+
       return res.status(200).json({ summarySubmissionId });
     } catch (error) {
       defaultLog.error({ label: 'uploadMedia', message: 'error', error });

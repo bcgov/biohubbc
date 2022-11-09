@@ -101,7 +101,8 @@ describe('getSingleSubmissionURL', () => {
       }
     });
 
-    sinon.stub(SummaryService.prototype, 'findSummarySubmissionById')
+    sinon
+      .stub(SummaryService.prototype, 'findSummarySubmissionById')
       .throws(new HTTP400('Failed to query survey summary submission table'));
 
     try {

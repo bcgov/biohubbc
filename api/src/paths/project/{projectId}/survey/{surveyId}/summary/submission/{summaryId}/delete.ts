@@ -109,12 +109,12 @@ export function deleteSummarySubmission(): RequestHandler {
     }
 
     const connection = getDBConnection(req['keycloak_token']);
-    
+
     try {
-      await connection.open()
-      const summaryService = new SummaryService(connection)
-  
-      const result = await summaryService.deleteSummarySubmission(Number(req.params.summaryId))
+      await connection.open();
+      const summaryService = new SummaryService(connection);
+
+      const result = await summaryService.deleteSummarySubmission(Number(req.params.summaryId));
       await connection.commit();
 
       return res.status(200).json(result);

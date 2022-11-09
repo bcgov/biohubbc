@@ -107,13 +107,13 @@ export function getSurveySummarySubmission(): RequestHandler {
     }
 
     const connection = getDBConnection(req['keycloak_token']);
-    const surveyId = Number(req.params.surveyId)
-  
+    const surveyId = Number(req.params.surveyId);
+
     try {
       await connection.open();
-      const summaryService = new SummaryService(connection)
-      
-      const summarySubmissionDetails = await summaryService.getLatestSurveySummarySubmission(surveyId)
+      const summaryService = new SummaryService(connection);
+
+      const summarySubmissionDetails = await summaryService.getLatestSurveySummarySubmission(surveyId);
 
       if (!summarySubmissionDetails || summarySubmissionDetails.delete_timestamp) {
         return res.status(200).json(null);
@@ -124,16 +124,17 @@ export function getSurveySummarySubmission(): RequestHandler {
 
       if (messageClass === 'Error') {
         const summary_submission_id = summarySubmissionDetails.id;
-        messageList = await summaryService.getSummarySubmissionMessages(summary_submission_id)
+        messageList = await summaryService.getSummarySubmissionMessages(summary_submission_id);
       }
 
       await connection.commit();
 
-      const getSummarySubmissionData = {
-        id: summarySubmissionDetails.id,
-        fileName: summarySubmissionDetails.file_name,
-        messages: messageList
-      } || null;
+      const getSummarySubmissionData =
+        {
+          id: summarySubmissionDetails.id,
+          fileName: summarySubmissionDetails.file_name,
+          messages: messageList
+        } || null;
 
       return res.status(200).json(getSummarySubmissionData);
     } catch (error) {

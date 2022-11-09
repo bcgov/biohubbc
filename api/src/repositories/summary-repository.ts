@@ -23,10 +23,10 @@ export interface ISurveySummaryDetails {
   file_name: string;
   delete_timestamp: string | null;
   submission_message_type_id: number;
-  message: string
+  message: string;
   submission_message_type_name: string;
   summary_submission_message_class_id: number;
-  submission_message_class_name: MESSAGE_CLASS_NAME
+  submission_message_class_name: MESSAGE_CLASS_NAME;
 }
 
 export interface ISummarySubmissionResponse {
@@ -54,14 +54,13 @@ export interface ISummarySubmissionMessagesResponse {
 const defaultLog = getLogger('repositories/summary-repository');
 
 export class SummaryRepository extends BaseRepository {
-
   /**
    * Query to find the record for a single summary submission by summarySubmissionId.
    *
    * @param {number} summarySubmissionId
    * @returns {Promise<ISummarySubmissionResponse>} The summary submission record
    */
-   async findSummarySubmissionById (summarySubmissionId: number): Promise<ISummarySubmissionResponse> {
+  async findSummarySubmissionById(summarySubmissionId: number): Promise<ISummarySubmissionResponse> {
     const sqlStatement = SQL`
       SELECT
         *
@@ -78,13 +77,13 @@ export class SummaryRepository extends BaseRepository {
     }
 
     return response && response.rows && response.rows[0];
-  };
+  }
 
   /**
    * Finds the latest summary submission for a given survey.
    *
    * @param {number} surveyId the ID of the survey
-   * @returns {{Promise<ISurveySummaryDetails>}} the latest survey summary record for the given survey 
+   * @returns {{Promise<ISurveySummaryDetails>}} the latest survey summary record for the given survey
    */
   async getLatestSurveySummarySubmission(surveyId: number): Promise<ISurveySummaryDetails> {
     const sqlStatement = SQL`
@@ -126,16 +125,16 @@ export class SummaryRepository extends BaseRepository {
     }
 
     return response && response.rows && response.rows[0];
-  };
+  }
 
   /**
    * Updates a survey summary submission record with an S3 key.
-   * 
+   *
    * @param {number} summarySubmissionId the ID of the record to update
    * @param {string} key S3 key
    * @return {Promise<{ survey_summary_submission_id: number }>} The ID of the updated record
    */
-  async updateSurveySummarySubmissionWithKey (
+  async updateSurveySummarySubmissionWithKey(
     summarySubmissionId: number,
     key: string
   ): Promise<{ survey_summary_submission_id: number }> {
@@ -148,14 +147,17 @@ export class SummaryRepository extends BaseRepository {
       RETURNING survey_summary_submission_id;
     `;
 
-    const response = await this.connection.query<{ survey_summary_submission_id: number }>(sqlStatement.text, sqlStatement.values);
+    const response = await this.connection.query<{ survey_summary_submission_id: number }>(
+      sqlStatement.text,
+      sqlStatement.values
+    );
 
     if (!response) {
       throw new HTTP400('Failed to update survey summary submission record');
     }
 
     return response && response.rows && response.rows[0];
-  };
+  }
 
   /**
    * Inserts a survey summary submission record.
@@ -165,7 +167,7 @@ export class SummaryRepository extends BaseRepository {
    * @param {string} file_name the file name of the submission.
    * @return {Promise<{ survey_summary_submission_id: number }>} the ID of the inserted record.
    */
-  async insertSurveySummarySubmission (
+  async insertSurveySummarySubmission(
     surveyId: number,
     source: string,
     file_name: string
@@ -185,14 +187,17 @@ export class SummaryRepository extends BaseRepository {
       RETURNING survey_summary_submission_id;
     `;
 
-    const response = await this.connection.query<{ survey_summary_submission_id: number }>(sqlStatement.text, sqlStatement.values);
+    const response = await this.connection.query<{ survey_summary_submission_id: number }>(
+      sqlStatement.text,
+      sqlStatement.values
+    );
 
     if (!response) {
       throw new HTTP400('Failed to insert survey summary submission record');
     }
 
     return response && response.rows && response.rows[0];
-  };
+  }
 
   /**
    * Inserts a record for survey summary details.
@@ -201,7 +206,7 @@ export class SummaryRepository extends BaseRepository {
    * @param {string} summaryDetails the details being inserted
    * @return {Promise<{ survey_summary_detail_id: number }>} the ID of the details record.
    */
-  async insertSurveySummaryDetails (
+  async insertSurveySummaryDetails(
     summarySubmissionId: number,
     summaryDetails: PostSummaryDetails
   ): Promise<{ survey_summary_detail_id: number }> {
@@ -258,14 +263,17 @@ export class SummaryRepository extends BaseRepository {
       RETURNING survey_summary_detail_id;
     `;
 
-    const response = await this.connection.query<{ survey_summary_detail_id: number }>(sqlStatement.text, sqlStatement.values);
+    const response = await this.connection.query<{ survey_summary_detail_id: number }>(
+      sqlStatement.text,
+      sqlStatement.values
+    );
 
     if (!response) {
       throw new HTTP400('Failed to insert summary details data');
     }
 
     return response && response.rows && response.rows[0];
-  };
+  }
 
   /**
    * Soft deletes a summary submission entry by ID
@@ -292,18 +300,16 @@ export class SummaryRepository extends BaseRepository {
     }
 
     return (response && response.rowCount) || null;
-  };
+  }
 
-/**
- * Retreives the list of messages for a summary submission.
- *
- * @param {number} summarySubmissionId the ID of the summary submission.
- * @returns {Promise<ISummarySubmissionMessagesResponse[]>} all messages for the given summary submission.
- */
- async getSummarySubmissionMessages (
-  summarySubmissionId: number
-): Promise<ISummarySubmissionMessagesResponse[]> {
-  const sqlStatement = SQL`
+  /**
+   * Retreives the list of messages for a summary submission.
+   *
+   * @param {number} summarySubmissionId the ID of the summary submission.
+   * @returns {Promise<ISummarySubmissionMessagesResponse[]>} all messages for the given summary submission.
+   */
+  async getSummarySubmissionMessages(summarySubmissionId: number): Promise<ISummarySubmissionMessagesResponse[]> {
+    const sqlStatement = SQL`
     SELECT
       sssm.submission_message_id as id,
       sssm.message,
@@ -329,18 +335,24 @@ export class SummaryRepository extends BaseRepository {
       sssm.submission_message_id;
     `;
 
-    const response = await this.connection.query<ISummarySubmissionMessagesResponse>(sqlStatement.text, sqlStatement.values);
+    const response = await this.connection.query<ISummarySubmissionMessagesResponse>(
+      sqlStatement.text,
+      sqlStatement.values
+    );
 
-    return response && response.rows
-  };
+    return response && response.rows;
+  }
 
   /**
    * Retreives the ID of a summary template based on its name and version number.
-   * @param templateName 
-   * @param templateVersion 
+   * @param templateName
+   * @param templateVersion
    * @returns
    */
-  async getSummaryTemplateIdFromNameVersion(templateName: string, templateVersion: string): Promise<{ summary_template_id: number }> {
+  async getSummaryTemplateIdFromNameVersion(
+    templateName: string,
+    templateVersion: string
+  ): Promise<{ summary_template_id: number }> {
     const sqlStatement = SQL`
       SELECT
         st.summary_template_id
@@ -353,7 +365,10 @@ export class SummaryRepository extends BaseRepository {
       ;
     `;
 
-    const response = await this.connection.query<{ summary_template_id: number }>(sqlStatement.text, sqlStatement.values);
+    const response = await this.connection.query<{ summary_template_id: number }>(
+      sqlStatement.text,
+      sqlStatement.values
+    );
 
     if (!response) {
       throw new HTTP400('Failed to query summary templates table');
@@ -396,7 +411,7 @@ export class SummaryRepository extends BaseRepository {
       throw new HTTP400('Failed to query summary template species table');
     }
 
-    return response.rows
+    return response.rows;
   }
 
   /**
@@ -410,7 +425,12 @@ export class SummaryRepository extends BaseRepository {
     summarySubmissionMessageType: SUMMARY_SUBMISSION_MESSAGE_TYPE,
     summarySubmissionMessage: string
   ): Promise<void> => {
-    defaultLog.debug({ label: 'insertSummarySubmissionMessage', summarySubmissionId, summarySubmissionMessageType, summarySubmissionMessage })
+    defaultLog.debug({
+      label: 'insertSummarySubmissionMessage',
+      summarySubmissionId,
+      summarySubmissionMessageType,
+      summarySubmissionMessage
+    });
     const sqlStatement = SQL`
       INSERT INTO survey_summary_submission_message (
         survey_summary_submission_id,
@@ -433,7 +453,7 @@ export class SummaryRepository extends BaseRepository {
       RETURNING
         submission_message_id;
     `;
-    
+
     const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
 
     if (response.rowCount !== 1) {

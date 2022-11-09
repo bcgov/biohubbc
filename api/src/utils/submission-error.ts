@@ -5,7 +5,9 @@ export const SubmissionErrorFromMessageType = (type: SUBMISSION_MESSAGE_TYPE): S
   return new SubmissionError({ messages: [message] });
 };
 
-export const SummarySubmissionErrorFromMessageType = (type: SUMMARY_SUBMISSION_MESSAGE_TYPE): SummarySubmissionError => {
+export const SummarySubmissionErrorFromMessageType = (
+  type: SUMMARY_SUBMISSION_MESSAGE_TYPE
+): SummarySubmissionError => {
   const message = new MessageError<SUMMARY_SUBMISSION_MESSAGE_TYPE>(type);
   return new SummarySubmissionError({ messages: [message] });
 };

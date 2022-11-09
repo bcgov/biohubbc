@@ -4,9 +4,9 @@ const DB_SCHEMA = process.env.DB_SCHEMA;
 
 const summaryMessageTypes = [
   {
-      name: 'Media is Invalid',
-      description: 'Media is invalid.',
-      class: 'Error'
+    name: 'Media is Invalid',
+    description: 'Media is invalid.',
+    class: 'Error'
   },
   {
     name: 'XLSX CSV is Invalid',

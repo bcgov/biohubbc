@@ -141,10 +141,10 @@ export function getSummarySubmissionCSVForView(): RequestHandler {
 
     try {
       await connection.open();
-      const summaryService = new SummaryService(connection)
+      const summaryService = new SummaryService(connection);
 
-      const summaryId = Number(req.params.summaryId)
-      const summarySubmission = await summaryService.findSummarySubmissionById(summaryId)
+      const summaryId = Number(req.params.summaryId);
+      const summarySubmission = await summaryService.findSummarySubmissionById(summaryId);
       await connection.commit();
 
       const fileName = summarySubmission.file_name;

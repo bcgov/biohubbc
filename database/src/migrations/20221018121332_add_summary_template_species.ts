@@ -1,5 +1,8 @@
 import { Knex } from 'knex';
-import { summaryTemplateValidationJson, SUMMARY_TEMPLATE_NAME } from './summary_template_species_validations/summary_template_validation';
+import {
+  summaryTemplateValidationJson,
+  SUMMARY_TEMPLATE_NAME
+} from './summary_template_species_validations/summary_template_validation';
 
 const DB_SCHEMA = process.env.DB_SCHEMA;
 
@@ -7,7 +10,7 @@ enum WILD_TAXON_IDS {
   MOOSE = 4147, // M_ALAM
   GOAT = 4165, // M-ORAM
   SHEEP = 8619, // M-OVDA
-  ELK = 4149, // M-CECA
+  ELK = 4149 // M-CECA
 }
 
 interface IValidationSchema {
@@ -26,11 +29,13 @@ const validationSchema: IValidationSchema[] = [
     validation: JSON.stringify(summaryTemplateValidationJson),
     summaryTemplateName: SUMMARY_TEMPLATE_NAME.SHEEP_SUMMARY_RESULTS,
     species: WILD_TAXON_IDS.SHEEP
-  },{
+  },
+  {
     validation: JSON.stringify(summaryTemplateValidationJson),
     summaryTemplateName: SUMMARY_TEMPLATE_NAME.GOAT_SUMMARY_RESULTS,
     species: WILD_TAXON_IDS.GOAT
-  },{
+  },
+  {
     validation: JSON.stringify(summaryTemplateValidationJson),
     summaryTemplateName: SUMMARY_TEMPLATE_NAME.ELK_SUMMARY_RESULTS,
     species: WILD_TAXON_IDS.ELK

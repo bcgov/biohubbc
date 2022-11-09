@@ -3,9 +3,13 @@ import { SUMMARY_TEMPLATE_NAME } from './summary_template_species_validations/su
 
 const DB_SCHEMA = process.env.DB_SCHEMA;
 
-
-const insertTemplate = async (knex: Knex, templateName: string, templateVersion: string, templateDescription: string) => {
-	await knex.raw(`
+const insertTemplate = async (
+  knex: Knex,
+  templateName: string,
+  templateVersion: string,
+  templateDescription: string
+) => {
+  await knex.raw(`
     INSERT INTO
       ${DB_SCHEMA}.summary_template (name, version, record_effective_date, description)
     VALUES
@@ -28,16 +32,36 @@ export async function up(knex: Knex): Promise<void> {
   `);
 
   // Moose Summary Results Template
-  await insertTemplate(knex, SUMMARY_TEMPLATE_NAME.MOOSE_SUMMARY_RESULTS, '1.0', SUMMARY_TEMPLATE_NAME.MOOSE_SUMMARY_RESULTS);
+  await insertTemplate(
+    knex,
+    SUMMARY_TEMPLATE_NAME.MOOSE_SUMMARY_RESULTS,
+    '1.0',
+    SUMMARY_TEMPLATE_NAME.MOOSE_SUMMARY_RESULTS
+  );
 
   // Sheep Summary Results Template
-  await insertTemplate(knex, SUMMARY_TEMPLATE_NAME.SHEEP_SUMMARY_RESULTS, '1.0', SUMMARY_TEMPLATE_NAME.SHEEP_SUMMARY_RESULTS);
+  await insertTemplate(
+    knex,
+    SUMMARY_TEMPLATE_NAME.SHEEP_SUMMARY_RESULTS,
+    '1.0',
+    SUMMARY_TEMPLATE_NAME.SHEEP_SUMMARY_RESULTS
+  );
 
   // Goat Summary Results Template
-  await insertTemplate(knex, SUMMARY_TEMPLATE_NAME.GOAT_SUMMARY_RESULTS, '1.0', SUMMARY_TEMPLATE_NAME.GOAT_SUMMARY_RESULTS);
+  await insertTemplate(
+    knex,
+    SUMMARY_TEMPLATE_NAME.GOAT_SUMMARY_RESULTS,
+    '1.0',
+    SUMMARY_TEMPLATE_NAME.GOAT_SUMMARY_RESULTS
+  );
 
   // Elk Summary Results Template
-  await insertTemplate(knex, SUMMARY_TEMPLATE_NAME.ELK_SUMMARY_RESULTS, '1.0', SUMMARY_TEMPLATE_NAME.ELK_SUMMARY_RESULTS);
+  await insertTemplate(
+    knex,
+    SUMMARY_TEMPLATE_NAME.ELK_SUMMARY_RESULTS,
+    '1.0',
+    SUMMARY_TEMPLATE_NAME.ELK_SUMMARY_RESULTS
+  );
 }
 
 /*
