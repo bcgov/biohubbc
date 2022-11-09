@@ -88,7 +88,6 @@ export enum SUBMISSION_MESSAGE_TYPE {
   'INVALID_MEDIA' = 'Media is invalid',
   'INVALID_XLSX_CSV' = 'Media is not a valid XLSX CSV file.',
   'UNSUPPORTED_FILE_TYPE' = 'File submitted is not a supported type'
-  /** @TODO Add any newly written types to migration */
 }
 
 export enum MESSAGE_CLASS_NAME {
