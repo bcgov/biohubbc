@@ -292,8 +292,6 @@ describe('uploadSummarySubmission', () => {
     });
 
     sinon.stub(file_utils, 'scanFileForVirus').resolves(true);
-    // sinon.stub(survey_queries, 'insertSurveySummarySubmissionSQL').returns(SQL`some query`);
-    // sinon.stub(survey_queries, 'updateSurveySummarySubmissionWithKeySQL').returns(SQL`some query`);
     sinon.stub(file_utils, 'uploadFileToS3').rejects('Failed to insert occurrence submission data');
 
     const requestHandler = upload.uploadAndValidate();
@@ -440,8 +438,6 @@ describe('uploadSummarySubmission', () => {
       ...dbConnectionObj,
       query: mockQuery
     });
-
-    // sinon.stub(survey_queries, 'insertSurveySummarySubmissionMessageSQL').returns(SQL`some query`);
 
     const requestHandler = upload.uploadAndValidate();
 
