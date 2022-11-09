@@ -8,6 +8,7 @@ import { PROJECT_ROLE } from '../constants/roles';
 import { HTTP400, HTTPError } from '../errors/http-error';
 import { PostFundingSource, PostProjectObject } from '../models/project-create';
 import {
+  GetAttachmentsData,
   GetCoordinatorData,
   GetFundingData,
   GetIUCNClassificationData,
@@ -15,7 +16,6 @@ import {
   GetObjectivesData,
   GetPartnershipsData,
   GetProjectData,
-  GetAttachmentsData,
   GetReportAttachmentsData
 } from '../models/project-view';
 import { GET_ENTITIES } from '../paths/project/{projectId}/update';
@@ -57,29 +57,33 @@ const mockProjectData = (): PostProjectObject => {
       geometry: []
     },
     funding: {
-      funding_sources: [{
-        agency_id: 1,
-        investment_action_category: 1,
-        agency_project_id: 1,
-        funding_amount: 1,
-        start_date: 1,
-        end_date: '',
-      }]
+      funding_sources: [
+        {
+          agency_id: 1,
+          investment_action_category: 1,
+          agency_project_id: 1,
+          funding_amount: 1,
+          start_date: 1,
+          end_date: ''
+        }
+      ]
     },
     iucn: {
-      classificationDetails: [{
-        classification: 1,
-        subClassification1: 1,
-        subClassification2: 1
-      }]
+      classificationDetails: [
+        {
+          classification: 1,
+          subClassification1: 1,
+          subClassification2: 1
+        }
+      ]
     },
     partnerships: {
       indigenous_partnerships: [1],
-      stakeholder_partnerships: ["some stake holder"]
+      stakeholder_partnerships: ['some stake holder']
     }
-  }
+  };
   return new PostProjectObject(data);
-}
+};
 
 describe('ProjectService', () => {
   afterEach(() => {
@@ -166,7 +170,7 @@ describe('ProjectService', () => {
 
   describe('getIndigenousPartnershipsRows', () => {
     it('should return row information', async () => {
-      const mockQueryResponse = ({ rows: [{id: 1}] } as unknown) as QueryResult<any>;
+      const mockQueryResponse = ({ rows: [{ id: 1 }] } as unknown) as QueryResult<any>;
       const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
       const service = new ProjectService(mockDBConnection);
 
@@ -176,18 +180,18 @@ describe('ProjectService', () => {
 
     it('should throw `Failed to build SQL get statement`', async () => {
       const service = mockService();
-      sinon.stub(queries.project, 'getIndigenousPartnershipsByProjectSQL').returns(null)
+      sinon.stub(queries.project, 'getIndigenousPartnershipsByProjectSQL').returns(null);
 
       try {
-        await service.getIndigenousPartnershipsRows(1)
+        await service.getIndigenousPartnershipsRows(1);
         expect.fail();
       } catch (error) {
-        expect((error as HTTP400).message).to.eql("Failed to build SQL get statement")
+        expect((error as HTTP400).message).to.eql('Failed to build SQL get statement');
       }
     });
 
     it('should return an empty array when no rows found', async () => {
-      const mockQueryResponse = ({rows: []} as unknown) as QueryResult<any>;
+      const mockQueryResponse = ({ rows: [] } as unknown) as QueryResult<any>;
       const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
       const service = new ProjectService(mockDBConnection);
 
@@ -203,11 +207,11 @@ describe('ProjectService', () => {
       const results = await service.getIndigenousPartnershipsRows(1);
       expect(results).to.have.be.null;
     });
-  })
+  });
 
   describe('getStakeholderPartnershipsRows', () => {
     it('should return row information', async () => {
-      const mockQueryResponse = ({ rows: [{id: 1}] } as unknown) as QueryResult<any>;
+      const mockQueryResponse = ({ rows: [{ id: 1 }] } as unknown) as QueryResult<any>;
       const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
       const service = new ProjectService(mockDBConnection);
 
@@ -217,18 +221,18 @@ describe('ProjectService', () => {
 
     it('should throw `Failed to build SQL get statement`', async () => {
       const service = mockService();
-      sinon.stub(queries.project, 'getStakeholderPartnershipsByProjectSQL').returns(null)
+      sinon.stub(queries.project, 'getStakeholderPartnershipsByProjectSQL').returns(null);
 
       try {
-        await service.getStakeholderPartnershipsRows(1)
+        await service.getStakeholderPartnershipsRows(1);
         expect.fail();
       } catch (error) {
-        expect((error as HTTP400).message).to.eql("Failed to build SQL get statement")
+        expect((error as HTTP400).message).to.eql('Failed to build SQL get statement');
       }
     });
 
     it('should return an empty array when no rows found', async () => {
-      const mockQueryResponse = ({rows: []} as unknown) as QueryResult<any>;
+      const mockQueryResponse = ({ rows: [] } as unknown) as QueryResult<any>;
       const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
       const service = new ProjectService(mockDBConnection);
 
@@ -244,32 +248,32 @@ describe('ProjectService', () => {
       const results = await service.getStakeholderPartnershipsRows(1);
       expect(results).to.have.be.null;
     });
-  })
+  });
 
   describe('getAttachmentsData', () => {
     it('should return row attachments data', async () => {
-      const mockQueryResponse = ({ rows: [{id: 1}] } as unknown) as QueryResult<any>;
+      const mockQueryResponse = ({ rows: [{ id: 1 }] } as unknown) as QueryResult<any>;
       const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
       const service = new ProjectService(mockDBConnection);
 
       const results = await service.getAttachmentsData(1);
-      expect(results).to.eql(new GetAttachmentsData([{id: 1}]));
+      expect(results).to.eql(new GetAttachmentsData([{ id: 1 }]));
     });
 
     it('should throw `Failed to build SQL get statement`', async () => {
       const service = mockService();
-      sinon.stub(queries.project, 'getAttachmentsByProjectSQL').returns(null)
+      sinon.stub(queries.project, 'getAttachmentsByProjectSQL').returns(null);
 
       try {
-        await service.getAttachmentsData(1)
+        await service.getAttachmentsData(1);
         expect.fail();
       } catch (error) {
-        expect((error as HTTP400).message).to.eql("Failed to build SQL get statement")
+        expect((error as HTTP400).message).to.eql('Failed to build SQL get statement');
       }
     });
 
     it('should return an empty object when no rows are found', async () => {
-      const mockQueryResponse = ({rows: []} as unknown) as QueryResult<any>;
+      const mockQueryResponse = ({ rows: [] } as unknown) as QueryResult<any>;
       const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
       const service = new ProjectService(mockDBConnection);
 
@@ -280,8 +284,8 @@ describe('ProjectService', () => {
 
   describe('createProject', () => {
     it('should create a project and return an ID', async () => {
-      const projectId = 1
-      const service = mockService()
+      const projectId = 1;
+      const service = mockService();
       const insertProject = sinon.stub(service, 'insertProject').resolves(projectId);
       const insertFunding = sinon.stub(service, 'insertFundingSource').resolves(1);
       const insertPartnerships = sinon.stub(service, 'insertIndigenousNation').resolves(1);
@@ -290,9 +294,9 @@ describe('ProjectService', () => {
       const insertActivity = sinon.stub(service, 'insertActivity').resolves(1);
       sinon.stub(service, 'insertParticipantRole').resolves();
 
-      const projectData = mockProjectData()
+      const projectData = mockProjectData();
 
-      const results = await service.createProject(projectData)
+      const results = await service.createProject(projectData);
       expect(projectId).to.be.eql(results);
       expect(insertProject).to.be.called;
       expect(insertFunding).to.be.called;
@@ -301,11 +305,11 @@ describe('ProjectService', () => {
       expect(inClassification).to.be.called;
       expect(insertActivity).to.be.called;
     });
-  })
+  });
 
   describe('updateFundingData', () => {
-    it('should run without issue', async() => {
-      const mockQueryResponse = ({rows: [{id: 1}], rowCount: 1} as unknown) as QueryResult<any>;
+    it('should run without issue', async () => {
+      const mockQueryResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as unknown) as QueryResult<any>;
       const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
       const service = new ProjectService(mockDBConnection);
       const updateData = {
@@ -315,23 +319,25 @@ describe('ProjectService', () => {
         location: null,
         iucn: null,
         funding: {
-          fundingSources: [{
-            id: 1,
-            investment_action_category: null,
-            agency_project_id: null,
-            funding_amount: null,
-            start_date: null,
-            end_date: null,
-            revision_count: null
-          }]
+          fundingSources: [
+            {
+              id: 1,
+              investment_action_category: null,
+              agency_project_id: null,
+              funding_amount: null,
+              start_date: null,
+              end_date: null,
+              revision_count: null
+            }
+          ]
         },
         partnerships: null
-      }
+      };
       await service.updateFundingData(1, updateData);
     });
 
-    it('should throw  `Failed to build SQL delete statement` error', async() => {
-      const mockQueryResponse = ({rows: [{id: 1}], rowCount: 1} as unknown) as QueryResult<any>;
+    it('should throw  `Failed to build SQL delete statement` error', async () => {
+      const mockQueryResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as unknown) as QueryResult<any>;
       const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
       const service = new ProjectService(mockDBConnection);
       const updateData = {
@@ -341,27 +347,29 @@ describe('ProjectService', () => {
         location: null,
         iucn: null,
         funding: {
-          fundingSources: [{
-            id: null,
-            investment_action_category: null,
-            agency_project_id: null,
-            funding_amount: null,
-            start_date: null,
-            end_date: null,
-            revision_count: null
-          }]
+          fundingSources: [
+            {
+              id: null,
+              investment_action_category: null,
+              agency_project_id: null,
+              funding_amount: null,
+              start_date: null,
+              end_date: null,
+              revision_count: null
+            }
+          ]
         },
         partnerships: null
-      }
+      };
       try {
         await service.updateFundingData(1, updateData);
         expect.fail();
       } catch (error) {
-        expect((error as HTTP400).message).to.be.eql("Failed to build SQL delete statement");
+        expect((error as HTTP400).message).to.be.eql('Failed to build SQL delete statement');
       }
     });
 
-    it('should throw  `Failed to delete survey funding source` error', async() => {
+    it('should throw  `Failed to delete survey funding source` error', async () => {
       const mockQueryResponse = (null as unknown) as QueryResult<any>;
       const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
       const service = new ProjectService(mockDBConnection);
@@ -372,28 +380,30 @@ describe('ProjectService', () => {
         location: null,
         iucn: null,
         funding: {
-          fundingSources: [{
-            id: 1,
-            investment_action_category: null,
-            agency_project_id: null,
-            funding_amount: null,
-            start_date: null,
-            end_date: null,
-            revision_count: null
-          }]
+          fundingSources: [
+            {
+              id: 1,
+              investment_action_category: null,
+              agency_project_id: null,
+              funding_amount: null,
+              start_date: null,
+              end_date: null,
+              revision_count: null
+            }
+          ]
         },
         partnerships: null
-      }
+      };
       try {
         await service.updateFundingData(1, updateData);
         expect.fail();
       } catch (error) {
-        expect((error as HTTP400).message).to.be.eql("Failed to delete survey funding source");
+        expect((error as HTTP400).message).to.be.eql('Failed to delete survey funding source');
       }
     });
 
-    it('should throw  `Failed to delete survey funding source` error', async() => {
-      const mockQueryResponse = ({ rows: [{id: 1}], rowCount: 1} as unknown) as QueryResult<any>;
+    it('should throw  `Failed to delete survey funding source` error', async () => {
+      const mockQueryResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as unknown) as QueryResult<any>;
       const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
       const service = new ProjectService(mockDBConnection);
       sinon.stub(queries.project, 'putProjectFundingSourceSQL').returns(null);
@@ -404,30 +414,32 @@ describe('ProjectService', () => {
         location: null,
         iucn: null,
         funding: {
-          fundingSources: [{
-            id: 1,
-            investment_action_category: null,
-            agency_project_id: null,
-            funding_amount: null,
-            start_date: null,
-            end_date: null,
-            revision_count: null
-          }]
+          fundingSources: [
+            {
+              id: 1,
+              investment_action_category: null,
+              agency_project_id: null,
+              funding_amount: null,
+              start_date: null,
+              end_date: null,
+              revision_count: null
+            }
+          ]
         },
         partnerships: null
-      }
+      };
       try {
         await service.updateFundingData(1, updateData);
         expect.fail();
       } catch (error) {
-        expect((error as HTTP400).message).to.be.eql("Failed to build SQL insert statement");
+        expect((error as HTTP400).message).to.be.eql('Failed to build SQL insert statement');
       }
     });
   });
 
   describe('insertProject', () => {
     it('should return project id', async () => {
-      const mockQueryResponse = ({ rows: [{id: 1}], rowCount: 1 } as unknown) as QueryResult<any>;
+      const mockQueryResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as unknown) as QueryResult<any>;
       const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
       const service = new ProjectService(mockDBConnection);
       const mockData = mockProjectData();
@@ -437,12 +449,11 @@ describe('ProjectService', () => {
     });
 
     it('should throw `Failed to build SQL insert statement` error', async () => {
-      const mockQueryResponse = ({ rows: [{id: 1}], rowCount: 1 } as unknown) as QueryResult<any>;
+      const mockQueryResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as unknown) as QueryResult<any>;
       const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
       const service = new ProjectService(mockDBConnection);
       const mockData = mockProjectData();
       sinon.stub(queries.project, 'postProjectSQL').returns(null);
-
 
       try {
         await service.insertProject(mockData);
@@ -459,7 +470,6 @@ describe('ProjectService', () => {
       const mockData = mockProjectData();
       // sinon.stub(queries.project, 'postProjectSQL').returns(null);
 
-
       try {
         await service.insertProject(mockData);
         expect.fail();
@@ -471,7 +481,7 @@ describe('ProjectService', () => {
 
   describe('insertFundingSource', () => {
     it('should return an id', async () => {
-      const mockQueryResponse = ({ rows: [{id: 1}], rowCount: 1 } as unknown) as QueryResult<any>;
+      const mockQueryResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as unknown) as QueryResult<any>;
       const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
       const service = new ProjectService(mockDBConnection);
       const mockData = mockProjectData();
@@ -482,16 +492,15 @@ describe('ProjectService', () => {
     });
 
     it('should throw `Failed to build SQL insert statement` error', async () => {
-      const mockQueryResponse = ({ rows: [{id: 1}], rowCount: 1 } as unknown) as QueryResult<any>;
+      const mockQueryResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as unknown) as QueryResult<any>;
       const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
       const service = new ProjectService(mockDBConnection);
       const mockData = mockProjectData();
       const data = new PostFundingSource(mockData.funding);
       sinon.stub(queries.project, 'postProjectFundingSourceSQL').returns(null);
 
-
       try {
-      await service.insertFundingSource(data, 1);
+        await service.insertFundingSource(data, 1);
         expect.fail();
       } catch (error) {
         expect((error as HTTP400).message).to.be.eql('Failed to build SQL insert statement');
@@ -516,7 +525,7 @@ describe('ProjectService', () => {
 
   describe('insertIndigenousNation', () => {
     it('should return an id', async () => {
-      const mockQueryResponse = ({ rows: [{id: 1}], rowCount: 1 } as unknown) as QueryResult<any>;
+      const mockQueryResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as unknown) as QueryResult<any>;
       const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
       const service = new ProjectService(mockDBConnection);
       const id = await service.insertIndigenousNation(1, 1);
@@ -525,11 +534,10 @@ describe('ProjectService', () => {
     });
 
     it('should throw `Failed to build SQL insert statement` error', async () => {
-      const mockQueryResponse = ({ rows: [{id: 1}], rowCount: 1 } as unknown) as QueryResult<any>;
+      const mockQueryResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as unknown) as QueryResult<any>;
       const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
       const service = new ProjectService(mockDBConnection);
       sinon.stub(queries.project, 'postProjectIndigenousNationSQL').returns(null);
-
 
       try {
         await service.insertIndigenousNation(1, 1);
@@ -555,23 +563,22 @@ describe('ProjectService', () => {
 
   describe('insertStakeholderPartnership', () => {
     it('should return an id', async () => {
-      const mockQueryResponse = ({ rows: [{id: 1}], rowCount: 1 } as unknown) as QueryResult<any>;
+      const mockQueryResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as unknown) as QueryResult<any>;
       const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
       const service = new ProjectService(mockDBConnection);
-      const id = await service.insertStakeholderPartnership("Acme Inc.", 1);
+      const id = await service.insertStakeholderPartnership('Acme Inc.', 1);
 
       expect(id).to.be.eql(1);
     });
 
     it('should throw `Failed to build SQL insert statement` error', async () => {
-      const mockQueryResponse = ({ rows: [{id: 1}], rowCount: 1 } as unknown) as QueryResult<any>;
+      const mockQueryResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as unknown) as QueryResult<any>;
       const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
       const service = new ProjectService(mockDBConnection);
       sinon.stub(queries.project, 'postProjectStakeholderPartnershipSQL').returns(null);
 
-
       try {
-        await service.insertStakeholderPartnership("Acme Inc.", 1);
+        await service.insertStakeholderPartnership('Acme Inc.', 1);
         expect.fail();
       } catch (error) {
         expect((error as HTTP400).message).to.be.eql('Failed to build SQL insert statement');
@@ -584,7 +591,7 @@ describe('ProjectService', () => {
       const service = new ProjectService(mockDBConnection);
 
       try {
-        await service.insertStakeholderPartnership("Acme Inc.", 1);
+        await service.insertStakeholderPartnership('Acme Inc.', 1);
         expect.fail();
       } catch (error) {
         expect((error as HTTP400).message).to.be.eql('Failed to insert project stakeholder partnership data');
@@ -594,7 +601,7 @@ describe('ProjectService', () => {
 
   describe('insertClassificationDetail', () => {
     it('should return an id', async () => {
-      const mockQueryResponse = ({ rows: [{id: 1}], rowCount: 1 } as unknown) as QueryResult<any>;
+      const mockQueryResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as unknown) as QueryResult<any>;
       const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
       const service = new ProjectService(mockDBConnection);
       const id = await service.insertClassificationDetail(1, 1);
@@ -603,11 +610,10 @@ describe('ProjectService', () => {
     });
 
     it('should throw `Failed to build SQL insert statement` error', async () => {
-      const mockQueryResponse = ({ rows: [{id: 1}], rowCount: 1 } as unknown) as QueryResult<any>;
+      const mockQueryResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as unknown) as QueryResult<any>;
       const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
       const service = new ProjectService(mockDBConnection);
       sinon.stub(queries.project, 'postProjectIUCNSQL').returns(null);
-
 
       try {
         await service.insertClassificationDetail(1, 1);
@@ -633,7 +639,7 @@ describe('ProjectService', () => {
 
   describe('insertActivity', () => {
     it('should return an id', async () => {
-      const mockQueryResponse = ({ rows: [{id: 1}], rowCount: 1 } as unknown) as QueryResult<any>;
+      const mockQueryResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as unknown) as QueryResult<any>;
       const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
       const service = new ProjectService(mockDBConnection);
       const id = await service.insertActivity(1, 1);
@@ -642,11 +648,10 @@ describe('ProjectService', () => {
     });
 
     it('should throw `Failed to build SQL insert statement` error', async () => {
-      const mockQueryResponse = ({ rows: [{id: 1}], rowCount: 1 } as unknown) as QueryResult<any>;
+      const mockQueryResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as unknown) as QueryResult<any>;
       const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
       const service = new ProjectService(mockDBConnection);
       sinon.stub(queries.project, 'postProjectActivitySQL').returns(null);
-
 
       try {
         await service.insertActivity(1, 1);
@@ -672,8 +677,8 @@ describe('ProjectService', () => {
 
   describe('insertParticipantRole', () => {
     it('should run without issue', async () => {
-      const mockQueryResponse = ({ rows: [{id: 1}], rowCount: 1 } as unknown) as QueryResult<any>;
-      const mockDBConnection = getMockDBConnection({ 
+      const mockQueryResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as unknown) as QueryResult<any>;
+      const mockDBConnection = getMockDBConnection({
         query: async () => mockQueryResponse,
         systemUserId: () => 1
       });
@@ -682,8 +687,8 @@ describe('ProjectService', () => {
     });
 
     it('should throw `Failed to identify system user ID`', async () => {
-      const mockQueryResponse = ({ rows: [{id: 1}], rowCount: 1 } as unknown) as QueryResult<any>;
-      const mockDBConnection = getMockDBConnection({ 
+      const mockQueryResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as unknown) as QueryResult<any>;
+      const mockDBConnection = getMockDBConnection({
         query: async () => mockQueryResponse,
         systemUserId: () => null
       });
@@ -698,8 +703,8 @@ describe('ProjectService', () => {
     });
 
     it('should throw `Failed to build SQL insert statement`', async () => {
-      const mockQueryResponse = ({ rows: [{id: 1}], rowCount: 1 } as unknown) as QueryResult<any>;
-      const mockDBConnection = getMockDBConnection({ 
+      const mockQueryResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as unknown) as QueryResult<any>;
+      const mockDBConnection = getMockDBConnection({
         query: async () => mockQueryResponse,
         systemUserId: () => 1
       });
@@ -715,7 +720,7 @@ describe('ProjectService', () => {
 
     it('should throw `Failed to insert project team member`', async () => {
       const mockQueryResponse = ({ rows: [], rowCount: 0 } as unknown) as QueryResult<any>;
-      const mockDBConnection = getMockDBConnection({ 
+      const mockDBConnection = getMockDBConnection({
         query: async () => mockQueryResponse,
         systemUserId: () => 1
       });
@@ -732,35 +737,35 @@ describe('ProjectService', () => {
 
   describe('getReportAttachmentsData', () => {
     it('should return row attachments data', async () => {
-      const mockQueryResponse = ({ rows: [{id: 1}] } as unknown) as QueryResult<any>;
+      const mockQueryResponse = ({ rows: [{ id: 1 }] } as unknown) as QueryResult<any>;
       const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
       const service = new ProjectService(mockDBConnection);
 
       const results = await service.getReportAttachmentsData(1);
-      expect(results).to.eql(new GetReportAttachmentsData([{id: 1}]));
+      expect(results).to.eql(new GetReportAttachmentsData([{ id: 1 }]));
     });
 
     it('should throw `Failed to build SQL get statement`', async () => {
       const service = mockService();
-      sinon.stub(queries.project, 'getReportAttachmentsByProjectSQL').returns(null)
+      sinon.stub(queries.project, 'getReportAttachmentsByProjectSQL').returns(null);
 
       try {
-        await service.getReportAttachmentsData(1)
+        await service.getReportAttachmentsData(1);
         expect.fail();
       } catch (error) {
-        expect((error as HTTP400).message).to.eql("Failed to build SQL get statement")
+        expect((error as HTTP400).message).to.eql('Failed to build SQL get statement');
       }
     });
 
     it('should return an empty object when no rows are found', async () => {
-      const mockQueryResponse = ({rows: []} as unknown) as QueryResult<any>;
+      const mockQueryResponse = ({ rows: [] } as unknown) as QueryResult<any>;
       const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
       const service = new ProjectService(mockDBConnection);
 
       const results = await service.getReportAttachmentsData(1);
       expect(results).to.eql(new GetReportAttachmentsData([]));
     });
-  })
+  });
 
   describe('ensureProjectParticipant', () => {
     afterEach(() => {
