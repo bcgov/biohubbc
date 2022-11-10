@@ -3,22 +3,24 @@ import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import xlsx from 'xlsx';
-import { SUBMISSION_MESSAGE_TYPE, SUBMISSION_STATUS_TYPE, SUMMARY_SUBMISSION_MESSAGE_TYPE } from '../constants/status';
+import { SUMMARY_SUBMISSION_MESSAGE_TYPE } from '../constants/status';
 import { SummaryRepository } from '../repositories/summary-repository';
-import { ITemplateMethodologyData } from '../repositories/validation-repository';
-import * as FileUtils from '../utils/file-utils';
+// import { ITemplateMethodologyData } from '../repositories/validation-repository';
+// import * as FileUtils from '../utils/file-utils';
 import { ICsvState } from '../utils/media/csv/csv-file';
-import { DWCArchive } from '../utils/media/dwc/dwc-archive-file';
+
 // import { DWCArchive } from '../utils/media/dwc/dwc-archive-file';
-import { ArchiveFile, IMediaState, MediaFile } from '../utils/media/media-file';
+import {  IMediaState, MediaFile } from '../utils/media/media-file';
+/*
 import * as MediaUtils from '../utils/media/media-utils';
 import { ValidationSchemaParser } from '../utils/media/validation/validation-schema-parser';
 import { TransformationSchemaParser } from '../utils/media/xlsx/transformation/transformation-schema-parser';
 import { XLSXTransformation } from '../utils/media/xlsx/transformation/xlsx-transformation';
+*/
 import { XLSXCSV } from '../utils/media/xlsx/xlsx-file';
-import { MessageError, SubmissionError, SubmissionErrorFromMessageType, SummarySubmissionError } from '../utils/submission-error';
+import { MessageError, SubmissionError, SummarySubmissionError, SummarySubmissionErrorFromMessageType } from '../utils/submission-error';
 import { getMockDBConnection } from '../__mocks__/db';
-import { OccurrenceService } from './occurrence-service';
+
 import { SummaryService } from './summary-service';
 
 chai.use(sinonChai);
@@ -44,6 +46,7 @@ const mockService = () => {
   return new SummaryService(dbConnection);
 };
 
+/*
 const mockOccurrenceSubmission = {
   occurrence_submission_id: 1,
   survey_id: 1,
@@ -54,6 +57,7 @@ const mockOccurrenceSubmission = {
   output_key: 'output key',
   output_file_name: ''
 };
+*/
 
 const buildFile = (fileName: string, customProps: { template_id?: number; csm_id?: number }) => {
   const newWorkbook = xlsx.utils.book_new();
@@ -81,7 +85,7 @@ const buildFile = (fileName: string, customProps: { template_id?: number; csm_id
   return new MediaFile(fileName, 'text/csv', buffer);
 };
 
-describe('SummaryService', () => {
+describe.only('SummaryService', () => {
   afterEach(() => {
     sinon.restore();
   });
@@ -93,6 +97,63 @@ describe('SummaryService', () => {
       sinon.restore();
     });
 
+    it('should run without issue', async () => {
+      const service = mockService();
+      const mockPrep = {
+        s3InputKey: '',
+        xlsx: new XLSXCSV(buildFile('test file', {}))
+      };
+      const prep = sinon.stub(service, 'summaryTemplatePreparation').resolves(mockPrep);
+      const validation = sinon.stub(service, 'summaryTemplateValidation').resolves();
+
+      await service.validateFile(1, 1);
+      expect(prep).to.be.calledOnce;
+      expect(validation).to.be.calledOnce;
+    });
+
+    it('should insert submission error', async () => {
+      const service = mockService();
+      const mockPrep = {
+        s3InputKey: '',
+        xlsx: new XLSXCSV(buildFile('test file', {}))
+      };
+      const mockError = SummarySubmissionErrorFromMessageType(SUMMARY_SUBMISSION_MESSAGE_TYPE.MISSING_VALIDATION_SCHEMA)
+      const prep = sinon.stub(service, 'summaryTemplatePreparation').resolves(mockPrep);
+      sinon.stub(service.summaryRepository, 'insertSummarySubmissionMessage').resolves();
+      const validation = sinon
+        .stub(service, 'summaryTemplateValidation')
+        .throws(mockError);
+      
+      try {
+        await service.validateFile(1, 1);
+        expect(prep).to.be.calledOnce;
+      } catch (error) {
+        expect(error).to.be.instanceOf(SummarySubmissionError);
+        expect(validation).not.to.be.calledOnce;
+      }
+    });
+
+    it('should throw', async () => {
+      const service = mockService();
+      const mockPrep = {
+        s3InputKey: '',
+        xlsx: new XLSXCSV(buildFile('test file', {}))
+      };
+      const prep = sinon.stub(service, 'summaryTemplatePreparation').resolves(mockPrep);
+      const validation = sinon.stub(service, 'summaryTemplateValidation').throws(new Error());
+      const submissionStatus = sinon.stub(service.submissionRepository, 'insertSubmissionStatus').resolves();
+      const insertError = sinon.stub(service.errorService, 'insertSubmissionError').resolves();
+
+      try {
+        await service.validateFile(1, 1);
+        expect(prep).to.be.calledOnce;
+        expect(validation).to.be.calledOnce;
+      } catch (error) {
+        expect(error).not.to.be.instanceOf(SubmissionError);
+        expect(insertError).not.to.be.calledOnce;
+        expect(submissionStatus).not.to.be.calledOnce;
+      }
+    }); 
   });
 
   describe('updateSurveySummarySubmissionWithKey', () => {
@@ -100,7 +161,16 @@ describe('SummaryService', () => {
       sinon.restore();
     });
 
+    it('should update a survey summary submission key', async () => {
+      const service = mockService();
+      const update = sinon.stub(service, 'updateSurveySummarySubmissionWithKey').resolves({ survey_summary_submission_id: 12 })
+      const result = await service.updateSurveySummarySubmissionWithKey(12, 'new-test-key')
+
+      expect(update).to.be.calledOnce;
+      expect(result).to.be.eql({ survey_summary_submission_id: 12 });
+    })
   });
+
   describe('insertSurveySummarySubmission', () => {
     afterEach(() => {
       sinon.restore();
