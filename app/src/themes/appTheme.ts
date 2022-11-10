@@ -31,7 +31,7 @@ const appTheme = createMuiTheme({
     },
     text: {
       primary: '#313132',
-      secondary: '#8f8f8f'
+      secondary: '#757575'
     }
   },
   typography: {
@@ -134,6 +134,13 @@ const appTheme = createMuiTheme({
       root: {
         height: '6px',
         borderRadius: '3px'
+      }
+    },
+    MuiListItem: {
+      root: {
+        '&:last-of-type': {
+          borderBottom: 'none'
+        }
       }
     },
     MuiListItemIcon: {
