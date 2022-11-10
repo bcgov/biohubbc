@@ -6,8 +6,6 @@ import * as db from '../../../../../../../database/db';
 import { HTTP400, HTTPError } from '../../../../../../../errors/http-error';
 import { SummaryService } from '../../../../../../../services/summary-service';
 import * as file_utils from '../../../../../../../utils/file-utils';
-import { ICsvState } from '../../../../../../../utils/media/csv/csv-file';
-import { IMediaState } from '../../../../../../../utils/media/media-file';
 import { XLSXCSV } from '../../../../../../../utils/media/xlsx/xlsx-file';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../../__mocks__/db';
 import * as upload from './upload';
@@ -15,10 +13,6 @@ import * as upload from './upload';
 chai.use(sinonChai);
 
 describe('uploadSummarySubmission', () => {
-  beforeEach(() => {
-    // sinon.spy(DateTimeSelector.prototype, 'updateDatetime')
-  });
-
   afterEach(() => {
     sinon.restore();
   });
@@ -339,8 +333,7 @@ describe('uploadSummarySubmission', () => {
     });
 
     sinon.stub(file_utils, 'scanFileForVirus').resolves(true);
-    sinon
-      .stub(SummaryService.prototype, 'insertSurveySummarySubmission')
+    sinon.stub(SummaryService.prototype, 'insertSurveySummarySubmission')
       .resolves({ survey_summary_submission_id: 14 });
     sinon.stub(file_utils, 'uploadFileToS3').resolves({ key: 'projects/1/surveys/1/test.txt' } as any);
     sinon.stub(SummaryService.prototype, 'summaryTemplateValidation').resolves();
@@ -355,123 +348,5 @@ describe('uploadSummarySubmission', () => {
     await requestHandler(mockReq, mockRes, mockNext);
 
     expect(mockRes.statusValue).to.equal(200);
-  });
-
-  it('should return with a 200 if errors messages exist and they are persisted', async () => {
-    const dbConnectionObj = getMockDBConnection();
-
-    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
-
-    mockReq.params = {
-      projectId: '1',
-      surveyId: '2'
-    };
-    mockReq.files = [
-      {
-        fieldname: 'media',
-        originalname: 'test.txt',
-        encoding: '7bit',
-        mimetype: 'text/plain',
-        size: 340
-      }
-    ] as any;
-
-    const mockQuery = sinon.stub();
-
-    mockQuery.resolves({ rowCount: 1, rows: [{ id: 1 }] });
-
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      query: mockQuery
-    });
-
-    const media_state: IMediaState = {
-      isValid: false,
-      fileName: 'test.txt'
-    };
-
-    const csv_state: ICsvState[] = []
-
-    sinon.stub(file_utils, 'scanFileForVirus').resolves(true);
-    sinon
-      .stub(SummaryService.prototype, 'insertSurveySummarySubmission')
-      .resolves({ survey_summary_submission_id: 14 });
-    sinon.stub(file_utils, 'uploadFileToS3').resolves({ key: 'projects/1/surveys/1/test.txt' } as any);
-
-    // We want summaryTemplateValidation to find that vaiateXLSX failed, thus persisting a parse error
-    // sinon.stub(SummaryService.prototype, 'summaryTemplateValidation').resolves()
-
-    sinon.stub(SummaryService.prototype, 'prepXLSX').returns({} as XLSXCSV);
-    sinon.stub(SummaryService.prototype, 'validateXLSX').returns({ csv_state, media_state });
-    sinon.stub(SummaryService.prototype, 'summaryTemplatePreparation').resolves({
-      s3InputKey: 'projects/1/surveys/1/test.txt',
-      xlsx: {} as XLSXCSV
-    });
-    sinon.stub(SummaryService.prototype, 'getSummaryTemplateSpeciesRecords').resolves([
-      {
-        summary_template_species_id: 1,
-        summary_template_id: 1,
-        wldtaxonomic_units_id: 1,
-        validation: '{}',
-        create_user: 1,
-        update_date: null,
-        update_user: null,
-        revision_count: 1
-      }
-    ]);
-    
-
-    const requestHandler = upload.uploadAndValidate();
-
-    await requestHandler(mockReq, mockRes, mockNext);
-
-    // expect insertSummarySubmissionMessage to be called
-    // expect(sinon.stub(SummaryService.prototype, 'insertSummarySubmissionError')).to.be.called
-
-    // expect persistSummaryValidationResults to returned true
-    expect(sinon.stub(SummaryService.prototype, 'persistSummaryValidationResults')).to.have.called;
-
-    expect(mockRes.statusValue).to.equal(200);
-    expect(mockRes.jsonValue).to.eql({ summarySubmissionId: 14 });
-  });
-
-  it('should throw an error if there are errors when persisting error messages', async () => {
-    const dbConnectionObj = getMockDBConnection();
-
-    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
-
-    mockReq.params = {
-      projectId: '1',
-      surveyId: '2'
-    };
-    mockReq.files = [
-      {
-        fieldname: 'media',
-        originalname: 'test.txt',
-        encoding: '7bit',
-        mimetype: 'text/plain',
-        size: 340
-      }
-    ] as any;
-    mockReq['parseError'] = 'some error exists';
-
-    const mockQuery = sinon.stub();
-
-    mockQuery.resolves({});
-
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      query: mockQuery
-    });
-
-    const requestHandler = upload.uploadAndValidate();
-
-    // try {
-      await requestHandler(mockReq, mockRes, mockNext);
-      // expect.fail();
-    //} catch (actualError) {
-    //  expect((actualError as HTTPError).message).to.equal('Failed to insert summary submission message data');
-    //  expect((actualError as HTTPError).status).to.equal(400);
-    //}
   });
 });
