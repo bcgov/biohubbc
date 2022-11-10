@@ -1,30 +1,19 @@
 import Box from '@material-ui/core/Box';
-import Checkbox from '@material-ui/core/Checkbox';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
+import Button from '@material-ui/core/Button';
 // import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
 import Divider from '@material-ui/core/Divider';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import TextField from '@material-ui/core/TextField';
 import Toolbar from '@material-ui/core/Toolbar';
-import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
-import { mdiAttachment, mdiChevronDown, mdiLockOutline, mdiFilePdfBox } from '@mdi/js';
+import { mdiAttachment, mdiChevronDown, mdiFilePdfBox, mdiLockOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import AttachmentsList from 'components/attachments/AttachmentsList';
 import { IUploadHandler } from 'components/attachments/FileUploadItem';
 import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
 import FileUploadWithMetaDialog from 'components/dialog/FileUploadWithMetaDialog';
+import SecurityDialog from 'components/dialog/SecurityDialog';
 // import { H2MenuToolbar } from 'components/toolbar/ActionToolbars';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import {
@@ -105,18 +94,10 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
     // eslint-disable-next-line
   }, []);
 
-  const [open, setOpen] = React.useState(false);
-
-  const openSecurityDialog = () => {
-    setOpen(true);
-  };
-
-  const closeSecurityDialog = () => {
-    setOpen(false);
-  };
+  const [securityDialogOpen, setSecurityDialogOpen] = useState(false);
 
   // Show/Hide Project Settings Menu
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -140,80 +121,17 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
         uploadHandler={getUploadHandler()}
       />
 
-      {/* Prototype Dialog for Applying Security Reasons */}
-      <Dialog
-        fullWidth
-        maxWidth="lg"
-        open={open}
-        onClose={closeSecurityDialog}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description">
-        <DialogTitle>Apply Security Reasons</DialogTitle>
-        <DialogContent style={{paddingTop: 0, paddingBottom: 0}}>
-          <Typography variant="body1" color="textSecondary" style={{marginBottom: '24px'}}>
-            Apply one or more security reasons to selected documents.
-          </Typography>
-          <Divider></Divider>
-          <TableContainer>
-            <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell width="70" padding="checkbox"></TableCell>
-                <TableCell width="200">Category</TableCell>
-                <TableCell>Reason</TableCell>
-                <TableCell width="160">Expiry Date</TableCell>
-              </TableRow> 
-            </TableHead>
-            <TableBody>
-              <TableRow>
-                <TableCell padding="checkbox">
-                  <Checkbox color="primary"/>
-                </TableCell>
-                <TableCell>Persecution or Harm</TableCell>
-                <TableCell>
-                  <Typography style={{fontWeight: 700}}>Reason Title</Typography>
-                  <Typography variant="body2" color="textSecondary">Reason Description</Typography>
-                </TableCell>
-                <TableCell>
-                  <TextField type="date" variant="outlined" size="small"></TextField>
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell padding="checkbox">
-                  <Checkbox color="primary"/>
-                </TableCell>
-                <TableCell>Persecution or Harm</TableCell>
-                <TableCell>
-                  <Typography style={{fontWeight: 700}}>Reason Title</Typography>
-                  <Typography variant="body2" color="textSecondary">Reason Description</Typography>
-                </TableCell>
-                <TableCell>
-                  <TextField type="date" variant="outlined" size="small" fullWidth></TextField>
-                </TableCell>
-              </TableRow>  
-            </TableBody>
-            </Table>
-          </TableContainer>
-        </DialogContent>
-        <DialogActions>
-          <Button
-            color="primary"
-            variant="contained"
-            onClick={closeSecurityDialog}>
-            Apply
-          </Button>
-          <Button
-            color="primary"
-            variant="outlined"
-            onClick={closeSecurityDialog}>
-            Cancel
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <SecurityDialog
+        open={securityDialogOpen}
+        onAccept={() => alert('accepted')}
+        onClose={() => setSecurityDialogOpen(false)}
+      />
 
       {/* Need to use the regular toolbar in lieu of these action toolbars given it doesn't support multiple buttons */}
-      <Toolbar style={{display: 'flex', justifyContent: 'space-between'}}>
-        <Typography variant="h4" component="h2">Documents</Typography>
+      <Toolbar style={{ display: 'flex', justifyContent: 'space-between' }}>
+        <Typography variant="h4" component="h2">
+          Documents
+        </Typography>
         <Box>
           <Button
             color="primary"
@@ -238,8 +156,7 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
             }}
             keepMounted
             open={Boolean(anchorEl)}
-            onClose={handleClose}
-          >
+            onClose={handleClose}>
             <MenuItem onClick={handleUploadReportClick}>
               <ListItemIcon>
                 <Icon path={mdiFilePdfBox} size={1} />
@@ -254,11 +171,11 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
             </MenuItem>
           </Menu>
           <Button
-            style={{marginLeft: '8px'}}
+            style={{ marginLeft: '8px' }}
             variant="contained"
             color="primary"
             startIcon={<Icon path={mdiLockOutline} size={0.8} />}
-            onClick={openSecurityDialog}>
+            onClick={() => setSecurityDialogOpen(true)}>
             Apply Security
           </Button>
         </Box>

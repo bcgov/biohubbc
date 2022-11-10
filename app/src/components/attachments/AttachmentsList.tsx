@@ -19,6 +19,7 @@ import TableRow from '@material-ui/core/TableRow';
 import { grey } from '@material-ui/core/colors';
 import {
   mdiAlertCircle,
+  mdiCheckboxOutline,
   mdiDotsVertical,
   mdiInformationOutline,
   mdiLockOpenVariantOutline,
@@ -397,7 +398,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
                   return (
                     <TableRow key={`${row.fileName}-${index}`}>
                       <TableCell padding="checkbox">
-                        <Checkbox color="primary"/>
+                        <Checkbox color="primary" checkedIcon={<Icon path={mdiCheckboxOutline } size={1} />} />
                       </TableCell>
                       <TableCell scope="row">
                         <Link style={{'fontWeight': 'bold'}} underline="always" component="button" onClick={() => openAttachment(row)}>
@@ -412,7 +413,6 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
 
                         {/* Submitted State */}
                         {/* <Chip color="primary" label="Submitted"/> */}
-
                         {/* Secured State and Number of Security Reasons Applied */}
                         {/* <Chip color="default" label="Secured (7)"/> */}
                         
