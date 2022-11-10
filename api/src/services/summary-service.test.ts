@@ -6,12 +6,11 @@ import xlsx from 'xlsx';
 import { SUBMISSION_MESSAGE_TYPE, SUBMISSION_STATUS_TYPE, SUMMARY_SUBMISSION_MESSAGE_TYPE } from '../constants/status';
 import { SummaryRepository } from '../repositories/summary-repository';
 import * as FileUtils from '../utils/file-utils';
-import * as MediaUtils from '../utils/media/media-utils';
 // import { ITemplateMethodologyData } from '../repositories/validation-repository';
 import { ICsvState } from '../utils/media/csv/csv-file';
-
 // import { DWCArchive } from '../utils/media/dwc/dwc-archive-file';
-import {  IMediaState, MediaFile } from '../utils/media/media-file';
+import { IMediaState, MediaFile } from '../utils/media/media-file';
+import * as MediaUtils from '../utils/media/media-utils';
 import { ValidationSchemaParser } from '../utils/media/validation/validation-schema-parser';
 /*
 import * as MediaUtils from '../utils/media/media-utils';
@@ -20,10 +19,15 @@ import { TransformationSchemaParser } from '../utils/media/xlsx/transformation/t
 import { XLSXTransformation } from '../utils/media/xlsx/transformation/xlsx-transformation';
 */
 import { XLSXCSV } from '../utils/media/xlsx/xlsx-file';
-import { MessageError, SubmissionError, SummarySubmissionError, SummarySubmissionErrorFromMessageType } from '../utils/submission-error';
+import {
+  MessageError,
+  SubmissionError,
+  SummarySubmissionError,
+  SummarySubmissionErrorFromMessageType
+} from '../utils/submission-error';
 import { getMockDBConnection } from '../__mocks__/db';
-
 import { SummaryService } from './summary-service';
+import { SurveyService } from './survey-service';
 
 chai.use(sinonChai);
 
@@ -119,13 +123,13 @@ describe.only('SummaryService', () => {
         s3InputKey: '',
         xlsx: new XLSXCSV(buildFile('test file', {}))
       };
-      const mockError = SummarySubmissionErrorFromMessageType(SUMMARY_SUBMISSION_MESSAGE_TYPE.MISSING_VALIDATION_SCHEMA)
+      const mockError = SummarySubmissionErrorFromMessageType(
+        SUMMARY_SUBMISSION_MESSAGE_TYPE.MISSING_VALIDATION_SCHEMA
+      );
       const prep = sinon.stub(service, 'summaryTemplatePreparation').resolves(mockPrep);
       sinon.stub(service.summaryRepository, 'insertSummarySubmissionMessage').resolves();
-      const validation = sinon
-        .stub(service, 'summaryTemplateValidation')
-        .throws(mockError);
-      
+      const validation = sinon.stub(service, 'summaryTemplateValidation').throws(mockError);
+
       try {
         await service.validateFile(1, 1);
         expect(prep).to.be.calledOnce;
@@ -155,7 +159,7 @@ describe.only('SummaryService', () => {
         expect(insertError).not.to.be.calledOnce;
         expect(submissionStatus).not.to.be.calledOnce;
       }
-    }); 
+    });
   });
 
   describe('updateSurveySummarySubmissionWithKey', () => {
@@ -165,43 +169,40 @@ describe.only('SummaryService', () => {
 
     it('should update a survey summary submission key', async () => {
       const service = mockService();
-      const update = sinon.stub(service, 'updateSurveySummarySubmissionWithKey').resolves({ survey_summary_submission_id: 12 })
-      const result = await service.updateSurveySummarySubmissionWithKey(12, 'new-test-key')
+      const update = sinon
+        .stub(service, 'updateSurveySummarySubmissionWithKey')
+        .resolves({ survey_summary_submission_id: 12 });
+      const result = await service.updateSurveySummarySubmissionWithKey(12, 'new-test-key');
 
       expect(update).to.be.calledOnce;
       expect(result).to.be.eql({ survey_summary_submission_id: 12 });
-    })
+    });
   });
 
   describe('insertSurveySummarySubmission', () => {
     afterEach(() => {
       sinon.restore();
     });
-
   });
   describe('deleteSummarySubmission', () => {
     afterEach(() => {
       sinon.restore();
     });
-
   });
   describe('getSummarySubmissionMessages', () => {
     afterEach(() => {
       sinon.restore();
     });
-
   });
   describe('findSummarySubmissionById', () => {
     afterEach(() => {
       sinon.restore();
     });
-
   });
   describe('getLatestSurveySummarySubmission', () => {
     afterEach(() => {
       sinon.restore();
     });
-
   });
 
   describe('summaryTemplatePreparation', () => {
@@ -247,9 +248,7 @@ describe.only('SummaryService', () => {
     afterEach(() => {
       sinon.restore();
     });
-
   });
-
 
   // Part B
 
@@ -291,7 +290,9 @@ describe.only('SummaryService', () => {
         expect.fail();
       } catch (error) {
         if (error instanceof SummarySubmissionError) {
-          expect(error.summarySubmissionMessages[0].type).to.be.eql(SUMMARY_SUBMISSION_MESSAGE_TYPE.UNSUPPORTED_FILE_TYPE);
+          expect(error.summarySubmissionMessages[0].type).to.be.eql(
+            SUMMARY_SUBMISSION_MESSAGE_TYPE.UNSUPPORTED_FILE_TYPE
+          );
         }
 
         expect(error).to.be.instanceOf(SummarySubmissionError);
@@ -323,6 +324,39 @@ describe.only('SummaryService', () => {
       sinon.restore();
     });
 
+    it('should return valid `ISummaryTemplateSpeciesData[]`', async () => {
+      const service = mockService();
+      const mockSpecies = sinon
+        .stub(SurveyService.prototype, 'getSpeciesData')
+        .resolves({ focal_species: [], focal_species_names: [], ancillary_species: [], ancillary_species_names: [] });
+      const mockXLSX = ({
+        workbook: { 
+          rawWorkbook: { 
+            Custpros: { sims_name: 'Moose SRB', sims_version: '1.0' } 
+          } 
+        }
+      } as unknown) as XLSXCSV;
+      const mockResults = [
+        {
+          summary_template_species_id: 1,
+          summary_template_id: 1,
+          wldtaxonomic_units_id: 1,
+          validation: '',
+          create_user: 1,
+          update_date: '',
+          update_user: 1,
+          revision_count: 1
+        }
+      ];
+      const mockRecords = sinon
+        .stub(SummaryRepository.prototype, 'getSummaryTemplateSpeciesRecords')
+        .resolves(mockResults);
+
+      const results = await service.getSummaryTemplateSpeciesRecords(mockXLSX, 1);
+      expect(results).to.be.eql(mockResults);
+      expect(mockSpecies).to.be.called;
+      expect(mockRecords).to.be.called;
+    });
   });
   describe('getValidationRules', () => {
     afterEach(() => {
@@ -348,7 +382,6 @@ describe.only('SummaryService', () => {
         expect((error as Error).message).to.be.eql('ValidationSchemaParser - provided json was not valid JSON');
       }
     });
-
   });
   describe('validateXLSX', () => {
     afterEach(() => {
@@ -370,7 +403,6 @@ describe.only('SummaryService', () => {
     afterEach(() => {
       sinon.restore();
     });
-
 
     it('should throw a submission error with multiple messages attached', async () => {
       const service = mockService();
@@ -424,7 +456,6 @@ describe.only('SummaryService', () => {
         expect(response).to.be.false;
       });
     });
-
   });
 
   describe('insertSummarySubmissionError', () => {
@@ -436,7 +467,9 @@ describe.only('SummaryService', () => {
       const connection = getMockDBConnection();
       const mockService = new SummaryService(connection);
       const mockInsert = sinon.stub(SummaryRepository.prototype, 'insertSummarySubmissionMessage').resolves();
-      const error = new SummarySubmissionError({messages: [new MessageError(SUMMARY_SUBMISSION_MESSAGE_TYPE.MISSING_RECOMMENDED_HEADER)]})
+      const error = new SummarySubmissionError({
+        messages: [new MessageError(SUMMARY_SUBMISSION_MESSAGE_TYPE.MISSING_RECOMMENDED_HEADER)]
+      });
       await mockService.insertSummarySubmissionError(1, error);
 
       expect(mockInsert).to.be.called;
