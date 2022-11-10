@@ -388,7 +388,7 @@ export class SummaryRepository extends BaseRepository {
   async getSummaryTemplateSpeciesRecords(
     templateName: string,
     templateVersion: string,
-    species?: number
+    species?: number[]
   ): Promise<ISummaryTemplateSpeciesData[]> {
     const templateRow = await this.getSummaryTemplateIdFromNameVersion(templateName, templateVersion);
 

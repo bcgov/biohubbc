@@ -194,6 +194,9 @@ export class SummaryService extends DBService {
     defaultLog.debug({ label: 'summaryTemplateValidation' });
     try {
       const summaryTemplateSpeciesRecords = await this.getSummaryTemplateSpeciesRecords(xlsx, surveyId);
+
+      // In the absense of hard requirements for selecting validation schema among multiple
+      // focal species, we select the first resulting validation schema.
       const templateRecord = summaryTemplateSpeciesRecords[0];
       const validationSchema = templateRecord?.validation;
 
@@ -281,7 +284,7 @@ export class SummaryService extends DBService {
     return this.summaryRepository.getSummaryTemplateSpeciesRecords(
       sims_name,
       sims_version,
-      speciesData.focal_species[0]
+      speciesData.focal_species
     );
   }
 
