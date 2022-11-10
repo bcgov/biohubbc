@@ -183,7 +183,7 @@ export class SummaryService extends DBService {
   }
 
   /**
-   * Retreives template validation schema for the given XLSX file and survey, and validates the
+   * Retrieves template validation schema for the given XLSX file and survey, and validates the
    * XLSX. If a summary submission ID is given, details about template validation schema selection
    * are logged.
    * @param {XLSXCSV} xlsx
@@ -195,7 +195,7 @@ export class SummaryService extends DBService {
     try {
       const summaryTemplateSpeciesRecords = await this.getSummaryTemplateSpeciesRecords(xlsx, surveyId);
 
-      // In the absense of hard requirements for selecting validation schema among multiple
+      // In the absence of hard requirements for selecting validation schema among multiple
       // focal species, we select the first resulting validation schema.
       const templateRecord = summaryTemplateSpeciesRecords[0];
       const validationSchema = templateRecord?.validation;
@@ -259,7 +259,7 @@ export class SummaryService extends DBService {
   }
 
   /**
-   * Reetrieves all summary template species records that are constrained by the template
+   * Retrieves all summary template species records that are constrained by the template
    * name, version and survey focal species.
    * @param file
    * @param surveyId
@@ -285,7 +285,7 @@ export class SummaryService extends DBService {
   }
 
   /**
-   * Retreives validation rules for the given validation schema.
+   * Retrieves validation rules for the given validation schema.
    *
    * @param {string | object} schema
    * @returns {ValidationSchemaParser}

@@ -1,0 +1,445 @@
+import chai, { expect } from 'chai';
+import { describe } from 'mocha';
+import sinon from 'sinon';
+import sinonChai from 'sinon-chai';
+import xlsx from 'xlsx';
+import { SUBMISSION_MESSAGE_TYPE, SUBMISSION_STATUS_TYPE, SUMMARY_SUBMISSION_MESSAGE_TYPE } from '../constants/status';
+import { SummaryRepository } from '../repositories/summary-repository';
+import * as FileUtils from '../utils/file-utils';
+import * as MediaUtils from '../utils/media/media-utils';
+// import { ITemplateMethodologyData } from '../repositories/validation-repository';
+import { ICsvState } from '../utils/media/csv/csv-file';
+
+// import { DWCArchive } from '../utils/media/dwc/dwc-archive-file';
+import {  IMediaState, MediaFile } from '../utils/media/media-file';
+import { ValidationSchemaParser } from '../utils/media/validation/validation-schema-parser';
+/*
+import * as MediaUtils from '../utils/media/media-utils';
+import { ValidationSchemaParser } from '../utils/media/validation/validation-schema-parser';
+import { TransformationSchemaParser } from '../utils/media/xlsx/transformation/transformation-schema-parser';
+import { XLSXTransformation } from '../utils/media/xlsx/transformation/xlsx-transformation';
+*/
+import { XLSXCSV } from '../utils/media/xlsx/xlsx-file';
+import { MessageError, SubmissionError, SummarySubmissionError, SummarySubmissionErrorFromMessageType } from '../utils/submission-error';
+import { getMockDBConnection } from '../__mocks__/db';
+
+import { SummaryService } from './summary-service';
+
+chai.use(sinonChai);
+
+// const mockS3File = {
+//   fieldname: 'media',
+//   originalname: 'test.csv',
+//   encoding: '7bit',
+//   mimetype: 'text/csv',
+//   size: 340
+// };
+
+// const s3Archive = {
+//   fieldname: 'media',
+//   originalname: 'test.zip',
+//   encoding: '7bit',
+//   mimetype: 'application/zip',
+//   size: 340
+// };
+
+const mockService = () => {
+  const dbConnection = getMockDBConnection();
+  return new SummaryService(dbConnection);
+};
+
+/*
+const mockOccurrenceSubmission = {
+  occurrence_submission_id: 1,
+  survey_id: 1,
+  template_methodology_species_id: 1,
+  source: '',
+  input_key: 'input key',
+  input_file_name: '',
+  output_key: 'output key',
+  output_file_name: ''
+};
+*/
+
+const buildFile = (fileName: string, customProps: { template_id?: number; csm_id?: number }) => {
+  const newWorkbook = xlsx.utils.book_new();
+  newWorkbook.Custprops = {};
+
+  if (customProps.csm_id && customProps.template_id) {
+    newWorkbook.Custprops['sims_template_id'] = customProps.template_id;
+    newWorkbook.Custprops['sims_csm_id'] = customProps.csm_id;
+  }
+
+  const ws_name = 'SheetJS';
+
+  // make worksheet
+  const ws_data = [
+    ['S', 'h', 'e', 'e', 't', 'J', 'S'],
+    [1, 2, 3, 4, 5]
+  ];
+  const ws = xlsx.utils.aoa_to_sheet(ws_data);
+
+  // Add the worksheet to the workbook
+  xlsx.utils.book_append_sheet(newWorkbook, ws, ws_name);
+
+  const buffer = xlsx.write(newWorkbook, { type: 'buffer' });
+
+  return new MediaFile(fileName, 'text/csv', buffer);
+};
+
+describe.only('SummaryService', () => {
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  // Part A
+
+  describe('validateFile', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('should run without issue', async () => {
+      const service = mockService();
+      const mockPrep = {
+        s3InputKey: '',
+        xlsx: new XLSXCSV(buildFile('test file', {}))
+      };
+      const prep = sinon.stub(service, 'summaryTemplatePreparation').resolves(mockPrep);
+      const validation = sinon.stub(service, 'summaryTemplateValidation').resolves();
+
+      await service.validateFile(1, 1);
+      expect(prep).to.be.calledOnce;
+      expect(validation).to.be.calledOnce;
+    });
+
+    it('should insert submission error', async () => {
+      const service = mockService();
+      const mockPrep = {
+        s3InputKey: '',
+        xlsx: new XLSXCSV(buildFile('test file', {}))
+      };
+      const mockError = SummarySubmissionErrorFromMessageType(SUMMARY_SUBMISSION_MESSAGE_TYPE.MISSING_VALIDATION_SCHEMA)
+      const prep = sinon.stub(service, 'summaryTemplatePreparation').resolves(mockPrep);
+      sinon.stub(service.summaryRepository, 'insertSummarySubmissionMessage').resolves();
+      const validation = sinon
+        .stub(service, 'summaryTemplateValidation')
+        .throws(mockError);
+      
+      try {
+        await service.validateFile(1, 1);
+        expect(prep).to.be.calledOnce;
+      } catch (error) {
+        expect(error).to.be.instanceOf(SummarySubmissionError);
+        expect(validation).not.to.be.calledOnce;
+      }
+    });
+
+    it('should throw', async () => {
+      const service = mockService();
+      const mockPrep = {
+        s3InputKey: '',
+        xlsx: new XLSXCSV(buildFile('test file', {}))
+      };
+      const prep = sinon.stub(service, 'summaryTemplatePreparation').resolves(mockPrep);
+      const validation = sinon.stub(service, 'summaryTemplateValidation').throws(new Error());
+      const submissionStatus = sinon.stub(service.submissionRepository, 'insertSubmissionStatus').resolves();
+      const insertError = sinon.stub(service.errorService, 'insertSubmissionError').resolves();
+
+      try {
+        await service.validateFile(1, 1);
+        expect(prep).to.be.calledOnce;
+        expect(validation).to.be.calledOnce;
+      } catch (error) {
+        expect(error).not.to.be.instanceOf(SubmissionError);
+        expect(insertError).not.to.be.calledOnce;
+        expect(submissionStatus).not.to.be.calledOnce;
+      }
+    }); 
+  });
+
+  describe('updateSurveySummarySubmissionWithKey', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('should update a survey summary submission key', async () => {
+      const service = mockService();
+      const update = sinon.stub(service, 'updateSurveySummarySubmissionWithKey').resolves({ survey_summary_submission_id: 12 })
+      const result = await service.updateSurveySummarySubmissionWithKey(12, 'new-test-key')
+
+      expect(update).to.be.calledOnce;
+      expect(result).to.be.eql({ survey_summary_submission_id: 12 });
+    })
+  });
+
+  describe('insertSurveySummarySubmission', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+  });
+  describe('deleteSummarySubmission', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+  });
+  describe('getSummarySubmissionMessages', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+  });
+  describe('findSummarySubmissionById', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+  });
+  describe('getLatestSurveySummarySubmission', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+  });
+
+  describe('summaryTemplatePreparation', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('should return valid S3 key and xlsx object', async () => {
+      const file = new MediaFile('test.txt', 'text/plain', Buffer.of(0));
+      const s3Key = 's3 key';
+      sinon.stub(FileUtils, 'getFileFromS3').resolves('file from s3' as any);
+      sinon.stub(SummaryService.prototype, 'prepXLSX').returns(new XLSXCSV(file));
+
+      const service = mockService();
+      const results = await service.summaryTemplatePreparation(1);
+
+      expect(results.xlsx).to.not.be.empty;
+      expect(results.xlsx).to.be.instanceOf(XLSXCSV);
+      expect(results.s3InputKey).to.be.eql(s3Key);
+    });
+
+    it('throws Failed to prepare submission error', async () => {
+      const file = new MediaFile('test.txt', 'text/plain', Buffer.of(0));
+      sinon.stub(FileUtils, 'getFileFromS3').throws(new SubmissionError({}));
+      sinon.stub(SummaryService.prototype, 'prepXLSX').resolves(new XLSXCSV(file));
+
+      try {
+        const dbConnection = getMockDBConnection();
+        const service = new SummaryService(dbConnection);
+        await service.summaryTemplatePreparation(1);
+
+        expect.fail();
+      } catch (error) {
+        expect(error).to.be.instanceOf(SubmissionError);
+        if (error instanceof SubmissionError) {
+          expect(error.status).to.be.eql(SUBMISSION_STATUS_TYPE.FAILED_SUMMARY_PREPARATION);
+        }
+      }
+    });
+  });
+
+  describe('summaryTemplateValidation', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+  });
+
+
+  // Part B
+
+  describe('prepXLSX', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+    it('should return valid XLSXCSV', () => {
+      const file = new MediaFile('test.txt', 'text/plain', Buffer.of(0));
+      const parse = sinon.stub(MediaUtils, 'parseUnknownMedia').returns(file);
+      sinon.stub(XLSXCSV, 'prototype').returns({
+        workbook: {
+          rawWorkbook: {
+            Custprops: {
+              sims_template_id: 1,
+              sims_csm_id: 1
+            }
+          }
+        }
+      });
+
+      const service = mockService();
+      try {
+        const xlsx = service.prepXLSX(file);
+        expect(xlsx).to.not.be.empty;
+        expect(xlsx).to.be.instanceOf(XLSXCSV);
+      } catch (error) {
+        expect(parse).to.be.calledOnce;
+      }
+    });
+
+    it('should throw File submitted is not a supported type error', () => {
+      const file = new MediaFile('test.txt', 'text/plain', Buffer.of(0));
+      const parse = sinon.stub(MediaUtils, 'parseUnknownMedia').returns(null);
+
+      const service = mockService();
+      try {
+        service.prepXLSX(file);
+        expect.fail();
+      } catch (error) {
+        if (error instanceof SummarySubmissionError) {
+          expect(error.summarySubmissionMessages[0].type).to.be.eql(SUMMARY_SUBMISSION_MESSAGE_TYPE.UNSUPPORTED_FILE_TYPE);
+        }
+
+        expect(error).to.be.instanceOf(SummarySubmissionError);
+        expect(parse).to.be.calledOnce;
+      }
+    });
+
+    it('should throw `XLSX CSV is Invalid` error', () => {
+      const file = new MediaFile('test.txt', 'text/plain', Buffer.of(0));
+      const parse = sinon.stub(MediaUtils, 'parseUnknownMedia').returns(('a file' as unknown) as MediaFile);
+
+      const service = mockService();
+      try {
+        service.prepXLSX(file);
+        expect.fail();
+      } catch (error) {
+        if (error instanceof SummarySubmissionError) {
+          expect(error.summarySubmissionMessages[0].type).to.be.eql(SUMMARY_SUBMISSION_MESSAGE_TYPE.INVALID_XLSX_CSV);
+        }
+
+        expect(error).to.be.instanceOf(SummarySubmissionError);
+        expect(parse).to.be.calledOnce;
+      }
+    });
+  });
+
+  describe('getSummaryTemplateSpeciesRecords', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+  });
+  describe('getValidationRules', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('should return validation schema parser', () => {
+      const service = mockService();
+
+      const parser = service.getValidationRules({});
+      expect(parser).to.be.instanceOf(ValidationSchemaParser);
+    });
+
+    it('should fail with invalid json', () => {
+      const service = mockService();
+      sinon
+        .stub(service, 'getValidationRules')
+        .throws(new Error('ValidationSchemaParser - provided json was not valid JSON'));
+      try {
+        service.getValidationRules('---');
+        expect.fail();
+      } catch (error) {
+        expect((error as Error).message).to.be.eql('ValidationSchemaParser - provided json was not valid JSON');
+      }
+    });
+
+  });
+  describe('validateXLSX', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('should return valid state object', async () => {
+      const service = mockService();
+      const xlsx = new XLSXCSV(buildFile('test file', {}));
+      const parser = new ValidationSchemaParser({});
+      const response = await service.validateXLSX(xlsx, parser);
+
+      expect(response.media_state.isValid).to.be.true;
+      expect(response.media_state.fileErrors).is.empty;
+    });
+  });
+
+  describe('persistSummaryValidationResults', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+
+    it('should throw a submission error with multiple messages attached', async () => {
+      const service = mockService();
+      const csvState: ICsvState[] = [
+        {
+          fileName: '',
+          isValid: false,
+          headerErrors: [
+            {
+              errorCode: SUBMISSION_MESSAGE_TYPE.MISSING_REQUIRED_HEADER,
+              message: '',
+              col: 'Effort & Effects'
+            }
+          ],
+          rowErrors: [
+            {
+              errorCode: SUBMISSION_MESSAGE_TYPE.INVALID_VALUE,
+              message: 'Invalid Value',
+              col: 'Block SU',
+              row: 1
+            }
+          ]
+        }
+      ];
+      const mediaState: IMediaState = {
+        fileName: 'Test.xlsx',
+        isValid: true
+      };
+      try {
+        await service.persistSummaryValidationResults(csvState, mediaState);
+        expect.fail();
+      } catch (error) {
+        if (error instanceof SummarySubmissionError) {
+          error.summarySubmissionMessages.forEach((e) => {
+            expect(e.type).to.be.eql(SUMMARY_SUBMISSION_MESSAGE_TYPE.INVALID_VALUE);
+          });
+        }
+      }
+    });
+
+    it('should run without issue', async () => {
+      it('should return false if no errors are present', async () => {
+        const service = mockService();
+        const csvState: ICsvState[] = [];
+        const mediaState: IMediaState = {
+          fileName: 'Test.xlsx',
+          isValid: true
+        };
+        const response = await service.persistSummaryValidationResults(csvState, mediaState);
+        // no errors found, data is valid
+        expect(response).to.be.false;
+      });
+    });
+
+  });
+
+  describe('insertSummarySubmissionError', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('should run without issue', async () => {
+      const connection = getMockDBConnection();
+      const mockService = new SummaryService(connection);
+      const mockInsert = sinon.stub(SummaryRepository.prototype, 'insertSummarySubmissionMessage').resolves();
+      const error = new SummarySubmissionError({messages: [new MessageError(SUMMARY_SUBMISSION_MESSAGE_TYPE.MISSING_RECOMMENDED_HEADER)]})
+      await mockService.insertSummarySubmissionError(1, error);
+
+      expect(mockInsert).to.be.called;
+    });
+  });
+});
