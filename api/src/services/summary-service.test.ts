@@ -3,7 +3,8 @@ import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import xlsx from 'xlsx';
-import { SUBMISSION_MESSAGE_TYPE, SUBMISSION_STATUS_TYPE } from '../constants/status';
+import { SUBMISSION_MESSAGE_TYPE, SUBMISSION_STATUS_TYPE, SUMMARY_SUBMISSION_MESSAGE_TYPE } from '../constants/status';
+import { SummaryRepository } from '../repositories/summary-repository';
 import { ITemplateMethodologyData } from '../repositories/validation-repository';
 import * as FileUtils from '../utils/file-utils';
 import { ICsvState } from '../utils/media/csv/csv-file';
@@ -15,7 +16,7 @@ import { ValidationSchemaParser } from '../utils/media/validation/validation-sch
 import { TransformationSchemaParser } from '../utils/media/xlsx/transformation/transformation-schema-parser';
 import { XLSXTransformation } from '../utils/media/xlsx/transformation/xlsx-transformation';
 import { XLSXCSV } from '../utils/media/xlsx/xlsx-file';
-import { SubmissionError, SubmissionErrorFromMessageType } from '../utils/submission-error';
+import { MessageError, SubmissionError, SubmissionErrorFromMessageType, SummarySubmissionError } from '../utils/submission-error';
 import { getMockDBConnection } from '../__mocks__/db';
 import { OccurrenceService } from './occurrence-service';
 import { SummaryService } from './summary-service';
@@ -140,7 +141,6 @@ describe('SummaryService', () => {
     afterEach(() => {
       sinon.restore();
     });
-
   });
   describe('summaryTemplateValidation', () => {
     afterEach(() => {
@@ -178,6 +178,20 @@ describe('SummaryService', () => {
       sinon.restore();
     });
 
+    it('should run without issue', async () => {
+      it('should return false if no errors are present', async () => {
+        const service = mockService();
+        const csvState: ICsvState[] = [];
+        const mediaState: IMediaState = {
+          fileName: 'Test.xlsx',
+          isValid: true
+        };
+        const response = await service.persistSummaryValidationResults(csvState, mediaState);
+        // no errors found, data is valid
+        expect(response).to.be.false;
+      });
+    });
+
   });
 
   describe('insertSummarySubmissionError', () => {
@@ -185,5 +199,14 @@ describe('SummaryService', () => {
       sinon.restore();
     });
 
+    it('should run without issue', async () => {
+      const connection = getMockDBConnection();
+      const mockService = new SummaryService(connection);
+      const mockInsert = sinon.stub(SummaryRepository.prototype, 'insertSummarySubmissionMessage').resolves();
+      const error = new SummarySubmissionError({messages: [new MessageError(SUMMARY_SUBMISSION_MESSAGE_TYPE.MISSING_RECOMMENDED_HEADER)]})
+      await mockService.insertSummarySubmissionError(1, error);
+
+      expect(mockInsert).to.be.called;
+    });
   });
 });

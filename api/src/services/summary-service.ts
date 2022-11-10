@@ -183,7 +183,7 @@ export class SummaryService extends DBService {
   }
 
   /**
-   * Retreives template validation schema for the given XLSX file and survey, and validates the
+   * Retrieves template validation schema for the given XLSX file and survey, and validates the
    * XLSX. If a summary submission ID is given, details about template validation schema selection
    * are logged.
    * @param {XLSXCSV} xlsx
