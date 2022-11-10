@@ -3,8 +3,9 @@ import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import xlsx from 'xlsx';
-import { SUMMARY_SUBMISSION_MESSAGE_TYPE } from '../constants/status';
+import { SUBMISSION_STATUS_TYPE, SUMMARY_SUBMISSION_MESSAGE_TYPE } from '../constants/status';
 import { SummaryRepository } from '../repositories/summary-repository';
+import * as FileUtils from '../utils/file-utils';
 // import { ITemplateMethodologyData } from '../repositories/validation-repository';
 // import * as FileUtils from '../utils/file-utils';
 import { ICsvState } from '../utils/media/csv/csv-file';
@@ -202,22 +203,55 @@ describe.only('SummaryService', () => {
 
   });
 
-
-  // Part B
-
-
-
   describe('summaryTemplatePreparation', () => {
     afterEach(() => {
       sinon.restore();
     });
+
+    it('should return valid S3 key and xlsx object', async () => {
+      const file = new MediaFile('test.txt', 'text/plain', Buffer.of(0));
+      const s3Key = 's3 key';
+      sinon.stub(FileUtils, 'getFileFromS3').resolves('file from s3' as any);
+      sinon.stub(SummaryService.prototype, 'prepXLSX').returns(new XLSXCSV(file));
+
+      const service = mockService();
+      const results = await service.summaryTemplatePreparation(1);
+
+      expect(results.xlsx).to.not.be.empty;
+      expect(results.xlsx).to.be.instanceOf(XLSXCSV);
+      expect(results.s3InputKey).to.be.eql(s3Key);
+    });
+
+    it('throws Failed to prepare submission error', async () => {
+      const file = new MediaFile('test.txt', 'text/plain', Buffer.of(0));
+      sinon.stub(FileUtils, 'getFileFromS3').throws(new SubmissionError({}));
+      sinon.stub(SummaryService.prototype, 'prepXLSX').resolves(new XLSXCSV(file));
+
+      try {
+        const dbConnection = getMockDBConnection();
+        const service = new SummaryService(dbConnection);
+        await service.summaryTemplatePreparation(1);
+
+        expect.fail();
+      } catch (error) {
+        expect(error).to.be.instanceOf(SubmissionError);
+        if (error instanceof SubmissionError) {
+          expect(error.status).to.be.eql(SUBMISSION_STATUS_TYPE.FAILED_SUMMARY_PREPARATION);
+        }
+      }
+    });
   });
+
   describe('summaryTemplateValidation', () => {
     afterEach(() => {
       sinon.restore();
     });
 
   });
+
+
+  // Part B
+
   describe('prepXLSX', () => {
     afterEach(() => {
       sinon.restore();
