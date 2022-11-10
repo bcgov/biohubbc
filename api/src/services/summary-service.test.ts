@@ -3,6 +3,7 @@ import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import xlsx from 'xlsx';
+import { shuffle } from 'lodash';
 import { SUBMISSION_MESSAGE_TYPE, SUBMISSION_STATUS_TYPE, SUMMARY_SUBMISSION_MESSAGE_TYPE } from '../constants/status';
 import { SummaryRepository } from '../repositories/summary-repository';
 import * as FileUtils from '../utils/file-utils';
@@ -211,9 +212,23 @@ describe.only('SummaryService', () => {
 
     it('should return valid S3 key and xlsx object', async () => {
       const file = new MediaFile('test.txt', 'text/plain', Buffer.of(0));
-      const s3Key = 's3 key';
+      const s3Key = 's3-key';
       sinon.stub(FileUtils, 'getFileFromS3').resolves('file from s3' as any);
       sinon.stub(SummaryService.prototype, 'prepXLSX').returns(new XLSXCSV(file));
+      sinon.stub(SummaryService.prototype, 'findSummarySubmissionById').resolves({
+        survey_summary_submission_id: 1,
+        survey_id: 1,
+        source: 'source',
+        event_timestamp: null,
+        delete_timestamp: null,
+        key: s3Key,
+        file_name: 'filename',
+        create_user: 1,
+        update_date: null,
+        update_user: null,
+        revision_count: 1,
+        summary_template_species_id: 1
+      });
 
       const service = mockService();
       const results = await service.summaryTemplatePreparation(1);
@@ -225,8 +240,23 @@ describe.only('SummaryService', () => {
 
     it('throws Failed to prepare submission error', async () => {
       const file = new MediaFile('test.txt', 'text/plain', Buffer.of(0));
+      const s3Key = 's3-key';
       sinon.stub(FileUtils, 'getFileFromS3').throws(new SubmissionError({}));
       sinon.stub(SummaryService.prototype, 'prepXLSX').resolves(new XLSXCSV(file));
+      sinon.stub(SummaryService.prototype, 'findSummarySubmissionById').resolves({
+        survey_summary_submission_id: 1,
+        survey_id: 1,
+        source: 'source',
+        event_timestamp: null,
+        delete_timestamp: null,
+        key: s3Key,
+        file_name: 'filename',
+        create_user: 1,
+        update_date: null,
+        update_user: null,
+        revision_count: 1,
+        summary_template_species_id: 1
+      });
 
       try {
         const dbConnection = getMockDBConnection();
@@ -247,6 +277,90 @@ describe.only('SummaryService', () => {
     afterEach(() => {
       sinon.restore();
     });
+
+    const makeMockTemplateSpeciesRecord = (seed: number) => ({
+      summary_template_species_id: seed + 1,
+      summary_template_id: seed + 1,
+      wldtaxonomic_units_id: 4165 + seed,
+      validation: JSON.stringify({ test_schema_id: seed + 1 }),
+      create_user: 1,
+      update_date: null,
+      update_user: null,
+      revision_count: 1
+    })
+    
+    it('Should log the particular validation schema that was found if summarySubmissionId is given', async () => {
+      //
+    });
+
+    it('should complete without error', async () => {
+      const service = mockService();
+      const file = new MediaFile('test.txt', 'text/plain', Buffer.of(0));
+      const xlsxCsv = new XLSXCSV(file);
+      sinon.stub(FileUtils, 'getFileFromS3').resolves('file from s3' as any);
+
+      const getValidation = sinon.stub(service, 'getSummaryTemplateSpeciesRecords').resolves([
+        makeMockTemplateSpeciesRecord(1)
+      ]);
+      const getRules = sinon.stub(service, 'getValidationRules').resolves('');
+      const validate = sinon.stub(service, 'validateXLSX').resolves({});
+      const persistResults = sinon.stub(service, 'persistSummaryValidationResults').resolves();
+
+      await service.summaryTemplateValidation(xlsxCsv, 1);
+
+      expect(getValidation).to.be.calledOnce;
+      expect(getRules).to.be.calledOnce;
+      expect(validate).to.be.calledOnce;
+      expect(persistResults).to.be.calledOnce;
+    });
+
+    it('should pick the first validation schema deterministically', async () => {
+      const service = mockService();
+      const file = new MediaFile('test.txt', 'text/plain', Buffer.of(0));
+      const xlsxCsv = new XLSXCSV(file);
+      sinon.stub(FileUtils, 'getFileFromS3').resolves('file from s3' as any);
+
+      const templateSpeciesRecords = shuffle([...Array(20).keys()]
+        .map(makeMockTemplateSpeciesRecord))
+
+      const getValidation = sinon.stub(service, 'getSummaryTemplateSpeciesRecords').resolves(templateSpeciesRecords);
+      const getRules = sinon.stub(service, 'getValidationRules').resolves('');
+      const validate = sinon.stub(service, 'validateXLSX').resolves({});
+      const persistResults = sinon.stub(service, 'persistSummaryValidationResults').resolves();
+
+      await service.summaryTemplateValidation(xlsxCsv, 1);
+
+      expect(getValidation).to.be.calledOnce;
+      expect(getRules).to.have.been.calledWith(templateSpeciesRecords[0].validation);
+      expect(validate).to.be.calledOnce;
+      expect(persistResults).to.be.calledOnce;
+    })
+
+    /*
+    it('should throw Failed to validate error', async () => {
+      const file = new MediaFile('test.txt', 'text/plain', Buffer.of(0));
+      const xlsxCsv = new XLSXCSV(file);
+      sinon.stub(FileUtils, 'getFileFromS3').resolves('file from s3' as any);
+
+      sinon.stub(ValidationService.prototype, 'getValidationSchema').throws(new SubmissionError({}));
+      sinon.stub(ValidationService.prototype, 'getValidationRules').resolves({});
+      sinon.stub(ValidationService.prototype, 'validateXLSX').resolves({});
+      sinon.stub(ValidationService.prototype, 'persistValidationResults').resolves(true);
+
+      try {
+        const dbConnection = getMockDBConnection();
+        const service = new ValidationService(dbConnection);
+        await service.templateValidation(xlsxCsv, 1);
+        expect.fail();
+      } catch (error) {
+        expect(error).to.be.instanceOf(SubmissionError);
+        if (error instanceof SubmissionError) {
+          expect(error.status).to.be.eql(SUBMISSION_STATUS_TYPE.FAILED_VALIDATION);
+        }
+      }
+    });
+    */
+
 
   });
 
