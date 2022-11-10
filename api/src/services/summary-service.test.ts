@@ -3,15 +3,16 @@ import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import xlsx from 'xlsx';
-import { SUBMISSION_STATUS_TYPE, SUMMARY_SUBMISSION_MESSAGE_TYPE } from '../constants/status';
+import { SUBMISSION_MESSAGE_TYPE, SUBMISSION_STATUS_TYPE, SUMMARY_SUBMISSION_MESSAGE_TYPE } from '../constants/status';
 import { SummaryRepository } from '../repositories/summary-repository';
 import * as FileUtils from '../utils/file-utils';
+import * as MediaUtils from '../utils/media/media-utils';
 // import { ITemplateMethodologyData } from '../repositories/validation-repository';
-// import * as FileUtils from '../utils/file-utils';
 import { ICsvState } from '../utils/media/csv/csv-file';
 
 // import { DWCArchive } from '../utils/media/dwc/dwc-archive-file';
 import {  IMediaState, MediaFile } from '../utils/media/media-file';
+import { ValidationSchemaParser } from '../utils/media/validation/validation-schema-parser';
 /*
 import * as MediaUtils from '../utils/media/media-utils';
 import { ValidationSchemaParser } from '../utils/media/validation/validation-schema-parser';
@@ -256,8 +257,67 @@ describe.only('SummaryService', () => {
     afterEach(() => {
       sinon.restore();
     });
+    it('should return valid XLSXCSV', () => {
+      const file = new MediaFile('test.txt', 'text/plain', Buffer.of(0));
+      const parse = sinon.stub(MediaUtils, 'parseUnknownMedia').returns(file);
+      sinon.stub(XLSXCSV, 'prototype').returns({
+        workbook: {
+          rawWorkbook: {
+            Custprops: {
+              sims_template_id: 1,
+              sims_csm_id: 1
+            }
+          }
+        }
+      });
 
+      const service = mockService();
+      try {
+        const xlsx = service.prepXLSX(file);
+        expect(xlsx).to.not.be.empty;
+        expect(xlsx).to.be.instanceOf(XLSXCSV);
+      } catch (error) {
+        expect(parse).to.be.calledOnce;
+      }
+    });
+
+    it('should throw File submitted is not a supported type error', () => {
+      const file = new MediaFile('test.txt', 'text/plain', Buffer.of(0));
+      const parse = sinon.stub(MediaUtils, 'parseUnknownMedia').returns(null);
+
+      const service = mockService();
+      try {
+        service.prepXLSX(file);
+        expect.fail();
+      } catch (error) {
+        if (error instanceof SummarySubmissionError) {
+          expect(error.summarySubmissionMessages[0].type).to.be.eql(SUMMARY_SUBMISSION_MESSAGE_TYPE.UNSUPPORTED_FILE_TYPE);
+        }
+
+        expect(error).to.be.instanceOf(SummarySubmissionError);
+        expect(parse).to.be.calledOnce;
+      }
+    });
+
+    it('should throw `XLSX CSV is Invalid` error', () => {
+      const file = new MediaFile('test.txt', 'text/plain', Buffer.of(0));
+      const parse = sinon.stub(MediaUtils, 'parseUnknownMedia').returns(('a file' as unknown) as MediaFile);
+
+      const service = mockService();
+      try {
+        service.prepXLSX(file);
+        expect.fail();
+      } catch (error) {
+        if (error instanceof SummarySubmissionError) {
+          expect(error.summarySubmissionMessages[0].type).to.be.eql(SUMMARY_SUBMISSION_MESSAGE_TYPE.INVALID_XLSX_CSV);
+        }
+
+        expect(error).to.be.instanceOf(SummarySubmissionError);
+        expect(parse).to.be.calledOnce;
+      }
+    });
   });
+
   describe('getSummaryTemplateSpeciesRecords', () => {
     afterEach(() => {
       sinon.restore();
@@ -269,17 +329,86 @@ describe.only('SummaryService', () => {
       sinon.restore();
     });
 
+    it('should return validation schema parser', () => {
+      const service = mockService();
+
+      const parser = service.getValidationRules({});
+      expect(parser).to.be.instanceOf(ValidationSchemaParser);
+    });
+
+    it('should fail with invalid json', () => {
+      const service = mockService();
+      sinon
+        .stub(service, 'getValidationRules')
+        .throws(new Error('ValidationSchemaParser - provided json was not valid JSON'));
+      try {
+        service.getValidationRules('---');
+        expect.fail();
+      } catch (error) {
+        expect((error as Error).message).to.be.eql('ValidationSchemaParser - provided json was not valid JSON');
+      }
+    });
+
   });
   describe('validateXLSX', () => {
     afterEach(() => {
       sinon.restore();
     });
 
+    it('should return valid state object', async () => {
+      const service = mockService();
+      const xlsx = new XLSXCSV(buildFile('test file', {}));
+      const parser = new ValidationSchemaParser({});
+      const response = await service.validateXLSX(xlsx, parser);
+
+      expect(response.media_state.isValid).to.be.true;
+      expect(response.media_state.fileErrors).is.empty;
+    });
   });
 
   describe('persistSummaryValidationResults', () => {
     afterEach(() => {
       sinon.restore();
+    });
+
+
+    it('should throw a submission error with multiple messages attached', async () => {
+      const service = mockService();
+      const csvState: ICsvState[] = [
+        {
+          fileName: '',
+          isValid: false,
+          headerErrors: [
+            {
+              errorCode: SUBMISSION_MESSAGE_TYPE.MISSING_REQUIRED_HEADER,
+              message: '',
+              col: 'Effort & Effects'
+            }
+          ],
+          rowErrors: [
+            {
+              errorCode: SUBMISSION_MESSAGE_TYPE.INVALID_VALUE,
+              message: 'Invalid Value',
+              col: 'Block SU',
+              row: 1
+            }
+          ]
+        }
+      ];
+      const mediaState: IMediaState = {
+        fileName: 'Test.xlsx',
+        isValid: true
+      };
+      try {
+        await service.persistSummaryValidationResults(csvState, mediaState);
+        expect.fail();
+      } catch (error) {
+        if (error instanceof SummarySubmissionError) {
+          error.summarySubmissionMessages.forEach((e) => {
+            expect(e.type).to.be.eql(SUMMARY_SUBMISSION_MESSAGE_TYPE.INVALID_VALUE);
+          });
+        }
+      }
     });
 
     it('should run without issue', async () => {
