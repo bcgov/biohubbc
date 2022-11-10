@@ -281,11 +281,7 @@ export class SummaryService extends DBService {
       }
     });
 
-    return this.summaryRepository.getSummaryTemplateSpeciesRecords(
-      sims_name,
-      sims_version,
-      speciesData.focal_species
-    );
+    return this.summaryRepository.getSummaryTemplateSpeciesRecords(sims_name, sims_version, speciesData.focal_species);
   }
 
   /**

@@ -333,7 +333,8 @@ describe('uploadSummarySubmission', () => {
     });
 
     sinon.stub(file_utils, 'scanFileForVirus').resolves(true);
-    sinon.stub(SummaryService.prototype, 'insertSurveySummarySubmission')
+    sinon
+      .stub(SummaryService.prototype, 'insertSurveySummarySubmission')
       .resolves({ survey_summary_submission_id: 14 });
     sinon.stub(file_utils, 'uploadFileToS3').resolves({ key: 'projects/1/surveys/1/test.txt' } as any);
     sinon.stub(SummaryService.prototype, 'summaryTemplateValidation').resolves();

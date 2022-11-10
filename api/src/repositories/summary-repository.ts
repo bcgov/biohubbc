@@ -420,7 +420,7 @@ export class SummaryRepository extends BaseRepository {
    * @param summarySubmissionMessageType the message type.
    * @param summarySubmissionMessage the full message.
    */
-  async insertSummarySubmissionMessage (
+  async insertSummarySubmissionMessage(
     summarySubmissionId: number,
     summarySubmissionMessageType: SUMMARY_SUBMISSION_MESSAGE_TYPE,
     summarySubmissionMessage: string
@@ -462,5 +462,5 @@ export class SummaryRepository extends BaseRepository {
         'rowCount was null or undefined, expected rowCount = 1'
       ]);
     }
-  };
+  }
 }
