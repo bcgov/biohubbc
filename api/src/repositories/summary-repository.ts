@@ -420,11 +420,11 @@ export class SummaryRepository extends BaseRepository {
    * @param summarySubmissionMessageType the message type.
    * @param summarySubmissionMessage the full message.
    */
-  insertSummarySubmissionMessage = async (
+  async insertSummarySubmissionMessage (
     summarySubmissionId: number,
     summarySubmissionMessageType: SUMMARY_SUBMISSION_MESSAGE_TYPE,
     summarySubmissionMessage: string
-  ): Promise<void> => {
+  ): Promise<void> {
     defaultLog.debug({
       label: 'insertSummarySubmissionMessage',
       summarySubmissionId,
