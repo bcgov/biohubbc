@@ -9,7 +9,7 @@ import { SummaryRepository } from './summary-repository';
 
 chai.use(sinonChai);
 
-describe.only('SummaryRepository', () => {
+describe('SummaryRepository', () => {
   afterEach(() => {
     sinon.restore();
   });
@@ -18,9 +18,7 @@ describe.only('SummaryRepository', () => {
     it('should succeed with valid data', async () => {
       const mockResponse = ({
         rows: [
-          {
-            id: 1
-          }
+          { id: 1 }
         ]
       } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({

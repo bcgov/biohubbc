@@ -292,8 +292,12 @@ export class SummaryService extends DBService {
    */
   getValidationRules(schema: string | object): ValidationSchemaParser {
     defaultLog.debug({ label: 'getValidationRules' });
-    const validationSchemaParser = new ValidationSchemaParser(schema);
-    return validationSchemaParser;
+    try {
+      const validationSchemaParser = new ValidationSchemaParser(schema);
+      return validationSchemaParser;
+    } catch {
+      throw SummarySubmissionErrorFromMessageType(SUMMARY_SUBMISSION_MESSAGE_TYPE.FAILED_PARSE_VALIDATION_SCHEMA);
+    }
   }
 
   /**
