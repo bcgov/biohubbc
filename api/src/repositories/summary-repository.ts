@@ -215,7 +215,7 @@ export class SummaryRepository extends BaseRepository {
         survey_summary_submission_id,
         study_area_id,
         population_unit,
-        block_sample_unit_id, 
+        block_sample_unit_id,
         parameter,
         stratum,
         observed,
@@ -406,7 +406,6 @@ export class SummaryRepository extends BaseRepository {
       );
     `;
     const response = await this.connection.query<ISummaryTemplateSpeciesData>(sqlStatement.text, sqlStatement.values);
-
     if (!response) {
       throw new HTTP400('Failed to query summary template species table');
     }

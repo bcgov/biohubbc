@@ -87,7 +87,7 @@ const buildFile = (fileName: string, customProps: { template_id?: number; csm_id
   return new MediaFile(fileName, 'text/csv', buffer);
 };
 
-describe.only('SummaryService', () => {
+describe('SummaryService', () => {
   afterEach(() => {
     sinon.restore();
   });
@@ -125,7 +125,7 @@ describe.only('SummaryService', () => {
       const validation = sinon
         .stub(service, 'summaryTemplateValidation')
         .throws(mockError);
-      
+
       try {
         await service.validateFile(1, 1);
         expect(prep).to.be.calledOnce;
@@ -155,7 +155,7 @@ describe.only('SummaryService', () => {
         expect(insertError).not.to.be.calledOnce;
         expect(submissionStatus).not.to.be.calledOnce;
       }
-    }); 
+    });
   });
 
   describe('updateSurveySummarySubmissionWithKey', () => {
