@@ -337,32 +337,75 @@ describe.only('SummaryService', () => {
       expect(persistResults).to.be.calledOnce;
     })
 
-    /*
-    it('should throw Failed to validate error', async () => {
+    it('should throw FAILED_GET_VALIDATION_RULES error if no validation found', async () => {
+      const service = mockService();
       const file = new MediaFile('test.txt', 'text/plain', Buffer.of(0));
       const xlsxCsv = new XLSXCSV(file);
+      
       sinon.stub(FileUtils, 'getFileFromS3').resolves('file from s3' as any);
-
-      sinon.stub(ValidationService.prototype, 'getValidationSchema').throws(new SubmissionError({}));
-      sinon.stub(ValidationService.prototype, 'getValidationRules').resolves({});
-      sinon.stub(ValidationService.prototype, 'validateXLSX').resolves({});
-      sinon.stub(ValidationService.prototype, 'persistValidationResults').resolves(true);
+      sinon.stub(service, 'getSummaryTemplateSpeciesRecords').resolves([]);
+      sinon.stub(service, 'getValidationRules').resolves({});
 
       try {
-        const dbConnection = getMockDBConnection();
-        const service = new ValidationService(dbConnection);
-        await service.templateValidation(xlsxCsv, 1);
+        await service.summaryTemplateValidation(xlsxCsv, 1);
         expect.fail();
       } catch (error) {
-        expect(error).to.be.instanceOf(SubmissionError);
-        if (error instanceof SubmissionError) {
-          expect(error.status).to.be.eql(SUBMISSION_STATUS_TYPE.FAILED_VALIDATION);
+        expect(error).to.be.instanceOf(SummarySubmissionError);
+        if (error instanceof SummarySubmissionError) {
+          expect(error.summarySubmissionMessages.length).to.equal(1);
+          expect(error.summarySubmissionMessages[0].type).to.be.eql(SUMMARY_SUBMISSION_MESSAGE_TYPE.FAILED_GET_VALIDATION_RULES);
         }
       }
     });
-    */
 
+    it('should throw FAILED_PARSE_VALIDATION_SCHEMA error if getValidationRules fails', async () => {
+      const service = mockService();
+      const file = new MediaFile('test.txt', 'text/plain', Buffer.of(0));
+      const xlsxCsv = new XLSXCSV(file);
+      sinon.stub(FileUtils, 'getFileFromS3').resolves('file from s3' as any);
+      sinon.stub(service, 'getSummaryTemplateSpeciesRecords').resolves([
+        {
+          ...makeMockTemplateSpeciesRecord(1),
+          validation: 'this validation string will fail'
+        }
+      ]);
 
+      try {
+        await service.summaryTemplateValidation(xlsxCsv, 1);
+        expect.fail();
+      } catch (error) {
+        expect(error).to.be.instanceOf(SummarySubmissionError);
+        if (error instanceof SummarySubmissionError) {
+          expect(error.summarySubmissionMessages.length).to.equal(1);
+          expect(error.summarySubmissionMessages[0].type).to.be.eql(SUMMARY_SUBMISSION_MESSAGE_TYPE.FAILED_PARSE_VALIDATION_SCHEMA);
+        }
+      }
+    });
+
+    it.only('should throw INVALID_MEDIA error if validateXLSX fails', async () => {
+      const service = mockService();
+      const file = new MediaFile('test.txt', 'text/plain', Buffer.of(0));
+      const xlsxCsv = new XLSXCSV(file);
+      sinon.stub(FileUtils, 'getFileFromS3').resolves('file from s3' as any);
+      sinon.stub(service, 'getValidationRules').resolves({});
+      sinon.stub(service, 'getSummaryTemplateSpeciesRecords').resolves([
+        {
+          ...makeMockTemplateSpeciesRecord(1),
+          validation: 'this validation string will fail'
+        }
+      ]);
+
+      try {
+        await service.summaryTemplateValidation(xlsxCsv, 1);
+        expect.fail();
+      } catch (error) {
+        expect(error).to.be.instanceOf(SummarySubmissionError);
+        if (error instanceof SummarySubmissionError) {
+          expect(error.summarySubmissionMessages.length).to.equal(1);
+          expect(error.summarySubmissionMessages[0]).to.be.eql(SUMMARY_SUBMISSION_MESSAGE_TYPE.INVALID_MEDIA);
+        }
+      }
+    });
   });
 
   // Part B
@@ -473,6 +516,7 @@ describe.only('SummaryService', () => {
       expect(mockRecords).to.be.called;
     });
   });
+
   describe('getValidationRules', () => {
     afterEach(() => {
       sinon.restore();
