@@ -1,3 +1,4 @@
+import { CircularProgress } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Button from '@material-ui/core/Button';
@@ -6,15 +7,23 @@ import Button from '@material-ui/core/Button';
 import Container from '@material-ui/core/Container';
 // import IconButton from '@material-ui/core/IconButton';
 import Link from '@material-ui/core/Link';
-import Paper from '@material-ui/core/Paper';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
+import Paper from '@material-ui/core/Paper';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
-import { mdiAccountMultipleOutline, mdiCalendarRangeOutline, mdiChevronDown, mdiCogOutline, mdiPencilOutline, mdiTrashCanOutline } from '@mdi/js';
+import {
+  mdiAccountMultipleOutline,
+  mdiCalendarRangeOutline,
+  mdiChevronDown,
+  mdiCogOutline,
+  mdiPencilOutline,
+  mdiTrashCanOutline
+} from '@mdi/js';
 import Icon from '@mdi/react';
+import EditDialog from 'components/dialog/EditDialog';
 // import clsx from 'clsx';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
@@ -23,12 +32,15 @@ import { DeleteProjectI18N } from 'constants/i18n';
 import { SYSTEM_ROLE } from 'constants/roles';
 import { AuthStateContext } from 'contexts/authStateContext';
 import { DialogContext } from 'contexts/dialogContext';
+import { FormikProps } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
-import React, { useContext } from 'react';
+import useDataLoader from 'hooks/useDataLoader';
+import { ICreateProjectRequest, IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
+import React, { useContext, useRef, useState } from 'react';
 import { useHistory } from 'react-router';
 import { getFormattedDateRangeString } from 'utils/Utils';
+import CreateProjectForm, { validationProjectYupSchema } from '../create/CreateProjectForm';
 
 const useStyles = makeStyles((theme: Theme) => ({
   titleActions: {
@@ -59,7 +71,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   projectTitle: {
     display: '-webkit-box',
     '-webkit-line-clamp': 2,
-    '-webkit-box-orient': 'vertical', 
+    '-webkit-box-orient': 'vertical',
     paddingTop: theme.spacing(0.5),
     paddingBottom: theme.spacing(0.5),
     overflow: 'hidden'
@@ -114,6 +126,13 @@ const ProjectHeader: React.FC<IProjectHeaderProps> = (props) => {
   const dialogContext = useContext(DialogContext);
 
   const { keycloakWrapper } = useContext(AuthStateContext);
+
+  const formikRef = useRef<FormikProps<ICreateProjectRequest>>(null);
+
+  const [openEditDialog, setOpenEditDialog] = useState(false);
+
+  const codesDataLoader = useDataLoader(() => biohubApi.codes.getAllCodeSets());
+  codesDataLoader.load();
 
   const defaultYesNoDialogProps = {
     dialogTitle: DeleteProjectI18N.deleteTitle,
@@ -205,20 +224,46 @@ const ProjectHeader: React.FC<IProjectHeaderProps> = (props) => {
     setAnchorEl(null);
   };
 
+  if (!codesDataLoader.data) {
+    return <CircularProgress className="pageProgress" size={40} />;
+  }
+
   return (
     <Paper square={true} elevation={0}>
+      <EditDialog
+        dialogTitle="Edit Project"
+        dialogSaveButtonLabel="Save"
+        open={openEditDialog}
+        component={{
+          element: (
+            <CreateProjectForm
+              handleSubmit={() => alert('submit')}
+              handleCancel={() => setOpenEditDialog(false)}
+              handleDraft={() => {}}
+              handleDeleteDraft={() => {}}
+              codes={codesDataLoader.data}
+              formikRef={formikRef}
+            />
+          ),
+          initialValues: {projectWithDetails},
+          validationSchema: validationProjectYupSchema
+        }}
+        onCancel={() => setOpenEditDialog(false)}
+        onSave={(values) => alert(values)}
+      />
+
       <Container maxWidth="xl">
         <Box py={4}>
-
           <Box mb={3}>
             <Breadcrumbs>
-              <Link
-                color="primary"
-                onClick={() => history.push('/admin/projects')}
-                aria-current="page">
-                <Typography variant="body1" component="span">Projects</Typography>
+              <Link color="primary" onClick={() => history.push('/admin/projects')} aria-current="page">
+                <Typography variant="body1" component="span">
+                  Projects
+                </Typography>
               </Link>
-              <Typography variant="body1" component="span">{projectWithDetails.project.project_name}</Typography>
+              <Typography variant="body1" component="span">
+                {projectWithDetails.project.project_name}
+              </Typography>
             </Breadcrumbs>
           </Box>
 
@@ -229,10 +274,14 @@ const ProjectHeader: React.FC<IProjectHeaderProps> = (props) => {
               </Typography>
               <Box mt={1} display="flex" alignItems="center">
                 {/* {getChipIcon(projectWithDetails.project.completion_status)} */}
-                <Typography component="span" variant="subtitle1" color="textSecondary" style={{display: 'flex', alignItems: 'center'}}>
+                <Typography
+                  component="span"
+                  variant="subtitle1"
+                  color="textSecondary"
+                  style={{ display: 'flex', alignItems: 'center' }}>
                   {projectWithDetails.project.end_date ? (
                     <>
-                      <Icon path={mdiCalendarRangeOutline} size={0.8} style={{marginRight: '0.5rem'}}/>
+                      <Icon path={mdiCalendarRangeOutline} size={0.8} style={{ marginRight: '0.5rem' }} />
                       <strong>Project Timeline:&nbsp;&nbsp;</strong>
                       {getFormattedDateRangeString(
                         DATE_FORMAT.ShortMediumDateFormat,
@@ -262,7 +311,8 @@ const ProjectHeader: React.FC<IProjectHeaderProps> = (props) => {
                 onClick={handleClick}>
                 Project Settings
               </Button>
-              <Menu style={{marginTop: '8px'}}
+              <Menu
+                style={{ marginTop: '8px' }}
                 id="projectSettingsMenu"
                 anchorEl={anchorEl}
                 getContentAnchorEl={null}
@@ -276,15 +326,14 @@ const ProjectHeader: React.FC<IProjectHeaderProps> = (props) => {
                 }}
                 keepMounted
                 open={Boolean(anchorEl)}
-                onClose={handleClose}
-              >
+                onClose={handleClose}>
                 <MenuItem onClick={() => history.push('users')}>
                   <ListItemIcon>
                     <Icon path={mdiAccountMultipleOutline} size={0.8} />
                   </ListItemIcon>
                   <Typography variant="inherit">Manage Project Team</Typography>
                 </MenuItem>
-                <MenuItem>
+                <MenuItem onClick={() => setOpenEditDialog(true)}>
                   <ListItemIcon>
                     <Icon path={mdiPencilOutline} size={0.8} />
                   </ListItemIcon>
@@ -301,7 +350,6 @@ const ProjectHeader: React.FC<IProjectHeaderProps> = (props) => {
               </Menu>
             </Box>
           </Box>
-
         </Box>
       </Container>
     </Paper>

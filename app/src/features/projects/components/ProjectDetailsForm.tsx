@@ -24,7 +24,7 @@ export interface IProjectDetailsForm {
   };
 }
 
-export const ProjectDetailsFormInitialValues: IProjectDetailsForm = {
+export const  ProjectDetailsFormInitialValues: IProjectDetailsForm = {
   project: {
     project_name: '',
     project_type: ('' as unknown) as number,

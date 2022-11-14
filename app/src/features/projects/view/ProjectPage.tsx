@@ -78,7 +78,6 @@ const ProjectPage: React.FC = () => {
 
       <Container maxWidth="xl">
         <Box py={3}>
-          
           {/* <Alert variant="filled" severity="error" elevation={1} style={{marginBottom: '24px'}}>
             <AlertTitle style={{'fontWeight': 700}}>Security Review Required</AlertTitle>
           </Alert> */}
