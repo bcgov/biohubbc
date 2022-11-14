@@ -17,9 +17,7 @@ describe('SummaryRepository', () => {
   describe('findSummarySubmissionById', () => {
     it('should succeed with valid data', async () => {
       const mockResponse = ({
-        rows: [
-          { id: 1 }
-        ]
+        rows: [{ id: 1 }]
       } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({
         query: () => mockResponse
@@ -119,7 +117,6 @@ describe('SummaryRepository', () => {
       }
     });
   });
-
 
   describe('insertSurveySummarySubmission', () => {
     it('should succeed with valid data', async () => {

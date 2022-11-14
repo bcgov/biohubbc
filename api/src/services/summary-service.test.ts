@@ -1,10 +1,11 @@
 import chai, { expect } from 'chai';
+import { shuffle } from 'lodash';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import xlsx from 'xlsx';
-import { shuffle } from 'lodash';
 import { SUBMISSION_MESSAGE_TYPE, SUBMISSION_STATUS_TYPE, SUMMARY_SUBMISSION_MESSAGE_TYPE } from '../constants/status';
+import { HTTP400 } from '../errors/http-error';
 import { SummaryRepository } from '../repositories/summary-repository';
 import * as FileUtils from '../utils/file-utils';
 // import { ITemplateMethodologyData } from '../repositories/validation-repository';
@@ -29,7 +30,6 @@ import {
 import { getMockDBConnection } from '../__mocks__/db';
 import { SummaryService } from './summary-service';
 import { SurveyService } from './survey-service';
-import { HTTP400 } from '../errors/http-error';
 
 chai.use(sinonChai);
 
@@ -187,26 +187,27 @@ describe.only('SummaryService', () => {
     it('should insert a summary submission', async () => {
       const service = mockService();
 
-      sinon.stub(SummaryRepository.prototype, 'insertSurveySummarySubmission')
+      sinon
+        .stub(SummaryRepository.prototype, 'insertSurveySummarySubmission')
         .resolves({ survey_summary_submission_id: 5 });
       const result = await service.insertSurveySummarySubmission(10, 'biohub-unit-testing', 'test-filename');
 
       expect(result).to.eql({ survey_summary_submission_id: 5 });
-    })
+    });
 
     it('should throw an error if the repo fails to insert the summary submission', async () => {
-      sinon.stub(SummaryRepository.prototype, 'insertSurveySummarySubmission')
+      sinon
+        .stub(SummaryRepository.prototype, 'insertSurveySummarySubmission')
         .throws(new HTTP400('Failed to insert survey summary submission record'));
-      
+
       try {
         const service = mockService();
         await service.insertSurveySummarySubmission(10, 'biohub-unit-testing', 'test-filename');
-        expect.fail()
+        expect.fail();
       } catch (error) {
-        expect(error)
+        expect(error);
       }
-    })
-    
+    });
   });
   describe('deleteSummarySubmission', () => {
     afterEach(() => {
@@ -342,13 +343,9 @@ describe.only('SummaryService', () => {
     afterEach(() => {
       sinon.restore();
     });
-    
+
     it('Should log the particular validation schema that was found if summarySubmissionId is given', async () => {
-      
       // @TODO
-      
-
-
     });
 
     it('should complete without error', async () => {
@@ -357,9 +354,9 @@ describe.only('SummaryService', () => {
       const xlsxCsv = new XLSXCSV(file);
       sinon.stub(FileUtils, 'getFileFromS3').resolves('file from s3' as any);
 
-      const getValidation = sinon.stub(service, 'getSummaryTemplateSpeciesRecords').resolves([
-        makeMockTemplateSpeciesRecord(1)
-      ]);
+      const getValidation = sinon
+        .stub(service, 'getSummaryTemplateSpeciesRecords')
+        .resolves([makeMockTemplateSpeciesRecord(1)]);
       const getRules = sinon.stub(service, 'getValidationRules').resolves('');
       const validate = sinon.stub(service, 'validateXLSX').resolves({});
       const persistResults = sinon.stub(service, 'persistSummaryValidationResults').resolves();
@@ -378,8 +375,7 @@ describe.only('SummaryService', () => {
       const xlsxCsv = new XLSXCSV(file);
       sinon.stub(FileUtils, 'getFileFromS3').resolves('file from s3' as any);
 
-      const templateSpeciesRecords = shuffle([...Array(20).keys()]
-        .map(makeMockTemplateSpeciesRecord))
+      const templateSpeciesRecords = shuffle([...Array(20).keys()].map(makeMockTemplateSpeciesRecord));
 
       const getValidation = sinon.stub(service, 'getSummaryTemplateSpeciesRecords').resolves(templateSpeciesRecords);
       const getRules = sinon.stub(service, 'getValidationRules').resolves('');
@@ -392,13 +388,13 @@ describe.only('SummaryService', () => {
       expect(getRules).to.have.been.calledWith(templateSpeciesRecords[0].validation);
       expect(validate).to.be.calledOnce;
       expect(persistResults).to.be.calledOnce;
-    })
+    });
 
     it('should throw FAILED_GET_VALIDATION_RULES error if no validation found', async () => {
       const service = mockService();
       const file = new MediaFile('test.txt', 'text/plain', Buffer.of(0));
       const xlsxCsv = new XLSXCSV(file);
-      
+
       sinon.stub(FileUtils, 'getFileFromS3').resolves('file from s3' as any);
       sinon.stub(service, 'getSummaryTemplateSpeciesRecords').resolves([]);
       sinon.stub(service, 'getValidationRules').resolves({});
@@ -410,7 +406,9 @@ describe.only('SummaryService', () => {
         expect(error).to.be.instanceOf(SummarySubmissionError);
         if (error instanceof SummarySubmissionError) {
           expect(error.summarySubmissionMessages.length).to.equal(1);
-          expect(error.summarySubmissionMessages[0].type).to.be.eql(SUMMARY_SUBMISSION_MESSAGE_TYPE.FAILED_GET_VALIDATION_RULES);
+          expect(error.summarySubmissionMessages[0].type).to.be.eql(
+            SUMMARY_SUBMISSION_MESSAGE_TYPE.FAILED_GET_VALIDATION_RULES
+          );
         }
       }
     });
@@ -434,7 +432,9 @@ describe.only('SummaryService', () => {
         expect(error).to.be.instanceOf(SummarySubmissionError);
         if (error instanceof SummarySubmissionError) {
           expect(error.summarySubmissionMessages.length).to.equal(1);
-          expect(error.summarySubmissionMessages[0].type).to.be.eql(SUMMARY_SUBMISSION_MESSAGE_TYPE.FAILED_PARSE_VALIDATION_SCHEMA);
+          expect(error.summarySubmissionMessages[0].type).to.be.eql(
+            SUMMARY_SUBMISSION_MESSAGE_TYPE.FAILED_PARSE_VALIDATION_SCHEMA
+          );
         }
       }
     });
@@ -443,8 +443,8 @@ describe.only('SummaryService', () => {
       const service = mockService();
       const file = new MediaFile('test.txt', 'text/plain', Buffer.of(0));
       const xlsxCsv = new XLSXCSV(file);
-      const validation = 'test-template-validation-schema'
-      const mockSchemaParser = { validationSchema: validation }
+      const validation = 'test-template-validation-schema';
+      const mockSchemaParser = { validationSchema: validation };
       sinon.stub(XLSXCSV.prototype, 'isMediaValid').returns({
         isValid: false,
         fileName: 'test filename'
@@ -452,15 +452,15 @@ describe.only('SummaryService', () => {
 
       const getValidation = sinon.stub(service, 'getValidationRules').resolves(mockSchemaParser);
       sinon.stub(FileUtils, 'getFileFromS3').resolves('file from s3' as any);
-      sinon.stub(service, 'getSummaryTemplateSpeciesRecords').resolves([
-        { ...makeMockTemplateSpeciesRecord(1), validation }
-      ]);
+      sinon
+        .stub(service, 'getSummaryTemplateSpeciesRecords')
+        .resolves([{ ...makeMockTemplateSpeciesRecord(1), validation }]);
 
       try {
         await service.summaryTemplateValidation(xlsxCsv, 1);
         expect.fail();
       } catch (error) {
-        expect(getValidation).to.be.calledWith('test-template-validation-schema')
+        expect(getValidation).to.be.calledWith('test-template-validation-schema');
         expect(error).to.be.instanceOf(SummarySubmissionError);
         if (error instanceof SummarySubmissionError) {
           expect(error.summarySubmissionMessages.length).to.equal(1);
@@ -550,10 +550,10 @@ describe.only('SummaryService', () => {
         .stub(SurveyService.prototype, 'getSpeciesData')
         .resolves({ focal_species: [], focal_species_names: [], ancillary_species: [], ancillary_species_names: [] });
       const mockXLSX = ({
-        workbook: { 
-          rawWorkbook: { 
-            Custpros: { sims_name: 'Moose SRB', sims_version: '1.0' } 
-          } 
+        workbook: {
+          rawWorkbook: {
+            Custpros: { sims_name: 'Moose SRB', sims_version: '1.0' }
+          }
         }
       } as unknown) as XLSXCSV;
       const mockResults = [
