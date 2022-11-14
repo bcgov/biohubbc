@@ -1,5 +1,4 @@
 import { Knex } from 'knex';
-import { COMMON_SURVEY_METHODOLOGY } from './common/template.enum';
 import { permutateTemplates } from './common/Utils';
 import { deerAerialNonSRBRecruitCompJSON } from './template_methodology_species_validations/20221021/deer_aerial_non_srb_recruit_comp_survey';
 import { deerGroundTransectRecruitCompJSON } from './template_methodology_species_validations/20221021/deer_ground_transect_recruit_comp_survey';
@@ -38,23 +37,17 @@ export async function up(knex: Knex): Promise<void> {
   permutateTemplates(
     knex,
     'Moose Composition Survey',
-    [COMMON_SURVEY_METHODOLOGY.COMPOSITION, null],
+    [null],
     taxonIdLists.moose,
     JSON.stringify(mooseCompositionJSON)
   );
 
-  permutateTemplates(
-    knex,
-    'Moose SRB Survey',
-    [COMMON_SURVEY_METHODOLOGY.STRATIFIED_RANDOM_BLOCK],
-    taxonIdLists.moose,
-    JSON.stringify(mooseSrbJSON)
-  );
+  permutateTemplates(knex, 'Moose SRB Survey', [null], taxonIdLists.moose, JSON.stringify(mooseSrbJSON));
 
   permutateTemplates(
     knex,
     'Moose Transect Distance Survey',
-    [COMMON_SURVEY_METHODOLOGY.ENCOUNTER_TRANSECTS],
+    [null],
     taxonIdLists.moose,
     JSON.stringify(mooseTransectDistanceJSON)
   );
@@ -62,7 +55,7 @@ export async function up(knex: Knex): Promise<void> {
   permutateTemplates(
     knex,
     'Sheep Population Total Count Recruitment Composition Survey',
-    [COMMON_SURVEY_METHODOLOGY.TOTAL_COUNT],
+    [null],
     taxonIdLists.sheep,
     JSON.stringify(sheepRecruitmentCompositionJSON)
   );
@@ -70,7 +63,7 @@ export async function up(knex: Knex): Promise<void> {
   permutateTemplates(
     knex,
     'Goat Population Total Count Recruitment Composition Survey',
-    [COMMON_SURVEY_METHODOLOGY.TOTAL_COUNT],
+    [null],
     taxonIdLists.goat,
     JSON.stringify(goatRecruitmentCompositionJSON)
   );
@@ -78,7 +71,7 @@ export async function up(knex: Knex): Promise<void> {
   permutateTemplates(
     knex,
     'Elk Aerial Transect Distance Sampling Recruitment Composition Survey',
-    [COMMON_SURVEY_METHODOLOGY.ENCOUNTER_TRANSECTS],
+    [null],
     taxonIdLists.elk,
     JSON.stringify(elkAerialTransectDistanceJSON)
   );
@@ -86,7 +79,7 @@ export async function up(knex: Knex): Promise<void> {
   permutateTemplates(
     knex,
     'Elk Aerial SRB Recruit Composition Survey',
-    [COMMON_SURVEY_METHODOLOGY.STRATIFIED_RANDOM_BLOCK],
+    [null],
     taxonIdLists.elk,
     JSON.stringify(elkSRBJSON)
   );
@@ -94,7 +87,7 @@ export async function up(knex: Knex): Promise<void> {
   permutateTemplates(
     knex,
     'Elk Aerial Non SRB Recruit Composition Survey',
-    [COMMON_SURVEY_METHODOLOGY.COMPOSITION, COMMON_SURVEY_METHODOLOGY.RECRUITMENT],
+    [null],
     taxonIdLists.elk,
     JSON.stringify(elkNonSRBJSON)
   );
@@ -102,7 +95,7 @@ export async function up(knex: Knex): Promise<void> {
   permutateTemplates(
     knex,
     'Deer Aerial Non SRB Recruit Composition Survey',
-    [COMMON_SURVEY_METHODOLOGY.COMPOSITION, COMMON_SURVEY_METHODOLOGY.RECRUITMENT],
+    [null],
     taxonIdLists.deer,
     JSON.stringify(deerAerialNonSRBRecruitCompJSON)
   );
@@ -110,7 +103,7 @@ export async function up(knex: Knex): Promise<void> {
   permutateTemplates(
     knex,
     'Deer Ground Transect Recruit Composition Survey',
-    [COMMON_SURVEY_METHODOLOGY.FIXED_WIDTH_TRANSECTS],
+    [null],
     taxonIdLists.deer,
     JSON.stringify(deerGroundTransectRecruitCompJSON)
   );
