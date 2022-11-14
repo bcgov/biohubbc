@@ -29,6 +29,7 @@ import {
 import { getMockDBConnection } from '../__mocks__/db';
 import { SummaryService } from './summary-service';
 import { SurveyService } from './survey-service';
+import { HTTP400 } from '../errors/http-error';
 
 chai.use(sinonChai);
 
@@ -53,18 +54,16 @@ const mockService = () => {
   return new SummaryService(dbConnection);
 };
 
-/*
-const mockOccurrenceSubmission = {
-  occurrence_submission_id: 1,
-  survey_id: 1,
-  template_methodology_species_id: 1,
-  source: '',
-  input_key: 'input key',
-  input_file_name: '',
-  output_key: 'output key',
-  output_file_name: ''
-};
-*/
+const makeMockTemplateSpeciesRecord = (seed: number) => ({
+  summary_template_species_id: seed + 1,
+  summary_template_id: seed + 1,
+  wldtaxonomic_units_id: 4165 + seed,
+  validation: JSON.stringify({ test_schema_id: seed + 1 }),
+  create_user: 1,
+  update_date: null,
+  update_user: null,
+  revision_count: 1
+});
 
 const buildFile = (fileName: string, customProps: { template_id?: number; csm_id?: number }) => {
   const newWorkbook = xlsx.utils.book_new();
@@ -184,25 +183,90 @@ describe.only('SummaryService', () => {
     afterEach(() => {
       sinon.restore();
     });
+
+    it('should insert a summary submission', async () => {
+      const service = mockService();
+
+      sinon.stub(SummaryRepository.prototype, 'insertSurveySummarySubmission')
+        .resolves({ survey_summary_submission_id: 5 });
+      const result = await service.insertSurveySummarySubmission(10, 'biohub-unit-testing', 'test-filename');
+
+      expect(result).to.eql({ survey_summary_submission_id: 5 });
+    })
+
+    it('should throw an error if the repo fails to insert the summary submission', async () => {
+      sinon.stub(SummaryRepository.prototype, 'insertSurveySummarySubmission')
+        .throws(new HTTP400('Failed to insert survey summary submission record'));
+      
+      try {
+        const service = mockService();
+        await service.insertSurveySummarySubmission(10, 'biohub-unit-testing', 'test-filename');
+        expect.fail()
+      } catch (error) {
+        expect(error)
+      }
+    })
+    
   });
   describe('deleteSummarySubmission', () => {
     afterEach(() => {
       sinon.restore();
     });
+
+    it('should return a row count of 1 when successfully deleting', async () => {
+      // @TODO
+    });
+
+    it('should return a row count of 0 when deleting an already delete submission', async () => {
+      // @TODO
+    });
+
+    it('should throw an error when the repo throws an error', async () => {
+      // @TODO
+    });
   });
+
   describe('getSummarySubmissionMessages', () => {
     afterEach(() => {
       sinon.restore();
+    });
+
+    it('should successfully retreive an array of submission messages', async () => {
+      // @TODO
+    });
+
+    it('should return an empty array if the repo finds no messages', async () => {
+      // @TODO
+    });
+
+    it('should throw an error when the repo throws an error', async () => {
+      // @TODO
     });
   });
   describe('findSummarySubmissionById', () => {
     afterEach(() => {
       sinon.restore();
     });
+
+    it('should successfully retreive a submission', async () => {
+      // @TODO
+    });
+
+    it('should throw an error when the repo throws an error', async () => {
+      // @TODO
+    });
   });
   describe('getLatestSurveySummarySubmission', () => {
     afterEach(() => {
       sinon.restore();
+    });
+
+    it('should successfully retreive a submission', async () => {
+      // @TODO
+    });
+
+    it('should throw an error when the repo throws an error', async () => {
+      // @TODO
     });
   });
 
@@ -278,20 +342,13 @@ describe.only('SummaryService', () => {
     afterEach(() => {
       sinon.restore();
     });
-
-    const makeMockTemplateSpeciesRecord = (seed: number) => ({
-      summary_template_species_id: seed + 1,
-      summary_template_id: seed + 1,
-      wldtaxonomic_units_id: 4165 + seed,
-      validation: JSON.stringify({ test_schema_id: seed + 1 }),
-      create_user: 1,
-      update_date: null,
-      update_user: null,
-      revision_count: 1
-    })
     
     it('Should log the particular validation schema that was found if summarySubmissionId is given', async () => {
-      //
+      
+      // @TODO
+      
+
+
     });
 
     it('should complete without error', async () => {
@@ -382,27 +439,32 @@ describe.only('SummaryService', () => {
       }
     });
 
-    it.only('should throw INVALID_MEDIA error if validateXLSX fails', async () => {
+    it('should throw INVALID_MEDIA error if validateXLSX fails with invalid media', async () => {
       const service = mockService();
       const file = new MediaFile('test.txt', 'text/plain', Buffer.of(0));
       const xlsxCsv = new XLSXCSV(file);
+      const validation = 'test-template-validation-schema'
+      const mockSchemaParser = { validationSchema: validation }
+      sinon.stub(XLSXCSV.prototype, 'isMediaValid').returns({
+        isValid: false,
+        fileName: 'test filename'
+      });
+
+      const getValidation = sinon.stub(service, 'getValidationRules').resolves(mockSchemaParser);
       sinon.stub(FileUtils, 'getFileFromS3').resolves('file from s3' as any);
-      sinon.stub(service, 'getValidationRules').resolves({});
       sinon.stub(service, 'getSummaryTemplateSpeciesRecords').resolves([
-        {
-          ...makeMockTemplateSpeciesRecord(1),
-          validation: 'this validation string will fail'
-        }
+        { ...makeMockTemplateSpeciesRecord(1), validation }
       ]);
 
       try {
         await service.summaryTemplateValidation(xlsxCsv, 1);
         expect.fail();
       } catch (error) {
+        expect(getValidation).to.be.calledWith('test-template-validation-schema')
         expect(error).to.be.instanceOf(SummarySubmissionError);
         if (error instanceof SummarySubmissionError) {
           expect(error.summarySubmissionMessages.length).to.equal(1);
-          expect(error.summarySubmissionMessages[0]).to.be.eql(SUMMARY_SUBMISSION_MESSAGE_TYPE.INVALID_MEDIA);
+          expect(error.summarySubmissionMessages[0].type).to.equal(SUMMARY_SUBMISSION_MESSAGE_TYPE.INVALID_MEDIA);
         }
       }
     });

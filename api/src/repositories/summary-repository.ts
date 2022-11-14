@@ -340,6 +340,10 @@ export class SummaryRepository extends BaseRepository {
       sqlStatement.values
     );
 
+    if (!response) {
+      throw new HTTP400('Failed to query survey summary submission table');
+    }
+
     return response && response.rows;
   }
 

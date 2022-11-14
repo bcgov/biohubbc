@@ -137,7 +137,7 @@ export class SummaryService extends DBService {
    * @returns {*} {Promise<ISummarySubmissionMessagesResponse[]>}
    */
   async getSummarySubmissionMessages(summarySubmissionId: number): Promise<ISummarySubmissionMessagesResponse[]> {
-    return this.summaryRepository.getSummarySubmissionMessages(summarySubmissionId) || [];
+    return this.summaryRepository.getSummarySubmissionMessages(summarySubmissionId);
   }
 
   /**
