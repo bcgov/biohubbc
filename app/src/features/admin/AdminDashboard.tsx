@@ -13,8 +13,6 @@ import Toolbar from '@material-ui/core/Toolbar';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
-// import { mdiAccountOutline  } from '@mdi/js';
-// import Icon from '@mdi/react';
 import React from 'react';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -30,7 +28,10 @@ const useStyles = makeStyles((theme: Theme) => ({
     paddingTop: theme.spacing(0.5),
     paddingBottom: theme.spacing(0.5),
     overflow: 'hidden'
-  }
+  },
+  toolbarCount: {
+    fontWeight: 400
+  },
 }));
 
 /**
@@ -46,7 +47,7 @@ const AdminDashboard: React.FC = () => {
       <Paper square={true} elevation={0}>
         <Container maxWidth="xl">
           <Box py={4}>
-            <Box display="flex" justifyContent="space-between">
+            <Box display="flex" alignItems="center" justifyContent="space-between">
               <Box className={classes.projectTitleContainer}>
                 <Typography variant="h1" className={classes.projectTitle}>
                   Welcome, <span>John Smith</span>
@@ -64,11 +65,11 @@ const AdminDashboard: React.FC = () => {
       <Container maxWidth="xl">
         <Box py={3}>
           <Paper elevation={0}>
-            <Box>
-              <Toolbar style={{display: 'flex', justifyContent: 'space-between'}}>
-                <Typography variant="h4" component="h2">Security Reviews <Typography component="span" color="textSecondary">(2)</Typography></Typography>
-              </Toolbar>
-              <Divider></Divider>
+            <Toolbar style={{display: 'flex', justifyContent: 'space-between'}}>
+              <Typography variant="h4" component="h2">Security Reviews <Typography className={classes.toolbarCount} component="span" variant="inherit" color="textSecondary">(2)</Typography></Typography>
+            </Toolbar>
+            <Divider></Divider>
+            <Box px={1}>
               <TableContainer>
                 <Table style={{tableLayout: 'fixed'}}>
                   <TableHead>

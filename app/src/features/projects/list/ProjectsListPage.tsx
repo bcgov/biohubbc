@@ -13,6 +13,7 @@ import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import { mdiFilterOutline, mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
@@ -37,14 +38,36 @@ import { useHistory } from 'react-router';
 import { getFormattedDate } from 'utils/Utils';
 
 const useStyles = makeStyles((theme: Theme) => ({
+  pageTitleContainer: {
+    maxWidth: '170ch',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis'
+  },
+  pageTitle: {
+    display: '-webkit-box',
+    '-webkit-line-clamp': 2,
+    '-webkit-box-orient': 'vertical', 
+    paddingTop: theme.spacing(0.5),
+    paddingBottom: theme.spacing(0.5),
+    overflow: 'hidden'
+  },
+  pageTitleActions: {
+    paddingTop: theme.spacing(0.75),
+    paddingBottom: theme.spacing(0.75)
+  },
   actionButton: {
-    minWidth: '6rem',
-    '& + button': {
-      marginLeft: '0.5rem'
-    }
+    marginLeft: theme.spacing(1),
+    minWidth: '6rem'
+  },
+  projectsTable: {
+    tableLayout: 'fixed'
+  },
+  toolbarCount: {
+    fontWeight: 400
   },
   linkButton: {
-    textAlign: 'left'
+    textAlign: 'left',
+    fontWeight: 700
   },
   filtersBox: {
     background: '#f7f8fa'
@@ -218,82 +241,81 @@ const ProjectsListPage: React.FC = () => {
 
     if (!hasProjects && !hasDrafts) {
       return (
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Name</TableCell>
-              <TableCell>Type</TableCell>
-              <TableCell>Permits</TableCell>
-              <TableCell>Contact Agency</TableCell>
-              <TableCell>Start Date</TableCell>
-              <TableCell>End Date</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            <TableRow>
-              <TableCell colSpan={6}>
-                <Box display="flex" justifyContent="center">
-                  No Results
-                </Box>
-              </TableCell>
-            </TableRow>
-          </TableBody>
-        </Table>
-      );
-    } else {
-      return (
         <TableContainer>
-          <Table>
+          <Table className={classes.projectsTable}>
             <TableHead>
               <TableRow>
                 <TableCell>Name</TableCell>
                 <TableCell>Type</TableCell>
-                <TableCell>Permits</TableCell>
                 <TableCell>Contact Agency</TableCell>
+                <TableCell>Status</TableCell>
                 <TableCell>Start Date</TableCell>
                 <TableCell>End Date</TableCell>
-                <TableCell>Status</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              <TableRow>
+                <TableCell colSpan={6}>
+                  <Box display="flex" justifyContent="center">
+                    No Results
+                  </Box>
+                </TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+        </TableContainer>
+      );
+    } else {
+      return (
+        <TableContainer>
+          <Table className={classes.projectsTable}>
+            <TableHead>
+              <TableRow>
+                <TableCell>Name</TableCell>
+                <TableCell>Contact Agency</TableCell>
+                <TableCell width={150}>Type</TableCell>
+                <TableCell width={150}>Status</TableCell>
+                <TableCell width={150}>Start Date</TableCell>
+                <TableCell width={150}>End Date</TableCell>
               </TableRow>
             </TableHead>
             <TableBody data-testid="project-table">
               {drafts?.map((row) => (
                 <TableRow key={row.id}>
-                  <TableCell component="th" scope="row">
+                  <TableCell>
                     <Link
+                      className={classes.linkButton}
                       data-testid={row.name}
                       underline="always"
                       component="button"
-                      className={classes.linkButton}
-                      variant="body2"
                       onClick={() => navigateToCreateProjectPage(row.id)}>
                       {row.name}
                     </Link>
                   </TableCell>
                   <TableCell />
                   <TableCell />
-                  <TableCell />
-                  <TableCell />
-                  <TableCell />
                   <TableCell>{getChipIcon('Draft')}</TableCell>
+                  <TableCell />
+                  <TableCell />
                 </TableRow>
               ))}
               {projects?.map((row) => (
                 <TableRow key={row.id}>
-                  <TableCell component="th" scope="row">
+                  <TableCell>
                     <Link
+                      className={classes.linkButton}
                       data-testid={row.name}
                       underline="always"
                       component="button"
-                      variant="body2"
                       onClick={() => navigateToProjectPage(row.id)}>
                       {row.name}
                     </Link>
                   </TableCell>
-                  <TableCell>{row.project_type}</TableCell>
                   <TableCell>{row.coordinator_agency}</TableCell>
+                  <TableCell>{row.project_type}</TableCell>
+                  <TableCell>{getChipIcon(row.completion_status)}</TableCell>
                   <TableCell>{getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, row.start_date)}</TableCell>
                   <TableCell>{getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, row.end_date)}</TableCell>
-                  <TableCell>{getChipIcon(row.completion_status)}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -307,78 +329,101 @@ const ProjectsListPage: React.FC = () => {
    * Displays project list.
    */
   return (
-    <Box my={4}>
-      <Container maxWidth="xl">
-        <Box mb={5} display="flex" justifyContent="space-between">
-          <Typography variant="h1">Projects</Typography>
-          <SystemRoleGuard
-            validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_CREATOR, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-            <Button
-              variant="contained"
-              color="primary"
-              startIcon={<Icon path={mdiPlus} size={1} />}
-              onClick={() => navigateToCreateProjectPage()}>
-              Create Project
-            </Button>
-          </SystemRoleGuard>
-        </Box>
-        <Paper>
-          <Box display="flex" alignItems="center" justifyContent="space-between" p={2}>
-            <Typography variant="h4" component="h3">
-              {projectCount} {projectCount !== 1 ? 'Projects' : 'Project'} found
-            </Typography>
-            {codes && (
-              <Button
-                variant="text"
-                color="primary"
-                startIcon={<Icon path={mdiFilterOutline} size={0.8} />}
-                onClick={() => setIsFiltersOpen(!isFiltersOpen)}>
-                {!isFiltersOpen ? `Show Filters` : `Hide Filters`}
-              </Button>
-            )}
-          </Box>
-          <Divider></Divider>
-          {isFiltersOpen && (
-            <Box className={classes.filtersBox}>
-              <Box px={2} py={4}>
-                <Formik
-                  innerRef={formikRef}
-                  initialValues={ProjectAdvancedFiltersInitialValues}
-                  onSubmit={handleSubmit}>
-                  <ProjectAdvancedFilters
-                    coordinator_agency={
-                      codes?.coordinator_agency?.map((item: any) => {
-                        return item.name;
-                      }) || []
-                    }
-                    funding_sources={
-                      codes?.funding_source?.map((item) => {
-                        return { value: item.id, label: item.name };
-                      }) || []
-                    }
-                  />
-                </Formik>
-                <Box mt={4} display="flex" alignItems="center" justifyContent="flex-end">
-                  <Button
-                    type="submit"
-                    variant="contained"
-                    color="primary"
-                    onClick={handleSubmit}
-                    className={classes.actionButton}>
-                    Search
-                  </Button>
-                  <Button className={classes.actionButton} variant="outlined" color="primary" onClick={handleReset}>
-                    Clear
-                  </Button>
-                </Box>
+    <>
+      <Paper square={true} elevation={0}>
+        <Container maxWidth="xl">
+          <Box py={4}>
+            <Box display="flex" justifyContent="space-between">
+              <Box className={classes.pageTitleContainer}>
+                <Typography variant="h1" className={classes.pageTitle}>
+                  Projects
+                </Typography>
+                {/* <Box mt={1} display="flex" alignItems="center">
+                  <Typography component="span" variant="subtitle1" color="textSecondary" style={{ display: 'flex', alignItems: 'center' }}>
+                    You have&nbsp;<strong>11 documents</strong>&nbsp;to review
+                  </Typography>
+                </Box> */}
               </Box>
-              <Divider></Divider>
+              <Box flex="0 0 auto" className={classes.pageTitleActions}>
+              <SystemRoleGuard
+                validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_CREATOR, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  startIcon={<Icon path={mdiPlus} size={1} />}
+                  onClick={() => navigateToCreateProjectPage()}>
+                  Create Project
+                </Button>
+              </SystemRoleGuard>
+              </Box>
             </Box>
-          )}
-          {getProjectsTableData()}
-        </Paper>
+          </Box>
+        </Container>
+      </Paper>
+      <Container maxWidth="xl">
+        <Box py={3}>
+          <Paper elevation={0}>
+            <Toolbar style={{display: 'flex', justifyContent: 'space-between'}}>
+              <Typography variant="h4" component="h2">Projects found <Typography className={classes.toolbarCount} component="span" variant="inherit" color="textSecondary">({projectCount})</Typography></Typography>
+              {codes && (
+                <Button
+                  variant="text"
+                  color="primary"
+                  startIcon={<Icon path={mdiFilterOutline} size={0.8} />}
+                  onClick={() => setIsFiltersOpen(!isFiltersOpen)}>
+                  {!isFiltersOpen ? `Show Filters` : `Hide Filters`}
+                </Button>
+              )}
+            </Toolbar>
+            <Divider></Divider>
+            {isFiltersOpen && (
+              <Box className={classes.filtersBox}>
+                <Box px={2} py={4}>
+                  <Formik
+                    innerRef={formikRef}
+                    initialValues={ProjectAdvancedFiltersInitialValues}
+                    onSubmit={handleSubmit}>
+                    <ProjectAdvancedFilters
+                      coordinator_agency={
+                        codes?.coordinator_agency?.map((item: any) => {
+                          return item.name;
+                        }) || []
+                      }
+                      funding_sources={
+                        codes?.funding_source?.map((item) => {
+                          return { value: item.id, label: item.name };
+                        }) || []
+                      }
+                    />
+                  </Formik>
+                  <Box mt={4} display="flex" alignItems="center" justifyContent="flex-end">
+                    <Button
+                      className={classes.actionButton}
+                      type="submit"
+                      variant="contained"
+                      color="primary"
+                      onClick={handleSubmit}>
+                      Search
+                    </Button>
+                    <Button
+                      className={classes.actionButton}
+                      variant="outlined"
+                      color="primary" 
+                      onClick={handleReset}>
+                      Clear
+                    </Button>
+                  </Box>
+                </Box>
+                <Divider></Divider>
+              </Box>
+            )}
+            <Box px={1}>
+              {getProjectsTableData()}
+            </Box>
+          </Paper>
+        </Box>
       </Container>
-    </Box>
+    </>
   );
 };
 

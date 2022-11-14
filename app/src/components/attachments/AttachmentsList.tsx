@@ -2,7 +2,6 @@ import Box from '@material-ui/core/Box';
 import Chip from '@material-ui/core/Chip';
 import Checkbox from '@material-ui/core/Checkbox';
 import Button from '@material-ui/core/Button';
-import Drawer from '@material-ui/core/Drawer';
 import IconButton from '@material-ui/core/IconButton';
 import Link from '@material-ui/core/Link';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -346,16 +345,6 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
     }
   };
 
-  const [open, setOpen] = React.useState(false);
-
-  const openDrawer = () => {
-    setOpen(true);
-  };
-
-  const closeDrawer = () => {
-    setOpen(false);
-  };
-
   return (
     <>
       <ViewFileWithMetaDialog
@@ -409,7 +398,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
                       <TableCell>
 
                         {/* Pending Review State */}
-                        <Chip size="small" color="secondary" label="Pending Review" icon={<Icon path={mdiAlertCircle} size={0.8} />} onClick={openDrawer} /> 
+                        <Chip size="small" color="secondary" label="Pending Review" icon={<Icon path={mdiAlertCircle} size={0.8} />} /> 
 
                         {/* Submitted State */}
                         {/* <Chip color="primary" label="Submitted"/> */}
@@ -470,15 +459,6 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
           />
         )} */}
       </Box>
-
-      <Drawer
-        anchor="right"
-        open={open}
-        onClose={closeDrawer}>
-        <Box width="500px">
-          Content
-        </Box>
-      </Drawer>
     </>
   );
 };
