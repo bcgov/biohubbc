@@ -13,8 +13,6 @@ import Toolbar from '@material-ui/core/Toolbar';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
-// import { mdiAccountOutline  } from '@mdi/js';
-// import Icon from '@mdi/react';
 import React from 'react';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -64,11 +62,11 @@ const AdminDashboard: React.FC = () => {
       <Container maxWidth="xl">
         <Box py={3}>
           <Paper elevation={0}>
-            <Box>
-              <Toolbar style={{display: 'flex', justifyContent: 'space-between'}}>
-                <Typography variant="h4" component="h2">Security Reviews <Typography component="span" color="textSecondary">(2)</Typography></Typography>
-              </Toolbar>
-              <Divider></Divider>
+            <Toolbar style={{display: 'flex', justifyContent: 'space-between'}}>
+              <Typography variant="h4" component="h2">Security Reviews <Typography component="span" color="textSecondary">(2)</Typography></Typography>
+            </Toolbar>
+            <Divider></Divider>
+            <Box px={1}>
               <TableContainer>
                 <Table style={{tableLayout: 'fixed'}}>
                   <TableHead>
