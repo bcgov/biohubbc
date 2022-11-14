@@ -13,6 +13,7 @@ import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import { mdiFilterOutline, mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
@@ -60,6 +61,9 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   projectsTable: {
     tableLayout: 'fixed'
+  },
+  toolbarCount: {
+    fontWeight: 400
   },
   linkButton: {
     textAlign: 'left',
@@ -280,10 +284,10 @@ const ProjectsListPage: React.FC = () => {
                 <TableRow key={row.id}>
                   <TableCell component="th" scope="row">
                     <Link
+                      className={classes.linkButton}
                       data-testid={row.name}
                       underline="always"
                       component="button"
-                      className={classes.linkButton}
                       onClick={() => navigateToCreateProjectPage(row.id)}>
                       {row.name}
                     </Link>
@@ -299,6 +303,7 @@ const ProjectsListPage: React.FC = () => {
                 <TableRow key={row.id}>
                   <TableCell component="th" scope="row">
                     <Link
+                      className={classes.linkButton}
                       data-testid={row.name}
                       underline="always"
                       component="button"
@@ -357,11 +362,9 @@ const ProjectsListPage: React.FC = () => {
       </Paper>
       <Container maxWidth="xl">
         <Box py={3}>
-          <Paper>
-            <Box display="flex" alignItems="center" justifyContent="space-between" p={2}>
-              <Typography variant="h4" component="h3">
-                {projectCount} {projectCount !== 1 ? 'Projects' : 'Project'} found
-              </Typography>
+          <Paper elevation={0}>
+            <Toolbar style={{display: 'flex', justifyContent: 'space-between'}}>
+              <Typography variant="h4" component="h2">Projects found <Typography className={classes.toolbarCount} component="span" variant="inherit" color="textSecondary">({projectCount})</Typography></Typography>
               {codes && (
                 <Button
                   variant="text"
@@ -371,7 +374,7 @@ const ProjectsListPage: React.FC = () => {
                   {!isFiltersOpen ? `Show Filters` : `Hide Filters`}
                 </Button>
               )}
-            </Box>
+            </Toolbar>
             <Divider></Divider>
             {isFiltersOpen && (
               <Box className={classes.filtersBox}>
@@ -414,7 +417,9 @@ const ProjectsListPage: React.FC = () => {
                 <Divider></Divider>
               </Box>
             )}
-            {getProjectsTableData()}
+            <Box px={1}>
+              {getProjectsTableData()}
+            </Box>
           </Paper>
         </Box>
       </Container>

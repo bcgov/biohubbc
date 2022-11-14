@@ -28,7 +28,10 @@ const useStyles = makeStyles((theme: Theme) => ({
     paddingTop: theme.spacing(0.5),
     paddingBottom: theme.spacing(0.5),
     overflow: 'hidden'
-  }
+  },
+  toolbarCount: {
+    fontWeight: 400
+  },
 }));
 
 /**
@@ -63,7 +66,7 @@ const AdminDashboard: React.FC = () => {
         <Box py={3}>
           <Paper elevation={0}>
             <Toolbar style={{display: 'flex', justifyContent: 'space-between'}}>
-              <Typography variant="h4" component="h2">Security Reviews <Typography component="span" color="textSecondary">(2)</Typography></Typography>
+              <Typography variant="h4" component="h2">Security Reviews <Typography className={classes.toolbarCount} component="span" variant="inherit" color="textSecondary">(2)</Typography></Typography>
             </Toolbar>
             <Divider></Divider>
             <Box px={1}>
