@@ -11,7 +11,7 @@ import { ISummarySubmissionMessagesResponse, SummaryRepository } from './summary
 
 chai.use(sinonChai);
 
-describe('SummaryRepository', () => {
+describe.only('SummaryRepository', () => {
   afterEach(() => {
     sinon.restore();
   });
@@ -34,20 +34,17 @@ describe('SummaryRepository', () => {
 
       expect(response).to.be.eql({ id: 1 });
     });
-    it('should throw a HTTP400 error when the query fails', async () => {
-      const mockQuery = sinon
-        .stub(SummaryRepository.prototype, 'findSummarySubmissionById')
-        .rejects(new Error('a HTTP 400 test error'));
 
+    it('should throw a HTTP400 error when the query fails', async () => {
       const dbConnection = getMockDBConnection();
       const repo = new SummaryRepository(dbConnection);
 
       try {
-        await repo.findSummarySubmissionById(1);
-        expect(mockQuery).to.be.calledOnce;
+        await repo.getLatestSurveySummarySubmission(1);
+
         expect.fail();
       } catch (error) {
-        expect((error as HTTP400).message).to.be.eql('a HTTP 400 test error');
+        expect((error as HTTP400).message).to.be.eql('Failed to query survey summary submission table');
       }
     });
   });
@@ -71,19 +68,15 @@ describe('SummaryRepository', () => {
       expect(response).to.be.eql({ id: 1 });
     });
     it('should throw a HTTP400 error when the query fails', async () => {
-      const mockQuery = sinon
-        .stub(SummaryRepository.prototype, 'getLatestSurveySummarySubmission')
-        .rejects(new Error('a test error'));
-
       const dbConnection = getMockDBConnection();
       const repo = new SummaryRepository(dbConnection);
 
       try {
         await repo.getLatestSurveySummarySubmission(1);
-        expect(mockQuery).to.be.calledOnce;
+
         expect.fail();
       } catch (error) {
-        expect((error as HTTP400).message).to.be.eql('a test error');
+        expect((error as HTTP400).message).to.be.eql('Failed to query survey summary submission table');
       }
     });
   });
@@ -107,19 +100,15 @@ describe('SummaryRepository', () => {
       expect(response).to.be.eql({ survey_summary_submission_id: 1 });
     });
     it('should throw a HTTP400 error when the query fails', async () => {
-      const mockQuery = sinon
-        .stub(SummaryRepository.prototype, 'updateSurveySummarySubmissionWithKey')
-        .rejects(new Error('a test error'));
-
       const dbConnection = getMockDBConnection();
       const repo = new SummaryRepository(dbConnection);
 
       try {
         await repo.updateSurveySummarySubmissionWithKey(1, 'abc');
-        expect(mockQuery).to.be.calledOnce;
+
         expect.fail();
       } catch (error) {
-        expect((error as HTTP400).message).to.be.eql('a test error');
+        expect((error as HTTP400).message).to.be.eql('Failed to update survey summary submission record');
       }
     });
   });
@@ -143,19 +132,18 @@ describe('SummaryRepository', () => {
       expect(response).to.be.eql({ survey_summary_submission_id: 1 });
     });
     it('should throw a HTTP400 error when the query fails', async () => {
-      const mockQuery = sinon
-        .stub(SummaryRepository.prototype, 'insertSurveySummarySubmission')
-        .rejects(new Error('a test error'));
+      // const mockQuery = sinon
+      //   .stub(SummaryRepository.prototype, 'insertSurveySummarySubmission')
+      //   .rejects(new Error('test error'));
 
       const dbConnection = getMockDBConnection();
       const repo = new SummaryRepository(dbConnection);
 
       try {
         await repo.insertSurveySummarySubmission(1, 'source', 'file_name');
-        expect(mockQuery).to.be.calledOnce;
         expect.fail();
       } catch (error) {
-        expect((error as HTTP400).message).to.be.eql('a test error');
+        expect((error as HTTP400).message).to.be.eql('Failed to insert survey summary submission record');
       }
     });
   });
@@ -180,19 +168,15 @@ describe('SummaryRepository', () => {
     });
 
     it('should throw a HTTP400 error when the query fails', async () => {
-      const mockQuery = sinon
-        .stub(SummaryRepository.prototype, 'insertSurveySummaryDetails')
-        .rejects(new Error('a test error'));
-
       const dbConnection = getMockDBConnection();
       const repo = new SummaryRepository(dbConnection);
 
       try {
         await repo.insertSurveySummaryDetails(1, ({} as unknown) as PostSummaryDetails);
-        expect(mockQuery).to.be.calledOnce;
+
         expect.fail();
       } catch (error) {
-        expect((error as HTTP400).message).to.be.eql('a test error');
+        expect((error as HTTP400).message).to.be.eql('Failed to insert summary details data');
       }
     });
   });
@@ -213,19 +197,15 @@ describe('SummaryRepository', () => {
     });
 
     it('should throw a HTTP400 error when the query fails', async () => {
-      const mockQuery = sinon
-        .stub(SummaryRepository.prototype, 'deleteSummarySubmission')
-        .rejects(new Error('a test error'));
-
       const dbConnection = getMockDBConnection();
       const repo = new SummaryRepository(dbConnection);
 
       try {
         await repo.deleteSummarySubmission(1);
-        expect(mockQuery).to.be.calledOnce;
+
         expect.fail();
       } catch (error) {
-        expect((error as HTTP400).message).to.be.eql('a test error');
+        expect((error as HTTP400).message).to.be.eql('Failed to soft delete survey summary submission');
       }
     });
   });
@@ -285,19 +265,15 @@ describe('SummaryRepository', () => {
       expect(response).to.be.eql({ summary_template_id: 1 });
     });
     it('should throw a HTTP400 error when the query fails', async () => {
-      const mockQuery = sinon
-        .stub(SummaryRepository.prototype, 'getSummaryTemplateIdFromNameVersion')
-        .rejects(new Error('a test error'));
-
       const dbConnection = getMockDBConnection();
       const repo = new SummaryRepository(dbConnection);
 
       try {
         await repo.getSummaryTemplateIdFromNameVersion('templateName', 'templateVersion');
-        expect(mockQuery).to.be.calledOnce;
+
         expect.fail();
       } catch (error) {
-        expect((error as HTTP400).message).to.be.eql('a test error');
+        expect((error as HTTP400).message).to.be.eql('Failed to query summary templates table');
       }
     });
   });
@@ -351,17 +327,17 @@ describe('SummaryRepository', () => {
     it('should throw a HTTP400 error when the query fails', async () => {
       const mockQuery = sinon
         .stub(SummaryRepository.prototype, 'getSummaryTemplateSpeciesRecords')
-        .rejects(new Error('a test error'));
-
+        .rejects(new Error('test error'));
       const dbConnection = getMockDBConnection();
       const repo = new SummaryRepository(dbConnection);
 
       try {
         await repo.getSummaryTemplateSpeciesRecords('templateName', 'templateVersion', [1, 2]);
         expect(mockQuery).to.be.calledOnce;
+
         expect.fail();
       } catch (error) {
-        expect((error as HTTP400).message).to.be.eql('a test error');
+        expect((error as HTTP400).message).to.be.eql('test error');
       }
     });
   });
@@ -386,19 +362,21 @@ describe('SummaryRepository', () => {
     });
 
     it('should throw an API error when the query fails', async () => {
-      const mockQuery = sinon
-        .stub(SummaryRepository.prototype, 'insertSummarySubmissionMessage')
-        .rejects(new Error('a test error'));
+      const mockResponse = ({
+        rowCount: 0
+      } as any) as Promise<QueryResult<any>>;
+      const dbConnection = getMockDBConnection({
+        query: () => mockResponse
+      });
 
-      const dbConnection = getMockDBConnection();
       const repo = new SummaryRepository(dbConnection);
 
       try {
         await repo.insertSummarySubmissionMessage(1, SUMMARY_SUBMISSION_MESSAGE_TYPE.DUPLICATE_HEADER, 'message');
-        expect(mockQuery).to.be.calledOnce;
+
         expect.fail();
       } catch (error) {
-        expect((error as HTTP400).message).to.be.eql('a test error');
+        expect((error as HTTP400).message).to.be.eql('Failed to insert summary submission message record');
       }
     });
   });

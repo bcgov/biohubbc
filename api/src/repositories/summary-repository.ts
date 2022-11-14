@@ -406,7 +406,10 @@ export class SummaryRepository extends BaseRepository {
       );
     `;
     const response = await this.connection.query<ISummaryTemplateSpeciesData>(sqlStatement.text, sqlStatement.values);
+    console.log('response: ', response);
+
     if (!response) {
+      console.log('no response');
       throw new HTTP400('Failed to query summary template species table');
     }
 
