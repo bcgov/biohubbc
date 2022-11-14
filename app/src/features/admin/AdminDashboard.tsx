@@ -47,7 +47,7 @@ const AdminDashboard: React.FC = () => {
       <Paper square={true} elevation={0}>
         <Container maxWidth="xl">
           <Box py={4}>
-            <Box display="flex" justifyContent="space-between">
+            <Box display="flex" alignItems="center" justifyContent="space-between">
               <Box className={classes.projectTitleContainer}>
                 <Typography variant="h1" className={classes.projectTitle}>
                   Welcome, <span>John Smith</span>

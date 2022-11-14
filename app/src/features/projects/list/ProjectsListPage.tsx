@@ -282,7 +282,7 @@ const ProjectsListPage: React.FC = () => {
             <TableBody data-testid="project-table">
               {drafts?.map((row) => (
                 <TableRow key={row.id}>
-                  <TableCell component="th" scope="row">
+                  <TableCell>
                     <Link
                       className={classes.linkButton}
                       data-testid={row.name}
@@ -301,7 +301,7 @@ const ProjectsListPage: React.FC = () => {
               ))}
               {projects?.map((row) => (
                 <TableRow key={row.id}>
-                  <TableCell component="th" scope="row">
+                  <TableCell>
                     <Link
                       className={classes.linkButton}
                       data-testid={row.name}
