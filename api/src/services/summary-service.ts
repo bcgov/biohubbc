@@ -212,7 +212,7 @@ export class SummaryService extends DBService {
         this.summaryRepository.insertSummarySubmissionMessage(
           summarySubmissionId,
           SUMMARY_SUBMISSION_MESSAGE_TYPE.FOUND_VALIDATION,
-          `Found validation having summary template species id '${summary_template_species_id}' among ${count} record(s).`
+          `Found validation having summary template species ID '${summary_template_species_id}' among ${count} record(s).`
         );
       }
 

@@ -4,7 +4,12 @@ import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import xlsx from 'xlsx';
-import { SUBMISSION_MESSAGE_TYPE, SUBMISSION_STATUS_TYPE, SUMMARY_SUBMISSION_MESSAGE_TYPE } from '../constants/status';
+import {
+  MESSAGE_CLASS_NAME,
+  SUBMISSION_MESSAGE_TYPE,
+  SUBMISSION_STATUS_TYPE,
+  SUMMARY_SUBMISSION_MESSAGE_TYPE
+} from '../constants/status';
 import { HTTP400 } from '../errors/http-error';
 import { SummaryRepository } from '../repositories/summary-repository';
 import * as FileUtils from '../utils/file-utils';
@@ -91,12 +96,10 @@ const buildFile = (fileName: string, customProps: { template_id?: number; csm_id
   return new MediaFile(fileName, 'text/csv', buffer);
 };
 
-describe.only('SummaryService', () => {
+describe('SummaryService', () => {
   afterEach(() => {
     sinon.restore();
   });
-
-  // Part A
 
   describe('validateFile', () => {
     afterEach(() => {
@@ -204,26 +207,49 @@ describe.only('SummaryService', () => {
         const service = mockService();
         await service.insertSurveySummarySubmission(10, 'biohub-unit-testing', 'test-filename');
         expect.fail();
-      } catch (error) {
-        expect(error);
+      } catch (actualError) {
+        expect((actualError as HTTP400).message).to.equal('Failed to insert survey summary submission record');
       }
     });
   });
+
   describe('deleteSummarySubmission', () => {
     afterEach(() => {
       sinon.restore();
     });
 
     it('should return a row count of 1 when successfully deleting', async () => {
-      // @TODO
+      const service = mockService();
+
+      sinon.stub(SummaryRepository.prototype, 'deleteSummarySubmission').resolves(1);
+
+      const result = await service.deleteSummarySubmission(10);
+
+      expect(result).to.be.equal(1);
     });
 
     it('should return a row count of 0 when deleting an already delete submission', async () => {
-      // @TODO
+      const service = mockService();
+
+      sinon.stub(SummaryRepository.prototype, 'deleteSummarySubmission').resolves(0);
+
+      const result = await service.deleteSummarySubmission(10);
+
+      expect(result).to.be.equal(0);
     });
 
     it('should throw an error when the repo throws an error', async () => {
-      // @TODO
+      sinon
+        .stub(SummaryRepository.prototype, 'deleteSummarySubmission')
+        .throws(new HTTP400('Failed to soft delete survey summary submission record'));
+
+      try {
+        const service = mockService();
+        await service.deleteSummarySubmission(10);
+        expect.fail();
+      } catch (actualError) {
+        expect((actualError as HTTP400).message).to.equal('Failed to soft delete survey summary submission record');
+      }
     });
   });
 
@@ -233,41 +259,171 @@ describe.only('SummaryService', () => {
     });
 
     it('should successfully retreive an array of submission messages', async () => {
-      // @TODO
+      const service = mockService();
+
+      sinon.stub(SummaryRepository.prototype, 'getSummarySubmissionMessages').resolves([
+        {
+          id: 1,
+          class: 'class1',
+          type: 'type1',
+          message: 'message1'
+        },
+        {
+          id: 2,
+          class: 'class2',
+          type: 'type2',
+          message: 'message2'
+        }
+      ]);
+
+      const result = await service.getSummarySubmissionMessages(10);
+
+      expect(result.length).to.be.equal(2);
+      expect(result).to.be.eql([
+        {
+          id: 1,
+          class: 'class1',
+          type: 'type1',
+          message: 'message1'
+        },
+        {
+          id: 2,
+          class: 'class2',
+          type: 'type2',
+          message: 'message2'
+        }
+      ]);
     });
 
     it('should return an empty array if the repo finds no messages', async () => {
-      // @TODO
+      const service = mockService();
+
+      sinon.stub(SummaryRepository.prototype, 'getSummarySubmissionMessages').resolves([]);
+
+      const result = await service.getSummarySubmissionMessages(10);
+
+      expect(result.length).to.be.equal(0);
+      expect(result).to.be.eql([]);
     });
 
     it('should throw an error when the repo throws an error', async () => {
-      // @TODO
+      sinon
+        .stub(SummaryRepository.prototype, 'getSummarySubmissionMessages')
+        .throws(new HTTP400('Failed to query survey summary submission table'));
+
+      try {
+        const service = mockService();
+        await service.getSummarySubmissionMessages(10);
+        expect.fail();
+      } catch (actualError) {
+        expect((actualError as HTTP400).message).to.equal('Failed to query survey summary submission table');
+      }
     });
   });
+
   describe('findSummarySubmissionById', () => {
     afterEach(() => {
       sinon.restore();
     });
 
     it('should successfully retreive a submission', async () => {
-      // @TODO
+      const service = mockService();
+
+      sinon.stub(SummaryRepository.prototype, 'findSummarySubmissionById').resolves({
+        survey_summary_submission_id: 10,
+        survey_id: 1,
+        source: 'source',
+        event_timestamp: null,
+        delete_timestamp: null,
+        key: 's3Key',
+        file_name: 'filename',
+        create_user: 1,
+        update_date: null,
+        update_user: null,
+        revision_count: 1,
+        summary_template_species_id: 1
+      });
+
+      const result = await service.findSummarySubmissionById(10);
+
+      expect(result).to.be.eql({
+        survey_summary_submission_id: 10,
+        survey_id: 1,
+        source: 'source',
+        event_timestamp: null,
+        delete_timestamp: null,
+        key: 's3Key',
+        file_name: 'filename',
+        create_user: 1,
+        update_date: null,
+        update_user: null,
+        revision_count: 1,
+        summary_template_species_id: 1
+      });
     });
 
     it('should throw an error when the repo throws an error', async () => {
-      // @TODO
+      sinon
+        .stub(SummaryRepository.prototype, 'findSummarySubmissionById')
+        .throws(new HTTP400('Failed to query survey summary submission table'));
+
+      try {
+        const service = mockService();
+        await service.findSummarySubmissionById(10);
+        expect.fail();
+      } catch (actualError) {
+        expect((actualError as HTTP400).message).to.equal('Failed to query survey summary submission table');
+      }
     });
   });
+
   describe('getLatestSurveySummarySubmission', () => {
     afterEach(() => {
       sinon.restore();
     });
 
     it('should successfully retreive a submission', async () => {
-      // @TODO
+      const service = mockService();
+
+      sinon.stub(SummaryRepository.prototype, 'getLatestSurveySummarySubmission').resolves({
+        id: 30,
+        file_name: 'file13.xlsx',
+        key: 's3_key',
+        delete_timestamp: null,
+        submission_message_type_id: 1,
+        message: 'another error message',
+        submission_message_type_name: 'Miscellaneous',
+        summary_submission_message_class_id: 1,
+        submission_message_class_name: MESSAGE_CLASS_NAME.ERROR
+      });
+
+      const result = await service.getLatestSurveySummarySubmission(20);
+
+      expect(result).to.be.eql({
+        id: 30,
+        file_name: 'file13.xlsx',
+        key: 's3_key',
+        delete_timestamp: null,
+        submission_message_type_id: 1,
+        message: 'another error message',
+        submission_message_type_name: 'Miscellaneous',
+        summary_submission_message_class_id: 1,
+        submission_message_class_name: MESSAGE_CLASS_NAME.ERROR
+      });
     });
 
     it('should throw an error when the repo throws an error', async () => {
-      // @TODO
+      sinon
+        .stub(SummaryRepository.prototype, 'getLatestSurveySummarySubmission')
+        .throws(new HTTP400('Failed to query survey summary submission table'));
+
+      try {
+        const service = mockService();
+        await service.getLatestSurveySummarySubmission(21);
+        expect.fail();
+      } catch (actualError) {
+        expect((actualError as HTTP400).message).to.equal('Failed to query survey summary submission table');
+      }
     });
   });
 
@@ -345,7 +501,39 @@ describe.only('SummaryService', () => {
     });
 
     it('Should log the particular validation schema that was found if summarySubmissionId is given', async () => {
-      // @TODO
+      const service = mockService();
+      const file = new MediaFile('test.txt', 'text/plain', Buffer.of(0));
+      const xlsxCsv = new XLSXCSV(file);
+      sinon.stub(FileUtils, 'getFileFromS3').resolves('file from s3' as any);
+
+      const getValidation = sinon
+        .stub(service, 'getSummaryTemplateSpeciesRecords')
+        .resolves([
+          makeMockTemplateSpeciesRecord(99),
+          makeMockTemplateSpeciesRecord(199),
+          makeMockTemplateSpeciesRecord(299),
+          makeMockTemplateSpeciesRecord(399)
+        ]);
+
+      const getRules = sinon.stub(service, 'getValidationRules').resolves('');
+      const validate = sinon.stub(service, 'validateXLSX').resolves({});
+      const persistResults = sinon.stub(service, 'persistSummaryValidationResults').resolves();
+
+      const logFoundValidation = sinon.stub(SummaryRepository.prototype, 'insertSummarySubmissionMessage').resolves();
+
+      await service.summaryTemplateValidation(xlsxCsv, 70, 60);
+
+      expect(getValidation).to.be.calledOnce;
+      expect(getRules).to.be.calledOnce;
+      expect(validate).to.be.calledOnce;
+      expect(persistResults).to.be.calledOnce;
+
+      expect(logFoundValidation).to.be.calledOnce;
+      expect(logFoundValidation).to.be.calledWith(
+        60,
+        SUMMARY_SUBMISSION_MESSAGE_TYPE.FOUND_VALIDATION,
+        "Found validation having summary template species ID '100' among 4 record(s)."
+      );
     });
 
     it('should complete without error', async () => {
@@ -470,8 +658,6 @@ describe.only('SummaryService', () => {
     });
   });
 
-  // Part B
-
   describe('prepXLSX', () => {
     afterEach(() => {
       sinon.restore();
@@ -552,7 +738,7 @@ describe.only('SummaryService', () => {
       const mockXLSX = ({
         workbook: {
           rawWorkbook: {
-            Custpros: { sims_name: 'Moose SRB', sims_version: '1.0' }
+            Custprops: { sims_name: 'Moose SRB', sims_version: '1.0' }
           }
         }
       } as unknown) as XLSXCSV;
