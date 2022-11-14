@@ -292,7 +292,7 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
                         </Link>
                       </TableCell>
                       <TableCell>
-                        <Box m={-1}>
+                        <Box my={-1}>
                           <CustomMenuButton
                             buttonLabel={row.role_names.join(', ') || 'Not Applicable'}
                             buttonTitle={'Change User Permissions'}
@@ -307,7 +307,7 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
                                   menuOnClick: () => handleChangeUserPermissionsClick(row, item.name, item.id)
                                 };
                               })}
-                            buttonEndIcon={<Icon path={mdiChevronDown} size={1} />}
+                            buttonEndIcon={<Icon path={mdiChevronDown} size={0.8} />}
                           />
                         </Box>
                       </TableCell>
@@ -318,7 +318,7 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
                             buttonIcon={<Icon path={mdiDotsVertical} size={1} />}
                             menuItems={[
                               {
-                                menuIcon: <Icon path={mdiInformationOutline} size={0.875} />,
+                                menuIcon: <Icon path={mdiInformationOutline} size={0.8} />,
                                 menuLabel: 'View Users Details',
                                 menuOnClick: () =>
                                   history.push({
@@ -327,8 +327,8 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
                                   })
                               },
                               {
-                                menuIcon: <Icon path={mdiTrashCanOutline} size={0.875} />,
-                                menuLabel: 'Remove User',
+                                menuIcon: <Icon path={mdiTrashCanOutline} size={0.8} />,
+                                menuLabel: 'Delete User',
                                 menuOnClick: () => handleRemoveUserClick(row)
                               }
                             ]}

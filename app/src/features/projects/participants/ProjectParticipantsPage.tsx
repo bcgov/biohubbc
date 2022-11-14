@@ -1,6 +1,7 @@
 import Box from '@material-ui/core/Box';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Container from '@material-ui/core/Container';
+import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
 import Paper from '@material-ui/core/Paper';
 import { makeStyles } from '@material-ui/core/styles';
@@ -30,15 +31,24 @@ import { useParams } from 'react-router';
 import ProjectParticipantsHeader from './ProjectParticipantsHeader';
 
 const useStyles = makeStyles((theme) => ({
+  projectTitleContainer: {
+    maxWidth: '170ch',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis'
+  },
+  projectTitle: {
+    display: '-webkit-box',
+    '-webkit-line-clamp': 2,
+    '-webkit-box-orient': 'vertical', 
+    paddingTop: theme.spacing(0.5),
+    paddingBottom: theme.spacing(0.5),
+    overflow: 'hidden'
+  },
   actionButton: {
     minWidth: '6rem',
     '& + button': {
       marginLeft: '0.5rem'
     }
-  },
-  teamMembersToolbar: {
-    paddingLeft: theme.spacing(2),
-    paddingRight: theme.spacing(2)
   },
   teamMembersTable: {
     tableLayout: 'fixed',
@@ -202,18 +212,20 @@ const ProjectParticipantsPage: React.FC = () => {
       <Container maxWidth="xl">
         <Box my={3}>
           <Paper>
-            <Toolbar className={classes.teamMembersToolbar}>
-              <Typography variant="h2" color="inherit">
+            <Toolbar>
+              <Typography component="h2" variant="h4" color="inherit">
                 Team Members
               </Typography>
             </Toolbar>
+
+            <Divider></Divider>
 
             <Table className={classes.teamMembersTable}>
               <TableHead>
                 <TableRow>
                   <TableCell>Username</TableCell>
                   <TableCell>Project Role</TableCell>
-                  <TableCell width="100px" align="center">
+                  <TableCell width="150px" align="center">
                     Actions
                   </TableCell>
                 </TableRow>
@@ -226,7 +238,7 @@ const ProjectParticipantsPage: React.FC = () => {
                         <strong>{row.user_identifier}</strong>
                       </TableCell>
                       <TableCell>
-                        <Box m={-1}>
+                        <Box my={-1}>
                           <ChangeProjectRoleMenu
                             row={row}
                             projectRoleCodes={codes.project_roles}
@@ -235,7 +247,7 @@ const ProjectParticipantsPage: React.FC = () => {
                         </Box>
                       </TableCell>
                       <TableCell align="center">
-                        <Box m={-1}>
+                        <Box my={-1}>
                           <IconButton
                             title="Remove Team Member"
                             data-testid={'remove-project-participant-button'}
@@ -389,14 +401,14 @@ const ChangeProjectRoleMenu: React.FC<IChangeProjectRoleMenuProps> = (props) => 
     <CustomMenuButton
       buttonLabel={currentProjectRoleName}
       buttonTitle={'Change Project Role'}
-      buttonProps={{ variant: 'text' }}
+      buttonProps={{ variant: 'outlined' }}
       menuItems={projectRoleCodes.map((roleCode) => {
         return {
           menuLabel: roleCode.name,
           menuOnClick: () => handleChangeUserPermissionsClick(row, roleCode.name, roleCode.id)
         };
       })}
-      buttonEndIcon={<Icon path={mdiMenuDown} size={1} />}
+      buttonEndIcon={<Icon path={mdiMenuDown} size={0.8} />}
     />
   );
 };

@@ -34,10 +34,6 @@ const useStyles = makeStyles((theme) => ({
       marginLeft: '0.5rem'
     }
   },
-  projectMembersToolbar: {
-    paddingLeft: theme.spacing(2),
-    paddingRight: theme.spacing(2)
-  },
   projectMembersTable: {
     tableLayout: 'fixed',
     '& td': {
@@ -176,7 +172,7 @@ const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
 
   return (
     <Paper elevation={0}>
-      <Toolbar className={classes.projectMembersToolbar}>
+      <Toolbar>
         <Typography data-testid="projects_header" variant="h4" component="h2">Assigned Projects <Typography className={classes.toolbarCount} component="span" variant="inherit" color="textSecondary">({assignedProjects?.length})</Typography></Typography>
       </Toolbar>
       <Divider></Divider>
@@ -217,7 +213,7 @@ const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
                     </Box>
                   </TableCell>
                   <TableCell align="center">
-                    <Box m={-1}>
+                    <Box my={-1}>
                       <IconButton
                         title="Remove Project Participant"
                         data-testid={'remove-project-participant-button'}
