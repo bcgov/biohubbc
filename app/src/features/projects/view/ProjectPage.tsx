@@ -76,7 +76,6 @@ const ProjectPage: React.FC = () => {
 
       <Container maxWidth="xl">
         <Box py={3}>
-
           <Grid container spacing={3}>
             <Grid item md={12} lg={3}>
               <Paper elevation={0}>

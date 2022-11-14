@@ -3,8 +3,10 @@ import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Button from '@material-ui/core/Button';
 import Container from '@material-ui/core/Container';
 import Link from '@material-ui/core/Link';
-import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
+import { Theme } from '@material-ui/core/styles/createMuiTheme';
+import makeStyles from '@material-ui/core/styles/makeStyles';
+import Typography from '@material-ui/core/Typography';
 import { mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
 import EditDialog from 'components/dialog/EditDialog';
@@ -22,8 +24,6 @@ import AddProjectParticipantsForm, {
   AddProjectParticipantsFormYupSchema,
   IAddProjectParticipantsForm
 } from './AddProjectParticipantsForm';
-import { Theme } from '@material-ui/core/styles/createMuiTheme';
-import makeStyles from '@material-ui/core/styles/makeStyles';
 
 const useStyles = makeStyles((theme: Theme) => ({
   projectTitleContainer: {
@@ -34,7 +34,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   projectTitle: {
     display: '-webkit-box',
     '-webkit-line-clamp': 2,
-    '-webkit-box-orient': 'vertical', 
+    '-webkit-box-orient': 'vertical',
     paddingTop: theme.spacing(0.5),
     paddingBottom: theme.spacing(0.5),
     overflow: 'hidden'
@@ -118,15 +118,17 @@ const ProjectParticipantsHeader: React.FC<IProjectParticipantsHeaderProps> = (pr
                 aria-current="page">
                 {props.projectWithDetails.project.project_name}
               </Link>
-              <Typography variant="body1" component="span">Project Team</Typography>
+              <Typography variant="body1" component="span">
+                Project Team
+              </Typography>
             </Breadcrumbs>
           </Box>
 
           <Box display="flex" justifyContent="space-between">
             <Box flex="1 1 auto" className={classes.projectTitleContainer}>
-                <Typography variant="h1" className={classes.projectTitle}>
-                  Project Team
-                </Typography>
+              <Typography variant="h1" className={classes.projectTitle}>
+                Project Team
+              </Typography>
             </Box>
             <Box flex="0 0 auto" className={classes.titleActions}>
               <Box ml={4}>
@@ -142,7 +144,6 @@ const ProjectParticipantsHeader: React.FC<IProjectParticipantsHeaderProps> = (pr
               </Box>
             </Box>
           </Box>
-          
         </Box>
       </Container>
 

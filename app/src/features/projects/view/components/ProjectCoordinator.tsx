@@ -2,7 +2,7 @@ import Box from '@material-ui/core/Box';
 import Link from '@material-ui/core/Link';
 import Typography from '@material-ui/core/Typography';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import {IGetProjectForViewResponse,} from 'interfaces/useProjectApi.interface';
+import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import React from 'react';
 
 export interface IProjectCoordinatorProps {
@@ -18,7 +18,7 @@ export interface IProjectCoordinatorProps {
  */
 const ProjectCoordinator: React.FC<IProjectCoordinatorProps> = (props) => {
   const {
-    projectForViewData: { coordinator },
+    projectForViewData: { coordinator }
   } = props;
 
   return (

@@ -245,7 +245,7 @@ const ProjectHeader: React.FC<IProjectHeaderProps> = (props) => {
               formikRef={formikRef}
             />
           ),
-          initialValues: {projectWithDetails},
+          initialValues: { projectWithDetails },
           validationSchema: validationProjectYupSchema
         }}
         onCancel={() => setOpenEditDialog(false)}

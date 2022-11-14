@@ -1,7 +1,9 @@
 import Box from '@material-ui/core/Box';
-import Paper from '@material-ui/core/Paper';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Container from '@material-ui/core/Container';
+import Paper from '@material-ui/core/Paper';
+import { Theme } from '@material-ui/core/styles/createMuiTheme';
+import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
 import { AdministrativeActivityStatusType, AdministrativeActivityType } from 'constants/misc';
 import AccessRequestList from 'features/admin/users/AccessRequestList';
@@ -11,8 +13,6 @@ import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetUserResponse } from 'interfaces/useUserApi.interface';
 import React, { useEffect, useState } from 'react';
 import ActiveUsersList from './ActiveUsersList';
-import { Theme } from '@material-ui/core/styles/createMuiTheme';
-import makeStyles from '@material-ui/core/styles/makeStyles';
 
 const useStyles = makeStyles((theme: Theme) => ({
   pageTitleContainer: {
@@ -23,7 +23,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   pageTitle: {
     display: '-webkit-box',
     '-webkit-line-clamp': 2,
-    '-webkit-box-orient': 'vertical', 
+    '-webkit-box-orient': 'vertical',
     paddingTop: theme.spacing(0.5),
     paddingBottom: theme.spacing(0.5),
     overflow: 'hidden'

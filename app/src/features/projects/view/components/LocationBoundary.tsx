@@ -1,8 +1,8 @@
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
-import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import Typography from '@material-ui/core/Typography';
 import { mdiChevronRight, mdiPencilOutline, mdiRefresh } from '@mdi/js';
 import Icon from '@mdi/react';
@@ -57,7 +57,7 @@ const useStyles = makeStyles((theme: Theme) =>
       color: theme.palette.text.primary,
       fontWeight: 700,
       textTransform: 'uppercase'
-    },
+    }
   })
 );
 
@@ -253,7 +253,7 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
 
       <Button
         variant="text"
-        style={{display: 'none'}}
+        style={{ display: 'none' }}
         color="primary"
         className="sectionHeaderButton"
         onClick={() => handleDialogViewOpen()}
@@ -262,7 +262,6 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
         endIcon={<Icon path={mdiChevronRight} size={0.875} />}>
         Show More
       </Button>
-
     </>
   );
 };

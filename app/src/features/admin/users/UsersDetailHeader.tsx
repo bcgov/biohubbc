@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   projectTitle: {
     display: '-webkit-box',
     '-webkit-line-clamp': 2,
-    '-webkit-box-orient': 'vertical', 
+    '-webkit-box-orient': 'vertical',
     paddingTop: theme.spacing(0.5),
     paddingBottom: theme.spacing(0.5),
     overflow: 'hidden'
@@ -111,16 +111,14 @@ const UsersDetailHeader: React.FC<IUsersHeaderProps> = (props) => {
     <Paper square={true} elevation={0}>
       <Container maxWidth="xl">
         <Box py={4}>
-          
           <Box mb={3}>
             <Breadcrumbs>
-              <Link
-                color="primary"
-                onClick={() => history.push('/admin/users')}
-                aria-current="page">
+              <Link color="primary" onClick={() => history.push('/admin/users')} aria-current="page">
                 Manage Users
               </Link>
-              <Typography variant="body1" component="span">{userDetails.user_identifier}</Typography>
+              <Typography variant="body1" component="span">
+                {userDetails.user_identifier}
+              </Typography>
             </Breadcrumbs>
           </Box>
 
@@ -130,7 +128,11 @@ const UsersDetailHeader: React.FC<IUsersHeaderProps> = (props) => {
                 User: <span>{userDetails.user_identifier}</span>
               </Typography>
               <Box mt={1} display="flex" alignItems="center">
-                <Typography component="span" variant="subtitle1" color="textSecondary" style={{display: 'flex', alignItems: 'center'}}>
+                <Typography
+                  component="span"
+                  variant="subtitle1"
+                  color="textSecondary"
+                  style={{ display: 'flex', alignItems: 'center' }}>
                   {userDetails.role_names[0]}
                 </Typography>
               </Box>
@@ -167,7 +169,6 @@ const UsersDetailHeader: React.FC<IUsersHeaderProps> = (props) => {
               </Button>
             </Box>
           </Box>
-
         </Box>
       </Container>
     </Paper>

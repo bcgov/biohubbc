@@ -13,7 +13,7 @@ import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
-import { mdiDotsVertical, mdiInformationOutline, mdiChevronDown, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
+import { mdiChevronDown, mdiDotsVertical, mdiInformationOutline, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import EditDialog from 'components/dialog/EditDialog';
 import { CustomMenuButton, CustomMenuIconButton } from 'components/toolbar/ActionToolbars';
@@ -247,8 +247,13 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
   return (
     <>
       <Paper elevation={0}>
-        <Toolbar style={{display: 'flex', justifyContent: 'space-between'}}>
-          <Typography variant="h4" component="h2">Active Users <Typography className={classes.toolbarCount} component="span" variant="inherit" color="textSecondary">({activeUsers?.length || 0})</Typography></Typography>
+        <Toolbar style={{ display: 'flex', justifyContent: 'space-between' }}>
+          <Typography variant="h4" component="h2">
+            Active Users{' '}
+            <Typography className={classes.toolbarCount} component="span" variant="inherit" color="textSecondary">
+              ({activeUsers?.length || 0})
+            </Typography>
+          </Typography>
           <Button
             color="primary"
             variant="contained"
@@ -284,10 +289,7 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
                   activeUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => (
                     <TableRow data-testid={`active-user-row-${index}`} key={row.id}>
                       <TableCell>
-                        <Link
-                          className={classes.linkButton}
-                          underline="always"
-                          href={`/admin/users/${row.id}`}>
+                        <Link className={classes.linkButton} underline="always" href={`/admin/users/${row.id}`}>
                           {row.user_identifier || 'Not Applicable'}
                         </Link>
                       </TableCell>

@@ -45,13 +45,7 @@ const GeneralInformation: React.FC<IProjectDetailsProps> = (props) => {
         </Typography>
         <Typography component="dd">
           {project.end_date ? (
-            <>
-              {getFormattedDateRangeString(
-                DATE_FORMAT.ShortMediumDateFormat,
-                project.start_date,
-                project.end_date
-              )}
-            </>
+            <>{getFormattedDateRangeString(DATE_FORMAT.ShortMediumDateFormat, project.start_date, project.end_date)}</>
           ) : (
             <>
               <span>Start Date:</span>{' '}
@@ -64,9 +58,7 @@ const GeneralInformation: React.FC<IProjectDetailsProps> = (props) => {
         <Typography component="dt" color="textSecondary">
           Activities
         </Typography>
-        <Typography component="dd">
-          {projectActivities ? <>{projectActivities}</> : 'No Activities'}
-        </Typography>
+        <Typography component="dd">{projectActivities ? <>{projectActivities}</> : 'No Activities'}</Typography>
       </Box>
     </Box>
   );

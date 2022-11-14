@@ -180,7 +180,7 @@ const ViewFileWithMetaDialog: React.FC<IViewFileWithMetaDialogProps> = (props) =
                   color="primary"
                   startIcon={<Icon path={mdiLockOutline} size={0.8} />}
                   style={{ marginRight: '8px' }}
-                  onClick={() =>setSecurityDialogOpen(true)}>
+                  onClick={() => setSecurityDialogOpen(true)}>
                   Add Security
                 </Button>
                 <Button variant="contained" color="primary" startIcon={<Icon path={mdiLockOutline} size={0.8} />}>

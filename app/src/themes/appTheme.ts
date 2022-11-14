@@ -1,6 +1,6 @@
-import { createMuiTheme } from '@material-ui/core/styles';
 // import createBreakpoints from '@material-ui/core/styles/createBreakpoints'
 import { grey } from '@material-ui/core/colors';
+import { createMuiTheme } from '@material-ui/core/styles';
 import 'styles.scss';
 
 // const breakpoints = createBreakpoints({})
@@ -41,7 +41,7 @@ const appTheme = createMuiTheme({
     MuiTypography: {
       h1: {
         fontSize: '2.25rem',
-        fontWeight: 700,
+        fontWeight: 700
       },
       h2: {
         fontSize: '1.875rem',
@@ -91,7 +91,7 @@ const appTheme = createMuiTheme({
     },
     MuiChip: {
       colorSecondary: {
-        backgroundColor: "red"
+        backgroundColor: 'red'
       }
     },
     MuiContainer: {

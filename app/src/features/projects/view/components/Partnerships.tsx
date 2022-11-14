@@ -40,11 +40,7 @@ const Partnerships: React.FC<IPartnershipsProps> = (props) => {
           );
         })}
 
-        {!hasIndigenousPartnerships && (
-          <Typography component="dd">
-            None
-          </Typography>
-        )}
+        {!hasIndigenousPartnerships && <Typography component="dd">None</Typography>}
       </Box>
       <Box display="flex" mt={1}>
         <Typography component="dt" color="textSecondary">

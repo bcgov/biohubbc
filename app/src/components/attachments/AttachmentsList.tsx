@@ -1,7 +1,8 @@
 import Box from '@material-ui/core/Box';
-import Chip from '@material-ui/core/Chip';
-import Checkbox from '@material-ui/core/Checkbox';
 import Button from '@material-ui/core/Button';
+import Checkbox from '@material-ui/core/Checkbox';
+import Chip from '@material-ui/core/Chip';
+import { grey } from '@material-ui/core/colors';
 import IconButton from '@material-ui/core/IconButton';
 import Link from '@material-ui/core/Link';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -15,7 +16,6 @@ import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import { grey } from '@material-ui/core/colors';
 import {
   mdiAlertCircle,
   mdiCheckboxOutline,
@@ -43,7 +43,7 @@ import ViewFileWithMetaDialog from '../dialog/ViewFileWithMetaDialog';
 
 const useStyles = makeStyles((theme: Theme) => ({
   attachmentsTable: {
-    tableLayout: "fixed"
+    tableLayout: 'fixed'
   },
   attachmentsTableLockIcon: {
     marginTop: '3px',
@@ -348,7 +348,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
   return (
     <>
       <ViewFileWithMetaDialog
-        dialogProps={{fullWidth: true, maxWidth: 'lg', open: showViewFileWithMetaDialog}}
+        dialogProps={{ fullWidth: true, maxWidth: 'lg', open: showViewFileWithMetaDialog }}
         open={showViewFileWithMetaDialog}
         onEdit={openEditReportMetaDialog}
         onClose={() => {
@@ -373,7 +373,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
             <TableHead>
               <TableRow>
                 <TableCell width="60px" padding="checkbox">
-                  <Checkbox color="primary"/>
+                  <Checkbox color="primary" />
                 </TableCell>
                 <TableCell>Name</TableCell>
                 <TableCell>Type</TableCell>
@@ -387,24 +387,32 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
                   return (
                     <TableRow key={`${row.fileName}-${index}`}>
                       <TableCell padding="checkbox">
-                        <Checkbox color="primary" checkedIcon={<Icon path={mdiCheckboxOutline } size={1} />} />
+                        <Checkbox color="primary" checkedIcon={<Icon path={mdiCheckboxOutline} size={1} />} />
                       </TableCell>
                       <TableCell scope="row">
-                        <Link style={{'fontWeight': 'bold'}} underline="always" component="button" onClick={() => openAttachment(row)}>
+                        <Link
+                          style={{ fontWeight: 'bold' }}
+                          underline="always"
+                          component="button"
+                          onClick={() => openAttachment(row)}>
                           {row.fileName}
                         </Link>
                       </TableCell>
                       <TableCell>{row.fileType}</TableCell>
                       <TableCell>
-
                         {/* Pending Review State */}
-                        <Chip size="small" color="secondary" label="Pending Review" icon={<Icon path={mdiAlertCircle} size={0.8} />} /> 
+                        <Chip
+                          size="small"
+                          color="secondary"
+                          label="Pending Review"
+                          icon={<Icon path={mdiAlertCircle} size={0.8} />}
+                        />
 
                         {/* Submitted State */}
                         {/* <Chip color="primary" label="Submitted"/> */}
                         {/* Secured State and Number of Security Reasons Applied */}
                         {/* <Chip color="default" label="Secured (7)"/> */}
-                        
+
                         <Box my={-1} hidden>
                           <Button
                             size="small"
@@ -419,18 +427,15 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
                             <strong>{row.securityToken ? 'Secured' : 'Unsecured'}</strong>
                           </Button>
                         </Box>
-
                       </TableCell>
 
-                      <TableCell align='right'>
-
+                      <TableCell align="right">
                         <AttachmentItemMenuButton
                           attachment={row}
                           handleDownloadFileClick={handleDownloadFileClick}
                           handleDeleteFileClick={handleDeleteFileClick}
                           handleViewDetailsClick={handleViewDetailsClick}
                         />
-
                       </TableCell>
                     </TableRow>
                   );
@@ -487,10 +492,7 @@ const AttachmentItemMenuButton: React.FC<IAttachmentItemMenuButtonProps> = (prop
     <>
       <Box my={-1}>
         <Box>
-          <IconButton
-            aria-label="Document actions"
-            onClick={handleClick}
-            data-testid="attachment-action-menu">
+          <IconButton aria-label="Document actions" onClick={handleClick} data-testid="attachment-action-menu">
             <Icon path={mdiDotsVertical} size={1} />
           </IconButton>
           <Menu

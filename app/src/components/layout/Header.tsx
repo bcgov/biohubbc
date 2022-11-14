@@ -228,7 +228,12 @@ const Header: React.FC = () => {
         <AuthGuard>
           <Box className={classes.mainNav}>
             <Container maxWidth="xl">
-              <Toolbar variant="dense" disableGutters className={classes.mainNavToolbar} role="navigation" aria-label="Main Navigation">
+              <Toolbar
+                variant="dense"
+                disableGutters
+                className={classes.mainNavToolbar}
+                role="navigation"
+                aria-label="Main Navigation">
                 <Link to="/admin/dashboard" id="menu_dashboard">
                   Dashboard
                 </Link>

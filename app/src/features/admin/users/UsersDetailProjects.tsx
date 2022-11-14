@@ -173,7 +173,12 @@ const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
   return (
     <Paper elevation={0}>
       <Toolbar>
-        <Typography data-testid="projects_header" variant="h4" component="h2">Assigned Projects <Typography className={classes.toolbarCount} component="span" variant="inherit" color="textSecondary">({assignedProjects?.length})</Typography></Typography>
+        <Typography data-testid="projects_header" variant="h4" component="h2">
+          Assigned Projects{' '}
+          <Typography className={classes.toolbarCount} component="span" variant="inherit" color="textSecondary">
+            ({assignedProjects?.length})
+          </Typography>
+        </Typography>
       </Toolbar>
       <Divider></Divider>
       <Box px={1}>
@@ -223,8 +228,8 @@ const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
                             dialogContent: (
                               <>
                                 <Typography variant="body1" color="textPrimary">
-                                  Removing user <strong>{userDetails.user_identifier}</strong> will revoke their
-                                  access to the project.
+                                  Removing user <strong>{userDetails.user_identifier}</strong> will revoke their access
+                                  to the project.
                                 </Typography>
                                 <Typography variant="body1" color="textPrimary">
                                   Are you sure you want to proceed?

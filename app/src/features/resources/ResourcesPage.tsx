@@ -3,6 +3,8 @@ import Button from '@material-ui/core/Button';
 import Container from '@material-ui/core/Container';
 import Link from '@material-ui/core/Link';
 import Paper from '@material-ui/core/Paper';
+import { Theme } from '@material-ui/core/styles/createMuiTheme';
+import makeStyles from '@material-ui/core/styles/makeStyles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -10,10 +12,8 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
-import { Theme } from '@material-ui/core/styles/createMuiTheme';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import Icon from '@mdi/react';
 import { mdiTrayArrowDown } from '@mdi/js';
+import Icon from '@mdi/react';
 import { ConfigContext } from 'contexts/configContext';
 import React, { useContext } from 'react';
 
@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   pageTitle: {
     display: '-webkit-box',
     '-webkit-line-clamp': 2,
-    '-webkit-box-orient': 'vertical', 
+    '-webkit-box-orient': 'vertical',
     paddingTop: theme.spacing(0.5),
     paddingBottom: theme.spacing(0.5),
     overflow: 'hidden'
@@ -41,7 +41,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 const ResourcesPage: React.FC = () => {
   const classes = useStyles();
   const config = useContext(ConfigContext);
-  const s3PublicHostURL = config?.S3_PUBLIC_HOST_URL;  
+  const s3PublicHostURL = config?.S3_PUBLIC_HOST_URL;
 
   const resources = [
     {
@@ -161,7 +161,7 @@ const ResourcesPage: React.FC = () => {
   const getResourcesList = () => {
     return (
       <TableContainer>
-        <Table style={{tableLayout: 'fixed'}}>
+        <Table style={{ tableLayout: 'fixed' }}>
           <TableHead>
             <TableRow>
               <TableCell>Name</TableCell>
@@ -173,17 +173,16 @@ const ResourcesPage: React.FC = () => {
             {resources?.map((row) => (
               <TableRow key={row.id}>
                 <TableCell>
-                  <Link href={row.url} underline="always" style={{fontWeight: 700}}>
+                  <Link href={row.url} underline="always" style={{ fontWeight: 700 }}>
                     {row.name}
                   </Link>
                 </TableCell>
-                <TableCell>
-                  {row.type}
-                </TableCell>
+                <TableCell>{row.type}</TableCell>
                 <TableCell>
                   <Button
                     startIcon={<Icon path={mdiTrayArrowDown} size={0.8} />}
-                    href={row.url} color="primary"
+                    href={row.url}
+                    color="primary"
                     aria-label={'Download' + row.name}>
                     Download
                   </Button>
@@ -217,9 +216,7 @@ const ResourcesPage: React.FC = () => {
       <Container maxWidth="xl">
         <Box py={3}>
           <Paper elevation={0}>
-            <Box px={1}>
-            { getResourcesList()}
-            </Box>
+            <Box px={1}>{getResourcesList()}</Box>
           </Paper>
         </Box>
       </Container>

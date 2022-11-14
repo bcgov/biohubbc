@@ -46,7 +46,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   pageTitle: {
     display: '-webkit-box',
     '-webkit-line-clamp': 2,
-    '-webkit-box-orient': 'vertical', 
+    '-webkit-box-orient': 'vertical',
     paddingTop: theme.spacing(0.5),
     paddingBottom: theme.spacing(0.5),
     overflow: 'hidden'
@@ -345,16 +345,20 @@ const ProjectsListPage: React.FC = () => {
                 </Box> */}
               </Box>
               <Box flex="0 0 auto" className={classes.pageTitleActions}>
-              <SystemRoleGuard
-                validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_CREATOR, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  startIcon={<Icon path={mdiPlus} size={1} />}
-                  onClick={() => navigateToCreateProjectPage()}>
-                  Create Project
-                </Button>
-              </SystemRoleGuard>
+                <SystemRoleGuard
+                  validSystemRoles={[
+                    SYSTEM_ROLE.SYSTEM_ADMIN,
+                    SYSTEM_ROLE.PROJECT_CREATOR,
+                    SYSTEM_ROLE.DATA_ADMINISTRATOR
+                  ]}>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    startIcon={<Icon path={mdiPlus} size={1} />}
+                    onClick={() => navigateToCreateProjectPage()}>
+                    Create Project
+                  </Button>
+                </SystemRoleGuard>
               </Box>
             </Box>
           </Box>
@@ -363,8 +367,13 @@ const ProjectsListPage: React.FC = () => {
       <Container maxWidth="xl">
         <Box py={3}>
           <Paper elevation={0}>
-            <Toolbar style={{display: 'flex', justifyContent: 'space-between'}}>
-              <Typography variant="h4" component="h2">Projects found <Typography className={classes.toolbarCount} component="span" variant="inherit" color="textSecondary">({projectCount})</Typography></Typography>
+            <Toolbar style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <Typography variant="h4" component="h2">
+                Projects found{' '}
+                <Typography className={classes.toolbarCount} component="span" variant="inherit" color="textSecondary">
+                  ({projectCount})
+                </Typography>
+              </Typography>
               {codes && (
                 <Button
                   variant="text"
@@ -405,11 +414,7 @@ const ProjectsListPage: React.FC = () => {
                       onClick={handleSubmit}>
                       Search
                     </Button>
-                    <Button
-                      className={classes.actionButton}
-                      variant="outlined"
-                      color="primary" 
-                      onClick={handleReset}>
+                    <Button className={classes.actionButton} variant="outlined" color="primary" onClick={handleReset}>
                       Clear
                     </Button>
                   </Box>
@@ -417,9 +422,7 @@ const ProjectsListPage: React.FC = () => {
                 <Divider></Divider>
               </Box>
             )}
-            <Box px={1}>
-              {getProjectsTableData()}
-            </Box>
+            <Box px={1}>{getProjectsTableData()}</Box>
           </Paper>
         </Box>
       </Container>

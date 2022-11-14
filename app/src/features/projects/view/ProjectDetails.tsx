@@ -5,15 +5,15 @@ import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
+import FundingSource from 'features/projects/view/components/FundingSource';
+import GeneralInformation from 'features/projects/view/components/GeneralInformation';
+import IUCNClassification from 'features/projects/view/components/IUCNClassification';
+import Partnerships from 'features/projects/view/components/Partnerships';
+import ProjectCoordinator from 'features/projects/view/components/ProjectCoordinator';
+import ProjectObjectives from 'features/projects/view/components/ProjectObjectives';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import React from 'react';
-import FundingSource from 'features/projects/view/components/FundingSource';
-import IUCNClassification from 'features/projects/view/components/IUCNClassification';
-import GeneralInformation from 'features/projects/view/components/GeneralInformation';
-import Partnerships from 'features/projects/view/components/Partnerships';
-import ProjectObjectives from 'features/projects/view/components/ProjectObjectives';
-import ProjectCoordinator from 'features/projects/view/components/ProjectCoordinator';
 // import { grey } from '@material-ui/core/colors';
 
 export interface IProjectDetailsProps {
@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   projectMetadataSections: {
     '& dl': {
-      borderRadius: '6px',
+      borderRadius: '6px'
       // backgroundColor: grey[100]
     },
     '& dt': {
@@ -73,7 +73,6 @@ const ProjectDetails: React.FC<IProjectDetailsProps> = (props) => {
       </Toolbar>
       <Divider></Divider>
       <Box py={2.75} px={3} className={classes.projectMetadataSections}>
-
         <Box component="section" mb={2}>
           <Typography component="h4" className={classes.projectMetaSectionHeader}>
             Project Objectives
@@ -129,7 +128,6 @@ const ProjectDetails: React.FC<IProjectDetailsProps> = (props) => {
           <Divider></Divider>
           <IUCNClassification projectForViewData={projectForViewData} codes={codes} refresh={refresh} />
         </Box>
-
       </Box>
     </Box>
   );

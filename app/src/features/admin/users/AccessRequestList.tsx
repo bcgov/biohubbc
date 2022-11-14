@@ -38,7 +38,7 @@ const useStyles = makeStyles(() => ({
   },
   toolbarCount: {
     fontWeight: 400
-  },
+  }
 }));
 
 export interface IAccessRequestListProps {
@@ -196,7 +196,12 @@ const AccessRequestList: React.FC<IAccessRequestListProps> = (props) => {
       />
       <Paper elevation={0}>
         <Toolbar>
-          <Typography variant="h4" component="h2">Access Requests <Typography className={classes.toolbarCount} component="span" variant="inherit" color="textSecondary">({accessRequests?.length || 0})</Typography></Typography>
+          <Typography variant="h4" component="h2">
+            Access Requests{' '}
+            <Typography className={classes.toolbarCount} component="span" variant="inherit" color="textSecondary">
+              ({accessRequests?.length || 0})
+            </Typography>
+          </Typography>
         </Toolbar>
         <Divider></Divider>
         <Box px={1}>
