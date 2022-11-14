@@ -24,6 +24,11 @@ const summaryMessageTypes = [
     class: 'Error'
   },
   {
+    name: 'Failed to Parse Validation Schema',
+    description: 'Failed to parse validation schema.',
+    class: 'Error'
+  },
+  {
     name: 'Unsupported File Type',
     description: 'File submitted is not a supported type.',
     class: 'Error'

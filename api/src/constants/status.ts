@@ -53,6 +53,7 @@ export enum SUMMARY_SUBMISSION_MESSAGE_TYPE {
   'INVALID_XLSX_CSV' = 'XLSX CSV is Invalid',
   'FAILED_TO_GET_TEMPLATE_NAME_VERSION' = 'Missing Name or Version Number',
   'FAILED_GET_VALIDATION_RULES' = 'Failed to Get Validation Rules',
+  'FAILED_PARSE_VALIDATION_SCHEMA' = 'Failed to Parse Validation Schema',
   'UNSUPPORTED_FILE_TYPE' = 'Unsupported File Type',
   'FOUND_VALIDATION' = 'Found Validation'
 }

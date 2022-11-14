@@ -11,7 +11,7 @@ import { ISummarySubmissionMessagesResponse, SummaryRepository } from './summary
 
 chai.use(sinonChai);
 
-describe.only('SummaryRepository', () => {
+describe('SummaryRepository', () => {
   afterEach(() => {
     sinon.restore();
   });
@@ -19,11 +19,7 @@ describe.only('SummaryRepository', () => {
   describe('findSummarySubmissionById', () => {
     it('should succeed with valid data', async () => {
       const mockResponse = ({
-        rows: [
-          {
-            id: 1
-          }
-        ]
+        rows: [{ id: 1 }]
       } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({
         query: () => mockResponse

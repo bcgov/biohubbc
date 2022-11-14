@@ -137,7 +137,7 @@ export class SummaryService extends DBService {
    * @returns {*} {Promise<ISummarySubmissionMessagesResponse[]>}
    */
   async getSummarySubmissionMessages(summarySubmissionId: number): Promise<ISummarySubmissionMessagesResponse[]> {
-    return this.summaryRepository.getSummarySubmissionMessages(summarySubmissionId) || [];
+    return this.summaryRepository.getSummarySubmissionMessages(summarySubmissionId);
   }
 
   /**
@@ -195,8 +195,8 @@ export class SummaryService extends DBService {
     try {
       const summaryTemplateSpeciesRecords = await this.getSummaryTemplateSpeciesRecords(xlsx, surveyId);
 
-      // In the absence of hard requirements for selecting validation schema among multiple
-      // focal species, we select the first resulting validation schema.
+      // In the absence of hard requirements for selecting validation schema in the case when focal species matching
+      // yields many validation schema, we select the first resulting validation schema.
       const templateRecord = summaryTemplateSpeciesRecords[0];
       const validationSchema = templateRecord?.validation;
 
@@ -292,8 +292,12 @@ export class SummaryService extends DBService {
    */
   getValidationRules(schema: string | object): ValidationSchemaParser {
     defaultLog.debug({ label: 'getValidationRules' });
-    const validationSchemaParser = new ValidationSchemaParser(schema);
-    return validationSchemaParser;
+    try {
+      const validationSchemaParser = new ValidationSchemaParser(schema);
+      return validationSchemaParser;
+    } catch {
+      throw SummarySubmissionErrorFromMessageType(SUMMARY_SUBMISSION_MESSAGE_TYPE.FAILED_PARSE_VALIDATION_SCHEMA);
+    }
   }
 
   /**
