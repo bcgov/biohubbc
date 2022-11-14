@@ -32,10 +32,10 @@ describe('xlsx/validate', () => {
             const response = requestValidator.validateRequest(request);
 
             expect(response.status).to.equal(400);
-            expect(response.errors[0].path).to.equal('project_id');
-            expect(response.errors[1].path).to.equal('occurrence_submission_id');
-            expect(response.errors[0].message).to.equal(`must have required property 'project_id'`);
-            expect(response.errors[1].message).to.equal(`must have required property 'occurrence_submission_id'`);
+            expect(response.errors[0].path).to.equal('occurrence_submission_id');
+            expect(response.errors[1].path).to.equal('survey_id');
+            expect(response.errors[0].message).to.equal(`must have required property 'occurrence_submission_id'`);
+            expect(response.errors[1].message).to.equal(`must have required property 'survey_id'`);
             expect(response.errors[2]).to.be.undefined;
           });
 
@@ -45,7 +45,7 @@ describe('xlsx/validate', () => {
                 'content-type': 'application/json'
               },
 
-              body: { project_id: 1 }
+              body: { survey_id: 1 }
             };
 
             const response = requestValidator.validateRequest(request);
@@ -61,25 +61,25 @@ describe('xlsx/validate', () => {
                 'content-type': 'application/json'
               },
 
-              body: { project_id: undefined, occurrence_submission_id: undefined }
+              body: { survey_id: undefined, occurrence_submission_id: undefined }
             };
 
             const response = requestValidator.validateRequest(request);
 
             expect(response.status).to.equal(400);
-            expect(response.errors[0].path).to.equal('project_id');
-            expect(response.errors[1].path).to.equal('occurrence_submission_id');
-            expect(response.errors[0].message).to.equal(`must have required property 'project_id'`);
-            expect(response.errors[1].message).to.equal(`must have required property 'occurrence_submission_id'`);
+            expect(response.errors[0].path).to.equal('occurrence_submission_id');
+            expect(response.errors[1].path).to.equal('survey_id');
+            expect(response.errors[0].message).to.equal(`must have required property 'occurrence_submission_id'`);
+            expect(response.errors[1].message).to.equal(`must have required property 'survey_id'`);
             expect(response.errors[2]).to.be.undefined;
           });
         });
 
-        describe('project_id and occurrence_submission_id', () => {
-          it('have invalid type', async () => {
+        describe('survey_id and occurrence_submission_id', () => {
+          it('have invalid type ', async () => {
             const request = {
               headers: { 'content-type': 'application/json' },
-              body: { project_id: 'not a number', occurrence_submission_id: 'not a number' }
+              body: { survey_id: 'not a number', occurrence_submission_id: 'not a number' }
             };
 
             const response = requestValidator.validateRequest(request);
@@ -95,7 +95,7 @@ describe('xlsx/validate', () => {
         it('required values are valid', async () => {
           const request = {
             headers: { 'content-type': 'application/json' },
-            body: { project_id: 1, occurrence_submission_id: 2 }
+            body: { survey_id: 1, occurrence_submission_id: 2 }
           };
 
           const response = requestValidator.validateRequest(request);
