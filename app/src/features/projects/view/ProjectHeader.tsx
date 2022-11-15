@@ -23,24 +23,19 @@ import {
   mdiTrashCanOutline
 } from '@mdi/js';
 import Icon from '@mdi/react';
-import EditDialog from 'components/dialog/EditDialog';
-// import clsx from 'clsx';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { DeleteProjectI18N } from 'constants/i18n';
-// import { ProjectStatusType } from 'constants/misc';
 import { SYSTEM_ROLE } from 'constants/roles';
 import { AuthStateContext } from 'contexts/authStateContext';
 import { DialogContext } from 'contexts/dialogContext';
-import { FormikProps } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
-import { ICreateProjectRequest, IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
-import React, { useContext, useRef, useState } from 'react';
+import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
+import React, { useContext } from 'react';
 import { useHistory } from 'react-router';
 import { getFormattedDateRangeString } from 'utils/Utils';
-import CreateProjectForm, { validationProjectYupSchema } from '../create/CreateProjectForm';
 
 const useStyles = makeStyles((theme: Theme) => ({
   titleActions: {
@@ -127,10 +122,6 @@ const ProjectHeader: React.FC<IProjectHeaderProps> = (props) => {
 
   const { keycloakWrapper } = useContext(AuthStateContext);
 
-  const formikRef = useRef<FormikProps<ICreateProjectRequest>>(null);
-
-  const [openEditDialog, setOpenEditDialog] = useState(false);
-
   const codesDataLoader = useDataLoader(() => biohubApi.codes.getAllCodeSets());
   codesDataLoader.load();
 
@@ -191,21 +182,6 @@ const ProjectHeader: React.FC<IProjectHeaderProps> = (props) => {
     dialogContext.setErrorDialog({ ...deleteErrorDialogProps, ...textDialogProps, open: true });
   };
 
-  // const getChipIcon = (status_name: string) => {
-  //   let chipLabel;
-  //   let chipStatusClass;
-
-  //   if (ProjectStatusType.ACTIVE === status_name) {
-  //     chipLabel = 'Active';
-  //     chipStatusClass = classes.chipActive;
-  //   } else if (ProjectStatusType.COMPLETED === status_name) {
-  //     chipLabel = 'Complete';
-  //     chipStatusClass = classes.chipCompleted;
-  //   }
-
-  //   return <Chip size="small" className={clsx(classes.chip, chipStatusClass)} label={chipLabel} />;
-  // };
-
   // Show delete button if you are a system admin or a project admin
   const showDeleteProjectButton = keycloakWrapper?.hasSystemRole([
     SYSTEM_ROLE.SYSTEM_ADMIN,
@@ -230,28 +206,6 @@ const ProjectHeader: React.FC<IProjectHeaderProps> = (props) => {
 
   return (
     <Paper square={true} elevation={0}>
-      <EditDialog
-        dialogTitle="Edit Project"
-        dialogSaveButtonLabel="Save"
-        open={openEditDialog}
-        component={{
-          element: (
-            <CreateProjectForm
-              handleSubmit={() => alert('submit')}
-              handleCancel={() => setOpenEditDialog(false)}
-              handleDraft={() => {}}
-              handleDeleteDraft={() => {}}
-              codes={codesDataLoader.data}
-              formikRef={formikRef}
-            />
-          ),
-          initialValues: { projectWithDetails },
-          validationSchema: validationProjectYupSchema
-        }}
-        onCancel={() => setOpenEditDialog(false)}
-        onSave={(values) => alert(values)}
-      />
-
       <Container maxWidth="xl">
         <Box py={4}>
           <Box mb={3}>
@@ -333,7 +287,7 @@ const ProjectHeader: React.FC<IProjectHeaderProps> = (props) => {
                   </ListItemIcon>
                   <Typography variant="inherit">Manage Project Team</Typography>
                 </MenuItem>
-                <MenuItem onClick={() => setOpenEditDialog(true)}>
+                <MenuItem onClick={() => history.push(`/admin/projects/edit?projectId=${projectWithDetails.id}`)}>
                   <ListItemIcon>
                     <Icon path={mdiPencilOutline} size={0.8} />
                   </ListItemIcon>

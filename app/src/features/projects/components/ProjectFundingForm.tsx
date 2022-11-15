@@ -28,13 +28,13 @@ import ProjectFundingItemForm, {
 
 export interface IProjectFundingForm {
   funding: {
-    funding_sources: IProjectFundingFormArrayItem[];
+    fundingSources: IProjectFundingFormArrayItem[];
   };
 }
 
 export const ProjectFundingFormInitialValues: IProjectFundingForm = {
   funding: {
-    funding_sources: []
+    fundingSources: []
   }
 };
 
@@ -113,7 +113,7 @@ const ProjectFundingForm: React.FC<IProjectFundingFormProps> = (props) => {
           startIcon={<Icon path={mdiPlus} size={1} />}
           onClick={() => {
             setCurrentProjectFundingFormArrayItem({
-              index: values.funding.funding_sources.length,
+              index: values.funding.fundingSources.length,
               values: ProjectFundingFormArrayItemInitialValues
             });
             setIsModalOpen(true);
@@ -122,7 +122,7 @@ const ProjectFundingForm: React.FC<IProjectFundingFormProps> = (props) => {
         </Button>
         <Box>
           <FieldArray
-            name="funding.funding_sources"
+            name="funding.fundingSources"
             render={(arrayHelpers) => (
               <Box mb={2}>
                 <EditDialog
@@ -140,7 +140,7 @@ const ProjectFundingForm: React.FC<IProjectFundingFormProps> = (props) => {
                   }}
                   onCancel={() => setIsModalOpen(false)}
                   onSave={(projectFundingItemValues) => {
-                    if (currentProjectFundingFormArrayItem.index < values.funding.funding_sources.length) {
+                    if (currentProjectFundingFormArrayItem.index < values.funding.fundingSources.length) {
                       // Update an existing item
                       arrayHelpers.replace(currentProjectFundingFormArrayItem.index, projectFundingItemValues);
                     } else {
@@ -153,7 +153,7 @@ const ProjectFundingForm: React.FC<IProjectFundingFormProps> = (props) => {
                   }}
                 />
                 <List dense disablePadding>
-                  {values.funding.funding_sources.map((fundingSource, index) => {
+                  {values.funding.fundingSources.map((fundingSource, index) => {
                     const investment_action_category_label =
                       (fundingSource.agency_id === 1 && 'Investment Action') ||
                       (fundingSource.agency_id === 2 && 'Investment Category') ||
@@ -179,7 +179,7 @@ const ProjectFundingForm: React.FC<IProjectFundingFormProps> = (props) => {
                             onClick={() => {
                               setCurrentProjectFundingFormArrayItem({
                                 index: index,
-                                values: values.funding.funding_sources[index]
+                                values: values.funding.fundingSources[index]
                               });
                               setIsModalOpen(true);
                             }}>
