@@ -14,7 +14,7 @@ import ProjectObjectives from 'features/projects/view/components/ProjectObjectiv
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import React from 'react';
-// import { grey } from '@material-ui/core/colors';
+import { grey } from '@material-ui/core/colors';
 
 export interface IProjectDetailsProps {
   projectForViewData: IGetProjectForViewResponse;
@@ -46,7 +46,9 @@ const useStyles = makeStyles((theme: Theme) => ({
   projectMetaSectionHeader: {
     fontSize: '14px',
     fontWeight: 700,
+    letterSpacing: '0.02rem',
     textTransform: 'uppercase',
+    color: grey[600],
     '& + hr': {
       marginTop: theme.spacing(1.5),
       marginBottom: theme.spacing(1.5)

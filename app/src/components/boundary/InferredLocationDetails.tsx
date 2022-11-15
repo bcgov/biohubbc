@@ -4,6 +4,7 @@ import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
 import React from 'react';
+import { grey } from '@material-ui/core/colors';
 
 const useStyles = makeStyles((theme: Theme) => ({
   boundaryGroup: {
@@ -28,10 +29,13 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
   },
   metaSectionHeader: {
-    marginBottom: theme.spacing(1.5),
-    color: theme.palette.text.primary,
+    color: grey[600],
     fontWeight: 700,
-    textTransform: 'uppercase'
+    textTransform: 'uppercase',
+    '& + hr': {
+      marginTop: theme.spacing(0.75),
+      marginBottom: theme.spacing(0.75)
+    }
   }
 }));
 
@@ -55,11 +59,11 @@ const InferredLocationDetails: React.FC<IInferredLocationDetailsProps> = (props)
 
     return (
       <>
-        <Box className={classes.boundaryGroup}>
-          <Divider style={{ marginTop: '20px', marginBottom: '20px' }}></Divider>
+        <Box className={classes.boundaryGroup} mt={3}>
           <Typography variant="body2" component="h3" className={classes.metaSectionHeader}>
             {type} ({data.length})
           </Typography>
+          <Divider></Divider>
           <Box component="ul" className={classes.boundaryList}>
             {data.map((item: string, index: number) => (
               <Typography key={index} variant="body1" component="li" color="textSecondary">

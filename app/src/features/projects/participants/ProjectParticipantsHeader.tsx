@@ -7,7 +7,7 @@ import Paper from '@material-ui/core/Paper';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
-import { mdiPlus } from '@mdi/js';
+import { mdiChevronRight, mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
 import EditDialog from 'components/dialog/EditDialog';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
@@ -107,8 +107,8 @@ const ProjectParticipantsHeader: React.FC<IProjectParticipantsHeaderProps> = (pr
     <Paper square elevation={0}>
       <Container maxWidth="xl">
         <Box py={4}>
-          <Box mb={3}>
-            <Breadcrumbs>
+          <Box mb={2}>
+            <Breadcrumbs separator={<Icon path={mdiChevronRight} size={0.8} />}>
               <Link color="primary" onClick={() => history.push('/admin/projects')} aria-current="page">
                 Projects
               </Link>

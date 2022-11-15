@@ -156,6 +156,7 @@ const appTheme = createMuiTheme({
     MuiTable: {
       root: {
         '& th': {
+          letterSpacing: '0.02rem',
           textTransform: 'uppercase'
         },
         '& tr:last-of-type td': {
