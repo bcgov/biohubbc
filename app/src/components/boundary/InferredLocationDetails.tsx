@@ -9,9 +9,9 @@ const useStyles = makeStyles((theme: Theme) => ({
   boundaryGroup: {
     clear: 'both',
     overflow: 'hidden',
-    "&:first-child": {
+    '&:first-child': {
       '& hr': {
-        display: "none"
+        display: 'none'
       }
     }
   },
@@ -32,7 +32,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     color: theme.palette.text.primary,
     fontWeight: 700,
     textTransform: 'uppercase'
-  },
+  }
 }));
 
 export interface IInferredLayers {
@@ -55,20 +55,20 @@ const InferredLocationDetails: React.FC<IInferredLocationDetailsProps> = (props)
 
     return (
       <>
-      <Box className={classes.boundaryGroup}>
-        <Divider style={{marginTop: '20px', marginBottom: '20px'}}></Divider>
-        <Typography variant="body2" component="h3" className={classes.metaSectionHeader}>
-          {type} ({data.length})
-        </Typography>
-        <Box component="ul" className={classes.boundaryList}>
-          {data.map((item: string, index: number) => (
-            <Typography key={index} variant="body1" component="li" color="textSecondary">
-              {item}
-              {index < data.length - 1 && ', '}
-            </Typography>
-          ))}
+        <Box className={classes.boundaryGroup}>
+          <Divider style={{ marginTop: '20px', marginBottom: '20px' }}></Divider>
+          <Typography variant="body2" component="h3" className={classes.metaSectionHeader}>
+            {type} ({data.length})
+          </Typography>
+          <Box component="ul" className={classes.boundaryList}>
+            {data.map((item: string, index: number) => (
+              <Typography key={index} variant="body1" component="li" color="textSecondary">
+                {item}
+                {index < data.length - 1 && ', '}
+              </Typography>
+            ))}
+          </Box>
         </Box>
-      </Box>
       </>
     );
   };

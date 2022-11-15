@@ -6,14 +6,21 @@ import Button from '@material-ui/core/Button';
 import Container from '@material-ui/core/Container';
 // import IconButton from '@material-ui/core/IconButton';
 import Link from '@material-ui/core/Link';
-import Paper from '@material-ui/core/Paper';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
+import Paper from '@material-ui/core/Paper';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
-import { mdiAccountMultipleOutline, mdiCalendarRangeOutline, mdiChevronDown, mdiCogOutline, mdiPencilOutline, mdiTrashCanOutline } from '@mdi/js';
+import {
+  mdiAccountMultipleOutline,
+  mdiCalendarRangeOutline,
+  mdiChevronDown,
+  mdiCogOutline,
+  mdiPencilOutline,
+  mdiTrashCanOutline
+} from '@mdi/js';
 import Icon from '@mdi/react';
 // import clsx from 'clsx';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
@@ -59,7 +66,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   projectTitle: {
     display: '-webkit-box',
     '-webkit-line-clamp': 2,
-    '-webkit-box-orient': 'vertical', 
+    '-webkit-box-orient': 'vertical',
     paddingTop: theme.spacing(0.5),
     paddingBottom: theme.spacing(0.5),
     overflow: 'hidden'
@@ -209,16 +216,16 @@ const ProjectHeader: React.FC<IProjectHeaderProps> = (props) => {
     <Paper square={true} elevation={0}>
       <Container maxWidth="xl">
         <Box py={4}>
-
           <Box mb={3}>
             <Breadcrumbs>
-              <Link
-                color="primary"
-                onClick={() => history.push('/admin/projects')}
-                aria-current="page">
-                <Typography variant="body1" component="span">Projects</Typography>
+              <Link color="primary" onClick={() => history.push('/admin/projects')} aria-current="page">
+                <Typography variant="body1" component="span">
+                  Projects
+                </Typography>
               </Link>
-              <Typography variant="body1" component="span">{projectWithDetails.project.project_name}</Typography>
+              <Typography variant="body1" component="span">
+                {projectWithDetails.project.project_name}
+              </Typography>
             </Breadcrumbs>
           </Box>
 
@@ -229,10 +236,14 @@ const ProjectHeader: React.FC<IProjectHeaderProps> = (props) => {
               </Typography>
               <Box mt={1} display="flex" alignItems="center">
                 {/* {getChipIcon(projectWithDetails.project.completion_status)} */}
-                <Typography component="span" variant="subtitle1" color="textSecondary" style={{display: 'flex', alignItems: 'center'}}>
+                <Typography
+                  component="span"
+                  variant="subtitle1"
+                  color="textSecondary"
+                  style={{ display: 'flex', alignItems: 'center' }}>
                   {projectWithDetails.project.end_date ? (
                     <>
-                      <Icon path={mdiCalendarRangeOutline} size={0.8} style={{marginRight: '0.5rem'}}/>
+                      <Icon path={mdiCalendarRangeOutline} size={0.8} style={{ marginRight: '0.5rem' }} />
                       <strong>Project Timeline:&nbsp;&nbsp;</strong>
                       {getFormattedDateRangeString(
                         DATE_FORMAT.ShortMediumDateFormat,
@@ -262,7 +273,8 @@ const ProjectHeader: React.FC<IProjectHeaderProps> = (props) => {
                 onClick={handleClick}>
                 Project Settings
               </Button>
-              <Menu style={{marginTop: '8px'}}
+              <Menu
+                style={{ marginTop: '8px' }}
                 id="projectSettingsMenu"
                 anchorEl={anchorEl}
                 getContentAnchorEl={null}
@@ -276,8 +288,7 @@ const ProjectHeader: React.FC<IProjectHeaderProps> = (props) => {
                 }}
                 keepMounted
                 open={Boolean(anchorEl)}
-                onClose={handleClose}
-              >
+                onClose={handleClose}>
                 <MenuItem onClick={() => history.push('users')}>
                   <ListItemIcon>
                     <Icon path={mdiAccountMultipleOutline} size={0.8} />
@@ -301,7 +312,6 @@ const ProjectHeader: React.FC<IProjectHeaderProps> = (props) => {
               </Menu>
             </Box>
           </Box>
-
         </Box>
       </Container>
     </Paper>

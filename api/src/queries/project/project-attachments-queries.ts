@@ -511,6 +511,7 @@ export const getProjectReportAttachmentSQL = (projectId: number, attachmentId: n
       file_size,
       key,
       security_token,
+      security_review_timestamp,
       revision_count
     FROM
       project_report_attachment

@@ -22,11 +22,11 @@ import {
   mdiCheckboxOutline,
   mdiDotsVertical,
   mdiInformationOutline,
+  mdiLockOpenCheckOutline,
   mdiLockOpenVariantOutline,
   mdiLockOutline,
   mdiTrashCanOutline,
-  mdiTrayArrowDown,
-  mdiLockOpenCheckOutline
+  mdiTrayArrowDown
 } from '@mdi/js';
 import Icon from '@mdi/react';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
@@ -437,7 +437,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
                           <Chip
                             size="small"
                             color="secondary"
-                            label={row.securityReason? row.securityReason : 'Pending review'}
+                            label={!row.securityReviewTimestamp ? 'reason?' : 'Pending review'}
                             icon={<Icon path={mdiAlertCircle} size={0.8} />}
                             onClick={openDrawer}
                           />
@@ -447,7 +447,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
                           <Chip
                             size="small"
                             color="primary"
-                            label='Unsecured'
+                            label="Unsecured"
                             icon={<Icon path={mdiLockOpenCheckOutline} size={0.8} />}
                             onClick={openDrawer}
                           />

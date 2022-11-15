@@ -170,7 +170,7 @@ export interface IGetSurveyAttachment {
   lastModified: string;
   size: number;
   securityToken: any;
-  securityReason: string;
+  securityReviewTimestamp: string;
   revisionCount: number;
 }
 

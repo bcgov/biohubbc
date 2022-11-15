@@ -185,7 +185,22 @@ export function getProjectReportMetaData(): RequestHandler {
 
       const getReportAuthorsData = reportAuthorsData && reportAuthorsData.rows;
 
-      const reportMetaObj = new GetReportAttachmentMetadata(getReportMetaData, getReportAuthorsData);
+      const securityObj = [
+        {
+          category: 'my category 1',
+          sub_category: 'my sub_category 1',
+          reason: 'my_reason 1',
+          date: 'my expiry date 1'
+        },
+        {
+          category: 'my category 2',
+          sub_category: 'my sub_category 2',
+          reason: 'my_reason 2',
+          date: 'my expiry date 2'
+        }
+      ];
+
+      const reportMetaObj = new GetReportAttachmentMetadata(getReportMetaData, getReportAuthorsData, securityObj);
 
       return res.status(200).json(reportMetaObj);
     } catch (error) {

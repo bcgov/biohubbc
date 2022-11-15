@@ -76,7 +76,6 @@ const ProjectDetails: React.FC<IProjectDetailsProps> = (props) => {
       </Toolbar>
       <Divider></Divider>
       <Box p={3}>
-        
         <Box component="section">
           <Typography component="h4" className={classes.projectMetaSectionHeader}>
             Project Objectives
@@ -85,14 +84,14 @@ const ProjectDetails: React.FC<IProjectDetailsProps> = (props) => {
           <Typography color="textSecondary" className={classes.projectMetaObjectives}>
             Snow depths were recorded along with observations of animal tracks on the areas at irregular intervals
             throughout each winter. Fecal pellet group counts were carried out over a period of several years to
-            determine relative moose use of the This paper reports on some aspects of the ecology of a winter range
-            used by a migratory moose population.
+            determine relative moose use of the This paper reports on some aspects of the ecology of a winter range used
+            by a migratory moose population.
           </Typography>
           <Button className={classes.readMoreButton} variant="text" color="primary" size="small">
             READ MORE...
           </Button>
         </Box>
-        
+
         <Box component="section">
           <Typography component="h4" className={classes.projectMetaSectionHeader}>
             General Information

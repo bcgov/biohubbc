@@ -3,6 +3,8 @@ import Container from '@material-ui/core/Container';
 import Divider from '@material-ui/core/Divider';
 import Link from '@material-ui/core/Link';
 import Paper from '@material-ui/core/Paper';
+import { Theme } from '@material-ui/core/styles/createMuiTheme';
+import makeStyles from '@material-ui/core/styles/makeStyles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -10,8 +12,6 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Toolbar from '@material-ui/core/Toolbar';
-import { Theme } from '@material-ui/core/styles/createMuiTheme';
-import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
 // import { mdiAccountOutline  } from '@mdi/js';
 // import Icon from '@mdi/react';
@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   projectTitle: {
     display: '-webkit-box',
     '-webkit-line-clamp': 2,
-    '-webkit-box-orient': 'vertical', 
+    '-webkit-box-orient': 'vertical',
     paddingTop: theme.spacing(0.5),
     paddingBottom: theme.spacing(0.5),
     overflow: 'hidden'
@@ -40,7 +40,7 @@ const useStyles = makeStyles((theme: Theme) => ({
  */
 const AdminDashboard: React.FC = () => {
   const classes = useStyles();
-  
+
   return (
     <>
       <Paper square={true} elevation={0}>
@@ -52,7 +52,11 @@ const AdminDashboard: React.FC = () => {
                   Welcome, <span>John Smith</span>
                 </Typography>
                 <Box mt={1} display="flex" alignItems="center">
-                  <Typography component="span" variant="subtitle1" color="textSecondary" style={{ display: 'flex', alignItems: 'center' }}>
+                  <Typography
+                    component="span"
+                    variant="subtitle1"
+                    color="textSecondary"
+                    style={{ display: 'flex', alignItems: 'center' }}>
                     You have&nbsp;<strong>11 documents</strong>&nbsp;to review
                   </Typography>
                 </Box>
@@ -65,30 +69,39 @@ const AdminDashboard: React.FC = () => {
         <Box py={3}>
           <Paper elevation={0}>
             <Box>
-              <Toolbar style={{display: 'flex', justifyContent: 'space-between'}}>
-                <Typography variant="h4" component="h2">Security Reviews <Typography component="span" color="textSecondary">(2)</Typography></Typography>
+              <Toolbar style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <Typography variant="h4" component="h2">
+                  Security Reviews{' '}
+                  <Typography component="span" color="textSecondary">
+                    (2)
+                  </Typography>
+                </Typography>
               </Toolbar>
               <Divider></Divider>
               <TableContainer>
-                <Table style={{tableLayout: 'fixed'}}>
+                <Table style={{ tableLayout: 'fixed' }}>
                   <TableHead>
                     <TableRow>
                       <TableCell>Project Name</TableCell>
                       <TableCell>Last Modified</TableCell>
                       <TableCell width={300}>Files to Review</TableCell>
-                    </TableRow> 
+                    </TableRow>
                   </TableHead>
                   <TableBody>
                     <TableRow>
                       <TableCell>
-                        <Link href="#" underline="always" style={{fontWeight: 700}}>Species Inventory Project Name</Link>
+                        <Link href="#" underline="always" style={{ fontWeight: 700 }}>
+                          Species Inventory Project Name
+                        </Link>
                       </TableCell>
                       <TableCell>YYYY-MM-DD</TableCell>
                       <TableCell>5</TableCell>
                     </TableRow>
                     <TableRow>
                       <TableCell>
-                        <Link href="#" underline="always" style={{fontWeight: 700}}>Species Inventory Project Name</Link>
+                        <Link href="#" underline="always" style={{ fontWeight: 700 }}>
+                          Species Inventory Project Name
+                        </Link>
                       </TableCell>
                       <TableCell>YYYY-MM-DD</TableCell>
                       <TableCell>6</TableCell>
