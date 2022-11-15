@@ -63,7 +63,7 @@ export class SummaryService extends DBService {
       const submissionPrep = await this.summaryTemplatePreparation(summarySubmissionId);
 
       // Next, validate the summary template
-      await this.summaryTemplateValidation(submissionPrep.xlsx, surveyId);
+      await this.summaryTemplateValidation(submissionPrep.xlsx, surveyId, summarySubmissionId);
     } catch (error) {
       if (error instanceof SummarySubmissionError) {
         // If any summary submission parsing or file errors are thrown, persist them
@@ -191,7 +191,7 @@ export class SummaryService extends DBService {
    * @param {number} [summarySubmissionId]
    */
   async summaryTemplateValidation(xlsx: XLSXCSV, surveyId: number, summarySubmissionId?: number) {
-    defaultLog.debug({ label: 'summaryTemplateValidation' });
+    defaultLog.debug({ label: 'summaryTemplateValidation', data: { surveyId, summarySubmissionId } });
     try {
       const summaryTemplateSpeciesRecords = await this.getSummaryTemplateSpeciesRecords(xlsx, surveyId);
 

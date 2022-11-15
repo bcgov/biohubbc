@@ -397,31 +397,12 @@ export class SummaryRepository extends BaseRepository {
   ): Promise<ISummaryTemplateSpeciesData[]> {
     const templateRow = await this.getSummaryTemplateIdFromNameVersion(templateName, templateVersion);
 
-    /*
-    const sqlStatement = SQL`
-      SELECT
-        *
-      FROM
-        summary_template_species sts
-      WHERE
-        sts.summary_template_id = ${templateRow.summary_template_id}
-      AND (
-        sts.wldtaxonomic_units_id IN (${species})
-      OR
-        sts.wldtaxonomic_units_id IS NULL
-      );
-    `;
-    */
-
     const queryBuilder = getKnex()
       .select()
-      .fromRaw('summary_template_species sumts')
-      .where('sumts.summary_template_id', templateRow.summary_template_id)
-      .and.whereIn('sumts.wldtaxonomic_units_id', species || [])
-      .or.where('sumts.wldtaxonomic_units_id', null);
-
-    const { sql, bindings } = queryBuilder.toSQL().toNative()
-    defaultLog.debug({ sql: String(sql), bindings});
+      .fromRaw('summary_template_species sts')
+      .where('sts.summary_template_id', templateRow.summary_template_id)
+      .and.whereIn('sts.wldtaxonomic_units_id', species || [])
+      .or.where('sts.wldtaxonomic_units_id', null);
     
     const response = await this.connection.knex<ISummaryTemplateSpeciesData>(queryBuilder);
 
