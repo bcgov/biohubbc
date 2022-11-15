@@ -25,7 +25,8 @@ export const getProjectAttachmentsSQL = (projectId: number): SQLStatement | null
       create_date,
       file_size,
       key,
-      security_token
+      security_token,
+      security_review_timestamp
     from
       project_attachment
     where
@@ -54,7 +55,8 @@ export const getProjectReportAttachmentsSQL = (projectId: number): SQLStatement 
       create_date,
       file_size,
       key,
-      security_token
+      security_token,
+      security_review_timestamp
     from
       project_report_attachment
     where

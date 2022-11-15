@@ -24,7 +24,8 @@ export class GetAttachmentsData {
             fileType: item.file_type || 'Report',
             lastModified: moment(item.update_date || item.create_date).toISOString(),
             size: item.file_size,
-            securityToken: item.security_token
+            securityToken: item.security_token,
+            securityReason: item.security_review_timestamp
           };
         })) ||
       [];
