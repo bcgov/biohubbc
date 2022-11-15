@@ -33,7 +33,7 @@ const GeneralInformation: React.FC<IProjectDetailsProps> = (props) => {
     <Box component="dl" my={0}>
       <Box display="flex">
         <Typography component="dt" color="textSecondary">
-          Project Type
+          Type
         </Typography>
         <Typography component="dd">
           {codes?.project_type?.find((item: any) => item.id === project.project_type)?.name}

@@ -14,7 +14,7 @@ import ProjectObjectives from 'features/projects/view/components/ProjectObjectiv
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import React from 'react';
-// import { grey } from '@material-ui/core/colors';
+import { grey } from '@material-ui/core/colors';
 
 export interface IProjectDetailsProps {
   projectForViewData: IGetProjectForViewResponse;
@@ -26,26 +26,29 @@ const useStyles = makeStyles((theme: Theme) => ({
   projectTitle: {
     fontWeight: 400
   },
-  projectMetadataSections: {
-    '& dl': {
-      borderRadius: '6px'
-      // backgroundColor: grey[100]
+  projectMetadata: {
+    '& section + section': {
+      marginTop: theme.spacing(2.5)
+    },
+    '& dl div': {
+      borderTopStyle: 'solid',
+      borderTopWidth: '1px',
+      borderColor: grey[300],
+      paddingTop: '6px',
+      paddingBottom: '6px'
     },
     '& dt': {
-      flex: '0 0 50%'
+      flex: '0 0 40%'
     },
     '& dd': {
       flex: '1 1 auto'
     }
   },
   projectMetaSectionHeader: {
-    marginBottom: theme.spacing(1.5),
+    marginBottom: '2px',
     fontSize: '14px',
     fontWeight: 700,
-    textTransform: 'uppercase',
-    '& + hr': {
-      marginBottom: theme.spacing(1)
-    }
+    textTransform: 'uppercase'
   },
   projectMetaObjectives: {
     display: '-webkit-box',
@@ -72,60 +75,58 @@ const ProjectDetails: React.FC<IProjectDetailsProps> = (props) => {
         </Typography>
       </Toolbar>
       <Divider></Divider>
-      <Box py={2.75} px={3} className={classes.projectMetadataSections}>
-        <Box component="section" mb={2}>
+      <Box py={2.75} px={3} className={classes.projectMetadata}>
+        <Box component="section">
           <Typography component="h4" className={classes.projectMetaSectionHeader}>
             Project Objectives
           </Typography>
-          <Divider></Divider>
+          <Divider style={{marginTop: '10px'}}></Divider>
           <Box py={1}>
             <ProjectObjectives projectForViewData={projectForViewData} codes={codes} refresh={refresh} />
           </Box>
         </Box>
 
-        <Box component="section" mb={2}>
+        <Box component="section">
           <Typography component="h4" className={classes.projectMetaSectionHeader}>
             General Information
           </Typography>
-          <Divider></Divider>
-          <Box py={1}>
+          <Box mt="10px">
             <GeneralInformation projectForViewData={projectForViewData} codes={codes} refresh={refresh} />
-          </Box>
-        </Box>
-
-        <Box component="section" mb={2}>
-          <Typography component="h4" className={classes.projectMetaSectionHeader}>
-            Project Coordinator
-          </Typography>
-          <Divider></Divider>
-          <Box py={1}>
-            <ProjectCoordinator projectForViewData={projectForViewData} codes={codes} refresh={refresh} />
-          </Box>
-        </Box>
-
-        <Box component="section" mb={1}>
-          <Typography component="h4" className={classes.projectMetaSectionHeader}>
-            Funding Sources
-          </Typography>
-          <Divider></Divider>
-          <FundingSource projectForViewData={projectForViewData} codes={codes} refresh={refresh} />
-        </Box>
-
-        <Box component="section" mb={2}>
-          <Typography component="h4" className={classes.projectMetaSectionHeader}>
-            Partnerships
-          </Typography>
-          <Divider></Divider>
-          <Box py={1}>
-            <Partnerships projectForViewData={projectForViewData} codes={codes} refresh={refresh} />
           </Box>
         </Box>
 
         <Box component="section">
           <Typography component="h4" className={classes.projectMetaSectionHeader}>
+            Project Coordinator
+          </Typography>
+          <Divider style={{marginTop: '10px'}}></Divider>
+          <Box py="6px">
+            <ProjectCoordinator projectForViewData={projectForViewData} codes={codes} refresh={refresh} />
+          </Box>
+        </Box>
+
+        <Box component="section">
+          <Typography component="h4" className={classes.projectMetaSectionHeader}>
+            Funding Sources
+          </Typography>
+          <Divider style={{marginTop: '10px'}}></Divider>
+          <FundingSource projectForViewData={projectForViewData} codes={codes} refresh={refresh} />
+        </Box>
+
+        <Box component="section">
+          <Typography component="h4" className={classes.projectMetaSectionHeader}>
+            Partnerships
+          </Typography>
+          <Box mt="10px">
+            <Partnerships projectForViewData={projectForViewData} codes={codes} refresh={refresh} />
+          </Box>
+        </Box>
+
+        <Box component="section" mb={0}>
+          <Typography component="h4" className={classes.projectMetaSectionHeader}>
             IUCN Classification
           </Typography>
-          <Divider></Divider>
+          <Divider style={{marginTop: '10px'}}></Divider>
           <IUCNClassification projectForViewData={projectForViewData} codes={codes} refresh={refresh} />
         </Box>
       </Box>
