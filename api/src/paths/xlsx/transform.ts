@@ -49,6 +49,9 @@ POST.apiDoc = {
               description: 'A survey occurrence submission ID',
               type: 'number',
               example: 1
+            },
+            survey_id: {
+              type: 'number'
             }
           }
         }
@@ -93,8 +96,9 @@ POST.apiDoc = {
 };
 
 export function transform(): RequestHandler {
-  return async (req, res, next) => {
+  return async (req, res) => {
     const submissionId = req.body.occurrence_submission_id;
+    const surveyId = req.body.survey_id;
     if (!submissionId) {
       throw new HTTP400('Missing required parameter `occurrence field`');
     }
@@ -106,7 +110,7 @@ export function transform(): RequestHandler {
       await connection.open();
 
       const service = new ValidationService(connection);
-      await service.transformFile(submissionId);
+      await service.transformFile(submissionId, surveyId);
 
       await connection.commit();
     } catch (error) {
