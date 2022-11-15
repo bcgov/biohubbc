@@ -42,9 +42,9 @@ const Partnerships: React.FC<IPartnershipsProps> = (props) => {
 
         {!hasIndigenousPartnerships && <Typography component="dd">None</Typography>}
       </Box>
-      <Box display="flex" mt={1}>
+      <Box display="flex">
         <Typography component="dt" color="textSecondary">
-          Other
+          Other Partnerships
         </Typography>
         {stakeholder_partnerships?.map((stakeholderPartnership: string, index: number) => {
           return (

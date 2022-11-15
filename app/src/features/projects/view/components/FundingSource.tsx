@@ -38,15 +38,17 @@ const FundingSource: React.FC<IProjectFundingProps> = (props) => {
       <List disablePadding>
         {hasFundingSources &&
           funding.fundingSources.map((item: any, index: number) => (
-            <ListItem disableGutters divider key={item.id}>
+            <ListItem disableGutters divider key={item.id} style={{padding: 0}}>
               <Box flex="1 1 auto">
-                <Typography component="div">
-                  {item.agency_name}
-                  {item.investment_action_category_name !== 'Not Applicable' && (
-                    <Typography component="span">&nbsp;({item.investment_action_category_name})</Typography>
-                  )}
-                </Typography>
-                <Box component="dl" mt={1} mb={0} className={classes.fundingSourceMeta}>
+                <Box py={1}>
+                  <Typography component="span">
+                    {item.agency_name}
+                    {item.investment_action_category_name !== 'Not Applicable' && (
+                      <Typography component="span">&nbsp;({item.investment_action_category_name})</Typography>
+                    )}
+                  </Typography>
+                </Box>
+                <Box component="dl" m={0} className={classes.fundingSourceMeta}>
                   <Box display="flex">
                     <Typography component="dt" color="textSecondary">
                       Project ID
