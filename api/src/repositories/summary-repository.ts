@@ -1,5 +1,6 @@
 import SQL from 'sql-template-strings';
 import { MESSAGE_CLASS_NAME, SUMMARY_SUBMISSION_MESSAGE_TYPE } from '../constants/status';
+import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { HTTP400 } from '../errors/http-error';
 import { PostSummaryDetails } from '../models/summaryresults-create';
@@ -396,6 +397,7 @@ export class SummaryRepository extends BaseRepository {
   ): Promise<ISummaryTemplateSpeciesData[]> {
     const templateRow = await this.getSummaryTemplateIdFromNameVersion(templateName, templateVersion);
 
+    /*
     const sqlStatement = SQL`
       SELECT
         *
@@ -409,11 +411,21 @@ export class SummaryRepository extends BaseRepository {
         sts.wldtaxonomic_units_id IS NULL
       );
     `;
-    const response = await this.connection.query<ISummaryTemplateSpeciesData>(sqlStatement.text, sqlStatement.values);
-    console.log('response: ', response);
+    */
+
+    const queryBuilder = getKnex()
+      .select()
+      .fromRaw('summary_template_species sumts')
+      .where('sumts.summary_template_id', templateRow.summary_template_id)
+      .and.whereIn('sumts.wldtaxonomic_units_id', species || [])
+      .or.where('sumts.wldtaxonomic_units_id', null);
+
+    const { sql, bindings } = queryBuilder.toSQL().toNative()
+    defaultLog.debug({ sql: String(sql), bindings});
+    
+    const response = await this.connection.knex<ISummaryTemplateSpeciesData>(queryBuilder);
 
     if (!response) {
-      console.log('no response');
       throw new HTTP400('Failed to query summary template species table');
     }
 
