@@ -41,7 +41,8 @@ export interface ISecurityReason {
   category: string;
   sub_category: string;
   reason: string;
-  date: string;
+  reason_description: string;
+  date_expired: string;
 }
 
 export class PostReportAttachmentMetadata {
@@ -103,7 +104,8 @@ export class GetReportAttachmentMetadata {
             category: reason?.category,
             sub_category: reason?.sub_category,
             reason: reason?.reason,
-            date: reason?.date
+            reason_description: reason?.reason_description,
+            date_submitted: this.last_modified
           };
         })) ||
       [];

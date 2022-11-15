@@ -296,11 +296,20 @@ export interface IGetReportMetaData {
   last_modified: string;
   revision_count: number;
   authors: IGetReportAuthors[];
+  security_reasons: IGetSecurityReasons[];
 }
 
 export interface IGetReportAuthors {
   first_name: string;
   last_name: string;
+}
+
+export interface IGetSecurityReasons {
+  category: string;
+  sub_category: string;
+  reason: string;
+  reason_description: string;
+  date_expired: string;
 }
 
 export interface IGetProjectParticipantsResponseArrayItem {

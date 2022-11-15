@@ -190,18 +190,20 @@ export function getProjectReportMetaData(): RequestHandler {
           category: 'my category 1',
           sub_category: 'my sub_category 1',
           reason: 'my_reason 1',
-          date: 'my expiry date 1'
+          reason_description: 'This is the description reason for reason 1',
+          date_expired: '2020-12-12'
         },
         {
           category: 'my category 2',
           sub_category: 'my sub_category 2',
           reason: 'my_reason 2',
-          date: 'my expiry date 2'
+          reason_description: 'This is the description reason for reason 2',
+          date_expired: '2040-12-31'
         }
       ];
 
       const reportMetaObj = new GetReportAttachmentMetadata(getReportMetaData, getReportAuthorsData, securityObj);
-
+      console.log(reportMetaObj);
       return res.status(200).json(reportMetaObj);
     } catch (error) {
       defaultLog.error({ label: 'getReportMetadata', message: 'error', error });
