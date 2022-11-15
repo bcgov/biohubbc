@@ -12,7 +12,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
-import { mdiMenuDown, mdiTrashCanOutline } from '@mdi/js';
+import { mdiChevronDown, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { IYesNoDialogProps } from 'components/dialog/YesNoDialog';
@@ -220,6 +220,7 @@ const ProjectParticipantsPage: React.FC = () => {
 
             <Divider></Divider>
 
+            <Box px={1}>
             <Table className={classes.teamMembersTable}>
               <TableHead>
                 <TableRow>
@@ -292,6 +293,7 @@ const ProjectParticipantsPage: React.FC = () => {
                 )}
               </TableBody>
             </Table>
+            </Box>
           </Paper>
         </Box>
       </Container>
@@ -408,7 +410,7 @@ const ChangeProjectRoleMenu: React.FC<IChangeProjectRoleMenuProps> = (props) => 
           menuOnClick: () => handleChangeUserPermissionsClick(row, roleCode.name, roleCode.id)
         };
       })}
-      buttonEndIcon={<Icon path={mdiMenuDown} size={0.8} />}
+      buttonEndIcon={<Icon path={mdiChevronDown} size={0.8} />}
     />
   );
 };
