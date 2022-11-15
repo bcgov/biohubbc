@@ -4,7 +4,7 @@ const DB_SCHEMA = process.env.DB_SCHEMA;
 const DB_SCHEMA_DAPI_V1 = process.env.DB_SCHEMA_DAPI_V1;
 
 /**
- * Add `occurrence_submission.` column and update `occurrence_submission` view.
+ *
  *
  * @export
  * @param {Knex} knex
