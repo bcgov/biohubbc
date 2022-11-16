@@ -75,11 +75,13 @@ const appTheme = createMuiTheme({
       root: {
         textTransform: 'none',
         fontSize: '0.9rem',
-        fontWeight: 'bold',
         borderRadius: '5px'
       },
       sizeLarge: {
         fontSize: '1rem'
+      },
+      containedPrimary: {
+        fontWeight: 700
       },
       outlinedPrimary: {
         backgroundColor: '#ffffff',
