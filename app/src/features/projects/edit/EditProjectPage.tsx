@@ -199,13 +199,8 @@ const EditProjectPage: React.FC = (props) => {
           <Box py={4} display="flex" justifyContent="space-between">
             <Box className={classes.pageTitleContainer}>
               <Typography variant="h1" className={classes.pageTitle}>
-                Edit Project
+                Edit Project Details
               </Typography>
-              <Box mt={1.5} mb={0.5} display="flex" alignItems="center">
-                <Typography variant="body1" color="textSecondary">
-                  Configure and update a species inventory project
-                </Typography>
-              </Box>
             </Box>
             <Box flex="0 0 auto" className={classes.pageTitleActions}>
               <Button color="primary" variant="contained">

@@ -23,17 +23,8 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
   },
   sectionDivider: {
-    height: '1px',
     marginTop: theme.spacing(5),
     marginBottom: theme.spacing(5)
-  },
-  breadCrumbLink: {
-    display: 'flex',
-    alignItems: 'center',
-    cursor: 'pointer'
-  },
-  breadCrumbLinkIcon: {
-    marginRight: '0.25rem'
   }
 }));
 
@@ -211,18 +202,16 @@ const EditProjectForm: React.FC<IEditProjectForm> = (props) => {
         </>
       </Formik>
 
-      <Box mt={4} display="flex" justifyContent="flex-end">
+      <Box display="flex" justifyContent="flex-end">
         <Button
           type="submit"
           color="primary"
-          size="large"
           variant="contained"
           onClick={() => formikRef.current?.submitForm()}
           className={classes.actionButton}>
           Save Project
         </Button>
-
-        <Button color="primary" size="large" variant="outlined" onClick={handleCancel} className={classes.actionButton}>
+        <Button color="primary" variant="outlined" onClick={handleCancel} className={classes.actionButton}>
           Cancel
         </Button>
       </Box>
