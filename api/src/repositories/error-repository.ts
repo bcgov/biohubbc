@@ -51,7 +51,7 @@ export class ErrorRepository extends BaseRepository {
 
     if (response.rowCount !== 1) {
       throw new ApiExecuteSQLError('Failed to insert submission status record', [
-        'SubmissionRepository->insertSubmissionStatus',
+        'ErrorRepository->insertSubmissionStatus',
         'rowCount was null or undefined, expected rowCount = 1'
       ]);
     }
@@ -102,7 +102,7 @@ export class ErrorRepository extends BaseRepository {
 
     if (response.rowCount !== 1) {
       throw new ApiExecuteSQLError('Failed to insert submission message record', [
-        'SubmissionRepository->insertSubmissionMessage',
+        'ErrorRepository->insertSubmissionMessage',
         'rowCount was null or undefined, expected rowCount = 1'
       ]);
     }
