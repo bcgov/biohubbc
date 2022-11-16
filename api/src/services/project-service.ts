@@ -6,6 +6,7 @@ import { IPostIUCN, PostFundingSource, PostProjectObject } from '../models/proje
 import {
   IPutIUCN,
   PutCoordinatorData,
+  PutFundingData,
   PutFundingSource,
   PutIUCNData,
   PutLocationData,
@@ -787,26 +788,21 @@ export class ProjectService extends DBService {
   }
 
   async updateFundingData(projectId: number, entities: IUpdateProject): Promise<void> {
-    const putFundingSource = entities?.funding && new PutFundingSource(entities.funding);
+    const putFundingData = entities?.funding && new PutFundingData(entities.funding);
 
-    console.log('putFundingSource', putFundingSource);
+    const fundingIds = putFundingData?.fundingSources.map((data) => {
+      return data.id;
+    });
 
-    if (putFundingSource?.id) {
-      const surveyFundingSourceDeleteStatement = queries.survey.deleteSurveyFundingSourceByProjectFundingSourceIdSQL(
-        putFundingSource?.id
-      );
-      const projectFundingSourceDeleteStatement = queries.project.deleteProjectFundingSourceSQL(
-        projectId,
-        putFundingSource?.id
-      );
+    console.log('fundingIds', fundingIds);
 
-      console.log('surveyFundingSourceDeleteStatement', surveyFundingSourceDeleteStatement);
-      console.log('projectFundingSourceDeleteStatement', projectFundingSourceDeleteStatement);
+    const surveyFundingSourceDeleteStatement = queries.survey.deleteSurveyFundingSourceConnectionToProjectSQL(
+      fundingIds
+    );
 
-      if (!projectFundingSourceDeleteStatement || !surveyFundingSourceDeleteStatement) {
-        throw new HTTP400('Failed to build SQL delete statement');
-      }
+    console.log('surveyFundingSourceDeleteStatement', surveyFundingSourceDeleteStatement);
 
+    if (surveyFundingSourceDeleteStatement) {
       const surveyFundingSourceDeleteResult = await this.connection.query(
         surveyFundingSourceDeleteStatement.text,
         surveyFundingSourceDeleteStatement.values
@@ -815,30 +811,40 @@ export class ProjectService extends DBService {
       if (!surveyFundingSourceDeleteResult) {
         throw new HTTP409('Failed to delete survey funding source');
       }
-
-      const projectFundingSourceDeleteResult = await this.connection.query(
-        projectFundingSourceDeleteStatement.text,
-        projectFundingSourceDeleteStatement.values
-      );
-
-      if (!projectFundingSourceDeleteResult) {
-        throw new HTTP409('Failed to delete project funding source');
-      }
     }
 
-    const sqlInsertStatement = queries.project.putProjectFundingSourceSQL(putFundingSource, projectId);
-    console.log('sqlInsertStatement', sqlInsertStatement);
+    console.log('putFundingData', putFundingData);
+    const projectFundingSourceDeleteStatement = queries.project.deleteAllProjectFundingSourceSQL(projectId);
+    console.log('projectFundingSourceDeleteStatement', projectFundingSourceDeleteStatement);
 
-    if (!sqlInsertStatement) {
+    if (!projectFundingSourceDeleteStatement) {
       throw new HTTP400('Failed to build SQL insert statement');
     }
 
-    const insertResult = await this.connection.query(sqlInsertStatement.text, sqlInsertStatement.values);
-    console.log('insertResult', insertResult);
+    const projectFundingSourceDeleteResult = await this.connection.query(
+      projectFundingSourceDeleteStatement.text,
+      projectFundingSourceDeleteStatement.values
+    );
 
-    if (!insertResult) {
-      throw new HTTP409('Failed to put (insert) project funding source with incremented revision count');
+    if (!projectFundingSourceDeleteResult) {
+      throw new HTTP409('Failed to delete project funding source');
     }
+
+    putFundingData?.fundingSources.forEach(async (putFundingSource: PutFundingSource) => {
+      const sqlInsertStatement = queries.project.putProjectFundingSourceSQL(putFundingSource, projectId);
+      console.log('sqlInsertStatement', sqlInsertStatement);
+
+      if (!sqlInsertStatement) {
+        throw new HTTP400('Failed to build SQL insert statement');
+      }
+
+      const insertResult = await this.connection.query(sqlInsertStatement.text, sqlInsertStatement.values);
+      console.log('insertResult', insertResult);
+
+      if (!insertResult) {
+        throw new HTTP409('Failed to put (insert) project funding source with incremented revision count');
+      }
+    });
   }
 
   async deleteProject(projectId: number): Promise<boolean | null> {

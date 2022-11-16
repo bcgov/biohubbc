@@ -195,9 +195,6 @@ const EditProjectPage: React.FC = (props) => {
               </Typography>
             </Box>
             <Box>
-              <Button color="primary" size="large" variant="outlined" className={classes.actionButton}>
-                Save Project
-              </Button>
               <Button
                 color="primary"
                 size="large"
