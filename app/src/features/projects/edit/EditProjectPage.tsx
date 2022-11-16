@@ -40,7 +40,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     '& button': {
       marginLeft: theme.spacing(1)
     }
-  },
+  }
 }));
 
 /**
@@ -110,7 +110,7 @@ const EditProjectPage: React.FC = (props) => {
     },
     onYes: () => {
       dialogContext.setYesNoDialog({ open: false });
-      history.push(`/admin/projects/id:${queryParams.projectId}`);
+      history.push(`/admin/projects/${queryParams.projectId}`);
     }
   };
 
@@ -135,7 +135,7 @@ const EditProjectPage: React.FC = (props) => {
 
   const handleCancel = () => {
     dialogContext.setYesNoDialog(defaultCancelDialogProps);
-    history.push(`/admin/projects/id:${queryParams.projectId}`);
+    history.push(`/admin/projects/${queryParams.projectId}`);
   };
 
   /**
@@ -203,13 +203,17 @@ const EditProjectPage: React.FC = (props) => {
               </Typography>
             </Box>
             <Box flex="0 0 auto" className={classes.pageTitleActions}>
-              <Button color="primary" variant="contained">
-                Save Project
-              </Button>
               <Button
                 color="primary"
-                variant="outlined"
-                onClick={handleCancel}>
+                variant="contained"
+                onClick={() => {
+                  if (formikRef && formikRef.current && formikRef.current.values) {
+                    updateProject(formikRef.current?.values);
+                  }
+                }}>
+                Save Project
+              </Button>
+              <Button color="primary" variant="outlined" onClick={handleCancel}>
                 Cancel
               </Button>
             </Box>
@@ -230,7 +234,6 @@ const EditProjectPage: React.FC = (props) => {
           </Paper>
         </Box>
       </Container>
-
     </>
   );
 };
