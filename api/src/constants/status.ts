@@ -55,7 +55,8 @@ export enum SUMMARY_SUBMISSION_MESSAGE_TYPE {
   'FAILED_GET_VALIDATION_RULES' = 'Failed to Get Validation Rules',
   'FAILED_PARSE_VALIDATION_SCHEMA' = 'Failed to Parse Validation Schema',
   'UNSUPPORTED_FILE_TYPE' = 'Unsupported File Type',
-  'FOUND_VALIDATION' = 'Found Validation'
+  'FOUND_VALIDATION' = 'Found Validation',
+  'SYSTEM_ERROR' = 'System Error'
 }
 
 // Message types that match the submission_message_type table

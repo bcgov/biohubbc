@@ -288,8 +288,9 @@ describe('SummaryRepository', () => {
           }
         ] as unknown) as ISummarySubmissionMessagesResponse[]
       } as any) as Promise<QueryResult<any>>;
+
       const dbConnection = getMockDBConnection({
-        query: () => mockResponse
+        knex: async () => mockResponse
       });
 
       const repo = new SummaryRepository(dbConnection);
@@ -311,8 +312,9 @@ describe('SummaryRepository', () => {
           }
         ] as unknown) as ISummarySubmissionMessagesResponse[]
       } as any) as Promise<QueryResult<any>>;
+      
       const dbConnection = getMockDBConnection({
-        query: () => mockResponse
+        knex: async () => mockResponse
       });
 
       const repo = new SummaryRepository(dbConnection);

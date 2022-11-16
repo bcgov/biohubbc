@@ -37,6 +37,11 @@ const summaryMessageTypes = [
     name: 'Found Validation',
     description: 'Summary validation schema was found.',
     class: 'Notice'
+  },
+  {
+    name: 'System Error',
+    description: 'The validation process has not started.',
+    class: 'Error'
   }
 ];
 

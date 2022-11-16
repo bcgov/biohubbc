@@ -1,12 +1,14 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../../../../../../constants/roles';
+import { SUMMARY_SUBMISSION_MESSAGE_TYPE } from '../../../../../../../constants/status';
 import { getDBConnection } from '../../../../../../../database/db';
 import { HTTP400 } from '../../../../../../../errors/http-error';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
 import { SummaryService } from '../../../../../../../services/summary-service';
 import { generateS3FileKey, scanFileForVirus, uploadFileToS3 } from '../../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../../utils/logger';
+import { MessageError, SummarySubmissionError } from '../../../../../../../utils/submission-error';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/summary/upload');
 
@@ -134,6 +136,8 @@ export function uploadAndValidate(): RequestHandler {
 
     const connection = getDBConnection(req['keycloak_token']);
 
+    let summarySubmissionId: number | null = null
+
     try {
       const rawMediaFile = rawMediaArray[0];
 
@@ -148,7 +152,7 @@ export function uploadAndValidate(): RequestHandler {
       }
 
       const surveyId = Number(req.params.surveyId);
-      const summarySubmissionId = (
+      summarySubmissionId = (
         await summaryService.insertSurveySummarySubmission(surveyId, 'BioHub', rawMediaFile.originalname)
       ).survey_summary_submission_id;
 
@@ -179,6 +183,17 @@ export function uploadAndValidate(): RequestHandler {
     } catch (error) {
       defaultLog.error({ label: 'uploadMedia', message: 'error', error });
       await connection.rollback();
+
+      // Log error in summary submission error messages table
+      if (summarySubmissionId) {
+        const summaryService = new SummaryService(connection);
+        await summaryService.insertSummarySubmissionError(
+          summarySubmissionId,
+          new SummarySubmissionError({
+            messages: [new MessageError(SUMMARY_SUBMISSION_MESSAGE_TYPE.SYSTEM_ERROR)]
+          })
+        )
+      }
       throw error;
     } finally {
       connection.release();
