@@ -21,7 +21,6 @@ describe('KeycloakService', () => {
 
   describe('getKeycloakToken', async () => {
     it('authenticates with keycloak and returns an access token', async () => {
-
       const mockAxiosResponse = { data: { access_token: 'token' } };
 
       const axiosStub = sinon.stub(axios, 'post').resolves(mockAxiosResponse);
@@ -31,7 +30,6 @@ describe('KeycloakService', () => {
       const response = await keycloakService.getKeycloakToken();
 
       expect(response).to.eql('token');
-
 
       expect(axiosStub).to.have.been.calledWith(
         'host/auth/realms/realm/protocol/openid-connect/token',
