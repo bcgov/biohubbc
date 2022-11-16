@@ -28,27 +28,31 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   projectMetadata: {
     '& section + section': {
-      marginTop: theme.spacing(2.5)
-    },
-    '& dl div': {
-      borderTopStyle: 'solid',
-      borderTopWidth: '1px',
-      borderColor: grey[300],
-      paddingTop: '6px',
-      paddingBottom: '6px'
+      marginTop: theme.spacing(3),
     },
     '& dt': {
       flex: '0 0 40%'
     },
     '& dd': {
       flex: '1 1 auto'
+    },
+    '& .MuiListItem-root:first-of-type': {
+      paddingTop: 0
+    },
+    '& .MuiListItem-root:last-of-type': {
+      paddingBottom: 0
     }
   },
   projectMetaSectionHeader: {
-    marginBottom: '2px',
     fontSize: '14px',
     fontWeight: 700,
-    textTransform: 'uppercase'
+    letterSpacing: '0.02rem',
+    textTransform: 'uppercase',
+    color: grey[600],
+    '& + hr': {
+      marginTop: theme.spacing(1.5),
+      marginBottom: theme.spacing(1.5)
+    }
   },
   projectMetaObjectives: {
     display: '-webkit-box',
@@ -80,36 +84,31 @@ const ProjectDetails: React.FC<IProjectDetailsProps> = (props) => {
           <Typography component="h4" className={classes.projectMetaSectionHeader}>
             Project Objectives
           </Typography>
-          <Divider style={{marginTop: '10px'}}></Divider>
-          <Box py={1}>
-            <ProjectObjectives projectForViewData={projectForViewData} codes={codes} refresh={refresh} />
-          </Box>
+          <Divider></Divider>
+          <ProjectObjectives projectForViewData={projectForViewData} codes={codes} refresh={refresh} />
         </Box>
 
         <Box component="section">
           <Typography component="h4" className={classes.projectMetaSectionHeader}>
             General Information
           </Typography>
-          <Box mt="10px">
-            <GeneralInformation projectForViewData={projectForViewData} codes={codes} refresh={refresh} />
-          </Box>
+          <Divider></Divider>
+          <GeneralInformation projectForViewData={projectForViewData} codes={codes} refresh={refresh} />
         </Box>
 
         <Box component="section">
           <Typography component="h4" className={classes.projectMetaSectionHeader}>
             Project Coordinator
           </Typography>
-          <Divider style={{marginTop: '10px'}}></Divider>
-          <Box py="6px">
-            <ProjectCoordinator projectForViewData={projectForViewData} codes={codes} refresh={refresh} />
-          </Box>
+          <Divider></Divider>
+          <ProjectCoordinator projectForViewData={projectForViewData} codes={codes} refresh={refresh} />
         </Box>
 
         <Box component="section">
           <Typography component="h4" className={classes.projectMetaSectionHeader}>
             Funding Sources
           </Typography>
-          <Divider style={{marginTop: '10px'}}></Divider>
+          <Divider></Divider>
           <FundingSource projectForViewData={projectForViewData} codes={codes} refresh={refresh} />
         </Box>
 
@@ -117,7 +116,8 @@ const ProjectDetails: React.FC<IProjectDetailsProps> = (props) => {
           <Typography component="h4" className={classes.projectMetaSectionHeader}>
             Partnerships
           </Typography>
-          <Box mt="10px">
+          <Divider></Divider>
+          <Box>
             <Partnerships projectForViewData={projectForViewData} codes={codes} refresh={refresh} />
           </Box>
         </Box>
@@ -126,7 +126,7 @@ const ProjectDetails: React.FC<IProjectDetailsProps> = (props) => {
           <Typography component="h4" className={classes.projectMetaSectionHeader}>
             IUCN Classification
           </Typography>
-          <Divider style={{marginTop: '10px'}}></Divider>
+          <Divider></Divider>
           <IUCNClassification projectForViewData={projectForViewData} codes={codes} refresh={refresh} />
         </Box>
       </Box>

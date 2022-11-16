@@ -21,17 +21,26 @@ import { Prompt } from 'react-router-dom';
 import EditProjectForm from './EditProjectForm';
 
 const useStyles = makeStyles((theme: Theme) => ({
-  actionButton: {
-    minWidth: '6rem',
-    '& + button': {
-      marginLeft: '0.5rem'
+  pageTitleContainer: {
+    maxWidth: '170ch',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis'
+  },
+  pageTitle: {
+    display: '-webkit-box',
+    '-webkit-line-clamp': 2,
+    '-webkit-box-orient': 'vertical',
+    paddingTop: theme.spacing(0.5),
+    paddingBottom: theme.spacing(0.5),
+    overflow: 'hidden'
+  },
+  pageTitleActions: {
+    paddingTop: theme.spacing(0.75),
+    paddingBottom: theme.spacing(0.75),
+    '& button': {
+      marginLeft: theme.spacing(1)
     }
   },
-  pageTitleContainer: {
-    '& h1': {
-      marginBottom: theme.spacing(1)
-    }
-  }
 }));
 
 /**
@@ -185,28 +194,32 @@ const EditProjectPage: React.FC = (props) => {
     <>
       <Prompt when={enableCancelCheck} message={handleLocationChange} />
 
-      <Container maxWidth="xl">
-        <Box py={5}>
-          <Box mb={3} display="flex" justifyContent="space-between" alignItems="flex-start">
+      <Paper square={true} elevation={0}>
+        <Container maxWidth="xl">
+          <Box py={4} display="flex" justifyContent="space-between">
             <Box className={classes.pageTitleContainer}>
-              <Typography variant="h1">Edit Project</Typography>
-              <Typography variant="body1" color="textSecondary">
-                Configure and update a species inventory project
+              <Typography variant="h1" className={classes.pageTitle}>
+                Edit Project Details
               </Typography>
             </Box>
-            <Box>
+            <Box flex="0 0 auto" className={classes.pageTitleActions}>
+              <Button color="primary" variant="contained">
+                Save Project
+              </Button>
               <Button
                 color="primary"
-                size="large"
                 variant="outlined"
-                onClick={handleCancel}
-                className={classes.actionButton}>
+                onClick={handleCancel}>
                 Cancel
               </Button>
             </Box>
           </Box>
+        </Container>
+      </Paper>
 
-          <Paper>
+      <Container maxWidth="xl">
+        <Box py={3}>
+          <Paper elevation={0}>
             <EditProjectForm
               codes={codesDataLoader.data}
               projectData={editProjectDataLoader.data}
@@ -217,6 +230,7 @@ const EditProjectPage: React.FC = (props) => {
           </Paper>
         </Box>
       </Container>
+
     </>
   );
 };

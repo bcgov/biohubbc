@@ -17,6 +17,7 @@ import Typography from '@material-ui/core/Typography';
 import {
   mdiAccountMultipleOutline,
   mdiCalendarRangeOutline,
+  mdiChevronRight,
   mdiChevronDown,
   mdiCogOutline,
   mdiPencilOutline,
@@ -208,8 +209,8 @@ const ProjectHeader: React.FC<IProjectHeaderProps> = (props) => {
     <Paper square={true} elevation={0}>
       <Container maxWidth="xl">
         <Box py={4}>
-          <Box mb={3}>
-            <Breadcrumbs>
+          <Box mb={2}>
+            <Breadcrumbs separator={<Icon path={mdiChevronRight} size={0.8} />}>
               <Link color="primary" onClick={() => history.push('/admin/projects')} aria-current="page">
                 <Typography variant="body1" component="span">
                   Projects
@@ -226,7 +227,7 @@ const ProjectHeader: React.FC<IProjectHeaderProps> = (props) => {
               <Typography variant="h1" className={classes.projectTitle}>
                 Project: <span>{projectWithDetails.project.project_name}</span>
               </Typography>
-              <Box mt={1} display="flex" alignItems="center">
+              <Box mt={1.5} mb={0.5} display="flex" alignItems="center">
                 {/* {getChipIcon(projectWithDetails.project.completion_status)} */}
                 <Typography
                   component="span"

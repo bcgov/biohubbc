@@ -259,26 +259,24 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
         <Button
           type="submit"
           color="primary"
-          size="large"
           variant="contained"
           onClick={() => formikRef.current?.submitForm()}
           className={classes.actionButton}>
           Submit Project
         </Button>
-        <Button color="primary" size="large" variant="outlined" onClick={handleDraft} className={classes.actionButton}>
+        <Button color="primary" variant="contained" onClick={handleDraft} className={classes.actionButton}>
           Save Draft
         </Button>
         {queryParams.draftId && (
           <Button
-            color="primary"
-            size="large"
+            color="secondary"
             variant="outlined"
             onClick={handleDeleteDraft}
             className={classes.actionButton}>
             Delete Draft
           </Button>
         )}
-        <Button color="primary" size="large" variant="outlined" onClick={handleCancel} className={classes.actionButton}>
+        <Button color="primary" variant="outlined" onClick={handleCancel} className={classes.actionButton}>
           Cancel
         </Button>
       </Box>

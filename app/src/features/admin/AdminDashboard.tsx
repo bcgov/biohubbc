@@ -52,7 +52,7 @@ const AdminDashboard: React.FC = () => {
                 <Typography variant="h1" className={classes.projectTitle}>
                   Welcome, <span>John Smith</span>
                 </Typography>
-                <Box mt={1} display="flex" alignItems="center">
+                <Box mt={1.5} mb={0.5} display="flex" alignItems="center">
                   <Typography
                     component="span"
                     variant="subtitle1"

@@ -7,7 +7,7 @@ import Paper from '@material-ui/core/Paper';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
-import { mdiTrashCanOutline } from '@mdi/js';
+import { mdiChevronRight, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import React, { useCallback, useContext } from 'react';
 import { useHistory } from 'react-router';
@@ -111,8 +111,8 @@ const UsersDetailHeader: React.FC<IUsersHeaderProps> = (props) => {
     <Paper square={true} elevation={0}>
       <Container maxWidth="xl">
         <Box py={4}>
-          <Box mb={3}>
-            <Breadcrumbs>
+          <Box mb={2}>
+            <Breadcrumbs separator={<Icon path={mdiChevronRight} size={0.8} />}>
               <Link color="primary" onClick={() => history.push('/admin/users')} aria-current="page">
                 Manage Users
               </Link>
@@ -127,7 +127,7 @@ const UsersDetailHeader: React.FC<IUsersHeaderProps> = (props) => {
               <Typography variant="h1" className={classes.projectTitle}>
                 User: <span>{userDetails.user_identifier}</span>
               </Typography>
-              <Box mt={1} display="flex" alignItems="center">
+              <Box mt={1.5} mb={0.5} display="flex" alignItems="center">
                 <Typography
                   component="span"
                   variant="subtitle1"
