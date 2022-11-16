@@ -1,4 +1,5 @@
 import Box from '@material-ui/core/Box';
+import Badge from '@material-ui/core/Badge';
 import Button from '@material-ui/core/Button';
 import Divider from '@material-ui/core/Divider';
 import Link from '@material-ui/core/Link';
@@ -298,7 +299,7 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
                           <CustomMenuButton
                             buttonLabel={row.role_names.join(', ') || 'Not Applicable'}
                             buttonTitle={'Change User Permissions'}
-                            buttonProps={{ variant: 'outlined' }}
+                            buttonProps={{ variant: 'outlined', size: 'small', color: 'default' }}
                             menuItems={codes.system_roles
                               .sort((item1, item2) => {
                                 return item1.name.localeCompare(item2.name);

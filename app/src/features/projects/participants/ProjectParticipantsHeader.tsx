@@ -119,7 +119,7 @@ const ProjectParticipantsHeader: React.FC<IProjectParticipantsHeaderProps> = (pr
                 {props.projectWithDetails.project.project_name}
               </Link>
               <Typography variant="body1" component="span">
-                Project Team
+                Manage Project Team
               </Typography>
             </Breadcrumbs>
           </Box>
@@ -127,7 +127,7 @@ const ProjectParticipantsHeader: React.FC<IProjectParticipantsHeaderProps> = (pr
           <Box display="flex" justifyContent="space-between">
             <Box flex="1 1 auto" className={classes.projectTitleContainer}>
               <Typography variant="h1" className={classes.projectTitle}>
-                Project Team
+                Manage Project Team
               </Typography>
             </Box>
             <Box flex="0 0 auto" className={classes.titleActions}>

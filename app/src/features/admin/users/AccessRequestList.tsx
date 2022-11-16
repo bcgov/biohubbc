@@ -211,7 +211,7 @@ const AccessRequestList: React.FC<IAccessRequestListProps> = (props) => {
                 <TableRow>
                   <TableCell>Username</TableCell>
                   <TableCell>Date of Request</TableCell>
-                  <TableCell>Access Status</TableCell>
+                  <TableCell>Status</TableCell>
                   <TableCell width="150px" align="center">
                     Actions
                   </TableCell>
@@ -234,13 +234,13 @@ const AccessRequestList: React.FC<IAccessRequestListProps> = (props) => {
                         <AccessStatusChip status={row.status_name} />
                       </TableCell>
 
-                      <TableCell align="right">
+                      <TableCell align="center">
                         {row.status_name === AdministrativeActivityStatusType.PENDING && (
                           <Button
                             color="primary"
                             variant="outlined"
                             onClick={() => setActiveReviewDialog({ open: true, request: row })}>
-                            <strong>Review</strong>
+                            Review
                           </Button>
                         )}
                       </TableCell>

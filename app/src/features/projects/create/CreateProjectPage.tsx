@@ -315,7 +315,7 @@ const CreateProjectPage: React.FC = () => {
                 <Typography variant="h1" className={classes.pageTitle}>
                   Create Project
                 </Typography>
-                <Box mt={1.5} mb={0.5} display="flex" alignItems="center">
+                <Box mt={0.75} mb={0.5} display="flex" alignItems="center">
                   <Typography component="span" variant="subtitle1" color="textSecondary">
                     Configure and submit a new species inventory project
                   </Typography>
