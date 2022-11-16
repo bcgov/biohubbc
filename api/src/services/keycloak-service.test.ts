@@ -12,12 +12,15 @@ describe('KeycloakService', () => {
     sinon.restore();
   });
 
+  before(() => {
+    process.env.KEYCLOAK_HOST = 'host/auth';
+    process.env.KEYCLOAK_REALM = 'realm';
+    process.env.KEYCLOAK_ADMIN_USERNAME = 'admin';
+    process.env.KEYCLOAK_ADMIN_PASSWORD = 'password';
+  });
+
   describe('getKeycloakToken', async () => {
     it('authenticates with keycloak and returns an access token', async () => {
-      process.env.KEYCLOAK_HOST = 'host';
-      process.env.KEYCLOAK_REALM = 'realm';
-      process.env.KEYCLOAK_ADMIN_USERNAME = 'admin';
-      process.env.KEYCLOAK_ADMIN_PASSWORD = 'password';
 
       const mockAxiosResponse = { data: { access_token: 'token' } };
 
@@ -28,6 +31,7 @@ describe('KeycloakService', () => {
       const response = await keycloakService.getKeycloakToken();
 
       expect(response).to.eql('token');
+
 
       expect(axiosStub).to.have.been.calledWith(
         'host/auth/realms/realm/protocol/openid-connect/token',
