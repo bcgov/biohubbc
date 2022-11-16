@@ -186,6 +186,14 @@ const appTheme = createMuiTheme({
         minWidth: '100px !important',
         fontWeight: 700
       }
+    },
+    MuiToolbar: {
+      root: {
+        '& .MuiTypography-root': {
+          paddingTop: '24px',
+          paddingBottom: '24px'
+        }
+      }
     }
   }
 });

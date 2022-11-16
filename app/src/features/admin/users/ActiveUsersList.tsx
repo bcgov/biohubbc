@@ -298,7 +298,7 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
                           <CustomMenuButton
                             buttonLabel={row.role_names.join(', ') || 'Not Applicable'}
                             buttonTitle={'Change User Permissions'}
-                            buttonProps={{ variant: 'outlined' }}
+                            buttonProps={{ variant: 'outlined', size: 'small', color: 'default' }}
                             menuItems={codes.system_roles
                               .sort((item1, item2) => {
                                 return item1.name.localeCompare(item2.name);

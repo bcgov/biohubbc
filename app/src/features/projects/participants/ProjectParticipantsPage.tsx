@@ -211,7 +211,7 @@ const ProjectParticipantsPage: React.FC = () => {
 
       <Container maxWidth="xl">
         <Box my={3}>
-          <Paper>
+          <Paper elevation={0}>
             <Toolbar>
               <Typography component="h2" variant="h4" color="inherit">
                 Team Members
@@ -236,7 +236,7 @@ const ProjectParticipantsPage: React.FC = () => {
                   projectParticipants?.map((row) => (
                     <TableRow key={row.project_participation_id}>
                       <TableCell scope="row">
-                        <strong>{row.user_identifier}</strong>
+                        {row.user_identifier}
                       </TableCell>
                       <TableCell>
                         <Box my={-1}>
@@ -403,7 +403,7 @@ const ChangeProjectRoleMenu: React.FC<IChangeProjectRoleMenuProps> = (props) => 
     <CustomMenuButton
       buttonLabel={currentProjectRoleName}
       buttonTitle={'Change Project Role'}
-      buttonProps={{ variant: 'outlined' }}
+      buttonProps={{ variant: 'outlined', size: 'small', color: 'default' }}
       menuItems={projectRoleCodes.map((roleCode) => {
         return {
           menuLabel: roleCode.name,
