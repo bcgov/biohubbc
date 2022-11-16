@@ -8,7 +8,7 @@ export const CreateProjectI18N = {
 
 
 export const EditProjectI18N = {
-  cancelTitle: 'Cancel Edit Creation',
+  cancelTitle: 'Cancel Edit Project',
   cancelText: 'Are you sure you want to cancel? Changes you have made will not be saved.',
   createErrorTitle: 'Error Editing Project',
   createErrorText:
