@@ -294,7 +294,8 @@ describe('SummaryRepository', () => {
       });
 
       const repo = new SummaryRepository(dbConnection);
-      sinon.stub(SummaryRepository.prototype, 'getSummaryTemplateIdFromNameVersion')
+      sinon
+        .stub(SummaryRepository.prototype, 'getSummaryTemplateIdFromNameVersion')
         .resolves({ summary_template_id: 1 });
 
       const response = await repo.getSummaryTemplateSpeciesRecords('templateName', 'templateVersion');
@@ -315,13 +316,14 @@ describe('SummaryRepository', () => {
           }
         ] as unknown) as ISummarySubmissionMessagesResponse[]
       } as any) as Promise<QueryResult<any>>;
-      
+
       const dbConnection = getMockDBConnection({
         knex: async () => mockResponse
       });
 
       const repo = new SummaryRepository(dbConnection);
-      sinon.stub(SummaryRepository.prototype, 'getSummaryTemplateIdFromNameVersion')
+      sinon
+        .stub(SummaryRepository.prototype, 'getSummaryTemplateIdFromNameVersion')
         .resolves({ summary_template_id: 1 });
       const response = await repo.getSummaryTemplateSpeciesRecords('templateName', 'templateVersion', [1, 2]);
 

@@ -136,7 +136,7 @@ export function uploadAndValidate(): RequestHandler {
 
     const connection = getDBConnection(req['keycloak_token']);
 
-    let summarySubmissionId: number | null = null
+    let summarySubmissionId: number | null = null;
 
     try {
       const rawMediaFile = rawMediaArray[0];
@@ -192,7 +192,7 @@ export function uploadAndValidate(): RequestHandler {
           new SummarySubmissionError({
             messages: [new MessageError(SUMMARY_SUBMISSION_MESSAGE_TYPE.SYSTEM_ERROR)]
           })
-        )
+        );
       }
       throw error;
     } finally {

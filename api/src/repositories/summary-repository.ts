@@ -401,11 +401,8 @@ export class SummaryRepository extends BaseRepository {
       .select()
       .fromRaw('summary_template_species sts')
       .where('sts.summary_template_id', templateRow.summary_template_id)
-      .andWhere(qb => {
-        qb.whereIn(
-          'sts.wldtaxonomic_units_id',
-          species || []
-        );
+      .andWhere((qb) => {
+        qb.whereIn('sts.wldtaxonomic_units_id', species || []);
       })
       .orWhere('sts.wldtaxonomic_units_id', null);
 
