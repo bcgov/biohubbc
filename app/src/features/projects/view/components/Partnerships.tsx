@@ -3,6 +3,24 @@ import Typography from '@material-ui/core/Typography';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import React from 'react';
+import { Theme } from '@material-ui/core/styles/createMuiTheme';
+import makeStyles from '@material-ui/core/styles/makeStyles';
+
+const useStyles = makeStyles((theme: Theme) => ({
+  projectPartners: {
+    position: 'relative',
+    display: 'inline-block',
+    "& + dd": {
+      paddingLeft: theme.spacing(1.25)
+    },
+    "& + dd::before": {
+      content: `','`,
+      position: 'absolute',
+      left: 0,
+      top: 0,
+    }
+  }
+}));
 
 export interface IPartnershipsProps {
   projectForViewData: IGetProjectForViewResponse;
@@ -16,6 +34,7 @@ export interface IPartnershipsProps {
  * @return {*}
  */
 const Partnerships: React.FC<IPartnershipsProps> = (props) => {
+  const classes = useStyles();
   const {
     projectForViewData: {
       partnerships: { indigenous_partnerships, stakeholder_partnerships }
@@ -34,7 +53,7 @@ const Partnerships: React.FC<IPartnershipsProps> = (props) => {
         </Typography>
         {indigenous_partnerships?.map((indigenousPartnership: number, index: number) => {
           return (
-            <Typography component="dd" key={index}>
+            <Typography component="dd" key={index} className={classes.projectPartners}>
               {codes?.first_nations?.find((item: any) => item.id === indigenousPartnership)?.name}
             </Typography>
           );
@@ -48,7 +67,7 @@ const Partnerships: React.FC<IPartnershipsProps> = (props) => {
         </Typography>
         {stakeholder_partnerships?.map((stakeholderPartnership: string, index: number) => {
           return (
-            <Typography component="dd" variant="body1" key={index}>
+            <Typography component="dd" variant="body1" className={classes.projectPartners} key={index}>
               {stakeholderPartnership}
             </Typography>
           );

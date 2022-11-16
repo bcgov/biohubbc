@@ -32,7 +32,7 @@ const IUCNClassification: React.FC<IIUCNClassificationProps> = (props) => {
           {iucn.classificationDetails.map((classificationDetail: any, index: number) => {
             return (
               <ListItem key={index} divider disableGutters>
-                <Typography color="textSecondary">
+                <Typography>
                   {`${
                     codes?.iucn_conservation_action_level_1_classification?.find(
                       (item: any) => item.id === classificationDetail.classification
@@ -60,7 +60,7 @@ const IUCNClassification: React.FC<IIUCNClassificationProps> = (props) => {
       {!hasIucnClassifications && (
         <Box component="ul" className="listNoBullets">
           <Box component="li">
-            <Typography component="dd" variant="body1" color="textSecondary">
+            <Typography component="dd" variant="body1">
               No IUCN Classifications
             </Typography>
           </Box>
