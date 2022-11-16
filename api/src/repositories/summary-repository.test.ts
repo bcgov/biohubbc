@@ -294,6 +294,9 @@ describe('SummaryRepository', () => {
       });
 
       const repo = new SummaryRepository(dbConnection);
+      sinon.stub(SummaryRepository.prototype, 'getSummaryTemplateIdFromNameVersion')
+        .resolves({ summary_template_id: 1 });
+
       const response = await repo.getSummaryTemplateSpeciesRecords('templateName', 'templateVersion');
 
       expect(response).to.be.eql((await mockResponse).rows);
@@ -318,6 +321,8 @@ describe('SummaryRepository', () => {
       });
 
       const repo = new SummaryRepository(dbConnection);
+      sinon.stub(SummaryRepository.prototype, 'getSummaryTemplateIdFromNameVersion')
+        .resolves({ summary_template_id: 1 });
       const response = await repo.getSummaryTemplateSpeciesRecords('templateName', 'templateVersion', [1, 2]);
 
       expect(response).to.be.eql((await mockResponse).rows);
