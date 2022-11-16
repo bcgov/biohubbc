@@ -61,8 +61,8 @@ export class KeycloakService {
   keycloakAdminUrl: string;
 
   constructor() {
-    this.keycloakRealmUrl = `${process.env.KEYCLOAK_HOST}/auth/realms/${process.env.KEYCLOAK_REALM}`;
-    this.keycloakAdminUrl = `${process.env.KEYCLOAK_HOST}/auth/admin/realms/${process.env.KEYCLOAK_REALM}`;
+    this.keycloakRealmUrl = `${process.env.KEYCLOAK_HOST}/realms/${process.env.KEYCLOAK_REALM}`;
+    this.keycloakAdminUrl = `${process.env.KEYCLOAK_HOST}/admin/realms/${process.env.KEYCLOAK_REALM}`;
   }
 
   /**
