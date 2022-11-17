@@ -22,6 +22,29 @@ export const getSurveyOccurrenceSubmissionSQL = (dataPackageId: number): SQLStat
 };
 
 /**
+ * SQL query to update the darwin_core_source column in occurrence_submission
+ *
+ * @param {number} occurrenceSubmissionId
+ * @param {string} jsonData
+ * @returns {SQLStatement} sql query object
+ */
+export const updateDWCSourceForOccurrenceSubmissionSQL = (
+  occurrenceSubmissionId: number,
+  jsonData: string
+): SQLStatement => {
+  return SQL`
+      UPDATE
+        occurrence_submission
+      SET
+        darwin_core_source = ${jsonData}
+      WHERE
+        occurrence_submission_id = ${occurrenceSubmissionId}
+      RETURNING
+        occurrence_submission_id;
+    `;
+};
+
+/**
  * SQL query to get data package record given package ID.
  *
  * @param {number} dataPackageId

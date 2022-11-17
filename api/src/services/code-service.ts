@@ -1,7 +1,7 @@
 import { coordinator_agency, region, regional_offices } from '../constants/codes';
 import { queries } from '../queries/queries';
 import { getLogger } from '../utils/logger';
-import { DBService } from './service';
+import { DBService } from './db-service';
 
 const defaultLog = getLogger('queries/code-queries');
 

@@ -222,7 +222,7 @@ export class GetAttachmentsData {
             file_type: item.file_type,
             title: item.title,
             description: item.description,
-            key: item.security_token ? '' : item.key,
+            key: item.key,
             file_size: item.file_size,
             is_secure: item.security_token ? 'true' : 'false'
           };
@@ -260,7 +260,7 @@ export class GetReportAttachmentsData {
             title: item.title,
             year: item.year,
             description: item.description,
-            key: item.security_token ? '' : item.key,
+            key: item.key,
             file_size: item.file_size,
             is_secure: item.security_token ? 'true' : 'false'
           };

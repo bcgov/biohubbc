@@ -17,8 +17,8 @@ import {
 } from '../models/survey-view';
 import { getDbCharacterSystemMetaDataConstantSQL } from '../queries/codes/db-constant-queries';
 import { CodeService, IAllCodeSets } from './code-service';
+import { DBService } from './db-service';
 import { ProjectService } from './project-service';
-import { DBService } from './service';
 import { SurveyService } from './survey-service';
 import { TaxonomyService } from './taxonomy-service';
 

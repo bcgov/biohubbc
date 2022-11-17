@@ -1529,7 +1529,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                         >
                           <div
                             class="leaflet-layer "
-                            style="z-index: 1;"
+                            style="z-index: 2;"
                           >
                             <div
                               class="leaflet-tile-container leaflet-zoom-animated"
@@ -1539,7 +1539,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                                 alt=""
                                 class="leaflet-tile"
                                 role="presentation"
-                                src="https://maps.gov.bc.ca/arcgis/rest/services/province/roads_wm/MapServer/tile/5/10/4"
+                                src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/5/10/4"
                                 style="width: 256px; height: 256px; left: -159px; top: -31px;"
                               />
                             </div>
@@ -1633,6 +1633,17 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                                     Draw a rectangle
                                   </span>
                                 </a>
+                                <a
+                                  class="leaflet-draw-draw-marker"
+                                  href="#"
+                                  title="Draw a marker"
+                                >
+                                  <span
+                                    class="sr-only"
+                                  >
+                                    Draw a marker
+                                  </span>
+                                </a>
                               </div>
                               <ul
                                 class="leaflet-draw-actions"
@@ -1697,9 +1708,8 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                                 <label>
                                   <div>
                                     <input
-                                      checked="checked"
                                       class="leaflet-control-layers-selector"
-                                      name="leaflet-base-layers_82"
+                                      name="leaflet-base-layers_85"
                                       type="radio"
                                     />
                                     <span>
@@ -1710,8 +1720,9 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                                 <label>
                                   <div>
                                     <input
+                                      checked="checked"
                                       class="leaflet-control-layers-selector"
-                                      name="leaflet-base-layers_82"
+                                      name="leaflet-base-layers_85"
                                       type="radio"
                                     />
                                     <span>
@@ -1737,6 +1748,12 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                               title="A JS library for interactive maps"
                             >
                               Leaflet
+                            </a>
+                             | © 
+                            <a
+                              href="https://www.esri.com/en-us/arcgis/products/location-services/services/basemaps"
+                            >
+                              ESRI Basemap
                             </a>
                           </div>
                         </div>

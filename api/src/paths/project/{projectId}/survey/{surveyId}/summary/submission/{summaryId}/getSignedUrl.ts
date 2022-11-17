@@ -2,9 +2,9 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../../database/db';
-import { HTTP400 } from '../../../../../../../../errors/custom-error';
-import { queries } from '../../../../../../../../queries/queries';
+import { HTTP400 } from '../../../../../../../../errors/http-error';
 import { authorizeRequestHandler } from '../../../../../../../../request-handlers/security/authorization';
+import { SummaryService } from '../../../../../../../../services/summary-service';
 import { getS3SignedURL } from '../../../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../../../utils/logger';
 import { attachmentApiDocObject } from '../../../../../../../../utils/shared-api-docs';
@@ -90,24 +90,13 @@ export function getSingleSummarySubmissionURL(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const getSurveySummarySubmissionSQLStatement = queries.survey.getSurveySummarySubmissionSQL(
-        Number(req.params.summaryId)
-      );
-
-      if (!getSurveySummarySubmissionSQLStatement) {
-        throw new HTTP400('Failed to build SQL get statement');
-      }
-
       await connection.open();
+      const summaryService = new SummaryService(connection);
 
-      const result = await connection.query(
-        getSurveySummarySubmissionSQLStatement.text,
-        getSurveySummarySubmissionSQLStatement.values
-      );
-
+      const summarySubmission = await summaryService.findSummarySubmissionById(Number(req.params.summaryId));
       await connection.commit();
 
-      const s3Key = result && result.rows.length && result.rows[0].key;
+      const s3Key = summarySubmission.key;
       const s3SignedUrl = await getS3SignedURL(s3Key);
 
       if (!s3SignedUrl) {

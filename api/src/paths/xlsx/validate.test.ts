@@ -1,191 +1,240 @@
 import chai, { expect } from 'chai';
 import { describe } from 'mocha';
+import OpenAPIRequestValidator, { OpenAPIRequestValidatorArgs } from 'openapi-request-validator';
+import OpenAPIResponseValidator, { OpenAPIResponseValidatorArgs } from 'openapi-response-validator';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import SQL from 'sql-template-strings';
-import xlsx from 'xlsx';
-import { HTTPError } from '../../errors/custom-error';
-import survey_queries from '../../queries/survey';
-import { ArchiveFile, MediaFile } from '../../utils/media/media-file';
-import * as media_utils from '../../utils/media/media-utils';
-import { getMockDBConnection } from '../../__mocks__/db';
+import * as db from '../../database/db';
+import { HTTPError } from '../../errors/http-error';
+import { ErrorService } from '../../services/error-service';
+import { ValidationService } from '../../services/validation-service';
+import { getMockDBConnection, getRequestHandlerMocks } from '../../__mocks__/db';
 import * as validate from './validate';
+import { POST } from './validate';
 
 chai.use(sinonChai);
 
-describe('prepXLSX', () => {
-  const sampleReq = {
-    keycloak_token: {},
-    s3File: {
-      fieldname: 'media',
-      originalname: 'test.txt',
-      encoding: '7bit',
-      mimetype: 'text/plain',
-      size: 340
-    }
-  } as any;
+describe('xlsx/validate', () => {
+  describe('openApiSchema', () => {
+    describe('request validation', () => {
+      const requestValidator = new OpenAPIRequestValidator((POST.apiDoc as unknown) as OpenAPIRequestValidatorArgs);
 
-  afterEach(() => {
-    sinon.restore();
-  });
+      describe('should throw an error when', () => {
+        describe('request body', () => {
+          it('is null', async () => {
+            const request = {
+              headers: {
+                'content-type': 'application/json'
+              },
+              body: {}
+            };
 
-  it('should set parseError when failed to parse s3File', async () => {
-    const nextSpy = sinon.spy();
+            const response = requestValidator.validateRequest(request);
 
-    sinon.stub(media_utils, 'parseUnknownMedia').returns(null);
+            expect(response.status).to.equal(400);
+            expect(response.errors[0].path).to.equal('occurrence_submission_id');
+            expect(response.errors[1].path).to.equal('survey_id');
+            expect(response.errors[0].message).to.equal(`must have required property 'occurrence_submission_id'`);
+            expect(response.errors[1].message).to.equal(`must have required property 'survey_id'`);
+            expect(response.errors[2]).to.be.undefined;
+          });
 
-    const result = validate.prepXLSX();
-    await result(sampleReq, (null as unknown) as any, nextSpy as any);
+          it('is missing required fields', async () => {
+            const request = {
+              headers: {
+                'content-type': 'application/json'
+              },
 
-    expect(sampleReq.parseError).to.eql('Failed to parse submission, file was empty');
-    expect(nextSpy).to.have.been.called;
-  });
+              body: { survey_id: 1 }
+            };
 
-  it('should set parseError when not a valid xlsx csv file', async () => {
-    const nextSpy = sinon.spy();
+            const response = requestValidator.validateRequest(request);
 
-    sinon.stub(media_utils, 'parseUnknownMedia').returns(('not a csv file' as unknown) as ArchiveFile);
+            expect(response.status).to.equal(400);
+            expect(response.errors[0].path).to.equal('occurrence_submission_id');
+            expect(response.errors[0].message).to.equal(`must have required property 'occurrence_submission_id'`);
+          });
 
-    const result = validate.prepXLSX();
-    await result(sampleReq, (null as unknown) as any, nextSpy as any);
+          it('fields are undefined', async () => {
+            const request = {
+              headers: {
+                'content-type': 'application/json'
+              },
 
-    expect(sampleReq.parseError).to.eql('Failed to parse submission, not a valid XLSX CSV file');
-    expect(nextSpy).to.have.been.called;
-  });
+              body: { survey_id: undefined, occurrence_submission_id: undefined }
+            };
 
-  it('should set parseError when no custom props set for the XLSX CSV file', async () => {
-    const nextSpy = sinon.spy();
+            const response = requestValidator.validateRequest(request);
 
-    const newWorkbook = xlsx.utils.book_new();
+            expect(response.status).to.equal(400);
+            expect(response.errors[0].path).to.equal('occurrence_submission_id');
+            expect(response.errors[1].path).to.equal('survey_id');
+            expect(response.errors[0].message).to.equal(`must have required property 'occurrence_submission_id'`);
+            expect(response.errors[1].message).to.equal(`must have required property 'survey_id'`);
+            expect(response.errors[2]).to.be.undefined;
+          });
+        });
 
-    if (!newWorkbook.Custprops) {
-      newWorkbook.Custprops = {};
-    }
+        describe('survey_id and occurrence_submission_id', () => {
+          it('have invalid type ', async () => {
+            const request = {
+              headers: { 'content-type': 'application/json' },
+              body: { survey_id: 'not a number', occurrence_submission_id: 'not a number' }
+            };
 
-    const ws_name = 'SheetJS';
+            const response = requestValidator.validateRequest(request);
 
-    /* make worksheet */
-    const ws_data = [
-      ['S', 'h', 'e', 'e', 't', 'J', 'S'],
-      [1, 2, 3, 4, 5]
-    ];
-    const ws = xlsx.utils.aoa_to_sheet(ws_data);
-
-    /* Add the worksheet to the workbook */
-    xlsx.utils.book_append_sheet(newWorkbook, ws, ws_name);
-
-    const buffer = xlsx.write(newWorkbook, { type: 'buffer' });
-
-    const mediaFile = new MediaFile('fileName', 'text/csv', buffer);
-
-    sinon.stub(media_utils, 'parseUnknownMedia').returns(mediaFile);
-
-    const requestHandler = validate.prepXLSX();
-    await requestHandler(sampleReq, (null as unknown) as any, nextSpy as any);
-
-    expect(sampleReq.parseError).to.eql('Failed to parse submission, template identification properties are missing');
-    expect(nextSpy).to.have.been.called;
-  });
-
-  it('should call next when parameters are valid', async () => {
-    const nextSpy = sinon.spy();
-
-    const newWorkbook = xlsx.utils.book_new();
-
-    if (!newWorkbook.Custprops) {
-      newWorkbook.Custprops = {};
-    }
-    newWorkbook.Custprops['sims_template_id'] = 1;
-    newWorkbook.Custprops['sims_csm_id'] = 1;
-    newWorkbook.Custprops['sims_species_id'] = 1234;
-
-    const ws_name = 'SheetJS';
-
-    /* make worksheet */
-    const ws_data = [
-      ['S', 'h', 'e', 'e', 't', 'J', 'S'],
-      [1, 2, 3, 4, 5]
-    ];
-    const ws = xlsx.utils.aoa_to_sheet(ws_data);
-
-    /* Add the worksheet to the workbook */
-    xlsx.utils.book_append_sheet(newWorkbook, ws, ws_name);
-
-    const buffer = xlsx.write(newWorkbook, { type: 'buffer' });
-
-    const mediaFile = new MediaFile('fileName', 'text/csv', buffer);
-
-    sinon.stub(media_utils, 'parseUnknownMedia').returns(mediaFile);
-
-    const requestHandler = validate.prepXLSX();
-    await requestHandler(sampleReq, (null as unknown) as any, nextSpy as any);
-
-    expect(nextSpy).to.have.been.called;
-  });
-});
-
-describe('getTemplateMethodologySpeciesRecord', () => {
-  afterEach(() => {
-    sinon.restore();
-  });
-
-  const dbConnectionObj = getMockDBConnection();
-
-  it('should throw 400 error when failed to build getTemplateMethodologySpeciesRecordSQL statement', async () => {
-    sinon.stub(survey_queries, 'getTemplateMethodologySpeciesRecordSQL').returns(null);
-
-    try {
-      await validate.getTemplateMethodologySpeciesRecord(1, 1, { ...dbConnectionObj, systemUserId: () => 20 });
-
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal(
-        'Failed to build SQL get template methodology species record sql statement'
-      );
-    }
-  });
-
-  it('should return null when no rows', async () => {
-    const mockQuery = sinon.stub();
-
-    mockQuery.resolves({
-      rows: [null]
-    });
-
-    sinon.stub(survey_queries, 'getTemplateMethodologySpeciesRecordSQL').returns(SQL`something`);
-
-    try {
-      await validate.getTemplateMethodologySpeciesRecord(1, 1, {
-        ...dbConnectionObj,
-        systemUserId: () => 20
+            expect(response.status).to.equal(400);
+            expect(response.errors[0].message).to.equal('must be number');
+            expect(response.errors[1].message).to.equal('must be number');
+          });
+        });
       });
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal('Failed to query template methodology species table');
-    }
+
+      describe('should succeed when', () => {
+        it('required values are valid', async () => {
+          const request = {
+            headers: { 'content-type': 'application/json' },
+            body: { survey_id: 1, occurrence_submission_id: 2 }
+          };
+
+          const response = requestValidator.validateRequest(request);
+
+          expect(response).to.be.undefined;
+        });
+      });
+    });
+
+    describe('response validation', () => {
+      const responseValidator = new OpenAPIResponseValidator((POST.apiDoc as unknown) as OpenAPIResponseValidatorArgs);
+
+      describe('should succeed when', () => {
+        it('returns a null response', async () => {
+          const apiResponse = null;
+          const response = responseValidator.validateResponse(200, apiResponse);
+
+          expect(response.message).to.equal('The response was not valid.');
+          expect(response.errors[0].message).to.equal('must be object');
+        });
+
+        it('optional values are valid', async () => {
+          const apiResponse = { status: 'my status', reason: 'my_reason' };
+          const response = responseValidator.validateResponse(200, apiResponse);
+
+          expect(response).to.equal(undefined);
+        });
+      });
+
+      describe('should fail when', () => {
+        it('optional values are invalid', async () => {
+          const apiResponse = { status: 1, reason: 1 };
+          const response = responseValidator.validateResponse(200, apiResponse);
+
+          expect(response.message).to.equal('The response was not valid.');
+          expect(response.errors[0].message).to.equal('must be string');
+        });
+      });
+    });
   });
 
-  it('should return first row on success', async () => {
-    const mockQuery = sinon.stub();
-
-    mockQuery.resolves({
-      rows: [
-        {
-          id: 1
-        }
-      ]
+  describe('validate XLSX', () => {
+    afterEach(() => {
+      sinon.restore();
     });
 
-    sinon.stub(survey_queries, 'getTemplateMethodologySpeciesRecordSQL').returns(SQL`something`);
+    it('throws an error when req.body.occurrence_submission_id is empty', async () => {
+      const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+      mockReq.body = {};
 
-    const result = await validate.getTemplateMethodologySpeciesRecord(1, 1, {
-      ...dbConnectionObj,
-      query: mockQuery,
-      systemUserId: () => 20
+      const requestHandler = validate.validate();
+
+      try {
+        await requestHandler(mockReq, mockRes, mockNext);
+        expect.fail();
+      } catch (actualError) {
+        expect((actualError as HTTPError).status).to.equal(400);
+        expect((actualError as HTTPError).message).to.equal('Missing required parameter `occurrence field`');
+      }
     });
 
-    expect(result).to.eql({ id: 1 });
+    it('returns a 200 if req.body.occurrence_submission_id exists', async () => {
+      const dbConnectionObj = getMockDBConnection();
+      sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
+      const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+      mockReq.body = {
+        occurrence_submission_id: '123-456-789'
+      };
+      mockReq['keycloak_token'] = 'token';
+
+      const validateFileStub = sinon.stub(ValidationService.prototype, 'validateFile').resolves();
+
+      const requestHandler = validate.validate();
+      await requestHandler(mockReq, mockRes, mockNext);
+      expect(mockRes.statusValue).to.equal(200);
+      expect(validateFileStub).to.have.been.calledOnceWith(mockReq.body.occurrence_submission_id);
+      expect(mockRes.jsonValue).to.eql({ status: 'success' });
+    });
+
+    it('catches an error on validateFile', async () => {
+      const dbConnectionObj = getMockDBConnection({ rollback: sinon.stub(), release: sinon.stub() });
+      sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
+
+      const validateFileStub = sinon
+        .stub(ValidationService.prototype, 'validateFile')
+        .throws(new Error('test validateFile error'));
+      const errorServiceStub = sinon.stub(ErrorService.prototype, 'insertSubmissionStatus').resolves();
+
+      const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+      mockReq['keycloak_token'] = 'token';
+
+      mockReq.body = {
+        occurrence_submission_id: '123-456-789'
+      };
+
+      const requestHandler = validate.validate();
+
+      try {
+        await requestHandler(mockReq, mockRes, mockNext);
+        expect.fail();
+      } catch (actualError) {
+        expect(validateFileStub).to.have.been.calledOnce;
+        expect(errorServiceStub).to.have.been.calledOnce;
+        expect(dbConnectionObj.rollback).to.have.been.calledOnce;
+        expect(dbConnectionObj.release).to.have.been.calledOnce;
+        expect((actualError as Error).message).to.equal('test validateFile error');
+      }
+    });
+
+    it('catches an error on insertSubmissionStatus', async () => {
+      const dbConnectionObj = getMockDBConnection({ rollback: sinon.stub(), release: sinon.stub() });
+      sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
+
+      const validateFileStub = sinon
+        .stub(ValidationService.prototype, 'validateFile')
+        .throws(new Error('test validateFile error'));
+      const errorServiceStub = sinon
+        .stub(ErrorService.prototype, 'insertSubmissionStatus')
+        .throws(new Error('test insertSubmissionStatus error'));
+
+      const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+      mockReq['keycloak_token'] = 'token';
+
+      mockReq.body = {
+        occurrence_submission_id: '123-456-789'
+      };
+
+      const requestHandler = validate.validate();
+
+      try {
+        await requestHandler(mockReq, mockRes, mockNext);
+        expect.fail();
+      } catch (actualError) {
+        expect(validateFileStub).to.have.been.calledOnce;
+        expect(errorServiceStub).to.have.been.calledOnce;
+        expect(dbConnectionObj.rollback).to.have.been.calledOnce;
+        expect(dbConnectionObj.release).to.have.been.calledOnce;
+        expect((actualError as Error).message).to.equal('test insertSubmissionStatus error');
+      }
+    });
   });
 });

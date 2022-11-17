@@ -42,6 +42,12 @@ export const CreateProjectDraftI18N = {
     'An error has occurred while attempting to save your draft, please try again. If the error persists, please contact your system administrator.'
 };
 
+export const DeleteProjectDraftI18N = {
+  draftErrorTitle: 'Error Deleting Draft',
+  draftErrorText:
+    'An error has occurred while attempting to delete your draft, please try again. If the error persists, please contact your system administrator.'
+};
+
 export const EditPartnershipsI18N = {
   editTitle: 'Edit Partnerships',
   editErrorTitle: 'Error Editing Partnerships',
@@ -192,10 +198,22 @@ export const EditReportMetaDataI18N = {
     'An error has occurred while attempting to edit your report meta data, please try again. If the error persists, please contact your system administrator.'
 };
 
+export const AddSystemUserI18N = {
+  addUserErrorTitle: 'Error Adding System User',
+  addUserErrorText:
+    'An error has occurred while attempting to add the system user. This user has already been granted this role. If the error persists, please contact your system administrator.'
+};
+
+export const UpdateSystemUserI18N = {
+  updateUserErrorTitle: 'Error Updating System User',
+  updateUserErrorText:
+    'An error has occurred while attempting to update the system user. If the error persists, please contact your system administrator.'
+};
+
 export const DeleteSystemUserI18N = {
-  deleteErrorTitle: 'Error Deleting System User',
-  deleteErrorText:
-    'An error has occurred while attempting to delete the system user, please try again. If the error persists, please contact your system administrator.'
+  deleteUserErrorTitle: 'Error Deleting System User',
+  deleteUserErrorText:
+    'An error has occurred while attempting to delete the system user. If the error persists, please contact your system administrator.'
 };
 
 export const ProjectParticipantsI18N = {

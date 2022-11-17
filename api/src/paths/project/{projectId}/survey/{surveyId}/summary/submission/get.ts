@@ -2,9 +2,10 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../database/db';
-import { HTTP400 } from '../../../../../../../errors/custom-error';
-import { queries } from '../../../../../../../queries/queries';
+import { HTTP400 } from '../../../../../../../errors/http-error';
+import { ISummarySubmissionMessagesResponse } from '../../../../../../../repositories/summary-repository';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
+import { SummaryService } from '../../../../../../../services/summary-service';
 import { getLogger } from '../../../../../../../utils/logger';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/summary/submission/get');
@@ -106,66 +107,34 @@ export function getSurveySummarySubmission(): RequestHandler {
     }
 
     const connection = getDBConnection(req['keycloak_token']);
+    const surveyId = Number(req.params.surveyId);
 
     try {
-      const getSurveySummarySubmissionSQLStatement = queries.survey.getLatestSurveySummarySubmissionSQL(
-        Number(req.params.surveyId)
-      );
-
-      if (!getSurveySummarySubmissionSQLStatement) {
-        throw new HTTP400('Failed to build getLatestSurveySummarySubmissionSQLStatement statement');
-      }
-
       await connection.open();
+      const summaryService = new SummaryService(connection);
 
-      const summarySubmissionData = await connection.query(
-        getSurveySummarySubmissionSQLStatement.text,
-        getSurveySummarySubmissionSQLStatement.values
-      );
+      const summarySubmissionDetails = await summaryService.getLatestSurveySummarySubmission(surveyId);
 
-      if (
-        !summarySubmissionData ||
-        !summarySubmissionData.rows ||
-        !summarySubmissionData.rows[0] ||
-        summarySubmissionData.rows[0].delete_timestamp
-      ) {
+      if (!summarySubmissionDetails || summarySubmissionDetails.delete_timestamp) {
         return res.status(200).json(null);
       }
 
-      let messageList: any[] = [];
+      let messageList: ISummarySubmissionMessagesResponse[] = [];
+      const messageClass = summarySubmissionDetails.submission_message_class_name;
 
-      const errorStatus = summarySubmissionData.rows[0].submission_message_class_name;
-
-      if (errorStatus === 'Error') {
-        const summary_submission_id = summarySubmissionData.rows[0].id;
-
-        const getSummarySubmissionErrorListSQLStatement = queries.survey.getSummarySubmissionMessagesSQL(
-          Number(summary_submission_id)
-        );
-
-        if (!getSummarySubmissionErrorListSQLStatement) {
-          throw new HTTP400('Failed to build SQL getSummarySubmissionMessagesSQL statement');
-        }
-
-        const summarySubmissionErrorListData = await connection.query(
-          getSummarySubmissionErrorListSQLStatement.text,
-          getSummarySubmissionErrorListSQLStatement.values
-        );
-
-        messageList = (summarySubmissionErrorListData && summarySubmissionErrorListData.rows) || [];
+      if (messageClass === 'Error') {
+        const summary_submission_id = summarySubmissionDetails.id;
+        messageList = await summaryService.getSummarySubmissionMessages(summary_submission_id);
       }
 
       await connection.commit();
 
       const getSummarySubmissionData =
-        (summarySubmissionData &&
-          summarySubmissionData.rows &&
-          summarySubmissionData.rows[0] && {
-            id: summarySubmissionData.rows[0].id,
-            fileName: summarySubmissionData.rows[0].file_name,
-            messages: messageList
-          }) ||
-        null;
+        {
+          id: summarySubmissionDetails.id,
+          fileName: summarySubmissionDetails.file_name,
+          messages: messageList
+        } || null;
 
       return res.status(200).json(getSummarySubmissionData);
     } catch (error) {

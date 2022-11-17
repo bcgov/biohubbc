@@ -1,8 +1,8 @@
 import { SYSTEM_ROLE } from '../constants/roles';
 import { IDBConnection } from '../database/db';
-import { ApiGeneralError } from '../errors/custom-error';
+import { ApiGeneralError } from '../errors/api-error';
 import { IPermitModel, PermitRepository } from '../repositories/permit-repository';
-import { DBService } from './service';
+import { DBService } from './db-service';
 import { UserService } from './user-service';
 export class PermitService extends DBService {
   permitRepository: PermitRepository;

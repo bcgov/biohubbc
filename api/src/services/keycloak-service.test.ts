@@ -2,7 +2,7 @@ import axios from 'axios';
 import chai, { expect } from 'chai';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import { ApiGeneralError } from '../errors/custom-error';
+import { ApiGeneralError } from '../errors/api-error';
 import { KeycloakService } from './keycloak-service';
 
 chai.use(sinonChai);
@@ -12,13 +12,15 @@ describe('KeycloakService', () => {
     sinon.restore();
   });
 
+  before(() => {
+    process.env.KEYCLOAK_HOST = 'host/auth';
+    process.env.KEYCLOAK_REALM = 'realm';
+    process.env.KEYCLOAK_ADMIN_USERNAME = 'admin';
+    process.env.KEYCLOAK_ADMIN_PASSWORD = 'password';
+  });
+
   describe('getKeycloakToken', async () => {
     it('authenticates with keycloak and returns an access token', async () => {
-      process.env.KEYCLOAK_HOST = 'host';
-      process.env.KEYCLOAK_REALM = 'realm';
-      process.env.KEYCLOAK_ADMIN_USERNAME = 'admin';
-      process.env.KEYCLOAK_ADMIN_PASSWORD = 'password';
-
       const mockAxiosResponse = { data: { access_token: 'token' } };
 
       const axiosStub = sinon.stub(axios, 'post').resolves(mockAxiosResponse);

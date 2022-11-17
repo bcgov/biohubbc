@@ -1,7 +1,7 @@
-import { ApiBuildSQLError, ApiExecuteSQLError } from '../errors/custom-error';
+import { ApiBuildSQLError, ApiExecuteSQLError } from '../errors/api-error';
 import { UserObject } from '../models/user';
 import { queries } from '../queries/queries';
-import { DBService } from './service';
+import { DBService } from './db-service';
 
 export type ListSystemUsers = {
   id: number;

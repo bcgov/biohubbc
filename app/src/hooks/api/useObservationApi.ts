@@ -121,10 +121,11 @@ const useObservationApi = (axios: AxiosInstance) => {
    * @param {number} projectId
    * @param {number} submissionId
    */
-  const initiateXLSXSubmissionValidation = async (projectId: number, submissionId: number) => {
+  const initiateXLSXSubmissionValidation = async (projectId: number, submissionId: number, surveyId: number) => {
     const { data } = await axios.post(`/api/xlsx/validate`, {
       project_id: projectId,
-      occurrence_submission_id: submissionId
+      occurrence_submission_id: submissionId,
+      survey_id: surveyId
     });
 
     return data;
@@ -136,10 +137,11 @@ const useObservationApi = (axios: AxiosInstance) => {
    * @param {number} projectId
    * @param {number} submissionId
    */
-  const initiateXLSXSubmissionTransform = async (projectId: number, submissionId: number) => {
+  const initiateXLSXSubmissionTransform = async (projectId: number, submissionId: number, surveyId: number) => {
     const { data } = await axios.post(`/api/xlsx/transform`, {
       project_id: projectId,
-      occurrence_submission_id: submissionId
+      occurrence_submission_id: submissionId,
+      survey_id: surveyId
     });
 
     return data;
@@ -167,8 +169,25 @@ const useObservationApi = (axios: AxiosInstance) => {
    * @param {number} submissionId
    * @return {*}
    */
-  const processOccurrences = async (projectId: number, submissionId: number) => {
+  const processOccurrences = async (projectId: number, submissionId: number, surveyId: number) => {
     const { data } = await axios.post(`/api/xlsx/process`, {
+      project_id: projectId,
+      occurrence_submission_id: submissionId,
+      survey_id: surveyId
+    });
+
+    return data;
+  };
+
+  /**
+   * Validates and processes a submitted Darwin Core File
+   *
+   * @param {number} projectId
+   * @param {number} submissionId
+   * @return {*}
+   */
+  const processDWCFile = async (projectId: number, submissionId: number) => {
+    const { data } = await axios.post(`api/dwc/process`, {
       project_id: projectId,
       occurrence_submission_id: submissionId
     });
@@ -185,7 +204,8 @@ const useObservationApi = (axios: AxiosInstance) => {
     initiateXLSXSubmissionTransform,
     initiateScrapeOccurrences,
     getOccurrencesForView,
-    processOccurrences
+    processOccurrences,
+    processDWCFile
   };
 };
 
