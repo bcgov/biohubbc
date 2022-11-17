@@ -17,7 +17,7 @@ exports[`MapContainer matches the snapshot with draw controls hidden 1`] = `
       >
         <div
           class="leaflet-layer "
-          style="z-index: 1;"
+          style="z-index: 2;"
         >
           <div
             class="leaflet-tile-container leaflet-zoom-animated"
@@ -27,7 +27,7 @@ exports[`MapContainer matches the snapshot with draw controls hidden 1`] = `
               alt=""
               class="leaflet-tile"
               role="presentation"
-              src="https://maps.gov.bc.ca/arcgis/rest/services/province/roads_wm/MapServer/tile/5/10/4"
+              src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/5/10/4"
               style="width: 256px; height: 256px; left: -159px; top: -31px;"
             />
           </div>
@@ -89,11 +89,7 @@ exports[`MapContainer matches the snapshot with draw controls hidden 1`] = `
       </div>
       <div
         class="leaflet-top leaflet-right"
-      >
-        <div
-          class="leaflet-draw leaflet-control"
-        />
-      </div>
+      />
       <div
         class="leaflet-bottom leaflet-left"
       />
@@ -118,9 +114,8 @@ exports[`MapContainer matches the snapshot with draw controls hidden 1`] = `
               <label>
                 <div>
                   <input
-                    checked="checked"
                     class="leaflet-control-layers-selector"
-                    name="leaflet-base-layers_115"
+                    name="leaflet-base-layers_117"
                     type="radio"
                   />
                   <span>
@@ -131,8 +126,9 @@ exports[`MapContainer matches the snapshot with draw controls hidden 1`] = `
               <label>
                 <div>
                   <input
+                    checked="checked"
                     class="leaflet-control-layers-selector"
-                    name="leaflet-base-layers_115"
+                    name="leaflet-base-layers_117"
                     type="radio"
                   />
                   <span>
@@ -158,6 +154,12 @@ exports[`MapContainer matches the snapshot with draw controls hidden 1`] = `
             title="A JS library for interactive maps"
           >
             Leaflet
+          </a>
+           | © 
+          <a
+            href="https://www.esri.com/en-us/arcgis/products/location-services/services/basemaps"
+          >
+            ESRI Basemap
           </a>
         </div>
       </div>
@@ -183,7 +185,7 @@ exports[`MapContainer matches the snapshot with feature popup 1`] = `
       >
         <div
           class="leaflet-layer "
-          style="z-index: 1;"
+          style="z-index: 2;"
         >
           <div
             class="leaflet-tile-container leaflet-zoom-animated"
@@ -193,7 +195,7 @@ exports[`MapContainer matches the snapshot with feature popup 1`] = `
               alt=""
               class="leaflet-tile"
               role="presentation"
-              src="https://maps.gov.bc.ca/arcgis/rest/services/province/roads_wm/MapServer/tile/5/10/4"
+              src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/5/10/4"
               style="width: 256px; height: 256px; left: -159px; top: -31px;"
             />
           </div>
@@ -325,6 +327,17 @@ exports[`MapContainer matches the snapshot with feature popup 1`] = `
                   Draw a rectangle
                 </span>
               </a>
+              <a
+                class="leaflet-draw-draw-marker"
+                href="#"
+                title="Draw a marker"
+              >
+                <span
+                  class="sr-only"
+                >
+                  Draw a marker
+                </span>
+              </a>
             </div>
             <ul
               class="leaflet-draw-actions"
@@ -389,9 +402,8 @@ exports[`MapContainer matches the snapshot with feature popup 1`] = `
               <label>
                 <div>
                   <input
-                    checked="checked"
                     class="leaflet-control-layers-selector"
-                    name="leaflet-base-layers_100"
+                    name="leaflet-base-layers_103"
                     type="radio"
                   />
                   <span>
@@ -402,8 +414,9 @@ exports[`MapContainer matches the snapshot with feature popup 1`] = `
               <label>
                 <div>
                   <input
+                    checked="checked"
                     class="leaflet-control-layers-selector"
-                    name="leaflet-base-layers_100"
+                    name="leaflet-base-layers_103"
                     type="radio"
                   />
                   <span>
@@ -429,6 +442,12 @@ exports[`MapContainer matches the snapshot with feature popup 1`] = `
             title="A JS library for interactive maps"
           >
             Leaflet
+          </a>
+           | © 
+          <a
+            href="https://www.esri.com/en-us/arcgis/products/location-services/services/basemaps"
+          >
+            ESRI Basemap
           </a>
         </div>
       </div>
@@ -454,7 +473,7 @@ exports[`MapContainer matches the snapshot with geometries being passed in 1`] =
       >
         <div
           class="leaflet-layer "
-          style="z-index: 1;"
+          style="z-index: 2;"
         >
           <div
             class="leaflet-tile-container leaflet-zoom-animated"
@@ -464,7 +483,7 @@ exports[`MapContainer matches the snapshot with geometries being passed in 1`] =
               alt=""
               class="leaflet-tile"
               role="presentation"
-              src="https://maps.gov.bc.ca/arcgis/rest/services/province/roads_wm/MapServer/tile/5/10/4"
+              src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/5/10/4"
               style="width: 256px; height: 256px; left: -159px; top: -31px;"
             />
           </div>
@@ -581,6 +600,17 @@ exports[`MapContainer matches the snapshot with geometries being passed in 1`] =
                   Draw a rectangle
                 </span>
               </a>
+              <a
+                class="leaflet-draw-draw-marker"
+                href="#"
+                title="Draw a marker"
+              >
+                <span
+                  class="sr-only"
+                >
+                  Draw a marker
+                </span>
+              </a>
             </div>
             <ul
               class="leaflet-draw-actions"
@@ -645,9 +675,8 @@ exports[`MapContainer matches the snapshot with geometries being passed in 1`] =
               <label>
                 <div>
                   <input
-                    checked="checked"
                     class="leaflet-control-layers-selector"
-                    name="leaflet-base-layers_46"
+                    name="leaflet-base-layers_47"
                     type="radio"
                   />
                   <span>
@@ -658,8 +687,9 @@ exports[`MapContainer matches the snapshot with geometries being passed in 1`] =
               <label>
                 <div>
                   <input
+                    checked="checked"
                     class="leaflet-control-layers-selector"
-                    name="leaflet-base-layers_46"
+                    name="leaflet-base-layers_47"
                     type="radio"
                   />
                   <span>
@@ -686,6 +716,12 @@ exports[`MapContainer matches the snapshot with geometries being passed in 1`] =
           >
             Leaflet
           </a>
+           | © 
+          <a
+            href="https://www.esri.com/en-us/arcgis/products/location-services/services/basemaps"
+          >
+            ESRI Basemap
+          </a>
         </div>
       </div>
     </div>
@@ -710,7 +746,7 @@ exports[`MapContainer matches the snapshot with non editable geos being passed i
       >
         <div
           class="leaflet-layer "
-          style="z-index: 1;"
+          style="z-index: 2;"
         >
           <div
             class="leaflet-tile-container leaflet-zoom-animated"
@@ -720,7 +756,7 @@ exports[`MapContainer matches the snapshot with non editable geos being passed i
               alt=""
               class="leaflet-tile"
               role="presentation"
-              src="https://maps.gov.bc.ca/arcgis/rest/services/province/roads_wm/MapServer/tile/5/10/4"
+              src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/5/10/4"
               style="width: 256px; height: 256px; left: -159px; top: -31px;"
             />
           </div>
@@ -852,6 +888,17 @@ exports[`MapContainer matches the snapshot with non editable geos being passed i
                   Draw a rectangle
                 </span>
               </a>
+              <a
+                class="leaflet-draw-draw-marker"
+                href="#"
+                title="Draw a marker"
+              >
+                <span
+                  class="sr-only"
+                >
+                  Draw a marker
+                </span>
+              </a>
             </div>
             <ul
               class="leaflet-draw-actions"
@@ -916,9 +963,8 @@ exports[`MapContainer matches the snapshot with non editable geos being passed i
               <label>
                 <div>
                   <input
-                    checked="checked"
                     class="leaflet-control-layers-selector"
-                    name="leaflet-base-layers_74"
+                    name="leaflet-base-layers_76"
                     type="radio"
                   />
                   <span>
@@ -929,8 +975,9 @@ exports[`MapContainer matches the snapshot with non editable geos being passed i
               <label>
                 <div>
                   <input
+                    checked="checked"
                     class="leaflet-control-layers-selector"
-                    name="leaflet-base-layers_74"
+                    name="leaflet-base-layers_76"
                     type="radio"
                   />
                   <span>
@@ -957,6 +1004,12 @@ exports[`MapContainer matches the snapshot with non editable geos being passed i
           >
             Leaflet
           </a>
+           | © 
+          <a
+            href="https://www.esri.com/en-us/arcgis/products/location-services/services/basemaps"
+          >
+            ESRI Basemap
+          </a>
         </div>
       </div>
     </div>
@@ -981,7 +1034,7 @@ exports[`MapContainer sets the bounds of the geo being passed in successfully 1`
       >
         <div
           class="leaflet-layer "
-          style="z-index: 1;"
+          style="z-index: 2;"
         >
           <div
             class="leaflet-tile-container leaflet-zoom-animated"
@@ -991,7 +1044,7 @@ exports[`MapContainer sets the bounds of the geo being passed in successfully 1`
               alt=""
               class="leaflet-tile"
               role="presentation"
-              src="https://maps.gov.bc.ca/arcgis/rest/services/province/roads_wm/MapServer/tile/0/0/0"
+              src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/0/0/0"
               style="width: 256px; height: 256px; left: -38px; top: -79px;"
             />
           </div>
@@ -1108,6 +1161,17 @@ exports[`MapContainer sets the bounds of the geo being passed in successfully 1`
                   Draw a rectangle
                 </span>
               </a>
+              <a
+                class="leaflet-draw-draw-marker"
+                href="#"
+                title="Draw a marker"
+              >
+                <span
+                  class="sr-only"
+                >
+                  Draw a marker
+                </span>
+              </a>
             </div>
             <ul
               class="leaflet-draw-actions"
@@ -1172,9 +1236,8 @@ exports[`MapContainer sets the bounds of the geo being passed in successfully 1`
               <label>
                 <div>
                   <input
-                    checked="checked"
                     class="leaflet-control-layers-selector"
-                    name="leaflet-base-layers_177"
+                    name="leaflet-base-layers_180"
                     type="radio"
                   />
                   <span>
@@ -1185,8 +1248,9 @@ exports[`MapContainer sets the bounds of the geo being passed in successfully 1`
               <label>
                 <div>
                   <input
+                    checked="checked"
                     class="leaflet-control-layers-selector"
-                    name="leaflet-base-layers_177"
+                    name="leaflet-base-layers_180"
                     type="radio"
                   />
                   <span>
@@ -1212,6 +1276,12 @@ exports[`MapContainer sets the bounds of the geo being passed in successfully 1`
             title="A JS library for interactive maps"
           >
             Leaflet
+          </a>
+           | © 
+          <a
+            href="https://www.esri.com/en-us/arcgis/products/location-services/services/basemaps"
+          >
+            ESRI Basemap
           </a>
         </div>
       </div>

@@ -288,6 +288,7 @@ export const insertOccurrenceSubmissionStatusSQL = (
 
 /**
  * SQL query to insert the occurrence submission message.
+ * @TODO this method duplicates ErrorRepository.insertSubmissionMessage
  *
  * @param {number} occurrenceSubmissionId
  * @param {string} submissionStatusType
@@ -372,31 +373,4 @@ export const getOccurrenceSubmissionMessagesSQL = (occurrenceSubmissionId: numbe
       os.occurrence_submission_id = ${occurrenceSubmissionId}
     ORDER BY sm.submission_message_id;
   `;
-};
-
-/**
- * SQL query to get a template methodology species id.
- *
- * @param {number} fieldMethodId
- * @param {number} templateId
- * @return {*}  {(SQLStatement | null)}
- */
-export const getTemplateMethodologySpeciesRecordSQL = (
-  fieldMethodId: number,
-  templateId: number
-): SQLStatement | null => {
-  if (!fieldMethodId || !templateId) {
-    return null;
-  }
-
-  return SQL`
-    SELECT *
-    FROM
-      template_methodology_species tms
-    WHERE
-      tms.field_method_id = ${fieldMethodId}
-    AND
-      tms.template_id = ${templateId}
-    ;
-    `;
 };

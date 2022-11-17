@@ -1,5 +1,5 @@
 import SQL from 'sql-template-strings';
-import { ApiGeneralError } from '../errors/custom-error';
+import { ApiGeneralError } from '../errors/api-error';
 import { PostProprietorData, PostSurveyObject } from '../models/survey-create';
 import { PutSurveyObject } from '../models/survey-update';
 import {
@@ -17,8 +17,8 @@ import {
   SurveySupplementaryData
 } from '../models/survey-view';
 import { queries } from '../queries/queries';
+import { DBService } from './db-service';
 import { PermitService } from './permit-service';
-import { DBService } from './service';
 import { TaxonomyService } from './taxonomy-service';
 
 export class SurveyService extends DBService {

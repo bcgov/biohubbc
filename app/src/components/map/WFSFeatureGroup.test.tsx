@@ -2,7 +2,7 @@ import { cleanup, render, waitFor } from '@testing-library/react';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import React from 'react';
 import { MapContainer } from 'react-leaflet';
-import { MapBounds } from './MapContainer';
+import { SetMapBounds } from './components/Bounds';
 import WFSFeatureGroup from './WFSFeatureGroup';
 
 jest.mock('../../hooks/useBioHubApi');
@@ -62,7 +62,7 @@ describe('WFSFeatureGroup', () => {
 
     const { asFragment } = render(
       <MapContainer id={'test-map'} style={{ height: '100%' }} center={[55, -128]} zoom={10} scrollWheelZoom={false}>
-        <MapBounds bounds={initialBounds} />
+        <SetMapBounds bounds={initialBounds} />
         <WFSFeatureGroup
           typeName="pub:WHSE_WILDLIFE_MANAGEMENT.WAA_WILDLIFE_MGMT_UNITS_SVW"
           featureKeyHandler={() => 'uniqueFeatureKey'}

@@ -2,9 +2,9 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../../database/db';
-import { HTTP400, HTTP500 } from '../../../../../../../../errors/custom-error';
-import { queries } from '../../../../../../../../queries/queries';
+import { HTTP400, HTTP500 } from '../../../../../../../../errors/http-error';
 import { authorizeRequestHandler } from '../../../../../../../../request-handlers/security/authorization';
+import { SummaryService } from '../../../../../../../../services/summary-service';
 import { generateS3FileKey, getFileFromS3 } from '../../../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../../../utils/logger';
 import { DWCArchive } from '../../../../../../../../utils/media/dwc/dwc-archive-file';
@@ -140,25 +140,19 @@ export function getSummarySubmissionCSVForView(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const getSubmissionSQLStatement = queries.survey.getSurveySummarySubmissionSQL(Number(req.params.summaryId));
-
-      if (!getSubmissionSQLStatement) {
-        throw new HTTP400('Failed to build SQL get statement');
-      }
-
       await connection.open();
+      const summaryService = new SummaryService(connection);
 
-      const submissionData = await connection.query(getSubmissionSQLStatement.text, getSubmissionSQLStatement.values);
-
+      const summaryId = Number(req.params.summaryId);
+      const summarySubmission = await summaryService.findSummarySubmissionById(summaryId);
       await connection.commit();
 
-      const fileName =
-        (submissionData && submissionData.rows && submissionData.rows[0] && submissionData.rows[0].file_name) || null;
+      const fileName = summarySubmission.file_name;
 
       const s3Key = generateS3FileKey({
         projectId: Number(req.params.projectId),
         surveyId: Number(req.params.surveyId),
-        summaryId: Number(req.params.summaryId),
+        summaryId,
         fileName
       });
 

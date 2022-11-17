@@ -1,7 +1,7 @@
 import moment from 'moment';
 import { PROJECT_ROLE } from '../constants/roles';
 import { COMPLETION_STATUS } from '../constants/status';
-import { HTTP400, HTTP409 } from '../errors/custom-error';
+import { HTTP400, HTTP409 } from '../errors/http-error';
 import { IPostIUCN, PostFundingSource, PostProjectObject } from '../models/project-create';
 import {
   IPutIUCN,
@@ -29,7 +29,7 @@ import { getSurveyAttachmentS3Keys } from '../paths/project/{projectId}/survey/{
 import { GET_ENTITIES, IUpdateProject } from '../paths/project/{projectId}/update';
 import { queries } from '../queries/queries';
 import { deleteFileFromS3 } from '../utils/file-utils';
-import { DBService } from './service';
+import { DBService } from './db-service';
 
 export class ProjectService extends DBService {
   /**
@@ -134,63 +134,6 @@ export class ProjectService extends DBService {
     if (!response || !response.rowCount) {
       throw new HTTP400('Failed to insert project team member');
     }
-  }
-
-  async getPublicProjectsList(): Promise<any> {
-    const getProjectListSQLStatement = queries.public.getPublicProjectListSQL();
-
-    if (!getProjectListSQLStatement) {
-      throw new HTTP400('Failed to build SQL get statement');
-    }
-
-    const response = await this.connection.query(getProjectListSQLStatement.text, getProjectListSQLStatement.values);
-
-    if (!response || !response.rows || !response.rows.length) {
-      return [];
-    }
-
-    return response.rows.map((row) => ({
-      id: row.id,
-      name: row.name,
-      start_date: row.start_date,
-      end_date: row.end_date,
-      coordinator_agency: row.coordinator_agency,
-      completion_status:
-        (row.end_date && moment(row.end_date).endOf('day').isBefore(moment()) && COMPLETION_STATUS.COMPLETED) ||
-        COMPLETION_STATUS.ACTIVE,
-      project_type: row.project_type
-    }));
-  }
-
-  async getPublicProjectById(projectId: number): Promise<IGetProject> {
-    const [
-      projectData,
-      objectiveData,
-      coordinatorData,
-      locationData,
-      iucnData,
-      fundingData,
-      partnershipsData
-    ] = await Promise.all([
-      this.getPublicProjectData(projectId),
-      this.getObjectivesData(projectId),
-      this.getCoordinatorData(projectId),
-      this.getLocationData(projectId),
-      this.getIUCNClassificationData(projectId),
-      this.getFundingData(projectId),
-      this.getPartnershipsData(projectId)
-    ]);
-
-    return {
-      id: projectId,
-      project: projectData,
-      objectives: objectiveData,
-      coordinator: coordinatorData,
-      location: locationData,
-      iucn: iucnData,
-      funding: fundingData,
-      partnerships: partnershipsData
-    };
   }
 
   async getProjectList(isUserAdmin: boolean, systemUserId: number | null, filterFields: any): Promise<any> {
@@ -965,28 +908,5 @@ export class ProjectService extends DBService {
     }
 
     return true;
-  }
-
-  async getPublicProjectData(projectId: number): Promise<GetProjectData> {
-    const getProjectSqlStatement = queries.public.getPublicProjectSQL(projectId);
-    const getProjectActivitiesSQLStatement = queries.public.getActivitiesByPublicProjectSQL(projectId);
-
-    if (!getProjectSqlStatement || !getProjectActivitiesSQLStatement) {
-      throw new HTTP400('Failed to build SQL get statement');
-    }
-
-    const [project, activity] = await Promise.all([
-      this.connection.query(getProjectSqlStatement.text, getProjectSqlStatement.values),
-      this.connection.query(getProjectActivitiesSQLStatement.text, getProjectActivitiesSQLStatement.values)
-    ]);
-
-    const projectResult = (project && project.rows && project.rows[0]) || null;
-    const activityResult = (activity && activity.rows) || null;
-
-    if (!projectResult || !activityResult) {
-      throw new HTTP400('Failed to get project data');
-    }
-
-    return new GetProjectData(projectResult, activityResult);
   }
 }

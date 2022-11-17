@@ -2,6 +2,7 @@ import { cleanup, fireEvent, render, waitFor } from '@testing-library/react';
 import { SYSTEM_ROLE } from 'constants/roles';
 import { AuthStateContext, IAuthState } from 'contexts/authStateContext';
 import { DialogContextProvider } from 'contexts/dialogContext';
+import { Feature } from 'geojson';
 import { createMemoryHistory } from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
@@ -25,6 +26,9 @@ const mockUseBiohubApi = {
   },
   codes: {
     getAllCodeSets: jest.fn<Promise<IGetAllCodeSetsResponse>, []>()
+  },
+  external: {
+    post: jest.fn<Promise<{ features?: Feature[] }>, []>()
   }
 };
 
@@ -60,6 +64,7 @@ describe('ProjectPage', () => {
     mockBiohubApi().survey.getSurveysList.mockClear();
     mockBiohubApi().codes.getAllCodeSets.mockClear();
     mockBiohubApi().project.publishProject.mockClear();
+    mockBiohubApi().external.post.mockClear();
 
     jest.spyOn(console, 'debug').mockImplementation(() => {});
   });
@@ -85,6 +90,15 @@ describe('ProjectPage', () => {
     mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
       activity: [{ id: 1, name: 'activity 1' }]
     } as any);
+    mockBiohubApi().external.post.mockResolvedValue({
+      features: [
+        {
+          type: 'Feature',
+          geometry: { type: 'Point', coordinates: [0, 0] },
+          properties: {}
+        }
+      ]
+    });
 
     const { asFragment, findByText } = render(
       <DialogContextProvider>
@@ -110,6 +124,15 @@ describe('ProjectPage', () => {
     mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
       activity: [{ id: 1, name: 'activity 1' }]
     } as any);
+    mockBiohubApi().external.post.mockResolvedValue({
+      features: [
+        {
+          type: 'Feature',
+          geometry: { type: 'Point', coordinates: [0, 0] },
+          properties: {}
+        }
+      ]
+    });
 
     const { asFragment, findByText } = render(
       <DialogContextProvider>
@@ -133,6 +156,15 @@ describe('ProjectPage', () => {
     } as any);
     mockBiohubApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
     mockBiohubApi().project.deleteProject.mockResolvedValue(true);
+    mockBiohubApi().external.post.mockResolvedValue({
+      features: [
+        {
+          type: 'Feature',
+          geometry: { type: 'Point', coordinates: [0, 0] },
+          properties: {}
+        }
+      ]
+    });
 
     const authState = {
       keycloakWrapper: {
@@ -176,6 +208,15 @@ describe('ProjectPage', () => {
     } as any);
     mockBiohubApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
     mockBiohubApi().project.deleteProject.mockResolvedValue(null);
+    mockBiohubApi().external.post.mockResolvedValue({
+      features: [
+        {
+          type: 'Feature',
+          geometry: { type: 'Point', coordinates: [0, 0] },
+          properties: {}
+        }
+      ]
+    });
 
     const authState = {
       keycloakWrapper: {
@@ -227,6 +268,15 @@ describe('ProjectPage', () => {
     } as any);
     mockBiohubApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
     mockBiohubApi().project.deleteProject = jest.fn(() => Promise.reject(new Error('API Error is Here')));
+    mockBiohubApi().external.post.mockResolvedValue({
+      features: [
+        {
+          type: 'Feature',
+          geometry: { type: 'Point', coordinates: [0, 0] },
+          properties: {}
+        }
+      ]
+    });
 
     const authState = {
       keycloakWrapper: {
@@ -281,6 +331,15 @@ describe('ProjectPage', () => {
       project: { ...getProjectForViewResponse.project }
     });
     mockBiohubApi().project.deleteProject.mockResolvedValue(true);
+    mockBiohubApi().external.post.mockResolvedValue({
+      features: [
+        {
+          type: 'Feature',
+          geometry: { type: 'Point', coordinates: [0, 0] },
+          properties: {}
+        }
+      ]
+    });
 
     const authState = {
       keycloakWrapper: {
@@ -311,6 +370,15 @@ describe('ProjectPage', () => {
       activity: [{ id: 1, name: 'activity 1' }]
     } as any);
     mockBiohubApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
+    mockBiohubApi().external.post.mockResolvedValue({
+      features: [
+        {
+          type: 'Feature',
+          geometry: { type: 'Point', coordinates: [0, 0] },
+          properties: {}
+        }
+      ]
+    });
 
     const authState = {
       keycloakWrapper: {
@@ -347,6 +415,15 @@ describe('ProjectPage', () => {
     mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
       activity: [{ id: 1, name: 'activity 1' }]
     } as any);
+    mockBiohubApi().external.post.mockResolvedValue({
+      features: [
+        {
+          type: 'Feature',
+          geometry: { type: 'Point', coordinates: [0, 0] },
+          properties: {}
+        }
+      ]
+    });
 
     const { asFragment, findByText } = render(
       <Router history={history}>

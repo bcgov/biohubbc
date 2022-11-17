@@ -6,7 +6,7 @@ import sinonChai from 'sinon-chai';
 import SQL from 'sql-template-strings';
 import { SYSTEM_ROLE } from '../../../constants/roles';
 import * as db from '../../../database/db';
-import { HTTPError } from '../../../errors/custom-error';
+import { HTTPError } from '../../../errors/http-error';
 import project_queries from '../../../queries/project';
 import survey_queries from '../../../queries/survey';
 import * as file_utils from '../../../utils/file-utils';

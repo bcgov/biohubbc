@@ -49,9 +49,9 @@ const request = require('request');
       REACT_APP_NODE_ENV: process.env.REACT_APP_NODE_ENV || 'dev',
       VERSION: `${process.env.VERSION || 'NA'}(build #${process.env.CHANGE_VERSION || 'NA'})`,
       KEYCLOAK_CONFIG: {
-        url: process.env.SSO_URL || 'https://dev.oidc.gov.bc.ca/auth',
-        realm: process.env.SSO_REALM || '35r1iman',
-        clientId: process.env.SSO_CLIENT_ID || 'biohubbc'
+        url: process.env.REACT_APP_KEYCLOAK_HOST || 'https://dev.oidc.gov.bc.ca/auth',
+        realm: process.env.REACT_APP_KEYCLOAK_REALM || '35r1iman',
+        clientId: process.env.REACT_APP_KEYCLOAK_CLIENT_ID || 'biohubbc'
       },
       SITEMINDER_LOGOUT_URL:
         process.env.REACT_APP_SITEMINDER_LOGOUT_URL || 'https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi',

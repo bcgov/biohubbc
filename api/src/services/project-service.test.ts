@@ -4,7 +4,7 @@ import { QueryResult } from 'pg';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import SQL from 'sql-template-strings';
-import { HTTPError } from '../errors/custom-error';
+import { HTTPError } from '../errors/http-error';
 import {
   GetCoordinatorData,
   GetFundingData,
@@ -295,78 +295,6 @@ describe('ProjectService', () => {
     });
   });
 
-  describe('getPublicProjectsList', () => {
-    afterEach(() => {
-      sinon.restore();
-    });
-
-    it('should throw a 400 error when no sql statement produced', async () => {
-      const mockDBConnection = getMockDBConnection();
-
-      sinon.stub(queries.public, 'getPublicProjectListSQL').returns(null);
-
-      const projectService = new ProjectService(mockDBConnection);
-
-      try {
-        await projectService.getPublicProjectsList();
-        expect.fail();
-      } catch (actualError) {
-        expect((actualError as HTTPError).message).to.equal('Failed to build SQL get statement');
-        expect((actualError as HTTPError).status).to.equal(400);
-      }
-    });
-
-    it('returns empty array if there are no rows', async () => {
-      const mockQueryResponse = ({ rows: [] } as unknown) as QueryResult<any>;
-      const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
-
-      sinon.stub(queries.public, 'getPublicProjectListSQL').returns(SQL`valid sql`);
-
-      const projectService = new ProjectService(mockDBConnection);
-
-      const result = await projectService.getPublicProjectsList();
-
-      expect(result).to.eql([]);
-    });
-
-    it('returns rows on success', async () => {
-      const mockRowObj = [
-        {
-          id: 123,
-          name: 'Project 1',
-          start_date: '1900-01-01',
-          end_date: '2000-10-10',
-          coordinator_agency: 'Agency 1',
-          project_type: 'Aquatic Habitat'
-        },
-        {
-          id: 456,
-          name: 'Project 2',
-          start_date: '1900-01-01',
-          end_date: '2000-12-31',
-          coordinator_agency: 'Agency 2',
-          project_type: 'Terrestrial Habitat'
-        }
-      ];
-      const mockQueryResponse = ({ rows: mockRowObj } as unknown) as QueryResult<any>;
-      const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
-
-      sinon.stub(queries.public, 'getPublicProjectListSQL').returns(SQL`valid sql`);
-
-      const projectService = new ProjectService(mockDBConnection);
-
-      const result = await projectService.getPublicProjectsList();
-
-      expect(result[0].id).to.equal(123);
-      expect(result[0].name).to.equal('Project 1');
-      expect(result[0].completion_status).to.equal('Completed');
-
-      expect(result[1].id).to.equal(456);
-      expect(result[1].name).to.equal('Project 2');
-      expect(result[1].completion_status).to.equal('Completed');
-    });
-  });
-
   describe('getProjectList', () => {
     afterEach(() => {
       sinon.restore();
@@ -437,64 +365,6 @@ describe('ProjectService', () => {
       expect(result[1].name).to.equal('Project 2');
       expect(result[1].completion_status).to.equal('Completed');
     });
-  });
-
-  describe('getPublicProjectById', () => {
-    afterEach(() => {
-      sinon.restore();
-    });
-
-    it('should throw a 400 error when no sql statement produced for getPublicProjectSQL', async () => {
-      const mockDBConnection = getMockDBConnection();
-
-      sinon.stub(queries.public, 'getPublicProjectSQL').returns(null);
-
-      const projectService = new ProjectService(mockDBConnection);
-
-      try {
-        await projectService.getPublicProjectById(1);
-        expect.fail();
-      } catch (actualError) {
-        expect((actualError as HTTPError).message).to.equal('Failed to build SQL get statement');
-        expect((actualError as HTTPError).status).to.equal(400);
-      }
-    });
-
-    it('should throw a 400 error when no sql statement produced', async () => {
-      const mockDBConnection = getMockDBConnection();
-
-      sinon.stub(queries.public, 'getPublicProjectSQL').returns(null);
-      sinon.stub(queries.public, 'getActivitiesByPublicProjectSQL').returns(null);
-
-      const projectService = new ProjectService(mockDBConnection);
-
-      try {
-        await projectService.getPublicProjectById(1);
-        expect.fail();
-      } catch (actualError) {
-        expect((actualError as HTTPError).message).to.equal('Failed to build SQL get statement');
-        expect((actualError as HTTPError).status).to.equal(400);
-      }
-    });
-  });
-
-  it('returns rows on success', async () => {
-    const mockQueryResponse = ({ rows: [{ id: 1 }] } as unknown) as QueryResult<any>;
-    const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
-
-    sinon.stub(ProjectService.prototype, 'getPublicProjectData').resolves(new GetProjectData());
-    sinon.stub(ProjectService.prototype, 'getObjectivesData').resolves(new GetObjectivesData());
-    sinon.stub(ProjectService.prototype, 'getCoordinatorData').resolves(new GetCoordinatorData());
-    sinon.stub(ProjectService.prototype, 'getLocationData').resolves(new GetLocationData());
-    sinon.stub(ProjectService.prototype, 'getPartnershipsData').resolves(new GetPartnershipsData());
-    sinon.stub(ProjectService.prototype, 'getIUCNClassificationData').resolves(new GetIUCNClassificationData());
-    sinon.stub(ProjectService.prototype, 'getFundingData').resolves(new GetFundingData());
-
-    const projectService = new ProjectService(mockDBConnection);
-
-    const result = await projectService.getPublicProjectById(1);
-
-    expect(result.id).to.equal(1);
   });
 });
 

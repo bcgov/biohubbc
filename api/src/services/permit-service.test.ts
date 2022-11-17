@@ -1,9 +1,13 @@
 import chai, { expect } from 'chai';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import { PermitRepository } from '../repositories/permit-repository';
+import { SYSTEM_ROLE } from '../constants/roles';
+import { ApiGeneralError } from '../errors/api-error';
+import { UserObject } from '../models/user';
+import { IPermitModel, PermitRepository } from '../repositories/permit-repository';
 import { getMockDBConnection } from '../__mocks__/db';
 import { PermitService } from './permit-service';
+import { UserService } from './user-service';
 
 chai.use(sinonChai);
 
@@ -14,6 +18,137 @@ describe('PermitService', () => {
     const permitService = new PermitService(mockDBConnection);
 
     expect(permitService).to.be.instanceof(PermitService);
+  });
+
+  describe('getPermitByUser', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('Gets permit by admin user id', async () => {
+      const mockPermitResponse: IPermitModel[] = [
+        {
+          permit_id: 1,
+          survey_id: 1,
+          number: 'permit number',
+          type: 'permit type',
+          create_date: new Date().toISOString(),
+          create_user: 1,
+          update_date: null,
+          update_user: null,
+          revision_count: 0
+        }
+      ];
+
+      const mockUserObject: UserObject = {
+        id: 1,
+        user_identifier: 'test_user',
+        record_end_date: '',
+        role_ids: [],
+        role_names: [SYSTEM_ROLE.SYSTEM_ADMIN]
+      };
+
+      const mockDBConnection = getMockDBConnection();
+      const permitService = new PermitService(mockDBConnection);
+
+      const getAllPermits = sinon.stub(PermitRepository.prototype, 'getAllPermits').resolves(mockPermitResponse);
+
+      const getUserByIdStub = sinon.stub(UserService.prototype, 'getUserById').resolves(mockUserObject);
+
+      const response = await permitService.getPermitByUser(mockUserObject.id);
+
+      expect(getAllPermits).to.be.calledOnce;
+      expect(getUserByIdStub).to.be.calledOnceWith(mockUserObject.id);
+      expect(response).to.eql(mockPermitResponse);
+    });
+
+    it('Gets permit by data admin user id', async () => {
+      const mockPermitResponse: IPermitModel[] = [
+        {
+          permit_id: 1,
+          survey_id: 1,
+          number: 'permit number',
+          type: 'permit type',
+          create_date: new Date().toISOString(),
+          create_user: 1,
+          update_date: null,
+          update_user: null,
+          revision_count: 0
+        }
+      ];
+
+      const mockUserObject: UserObject = {
+        id: 1,
+        user_identifier: 'test_user',
+        record_end_date: '',
+        role_ids: [],
+        role_names: [SYSTEM_ROLE.DATA_ADMINISTRATOR]
+      };
+
+      const mockDBConnection = getMockDBConnection();
+      const permitService = new PermitService(mockDBConnection);
+
+      const getAllPermits = sinon.stub(PermitRepository.prototype, 'getAllPermits').resolves(mockPermitResponse);
+
+      const getUserByIdStub = sinon.stub(UserService.prototype, 'getUserById').resolves(mockUserObject);
+
+      const response = await permitService.getPermitByUser(mockUserObject.id);
+
+      expect(getAllPermits).to.be.calledOnce;
+      expect(getUserByIdStub).to.be.calledOnceWith(mockUserObject.id);
+      expect(response).to.eql(mockPermitResponse);
+    });
+
+    it('Gets permit by non-admin user id', async () => {
+      const mockPermitResponse: IPermitModel[] = [
+        {
+          permit_id: 1,
+          survey_id: 1,
+          number: 'permit number',
+          type: 'permit type',
+          create_date: new Date().toISOString(),
+          create_user: 1,
+          update_date: null,
+          update_user: null,
+          revision_count: 0
+        }
+      ];
+
+      const mockUserObject: UserObject = {
+        id: 1,
+        user_identifier: 'test_user',
+        record_end_date: '',
+        role_ids: [],
+        role_names: []
+      };
+
+      const mockDBConnection = getMockDBConnection();
+      const permitService = new PermitService(mockDBConnection);
+
+      const getPermitByUser = sinon.stub(PermitRepository.prototype, 'getPermitByUser').resolves(mockPermitResponse);
+
+      const getUserByIdStub = sinon.stub(UserService.prototype, 'getUserById').resolves(mockUserObject);
+
+      const response = await permitService.getPermitByUser(mockUserObject.id);
+
+      expect(getPermitByUser).to.be.calledOnce;
+      expect(getUserByIdStub).to.be.calledOnceWith(mockUserObject.id);
+      expect(response).to.eql(mockPermitResponse);
+    });
+
+    it('throws api error if user not found', async () => {
+      const mockDBConnection = getMockDBConnection();
+      const permitService = new PermitService(mockDBConnection);
+
+      sinon.stub(UserService.prototype, 'getUserById').resolves();
+
+      try {
+        await permitService.getPermitByUser(1);
+        expect.fail();
+      } catch (actualError) {
+        expect((actualError as ApiGeneralError).message).to.equal('Failed to acquire user');
+      }
+    });
   });
 
   describe('getPermitBySurveyId', () => {

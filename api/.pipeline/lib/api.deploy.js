@@ -1,4 +1,5 @@
 'use strict';
+
 const { OpenShiftClientX } = require('pipeline-cli');
 const path = require('path');
 
@@ -8,7 +9,7 @@ const path = require('path');
  * @param {*} settings
  * @returns
  */
-module.exports = (settings) => {
+const apiDeploy = async (settings) => {
   const phases = settings.phases;
   const options = settings.options;
   const phase = options.env;
@@ -40,7 +41,9 @@ module.exports = (settings) => {
         KEYCLOAK_SECRET: 'keycloak-admin-password',
         KEYCLOAK_SECRET_ADMIN_PASSWORD: 'keycloak_admin_password',
         DB_SERVICE_NAME: `${phases[phase].dbName}-postgresql${phases[phase].suffix}`,
-        CERTIFICATE_URL: phases[phase].certificateURL,
+        KEYCLOAK_HOST: phases[phase].sso.url,
+        KEYCLOAK_CLIENT_ID: phases[phase].sso.clientId,
+        KEYCLOAK_REALM: phases[phase].sso.realm,
         REPLICAS: phases[phase].replicas || 1,
         REPLICA_MAX: phases[phase].maxReplicas || 1,
         LOG_LEVEL: phases[phase].logLevel || 'info'
@@ -53,3 +56,5 @@ module.exports = (settings) => {
 
   oc.applyAndDeploy(objects, phases[phase].instance);
 };
+
+module.exports = { apiDeploy };

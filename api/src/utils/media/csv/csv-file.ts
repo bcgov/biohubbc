@@ -1,4 +1,5 @@
 import xlsx from 'xlsx';
+import { SUBMISSION_MESSAGE_TYPE } from '../../../constants/status';
 import { IMediaState, MediaValidation } from '../media-file';
 
 export type CSVWorksheets = { [name: string]: CSVWorksheet };
@@ -216,28 +217,22 @@ export type CSVValidator = (csvWorksheet: CSVWorksheet) => CSVWorksheet;
 
 // ensure these error codes match the 'name' column in the table: submission_message_type
 
-export type IHeaderErrorCode =
-  | 'Duplicate Header'
-  | 'Unknown Header'
-  | 'Missing Required Header'
-  | 'Missing Recommended Header'
-  | 'Miscellaneous';
-
-export type IRowErrorCode =
-  | 'Missing Required Field'
-  | 'Unexpected Format'
-  | 'Out of Range'
-  | 'Invalid Value'
-  | 'Miscellaneous';
-
 export interface IHeaderError {
-  errorCode: IHeaderErrorCode;
+  errorCode:
+    | SUBMISSION_MESSAGE_TYPE.DUPLICATE_HEADER
+    | SUBMISSION_MESSAGE_TYPE.UNKNOWN_HEADER
+    | SUBMISSION_MESSAGE_TYPE.MISSING_RECOMMENDED_HEADER
+    | SUBMISSION_MESSAGE_TYPE.MISSING_REQUIRED_HEADER;
   message: string;
   col: string | number;
 }
 
 export interface IRowError {
-  errorCode: IRowErrorCode;
+  errorCode:
+    | SUBMISSION_MESSAGE_TYPE.MISSING_REQUIRED_FIELD
+    | SUBMISSION_MESSAGE_TYPE.OUT_OF_RANGE
+    | SUBMISSION_MESSAGE_TYPE.INVALID_VALUE
+    | SUBMISSION_MESSAGE_TYPE.UNEXPECTED_FORMAT;
   message: string;
   col: string;
   row: number;

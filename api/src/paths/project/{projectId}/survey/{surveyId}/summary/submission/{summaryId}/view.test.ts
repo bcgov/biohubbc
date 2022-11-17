@@ -3,10 +3,8 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import SQL from 'sql-template-strings';
 import * as db from '../../../../../../../../database/db';
-import { HTTPError } from '../../../../../../../../errors/custom-error';
-import survey_queries from '../../../../../../../../queries/survey';
+import { HTTPError } from '../../../../../../../../errors/http-error';
 import * as file_utils from '../../../../../../../../utils/file-utils';
 import { MediaFile } from '../../../../../../../../utils/media/media-file';
 import * as media_utils from '../../../../../../../../utils/media/media-utils';
@@ -95,27 +93,6 @@ describe('getSurveySubmissionCSVForView', () => {
     }
   });
 
-  it('should throw a 400 error when no sql statement returned for getSurveySummarySubmissionSQL', async () => {
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      }
-    });
-
-    sinon.stub(survey_queries, 'getSurveySummarySubmissionSQL').returns(null);
-
-    try {
-      const result = view.getSummarySubmissionCSVForView();
-
-      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal('Failed to build SQL get statement');
-    }
-  });
-
   it('should throw a 500 error when no s3 file fetched', async () => {
     const mockQuery = sinon.stub();
 
@@ -136,7 +113,6 @@ describe('getSurveySubmissionCSVForView', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_queries, 'getLatestSurveySummarySubmissionSQL').returns(SQL`something`);
     sinon.stub(file_utils, 'generateS3FileKey').resolves('validkey');
     sinon.stub(file_utils, 'getFileFromS3').resolves((null as unknown) as GetObjectOutput);
 
@@ -171,7 +147,6 @@ describe('getSurveySubmissionCSVForView', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_queries, 'getLatestSurveySummarySubmissionSQL').returns(SQL`something`);
     sinon.stub(file_utils, 'generateS3FileKey').resolves('validkey');
     sinon.stub(file_utils, 'getFileFromS3').resolves({ file: 'myfile' } as GetObjectOutput);
     sinon.stub(media_utils, 'parseUnknownMedia').returns(null);
@@ -207,7 +182,6 @@ describe('getSurveySubmissionCSVForView', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_queries, 'getLatestSurveySummarySubmissionSQL').returns(SQL`something`);
     sinon.stub(file_utils, 'generateS3FileKey').resolves('validkey');
     sinon.stub(file_utils, 'getFileFromS3').resolves({ file: 'myfile' } as GetObjectOutput);
     sinon
