@@ -80,8 +80,10 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
   };
 
   const handleViewDetailsClick = (attachment: IGetProjectAttachment | IGetSurveyAttachment) => {
+    console.log('trying to view');
     setCurrentAttachment(attachment);
     getReportMeta(attachment);
+    //getAttachmentMeta(attachment);
   };
 
   const dialogContext = useContext(DialogContext);
@@ -112,10 +114,10 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
   };
 
   useEffect(() => {
-    if (reportMetaData && currentAttachment) {
+    if (currentAttachment) {
       setShowViewFileWithMetaDialog(true);
     }
-  }, [reportMetaData, currentAttachment]);
+  }, [currentAttachment]);
 
   const showDeleteAttachmentDialog = (attachment: IGetProjectAttachment | IGetSurveyAttachment) => {
     dialogContext.setYesNoDialog({
@@ -203,6 +205,23 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
       return error;
     }
   };
+
+  // const getAttachmentMeta = async (attachment: IGetProjectAttachment | IGetSurveyAttachment) => {
+  //   setReportMetaData({
+  //     attachment_id: 1,
+  //     title: 'attachment title',
+  //     year_published: 2000,
+  //     description: 'some description',
+  //     last_modified: '2022-02-02',
+  //     revision_count: 1,
+  //     authors: [
+  //       {
+  //         first_name: 'John',
+  //         last_name: 'Smith'
+  //       }
+  //     ]
+  //   });
+  // };
 
   const openAttachment = async (attachment: IGetProjectAttachment | IGetSurveyAttachment) => {
     try {
@@ -510,19 +529,18 @@ const AttachmentItemMenuButton: React.FC<IAttachmentItemMenuButtonProps> = (prop
               </ListItemIcon>
               Download Document
             </MenuItem>
-            {props.attachment.fileType === AttachmentType.REPORT && (
-              <MenuItem
-                onClick={() => {
-                  props.handleViewDetailsClick(props.attachment);
-                  setAnchorEl(null);
-                }}
-                data-testid="attachment-action-menu-details">
-                <ListItemIcon>
-                  <Icon path={mdiInformationOutline} size={0.8} />
-                </ListItemIcon>
-                View Document Details
-              </MenuItem>
-            )}
+            <MenuItem
+              onClick={() => {
+                props.handleViewDetailsClick(props.attachment);
+                setAnchorEl(null);
+              }}
+              data-testid="attachment-action-menu-details">
+              <ListItemIcon>
+                <Icon path={mdiInformationOutline} size={0.8} />
+              </ListItemIcon>
+              View Document Details
+            </MenuItem>
+
             <MenuItem
               onClick={() => {
                 props.handleDeleteFileClick(props.attachment);

@@ -17,6 +17,8 @@ import TableRow from '@material-ui/core/TableRow';
 // import TextField from '@material-ui/core/TextField';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
+import Alert from '@material-ui/lab/Alert';
+import AlertTitle from '@material-ui/lab/AlertTitle';
 import { mdiLockOutline, mdiPencilOutline, mdiTrayArrowDown } from '@mdi/js';
 import Icon from '@mdi/react';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
@@ -106,6 +108,10 @@ const ViewFileWithMetaDialog: React.FC<IViewFileWithMetaDialogProps> = (props) =
             </Box>
           </Box>
           <Box mt={5}>
+            <Alert severity="info" style={{ marginBottom: '24px' }}>
+              <AlertTitle>Alert Title</AlertTitle>
+              Document requires a security review
+            </Alert>
             <Paper variant="outlined">
               <Toolbar style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <Typography variant="h5" component="h3">
@@ -196,28 +202,36 @@ const ViewFileWithMetaDialog: React.FC<IViewFileWithMetaDialogProps> = (props) =
                     <TableCell width="200">Category</TableCell>
                     <TableCell>Reason</TableCell>
                     <TableCell width="160">Dates</TableCell>
-                    <TableCell width="160">Actions</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  <TableRow>
-                    <TableCell>Security Administration</TableCell>
-                    <TableCell>
-                      <Typography style={{ fontWeight: 700 }}>Awaiting Security Review</Typography>
-                      <Typography variant="body1" color="textSecondary">
-                        Awaiting review to determine if security-reasons should be assigned
-                      </Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Typography variant="body2" component="div">
-                        Submitted
-                      </Typography>
-                      <Typography variant="body2" component="div" color="textSecondary">
-                        YYYY-MM-DD
-                      </Typography>
-                    </TableCell>
-                    <TableCell></TableCell>
-                  </TableRow>
+                  {props.reportMetaData?.security_reasons &&
+                    props.reportMetaData?.security_reasons?.length > 0 &&
+                    props.reportMetaData?.security_reasons?.map((row, index) => {
+                      return (
+                        <TableRow key={`${row.category}-${index}`}>
+                          <TableCell>{row.category}</TableCell>
+                          <TableCell>
+                            <Typography style={{ fontWeight: 700 }}>{row.reason}</Typography>
+                            <Typography variant="body1" color="textSecondary">
+                              {row.reason_description}
+                            </Typography>
+                          </TableCell>
+                          <TableCell>
+                            <Typography variant="body2" component="div">
+                              Submitted
+                            </Typography>
+                            <Typography variant="body2" component="div" color="textSecondary">
+                              {getFormattedDateRangeString(
+                                DATE_FORMAT.ShortMediumDateFormat,
+                                props.reportMetaData?.last_modified || ''
+                              )}
+                            </Typography>
+                          </TableCell>
+                          <TableCell></TableCell>
+                        </TableRow>
+                      );
+                    })}
                 </TableBody>
               </Table>
             </TableContainer>
