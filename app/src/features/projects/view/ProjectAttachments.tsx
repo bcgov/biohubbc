@@ -123,7 +123,9 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
 
       <SecurityDialog
         open={securityDialogOpen}
-        onAccept={() => alert('accepted')}
+        onAccept={() => {
+          setSecurityDialogOpen(false);
+        }}
         onClose={() => setSecurityDialogOpen(false)}
       />
 
