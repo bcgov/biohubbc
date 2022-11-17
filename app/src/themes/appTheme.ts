@@ -1,6 +1,6 @@
-import { createMuiTheme } from '@material-ui/core/styles';
 // import createBreakpoints from '@material-ui/core/styles/createBreakpoints'
 import { grey } from '@material-ui/core/colors';
+import { createMuiTheme } from '@material-ui/core/styles';
 import 'styles.scss';
 
 // const breakpoints = createBreakpoints({})
@@ -31,7 +31,7 @@ const appTheme = createMuiTheme({
     },
     text: {
       primary: '#313132',
-      secondary: '#8f8f8f'
+      secondary: '#757575'
     }
   },
   typography: {
@@ -41,7 +41,7 @@ const appTheme = createMuiTheme({
     MuiTypography: {
       h1: {
         fontSize: '2.25rem',
-        fontWeight: 700,
+        fontWeight: 700
       },
       h2: {
         fontSize: '1.875rem',
@@ -75,11 +75,13 @@ const appTheme = createMuiTheme({
       root: {
         textTransform: 'none',
         fontSize: '0.9rem',
-        fontWeight: 'bold',
         borderRadius: '5px'
       },
       sizeLarge: {
         fontSize: '1rem'
+      },
+      containedPrimary: {
+        fontWeight: 700
       },
       outlinedPrimary: {
         backgroundColor: '#ffffff',
@@ -91,7 +93,7 @@ const appTheme = createMuiTheme({
     },
     MuiChip: {
       colorSecondary: {
-        backgroundColor: "red"
+        backgroundColor: 'red'
       }
     },
     MuiContainer: {
@@ -136,6 +138,13 @@ const appTheme = createMuiTheme({
         borderRadius: '3px'
       }
     },
+    MuiListItem: {
+      root: {
+        '&:last-of-type': {
+          borderBottom: 'none'
+        }
+      }
+    },
     MuiListItemIcon: {
       root: {
         minWidth: '42px'
@@ -149,6 +158,7 @@ const appTheme = createMuiTheme({
     MuiTable: {
       root: {
         '& th': {
+          letterSpacing: '0.02rem',
           textTransform: 'uppercase'
         },
         '& tr:last-of-type td': {

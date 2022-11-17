@@ -3,8 +3,8 @@ import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../../database/db';
 import { HTTP400 } from '../../../../../../../../errors/http-error';
-import { queries } from '../../../../../../../../queries/queries';
 import { authorizeRequestHandler } from '../../../../../../../../request-handlers/security/authorization';
+import { SummaryService } from '../../../../../../../../services/summary-service';
 import { getLogger } from '../../../../../../../../utils/logger';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/summary/submission/{summaryId}/delete');
@@ -111,24 +111,13 @@ export function deleteSummarySubmission(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const deleteSubmissionSQLStatement = queries.survey.deleteSummarySubmissionSQL(Number(req.params.summaryId));
-
-      if (!deleteSubmissionSQLStatement) {
-        throw new HTTP400('Failed to build SQL delete statement');
-      }
-
       await connection.open();
+      const summaryService = new SummaryService(connection);
 
-      const deleteResult = await connection.query(
-        deleteSubmissionSQLStatement.text,
-        deleteSubmissionSQLStatement.values
-      );
-
+      const result = await summaryService.deleteSummarySubmission(Number(req.params.summaryId));
       await connection.commit();
 
-      const deleteResponse = (deleteResult && deleteResult.rowCount) || null;
-
-      return res.status(200).json(deleteResponse);
+      return res.status(200).json(result);
     } catch (error) {
       defaultLog.error({ label: 'deleteSummarySubmission', message: 'error', error });
       await connection.rollback();
