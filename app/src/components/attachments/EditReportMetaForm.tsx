@@ -26,6 +26,7 @@ export interface IEditReportMetaForm {
   description: string;
   year_published: number;
   revision_count: number;
+  onSave?: () => void;
 }
 
 export const EditReportMetaFormInitialValues: IEditReportMetaForm = {

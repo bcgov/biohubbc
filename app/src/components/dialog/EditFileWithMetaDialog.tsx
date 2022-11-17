@@ -71,7 +71,13 @@ export interface IEditFileWithMetaDialogProps {
    *
    * @memberof IEditFileWithMetaDialogProps
    */
-  onSave: (fileMeta: IEditReportMetaForm) => Promise<any>;
+  onSave: (fileMeta: IEditReportMetaForm) => Promise<void>;
+  /**
+   *
+   *
+   * @memberof IEditFileWithMetaDialogProps
+   */
+  refresh: () => void;
 }
 
 /**
@@ -116,6 +122,7 @@ const EditFileWithMetaDialog: React.FC<IEditFileWithMetaDialogProps> = (props) =
             setIsSaving(false);
             props.onClose();
           });
+          props.refresh();
         }}>
         {(formikProps) => (
           <>

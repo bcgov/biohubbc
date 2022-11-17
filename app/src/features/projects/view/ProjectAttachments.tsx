@@ -183,7 +183,12 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
       </Toolbar>
       <Divider></Divider>
       <Box px={1}>
-        <AttachmentsList projectId={projectId} attachmentsList={attachmentsList} getAttachments={getAttachments} />
+        <AttachmentsList
+          projectId={projectId}
+          attachmentsList={attachmentsList}
+          getAttachments={getAttachments}
+          refresh={() => getAttachments(true)}
+        />
       </Box>
     </>
   );

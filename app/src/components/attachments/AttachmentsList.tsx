@@ -30,18 +30,17 @@ import {
 } from '@mdi/js';
 import Icon from '@mdi/react';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
+import ViewFileWithDetailsDialog from 'components/dialog/ViewFileWithDetailsDialog';
+import { AttachmentType } from 'constants/attachments';
 import { AttachmentsI18N, EditReportMetaDataI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetProjectAttachment, IGetReportMetaData } from 'interfaces/useProjectApi.interface';
 import { IGetSurveyAttachment } from 'interfaces/useSurveyApi.interface';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { getFormattedFileSize } from 'utils/Utils';
-import { AttachmentType } from '../../constants/attachments';
 import { IEditReportMetaForm } from '../attachments/EditReportMetaForm';
-import EditFileWithMetaDialog from '../dialog/EditFileWithMetaDialog';
-import ViewFileWithMetaDialog from '../dialog/ViewFileWithMetaDialog';
 
 const useStyles = makeStyles((theme: Theme) => ({
   attachmentsTable: {
@@ -58,6 +57,7 @@ export interface IAttachmentsListProps {
   surveyId?: number;
   attachmentsList: (IGetProjectAttachment | IGetSurveyAttachment)[];
   getAttachments: (forceFetch: boolean) => void;
+  refresh: () => void;
 }
 
 const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
@@ -68,8 +68,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
   const [page] = useState(0);
 
   const [reportMetaData, setReportMetaData] = useState<IGetReportMetaData | null>(null);
-  const [showViewFileWithMetaDialog, setShowViewFileWithMetaDialog] = useState<boolean>(false);
-  const [showEditFileWithMetaDialog, setShowEditFileWithMetaDialog] = useState<boolean>(false);
+  const [showViewFileWithDetailsDialog, setShowViewFileWithDetailsDialog] = useState<boolean>(false);
 
   const [currentAttachment, setCurrentAttachment] = useState<IGetProjectAttachment | IGetSurveyAttachment | null>(null);
 
@@ -82,10 +81,9 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
   };
 
   const handleViewDetailsClick = (attachment: IGetProjectAttachment | IGetSurveyAttachment) => {
-    console.log('trying to view');
     setCurrentAttachment(attachment);
     getReportMeta(attachment);
-    //getAttachmentMeta(attachment);
+    setShowViewFileWithDetailsDialog(true);
   };
 
   const dialogContext = useContext(DialogContext);
@@ -114,12 +112,6 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
     onNo: () => dialogContext.setYesNoDialog({ open: false }),
     onYes: () => dialogContext.setYesNoDialog({ open: false })
   };
-
-  useEffect(() => {
-    if (currentAttachment) {
-      setShowViewFileWithMetaDialog(true);
-    }
-  }, [currentAttachment]);
 
   const showDeleteAttachmentDialog = (attachment: IGetProjectAttachment | IGetSurveyAttachment) => {
     dialogContext.setYesNoDialog({
@@ -208,23 +200,6 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
     }
   };
 
-  // const getAttachmentMeta = async (attachment: IGetProjectAttachment | IGetSurveyAttachment) => {
-  //   setReportMetaData({
-  //     attachment_id: 1,
-  //     title: 'attachment title',
-  //     year_published: 2000,
-  //     description: 'some description',
-  //     last_modified: '2022-02-02',
-  //     revision_count: 1,
-  //     authors: [
-  //       {
-  //         first_name: 'John',
-  //         last_name: 'Smith'
-  //       }
-  //     ]
-  //   });
-  // };
-
   const openAttachment = async (attachment: IGetProjectAttachment | IGetSurveyAttachment) => {
     try {
       let response;
@@ -261,11 +236,6 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
     if (currentAttachment) {
       openAttachment(currentAttachment);
     }
-  };
-
-  const openEditReportMetaDialog = async () => {
-    setShowViewFileWithMetaDialog(false);
-    setShowEditFileWithMetaDialog(true);
   };
 
   const makeAttachmentSecure = async (attachment: IGetProjectAttachment | IGetSurveyAttachment) => {
@@ -340,6 +310,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
     const fileMeta = values;
 
     try {
+      console.log('got in handleDialogEditSave');
       if (props.surveyId) {
         await biohubApi.survey.updateSurveyReportMetadata(
           props.projectId,
@@ -362,7 +333,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
       const apiError = error as APIError;
       showErrorDialog({ dialogText: apiError.message, dialogErrorDetails: apiError.errors, open: true });
     } finally {
-      setShowEditFileWithMetaDialog(false);
+      props.refresh();
     }
   };
 
@@ -378,26 +349,19 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
 
   return (
     <>
-      <ViewFileWithMetaDialog
-        dialogProps={{ fullWidth: true, maxWidth: 'lg', open: showViewFileWithMetaDialog }}
-        open={showViewFileWithMetaDialog}
-        onEdit={openEditReportMetaDialog}
+      <ViewFileWithDetailsDialog
+        dialogProps={{ fullWidth: true, maxWidth: 'lg', open: showViewFileWithDetailsDialog }}
+        open={showViewFileWithDetailsDialog}
         onClose={() => {
-          setShowViewFileWithMetaDialog(false);
-        }}
-        onDownload={openAttachmentFromReportMetaDialog}
-        reportMetaData={reportMetaData}
-        attachmentSize={(currentAttachment && getFormattedFileSize(currentAttachment.size)) || '0 KB'}
-      />
-      <EditFileWithMetaDialog
-        open={showEditFileWithMetaDialog}
-        dialogTitle={'Edit Upload Report'}
-        reportMetaData={reportMetaData}
-        onClose={() => {
-          setShowEditFileWithMetaDialog(false);
+          setShowViewFileWithDetailsDialog(false);
         }}
         onSave={handleDialogEditSave}
+        onFileDownload={openAttachmentFromReportMetaDialog}
+        reportMetaData={reportMetaData}
+        attachmentSize={(currentAttachment && getFormattedFileSize(currentAttachment.size)) || '0 KB'}
+        refresh={props.refresh}
       />
+
       <Box>
         <TableContainer>
           <Table className={classes.attachmentsTable} aria-label="attachments-list-table">
@@ -453,11 +417,6 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
                           />
                         )}
 
-                        {/* Submitted State */}
-                        {/* <Chip color="primary" label="Submitted"/> */}
-                        {/* Secured State and Number of Security Reasons Applied */}
-                        {/* <Chip color="default" label="Secured (7)"/> */}
-
                         <Box my={-1} hidden>
                           <Button
                             size="small"
@@ -495,19 +454,6 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
             </TableBody>
           </Table>
         </TableContainer>
-        {/* {props.attachmentsList.length > 0 && (
-          <TablePagination
-            rowsPerPageOptions={[5, 10, 15, 20]}
-            component="div"
-            count={props.attachmentsList.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onChangePage={(event: unknown, newPage: number) => handleChangePage(event, newPage, setPage)}
-            onChangeRowsPerPage={(event: React.ChangeEvent<HTMLInputElement>) =>
-              handleChangeRowsPerPage(event, setPage, setRowsPerPage)
-            }
-          />
-        )} */}
       </Box>
 
       <Drawer anchor="right" open={open} onClose={closeDrawer}>
