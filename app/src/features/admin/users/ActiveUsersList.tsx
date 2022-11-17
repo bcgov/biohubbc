@@ -85,7 +85,7 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
           related projects. Are you sure you want to proceed?
         </Typography>
       ),
-      yesButtonLabel: 'Remove User',
+      yesButtonLabel: 'Remove',
       noButtonLabel: 'Cancel',
       yesButtonProps: { color: 'secondary' },
       onClose: () => {
@@ -330,7 +330,7 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
                               },
                               {
                                 menuIcon: <Icon path={mdiTrashCanOutline} size={0.8} />,
-                                menuLabel: 'Delete User',
+                                menuLabel: 'Remove User',
                                 menuOnClick: () => handleRemoveUserClick(row)
                               }
                             ]}
