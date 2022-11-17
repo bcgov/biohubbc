@@ -127,7 +127,7 @@ const UsersDetailHeader: React.FC<IUsersHeaderProps> = (props) => {
               <Typography variant="h1" className={classes.projectTitle}>
                 User: <span>{userDetails.user_identifier}</span>
               </Typography>
-              <Box mt={1.5} mb={0.5} display="flex" alignItems="center">
+              <Box mt={0.75} mb={0.5} display="flex" alignItems="center">
                 <Typography
                   component="span"
                   variant="subtitle1"

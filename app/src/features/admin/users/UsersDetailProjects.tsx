@@ -187,7 +187,7 @@ const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
             <TableRow>
               <TableCell>Project Name</TableCell>
               <TableCell>Project Role</TableCell>
-              <TableCell width="100px" align="center">
+              <TableCell width="150px" align="center">
                 Actions
               </TableCell>
             </TableRow>
@@ -220,7 +220,7 @@ const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
                   <TableCell align="center">
                     <Box my={-1}>
                       <IconButton
-                        title="Remove Project Participant"
+                        title="Remove User from Project"
                         data-testid={'remove-project-participant-button'}
                         onClick={() =>
                           openYesNoDialog({
@@ -370,7 +370,7 @@ const ChangeProjectRoleMenu: React.FC<IChangeProjectRoleMenuProps> = (props) => 
     <CustomMenuButton
       buttonLabel={currentProjectRoleName}
       buttonTitle={'Change Project Role'}
-      buttonProps={{ variant: 'outlined' }}
+      buttonProps={{ variant: 'outlined', size: 'small', color: 'default' }}
       menuItems={projectRoleCodes.map((roleCode) => {
         return {
           menuLabel: roleCode.name,
