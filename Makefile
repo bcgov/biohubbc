@@ -165,7 +165,7 @@ run-db-setup: ## Run the database migrations and seeding
 
 build-db-migrate: ## Build the db knex migrations image
 	@echo "==============================================="
-	@echo "Make: build-db-migrate - bnuilding db knex migrate image"
+	@echo "Make: build-db-migrate - building db knex migrate image"
 	@echo "==============================================="
 	@docker-compose -f docker-compose.yml build db_migrate
 
