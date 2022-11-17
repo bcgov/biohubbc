@@ -119,10 +119,10 @@ const EditFileWithMetaDialog: React.FC<IEditFileWithMetaDialogProps> = (props) =
         onSubmit={(values) => {
           setIsSaving(true);
           props.onSave(values).finally(() => {
+            props.refresh();
             setIsSaving(false);
             props.onClose();
           });
-          props.refresh();
         }}>
         {(formikProps) => (
           <>

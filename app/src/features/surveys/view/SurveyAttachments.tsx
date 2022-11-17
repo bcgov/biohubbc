@@ -118,7 +118,6 @@ const SurveyAttachments: React.FC<ISurveyAttachmentsProps> = () => {
             surveyId={surveyId}
             attachmentsList={attachmentsList}
             getAttachments={getAttachments}
-            refresh={() => getAttachments(true)}
           />
         </Box>
       </Paper>

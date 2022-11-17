@@ -57,7 +57,6 @@ export interface IAttachmentsListProps {
   surveyId?: number;
   attachmentsList: (IGetProjectAttachment | IGetSurveyAttachment)[];
   getAttachments: (forceFetch: boolean) => void;
-  refresh: () => void;
 }
 
 const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
@@ -310,7 +309,6 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
     const fileMeta = values;
 
     try {
-      console.log('got in handleDialogEditSave');
       if (props.surveyId) {
         await biohubApi.survey.updateSurveyReportMetadata(
           props.projectId,
@@ -332,8 +330,6 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
     } catch (error) {
       const apiError = error as APIError;
       showErrorDialog({ dialogText: apiError.message, dialogErrorDetails: apiError.errors, open: true });
-    } finally {
-      props.refresh();
     }
   };
 
@@ -359,7 +355,11 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
         onFileDownload={openAttachmentFromReportMetaDialog}
         reportMetaData={reportMetaData}
         attachmentSize={(currentAttachment && getFormattedFileSize(currentAttachment.size)) || '0 KB'}
-        refresh={props.refresh}
+        refresh={() => {
+          if (currentAttachment) {
+            getReportMeta(currentAttachment);
+          }
+        }}
       />
 
       <Box>
