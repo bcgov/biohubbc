@@ -140,7 +140,6 @@ const UsersDetailHeader: React.FC<IUsersHeaderProps> = (props) => {
             <Box flex="0 0 auto" className={classes.titleActions}>
               <Button
                 title="Remove User"
-                color="primary"
                 variant="outlined"
                 startIcon={<Icon path={mdiTrashCanOutline} size={0.8} />}
                 data-testid={'remove-user-button'}
@@ -150,7 +149,7 @@ const UsersDetailHeader: React.FC<IUsersHeaderProps> = (props) => {
                     dialogContent: (
                       <>
                         <Typography variant="body1" color="textPrimary">
-                          Removing user <strong>{userDetails.user_identifier}</strong> will revoke their access to all
+                          Removing this user <strong>{userDetails.user_identifier}</strong> will revoke their access to all
                           projects.
                         </Typography>
                         <Typography variant="body1" color="textPrimary">
