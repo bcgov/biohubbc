@@ -1,4 +1,5 @@
 import Box from '@material-ui/core/Box';
+import { grey } from '@material-ui/core/colors';
 import Divider from '@material-ui/core/Divider';
 // import Paper from '@material-ui/core/Paper';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
@@ -14,7 +15,6 @@ import ProjectObjectives from 'features/projects/view/components/ProjectObjectiv
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import React from 'react';
-import { grey } from '@material-ui/core/colors';
 
 export interface IProjectDetailsProps {
   projectForViewData: IGetProjectForViewResponse;
@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   projectMetadata: {
     '& section + section': {
-      marginTop: theme.spacing(3),
+      marginTop: theme.spacing(3)
     },
     '& dt': {
       flex: '0 0 40%'

@@ -1,6 +1,6 @@
 import Box from '@material-ui/core/Box';
-import IconButton from '@material-ui/core/IconButton';
 import Container from '@material-ui/core/Container';
+import IconButton from '@material-ui/core/IconButton';
 import Link from '@material-ui/core/Link';
 import Paper from '@material-ui/core/Paper';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
@@ -166,7 +166,9 @@ const ResourcesPage: React.FC = () => {
             <TableRow>
               <TableCell>Name</TableCell>
               <TableCell>Type</TableCell>
-              <TableCell width={150} align="center">Actions</TableCell>
+              <TableCell width={150} align="center">
+                Actions
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody data-testid="resources-table">
@@ -179,9 +181,7 @@ const ResourcesPage: React.FC = () => {
                 </TableCell>
                 <TableCell>{row.type}</TableCell>
                 <TableCell align="center">
-                  <IconButton
-                    href={row.url}
-                    aria-label={'Download'+ ' ' + row.name}>
+                  <IconButton href={row.url} aria-label={'Download' + ' ' + row.name}>
                     <Icon path={mdiTrayArrowDown} size={0.8} />
                   </IconButton>
                 </TableCell>

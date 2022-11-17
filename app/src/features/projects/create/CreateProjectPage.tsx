@@ -323,24 +323,15 @@ const CreateProjectPage: React.FC = () => {
               </Box>
             </Box>
             <Box flex="0 0 auto" className={classes.pageTitleActions}>
-              <Button
-                color="primary"
-                variant="contained"
-                onClick={() => setOpenDraftDialog(true)}>
+              <Button color="primary" variant="contained" onClick={() => setOpenDraftDialog(true)}>
                 Save Draft
               </Button>
               {queryParams.draftId && (
-                <Button
-                  color="primary"
-                  variant="outlined"
-                  onClick={() => setOpenDeleteDraftDialog(true)}>
+                <Button color="primary" variant="outlined" onClick={() => setOpenDeleteDraftDialog(true)}>
                   Delete Draft
                 </Button>
               )}
-              <Button
-                color="primary"
-                variant="outlined"
-                onClick={handleCancel}>
+              <Button color="primary" variant="outlined" onClick={handleCancel}>
                 Cancel
               </Button>
             </Box>

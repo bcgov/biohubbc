@@ -1,23 +1,23 @@
 import Box from '@material-ui/core/Box';
+import { Theme } from '@material-ui/core/styles/createMuiTheme';
+import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import React from 'react';
-import { Theme } from '@material-ui/core/styles/createMuiTheme';
-import makeStyles from '@material-ui/core/styles/makeStyles';
 
 const useStyles = makeStyles((theme: Theme) => ({
   projectPartners: {
     position: 'relative',
     display: 'inline-block',
-    "& + dd": {
+    '& + dd': {
       paddingLeft: theme.spacing(1.25)
     },
-    "& + dd::before": {
+    '& + dd::before': {
       content: `','`,
       position: 'absolute',
       left: 0,
-      top: 0,
+      top: 0
     }
   }
 }));

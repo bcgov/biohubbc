@@ -1,10 +1,10 @@
 import Box from '@material-ui/core/Box';
+import { grey } from '@material-ui/core/colors';
 import Divider from '@material-ui/core/Divider';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
 import React from 'react';
-import { grey } from '@material-ui/core/colors';
 
 const useStyles = makeStyles((theme: Theme) => ({
   boundaryGroup: {

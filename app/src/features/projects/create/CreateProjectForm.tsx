@@ -268,11 +268,7 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
           Save Draft
         </Button>
         {queryParams.draftId && (
-          <Button
-            color="secondary"
-            variant="outlined"
-            onClick={handleDeleteDraft}
-            className={classes.actionButton}>
+          <Button color="secondary" variant="outlined" onClick={handleDeleteDraft} className={classes.actionButton}>
             Delete Draft
           </Button>
         )}

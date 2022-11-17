@@ -17,8 +17,8 @@ import Typography from '@material-ui/core/Typography';
 import {
   mdiAccountMultipleOutline,
   mdiCalendarRangeOutline,
-  mdiChevronRight,
   mdiChevronDown,
+  mdiChevronRight,
   mdiCogOutline,
   mdiPencilOutline,
   mdiTrashCanOutline
@@ -295,7 +295,7 @@ const ProjectHeader: React.FC<IProjectHeaderProps> = (props) => {
                   <Typography variant="inherit">Edit Project Details</Typography>
                 </MenuItem>
                 {showDeleteProjectButton && (
-                  <MenuItem onClick={showDeleteProjectDialog}>
+                  <MenuItem onClick={showDeleteProjectDialog} data-testid={'delete-project-button'}>
                     <ListItemIcon>
                       <Icon path={mdiTrashCanOutline} size={0.8} />
                     </ListItemIcon>

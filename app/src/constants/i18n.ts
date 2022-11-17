@@ -6,7 +6,6 @@ export const CreateProjectI18N = {
     'An error has occurred while attempting to create your project, please try again. If the error persists, please contact your system administrator.'
 };
 
-
 export const EditProjectI18N = {
   cancelTitle: 'Cancel Edit Project',
   cancelText: 'Are you sure you want to cancel? Changes you have made will not be saved.',
@@ -14,7 +13,6 @@ export const EditProjectI18N = {
   createErrorText:
     'An error has occurred while attempting to edit your project, please try again. If the error persists, please contact your system administrator.'
 };
-
 
 export const CreateSurveyI18N = {
   cancelTitle: 'Cancel Survey Creation',

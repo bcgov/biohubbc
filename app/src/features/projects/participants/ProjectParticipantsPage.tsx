@@ -221,78 +221,76 @@ const ProjectParticipantsPage: React.FC = () => {
             <Divider></Divider>
 
             <Box px={1}>
-            <Table className={classes.teamMembersTable}>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Username</TableCell>
-                  <TableCell>Project Role</TableCell>
-                  <TableCell width="150px" align="center">
-                    Actions
-                  </TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {hasProjectParticipants &&
-                  projectParticipants?.map((row) => (
-                    <TableRow key={row.project_participation_id}>
-                      <TableCell scope="row">
-                        {row.user_identifier}
-                      </TableCell>
-                      <TableCell>
-                        <Box my={-1}>
-                          <ChangeProjectRoleMenu
-                            row={row}
-                            projectRoleCodes={codes.project_roles}
-                            refresh={getProjectParticipants}
-                          />
-                        </Box>
-                      </TableCell>
-                      <TableCell align="center">
-                        <Box my={-1}>
-                          <IconButton
-                            title="Remove Team Member"
-                            data-testid={'remove-project-participant-button'}
-                            onClick={() =>
-                              openYesNoDialog({
-                                dialogTitle: ProjectParticipantsI18N.removeParticipantTitle,
-                                dialogContent: (
-                                  <Typography variant="body1" component="div" color="textSecondary">
-                                    Removing user <strong>{row.user_identifier}</strong> will revoke their access to
-                                    project. Are you sure you want to proceed?
-                                  </Typography>
-                                ),
-                                yesButtonProps: { color: 'secondary' },
-                                onYes: () => {
-                                  handleRemoveProjectParticipant(row.project_participation_id);
-                                  dialogContext.setYesNoDialog({ open: false });
-                                  dialogContext.setSnackbar({
-                                    open: true,
-                                    snackbarMessage: (
-                                      <Typography variant="body2" component="div">
-                                        User <strong>{row.user_identifier}</strong> removed from project.
-                                      </Typography>
-                                    )
-                                  });
-                                }
-                              })
-                            }>
-                            <Icon path={mdiTrashCanOutline} size={1} />
-                          </IconButton>
+              <Table className={classes.teamMembersTable}>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Username</TableCell>
+                    <TableCell>Project Role</TableCell>
+                    <TableCell width="150px" align="center">
+                      Actions
+                    </TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {hasProjectParticipants &&
+                    projectParticipants?.map((row) => (
+                      <TableRow key={row.project_participation_id}>
+                        <TableCell scope="row">{row.user_identifier}</TableCell>
+                        <TableCell>
+                          <Box my={-1}>
+                            <ChangeProjectRoleMenu
+                              row={row}
+                              projectRoleCodes={codes.project_roles}
+                              refresh={getProjectParticipants}
+                            />
+                          </Box>
+                        </TableCell>
+                        <TableCell align="center">
+                          <Box my={-1}>
+                            <IconButton
+                              title="Remove Team Member"
+                              data-testid={'remove-project-participant-button'}
+                              onClick={() =>
+                                openYesNoDialog({
+                                  dialogTitle: ProjectParticipantsI18N.removeParticipantTitle,
+                                  dialogContent: (
+                                    <Typography variant="body1" component="div" color="textSecondary">
+                                      Removing user <strong>{row.user_identifier}</strong> will revoke their access to
+                                      project. Are you sure you want to proceed?
+                                    </Typography>
+                                  ),
+                                  yesButtonProps: { color: 'secondary' },
+                                  onYes: () => {
+                                    handleRemoveProjectParticipant(row.project_participation_id);
+                                    dialogContext.setYesNoDialog({ open: false });
+                                    dialogContext.setSnackbar({
+                                      open: true,
+                                      snackbarMessage: (
+                                        <Typography variant="body2" component="div">
+                                          User <strong>{row.user_identifier}</strong> removed from project.
+                                        </Typography>
+                                      )
+                                    });
+                                  }
+                                })
+                              }>
+                              <Icon path={mdiTrashCanOutline} size={1} />
+                            </IconButton>
+                          </Box>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  {!hasProjectParticipants && (
+                    <TableRow>
+                      <TableCell colSpan={3}>
+                        <Box display="flex" justifyContent="center">
+                          No Team Members
                         </Box>
                       </TableCell>
                     </TableRow>
-                  ))}
-                {!hasProjectParticipants && (
-                  <TableRow>
-                    <TableCell colSpan={3}>
-                      <Box display="flex" justifyContent="center">
-                        No Team Members
-                      </Box>
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
+                  )}
+                </TableBody>
+              </Table>
             </Box>
           </Paper>
         </Box>

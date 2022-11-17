@@ -19,21 +19,21 @@ const HorizontalSplitFormComponent: React.FC<IHorizontalSplitFormComponentProps>
   const { title, summary, component } = props;
 
   return (
-  <Grid container spacing={3}>
-    <Grid item xs={12} lg={4}>
-      <Typography variant="h3" component="h2">
-        {title}
-      </Typography>
-      <Box pt={2} pb={3} maxWidth="55ch">
-        <Typography variant="body1" color="textSecondary">
-          {summary}
+    <Grid container spacing={3}>
+      <Grid item xs={12} lg={4}>
+        <Typography variant="h3" component="h2">
+          {title}
         </Typography>
-      </Box>
+        <Box pt={2} pb={3} maxWidth="55ch">
+          <Typography variant="body1" color="textSecondary">
+            {summary}
+          </Typography>
+        </Box>
+      </Grid>
+      <Grid item xs={12} lg={8}>
+        {component}
+      </Grid>
     </Grid>
-    <Grid item xs={12} lg={8}>
-      {component}
-    </Grid>
-  </Grid>
   );
 };
 
