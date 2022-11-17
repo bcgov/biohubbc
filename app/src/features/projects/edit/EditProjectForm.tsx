@@ -98,7 +98,7 @@ const EditProjectForm: React.FC<IEditProjectForm> = (props) => {
                     reach each of the project's objectives.
                   </Typography>
 
-                  <Box mt={4}>
+                  <Box mt={3}>
                     <ProjectIUCNForm
                       classifications={
                         codes?.iucn_conservation_action_level_1_classification?.map((item) => {
@@ -147,11 +147,11 @@ const EditProjectForm: React.FC<IEditProjectForm> = (props) => {
                   <Typography component="legend" variant="h5">
                     Funding Sources
                   </Typography>
-                  <Typography variant="body1" color="textSecondary" style={{ maxWidth: '90ch' }}>
+                  <Typography variant="body1" color="textSecondary" style={{ maxWidth: '72ch' }}>
                     Specify funding sources for the project. <strong>Note:</strong> Dollar amounts are not intended to
                     be exact, please round to the nearest 100.
                   </Typography>
-                  <Box mt={3.5}>
+                  <Box mt={3}>
                     <ProjectFundingForm
                       funding_sources={
                         codes?.funding_source?.map((item) => {
@@ -170,7 +170,7 @@ const EditProjectForm: React.FC<IEditProjectForm> = (props) => {
                   <Typography component="legend" variant="h5">
                     Partnerships
                   </Typography>
-                  <Typography variant="body1" color="textSecondary" style={{ maxWidth: '90ch' }}>
+                  <Typography variant="body1" color="textSecondary" style={{ maxWidth: '72ch' }}>
                     Additional partnerships that have not been previously identified as a funding sources.
                   </Typography>
                   <Box mt={4}>

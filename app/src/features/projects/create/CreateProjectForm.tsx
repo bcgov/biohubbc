@@ -151,7 +151,7 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
                     reach each of the project's objectives.
                   </Typography>
 
-                  <Box mt={4}>
+                  <Box mt={3}>
                     <ProjectIUCNForm
                       classifications={
                         codes?.iucn_conservation_action_level_1_classification?.map((item) => {
@@ -204,7 +204,7 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
                     Specify funding sources for the project. <strong>Note:</strong> Dollar amounts are not intended to
                     be exact, please round to the nearest 100.
                   </Typography>
-                  <Box mt={3.5}>
+                  <Box mt={3}>
                     <ProjectFundingForm
                       funding_sources={
                         codes?.funding_source?.map((item) => {
