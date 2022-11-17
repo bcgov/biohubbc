@@ -450,19 +450,6 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
             </TableBody>
           </Table>
         </TableContainer>
-        {/* {props.attachmentsList.length > 0 && (
-          <TablePagination
-            rowsPerPageOptions={[5, 10, 15, 20]}
-            component="div"
-            count={props.attachmentsList.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onChangePage={(event: unknown, newPage: number) => handleChangePage(event, newPage, setPage)}
-            onChangeRowsPerPage={(event: React.ChangeEvent<HTMLInputElement>) =>
-              handleChangeRowsPerPage(event, setPage, setRowsPerPage)
-            }
-          />
-        )} */}
       </Box>
     </>
   );

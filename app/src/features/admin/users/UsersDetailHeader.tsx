@@ -116,7 +116,7 @@ const UsersDetailHeader: React.FC<IUsersHeaderProps> = (props) => {
               <Link color="primary" onClick={() => history.push('/admin/users')} aria-current="page">
                 Manage Users
               </Link>
-              <Typography variant="body1" component="span">
+              <Typography data-testid="user-detail-title" variant="body1" component="span">
                 {userDetails.user_identifier}
               </Typography>
             </Breadcrumbs>
