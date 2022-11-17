@@ -47,16 +47,20 @@ describe('ProjectAttachments', () => {
       </Router>
     );
 
-    expect(getByText('Submit Documents')).toBeInTheDocument();
-    expect(queryByText('Upload Attachment')).toBeNull();
+    expect(getByText('Upload')).toBeInTheDocument();
+    expect(queryByText('Upload Attachments')).toBeNull();
 
-    fireEvent.click(getByText('Submit Documents'));
+    fireEvent.click(getByText('Upload'));
 
     await waitFor(() => {
-      expect(getByText('Submit Attachments')).toBeInTheDocument();
+      expect(getByText('Upload Attachments')).toBeInTheDocument();
     });
 
-    fireEvent.click(getByText('Submit Attachments'));
+    fireEvent.click(getByText('Upload Attachments'));
+
+    await waitFor(() => {
+      expect(queryByText('Upload Attachments')).toBeNull();
+    });
 
     expect(getByText('Close')).toBeInTheDocument();
   });
@@ -68,7 +72,7 @@ describe('ProjectAttachments', () => {
       </Router>
     );
 
-    expect(getByText('No Documents')).toBeInTheDocument();
+    expect(getByText('No Attachments')).toBeInTheDocument();
   });
 
   it('renders correctly with attachments', async () => {

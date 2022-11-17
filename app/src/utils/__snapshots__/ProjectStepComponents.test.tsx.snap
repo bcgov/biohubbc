@@ -1135,7 +1135,7 @@ exports[`ProjectStepComponents renders the project funding with the codes values
 <DocumentFragment>
   <form>
     <div
-      class="MuiBox-root MuiBox-root-35"
+      class="MuiBox-root MuiBox-root-36"
     >
       <button
         aria-label="Add Funding Source"
@@ -1169,13 +1169,13 @@ exports[`ProjectStepComponents renders the project funding with the codes values
         />
       </button>
       <div
-        class="MuiBox-root MuiBox-root-36"
+        class="MuiBox-root MuiBox-root-37"
       >
         <div
-          class="MuiBox-root MuiBox-root-37"
+          class="MuiBox-root MuiBox-root-38"
         >
           <ul
-            class="MuiList-root"
+            class="MuiList-root MuiList-dense"
           />
         </div>
       </div>
@@ -1188,7 +1188,7 @@ exports[`ProjectStepComponents renders the project funding without the codes val
 <DocumentFragment>
   <form>
     <div
-      class="MuiBox-root MuiBox-root-41"
+      class="MuiBox-root MuiBox-root-43"
     >
       <button
         aria-label="Add Funding Source"
@@ -1222,13 +1222,13 @@ exports[`ProjectStepComponents renders the project funding without the codes val
         />
       </button>
       <div
-        class="MuiBox-root MuiBox-root-42"
+        class="MuiBox-root MuiBox-root-44"
       >
         <div
-          class="MuiBox-root MuiBox-root-43"
+          class="MuiBox-root MuiBox-root-45"
         >
           <ul
-            class="MuiList-root"
+            class="MuiList-root MuiList-dense"
           />
         </div>
       </div>
@@ -1255,10 +1255,10 @@ exports[`ProjectStepComponents renders the project location 1`] = `
         Import or select a boundary from existing map layers. To select an existing boundary, choose a map layer below and click a boundary on the map.
       </p>
       <div
-        class="MuiBox-root MuiBox-root-56"
+        class="MuiBox-root MuiBox-root-58"
       >
         <div
-          class="MuiBox-root MuiBox-root-57"
+          class="MuiBox-root MuiBox-root-59"
         >
           <button
             class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-outlinedSizeLarge MuiButton-sizeLarge"
@@ -1290,10 +1290,10 @@ exports[`ProjectStepComponents renders the project location 1`] = `
             />
           </button>
           <div
-            class="MuiBox-root MuiBox-root-58"
+            class="MuiBox-root MuiBox-root-60"
           >
             <div
-              class="MuiFormControl-root makeStyles-mapLayerControl-55"
+              class="MuiFormControl-root makeStyles-mapLayerControl-57"
             >
               <label
                 class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-marginDense MuiInputLabel-outlined"
@@ -1337,10 +1337,10 @@ exports[`ProjectStepComponents renders the project location 1`] = `
                 </svg>
                 <fieldset
                   aria-hidden="true"
-                  class="PrivateNotchedOutline-root-59 MuiOutlinedInput-notchedOutline"
+                  class="PrivateNotchedOutline-root-61 MuiOutlinedInput-notchedOutline"
                 >
                   <legend
-                    class="PrivateNotchedOutline-legendLabelled-61"
+                    class="PrivateNotchedOutline-legendLabelled-63"
                   >
                     <span>
                       Map Layers
@@ -1351,7 +1351,7 @@ exports[`ProjectStepComponents renders the project location 1`] = `
             </div>
           </div>
           <div
-            class="MuiBox-root MuiBox-root-63"
+            class="MuiBox-root MuiBox-root-65"
           />
         </div>
       </div>
@@ -1359,7 +1359,7 @@ exports[`ProjectStepComponents renders the project location 1`] = `
         class="MuiPaper-root MuiPaper-outlined MuiPaper-rounded"
       >
         <div
-          class="MuiBox-root MuiBox-root-64"
+          class="MuiBox-root MuiBox-root-66"
         >
           <div
             class="leaflet-container leaflet-grab leaflet-touch-drag"
@@ -1610,7 +1610,7 @@ exports[`ProjectStepComponents renders the project location 1`] = `
       </div>
     </div>
     <div
-      class="MuiBox-root MuiBox-root-65"
+      class="MuiBox-root MuiBox-root-67"
     >
       <h3
         class="MuiTypography-root MuiTypography-h5"
@@ -1642,10 +1642,10 @@ exports[`ProjectStepComponents renders the project location 1`] = `
           />
           <fieldset
             aria-hidden="true"
-            class="PrivateNotchedOutline-root-59 MuiOutlinedInput-notchedOutline"
+            class="PrivateNotchedOutline-root-61 MuiOutlinedInput-notchedOutline"
           >
             <legend
-              class="PrivateNotchedOutline-legendLabelled-61"
+              class="PrivateNotchedOutline-legendLabelled-63"
             >
               <span>
                 Location Description
@@ -1814,10 +1814,10 @@ exports[`ProjectStepComponents renders the project partnerships with the codes v
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-45 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-47 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-47"
+                  class="PrivateNotchedOutline-legendLabelled-49"
                 >
                   <span>
                     Indigenous Partnerships
@@ -1919,10 +1919,10 @@ exports[`ProjectStepComponents renders the project partnerships with the codes v
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-45 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-47 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-47"
+                  class="PrivateNotchedOutline-legendLabelled-49"
                 >
                   <span>
                     Other Partnerships
@@ -2035,10 +2035,10 @@ exports[`ProjectStepComponents renders the project partnerships without the code
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-50 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-52 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-52"
+                  class="PrivateNotchedOutline-legendLabelled-54"
                 >
                   <span>
                     Indigenous Partnerships
@@ -2140,10 +2140,10 @@ exports[`ProjectStepComponents renders the project partnerships without the code
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-50 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-52 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-52"
+                  class="PrivateNotchedOutline-legendLabelled-54"
                 >
                   <span>
                     Other Partnerships

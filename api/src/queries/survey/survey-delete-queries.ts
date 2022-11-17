@@ -39,37 +39,6 @@ export const deleteSurveyFundingSourceByProjectFundingSourceIdSQL = (
 };
 
 /**
- * SQL query to delete survey funding sources rows if deleted from project level
- *
- * @param {(any[] | undefined)} projectFundingSourceIds
- * @return {*}  {(SQLStatement | null)}
- */
-export const deleteSurveyFundingSourceConnectionToProjectSQL = (
-  projectFundingSourceIds: any[] | undefined
-): SQLStatement | null => {
-  if (!projectFundingSourceIds) {
-    return null;
-  }
-
-  const sqlStatement: SQLStatement = SQL`
-    DELETE
-      from survey_funding_source sfs
-    WHERE
-      sfs.project_funding_source_id
-    NOT IN
-      ( ${projectFundingSourceIds[0]}`;
-
-  for (let i = 1; i < projectFundingSourceIds.length; i++) {
-    sqlStatement.append(`, ${projectFundingSourceIds[i]}`);
-  }
-  sqlStatement.append(`);`);
-
-  console.log('sqlStatement', sqlStatement);
-
-  return sqlStatement;
-};
-
-/**
  * SQL query to delete all survey species rows.
  *
  * @param {number} surveyId

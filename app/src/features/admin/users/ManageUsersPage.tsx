@@ -1,9 +1,6 @@
 import Box from '@material-ui/core/Box';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Container from '@material-ui/core/Container';
-import Paper from '@material-ui/core/Paper';
-import { Theme } from '@material-ui/core/styles/createMuiTheme';
-import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
 import { AdministrativeActivityStatusType, AdministrativeActivityType } from 'constants/misc';
 import AccessRequestList from 'features/admin/users/AccessRequestList';
@@ -14,33 +11,12 @@ import { IGetUserResponse } from 'interfaces/useUserApi.interface';
 import React, { useEffect, useState } from 'react';
 import ActiveUsersList from './ActiveUsersList';
 
-const useStyles = makeStyles((theme: Theme) => ({
-  pageTitleContainer: {
-    maxWidth: '170ch',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis'
-  },
-  pageTitle: {
-    display: '-webkit-box',
-    '-webkit-line-clamp': 2,
-    '-webkit-box-orient': 'vertical',
-    paddingTop: theme.spacing(0.5),
-    paddingBottom: theme.spacing(0.5),
-    overflow: 'hidden'
-  },
-  pageTitleActions: {
-    paddingTop: theme.spacing(0.75),
-    paddingBottom: theme.spacing(0.75)
-  }
-}));
-
 /**
  * Page to display user management data/functionality.
  *
  * @return {*}
  */
 const ManageUsersPage: React.FC = () => {
-  const classes = useStyles();
   const biohubApi = useBiohubApi();
 
   const [accessRequests, setAccessRequests] = useState<IGetAccessRequestsListResponse[]>([]);
@@ -141,22 +117,13 @@ const ManageUsersPage: React.FC = () => {
   }
 
   return (
-    <>
-      <Paper square={true} elevation={0}>
-        <Container maxWidth="xl">
-          <Box py={4}>
-            <Box display="flex" justifyContent="space-between">
-              <Box className={classes.pageTitleContainer}>
-                <Typography variant="h1" className={classes.pageTitle}>
-                  Manage Users
-                </Typography>
-              </Box>
-            </Box>
-          </Box>
-        </Container>
-      </Paper>
+    <Box my={4}>
       <Container maxWidth="xl">
-        <Box py={3}>
+        <Box mb={5} display="flex" alignItems="center" justifyContent="space-between">
+          <Typography variant="h1">Manage Users</Typography>
+        </Box>
+
+        <Box>
           <AccessRequestList
             accessRequests={accessRequests}
             codes={codes}
@@ -165,12 +132,12 @@ const ManageUsersPage: React.FC = () => {
               refreshActiveUsers();
             }}
           />
-          <Box mt={3}>
-            <ActiveUsersList activeUsers={activeUsers} codes={codes} refresh={refreshActiveUsers} />
-          </Box>
+        </Box>
+        <Box pt={3}>
+          <ActiveUsersList activeUsers={activeUsers} codes={codes} refresh={refreshActiveUsers} />
         </Box>
       </Container>
-    </>
+    </Box>
   );
 };
 

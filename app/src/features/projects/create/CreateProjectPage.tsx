@@ -9,6 +9,7 @@ import Typography from '@material-ui/core/Typography';
 import EditDialog from 'components/dialog/EditDialog';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import YesNoDialog from 'components/dialog/YesNoDialog';
+import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { CreateProjectDraftI18N, CreateProjectI18N, DeleteProjectDraftI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
 import ProjectDraftForm, {
@@ -25,27 +26,19 @@ import { ICreateProjectRequest } from 'interfaces/useProjectApi.interface';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router';
 import { Prompt } from 'react-router-dom';
+import { getFormattedDate } from 'utils/Utils';
 import CreateProjectForm from './CreateProjectForm';
 
 const useStyles = makeStyles((theme: Theme) => ({
+  actionButton: {
+    minWidth: '6rem',
+    '& + button': {
+      marginLeft: '0.5rem'
+    }
+  },
   pageTitleContainer: {
-    maxWidth: '170ch',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis'
-  },
-  pageTitle: {
-    display: '-webkit-box',
-    '-webkit-line-clamp': 2,
-    '-webkit-box-orient': 'vertical',
-    paddingTop: theme.spacing(0.5),
-    paddingBottom: theme.spacing(0.5),
-    overflow: 'hidden'
-  },
-  pageTitleActions: {
-    paddingTop: theme.spacing(0.75),
-    paddingBottom: theme.spacing(0.75),
-    '& button': {
-      marginLeft: theme.spacing(1)
+    '& h1': {
+      marginBottom: theme.spacing(1)
     }
   }
 }));
@@ -307,41 +300,53 @@ const CreateProjectPage: React.FC = () => {
         onYes={() => handleDeleteDraft()}
       />
 
-      <Paper square={true} elevation={0}>
-        <Container maxWidth="xl">
-          <Box py={4} display="flex" justifyContent="space-between">
-            <Box display="flex" justifyContent="space-between">
-              <Box className={classes.pageTitleContainer}>
-                <Typography variant="h1" className={classes.pageTitle}>
-                  Create Project
-                </Typography>
-                <Box mt={0.75} mb={0.5} display="flex" alignItems="center">
-                  <Typography component="span" variant="subtitle1" color="textSecondary">
-                    Configure and submit a new species inventory project
-                  </Typography>
-                </Box>
-              </Box>
+      <Container maxWidth="xl">
+        <Box py={5}>
+          <Box mb={3} display="flex" justifyContent="space-between" alignItems="flex-start">
+            <Box className={classes.pageTitleContainer}>
+              <Typography variant="h1">Create Project</Typography>
+              <Typography variant="body1" color="textSecondary">
+                Configure and submit a new species inventory project
+              </Typography>
             </Box>
-            <Box flex="0 0 auto" className={classes.pageTitleActions}>
-              <Button color="primary" variant="contained" onClick={() => setOpenDraftDialog(true)}>
+            <Box>
+              <Button
+                color="primary"
+                size="large"
+                variant="outlined"
+                onClick={() => setOpenDraftDialog(true)}
+                className={classes.actionButton}>
                 Save Draft
               </Button>
               {queryParams.draftId && (
-                <Button color="primary" variant="outlined" onClick={() => setOpenDeleteDraftDialog(true)}>
+                <Button
+                  color="primary"
+                  size="large"
+                  variant="outlined"
+                  onClick={() => setOpenDeleteDraftDialog(true)}
+                  className={classes.actionButton}>
                   Delete Draft
                 </Button>
               )}
-              <Button color="primary" variant="outlined" onClick={handleCancel}>
+              <Button
+                color="primary"
+                size="large"
+                variant="outlined"
+                onClick={handleCancel}
+                className={classes.actionButton}>
                 Cancel
               </Button>
             </Box>
           </Box>
-        </Container>
-      </Paper>
+          <Box display="flex" justifyContent="flex-end">
+            <Box visibility={(draft?.date && 'visible') || 'hidden'}>
+              <Typography component="span" variant="subtitle2" color="textSecondary">
+                {`Draft saved on ${getFormattedDate(DATE_FORMAT.ShortMediumDateTimeFormat, draft.date)}`}
+              </Typography>
+            </Box>
+          </Box>
 
-      <Container maxWidth="xl">
-        <Box py={3}>
-          <Paper elevation={0}>
+          <Paper>
             <CreateProjectForm
               handleSubmit={createProject}
               handleCancel={handleCancel}

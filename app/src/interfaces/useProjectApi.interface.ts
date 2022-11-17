@@ -174,7 +174,7 @@ export interface IGetProjectForUpdateResponseFundingSource {
 }
 
 export interface IGetProjectForUpdateResponseFundingData {
-  funding_sources: IGetProjectForUpdateResponseFundingSource[];
+  fundingSources: IGetProjectForUpdateResponseFundingSource[];
 }
 
 export interface IGetProjectForUpdateResponsePartnerships {

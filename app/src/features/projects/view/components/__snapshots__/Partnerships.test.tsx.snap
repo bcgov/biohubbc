@@ -2,36 +2,88 @@
 
 exports[`Partnerships renders correctly with default empty values 1`] = `
 <DocumentFragment>
+  <div
+    class="MuiToolbar-root MuiToolbar-regular"
+    style="justify-content: space-between;"
+  >
+    <h3
+      class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
+    >
+      Partnerships
+    </h3>
+    <div
+      class="MuiBox-root MuiBox-root-1"
+    >
+      <button
+        aria-label="Edit Partnerships"
+        class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
+        data-testid="h3-button-toolbar-Edit"
+        id="h3-button-toolbar-Edit"
+        tabindex="0"
+        title="Edit Partnerships"
+        type="button"
+      >
+        <span
+          class="MuiButton-label"
+        >
+          <span
+            class="MuiButton-startIcon MuiButton-iconSizeMedium"
+          >
+            <svg
+              role="presentation"
+              style="width: 1.3125rem; height: 1.3125rem;"
+              viewBox="0 0 24 24"
+            >
+              <path
+                d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z"
+                style="fill: currentColor;"
+              />
+            </svg>
+          </span>
+          <strong>
+            Edit
+          </strong>
+        </span>
+        <span
+          class="MuiTouchRipple-root"
+        />
+      </button>
+    </div>
+  </div>
   <dl
-    class="MuiBox-root MuiBox-root-2"
+    class="ddInline"
   >
     <div
-      class="MuiBox-root MuiBox-root-3"
+      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
     >
-      <dt
-        class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
-        Indigenous
-      </dt>
-      <dd
-        class="MuiTypography-root MuiTypography-body1"
+        <dt
+          class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+        >
+          Indigenous Partnerships
+        </dt>
+        <dd
+          class="MuiTypography-root MuiTypography-body1"
+        >
+          No Indigenous Partnerships
+        </dd>
+      </div>
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
-        None
-      </dd>
-    </div>
-    <div
-      class="MuiBox-root MuiBox-root-4"
-    >
-      <dt
-        class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
-      >
-        Other Partnerships
-      </dt>
-      <dd
-        class="MuiTypography-root MuiTypography-body1"
-      >
-        None
-      </dd>
+        <dt
+          class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+        >
+          Other Partnerships
+        </dt>
+        <dd
+          class="MuiTypography-root MuiTypography-body1"
+        >
+          No Other Partnerships
+        </dd>
+      </div>
     </div>
   </dl>
 </DocumentFragment>
@@ -39,44 +91,96 @@ exports[`Partnerships renders correctly with default empty values 1`] = `
 
 exports[`Partnerships renders correctly with existing partnership values 1`] = `
 <DocumentFragment>
+  <div
+    class="MuiToolbar-root MuiToolbar-regular"
+    style="justify-content: space-between;"
+  >
+    <h3
+      class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
+    >
+      Partnerships
+    </h3>
+    <div
+      class="MuiBox-root MuiBox-root-3"
+    >
+      <button
+        aria-label="Edit Partnerships"
+        class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
+        data-testid="h3-button-toolbar-Edit"
+        id="h3-button-toolbar-Edit"
+        tabindex="0"
+        title="Edit Partnerships"
+        type="button"
+      >
+        <span
+          class="MuiButton-label"
+        >
+          <span
+            class="MuiButton-startIcon MuiButton-iconSizeMedium"
+          >
+            <svg
+              role="presentation"
+              style="width: 1.3125rem; height: 1.3125rem;"
+              viewBox="0 0 24 24"
+            >
+              <path
+                d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z"
+                style="fill: currentColor;"
+              />
+            </svg>
+          </span>
+          <strong>
+            Edit
+          </strong>
+        </span>
+        <span
+          class="MuiTouchRipple-root"
+        />
+      </button>
+    </div>
+  </div>
   <dl
-    class="MuiBox-root MuiBox-root-10"
+    class="ddInline"
   >
     <div
-      class="MuiBox-root MuiBox-root-11"
+      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
     >
-      <dt
-        class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
-        Indigenous
-      </dt>
-      <dd
-        class="MuiTypography-root makeStyles-projectPartners-9 MuiTypography-body1"
+        <dt
+          class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+        >
+          Indigenous Partnerships
+        </dt>
+        <dd
+          class="MuiTypography-root MuiTypography-body1"
+        >
+          First nations code
+        </dd>
+        <dd
+          class="MuiTypography-root MuiTypography-body1"
+        />
+      </div>
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
-        First nations code
-      </dd>
-      <dd
-        class="MuiTypography-root makeStyles-projectPartners-9 MuiTypography-body1"
-      />
-    </div>
-    <div
-      class="MuiBox-root MuiBox-root-12"
-    >
-      <dt
-        class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
-      >
-        Other Partnerships
-      </dt>
-      <dd
-        class="MuiTypography-root makeStyles-projectPartners-9 MuiTypography-body1"
-      >
-        partner 3
-      </dd>
-      <dd
-        class="MuiTypography-root makeStyles-projectPartners-9 MuiTypography-body1"
-      >
-        partner 4
-      </dd>
+        <dt
+          class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+        >
+          Other Partnerships
+        </dt>
+        <dd
+          class="MuiTypography-root MuiTypography-body1"
+        >
+          partner 3
+        </dd>
+        <dd
+          class="MuiTypography-root MuiTypography-body1"
+        >
+          partner 4
+        </dd>
+      </div>
     </div>
   </dl>
 </DocumentFragment>
@@ -84,36 +188,88 @@ exports[`Partnerships renders correctly with existing partnership values 1`] = `
 
 exports[`Partnerships renders correctly with invalid null values 1`] = `
 <DocumentFragment>
+  <div
+    class="MuiToolbar-root MuiToolbar-regular"
+    style="justify-content: space-between;"
+  >
+    <h3
+      class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
+    >
+      Partnerships
+    </h3>
+    <div
+      class="MuiBox-root MuiBox-root-2"
+    >
+      <button
+        aria-label="Edit Partnerships"
+        class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
+        data-testid="h3-button-toolbar-Edit"
+        id="h3-button-toolbar-Edit"
+        tabindex="0"
+        title="Edit Partnerships"
+        type="button"
+      >
+        <span
+          class="MuiButton-label"
+        >
+          <span
+            class="MuiButton-startIcon MuiButton-iconSizeMedium"
+          >
+            <svg
+              role="presentation"
+              style="width: 1.3125rem; height: 1.3125rem;"
+              viewBox="0 0 24 24"
+            >
+              <path
+                d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z"
+                style="fill: currentColor;"
+              />
+            </svg>
+          </span>
+          <strong>
+            Edit
+          </strong>
+        </span>
+        <span
+          class="MuiTouchRipple-root"
+        />
+      </button>
+    </div>
+  </div>
   <dl
-    class="MuiBox-root MuiBox-root-6"
+    class="ddInline"
   >
     <div
-      class="MuiBox-root MuiBox-root-7"
+      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
     >
-      <dt
-        class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
-        Indigenous
-      </dt>
-      <dd
-        class="MuiTypography-root MuiTypography-body1"
+        <dt
+          class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+        >
+          Indigenous Partnerships
+        </dt>
+        <dd
+          class="MuiTypography-root MuiTypography-body1"
+        >
+          No Indigenous Partnerships
+        </dd>
+      </div>
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
-        None
-      </dd>
-    </div>
-    <div
-      class="MuiBox-root MuiBox-root-8"
-    >
-      <dt
-        class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
-      >
-        Other Partnerships
-      </dt>
-      <dd
-        class="MuiTypography-root MuiTypography-body1"
-      >
-        None
-      </dd>
+        <dt
+          class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+        >
+          Other Partnerships
+        </dt>
+        <dd
+          class="MuiTypography-root MuiTypography-body1"
+        >
+          No Other Partnerships
+        </dd>
+      </div>
     </div>
   </dl>
 </DocumentFragment>

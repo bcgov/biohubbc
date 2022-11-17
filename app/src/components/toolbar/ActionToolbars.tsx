@@ -127,13 +127,12 @@ export const CustomMenuButton: React.FC<ICustomMenuButtonProps> = (props) => {
         {props.buttonLabel}
       </Button>
       <Menu
-        style={{ marginTop: '8px' }}
         open={open}
         onClose={handleClose}
         anchorEl={anchorEl}
         getContentAnchorEl={null}
         anchorOrigin={{
-          vertical: 'bottom',
+          vertical: 'top',
           horizontal: 'right'
         }}
         transformOrigin={{
