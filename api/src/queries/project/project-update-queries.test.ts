@@ -221,12 +221,16 @@ describe('putProjectFundingSourceSQL', () => {
     it('returns a SQLStatement when all fields are passed in as expected', () => {
       const response = putProjectFundingSourceSQL(
         new PutFundingSource({
-          investment_action_category: 222,
-          agency_project_id: 'funding source name',
-          funding_amount: 10000,
-          start_date: '2020-02-02',
-          end_date: '2020-03-02',
-          revision_count: 11
+          fundingSources: [
+            {
+              investment_action_category: 222,
+              agency_project_id: 'funding source name',
+              funding_amount: 10000,
+              start_date: '2020-02-02',
+              end_date: '2020-03-02',
+              revision_count: 11
+            }
+          ]
         }),
         1
       );

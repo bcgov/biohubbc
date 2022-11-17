@@ -142,8 +142,7 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
             onClick={handleClick}>
             Submit Documents
           </Button>
-          <Menu
-            style={{ marginTop: '8px' }}
+          <Menu style={{marginTop: '8px'}}
             id="attachmentsMenu"
             anchorEl={anchorEl}
             getContentAnchorEl={null}

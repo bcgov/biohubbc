@@ -9,7 +9,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     color: 'white'
   },
   chipPending: {
-    backgroundColor: theme.palette.error.main
+    backgroundColor: theme.palette.primary.main
   },
   chipActioned: {
     backgroundColor: theme.palette.success.main
@@ -32,7 +32,7 @@ export const AccessStatusChip: React.FC<{ status: string; chipProps?: Partial<Ch
     chipLabel = 'Approved';
     chipStatusClass = classes.chipActioned;
   } else {
-    chipLabel = 'Pending Review';
+    chipLabel = 'Pending';
     chipStatusClass = classes.chipPending;
   }
 

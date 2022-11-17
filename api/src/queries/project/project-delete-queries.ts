@@ -112,27 +112,6 @@ export const deleteProjectFundingSourceSQL = (
 };
 
 /**
- * SQL query to delete all project funding source record.
- *
- * @param {projectId} projectId
- * @returns {SQLStatement} sql query object
- */
-export const deleteAllProjectFundingSourceSQL = (projectId: number | undefined): SQLStatement | null => {
-  if (!projectId) {
-    return null;
-  }
-
-  const sqlStatement: SQLStatement = SQL`
-    DELETE
-      from project_funding_source
-    WHERE
-      project_id = ${projectId};
-  `;
-
-  return sqlStatement;
-};
-
-/**
  * SQL query to delete a project row (and associated data) based on project ID.
  *
  * @param {number} projectId

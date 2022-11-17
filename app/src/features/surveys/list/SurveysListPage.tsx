@@ -54,7 +54,7 @@ const SurveysListPage: React.FC<ISurveysListPageProps> = (props) => {
         buttonLabel="Create Survey"
         buttonTitle="Create Survey"
         buttonStartIcon={<Icon path={mdiPlus} size={0.8} />}
-        buttonProps={{ variant: 'contained' }}
+        buttonProps={{variant: 'contained'}}
         buttonOnClick={() => navigateToCreateSurveyPage(projectForViewData.id)}
       />
       <Divider></Divider>

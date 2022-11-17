@@ -10,20 +10,20 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 // import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
-// import { handleChangePage, handleChangeRowsPerPage } from 'utils/tablePaginationUtils';
-// import { getFormattedDateRangeString } from 'utils/Utils';
-import { mdiAlertCircle } from '@mdi/js';
-import Icon from '@mdi/react';
 import clsx from 'clsx';
 // import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { SurveyStatusType } from 'constants/misc';
 import { SurveyViewObject } from 'interfaces/useSurveyApi.interface';
 import moment from 'moment';
 import React, { useState } from 'react';
+// import { handleChangePage, handleChangeRowsPerPage } from 'utils/tablePaginationUtils';
+// import { getFormattedDateRangeString } from 'utils/Utils';
+import { mdiAlertCircle } from '@mdi/js';
+import Icon from '@mdi/react';
 
 const useStyles = makeStyles((theme: Theme) => ({
   surveyTable: {
-    tableLayout: 'fixed'
+    tableLayout: "fixed"
   }
 }));
 
@@ -59,7 +59,7 @@ const SurveysList: React.FC<ISurveysListProps> = (props) => {
       chipLabel = 'Completed';
     }
 
-    return <Chip color="secondary" style={{ minWidth: '100px' }} className={clsx(chipStatusClass)} label={chipLabel} />;
+    return <Chip color="secondary" style={{'minWidth': '100px'}} className={clsx(chipStatusClass)} label={chipLabel} />;
   };
 
   return (
@@ -79,8 +79,7 @@ const SurveysList: React.FC<ISurveysListProps> = (props) => {
               props.surveysList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => (
                 <TableRow key={index}>
                   <TableCell scope="row">
-                    <Link
-                      style={{ fontWeight: 'bold' }}
+                    <Link style={{'fontWeight': 'bold'}}
                       underline="always"
                       href={`/admin/projects/${props.projectId}/surveys/${row.survey_details.id}/details`}>
                       {row.survey_details.survey_name}
@@ -89,7 +88,9 @@ const SurveysList: React.FC<ISurveysListProps> = (props) => {
                   <TableCell>
                     {[...row.species?.focal_species_names, ...row.species?.ancillary_species_names].join(', ')}
                   </TableCell>
-                  <TableCell>Community Composition</TableCell>
+                  <TableCell>
+                    Community Composition
+                  </TableCell>
                   {/* <TableCell>
                     Call Playback
                   </TableCell> */}
@@ -101,21 +102,19 @@ const SurveysList: React.FC<ISurveysListProps> = (props) => {
                     )}
                   </TableCell> */}
                   <TableCell>
-                    <Chip
-                      size="small"
-                      color="secondary"
-                      label="Pending Review"
-                      icon={<Icon path={mdiAlertCircle} size={0.8} />}
-                    />
 
-                    <Box hidden>{getChipIcon(getSurveyCompletionStatusType(row))}</Box>
+                    <Chip size="small" color="secondary" label="Pending Review" icon={<Icon path={mdiAlertCircle} size={0.8} />} />
+
+                    <Box hidden>
+                      {getChipIcon(getSurveyCompletionStatusType(row))}
+                    </Box>
                   </TableCell>
                 </TableRow>
               ))}
             {!props.surveysList.length && (
               <TableRow>
                 <TableCell colSpan={4} align="center">
-                  <strong>No Surveys</strong>
+                <strong>No Surveys</strong>
                 </TableCell>
               </TableRow>
             )}

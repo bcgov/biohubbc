@@ -1,10 +1,8 @@
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
-import { grey } from '@material-ui/core/colors';
-import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import { mdiChevronRight, mdiPencilOutline, mdiRefresh } from '@mdi/js';
 import Icon from '@mdi/react';
@@ -55,15 +53,11 @@ const useStyles = makeStyles((theme: Theme) =>
       }
     },
     metaSectionHeader: {
-      color: grey[600],
+      marginBottom: theme.spacing(1.5),
+      color: theme.palette.text.primary,
       fontWeight: 700,
-      textTransform: 'uppercase',
-      letterSpacing: '0.02rem',
-      '& + hr': {
-        marginTop: theme.spacing(0.75),
-        marginBottom: theme.spacing(0.75)
-      }
-    }
+      textTransform: 'uppercase'
+    },
   })
 );
 
@@ -250,7 +244,6 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
         <Typography variant="body2" className={classes.metaSectionHeader}>
           Location Description
         </Typography>
-        <Divider></Divider>
         <Typography variant="body1" color="textSecondary">
           {location.location_description ? <>{location.location_description}</> : 'No description provided'}
         </Typography>
@@ -260,7 +253,7 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
 
       <Button
         variant="text"
-        style={{ display: 'none' }}
+        style={{display: 'none'}}
         color="primary"
         className="sectionHeaderButton"
         onClick={() => handleDialogViewOpen()}
@@ -269,6 +262,7 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
         endIcon={<Icon path={mdiChevronRight} size={0.875} />}>
         Show More
       </Button>
+
     </>
   );
 };

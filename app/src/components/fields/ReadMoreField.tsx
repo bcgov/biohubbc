@@ -29,11 +29,7 @@ export const ReadMoreField: React.FC<IReadMoreFieldProps> = (props) => {
 
   const renderParagraph = (paragraph: string) => {
     if (paragraph) {
-      return (
-        <Typography color="textSecondary" key={uuidv4()}>
-          {paragraph}
-        </Typography>
-      );
+      return <Typography key={uuidv4()}>{paragraph}</Typography>;
     }
     return <p key={uuidv4()}></p>;
   };
@@ -66,9 +62,9 @@ export const ReadMoreField: React.FC<IReadMoreFieldProps> = (props) => {
             .map((paragraph: string) => {
               return renderParagraph(paragraph);
             })}
-          <Box mt={0.5} mb={-0.75} ml="-5px">
-            <Button size="small" variant="text" onClick={() => setIsTruncatedText(false)} style={{ color: '#757575' }}>
-              READ MORE...
+          <Box mt={3}>
+            <Button size="small" variant="outlined" color="primary" onClick={() => setIsTruncatedText(false)}>
+              Read More
             </Button>
           </Box>
         </>
@@ -79,9 +75,9 @@ export const ReadMoreField: React.FC<IReadMoreFieldProps> = (props) => {
             return renderParagraph(paragraph);
           })}
           {willTruncateText(text) && (
-            <Box mt={0.5} mb={-0.75} ml="-5px">
-              <Button size="small" variant="text" onClick={() => setIsTruncatedText(true)} style={{ color: '#757575' }}>
-                READ LESS
+            <Box mt={3}>
+              <Button size="small" variant="outlined" color="primary" onClick={() => setIsTruncatedText(true)}>
+                Read Less
               </Button>
             </Box>
           )}

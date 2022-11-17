@@ -1,6 +1,6 @@
 import Box from '@material-ui/core/Box';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import Divider from '@material-ui/core/Divider';
+import Container from '@material-ui/core/Container';
 import IconButton from '@material-ui/core/IconButton';
 import Link from '@material-ui/core/Link';
 import Paper from '@material-ui/core/Paper';
@@ -12,7 +12,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
-import { mdiChevronDown, mdiTrashCanOutline } from '@mdi/js';
+import { mdiMenuDown, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router';
@@ -34,18 +34,15 @@ const useStyles = makeStyles((theme) => ({
       marginLeft: '0.5rem'
     }
   },
+  projectMembersToolbar: {
+    paddingLeft: theme.spacing(2),
+    paddingRight: theme.spacing(2)
+  },
   projectMembersTable: {
     tableLayout: 'fixed',
     '& td': {
       verticalAlign: 'middle'
     }
-  },
-  toolbarCount: {
-    fontWeight: 400
-  },
-  linkButton: {
-    textAlign: 'left',
-    fontWeight: 700
   }
 }));
 
@@ -171,97 +168,97 @@ const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
   }
 
   return (
-    <Paper elevation={0}>
-      <Toolbar>
-        <Typography data-testid="projects_header" variant="h4" component="h2">
-          Assigned Projects{' '}
-          <Typography className={classes.toolbarCount} component="span" variant="inherit" color="textSecondary">
-            ({assignedProjects?.length})
-          </Typography>
-        </Typography>
-      </Toolbar>
-      <Divider></Divider>
-      <Box px={1}>
-        <Table className={classes.projectMembersTable}>
-          <TableHead>
-            <TableRow>
-              <TableCell>Project Name</TableCell>
-              <TableCell>Project Role</TableCell>
-              <TableCell width="150px" align="center">
-                Actions
-              </TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody data-testid="resources-table">
-            {assignedProjects.length > 0 &&
-              assignedProjects?.map((row) => (
-                <TableRow key={row.project_id}>
-                  <TableCell scope="row">
-                    <Link
-                      color="primary"
-                      onClick={() => history.push(`/admin/projects/${row.project_id}/details`)}
-                      aria-current="page">
-                      <Typography variant="body2">
-                        <strong>{row.name}</strong>
-                      </Typography>
-                    </Link>
-                  </TableCell>
-
-                  <TableCell>
-                    <Box my={-1}>
-                      <ChangeProjectRoleMenu
-                        row={row}
-                        user_identifier={props.userDetails.user_identifier}
-                        projectRoleCodes={codes.project_roles}
-                        refresh={refresh}
-                      />
-                    </Box>
-                  </TableCell>
-                  <TableCell align="center">
-                    <Box my={-1}>
-                      <IconButton
-                        title="Remove User from Project"
-                        data-testid={'remove-project-participant-button'}
-                        onClick={() =>
-                          openYesNoDialog({
-                            dialogTitle: SystemUserI18N.removeUserFromProject,
-                            dialogContent: (
-                              <>
-                                <Typography variant="body1" color="textPrimary">
-                                  Removing user <strong>{userDetails.user_identifier}</strong> will revoke their access
-                                  to the project.
-                                </Typography>
-                                <Typography variant="body1" color="textPrimary">
-                                  Are you sure you want to proceed?
-                                </Typography>
-                              </>
-                            ),
-                            yesButtonProps: { color: 'secondary' },
-                            onYes: () => {
-                              handleRemoveProjectParticipant(row.project_id, row.project_participation_id);
-                              dialogContext.setYesNoDialog({ open: false });
-                            }
-                          })
-                        }>
-                        <Icon path={mdiTrashCanOutline} size={1} />
-                      </IconButton>
-                    </Box>
+    <Container maxWidth="xl">
+      <Box pt={3}>
+        <Paper>
+          <Toolbar className={classes.projectMembersToolbar}>
+            <Typography data-testid="projects_header" variant="h2">
+              Assigned Projects ({assignedProjects?.length})
+            </Typography>
+          </Toolbar>
+          <Box>
+            <Table className={classes.projectMembersTable}>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Project Name</TableCell>
+                  <TableCell>Project Role</TableCell>
+                  <TableCell width="100px" align="center">
+                    Actions
                   </TableCell>
                 </TableRow>
-              ))}
-            {!assignedProjects.length && (
-              <TableRow>
-                <TableCell colSpan={3}>
-                  <Box display="flex" justifyContent="center">
-                    No Projects
-                  </Box>
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+              </TableHead>
+              <TableBody data-testid="resources-table">
+                {assignedProjects.length > 0 &&
+                  assignedProjects?.map((row) => (
+                    <TableRow key={row.project_id}>
+                      <TableCell scope="row">
+                        <Link
+                          color="primary"
+                          onClick={() => history.push(`/admin/projects/${row.project_id}/details`)}
+                          aria-current="page">
+                          <Typography variant="body2">
+                            <strong>{row.name}</strong>
+                          </Typography>
+                        </Link>
+                      </TableCell>
+
+                      <TableCell>
+                        <Box m={-1}>
+                          <ChangeProjectRoleMenu
+                            row={row}
+                            user_identifier={props.userDetails.user_identifier}
+                            projectRoleCodes={codes.project_roles}
+                            refresh={refresh}
+                          />
+                        </Box>
+                      </TableCell>
+                      <TableCell align="center">
+                        <Box m={-1}>
+                          <IconButton
+                            title="Remove Project Participant"
+                            data-testid={'remove-project-participant-button'}
+                            onClick={() =>
+                              openYesNoDialog({
+                                dialogTitle: SystemUserI18N.removeUserFromProject,
+                                dialogContent: (
+                                  <>
+                                    <Typography variant="body1" color="textPrimary">
+                                      Removing user <strong>{userDetails.user_identifier}</strong> will revoke their
+                                      access to the project.
+                                    </Typography>
+                                    <Typography variant="body1" color="textPrimary">
+                                      Are you sure you want to proceed?
+                                    </Typography>
+                                  </>
+                                ),
+                                yesButtonProps: { color: 'secondary' },
+                                onYes: () => {
+                                  handleRemoveProjectParticipant(row.project_id, row.project_participation_id);
+                                  dialogContext.setYesNoDialog({ open: false });
+                                }
+                              })
+                            }>
+                            <Icon path={mdiTrashCanOutline} size={1} />
+                          </IconButton>
+                        </Box>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                {!assignedProjects.length && (
+                  <TableRow>
+                    <TableCell colSpan={3}>
+                      <Box display="flex" justifyContent="center">
+                        No Projects
+                      </Box>
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </Box>
+        </Paper>
       </Box>
-    </Paper>
+    </Container>
   );
 };
 
@@ -370,14 +367,14 @@ const ChangeProjectRoleMenu: React.FC<IChangeProjectRoleMenuProps> = (props) => 
     <CustomMenuButton
       buttonLabel={currentProjectRoleName}
       buttonTitle={'Change Project Role'}
-      buttonProps={{ variant: 'outlined', size: 'small', color: 'default' }}
+      buttonProps={{ variant: 'text' }}
       menuItems={projectRoleCodes.map((roleCode) => {
         return {
           menuLabel: roleCode.name,
           menuOnClick: () => handleChangeUserPermissionsClick(row, roleCode.name, roleCode.id)
         };
       })}
-      buttonEndIcon={<Icon path={mdiChevronDown} size={0.8} />}
+      buttonEndIcon={<Icon path={mdiMenuDown} size={1} />}
     />
   );
 };

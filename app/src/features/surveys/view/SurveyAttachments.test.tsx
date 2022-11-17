@@ -83,7 +83,7 @@ describe('SurveyAttachments', () => {
       </Router>
     );
 
-    expect(getByText('No Documents')).toBeInTheDocument();
+    expect(getByText('No Attachments')).toBeInTheDocument();
   });
 
   it('renders correctly with attachments', async () => {

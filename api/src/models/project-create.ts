@@ -192,13 +192,13 @@ export class PostFundingSource {
  * @class PostFundingData
  */
 export class PostFundingData {
-  fundingSources: PostFundingSource[];
+  funding_sources: PostFundingSource[];
 
   constructor(obj?: any) {
     defaultLog.debug({ label: 'PostFundingData', message: 'params', obj });
 
-    this.fundingSources =
-      (obj?.fundingSources?.length && obj.fundingSources.map((item: any) => new PostFundingSource(item))) || [];
+    this.funding_sources =
+      (obj?.funding_sources?.length && obj.funding_sources.map((item: any) => new PostFundingSource(item))) || [];
   }
 }
 
