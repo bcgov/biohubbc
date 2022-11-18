@@ -71,7 +71,13 @@ export interface IEditFileWithMetaDialogProps {
    *
    * @memberof IEditFileWithMetaDialogProps
    */
-  onSave: (fileMeta: IEditReportMetaForm) => Promise<any>;
+  onSave: (fileMeta: IEditReportMetaForm) => Promise<void>;
+  /**
+   *
+   *
+   * @memberof IEditFileWithMetaDialogProps
+   */
+  refresh: () => void;
 }
 
 /**
@@ -113,6 +119,7 @@ const EditFileWithMetaDialog: React.FC<IEditFileWithMetaDialogProps> = (props) =
         onSubmit={(values) => {
           setIsSaving(true);
           props.onSave(values).finally(() => {
+            props.refresh();
             setIsSaving(false);
             props.onClose();
           });
