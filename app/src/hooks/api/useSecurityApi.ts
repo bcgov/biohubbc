@@ -28,22 +28,22 @@ const useSecurityApi = (axios: AxiosInstance) => {
       {
         security_reason_id: 2,
         category: 'category 2',
-        reasonTitle: 'reason title 1',
-        reasonDescription: 'reason description 1',
+        reasonTitle: 'reason title 2',
+        reasonDescription: 'reason description 2',
         expirationDate: new Date().toISOString()
       },
       {
         security_reason_id: 3,
         category: 'category 3',
-        reasonTitle: 'reason title 1',
-        reasonDescription: 'reason description 1',
+        reasonTitle: 'reason title 3',
+        reasonDescription: 'reason description 3',
         expirationDate: new Date().toISOString()
       },
       {
         security_reason_id: 4,
         category: 'category 4',
-        reasonTitle: 'reason title 1',
-        reasonDescription: 'reason description 1',
+        reasonTitle: 'reason title 4',
+        reasonDescription: 'reason description 4',
         expirationDate: null
       }
     ];
@@ -51,8 +51,18 @@ const useSecurityApi = (axios: AxiosInstance) => {
     // return data.security_reasons;
   };
 
+  const updateSecurityReasons = async (securityIds: number[], attachmentIds: number[]): Promise<any> => {
+    const { data } = await axios.put(`/api/project/{projectId}/attachments/security`, {
+      security_ids: securityIds,
+      attachment_ids: attachmentIds
+    });
+
+    return data;
+  };
+
   return {
-    getSecurityReasons
+    getSecurityReasons,
+    updateSecurityReasons
   };
 };
 
