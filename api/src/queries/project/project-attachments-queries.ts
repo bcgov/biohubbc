@@ -30,7 +30,8 @@ export const __deprecated_getProjectAttachmentsSQL = (projectId: number): SQLSta
       create_date,
       file_size,
       key,
-      security_token
+      security_token,
+      security_review_timestamp
     from
       project_attachment
     where
@@ -60,7 +61,8 @@ export const __deprecated_getProjectReportAttachmentsSQL = (projectId: number): 
       create_date,
       file_size,
       key,
-      security_token
+      security_token,
+      security_review_timestamp
     from
       project_report_attachment
     where
@@ -515,6 +517,7 @@ export const getProjectReportAttachmentSQL = (projectId: number, attachmentId: n
       file_size,
       key,
       security_token,
+      security_review_timestamp,
       revision_count
     FROM
       project_report_attachment
