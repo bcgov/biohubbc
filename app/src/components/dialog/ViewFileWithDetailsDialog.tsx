@@ -18,12 +18,13 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import Alert from '@material-ui/lab/Alert';
 import AlertTitle from '@material-ui/lab/AlertTitle';
-import { mdiLockOutline, mdiPencilOutline, mdiTrayArrowDown } from '@mdi/js';
+import { mdiLockOpenOutline, mdiLockOutline, mdiPencilOutline, mdiTrayArrowDown } from '@mdi/js';
 import Icon from '@mdi/react';
 import { IEditReportMetaForm } from 'components/attachments/EditReportMetaForm';
 import ReportMeta from 'components/attachments/ReportMeta';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
-import { IGetReportMetaData } from 'interfaces/useProjectApi.interface';
+import { useBiohubApi } from 'hooks/useBioHubApi';
+import { IGetReportMetaData, IGetSecurityReasons } from 'interfaces/useProjectApi.interface';
 import React, { useState } from 'react';
 import { getFormattedDateRangeString } from 'utils/Utils';
 import EditFileWithMetaDialog from './EditFileWithMetaDialog';
@@ -53,6 +54,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 export interface IViewFileWithDetailsDialogProps {
+  projectId: number;
   open: boolean;
   onClose: () => void;
   onFileDownload: () => void;
@@ -71,9 +73,22 @@ export interface IViewFileWithDetailsDialogProps {
  */
 const ViewFileWithDetailsDialog: React.FC<IViewFileWithDetailsDialogProps> = (props) => {
   const classes = useStyles();
+  const biohubApi = useBiohubApi();
 
   const [securityDialogOpen, setSecurityDialogOpen] = useState(false);
   const [showEditFileWithMetaDialog, setShowEditFileWithMetaDialog] = useState<boolean>(false);
+
+  const removeSecurity = async (securityReasons: IGetSecurityReasons[]) => {
+    console.log('securityReason', securityReasons);
+    if (props.reportMetaData?.attachment_id) {
+      const response = await biohubApi.project.removeAttachmentSecurity(
+        props.projectId,
+        props.reportMetaData?.attachment_id,
+        securityReasons
+      );
+      console.log('response', response);
+    }
+  };
 
   if (!props.open) {
     return <></>;
@@ -83,7 +98,7 @@ const ViewFileWithDetailsDialog: React.FC<IViewFileWithDetailsDialogProps> = (pr
     <>
       <SecurityDialog
         open={securityDialogOpen}
-        onAccept={() => alert('accepted')}
+        onAccept={() => alert('Applyed')}
         onClose={() => setSecurityDialogOpen(false)}
       />
 
@@ -156,7 +171,15 @@ const ViewFileWithDetailsDialog: React.FC<IViewFileWithDetailsDialogProps> = (pr
                   onClick={() => setSecurityDialogOpen(true)}>
                   Add Security
                 </Button>
-                <Button variant="contained" color="primary" startIcon={<Icon path={mdiLockOutline} size={0.8} />}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() => {
+                    if (props.reportMetaData?.security_reasons) {
+                      removeSecurity(props.reportMetaData?.security_reasons);
+                    }
+                  }}
+                  startIcon={<Icon path={mdiLockOpenOutline} size={0.8} />}>
                   Remove Security
                 </Button>
               </Box>
@@ -169,6 +192,7 @@ const ViewFileWithDetailsDialog: React.FC<IViewFileWithDetailsDialogProps> = (pr
                     <TableCell width="200">Category</TableCell>
                     <TableCell>Reason</TableCell>
                     <TableCell width="160">Dates</TableCell>
+                    <TableCell width="160">Actions</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -195,7 +219,15 @@ const ViewFileWithDetailsDialog: React.FC<IViewFileWithDetailsDialogProps> = (pr
                               )}
                             </Typography>
                           </TableCell>
-                          <TableCell></TableCell>
+                          <TableCell>
+                            <Button
+                              variant="contained"
+                              color="primary"
+                              onClick={() => removeSecurity([row])}
+                              startIcon={<Icon path={mdiLockOpenOutline} size={0.8} />}>
+                              Remove
+                            </Button>
+                          </TableCell>
                         </TableRow>
                       );
                     })}

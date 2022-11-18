@@ -11,6 +11,7 @@ import {
   IGetProjectParticipantsResponse,
   IGetProjectsListResponse,
   IGetReportMetaData,
+  IGetSecurityReasons,
   IGetUserProjectsListResponse,
   IProjectAdvancedFilterRequest,
   IUpdateProjectRequest,
@@ -285,6 +286,26 @@ const useProjectApi = (axios: AxiosInstance) => {
   };
 
   /**
+   * Remove array of security reasons from attachment Id
+   *
+   * @param {number} projectId
+   * @param {number} attachmentId
+   * @param {IGetSecurityReasons[]} securityReasons
+   * @return {*}  {Promise<any>}
+   */
+  const removeAttachmentSecurity = async (
+    projectId: number,
+    attachmentId: number,
+    securityReasons: IGetSecurityReasons[]
+  ): Promise<any> => {
+    const { data } = await axios.post(`/api/project/${projectId}/attachments/${attachmentId}/security/remove`, {
+      securityReasons
+    });
+
+    return data;
+  };
+
+  /**
    * Make security status of project attachment secure.
    *
    * @param {number} projectId
@@ -455,6 +476,7 @@ const useProjectApi = (axios: AxiosInstance) => {
     getProjectParticipants,
     addProjectParticipants,
     removeProjectParticipant,
+    removeAttachmentSecurity,
     updateProjectParticipantRole
   };
 };
