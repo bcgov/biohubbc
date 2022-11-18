@@ -1,10 +1,12 @@
 import SQL from 'sql-template-strings';
 import { ApiExecuteSQLError } from '../errors/api-error';
+import { getLogger } from '../utils/logger';
 import { BaseRepository } from './base-repository';
 
 /**
  * @TODO find all definitions of this interface and replace them by importing this
  * interface
+ * @TODO see new fields added to IGetAttachmentsSource from pull #845 (securityReviewTimestamp)
  */
 export interface IGetAttachmentsSource {
   file_name: string;
@@ -31,6 +33,8 @@ export interface IGetReportAttachmentsSource {
   authors?: { author: string }[];
 }
 
+const defaultLog = getLogger('repositories/attachment-repository');
+
 /**
  * A repository class for accessing attachment data.
  *
@@ -48,6 +52,8 @@ export class AttachmentRepository extends BaseRepository {
    * @memberof AttachmentRepository
    */
   async getProjectAttachments(projectId: number): Promise<IGetAttachmentsSource[]> {
+    defaultLog.debug({ label: 'getProjectAttachments' });
+
     const sqlStatement = SQL`
       SELECT
         project_attachment_id AS id,
