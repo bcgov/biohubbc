@@ -2,37 +2,18 @@ import { Box, Button, Divider, Typography } from '@material-ui/core';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
-import { ScrollToFormikError } from 'components/formik/ScrollToFormikError';
 import { Formik, FormikProps } from 'formik';
-import { useQuery } from 'hooks/useQuery';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import { ICreateProjectRequest } from 'interfaces/useProjectApi.interface';
+import { IUpdateProjectRequest } from 'interfaces/useProjectApi.interface';
 import React from 'react';
-import ProjectCoordinatorForm, {
-  ProjectCoordinatorInitialValues,
-  ProjectCoordinatorYupSchema
-} from '../components/ProjectCoordinatorForm';
-import ProjectDetailsForm, {
-  ProjectDetailsFormInitialValues,
-  ProjectDetailsFormYupSchema
-} from '../components/ProjectDetailsForm';
-import ProjectFundingForm, {
-  ProjectFundingFormInitialValues,
-  ProjectFundingFormYupSchema
-} from '../components/ProjectFundingForm';
-import ProjectIUCNForm, { ProjectIUCNFormInitialValues, ProjectIUCNFormYupSchema } from '../components/ProjectIUCNForm';
-import ProjectLocationForm, {
-  ProjectLocationFormInitialValues,
-  ProjectLocationFormYupSchema
-} from '../components/ProjectLocationForm';
-import ProjectObjectivesForm, {
-  ProjectObjectivesFormInitialValues,
-  ProjectObjectivesFormYupSchema
-} from '../components/ProjectObjectivesForm';
-import ProjectPartnershipsForm, {
-  ProjectPartnershipsFormInitialValues,
-  ProjectPartnershipsFormYupSchema
-} from '../components/ProjectPartnershipsForm';
+import ProjectCoordinatorForm from '../components/ProjectCoordinatorForm';
+import ProjectDetailsForm from '../components/ProjectDetailsForm';
+import ProjectFundingForm from '../components/ProjectFundingForm';
+import ProjectIUCNForm from '../components/ProjectIUCNForm';
+import ProjectLocationForm from '../components/ProjectLocationForm';
+import ProjectObjectivesForm from '../components/ProjectObjectivesForm';
+import ProjectPartnershipsForm from '../components/ProjectPartnershipsForm';
+import { initialProjectFieldData, validationProjectYupSchema } from '../create/CreateProjectForm';
 
 const useStyles = makeStyles((theme: Theme) => ({
   actionButton: {
@@ -42,58 +23,32 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
   },
   sectionDivider: {
-    height: '1px',
     marginTop: theme.spacing(5),
     marginBottom: theme.spacing(5)
-  },
-  breadCrumbLink: {
-    display: 'flex',
-    alignItems: 'center',
-    cursor: 'pointer'
-  },
-  breadCrumbLinkIcon: {
-    marginRight: '0.25rem'
   }
 }));
 
-export interface ICreateProjectForm {
+export interface IEditProjectForm {
   codes: IGetAllCodeSetsResponse;
-  handleSubmit: (formikData: ICreateProjectRequest) => void;
+  projectData: IUpdateProjectRequest;
+  handleSubmit: (formikData: IUpdateProjectRequest) => void;
   handleCancel: () => void;
-  handleDraft: (value: React.SetStateAction<boolean>) => void;
-  handleDeleteDraft: (value: React.SetStateAction<boolean>) => void;
-  formikRef: React.RefObject<FormikProps<ICreateProjectRequest>>;
+  formikRef: React.RefObject<FormikProps<IUpdateProjectRequest>>;
 }
-
-export const initialProjectFieldData: ICreateProjectRequest = {
-  ...ProjectDetailsFormInitialValues,
-  ...ProjectObjectivesFormInitialValues,
-  ...ProjectCoordinatorInitialValues,
-  ...ProjectLocationFormInitialValues,
-  ...ProjectIUCNFormInitialValues,
-  ...ProjectFundingFormInitialValues,
-  ...ProjectPartnershipsFormInitialValues
-};
-
-export const validationProjectYupSchema = ProjectCoordinatorYupSchema.concat(ProjectDetailsFormYupSchema)
-  .concat(ProjectObjectivesFormYupSchema)
-  .concat(ProjectLocationFormYupSchema)
-  .concat(ProjectIUCNFormYupSchema)
-  .concat(ProjectFundingFormYupSchema)
-  .concat(ProjectPartnershipsFormYupSchema);
 
 /**
  * Form for creating a new project.
  *
  * @return {*}
  */
-const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
-  const { codes, formikRef } = props;
+const EditProjectForm: React.FC<IEditProjectForm> = (props) => {
+  const { codes, formikRef, projectData } = props;
+
+  console.log('projectData', projectData);
 
   const classes = useStyles();
-  const queryParams = useQuery();
 
-  const handleSubmit = async (formikData: ICreateProjectRequest) => {
+  const handleSubmit = async (formikData: IUpdateProjectRequest) => {
     props.handleSubmit(formikData);
   };
 
@@ -101,26 +56,18 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
     props.handleCancel();
   };
 
-  const handleDraft = () => {
-    props.handleDraft(true);
-  };
-
-  const handleDeleteDraft = () => {
-    props.handleDeleteDraft(true);
-  };
-
   return (
     <Box p={5}>
       <Formik
         innerRef={formikRef}
-        initialValues={initialProjectFieldData}
+        initialValues={(initialProjectFieldData as unknown) as IUpdateProjectRequest}
         validationSchema={validationProjectYupSchema}
         validateOnBlur={true}
         validateOnChange={false}
         enableReinitialize={true}
         onSubmit={handleSubmit}>
         <>
-          <ScrollToFormikError fieldOrder={Object.keys(initialProjectFieldData)} />
+          {/* <ScrollToFormikError fieldOrder={Object.keys(initialProjectFieldData)} /> */}
 
           <HorizontalSplitFormComponent
             title="General Information"
@@ -200,7 +147,7 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
                   <Typography component="legend" variant="h5">
                     Funding Sources
                   </Typography>
-                  <Typography variant="body1" color="textSecondary" style={{ maxWidth: '90ch' }}>
+                  <Typography variant="body1" color="textSecondary" style={{ maxWidth: '72ch' }}>
                     Specify funding sources for the project. <strong>Note:</strong> Dollar amounts are not intended to
                     be exact, please round to the nearest 100.
                   </Typography>
@@ -223,7 +170,7 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
                   <Typography component="legend" variant="h5">
                     Partnerships
                   </Typography>
-                  <Typography variant="body1" color="textSecondary" style={{ maxWidth: '90ch' }}>
+                  <Typography variant="body1" color="textSecondary" style={{ maxWidth: '72ch' }}>
                     Additional partnerships that have not been previously identified as a funding sources.
                   </Typography>
                   <Box mt={4}>
@@ -255,23 +202,15 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
         </>
       </Formik>
 
-      <Box mt={4} display="flex" justifyContent="flex-end">
+      <Box display="flex" justifyContent="flex-end">
         <Button
           type="submit"
           color="primary"
           variant="contained"
           onClick={() => formikRef.current?.submitForm()}
           className={classes.actionButton}>
-          Submit Project
+          Save Project
         </Button>
-        <Button color="primary" variant="contained" onClick={handleDraft} className={classes.actionButton}>
-          Save Draft
-        </Button>
-        {queryParams.draftId && (
-          <Button color="secondary" variant="outlined" onClick={handleDeleteDraft} className={classes.actionButton}>
-            Delete Draft
-          </Button>
-        )}
         <Button color="primary" variant="outlined" onClick={handleCancel} className={classes.actionButton}>
           Cancel
         </Button>
@@ -280,4 +219,4 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
   );
 };
 
-export default CreateProjectForm;
+export default EditProjectForm;

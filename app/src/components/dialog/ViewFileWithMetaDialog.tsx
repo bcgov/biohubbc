@@ -1,6 +1,4 @@
 import { DialogTitle } from '@material-ui/core';
-import Alert from '@material-ui/lab/Alert';
-import AlertTitle from '@material-ui/lab/AlertTitle';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Dialog, { DialogProps } from '@material-ui/core/Dialog';
@@ -108,10 +106,6 @@ const ViewFileWithMetaDialog: React.FC<IViewFileWithMetaDialogProps> = (props) =
             </Box>
           </Box>
           <Box mt={5}>
-            <Alert severity="info" style={{marginBottom: '24px'}}>
-              <AlertTitle>Alert Title</AlertTitle>
-              Document requires a security review
-            </Alert>
             <Paper variant="outlined">
               <Toolbar style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <Typography variant="h5" component="h3">
@@ -186,7 +180,7 @@ const ViewFileWithMetaDialog: React.FC<IViewFileWithMetaDialogProps> = (props) =
                   color="primary"
                   startIcon={<Icon path={mdiLockOutline} size={0.8} />}
                   style={{ marginRight: '8px' }}
-                  onClick={() =>setSecurityDialogOpen(true)}>
+                  onClick={() => setSecurityDialogOpen(true)}>
                   Add Security
                 </Button>
                 <Button variant="contained" color="primary" startIcon={<Icon path={mdiLockOutline} size={0.8} />}>

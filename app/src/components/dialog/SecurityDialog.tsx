@@ -1,19 +1,16 @@
 import Button from '@material-ui/core/Button';
-import Checkbox from '@material-ui/core/Checkbox';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import Dialog, { DialogProps } from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Divider from '@material-ui/core/Divider';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
-import React from 'react';
+import { Formik, FormikProps } from 'formik';
+import { useBiohubApi } from 'hooks/useBioHubApi';
+import useDataLoader from 'hooks/useDataLoader';
+import React, { useRef, useState } from 'react';
+import SecurityForm, { ISecurityForm, SecurityInitialValues, SecurityYupSchema } from './SecurityForm';
 
 export interface ISecurityDialogProps {
   /**
@@ -28,7 +25,7 @@ export interface ISecurityDialogProps {
    *
    * @memberof ISecurityDialogProps
    */
-  onAccept: () => any;
+  onAccept: (securityReasons: ISecurityForm) => any;
   /**
    * Callback fired if the dialog is closed.
    *
@@ -53,78 +50,63 @@ export interface ISecurityDialogProps {
  * @return {*}
  */
 const SecurityDialog: React.FC<ISecurityDialogProps> = (props) => {
+  const biohubApi = useBiohubApi();
+
+  const securityReasonsDataLoader = useDataLoader(() => biohubApi.security.getSecurityReasons());
+
+  const [formikRef] = useState(useRef<FormikProps<ISecurityForm>>(null));
+
   if (!props.open) {
     return <></>;
   }
-  /* Prototype Dialog for Applying Security Reasons */
+
+  securityReasonsDataLoader.load();
+
+  const getSecurityDialogContent = () => {
+    if (securityReasonsDataLoader.isLoading) {
+      return <CircularProgress className="pageProgress" size={40} />;
+    }
+
+    if (securityReasonsDataLoader.data) {
+      return <SecurityForm availableSecurityReasons={securityReasonsDataLoader.data} />;
+    }
+
+    // Not loading, but also no data returned
+    return <CircularProgress className="pageProgress" size={40} />;
+  };
 
   return (
-    <Dialog
-      fullWidth
-      maxWidth="lg"
-      open={props.open}
-      aria-labelledby="alert-dialog-title"
-      aria-describedby="alert-dialog-description">
-      <DialogTitle>Apply Security Reasons</DialogTitle>
-      <DialogContent style={{ paddingTop: 0, paddingBottom: 0 }}>
-        <Typography variant="body1" color="textSecondary" style={{ marginBottom: '24px' }}>
-          Apply one or more security reasons to selected documents.
-        </Typography>
-        <Divider></Divider>
-        <TableContainer>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell width="70" padding="checkbox"></TableCell>
-                <TableCell width="200">Category</TableCell>
-                <TableCell>Reason</TableCell>
-                <TableCell width="160">Expiry Date</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              <TableRow>
-                <TableCell padding="checkbox">
-                  <Checkbox color="primary" />
-                </TableCell>
-                <TableCell>Persecution or Harm</TableCell>
-                <TableCell>
-                  <Typography style={{ fontWeight: 700 }}>Reason Title</Typography>
-                  <Typography variant="body2" color="textSecondary">
-                    Reason Description
-                  </Typography>
-                </TableCell>
-                <TableCell>
-                  <TextField type="date" variant="outlined" size="small"></TextField>
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell padding="checkbox">
-                  <Checkbox color="primary" />
-                </TableCell>
-                <TableCell>Persecution or Harm</TableCell>
-                <TableCell>
-                  <Typography style={{ fontWeight: 700 }}>Reason Title</Typography>
-                  <Typography variant="body2" color="textSecondary">
-                    Reason Description
-                  </Typography>
-                </TableCell>
-                <TableCell>
-                  <TextField type="date" variant="outlined" size="small" fullWidth></TextField>
-                </TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </DialogContent>
-      <DialogActions>
-        <Button color="primary" variant="contained" onClick={props.onAccept}>
-          Apply
-        </Button>
-        <Button color="primary" variant="outlined" onClick={props.onClose}>
-          Cancel
-        </Button>
-      </DialogActions>
-    </Dialog>
+    <Formik
+      innerRef={formikRef}
+      initialValues={SecurityInitialValues}
+      validationSchema={SecurityYupSchema}
+      validateOnBlur={true}
+      validateOnChange={false}
+      onSubmit={(values) => props.onAccept(values)}>
+      <Dialog
+        fullWidth
+        maxWidth="lg"
+        open={props.open}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description">
+        <DialogTitle>Apply Security Reasons</DialogTitle>
+        <DialogContent style={{ paddingTop: 0, paddingBottom: 0 }}>
+          <Typography variant="body1" color="textSecondary" style={{ marginBottom: '24px' }}>
+            Apply one or more security reasons to selected documents.
+          </Typography>
+          <Divider></Divider>
+          {getSecurityDialogContent()}
+        </DialogContent>
+        <DialogActions>
+          <Button color="primary" variant="contained" onClick={() => formikRef.current?.handleSubmit()}>
+            Apply
+          </Button>
+          <Button color="primary" variant="outlined" onClick={props.onClose}>
+            Cancel
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </Formik>
   );
 };
 

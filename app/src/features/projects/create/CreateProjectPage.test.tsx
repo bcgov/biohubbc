@@ -519,7 +519,7 @@ describe('CreateProjectPage', () => {
           objectives: { objectives: '' },
           location: { location_description: '', geometry: [] },
           iucn: { classificationDetails: [] },
-          funding: { funding_sources: [] },
+          funding: { fundingSources: [] },
           partnerships: { indigenous_partnerships: [], stakeholder_partnerships: [] }
         });
 
@@ -558,7 +558,7 @@ describe('CreateProjectPage', () => {
           objectives: { objectives: '' },
           location: { location_description: '', geometry: [] },
           iucn: { classificationDetails: [] },
-          funding: { funding_sources: [] },
+          funding: { fundingSources: [] },
           partnerships: { indigenous_partnerships: [], stakeholder_partnerships: [] }
         });
 
