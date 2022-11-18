@@ -64,6 +64,10 @@ export async function up(knex: Knex): Promise<void> {
         project_attachment_proprietary_id    integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
         project_attachment_id                integer           NOT NULL,
         proprietary_security_id              integer           NOT NULL,
+        proprietor                           varchar(30)       NOT NULL,
+        description                          varchar(3000)     NOT NULL,
+        start_date                           date,
+        end_date                             date,
         create_date                          timestamptz(6)    DEFAULT now() NOT NULL,
         create_user                          integer           NOT NULL,
         update_date                          timestamptz(6),
@@ -75,6 +79,10 @@ export async function up(knex: Knex): Promise<void> {
     COMMENT ON COLUMN project_attachment_proprietary.project_attachment_proprietary_id IS 'System generated surrogate primary key identifier.';
     COMMENT ON COLUMN project_attachment_proprietary.project_attachment_id IS 'System generated surrogate primary key identifier.';
     COMMENT ON COLUMN project_attachment_proprietary.proprietary_security_id IS 'A foreign key to a proprietary security label in the reference data system.';
+    COMMENT ON COLUMN project_attachment_proprietary.proprietor IS 'The proprietor or owner of the artifact.';
+    COMMENT ON COLUMN project_attachment_proprietary.description IS 'The description of the record.';
+    COMMENT ON COLUMN project_attachment_proprietary.start_date IS 'The record start date.';
+    COMMENT ON COLUMN project_attachment_proprietary.end_date IS 'The record end date.';
     COMMENT ON COLUMN project_attachment_proprietary.create_date IS 'The datetime the record was created.';
     COMMENT ON COLUMN project_attachment_proprietary.create_user IS 'The id of the user who created the record as identified in the system user table.';
     COMMENT ON COLUMN project_attachment_proprietary.update_date IS 'The datetime the record was updated.';
@@ -108,6 +116,10 @@ export async function up(knex: Knex): Promise<void> {
         project_report_proprietary_id    integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
         project_report_attachment_id     integer           NOT NULL,
         proprietary_security_id          integer           NOT NULL,
+        proprietor                       varchar(30)       NOT NULL,
+        description                      varchar(3000)     NOT NULL,
+        start_date                       date,
+        end_date                         date,
         create_date                      timestamptz(6)    DEFAULT now() NOT NULL,
         create_user                      integer           NOT NULL,
         update_date                      timestamptz(6),
@@ -119,6 +131,10 @@ export async function up(knex: Knex): Promise<void> {
     COMMENT ON COLUMN project_report_proprietary.project_report_proprietary_id IS 'System generated surrogate primary key identifier.';
     COMMENT ON COLUMN project_report_proprietary.project_report_attachment_id IS 'System generated surrogate primary key identifier.';
     COMMENT ON COLUMN project_report_proprietary.proprietary_security_id IS 'A foreign key to a proprietary security label in the reference data system.';
+    COMMENT ON COLUMN project_report_proprietary.proprietor IS 'The proprietor or owner of the artifact.';
+    COMMENT ON COLUMN project_report_proprietary.description IS 'The description of the record.';
+    COMMENT ON COLUMN project_report_proprietary.start_date IS 'The record start date.';
+    COMMENT ON COLUMN project_report_proprietary.end_date IS 'The record end date.';
     COMMENT ON COLUMN project_report_proprietary.create_date IS 'The datetime the record was created.';
     COMMENT ON COLUMN project_report_proprietary.create_user IS 'The id of the user who created the record as identified in the system user table.';
     COMMENT ON COLUMN project_report_proprietary.update_date IS 'The datetime the record was updated.';
@@ -152,6 +168,10 @@ export async function up(knex: Knex): Promise<void> {
       survey_attachment_proprietary_id    integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
       survey_attachment_id                integer           NOT NULL,
       proprietary_security_id             integer           NOT NULL,
+      proprietor                          varchar(30)       NOT NULL,
+      description                         varchar(3000)     NOT NULL,
+      start_date                          date,
+      end_date                            date,
       create_date                         timestamptz(6)    DEFAULT now() NOT NULL,
       create_user                         integer           NOT NULL,
       update_date                         timestamptz(6),
@@ -163,6 +183,10 @@ export async function up(knex: Knex): Promise<void> {
     COMMENT ON COLUMN survey_attachment_proprietary.survey_attachment_proprietary_id IS 'System generated surrogate primary key identifier.';
     COMMENT ON COLUMN survey_attachment_proprietary.survey_attachment_id IS 'System generated surrogate primary key identifier.';
     COMMENT ON COLUMN survey_attachment_proprietary.proprietary_security_id IS 'A foreign key to a proprietary security label in the reference data system.';
+    COMMENT ON COLUMN survey_attachment_proprietary.proprietor IS 'The proprietor or owner of the artifact.';
+    COMMENT ON COLUMN survey_attachment_proprietary.description IS 'The description of the record.';
+    COMMENT ON COLUMN survey_attachment_proprietary.start_date IS 'The record start date.';
+    COMMENT ON COLUMN survey_attachment_proprietary.end_date IS 'The record end date.';
     COMMENT ON COLUMN survey_attachment_proprietary.create_date IS 'The datetime the record was created.';
     COMMENT ON COLUMN survey_attachment_proprietary.create_user IS 'The id of the user who created the record as identified in the system user table.';
     COMMENT ON COLUMN survey_attachment_proprietary.update_date IS 'The datetime the record was updated.';
@@ -196,6 +220,10 @@ export async function up(knex: Knex): Promise<void> {
       survey_report_proprietary_id    integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
       survey_report_attachment_id     integer           NOT NULL,
       proprietary_security_id         integer           NOT NULL,
+      proprietor                      varchar(30)       NOT NULL,
+      description                     varchar(3000)     NOT NULL,
+      start_date                      date,
+      end_date                        date,
       create_date                     timestamptz(6)    DEFAULT now() NOT NULL,
       create_user                     integer           NOT NULL,
       update_date                     timestamptz(6),
@@ -207,6 +235,10 @@ export async function up(knex: Knex): Promise<void> {
     COMMENT ON COLUMN survey_report_proprietary.survey_report_proprietary_id IS 'System generated surrogate primary key identifier.';
     COMMENT ON COLUMN survey_report_proprietary.survey_report_attachment_id IS 'System generated surrogate primary key identifier.';
     COMMENT ON COLUMN survey_report_proprietary.proprietary_security_id IS 'A foreign key to a proprietary security label in the reference data system.';
+    COMMENT ON COLUMN survey_report_proprietary.proprietor IS 'The proprietor or owner of the artifact.';
+    COMMENT ON COLUMN survey_report_proprietary.description IS 'The description of the record.';
+    COMMENT ON COLUMN survey_report_proprietary.start_date IS 'The record start date.';
+    COMMENT ON COLUMN survey_report_proprietary.end_date IS 'The record end date.';
     COMMENT ON COLUMN survey_report_proprietary.create_date IS 'The datetime the record was created.';
     COMMENT ON COLUMN survey_report_proprietary.create_user IS 'The id of the user who created the record as identified in the system user table.';
     COMMENT ON COLUMN survey_report_proprietary.update_date IS 'The datetime the record was updated.';

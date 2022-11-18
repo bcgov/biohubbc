@@ -98,9 +98,9 @@ begin
   insert into project_first_nation (project_id, first_nations_id) values (_project_id, (select first_nations_id from first_nations where name = 'Kitselas Nation'));
   insert into project_participation (project_id, system_user_id, project_role_id) values (_project_id, _system_user_id, (select project_role_id from project_role where name = 'Editor'));
   insert into project_attachment_persecution (persecution_security_id, project_attachment_id) values (1000, _project_attachment_id);
-  insert into project_attachment_proprietary (proprietary_security_id, project_attachment_id) values (1000, _project_attachment_id);
+  insert into project_attachment_proprietary (proprietary_security_id, project_attachment_id, proprietor, description, start_date, end_date) values (1000, _project_attachment_id, 'Proprietor Name', 'proprietary description', null, current_date + 60);
   insert into project_report_persecution (persecution_security_id, project_report_attachment_id) values (1000, _project_report_attachment_id);
-  insert into project_report_proprietary (proprietary_security_id, project_report_attachment_id) values (1000, _project_report_attachment_id);
+  insert into project_report_proprietary (proprietary_security_id, project_report_attachment_id, proprietor, description, start_date, end_date) values (1000, _project_report_attachment_id, 'Proprietor Name', 'proprietary description', null, current_date + 60);
 
   select count(1) into _count from stakeholder_partnership;
   assert _count = 1, 'FAIL stakeholder_partnership';
@@ -172,9 +172,9 @@ begin
   insert into permit (survey_id, number, type) values (_survey_id, '8377262', 'permit type') returning permit_id into _permit_id;
   insert into permit (survey_id, number, type) values (_survey_id, '8377261', 'permit type') returning permit_id into _permit_id;
   insert into survey_attachment_persecution (persecution_security_id, survey_attachment_id) values (1000, _survey_attachment_id);
-  insert into survey_attachment_proprietary (proprietary_security_id, survey_attachment_id) values (1000, _survey_attachment_id);
+  insert into survey_attachment_proprietary (proprietary_security_id, survey_attachment_id, proprietor, description, start_date, end_date) values (1000, _survey_attachment_id, 'Proprietor Name', 'proprietary description', null, current_date + 60);
   insert into survey_report_persecution (persecution_security_id, survey_report_attachment_id) values (1000, _survey_report_attachment_id);
-  insert into survey_report_proprietary (proprietary_security_id, survey_report_attachment_id) values (1000, _survey_report_attachment_id);
+  insert into survey_report_proprietary (proprietary_security_id, survey_report_attachment_id, proprietor, description, start_date, end_date) values (1000, _survey_report_attachment_id, 'Proprietor Name', 'proprietary description', null, current_date + 60);
 
   select count(1) into _count from survey;
   assert _count = 1, 'FAIL survey';
