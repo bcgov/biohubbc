@@ -36,8 +36,8 @@ import { AttachmentsI18N, EditReportMetaDataI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { IGetProjectAttachment, IGetReportMetaData } from 'interfaces/useProjectApi.interface';
-import { IGetSurveyAttachment } from 'interfaces/useSurveyApi.interface';
+import { IGetProjectAttachment, IGetProjectReportAttachment, IGetReportMetaData } from 'interfaces/useProjectApi.interface';
+import { IGetSurveyAttachment, IGetSurveyReportAttachment } from 'interfaces/useSurveyApi.interface';
 import React, { useContext, useState } from 'react';
 import { getFormattedFileSize } from 'utils/Utils';
 import { IEditReportMetaForm } from '../attachments/EditReportMetaForm';
@@ -186,11 +186,19 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
     }
   };
 
+  const isProjectReport = (attachment: IGetProjectAttachment): attachment is IGetProjectReportAttachment => {
+    return attachment.fileType === 'Report'
+  }
+
+  const isSurveyReport = (attachment: IGetSurveyAttachment): attachment is IGetSurveyReportAttachment => {
+    return attachment.fileType === 'Report'
+  }
+
   const getReportMeta = async (attachment: IGetProjectAttachment | IGetSurveyAttachment) => {
-    if (attachment.fileType === 'Other') {
-      console.log('this is not a report');
-    } else {
+    if (isProjectReport(attachment) || isSurveyReport(attachment)) {
       console.log('this is a report');
+    } else {
+      console.log('this is not a report');
     }
     try {
       let response;

@@ -18,6 +18,8 @@ export interface IGetProjectAttachment {
   revisionCount: number;
 }
 
+export type IGetProjectReportAttachment = IGetProjectAttachment & { fileType: 'Report' };
+
 /**
  * An interface for an instance of filter fields for project advanced filter search
  */
@@ -41,6 +43,7 @@ export interface IProjectAdvancedFilterRequest {
  */
 export interface IGetProjectAttachmentsResponse {
   attachmentsList: IGetProjectAttachment[];
+  reportAttachmentsList: IGetProjectReportAttachment[];
 }
 
 /**

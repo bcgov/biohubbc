@@ -174,6 +174,8 @@ export interface IGetSurveyAttachment {
   revisionCount: number;
 }
 
+export type IGetSurveyReportAttachment = IGetSurveyAttachment & { fileType: 'Report' };
+
 /**
  * Get survey attachments response object.
  *

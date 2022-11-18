@@ -114,10 +114,9 @@ export function getAttachments(): RequestHandler {
       const attachmentsData = await attachmentService.getProjectAttachments(projectId);
 
       const reportAttachmentsData = await attachmentService.getProjectReportAttachments(projectId);
-
       await connection.commit();
-
-      const getAttachmentsData = new GetAttachmentsData([...attachmentsData, ...reportAttachmentsData]);
+      
+      const getAttachmentsData = new GetAttachmentsData(attachmentsData, reportAttachmentsData);
 
       return res.status(200).json(getAttachmentsData);
     } catch (error) {
