@@ -43,6 +43,13 @@ const defaultLog = getLogger('repositories/attachment-repository');
  * @extends {BaseRepository}
  */
 export class AttachmentRepository extends BaseRepository {
+  async addSecurityToAttachments(securityIds: number[], attachmentId: number): Promise<void> {
+    // TODO
+  }
+
+  async addSecurityToReportAttachments(securityIds: number[], attachmentId: number): Promise<void> {
+    // TODO
+  }
 
   /**
    * SQL query to get report attachments for a single project.
