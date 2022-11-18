@@ -14,7 +14,6 @@ import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-// import TextField from '@material-ui/core/TextField';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import Alert from '@material-ui/lab/Alert';
@@ -61,6 +60,7 @@ export interface IViewFileWithDetailsDialogProps {
   reportMetaData: IGetReportMetaData | null;
   attachmentSize: string;
   dialogProps?: DialogProps;
+  fileType: string | null;
   refresh: () => void;
 }
 
@@ -119,15 +119,17 @@ const ViewFileWithDetailsDialog: React.FC<IViewFileWithDetailsDialogProps> = (pr
                 onClick={() => props.onFileDownload()}>
                 Download ({props.attachmentSize})
               </Button>
-              <Box>
-                <Button
-                  variant="outlined"
-                  color="primary"
-                  startIcon={<Icon path={mdiPencilOutline} size={0.8} />}
-                  onClick={() => setShowEditFileWithMetaDialog(true)}>
-                  Edit Details
-                </Button>
-              </Box>
+              {props.fileType === 'Report' && (
+                <Box>
+                  <Button
+                    variant="outlined"
+                    color="primary"
+                    startIcon={<Icon path={mdiPencilOutline} size={0.8} />}
+                    onClick={() => setShowEditFileWithMetaDialog(true)}>
+                    Edit Details
+                  </Button>
+                </Box>
+              )}
             </Box>
           </Box>
           <Box mt={5}>
@@ -136,7 +138,9 @@ const ViewFileWithDetailsDialog: React.FC<IViewFileWithDetailsDialogProps> = (pr
               Document requires a security review
             </Alert>
 
-            {props.reportMetaData && <ReportMeta reportMetaData={props.reportMetaData} />}
+            {props.fileType === 'Report' && props.reportMetaData && (
+              <ReportMeta reportMetaData={props.reportMetaData} />
+            )}
           </Box>
           <Paper variant="outlined" style={{ marginTop: '24px' }}>
             <Toolbar style={{ display: 'flex', justifyContent: 'space-between' }}>
