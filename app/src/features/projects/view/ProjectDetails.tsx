@@ -1,10 +1,17 @@
 import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
+import { grey } from '@material-ui/core/colors';
 import Divider from '@material-ui/core/Divider';
+// import Paper from '@material-ui/core/Paper';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
+import FundingSource from 'features/projects/view/components/FundingSource';
+import GeneralInformation from 'features/projects/view/components/GeneralInformation';
+import IUCNClassification from 'features/projects/view/components/IUCNClassification';
+import Partnerships from 'features/projects/view/components/Partnerships';
+import ProjectCoordinator from 'features/projects/view/components/ProjectCoordinator';
+import ProjectObjectives from 'features/projects/view/components/ProjectObjectives';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import React from 'react';
@@ -19,43 +26,43 @@ const useStyles = makeStyles((theme: Theme) => ({
   projectTitle: {
     fontWeight: 400
   },
-  projectOverview: {
+  projectMetadata: {
     '& section + section': {
-      marginTop: '24px'
+      marginTop: theme.spacing(3)
     },
     '& dt': {
-      flex: '0 0 100px',
-      margin: '0',
-      color: theme.palette.text.secondary
+      flex: '0 0 40%'
     },
     '& dd': {
       flex: '1 1 auto'
+    },
+    '& .MuiListItem-root': {
+      paddingTop: theme.spacing(1.5),
+      paddingBottom: theme.spacing(1.5)
+    },
+    '& .MuiListItem-root:first-of-type': {
+      paddingTop: 0
+    },
+    '& .MuiListItem-root:last-of-type': {
+      paddingBottom: 0
     }
   },
-  projectMetaRow: {
-    display: 'flex',
-    paddingTop: theme.spacing(0.25),
-    paddingBottom: theme.spacing(0.25)
-  },
   projectMetaSectionHeader: {
-    marginBottom: theme.spacing(1.5),
-    color: theme.palette.text.secondary,
     fontSize: '14px',
     fontWeight: 700,
-    textTransform: 'uppercase'
+    letterSpacing: '0.02rem',
+    textTransform: 'uppercase',
+    color: grey[600],
+    '& + hr': {
+      marginTop: theme.spacing(1.5),
+      marginBottom: theme.spacing(1.5)
+    }
   },
   projectMetaObjectives: {
     display: '-webkit-box',
     '-webkit-line-clamp': 4,
     '-webkit-box-orient': 'vertical',
     overflow: 'hidden'
-  },
-  readMoreButton: {
-    marginTop: '6px',
-    marginLeft: '-5px',
-    marginBottom: '-5px',
-    fontWeight: 400,
-    fontSize: '14px'
   }
 }));
 
@@ -65,106 +72,66 @@ const useStyles = makeStyles((theme: Theme) => ({
  * @return {*}
  */
 const ProjectDetails: React.FC<IProjectDetailsProps> = (props) => {
+  const { projectForViewData, codes, refresh } = props;
   const classes = useStyles();
 
   return (
-    <Box className={classes.projectOverview}>
+    <Box>
       <Toolbar>
         <Typography variant="h4" component="h3">
           Project Details
         </Typography>
       </Toolbar>
       <Divider></Divider>
-      <Box p={3}>
+      <Box py={2.75} px={3} className={classes.projectMetadata}>
         <Box component="section">
           <Typography component="h4" className={classes.projectMetaSectionHeader}>
             Project Objectives
           </Typography>
-          <Divider style={{ marginTop: '12px', marginBottom: '12px' }}></Divider>
-          <Typography color="textSecondary" className={classes.projectMetaObjectives}>
-            Snow depths were recorded along with observations of animal tracks on the areas at irregular intervals
-            throughout each winter. Fecal pellet group counts were carried out over a period of several years to
-            determine relative moose use of the This paper reports on some aspects of the ecology of a winter range used
-            by a migratory moose population.
-          </Typography>
-          <Button className={classes.readMoreButton} variant="text" color="primary" size="small">
-            READ MORE...
-          </Button>
+          <Divider></Divider>
+          <ProjectObjectives projectForViewData={projectForViewData} codes={codes} refresh={refresh} />
         </Box>
 
         <Box component="section">
           <Typography component="h4" className={classes.projectMetaSectionHeader}>
             General Information
           </Typography>
-          <Divider style={{ marginTop: '12px', marginBottom: '12px' }}></Divider>
-          <Box component="dl">
-            <Box className={classes.projectMetaRow}>
-              <Typography component="dt">Type</Typography>
-              <Typography component="dd">Wildlife</Typography>
-            </Box>
-            <Box className={classes.projectMetaRow}>
-              <Typography component="dt">Location</Typography>
-              <Typography component="dd">Skeena Natural Resource Region</Typography>
-            </Box>
-            <Box className={classes.projectMetaRow}>
-              <Typography component="dt">Activities</Typography>
-              <Typography component="dd">Inventory, Monitoring</Typography>
-            </Box>
-            <Box className={classes.projectMetaRow}>
-              <Typography component="dt">Timeline</Typography>
-              <Typography component="dd">YYYY-MM-DD to YYYY-MM-DD</Typography>
-            </Box>
-          </Box>
+          <Divider></Divider>
+          <GeneralInformation projectForViewData={projectForViewData} codes={codes} refresh={refresh} />
         </Box>
 
         <Box component="section">
           <Typography component="h4" className={classes.projectMetaSectionHeader}>
             Project Coordinator
           </Typography>
-          <Divider style={{ marginTop: '12px', marginBottom: '12px' }}></Divider>
-          <Box mt={1}>
-            <Typography component="div">John Smith</Typography>
-            <Typography component="div" color="textSecondary">
-              Consulting Agency Name
-            </Typography>
-            <Typography component="div" color="textSecondary">
-              email@email.com
-            </Typography>
-          </Box>
+          <Divider></Divider>
+          <ProjectCoordinator projectForViewData={projectForViewData} codes={codes} refresh={refresh} />
         </Box>
 
         <Box component="section">
           <Typography component="h4" className={classes.projectMetaSectionHeader}>
             Funding Sources
           </Typography>
-          <Divider style={{ marginTop: '12px', marginBottom: '12px' }}></Divider>
-          <Box mt={1}>
-            <Typography component="div">Together for Wildlife - Action 1</Typography>
-            <Typography component="div" color="textSecondary">
-              $1,000,000
-            </Typography>
-            <Typography component="div" color="textSecondary">
-              YYYY-MM-DD to YYYY-MM-DD
-            </Typography>
-          </Box>
+          <Divider></Divider>
+          <FundingSource projectForViewData={projectForViewData} codes={codes} refresh={refresh} />
         </Box>
+
         <Box component="section">
           <Typography component="h4" className={classes.projectMetaSectionHeader}>
             Partnerships
           </Typography>
-          <Divider style={{ marginTop: '12px', marginBottom: '12px' }}></Divider>
-          <Box mt={1}>
-            <Typography component="div">Indigenous Partnerships</Typography>
-            <Typography component="div" color="textSecondary">
-              Ahousaht First Nation, Adams Lake Indian Band, Acho Dene Koe First Nation
-            </Typography>
+          <Divider></Divider>
+          <Box>
+            <Partnerships projectForViewData={projectForViewData} codes={codes} refresh={refresh} />
           </Box>
-          <Box mt={1}>
-            <Typography component="div">Other Partnerships</Typography>
-            <Typography component="div" color="textSecondary">
-              BC Hydro
-            </Typography>
-          </Box>
+        </Box>
+
+        <Box component="section" mb={0}>
+          <Typography component="h4" className={classes.projectMetaSectionHeader}>
+            IUCN Classification
+          </Typography>
+          <Divider></Divider>
+          <IUCNClassification projectForViewData={projectForViewData} codes={codes} refresh={refresh} />
         </Box>
       </Box>
     </Box>

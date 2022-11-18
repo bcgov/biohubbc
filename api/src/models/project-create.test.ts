@@ -93,7 +93,7 @@ describe('PostProjectObject', () => {
         ]
       },
       funding: {
-        funding_sources: [
+        fundingSources: [
           {
             agency_id: 1,
             investment_action_category: 1,
@@ -522,8 +522,8 @@ describe('PostFundingData', () => {
       data = new PostFundingData(null);
     });
 
-    it('sets funding_sources', () => {
-      expect(data.funding_sources).to.eql([]);
+    it('sets fundingSources', () => {
+      expect(data.fundingSources).to.eql([]);
     });
   });
 
@@ -531,15 +531,15 @@ describe('PostFundingData', () => {
     let data: PostFundingData;
 
     const obj = {
-      funding_sources: null
+      fundingSources: null
     };
 
     before(() => {
       data = new PostFundingData(obj);
     });
 
-    it('sets funding_sources', () => {
-      expect(data.funding_sources).to.eql([]);
+    it('sets fundingSources', () => {
+      expect(data.fundingSources).to.eql([]);
     });
   });
 
@@ -547,15 +547,15 @@ describe('PostFundingData', () => {
     let data: PostFundingData;
 
     const obj = {
-      funding_sources: []
+      fundingSources: []
     };
 
     before(() => {
       data = new PostFundingData(obj);
     });
 
-    it('sets funding_sources', () => {
-      expect(data.funding_sources).to.eql([]);
+    it('sets fundingSources', () => {
+      expect(data.fundingSources).to.eql([]);
     });
   });
 
@@ -563,7 +563,7 @@ describe('PostFundingData', () => {
     let data: PostFundingData;
 
     const obj = {
-      funding_sources: [
+      fundingSources: [
         {
           agency_id: 1,
           investment_action_category: 1,
@@ -579,8 +579,8 @@ describe('PostFundingData', () => {
       data = new PostFundingData(obj);
     });
 
-    it('sets funding_sources', () => {
-      expect(data.funding_sources).to.eql(obj.funding_sources);
+    it('sets fundingSources', () => {
+      expect(data.fundingSources).to.eql(obj.fundingSources);
     });
   });
 });

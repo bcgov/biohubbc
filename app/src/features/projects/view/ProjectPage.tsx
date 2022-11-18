@@ -1,5 +1,3 @@
-// import Alert from '@material-ui/lab/Alert';
-// import AlertTitle from '@material-ui/lab/AlertTitle';
 import Box from '@material-ui/core/Box';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Container from '@material-ui/core/Container';
@@ -83,12 +81,12 @@ const ProjectPage: React.FC = () => {
           </Alert> */}
 
           <Grid container spacing={3}>
-            <Grid item md={12} lg={4} xl={3}>
+            <Grid item md={12} lg={4}>
               <Paper elevation={0}>
                 <ProjectDetails projectForViewData={projectWithDetails} codes={codes} refresh={getProject} />
               </Paper>
             </Grid>
-            <Grid item md={12} lg={8} xl={9}>
+            <Grid item md={12} lg={8}>
               <Box mb={3}>
                 <Paper elevation={0}>
                   <SurveysListPage projectForViewData={projectWithDetails} />

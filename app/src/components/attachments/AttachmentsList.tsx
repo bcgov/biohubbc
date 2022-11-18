@@ -346,11 +346,9 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
   };
 
   const [open, setOpen] = React.useState(false);
-
   const openDrawer = () => {
     setOpen(true);
   };
-
   const closeDrawer = () => {
     setOpen(false);
   };

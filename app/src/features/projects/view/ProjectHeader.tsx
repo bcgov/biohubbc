@@ -1,3 +1,4 @@
+import { CircularProgress } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Button from '@material-ui/core/Button';
@@ -17,21 +18,21 @@ import {
   mdiAccountMultipleOutline,
   mdiCalendarRangeOutline,
   mdiChevronDown,
+  mdiChevronRight,
   mdiCogOutline,
   mdiPencilOutline,
   mdiTrashCanOutline
 } from '@mdi/js';
 import Icon from '@mdi/react';
-// import clsx from 'clsx';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { DeleteProjectI18N } from 'constants/i18n';
-// import { ProjectStatusType } from 'constants/misc';
 import { SYSTEM_ROLE } from 'constants/roles';
 import { AuthStateContext } from 'contexts/authStateContext';
 import { DialogContext } from 'contexts/dialogContext';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import useDataLoader from 'hooks/useDataLoader';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import React, { useContext } from 'react';
 import { useHistory } from 'react-router';
@@ -122,6 +123,9 @@ const ProjectHeader: React.FC<IProjectHeaderProps> = (props) => {
 
   const { keycloakWrapper } = useContext(AuthStateContext);
 
+  const codesDataLoader = useDataLoader(() => biohubApi.codes.getAllCodeSets());
+  codesDataLoader.load();
+
   const defaultYesNoDialogProps = {
     dialogTitle: DeleteProjectI18N.deleteTitle,
     dialogText: DeleteProjectI18N.deleteText,
@@ -179,21 +183,6 @@ const ProjectHeader: React.FC<IProjectHeaderProps> = (props) => {
     dialogContext.setErrorDialog({ ...deleteErrorDialogProps, ...textDialogProps, open: true });
   };
 
-  // const getChipIcon = (status_name: string) => {
-  //   let chipLabel;
-  //   let chipStatusClass;
-
-  //   if (ProjectStatusType.ACTIVE === status_name) {
-  //     chipLabel = 'Active';
-  //     chipStatusClass = classes.chipActive;
-  //   } else if (ProjectStatusType.COMPLETED === status_name) {
-  //     chipLabel = 'Complete';
-  //     chipStatusClass = classes.chipCompleted;
-  //   }
-
-  //   return <Chip size="small" className={clsx(classes.chip, chipStatusClass)} label={chipLabel} />;
-  // };
-
   // Show delete button if you are a system admin or a project admin
   const showDeleteProjectButton = keycloakWrapper?.hasSystemRole([
     SYSTEM_ROLE.SYSTEM_ADMIN,
@@ -212,12 +201,16 @@ const ProjectHeader: React.FC<IProjectHeaderProps> = (props) => {
     setAnchorEl(null);
   };
 
+  if (!codesDataLoader.data) {
+    return <CircularProgress className="pageProgress" size={40} />;
+  }
+
   return (
     <Paper square={true} elevation={0}>
       <Container maxWidth="xl">
         <Box py={4}>
-          <Box mb={3}>
-            <Breadcrumbs>
+          <Box mb={2}>
+            <Breadcrumbs separator={<Icon path={mdiChevronRight} size={0.8} />}>
               <Link color="primary" onClick={() => history.push('/admin/projects')} aria-current="page">
                 <Typography variant="body1" component="span">
                   Projects
@@ -234,7 +227,7 @@ const ProjectHeader: React.FC<IProjectHeaderProps> = (props) => {
               <Typography variant="h1" className={classes.projectTitle}>
                 Project: <span>{projectWithDetails.project.project_name}</span>
               </Typography>
-              <Box mt={1} display="flex" alignItems="center">
+              <Box mt={0.75} mb={0.5} display="flex" alignItems="center">
                 {/* {getChipIcon(projectWithDetails.project.completion_status)} */}
                 <Typography
                   component="span"
@@ -295,14 +288,14 @@ const ProjectHeader: React.FC<IProjectHeaderProps> = (props) => {
                   </ListItemIcon>
                   <Typography variant="inherit">Manage Project Team</Typography>
                 </MenuItem>
-                <MenuItem>
+                <MenuItem onClick={() => history.push(`/admin/projects/edit?projectId=${projectWithDetails.id}`)}>
                   <ListItemIcon>
                     <Icon path={mdiPencilOutline} size={0.8} />
                   </ListItemIcon>
                   <Typography variant="inherit">Edit Project Details</Typography>
                 </MenuItem>
                 {showDeleteProjectButton && (
-                  <MenuItem onClick={showDeleteProjectDialog}>
+                  <MenuItem onClick={showDeleteProjectDialog} data-testid={'delete-project-button'}>
                     <ListItemIcon>
                       <Icon path={mdiTrashCanOutline} size={0.8} />
                     </ListItemIcon>

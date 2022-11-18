@@ -31,7 +31,7 @@ const appTheme = createMuiTheme({
     },
     text: {
       primary: '#313132',
-      secondary: '#8f8f8f'
+      secondary: '#757575'
     }
   },
   typography: {
@@ -75,11 +75,13 @@ const appTheme = createMuiTheme({
       root: {
         textTransform: 'none',
         fontSize: '0.9rem',
-        fontWeight: 'bold',
         borderRadius: '5px'
       },
       sizeLarge: {
         fontSize: '1rem'
+      },
+      containedPrimary: {
+        fontWeight: 700
       },
       outlinedPrimary: {
         backgroundColor: '#ffffff',
@@ -136,6 +138,13 @@ const appTheme = createMuiTheme({
         borderRadius: '3px'
       }
     },
+    MuiListItem: {
+      root: {
+        '&:last-of-type': {
+          borderBottom: 'none'
+        }
+      }
+    },
     MuiListItemIcon: {
       root: {
         minWidth: '42px'
@@ -149,6 +158,7 @@ const appTheme = createMuiTheme({
     MuiTable: {
       root: {
         '& th': {
+          letterSpacing: '0.02rem',
           textTransform: 'uppercase'
         },
         '& tr:last-of-type td': {

@@ -1,5 +1,7 @@
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
+import { grey } from '@material-ui/core/colors';
+import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
@@ -53,10 +55,14 @@ const useStyles = makeStyles((theme: Theme) =>
       }
     },
     metaSectionHeader: {
-      marginBottom: theme.spacing(1.5),
-      color: theme.palette.text.primary,
+      color: grey[600],
       fontWeight: 700,
-      textTransform: 'uppercase'
+      textTransform: 'uppercase',
+      letterSpacing: '0.02rem',
+      '& + hr': {
+        marginTop: theme.spacing(0.75),
+        marginBottom: theme.spacing(0.75)
+      }
     }
   })
 );
@@ -244,6 +250,7 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
         <Typography variant="body2" className={classes.metaSectionHeader}>
           Location Description
         </Typography>
+        <Divider></Divider>
         <Typography variant="body1" color="textSecondary">
           {location.location_description ? <>{location.location_description}</> : 'No description provided'}
         </Typography>

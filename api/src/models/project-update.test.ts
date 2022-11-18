@@ -350,17 +350,13 @@ describe('PutFundingSource', () => {
 
     before(() => {
       data = new PutFundingSource({
-        fundingSources: [
-          {
-            id: 1,
-            investment_action_category: 1,
-            agency_project_id: 'agency project id',
-            funding_amount: 20,
-            start_date: '2020/04/04',
-            end_date: '2020/05/05',
-            revision_count: 1
-          }
-        ]
+        id: 1,
+        investment_action_category: 1,
+        agency_project_id: 'agency project id',
+        funding_amount: 20,
+        start_date: '2020/04/04',
+        end_date: '2020/05/05',
+        revision_count: 1
       });
     });
 
