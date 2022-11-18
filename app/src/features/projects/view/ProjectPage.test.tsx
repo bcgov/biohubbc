@@ -344,8 +344,8 @@ describe('ProjectPage', () => {
     const authState = {
       keycloakWrapper: {
         ...defaultAuthState.keycloakWrapper,
-        systemRoles: [SYSTEM_ROLE.PROJECT_CREATOR] as string[],
-        hasSystemRole: jest.fn().mockReturnValueOnce(true).mockReturnValueOnce(false).mockReturnValueOnce(true)
+        systemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN] as string[],
+        hasSystemRole: () => true
       }
     };
 

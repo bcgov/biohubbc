@@ -25,7 +25,8 @@ export const getSurveyAttachmentsSQL = (surveyId: number): SQLStatement | null =
       file_size,
       file_type,
       key,
-      security_token
+      security_token,
+      security_review_timestamp
     from
       survey_attachment
     where
@@ -54,7 +55,8 @@ export const getSurveyReportAttachmentsSQL = (surveyId: number): SQLStatement | 
       create_date,
       file_size,
       key,
-      security_token
+      security_token,
+      security_review_timestamp
     from
       survey_report_attachment
     where

@@ -19,7 +19,7 @@ import { ErrorService } from './error-service';
 import { OccurrenceService } from './occurrence-service';
 import { SurveyService } from './survey-service';
 
-const defaultLog = getLogger('services/dwc-service');
+const defaultLog = getLogger('services/validation-service');
 
 interface ICsvMediaState {
   csv_state: ICsvState[];

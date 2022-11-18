@@ -51,8 +51,8 @@ const useSecurityApi = (axios: AxiosInstance) => {
     // return data.security_reasons;
   };
 
-  const updateSecurityReasons = async (securityIds: number[], attachmentIds: number[]): Promise<any> => {
-    const { data } = await axios.put(`/api/project/{projectId}/attachments/security`, {
+  const addSecurityReasons = async (securityIds: number[], attachmentIds: number[]): Promise<any> => {
+    const { data } = await axios.post(`/api/project/{projectId}/attachments/security/add`, {
       security_ids: securityIds,
       attachment_ids: attachmentIds
     });
@@ -62,7 +62,7 @@ const useSecurityApi = (axios: AxiosInstance) => {
 
   return {
     getSecurityReasons,
-    updateSecurityReasons
+    addSecurityReasons
   };
 };
 

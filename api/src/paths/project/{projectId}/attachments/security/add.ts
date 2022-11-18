@@ -8,7 +8,7 @@ import { getLogger } from '../../../../../utils/logger';
 
 const defaultLog = getLogger('/api/project/{projectId}/attachments/list');
 
-export const PUT: Operation = [
+export const POST: Operation = [
   authorizeRequestHandler(() => {
     return {
       and: [
@@ -22,7 +22,7 @@ export const PUT: Operation = [
   addAttachmentSecurity()
 ];
 
-PUT.apiDoc = {
+POST.apiDoc = {
   description: 'Adds security rules for one or more attachments.',
   tags: ['attachments', 'security'],
   security: [

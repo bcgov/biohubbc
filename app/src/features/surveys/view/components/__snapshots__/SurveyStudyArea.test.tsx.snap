@@ -9,11 +9,11 @@ exports[`SurveyStudyArea renders correctly 1`] = `
       class="MuiToolbar-root MuiToolbar-regular"
       style="justify-content: space-between;"
     >
-      <h3
-        class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
+      <h4
+        class="MuiTypography-root MuiTypography-h4 MuiTypography-colorInherit"
       >
         Study Area
-      </h3>
+      </h4>
       <div
         class="MuiBox-root MuiBox-root-3"
       >
@@ -43,9 +43,7 @@ exports[`SurveyStudyArea renders correctly 1`] = `
                 />
               </svg>
             </span>
-            <strong>
-              Edit
-            </strong>
+            Edit
           </span>
           <span
             class="MuiTouchRipple-root"
@@ -287,7 +285,7 @@ exports[`SurveyStudyArea renders correctly 1`] = `
       </p>
     </div>
     <div
-      class="MuiBox-root MuiBox-root-9"
+      class="MuiBox-root MuiBox-root-10"
     >
       <button
         aria-label="Show Expanded Location"

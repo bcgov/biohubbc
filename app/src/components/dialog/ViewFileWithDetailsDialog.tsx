@@ -1,6 +1,4 @@
 import { DialogTitle } from '@material-ui/core';
-import Alert from '@material-ui/lab/Alert';
-import AlertTitle from '@material-ui/lab/AlertTitle';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Dialog, { DialogProps } from '@material-ui/core/Dialog';
@@ -16,15 +14,19 @@ import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-// import TextField from '@material-ui/core/TextField';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
+import Alert from '@material-ui/lab/Alert';
+import AlertTitle from '@material-ui/lab/AlertTitle';
 import { mdiLockOutline, mdiPencilOutline, mdiTrayArrowDown } from '@mdi/js';
 import Icon from '@mdi/react';
+import { IEditReportMetaForm } from 'components/attachments/EditReportMetaForm';
+import ReportMeta from 'components/attachments/ReportMeta';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { IGetReportMetaData } from 'interfaces/useProjectApi.interface';
 import React, { useState } from 'react';
 import { getFormattedDateRangeString } from 'utils/Utils';
+import EditFileWithMetaDialog from './EditFileWithMetaDialog';
 import SecurityDialog from './SecurityDialog';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -50,14 +52,16 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }));
 
-export interface IViewFileWithMetaDialogProps {
+export interface IViewFileWithDetailsDialogProps {
   open: boolean;
-  onEdit?: () => void;
   onClose: () => void;
-  onDownload: () => void;
+  onFileDownload: () => void;
+  onSave: (fileMeta: IEditReportMetaForm) => Promise<void>;
   reportMetaData: IGetReportMetaData | null;
   attachmentSize: string;
   dialogProps?: DialogProps;
+  fileType: string | null;
+  refresh: () => void;
 }
 
 /**
@@ -65,12 +69,11 @@ export interface IViewFileWithMetaDialogProps {
  *
  * @return {*}
  */
-const ViewFileWithMetaDialog: React.FC<IViewFileWithMetaDialogProps> = (props) => {
+const ViewFileWithDetailsDialog: React.FC<IViewFileWithDetailsDialogProps> = (props) => {
   const classes = useStyles();
-  const { reportMetaData } = props;
 
   const [securityDialogOpen, setSecurityDialogOpen] = useState(false);
-  const [showEditButton] = useState<boolean>(!!props.onEdit);
+  const [showEditFileWithMetaDialog, setShowEditFileWithMetaDialog] = useState<boolean>(false);
 
   if (!props.open) {
     return <></>;
@@ -84,6 +87,17 @@ const ViewFileWithMetaDialog: React.FC<IViewFileWithMetaDialogProps> = (props) =
         onClose={() => setSecurityDialogOpen(false)}
       />
 
+      <EditFileWithMetaDialog
+        open={showEditFileWithMetaDialog}
+        dialogTitle={'Edit Upload Report'}
+        reportMetaData={props.reportMetaData}
+        onClose={() => {
+          setShowEditFileWithMetaDialog(false);
+        }}
+        onSave={props.onSave}
+        refresh={props.refresh}
+      />
+
       <Dialog open={props.open} onClose={props.onClose} {...props.dialogProps} data-testid="view-meta-dialog">
         <DialogTitle data-testid="view-meta-dialog-title">
           <Typography variant="body2" color="textSecondary" style={{ fontWeight: 700 }}>
@@ -94,7 +108,7 @@ const ViewFileWithMetaDialog: React.FC<IViewFileWithMetaDialogProps> = (props) =
           <Box display="flex" justifyContent="space-between">
             <Box style={{ maxWidth: '120ch' }}>
               <Typography variant="h2" component="h1" className={classes.docTitle}>
-                {reportMetaData?.title}
+                {props.reportMetaData?.title}
               </Typography>
             </Box>
             <Box flex="0 0 auto">
@@ -102,78 +116,31 @@ const ViewFileWithMetaDialog: React.FC<IViewFileWithMetaDialogProps> = (props) =
                 variant="contained"
                 color="primary"
                 startIcon={<Icon path={mdiTrayArrowDown} size={0.8} />}
-                onClick={props.onDownload}>
+                onClick={() => props.onFileDownload()}>
                 Download ({props.attachmentSize})
               </Button>
+              {props.fileType === 'Report' && (
+                <Box>
+                  <Button
+                    variant="outlined"
+                    color="primary"
+                    startIcon={<Icon path={mdiPencilOutline} size={0.8} />}
+                    onClick={() => setShowEditFileWithMetaDialog(true)}>
+                    Edit Details
+                  </Button>
+                </Box>
+              )}
             </Box>
           </Box>
           <Box mt={5}>
-            <Alert severity="info" style={{marginBottom: '24px'}}>
+            <Alert severity="info" style={{ marginBottom: '24px' }}>
               <AlertTitle>Alert Title</AlertTitle>
               Document requires a security review
             </Alert>
-            <Paper variant="outlined">
-              <Toolbar style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <Typography variant="h5" component="h3">
-                  General Information
-                </Typography>
-                <Box>
-                  {showEditButton && (
-                    <Button
-                      variant="outlined"
-                      color="primary"
-                      startIcon={<Icon path={mdiPencilOutline} size={0.8} />}
-                      onClick={props.onEdit}>
-                      Edit Details
-                    </Button>
-                  )}
-                </Box>
-              </Toolbar>
-              <Divider></Divider>
-              <Box p={3}>
-                <Box component="dl" className={classes.docDL}>
-                  <Box className={classes.docMetaRow}>
-                    <Typography component="dt" variant="body1" color="textSecondary">
-                      Report Title
-                    </Typography>
-                    <Typography variant="body1">{reportMetaData?.title}</Typography>
-                  </Box>
-                  <Box mt={1} className={classes.docMetaRow}>
-                    <Typography component="dt" variant="body1" color="textSecondary">
-                      Description
-                    </Typography>
-                    <Typography variant="body1">{reportMetaData?.description}</Typography>
-                  </Box>
-                  <Box mt={1} className={classes.docMetaRow}>
-                    <Typography component="dt" variant="body1" color="textSecondary">
-                      Year Published
-                    </Typography>
-                    <Typography component="dd">{reportMetaData?.year_published}</Typography>
-                  </Box>
-                  <Box mt={1} className={classes.docMetaRow}>
-                    <Typography component="dt" variant="body1" color="textSecondary">
-                      Last Modified
-                    </Typography>
-                    <Typography component="dd">
-                      {getFormattedDateRangeString(
-                        DATE_FORMAT.ShortMediumDateFormat,
-                        reportMetaData?.last_modified || ''
-                      )}
-                    </Typography>
-                  </Box>
-                  <Box mt={1} className={classes.docMetaRow}>
-                    <Typography component="dt" variant="body1" color="textSecondary">
-                      Authors
-                    </Typography>
-                    <Typography component="dd">
-                      {reportMetaData?.authors
-                        ?.map((author) => [author.first_name, author.last_name].join(' '))
-                        .join(', ')}
-                    </Typography>
-                  </Box>
-                </Box>
-              </Box>
-            </Paper>
+
+            {props.fileType === 'Report' && props.reportMetaData && (
+              <ReportMeta reportMetaData={props.reportMetaData} />
+            )}
           </Box>
           <Paper variant="outlined" style={{ marginTop: '24px' }}>
             <Toolbar style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -186,7 +153,7 @@ const ViewFileWithMetaDialog: React.FC<IViewFileWithMetaDialogProps> = (props) =
                   color="primary"
                   startIcon={<Icon path={mdiLockOutline} size={0.8} />}
                   style={{ marginRight: '8px' }}
-                  onClick={() =>setSecurityDialogOpen(true)}>
+                  onClick={() => setSecurityDialogOpen(true)}>
                   Add Security
                 </Button>
                 <Button variant="contained" color="primary" startIcon={<Icon path={mdiLockOutline} size={0.8} />}>
@@ -202,28 +169,36 @@ const ViewFileWithMetaDialog: React.FC<IViewFileWithMetaDialogProps> = (props) =
                     <TableCell width="200">Category</TableCell>
                     <TableCell>Reason</TableCell>
                     <TableCell width="160">Dates</TableCell>
-                    <TableCell width="160">Actions</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  <TableRow>
-                    <TableCell>Security Administration</TableCell>
-                    <TableCell>
-                      <Typography style={{ fontWeight: 700 }}>Awaiting Security Review</Typography>
-                      <Typography variant="body1" color="textSecondary">
-                        Awaiting review to determine if security-reasons should be assigned
-                      </Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Typography variant="body2" component="div">
-                        Submitted
-                      </Typography>
-                      <Typography variant="body2" component="div" color="textSecondary">
-                        YYYY-MM-DD
-                      </Typography>
-                    </TableCell>
-                    <TableCell></TableCell>
-                  </TableRow>
+                  {props.reportMetaData?.security_reasons &&
+                    props.reportMetaData?.security_reasons?.length > 0 &&
+                    props.reportMetaData?.security_reasons?.map((row, index) => {
+                      return (
+                        <TableRow key={`${row.category}-${index}`}>
+                          <TableCell>{row.category}</TableCell>
+                          <TableCell>
+                            <Typography style={{ fontWeight: 700 }}>{row.reason}</Typography>
+                            <Typography variant="body1" color="textSecondary">
+                              {row.reason_description}
+                            </Typography>
+                          </TableCell>
+                          <TableCell>
+                            <Typography variant="body2" component="div">
+                              Submitted
+                            </Typography>
+                            <Typography variant="body2" component="div" color="textSecondary">
+                              {getFormattedDateRangeString(
+                                DATE_FORMAT.ShortMediumDateFormat,
+                                props.reportMetaData?.last_modified || ''
+                              )}
+                            </Typography>
+                          </TableCell>
+                          <TableCell></TableCell>
+                        </TableRow>
+                      );
+                    })}
                 </TableBody>
               </Table>
             </TableContainer>
@@ -239,4 +214,4 @@ const ViewFileWithMetaDialog: React.FC<IViewFileWithMetaDialogProps> = (props) =
   );
 };
 
-export default ViewFileWithMetaDialog;
+export default ViewFileWithDetailsDialog;
