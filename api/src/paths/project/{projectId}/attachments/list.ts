@@ -105,8 +105,8 @@ export function getAttachments(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const getProjectAttachmentsSQLStatement = queries.project.getProjectAttachmentsSQL(Number(req.params.projectId));
-      const getProjectReportAttachmentsSQLStatement = queries.project.getProjectReportAttachmentsSQL(
+      const getProjectAttachmentsSQLStatement = queries.project.__deprecated_getProjectAttachmentsSQL(Number(req.params.projectId));
+      const getProjectReportAttachmentsSQLStatement = queries.project.__deprecated_getProjectReportAttachmentsSQL(
         Number(req.params.projectId)
       );
 

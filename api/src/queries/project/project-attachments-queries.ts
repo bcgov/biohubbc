@@ -6,12 +6,17 @@ import {
 } from '../../models/project-survey-attachments';
 
 /**
+ * @TODO technical debt: move all these queries to the new Attachments Repository.
+ */
+
+/**
  * SQL query to get attachments for a single project.
  *
  * @param {number} projectId
  * @returns {SQLStatement} sql query object
+ * @TODO deprecate this method, see attachment service
  */
-export const getProjectAttachmentsSQL = (projectId: number): SQLStatement | null => {
+export const __deprecated_getProjectAttachmentsSQL = (projectId: number): SQLStatement | null => {
   if (!projectId) {
     return null;
   }
@@ -40,8 +45,9 @@ export const getProjectAttachmentsSQL = (projectId: number): SQLStatement | null
  *
  * @param {number} projectId
  * @returns {SQLStatement} sql query object
+ * @TODO deprecate this method, see attachment service
  */
-export const getProjectReportAttachmentsSQL = (projectId: number): SQLStatement | null => {
+export const __deprecated_getProjectReportAttachmentsSQL = (projectId: number): SQLStatement | null => {
   if (!projectId) {
     return null;
   }
