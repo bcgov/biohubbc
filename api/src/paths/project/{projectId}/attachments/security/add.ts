@@ -1,10 +1,10 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SYSTEM_ROLE } from '../../../../constants/roles';
-import { getDBConnection } from '../../../../database/db';
-import { authorizeRequestHandler } from '../../../../request-handlers/security/authorization';
-import { AttachmentService } from '../../../../services/attachment-service';
-import { getLogger } from '../../../../utils/logger';
+import { SYSTEM_ROLE } from '../../../../../constants/roles';
+import { getDBConnection } from '../../../../../database/db';
+import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
+import { AttachmentService } from '../../../../../services/attachment-service';
+import { getLogger } from '../../../../../utils/logger';
 
 const defaultLog = getLogger('/api/project/{projectId}/attachments/list');
 
@@ -19,11 +19,11 @@ export const PUT: Operation = [
       ]
     };
   }),
-  updateAttachmentSecurity()
+  addAttachmentSecurity()
 ];
 
 PUT.apiDoc = {
-  description: 'Updates security for one or more attachments.',
+  description: 'Adds security rules for one or more attachments.',
   tags: ['attachments', 'security'],
   security: [
     {
@@ -53,15 +53,15 @@ PUT.apiDoc = {
                 type: 'number',
                 minimum: 1
               }
-            }
-          },
-          attachment_ids: {
-            type: 'array',
-            items: {
-              type: 'number',
-              minimum: 1
             },
-            minItems: 1
+            attachment_ids: {
+              type: 'array',
+              items: {
+                type: 'number',
+                minimum: 1
+              },
+              minItems: 1
+            }
           }
         }
       }
@@ -103,7 +103,7 @@ PUT.apiDoc = {
   }
 };
 
-export function updateAttachmentSecurity(): RequestHandler {
+export function addAttachmentSecurity(): RequestHandler {
   return async (req, res) => {
     const connection = getDBConnection(req['keycloak_token']);
 
