@@ -23,9 +23,10 @@ import Icon from '@mdi/react';
 import { IEditReportMetaForm } from 'components/attachments/EditReportMetaForm';
 import ReportMeta from 'components/attachments/ReportMeta';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
+import { DialogContext } from 'contexts/dialogContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetReportMetaData, IGetSecurityReasons } from 'interfaces/useProjectApi.interface';
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { getFormattedDateRangeString } from 'utils/Utils';
 import EditFileWithMetaDialog from './EditFileWithMetaDialog';
 import SecurityDialog from './SecurityDialog';
@@ -79,15 +80,55 @@ const ViewFileWithDetailsDialog: React.FC<IViewFileWithDetailsDialogProps> = (pr
   const [showEditFileWithMetaDialog, setShowEditFileWithMetaDialog] = useState<boolean>(false);
 
   const removeSecurity = async (securityReasons: IGetSecurityReasons[]) => {
-    console.log('securityReason', securityReasons);
+    const securityIds = securityReasons.map((security) => {
+      return security.security_reason_id;
+    });
+
     if (props.reportMetaData?.attachment_id) {
-      const response = await biohubApi.project.removeAttachmentSecurity(
+      const response = await biohubApi.security.deleteSecurityReasons(
         props.projectId,
         props.reportMetaData?.attachment_id,
-        securityReasons
+        securityIds
       );
       console.log('response', response);
     }
+  };
+
+  const dialogContext = useContext(DialogContext);
+
+  const defaultYesNoDialogProps = {
+    open: false,
+    onClose: () => dialogContext.setYesNoDialog({ open: false }),
+    onNo: () => dialogContext.setYesNoDialog({ open: false }),
+    onYes: () => dialogContext.setYesNoDialog({ open: false })
+  };
+
+  const showDeleteSecurityReasonDialog = (securityReasons: IGetSecurityReasons[]) => {
+    let yesNoDialogProps;
+
+    if (securityReasons.length == 1) {
+      yesNoDialogProps = {
+        ...defaultYesNoDialogProps,
+        dialogTitle: 'Remove Security Reason',
+        dialogText: 'Are you sure you want to remove the selected security reason? This action cannot be undone.'
+      };
+    } else {
+      yesNoDialogProps = {
+        ...defaultYesNoDialogProps,
+        dialogTitle: 'Remove Security Reasons',
+        dialogText: 'Are you sure you want to remove all security reasons? This action cannot be undone.'
+      };
+    }
+
+    dialogContext.setYesNoDialog({
+      ...yesNoDialogProps,
+      open: true,
+      yesButtonProps: { color: 'secondary' },
+      onYes: () => {
+        removeSecurity(securityReasons);
+        dialogContext.setYesNoDialog({ open: false });
+      }
+    });
   };
 
   if (!props.open) {
@@ -176,7 +217,7 @@ const ViewFileWithDetailsDialog: React.FC<IViewFileWithDetailsDialogProps> = (pr
                   color="primary"
                   onClick={() => {
                     if (props.reportMetaData?.security_reasons) {
-                      removeSecurity(props.reportMetaData?.security_reasons);
+                      showDeleteSecurityReasonDialog(props.reportMetaData?.security_reasons);
                     }
                   }}
                   startIcon={<Icon path={mdiLockOpenOutline} size={0.8} />}>
@@ -223,7 +264,7 @@ const ViewFileWithDetailsDialog: React.FC<IViewFileWithDetailsDialogProps> = (pr
                             <Button
                               variant="contained"
                               color="primary"
-                              onClick={() => removeSecurity([row])}
+                              onClick={() => showDeleteSecurityReasonDialog([row])}
                               startIcon={<Icon path={mdiLockOpenOutline} size={0.8} />}>
                               Remove
                             </Button>

@@ -60,9 +60,30 @@ const useSecurityApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  /**
+   * Remove array of security reasons from attachment Id
+   *
+   * @param {number} projectId
+   * @param {number} attachmentId
+   * @param {IGetSecurityReasons[]} securityReasons
+   * @return {*}  {Promise<any>}
+   */
+  const deleteSecurityReasons = async (
+    projectId: number,
+    attachmentId: number,
+    securityIds: number[]
+  ): Promise<any> => {
+    const { data } = await axios.post(`/api/project/${projectId}/attachments/${attachmentId}/security/delete`, {
+      security_ids: securityIds
+    });
+
+    return data;
+  };
+
   return {
     getSecurityReasons,
-    addSecurityReasons
+    addSecurityReasons,
+    deleteSecurityReasons
   };
 };
 

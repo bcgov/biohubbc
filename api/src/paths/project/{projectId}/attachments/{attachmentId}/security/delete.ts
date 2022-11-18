@@ -1,41 +1,35 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { PROJECT_ROLE } from '../../../../../../constants/roles';
+import { SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
+import { AttachmentService } from '../../../../../../services/attachment-service';
 import { getLogger } from '../../../../../../utils/logger';
-import { attachmentApiDocObject } from '../../../../../../utils/shared-api-docs';
 
 const defaultLog = getLogger('/api/project/{projectId}/attachments/{attachmentId}/security/delete');
 
-export interface IGetSecurityReasons {
-  category: string;
-  sub_category: string;
-  reason: string;
-  reason_description: string;
-  date_expired: string;
-}
-
 export const POST: Operation = [
-  authorizeRequestHandler((req) => {
+  authorizeRequestHandler(() => {
     return {
       and: [
         {
-          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR],
-          projectId: Number(req.params.projectId),
-          discriminator: 'ProjectRole'
+          validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR],
+          discriminator: 'SystemRole'
         }
       ]
     };
   }),
-  deleteAttachmentSecurity()
+  deleteSecurityReasons()
 ];
 
 POST.apiDoc = {
-  ...attachmentApiDocObject(
-    'Delete security rules on attachment of a project.',
-    'Row count of successfully deleted attachment record'
-  ),
+  description: 'Delete security reason on attachment of a project.',
+  tags: ['attachment'],
+  security: [
+    {
+      Bearer: []
+    }
+  ],
   parameters: [
     {
       in: 'path',
@@ -55,35 +49,18 @@ POST.apiDoc = {
     }
   ],
   requestBody: {
-    description: 'Attachment security rules for removal',
+    description: 'Row count of successfully deleted security reason',
     content: {
       'application/json': {
         schema: {
           type: 'object',
-          required: ['attachmentType'],
+          required: ['security_ids'],
           properties: {
-            securityReasons: {
+            security_ids: {
               type: 'array',
               items: {
-                type: 'object',
-                required: ['category', 'sub_category', 'reason', 'reason_description', 'date_expired'],
-                properties: {
-                  category: {
-                    type: 'string'
-                  },
-                  sub_category: {
-                    type: 'string'
-                  },
-                  reason: {
-                    type: 'string'
-                  },
-                  reason_description: {
-                    type: 'string'
-                  },
-                  date_expired: {
-                    type: 'string'
-                  }
-                }
+                type: 'number',
+                minimum: 1
               }
             }
           }
@@ -113,24 +90,28 @@ POST.apiDoc = {
   }
 };
 
-export function deleteAttachmentSecurity(): RequestHandler {
+export function deleteSecurityReasons(): RequestHandler {
   return async (req, res) => {
-    defaultLog.debug({ label: 'Delete attachment security', message: 'params', req_params: req.params });
+    defaultLog.debug({ label: 'Delete security Reasons', message: 'params', req_params: req.params });
 
     const connection = getDBConnection(req['keycloak_token']);
 
-    const securityReasons: IGetSecurityReasons = req.body.securityReasons;
-
-    console.log('securityReasons', securityReasons);
+    const attachmentId = Number(req.params.attachmentId);
+    const securityIds: number[] = req.body.security_ids;
 
     try {
       await connection.open();
+      const attachmentService = new AttachmentService(connection);
+
+      const response = await attachmentService.removeSecurityFromReportAttachment(securityIds, attachmentId);
+
+      console.log('response', response);
 
       await connection.commit();
 
       return res.status(200).send();
     } catch (error) {
-      defaultLog.error({ label: 'deleteAttachment', message: 'error', error });
+      defaultLog.error({ label: 'deleteSecurityReasons', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

@@ -8,4 +8,9 @@ export class AttachmentRepository extends BaseRepository {
   async addSecurityToReportAttachments(securityIds: number[], attachmentId: number): Promise<void> {
     // TODO
   }
+
+  async removeSecurityFromReportAttachment(securityIds: number[], attachmentId: number): Promise<void> {
+    // TODO
+  }
+
 }
