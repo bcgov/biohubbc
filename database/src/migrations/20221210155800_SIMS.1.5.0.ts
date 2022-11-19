@@ -18,25 +18,25 @@ export async function up(knex: Knex): Promise<void> {
       add column foi_reason_description varchar(3000),
       add column government_interest_description varchar(3000);
     comment on column project_attachment.foi_reason_description is 'The description of the Freedom of Information reason for securing of the artifact.';
-    comment on column project_attachment.foi_reason_description is 'The description of the government interest reason for securing of the artifact.';
+    comment on column project_attachment.government_interest_description is 'The description of the government interest reason for securing of the artifact.';
 
     alter table project_report_attachment 
       add column foi_reason_description varchar(3000),
       add column government_interest_description varchar(3000);
     comment on column project_report_attachment.foi_reason_description is 'The description of the Freedom of Information reason for securing of the artifact.';
-    comment on column project_report_attachment.foi_reason_description is 'The description of the government interest reason for securing of the artifact.';
+    comment on column project_report_attachment.government_interest_description is 'The description of the government interest reason for securing of the artifact.';
 
     alter table survey_attachment 
       add column foi_reason_description varchar(3000),
       add column government_interest_description varchar(3000);
     comment on column survey_attachment.foi_reason_description is 'The description of the Freedom of Information reason for securing of the artifact.';
-    comment on column survey_attachment.foi_reason_description is 'The description of the government interest reason for securing of the artifact.';
+    comment on column survey_attachment.government_interest_description is 'The description of the government interest reason for securing of the artifact.';
 
     alter table survey_report_attachment 
       add column foi_reason_description varchar(3000),
       add column government_interest_description varchar(3000);
     comment on column survey_report_attachment.foi_reason_description is 'The description of the Freedom of Information reason for securing of the artifact.';
-    comment on column survey_report_attachment.foi_reason_description is 'The description of the government interest reason for securing of the artifact.';
+    comment on column survey_report_attachment.government_interest_description is 'The description of the government interest reason for securing of the artifact.';
 
     CREATE TABLE project_attachment_persecution(
       project_attachment_persecution_id    integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
