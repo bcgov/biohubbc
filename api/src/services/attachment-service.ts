@@ -27,16 +27,94 @@ export class AttachmentService extends DBService {
     return this.attachmentRepository.addSecurityToAttachments(securityIds, attachmentId);
   }
 
-  async removeSecurityFromAttachment(securityIds: number[], attachmentId: number): Promise<void> {
-    return this.attachmentRepository.removeSecurityFromAttachment(securityIds, attachmentId);
+  /**
+   * Function to run array of SQL queries to delete Project Attachments
+   *
+   * @param {number[]} securityIds
+   * @param {number} attachmentId
+   * @return {*}  {Promise<{ project_attachment_persecution_id: number }[]>}
+   * @memberof AttachmentService
+   */
+  async removeSecurityFromProjectAttachment(
+    securityIds: number[],
+    attachmentId: number
+  ): Promise<{ project_attachment_persecution_id: number }[]> {
+    const result = [];
+    for (const securityId of securityIds) {
+      const response = await this.attachmentRepository.removeSecurityFromProjectAttachment(securityId, attachmentId);
+      result.push(response);
+    }
+    return result;
+  }
+
+  /**
+   * Function to run array of SQL queries to delete Survey Attachments
+   *
+   * @param {number[]} securityIds
+   * @param {number} attachmentId
+   * @return {*}  {Promise<{ survey_attachment_persecution_id: number }[]>}
+   * @memberof AttachmentService
+   */
+  async removeSecurityFromSurveyAttachment(
+    securityIds: number[],
+    attachmentId: number
+  ): Promise<{ survey_attachment_persecution_id: number }[]> {
+    const result = [];
+    for (const securityId of securityIds) {
+      const response = await this.attachmentRepository.removeSecurityFromSurveyAttachment(securityId, attachmentId);
+      result.push(response);
+    }
+    return result;
   }
 
   async addSecurityToReportAttachment(securityIds: number[], attachmentId: number): Promise<void> {
     return this.attachmentRepository.addSecurityToReportAttachments(securityIds, attachmentId);
   }
 
-  async removeSecurityFromReportAttachment(securityIds: number[], attachmentId: number): Promise<void> {
-    return this.attachmentRepository.removeSecurityFromReportAttachment(securityIds, attachmentId);
+  /**
+   * Function to run array of SQL queries to delete Project Report Attachments
+   *
+   * @param {number[]} securityIds
+   * @param {number} attachmentId
+   * @return {*}  {Promise<{ project_report_persecution_id: number }[]>}
+   * @memberof AttachmentService
+   */
+  async removeSecurityFromProjectReportAttachment(
+    securityIds: number[],
+    attachmentId: number
+  ): Promise<{ project_report_persecution_id: number }[]> {
+    const result = [];
+    for (const securityId of securityIds) {
+      const response = await this.attachmentRepository.removeSecurityFromProjectReportAttachment(
+        securityId,
+        attachmentId
+      );
+      result.push(response);
+    }
+    return result;
+  }
+
+  /**
+   * Function to run array of SQL queries to delete Survey Report Attachments
+   *
+   * @param {number[]} securityIds
+   * @param {number} attachmentId
+   * @return {*}  {Promise<{ survey_report_persecution_id: number }[]>}
+   * @memberof AttachmentService
+   */
+  async removeSecurityFromSurveyReportAttachment(
+    securityIds: number[],
+    attachmentId: number
+  ): Promise<{ survey_report_persecution_id: number }[]> {
+    const result = [];
+    for (const securityId of securityIds) {
+      const response = await this.attachmentRepository.removeSecurityFromSurveyReportAttachment(
+        securityId,
+        attachmentId
+      );
+      result.push(response);
+    }
+    return result;
   }
 
   async addSecurityToAttachments(securityIds: number[], attachmentIds: number[]): Promise<void[]> {

@@ -28,6 +28,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetReportMetaData, IGetSecurityReasons } from 'interfaces/useProjectApi.interface';
 import React, { useContext, useState } from 'react';
 import { getFormattedDateRangeString } from 'utils/Utils';
+import { AttachmentType } from '../../constants/attachments';
 import EditFileWithMetaDialog from './EditFileWithMetaDialog';
 import SecurityDialog from './SecurityDialog';
 
@@ -56,6 +57,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 export interface IViewFileWithDetailsDialogProps {
   projectId: number;
+  surveyId?: number;
   open: boolean;
   onClose: () => void;
   onFileDownload: () => void;
@@ -84,15 +86,38 @@ const ViewFileWithDetailsDialog: React.FC<IViewFileWithDetailsDialogProps> = (pr
       return security.security_reason_id;
     });
 
-    const isReport = props.fileType ? true : false;
-
     if (props.reportMetaData?.attachment_id) {
-      await biohubApi.security.deleteSecurityReasons(
-        props.projectId,
-        props.reportMetaData?.attachment_id,
-        securityIds,
-        isReport
-      );
+      if (props.surveyId == undefined) {
+        if (props.fileType === AttachmentType.REPORT) {
+          await biohubApi.security.deleteProjectReportAttachmentSecurityReasons(
+            props.projectId,
+            props.reportMetaData?.attachment_id,
+            securityIds
+          );
+        } else {
+          await biohubApi.security.deleteProjectAttachmentSecurityReasons(
+            props.projectId,
+            props.reportMetaData?.attachment_id,
+            securityIds
+          );
+        }
+      } else {
+        if (props.fileType === AttachmentType.REPORT) {
+          await biohubApi.security.deleteSurveyReportAttachmentSecurityReasons(
+            props.projectId,
+            props.surveyId,
+            props.reportMetaData?.attachment_id,
+            securityIds
+          );
+        } else {
+          await biohubApi.security.deleteSurveyAttachmentSecurityReasons(
+            props.projectId,
+            props.surveyId,
+            props.reportMetaData?.attachment_id,
+            securityIds
+          );
+        }
+      }
     }
   };
 

@@ -1,12 +1,12 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SYSTEM_ROLE } from '../../../../../../constants/roles';
-import { getDBConnection } from '../../../../../../database/db';
-import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
-import { AttachmentService } from '../../../../../../services/attachment-service';
-import { getLogger } from '../../../../../../utils/logger';
+import { SYSTEM_ROLE } from '../../../../../../../../constants/roles';
+import { getDBConnection } from '../../../../../../../../database/db';
+import { authorizeRequestHandler } from '../../../../../../../../request-handlers/security/authorization';
+import { AttachmentService } from '../../../../../../../../services/attachment-service';
+import { getLogger } from '../../../../../../../../utils/logger';
 
-const defaultLog = getLogger('/api/project/{projectId}/attachments/{attachmentId}/security/delete');
+const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/attachments/{attachmentId}/security/delete');
 
 export const POST: Operation = [
   authorizeRequestHandler(() => {
@@ -19,7 +19,7 @@ export const POST: Operation = [
       ]
     };
   }),
-  deleteProjectSecurityReasons()
+  deleteSurveySecurityReasons()
 ];
 
 POST.apiDoc = {
@@ -34,6 +34,14 @@ POST.apiDoc = {
     {
       in: 'path',
       name: 'projectId',
+      schema: {
+        type: 'number'
+      },
+      required: true
+    },
+    {
+      in: 'path',
+      name: 'surveyId',
       schema: {
         type: 'number'
       },
@@ -93,7 +101,7 @@ POST.apiDoc = {
   }
 };
 
-export function deleteProjectSecurityReasons(): RequestHandler {
+export function deleteSurveySecurityReasons(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({ label: 'Delete security Reasons', message: 'params', req_params: req.params });
 
@@ -108,9 +116,9 @@ export function deleteProjectSecurityReasons(): RequestHandler {
       const attachmentService = new AttachmentService(connection);
 
       if (attachmentType == 'Report') {
-        await attachmentService.removeSecurityFromProjectReportAttachment(securityIds, attachmentId);
+        await attachmentService.removeSecurityFromSurveyReportAttachment(securityIds, attachmentId);
       } else {
-        await attachmentService.removeSecurityFromProjectAttachment(securityIds, attachmentId);
+        await attachmentService.removeSecurityFromSurveyAttachment(securityIds, attachmentId);
       }
 
       await connection.commit();
