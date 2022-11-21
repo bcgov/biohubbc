@@ -15,12 +15,16 @@ export class AttachmentService extends DBService {
     return this.attachmentRepository.addSecurityToAttachments(securityIds, attachmentId);
   }
 
+  async removeSecurityFromAttachment(securityIds: number[], attachmentId: number): Promise<void> {
+    return this.attachmentRepository.removeSecurityFromAttachment(securityIds, attachmentId);
+  }
+
   async addSecurityToReportAttachment(securityIds: number[], attachmentId: number): Promise<void> {
     return this.attachmentRepository.addSecurityToReportAttachments(securityIds, attachmentId);
   }
 
   async removeSecurityFromReportAttachment(securityIds: number[], attachmentId: number): Promise<void> {
-    return this.attachmentRepository.addSecurityToReportAttachments(securityIds, attachmentId);
+    return this.attachmentRepository.removeSecurityFromReportAttachment(securityIds, attachmentId);
   }
 
   async addSecurityToAttachments(securityIds: number[], attachmentIds: number[]): Promise<void[]> {

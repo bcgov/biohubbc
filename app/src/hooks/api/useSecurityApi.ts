@@ -71,10 +71,12 @@ const useSecurityApi = (axios: AxiosInstance) => {
   const deleteSecurityReasons = async (
     projectId: number,
     attachmentId: number,
-    securityIds: number[]
+    securityIds: number[],
+    isReport: boolean
   ): Promise<any> => {
     const { data } = await axios.post(`/api/project/${projectId}/attachments/${attachmentId}/security/delete`, {
-      security_ids: securityIds
+      security_ids: securityIds,
+      isReport: isReport
     });
 
     return data;

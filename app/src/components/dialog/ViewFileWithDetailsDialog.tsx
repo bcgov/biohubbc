@@ -84,13 +84,15 @@ const ViewFileWithDetailsDialog: React.FC<IViewFileWithDetailsDialogProps> = (pr
       return security.security_reason_id;
     });
 
+    const isReport = props.fileType ? true : false;
+
     if (props.reportMetaData?.attachment_id) {
-      const response = await biohubApi.security.deleteSecurityReasons(
+      await biohubApi.security.deleteSecurityReasons(
         props.projectId,
         props.reportMetaData?.attachment_id,
-        securityIds
+        securityIds,
+        isReport
       );
-      console.log('response', response);
     }
   };
 

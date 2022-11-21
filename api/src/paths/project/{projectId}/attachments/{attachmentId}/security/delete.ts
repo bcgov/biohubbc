@@ -54,7 +54,7 @@ POST.apiDoc = {
       'application/json': {
         schema: {
           type: 'object',
-          required: ['security_ids'],
+          required: ['security_ids', 'isReport'],
           properties: {
             security_ids: {
               type: 'array',
@@ -62,6 +62,9 @@ POST.apiDoc = {
                 type: 'number',
                 minimum: 1
               }
+            },
+            isReport: {
+              type: 'boolean'
             }
           }
         }
@@ -98,14 +101,17 @@ export function deleteSecurityReasons(): RequestHandler {
 
     const attachmentId = Number(req.params.attachmentId);
     const securityIds: number[] = req.body.security_ids;
+    const isReport: boolean = req.body.isReport;
 
     try {
       await connection.open();
       const attachmentService = new AttachmentService(connection);
 
-      const response = await attachmentService.removeSecurityFromReportAttachment(securityIds, attachmentId);
-
-      console.log('response', response);
+      if (isReport) {
+        await attachmentService.removeSecurityFromReportAttachment(securityIds, attachmentId);
+      } else {
+        await attachmentService.removeSecurityFromAttachment(securityIds, attachmentId);
+      }
 
       await connection.commit();
 
