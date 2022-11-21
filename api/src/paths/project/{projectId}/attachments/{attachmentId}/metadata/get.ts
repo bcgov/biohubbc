@@ -3,9 +3,8 @@ import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
 import { HTTP400 } from '../../../../../../errors/http-error';
-import { GetReportAttachmentMetadata } from '../../../../../../models/project-survey-attachments';
-import { queries } from '../../../../../../queries/queries';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
+import { AttachmentService } from '../../../../../../services/attachment-service';
 import { getLogger } from '../../../../../../utils/logger';
 
 const defaultLog = getLogger('/api/project/{projectId}/attachments/{attachmentId}/getSignedUrl');
@@ -61,39 +60,45 @@ GET.apiDoc = {
           schema: {
             title: 'metadata get response object',
             type: 'object',
-            required: [
-              'attachment_id',
-              'title',
-              'last_modified',
-              'description',
-              'year_published',
-              'revision_count',
-              'authors'
-            ],
+            required: ['metadata', 'authors'],
             properties: {
-              attachment_id: {
-                description: 'Report metadata attachment id',
-                type: 'number'
-              },
-              title: {
-                description: 'Report metadata attachment title ',
-                type: 'string'
-              },
-              last_modified: {
-                description: 'Report metadata last modified',
-                type: 'string'
-              },
-              description: {
-                description: 'Report metadata description',
-                type: 'string'
-              },
-              year_published: {
-                description: 'Report metadata year published',
-                type: 'number'
-              },
-              revision_count: {
-                description: 'Report metadata revision count',
-                type: 'number'
+              metadata: {
+                description: 'Report metadata general information object',
+                type: 'object',
+                required: [
+                  'attachment_id',
+                  'title',
+                  'last_modified',
+                  'description',
+                  'year_published',
+                  'revision_count'
+                ],
+                properties: {
+                  attachment_id: {
+                    description: 'Report metadata attachment id',
+                    type: 'number'
+                  },
+                  title: {
+                    description: 'Report metadata attachment title ',
+                    type: 'string'
+                  },
+                  last_modified: {
+                    description: 'Report metadata last modified',
+                    type: 'string'
+                  },
+                  description: {
+                    description: 'Report metadata description',
+                    type: 'string'
+                  },
+                  year_published: {
+                    description: 'Report metadata year published',
+                    type: 'number'
+                  },
+                  revision_count: {
+                    description: 'Report metadata revision count',
+                    type: 'number'
+                  }
+                }
               },
               authors: {
                 description: 'Report metadata author object',
@@ -109,6 +114,13 @@ GET.apiDoc = {
                       type: 'string'
                     }
                   }
+                }
+              },
+              security: {
+                description: 'Report metadata security object',
+                type: 'array',
+                items: {
+                  type: 'object'
                 }
               }
             }
@@ -154,36 +166,18 @@ export function getProjectReportMetaData(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const getProjectReportAttachmentSQLStatement = queries.project.getProjectReportAttachmentSQL(
+      await connection.open();
+
+      const attachmentService = new AttachmentService(connection);
+
+      const projectReportAttachment = await attachmentService.getProjectReportAttachment(
         Number(req.params.projectId),
         Number(req.params.attachmentId)
       );
 
-      const getProjectReportAuthorsSQLStatement = queries.project.getProjectReportAuthorsSQL(
-        Number(req.params.attachmentId)
-      );
-
-      if (!getProjectReportAttachmentSQLStatement || !getProjectReportAuthorsSQLStatement) {
-        throw new HTTP400('Failed to build metadata SQLStatement');
-      }
-
-      await connection.open();
-
-      const reportMetaData = await connection.query(
-        getProjectReportAttachmentSQLStatement.text,
-        getProjectReportAttachmentSQLStatement.values
-      );
-
-      const reportAuthorsData = await connection.query(
-        getProjectReportAuthorsSQLStatement.text,
-        getProjectReportAuthorsSQLStatement.values
-      );
+      const projectReportAuthors = await attachmentService.getProjectAttachmentAuthors(Number(req.params.attachmentId));
 
       await connection.commit();
-
-      const getReportMetaData = reportMetaData && reportMetaData.rows[0];
-
-      const getReportAuthorsData = reportAuthorsData && reportAuthorsData.rows;
 
       const securityObj = [
         {
@@ -202,7 +196,9 @@ export function getProjectReportMetaData(): RequestHandler {
         }
       ];
 
-      const reportMetaObj = new GetReportAttachmentMetadata(getReportMetaData, getReportAuthorsData, securityObj);
+      const reportMetaObj = { metadata: projectReportAttachment, authors: projectReportAuthors, security: securityObj };
+
+      console.log('*************************** reportMetaObj *****************************');
       console.log(reportMetaObj);
       return res.status(200).json(reportMetaObj);
     } catch (error) {

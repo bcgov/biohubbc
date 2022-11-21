@@ -1,6 +1,8 @@
 import { IDBConnection } from '../database/db';
 import {
   AttachmentRepository,
+  IGetAttachment,
+  IGetAttachmentAuthor,
   IGetAttachmentsSource,
   IGetReportAttachmentsSource
 } from '../repositories/attachment-repository';
@@ -21,6 +23,17 @@ export class AttachmentService extends DBService {
 
   async getProjectReportAttachments(projectId: number): Promise<IGetReportAttachmentsSource[]> {
     return this.attachmentRepository.getProjectReportAttachments(projectId);
+  }
+
+  async getProjectReportAttachment(projectId: number, attachmentId: number): Promise<IGetAttachment> {
+    const response = this.attachmentRepository.getProjectReportAttachment(projectId, attachmentId);
+
+    console.log('getProjectReportAttachment: ', response);
+    return response;
+  }
+
+  async getProjectAttachmentAuthors(attachmentId: number): Promise<IGetAttachmentAuthor[]> {
+    return this.attachmentRepository.getProjectAttachmentAuthors(attachmentId);
   }
 
   async addSecurityToAttachment(securityIds: number[], attachmentId: number): Promise<void> {

@@ -1,5 +1,6 @@
 import SQL from 'sql-template-strings';
 import { ApiExecuteSQLError } from '../errors/api-error';
+import { HTTP400 } from '../errors/http-error';
 import { getLogger } from '../utils/logger';
 import { BaseRepository } from './base-repository';
 
@@ -16,6 +17,30 @@ export interface IGetAttachmentsSource {
   key: string;
   file_size: string;
   is_secure: string;
+}
+
+export interface IGetAttachment {
+  attachment_id: number;
+  file_name: string;
+  title: string;
+  description: string;
+  year_published: number;
+  last_modified: string;
+  create_date: string;
+  key: string;
+  file_size: string;
+  security_token: string;
+  security_review_timestamp: string;
+  revision_count: number;
+}
+
+export interface IGetAttachmentAuthor {
+  project_report_author_id: number;
+  project_report_attachment_id: number;
+  first_name: string;
+  last_name: string;
+  update_date: string;
+  revision_count: number;
 }
 
 /**
@@ -115,5 +140,58 @@ export class AttachmentRepository extends BaseRepository {
 
   async addSecurityToReportAttachments(securityIds: number[], attachmentId: number): Promise<void> {
     // TODO
+  }
+
+  async getProjectReportAttachment(projectId: number, attachmentId: number): Promise<IGetAttachment> {
+    const sqlStatement = SQL`
+      SELECT
+      project_report_attachment_id as attachment_id,
+      file_name,
+      title,
+      description,
+      year::int as year_published,
+      update_date::text as last_modified,
+      create_date,
+      file_size,
+      key,
+      security_token,
+      security_review_timestamp,
+      revision_count
+    FROM
+      project_report_attachment
+    where
+      project_report_attachment_id = ${attachmentId}
+    and
+      project_id = ${projectId}
+  `;
+
+    const response = await this.connection.sql<IGetAttachment>(sqlStatement);
+
+    console.log('in repository: ', response);
+
+    if (!response || !response.rows) {
+      throw new HTTP400('Failed to get project attachment by attachment id');
+    }
+
+    return response.rows[0];
+  }
+
+  async getProjectAttachmentAuthors(projectReportAttachmentId: number): Promise<IGetAttachmentAuthor[]> {
+    const sqlStatement = SQL`
+  SELECT
+    project_report_author.*
+  FROM
+    project_report_author
+  where
+    project_report_attachment_id = ${projectReportAttachmentId}
+`;
+
+    const response = await this.connection.sql<IGetAttachmentAuthor>(sqlStatement);
+
+    if (!response || !response.rows) {
+      throw new HTTP400('Failed to get project attachment authors by attachment id');
+    }
+
+    return response.rows;
   }
 }
