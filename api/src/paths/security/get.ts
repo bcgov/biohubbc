@@ -66,7 +66,7 @@ export function getRules(): RequestHandler {
     try {
       const service = new SecuritySearchService();
       const response = await service.getPersecutionSecurityRules()
-      // const response = await service.getProprietarySecurityRules();
+
       return res.status(200).json(response);
     } catch (error) {
       defaultLog.error({ label: 'getSecurityRules', message: 'error', error });

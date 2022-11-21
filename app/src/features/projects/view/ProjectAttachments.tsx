@@ -92,6 +92,13 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
     };
   };
 
+  const addSecurityReasons = (securityReasons: number[]) => {
+    console.log(securityReasons)
+    biohubApi.security.addSecurityReasons(projectId, securityReasons, selectedAttachmentRows).finally(() => {
+      setSecurityDialogOpen(false);
+    })
+  }
+
   useEffect(() => {
     getAttachments(false);
     // eslint-disable-next-line
@@ -127,10 +134,13 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
       <SecurityDialog
         open={securityDialogOpen}
         onAccept={(securityReasons) => {
-          // TODO make call to save security reasons
-          console.log(securityReasons);
-          console.log(selectedAttachmentRows);
-          setSecurityDialogOpen(false);
+          if (selectedAttachmentRows.length > 0) {
+            // formik form is retuning array of strings not numbers if printed out in console
+            // linter wrongly believes formik to be number[] so wrapped map in string to force values into number[]
+            addSecurityReasons(securityReasons.security_reasons.map(item => parseInt(`${item.security_reason_id}`)))
+          } else {
+            setSecurityDialogOpen(false);
+          }
         }}
         onClose={() => setSecurityDialogOpen(false)}
       />
