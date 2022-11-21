@@ -43,7 +43,6 @@ const defaultLog = getLogger('repositories/attachment-repository');
  * @extends {BaseRepository}
  */
 export class AttachmentRepository extends BaseRepository {
-
   /**
    * SQL query to get report attachments for a single project.
    *
@@ -70,7 +69,7 @@ export class AttachmentRepository extends BaseRepository {
         project_id = ${projectId};
     `;
 
-    const response =  await this.connection.sql<IGetAttachmentsSource>(sqlStatement);
+    const response = await this.connection.sql<IGetAttachmentsSource>(sqlStatement);
 
     if (!response || !response.rows) {
       throw new ApiExecuteSQLError('Failed to get project attachments by projectId', [
@@ -80,7 +79,7 @@ export class AttachmentRepository extends BaseRepository {
     }
 
     return response.rows;
-  };
+  }
 
   async getProjectReportAttachments(projectId: number): Promise<IGetReportAttachmentsSource[]> {
     const sqlStatement = SQL`
@@ -97,7 +96,7 @@ export class AttachmentRepository extends BaseRepository {
       where
         project_id = ${projectId};
     `;
-  
+
     const response = await this.connection.sql<IGetReportAttachmentsSource>(sqlStatement);
 
     if (!response || !response.rows) {
@@ -108,5 +107,13 @@ export class AttachmentRepository extends BaseRepository {
     }
 
     return response.rows;
-  };
+  }
+
+  async addSecurityToAttachments(securityIds: number[], attachmentId: number): Promise<void> {
+    // TODO
+  }
+
+  async addSecurityToReportAttachments(securityIds: number[], attachmentId: number): Promise<void> {
+    // TODO
+  }
 }
