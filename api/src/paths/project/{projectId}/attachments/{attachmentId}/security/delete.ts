@@ -95,7 +95,7 @@ POST.apiDoc = {
 
 export function deleteProjectSecurityReasons(): RequestHandler {
   return async (req, res) => {
-    defaultLog.debug({ label: 'Delete security Reasons', message: 'params', req_params: req.params });
+    defaultLog.debug({ label: 'Delete Project Security Reasons', message: 'params', req_params: req.params });
 
     const connection = getDBConnection(req['keycloak_token']);
 
@@ -117,7 +117,7 @@ export function deleteProjectSecurityReasons(): RequestHandler {
 
       return res.status(200).send();
     } catch (error) {
-      defaultLog.error({ label: 'deleteSecurityReasons', message: 'error', error });
+      defaultLog.error({ label: 'deleteProjectSecurityReasons', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

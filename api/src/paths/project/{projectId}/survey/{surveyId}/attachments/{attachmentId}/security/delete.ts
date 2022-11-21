@@ -103,7 +103,7 @@ POST.apiDoc = {
 
 export function deleteSurveySecurityReasons(): RequestHandler {
   return async (req, res) => {
-    defaultLog.debug({ label: 'Delete security Reasons', message: 'params', req_params: req.params });
+    defaultLog.debug({ label: 'Delete Survey Security Reasons', message: 'params', req_params: req.params });
 
     const connection = getDBConnection(req['keycloak_token']);
 
@@ -125,7 +125,7 @@ export function deleteSurveySecurityReasons(): RequestHandler {
 
       return res.status(200).send();
     } catch (error) {
-      defaultLog.error({ label: 'deleteSecurityReasons', message: 'error', error });
+      defaultLog.error({ label: 'deleteSurveySecurityReasons', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {
