@@ -51,8 +51,12 @@ const useSecurityApi = (axios: AxiosInstance) => {
     // return data.security_reasons;
   };
 
-  const addSecurityReasons = async (securityIds: number[], attachmentIds: number[]): Promise<any> => {
-    const { data } = await axios.post(`/api/project/{projectId}/attachments/security/add`, {
+  const addSecurityReasons = async (
+    projectId: number,
+    securityIds: number[],
+    attachmentIds: number[]
+  ): Promise<any> => {
+    const { data } = await axios.post(`/api/project/${projectId}/attachments/security/add`, {
       security_ids: securityIds,
       attachment_ids: attachmentIds
     });

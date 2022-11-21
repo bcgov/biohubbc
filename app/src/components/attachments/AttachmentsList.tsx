@@ -57,6 +57,7 @@ export interface IAttachmentsListProps {
   surveyId?: number;
   attachmentsList: (IGetProjectAttachment | IGetSurveyAttachment)[];
   getAttachments: (forceFetch: boolean) => void;
+  onCheckboxChange?: (attachmentId: number) => void;
 }
 
 const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
@@ -393,7 +394,15 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
                   return (
                     <TableRow key={`${row.fileName}-${index}`}>
                       <TableCell padding="checkbox">
-                        <Checkbox color="primary" checkedIcon={<Icon path={mdiCheckboxOutline} size={1} />} />
+                        <Checkbox
+                          color="primary"
+                          checkedIcon={<Icon path={mdiCheckboxOutline} size={1} />}
+                          value={row.id}
+                          onChange={(e) => {
+                            console.log(e);
+                            props.onCheckboxChange?.(Number(e.target.value));
+                          }}
+                        />
                       </TableCell>
                       <TableCell scope="row">
                         <Link

@@ -45,6 +45,9 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
   );
   const [attachmentsList, setAttachmentsList] = useState<IGetProjectAttachment[]>([]);
 
+  // Tracks which attachment rows have been selected, via the table checkboxes.
+  const [selectedAttachmentRows, setSelectedAttachmentRows] = useState<number[]>([]);
+
   const handleUploadReportClick = () => {
     setAttachmentType(AttachmentType.REPORT);
     setOpenUploadAttachments(true);
@@ -123,7 +126,10 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
 
       <SecurityDialog
         open={securityDialogOpen}
-        onAccept={() => {
+        onAccept={(securityReasons) => {
+          // TODO make call to save security reasons
+          console.log(securityReasons);
+          console.log(selectedAttachmentRows);
           setSecurityDialogOpen(false);
         }}
         onClose={() => setSecurityDialogOpen(false)}
@@ -185,7 +191,15 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
       </Toolbar>
       <Divider></Divider>
       <Box px={1}>
-        <AttachmentsList projectId={projectId} attachmentsList={attachmentsList} getAttachments={getAttachments} />
+        <AttachmentsList
+          projectId={projectId}
+          attachmentsList={attachmentsList}
+          getAttachments={getAttachments}
+          onCheckboxChange={(value) => {
+            console.log(value);
+            setSelectedAttachmentRows([value]);
+          }}
+        />
       </Box>
     </>
   );
