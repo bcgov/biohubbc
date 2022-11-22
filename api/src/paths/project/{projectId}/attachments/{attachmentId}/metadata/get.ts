@@ -66,7 +66,7 @@ GET.apiDoc = {
                 description: 'Report metadata general information object',
                 type: 'object',
                 required: [
-                  'attachment_id',
+                  'id',
                   'title',
                   'last_modified',
                   'description',
@@ -74,7 +74,7 @@ GET.apiDoc = {
                   'revision_count'
                 ],
                 properties: {
-                  attachment_id: {
+                  id: {
                     description: 'Report metadata attachment id',
                     type: 'number'
                   },
