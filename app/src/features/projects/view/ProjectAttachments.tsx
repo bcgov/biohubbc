@@ -98,7 +98,6 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
   };
 
   const addSecurityReasons = (securityReasons: number[]) => {
-    console.log(securityReasons);
     biohubApi.security.addSecurityReasons(projectId, securityReasons, selectedAttachmentRows).finally(() => {
       setSecurityDialogOpen(false);
     });

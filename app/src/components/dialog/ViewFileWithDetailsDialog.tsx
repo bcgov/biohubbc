@@ -24,6 +24,7 @@ import { IEditReportMetaForm } from 'components/attachments/EditReportMetaForm';
 import ReportMeta from 'components/attachments/ReportMeta';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { DialogContext } from 'contexts/dialogContext';
+import { IAttachmentType } from 'features/projects/view/ProjectAttachments';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetReportDetails, IGetSecurityReasons } from 'interfaces/useProjectApi.interface';
 import React, { useContext, useState } from 'react';
@@ -57,6 +58,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 export interface IViewFileWithDetailsDialogProps {
   projectId: number;
+  attachmentId: number | undefined;
   surveyId?: number;
   open: boolean;
   onClose: () => void;
@@ -122,7 +124,7 @@ const ViewFileWithDetailsDialog: React.FC<IViewFileWithDetailsDialogProps> = (pr
   };
 
   const dialogContext = useContext(DialogContext);
-
+  console.log(props)
   const defaultYesNoDialogProps = {
     open: false,
     onClose: () => dialogContext.setYesNoDialog({ open: false }),
@@ -130,9 +132,31 @@ const ViewFileWithDetailsDialog: React.FC<IViewFileWithDetailsDialogProps> = (pr
     onYes: () => dialogContext.setYesNoDialog({ open: false })
   };
 
+  const addSecurityReasons = (securityReasons: number[]) => {
+    if (props.attachmentId && props.fileType) {
+      const attachmentData: IAttachmentType = {
+        id: props.attachmentId,
+        type: mapFileTypeToAttachmentType(props.fileType || "Other")
+      }
+      
+      biohubApi.security.addSecurityReasons(props.projectId, securityReasons, [attachmentData]).finally(() => {
+        setSecurityDialogOpen(false);
+      });
+    }
+  };
+
+  const mapFileTypeToAttachmentType = (type: string): AttachmentType => {
+    let attachmentType = AttachmentType.OTHER
+    if (type === "Report") {
+      attachmentType = AttachmentType.REPORT
+    }
+
+    return attachmentType;
+  }
+
   const showDeleteSecurityReasonDialog = (securityReasons: IGetSecurityReasons[]) => {
     let yesNoDialogProps;
-
+    
     if (securityReasons.length == 1) {
       yesNoDialogProps = {
         ...defaultYesNoDialogProps,
@@ -166,7 +190,15 @@ const ViewFileWithDetailsDialog: React.FC<IViewFileWithDetailsDialogProps> = (pr
     <>
       <SecurityDialog
         open={securityDialogOpen}
-        onAccept={() => alert('Applyed')}
+        onAccept={(securityReasons) => {
+          // formik form is retuning array of strings not numbers if printed out in console
+          // linter wrongly believes formik to be number[] so wrapped map in string to force values into number[]
+          if (securityReasons.security_reasons.length > 0) {
+            addSecurityReasons(securityReasons.security_reasons.map((item) => parseInt(`${item.security_reason_id}`)));
+          }
+
+          setSecurityDialogOpen(false);
+        }}
         onClose={() => setSecurityDialogOpen(false)}
       />
 
