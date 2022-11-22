@@ -10,7 +10,7 @@ import {
   IGetProjectForViewResponse,
   IGetProjectParticipantsResponse,
   IGetProjectsListResponse,
-  IGetReportMetaData,
+  IGetReportDetails,
   IGetUserProjectsListResponse,
   IProjectAdvancedFilterRequest,
   IUpdateProjectRequest,
@@ -361,7 +361,7 @@ const useProjectApi = (axios: AxiosInstance) => {
    * @param {string} attachmentType
    * @return {*}  {Promise<IGetReportMetaData>}
    */
-  const getProjectReportMetadata = async (projectId: number, attachmentId: number): Promise<IGetReportMetaData> => {
+  const getProjectReportMetadata = async (projectId: number, attachmentId: number): Promise<IGetReportDetails> => {
     const { data } = await axios.get(`/api/project/${projectId}/attachments/${attachmentId}/metadata/get`, {
       params: {},
       paramsSerializer: (params: any) => {

@@ -1,12 +1,20 @@
 import Box from '@material-ui/core/Box';
-import Paper from '@material-ui/core/Paper';
-import { mdiMenuDown, mdiTrayArrowUp } from '@mdi/js';
+import Button from '@material-ui/core/Button';
+// import DialogContentText from '@material-ui/core/DialogContentText';
+import Divider from '@material-ui/core/Divider';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
+import { mdiAttachment, mdiChevronDown, mdiFilePdfBox, mdiLockOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import AttachmentsList from 'components/attachments/AttachmentsList';
 import { IUploadHandler } from 'components/attachments/FileUploadItem';
 import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
 import FileUploadWithMetaDialog from 'components/dialog/FileUploadWithMetaDialog';
-import { H2MenuToolbar } from 'components/toolbar/ActionToolbars';
+import SecurityDialog from 'components/dialog/SecurityDialog';
+// import { H2MenuToolbar } from 'components/toolbar/ActionToolbars';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import {
   IGetProjectAttachment,
@@ -86,6 +94,19 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
     // eslint-disable-next-line
   }, []);
 
+  const [securityDialogOpen, setSecurityDialogOpen] = useState(false);
+
+  // Show/Hide Project Settings Menu
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
   return (
     <>
       <FileUploadWithMetaDialog
@@ -99,22 +120,73 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
         }}
         uploadHandler={getUploadHandler()}
       />
-      <Paper>
-        <H2MenuToolbar
-          label="Documents"
-          buttonLabel="Upload"
-          buttonTitle="Upload Document"
-          buttonStartIcon={<Icon path={mdiTrayArrowUp} size={1} />}
-          buttonEndIcon={<Icon path={mdiMenuDown} size={1} />}
-          menuItems={[
-            { menuLabel: 'Upload Report', menuOnClick: handleUploadReportClick },
-            { menuLabel: 'Upload Attachments', menuOnClick: handleUploadAttachmentClick }
-          ]}
-        />
-        <Box px={3} pb={2}>
-          <AttachmentsList projectId={projectId} attachmentsList={attachmentsList} getAttachments={getAttachments} />
+
+      <SecurityDialog
+        open={securityDialogOpen}
+        onAccept={() => {
+          setSecurityDialogOpen(false);
+        }}
+        onClose={() => setSecurityDialogOpen(false)}
+      />
+
+      {/* Need to use the regular toolbar in lieu of these action toolbars given it doesn't support multiple buttons */}
+      <Toolbar style={{ display: 'flex', justifyContent: 'space-between' }}>
+        <Typography variant="h4" component="h2">
+          Documents
+        </Typography>
+        <Box>
+          <Button
+            color="primary"
+            variant="contained"
+            endIcon={<Icon path={mdiChevronDown} size={0.8} />}
+            aria-controls="simple-menu"
+            aria-haspopup="true"
+            onClick={handleClick}>
+            Submit Documents
+          </Button>
+          <Menu
+            style={{ marginTop: '8px' }}
+            id="attachmentsMenu"
+            anchorEl={anchorEl}
+            getContentAnchorEl={null}
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'right'
+            }}
+            transformOrigin={{
+              vertical: 'top',
+              horizontal: 'right'
+            }}
+            keepMounted
+            open={Boolean(anchorEl)}
+            onClose={handleClose}>
+            <MenuItem onClick={handleUploadReportClick}>
+              <ListItemIcon>
+                <Icon path={mdiFilePdfBox} size={1} />
+              </ListItemIcon>
+              <Typography variant="inherit">Submit Report</Typography>
+            </MenuItem>
+            <MenuItem onClick={handleUploadAttachmentClick}>
+              <ListItemIcon>
+                <Icon path={mdiAttachment} size={1} />
+              </ListItemIcon>
+              <Typography variant="inherit">Submit Attachments</Typography>
+            </MenuItem>
+          </Menu>
+          <Button
+            style={{ marginLeft: '8px' }}
+            variant="contained"
+            color="primary"
+            startIcon={<Icon path={mdiLockOutline} size={0.8} />}
+            onClick={() => setSecurityDialogOpen(true)}>
+            Apply Security
+          </Button>
         </Box>
-      </Paper>
+      </Toolbar>
+      <Divider></Divider>
+      <Box px={1}>
+        <AttachmentsList projectId={projectId} attachmentsList={attachmentsList} getAttachments={getAttachments} />
+      </Box>
     </>
   );
 };

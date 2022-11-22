@@ -25,7 +25,8 @@ export const getProjectAttachmentsSQL = (projectId: number): SQLStatement | null
       create_date,
       file_size,
       key,
-      security_token
+      security_token,
+      security_review_timestamp
     from
       project_attachment
     where
@@ -54,7 +55,8 @@ export const getProjectReportAttachmentsSQL = (projectId: number): SQLStatement 
       create_date,
       file_size,
       key,
-      security_token
+      security_token,
+      security_review_timestamp
     from
       project_report_attachment
     where
@@ -479,68 +481,6 @@ export const deleteProjectReportAttachmentAuthorsSQL = (attachmentId: number): S
       FROM project_report_author
     WHERE
       project_report_attachment_id = ${attachmentId};
-  `;
-
-  return sqlStatement;
-};
-
-/**
- * Get the metadata fields of  project report attachment, for the specified `projectId` and `attachmentId`.
- *
- * @param {number} projectId
- * @param {number} attachmentId
- * @param {PutReportAttachmentMetadata} metadata
- * @return {*}  {(SQLStatement | null)}
- */
-export const getProjectReportAttachmentSQL = (projectId: number, attachmentId: number): SQLStatement | null => {
-  if (!projectId || !attachmentId) {
-    return null;
-  }
-
-  const sqlStatement: SQLStatement = SQL`
-    SELECT
-      project_report_attachment_id as attachment_id,
-      file_name,
-      title,
-      description,
-      year as year_published,
-      update_date,
-      create_date,
-      file_size,
-      key,
-      security_token,
-      revision_count
-    FROM
-      project_report_attachment
-    where
-      project_report_attachment_id = ${attachmentId}
-    and
-      project_id = ${projectId}
-  `;
-
-  return sqlStatement;
-};
-
-/**
- * Get the metadata fields of  project report attachment, for the specified `projectId` and `attachmentId`.
- *
- * @param {number} projectId
- * @param {number} attachmentId
- * @param {PutReportAttachmentMetadata} metadata
- * @return {*}  {(SQLStatement | null)}
- */
-export const getProjectReportAuthorsSQL = (projectReportAttachmentId: number): SQLStatement | null => {
-  if (!projectReportAttachmentId) {
-    return null;
-  }
-
-  const sqlStatement: SQLStatement = SQL`
-    SELECT
-      project_report_author.*
-    FROM
-      project_report_author
-    where
-      project_report_attachment_id = ${projectReportAttachmentId}
   `;
 
   return sqlStatement;

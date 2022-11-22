@@ -1,5 +1,9 @@
-import { createMuiTheme } from '@material-ui/core';
+// import createBreakpoints from '@material-ui/core/styles/createBreakpoints'
+import { grey } from '@material-ui/core/colors';
+import { createMuiTheme } from '@material-ui/core/styles';
 import 'styles.scss';
+
+// const breakpoints = createBreakpoints({})
 
 const appTheme = createMuiTheme({
   breakpoints: {
@@ -8,7 +12,7 @@ const appTheme = createMuiTheme({
       sm: 600,
       md: 960,
       lg: 1280,
-      xl: 1600
+      xl: 1720
     }
   },
   palette: {
@@ -27,7 +31,7 @@ const appTheme = createMuiTheme({
     },
     text: {
       primary: '#313132',
-      secondary: '#7f7f81'
+      secondary: '#757575'
     }
   },
   typography: {
@@ -59,15 +63,19 @@ const appTheme = createMuiTheme({
         fontWeight: 700
       }
     },
-    MuiAlert: {
-      root: {
-        alignItems: 'center',
-        fontSize: '1rem'
+    MuiBreadcrumbs: {
+      li: {
+        maxWidth: '40ch',
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis'
       }
     },
     MuiButton: {
       root: {
-        textTransform: 'none'
+        textTransform: 'none',
+        fontSize: '0.9rem',
+        borderRadius: '5px'
       },
       sizeLarge: {
         fontSize: '1rem'
@@ -81,9 +89,11 @@ const appTheme = createMuiTheme({
         '&:hover': {
           backgroundColor: '#ffffff'
         }
-      },
-      endIcon: {
-        marginLeft: '4px'
+      }
+    },
+    MuiChip: {
+      colorSecondary: {
+        backgroundColor: 'red'
       }
     },
     MuiContainer: {
@@ -128,18 +138,46 @@ const appTheme = createMuiTheme({
         borderRadius: '3px'
       }
     },
+    MuiListItem: {
+      root: {
+        '&:last-of-type': {
+          borderBottom: 'none'
+        }
+      }
+    },
     MuiListItemIcon: {
       root: {
         minWidth: '42px'
       }
     },
+    MuiPaper: {
+      rounded: {
+        borderRadius: '6px'
+      }
+    },
+    MuiTable: {
+      root: {
+        '& th': {
+          letterSpacing: '0.02rem',
+          textTransform: 'uppercase'
+        },
+        '& tr:last-of-type td': {
+          borderBottom: 'none'
+        },
+        '& .MuiLink-root': {
+          fontFamily: 'inherit',
+          fontSize: 'inherit'
+        }
+      }
+    },
     MuiTableCell: {
       root: {
-        verticalAlign: 'top'
+        fontSize: '0.9rem'
       },
       head: {
-        backgroundColor: '#f5f5f5',
-        lineHeight: 'normal'
+        fontSize: '0.875rem',
+        fontWeight: 700,
+        color: grey[600]
       }
     },
     MuiTab: {

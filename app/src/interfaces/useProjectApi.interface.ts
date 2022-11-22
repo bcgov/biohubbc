@@ -14,6 +14,7 @@ export interface IGetProjectAttachment {
   lastModified: string;
   size: number;
   securityToken: string;
+  securityReviewTimestamp: string;
   revisionCount: number;
 }
 
@@ -174,7 +175,7 @@ export interface IGetProjectForUpdateResponseFundingSource {
 }
 
 export interface IGetProjectForUpdateResponseFundingData {
-  fundingSources: IGetProjectForUpdateResponseFundingSource[];
+  funding_sources: IGetProjectForUpdateResponseFundingSource[];
 }
 
 export interface IGetProjectForUpdateResponsePartnerships {
@@ -287,19 +288,32 @@ export interface IUploadAttachmentResponse {
   revision_count: number;
 }
 
-export interface IGetReportMetaData {
+export interface IGetReportDetails {
+  metadata: IGetReportMetadata | null;
+  authors: IGetReportAuthors[];
+  security_reasons: IGetSecurityReasons[];
+}
+
+export interface IGetReportMetadata {
   attachment_id: number;
   title: string;
   year_published: number;
   description: string;
   last_modified: string;
   revision_count: number;
-  authors: IGetReportAuthors[];
 }
 
 export interface IGetReportAuthors {
   first_name: string;
   last_name: string;
+}
+
+export interface IGetSecurityReasons {
+  category: string;
+  sub_category: string;
+  reason: string;
+  reason_description: string;
+  date_expired: string;
 }
 
 export interface IGetProjectParticipantsResponseArrayItem {

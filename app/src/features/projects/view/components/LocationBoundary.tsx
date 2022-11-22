@@ -1,8 +1,10 @@
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
+import { grey } from '@material-ui/core/colors';
+import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
-import Paper from '@material-ui/core/Paper';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import Typography from '@material-ui/core/Typography';
 import { mdiChevronRight, mdiPencilOutline, mdiRefresh } from '@mdi/js';
 import Icon from '@mdi/react';
@@ -39,7 +41,7 @@ export interface ILocationBoundaryProps {
   refresh: () => void;
 }
 
-const useStyles = makeStyles(() =>
+const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     zoomToBoundaryExtentBtn: {
       padding: '3px',
@@ -50,6 +52,16 @@ const useStyles = makeStyles(() =>
       backgroundClip: 'padding-box',
       '&:hover': {
         backgroundColor: '#eeeeee'
+      }
+    },
+    metaSectionHeader: {
+      color: grey[600],
+      fontWeight: 700,
+      textTransform: 'uppercase',
+      letterSpacing: '0.02rem',
+      '& + hr': {
+        marginTop: theme.spacing(0.75),
+        marginBottom: theme.spacing(0.75)
       }
     }
   })
@@ -204,59 +216,59 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
         mapTitle={'Project Location'}
       />
 
-      <Box component={Paper} px={3} pt={1} pb={3}>
-        <H2ButtonToolbar
-          label="Project Location"
-          buttonLabel="Edit"
-          buttonTitle="Edit Project Location"
-          buttonStartIcon={<Icon path={mdiPencilOutline} size={0.875} />}
-          buttonOnClick={() => handleDialogEditOpen()}
-          buttonProps={{ variant: 'text' }}
-          toolbarProps={{ disableGutters: true }}
+      <H2ButtonToolbar
+        label="Project Location"
+        buttonLabel="Edit"
+        buttonTitle="Edit Project Location"
+        buttonStartIcon={<Icon path={mdiPencilOutline} size={0.875} />}
+        buttonOnClick={() => handleDialogEditOpen()}
+        buttonProps={{ variant: 'text' }}
+        toolbarProps={{ disableGutters: true }}
+      />
+
+      <Box height={500} position="relative">
+        <MapContainer
+          mapId="project_location_form_map"
+          nonEditableGeometries={nonEditableGeometries}
+          bounds={bounds}
+          setInferredLayersInfo={setInferredLayersInfo}
         />
-
-        <Box mt={2} height={350} position="relative">
-          <MapContainer
-            mapId="project_location_form_map"
-            nonEditableGeometries={nonEditableGeometries}
-            bounds={bounds}
-            setInferredLayersInfo={setInferredLayersInfo}
-          />
-          {location.geometry && location.geometry.length > 0 && (
-            <Box position="absolute" top="126px" left="10px" zIndex="999">
-              <IconButton
-                aria-label="zoom to initial extent"
-                title="Zoom to initial extent"
-                className={classes.zoomToBoundaryExtentBtn}
-                onClick={() => zoomToBoundaryExtent()}>
-                <Icon size={1} path={mdiRefresh} />
-              </IconButton>
-            </Box>
-          )}
-        </Box>
-
-        <Box my={3}>
-          <Typography variant="body2" color="textSecondary">
-            Location Description
-          </Typography>
-          <Typography variant="body1">
-            {location.location_description ? <>{location.location_description}</> : 'No Description'}
-          </Typography>
-        </Box>
-
-        <InferredLocationDetails layers={inferredLayersInfo} />
-
-        <Button
-          variant="text"
-          color="primary"
-          className="sectionHeaderButton"
-          onClick={() => handleDialogViewOpen()}
-          title="Expand Location"
-          aria-label="Show Expanded Location"
-          endIcon={<Icon path={mdiChevronRight} size={0.875} />}>
-          Show More
-        </Button>
+        {location.geometry && location.geometry.length > 0 && (
+          <Box position="absolute" top="126px" left="10px" zIndex="999">
+            <IconButton
+              aria-label="zoom to initial extent"
+              title="Zoom to initial extent"
+              className={classes.zoomToBoundaryExtentBtn}
+              onClick={() => zoomToBoundaryExtent()}>
+              <Icon size={1} path={mdiRefresh} />
+            </IconButton>
+          </Box>
+        )}
       </Box>
+
+      <Box mt={3}>
+        <Typography variant="body2" className={classes.metaSectionHeader}>
+          Location Description
+        </Typography>
+        <Divider></Divider>
+        <Typography variant="body1" color="textSecondary">
+          {location.location_description ? <>{location.location_description}</> : 'No description provided'}
+        </Typography>
+      </Box>
+
+      <InferredLocationDetails layers={inferredLayersInfo} />
+
+      <Button
+        variant="text"
+        style={{ display: 'none' }}
+        color="primary"
+        className="sectionHeaderButton"
+        onClick={() => handleDialogViewOpen()}
+        title="Expand Location"
+        aria-label="Show Expanded Location"
+        endIcon={<Icon path={mdiChevronRight} size={0.875} />}>
+        Show More
+      </Button>
     </>
   );
 };

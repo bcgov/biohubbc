@@ -1,5 +1,9 @@
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
+import Checkbox from '@material-ui/core/Checkbox';
+import Chip from '@material-ui/core/Chip';
+import { grey } from '@material-ui/core/colors';
+import Drawer from '@material-ui/core/Drawer';
 import IconButton from '@material-ui/core/IconButton';
 import Link from '@material-ui/core/Link';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -12,41 +16,39 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
-import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import {
+  mdiAlertCircle,
+  mdiCheckboxOutline,
   mdiDotsVertical,
-  mdiDownload,
   mdiInformationOutline,
+  mdiLockOpenCheckOutline,
   mdiLockOpenVariantOutline,
   mdiLockOutline,
-  mdiTrashCanOutline
+  mdiTrashCanOutline,
+  mdiTrayArrowDown
 } from '@mdi/js';
 import Icon from '@mdi/react';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
-import { DATE_FORMAT } from 'constants/dateTimeFormats';
+import ViewFileWithDetailsDialog from 'components/dialog/ViewFileWithDetailsDialog';
+import { AttachmentType } from 'constants/attachments';
 import { AttachmentsI18N, EditReportMetaDataI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { IGetProjectAttachment, IGetReportMetaData } from 'interfaces/useProjectApi.interface';
+import { IGetProjectAttachment, IGetReportDetails } from 'interfaces/useProjectApi.interface';
 import { IGetSurveyAttachment } from 'interfaces/useSurveyApi.interface';
-import React, { useContext, useEffect, useState } from 'react';
-import { handleChangePage, handleChangeRowsPerPage } from 'utils/tablePaginationUtils';
-import { getFormattedDate, getFormattedFileSize } from 'utils/Utils';
-import { AttachmentType } from '../../constants/attachments';
+import React, { useContext, useState } from 'react';
+import { getFormattedFileSize } from 'utils/Utils';
 import { IEditReportMetaForm } from '../attachments/EditReportMetaForm';
-import EditFileWithMetaDialog from '../dialog/EditFileWithMetaDialog';
-import ViewFileWithMetaDialog from '../dialog/ViewFileWithMetaDialog';
 
 const useStyles = makeStyles((theme: Theme) => ({
   attachmentsTable: {
-    '& .MuiTableCell-root': {
-      verticalAlign: 'middle'
-    }
+    tableLayout: 'fixed'
   },
-  uploadMenu: {
-    marginTop: theme.spacing(1)
+  attachmentsTableLockIcon: {
+    marginTop: '3px',
+    color: grey[600]
   }
 }));
 
@@ -61,14 +63,16 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
   const classes = useStyles();
   const biohubApi = useBiohubApi();
 
-  const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [page, setPage] = useState(0);
+  const [rowsPerPage] = useState(10);
+  const [page] = useState(0);
 
-  const [reportMetaData, setReportMetaData] = useState<IGetReportMetaData | null>(null);
-  const [showViewFileWithMetaDialog, setShowViewFileWithMetaDialog] = useState<boolean>(false);
-  const [showEditFileWithMetaDialog, setShowEditFileWithMetaDialog] = useState<boolean>(false);
+  const [reportDetails, setReportDetails] = useState<IGetReportDetails | null>(null);
+  const [showViewFileWithDetailsDialog, setShowViewFileWithDetailsDialog] = useState<boolean>(false);
 
   const [currentAttachment, setCurrentAttachment] = useState<IGetProjectAttachment | IGetSurveyAttachment | null>(null);
+
+  console.log('current attachment is : ');
+  console.log(currentAttachment);
 
   const handleDownloadFileClick = (attachment: IGetProjectAttachment | IGetSurveyAttachment) => {
     openAttachment(attachment);
@@ -79,8 +83,12 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
   };
 
   const handleViewDetailsClick = (attachment: IGetProjectAttachment | IGetSurveyAttachment) => {
+    console.log('attachment');
+
+    console.log(attachment);
     setCurrentAttachment(attachment);
     getReportMeta(attachment);
+    setShowViewFileWithDetailsDialog(true);
   };
 
   const dialogContext = useContext(DialogContext);
@@ -109,12 +117,6 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
     onNo: () => dialogContext.setYesNoDialog({ open: false }),
     onYes: () => dialogContext.setYesNoDialog({ open: false })
   };
-
-  useEffect(() => {
-    if (reportMetaData && currentAttachment) {
-      setShowViewFileWithMetaDialog(true);
-    }
-  }, [reportMetaData, currentAttachment]);
 
   const showDeleteAttachmentDialog = (attachment: IGetProjectAttachment | IGetSurveyAttachment) => {
     dialogContext.setYesNoDialog({
@@ -184,6 +186,11 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
   };
 
   const getReportMeta = async (attachment: IGetProjectAttachment | IGetSurveyAttachment) => {
+    if (attachment.fileType === 'Other') {
+      console.log('this is not a report');
+    } else {
+      console.log('this is a report');
+    }
     try {
       let response;
 
@@ -197,7 +204,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
         return;
       }
 
-      setReportMetaData(response);
+      setReportDetails(response);
     } catch (error) {
       return error;
     }
@@ -239,11 +246,6 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
     if (currentAttachment) {
       openAttachment(currentAttachment);
     }
-  };
-
-  const openEditReportMetaDialog = async () => {
-    setShowViewFileWithMetaDialog(false);
-    setShowEditFileWithMetaDialog(true);
   };
 
   const makeAttachmentSecure = async (attachment: IGetProjectAttachment | IGetSurveyAttachment) => {
@@ -311,7 +313,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
   };
 
   const handleDialogEditSave = async (values: IEditReportMetaForm) => {
-    if (!reportMetaData) {
+    if (!reportDetails?.metadata) {
       return;
     }
 
@@ -322,60 +324,66 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
         await biohubApi.survey.updateSurveyReportMetadata(
           props.projectId,
           props.surveyId,
-          reportMetaData.attachment_id,
+          reportDetails.metadata.attachment_id,
           AttachmentType.REPORT,
           fileMeta,
-          reportMetaData.revision_count
+          reportDetails.metadata.revision_count
         );
       } else {
         await biohubApi.project.updateProjectReportMetadata(
           props.projectId,
-          reportMetaData.attachment_id,
+          reportDetails.metadata.attachment_id,
           AttachmentType.REPORT,
           fileMeta,
-          reportMetaData.revision_count
+          reportDetails.metadata.revision_count
         );
       }
     } catch (error) {
       const apiError = error as APIError;
       showErrorDialog({ dialogText: apiError.message, dialogErrorDetails: apiError.errors, open: true });
-    } finally {
-      setShowEditFileWithMetaDialog(false);
     }
+  };
+
+  const [open, setOpen] = React.useState(false);
+  const openDrawer = () => {
+    setOpen(true);
+  };
+  const closeDrawer = () => {
+    setOpen(false);
   };
 
   return (
     <>
-      <ViewFileWithMetaDialog
-        open={showViewFileWithMetaDialog}
-        onEdit={openEditReportMetaDialog}
+      <ViewFileWithDetailsDialog
+        dialogProps={{ fullWidth: true, maxWidth: 'lg', open: showViewFileWithDetailsDialog }}
+        open={showViewFileWithDetailsDialog}
         onClose={() => {
-          setShowViewFileWithMetaDialog(false);
-        }}
-        onDownload={openAttachmentFromReportMetaDialog}
-        reportMetaData={reportMetaData}
-        attachmentSize={(currentAttachment && getFormattedFileSize(currentAttachment.size)) || '0 KB'}
-      />
-      <EditFileWithMetaDialog
-        open={showEditFileWithMetaDialog}
-        dialogTitle={'Edit Upload Report'}
-        reportMetaData={reportMetaData}
-        onClose={() => {
-          setShowEditFileWithMetaDialog(false);
+          setShowViewFileWithDetailsDialog(false);
         }}
         onSave={handleDialogEditSave}
+        onFileDownload={openAttachmentFromReportMetaDialog}
+        reportDetails={reportDetails}
+        attachmentSize={(currentAttachment && getFormattedFileSize(currentAttachment.size)) || '0 KB'}
+        fileType={currentAttachment && currentAttachment.fileType}
+        refresh={() => {
+          if (currentAttachment) {
+            getReportMeta(currentAttachment);
+          }
+        }}
       />
+
       <Box>
         <TableContainer>
           <Table className={classes.attachmentsTable} aria-label="attachments-list-table">
             <TableHead>
               <TableRow>
+                <TableCell width="60px" padding="checkbox">
+                  <Checkbox color="primary" />
+                </TableCell>
                 <TableCell>Name</TableCell>
                 <TableCell>Type</TableCell>
-                <TableCell>File Size</TableCell>
-                <TableCell>Last Modified</TableCell>
-                <TableCell width="150px">Security</TableCell>
-                <TableCell width="50px"></TableCell>
+                <TableCell width="140px">Status</TableCell>
+                <TableCell width="80px"></TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -383,16 +391,43 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
                 props.attachmentsList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => {
                   return (
                     <TableRow key={`${row.fileName}-${index}`}>
+                      <TableCell padding="checkbox">
+                        <Checkbox color="primary" checkedIcon={<Icon path={mdiCheckboxOutline} size={1} />} />
+                      </TableCell>
                       <TableCell scope="row">
-                        <Link underline="always" component="button" variant="body2" onClick={() => openAttachment(row)}>
+                        <Link
+                          style={{ fontWeight: 'bold' }}
+                          underline="always"
+                          component="button"
+                          onClick={() => openAttachment(row)}>
                           {row.fileName}
                         </Link>
                       </TableCell>
                       <TableCell>{row.fileType}</TableCell>
-                      <TableCell>{getFormattedFileSize(row.size)}</TableCell>
-                      <TableCell>{getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, row.lastModified)}</TableCell>
                       <TableCell>
-                        <Box my={-1}>
+                        {/* Pending Review State */}
+
+                        {row.securityToken && (
+                          <Chip
+                            size="small"
+                            color="secondary"
+                            label={!row.securityReviewTimestamp ? 'reason?' : 'Pending review'}
+                            icon={<Icon path={mdiAlertCircle} size={0.8} />}
+                            onClick={openDrawer}
+                          />
+                        )}
+
+                        {!row.securityToken && (
+                          <Chip
+                            size="small"
+                            color="primary"
+                            label="Unsecured"
+                            icon={<Icon path={mdiLockOpenCheckOutline} size={0.8} />}
+                            onClick={openDrawer}
+                          />
+                        )}
+
+                        <Box my={-1} hidden>
                           <Button
                             size="small"
                             color="primary"
@@ -422,27 +457,18 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
               {!props.attachmentsList.length && (
                 <TableRow>
                   <TableCell colSpan={6} align="center">
-                    No Attachments
+                    <strong>No Documents</strong>
                   </TableCell>
                 </TableRow>
               )}
             </TableBody>
           </Table>
         </TableContainer>
-        {props.attachmentsList.length > 0 && (
-          <TablePagination
-            rowsPerPageOptions={[5, 10, 15, 20]}
-            component="div"
-            count={props.attachmentsList.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onChangePage={(event: unknown, newPage: number) => handleChangePage(event, newPage, setPage)}
-            onChangeRowsPerPage={(event: React.ChangeEvent<HTMLInputElement>) =>
-              handleChangeRowsPerPage(event, setPage, setRowsPerPage)
-            }
-          />
-        )}
       </Box>
+
+      <Drawer anchor="right" open={open} onClose={closeDrawer}>
+        <Box width="500px">Content</Box>
+      </Drawer>
     </>
   );
 };
@@ -457,8 +483,6 @@ interface IAttachmentItemMenuButtonProps {
 }
 
 const AttachmentItemMenuButton: React.FC<IAttachmentItemMenuButtonProps> = (props) => {
-  const classes = useStyles();
-
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 
@@ -473,15 +497,10 @@ const AttachmentItemMenuButton: React.FC<IAttachmentItemMenuButtonProps> = (prop
     <>
       <Box my={-1}>
         <Box>
-          <IconButton
-            color="primary"
-            aria-label="delete attachment"
-            onClick={handleClick}
-            data-testid="attachment-action-menu">
+          <IconButton aria-label="Document actions" onClick={handleClick} data-testid="attachment-action-menu">
             <Icon path={mdiDotsVertical} size={1} />
           </IconButton>
           <Menu
-            className={classes.uploadMenu}
             getContentAnchorEl={null}
             anchorOrigin={{
               vertical: 'top',
@@ -505,23 +524,22 @@ const AttachmentItemMenuButton: React.FC<IAttachmentItemMenuButtonProps> = (prop
               }}
               data-testid="attachment-action-menu-download">
               <ListItemIcon>
-                <Icon path={mdiDownload} size={1} />
+                <Icon path={mdiTrayArrowDown} size={0.875} />
               </ListItemIcon>
-              Download File
+              Download Document
             </MenuItem>
-            {props.attachment.fileType === AttachmentType.REPORT && (
-              <MenuItem
-                onClick={() => {
-                  props.handleViewDetailsClick(props.attachment);
-                  setAnchorEl(null);
-                }}
-                data-testid="attachment-action-menu-details">
-                <ListItemIcon>
-                  <Icon path={mdiInformationOutline} size={1} />
-                </ListItemIcon>
-                View Details
-              </MenuItem>
-            )}
+            <MenuItem
+              onClick={() => {
+                props.handleViewDetailsClick(props.attachment);
+                setAnchorEl(null);
+              }}
+              data-testid="attachment-action-menu-details">
+              <ListItemIcon>
+                <Icon path={mdiInformationOutline} size={0.8} />
+              </ListItemIcon>
+              View Document Details
+            </MenuItem>
+
             <MenuItem
               onClick={() => {
                 props.handleDeleteFileClick(props.attachment);
@@ -529,9 +547,9 @@ const AttachmentItemMenuButton: React.FC<IAttachmentItemMenuButtonProps> = (prop
               }}
               data-testid="attachment-action-menu-delete">
               <ListItemIcon>
-                <Icon path={mdiTrashCanOutline} size={1} />
+                <Icon path={mdiTrashCanOutline} size={0.8} />
               </ListItemIcon>
-              Delete File
+              Delete Document
             </MenuItem>
           </Menu>
         </Box>

@@ -1,7 +1,7 @@
 import { AxiosInstance, CancelTokenSource } from 'axios';
 import { IEditReportMetaForm } from 'components/attachments/EditReportMetaForm';
 import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
-import { IGetReportMetaData, IUploadAttachmentResponse } from 'interfaces/useProjectApi.interface';
+import { IGetReportDetails, IUploadAttachmentResponse } from 'interfaces/useProjectApi.interface';
 import { IGetSummaryResultsResponse, IUploadSummaryResultsResponse } from 'interfaces/useSummaryResultsApi.interface';
 import {
   ICreateSurveyRequest,
@@ -445,7 +445,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
     projectId: number,
     surveyId: number,
     attachmentId: number
-  ): Promise<IGetReportMetaData> => {
+  ): Promise<IGetReportDetails> => {
     const { data } = await axios.get(
       `/api/project/${projectId}/survey/${surveyId}/attachments/${attachmentId}/metadata/get`,
       {

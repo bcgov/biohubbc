@@ -10,7 +10,7 @@ import useTheme from '@material-ui/core/styles/useTheme';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import EditFileWithMeta from 'components/attachments/EditFileWithMeta';
 import { Formik, FormikProps } from 'formik';
-import { IGetReportMetaData } from 'interfaces/useProjectApi.interface';
+import { IGetReportDetails } from 'interfaces/useProjectApi.interface';
 import React, { useRef, useState } from 'react';
 import {
   EditReportMetaFormInitialValues,
@@ -49,10 +49,10 @@ export interface IEditFileWithMetaDialogProps {
   /**
    * Report meta data
    *
-   * @type {IGetReportMetaData | null}
+   * @type {IGetReportDetails | null}
    * @memberof IEditFileWithMetaDialogProps
    */
-  reportMetaData: IGetReportMetaData | null;
+  reportMetaData: IGetReportDetails | null;
   /**
    * Set to `true` to open the dialog, `false` to close the dialog.
    *
@@ -71,7 +71,13 @@ export interface IEditFileWithMetaDialogProps {
    *
    * @memberof IEditFileWithMetaDialogProps
    */
-  onSave: (fileMeta: IEditReportMetaForm) => Promise<any>;
+  onSave: (fileMeta: IEditReportMetaForm) => Promise<void>;
+  /**
+   *
+   *
+   * @memberof IEditFileWithMetaDialogProps
+   */
+  refresh: () => void;
 }
 
 /**
@@ -113,6 +119,7 @@ const EditFileWithMetaDialog: React.FC<IEditFileWithMetaDialogProps> = (props) =
         onSubmit={(values) => {
           setIsSaving(true);
           props.onSave(values).finally(() => {
+            props.refresh();
             setIsSaving(false);
             props.onClose();
           });

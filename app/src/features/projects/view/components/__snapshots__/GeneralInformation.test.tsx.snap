@@ -2,369 +2,168 @@
 
 exports[`ProjectDetails renders correctly with activity data 1`] = `
 <DocumentFragment>
-  <div
-    class="MuiBox-root MuiBox-root-5"
+  <dl
+    class="MuiBox-root MuiBox-root-3"
   >
     <div
-      class="MuiToolbar-root MuiToolbar-regular"
-      style="justify-content: space-between;"
+      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-1"
     >
-      <h3
-        class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
-      >
-        General Information
-      </h3>
       <div
-        class="MuiBox-root MuiBox-root-6"
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-sm-6"
       >
-        <button
-          aria-label="Edit General Information"
-          class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
-          data-testid="h3-button-toolbar-Edit"
-          id="h3-button-toolbar-Edit"
-          tabindex="0"
-          title="Edit General Information"
-          type="button"
+        <dt
+          class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
         >
-          <span
-            class="MuiButton-label"
-          >
-            <span
-              class="MuiButton-startIcon MuiButton-iconSizeMedium"
-            >
-              <svg
-                role="presentation"
-                style="width: 1.3125rem; height: 1.3125rem;"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z"
-                  style="fill: currentColor;"
-                />
-              </svg>
-            </span>
-            <strong>
-              Edit
-            </strong>
-          </span>
-          <span
-            class="MuiTouchRipple-root"
-          />
-        </button>
+          Type
+        </dt>
+        <dd
+          class="MuiTypography-root MuiTypography-body1"
+        >
+          Project type
+        </dd>
+      </div>
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-sm-6"
+      >
+        <dt
+          class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+        >
+          Timeline
+        </dt>
+        <dd
+          class="MuiTypography-root MuiTypography-body1"
+        >
+          Oct 10, 1998 - Feb 26, 2021
+        </dd>
+      </div>
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-sm-12"
+      >
+        <dt
+          class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+        >
+          Activities
+        </dt>
+        <dd
+          class="MuiTypography-root MuiTypography-body1"
+        >
+          Activity code
+        </dd>
       </div>
     </div>
-    <hr
-      class="MuiDivider-root"
-    />
-    <dl>
-      <div
-        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
-      >
-        <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
-        >
-          <dt
-            class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
-          >
-            Project Name
-          </dt>
-          <dd
-            class="MuiTypography-root MuiTypography-body1"
-          >
-            Test Project Name
-          </dd>
-        </div>
-        <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
-        >
-          <dt
-            class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
-          >
-            Project Type
-          </dt>
-          <dd
-            class="MuiTypography-root MuiTypography-body1"
-          >
-            Project type
-          </dd>
-        </div>
-        <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
-        >
-          <dt
-            class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
-          >
-            Timeline
-          </dt>
-          <dd
-            class="MuiTypography-root MuiTypography-body1"
-          >
-            Oct 10, 1998 - Feb 26, 2021
-          </dd>
-        </div>
-        <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
-        >
-          <dt
-            class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
-          >
-            Activities
-          </dt>
-          <dd
-            class="MuiTypography-root MuiTypography-body1"
-          >
-            Activity code
-          </dd>
-        </div>
-      </div>
-    </dl>
-  </div>
+  </dl>
 </DocumentFragment>
 `;
 
 exports[`ProjectDetails renders correctly with no activity data 1`] = `
 <DocumentFragment>
-  <div
-    class="MuiBox-root MuiBox-root-3"
+  <dl
+    class="MuiBox-root MuiBox-root-2"
   >
     <div
-      class="MuiToolbar-root MuiToolbar-regular"
-      style="justify-content: space-between;"
+      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-1"
     >
-      <h3
-        class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
-      >
-        General Information
-      </h3>
       <div
-        class="MuiBox-root MuiBox-root-4"
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-sm-6"
       >
-        <button
-          aria-label="Edit General Information"
-          class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
-          data-testid="h3-button-toolbar-Edit"
-          id="h3-button-toolbar-Edit"
-          tabindex="0"
-          title="Edit General Information"
-          type="button"
+        <dt
+          class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
         >
-          <span
-            class="MuiButton-label"
-          >
-            <span
-              class="MuiButton-startIcon MuiButton-iconSizeMedium"
-            >
-              <svg
-                role="presentation"
-                style="width: 1.3125rem; height: 1.3125rem;"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z"
-                  style="fill: currentColor;"
-                />
-              </svg>
-            </span>
-            <strong>
-              Edit
-            </strong>
-          </span>
-          <span
-            class="MuiTouchRipple-root"
-          />
-        </button>
+          Type
+        </dt>
+        <dd
+          class="MuiTypography-root MuiTypography-body1"
+        >
+          Project type
+        </dd>
+      </div>
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-sm-6"
+      >
+        <dt
+          class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+        >
+          Timeline
+        </dt>
+        <dd
+          class="MuiTypography-root MuiTypography-body1"
+        >
+          Oct 10, 1998 - Feb 26, 2021
+        </dd>
+      </div>
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-sm-12"
+      >
+        <dt
+          class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+        >
+          Activities
+        </dt>
+        <dd
+          class="MuiTypography-root MuiTypography-body1"
+        >
+          No Activities
+        </dd>
       </div>
     </div>
-    <hr
-      class="MuiDivider-root"
-    />
-    <dl>
-      <div
-        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
-      >
-        <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
-        >
-          <dt
-            class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
-          >
-            Project Name
-          </dt>
-          <dd
-            class="MuiTypography-root MuiTypography-body1"
-          >
-            Test Project Name
-          </dd>
-        </div>
-        <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
-        >
-          <dt
-            class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
-          >
-            Project Type
-          </dt>
-          <dd
-            class="MuiTypography-root MuiTypography-body1"
-          >
-            Project type
-          </dd>
-        </div>
-        <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
-        >
-          <dt
-            class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
-          >
-            Timeline
-          </dt>
-          <dd
-            class="MuiTypography-root MuiTypography-body1"
-          >
-            Oct 10, 1998 - Feb 26, 2021
-          </dd>
-        </div>
-        <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
-        >
-          <dt
-            class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
-          >
-            Activities
-          </dt>
-          <dd
-            class="MuiTypography-root MuiTypography-body1"
-          >
-            No Activities
-          </dd>
-        </div>
-      </div>
-    </dl>
-  </div>
+  </dl>
 </DocumentFragment>
 `;
 
 exports[`ProjectDetails renders correctly with no end date (only start date) 1`] = `
 <DocumentFragment>
-  <div
+  <dl
     class="MuiBox-root MuiBox-root-1"
   >
     <div
-      class="MuiToolbar-root MuiToolbar-regular"
-      style="justify-content: space-between;"
+      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-1"
     >
-      <h3
-        class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
-      >
-        General Information
-      </h3>
       <div
-        class="MuiBox-root MuiBox-root-2"
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-sm-6"
       >
-        <button
-          aria-label="Edit General Information"
-          class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
-          data-testid="h3-button-toolbar-Edit"
-          id="h3-button-toolbar-Edit"
-          tabindex="0"
-          title="Edit General Information"
-          type="button"
+        <dt
+          class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
         >
-          <span
-            class="MuiButton-label"
-          >
-            <span
-              class="MuiButton-startIcon MuiButton-iconSizeMedium"
-            >
-              <svg
-                role="presentation"
-                style="width: 1.3125rem; height: 1.3125rem;"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z"
-                  style="fill: currentColor;"
-                />
-              </svg>
-            </span>
-            <strong>
-              Edit
-            </strong>
+          Type
+        </dt>
+        <dd
+          class="MuiTypography-root MuiTypography-body1"
+        >
+          Project type
+        </dd>
+      </div>
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-sm-6"
+      >
+        <dt
+          class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+        >
+          Timeline
+        </dt>
+        <dd
+          class="MuiTypography-root MuiTypography-body1"
+        >
+          <span>
+            Start Date:
           </span>
-          <span
-            class="MuiTouchRipple-root"
-          />
-        </button>
+           Oct 10, 1998
+        </dd>
+      </div>
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-sm-12"
+      >
+        <dt
+          class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+        >
+          Activities
+        </dt>
+        <dd
+          class="MuiTypography-root MuiTypography-body1"
+        >
+          Activity code
+        </dd>
       </div>
     </div>
-    <hr
-      class="MuiDivider-root"
-    />
-    <dl>
-      <div
-        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
-      >
-        <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
-        >
-          <dt
-            class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
-          >
-            Project Name
-          </dt>
-          <dd
-            class="MuiTypography-root MuiTypography-body1"
-          >
-            Test Project Name
-          </dd>
-        </div>
-        <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
-        >
-          <dt
-            class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
-          >
-            Project Type
-          </dt>
-          <dd
-            class="MuiTypography-root MuiTypography-body1"
-          >
-            Project type
-          </dd>
-        </div>
-        <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
-        >
-          <dt
-            class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
-          >
-            Timeline
-          </dt>
-          <dd
-            class="MuiTypography-root MuiTypography-body1"
-          >
-            <span>
-              Start Date:
-            </span>
-             Oct 10, 1998
-          </dd>
-        </div>
-        <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
-        >
-          <dt
-            class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
-          >
-            Activities
-          </dt>
-          <dd
-            class="MuiTypography-root MuiTypography-body1"
-          >
-            Activity code
-          </dd>
-        </div>
-      </div>
-    </dl>
-  </div>
+  </dl>
 </DocumentFragment>
 `;
