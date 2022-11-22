@@ -27,6 +27,23 @@ GET.apiDoc = {
       Bearer: []
     }
   ],
+  requestBody: {
+    content: {
+      'application/json': {
+        schema: {
+          type: 'object',
+          properties: {
+            security_ids: {
+              type: 'array',
+              items: {
+                type: 'number',
+              }
+            }
+          }
+        }
+      }
+    }
+  },
   responses: {
     200: {
       description: 'Security objects.',
@@ -63,6 +80,7 @@ export function getRules(): RequestHandler {
   return async (req, res) => {
     try {
       const service = new SecuritySearchService();
+      // req.body.security_ids
       const response = await service.getPersecutionSecurityRules();
 
       return res.status(200).json(response);
