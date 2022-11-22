@@ -36,7 +36,7 @@ import { AttachmentsI18N, EditReportMetaDataI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { IGetProjectAttachment, IGetReportMetaData } from 'interfaces/useProjectApi.interface';
+import { IGetProjectAttachment, IGetReportDetails } from 'interfaces/useProjectApi.interface';
 import { IGetSurveyAttachment } from 'interfaces/useSurveyApi.interface';
 import React, { useContext, useState } from 'react';
 import { getFormattedFileSize } from 'utils/Utils';
@@ -66,7 +66,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
   const [rowsPerPage] = useState(10);
   const [page] = useState(0);
 
-  const [reportMetaData, setReportMetaData] = useState<IGetReportMetaData | null>(null);
+  const [reportMetaData, setReportMetaData] = useState<IGetReportDetails | null>(null);
   console.log('reportMetaData', reportMetaData);
   const [showViewFileWithDetailsDialog, setShowViewFileWithDetailsDialog] = useState<boolean>(false);
 
@@ -314,7 +314,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
   };
 
   const handleDialogEditSave = async (values: IEditReportMetaForm) => {
-    if (!reportMetaData) {
+    if (!reportMetaData?.metadata) {
       return;
     }
 
@@ -325,18 +325,18 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
         await biohubApi.survey.updateSurveyReportMetadata(
           props.projectId,
           props.surveyId,
-          reportMetaData.attachment_id,
+          reportMetaData.metadata.attachment_id,
           AttachmentType.REPORT,
           fileMeta,
-          reportMetaData.revision_count
+          reportMetaData.metadata.revision_count
         );
       } else {
         await biohubApi.project.updateProjectReportMetadata(
           props.projectId,
-          reportMetaData.attachment_id,
+          reportMetaData.metadata.attachment_id,
           AttachmentType.REPORT,
           fileMeta,
-          reportMetaData.revision_count
+          reportMetaData.metadata.revision_count
         );
       }
     } catch (error) {

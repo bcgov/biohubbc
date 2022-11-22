@@ -3,6 +3,7 @@ import {
   AttachmentRepository,
   IGetAttachment,
   IGetAttachmentAuthor,
+  IGetAttachmentSecurityReason,
   IGetAttachmentsSource,
   IGetReportAttachmentsSource
 } from '../repositories/attachment-repository';
@@ -34,6 +35,10 @@ export class AttachmentService extends DBService {
 
   async getProjectAttachmentAuthors(attachmentId: number): Promise<IGetAttachmentAuthor[]> {
     return this.attachmentRepository.getProjectAttachmentAuthors(attachmentId);
+  }
+
+  async getProjectAttachmentSecurityRules(attachmentId: number): Promise<IGetAttachmentSecurityReason[]> {
+    return this.attachmentRepository.getProjectAttachmentSecurityReasons(attachmentId);
   }
 
   async addSecurityToAttachment(securityIds: number[], attachmentId: number): Promise<void> {

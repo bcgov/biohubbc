@@ -43,6 +43,13 @@ export interface IGetAttachmentAuthor {
   revision_count: number;
 }
 
+export interface IGetAttachmentSecurityReason {
+  project_report_author_id: number;
+  project_report_attachment_id: number;
+  persecution_security_id: number;
+  update_date: string;
+}
+
 /**
  * @TODO find all definitions of this interface and replace them by importing this
  * interface
@@ -178,18 +185,39 @@ export class AttachmentRepository extends BaseRepository {
 
   async getProjectAttachmentAuthors(projectReportAttachmentId: number): Promise<IGetAttachmentAuthor[]> {
     const sqlStatement = SQL`
-  SELECT
-    project_report_author.*
-  FROM
-    project_report_author
-  where
-    project_report_attachment_id = ${projectReportAttachmentId}
-`;
+      SELECT
+        project_report_author.*
+      FROM
+        project_report_author
+      where
+        project_report_attachment_id = ${projectReportAttachmentId}
+    `;
 
     const response = await this.connection.sql<IGetAttachmentAuthor>(sqlStatement);
 
     if (!response || !response.rows) {
       throw new HTTP400('Failed to get project attachment authors by attachment id');
+    }
+
+    return response.rows;
+  }
+
+  async getProjectAttachmentSecurityReasons(
+    projectReportAttachmentId: number
+  ): Promise<IGetAttachmentSecurityReason[]> {
+    const sqlStatement = SQL`
+      SELECT
+        project_report_persecution.*
+      FROM
+        project_report_persecution
+      where
+        project_report_attachment_id = ${projectReportAttachmentId}
+    `;
+
+    const response = await this.connection.sql<IGetAttachmentSecurityReason>(sqlStatement);
+
+    if (!response || !response.rows) {
+      throw new HTTP400('Failed to get project attachment security reasons by attachment id');
     }
 
     return response.rows;

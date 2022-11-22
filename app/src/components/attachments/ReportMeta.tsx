@@ -6,7 +6,7 @@ import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Toolbar from '@material-ui/core/Toolbar';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
-import { IGetReportMetaData } from 'interfaces/useProjectApi.interface';
+import { IGetReportDetails } from 'interfaces/useProjectApi.interface';
 import React from 'react';
 import { getFormattedDateRangeString } from 'utils/Utils';
 
@@ -37,7 +37,7 @@ export interface IViewReportMetadataProps {
   onEdit?: () => void;
   onSave?: <IEditReportMetaForm>() => void;
 
-  reportMetaData: IGetReportMetaData | null;
+  reportMetaData: IGetReportDetails | null;
 }
 
 const ReportMeta: React.FC<IViewReportMetadataProps> = (props) => {
@@ -60,26 +60,29 @@ const ReportMeta: React.FC<IViewReportMetadataProps> = (props) => {
               <Typography component="dt" variant="body1" color="textSecondary">
                 Report Title
               </Typography>
-              <Typography variant="body1">{reportMetaData?.title}</Typography>
+              <Typography variant="body1">{reportMetaData?.metadata?.title}</Typography>
             </Box>
             <Box mt={1} className={classes.docMetaRow}>
               <Typography component="dt" variant="body1" color="textSecondary">
                 Description
               </Typography>
-              <Typography variant="body1">{reportMetaData?.description}</Typography>
+              <Typography variant="body1">{reportMetaData?.metadata?.description}</Typography>
             </Box>
             <Box mt={1} className={classes.docMetaRow}>
               <Typography component="dt" variant="body1" color="textSecondary">
                 Year Published
               </Typography>
-              <Typography component="dd">{reportMetaData?.year_published}</Typography>
+              <Typography component="dd">{reportMetaData?.metadata?.year_published}</Typography>
             </Box>
             <Box mt={1} className={classes.docMetaRow}>
               <Typography component="dt" variant="body1" color="textSecondary">
                 Last Modified
               </Typography>
               <Typography component="dd">
-                {getFormattedDateRangeString(DATE_FORMAT.ShortMediumDateFormat, reportMetaData?.last_modified || '')}
+                {getFormattedDateRangeString(
+                  DATE_FORMAT.ShortMediumDateFormat,
+                  reportMetaData?.metadata?.last_modified || ''
+                )}
               </Typography>
             </Box>
             <Box mt={1} className={classes.docMetaRow}>

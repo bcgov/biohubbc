@@ -60,7 +60,7 @@ GET.apiDoc = {
           schema: {
             title: 'metadata get response object',
             type: 'object',
-            required: ['metadata', 'authors'],
+            required: ['metadata', 'authors', 'security_reasons'],
             properties: {
               metadata: {
                 description: 'Report metadata general information object',
@@ -116,11 +116,26 @@ GET.apiDoc = {
                   }
                 }
               },
-              security: {
+              security_reasons: {
                 description: 'Report metadata security object',
                 type: 'array',
                 items: {
-                  type: 'object'
+                  type: 'object',
+                  properties: {
+                    project_report_author_id: {
+                      type: 'number'
+                    },
+                    project_report_attachment_id: {
+                      type: 'number'
+                    },
+                    persecution_security_id: {
+                      type: 'number'
+                    },
+                    update_date: {
+                      oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
+                      description: 'ISO 8601 date string for the project start date'
+                    }
+                  }
                 }
               }
             }
@@ -177,26 +192,17 @@ export function getProjectReportMetaData(): RequestHandler {
 
       const projectReportAuthors = await attachmentService.getProjectAttachmentAuthors(Number(req.params.attachmentId));
 
+      const projectReportSecurity = await attachmentService.getProjectAttachmentSecurityRules(
+        Number(req.params.attachmentId)
+      );
+
       await connection.commit();
 
-      const securityObj = [
-        {
-          category: 'my category 1',
-          sub_category: 'my sub_category 1',
-          reason: 'my_reason 1',
-          reason_description: 'This is the description reason for reason 1',
-          date_expired: '2020-12-12'
-        },
-        {
-          category: 'my category 2',
-          sub_category: 'my sub_category 2',
-          reason: 'my_reason 2',
-          reason_description: 'This is the description reason for reason 2',
-          date_expired: '2040-12-31'
-        }
-      ];
-
-      const reportMetaObj = { metadata: projectReportAttachment, authors: projectReportAuthors, security: securityObj };
+      const reportMetaObj = {
+        metadata: projectReportAttachment,
+        authors: projectReportAuthors,
+        security_reasons: projectReportSecurity
+      };
 
       console.log('*************************** reportMetaObj *****************************');
       console.log(reportMetaObj);
