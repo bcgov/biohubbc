@@ -189,8 +189,29 @@ export class AttachmentRepository extends BaseRepository {
     return response.rows;
   }
 
+  // TODO functions need to handle duplicate keys (re adding existing security reasons)
   async addSecurityToAttachments(securityIds: number[], attachmentId: number): Promise<void> {
-    // TODO
+    const insertStatement = SQL`
+      INSERT INTO project_attachment_persecution (
+        project_attachment_id, 
+        persecution_security_id
+      ) VALUES `;
+
+    securityIds.forEach((id, index) => {
+      insertStatement.append(SQL`
+      (${attachmentId},${id})`);
+
+      if (index !== securityIds.length - 1) {
+        insertStatement.append(',');
+      }
+    });
+    insertStatement.append(';');
+
+    try {
+      await this.connection.sql(insertStatement);
+    } catch (error) {
+      defaultLog.error({ label: 'addSecurityToAttachments', message: 'error', error });
+    }
   }
 
   /**
@@ -267,8 +288,58 @@ export class AttachmentRepository extends BaseRepository {
     return result;
   }
 
+  // TODO functions need to handle duplicate keys (re adding existing security reasons)
   async addSecurityToReportAttachments(securityIds: number[], attachmentId: number): Promise<void> {
-    // TODO
+    const insertStatement = SQL`
+      INSERT INTO project_report_persecution (
+        project_report_attachment_id, 
+        persecution_security_id
+      ) VALUES `;
+
+    securityIds.forEach((id, index) => {
+      insertStatement.append(SQL`
+      (${attachmentId},${id})`);
+
+      if (index !== securityIds.length - 1) {
+        insertStatement.append(',');
+      }
+    });
+
+    insertStatement.append(';');
+
+    try {
+      await this.connection.sql(insertStatement);
+    } catch (error) {
+      defaultLog.error({ label: 'addSecurityToAttachments', message: 'error', error });
+    }
+  }
+
+  async addSecurityReviewTimeToReportAttachment(attachmentId: number): Promise<void> {
+    const updateSQL = SQL`
+      UPDATE  project_report_attachment 
+      SET security_review_timestamp=now()
+      WHERE project_report_attachment_id=${attachmentId};`;
+
+      try {
+        
+        await this.connection.sql(updateSQL)
+      } catch (error) {
+        defaultLog.error({ label: 'addSecurityReviewTimeToReportAttachment', message: 'error', error });
+      }
+  }
+
+  async addSecurityReviewTimeToAttachment(attachmentId: number): Promise<void> {
+    const updateSQL = SQL`
+      UPDATE  project_attachment 
+      SET security_review_timestamp=now()
+      WHERE project_attachment_id=${attachmentId};`;
+
+      try {
+        
+        await this.connection.sql(updateSQL)
+      } catch (error) {
+        defaultLog.error({ label: 'addSecurityReviewTimeToAttachment', message: 'error', error });
+      }
   }
 
   /**
