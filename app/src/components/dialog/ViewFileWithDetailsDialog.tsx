@@ -25,7 +25,7 @@ import ReportMeta from 'components/attachments/ReportMeta';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { DialogContext } from 'contexts/dialogContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { IGetReportMetaData, IGetSecurityReasons } from 'interfaces/useProjectApi.interface';
+import { IGetReportDetails, IGetSecurityReasons } from 'interfaces/useProjectApi.interface';
 import React, { useContext, useState } from 'react';
 import { getFormattedDateRangeString } from 'utils/Utils';
 import { AttachmentType } from '../../constants/attachments';
@@ -57,12 +57,11 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 export interface IViewFileWithDetailsDialogProps {
   projectId: number;
-  surveyId?: number;
   open: boolean;
   onClose: () => void;
   onFileDownload: () => void;
   onSave: (fileMeta: IEditReportMetaForm) => Promise<void>;
-  reportMetaData: IGetReportMetaData | null;
+  reportDetails: IGetReportDetails | null;
   attachmentSize: string;
   dialogProps?: DialogProps;
   fileType: string | null;
@@ -86,37 +85,19 @@ const ViewFileWithDetailsDialog: React.FC<IViewFileWithDetailsDialogProps> = (pr
       return security.security_reason_id;
     });
 
-    if (props.reportMetaData?.attachment_id) {
-      if (props.surveyId == undefined) {
-        if (props.fileType === AttachmentType.REPORT) {
-          await biohubApi.security.deleteProjectReportAttachmentSecurityReasons(
-            props.projectId,
-            props.reportMetaData?.attachment_id,
-            securityIds
-          );
-        } else {
-          await biohubApi.security.deleteProjectAttachmentSecurityReasons(
-            props.projectId,
-            props.reportMetaData?.attachment_id,
-            securityIds
-          );
-        }
+    if (props.reportDetails?.metadata?.attachment_id) {
+      if (props.fileType === AttachmentType.REPORT) {
+        await biohubApi.security.deleteProjectReportAttachmentSecurityReasons(
+          props.projectId,
+          props.reportDetails?.metadata?.attachment_id,
+          securityIds
+        );
       } else {
-        if (props.fileType === AttachmentType.REPORT) {
-          await biohubApi.security.deleteSurveyReportAttachmentSecurityReasons(
-            props.projectId,
-            props.surveyId,
-            props.reportMetaData?.attachment_id,
-            securityIds
-          );
-        } else {
-          await biohubApi.security.deleteSurveyAttachmentSecurityReasons(
-            props.projectId,
-            props.surveyId,
-            props.reportMetaData?.attachment_id,
-            securityIds
-          );
-        }
+        await biohubApi.security.deleteProjectAttachmentSecurityReasons(
+          props.projectId,
+          props.reportDetails?.metadata?.attachment_id,
+          securityIds
+        );
       }
     }
   };
@@ -173,7 +154,7 @@ const ViewFileWithDetailsDialog: React.FC<IViewFileWithDetailsDialogProps> = (pr
       <EditFileWithMetaDialog
         open={showEditFileWithMetaDialog}
         dialogTitle={'Edit Upload Report'}
-        reportMetaData={props.reportMetaData}
+        reportMetaData={props.reportDetails}
         onClose={() => {
           setShowEditFileWithMetaDialog(false);
         }}
@@ -191,7 +172,7 @@ const ViewFileWithDetailsDialog: React.FC<IViewFileWithDetailsDialogProps> = (pr
           <Box display="flex" justifyContent="space-between">
             <Box style={{ maxWidth: '120ch' }}>
               <Typography variant="h2" component="h1" className={classes.docTitle}>
-                {props.reportMetaData?.title}
+                {props.reportDetails?.metadata?.title}
               </Typography>
             </Box>
             <Box flex="0 0 auto">
@@ -221,8 +202,8 @@ const ViewFileWithDetailsDialog: React.FC<IViewFileWithDetailsDialogProps> = (pr
               Document requires a security review
             </Alert>
 
-            {props.fileType === 'Report' && props.reportMetaData && (
-              <ReportMeta reportMetaData={props.reportMetaData} />
+            {props.reportDetails?.metadata && props.fileType === 'Report' && (
+              <ReportMeta reportDetails={props.reportDetails} />
             )}
           </Box>
           <Paper variant="outlined" style={{ marginTop: '24px' }}>
@@ -243,8 +224,8 @@ const ViewFileWithDetailsDialog: React.FC<IViewFileWithDetailsDialogProps> = (pr
                   variant="contained"
                   color="primary"
                   onClick={() => {
-                    if (props.reportMetaData?.security_reasons) {
-                      showDeleteSecurityReasonDialog(props.reportMetaData?.security_reasons);
+                    if (props.reportDetails?.security_reasons) {
+                      showDeleteSecurityReasonDialog(props.reportDetails?.security_reasons);
                     }
                   }}
                   startIcon={<Icon path={mdiLockOpenOutline} size={0.8} />}>
@@ -264,9 +245,9 @@ const ViewFileWithDetailsDialog: React.FC<IViewFileWithDetailsDialogProps> = (pr
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {props.reportMetaData?.security_reasons &&
-                    props.reportMetaData?.security_reasons?.length > 0 &&
-                    props.reportMetaData?.security_reasons?.map((row, index) => {
+                  {props.reportDetails?.security_reasons &&
+                    props.reportDetails?.security_reasons?.length > 0 &&
+                    props.reportDetails?.security_reasons?.map((row, index) => {
                       return (
                         <TableRow key={`${row.category}-${index}`}>
                           <TableCell>{row.category}</TableCell>
@@ -283,7 +264,7 @@ const ViewFileWithDetailsDialog: React.FC<IViewFileWithDetailsDialogProps> = (pr
                             <Typography variant="body2" component="div" color="textSecondary">
                               {getFormattedDateRangeString(
                                 DATE_FORMAT.ShortMediumDateFormat,
-                                props.reportMetaData?.last_modified || ''
+                                props.reportDetails?.metadata?.last_modified || ''
                               )}
                             </Typography>
                           </TableCell>
@@ -299,6 +280,30 @@ const ViewFileWithDetailsDialog: React.FC<IViewFileWithDetailsDialogProps> = (pr
                         </TableRow>
                       );
                     })}
+
+                  {props.reportDetails?.security_reasons?.length == 0 && (
+                    <TableRow key={`0`}>
+                      <TableCell>Security Administration</TableCell>
+                      <TableCell>
+                        <Typography style={{ fontWeight: 700 }}>Awaiting Security Review</Typography>
+                        <Typography variant="body1" color="textSecondary">
+                          Awaiting review to determine if security-reasons should be assigned
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Typography variant="body2" component="div">
+                          Submitted
+                        </Typography>
+                        <Typography variant="body2" component="div" color="textSecondary">
+                          {getFormattedDateRangeString(
+                            DATE_FORMAT.ShortMediumDateFormat,
+                            props.reportDetails?.metadata?.last_modified || ''
+                          )}
+                        </Typography>
+                      </TableCell>
+                      <TableCell></TableCell>
+                    </TableRow>
+                  )}
                 </TableBody>
               </Table>
             </TableContainer>

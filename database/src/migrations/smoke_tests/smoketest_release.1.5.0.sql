@@ -146,7 +146,8 @@ begin
     , lead_last_name
     , geography
     , ecological_season_id
-    , intended_outcome_id)
+    , intended_outcome_id
+    , government_interest_description)
   values (_project_id
     , 'survey name'
     , 'survey objectives'
@@ -157,7 +158,8 @@ begin
     , 'lead last'
     , _geography
     , (select ecological_season_id from ecological_season where name = 'Growing')
-    , (select intended_outcome_id from intended_outcome where name = 'Survival')    
+    , (select intended_outcome_id from intended_outcome where name = 'Survival')
+    , 'government interest reason'
     ) returning survey_id into _survey_id;
 
   insert into survey_proprietor (survey_id, first_nations_id, proprietor_type_id, rationale,disa_required)
@@ -175,6 +177,7 @@ begin
   insert into survey_attachment_proprietary (proprietary_security_id, survey_attachment_id, proprietor, description, start_date, end_date) values (1000, _survey_attachment_id, 'Proprietor Name', 'proprietary description', null, current_date + 60);
   insert into survey_report_persecution (persecution_security_id, survey_report_attachment_id) values (1000, _survey_report_attachment_id);
   insert into survey_report_proprietary (proprietary_security_id, survey_report_attachment_id, proprietor, description, start_date, end_date) values (1000, _survey_report_attachment_id, 'Proprietor Name', 'proprietary description', null, current_date + 60);
+  insert into survey_occurrence_proprietary (proprietary_security_id, survey_id, proprietor, description, start_date, end_date) values (1000, _survey_id, 'Proprietor Name', 'proprietary description', null, current_date + 60);
 
   select count(1) into _count from survey;
   assert _count = 1, 'FAIL survey';
