@@ -50,6 +50,7 @@ export async function up(knex: Knex): Promise<void> {
        delete from survey_attachment_proprietary where survey_attachment_id in (select survey_attachment_id from survey_attachment where survey_id = p_survey_id);
        delete from survey_report_persecution where survey_report_attachment_id in (select survey_report_attachment_id from survey_report_attachment where survey_id = p_survey_id);
        delete from survey_report_proprietary where survey_report_attachment_id in (select survey_report_attachment_id from survey_report_attachment where survey_id = p_survey_id);
+       delete from survey_occurrence_proprietary where survey_id = p_survey_id;
        delete from survey_attachment where survey_id = p_survey_id;
        delete from survey_report_author where survey_report_attachment_id in (select survey_report_attachment_id from survey_report_attachment where survey_id = p_survey_id);
        delete from survey_report_attachment where survey_id = p_survey_id;
