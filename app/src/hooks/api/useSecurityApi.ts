@@ -12,12 +12,18 @@ const useSecurityApi = (axios: AxiosInstance) => {
   /**
    * Fetch a list of security reasons.
    *
-   * TODO update to fetch a real list of reasons from endpoint, rather than the hardcoded values currently returned
-   *
    * @return {*}  {Promise<SecurityReason[]>}
    */
   const getSecurityReasons = async (): Promise<SecurityReason[]> => {
-    const { data } = await axios.get<any>(`/api/security/get`);
+    const { data } = await axios.get<SecurityReason[]>(`/api/security/get`);
+    return data;
+  };
+
+  const searchForSecurityReasons = async (ids: number[]): Promise<SecurityReason[]> => {
+    const { data } = await axios.post<SecurityReason[]>(`/api/security/search`, {
+      security_ids: ids
+    });
+
     return data;
   };
 
@@ -36,7 +42,8 @@ const useSecurityApi = (axios: AxiosInstance) => {
 
   return {
     getSecurityReasons,
-    addSecurityReasons
+    addSecurityReasons,
+    searchForSecurityReasons
   };
 };
 

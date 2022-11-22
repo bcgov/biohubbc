@@ -24,7 +24,8 @@ export class SecuritySearchService {
     try {
       const client = new Client({ node: process.env.ELASTICSEARCH_URL });
       return client.search({
-        index: `${index}`
+        index: `${index}`,
+        ...searchRequest
       });
     } catch (error) {
       defaultLog.debug({ label: 'elasticSearch', message: 'error', error });
