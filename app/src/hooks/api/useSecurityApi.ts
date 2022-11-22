@@ -1,4 +1,5 @@
 import { AxiosInstance } from 'axios';
+import { AttachmentType } from 'constants/attachments';
 import { SecurityReason } from 'interfaces/useSecurityApi.interface';
 
 /**
@@ -60,9 +61,105 @@ const useSecurityApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  /**
+   * Remove array of security reasons from Project report attachment Id
+   *
+   * @param {number} projectId
+   * @param {number} attachmentId
+   * @param {number[]} securityIds
+   * @return {*}  {Promise<any>}
+   */
+  const deleteProjectReportAttachmentSecurityReasons = async (
+    projectId: number,
+    attachmentId: number,
+    securityIds: number[]
+  ): Promise<any> => {
+    const { data } = await axios.post(`/api/project/${projectId}/attachments/${attachmentId}/security/delete`, {
+      security_ids: securityIds,
+      attachmentType: AttachmentType.REPORT
+    });
+
+    return data;
+  };
+
+  /**
+   * Remove array of security reasons from Project attachment Id
+   *
+   * @param {number} projectId
+   * @param {number} attachmentId
+   * @param {number[]} securityIds
+   * @return {*}  {Promise<any>}
+   */
+  const deleteProjectAttachmentSecurityReasons = async (
+    projectId: number,
+    attachmentId: number,
+    securityIds: number[]
+  ): Promise<any> => {
+    const { data } = await axios.post(`/api/project/${projectId}/attachments/${attachmentId}/security/delete`, {
+      security_ids: securityIds,
+      attachmentType: AttachmentType.OTHER
+    });
+
+    return data;
+  };
+
+  /**
+   * Remove array of security reasons from Survey report attachment Id
+   *
+   * @param {number} projectId
+   * @param {number} attachmentId
+   * @param {number[]} securityIds
+   * @return {*}  {Promise<any>}
+   */
+  const deleteSurveyReportAttachmentSecurityReasons = async (
+    projectId: number,
+    surveyId: number,
+    attachmentId: number,
+    securityIds: number[]
+  ): Promise<any> => {
+    const { data } = await axios.post(
+      `/api/project/${projectId}/survey/${surveyId}/attachments/${attachmentId}/security/delete`,
+      {
+        security_ids: securityIds,
+        attachmentType: AttachmentType.REPORT
+      }
+    );
+
+    return data;
+  };
+
+  /**
+   * Remove array of security reasons from Survey attachment Id
+   *
+   * @param {number} projectId
+   * @param {number} attachmentId
+   * @param {number[]} securityIds
+   * @return {*}  {Promise<any>}
+   */
+  const deleteSurveyAttachmentSecurityReasons = async (
+    projectId: number,
+    surveyId: number,
+    attachmentId: number,
+    securityIds: number[]
+  ): Promise<any> => {
+    const { data } = await axios.post(
+      `/api/project/${projectId}/survey/${surveyId}/attachments/${attachmentId}/security/delete`,
+      {
+        security_ids: securityIds,
+        attachmentType: AttachmentType.OTHER
+      }
+    );
+
+    return data;
+  };
+
   return {
     getSecurityReasons,
-    addSecurityReasons
+    addSecurityReasons,
+    deleteProjectReportAttachmentSecurityReasons,
+    deleteProjectAttachmentSecurityReasons,
+    deleteSurveyReportAttachmentSecurityReasons,
+    deleteSurveyAttachmentSecurityReasons
   };
 };
 
