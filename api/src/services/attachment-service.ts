@@ -8,6 +8,10 @@ import {
 } from '../repositories/attachment-repository';
 import { DBService } from './db-service';
 
+export interface IAttachmentType {
+  id: number;
+  type: 'Report' | 'Other';
+}
 export class AttachmentService extends DBService {
   attachmentRepository: AttachmentRepository;
 
@@ -152,5 +156,30 @@ export class AttachmentService extends DBService {
     const results = await Promise.all(promises);
 
     return results;
+  }
+
+  async addSecurityToAllAttachments(securityIds: number[], attachments: IAttachmentType[]): Promise<void[]> {
+    const actions: Promise<void>[] = []
+    attachments.forEach(item => {
+      if (item.type === 'Report') {
+        actions.push(this.addSecurityToReportAttachment(securityIds, item.id));
+        actions.push(this.addSecurityReviewToReportAttachment(item.id));
+      } else {
+        actions.push(this.addSecurityToAttachment(securityIds, item.id));
+        actions.push(this.addSecurityReviewToAttachment(item.id));
+      }
+    });
+
+    const results = await Promise.all(actions);
+
+    return results;
+  }
+
+  async addSecurityReviewToReportAttachment(attachmentId: number): Promise<void> {
+    return this.attachmentRepository.addSecurityReviewTimeToReportAttachment(attachmentId);
+  }
+
+  async addSecurityReviewToAttachment(attachmentId: number): Promise<void> {
+    return this.attachmentRepository.addSecurityReviewTimeToAttachment(attachmentId);
   }
 }

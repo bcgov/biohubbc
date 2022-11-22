@@ -30,6 +30,11 @@ export interface IProjectAttachmentsProps {
   projectForViewData: IGetProjectForViewResponse;
 }
 
+export interface IAttachmentType {
+  id: number,
+  type: "Report" | "Other"
+}
+
 /**
  * Project attachments content for a project.
  *
@@ -46,6 +51,9 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
   );
   const [attachmentsList, setAttachmentsList] = useState<IGetProjectAttachment[]>([]);
   const [reportAttachmentsList, setReportAttachmentsList] = useState<IGetProjectReportAttachment[]>([]);
+
+  // Tracks which attachment rows have been selected, via the table checkboxes.
+  const [selectedAttachmentRows, setSelectedAttachmentRows] = useState<IAttachmentType[]>([]);
 
   const handleUploadReportClick = () => {
     setAttachmentType(AttachmentType.REPORT);
@@ -92,6 +100,13 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
     };
   };
 
+  const addSecurityReasons = (securityReasons: number[]) => {
+    console.log(securityReasons);
+    biohubApi.security.addSecurityReasons(projectId, securityReasons, selectedAttachmentRows).finally(() => {
+      setSecurityDialogOpen(false);
+    });
+  };
+
   useEffect(() => {
     getAttachments(false);
     // eslint-disable-next-line
@@ -126,8 +141,14 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
 
       <SecurityDialog
         open={securityDialogOpen}
-        onAccept={() => {
-          setSecurityDialogOpen(false);
+        onAccept={(securityReasons) => {
+          if (selectedAttachmentRows.length > 0) {
+            // formik form is retuning array of strings not numbers if printed out in console
+            // linter wrongly believes formik to be number[] so wrapped map in string to force values into number[]
+            addSecurityReasons(securityReasons.security_reasons.map((item) => parseInt(`${item.security_reason_id}`)));
+          } else {
+            setSecurityDialogOpen(false);
+          }
         }}
         onClose={() => setSecurityDialogOpen(false)}
       />
@@ -188,7 +209,15 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
       </Toolbar>
       <Divider></Divider>
       <Box px={1}>
-        <AttachmentsList projectId={projectId} attachmentsList={[...attachmentsList, ...reportAttachmentsList]} getAttachments={getAttachments} />
+        <AttachmentsList
+          projectId={projectId}
+          attachmentsList={attachmentsList}
+          getAttachments={getAttachments}
+          onCheckboxChange={(value) => {
+            console.log(value);
+            setSelectedAttachmentRows([value]);
+          }}
+        />
       </Box>
     </>
   );
