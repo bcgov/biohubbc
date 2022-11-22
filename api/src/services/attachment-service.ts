@@ -34,8 +34,8 @@ export class AttachmentService extends DBService {
     return this.attachmentRepository.getProjectAttachmentAuthors(attachmentId);
   }
 
-  async getProjectAttachmentSecurityRules(attachmentId: number): Promise<IGetAttachmentSecurityReason[]> {
-    const security_reasons = this.attachmentRepository.getProjectAttachmentSecurityReasons(attachmentId);
+  async getProjectReportSecurityRules(attachmentId: number): Promise<IGetAttachmentSecurityReason[]> {
+    const security_reasons = this.attachmentRepository.getProjectReportSecurityReasons(attachmentId);
 
     //For faking security reason from the database
 

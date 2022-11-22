@@ -202,9 +202,7 @@ export class AttachmentRepository extends BaseRepository {
     return response.rows;
   }
 
-  async getProjectAttachmentSecurityReasons(
-    projectReportAttachmentId: number
-  ): Promise<IGetAttachmentSecurityReason[]> {
+  async getProjectReportSecurityReasons(projectReportAttachmentId: number): Promise<IGetAttachmentSecurityReason[]> {
     const sqlStatement = SQL`
       SELECT
         project_report_persecution.*
