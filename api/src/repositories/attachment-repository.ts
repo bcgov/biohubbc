@@ -4,23 +4,32 @@ import { HTTP400 } from '../errors/http-error';
 import { getLogger } from '../utils/logger';
 import { BaseRepository } from './base-repository';
 
-/**
- * @TODO find all definitions of this interface and replace them by importing this
- * interface
- * @TODO see new fields added to IGetAttachmentsSource from pull #845 (securityReviewTimestamp)
- */
-export interface IGetAttachmentsSource {
-  file_name: string;
-  file_type: string;
-  title: string;
-  description: string;
-  key: string;
-  file_size: string;
-  is_secure: string;
+export interface IGetSurveyAttachment {
+  /**
+   * @TODO
+   */
 }
 
-export interface IGetAttachment {
-  attachment_id: number;
+export interface IGetSurveyReportAttachment {
+  /**
+   * @TODO
+   */
+}
+
+export interface IGetProjectAttachment {
+  id: number,
+  file_name: string;
+  file_type: string;
+  create_date: string;
+  update_date: string;
+  file_size: string;
+  key: string;
+  security_token: string;
+  security_review_timestamp: string | null
+}
+
+export interface IGetProjectReportAttachment {
+  id: number;
   file_name: string;
   title: string;
   description: string;
@@ -30,9 +39,11 @@ export interface IGetAttachment {
   key: string;
   file_size: string;
   security_token: string;
-  security_review_timestamp: string;
+  security_review_timestamp: string | null
   revision_count: number;
 }
+
+export type WithSecurityRuleCount<T> = T & { security_rule_count: number }
 
 export interface IGetAttachmentAuthor {
   project_report_author_id: number;
@@ -48,21 +59,6 @@ export interface IGetAttachmentSecurityReason {
   project_report_attachment_id: number;
   persecution_security_id: number;
   update_date: string;
-}
-
-/**
- * @TODO find all definitions of this interface and replace them by importing this
- * interface
- */
-export interface IGetReportAttachmentsSource {
-  file_name: string;
-  title: string;
-  year: string;
-  description: string;
-  key: string;
-  file_size: string;
-  is_secure: string;
-  authors?: { author: string }[];
 }
 
 const defaultLog = getLogger('repositories/attachment-repository');
@@ -82,7 +78,7 @@ export class AttachmentRepository extends BaseRepository {
    * @return {*}
    * @memberof AttachmentRepository
    */
-  async getProjectAttachments(projectId: number): Promise<IGetAttachmentsSource[]> {
+  async getProjectAttachments(projectId: number): Promise<IGetProjectAttachment[]> {
     defaultLog.debug({ label: 'getProjectAttachments' });
 
     const sqlStatement = SQL`
@@ -94,14 +90,15 @@ export class AttachmentRepository extends BaseRepository {
         create_date,
         file_size,
         key,
-        security_token
+        security_token,
+        security_review_timestamp
       FROM
         project_attachment
       WHERE
         project_id = ${projectId};
     `;
 
-    const response = await this.connection.sql<IGetAttachmentsSource>(sqlStatement);
+    const response = await this.connection.sql<IGetProjectAttachment>(sqlStatement);
 
     if (!response || !response.rows) {
       throw new ApiExecuteSQLError('Failed to get project attachments by projectId', [
@@ -113,27 +110,78 @@ export class AttachmentRepository extends BaseRepository {
     return response.rows;
   }
 
-  async getProjectReportAttachments(projectId: number): Promise<IGetReportAttachmentsSource[]> {
+  async getProjectReportAttachments(projectId: number): Promise<IGetProjectReportAttachment[]> {
     const sqlStatement = SQL`
       SELECT
         project_report_attachment_id as id,
         file_name,
-        update_date,
+        title,
+        description,
+        year::int as year_published,
+        update_date::text as last_modified,
         create_date,
         file_size,
         key,
-        security_token
-      from
+        security_token,
+        security_review_timestamp,
+        revision_count
+      FROM
         project_report_attachment
-      where
+      WHERE
         project_id = ${projectId};
     `;
 
-    const response = await this.connection.sql<IGetReportAttachmentsSource>(sqlStatement);
+    const response = await this.connection.sql<IGetProjectReportAttachment>(sqlStatement);
 
     if (!response || !response.rows) {
       throw new ApiExecuteSQLError('Failed to get project report attachments by projectId', [
         'AttachmentRepository->getProjectReportAttachments',
+        'rows was null or undefined, expected rows != null'
+      ]);
+    }
+
+    return response.rows;
+  }
+
+  /**
+   * SQL query to get report attachments for a single project, including attachment statuses
+   *
+   * @param {number} projectId
+   * @return {*}
+   * @memberof AttachmentRepository
+   */
+   async getProjectAttachmentsWithStatus(projectId: number): Promise<WithSecurityRuleCount<IGetProjectAttachment>[]> {
+    defaultLog.debug({ label: 'getProjectAttachments' });
+
+    const sqlStatement = SQL`
+      SELECT
+        pa.project_attachment_id AS id,
+        pa.file_name,
+        pa.file_type,
+        pa.update_date,
+        pa.create_date,
+        pa.file_size,
+        pa.key,
+        pa.security_token,
+        pa.security_review_timestamp,
+        COUNT(pap.*) AS security_rule_count
+      FROM
+        project_attachment pa
+      LEFT JOIN
+        project_attachment_persecution pap
+      ON
+        pa.project_attachment_id = pap.project_attachment_id
+      WHERE
+        project_id = ${projectId}
+      GROUP BY
+      	pa.project_attachment_id
+    `;
+
+    const response = await this.connection.sql<WithSecurityRuleCount<IGetProjectAttachment>>(sqlStatement);
+
+    if (!response || !response.rows) {
+      throw new ApiExecuteSQLError('Failed to get project attachments with security rule count by projectId', [
+        'AttachmentRepository->getProjectAttachments',
         'rows was null or undefined, expected rows != null'
       ]);
     }
@@ -220,30 +268,30 @@ export class AttachmentRepository extends BaseRepository {
       }
   }
 
-  async getProjectReportAttachment(projectId: number, attachmentId: number): Promise<IGetAttachment> {
+  async getProjectReportAttachmentById(projectId: number, attachmentId: number): Promise<IGetProjectReportAttachment> {
     const sqlStatement = SQL`
       SELECT
-      project_report_attachment_id as attachment_id,
-      file_name,
-      title,
-      description,
-      year::int as year_published,
-      update_date::text as last_modified,
-      create_date,
-      file_size,
-      key,
-      security_token,
-      security_review_timestamp,
-      revision_count
-    FROM
-      project_report_attachment
-    where
-      project_report_attachment_id = ${attachmentId}
-    and
-      project_id = ${projectId}
-  `;
+        project_report_attachment_id as id,
+        file_name,
+        title,
+        description,
+        year::int as year_published,
+        update_date::text as last_modified,
+        create_date,
+        file_size,
+        key,
+        security_token,
+        security_review_timestamp,
+        revision_count
+      FROM
+        project_report_attachment
+      WHERE
+        project_report_attachment_id = ${attachmentId}
+      AND
+        project_id = ${projectId};
+    `;
 
-    const response = await this.connection.sql<IGetAttachment>(sqlStatement);
+    const response = await this.connection.sql<IGetProjectReportAttachment>(sqlStatement);
 
     console.log('in repository: ', response);
 
