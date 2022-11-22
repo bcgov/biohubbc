@@ -73,9 +73,6 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
 
   const [currentAttachment, setCurrentAttachment] = useState<IGetProjectAttachment | IGetSurveyAttachment | null>(null);
 
-  console.log('current attachment is : ');
-  console.log(currentAttachment);
-
   const handleDownloadFileClick = (attachment: IGetProjectAttachment | IGetSurveyAttachment) => {
     openAttachment(attachment);
   };
@@ -85,9 +82,6 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
   };
 
   const handleViewDetailsClick = (attachment: IGetProjectAttachment | IGetSurveyAttachment) => {
-    console.log('attachment');
-
-    console.log(attachment);
     setCurrentAttachment(attachment);
     getReportMeta(attachment);
     setShowViewFileWithDetailsDialog(true);
@@ -357,6 +351,8 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
   return (
     <>
       <ViewFileWithDetailsDialog
+        projectId={props.projectId}
+        surveyId={props.surveyId}
         dialogProps={{ fullWidth: true, maxWidth: 'lg', open: showViewFileWithDetailsDialog }}
         open={showViewFileWithDetailsDialog}
         onClose={() => {
