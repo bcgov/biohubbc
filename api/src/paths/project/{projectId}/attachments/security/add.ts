@@ -3,7 +3,7 @@ import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../../../../constants/roles';
 import { getDBConnection } from '../../../../../database/db';
 import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
-import { AttachmentService } from '../../../../../services/attachment-service';
+import { AttachmentService, IAttachmentType } from '../../../../../services/attachment-service';
 import { getLogger } from '../../../../../utils/logger';
 
 const defaultLog = getLogger('/api/project/{projectId}/attachments/list');
@@ -45,7 +45,7 @@ POST.apiDoc = {
       'application/json': {
         schema: {
           type: 'object',
-          required: ['attachment_ids', 'security_ids'],
+          required: ['attachments', 'security_ids'],
           properties: {
             security_ids: {
               type: 'array',
@@ -54,11 +54,20 @@ POST.apiDoc = {
                 minimum: 1
               }
             },
-            attachment_ids: {
+            attachments: {
               type: 'array',
               items: {
-                type: 'number',
-                minimum: 1
+                type: 'object',
+                minimum: 1,
+                required: ['id', 'type'],
+                properties: {
+                  id: {
+                    type: 'number'
+                  },
+                  type: {
+                    type: 'string'
+                  }
+                }
               },
               minItems: 1
             }
@@ -108,14 +117,14 @@ export function addAttachmentSecurity(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     const securityIds: number[] = req.body.security_ids;
-    const attachmentIds: number[] = req.body.attachment_ids;
+    const attachments: IAttachmentType[] = req.body.attachments;
 
     try {
       await connection.open();
 
       const attachmentService = new AttachmentService(connection);
 
-      await attachmentService.addSecurityToAttachments(securityIds, attachmentIds);
+      await attachmentService.addSecurityToAllAttachments(securityIds,attachments);
 
       await connection.commit();
 

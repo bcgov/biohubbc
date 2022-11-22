@@ -1,4 +1,5 @@
 import { AxiosInstance } from 'axios';
+import { IAttachmentType } from 'features/projects/view/ProjectAttachments';
 import { SecurityReason } from 'interfaces/useSecurityApi.interface';
 
 /**
@@ -23,11 +24,11 @@ const useSecurityApi = (axios: AxiosInstance) => {
   const addSecurityReasons = async (
     projectId: number,
     securityIds: number[],
-    attachmentIds: number[]
+    attachments: IAttachmentType[]
   ): Promise<any> => {
     const { data } = await axios.post(`/api/project/${projectId}/attachments/security/add`, {
       security_ids: securityIds,
-      attachment_ids: attachmentIds
+      attachments: attachments
     });
 
     return data;

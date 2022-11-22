@@ -34,6 +34,7 @@ import ViewFileWithDetailsDialog from 'components/dialog/ViewFileWithDetailsDial
 import { AttachmentType } from 'constants/attachments';
 import { AttachmentsI18N, EditReportMetaDataI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
+import { IAttachmentType } from 'features/projects/view/ProjectAttachments';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetProjectAttachment, IGetReportMetaData } from 'interfaces/useProjectApi.interface';
@@ -57,7 +58,7 @@ export interface IAttachmentsListProps {
   surveyId?: number;
   attachmentsList: (IGetProjectAttachment | IGetSurveyAttachment)[];
   getAttachments: (forceFetch: boolean) => void;
-  onCheckboxChange?: (attachmentId: number) => void;
+  onCheckboxChange?: (attachmentType: IAttachmentType) => void;
 }
 
 const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
@@ -397,10 +398,13 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
                         <Checkbox
                           color="primary"
                           checkedIcon={<Icon path={mdiCheckboxOutline} size={1} />}
-                          value={row.id}
+                          value={index}
                           onChange={(e) => {
                             console.log(e);
-                            props.onCheckboxChange?.(Number(e.target.value));
+                            const attachment: IAttachmentType[] = props.attachmentsList.filter((item, index) => index == Number(e.target.value)).map(item => {
+                              return {id: item.id, type: item.fileType} as IAttachmentType
+                            });
+                            props.onCheckboxChange?.(attachment[0]);
                           }}
                         />
                       </TableCell>

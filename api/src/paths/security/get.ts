@@ -1,9 +1,8 @@
-import { RequestHandler } from "express";
-import { Operation } from "express-openapi";
-import { authorizeRequestHandler } from "../../request-handlers/security/authorization";
-import { SecuritySearchService } from "../../services/security-search-service";
-import { getLogger } from "../../utils/logger";
-
+import { RequestHandler } from 'express';
+import { Operation } from 'express-openapi';
+import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
+import { SecuritySearchService } from '../../services/security-search-service';
+import { getLogger } from '../../utils/logger';
 
 const defaultLog = getLogger('/api/security/list');
 
@@ -62,15 +61,14 @@ GET.apiDoc = {
 
 export function getRules(): RequestHandler {
   return async (req, res) => {
-
     try {
       const service = new SecuritySearchService();
-      const response = await service.getPersecutionSecurityRules()
+      const response = await service.getPersecutionSecurityRules();
 
       return res.status(200).json(response);
     } catch (error) {
       defaultLog.error({ label: 'getSecurityRules', message: 'error', error });
       throw error;
     }
-  }
+  };
 }

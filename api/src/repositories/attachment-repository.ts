@@ -1,5 +1,5 @@
 import SQL from 'sql-template-strings';
-import { ApiExecuteSQLError, ApiGeneralError } from '../errors/api-error';
+import { ApiExecuteSQLError } from '../errors/api-error';
 import { getLogger } from '../utils/logger';
 import { BaseRepository } from './base-repository';
 
@@ -134,8 +134,30 @@ export class AttachmentRepository extends BaseRepository {
     }
   }
 
-
   async addSecurityToReportAttachments(securityIds: number[], attachmentId: number): Promise<void> {
-    // TODO
+    const insertStatement = SQL`
+      INSERT INTO project_report_persecution (
+        project_report_attachment_id, 
+        persecution_security_id
+      ) VALUES `;
+
+    securityIds.forEach((id, index) => {
+      insertStatement.append(SQL`
+      (${attachmentId},${id})`);
+
+      if (index !== securityIds.length - 1) {
+        insertStatement.append(',');
+      }
+    });
+
+    insertStatement.append(';');
+
+    try {
+      await this.connection.sql(insertStatement);
+    } catch (error) {
+      console.log("___________________")
+      console.log(error)
+      defaultLog.error({ label: 'addSecurityToAttachments', message: 'error', error });
+    }
   }
 }

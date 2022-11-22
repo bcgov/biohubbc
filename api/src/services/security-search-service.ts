@@ -16,11 +16,10 @@ interface ISecurityProprietySource {
   name: string;
 }
 export class SecuritySearchService {
+  private proprietarySecurityIndex = 'proprietary_security_1.0.0';
+  private persecutionSecurityIndex = 'persecution_security_1.0.0';
 
-  private proprietarySecurityIndex = "proprietary_security_1.0.0";
-  private persecutionSecurityIndex = "persecution_security_1.0.0";
-
-  private async elasticSearch(index: String) {
+  private async elasticSearch(index: string) {
     try {
       const client = new Client({ node: process.env.ELASTICSEARCH_URL });
       return client.search({
@@ -28,33 +27,37 @@ export class SecuritySearchService {
       });
     } catch (error) {
       defaultLog.debug({ label: 'elasticSearch', message: 'error', error });
-    }  
+    }
   }
 
   async getProprietarySecurityRules(): Promise<any[]> {
     const response = await this.elasticSearch(this.proprietarySecurityIndex);
-    
-    return response?.hits.hits.map(item => {
-      return {
-        security_reason_id: item._id,
-        category: (item._source as ISecurityProprietySource).name,
-        reasonTitle: (item._source as ISecurityProprietySource).name,
-        reasonDescription: (item._source as ISecurityProprietySource).description,
-        expirationDate: null,
-      }
-    }) || [];
+
+    return (
+      response?.hits.hits.map((item) => {
+        return {
+          security_reason_id: item._id,
+          category: (item._source as ISecurityProprietySource).name,
+          reasonTitle: (item._source as ISecurityProprietySource).name,
+          reasonDescription: (item._source as ISecurityProprietySource).description,
+          expirationDate: null
+        };
+      }) || []
+    );
   }
 
   async getPersecutionSecurityRules(): Promise<any[]> {
     const response = await this.elasticSearch(this.persecutionSecurityIndex);
-    return response?.hits.hits.map(item => {
-      return {
-        security_reason_id: item._id,
-        category: (item._source as ISecurityProsecutionSource).taxon.code,
-        reasonTitle: (item._source as ISecurityProsecutionSource).type,
-        reasonDescription: (item._source as ISecurityProsecutionSource).description,
-        expirationDate: null,
-      }
-    }) || [];
+    return (
+      response?.hits.hits.map((item) => {
+        return {
+          security_reason_id: item._id,
+          category: (item._source as ISecurityProsecutionSource).taxon.code,
+          reasonTitle: (item._source as ISecurityProsecutionSource).type,
+          reasonDescription: (item._source as ISecurityProsecutionSource).description,
+          expirationDate: null
+        };
+      }) || []
+    );
   }
 }
