@@ -5,6 +5,7 @@ import { getDBConnection } from '../../../../../../database/db';
 import { HTTP400 } from '../../../../../../errors/http-error';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 import { AttachmentService } from '../../../../../../services/attachment-service';
+import { SecuritySearchService } from '../../../../../../services/security-search-service';
 import { getLogger } from '../../../../../../utils/logger';
 
 const defaultLog = getLogger('/api/project/{projectId}/attachments/{attachmentId}/getSignedUrl');
@@ -196,12 +197,25 @@ export function getProjectReportMetaData(): RequestHandler {
         Number(req.params.attachmentId)
       );
 
+      const securitySearchService = new SecuritySearchService();
+
+      const persecutionRules = await securitySearchService.getPersecutionSecurityRules();
+
       await connection.commit();
+
+      const mappedSecurityObj = projectReportSecurity.map((item) => {
+        return {
+          security_reason_id: item.persecution_security_id,
+          security_reason_title: persecutionRules[item.persecution_security_id - 1].reasonTitle,
+          security_reason_description: persecutionRules[item.persecution_security_id - 1].reasonDescription,
+          date_expired: persecutionRules[item.persecution_security_id - 1].expirationDate
+        };
+      });
 
       const reportDetails = {
         metadata: projectReportAttachment,
         authors: projectReportAuthors,
-        security_reasons: projectReportSecurity
+        security_reasons: mappedSecurityObj
       };
 
       return res.status(200).json(reportDetails);

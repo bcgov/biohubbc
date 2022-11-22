@@ -176,23 +176,21 @@ const ViewFileWithDetailsDialog: React.FC<IViewFileWithDetailsDialogProps> = (pr
                     props.reportDetails?.security_reasons?.length > 0 &&
                     props.reportDetails?.security_reasons?.map((row, index) => {
                       return (
-                        <TableRow key={`${row.category}-${index}`}>
-                          <TableCell>{row.category}</TableCell>
+                        <TableRow key={`${row.security_reason_id}-${index}`}>
+                          <TableCell>Security Administration</TableCell>
                           <TableCell>
-                            <Typography style={{ fontWeight: 700 }}>{row.reason}</Typography>
+                            <Typography style={{ fontWeight: 700 }}>{row.security_reason_title}</Typography>
                             <Typography variant="body1" color="textSecondary">
-                              {row.reason_description}
+                              {row.security_reason_description}
                             </Typography>
                           </TableCell>
                           <TableCell>
                             <Typography variant="body2" component="div">
-                              Submitted
+                              Expired
                             </Typography>
+
                             <Typography variant="body2" component="div" color="textSecondary">
-                              {getFormattedDateRangeString(
-                                DATE_FORMAT.ShortMediumDateFormat,
-                                props.reportDetails?.metadata?.last_modified || ''
-                              )}
+                              {row.date_expired ? row.date_expired : 'N/A'}
                             </Typography>
                           </TableCell>
                           <TableCell></TableCell>
@@ -200,7 +198,7 @@ const ViewFileWithDetailsDialog: React.FC<IViewFileWithDetailsDialogProps> = (pr
                       );
                     })}
 
-                  {props.reportDetails?.security_reasons?.length == 0 && (
+                  {props.reportDetails?.security_reasons?.length === 0 && (
                     <TableRow key={`0`}>
                       <TableCell>Security Administration</TableCell>
                       <TableCell>

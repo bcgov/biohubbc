@@ -309,10 +309,9 @@ export interface IGetReportAuthors {
 }
 
 export interface IGetSecurityReasons {
-  category: string;
-  sub_category: string;
-  reason: string;
-  reason_description: string;
+  security_reason_id: number;
+  security_reason_title: string;
+  security_reason_description: string;
   date_expired: string;
 }
 

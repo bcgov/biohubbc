@@ -27,10 +27,7 @@ export class AttachmentService extends DBService {
   }
 
   async getProjectReportAttachment(projectId: number, attachmentId: number): Promise<IGetAttachment> {
-    const response = this.attachmentRepository.getProjectReportAttachment(projectId, attachmentId);
-
-    console.log('getProjectReportAttachment: ', response);
-    return response;
+    return this.attachmentRepository.getProjectReportAttachment(projectId, attachmentId);
   }
 
   async getProjectAttachmentAuthors(attachmentId: number): Promise<IGetAttachmentAuthor[]> {
@@ -38,7 +35,26 @@ export class AttachmentService extends DBService {
   }
 
   async getProjectAttachmentSecurityRules(attachmentId: number): Promise<IGetAttachmentSecurityReason[]> {
-    return this.attachmentRepository.getProjectAttachmentSecurityReasons(attachmentId);
+    const security_reasons = this.attachmentRepository.getProjectAttachmentSecurityReasons(attachmentId);
+
+    //For faking security reason from the database
+
+    // const security_reasons = [
+    //   {
+    //     project_report_author_id: 1,
+    //     project_report_attachment_id: 2,
+    //     persecution_security_id: 3,
+    //     update_date: '2022-10-10'
+    //   },
+    //   {
+    //     project_report_author_id: 4,
+    //     project_report_attachment_id: 5,
+    //     persecution_security_id: 6,
+    //     update_date: '2020-12-12'
+    //   }
+    // ];
+
+    return security_reasons;
   }
 
   async addSecurityToAttachment(securityIds: number[], attachmentId: number): Promise<void> {
