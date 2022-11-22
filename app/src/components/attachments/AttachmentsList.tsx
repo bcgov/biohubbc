@@ -350,6 +350,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
     <>
       <ViewFileWithDetailsDialog
         projectId={props.projectId}
+        surveyId={props.surveyId}
         dialogProps={{ fullWidth: true, maxWidth: 'lg', open: showViewFileWithDetailsDialog }}
         open={showViewFileWithDetailsDialog}
         onClose={() => {

@@ -57,6 +57,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 export interface IViewFileWithDetailsDialogProps {
   projectId: number;
+  surveyId?: number;
   open: boolean;
   onClose: () => void;
   onFileDownload: () => void;
@@ -86,18 +87,36 @@ const ViewFileWithDetailsDialog: React.FC<IViewFileWithDetailsDialogProps> = (pr
     });
 
     if (props.reportDetails?.metadata?.attachment_id) {
-      if (props.fileType === AttachmentType.REPORT) {
-        await biohubApi.security.deleteProjectReportAttachmentSecurityReasons(
-          props.projectId,
-          props.reportDetails?.metadata?.attachment_id,
-          securityIds
-        );
+      if (props.surveyId == undefined) {
+        if (props.fileType === AttachmentType.REPORT) {
+          await biohubApi.security.deleteProjectReportAttachmentSecurityReasons(
+            props.projectId,
+            props.reportDetails?.metadata?.attachment_id,
+            securityIds
+          );
+        } else {
+          await biohubApi.security.deleteProjectAttachmentSecurityReasons(
+            props.projectId,
+            props.reportDetails?.metadata?.attachment_id,
+            securityIds
+          );
+        }
       } else {
-        await biohubApi.security.deleteProjectAttachmentSecurityReasons(
-          props.projectId,
-          props.reportDetails?.metadata?.attachment_id,
-          securityIds
-        );
+        if (props.fileType === AttachmentType.REPORT) {
+          await biohubApi.security.deleteSurveyReportAttachmentSecurityReasons(
+            props.projectId,
+            props.surveyId,
+            props.reportDetails?.metadata?.attachment_id,
+            securityIds
+          );
+        } else {
+          await biohubApi.security.deleteSurveyAttachmentSecurityReasons(
+            props.projectId,
+            props.surveyId,
+            props.reportDetails?.metadata?.attachment_id,
+            securityIds
+          );
+        }
       }
     }
   };
