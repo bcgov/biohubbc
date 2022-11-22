@@ -66,8 +66,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
   const [rowsPerPage] = useState(10);
   const [page] = useState(0);
 
-  const [reportMetaData, setReportMetaData] = useState<IGetReportDetails | null>(null);
-  console.log('reportMetaData', reportMetaData);
+  const [reportDetails, setReportDetails] = useState<IGetReportDetails | null>(null);
   const [showViewFileWithDetailsDialog, setShowViewFileWithDetailsDialog] = useState<boolean>(false);
 
   const [currentAttachment, setCurrentAttachment] = useState<IGetProjectAttachment | IGetSurveyAttachment | null>(null);
@@ -205,7 +204,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
         return;
       }
 
-      setReportMetaData(response);
+      setReportDetails(response);
     } catch (error) {
       return error;
     }
@@ -314,7 +313,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
   };
 
   const handleDialogEditSave = async (values: IEditReportMetaForm) => {
-    if (!reportMetaData?.metadata) {
+    if (!reportDetails?.metadata) {
       return;
     }
 
@@ -325,18 +324,18 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
         await biohubApi.survey.updateSurveyReportMetadata(
           props.projectId,
           props.surveyId,
-          reportMetaData.metadata.attachment_id,
+          reportDetails.metadata.attachment_id,
           AttachmentType.REPORT,
           fileMeta,
-          reportMetaData.metadata.revision_count
+          reportDetails.metadata.revision_count
         );
       } else {
         await biohubApi.project.updateProjectReportMetadata(
           props.projectId,
-          reportMetaData.metadata.attachment_id,
+          reportDetails.metadata.attachment_id,
           AttachmentType.REPORT,
           fileMeta,
-          reportMetaData.metadata.revision_count
+          reportDetails.metadata.revision_count
         );
       }
     } catch (error) {
@@ -363,7 +362,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
         }}
         onSave={handleDialogEditSave}
         onFileDownload={openAttachmentFromReportMetaDialog}
-        reportMetaData={reportMetaData}
+        reportDetails={reportDetails}
         attachmentSize={(currentAttachment && getFormattedFileSize(currentAttachment.size)) || '0 KB'}
         fileType={currentAttachment && currentAttachment.fileType}
         refresh={() => {

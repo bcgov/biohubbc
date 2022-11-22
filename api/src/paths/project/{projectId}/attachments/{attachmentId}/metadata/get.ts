@@ -198,17 +198,15 @@ export function getProjectReportMetaData(): RequestHandler {
 
       await connection.commit();
 
-      const reportMetaObj = {
+      const reportDetails = {
         metadata: projectReportAttachment,
         authors: projectReportAuthors,
         security_reasons: projectReportSecurity
       };
 
-      console.log('*************************** reportMetaObj *****************************');
-      console.log(reportMetaObj);
-      return res.status(200).json(reportMetaObj);
+      return res.status(200).json(reportDetails);
     } catch (error) {
-      defaultLog.error({ label: 'getReportMetadata', message: 'error', error });
+      defaultLog.error({ label: 'getProjectReportDetails', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

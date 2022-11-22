@@ -57,7 +57,7 @@ export interface IViewFileWithDetailsDialogProps {
   onClose: () => void;
   onFileDownload: () => void;
   onSave: (fileMeta: IEditReportMetaForm) => Promise<void>;
-  reportMetaData: IGetReportDetails | null;
+  reportDetails: IGetReportDetails | null;
   attachmentSize: string;
   dialogProps?: DialogProps;
   fileType: string | null;
@@ -90,7 +90,7 @@ const ViewFileWithDetailsDialog: React.FC<IViewFileWithDetailsDialogProps> = (pr
       <EditFileWithMetaDialog
         open={showEditFileWithMetaDialog}
         dialogTitle={'Edit Upload Report'}
-        reportMetaData={props.reportMetaData}
+        reportMetaData={props.reportDetails}
         onClose={() => {
           setShowEditFileWithMetaDialog(false);
         }}
@@ -108,7 +108,7 @@ const ViewFileWithDetailsDialog: React.FC<IViewFileWithDetailsDialogProps> = (pr
           <Box display="flex" justifyContent="space-between">
             <Box style={{ maxWidth: '120ch' }}>
               <Typography variant="h2" component="h1" className={classes.docTitle}>
-                {props.reportMetaData?.metadata?.title}
+                {props.reportDetails?.metadata?.title}
               </Typography>
             </Box>
             <Box flex="0 0 auto">
@@ -138,8 +138,8 @@ const ViewFileWithDetailsDialog: React.FC<IViewFileWithDetailsDialogProps> = (pr
               Document requires a security review
             </Alert>
 
-            {props.fileType === 'Report' && props.reportMetaData && (
-              <ReportMeta reportMetaData={props.reportMetaData} />
+            {props.reportDetails?.metadata && props.fileType === 'Report' && (
+              <ReportMeta reportDetails={props.reportDetails} />
             )}
           </Box>
           <Paper variant="outlined" style={{ marginTop: '24px' }}>
@@ -172,9 +172,9 @@ const ViewFileWithDetailsDialog: React.FC<IViewFileWithDetailsDialogProps> = (pr
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {props.reportMetaData?.security_reasons &&
-                    props.reportMetaData?.security_reasons?.length > 0 &&
-                    props.reportMetaData?.security_reasons?.map((row, index) => {
+                  {props.reportDetails?.security_reasons &&
+                    props.reportDetails?.security_reasons?.length > 0 &&
+                    props.reportDetails?.security_reasons?.map((row, index) => {
                       return (
                         <TableRow key={`${row.category}-${index}`}>
                           <TableCell>{row.category}</TableCell>
@@ -191,7 +191,7 @@ const ViewFileWithDetailsDialog: React.FC<IViewFileWithDetailsDialogProps> = (pr
                             <Typography variant="body2" component="div" color="textSecondary">
                               {getFormattedDateRangeString(
                                 DATE_FORMAT.ShortMediumDateFormat,
-                                props.reportMetaData?.metadata?.last_modified || ''
+                                props.reportDetails?.metadata?.last_modified || ''
                               )}
                             </Typography>
                           </TableCell>
@@ -200,7 +200,7 @@ const ViewFileWithDetailsDialog: React.FC<IViewFileWithDetailsDialogProps> = (pr
                       );
                     })}
 
-                  {props.reportMetaData?.security_reasons && props.reportMetaData?.security_reasons?.length == 0 && (
+                  {props.reportDetails?.security_reasons?.length == 0 && (
                     <TableRow key={`0`}>
                       <TableCell>Security Administration</TableCell>
                       <TableCell>
@@ -216,7 +216,7 @@ const ViewFileWithDetailsDialog: React.FC<IViewFileWithDetailsDialogProps> = (pr
                         <Typography variant="body2" component="div" color="textSecondary">
                           {getFormattedDateRangeString(
                             DATE_FORMAT.ShortMediumDateFormat,
-                            props.reportMetaData?.metadata?.last_modified || ''
+                            props.reportDetails?.metadata?.last_modified || ''
                           )}
                         </Typography>
                       </TableCell>

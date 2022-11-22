@@ -33,17 +33,17 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }));
 
-export interface IViewReportMetadataProps {
+export interface IViewReportDetailsProps {
   onEdit?: () => void;
   onSave?: <IEditReportMetaForm>() => void;
 
-  reportMetaData: IGetReportDetails | null;
+  reportDetails: IGetReportDetails | null;
 }
 
-const ReportMeta: React.FC<IViewReportMetadataProps> = (props) => {
+const ReportMeta: React.FC<IViewReportDetailsProps> = (props) => {
   const classes = useStyles();
 
-  const reportMetaData = props.reportMetaData;
+  const reportDetails = props.reportDetails;
 
   return (
     <>
@@ -60,19 +60,19 @@ const ReportMeta: React.FC<IViewReportMetadataProps> = (props) => {
               <Typography component="dt" variant="body1" color="textSecondary">
                 Report Title
               </Typography>
-              <Typography variant="body1">{reportMetaData?.metadata?.title}</Typography>
+              <Typography variant="body1">{reportDetails?.metadata?.title}</Typography>
             </Box>
             <Box mt={1} className={classes.docMetaRow}>
               <Typography component="dt" variant="body1" color="textSecondary">
                 Description
               </Typography>
-              <Typography variant="body1">{reportMetaData?.metadata?.description}</Typography>
+              <Typography variant="body1">{reportDetails?.metadata?.description}</Typography>
             </Box>
             <Box mt={1} className={classes.docMetaRow}>
               <Typography component="dt" variant="body1" color="textSecondary">
                 Year Published
               </Typography>
-              <Typography component="dd">{reportMetaData?.metadata?.year_published}</Typography>
+              <Typography component="dd">{reportDetails?.metadata?.year_published}</Typography>
             </Box>
             <Box mt={1} className={classes.docMetaRow}>
               <Typography component="dt" variant="body1" color="textSecondary">
@@ -81,7 +81,7 @@ const ReportMeta: React.FC<IViewReportMetadataProps> = (props) => {
               <Typography component="dd">
                 {getFormattedDateRangeString(
                   DATE_FORMAT.ShortMediumDateFormat,
-                  reportMetaData?.metadata?.last_modified || ''
+                  reportDetails?.metadata?.last_modified || ''
                 )}
               </Typography>
             </Box>
@@ -90,7 +90,7 @@ const ReportMeta: React.FC<IViewReportMetadataProps> = (props) => {
                 Authors
               </Typography>
               <Typography component="dd">
-                {reportMetaData?.authors?.map((author) => [author.first_name, author.last_name].join(' ')).join(', ')}
+                {reportDetails?.authors?.map((author) => [author.first_name, author.last_name].join(' ')).join(', ')}
               </Typography>
             </Box>
           </Box>
