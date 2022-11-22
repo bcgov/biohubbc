@@ -109,6 +109,7 @@ export class AttachmentRepository extends BaseRepository {
     return response.rows;
   }
 
+  // TODO functions need to handle duplicate keys (re adding existing security reasons)
   async addSecurityToAttachments(securityIds: number[], attachmentId: number): Promise<void> {
     const insertStatement = SQL`
       INSERT INTO project_attachment_persecution (
@@ -124,7 +125,6 @@ export class AttachmentRepository extends BaseRepository {
         insertStatement.append(',');
       }
     });
-
     insertStatement.append(';');
 
     try {
@@ -134,6 +134,7 @@ export class AttachmentRepository extends BaseRepository {
     }
   }
 
+  // TODO functions need to handle duplicate keys (re adding existing security reasons)
   async addSecurityToReportAttachments(securityIds: number[], attachmentId: number): Promise<void> {
     const insertStatement = SQL`
       INSERT INTO project_report_persecution (
@@ -155,9 +156,35 @@ export class AttachmentRepository extends BaseRepository {
     try {
       await this.connection.sql(insertStatement);
     } catch (error) {
-      console.log("___________________")
-      console.log(error)
       defaultLog.error({ label: 'addSecurityToAttachments', message: 'error', error });
     }
+  }
+
+  async addSecurityReviewTimeToReportAttachment(attachmentId: number): Promise<void> {
+    const updateSQL = SQL`
+      UPDATE  project_report_attachment 
+      SET security_review_timestamp=now()
+      WHERE project_report_attachment_id=${attachmentId};`;
+
+      try {
+        
+        await this.connection.sql(updateSQL)
+      } catch (error) {
+        defaultLog.error({ label: 'addSecurityReviewTimeToReportAttachment', message: 'error', error });
+      }
+  }
+
+  async addSecurityReviewTimeToAttachment(attachmentId: number): Promise<void> {
+    const updateSQL = SQL`
+      UPDATE  project_attachment 
+      SET security_review_timestamp=now()
+      WHERE project_attachment_id=${attachmentId};`;
+
+      try {
+        
+        await this.connection.sql(updateSQL)
+      } catch (error) {
+        defaultLog.error({ label: 'addSecurityReviewTimeToAttachment', message: 'error', error });
+      }
   }
 }

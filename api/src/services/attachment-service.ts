@@ -52,15 +52,27 @@ export class AttachmentService extends DBService {
   }
 
   async addSecurityToAllAttachments(securityIds: number[], attachments: IAttachmentType[]): Promise<void[]> {
-    const promises = attachments.map((item) => {
+    const actions: Promise<void>[] = []
+    attachments.forEach(item => {
       if (item.type === 'Report') {
-        return this.addSecurityToReportAttachment(securityIds, item.id);
+        actions.push(this.addSecurityToReportAttachment(securityIds, item.id));
+        actions.push(this.addSecurityReviewToReportAttachment(item.id));
       } else {
-        return this.addSecurityToAttachment(securityIds, item.id);
+        actions.push(this.addSecurityToAttachment(securityIds, item.id));
+        actions.push(this.addSecurityReviewToAttachment(item.id));
       }
     });
-    const results = await Promise.all(promises);
+
+    const results = await Promise.all(actions);
 
     return results;
+  }
+
+  async addSecurityReviewToReportAttachment(attachmentId: number): Promise<void> {
+    return this.attachmentRepository.addSecurityReviewTimeToReportAttachment(attachmentId);
+  }
+
+  async addSecurityReviewToAttachment(attachmentId: number): Promise<void> {
+    return this.attachmentRepository.addSecurityReviewTimeToAttachment(attachmentId);
   }
 }
