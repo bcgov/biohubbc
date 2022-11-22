@@ -1,11 +1,10 @@
 import { IDBConnection } from '../database/db';
 import {
   AttachmentRepository,
-  IGetAttachment,
   IGetAttachmentAuthor,
   IGetAttachmentSecurityReason,
-  IGetAttachmentsSource,
-  IGetReportAttachmentsSource
+  IGetProjectAttachment,
+  IGetProjectReportAttachment,
 } from '../repositories/attachment-repository';
 import { DBService } from './db-service';
 
@@ -18,16 +17,20 @@ export class AttachmentService extends DBService {
     this.attachmentRepository = new AttachmentRepository(connection);
   }
 
-  async getProjectAttachments(projectId: number): Promise<IGetAttachmentsSource[]> {
+  async getProjectAttachments(projectId: number): Promise<IGetProjectAttachment[]> {
     return this.attachmentRepository.getProjectAttachments(projectId);
   }
 
-  async getProjectReportAttachments(projectId: number): Promise<IGetReportAttachmentsSource[]> {
+  async getProjectReportAttachments(projectId: number): Promise<IGetProjectReportAttachment[]> {
     return this.attachmentRepository.getProjectReportAttachments(projectId);
   }
 
-  async getProjectReportAttachment(projectId: number, attachmentId: number): Promise<IGetAttachment> {
-    const response = this.attachmentRepository.getProjectReportAttachment(projectId, attachmentId);
+  async getProjectAttachmentsWithStatus(projectId: number): Promise<any> {
+    return Promise.resolve();
+  }
+
+  async getProjectReportAttachment(projectId: number, attachmentId: number): Promise<IGetProjectReportAttachment> {
+    const response = this.attachmentRepository.getProjectReportAttachmentById(projectId, attachmentId);
 
     console.log('getProjectReportAttachment: ', response);
     return response;
