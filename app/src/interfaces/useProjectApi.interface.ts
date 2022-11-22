@@ -291,15 +291,19 @@ export interface IUploadAttachmentResponse {
   revision_count: number;
 }
 
-export interface IGetReportMetaData {
+export interface IGetReportDetails {
+  metadata: IGetReportMetadata | null;
+  authors: IGetReportAuthors[];
+  security_reasons: IGetSecurityReasons[];
+}
+
+export interface IGetReportMetadata {
   attachment_id: number;
   title: string;
   year_published: number;
   description: string;
   last_modified: string;
   revision_count: number;
-  authors: IGetReportAuthors[];
-  security_reasons: IGetSecurityReasons[];
 }
 
 export interface IGetReportAuthors {

@@ -36,7 +36,7 @@ import { AttachmentsI18N, EditReportMetaDataI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { IGetProjectAttachment, IGetProjectReportAttachment, IGetReportMetaData } from 'interfaces/useProjectApi.interface';
+import { IGetProjectAttachment, IGetProjectReportAttachment, IGetReportDetails } from 'interfaces/useProjectApi.interface';
 import { IGetSurveyAttachment, IGetSurveyReportAttachment } from 'interfaces/useSurveyApi.interface';
 import React, { useContext, useState } from 'react';
 import { getFormattedFileSize } from 'utils/Utils';
@@ -66,8 +66,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
   const [rowsPerPage] = useState(10);
   const [page] = useState(0);
 
-  const [reportMetaData, setReportMetaData] = useState<IGetReportMetaData | null>(null);
-  console.log('reportMetaData', reportMetaData);
+  const [reportDetails, setReportDetails] = useState<IGetReportDetails | null>(null);
   const [showViewFileWithDetailsDialog, setShowViewFileWithDetailsDialog] = useState<boolean>(false);
 
   const [currentAttachment, setCurrentAttachment] = useState<IGetProjectAttachment | IGetSurveyAttachment | null>(null);
@@ -213,7 +212,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
         return;
       }
 
-      setReportMetaData(response);
+      setReportDetails(response);
     } catch (error) {
       return error;
     }
@@ -322,7 +321,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
   };
 
   const handleDialogEditSave = async (values: IEditReportMetaForm) => {
-    if (!reportMetaData) {
+    if (!reportDetails?.metadata) {
       return;
     }
 
@@ -333,18 +332,18 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
         await biohubApi.survey.updateSurveyReportMetadata(
           props.projectId,
           props.surveyId,
-          reportMetaData.attachment_id,
+          reportDetails.metadata.attachment_id,
           AttachmentType.REPORT,
           fileMeta,
-          reportMetaData.revision_count
+          reportDetails.metadata.revision_count
         );
       } else {
         await biohubApi.project.updateProjectReportMetadata(
           props.projectId,
-          reportMetaData.attachment_id,
+          reportDetails.metadata.attachment_id,
           AttachmentType.REPORT,
           fileMeta,
-          reportMetaData.revision_count
+          reportDetails.metadata.revision_count
         );
       }
     } catch (error) {
@@ -371,7 +370,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
         }}
         onSave={handleDialogEditSave}
         onFileDownload={openAttachmentFromReportMetaDialog}
-        reportMetaData={reportMetaData}
+        reportDetails={reportDetails}
         attachmentSize={(currentAttachment && getFormattedFileSize(currentAttachment.size)) || '0 KB'}
         fileType={currentAttachment && currentAttachment.fileType}
         refresh={() => {
