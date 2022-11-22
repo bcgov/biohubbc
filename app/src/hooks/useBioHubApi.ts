@@ -50,7 +50,7 @@ export const useBiohubApi = () => {
 
   const external = useExternalApi(axios);
 
-  const security = useSecurityApi(axios);
+  const security = useSecurityApi(apiAxios);
 
   return {
     project,

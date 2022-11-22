@@ -38,6 +38,7 @@ export interface IReportAttachmentAuthor {
 }
 
 export interface ISecurityReason {
+  security_reason_id: number;
   category: string;
   sub_category: string;
   reason: string;
@@ -101,6 +102,7 @@ export class GetReportAttachmentMetadata {
       (securityObj &&
         securityObj?.map((reason: any) => {
           return {
+            security_reason_id: reason?.security_reason_id,
             category: reason?.category,
             sub_category: reason?.sub_category,
             reason: reason?.reason,

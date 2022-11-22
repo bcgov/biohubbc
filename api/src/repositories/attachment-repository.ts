@@ -17,7 +17,7 @@ export interface IGetSurveyReportAttachment {
 }
 
 export interface IGetProjectAttachment {
-  id: number,
+  id: number;
   file_name: string;
   file_type: string;
   create_date: string;
@@ -25,7 +25,7 @@ export interface IGetProjectAttachment {
   file_size: string;
   key: string;
   security_token: string;
-  security_review_timestamp: string | null
+  security_review_timestamp: string | null;
 }
 
 export interface IGetProjectReportAttachment {
@@ -39,11 +39,11 @@ export interface IGetProjectReportAttachment {
   key: string;
   file_size: string;
   security_token: string;
-  security_review_timestamp: string | null
+  security_review_timestamp: string | null;
   revision_count: number;
 }
 
-export type WithSecurityRuleCount<T> = T & { security_rule_count: number }
+export type WithSecurityRuleCount<T> = T & { security_rule_count: number };
 
 export interface IGetAttachmentAuthor {
   project_report_author_id: number;
@@ -150,7 +150,7 @@ export class AttachmentRepository extends BaseRepository {
    * @return {*}
    * @memberof AttachmentRepository
    */
-   async getProjectAttachmentsWithStatus(projectId: number): Promise<WithSecurityRuleCount<IGetProjectAttachment>[]> {
+  async getProjectAttachmentsWithStatus(projectId: number): Promise<WithSecurityRuleCount<IGetProjectAttachment>[]> {
     defaultLog.debug({ label: 'getProjectAttachments' });
 
     const sqlStatement = SQL`
@@ -193,8 +193,156 @@ export class AttachmentRepository extends BaseRepository {
     // TODO
   }
 
+  /**
+   * SQL query to delete security for Project Attachment
+   *
+   * @param {number} securityId
+   * @param {number} attachmentId
+   * @return {*}  {Promise<{ project_attachment_persecution_id: number }>}
+   * @memberof AttachmentRepository
+   */
+  async removeSecurityFromProjectAttachment(
+    securityId: number,
+    attachmentId: number
+  ): Promise<{ project_attachment_persecution_id: number }> {
+    const sqlStatement = SQL`
+      DELETE FROM
+        project_attachment_persecution
+      WHERE
+        project_attachment_id = ${attachmentId}
+      AND
+        project_attachment_persecution_id =  ${securityId}
+      RETURNING project_attachment_persecution_id
+      ;
+      `;
+
+    const response = await this.connection.sql(sqlStatement);
+
+    const result = (response && response.rows && response.rows[0]) || null;
+
+    if (!result) {
+      throw new ApiExecuteSQLError('Failed to Delete Project Attachment Security', [
+        'AttachmentRepository->removeSecurityFromProjectAttachment',
+        'row[0] was null or undefined, expected row[0] != null'
+      ]);
+    }
+
+    return result;
+  }
+
+  /**
+   * SQL query to delete security for Survey Attachment
+   *
+   * @param {number} securityId
+   * @param {number} attachmentId
+   * @return {*}  {Promise<{ survey_attachment_persecution_id: number }>}
+   * @memberof AttachmentRepository
+   */
+  async removeSecurityFromSurveyAttachment(
+    securityId: number,
+    attachmentId: number
+  ): Promise<{ survey_attachment_persecution_id: number }> {
+    const sqlStatement = SQL`
+      DELETE FROM
+        survey_attachment_persecution
+      WHERE
+        survey_attachment_id = ${attachmentId}
+      AND
+        survey_attachment_persecution_id =  ${securityId}
+      RETURNING survey_attachment_persecution_id
+      ;
+      `;
+
+    const response = await this.connection.sql(sqlStatement);
+
+    const result = (response && response.rows && response.rows[0]) || null;
+
+    if (!result) {
+      throw new ApiExecuteSQLError('Failed to Delete Survey Attachment Security', [
+        'AttachmentRepository->removeSecurityFromSurveyAttachment',
+        'row[0] was null or undefined, expected row[0] != null'
+      ]);
+    }
+
+    return result;
+  }
+
   async addSecurityToReportAttachments(securityIds: number[], attachmentId: number): Promise<void> {
     // TODO
+  }
+
+  /**
+   * SQL query to delete security for Project Report Attachment
+   *
+   * @param {number} securityId
+   * @param {number} attachmentId
+   * @return {*}  {Promise<{ project_report_persecution_id: number }>}
+   * @memberof AttachmentRepository
+   */
+  async removeSecurityFromProjectReportAttachment(
+    securityId: number,
+    attachmentId: number
+  ): Promise<{ project_report_persecution_id: number }> {
+    const sqlStatement = SQL`
+      DELETE FROM
+        project_report_persecution
+      WHERE
+        project_report_attachment_id = ${attachmentId}
+      AND
+        project_report_persecution_id =  ${securityId}
+      RETURNING project_report_persecution_id
+      ;
+      `;
+
+    const response = await this.connection.sql(sqlStatement);
+
+    const result = (response && response.rows && response.rows[0]) || null;
+
+    if (!result) {
+      throw new ApiExecuteSQLError('Failed to Delete Project Report Attachment Security', [
+        'AttachmentRepository->removeSecurityFromProjectReportAttachment',
+        'row[0] was null or undefined, expected row[0] != null'
+      ]);
+    }
+
+    return result;
+  }
+
+  /**
+   * SQL query to delete security for Survey Report Attachment
+   *
+   * @param {number} securityId
+   * @param {number} attachmentId
+   * @return {*}  {Promise<{ survey_report_persecution_id: number }>}
+   * @memberof AttachmentRepository
+   */
+  async removeSecurityFromSurveyReportAttachment(
+    securityId: number,
+    attachmentId: number
+  ): Promise<{ survey_report_persecution_id: number }> {
+    const sqlStatement = SQL`
+      DELETE FROM
+        survey_report_persecution
+      WHERE
+        survey_report_attachment_id = ${attachmentId}
+      AND
+        survey_report_persecution_id =  ${securityId}
+      RETURNING survey_report_persecution_id
+      ;
+      `;
+
+    const response = await this.connection.sql(sqlStatement);
+
+    const result = (response && response.rows && response.rows[0]) || null;
+
+    if (!result) {
+      throw new ApiExecuteSQLError('Failed to Delete Survey Report Attachment Security', [
+        'AttachmentRepository->removeSecurityFromSurveyReportAttachment',
+        'row[0] was null or undefined, expected row[0] != null'
+      ]);
+    }
+
+    return result;
   }
 
   async getProjectReportAttachmentById(projectId: number, attachmentId: number): Promise<IGetProjectReportAttachment> {
