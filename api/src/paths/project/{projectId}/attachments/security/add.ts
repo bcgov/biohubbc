@@ -51,14 +51,12 @@ POST.apiDoc = {
               type: 'array',
               items: {
                 type: 'number',
-                minimum: 1
               }
             },
             attachments: {
               type: 'array',
               items: {
                 type: 'object',
-                minimum: 1,
                 required: ['id', 'type'],
                 properties: {
                   id: {
