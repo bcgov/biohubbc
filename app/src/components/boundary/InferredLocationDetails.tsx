@@ -11,9 +11,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     clear: 'both',
     overflow: 'hidden',
     '&:first-child': {
-      '& hr': {
-        display: 'none'
-      }
+      marginTop: 0
     }
   },
   boundaryList: {

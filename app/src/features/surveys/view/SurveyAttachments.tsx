@@ -1,4 +1,5 @@
 import Box from '@material-ui/core/Box';
+import Divider from '@material-ui/core/Divider';
 import Paper from '@material-ui/core/Paper';
 import { mdiMenuDown, mdiTrayArrowUp } from '@mdi/js';
 import Icon from '@mdi/react';
@@ -100,19 +101,21 @@ const SurveyAttachments: React.FC<ISurveyAttachmentsProps> = () => {
         }}
         uploadHandler={getUploadHandler()}
       />
-      <Paper>
+      <Paper elevation={0}>
         <H2MenuToolbar
           label="Documents"
-          buttonLabel="Upload"
-          buttonTitle="Upload Document"
-          buttonStartIcon={<Icon path={mdiTrayArrowUp} size={1} />}
-          buttonEndIcon={<Icon path={mdiMenuDown} size={1} />}
+          buttonLabel="Submit Documents"
+          buttonTitle="Submit Documents"
+          buttonProps={{variant: 'contained'}}
+          buttonStartIcon={<Icon path={mdiTrayArrowUp} size={0.8} />}
+          buttonEndIcon={<Icon path={mdiMenuDown} size={0.8} />}
           menuItems={[
             { menuLabel: 'Upload Report', menuOnClick: handleUploadReportClick },
             { menuLabel: 'Upload Attachments', menuOnClick: handleUploadAttachmentClick }
           ]}
         />
-        <Box px={3} pb={2}>
+        <Divider></Divider>
+        <Box px={1}>
           <AttachmentsList
             projectId={projectId}
             surveyId={surveyId}

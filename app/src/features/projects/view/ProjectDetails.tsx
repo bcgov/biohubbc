@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   projectMetadata: {
     '& section + section': {
-      marginTop: theme.spacing(3)
+      marginTop: theme.spacing(4)
     },
     '& dt': {
       flex: '0 0 40%'
@@ -83,7 +83,7 @@ const ProjectDetails: React.FC<IProjectDetailsProps> = (props) => {
         </Typography>
       </Toolbar>
       <Divider></Divider>
-      <Box py={2.75} px={3} className={classes.projectMetadata}>
+      <Box p={3} className={classes.projectMetadata}>
         <Box component="section">
           <Typography component="h4" className={classes.projectMetaSectionHeader}>
             Project Objectives

@@ -1,6 +1,7 @@
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
+import Divider from '@material-ui/core/Divider';
 import Paper from '@material-ui/core/Paper';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
@@ -27,6 +28,8 @@ import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
 import { LatLngBoundsExpression } from 'leaflet';
 import React, { useCallback, useEffect, useState } from 'react';
 import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
+import { grey } from '@material-ui/core/colors';
+import { Theme } from '@material-ui/core/styles/createMuiTheme';
 
 export interface ISurveyStudyAreaProps {
   surveyForViewData: IGetSurveyForViewResponse;
@@ -34,7 +37,7 @@ export interface ISurveyStudyAreaProps {
   refresh: () => void;
 }
 
-const useStyles = makeStyles(() =>
+const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     zoomToBoundaryExtentBtn: {
       padding: '3px',
@@ -45,6 +48,15 @@ const useStyles = makeStyles(() =>
       backgroundClip: 'padding-box',
       '&:hover': {
         backgroundColor: '#eeeeee'
+      }
+    },
+    metaSectionHeader: {
+      color: grey[600],
+      fontWeight: 700,
+      textTransform: 'uppercase',
+      '& + hr': {
+        marginTop: theme.spacing(0.75),
+        marginBottom: theme.spacing(0.75)
       }
     }
   })
@@ -212,56 +224,59 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
         mapTitle={'Study Area'}
       />
       <ErrorDialog {...errorDialogProps} />
-      <Box component={Paper} px={3} pt={1} pb={3}>
+      <Paper>
         <H2ButtonToolbar
           label="Study Area"
-          buttonLabel="Edit"
+          buttonLabel="Edit Study Area"
           buttonTitle="Edit Study Area"
-          buttonStartIcon={<Icon path={mdiPencilOutline} size={0.875} />}
+          buttonStartIcon={<Icon path={mdiPencilOutline} size={0.8} />}
           buttonOnClick={() => handleDialogEditOpen()}
           buttonProps={{ variant: 'text' }}
-          toolbarProps={{ disableGutters: true }}
         />
 
-        <Box mt={2} height={350} position="relative">
-          <MapContainer
-            mapId="survey_study_area_map"
-            nonEditableGeometries={nonEditableGeometries}
-            bounds={bounds}
-            setInferredLayersInfo={setInferredLayersInfo}
-            additionalLayers={
-              occurrence_submission.id
-                ? [
-                    <OccurrenceFeatureGroup
-                      projectId={projectForViewData.id}
-                      occurrenceSubmissionId={occurrence_submission.id}
-                    />
-                  ]
-                : undefined
-            }
-          />
-          {surveyGeometry.length > 0 && (
-            <Box position="absolute" top="126px" left="10px" zIndex="999">
-              <IconButton
-                aria-label="zoom to initial extent"
-                title="Zoom to initial extent"
-                className={classes.zoomToBoundaryExtentBtn}
-                onClick={() => zoomToBoundaryExtent()}>
-                <Icon size={1} path={mdiRefresh} />
-              </IconButton>
+        <Box px={3} pb={3}>
+          <Box height={500} position="relative">
+            <MapContainer
+              mapId="survey_study_area_map"
+              nonEditableGeometries={nonEditableGeometries}
+              bounds={bounds}
+              setInferredLayersInfo={setInferredLayersInfo}
+              additionalLayers={
+                occurrence_submission.id
+                  ? [
+                      <OccurrenceFeatureGroup
+                        projectId={projectForViewData.id}
+                        occurrenceSubmissionId={occurrence_submission.id}
+                      />
+                    ]
+                  : undefined
+              }
+            />
+            {surveyGeometry.length > 0 && (
+              <Box position="absolute" top="126px" left="10px" zIndex="999">
+                <IconButton
+                  aria-label="zoom to initial extent"
+                  title="Zoom to initial extent"
+                  className={classes.zoomToBoundaryExtentBtn}
+                  onClick={() => zoomToBoundaryExtent()}>
+                  <Icon size={1} path={mdiRefresh} />
+                </IconButton>
+              </Box>
+            )}
+          </Box>
+          <Box mt={3}>
+            <Typography variant="body2" component="h3" className={classes.metaSectionHeader}>
+              Study Area Name
+            </Typography>
+            <Divider></Divider>
+            <Typography variant="body1">{survey_details.survey_area_name}</Typography>
+            <Box mt={3}>
+              <InferredLocationDetails layers={inferredLayersInfo} />
             </Box>
-          )}
-        </Box>
-        <Box my={3}>
-          <Typography variant="body2" color="textSecondary">
-            Study Area Name
-          </Typography>
-          <Typography variant="body1">{survey_details.survey_area_name}</Typography>
+          </Box>
         </Box>
 
-        <InferredLocationDetails layers={inferredLayersInfo} />
-
-        <Box mt={3}>
+        <Box mt={3} style={{display: 'none'}}>
           <Button
             variant="text"
             color="primary"
@@ -273,7 +288,8 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
             Show More
           </Button>
         </Box>
-      </Box>
+
+      </Paper>
     </>
   );
 };

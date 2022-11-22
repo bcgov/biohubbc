@@ -95,9 +95,7 @@ const ProjectPage: React.FC = () => {
               </Box>
               <Box>
                 <Paper elevation={0}>
-                  <Box pb={3} px={3}>
-                    <LocationBoundary projectForViewData={projectWithDetails} codes={codes} refresh={getProject} />
-                  </Box>
+                  <LocationBoundary projectForViewData={projectWithDetails} codes={codes} refresh={getProject} />
                 </Paper>
               </Box>
             </Grid>

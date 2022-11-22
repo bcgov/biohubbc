@@ -60,7 +60,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
   },
   projectTitleContainer: {
-    maxWidth: '170ch',
+    maxWidth: '150ch',
     overflow: 'hidden',
     textOverflow: 'ellipsis'
   },
@@ -227,7 +227,7 @@ const ProjectHeader: React.FC<IProjectHeaderProps> = (props) => {
               <Typography variant="h1" className={classes.projectTitle}>
                 Project: <span>{projectWithDetails.project.project_name}</span>
               </Typography>
-              <Box mt={0.75} mb={0.5} display="flex" alignItems="center">
+              <Box mt={0.75} display="flex" alignItems="center">
                 {/* {getChipIcon(projectWithDetails.project.completion_status)} */}
                 <Typography
                   component="span"

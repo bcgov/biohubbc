@@ -107,11 +107,6 @@ const appTheme = createMuiTheme({
         width: '800px'
       }
     },
-    MuiDialogTitle: {
-      root: {
-        padding: '20px 24px'
-      }
-    },
     MuiDialogActions: {
       root: {
         padding: '20px 24px',

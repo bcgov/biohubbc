@@ -13,7 +13,7 @@ import {
   mdiClockOutline,
   mdiDownload,
   mdiFileOutline,
-  mdiImport,
+  mdiTrayArrowUp,
   mdiInformationOutline,
   mdiTrashCanOutline
 } from '@mdi/js';
@@ -35,9 +35,6 @@ interface ISurveyObservationsProps {
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
-  browseLink: {
-    cursor: 'pointer'
-  },
   alertLink: {
     color: 'inherit'
   },
@@ -425,23 +422,25 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
 
   return (
     <>
-      <Paper>
+      <Paper elevation={0}>
         <H2ButtonToolbar
           label="Observations"
-          buttonLabel="Import"
-          buttonTitle="Import"
-          buttonStartIcon={<Icon path={mdiImport} size={1} />}
+          buttonLabel="Submit Observations"
+          buttonTitle="Submit Observations"
+          buttonProps={{variant: 'contained', color: 'primary'}}
+          buttonStartIcon={<Icon path={mdiTrayArrowUp} size={0.8} />}
           buttonOnClick={() => showUploadDialog()}
         />
 
-        <Box pb={3}>
+        <Divider></Divider>
+
+        <Box p={3}>
           {!submissionStatus && (
             <>
-              <Box component={Divider} m={0} />
-              <Box p={3} textAlign="center">
-                <Typography data-testid="observations-nodata" variant="body2">
+              <Box textAlign="center">
+                <Typography data-testid="observations-nodata" variant="body2" color="textSecondary">
                   No Observation Data. &nbsp;
-                  <Link onClick={() => setOpenImportObservations(true)} className={classes.browseLink}>
+                  <Link onClick={() => setOpenImportObservations(true)}>
                     Click Here to Import
                   </Link>
                 </Typography>
@@ -450,7 +449,7 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
           )}
 
           {!isValidating && submissionStatus?.status === SUBMISSION_STATUS_TYPE.SYSTEM_ERROR && (
-            <Box px={3} pb={3}>
+            <Box>
               {displayAlertBox(
                 'error',
                 mdiAlertCircleOutline,
@@ -471,40 +470,47 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
 
           {!isValidating &&
             (submissionStatus?.status === SUBMISSION_STATUS_TYPE.REJECTED ||
-              submissionStatus?.status === SUBMISSION_STATUS_TYPE.FAILED_OCCURRENCE_PREPARATION ||
-              submissionStatus?.status === SUBMISSION_STATUS_TYPE.INVALID_MEDIA ||
-              submissionStatus?.status === SUBMISSION_STATUS_TYPE.FAILED_VALIDATION ||
-              submissionStatus?.status === SUBMISSION_STATUS_TYPE.FAILED_TRANSFORMED ||
-              submissionStatus?.status === SUBMISSION_STATUS_TYPE.FAILED_PROCESSING_OCCURRENCE_DATA) && (
-              <Box px={3} pb={3}>
-                {displayAlertBox(
-                  'error',
-                  mdiAlertCircleOutline,
-                  submissionStatus.inputFileName,
-                  `Validation error: ${submissionStatus?.status}`
-                )}
-                <Box my={3}>
-                  <Typography data-testid="observations-error-details" variant="body1">
-                    Resolve the following errors in your local file and re-import.
-                  </Typography>
-                </Box>
-                <Box>
-                  {displayMessages(submissionErrors, messageGrouping, mdiAlertCircleOutline)}
-                  {displayMessages(submissionWarnings, messageGrouping, mdiInformationOutline)}
-                </Box>
+            submissionStatus?.status === SUBMISSION_STATUS_TYPE.FAILED_OCCURRENCE_PREPARATION ||
+            submissionStatus?.status === SUBMISSION_STATUS_TYPE.INVALID_MEDIA ||
+            submissionStatus?.status === SUBMISSION_STATUS_TYPE.FAILED_VALIDATION ||
+            submissionStatus?.status === SUBMISSION_STATUS_TYPE.FAILED_TRANSFORMED ||
+            submissionStatus?.status === SUBMISSION_STATUS_TYPE.FAILED_PROCESSING_OCCURRENCE_DATA) && (
+            <Box>
+              {displayAlertBox(
+                'error',
+                mdiAlertCircleOutline,
+                submissionStatus.inputFileName,
+                `Validation error: ${submissionStatus?.status}`
+              )}
+              <Box my={3}>
+                <Typography data-testid="observations-error-details" variant="body1">
+                  Resolve the following errors in your local file and re-import.
+                </Typography>
               </Box>
-            )}
+              <Box>
+                {displayMessages(submissionErrors, messageGrouping, mdiAlertCircleOutline)}
+                {displayMessages(submissionWarnings, messageGrouping, mdiInformationOutline)}
+              </Box>
+            </Box>
+          )}
+
           {!isValidating &&
             submissionStatus &&
             (submissionStatus.status === SUBMISSION_STATUS_TYPE.DARWIN_CORE_VALIDATED ||
-              submissionStatus.status === SUBMISSION_STATUS_TYPE.TEMPLATE_VALIDATED ||
-              submissionStatus.status === SUBMISSION_STATUS_TYPE.TEMPLATE_TRANSFORMED) && (
-              <>
-                <Box px={3}>{displayAlertBox('info', mdiFileOutline, submissionStatus.inputFileName, '')}</Box>
-              </>
-            )}
+            submissionStatus.status === SUBMISSION_STATUS_TYPE.TEMPLATE_VALIDATED ||
+            submissionStatus.status === SUBMISSION_STATUS_TYPE.TEMPLATE_TRANSFORMED) && (
+            <Box px={3}>
+              {displayAlertBox(
+                'info',
+                mdiFileOutline,
+                submissionStatus.inputFileName,
+                ''
+              )}
+            </Box>
+          )}
+
           {isValidating && submissionStatus && (
-            <Box px={3} pb={3}>
+            <Box>
               {displayAlertBox(
                 'info',
                 mdiClockOutline,
