@@ -20,6 +20,7 @@ export interface IGetProjectAttachment {
   id: number;
   file_name: string;
   file_type: string;
+  create_user: number;
   create_date: string;
   update_date: string;
   file_size: string;
@@ -31,6 +32,7 @@ export interface IGetProjectAttachment {
 export interface IGetProjectReportAttachment {
   id: number;
   file_name: string;
+  create_user: number;
   title: string;
   description: string;
   year_published: number;
@@ -43,7 +45,14 @@ export interface IGetProjectReportAttachment {
   revision_count: number;
 }
 
+export type AttachmentStatus =
+  | 'PENDING_REVIEW'
+  | 'SECURED'
+  | 'UNSECURED'
+  | 'SUBMITTED'
+
 export type WithSecurityRuleCount<T> = T & { security_rule_count: number };
+export type WithAttachmentStatus<T> = T & { status: AttachmentStatus };
 
 export interface IGetAttachmentAuthor {
   project_report_author_id: number;
@@ -86,6 +95,7 @@ export class AttachmentRepository extends BaseRepository {
         project_attachment_id AS id,
         file_name,
         file_type,
+        create_user,
         update_date,
         create_date,
         file_size,
@@ -115,6 +125,7 @@ export class AttachmentRepository extends BaseRepository {
       SELECT
         project_report_attachment_id as id,
         file_name,
+        create_user,
         title,
         description,
         year::int as year_published,
@@ -144,44 +155,50 @@ export class AttachmentRepository extends BaseRepository {
   }
 
   /**
-   * SQL query to get report attachments for a single project, including attachment statuses
+   * SQL query to get report attachments for a single project, including security rule counts
    *
    * @param {number} projectId
    * @return {*}
    * @memberof AttachmentRepository
    */
-   async getProjectAttachmentsWithStatus(projectId: number): Promise<WithSecurityRuleCount<IGetProjectAttachment>[]> {
-    defaultLog.debug({ label: 'getProjectAttachments' });
+   async getProjectAttachmentsWithSecurityCounts(projectId: number): Promise<WithSecurityRuleCount<IGetProjectAttachment>[]> {
+    defaultLog.debug({ label: 'getProjectAttachmentsWithSecurityCounts' });
 
     const sqlStatement = SQL`
       SELECT
         pa.project_attachment_id AS id,
         pa.file_name,
         pa.file_type,
+        pa.create_user,
         pa.update_date,
         pa.create_date,
         pa.file_size,
         pa.key,
         pa.security_token,
         pa.security_review_timestamp,
-        COUNT(pap.*) AS security_rule_count
+        COALESCE(src.count, 0) AS security_rule_count
       FROM
         project_attachment pa
-      LEFT JOIN
-        project_attachment_persecution pap
+      LEFT JOIN (
+          SELECT DISTINCT ON (pap.project_attachment_id)
+            pap.project_attachment_id,
+            COUNT(pap.project_attachment_id) AS count
+          FROM
+            project_attachment_persecution pap
+          GROUP BY
+            pap.project_attachment_id
+      ) src
       ON
-        pa.project_attachment_id = pap.project_attachment_id
+        pa.project_attachment_id = src.project_attachment_id
       WHERE
-        project_id = ${projectId}
-      GROUP BY
-      	pa.project_attachment_id
+        pa.project_id = ${projectId}
     `;
 
     const response = await this.connection.sql<WithSecurityRuleCount<IGetProjectAttachment>>(sqlStatement);
 
     if (!response || !response.rows) {
       throw new ApiExecuteSQLError('Failed to get project attachments with security rule count by projectId', [
-        'AttachmentRepository->getProjectAttachments',
+        'AttachmentRepository->getProjectAttachmentsWithSecurityCounts',
         'rows was null or undefined, expected rows != null'
       ]);
     }
