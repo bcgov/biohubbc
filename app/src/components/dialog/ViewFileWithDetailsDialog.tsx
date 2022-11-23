@@ -222,6 +222,55 @@ const ViewFileWithDetailsDialog: React.FC<IViewFileWithDetailsDialogProps> = (pr
                     </TableRow>
                   )}
                 </TableBody>
+
+                <TableBody>
+                  {props.attachmentDetails?.security_reasons &&
+                    props.attachmentDetails?.security_reasons?.length > 0 &&
+                    props.attachmentDetails?.security_reasons?.map((row, index) => {
+                      return (
+                        <TableRow key={`${row.security_reason_id}-${index}`}>
+                          <TableCell>Security Administration</TableCell>
+                          <TableCell>
+                            <Typography style={{ fontWeight: 700 }}>{row.security_reason_title}</Typography>
+                            <Typography variant="body1" color="textSecondary">
+                              {row.security_reason_description}
+                            </Typography>
+                          </TableCell>
+                          <TableCell>
+                            <Typography variant="body2" component="div">
+                              Expired
+                            </Typography>
+
+                            <Typography variant="body2" component="div" color="textSecondary">
+                              {row.date_expired ? row.date_expired : 'N/A'}
+                            </Typography>
+                          </TableCell>
+                          <TableCell></TableCell>
+                        </TableRow>
+                      );
+                    })}
+
+                  {props.attachmentDetails?.security_reasons?.length === 0 && (
+                    <TableRow key={`0`}>
+                      <TableCell>Security Administration</TableCell>
+                      <TableCell>
+                        <Typography style={{ fontWeight: 700 }}>Awaiting Security Review</Typography>
+                        <Typography variant="body1" color="textSecondary">
+                          Awaiting review to determine if security-reasons should be assigned
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Typography variant="body2" component="div">
+                          Submitted
+                        </Typography>
+                        <Typography variant="body2" component="div" color="textSecondary">
+                          TBD
+                        </Typography>
+                      </TableCell>
+                      <TableCell></TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
               </Table>
             </TableContainer>
           </Paper>

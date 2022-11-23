@@ -227,7 +227,7 @@ export class AttachmentRepository extends BaseRepository {
       FROM
         project_attachment_persecution
       where
-        project_attachment_attachment_id = ${projectAttachmentId}
+        project_attachment_id = ${projectAttachmentId}
     `;
 
     const response = await this.connection.sql<IGetAttachmentSecurityReason>(sqlStatement);

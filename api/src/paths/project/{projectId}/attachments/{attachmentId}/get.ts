@@ -61,7 +61,7 @@ GET.apiDoc = {
           schema: {
             title: 'metadata get response object',
             type: 'object',
-            required: ['metadata', 'authors', 'security_reasons'],
+            required: ['security_reasons'],
             properties: {
               security_reasons: {
                 description: 'Report metadata security object',
@@ -77,10 +77,6 @@ GET.apiDoc = {
                     },
                     persecution_security_id: {
                       type: 'number'
-                    },
-                    update_date: {
-                      oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
-                      description: 'ISO 8601 date string for the project start date'
                     }
                   }
                 }
@@ -146,8 +142,7 @@ export function getProjectAttachmentDetails(): RequestHandler {
         return {
           security_reason_id: item.persecution_security_id,
           security_reason_title: persecutionRules[item.persecution_security_id - 1].reasonTitle,
-          security_reason_description: persecutionRules[item.persecution_security_id - 1].reasonDescription,
-          date_expired: persecutionRules[item.persecution_security_id - 1].expirationDate
+          security_reason_description: persecutionRules[item.persecution_security_id - 1].reasonDescription
         };
       });
 
