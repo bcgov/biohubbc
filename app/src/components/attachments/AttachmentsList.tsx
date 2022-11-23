@@ -413,7 +413,6 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
                           checkedIcon={<Icon path={mdiCheckboxOutline} size={1} />}
                           value={index}
                           onChange={(e) => {
-                            console.log(e);
                             const attachment: IAttachmentType[] = props.attachmentsList
                               .filter((item, index) => index == Number(e.target.value))
                               .map((item) => {

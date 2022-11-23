@@ -1,11 +1,10 @@
-import { RequestHandler } from "express";
-import { Operation } from "express-openapi";
-import { SYSTEM_ROLE } from "../../../../../../../constants/roles";
-import { getDBConnection } from "../../../../../../../database/db";
-import { authorizeRequestHandler } from "../../../../../../../request-handlers/security/authorization";
-import { AttachmentService, IAttachmentType } from "../../../../../../../services/attachment-service";
-import { getLogger } from "../../../../../../../utils/logger";
-
+import { RequestHandler } from 'express';
+import { Operation } from 'express-openapi';
+import { SYSTEM_ROLE } from '../../../../../../../constants/roles';
+import { getDBConnection } from '../../../../../../../database/db';
+import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
+import { AttachmentService, IAttachmentType } from '../../../../../../../services/attachment-service';
+import { getLogger } from '../../../../../../../utils/logger';
 
 const defaultLog = getLogger('/api/project/{projectId}/attachments/security/add');
 
@@ -51,7 +50,7 @@ POST.apiDoc = {
             security_ids: {
               type: 'array',
               items: {
-                type: 'number',
+                type: 'number'
               }
             },
             attachments: {
@@ -123,7 +122,7 @@ export function addSurveyAttachmentSecurity(): RequestHandler {
 
       const attachmentService = new AttachmentService(connection);
 
-      await attachmentService.addSecurityToSurveyAttachments(securityIds,attachments);
+      await attachmentService.addSecurityToSurveyAttachments(securityIds, attachments);
 
       await connection.commit();
 

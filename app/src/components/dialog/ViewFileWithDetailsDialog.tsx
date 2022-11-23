@@ -79,8 +79,6 @@ const ViewFileWithDetailsDialog: React.FC<IViewFileWithDetailsDialogProps> = (pr
   const classes = useStyles();
   const biohubApi = useBiohubApi();
 
-  console.log('props in ViewFileWithDetailsDialog: ', props);
-
   const [securityDialogOpen, setSecurityDialogOpen] = useState(false);
   const [showEditFileWithMetaDialog, setShowEditFileWithMetaDialog] = useState<boolean>(false);
 
@@ -137,9 +135,9 @@ const ViewFileWithDetailsDialog: React.FC<IViewFileWithDetailsDialogProps> = (pr
     if (props.attachmentId && props.fileType) {
       const attachmentData: IAttachmentType = {
         id: props.attachmentId,
-        type: mapFileTypeToAttachmentType(props.fileType || "Other")
-      }
-      
+        type: mapFileTypeToAttachmentType(props.fileType || 'Other')
+      };
+
       if (props.surveyId === undefined) {
         biohubApi.security.addProjectSecurityReasons(props.projectId, securityReasons, [attachmentData]).finally(() => {
           setSecurityDialogOpen(false);
@@ -152,17 +150,17 @@ const ViewFileWithDetailsDialog: React.FC<IViewFileWithDetailsDialogProps> = (pr
   };
 
   const mapFileTypeToAttachmentType = (type: string): AttachmentType => {
-    let attachmentType = AttachmentType.OTHER
-    if (type === "Report") {
-      attachmentType = AttachmentType.REPORT
+    let attachmentType = AttachmentType.OTHER;
+    if (type === 'Report') {
+      attachmentType = AttachmentType.REPORT;
     }
 
     return attachmentType;
-  }
+  };
 
   const showDeleteSecurityReasonDialog = (securityReasons: IGetSecurityReasons[]) => {
     let yesNoDialogProps;
-    
+
     if (securityReasons.length == 1) {
       yesNoDialogProps = {
         ...defaultYesNoDialogProps,

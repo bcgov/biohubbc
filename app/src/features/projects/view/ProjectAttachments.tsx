@@ -83,7 +83,7 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
         return error;
       }
     },
-    [biohubApi.project, projectId, attachmentsList.length, reportAttachmentsList.length]
+    [biohubApi.project, projectId, attachmentsList.length]
   );
 
   const getUploadHandler = (): IUploadHandler<IUploadAttachmentResponse> => {
@@ -101,7 +101,6 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
   };
 
   const addSecurityReasons = (securityReasons: number[]) => {
-    console.log(securityReasons);
     biohubApi.security.addProjectSecurityReasons(projectId, securityReasons, selectedAttachmentRows).finally(() => {
       setSecurityDialogOpen(false);
     });

@@ -1,6 +1,6 @@
 import { AxiosInstance } from 'axios';
-import { IAttachmentType } from 'features/projects/view/ProjectAttachments';
 import { AttachmentType } from 'constants/attachments';
+import { IAttachmentType } from 'features/projects/view/ProjectAttachments';
 import { SecurityReason } from 'interfaces/useSecurityApi.interface';
 
 /**
@@ -33,7 +33,6 @@ const useSecurityApi = (axios: AxiosInstance) => {
     securityIds: number[],
     attachments: IAttachmentType[]
   ): Promise<any> => {
-    console.log(attachments)
     const { data } = await axios.post(`/api/project/${projectId}/attachments/security/add`, {
       security_ids: securityIds,
       attachments: attachments
@@ -48,7 +47,6 @@ const useSecurityApi = (axios: AxiosInstance) => {
     securityIds: number[],
     attachments: IAttachmentType[]
   ): Promise<any> => {
-    console.log(attachments)
     const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/attachments/security/add`, {
       security_ids: securityIds,
       attachments: attachments

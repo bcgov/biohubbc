@@ -122,7 +122,7 @@ export function addAttachmentSecurity(): RequestHandler {
 
       const attachmentService = new AttachmentService(connection);
 
-      await attachmentService.addSecurityToProjectAttachments(securityIds,attachments);
+      await attachmentService.addSecurityToProjectAttachments(securityIds, attachments);
 
       await connection.commit();
 
