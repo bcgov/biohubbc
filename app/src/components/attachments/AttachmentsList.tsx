@@ -414,7 +414,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
                           value={index}
                           onChange={(e) => {
                             const attachment: IAttachmentType[] = props.attachmentsList
-                              .filter((item, index) => index == Number(e.target.value))
+                              .filter((item, index) => index === Number(e.target.value))
                               .map((item) => {
                                 return { id: item.id, type: item.fileType } as IAttachmentType;
                               });
@@ -436,7 +436,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
                         <Chip
                           size="small"
                           color="secondary"
-                          label={!row.securityReviewTimestamp ? 'status?' : 'Pending review'}
+                          label={row.securityReviewTimestamp ? 'Reviewed' : 'Pending Review'}
                           icon={<Icon path={mdiAlertCircle} size={0.8} />}
                           onClick={openDrawer}
                         />

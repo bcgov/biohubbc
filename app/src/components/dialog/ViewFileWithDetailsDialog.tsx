@@ -88,7 +88,7 @@ const ViewFileWithDetailsDialog: React.FC<IViewFileWithDetailsDialogProps> = (pr
     });
 
     if (props.reportDetails?.metadata?.attachment_id) {
-      if (props.surveyId == undefined) {
+      if (props.surveyId === undefined) {
         if (props.fileType === AttachmentType.REPORT) {
           await biohubApi.security.deleteProjectReportAttachmentSecurityReasons(
             props.projectId,
@@ -131,7 +131,7 @@ const ViewFileWithDetailsDialog: React.FC<IViewFileWithDetailsDialogProps> = (pr
     onYes: () => dialogContext.setYesNoDialog({ open: false })
   };
 
-  const addSecurityReasons = (securityReasons: number[]) => {
+  const addSecurityReasons = async (securityReasons: number[]) => {
     if (props.attachmentId && props.fileType) {
       const attachmentData: IAttachmentType = {
         id: props.attachmentId,
@@ -139,9 +139,11 @@ const ViewFileWithDetailsDialog: React.FC<IViewFileWithDetailsDialogProps> = (pr
       };
 
       if (props.surveyId === undefined) {
-        biohubApi.security.addProjectSecurityReasons(props.projectId, securityReasons, [attachmentData]).finally(() => {
-          setSecurityDialogOpen(false);
-        });
+        await biohubApi.security
+          .addProjectSecurityReasons(props.projectId, securityReasons, [attachmentData])
+          .finally(() => {
+            setSecurityDialogOpen(false);
+          });
       } else {
         setSecurityDialogOpen(false);
         // biohubApi.security.addSurveySecurityReasons(props.projectId, securityReasons, [attachmentData])
@@ -161,7 +163,7 @@ const ViewFileWithDetailsDialog: React.FC<IViewFileWithDetailsDialogProps> = (pr
   const showDeleteSecurityReasonDialog = (securityReasons: IGetSecurityReasons[]) => {
     let yesNoDialogProps;
 
-    if (securityReasons.length == 1) {
+    if (securityReasons.length === 1) {
       yesNoDialogProps = {
         ...defaultYesNoDialogProps,
         dialogTitle: 'Remove Security Reason',
@@ -179,8 +181,9 @@ const ViewFileWithDetailsDialog: React.FC<IViewFileWithDetailsDialogProps> = (pr
       ...yesNoDialogProps,
       open: true,
       yesButtonProps: { color: 'secondary' },
-      onYes: () => {
-        removeSecurity(securityReasons);
+      onYes: async () => {
+        await removeSecurity(securityReasons);
+        props.refresh();
         dialogContext.setYesNoDialog({ open: false });
       }
     });
@@ -194,13 +197,16 @@ const ViewFileWithDetailsDialog: React.FC<IViewFileWithDetailsDialogProps> = (pr
     <>
       <SecurityDialog
         open={securityDialogOpen}
-        onAccept={(securityReasons) => {
+        onAccept={async (securityReasons) => {
           // formik form is retuning array of strings not numbers if printed out in console
           // linter wrongly believes formik to be number[] so wrapped map in string to force values into number[]
           if (securityReasons.security_reasons.length > 0) {
-            addSecurityReasons(securityReasons.security_reasons.map((item) => parseInt(`${item.security_reason_id}`)));
+            await addSecurityReasons(
+              securityReasons.security_reasons.map((item) => parseInt(`${item.security_reason_id}`))
+            );
           }
 
+          props.refresh();
           setSecurityDialogOpen(false);
         }}
         onClose={() => setSecurityDialogOpen(false)}
