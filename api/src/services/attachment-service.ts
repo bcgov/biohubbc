@@ -68,13 +68,10 @@ export class AttachmentService extends DBService {
   async removeSecurityFromProjectAttachment(
     securityIds: number[],
     attachmentId: number
-  ): Promise<{ project_attachment_persecution_id: number }[]> {
-    const result = [];
+  ): Promise<void> {
     for (const securityId of securityIds) {
-      const response = await this.attachmentRepository.removeSecurityFromProjectAttachment(securityId, attachmentId);
-      result.push(response);
+      await this.attachmentRepository.removeSecurityFromProjectAttachment(securityId, attachmentId);
     }
-    return result;
   }
 
   /**
@@ -88,13 +85,10 @@ export class AttachmentService extends DBService {
   async removeSecurityFromSurveyAttachment(
     securityIds: number[],
     attachmentId: number
-  ): Promise<{ survey_attachment_persecution_id: number }[]> {
-    const result = [];
+  ): Promise<void> {
     for (const securityId of securityIds) {
-      const response = await this.attachmentRepository.removeSecurityFromSurveyAttachment(securityId, attachmentId);
-      result.push(response);
+      await this.attachmentRepository.removeSecurityFromSurveyAttachment(securityId, attachmentId);
     }
-    return result;
   }
 
   async addSecurityToProjectReportAttachment(securityIds: number[], attachmentId: number): Promise<void> {
@@ -116,16 +110,13 @@ export class AttachmentService extends DBService {
   async removeSecurityFromProjectReportAttachment(
     securityIds: number[],
     attachmentId: number
-  ): Promise<{ project_report_persecution_id: number }[]> {
-    const result = [];
+  ): Promise<void> {
     for (const securityId of securityIds) {
-      const response = await this.attachmentRepository.removeSecurityFromProjectReportAttachment(
+      await this.attachmentRepository.removeSecurityFromProjectReportAttachment(
         securityId,
         attachmentId
       );
-      result.push(response);
     }
-    return result;
   }
 
   /**
@@ -139,16 +130,13 @@ export class AttachmentService extends DBService {
   async removeSecurityFromSurveyReportAttachment(
     securityIds: number[],
     attachmentId: number
-  ): Promise<{ survey_report_persecution_id: number }[]> {
-    const result = [];
+  ): Promise<void> {
     for (const securityId of securityIds) {
-      const response = await this.attachmentRepository.removeSecurityFromSurveyReportAttachment(
+      await this.attachmentRepository.removeSecurityFromSurveyReportAttachment(
         securityId,
         attachmentId
       );
-      result.push(response);
     }
-    return result;
   }
 
   async addSecurityToAttachments(securityIds: number[], attachmentIds: number[]): Promise<void[]> {

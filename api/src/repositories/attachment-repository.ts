@@ -239,36 +239,30 @@ export class AttachmentRepository extends BaseRepository {
    *
    * @param {number} securityId
    * @param {number} attachmentId
-   * @return {*}  {Promise<{ project_attachment_persecution_id: number }>}
+   * @return {*}  {Promise<void>}
    * @memberof AttachmentRepository
    */
   async removeSecurityFromProjectAttachment(
     securityId: number,
     attachmentId: number
-  ): Promise<{ project_attachment_persecution_id: number }> {
+  ): Promise<void> {
     const sqlStatement = SQL`
       DELETE FROM
         project_attachment_persecution
       WHERE
         project_attachment_id = ${attachmentId}
       AND
-        project_attachment_persecution_id =  ${securityId}
-      RETURNING project_attachment_persecution_id
-      ;
+        persecution_security_id =  ${securityId};
       `;
 
-    const response = await this.connection.sql(sqlStatement);
+      const response = await this.connection.sql(sqlStatement);
 
-    const result = (response && response.rows && response.rows[0]) || null;
-
-    if (!result) {
+      if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to Delete Project Attachment Security', [
         'AttachmentRepository->removeSecurityFromProjectAttachment',
-        'row[0] was null or undefined, expected row[0] != null'
+        'rowCount was 0 or undefined, expected rowCount == 1'
       ]);
     }
-
-    return result;
   }
 
   /**
@@ -276,36 +270,30 @@ export class AttachmentRepository extends BaseRepository {
    *
    * @param {number} securityId
    * @param {number} attachmentId
-   * @return {*}  {Promise<{ survey_attachment_persecution_id: number }>}
+   * @return {*}  {Promise<void>}
    * @memberof AttachmentRepository
    */
   async removeSecurityFromSurveyAttachment(
     securityId: number,
     attachmentId: number
-  ): Promise<{ survey_attachment_persecution_id: number }> {
+  ): Promise<void> {
     const sqlStatement = SQL`
       DELETE FROM
         survey_attachment_persecution
       WHERE
         survey_attachment_id = ${attachmentId}
       AND
-        survey_attachment_persecution_id =  ${securityId}
-      RETURNING survey_attachment_persecution_id
-      ;
+      persecution_security_id =  ${securityId};
       `;
 
-    const response = await this.connection.sql(sqlStatement);
+      const response = await this.connection.sql(sqlStatement);
 
-    const result = (response && response.rows && response.rows[0]) || null;
-
-    if (!result) {
+      if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to Delete Survey Attachment Security', [
         'AttachmentRepository->removeSecurityFromSurveyAttachment',
-        'row[0] was null or undefined, expected row[0] != null'
+        'rowCount was 0 or undefined, expected rowCount == 1'
       ]);
     }
-
-    return result;
   }
 
   // TODO functions need to handle duplicate keys (re adding existing security reasons)
@@ -417,36 +405,30 @@ export class AttachmentRepository extends BaseRepository {
    *
    * @param {number} securityId
    * @param {number} attachmentId
-   * @return {*}  {Promise<{ project_report_persecution_id: number }>}
+   * @return {*}  {Promise<void>}
    * @memberof AttachmentRepository
    */
   async removeSecurityFromProjectReportAttachment(
     securityId: number,
     attachmentId: number
-  ): Promise<{ project_report_persecution_id: number }> {
+  ): Promise<void> {
     const sqlStatement = SQL`
       DELETE FROM
         project_report_persecution
       WHERE
         project_report_attachment_id = ${attachmentId}
       AND
-        project_report_persecution_id =  ${securityId}
-      RETURNING project_report_persecution_id
-      ;
+        persecution_security_id =  ${securityId};
       `;
 
     const response = await this.connection.sql(sqlStatement);
 
-    const result = (response && response.rows && response.rows[0]) || null;
-
-    if (!result) {
+    if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to Delete Project Report Attachment Security', [
         'AttachmentRepository->removeSecurityFromProjectReportAttachment',
-        'row[0] was null or undefined, expected row[0] != null'
+        'rowCount was 0 or undefined, expected rowCount == 1'
       ]);
     }
-
-    return result;
   }
 
   /**
@@ -454,36 +436,30 @@ export class AttachmentRepository extends BaseRepository {
    *
    * @param {number} securityId
    * @param {number} attachmentId
-   * @return {*}  {Promise<{ survey_report_persecution_id: number }>}
+   * @return {*}  {Promise<void>}
    * @memberof AttachmentRepository
    */
   async removeSecurityFromSurveyReportAttachment(
     securityId: number,
     attachmentId: number
-  ): Promise<{ survey_report_persecution_id: number }> {
+  ): Promise<void> {
     const sqlStatement = SQL`
       DELETE FROM
         survey_report_persecution
       WHERE
         survey_report_attachment_id = ${attachmentId}
       AND
-        survey_report_persecution_id =  ${securityId}
-      RETURNING survey_report_persecution_id
-      ;
+        persecution_security_id =  ${securityId};
       `;
 
     const response = await this.connection.sql(sqlStatement);
 
-    const result = (response && response.rows && response.rows[0]) || null;
-
-    if (!result) {
+    if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to Delete Survey Report Attachment Security', [
         'AttachmentRepository->removeSecurityFromSurveyReportAttachment',
-        'row[0] was null or undefined, expected row[0] != null'
+        'rowCount was 0 or undefined, expected rowCount == 1'
       ]);
     }
-
-    return result;
   }
 
   async getProjectReportAttachmentById(projectId: number, attachmentId: number): Promise<IGetProjectReportAttachment> {
