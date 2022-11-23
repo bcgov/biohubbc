@@ -42,45 +42,11 @@ export class AttachmentService extends DBService {
   }
 
   async getProjectReportSecurityReasons(attachmentId: number): Promise<IGetAttachmentSecurityReason[]> {
-    //const security_reasons = this.attachmentRepository.getProjectReportSecurityReasons(attachmentId);
-
-    //For faking security reason from the database
-
-    const security_reasons = [
-      {
-        project_report_author_id: 1,
-        project_report_attachment_id: 2,
-        persecution_security_id: 3
-      },
-      {
-        project_report_author_id: 4,
-        project_report_attachment_id: 5,
-        persecution_security_id: 6
-      }
-    ];
-
-    return security_reasons;
+    return this.attachmentRepository.getProjectReportSecurityReasons(attachmentId);
   }
 
   async getProjectAttachmentSecurityReasons(attachmentId: number): Promise<IGetAttachmentSecurityReason[]> {
-    const security_reasons = this.attachmentRepository.getProjectAttachmentSecurityReasons(attachmentId);
-
-    //For faking security reason from the database
-
-    // const security_reasons = [
-    //   {
-    //     project_report_author_id: 1,
-    //     project_report_attachment_id: 2,
-    //     persecution_security_id: 3
-    //   },
-    //   {
-    //     project_report_author_id: 4,
-    //     project_report_attachment_id: 5,
-    //     persecution_security_id: 6
-    //   }
-    // ];
-
-    return security_reasons;
+    return this.attachmentRepository.getProjectAttachmentSecurityReasons(attachmentId);
   }
 
   async addSecurityToProjectAttachment(securityIds: number[], attachmentId: number): Promise<void> {

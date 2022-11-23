@@ -299,7 +299,7 @@ const ViewFileWithDetailsDialog: React.FC<IViewFileWithDetailsDialogProps> = (pr
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {props.reportDetails?.security_reasons &&
+                  {props.reportDetails && props.reportDetails?.security_reasons &&
                     props.reportDetails?.security_reasons?.length > 0 &&
                     props.reportDetails?.security_reasons?.map((row, index) => {
                       return (
@@ -333,7 +333,7 @@ const ViewFileWithDetailsDialog: React.FC<IViewFileWithDetailsDialogProps> = (pr
                       );
                     })}
 
-                  {props.reportDetails?.security_reasons?.length === 0 && (
+                  {props.reportDetails && props.reportDetails?.security_reasons?.length === 0 && (
                     <TableRow key={`0`}>
                       <TableCell>Security Administration</TableCell>
                       <TableCell>
@@ -358,8 +358,9 @@ const ViewFileWithDetailsDialog: React.FC<IViewFileWithDetailsDialogProps> = (pr
                   )}
                 </TableBody>
 
+
                 <TableBody>
-                  {props.attachmentDetails?.security_reasons &&
+                  {props.attachmentDetails && props.attachmentDetails?.security_reasons &&
                     props.attachmentDetails?.security_reasons?.length > 0 &&
                     props.attachmentDetails?.security_reasons?.map((row, index) => {
                       return (
@@ -385,7 +386,7 @@ const ViewFileWithDetailsDialog: React.FC<IViewFileWithDetailsDialogProps> = (pr
                       );
                     })}
 
-                  {props.attachmentDetails?.security_reasons?.length === 0 && (
+                  {props.attachmentDetails && props.attachmentDetails?.security_reasons?.length === 0 && (
                     <TableRow key={`0`}>
                       <TableCell>Security Administration</TableCell>
                       <TableCell>
