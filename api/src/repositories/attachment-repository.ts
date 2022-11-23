@@ -191,7 +191,62 @@ export class AttachmentRepository extends BaseRepository {
       ON
         pa.project_attachment_id = src.project_attachment_id
       WHERE
-        pa.project_id = ${projectId}
+        pa.project_id = ${projectId};
+    `;
+
+    const response = await this.connection.sql<WithSecurityRuleCount<IGetProjectAttachment>>(sqlStatement);
+
+    if (!response || !response.rows) {
+      throw new ApiExecuteSQLError('Failed to get project attachments with security rule count by projectId', [
+        'AttachmentRepository->getProjectAttachmentsWithSecurityCounts',
+        'rows was null or undefined, expected rows != null'
+      ]);
+    }
+
+    return response.rows;
+  }
+
+  /**
+   * SQL query to get report attachments for a single project, including security rule counts
+   *
+   * @param {number} projectId
+   * @return {*}
+   * @memberof AttachmentRepository
+   */
+   async getProjectReportAttachmentsWithSecurityCounts(projectId: number): Promise<WithSecurityRuleCount<IGetProjectAttachment>[]> {
+    defaultLog.debug({ label: 'getProjectAttachmentsWithSecurityCounts' });
+
+    const sqlStatement = SQL`
+      SELECT
+        pra.project_report_attachment_id as id,
+        pra.file_name,
+        pra.create_user,
+        pra.title,
+        pra.description,
+        pra.year::int as year_published,
+        pra.update_date::text as last_modified,
+        pra.create_date,
+        pra.file_size,
+        pra.key,
+        pra.security_token,
+        pra.security_review_timestamp,
+        pra.revision_count,
+        COALESCE(src.count, 0) AS security_rule_count
+      FROM
+        project_report_attachment pra
+      LEFT JOIN (
+          SELECT DISTINCT ON (prp.project_report_attachment_id)
+            prp.project_report_attachment_id,
+            COUNT(prp.project_report_attachment_id) AS count
+          FROM
+            project_report_persecution prp
+          GROUP BY
+            prp.project_report_attachment_id
+      ) src
+      ON
+        pra.project_report_attachment_id = src.project_report_attachment_id
+      WHERE
+        pra.project_id = ${projectId}
     `;
 
     const response = await this.connection.sql<WithSecurityRuleCount<IGetProjectAttachment>>(sqlStatement);

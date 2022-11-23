@@ -35,12 +35,13 @@ export class AttachmentService extends DBService {
     return this.attachmentRepository.getProjectAttachmentsWithSecurityCounts(projectId);
   }
 
-  async getProjectReportAttachment(projectId: number, attachmentId: number): Promise<IGetProjectReportAttachment> {
-    const response = this.attachmentRepository.getProjectReportAttachmentById(projectId, attachmentId);
-
-    console.log('getProjectReportAttachment: ', response);
-    return response;
+  async getProjectReportAttachmentsWithSecurityCounts(projectId: number): Promise<WithSecurityRuleCount<IGetProjectAttachment>[]> {
+    return this.attachmentRepository.getProjectReportAttachmentsWithSecurityCounts(projectId);
   }
+
+  async getProjectReportAttachment(projectId: number, attachmentId: number): Promise<IGetProjectReportAttachment> {
+    return this.attachmentRepository.getProjectReportAttachmentById(projectId, attachmentId);
+  }  
 
   async getProjectAttachmentAuthors(attachmentId: number): Promise<IGetAttachmentAuthor[]> {
     return this.attachmentRepository.getProjectAttachmentAuthors(attachmentId);

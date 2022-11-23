@@ -4,7 +4,7 @@ import { PROJECT_ROLE, SYSTEM_ROLE } from '../../../../constants/roles';
 import { getDBConnection } from '../../../../database/db';
 import { HTTP400 } from '../../../../errors/http-error';
 import { GetAttachmentsData } from '../../../../models/project-survey-attachments';
-import { IGetProjectAttachment, WithSecurityRuleCount } from '../../../../repositories/attachment-repository';
+import { IGetProjectAttachment, IGetProjectReportAttachment, WithSecurityRuleCount } from '../../../../repositories/attachment-repository';
 import { authorizeRequestHandler, userHasValidRole } from '../../../../request-handlers/security/authorization';
 import { AttachmentService } from '../../../../services/attachment-service';
 import { AttachmentStatus } from '../../../../repositories/attachment-repository'
@@ -114,25 +114,28 @@ export function getAttachments(): RequestHandler {
       const attachmentService = new AttachmentService(connection);      
       
       const attachmentsData = (await attachmentService.getProjectAttachmentsWithSecurityCounts(projectId))
-        .map(((attachment: WithSecurityRuleCount<IGetProjectAttachment>) => {
-          const status: AttachmentStatus = attachment.security_review_timestamp ? (
-            attachment.security_rule_count > 0
-              ? 'SECURED'
-              : 'UNSECURED'
-          ) : (
-            isUserAdmin
-              ? 'PENDING_REVIEW'
-              : 'SUBMITTED'
-          );
+      const reportAttachmentsData = await attachmentService.getProjectReportAttachmentsWithSecurityCounts(projectId);
 
-          return { ...attachment, status };
-        }))
+      const injectAttachmentStatus = (attachment: WithSecurityRuleCount<IGetProjectAttachment | IGetProjectReportAttachment>) => {
+        const status: AttachmentStatus = attachment.security_review_timestamp ? (
+          attachment.security_rule_count > 0
+            ? 'SECURED'
+            : 'UNSECURED'
+        ) : (
+          isUserAdmin
+            ? 'PENDING_REVIEW'
+            : 'SUBMITTED'
+        );
 
-        const reportAttachmentsData = await attachmentService.getProjectReportAttachments(projectId);
+        return { ...attachment, status };
+      }
 
       await connection.commit();
 
-      const getAttachmentsData = new GetAttachmentsData(attachmentsData, reportAttachmentsData);
+      const getAttachmentsData = new GetAttachmentsData(
+        attachmentsData.map(injectAttachmentStatus),
+        reportAttachmentsData.map(injectAttachmentStatus)
+      );
 
       return res.status(200).json(getAttachmentsData);
     } catch (error) {
