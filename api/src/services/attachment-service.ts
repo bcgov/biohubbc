@@ -142,10 +142,6 @@ export class AttachmentService extends DBService {
     return result;
   }
 
-  async addSecurityToSurveyReportAttachment(): Promise<void[]> {
-    return [];
-  }
-
   async addSecurityToAttachments(securityIds: number[], attachmentIds: number[]): Promise<void[]> {
     const promises = attachmentIds.map((item) => this.addSecurityToAttachment(securityIds, item));
 
