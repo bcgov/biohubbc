@@ -511,8 +511,6 @@ export class AttachmentRepository extends BaseRepository {
 
     const response = await this.connection.sql<IGetProjectReportAttachment>(sqlStatement);
 
-    console.log('in repository: ', response);
-
     if (!response || !response.rows) {
       throw new HTTP400('Failed to get project attachment by attachment id');
     }
