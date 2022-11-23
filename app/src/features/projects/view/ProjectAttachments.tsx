@@ -19,6 +19,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import {
   IGetProjectAttachment,
   IGetProjectForViewResponse,
+  IGetProjectReportAttachment,
   IUploadAttachmentResponse
 } from 'interfaces/useProjectApi.interface';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -30,8 +31,8 @@ export interface IProjectAttachmentsProps {
 }
 
 export interface IAttachmentType {
-  id: number,
-  type: "Report" | "Other"
+  id: number;
+  type: 'Report' | 'Other';
 }
 
 /**
@@ -49,6 +50,7 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
     AttachmentType.OTHER
   );
   const [attachmentsList, setAttachmentsList] = useState<IGetProjectAttachment[]>([]);
+  const [reportAttachmentsList, setReportAttachmentsList] = useState<IGetProjectReportAttachment[]>([]);
 
   // Tracks which attachment rows have been selected, via the table checkboxes.
   const [selectedAttachmentRows, setSelectedAttachmentRows] = useState<IAttachmentType[]>([]);
@@ -71,16 +73,17 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
       try {
         const response = await biohubApi.project.getProjectAttachments(projectId);
 
-        if (!response?.attachmentsList) {
+        if (!response?.attachmentsList && !response?.reportAttachmentsList) {
           return;
         }
 
+        setReportAttachmentsList([...response.reportAttachmentsList]);
         setAttachmentsList([...response.attachmentsList]);
       } catch (error) {
         return error;
       }
     },
-    [biohubApi.project, projectId, attachmentsList.length]
+    [biohubApi.project, projectId, attachmentsList.length, reportAttachmentsList.length]
   );
 
   const getUploadHandler = (): IUploadHandler<IUploadAttachmentResponse> => {
@@ -208,11 +211,18 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
       <Box px={1}>
         <AttachmentsList
           projectId={projectId}
-          attachmentsList={attachmentsList}
+          attachmentsList={[...attachmentsList, ...reportAttachmentsList]}
           getAttachments={getAttachments}
           onCheckboxChange={(value) => {
-            console.log(value);
-            setSelectedAttachmentRows([value]);
+            setSelectedAttachmentRows((currentRows) => {
+              const hasMatchingValue = currentRows.find((item) => item.id === value.id && item.type === value.type);
+
+              if (hasMatchingValue) {
+                return currentRows;
+              }
+
+              return [...currentRows, value];
+            });
           }}
         />
       </Box>

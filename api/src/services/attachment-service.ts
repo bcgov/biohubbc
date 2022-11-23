@@ -4,7 +4,7 @@ import {
   IGetAttachmentAuthor,
   IGetAttachmentSecurityReason,
   IGetProjectAttachment,
-  IGetProjectReportAttachment,
+  IGetProjectReportAttachment
 } from '../repositories/attachment-repository';
 import { DBService } from './db-service';
 
@@ -34,18 +34,53 @@ export class AttachmentService extends DBService {
   }
 
   async getProjectReportAttachment(projectId: number, attachmentId: number): Promise<IGetProjectReportAttachment> {
-    const response = this.attachmentRepository.getProjectReportAttachmentById(projectId, attachmentId);
-
-    console.log('getProjectReportAttachment: ', response);
-    return response;
+    return this.attachmentRepository.getProjectReportAttachmentById(projectId, attachmentId);
   }
 
   async getProjectAttachmentAuthors(attachmentId: number): Promise<IGetAttachmentAuthor[]> {
     return this.attachmentRepository.getProjectAttachmentAuthors(attachmentId);
   }
 
-  async getProjectAttachmentSecurityRules(attachmentId: number): Promise<IGetAttachmentSecurityReason[]> {
-    return this.attachmentRepository.getProjectAttachmentSecurityReasons(attachmentId);
+  async getProjectReportSecurityReasons(attachmentId: number): Promise<IGetAttachmentSecurityReason[]> {
+    //const security_reasons = this.attachmentRepository.getProjectReportSecurityReasons(attachmentId);
+
+    //For faking security reason from the database
+
+    const security_reasons = [
+      {
+        project_report_author_id: 1,
+        project_report_attachment_id: 2,
+        persecution_security_id: 3
+      },
+      {
+        project_report_author_id: 4,
+        project_report_attachment_id: 5,
+        persecution_security_id: 6
+      }
+    ];
+
+    return security_reasons;
+  }
+
+  async getProjectAttachmentSecurityReasons(attachmentId: number): Promise<IGetAttachmentSecurityReason[]> {
+    const security_reasons = this.attachmentRepository.getProjectAttachmentSecurityReasons(attachmentId);
+
+    //For faking security reason from the database
+
+    // const security_reasons = [
+    //   {
+    //     project_report_author_id: 1,
+    //     project_report_attachment_id: 2,
+    //     persecution_security_id: 3
+    //   },
+    //   {
+    //     project_report_author_id: 4,
+    //     project_report_attachment_id: 5,
+    //     persecution_security_id: 6
+    //   }
+    // ];
+
+    return security_reasons;
   }
 
   async addSecurityToProjectAttachment(securityIds: number[], attachmentId: number): Promise<void> {

@@ -143,7 +143,7 @@ describe('deleteProject', () => {
       query: mockQuery
     });
 
-    sinon.stub(project_queries, 'getProjectAttachmentsSQL').returns(SQL`something`);
+    sinon.stub(project_queries, '__deprecated_getProjectAttachmentsSQL').returns(SQL`something`);
     sinon.stub(survey_queries, 'getSurveyIdsSQL').returns(SQL`something`);
 
     try {
@@ -184,7 +184,7 @@ describe('deleteProject', () => {
       query: mockQuery
     });
 
-    sinon.stub(project_queries, 'getProjectAttachmentsSQL').returns(SQL`something`);
+    sinon.stub(project_queries, '__deprecated_getProjectAttachmentsSQL').returns(SQL`something`);
     sinon.stub(survey_queries, 'getSurveyIdsSQL').returns(SQL`something`);
 
     try {
@@ -225,7 +225,7 @@ describe('deleteProject', () => {
       query: mockQuery
     });
 
-    sinon.stub(project_queries, 'getProjectAttachmentsSQL').returns(SQL`something`);
+    sinon.stub(project_queries, '__deprecated_getProjectAttachmentsSQL').returns(SQL`something`);
     sinon.stub(survey_queries, 'getSurveyIdsSQL').returns(SQL`something`);
     sinon.stub(survey_delete, 'getSurveyAttachmentS3Keys').resolves(['key1', 'key2']);
     sinon.stub(project_queries, 'deleteProjectSQL').returns(null);
@@ -271,7 +271,7 @@ describe('deleteProject', () => {
       query: mockQuery
     });
 
-    sinon.stub(project_queries, 'getProjectAttachmentsSQL').returns(SQL`something`);
+    sinon.stub(project_queries, '__deprecated_getProjectAttachmentsSQL').returns(SQL`something`);
     sinon.stub(survey_queries, 'getSurveyIdsSQL').returns(SQL`something`);
     sinon.stub(survey_delete, 'getSurveyAttachmentS3Keys').resolves(['key1', 'key2']);
     sinon.stub(project_queries, 'deleteProjectSQL').returns(SQL`some`);
@@ -314,7 +314,7 @@ describe('deleteProject', () => {
       query: mockQuery
     });
 
-    sinon.stub(project_queries, 'getProjectAttachmentsSQL').returns(SQL`something`);
+    sinon.stub(project_queries, '__deprecated_getProjectAttachmentsSQL').returns(SQL`something`);
     sinon.stub(survey_queries, 'getSurveyIdsSQL').returns(SQL`something`);
     sinon.stub(survey_delete, 'getSurveyAttachmentS3Keys').resolves(['key1', 'key2']);
     sinon.stub(project_queries, 'deleteProjectSQL').returns(SQL`some`);

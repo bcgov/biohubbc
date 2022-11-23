@@ -18,6 +18,8 @@ export interface IGetProjectAttachment {
   revisionCount: number;
 }
 
+export type IGetProjectReportAttachment = IGetProjectAttachment & { fileType: 'Report' };
+
 /**
  * An interface for an instance of filter fields for project advanced filter search
  */
@@ -41,6 +43,7 @@ export interface IProjectAdvancedFilterRequest {
  */
 export interface IGetProjectAttachmentsResponse {
   attachmentsList: IGetProjectAttachment[];
+  reportAttachmentsList: IGetProjectReportAttachment[];
 }
 
 /**
@@ -294,6 +297,11 @@ export interface IGetReportDetails {
   security_reasons: IGetSecurityReasons[];
 }
 
+export interface IGetAttachmentDetails {
+  authors: IGetReportAuthors[];
+  security_reasons: IGetSecurityReasons[];
+}
+
 export interface IGetReportMetadata {
   attachment_id: number;
   title: string;
@@ -310,10 +318,8 @@ export interface IGetReportAuthors {
 
 export interface IGetSecurityReasons {
   security_reason_id: number;
-  category: string;
-  sub_category: string;
-  reason: string;
-  reason_description: string;
+  security_reason_title: string;
+  security_reason_description: string;
   date_expired: string;
 }
 

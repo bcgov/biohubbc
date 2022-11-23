@@ -72,11 +72,11 @@ export class SecuritySearchService {
       }
     });
 
-    return this.mapProsecutionItems(response?.hits.hits || [])
+    return this.mapProsecutionItems(response?.hits.hits || []);
   }
-  
+
   mapProsecutionItems(items: any[]): any[] {
-    return items.map(item => {
+    return items.map((item) => {
       return {
         security_reason_id: item._id,
         category: (item._source as ISecurityProsecutionSource).taxon.code,
@@ -84,6 +84,6 @@ export class SecuritySearchService {
         reasonDescription: (item._source as ISecurityProsecutionSource).description,
         expirationDate: null
       };
-    })
+    });
   }
 }

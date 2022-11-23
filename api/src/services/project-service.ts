@@ -428,8 +428,6 @@ export class ProjectService extends DBService {
   }
 
   async createProject(postProjectData: PostProjectObject): Promise<number> {
-    console.log('CREATE PROJECTTTTTTTTTT', postProjectData);
-
     const projectId = await this.insertProject(postProjectData);
 
     const promises: Promise<any>[] = [];
@@ -872,7 +870,7 @@ export class ProjectService extends DBService {
      * Get the attachment S3 keys for all attachments associated to this project and surveys under this project
      * Used to delete them from S3 separately later
      */
-    const getProjectAttachmentSQLStatement = queries.project.getProjectAttachmentsSQL(projectId);
+    const getProjectAttachmentSQLStatement = queries.project.__deprecated_getProjectAttachmentsSQL(projectId);
     const getSurveyIdsSQLStatement = queries.survey.getSurveyIdsSQL(projectId);
 
     if (!getProjectAttachmentSQLStatement || !getSurveyIdsSQLStatement) {
