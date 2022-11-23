@@ -387,8 +387,7 @@ const ViewFileWithDetailsDialog: React.FC<IViewFileWithDetailsDialogProps> = (pr
                           </TableCell>
                           <TableCell>
                             <Button
-                              variant="contained"
-                              color="primary"
+                              variant="outlined"
                               onClick={() => showDeleteSecurityReasonDialog([row])}
                               startIcon={<Icon path={mdiLockOpenOutline} size={0.8} />}>
                               Remove
