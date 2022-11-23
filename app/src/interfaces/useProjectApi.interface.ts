@@ -303,7 +303,7 @@ export interface IGetAttachmentDetails {
 }
 
 export interface IGetReportMetadata {
-  attachment_id: number;
+  id: number;
   title: string;
   year_published: number;
   description: string;

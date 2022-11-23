@@ -242,10 +242,7 @@ export class AttachmentRepository extends BaseRepository {
    * @return {*}  {Promise<void>}
    * @memberof AttachmentRepository
    */
-  async removeSecurityFromProjectAttachment(
-    securityId: number,
-    attachmentId: number
-  ): Promise<void> {
+  async removeSecurityFromProjectAttachment(securityId: number, attachmentId: number): Promise<void> {
     const sqlStatement = SQL`
       DELETE FROM
         project_attachment_persecution
@@ -255,9 +252,9 @@ export class AttachmentRepository extends BaseRepository {
         persecution_security_id =  ${securityId};
       `;
 
-      const response = await this.connection.sql(sqlStatement);
+    const response = await this.connection.sql(sqlStatement);
 
-      if (!response.rowCount) {
+    if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to Delete Project Attachment Security', [
         'AttachmentRepository->removeSecurityFromProjectAttachment',
         'rowCount was 0 or undefined, expected rowCount == 1'
@@ -273,10 +270,7 @@ export class AttachmentRepository extends BaseRepository {
    * @return {*}  {Promise<void>}
    * @memberof AttachmentRepository
    */
-  async removeSecurityFromSurveyAttachment(
-    securityId: number,
-    attachmentId: number
-  ): Promise<void> {
+  async removeSecurityFromSurveyAttachment(securityId: number, attachmentId: number): Promise<void> {
     const sqlStatement = SQL`
       DELETE FROM
         survey_attachment_persecution
@@ -286,9 +280,9 @@ export class AttachmentRepository extends BaseRepository {
       persecution_security_id =  ${securityId};
       `;
 
-      const response = await this.connection.sql(sqlStatement);
+    const response = await this.connection.sql(sqlStatement);
 
-      if (!response.rowCount) {
+    if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to Delete Survey Attachment Security', [
         'AttachmentRepository->removeSecurityFromSurveyAttachment',
         'rowCount was 0 or undefined, expected rowCount == 1'
@@ -408,10 +402,7 @@ export class AttachmentRepository extends BaseRepository {
    * @return {*}  {Promise<void>}
    * @memberof AttachmentRepository
    */
-  async removeSecurityFromProjectReportAttachment(
-    securityId: number,
-    attachmentId: number
-  ): Promise<void> {
+  async removeSecurityFromProjectReportAttachment(securityId: number, attachmentId: number): Promise<void> {
     const sqlStatement = SQL`
       DELETE FROM
         project_report_persecution
@@ -439,10 +430,7 @@ export class AttachmentRepository extends BaseRepository {
    * @return {*}  {Promise<void>}
    * @memberof AttachmentRepository
    */
-  async removeSecurityFromSurveyReportAttachment(
-    securityId: number,
-    attachmentId: number
-  ): Promise<void> {
+  async removeSecurityFromSurveyReportAttachment(securityId: number, attachmentId: number): Promise<void> {
     const sqlStatement = SQL`
       DELETE FROM
         survey_report_persecution
