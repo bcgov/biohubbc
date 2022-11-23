@@ -5,7 +5,7 @@ import Icon from '@mdi/react';
 import AttachmentsList from 'components/attachments/AttachmentsList';
 import { IUploadHandler } from 'components/attachments/FileUploadItem';
 import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
-import FileUploadWithMetaDialog from 'components/dialog/FileUploadWithMetaDialog';
+import FileUploadWithMetaDialog from 'components/dialog/security/FileUploadWithMetaDialog';
 import { H2MenuToolbar } from 'components/toolbar/ActionToolbars';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetProjectForViewResponse, IUploadAttachmentResponse } from 'interfaces/useProjectApi.interface';
