@@ -50,7 +50,7 @@ POST.apiDoc = {
             security_ids: {
               type: 'array',
               items: {
-                type: 'number',
+                type: 'number'
               }
             },
             attachments: {
@@ -122,7 +122,7 @@ export function addAttachmentSecurity(): RequestHandler {
 
       const attachmentService = new AttachmentService(connection);
 
-      await attachmentService.addSecurityToAllAttachments(securityIds,attachments);
+      await attachmentService.addSecurityToAllAttachments(securityIds, attachments);
 
       await connection.commit();
 

@@ -210,7 +210,7 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
       <Box px={1}>
         <AttachmentsList
           projectId={projectId}
-          attachmentsList={attachmentsList}
+          attachmentsList={[...attachmentsList, ...reportAttachmentsList]}
           getAttachments={getAttachments}
           onCheckboxChange={(value) => {
             setSelectedAttachmentRows((currentRows) => {

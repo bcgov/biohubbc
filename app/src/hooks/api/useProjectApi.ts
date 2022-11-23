@@ -5,6 +5,7 @@ import {
   IAddProjectParticipant,
   ICreateProjectRequest,
   ICreateProjectResponse,
+  IGetAttachmentDetails,
   IGetProjectAttachmentsResponse,
   IGetProjectForUpdateResponse,
   IGetProjectForViewResponse,
@@ -361,8 +362,22 @@ const useProjectApi = (axios: AxiosInstance) => {
    * @param {string} attachmentType
    * @return {*}  {Promise<IGetReportMetaData>}
    */
-  const getProjectReportMetadata = async (projectId: number, attachmentId: number): Promise<IGetReportDetails> => {
+  const getProjectReportDetails = async (projectId: number, attachmentId: number): Promise<IGetReportDetails> => {
     const { data } = await axios.get(`/api/project/${projectId}/attachments/${attachmentId}/metadata/get`, {
+      params: {},
+      paramsSerializer: (params: any) => {
+        return qs.stringify(params);
+      }
+    });
+
+    return data;
+  };
+
+  const getProjectAttachmentDetails = async (
+    projectId: number,
+    attachmentId: number
+  ): Promise<IGetAttachmentDetails> => {
+    const { data } = await axios.get(`/api/project/${projectId}/attachments/${attachmentId}/get`, {
       params: {},
       paramsSerializer: (params: any) => {
         return qs.stringify(params);
@@ -451,7 +466,8 @@ const useProjectApi = (axios: AxiosInstance) => {
     deleteProject,
     makeAttachmentSecure,
     makeAttachmentUnsecure,
-    getProjectReportMetadata,
+    getProjectReportDetails,
+    getProjectAttachmentDetails,
     getProjectParticipants,
     addProjectParticipants,
     removeProjectParticipant,

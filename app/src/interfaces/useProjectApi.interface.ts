@@ -297,6 +297,11 @@ export interface IGetReportDetails {
   security_reasons: IGetSecurityReasons[];
 }
 
+export interface IGetAttachmentDetails {
+  authors: IGetReportAuthors[];
+  security_reasons: IGetSecurityReasons[];
+}
+
 export interface IGetReportMetadata {
   attachment_id: number;
   title: string;
@@ -313,10 +318,8 @@ export interface IGetReportAuthors {
 
 export interface IGetSecurityReasons {
   security_reason_id: number;
-  category: string;
-  sub_category: string;
-  reason: string;
-  reason_description: string;
+  security_reason_title: string;
+  security_reason_description: string;
   date_expired: string;
 }
 

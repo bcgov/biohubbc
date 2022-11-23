@@ -37,7 +37,7 @@ POST.apiDoc = {
             security_ids: {
               type: 'array',
               items: {
-                type: 'number',
+                type: 'number'
               }
             }
           }

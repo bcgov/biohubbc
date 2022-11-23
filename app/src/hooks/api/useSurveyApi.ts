@@ -1,7 +1,11 @@
 import { AxiosInstance, CancelTokenSource } from 'axios';
 import { IEditReportMetaForm } from 'components/attachments/EditReportMetaForm';
 import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
-import { IGetReportDetails, IUploadAttachmentResponse } from 'interfaces/useProjectApi.interface';
+import {
+  IGetAttachmentDetails,
+  IGetReportDetails,
+  IUploadAttachmentResponse
+} from 'interfaces/useProjectApi.interface';
 import { IGetSummaryResultsResponse, IUploadSummaryResultsResponse } from 'interfaces/useSummaryResultsApi.interface';
 import {
   ICreateSurveyRequest,
@@ -178,7 +182,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
     };
 
     const { data } = await axios.put(
-      `/api/project/${projectId}/survey/${surveyId}/attachments/${attachmentId}/metadata/update`,
+      `/api/project/${projectId}/survey/${surveyId}/attachments/${attachmentId}/report/update`,
       obj
     );
 
@@ -441,13 +445,13 @@ const useSurveyApi = (axios: AxiosInstance) => {
    * @param {string} attachmentType
    * @returns {*} {Promise<string>}
    */
-  const getSurveyReportMetadata = async (
+  const getSurveyReportDetails = async (
     projectId: number,
     surveyId: number,
     attachmentId: number
   ): Promise<IGetReportDetails> => {
     const { data } = await axios.get(
-      `/api/project/${projectId}/survey/${surveyId}/attachments/${attachmentId}/metadata/get`,
+      `/api/project/${projectId}/survey/${surveyId}/attachments/${attachmentId}/report/get`,
       {
         params: {},
         paramsSerializer: (params) => {
@@ -455,6 +459,21 @@ const useSurveyApi = (axios: AxiosInstance) => {
         }
       }
     );
+
+    return data;
+  };
+
+  const getSurveyAttachmentDetails = async (
+    projectId: number,
+    surveyId: number,
+    attachmentId: number
+  ): Promise<IGetAttachmentDetails> => {
+    const { data } = await axios.get(`/api/project/${surveyId}/attachments/${attachmentId}/get`, {
+      params: {},
+      paramsSerializer: (params: any) => {
+        return qs.stringify(params);
+      }
+    });
 
     return data;
   };
@@ -480,7 +499,8 @@ const useSurveyApi = (axios: AxiosInstance) => {
     uploadSurveyAttachments,
     uploadSurveyReports,
     updateSurveyReportMetadata,
-    getSurveyReportMetadata,
+    getSurveyReportDetails,
+    getSurveyAttachmentDetails,
     uploadSurveySummaryResults,
     getSurveySummarySubmission,
     getSurveyAttachments,

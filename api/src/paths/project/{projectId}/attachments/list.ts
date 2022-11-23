@@ -106,16 +106,14 @@ export function getAttachments(): RequestHandler {
     const projectId = Number(req.params.projectId);
 
     try {
-      
       await connection.open();
       const attachmentService = new AttachmentService(connection);
 
-      
       const attachmentsData = await attachmentService.getProjectAttachments(projectId);
 
       const reportAttachmentsData = await attachmentService.getProjectReportAttachments(projectId);
       await connection.commit();
-      
+
       const getAttachmentsData = new GetAttachmentsData(attachmentsData, reportAttachmentsData);
 
       return res.status(200).json(getAttachmentsData);

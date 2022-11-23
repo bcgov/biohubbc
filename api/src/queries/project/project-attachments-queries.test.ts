@@ -7,18 +7,18 @@ import {
   deleteProjectReportAttachmentSQL,
   getProjectAttachmentByFileNameSQL,
   getProjectAttachmentS3KeySQL,
-  __deprecated_getProjectAttachmentsSQL,
   getProjectReportAttachmentByFileNameSQL,
   getProjectReportAttachmentS3KeySQL,
   getProjectReportAttachmentSQL,
-  __deprecated_getProjectReportAttachmentsSQL,
   getProjectReportAuthorsSQL,
   insertProjectReportAttachmentAuthorSQL,
   postProjectAttachmentSQL,
   postProjectReportAttachmentSQL,
   putProjectAttachmentSQL,
   putProjectReportAttachmentSQL,
-  updateProjectReportAttachmentMetadataSQL
+  updateProjectReportAttachmentMetadataSQL,
+  __deprecated_getProjectAttachmentsSQL,
+  __deprecated_getProjectReportAttachmentsSQL
 } from './project-attachments-queries';
 
 const post_sample_attachment_meta = {

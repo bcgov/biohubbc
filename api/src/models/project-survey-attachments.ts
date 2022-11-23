@@ -26,10 +26,10 @@ export class GetAttachmentsData {
         securityToken: item.security_token,
         securityReviewTimestamp: item.security_review_timestamp
       };
-    }
+    };
 
-    this.attachmentsList = attachmentsData?.length && attachmentsData.map(mapAttachment) || [];
-    this.reportAttachmentsList = reportAttachmentsData?.length && reportAttachmentsData.map(mapAttachment) || [];
+    this.attachmentsList = (attachmentsData?.length && attachmentsData.map(mapAttachment)) || [];
+    this.reportAttachmentsList = (reportAttachmentsData?.length && reportAttachmentsData.map(mapAttachment)) || [];
   }
 }
 
