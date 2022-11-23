@@ -11,24 +11,25 @@ const defaultLog = getLogger('models/project-survey-attachments');
  */
 export class GetAttachmentsData {
   attachmentsList: any[];
+  reportAttachmentsList: any[];
 
-  constructor(attachmentsData?: any) {
+  constructor(attachmentsData?: any, reportAttachmentsData?: any) {
     defaultLog.debug({ label: 'GetAttachmentsData', message: 'params', attachmentsData });
 
-    this.attachmentsList =
-      (attachmentsData?.length &&
-        attachmentsData.map((item: any) => {
-          return {
-            id: item.id,
-            fileName: item.file_name,
-            fileType: item.file_type || 'Report',
-            lastModified: moment(item.update_date || item.create_date).toISOString(),
-            size: item.file_size,
-            securityToken: item.security_token,
-            securityReviewTimestamp: item.security_review_timestamp
-          };
-        })) ||
-      [];
+    const mapAttachment = (item: any) => {
+      return {
+        id: item.id,
+        fileName: item.file_name,
+        fileType: item.file_type || 'Report',
+        lastModified: moment(item.update_date || item.create_date).toISOString(),
+        size: item.file_size,
+        securityToken: item.security_token,
+        securityReviewTimestamp: item.security_review_timestamp
+      };
+    }
+
+    this.attachmentsList = attachmentsData?.length && attachmentsData.map(mapAttachment) || [];
+    this.reportAttachmentsList = reportAttachmentsData?.length && reportAttachmentsData.map(mapAttachment) || [];
   }
 }
 

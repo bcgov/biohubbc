@@ -19,6 +19,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import {
   IGetProjectAttachment,
   IGetProjectForViewResponse,
+  IGetProjectReportAttachment,
   IUploadAttachmentResponse
 } from 'interfaces/useProjectApi.interface';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -49,6 +50,7 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
     AttachmentType.OTHER
   );
   const [attachmentsList, setAttachmentsList] = useState<IGetProjectAttachment[]>([]);
+  const [reportAttachmentsList, setReportAttachmentsList] = useState<IGetProjectReportAttachment[]>([]);
 
   // Tracks which attachment rows have been selected, via the table checkboxes.
   const [selectedAttachmentRows, setSelectedAttachmentRows] = useState<IAttachmentType[]>([]);
@@ -71,16 +73,17 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
       try {
         const response = await biohubApi.project.getProjectAttachments(projectId);
 
-        if (!response?.attachmentsList) {
+        if (!response?.attachmentsList && !response?.reportAttachmentsList) {
           return;
         }
 
+        setReportAttachmentsList([...response.reportAttachmentsList]);
         setAttachmentsList([...response.attachmentsList]);
       } catch (error) {
         return error;
       }
     },
-    [biohubApi.project, projectId, attachmentsList.length]
+    [biohubApi.project, projectId, attachmentsList.length, reportAttachmentsList.length]
   );
 
   const getUploadHandler = (): IUploadHandler<IUploadAttachmentResponse> => {
