@@ -190,7 +190,7 @@ export class AttachmentRepository extends BaseRepository {
   }
 
   // TODO functions need to handle duplicate keys (re adding existing security reasons)
-  async addSecurityToAttachments(securityIds: number[], attachmentId: number): Promise<void> {
+  async addSecurityToProjectAttachments(securityIds: number[], attachmentId: number): Promise<void> {
     const insertStatement = SQL`
       INSERT INTO project_attachment_persecution (
         project_attachment_id, 
@@ -289,7 +289,7 @@ export class AttachmentRepository extends BaseRepository {
   }
 
   // TODO functions need to handle duplicate keys (re adding existing security reasons)
-  async addSecurityToReportAttachments(securityIds: number[], attachmentId: number): Promise<void> {
+  async addSecurityToProjectReportAttachments(securityIds: number[], attachmentId: number): Promise<void> {
     const insertStatement = SQL`
       INSERT INTO project_report_persecution (
         project_report_attachment_id, 
@@ -314,7 +314,7 @@ export class AttachmentRepository extends BaseRepository {
     }
   }
 
-  async addSecurityReviewTimeToReportAttachment(attachmentId: number): Promise<void> {
+  async addSecurityReviewTimeToProjectReportAttachment(attachmentId: number): Promise<void> {
     const updateSQL = SQL`
       UPDATE  project_report_attachment 
       SET security_review_timestamp=now()
@@ -328,7 +328,7 @@ export class AttachmentRepository extends BaseRepository {
       }
   }
 
-  async addSecurityReviewTimeToAttachment(attachmentId: number): Promise<void> {
+  async addSecurityReviewTimeToProjectAttachment(attachmentId: number): Promise<void> {
     const updateSQL = SQL`
       UPDATE  project_attachment 
       SET security_review_timestamp=now()
