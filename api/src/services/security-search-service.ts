@@ -4,7 +4,7 @@ import { getLogger } from '../utils/logger';
 
 const defaultLog = getLogger('services/security-search-service');
 
-interface ISecurityPersecutionSource {
+interface ISecurityProsecutionSource {
   description: string;
   type: string;
   taxon: {
@@ -24,7 +24,8 @@ export class SecuritySearchService {
     try {
       const client = new Client({ node: process.env.ELASTICSEARCH_URL });
       return client.search({
-        index: `${index}`
+        index: `${index}`,
+        ...searchRequest
       });
     } catch (error) {
       defaultLog.debug({ label: 'elasticSearch', message: 'error', error });
@@ -53,9 +54,9 @@ export class SecuritySearchService {
       response?.hits.hits.map((item) => {
         return {
           security_reason_id: item._id,
-          category: (item._source as ISecurityPersecutionSource).taxon.code,
-          reasonTitle: (item._source as ISecurityPersecutionSource).type,
-          reasonDescription: (item._source as ISecurityPersecutionSource).description,
+          category: (item._source as ISecurityProsecutionSource).taxon.code,
+          reasonTitle: (item._source as ISecurityProsecutionSource).type,
+          reasonDescription: (item._source as ISecurityProsecutionSource).description,
           expirationDate: null
         };
       }) || []
@@ -78,9 +79,9 @@ export class SecuritySearchService {
     return items.map((item) => {
       return {
         security_reason_id: item._id,
-        category: (item._source as ISecurityPersecutionSource).taxon.code,
-        reasonTitle: (item._source as ISecurityPersecutionSource).type,
-        reasonDescription: (item._source as ISecurityPersecutionSource).description,
+        category: (item._source as ISecurityProsecutionSource).taxon.code,
+        reasonTitle: (item._source as ISecurityProsecutionSource).type,
+        reasonDescription: (item._source as ISecurityProsecutionSource).description,
         expirationDate: null
       };
     });

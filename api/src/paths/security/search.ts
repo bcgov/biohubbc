@@ -4,9 +4,9 @@ import { authorizeRequestHandler } from '../../request-handlers/security/authori
 import { SecuritySearchService } from '../../services/security-search-service';
 import { getLogger } from '../../utils/logger';
 
-const defaultLog = getLogger('/api/security/get');
+const defaultLog = getLogger('/api/security/search');
 
-export const GET: Operation = [
+export const POST: Operation = [
   authorizeRequestHandler(() => {
     return {
       and: [
@@ -16,10 +16,10 @@ export const GET: Operation = [
       ]
     };
   }),
-  getRules()
+  searchRules()
 ];
 
-GET.apiDoc = {
+POST.apiDoc = {
   description: 'Get all Security Rules.',
   tags: ['security'],
   security: [
@@ -27,6 +27,24 @@ GET.apiDoc = {
       Bearer: []
     }
   ],
+  requestBody: {
+    content: {
+      'application/json': {
+        schema: {
+          type: 'object',
+          required: ['security_ids'],
+          properties: {
+            security_ids: {
+              type: 'array',
+              items: {
+                type: 'number'
+              }
+            }
+          }
+        }
+      }
+    }
+  },
   responses: {
     200: {
       description: 'Security objects.',
@@ -59,12 +77,11 @@ GET.apiDoc = {
   }
 };
 
-export function getRules(): RequestHandler {
+export function searchRules(): RequestHandler {
   return async (req, res) => {
     try {
       const service = new SecuritySearchService();
-      // req.body.security_ids
-      const response = await service.getPersecutionSecurityRules();
+      const response = await service.getPersecutionSecurityFromIds(req.body.security_ids);
 
       return res.status(200).json(response);
     } catch (error) {

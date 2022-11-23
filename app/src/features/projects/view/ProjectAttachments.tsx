@@ -19,6 +19,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import {
   IGetProjectAttachment,
   IGetProjectForViewResponse,
+  IGetProjectReportAttachment,
   IUploadAttachmentResponse
 } from 'interfaces/useProjectApi.interface';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -27,6 +28,11 @@ import { AttachmentType } from '../../../constants/attachments';
 
 export interface IProjectAttachmentsProps {
   projectForViewData: IGetProjectForViewResponse;
+}
+
+export interface IAttachmentType {
+  id: number;
+  type: 'Report' | 'Other';
 }
 
 /**
@@ -44,6 +50,10 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
     AttachmentType.OTHER
   );
   const [attachmentsList, setAttachmentsList] = useState<IGetProjectAttachment[]>([]);
+  const [reportAttachmentsList, setReportAttachmentsList] = useState<IGetProjectReportAttachment[]>([]);
+
+  // Tracks which attachment rows have been selected, via the table checkboxes.
+  const [selectedAttachmentRows, setSelectedAttachmentRows] = useState<IAttachmentType[]>([]);
 
   const handleUploadReportClick = () => {
     setAttachmentType(AttachmentType.REPORT);
@@ -63,16 +73,17 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
       try {
         const response = await biohubApi.project.getProjectAttachments(projectId);
 
-        if (!response?.attachmentsList) {
+        if (!response?.attachmentsList && !response?.reportAttachmentsList) {
           return;
         }
 
+        setReportAttachmentsList([...response.reportAttachmentsList]);
         setAttachmentsList([...response.attachmentsList]);
       } catch (error) {
         return error;
       }
     },
-    [biohubApi.project, projectId, attachmentsList.length]
+    [biohubApi.project, projectId, attachmentsList.length, reportAttachmentsList.length]
   );
 
   const getUploadHandler = (): IUploadHandler<IUploadAttachmentResponse> => {
@@ -87,6 +98,13 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
         setOpenUploadAttachments(false);
       });
     };
+  };
+
+  const addSecurityReasons = (securityReasons: number[]) => {
+    console.log(securityReasons);
+    biohubApi.security.addSecurityReasons(projectId, securityReasons, selectedAttachmentRows).finally(() => {
+      setSecurityDialogOpen(false);
+    });
   };
 
   useEffect(() => {
@@ -123,8 +141,14 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
 
       <SecurityDialog
         open={securityDialogOpen}
-        onAccept={() => {
-          setSecurityDialogOpen(false);
+        onAccept={(securityReasons) => {
+          if (selectedAttachmentRows.length > 0) {
+            // formik form is retuning array of strings not numbers if printed out in console
+            // linter wrongly believes formik to be number[] so wrapped map in string to force values into number[]
+            addSecurityReasons(securityReasons.security_reasons.map((item) => parseInt(`${item.security_reason_id}`)));
+          } else {
+            setSecurityDialogOpen(false);
+          }
         }}
         onClose={() => setSecurityDialogOpen(false)}
       />
@@ -185,7 +209,15 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
       </Toolbar>
       <Divider></Divider>
       <Box px={1}>
-        <AttachmentsList projectId={projectId} attachmentsList={attachmentsList} getAttachments={getAttachments} />
+        <AttachmentsList
+          projectId={projectId}
+          attachmentsList={[...attachmentsList, ...reportAttachmentsList]}
+          getAttachments={getAttachments}
+          onCheckboxChange={(value) => {
+            console.log(value);
+            setSelectedAttachmentRows([value]);
+          }}
+        />
       </Box>
     </>
   );
