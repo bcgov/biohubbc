@@ -455,7 +455,6 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
                           </Button>
                         </Box>
                       </TableCell>
-
                       <TableCell align="right">
                         <AttachmentItemMenuButton
                           attachment={row}

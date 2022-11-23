@@ -87,18 +87,18 @@ const ViewFileWithDetailsDialog: React.FC<IViewFileWithDetailsDialogProps> = (pr
       return security.security_reason_id;
     });
 
-    if (props.reportDetails?.metadata?.attachment_id) {
+    if (props.attachmentId) {
       if (props.surveyId == undefined) {
         if (props.fileType === AttachmentType.REPORT) {
           await biohubApi.security.deleteProjectReportAttachmentSecurityReasons(
             props.projectId,
-            props.reportDetails?.metadata?.attachment_id,
+            props.attachmentId,
             securityIds
           );
         } else {
           await biohubApi.security.deleteProjectAttachmentSecurityReasons(
             props.projectId,
-            props.reportDetails?.metadata?.attachment_id,
+            props.attachmentId,
             securityIds
           );
         }
@@ -107,14 +107,14 @@ const ViewFileWithDetailsDialog: React.FC<IViewFileWithDetailsDialogProps> = (pr
           await biohubApi.security.deleteSurveyReportAttachmentSecurityReasons(
             props.projectId,
             props.surveyId,
-            props.reportDetails?.metadata?.attachment_id,
+            props.attachmentId,
             securityIds
           );
         } else {
           await biohubApi.security.deleteSurveyAttachmentSecurityReasons(
             props.projectId,
             props.surveyId,
-            props.reportDetails?.metadata?.attachment_id,
+            props.attachmentId,
             securityIds
           );
         }
@@ -381,7 +381,15 @@ const ViewFileWithDetailsDialog: React.FC<IViewFileWithDetailsDialogProps> = (pr
                               {row.date_expired ? row.date_expired : 'N/A'}
                             </Typography>
                           </TableCell>
-                          <TableCell></TableCell>
+                          <TableCell>
+                          <Button
+                              variant="contained"
+                              color="primary"
+                              onClick={() => showDeleteSecurityReasonDialog([row])}
+                              startIcon={<Icon path={mdiLockOpenOutline} size={0.8} />}>
+                              Remove
+                            </Button>
+                          </TableCell>
                         </TableRow>
                       );
                     })}
