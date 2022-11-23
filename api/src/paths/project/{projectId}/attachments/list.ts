@@ -4,10 +4,14 @@ import { PROJECT_ROLE, SYSTEM_ROLE } from '../../../../constants/roles';
 import { getDBConnection } from '../../../../database/db';
 import { HTTP400 } from '../../../../errors/http-error';
 import { GetAttachmentsData } from '../../../../models/project-survey-attachments';
-import { IGetProjectAttachment, IGetProjectReportAttachment, WithSecurityRuleCount } from '../../../../repositories/attachment-repository';
+import {
+  AttachmentStatus,
+  IGetProjectAttachment,
+  IGetProjectReportAttachment,
+  WithSecurityRuleCount
+} from '../../../../repositories/attachment-repository';
 import { authorizeRequestHandler, userHasValidRole } from '../../../../request-handlers/security/authorization';
 import { AttachmentService } from '../../../../services/attachment-service';
-import { AttachmentStatus } from '../../../../repositories/attachment-repository'
 import { getLogger } from '../../../../utils/logger';
 
 const defaultLog = getLogger('/api/project/{projectId}/attachments/list');
@@ -111,24 +115,24 @@ export function getAttachments(): RequestHandler {
       await connection.open();
       const isUserAdmin = userHasValidRole([SYSTEM_ROLE.DATA_ADMINISTRATOR], req['system_user']['role_names']);
 
-      const attachmentService = new AttachmentService(connection);      
-      
-      const attachmentsData = (await attachmentService.getProjectAttachmentsWithSecurityCounts(projectId))
+      const attachmentService = new AttachmentService(connection);
+
+      const attachmentsData = await attachmentService.getProjectAttachmentsWithSecurityCounts(projectId);
       const reportAttachmentsData = await attachmentService.getProjectReportAttachmentsWithSecurityCounts(projectId);
 
-      const injectAttachmentStatus = (attachment: WithSecurityRuleCount<IGetProjectAttachment | IGetProjectReportAttachment>) => {
-        const status: AttachmentStatus = attachment.security_review_timestamp ? (
-          attachment.security_rule_count > 0
+      const injectAttachmentStatus = (
+        attachment: WithSecurityRuleCount<IGetProjectAttachment | IGetProjectReportAttachment>
+      ) => {
+        const status: AttachmentStatus = attachment.security_review_timestamp
+          ? attachment.security_rule_count > 0
             ? 'SECURED'
             : 'UNSECURED'
-        ) : (
-          isUserAdmin
-            ? 'PENDING_REVIEW'
-            : 'SUBMITTED'
-        );
+          : isUserAdmin
+          ? 'PENDING_REVIEW'
+          : 'SUBMITTED';
 
         return { ...attachment, status };
-      }
+      };
 
       await connection.commit();
 

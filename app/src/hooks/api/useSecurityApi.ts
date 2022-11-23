@@ -1,6 +1,6 @@
 import { AxiosInstance } from 'axios';
-import { IAttachmentType } from 'features/projects/view/ProjectAttachments';
 import { AttachmentType } from 'constants/attachments';
+import { IAttachmentType } from 'features/projects/view/ProjectAttachments';
 import { SecurityReason } from 'interfaces/useSecurityApi.interface';
 
 /**

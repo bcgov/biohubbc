@@ -5,7 +5,7 @@ import {
   IGetAttachmentSecurityReason,
   IGetProjectAttachment,
   IGetProjectReportAttachment,
-  WithSecurityRuleCount,
+  WithSecurityRuleCount
 } from '../repositories/attachment-repository';
 import { DBService } from './db-service';
 
@@ -31,17 +31,21 @@ export class AttachmentService extends DBService {
     return this.attachmentRepository.getProjectReportAttachments(projectId);
   }
 
-  async getProjectAttachmentsWithSecurityCounts(projectId: number): Promise<WithSecurityRuleCount<IGetProjectAttachment>[]> {
+  async getProjectAttachmentsWithSecurityCounts(
+    projectId: number
+  ): Promise<WithSecurityRuleCount<IGetProjectAttachment>[]> {
     return this.attachmentRepository.getProjectAttachmentsWithSecurityCounts(projectId);
   }
 
-  async getProjectReportAttachmentsWithSecurityCounts(projectId: number): Promise<WithSecurityRuleCount<IGetProjectAttachment>[]> {
+  async getProjectReportAttachmentsWithSecurityCounts(
+    projectId: number
+  ): Promise<WithSecurityRuleCount<IGetProjectAttachment>[]> {
     return this.attachmentRepository.getProjectReportAttachmentsWithSecurityCounts(projectId);
   }
 
   async getProjectReportAttachment(projectId: number, attachmentId: number): Promise<IGetProjectReportAttachment> {
     return this.attachmentRepository.getProjectReportAttachmentById(projectId, attachmentId);
-  }  
+  }
 
   async getProjectAttachmentAuthors(attachmentId: number): Promise<IGetAttachmentAuthor[]> {
     return this.attachmentRepository.getProjectAttachmentAuthors(attachmentId);
@@ -162,8 +166,8 @@ export class AttachmentService extends DBService {
   }
 
   async addSecurityToAllAttachments(securityIds: number[], attachments: IAttachmentType[]): Promise<void[]> {
-    const actions: Promise<void>[] = []
-    attachments.forEach(item => {
+    const actions: Promise<void>[] = [];
+    attachments.forEach((item) => {
       if (item.type === 'Report') {
         actions.push(this.addSecurityToReportAttachment(securityIds, item.id));
         actions.push(this.addSecurityReviewToReportAttachment(item.id));

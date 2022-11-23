@@ -4,16 +4,18 @@ import { HTTP400 } from '../errors/http-error';
 import { getLogger } from '../utils/logger';
 import { BaseRepository } from './base-repository';
 
+/**
+ * @TODO
+ */
 export interface IGetSurveyAttachment {
-  /**
-   * @TODO
-   */
+  something: any;
 }
 
+/**
+ * @TODO
+ */
 export interface IGetSurveyReportAttachment {
-  /**
-   * @TODO
-   */
+  something: any;
 }
 
 export interface IGetProjectAttachment {
@@ -45,11 +47,7 @@ export interface IGetProjectReportAttachment {
   revision_count: number;
 }
 
-export type AttachmentStatus =
-  | 'PENDING_REVIEW'
-  | 'SECURED'
-  | 'UNSECURED'
-  | 'SUBMITTED'
+export type AttachmentStatus = 'PENDING_REVIEW' | 'SECURED' | 'UNSECURED' | 'SUBMITTED';
 
 export type WithSecurityRuleCount<T> = T & { security_rule_count: number };
 export type WithAttachmentStatus<T> = T & { status: AttachmentStatus };
@@ -161,7 +159,9 @@ export class AttachmentRepository extends BaseRepository {
    * @return {*}
    * @memberof AttachmentRepository
    */
-   async getProjectAttachmentsWithSecurityCounts(projectId: number): Promise<WithSecurityRuleCount<IGetProjectAttachment>[]> {
+  async getProjectAttachmentsWithSecurityCounts(
+    projectId: number
+  ): Promise<WithSecurityRuleCount<IGetProjectAttachment>[]> {
     defaultLog.debug({ label: 'getProjectAttachmentsWithSecurityCounts' });
 
     const sqlStatement = SQL`
@@ -213,7 +213,9 @@ export class AttachmentRepository extends BaseRepository {
    * @return {*}
    * @memberof AttachmentRepository
    */
-   async getProjectReportAttachmentsWithSecurityCounts(projectId: number): Promise<WithSecurityRuleCount<IGetProjectAttachment>[]> {
+  async getProjectReportAttachmentsWithSecurityCounts(
+    projectId: number
+  ): Promise<WithSecurityRuleCount<IGetProjectAttachment>[]> {
     defaultLog.debug({ label: 'getProjectAttachmentsWithSecurityCounts' });
 
     const sqlStatement = SQL`
@@ -392,12 +394,11 @@ export class AttachmentRepository extends BaseRepository {
       SET security_review_timestamp=now()
       WHERE project_report_attachment_id=${attachmentId};`;
 
-      try {
-        
-        await this.connection.sql(updateSQL)
-      } catch (error) {
-        defaultLog.error({ label: 'addSecurityReviewTimeToReportAttachment', message: 'error', error });
-      }
+    try {
+      await this.connection.sql(updateSQL);
+    } catch (error) {
+      defaultLog.error({ label: 'addSecurityReviewTimeToReportAttachment', message: 'error', error });
+    }
   }
 
   async addSecurityReviewTimeToAttachment(attachmentId: number): Promise<void> {
@@ -406,12 +407,11 @@ export class AttachmentRepository extends BaseRepository {
       SET security_review_timestamp=now()
       WHERE project_attachment_id=${attachmentId};`;
 
-      try {
-        
-        await this.connection.sql(updateSQL)
-      } catch (error) {
-        defaultLog.error({ label: 'addSecurityReviewTimeToAttachment', message: 'error', error });
-      }
+    try {
+      await this.connection.sql(updateSQL);
+    } catch (error) {
+      defaultLog.error({ label: 'addSecurityReviewTimeToAttachment', message: 'error', error });
+    }
   }
 
   /**

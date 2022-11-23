@@ -38,7 +38,12 @@ import { DialogContext } from 'contexts/dialogContext';
 import { IAttachmentType } from 'features/projects/view/ProjectAttachments';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { AttachmentStatus, IGetProjectAttachment, IGetProjectReportAttachment, IGetReportDetails } from 'interfaces/useProjectApi.interface';
+import {
+  AttachmentStatus,
+  IGetProjectAttachment,
+  IGetProjectReportAttachment,
+  IGetReportDetails
+} from 'interfaces/useProjectApi.interface';
 import { IGetSurveyAttachment, IGetSurveyReportAttachment } from 'interfaces/useSurveyApi.interface';
 import React, { useContext, useState } from 'react';
 import { getFormattedFileSize } from 'utils/Utils';
@@ -63,7 +68,7 @@ export interface IAttachmentsListProps {
 }
 
 const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
-  console.log("PROPS:", props)
+  console.log('PROPS:', props);
   const classes = useStyles();
   const biohubApi = useBiohubApi();
 
@@ -184,12 +189,12 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
   };
 
   const isProjectReport = (attachment: IGetProjectAttachment): attachment is IGetProjectReportAttachment => {
-    return attachment.fileType === 'Report'
-  }
+    return attachment.fileType === 'Report';
+  };
 
   const isSurveyReport = (attachment: IGetSurveyAttachment): attachment is IGetSurveyReportAttachment => {
-    return attachment.fileType === 'Report'
-  }
+    return attachment.fileType === 'Report';
+  };
 
   const getReportMeta = async (attachment: IGetProjectAttachment | IGetSurveyAttachment) => {
     if (isProjectReport(attachment) || isSurveyReport(attachment)) {
@@ -359,9 +364,9 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
   };
 
   const AttachmentStatusChip = (status?: AttachmentStatus, securityRuleCount?: number) => {
-    let label = 'Submitted'
-    let color: "default" | "primary" | "secondary" | undefined = 'primary'
-    let icon = undefined
+    let label = 'Submitted';
+    let color: 'default' | 'primary' | 'secondary' | undefined = 'primary';
+    let icon = undefined;
 
     switch (status) {
       case 'SUBMITTED':
@@ -388,11 +393,11 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
         size="small"
         color={color}
         label={label}
-        icon={icon ? (<Icon path={icon} size={0.8} />) : undefined}
+        icon={icon ? <Icon path={icon} size={0.8} /> : undefined}
         onClick={openDrawer}
       />
-    )
-  }
+    );
+  };
 
   return (
     <>
@@ -442,9 +447,11 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
                           value={index}
                           onChange={(e) => {
                             console.log(e);
-                            const attachment: IAttachmentType[] = props.attachmentsList.filter((item, index) => index == Number(e.target.value)).map(item => {
-                              return {id: item.id, type: item.fileType} as IAttachmentType
-                            });
+                            const attachment: IAttachmentType[] = props.attachmentsList
+                              .filter((item, index) => index == Number(e.target.value))
+                              .map((item) => {
+                                return { id: item.id, type: item.fileType } as IAttachmentType;
+                              });
                             props.onCheckboxChange?.(attachment[0]);
                           }}
                         />

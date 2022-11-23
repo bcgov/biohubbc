@@ -175,8 +175,8 @@ export interface IGetSurveyAttachment {
   securityToken: any;
   securityReviewTimestamp: string;
   revisionCount: number;
-  securityRuleCount?: number
-  status?: AttachmentStatus
+  securityRuleCount?: number;
+  status?: AttachmentStatus;
 }
 
 export type IGetSurveyReportAttachment = IGetSurveyAttachment & { fileType: 'Report' };

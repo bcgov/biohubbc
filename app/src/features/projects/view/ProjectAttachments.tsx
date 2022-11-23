@@ -31,8 +31,8 @@ export interface IProjectAttachmentsProps {
 }
 
 export interface IAttachmentType {
-  id: number,
-  type: "Report" | "Other"
+  id: number;
+  type: 'Report' | 'Other';
 }
 
 /**
@@ -83,7 +83,7 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
         return error;
       }
     },
-    [biohubApi.project, projectId, attachmentsList.length, reportAttachmentsList.length]
+    [biohubApi.project, projectId, attachmentsList.length]
   );
 
   const getUploadHandler = (): IUploadHandler<IUploadAttachmentResponse> => {

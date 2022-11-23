@@ -7,14 +7,7 @@ import { IProjectObjectivesForm } from 'features/projects/components/ProjectObje
 import { IProjectPartnershipsForm } from 'features/projects/components/ProjectPartnershipsForm';
 import { Feature } from 'geojson';
 
-/**
- * @TODO should this be moved somewhere else?
- */
-export type AttachmentStatus =
-  | 'PENDING_REVIEW'
-  | 'SECURED'
-  | 'UNSECURED'
-  | 'SUBMITTED'
+export type AttachmentStatus = 'PENDING_REVIEW' | 'SECURED' | 'UNSECURED' | 'SUBMITTED';
 
 /**
  * @TODO securityRuleCount and status should likely be required, not optional.
@@ -28,8 +21,8 @@ export interface IGetProjectAttachment {
   securityToken: string;
   securityReviewTimestamp: string;
   revisionCount: number;
-  securityRuleCount?: number
-  status?: AttachmentStatus
+  securityRuleCount?: number;
+  status?: AttachmentStatus;
 }
 
 export type IGetProjectReportAttachment = IGetProjectAttachment & { fileType: 'Report' };

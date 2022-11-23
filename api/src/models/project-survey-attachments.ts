@@ -28,10 +28,10 @@ export class GetAttachmentsData {
         securityRuleCount: item.security_rule_count && Number(item.security_rule_count),
         status: item.status
       };
-    }
+    };
 
-    this.attachmentsList = attachmentsData?.length && attachmentsData.map(mapAttachment) || [];
-    this.reportAttachmentsList = reportAttachmentsData?.length && reportAttachmentsData.map(mapAttachment) || [];
+    this.attachmentsList = (attachmentsData?.length && attachmentsData.map(mapAttachment)) || [];
+    this.reportAttachmentsList = (reportAttachmentsData?.length && reportAttachmentsData.map(mapAttachment)) || [];
   }
 }
 
