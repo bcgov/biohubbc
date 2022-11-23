@@ -47,7 +47,6 @@ export interface IGetAttachmentSecurityReason {
   project_report_author_id: number;
   project_report_attachment_id: number;
   persecution_security_id: number;
-  update_date: string;
 }
 
 /**
@@ -210,6 +209,25 @@ export class AttachmentRepository extends BaseRepository {
         project_report_persecution
       where
         project_report_attachment_id = ${projectReportAttachmentId}
+    `;
+
+    const response = await this.connection.sql<IGetAttachmentSecurityReason>(sqlStatement);
+
+    if (!response || !response.rows) {
+      throw new HTTP400('Failed to get project attachment security reasons by attachment id');
+    }
+
+    return response.rows;
+  }
+
+  async getProjectAttachmentSecurityReasons(projectAttachmentId: number): Promise<IGetAttachmentSecurityReason[]> {
+    const sqlStatement = SQL`
+      SELECT
+        project_attachment_persecution.*
+      FROM
+        project_attachment_persecution
+      where
+        project_attachment_attachment_id = ${projectAttachmentId}
     `;
 
     const response = await this.connection.sql<IGetAttachmentSecurityReason>(sqlStatement);

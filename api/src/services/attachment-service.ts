@@ -34,25 +34,46 @@ export class AttachmentService extends DBService {
     return this.attachmentRepository.getProjectAttachmentAuthors(attachmentId);
   }
 
-  async getProjectReportSecurityRules(attachmentId: number): Promise<IGetAttachmentSecurityReason[]> {
-    const security_reasons = this.attachmentRepository.getProjectReportSecurityReasons(attachmentId);
+  async getProjectReportSecurityReasons(attachmentId: number): Promise<IGetAttachmentSecurityReason[]> {
+    //const security_reasons = this.attachmentRepository.getProjectReportSecurityReasons(attachmentId);
 
     //For faking security reason from the database
 
-    // const security_reasons = [
-    //   {
-    //     project_report_author_id: 1,
-    //     project_report_attachment_id: 2,
-    //     persecution_security_id: 3,
-    //     update_date: '2022-10-10'
-    //   },
-    //   {
-    //     project_report_author_id: 4,
-    //     project_report_attachment_id: 5,
-    //     persecution_security_id: 6,
-    //     update_date: '2020-12-12'
-    //   }
-    // ];
+    const security_reasons = [
+      {
+        project_report_author_id: 1,
+        project_report_attachment_id: 2,
+        persecution_security_id: 3
+      },
+      {
+        project_report_author_id: 4,
+        project_report_attachment_id: 5,
+        persecution_security_id: 6
+      }
+    ];
+
+    return security_reasons;
+  }
+
+  async getProjectAttachmentSecurityReasons(attachmentId: number): Promise<IGetAttachmentSecurityReason[]> {
+    //const security_reasons = this.attachmentRepository.getProjectReportSecurityReasons(attachmentId);
+
+    //For faking security reason from the database
+
+    const security_reasons = [
+      {
+        project_report_author_id: 1,
+        project_report_attachment_id: 2,
+        persecution_security_id: 3,
+        update_date: '2022-10-10'
+      },
+      {
+        project_report_author_id: 4,
+        project_report_attachment_id: 5,
+        persecution_security_id: 6,
+        update_date: '2020-12-12'
+      }
+    ];
 
     return security_reasons;
   }

@@ -294,6 +294,11 @@ export interface IGetReportDetails {
   security_reasons: IGetSecurityReasons[];
 }
 
+export interface IGetAttachmentDetails {
+  authors: IGetReportAuthors[];
+  security_reasons: IGetSecurityReasons[];
+}
+
 export interface IGetReportMetadata {
   attachment_id: number;
   title: string;

@@ -16,14 +16,12 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
-import Alert from '@material-ui/lab/Alert';
-import AlertTitle from '@material-ui/lab/AlertTitle';
 import { mdiLockOutline, mdiPencilOutline, mdiTrayArrowDown } from '@mdi/js';
 import Icon from '@mdi/react';
 import { IEditReportMetaForm } from 'components/attachments/EditReportMetaForm';
 import ReportMeta from 'components/attachments/ReportMeta';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
-import { IGetReportDetails } from 'interfaces/useProjectApi.interface';
+import { IGetAttachmentDetails, IGetReportDetails } from 'interfaces/useProjectApi.interface';
 import React, { useState } from 'react';
 import { getFormattedDateRangeString } from 'utils/Utils';
 import EditFileWithMetaDialog from './EditFileWithMetaDialog';
@@ -58,6 +56,7 @@ export interface IViewFileWithDetailsDialogProps {
   onFileDownload: () => void;
   onSave: (fileMeta: IEditReportMetaForm) => Promise<void>;
   reportDetails: IGetReportDetails | null;
+  attachmentDetails: IGetAttachmentDetails | null;
   attachmentSize: string;
   dialogProps?: DialogProps;
   fileType: string | null;
@@ -71,6 +70,8 @@ export interface IViewFileWithDetailsDialogProps {
  */
 const ViewFileWithDetailsDialog: React.FC<IViewFileWithDetailsDialogProps> = (props) => {
   const classes = useStyles();
+
+  console.log('props in ViewFileWithDetailsDialog: ', props);
 
   const [securityDialogOpen, setSecurityDialogOpen] = useState(false);
   const [showEditFileWithMetaDialog, setShowEditFileWithMetaDialog] = useState<boolean>(false);
@@ -86,17 +87,18 @@ const ViewFileWithDetailsDialog: React.FC<IViewFileWithDetailsDialogProps> = (pr
         onAccept={() => alert('accepted')}
         onClose={() => setSecurityDialogOpen(false)}
       />
-
-      <EditFileWithMetaDialog
-        open={showEditFileWithMetaDialog}
-        dialogTitle={'Edit Upload Report'}
-        reportMetaData={props.reportDetails}
-        onClose={() => {
-          setShowEditFileWithMetaDialog(false);
-        }}
-        onSave={props.onSave}
-        refresh={props.refresh}
-      />
+      {props.reportDetails && (
+        <EditFileWithMetaDialog
+          open={showEditFileWithMetaDialog}
+          dialogTitle={'Edit Upload Report'}
+          reportMetaData={props.reportDetails}
+          onClose={() => {
+            setShowEditFileWithMetaDialog(false);
+          }}
+          onSave={props.onSave}
+          refresh={props.refresh}
+        />
+      )}
 
       <Dialog open={props.open} onClose={props.onClose} {...props.dialogProps} data-testid="view-meta-dialog">
         <DialogTitle data-testid="view-meta-dialog-title">
@@ -106,11 +108,14 @@ const ViewFileWithDetailsDialog: React.FC<IViewFileWithDetailsDialogProps> = (pr
         </DialogTitle>
         <DialogContent>
           <Box display="flex" justifyContent="space-between">
-            <Box style={{ maxWidth: '120ch' }}>
-              <Typography variant="h2" component="h1" className={classes.docTitle}>
-                {props.reportDetails?.metadata?.title}
-              </Typography>
-            </Box>
+            {props.reportDetails?.metadata?.title && (
+              <Box style={{ maxWidth: '120ch' }}>
+                <Typography variant="h2" component="h1" className={classes.docTitle}>
+                  {props.reportDetails?.metadata?.title}
+                </Typography>
+              </Box>
+            )}
+
             <Box flex="0 0 auto">
               <Button
                 variant="contained"
@@ -133,11 +138,6 @@ const ViewFileWithDetailsDialog: React.FC<IViewFileWithDetailsDialogProps> = (pr
             </Box>
           </Box>
           <Box mt={5}>
-            <Alert severity="info" style={{ marginBottom: '24px' }}>
-              <AlertTitle>Alert Title</AlertTitle>
-              Document requires a security review
-            </Alert>
-
             {props.reportDetails?.metadata && props.fileType === 'Report' && (
               <ReportMeta reportDetails={props.reportDetails} />
             )}

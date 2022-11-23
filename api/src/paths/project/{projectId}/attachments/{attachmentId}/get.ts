@@ -1,12 +1,12 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { PROJECT_ROLE } from '../../../../../../constants/roles';
-import { getDBConnection } from '../../../../../../database/db';
-import { HTTP400 } from '../../../../../../errors/http-error';
-import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
-import { AttachmentService } from '../../../../../../services/attachment-service';
-import { SecuritySearchService } from '../../../../../../services/security-search-service';
-import { getLogger } from '../../../../../../utils/logger';
+import { PROJECT_ROLE } from '../../../../../constants/roles';
+import { getDBConnection } from '../../../../../database/db';
+import { HTTP400 } from '../../../../../errors/http-error';
+import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
+import { AttachmentService } from '../../../../../services/attachment-service';
+import { SecuritySearchService } from '../../../../../services/security-search-service';
+import { getLogger } from '../../../../../utils/logger';
 
 const defaultLog = getLogger('/api/project/{projectId}/attachments/{attachmentId}/getSignedUrl');
 
@@ -22,7 +22,7 @@ export const GET: Operation = [
       ]
     };
   }),
-  getProjectReportMetaData()
+  getProjectAttachmentDetails()
 ];
 
 GET.apiDoc = {
@@ -63,60 +63,6 @@ GET.apiDoc = {
             type: 'object',
             required: ['metadata', 'authors', 'security_reasons'],
             properties: {
-              metadata: {
-                description: 'Report metadata general information object',
-                type: 'object',
-                required: [
-                  'attachment_id',
-                  'title',
-                  'last_modified',
-                  'description',
-                  'year_published',
-                  'revision_count'
-                ],
-                properties: {
-                  attachment_id: {
-                    description: 'Report metadata attachment id',
-                    type: 'number'
-                  },
-                  title: {
-                    description: 'Report metadata attachment title ',
-                    type: 'string'
-                  },
-                  last_modified: {
-                    description: 'Report metadata last modified',
-                    type: 'string'
-                  },
-                  description: {
-                    description: 'Report metadata description',
-                    type: 'string'
-                  },
-                  year_published: {
-                    description: 'Report metadata year published',
-                    type: 'number'
-                  },
-                  revision_count: {
-                    description: 'Report metadata revision count',
-                    type: 'number'
-                  }
-                }
-              },
-              authors: {
-                description: 'Report metadata author object',
-                type: 'array',
-                items: {
-                  type: 'object',
-                  required: ['first_name', 'last_name'],
-                  properties: {
-                    first_name: {
-                      type: 'string'
-                    },
-                    last_name: {
-                      type: 'string'
-                    }
-                  }
-                }
-              },
               security_reasons: {
                 description: 'Report metadata security object',
                 type: 'array',
@@ -131,6 +77,10 @@ GET.apiDoc = {
                     },
                     persecution_security_id: {
                       type: 'number'
+                    },
+                    update_date: {
+                      oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
+                      description: 'ISO 8601 date string for the project start date'
                     }
                   }
                 }
@@ -158,10 +108,10 @@ GET.apiDoc = {
   }
 };
 
-export function getProjectReportMetaData(): RequestHandler {
+export function getProjectAttachmentDetails(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({
-      label: 'getProjectReportMetaData',
+      label: 'getProjectAttachmentDetails',
       message: 'params',
       req_params: req.params,
       req_query: req.query
@@ -182,14 +132,7 @@ export function getProjectReportMetaData(): RequestHandler {
 
       const attachmentService = new AttachmentService(connection);
 
-      const projectReportAttachment = await attachmentService.getProjectReportAttachment(
-        Number(req.params.projectId),
-        Number(req.params.attachmentId)
-      );
-
-      const projectReportAuthors = await attachmentService.getProjectAttachmentAuthors(Number(req.params.attachmentId));
-
-      const projectReportSecurity = await attachmentService.getProjectReportSecurityReasons(
+      const projectAttachmentSecurity = await attachmentService.getProjectAttachmentSecurityReasons(
         Number(req.params.attachmentId)
       );
 
@@ -199,7 +142,7 @@ export function getProjectReportMetaData(): RequestHandler {
 
       await connection.commit();
 
-      const mappedSecurityObj = projectReportSecurity.map((item) => {
+      const mappedSecurityObj = projectAttachmentSecurity.map((item) => {
         return {
           security_reason_id: item.persecution_security_id,
           security_reason_title: persecutionRules[item.persecution_security_id - 1].reasonTitle,
@@ -208,13 +151,11 @@ export function getProjectReportMetaData(): RequestHandler {
         };
       });
 
-      const reportDetails = {
-        metadata: projectReportAttachment,
-        authors: projectReportAuthors,
+      const attachmentDetails = {
         security_reasons: mappedSecurityObj
       };
 
-      return res.status(200).json(reportDetails);
+      return res.status(200).json(attachmentDetails);
     } catch (error) {
       defaultLog.error({ label: 'getProjectReportDetails', message: 'error', error });
       await connection.rollback();

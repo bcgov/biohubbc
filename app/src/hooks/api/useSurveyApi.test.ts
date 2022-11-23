@@ -298,7 +298,7 @@ describe('useSurveyApi', () => {
 
   it('updateSurveyReportMetadata works as expected', async () => {
     mock
-      .onPut(`/api/project/${projectId}/survey/${surveyId}/attachments/${attachmentId}/metadata/update`)
+      .onPut(`/api/project/${projectId}/survey/${surveyId}/attachments/${attachmentId}/report/update`)
       .reply(200, 'result 1');
 
     const result = await useSurveyApi(axios).updateSurveyReportMetadata(
@@ -315,7 +315,7 @@ describe('useSurveyApi', () => {
 
   it('getSurveyReportMetadata works as expected', async () => {
     mock
-      .onGet(`/api/project/${projectId}/survey/${surveyId}/attachments/${attachmentId}/metadata/get`)
+      .onGet(`/api/project/${projectId}/survey/${surveyId}/attachments/${attachmentId}/report/get`)
       .reply(200, 'result 1');
 
     const result = await useSurveyApi(axios).getSurveyReportMetadata(projectId, surveyId, attachmentId);

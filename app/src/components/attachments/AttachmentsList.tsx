@@ -36,7 +36,7 @@ import { AttachmentsI18N, EditReportMetaDataI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { IGetProjectAttachment, IGetReportDetails } from 'interfaces/useProjectApi.interface';
+import { IGetAttachmentDetails, IGetProjectAttachment, IGetReportDetails } from 'interfaces/useProjectApi.interface';
 import { IGetSurveyAttachment } from 'interfaces/useSurveyApi.interface';
 import React, { useContext, useState } from 'react';
 import { getFormattedFileSize } from 'utils/Utils';
@@ -67,6 +67,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
   const [page] = useState(0);
 
   const [reportDetails, setReportDetails] = useState<IGetReportDetails | null>(null);
+  const [attachmentDetails, setAttachmentDetails] = useState<IGetAttachmentDetails | null>(null);
   const [showViewFileWithDetailsDialog, setShowViewFileWithDetailsDialog] = useState<boolean>(false);
 
   const [currentAttachment, setCurrentAttachment] = useState<IGetProjectAttachment | IGetSurveyAttachment | null>(null);
@@ -87,7 +88,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
 
     console.log(attachment);
     setCurrentAttachment(attachment);
-    getReportMeta(attachment);
+    attachment.fileType === 'Report' ? getReportDetails(attachment) : getAttachmentDetails(attachment);
     setShowViewFileWithDetailsDialog(true);
   };
 
@@ -185,7 +186,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
     }
   };
 
-  const getReportMeta = async (attachment: IGetProjectAttachment | IGetSurveyAttachment) => {
+  const getReportDetails = async (attachment: IGetProjectAttachment | IGetSurveyAttachment) => {
     if (attachment.fileType === 'Other') {
       console.log('this is not a report');
     } else {
@@ -195,9 +196,9 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
       let response;
 
       if (props.surveyId) {
-        response = await biohubApi.survey.getSurveyReportMetadata(props.projectId, props.surveyId, attachment.id);
+        response = await biohubApi.survey.getSurveyReportDetails(props.projectId, props.surveyId, attachment.id);
       } else {
-        response = await biohubApi.project.getProjectReportMetadata(props.projectId, attachment.id);
+        response = await biohubApi.project.getProjectReportDetails(props.projectId, attachment.id);
       }
 
       if (!response) {
@@ -205,6 +206,31 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
       }
 
       setReportDetails(response);
+    } catch (error) {
+      return error;
+    }
+  };
+
+  const getAttachmentDetails = async (attachment: IGetProjectAttachment | IGetSurveyAttachment) => {
+    if (attachment.fileType === 'Other') {
+      console.log('this is not a report');
+    } else {
+      console.log('this is a report');
+    }
+    try {
+      let response;
+
+      if (props.surveyId) {
+        response = await biohubApi.survey.getSurveyAttachmentDetails(props.projectId, props.surveyId, attachment.id);
+      } else {
+        response = await biohubApi.project.getProjectAttachmentDetails(props.projectId, attachment.id);
+      }
+
+      if (!response) {
+        return;
+      }
+
+      setAttachmentDetails(response);
     } catch (error) {
       return error;
     }
@@ -363,12 +389,14 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
         onSave={handleDialogEditSave}
         onFileDownload={openAttachmentFromReportMetaDialog}
         reportDetails={reportDetails}
+        attachmentDetails={attachmentDetails}
         attachmentSize={(currentAttachment && getFormattedFileSize(currentAttachment.size)) || '0 KB'}
         fileType={currentAttachment && currentAttachment.fileType}
         refresh={() => {
-          if (currentAttachment) {
-            getReportMeta(currentAttachment);
-          }
+          currentAttachment &&
+            (currentAttachment.fileType === 'Report'
+              ? getReportDetails(currentAttachment)
+              : getAttachmentDetails(currentAttachment));
         }}
       />
 
