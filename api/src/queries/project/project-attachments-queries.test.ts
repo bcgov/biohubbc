@@ -7,11 +7,11 @@ import {
   deleteProjectReportAttachmentSQL,
   getProjectAttachmentByFileNameSQL,
   getProjectAttachmentS3KeySQL,
-  getProjectAttachmentsSQL,
+  __deprecated_getProjectAttachmentsSQL,
   getProjectReportAttachmentByFileNameSQL,
   getProjectReportAttachmentS3KeySQL,
   getProjectReportAttachmentSQL,
-  getProjectReportAttachmentsSQL,
+  __deprecated_getProjectReportAttachmentsSQL,
   getProjectReportAuthorsSQL,
   insertProjectReportAttachmentAuthorSQL,
   postProjectAttachmentSQL,
@@ -46,29 +46,29 @@ const put_sample_attachment_meta = {
   revision_count: 0
 };
 
-describe('getProjectAttachmentsSQL', () => {
+describe('__deprecated_getProjectAttachmentsSQL', () => {
   it('returns null response when null projectId provided', () => {
-    const response = getProjectAttachmentsSQL((null as unknown) as number);
+    const response = __deprecated_getProjectAttachmentsSQL((null as unknown) as number);
 
     expect(response).to.be.null;
   });
 
   it('returns non null response when valid projectId provided', () => {
-    const response = getProjectAttachmentsSQL(1);
+    const response = __deprecated_getProjectAttachmentsSQL(1);
 
     expect(response).to.not.be.null;
   });
 });
 
-describe('getProjectReportAttachmentsSQL', () => {
+describe('__deprecated_getProjectReportAttachmentsSQL', () => {
   it('returns null response when null projectId provided', () => {
-    const response = getProjectReportAttachmentsSQL((null as unknown) as number);
+    const response = __deprecated_getProjectReportAttachmentsSQL((null as unknown) as number);
 
     expect(response).to.be.null;
   });
 
   it('returns non null response when valid projectId provided', () => {
-    const response = getProjectReportAttachmentsSQL(1);
+    const response = __deprecated_getProjectReportAttachmentsSQL(1);
 
     expect(response).to.not.be.null;
   });

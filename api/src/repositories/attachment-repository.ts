@@ -150,7 +150,7 @@ export class AttachmentRepository extends BaseRepository {
    * @return {*}
    * @memberof AttachmentRepository
    */
-  async getProjectAttachmentsWithStatus(projectId: number): Promise<WithSecurityRuleCount<IGetProjectAttachment>[]> {
+   async getProjectAttachmentsWithStatus(projectId: number): Promise<WithSecurityRuleCount<IGetProjectAttachment>[]> {
     defaultLog.debug({ label: 'getProjectAttachments' });
 
     const sqlStatement = SQL`
