@@ -83,7 +83,13 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
 
   const handleViewDetailsClick = (attachment: IGetProjectAttachment | IGetSurveyAttachment) => {
     setCurrentAttachment(attachment);
-    attachment.fileType === 'Report' ? getReportDetails(attachment) : getAttachmentDetails(attachment);
+    if (attachment.fileType === 'Report') {
+      getReportDetails(attachment);
+      setAttachmentDetails(null);
+    } else {
+      getAttachmentDetails(attachment);
+      setReportDetails(null);
+    }
     setShowViewFileWithDetailsDialog(true);
   };
 
