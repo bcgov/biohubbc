@@ -31,8 +31,8 @@ export interface IProjectAttachmentsProps {
 }
 
 export interface IAttachmentType {
-  id: number,
-  type: "Report" | "Other"
+  id: number;
+  type: 'Report' | 'Other';
 }
 
 /**
@@ -101,7 +101,6 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
   };
 
   const addSecurityReasons = (securityReasons: number[]) => {
-    console.log(securityReasons);
     biohubApi.security.addSecurityReasons(projectId, securityReasons, selectedAttachmentRows).finally(() => {
       setSecurityDialogOpen(false);
     });
@@ -214,8 +213,15 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
           attachmentsList={attachmentsList}
           getAttachments={getAttachments}
           onCheckboxChange={(value) => {
-            console.log(value);
-            setSelectedAttachmentRows([value]);
+            setSelectedAttachmentRows((currentRows) => {
+              const hasMatchingValue = currentRows.find((item) => item.id === value.id && item.type === value.type);
+
+              if (hasMatchingValue) {
+                return currentRows;
+              }
+
+              return [...currentRows, value];
+            });
           }}
         />
       </Box>

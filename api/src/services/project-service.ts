@@ -428,8 +428,6 @@ export class ProjectService extends DBService {
   }
 
   async createProject(postProjectData: PostProjectObject): Promise<number> {
-    console.log('CREATE PROJECTTTTTTTTTT', postProjectData);
-
     const projectId = await this.insertProject(postProjectData);
 
     const promises: Promise<any>[] = [];
