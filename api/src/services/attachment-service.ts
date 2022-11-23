@@ -51,12 +51,20 @@ export class AttachmentService extends DBService {
     return this.attachmentRepository.getProjectAttachmentAuthors(attachmentId);
   }
 
-  async getProjectAttachmentSecurityRules(attachmentId: number): Promise<IGetAttachmentSecurityReason[]> {
+  async getProjectReportSecurityReasons(attachmentId: number): Promise<IGetAttachmentSecurityReason[]> {
+    return this.attachmentRepository.getProjectReportSecurityReasons(attachmentId);
+  }
+
+  async getProjectAttachmentSecurityReasons(attachmentId: number): Promise<IGetAttachmentSecurityReason[]> {
     return this.attachmentRepository.getProjectAttachmentSecurityReasons(attachmentId);
   }
 
-  async addSecurityToAttachment(securityIds: number[], attachmentId: number): Promise<void> {
-    return this.attachmentRepository.addSecurityToAttachments(securityIds, attachmentId);
+  async addSecurityToProjectAttachment(securityIds: number[], attachmentId: number): Promise<void> {
+    return this.attachmentRepository.addSecurityToProjectAttachments(securityIds, attachmentId);
+  }
+
+  async addSecurityToSurveyAttachment(securityIds: number[], attachmentId: number): Promise<void> {
+    return this.attachmentRepository.addSecurityToSurveyAttachments(securityIds, attachmentId);
   }
 
   /**
@@ -67,16 +75,10 @@ export class AttachmentService extends DBService {
    * @return {*}  {Promise<{ project_attachment_persecution_id: number }[]>}
    * @memberof AttachmentService
    */
-  async removeSecurityFromProjectAttachment(
-    securityIds: number[],
-    attachmentId: number
-  ): Promise<{ project_attachment_persecution_id: number }[]> {
-    const result = [];
+  async removeSecurityFromProjectAttachment(securityIds: number[], attachmentId: number): Promise<void> {
     for (const securityId of securityIds) {
-      const response = await this.attachmentRepository.removeSecurityFromProjectAttachment(securityId, attachmentId);
-      result.push(response);
+      await this.attachmentRepository.removeSecurityFromProjectAttachment(securityId, attachmentId);
     }
-    return result;
   }
 
   /**
@@ -87,20 +89,18 @@ export class AttachmentService extends DBService {
    * @return {*}  {Promise<{ survey_attachment_persecution_id: number }[]>}
    * @memberof AttachmentService
    */
-  async removeSecurityFromSurveyAttachment(
-    securityIds: number[],
-    attachmentId: number
-  ): Promise<{ survey_attachment_persecution_id: number }[]> {
-    const result = [];
+  async removeSecurityFromSurveyAttachment(securityIds: number[], attachmentId: number): Promise<void> {
     for (const securityId of securityIds) {
-      const response = await this.attachmentRepository.removeSecurityFromSurveyAttachment(securityId, attachmentId);
-      result.push(response);
+      await this.attachmentRepository.removeSecurityFromSurveyAttachment(securityId, attachmentId);
     }
-    return result;
   }
 
-  async addSecurityToReportAttachment(securityIds: number[], attachmentId: number): Promise<void> {
-    return this.attachmentRepository.addSecurityToReportAttachments(securityIds, attachmentId);
+  async addSecurityToProjectReportAttachment(securityIds: number[], attachmentId: number): Promise<void> {
+    return this.attachmentRepository.addSecurityToProjectReportAttachments(securityIds, attachmentId);
+  }
+
+  async addSecurityToSurveyReportAttachment(securityIds: number[], attachmentId: number): Promise<void> {
+    return this.attachmentRepository.addSecurityToSurveyReportAttachments(securityIds, attachmentId);
   }
 
   /**
@@ -111,19 +111,10 @@ export class AttachmentService extends DBService {
    * @return {*}  {Promise<{ project_report_persecution_id: number }[]>}
    * @memberof AttachmentService
    */
-  async removeSecurityFromProjectReportAttachment(
-    securityIds: number[],
-    attachmentId: number
-  ): Promise<{ project_report_persecution_id: number }[]> {
-    const result = [];
+  async removeSecurityFromProjectReportAttachment(securityIds: number[], attachmentId: number): Promise<void> {
     for (const securityId of securityIds) {
-      const response = await this.attachmentRepository.removeSecurityFromProjectReportAttachment(
-        securityId,
-        attachmentId
-      );
-      result.push(response);
+      await this.attachmentRepository.removeSecurityFromProjectReportAttachment(securityId, attachmentId);
     }
-    return result;
   }
 
   /**
@@ -134,23 +125,14 @@ export class AttachmentService extends DBService {
    * @return {*}  {Promise<{ survey_report_persecution_id: number }[]>}
    * @memberof AttachmentService
    */
-  async removeSecurityFromSurveyReportAttachment(
-    securityIds: number[],
-    attachmentId: number
-  ): Promise<{ survey_report_persecution_id: number }[]> {
-    const result = [];
+  async removeSecurityFromSurveyReportAttachment(securityIds: number[], attachmentId: number): Promise<void> {
     for (const securityId of securityIds) {
-      const response = await this.attachmentRepository.removeSecurityFromSurveyReportAttachment(
-        securityId,
-        attachmentId
-      );
-      result.push(response);
+      await this.attachmentRepository.removeSecurityFromSurveyReportAttachment(securityId, attachmentId);
     }
-    return result;
   }
 
   async addSecurityToAttachments(securityIds: number[], attachmentIds: number[]): Promise<void[]> {
-    const promises = attachmentIds.map((item) => this.addSecurityToAttachment(securityIds, item));
+    const promises = attachmentIds.map((item) => this.addSecurityToProjectAttachment(securityIds, item));
 
     const results = await Promise.all(promises);
 
@@ -158,22 +140,30 @@ export class AttachmentService extends DBService {
   }
 
   async addSecurityToReportAttachments(securityIds: number[], attachmentIds: number[]): Promise<void[]> {
-    const promises = attachmentIds.map((item) => this.addSecurityToReportAttachment(securityIds, item));
+    const promises = attachmentIds.map((item) => this.addSecurityToProjectReportAttachment(securityIds, item));
 
     const results = await Promise.all(promises);
 
     return results;
   }
 
-  async addSecurityToAllAttachments(securityIds: number[], attachments: IAttachmentType[]): Promise<void[]> {
+  async addSecurityToSurveyReportAttachments(securityIds: number[], attachmentIds: number[]): Promise<void[]> {
+    // const promises = attachmentIds.map((item) => this.addSecurityToProjectReportAttachment(securityIds, item));
+
+    const results = await Promise.all([]);
+
+    return results;
+  }
+
+  async addSecurityToProjectAttachments(securityIds: number[], attachments: IAttachmentType[]): Promise<void[]> {
     const actions: Promise<void>[] = [];
     attachments.forEach((item) => {
       if (item.type === 'Report') {
-        actions.push(this.addSecurityToReportAttachment(securityIds, item.id));
-        actions.push(this.addSecurityReviewToReportAttachment(item.id));
+        actions.push(this.addSecurityToProjectReportAttachment(securityIds, item.id));
+        actions.push(this.addSecurityReviewToProjectReportAttachment(item.id));
       } else {
-        actions.push(this.addSecurityToAttachment(securityIds, item.id));
-        actions.push(this.addSecurityReviewToAttachment(item.id));
+        actions.push(this.addSecurityToProjectAttachment(securityIds, item.id));
+        actions.push(this.addSecurityReviewToProjectAttachment(item.id));
       }
     });
 
@@ -182,11 +172,36 @@ export class AttachmentService extends DBService {
     return results;
   }
 
-  async addSecurityReviewToReportAttachment(attachmentId: number): Promise<void> {
-    return this.attachmentRepository.addSecurityReviewTimeToReportAttachment(attachmentId);
+  async addSecurityToSurveyAttachments(securityIds: number[], attachments: IAttachmentType[]): Promise<void[]> {
+    const actions: Promise<void>[] = [];
+    attachments.forEach((item) => {
+      if (item.type === 'Report') {
+        actions.push(this.addSecurityToSurveyReportAttachment(securityIds, item.id));
+        actions.push(this.addSecurityReviewToSurveyReportAttachment(item.id));
+      } else {
+        actions.push(this.addSecurityToSurveyAttachment(securityIds, item.id));
+        actions.push(this.addSecurityReviewToSurveyAttachment(item.id));
+      }
+    });
+
+    const results = await Promise.all(actions);
+
+    return results;
   }
 
-  async addSecurityReviewToAttachment(attachmentId: number): Promise<void> {
-    return this.attachmentRepository.addSecurityReviewTimeToAttachment(attachmentId);
+  async addSecurityReviewToProjectReportAttachment(attachmentId: number): Promise<void> {
+    return this.attachmentRepository.addSecurityReviewTimeToProjectReportAttachment(attachmentId);
+  }
+
+  async addSecurityReviewToProjectAttachment(attachmentId: number): Promise<void> {
+    return this.attachmentRepository.addSecurityReviewTimeToProjectAttachment(attachmentId);
+  }
+
+  async addSecurityReviewToSurveyReportAttachment(attachmentId: number): Promise<void> {
+    return this.attachmentRepository.addSecurityReviewTimeToSurveyReportAttachment(attachmentId);
+  }
+
+  async addSecurityReviewToSurveyAttachment(attachmentId: number): Promise<void> {
+    return this.attachmentRepository.addSecurityReviewTimeToSurveyAttachment(attachmentId);
   }
 }

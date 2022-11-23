@@ -64,8 +64,6 @@ export const deleteSurveyFundingSourceConnectionToProjectSQL = (
   }
   sqlStatement.append(`);`);
 
-  console.log('sqlStatement', sqlStatement);
-
   return sqlStatement;
 };
 

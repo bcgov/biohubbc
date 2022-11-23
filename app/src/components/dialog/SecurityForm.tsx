@@ -106,7 +106,8 @@ const SecurityForm: React.FC<ISecurityFormProps> = (props) => {
                         value={availableSecurityReason.security_reason_id}
                       />
                     </TableCell>
-                    <TableCell>{availableSecurityReason.category}</TableCell>
+                    {/* <TableCell>{availableSecurityReason.category}</TableCell> */}
+                    <TableCell>Persecution or Harm</TableCell>
                     <TableCell>
                       <Typography style={{ fontWeight: 700 }}>{availableSecurityReason.reasonTitle}</Typography>
                       <Typography variant="body2" color="textSecondary">

@@ -16,17 +16,16 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
-import Alert from '@material-ui/lab/Alert';
-import AlertTitle from '@material-ui/lab/AlertTitle';
 import { mdiLockOpenOutline, mdiLockOutline, mdiPencilOutline, mdiTrayArrowDown } from '@mdi/js';
 import Icon from '@mdi/react';
 import { IEditReportMetaForm } from 'components/attachments/EditReportMetaForm';
 import ReportMeta from 'components/attachments/ReportMeta';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { DialogContext } from 'contexts/dialogContext';
+import { IAttachmentType } from 'features/projects/view/ProjectAttachments';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { IGetReportDetails, IGetSecurityReasons } from 'interfaces/useProjectApi.interface';
-import React, { useContext, useState } from 'react';
+import { IGetAttachmentDetails, IGetReportDetails, IGetSecurityReasons } from 'interfaces/useProjectApi.interface';
+import { default as React, useContext, useState } from 'react';
 import { getFormattedDateRangeString } from 'utils/Utils';
 import { AttachmentType } from '../../constants/attachments';
 import EditFileWithMetaDialog from './EditFileWithMetaDialog';
@@ -57,12 +56,14 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 export interface IViewFileWithDetailsDialogProps {
   projectId: number;
+  attachmentId: number | undefined;
   surveyId?: number;
   open: boolean;
   onClose: () => void;
   onFileDownload: () => void;
   onSave: (fileMeta: IEditReportMetaForm) => Promise<void>;
   reportDetails: IGetReportDetails | null;
+  attachmentDetails: IGetAttachmentDetails | null;
   attachmentSize: string;
   dialogProps?: DialogProps;
   fileType: string | null;
@@ -86,18 +87,18 @@ const ViewFileWithDetailsDialog: React.FC<IViewFileWithDetailsDialogProps> = (pr
       return security.security_reason_id;
     });
 
-    if (props.reportDetails?.metadata?.attachment_id) {
-      if (props.surveyId == undefined) {
+    if (props.attachmentId) {
+      if (props.surveyId === undefined) {
         if (props.fileType === AttachmentType.REPORT) {
           await biohubApi.security.deleteProjectReportAttachmentSecurityReasons(
             props.projectId,
-            props.reportDetails?.metadata?.attachment_id,
+            props.attachmentId,
             securityIds
           );
         } else {
           await biohubApi.security.deleteProjectAttachmentSecurityReasons(
             props.projectId,
-            props.reportDetails?.metadata?.attachment_id,
+            props.attachmentId,
             securityIds
           );
         }
@@ -106,14 +107,14 @@ const ViewFileWithDetailsDialog: React.FC<IViewFileWithDetailsDialogProps> = (pr
           await biohubApi.security.deleteSurveyReportAttachmentSecurityReasons(
             props.projectId,
             props.surveyId,
-            props.reportDetails?.metadata?.attachment_id,
+            props.attachmentId,
             securityIds
           );
         } else {
           await biohubApi.security.deleteSurveyAttachmentSecurityReasons(
             props.projectId,
             props.surveyId,
-            props.reportDetails?.metadata?.attachment_id,
+            props.attachmentId,
             securityIds
           );
         }
@@ -130,10 +131,36 @@ const ViewFileWithDetailsDialog: React.FC<IViewFileWithDetailsDialogProps> = (pr
     onYes: () => dialogContext.setYesNoDialog({ open: false })
   };
 
+  const addSecurityReasons = async (securityReasons: number[]) => {
+    if (props.attachmentId && props.fileType) {
+      const attachmentData: IAttachmentType = {
+        id: props.attachmentId,
+        type: mapFileTypeToAttachmentType(props.fileType || 'Other')
+      };
+
+      if (props.surveyId === undefined) {
+        await biohubApi.security.addProjectSecurityReasons(props.projectId, securityReasons, [attachmentData]);
+        setSecurityDialogOpen(false);
+      } else {
+        setSecurityDialogOpen(false);
+        // biohubApi.security.addSurveySecurityReasons(props.projectId, securityReasons, [attachmentData])
+      }
+    }
+  };
+
+  const mapFileTypeToAttachmentType = (type: string): AttachmentType => {
+    let attachmentType = AttachmentType.OTHER;
+    if (type === 'Report') {
+      attachmentType = AttachmentType.REPORT;
+    }
+
+    return attachmentType;
+  };
+
   const showDeleteSecurityReasonDialog = (securityReasons: IGetSecurityReasons[]) => {
     let yesNoDialogProps;
 
-    if (securityReasons.length == 1) {
+    if (securityReasons.length === 1) {
       yesNoDialogProps = {
         ...defaultYesNoDialogProps,
         dialogTitle: 'Remove Security Reason',
@@ -151,8 +178,9 @@ const ViewFileWithDetailsDialog: React.FC<IViewFileWithDetailsDialogProps> = (pr
       ...yesNoDialogProps,
       open: true,
       yesButtonProps: { color: 'secondary' },
-      onYes: () => {
-        removeSecurity(securityReasons);
+      onYes: async () => {
+        await removeSecurity(securityReasons);
+        props.refresh();
         dialogContext.setYesNoDialog({ open: false });
       }
     });
@@ -166,20 +194,32 @@ const ViewFileWithDetailsDialog: React.FC<IViewFileWithDetailsDialogProps> = (pr
     <>
       <SecurityDialog
         open={securityDialogOpen}
-        onAccept={() => alert('Applyed')}
+        onAccept={async (securityReasons) => {
+          // formik form is retuning array of strings not numbers if printed out in console
+          // linter wrongly believes formik to be number[] so wrapped map in string to force values into number[]
+          if (securityReasons.security_reasons.length > 0) {
+            await addSecurityReasons(
+              securityReasons.security_reasons.map((item) => parseInt(`${item.security_reason_id}`))
+            );
+          }
+
+          props.refresh();
+          setSecurityDialogOpen(false);
+        }}
         onClose={() => setSecurityDialogOpen(false)}
       />
-
-      <EditFileWithMetaDialog
-        open={showEditFileWithMetaDialog}
-        dialogTitle={'Edit Upload Report'}
-        reportMetaData={props.reportDetails}
-        onClose={() => {
-          setShowEditFileWithMetaDialog(false);
-        }}
-        onSave={props.onSave}
-        refresh={props.refresh}
-      />
+      {props.reportDetails && (
+        <EditFileWithMetaDialog
+          open={showEditFileWithMetaDialog}
+          dialogTitle={'Edit Upload Report'}
+          reportMetaData={props.reportDetails}
+          onClose={() => {
+            setShowEditFileWithMetaDialog(false);
+          }}
+          onSave={props.onSave}
+          refresh={props.refresh}
+        />
+      )}
 
       <Dialog open={props.open} onClose={props.onClose} {...props.dialogProps} data-testid="view-meta-dialog">
         <DialogTitle data-testid="view-meta-dialog-title">
@@ -189,21 +229,17 @@ const ViewFileWithDetailsDialog: React.FC<IViewFileWithDetailsDialogProps> = (pr
         </DialogTitle>
         <DialogContent>
           <Box display="flex" justifyContent="space-between">
-            <Box style={{ maxWidth: '120ch' }}>
-              <Typography variant="h2" component="h1" className={classes.docTitle}>
-                {props.reportDetails?.metadata?.title}
-              </Typography>
-            </Box>
-            <Box flex="0 0 auto">
-              <Button
-                variant="contained"
-                color="primary"
-                startIcon={<Icon path={mdiTrayArrowDown} size={0.8} />}
-                onClick={() => props.onFileDownload()}>
-                Download ({props.attachmentSize})
-              </Button>
+            {props.reportDetails?.metadata?.title && (
+              <Box style={{ maxWidth: '120ch' }}>
+                <Typography variant="h2" component="h1" className={classes.docTitle}>
+                  {props.reportDetails?.metadata?.title}
+                </Typography>
+              </Box>
+            )}
+
+            <Box display="flex" flex="0 0 auto">
               {props.fileType === 'Report' && (
-                <Box>
+                <Box mr={1}>
                   <Button
                     variant="outlined"
                     color="primary"
@@ -213,14 +249,16 @@ const ViewFileWithDetailsDialog: React.FC<IViewFileWithDetailsDialogProps> = (pr
                   </Button>
                 </Box>
               )}
+              <Button
+                variant="contained"
+                color="primary"
+                startIcon={<Icon path={mdiTrayArrowDown} size={0.8} />}
+                onClick={() => props.onFileDownload()}>
+                Download ({props.attachmentSize})
+              </Button>
             </Box>
           </Box>
           <Box mt={5}>
-            <Alert severity="info" style={{ marginBottom: '24px' }}>
-              <AlertTitle>Alert Title</AlertTitle>
-              Document requires a security review
-            </Alert>
-
             {props.reportDetails?.metadata && props.fileType === 'Report' && (
               <ReportMeta reportDetails={props.reportDetails} />
             )}
@@ -264,27 +302,26 @@ const ViewFileWithDetailsDialog: React.FC<IViewFileWithDetailsDialogProps> = (pr
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {props.reportDetails?.security_reasons &&
+                  {props.reportDetails &&
+                    props.reportDetails?.security_reasons &&
                     props.reportDetails?.security_reasons?.length > 0 &&
                     props.reportDetails?.security_reasons?.map((row, index) => {
                       return (
-                        <TableRow key={`${row.category}-${index}`}>
-                          <TableCell>{row.category}</TableCell>
+                        <TableRow key={`${row.security_reason_id}-${index}`}>
+                          <TableCell>Persecution or Harm</TableCell>
                           <TableCell>
-                            <Typography style={{ fontWeight: 700 }}>{row.reason}</Typography>
+                            <Typography style={{ fontWeight: 700 }}>{row.security_reason_title}</Typography>
                             <Typography variant="body1" color="textSecondary">
-                              {row.reason_description}
+                              {row.security_reason_description}
                             </Typography>
                           </TableCell>
                           <TableCell>
                             <Typography variant="body2" component="div">
-                              Submitted
+                              Expired
                             </Typography>
+
                             <Typography variant="body2" component="div" color="textSecondary">
-                              {getFormattedDateRangeString(
-                                DATE_FORMAT.ShortMediumDateFormat,
-                                props.reportDetails?.metadata?.last_modified || ''
-                              )}
+                              {row.date_expired ? row.date_expired : 'N/A'}
                             </Typography>
                           </TableCell>
                           <TableCell>
@@ -300,7 +337,7 @@ const ViewFileWithDetailsDialog: React.FC<IViewFileWithDetailsDialogProps> = (pr
                       );
                     })}
 
-                  {props.reportDetails?.security_reasons?.length == 0 && (
+                  {props.reportDetails && props.reportDetails?.security_reasons?.length === 0 && (
                     <TableRow key={`0`}>
                       <TableCell>Security Administration</TableCell>
                       <TableCell>
@@ -318,6 +355,63 @@ const ViewFileWithDetailsDialog: React.FC<IViewFileWithDetailsDialogProps> = (pr
                             DATE_FORMAT.ShortMediumDateFormat,
                             props.reportDetails?.metadata?.last_modified || ''
                           )}
+                        </Typography>
+                      </TableCell>
+                      <TableCell></TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+
+                <TableBody>
+                  {props.attachmentDetails &&
+                    props.attachmentDetails?.security_reasons &&
+                    props.attachmentDetails?.security_reasons?.length > 0 &&
+                    props.attachmentDetails?.security_reasons?.map((row, index) => {
+                      return (
+                        <TableRow key={`${row.security_reason_id}-${index}`}>
+                          <TableCell>Security Administration</TableCell>
+                          <TableCell>
+                            <Typography style={{ fontWeight: 700 }}>{row.security_reason_title}</Typography>
+                            <Typography variant="body1" color="textSecondary">
+                              {row.security_reason_description}
+                            </Typography>
+                          </TableCell>
+                          <TableCell>
+                            <Typography variant="body2" component="div">
+                              Expired
+                            </Typography>
+
+                            <Typography variant="body2" component="div" color="textSecondary">
+                              {row.date_expired ? row.date_expired : 'N/A'}
+                            </Typography>
+                          </TableCell>
+                          <TableCell>
+                            <Button
+                              variant="outlined"
+                              onClick={() => showDeleteSecurityReasonDialog([row])}
+                              startIcon={<Icon path={mdiLockOpenOutline} size={0.8} />}>
+                              Remove
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+
+                  {props.attachmentDetails && props.attachmentDetails?.security_reasons?.length === 0 && (
+                    <TableRow key={`0`}>
+                      <TableCell>Security Administration</TableCell>
+                      <TableCell>
+                        <Typography style={{ fontWeight: 700 }}>Awaiting Security Review</Typography>
+                        <Typography variant="body1" color="textSecondary">
+                          Awaiting review to determine if security-reasons should be assigned
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Typography variant="body2" component="div">
+                          Submitted
+                        </Typography>
+                        <Typography variant="body2" component="div" color="textSecondary">
+                          TBD
                         </Typography>
                       </TableCell>
                       <TableCell></TableCell>

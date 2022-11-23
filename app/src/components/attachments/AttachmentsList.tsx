@@ -41,10 +41,11 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import {
   AttachmentStatus,
   IGetProjectAttachment,
-  IGetProjectReportAttachment,
-  IGetReportDetails
+  // IGetProjectReportAttachment,
+  IGetReportDetails,
+  IGetAttachmentDetails
 } from 'interfaces/useProjectApi.interface';
-import { IGetSurveyAttachment, IGetSurveyReportAttachment } from 'interfaces/useSurveyApi.interface';
+import { IGetSurveyAttachment, /*IGetSurveyReportAttachment*/ } from 'interfaces/useSurveyApi.interface';
 import React, { useContext, useState } from 'react';
 import { getFormattedFileSize } from 'utils/Utils';
 import { IEditReportMetaForm } from '../attachments/EditReportMetaForm';
@@ -76,6 +77,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
   const [page] = useState(0);
 
   const [reportDetails, setReportDetails] = useState<IGetReportDetails | null>(null);
+  const [attachmentDetails, setAttachmentDetails] = useState<IGetAttachmentDetails | null>(null);
   const [showViewFileWithDetailsDialog, setShowViewFileWithDetailsDialog] = useState<boolean>(false);
 
   const [currentAttachment, setCurrentAttachment] = useState<IGetProjectAttachment | IGetSurveyAttachment | null>(null);
@@ -90,7 +92,13 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
 
   const handleViewDetailsClick = (attachment: IGetProjectAttachment | IGetSurveyAttachment) => {
     setCurrentAttachment(attachment);
-    getReportMeta(attachment);
+    if (attachment.fileType === 'Report') {
+      getReportDetails(attachment);
+      setAttachmentDetails(null);
+    } else {
+      getAttachmentDetails(attachment);
+      setReportDetails(null);
+    }
     setShowViewFileWithDetailsDialog(true);
   };
 
@@ -188,6 +196,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
     }
   };
 
+  /*
   const isProjectReport = (attachment: IGetProjectAttachment): attachment is IGetProjectReportAttachment => {
     return attachment.fileType === 'Report';
   };
@@ -202,13 +211,17 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
     } else {
       console.log('this is not a report');
     }
+  }
+  */
+
+  const getReportDetails = async (attachment: IGetProjectAttachment | IGetSurveyAttachment) => {
     try {
       let response;
 
       if (props.surveyId) {
-        response = await biohubApi.survey.getSurveyReportMetadata(props.projectId, props.surveyId, attachment.id);
+        response = await biohubApi.survey.getSurveyReportDetails(props.projectId, props.surveyId, attachment.id);
       } else {
-        response = await biohubApi.project.getProjectReportMetadata(props.projectId, attachment.id);
+        response = await biohubApi.project.getProjectReportDetails(props.projectId, attachment.id);
       }
 
       if (!response) {
@@ -216,6 +229,26 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
       }
 
       setReportDetails(response);
+    } catch (error) {
+      return error;
+    }
+  };
+
+  const getAttachmentDetails = async (attachment: IGetProjectAttachment | IGetSurveyAttachment) => {
+    try {
+      let response;
+
+      if (props.surveyId) {
+        response = await biohubApi.survey.getSurveyAttachmentDetails(props.projectId, props.surveyId, attachment.id);
+      } else {
+        response = await biohubApi.project.getProjectAttachmentDetails(props.projectId, attachment.id);
+      }
+
+      if (!response) {
+        return;
+      }
+
+      setAttachmentDetails(response);
     } catch (error) {
       return error;
     }
@@ -335,7 +368,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
         await biohubApi.survey.updateSurveyReportMetadata(
           props.projectId,
           props.surveyId,
-          reportDetails.metadata.attachment_id,
+          reportDetails.metadata.id,
           AttachmentType.REPORT,
           fileMeta,
           reportDetails.metadata.revision_count
@@ -343,7 +376,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
       } else {
         await biohubApi.project.updateProjectReportMetadata(
           props.projectId,
-          reportDetails.metadata.attachment_id,
+          reportDetails.metadata.id,
           AttachmentType.REPORT,
           fileMeta,
           reportDetails.metadata.revision_count
@@ -403,6 +436,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
     <>
       <ViewFileWithDetailsDialog
         projectId={props.projectId}
+        attachmentId={currentAttachment?.id}
         surveyId={props.surveyId}
         dialogProps={{ fullWidth: true, maxWidth: 'lg', open: showViewFileWithDetailsDialog }}
         open={showViewFileWithDetailsDialog}
@@ -412,12 +446,14 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
         onSave={handleDialogEditSave}
         onFileDownload={openAttachmentFromReportMetaDialog}
         reportDetails={reportDetails}
+        attachmentDetails={attachmentDetails}
         attachmentSize={(currentAttachment && getFormattedFileSize(currentAttachment.size)) || '0 KB'}
         fileType={currentAttachment && currentAttachment.fileType}
         refresh={() => {
-          if (currentAttachment) {
-            getReportMeta(currentAttachment);
-          }
+          currentAttachment &&
+            (currentAttachment.fileType === 'Report'
+              ? getReportDetails(currentAttachment)
+              : getAttachmentDetails(currentAttachment));
         }}
       />
 
@@ -446,9 +482,8 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
                           checkedIcon={<Icon path={mdiCheckboxOutline} size={1} />}
                           value={index}
                           onChange={(e) => {
-                            console.log(e);
                             const attachment: IAttachmentType[] = props.attachmentsList
-                              .filter((item, index) => index == Number(e.target.value))
+                              .filter((item, index) => index === Number(e.target.value))
                               .map((item) => {
                                 return { id: item.id, type: item.fileType } as IAttachmentType;
                               });
@@ -484,7 +519,6 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
                           </Button>
                         </Box>
                       </TableCell>
-
                       <TableCell align="right">
                         <AttachmentItemMenuButton
                           attachment={row}
@@ -498,7 +532,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
                 })}
               {!props.attachmentsList.length && (
                 <TableRow>
-                  <TableCell colSpan={6} align="center">
+                  <TableCell colSpan={5} align="center">
                     <strong>No Documents</strong>
                   </TableCell>
                 </TableRow>

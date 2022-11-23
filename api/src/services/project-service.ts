@@ -428,8 +428,6 @@ export class ProjectService extends DBService {
   }
 
   async createProject(postProjectData: PostProjectObject): Promise<number> {
-    console.log('CREATE PROJECTTTTTTTTTT', postProjectData);
-
     const projectId = await this.insertProject(postProjectData);
 
     const promises: Promise<any>[] = [];
@@ -511,19 +509,13 @@ export class ProjectService extends DBService {
   }
 
   async insertFundingSource(fundingSource: PostFundingSource, project_id: number): Promise<number> {
-    console.log('fundingSource--------------------------------------', fundingSource);
-
     const sqlStatement = queries.project.postProjectFundingSourceSQL(fundingSource, project_id);
-
-    console.log('sqlStatement', sqlStatement);
 
     if (!sqlStatement) {
       throw new HTTP400('Failed to build SQL insert statement');
     }
 
     const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
-
-    console.log('response', response);
 
     const result = (response && response.rows && response.rows[0]) || null;
 
@@ -632,9 +624,6 @@ export class ProjectService extends DBService {
 
   async updateProject(projectId: number, entities: IUpdateProject) {
     const promises: Promise<any>[] = [];
-
-    console.log('projectId', projectId);
-    console.log('entities', entities);
 
     if (entities?.partnerships) {
       promises.push(this.updatePartnershipsData(projectId, entities));
@@ -794,13 +783,9 @@ export class ProjectService extends DBService {
       return data.id;
     });
 
-    console.log('fundingIds', fundingIds);
-
     const surveyFundingSourceDeleteStatement = queries.survey.deleteSurveyFundingSourceConnectionToProjectSQL(
       fundingIds
     );
-
-    console.log('surveyFundingSourceDeleteStatement', surveyFundingSourceDeleteStatement);
 
     if (surveyFundingSourceDeleteStatement) {
       const surveyFundingSourceDeleteResult = await this.connection.query(
@@ -813,9 +798,7 @@ export class ProjectService extends DBService {
       }
     }
 
-    console.log('putFundingData', putFundingData);
     const projectFundingSourceDeleteStatement = queries.project.deleteAllProjectFundingSourceSQL(projectId);
-    console.log('projectFundingSourceDeleteStatement', projectFundingSourceDeleteStatement);
 
     if (!projectFundingSourceDeleteStatement) {
       throw new HTTP400('Failed to build SQL insert statement');
@@ -832,14 +815,12 @@ export class ProjectService extends DBService {
 
     putFundingData?.fundingSources.forEach(async (putFundingSource: PutFundingSource) => {
       const sqlInsertStatement = queries.project.putProjectFundingSourceSQL(putFundingSource, projectId);
-      console.log('sqlInsertStatement', sqlInsertStatement);
 
       if (!sqlInsertStatement) {
         throw new HTTP400('Failed to build SQL insert statement');
       }
 
       const insertResult = await this.connection.query(sqlInsertStatement.text, sqlInsertStatement.values);
-      console.log('insertResult', insertResult);
 
       if (!insertResult) {
         throw new HTTP409('Failed to put (insert) project funding source with incremented revision count');

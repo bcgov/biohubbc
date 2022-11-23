@@ -28,12 +28,26 @@ const useSecurityApi = (axios: AxiosInstance) => {
     return data;
   };
 
-  const addSecurityReasons = async (
+  const addProjectSecurityReasons = async (
     projectId: number,
     securityIds: number[],
     attachments: IAttachmentType[]
   ): Promise<any> => {
     const { data } = await axios.post(`/api/project/${projectId}/attachments/security/add`, {
+      security_ids: securityIds,
+      attachments: attachments
+    });
+
+    return data;
+  };
+
+  const addSurveySecurityReasons = async (
+    projectId: number,
+    surveyId: number,
+    securityIds: number[],
+    attachments: IAttachmentType[]
+  ): Promise<any> => {
+    const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/attachments/security/add`, {
       security_ids: securityIds,
       attachments: attachments
     });
@@ -135,7 +149,8 @@ const useSecurityApi = (axios: AxiosInstance) => {
 
   return {
     getSecurityReasons,
-    addSecurityReasons,
+    addProjectSecurityReasons,
+    addSurveySecurityReasons,
     searchForSecurityReasons,
     deleteProjectReportAttachmentSecurityReasons,
     deleteProjectAttachmentSecurityReasons,
