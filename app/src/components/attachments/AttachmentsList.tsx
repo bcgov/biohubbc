@@ -22,6 +22,8 @@ import {
   mdiCheckboxOutline,
   mdiDotsVertical,
   mdiInformationOutline,
+  mdiLockCheckOutline,
+  mdiLockOpenCheckOutline,
   mdiLockOpenVariantOutline,
   mdiLockOutline,
   mdiTrashCanOutline,
@@ -36,7 +38,12 @@ import { DialogContext } from 'contexts/dialogContext';
 import { IAttachmentType } from 'features/projects/view/ProjectAttachments';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { IGetAttachmentDetails, IGetProjectAttachment, IGetReportDetails } from 'interfaces/useProjectApi.interface';
+import {
+  AttachmentStatus,
+  IGetAttachmentDetails,
+  IGetProjectAttachment,
+  IGetReportDetails
+} from 'interfaces/useProjectApi.interface';
 import { IGetSurveyAttachment } from 'interfaces/useSurveyApi.interface';
 import React, { useContext, useState } from 'react';
 import { getFormattedFileSize } from 'utils/Utils';
@@ -369,6 +376,42 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
     setOpen(false);
   };
 
+  const AttachmentStatusChip = (status?: AttachmentStatus, securityRuleCount?: number) => {
+    let label = 'Submitted';
+    let color: 'default' | 'primary' | 'secondary' | undefined = 'primary';
+    let icon = undefined;
+
+    switch (status) {
+      case 'SUBMITTED':
+        break;
+      case 'PENDING_REVIEW':
+        label = 'Pending review';
+        color = 'secondary';
+        icon = mdiAlertCircle;
+        break;
+      case 'SECURED':
+        label = securityRuleCount ? `Secured (${securityRuleCount})` : 'Secured';
+        color = 'default';
+        icon = mdiLockCheckOutline;
+        break;
+      case 'UNSECURED':
+        label = 'Unsecured';
+        color = 'default';
+        icon = mdiLockOpenCheckOutline;
+        break;
+    }
+
+    return (
+      <Chip
+        size="small"
+        color={color}
+        label={label}
+        icon={icon ? <Icon path={icon} size={0.8} /> : undefined}
+        onClick={openDrawer}
+      />
+    );
+  };
+
   return (
     <>
       <ViewFileWithDetailsDialog
@@ -439,13 +482,8 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
                       </TableCell>
                       <TableCell>{row.fileType}</TableCell>
                       <TableCell>
-                        <Chip
-                          size="small"
-                          color="secondary"
-                          label={row.securityReviewTimestamp ? 'Reviewed' : 'Pending Review'}
-                          icon={<Icon path={mdiAlertCircle} size={0.8} />}
-                          onClick={openDrawer}
-                        />
+                        {AttachmentStatusChip(row.status, row.securityRuleCount)}
+
                         <Box my={-1} hidden>
                           <Button
                             size="small"
