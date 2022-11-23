@@ -1,12 +1,13 @@
-import { RequestHandler } from 'express';
-import { Operation } from 'express-openapi';
-import { SYSTEM_ROLE } from '../../../../../constants/roles';
-import { getDBConnection } from '../../../../../database/db';
-import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
-import { AttachmentService, IAttachmentType } from '../../../../../services/attachment-service';
-import { getLogger } from '../../../../../utils/logger';
+import { RequestHandler } from "express";
+import { Operation } from "express-openapi";
+import { SYSTEM_ROLE } from "../../../../../../../constants/roles";
+import { getDBConnection } from "../../../../../../../database/db";
+import { authorizeRequestHandler } from "../../../../../../../request-handlers/security/authorization";
+import { AttachmentService, IAttachmentType } from "../../../../../../../services/attachment-service";
+import { getLogger } from "../../../../../../../utils/logger";
 
-const defaultLog = getLogger('/api/project/{projectId}/attachments/list');
+
+const defaultLog = getLogger('/api/project/{projectId}/attachments/security/add');
 
 export const POST: Operation = [
   authorizeRequestHandler(() => {
@@ -19,7 +20,7 @@ export const POST: Operation = [
       ]
     };
   }),
-  addAttachmentSecurity()
+  addSurveyAttachmentSecurity()
 ];
 
 POST.apiDoc = {
@@ -50,7 +51,7 @@ POST.apiDoc = {
             security_ids: {
               type: 'array',
               items: {
-                type: 'number'
+                type: 'number',
               }
             },
             attachments: {
@@ -110,7 +111,7 @@ POST.apiDoc = {
   }
 };
 
-export function addAttachmentSecurity(): RequestHandler {
+export function addSurveyAttachmentSecurity(): RequestHandler {
   return async (req, res) => {
     const connection = getDBConnection(req['keycloak_token']);
 
@@ -122,7 +123,7 @@ export function addAttachmentSecurity(): RequestHandler {
 
       const attachmentService = new AttachmentService(connection);
 
-      await attachmentService.addSecurityToProjectAttachments(securityIds,attachments);
+      await attachmentService.addSecurityToSurveyAttachments(securityIds,attachments);
 
       await connection.commit();
 

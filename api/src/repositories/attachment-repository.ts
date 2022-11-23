@@ -189,7 +189,7 @@ export class AttachmentRepository extends BaseRepository {
   }
 
   // TODO functions need to handle duplicate keys (re adding existing security reasons)
-  async addSecurityToAttachments(securityIds: number[], attachmentId: number): Promise<void> {
+  async addSecurityToProjectAttachments(securityIds: number[], attachmentId: number): Promise<void> {
     const insertStatement = SQL`
       INSERT INTO project_attachment_persecution (
         project_attachment_id, 
@@ -209,7 +209,32 @@ export class AttachmentRepository extends BaseRepository {
     try {
       await this.connection.sql(insertStatement);
     } catch (error) {
-      defaultLog.error({ label: 'addSecurityToAttachments', message: 'error', error });
+      defaultLog.error({ label: 'addSecurityToProjectAttachments', message: 'error', error });
+    }
+  }
+  
+  // TODO functions need to handle duplicate keys (re adding existing security reasons)
+  async addSecurityToSurveyAttachments(securityIds: number[], attachmentId: number): Promise<void> {
+    const insertStatement = SQL`
+      INSERT INTO survey_attachment_persecution (
+        survey_attachment_id, 
+        persecution_security_id
+      ) VALUES `;
+
+    securityIds.forEach((id, index) => {
+      insertStatement.append(SQL`
+      (${attachmentId},${id})`);
+
+      if (index !== securityIds.length - 1) {
+        insertStatement.append(',');
+      }
+    });
+    insertStatement.append(';');
+
+    try {
+      await this.connection.sql(insertStatement);
+    } catch (error) {
+      defaultLog.error({ label: 'addSecurityToSurveyAttachments', message: 'error', error });
     }
   }
 
@@ -288,7 +313,7 @@ export class AttachmentRepository extends BaseRepository {
   }
 
   // TODO functions need to handle duplicate keys (re adding existing security reasons)
-  async addSecurityToReportAttachments(securityIds: number[], attachmentId: number): Promise<void> {
+  async addSecurityToProjectReportAttachments(securityIds: number[], attachmentId: number): Promise<void> {
     const insertStatement = SQL`
       INSERT INTO project_report_persecution (
         project_report_attachment_id, 
@@ -309,11 +334,37 @@ export class AttachmentRepository extends BaseRepository {
     try {
       await this.connection.sql(insertStatement);
     } catch (error) {
-      defaultLog.error({ label: 'addSecurityToAttachments', message: 'error', error });
+      defaultLog.error({ label: 'addSecurityToProjectReportAttachments', message: 'error', error });
     }
   }
 
-  async addSecurityReviewTimeToReportAttachment(attachmentId: number): Promise<void> {
+  // TODO functions need to handle duplicate keys (re adding existing security reasons)
+  async addSecurityToSurveyReportAttachments(securityIds: number[], attachmentId: number): Promise<void> {
+    const insertStatement = SQL`
+      INSERT INTO survey_report_persecution (
+        survey_report_attachment_id, 
+        persecution_security_id
+      ) VALUES `;
+
+    securityIds.forEach((id, index) => {
+      insertStatement.append(SQL`
+      (${attachmentId},${id})`);
+
+      if (index !== securityIds.length - 1) {
+        insertStatement.append(',');
+      }
+    });
+
+    insertStatement.append(';');
+
+    try {
+      await this.connection.sql(insertStatement);
+    } catch (error) {
+      defaultLog.error({ label: 'addSecurityToSurveyReportAttachments', message: 'error', error });
+    }
+  }
+
+  async addSecurityReviewTimeToProjectReportAttachment(attachmentId: number): Promise<void> {
     const updateSQL = SQL`
       UPDATE  project_report_attachment 
       SET security_review_timestamp=now()
@@ -326,7 +377,7 @@ export class AttachmentRepository extends BaseRepository {
     }
   }
 
-  async addSecurityReviewTimeToAttachment(attachmentId: number): Promise<void> {
+  async addSecurityReviewTimeToProjectAttachment(attachmentId: number): Promise<void> {
     const updateSQL = SQL`
       UPDATE  project_attachment 
       SET security_review_timestamp=now()
@@ -337,6 +388,35 @@ export class AttachmentRepository extends BaseRepository {
     } catch (error) {
       defaultLog.error({ label: 'addSecurityReviewTimeToAttachment', message: 'error', error });
     }
+  }
+
+
+  async addSecurityReviewTimeToSurveyReportAttachment(attachmentId: number): Promise<void> {
+    const updateSQL = SQL`
+      UPDATE  survey_report_attachment 
+      SET security_review_timestamp=now()
+      WHERE survey_report_attachment_id=${attachmentId};`;
+
+      try {
+        
+        await this.connection.sql(updateSQL)
+      } catch (error) {
+        defaultLog.error({ label: 'addSecurityReviewTimeToReportAttachment', message: 'error', error });
+      }
+  }
+
+  async addSecurityReviewTimeToSurveyAttachment(attachmentId: number): Promise<void> {
+    const updateSQL = SQL`
+      UPDATE  survey_attachment 
+      SET security_review_timestamp=now()
+      WHERE survey_attachment_id=${attachmentId};`;
+
+      try {
+        
+        await this.connection.sql(updateSQL)
+      } catch (error) {
+        defaultLog.error({ label: 'addSecurityReviewTimeToAttachment', message: 'error', error });
+      }
   }
 
   /**
