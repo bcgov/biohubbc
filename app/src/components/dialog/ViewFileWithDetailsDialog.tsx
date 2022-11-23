@@ -124,7 +124,7 @@ const ViewFileWithDetailsDialog: React.FC<IViewFileWithDetailsDialogProps> = (pr
   };
 
   const dialogContext = useContext(DialogContext);
-  console.log(props)
+
   const defaultYesNoDialogProps = {
     open: false,
     onClose: () => dialogContext.setYesNoDialog({ open: false }),
@@ -139,9 +139,13 @@ const ViewFileWithDetailsDialog: React.FC<IViewFileWithDetailsDialogProps> = (pr
         type: mapFileTypeToAttachmentType(props.fileType || "Other")
       }
       
-      biohubApi.security.addSecurityReasons(props.projectId, securityReasons, [attachmentData]).finally(() => {
-        setSecurityDialogOpen(false);
-      });
+      if (props.surveyId === undefined) {
+        biohubApi.security.addProjectSecurityReasons(props.projectId, securityReasons, [attachmentData]).finally(() => {
+          setSecurityDialogOpen(false);
+        });
+      } else {
+        biohubApi.security.addSurveySecurityReasons(props.projectId, securityReasons, [attachmentData])
+      }
     }
   };
 

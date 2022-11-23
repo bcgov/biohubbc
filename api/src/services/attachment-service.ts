@@ -51,6 +51,10 @@ export class AttachmentService extends DBService {
   async addSecurityToProjectAttachment(securityIds: number[], attachmentId: number): Promise<void> {
     return this.attachmentRepository.addSecurityToProjectAttachments(securityIds, attachmentId);
   }
+  
+  async addSecurityToSurveyAttachment(securityIds: number[], attachmentId: number): Promise<void> {
+    return this.attachmentRepository.addSecurityToSurveyAttachments(securityIds, attachmentId);
+  }
 
   /**
    * Function to run array of SQL queries to delete Project Attachments
@@ -94,6 +98,10 @@ export class AttachmentService extends DBService {
 
   async addSecurityToProjectReportAttachment(securityIds: number[], attachmentId: number): Promise<void> {
     return this.attachmentRepository.addSecurityToProjectReportAttachments(securityIds, attachmentId);
+  }
+  
+  async addSecurityToSurveyReportAttachment(securityIds: number[], attachmentId: number): Promise<void> {
+    return this.attachmentRepository.addSecurityToSurveyReportAttachments(securityIds, attachmentId);
   }
 
   /**
@@ -187,11 +195,11 @@ export class AttachmentService extends DBService {
     const actions: Promise<void>[] = []
     attachments.forEach(item => {
       if (item.type === 'Report') {
-        // actions.push(this.addSecurityToReportAttachment(securityIds, item.id));
-        // actions.push(this.addSecurityReviewToReportAttachment(item.id));
+        actions.push(this.addSecurityToSurveyReportAttachment(securityIds, item.id));
+        actions.push(this.addSecurityReviewToSurveyReportAttachment(item.id));
       } else {
-        // actions.push(this.addSecurityToAttachment(securityIds, item.id));
-        // actions.push(this.addSecurityReviewToAttachment(item.id));
+        actions.push(this.addSecurityToSurveyAttachment(securityIds, item.id));
+        actions.push(this.addSecurityReviewToSurveyAttachment(item.id))
       }
     });
 
@@ -207,5 +215,13 @@ export class AttachmentService extends DBService {
 
   async addSecurityReviewToProjectAttachment(attachmentId: number): Promise<void> {
     return this.attachmentRepository.addSecurityReviewTimeToProjectAttachment(attachmentId);
+  }
+
+  async addSecurityReviewToSurveyReportAttachment(attachmentId: number): Promise<void> {
+    return this.attachmentRepository.addSecurityReviewTimeToSurveyReportAttachment(attachmentId);
+  }
+
+  async addSecurityReviewToSurveyAttachment(attachmentId: number): Promise<void> {
+    return this.attachmentRepository.addSecurityReviewTimeToSurveyAttachment(attachmentId);
   }
 }
