@@ -87,18 +87,18 @@ const ViewFileWithDetailsDialog: React.FC<IViewFileWithDetailsDialogProps> = (pr
       return security.security_reason_id;
     });
 
-    if (props.reportDetails?.metadata?.attachment_id) {
+    if (props.attachmentId) {
       if (props.surveyId === undefined) {
         if (props.fileType === AttachmentType.REPORT) {
           await biohubApi.security.deleteProjectReportAttachmentSecurityReasons(
             props.projectId,
-            props.reportDetails?.metadata?.attachment_id,
+            props.attachmentId,
             securityIds
           );
         } else {
           await biohubApi.security.deleteProjectAttachmentSecurityReasons(
             props.projectId,
-            props.reportDetails?.metadata?.attachment_id,
+            props.attachmentId,
             securityIds
           );
         }
@@ -107,14 +107,14 @@ const ViewFileWithDetailsDialog: React.FC<IViewFileWithDetailsDialogProps> = (pr
           await biohubApi.security.deleteSurveyReportAttachmentSecurityReasons(
             props.projectId,
             props.surveyId,
-            props.reportDetails?.metadata?.attachment_id,
+            props.attachmentId,
             securityIds
           );
         } else {
           await biohubApi.security.deleteSurveyAttachmentSecurityReasons(
             props.projectId,
             props.surveyId,
-            props.reportDetails?.metadata?.attachment_id,
+            props.attachmentId,
             securityIds
           );
         }
@@ -139,11 +139,8 @@ const ViewFileWithDetailsDialog: React.FC<IViewFileWithDetailsDialogProps> = (pr
       };
 
       if (props.surveyId === undefined) {
-        await biohubApi.security
-          .addProjectSecurityReasons(props.projectId, securityReasons, [attachmentData])
-          .finally(() => {
-            setSecurityDialogOpen(false);
-          });
+        await biohubApi.security.addProjectSecurityReasons(props.projectId, securityReasons, [attachmentData]);
+        setSecurityDialogOpen(false);
       } else {
         setSecurityDialogOpen(false);
         // biohubApi.security.addSurveySecurityReasons(props.projectId, securityReasons, [attachmentData])
@@ -305,7 +302,8 @@ const ViewFileWithDetailsDialog: React.FC<IViewFileWithDetailsDialogProps> = (pr
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {props.reportDetails?.security_reasons &&
+                  {props.reportDetails &&
+                    props.reportDetails?.security_reasons &&
                     props.reportDetails?.security_reasons?.length > 0 &&
                     props.reportDetails?.security_reasons?.map((row, index) => {
                       return (
@@ -339,7 +337,7 @@ const ViewFileWithDetailsDialog: React.FC<IViewFileWithDetailsDialogProps> = (pr
                       );
                     })}
 
-                  {props.reportDetails?.security_reasons?.length === 0 && (
+                  {props.reportDetails && props.reportDetails?.security_reasons?.length === 0 && (
                     <TableRow key={`0`}>
                       <TableCell>Security Administration</TableCell>
                       <TableCell>
@@ -365,7 +363,8 @@ const ViewFileWithDetailsDialog: React.FC<IViewFileWithDetailsDialogProps> = (pr
                 </TableBody>
 
                 <TableBody>
-                  {props.attachmentDetails?.security_reasons &&
+                  {props.attachmentDetails &&
+                    props.attachmentDetails?.security_reasons &&
                     props.attachmentDetails?.security_reasons?.length > 0 &&
                     props.attachmentDetails?.security_reasons?.map((row, index) => {
                       return (
@@ -386,12 +385,20 @@ const ViewFileWithDetailsDialog: React.FC<IViewFileWithDetailsDialogProps> = (pr
                               {row.date_expired ? row.date_expired : 'N/A'}
                             </Typography>
                           </TableCell>
-                          <TableCell></TableCell>
+                          <TableCell>
+                            <Button
+                              variant="contained"
+                              color="primary"
+                              onClick={() => showDeleteSecurityReasonDialog([row])}
+                              startIcon={<Icon path={mdiLockOpenOutline} size={0.8} />}>
+                              Remove
+                            </Button>
+                          </TableCell>
                         </TableRow>
                       );
                     })}
 
-                  {props.attachmentDetails?.security_reasons?.length === 0 && (
+                  {props.attachmentDetails && props.attachmentDetails?.security_reasons?.length === 0 && (
                     <TableRow key={`0`}>
                       <TableCell>Security Administration</TableCell>
                       <TableCell>
