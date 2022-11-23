@@ -237,16 +237,9 @@ const ViewFileWithDetailsDialog: React.FC<IViewFileWithDetailsDialogProps> = (pr
               </Box>
             )}
 
-            <Box flex="0 0 auto">
-              <Button
-                variant="contained"
-                color="primary"
-                startIcon={<Icon path={mdiTrayArrowDown} size={0.8} />}
-                onClick={() => props.onFileDownload()}>
-                Download ({props.attachmentSize})
-              </Button>
+            <Box display="flex" flex="0 0 auto">
               {props.fileType === 'Report' && (
-                <Box>
+                <Box mr={1}>
                   <Button
                     variant="outlined"
                     color="primary"
@@ -256,6 +249,13 @@ const ViewFileWithDetailsDialog: React.FC<IViewFileWithDetailsDialogProps> = (pr
                   </Button>
                 </Box>
               )}
+              <Button
+                variant="contained"
+                color="primary"
+                startIcon={<Icon path={mdiTrayArrowDown} size={0.8} />}
+                onClick={() => props.onFileDownload()}>
+                Download ({props.attachmentSize})
+              </Button>
             </Box>
           </Box>
           <Box mt={5}>
