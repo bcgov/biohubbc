@@ -32,7 +32,6 @@ export interface ISurveyAttachmentDetailsDialogProps {
   currentAttachment: IGetProjectAttachment | null;
   open: boolean;
   onClose: () => void;
-
   dialogProps?: DialogProps;
 }
 
@@ -240,7 +239,7 @@ const SurveyAttachmentDetailsDialog: React.FC<ISurveyAttachmentDetailsDialogProp
 
   useEffect(() => {
     loadDetails();
-  }, [props.open, props.currentAttachment]);
+  }, [props.open, props.currentAttachment, loadDetails]);
 
   if (!props.open) {
     return <></>;
@@ -250,6 +249,7 @@ const SurveyAttachmentDetailsDialog: React.FC<ISurveyAttachmentDetailsDialogProp
     <>
       <SecurityDialog
         open={showAddSecurityDialog}
+        selectedSecurityRules={[]}
         onAccept={async (securityReasons) => {
           // formik form is retuning array of strings not numbers if printed out in console
           // linter wrongly believes formik to be number[] so wrapped map in string to force values into number[]
@@ -292,6 +292,8 @@ const SurveyAttachmentDetailsDialog: React.FC<ISurveyAttachmentDetailsDialogProp
           )}
 
           <ViewSecurityTable
+
+            updateReviewTime={() => {}}
             securityDetails={reportDetails || attachmentDetails}
             showAddSecurityDialog={setShowAddSecurityDialog}
             showDeleteSecurityReasonDialog={showDeleteSecurityReasonDialog}

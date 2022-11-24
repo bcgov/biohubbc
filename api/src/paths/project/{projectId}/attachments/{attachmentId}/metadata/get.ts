@@ -22,7 +22,7 @@ export const GET: Operation = [
       ]
     };
   }),
-  getProjectReportMetaData()
+  getProjectReportDetails()
 ];
 
 GET.apiDoc = {
@@ -151,10 +151,10 @@ GET.apiDoc = {
   }
 };
 
-export function getProjectReportMetaData(): RequestHandler {
+export function getProjectReportDetails(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({
-      label: 'getProjectReportMetaData',
+      label: 'getProjectReportDetails',
       message: 'params',
       req_params: req.params,
       req_query: req.query

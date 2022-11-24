@@ -286,26 +286,6 @@ const useProjectApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Make security status of project attachment secure.
-   *
-   * @param {number} projectId
-   * @param {number} attachmentId
-   * @param {string} attachmentType
-   * @return {*}  {Promise<any>}
-   */
-  const makeAttachmentSecure = async (
-    projectId: number,
-    attachmentId: number,
-    attachmentType: string
-  ): Promise<any> => {
-    const { data } = await axios.put(`/api/project/${projectId}/attachments/${attachmentId}/makeSecure`, {
-      attachmentType
-    });
-
-    return data;
-  };
-
-  /**
    * Make security status of project attachment unsecure.
    *
    * @param {number} projectId
@@ -464,7 +444,6 @@ const useProjectApi = (axios: AxiosInstance) => {
     deleteFundingSource,
     addFundingSource,
     deleteProject,
-    makeAttachmentSecure,
     makeAttachmentUnsecure,
     getProjectReportDetails,
     getProjectAttachmentDetails,

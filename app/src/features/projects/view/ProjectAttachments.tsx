@@ -142,6 +142,7 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
 
       <SecurityDialog
         open={securityDialogOpen}
+        selectedSecurityRules={[]}
         onAccept={(securityReasons) => {
           if (selectedAttachmentRows.length > 0) {
             // formik form is retuning array of strings not numbers if printed out in console

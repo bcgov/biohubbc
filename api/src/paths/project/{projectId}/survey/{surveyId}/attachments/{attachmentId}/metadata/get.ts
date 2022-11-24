@@ -3,9 +3,9 @@ import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../../database/db';
 import { HTTP400 } from '../../../../../../../../errors/http-error';
-import { GetReportAttachmentMetadata } from '../../../../../../../../models/project-survey-attachments';
-import { queries } from '../../../../../../../../queries/queries';
 import { authorizeRequestHandler } from '../../../../../../../../request-handlers/security/authorization';
+import { AttachmentService } from '../../../../../../../../services/attachment-service';
+import { SecuritySearchService } from '../../../../../../../../services/security-search-service';
 import { getLogger } from '../../../../../../../../utils/logger';
 
 const defaultLog = getLogger('/api/project/{projectId}/attachments/{attachmentId}/getSignedUrl');
@@ -22,7 +22,7 @@ export const GET: Operation = [
       ]
     };
   }),
-  getSurveyReportMetaData()
+  getSurveyReportDetails()
 ];
 
 GET.apiDoc = {
@@ -68,36 +68,43 @@ GET.apiDoc = {
       content: {
         'application/json': {
           schema: {
+            title: 'metadata get response object',
             type: 'object',
-            required: [
-              'attachment_id',
-              'title',
-              'last_modified',
-              'description',
-              'year_published',
-              'revision_count',
-              'authors'
-            ],
+            required: ['metadata', 'authors', 'security_reasons'],
             properties: {
-              attachment_id: {
-                type: 'number'
-              },
-              title: {
-                type: 'string'
-              },
-              last_modified: {
-                type: 'string'
-              },
-              description: {
-                type: 'string'
-              },
-              year_published: {
-                type: 'number'
-              },
-              revision_count: {
-                type: 'number'
+              metadata: {
+                description: 'Report metadata general information object',
+                type: 'object',
+                required: ['id', 'title', 'last_modified', 'description', 'year_published', 'revision_count'],
+                properties: {
+                  id: {
+                    description: 'Report metadata attachment id',
+                    type: 'number'
+                  },
+                  title: {
+                    description: 'Report metadata attachment title ',
+                    type: 'string'
+                  },
+                  last_modified: {
+                    description: 'Report metadata last modified',
+                    type: 'string'
+                  },
+                  description: {
+                    description: 'Report metadata description',
+                    type: 'string'
+                  },
+                  year_published: {
+                    description: 'Report metadata year published',
+                    type: 'number'
+                  },
+                  revision_count: {
+                    description: 'Report metadata revision count',
+                    type: 'number'
+                  }
+                }
               },
               authors: {
+                description: 'Report metadata author object',
                 type: 'array',
                 items: {
                   type: 'object',
@@ -111,13 +118,30 @@ GET.apiDoc = {
                     }
                   }
                 }
+              },
+              security_reasons: {
+                description: 'Report metadata security object',
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    project_report_author_id: {
+                      type: 'number'
+                    },
+                    project_report_attachment_id: {
+                      type: 'number'
+                    },
+                    persecution_security_id: {
+                      type: 'number'
+                    }
+                  }
+                }
               }
             }
           }
         }
       }
     },
-
     400: {
       $ref: '#/components/responses/400'
     },
@@ -136,7 +160,7 @@ GET.apiDoc = {
   }
 };
 
-export function getSurveyReportMetaData(): RequestHandler {
+export function getSurveyReportDetails(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({
       label: 'getSurveyReportMetaData',
@@ -159,42 +183,43 @@ export function getSurveyReportMetaData(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const getProjectReportAttachmentSQLStatement = queries.survey.getSurveyReportAttachmentSQL(
+      await connection.open();
+      const attachmentService = new AttachmentService(connection);
+
+      const surveyReportAttachment = await attachmentService.getSurveyReportAttachment(
         Number(req.params.surveyId),
         Number(req.params.attachmentId)
       );
 
-      const getProjectReportAuthorsSQLStatement = queries.survey.getSurveyReportAuthorsSQL(
+      const surveyReportAuthors = await attachmentService.getSurveyAttachmentAuthors(Number(req.params.attachmentId));
+
+      const surveyReportSecurity = await attachmentService.getSurveyReportSecurityReasons(
         Number(req.params.attachmentId)
       );
+      const securitySearchService = new SecuritySearchService();
 
-      if (!getProjectReportAttachmentSQLStatement || !getProjectReportAuthorsSQLStatement) {
-        throw new HTTP400('Failed to build metadata SQLStatement');
-      }
-
-      await connection.open();
-
-      const reportMetaData = await connection.query(
-        getProjectReportAttachmentSQLStatement.text,
-        getProjectReportAttachmentSQLStatement.values
-      );
-
-      const reportAuthorsData = await connection.query(
-        getProjectReportAuthorsSQLStatement.text,
-        getProjectReportAuthorsSQLStatement.values
-      );
+      const persecutionRules = await securitySearchService.getPersecutionSecurityRules();
 
       await connection.commit();
 
-      const getReportMetaData = reportMetaData && reportMetaData.rows[0];
+      const mappedSecurityObj = surveyReportSecurity.map((item) => {
+        return {
+          security_reason_id: item.persecution_security_id,
+          security_reason_title: persecutionRules[item.persecution_security_id - 1].reasonTitle,
+          security_reason_description: persecutionRules[item.persecution_security_id - 1].reasonDescription,
+          date_expired: persecutionRules[item.persecution_security_id - 1].expirationDate
+        };
+      });
 
-      const getReportAuthorsData = reportAuthorsData && reportAuthorsData.rows;
+      const reportDetails = {
+        metadata: surveyReportAttachment,
+        authors: surveyReportAuthors,
+        security_reasons: mappedSecurityObj
+      };
 
-      const reportMetaObj = new GetReportAttachmentMetadata(getReportMetaData, getReportAuthorsData);
-
-      return res.status(200).json(reportMetaObj);
+      return res.status(200).json(reportDetails);
     } catch (error) {
-      defaultLog.error({ label: 'getReportMetadata', message: 'error', error });
+      defaultLog.error({ label: 'getSurveyDetails', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

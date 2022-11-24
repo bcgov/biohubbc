@@ -13,7 +13,11 @@ import { Formik, FormikProps } from 'formik';
 import React, { useRef, useState } from 'react';
 import { AttachmentType } from '../../../constants/attachments';
 import { IFileHandler, IUploadHandler } from '../../attachments/FileUploadItem';
-import { IReportMetaForm, ReportMetaFormInitialValues, ReportMetaFormYupSchema } from '../../attachments/ReportMetaForm';
+import {
+  IReportMetaForm,
+  ReportMetaFormInitialValues,
+  ReportMetaFormYupSchema
+} from '../../attachments/ReportMetaForm';
 
 const useStyles = makeStyles((theme) => ({
   wrapper: {

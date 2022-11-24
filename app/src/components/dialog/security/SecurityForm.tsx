@@ -15,9 +15,11 @@ import React from 'react';
 import { getFormattedDate } from 'utils/Utils';
 import yup from 'utils/YupSchema';
 
+// `security_reason_id` is a string so `isSecurityReasonSelected` makes correct comparison
+// formik forms turns int values into string internally
 export interface ISecurityForm {
   security_reasons: {
-    security_reason_id: number;
+    security_reason_id: string;
   }[];
 }
 
@@ -54,11 +56,11 @@ const SecurityForm: React.FC<ISecurityFormProps> = (props) => {
   const { values } = useFormikContext<ISecurityForm>();
 
   const isSecurityReasonSelected = (securityReasonId: number): boolean => {
-    return values.security_reasons.map((item) => item.security_reason_id).includes(securityReasonId);
+    return values.security_reasons.map((item) => item.security_reason_id).includes(`${securityReasonId}`);
   };
 
   const getIndexOfSelectedSecurityReason = (securityReasonId: number): number => {
-    return values.security_reasons.map((item) => item.security_reason_id).indexOf(securityReasonId);
+    return values.security_reasons.map((item) => item.security_reason_id).indexOf(`${securityReasonId}`);
   };
 
   const getExpiryDateString = (expiryDate?: string | null): string => {

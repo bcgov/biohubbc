@@ -203,31 +203,6 @@ const useSurveyApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Make security status of survey attachment secure.
-   *
-   * @param {number} projectId
-   * @param {number} surveyId
-   * @param {number} attachmentId
-   * @param {string} attachmentType
-   * @return {*}  {Promise<any>}
-   */
-  const makeAttachmentSecure = async (
-    projectId: number,
-    surveyId: number,
-    attachmentId: number,
-    attachmentType: string
-  ): Promise<any> => {
-    const { data } = await axios.put(
-      `/api/project/${projectId}/survey/${surveyId}/attachments/${attachmentId}/makeSecure`,
-      {
-        attachmentType
-      }
-    );
-
-    return data;
-  };
-
-  /**
    * Make security status of survey attachment unsecure.
    *
    * @param {number} projectId
@@ -451,7 +426,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
     attachmentId: number
   ): Promise<IGetReportDetails> => {
     const { data } = await axios.get(
-      `/api/project/${projectId}/survey/${surveyId}/attachments/${attachmentId}/report/get`,
+      `/api/project/${projectId}/survey/${surveyId}/attachments/${attachmentId}/metadata/get`,
       {
         params: {},
         paramsSerializer: (params) => {
@@ -468,7 +443,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
     surveyId: number,
     attachmentId: number
   ): Promise<IGetAttachmentDetails> => {
-    const { data } = await axios.get(`/api/project/${surveyId}/attachments/${attachmentId}/get`, {
+    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/attachments/${attachmentId}/get`, {
       params: {},
       paramsSerializer: (params: any) => {
         return qs.stringify(params);
@@ -510,7 +485,6 @@ const useSurveyApi = (axios: AxiosInstance) => {
     deleteSurvey,
     getAvailableSurveyFundingSources,
     makeAttachmentUnsecure,
-    makeAttachmentSecure,
     getSummarySubmissionSignedURL,
     deleteSummarySubmission,
     uploadSurveyDataToBioHub

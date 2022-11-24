@@ -21,6 +21,7 @@ export interface IViewSecurityTableProps {
   securityDetails: IGetReportDetails | IGetAttachmentDetails | null;
   showAddSecurityDialog: (value: boolean) => void;
   showDeleteSecurityReasonDialog: (securityReasons: IGetSecurityReasons[]) => void;
+  updateReviewTime: () => void;
 }
 
 /**
@@ -29,7 +30,6 @@ export interface IViewSecurityTableProps {
  * @return {*}
  */
 const ViewSecurityTable: React.FC<IViewSecurityTableProps> = (props) => {
-
   return (
     <>
       <Paper variant="outlined" style={{ marginTop: '24px' }}>
@@ -53,6 +53,7 @@ const ViewSecurityTable: React.FC<IViewSecurityTableProps> = (props) => {
                 if (props.securityDetails?.security_reasons) {
                   props.showDeleteSecurityReasonDialog(props.securityDetails?.security_reasons);
                 }
+                props.updateReviewTime()
               }}
               startIcon={<Icon path={mdiLockOpenOutline} size={0.8} />}>
               Remove Security
@@ -122,7 +123,7 @@ const ViewSecurityTable: React.FC<IViewSecurityTableProps> = (props) => {
                     <Typography variant="body2" component="div" color="textSecondary">
                       {getFormattedDateRangeString(
                         DATE_FORMAT.ShortMediumDateFormat,
-                         '' //props.securityDetails?.metadata?.last_modified ||
+                        '' //props.securityDetails?.metadata?.last_modified ||
                       )}
                     </Typography>
                   </TableCell>

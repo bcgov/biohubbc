@@ -147,6 +147,84 @@ const useSecurityApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  /**
+   * Update Review Time for Project Report Attachment Id
+   *
+   * @param {number} projectId
+   * @param {number} attachmentId
+   * @return {*}  {Promise<any>}
+   */
+  const updateProjectReportAttachmentSecurityReviewTime = async (
+    projectId: number,
+    attachmentId: number
+  ): Promise<any> => {
+    const { data } = await axios.post(
+      `/api/project/${projectId}/attachments/${attachmentId}/security/review-time/update`,
+      {
+        attachmentType: AttachmentType.REPORT
+      }
+    );
+
+    return data;
+  };
+
+  /**
+   * Update Review Time for Project Attachment Id
+   *
+   * @param {number} projectId
+   * @param {number} attachmentId
+   * @return {*}  {Promise<any>}
+   */
+  const updateProjectAttachmentSecurityReviewTime = async (projectId: number, attachmentId: number): Promise<any> => {
+    const { data } = await axios.post(
+      `/api/project/${projectId}/attachments/${attachmentId}/security/review-time/update`,
+      {
+        attachmentType: AttachmentType.OTHER
+      }
+    );
+
+    return data;
+  };
+
+  /**
+   * Update Review Time for Survey Report Attachment Id
+   *
+   * @param {number} projectId
+   * @param {number} attachmentId
+   * @return {*}  {Promise<any>}
+   */
+  const updateSurveyReportAttachmentSecurityReviewTime = async (
+    projectId: number,
+    attachmentId: number
+  ): Promise<any> => {
+    const { data } = await axios.post(
+      `/api/project/${projectId}/attachments/${attachmentId}/security/review-time/update`,
+      {
+        attachmentType: AttachmentType.REPORT
+      }
+    );
+
+    return data;
+  };
+
+  /**
+   * Update Review Time for Survey Attachment Id
+   *
+   * @param {number} projectId
+   * @param {number} attachmentId
+   * @return {*}  {Promise<any>}
+   */
+  const updateSurveyAttachmentSecurityReviewTime = async (projectId: number, attachmentId: number): Promise<any> => {
+    const { data } = await axios.post(
+      `/api/project/${projectId}/attachments/${attachmentId}/security/review-time/update`,
+      {
+        attachmentType: AttachmentType.OTHER
+      }
+    );
+
+    return data;
+  };
+
   return {
     getSecurityReasons,
     addProjectSecurityReasons,
@@ -155,7 +233,11 @@ const useSecurityApi = (axios: AxiosInstance) => {
     deleteProjectReportAttachmentSecurityReasons,
     deleteProjectAttachmentSecurityReasons,
     deleteSurveyReportAttachmentSecurityReasons,
-    deleteSurveyAttachmentSecurityReasons
+    deleteSurveyAttachmentSecurityReasons,
+    updateProjectReportAttachmentSecurityReviewTime,
+    updateProjectAttachmentSecurityReviewTime,
+    updateSurveyReportAttachmentSecurityReviewTime,
+    updateSurveyAttachmentSecurityReviewTime
   };
 };
 

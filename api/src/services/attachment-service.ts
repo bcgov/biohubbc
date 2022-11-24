@@ -2,9 +2,12 @@ import { IDBConnection } from '../database/db';
 import {
   AttachmentRepository,
   IGetAttachmentAuthor,
-  IGetAttachmentSecurityReason,
   IGetProjectAttachment,
-  IGetProjectReportAttachment,
+  IGetProjectAttachmentSecurityReason,
+  IGetProjectReportSecurityReason,
+  IGetReportAttachment,
+  IGetSurveyAttachmentSecurityReason,
+  IGetSurveyReportSecurityReason,
   WithSecurityRuleCount
 } from '../repositories/attachment-repository';
 import { DBService } from './db-service';
@@ -27,7 +30,7 @@ export class AttachmentService extends DBService {
     return this.attachmentRepository.getProjectAttachments(projectId);
   }
 
-  async getProjectReportAttachments(projectId: number): Promise<IGetProjectReportAttachment[]> {
+  async getProjectReportAttachments(projectId: number): Promise<IGetReportAttachment[]> {
     return this.attachmentRepository.getProjectReportAttachments(projectId);
   }
 
@@ -43,7 +46,7 @@ export class AttachmentService extends DBService {
     return this.attachmentRepository.getProjectReportAttachmentsWithSecurityCounts(projectId);
   }
 
-  async getProjectReportAttachment(projectId: number, attachmentId: number): Promise<IGetProjectReportAttachment> {
+  async getProjectReportAttachment(projectId: number, attachmentId: number): Promise<IGetReportAttachment> {
     return this.attachmentRepository.getProjectReportAttachmentById(projectId, attachmentId);
   }
 
@@ -51,11 +54,11 @@ export class AttachmentService extends DBService {
     return this.attachmentRepository.getProjectAttachmentAuthors(attachmentId);
   }
 
-  async getProjectReportSecurityReasons(attachmentId: number): Promise<IGetAttachmentSecurityReason[]> {
+  async getProjectReportSecurityReasons(attachmentId: number): Promise<IGetProjectReportSecurityReason[]> {
     return this.attachmentRepository.getProjectReportSecurityReasons(attachmentId);
   }
 
-  async getProjectAttachmentSecurityReasons(attachmentId: number): Promise<IGetAttachmentSecurityReason[]> {
+  async getProjectAttachmentSecurityReasons(attachmentId: number): Promise<IGetProjectAttachmentSecurityReason[]> {
     return this.attachmentRepository.getProjectAttachmentSecurityReasons(attachmentId);
   }
 
@@ -65,6 +68,22 @@ export class AttachmentService extends DBService {
 
   async addSecurityToSurveyAttachment(securityIds: number[], attachmentId: number): Promise<void> {
     return this.attachmentRepository.addSecurityToSurveyAttachments(securityIds, attachmentId);
+  }
+
+  async removeAllSecurityFromAProjectAttachment(attachmentId: number): Promise<void> {
+    return this.attachmentRepository.removeAllSecurityFromAProjectAttachment(attachmentId);
+  }
+
+  async removeAllSecurityFromAProjectReportAttachment(attachmentId: number): Promise<void> {
+    return this.attachmentRepository.removeAllSecurityFromAProjectReportAttachment(attachmentId);
+  }
+
+  async removeAllSecurityFromASurveyAttachment(attachmentId: number): Promise<void> {
+    return this.attachmentRepository.removeAllSecurityFromASurveyAttachment(attachmentId);
+  }
+
+  async removeAllSecurityFromASurveyReportAttachment(attachmentId: number): Promise<void> {
+    return this.attachmentRepository.removeAllSecurityFromASurveyReportAttachment(attachmentId);
   }
 
   /**
@@ -203,5 +222,44 @@ export class AttachmentService extends DBService {
 
   async addSecurityReviewToSurveyAttachment(attachmentId: number): Promise<void> {
     return this.attachmentRepository.addSecurityReviewTimeToSurveyAttachment(attachmentId);
+  }
+
+  async getSurveyReportAttachment(projectId: number, attachmentId: number): Promise<IGetReportAttachment> {
+    return this.attachmentRepository.getSurveyReportAttachmentById(projectId, attachmentId);
+  }
+
+  async getSurveyAttachmentAuthors(attachmentId: number): Promise<IGetAttachmentAuthor[]> {
+    return this.attachmentRepository.getSurveyAttachmentAuthors(attachmentId);
+  }
+  async getSurveyReportSecurityReasons(attachmentId: number): Promise<IGetSurveyReportSecurityReason[]> {
+    //return this.attachmentRepository.getSurveyReportSecurityReasons(attachmentId);
+    return [
+      {
+        survey_report_persecution_id: 1,
+        survey_report_attachment_id: 2,
+        persecution_security_id: 3
+      },
+      {
+        survey_report_persecution_id: 2,
+        survey_report_attachment_id: 3,
+        persecution_security_id: 4
+      }
+    ];
+  }
+  async getSurveyAttachmentSecurityReasons(attachmentId: number): Promise<IGetSurveyAttachmentSecurityReason[]> {
+    //return this.attachmentRepository.getSurveyAttachmentSecurityReasons(attachmentId);
+
+    return [
+      {
+        survey_attachment_persecution_id: 1,
+        survey_attachment_id: 2,
+        persecution_security_id: 3
+      },
+      {
+        survey_attachment_persecution_id: 2,
+        survey_attachment_id: 3,
+        persecution_security_id: 4
+      }
+    ];
   }
 }
