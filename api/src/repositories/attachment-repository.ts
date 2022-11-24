@@ -278,7 +278,8 @@ export class AttachmentRepository extends BaseRepository {
         insertStatement.append(',');
       }
     });
-    insertStatement.append(';');
+
+    insertStatement.append(' ON CONFLICT (persecution_security_id) DO NOTHING;');
 
     try {
       await this.connection.sql(insertStatement);
@@ -303,7 +304,8 @@ export class AttachmentRepository extends BaseRepository {
         insertStatement.append(',');
       }
     });
-    insertStatement.append(';');
+
+    insertStatement.append(' ON CONFLICT (persecution_security_id) DO NOTHING;');
 
     try {
       await this.connection.sql(insertStatement);
@@ -385,7 +387,7 @@ export class AttachmentRepository extends BaseRepository {
       }
     });
 
-    insertStatement.append(';');
+    insertStatement.append(' ON CONFLICT (persecution_security_id) DO NOTHING;');
 
     try {
       await this.connection.sql(insertStatement);
@@ -411,7 +413,7 @@ export class AttachmentRepository extends BaseRepository {
       }
     });
 
-    insertStatement.append(';');
+    insertStatement.append(' ON CONFLICT (persecution_security_id) DO NOTHING;');
 
     try {
       await this.connection.sql(insertStatement);
