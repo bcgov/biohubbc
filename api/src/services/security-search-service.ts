@@ -4,7 +4,7 @@ import { getLogger } from '../utils/logger';
 
 const defaultLog = getLogger('services/security-search-service');
 
-interface ISecurityProsecutionSource {
+interface ISecurityPersecutionSource {
   description: string;
   type: string;
   taxon: {
@@ -54,9 +54,10 @@ export class SecuritySearchService {
       response?.hits.hits.map((item) => {
         return {
           security_reason_id: item._id,
-          category: (item._source as ISecurityProsecutionSource).taxon.code,
-          reasonTitle: (item._source as ISecurityProsecutionSource).type,
-          reasonDescription: (item._source as ISecurityProsecutionSource).description,
+          category: 'Persecution and Harm',
+          taxon: (item._source as ISecurityPersecutionSource).taxon.code,
+          reasonTitle: (item._source as ISecurityPersecutionSource).type,
+          reasonDescription: (item._source as ISecurityPersecutionSource).description,
           expirationDate: null
         };
       }) || []
@@ -72,16 +73,16 @@ export class SecuritySearchService {
       }
     });
 
-    return this.mapProsecutionItems(response?.hits.hits || []);
+    return this.mapPersecutionItems(response?.hits.hits || []);
   }
 
-  mapProsecutionItems(items: any[]): any[] {
+  mapPersecutionItems(items: any[]): any[] {
     return items.map((item) => {
       return {
         security_reason_id: item._id,
-        category: (item._source as ISecurityProsecutionSource).taxon.code,
-        reasonTitle: (item._source as ISecurityProsecutionSource).type,
-        reasonDescription: (item._source as ISecurityProsecutionSource).description,
+        category: (item._source as ISecurityPersecutionSource).taxon.code,
+        reasonTitle: (item._source as ISecurityPersecutionSource).type,
+        reasonDescription: (item._source as ISecurityPersecutionSource).description,
         expirationDate: null
       };
     });

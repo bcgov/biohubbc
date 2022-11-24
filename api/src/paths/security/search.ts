@@ -1,5 +1,6 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
+import { SYSTEM_ROLE } from '../../constants/roles';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
 import { SecuritySearchService } from '../../services/security-search-service';
 import { getLogger } from '../../utils/logger';
@@ -11,7 +12,8 @@ export const POST: Operation = [
     return {
       and: [
         {
-          discriminator: 'SystemUser'
+          validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR],
+          discriminator: 'SystemRole'
         }
       ]
     };

@@ -12,8 +12,10 @@ import Icon from '@mdi/react';
 import AttachmentsList from 'components/attachments/AttachmentsList';
 import { IUploadHandler } from 'components/attachments/FileUploadItem';
 import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
-import FileUploadWithMetaDialog from 'components/dialog/FileUploadWithMetaDialog';
-import SecurityDialog from 'components/dialog/SecurityDialog';
+import FileUploadWithMetaDialog from 'components/dialog/security/FileUploadWithMetaDialog';
+import SecurityDialog from 'components/dialog/security/SecurityDialog';
+import { SystemRoleGuard } from 'components/security/Guards';
+import { SYSTEM_ROLE } from 'constants/roles';
 // import { H2MenuToolbar } from 'components/toolbar/ActionToolbars';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import {
@@ -140,6 +142,7 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
 
       <SecurityDialog
         open={securityDialogOpen}
+        selectedSecurityRules={[]}
         onAccept={(securityReasons) => {
           if (selectedAttachmentRows.length > 0) {
             // formik form is retuning array of strings not numbers if printed out in console
@@ -196,14 +199,16 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
               <Typography variant="inherit">Submit Attachments</Typography>
             </MenuItem>
           </Menu>
-          <Button
-            style={{ marginLeft: '8px' }}
-            variant="contained"
-            color="primary"
-            startIcon={<Icon path={mdiLockOutline} size={0.8} />}
-            onClick={() => setSecurityDialogOpen(true)}>
-            Apply Security
-          </Button>
+          <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+            <Button
+              style={{ marginLeft: '8px' }}
+              variant="contained"
+              color="primary"
+              startIcon={<Icon path={mdiLockOutline} size={0.8} />}
+              onClick={() => setSecurityDialogOpen(true)}>
+              Apply Security
+            </Button>
+          </SystemRoleGuard>
         </Box>
       </Toolbar>
       <Divider></Divider>

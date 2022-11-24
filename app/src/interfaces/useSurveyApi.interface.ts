@@ -4,7 +4,7 @@ import { IProprietaryDataForm } from 'features/surveys/components/ProprietaryDat
 import { IPurposeAndMethodologyForm } from 'features/surveys/components/PurposeAndMethodologyForm';
 import { IStudyAreaForm } from 'features/surveys/components/StudyAreaForm';
 import { Feature } from 'geojson';
-import { IGetProjectForUpdateResponseFundingSource } from 'interfaces/useProjectApi.interface';
+import { AttachmentStatus, IGetProjectForUpdateResponseFundingSource } from 'interfaces/useProjectApi.interface';
 import { StringBoolean } from 'types/misc';
 
 /**
@@ -163,6 +163,9 @@ export interface IGetSpecies {
   ancillary_species_names: string[];
 }
 
+/**
+ * @TODO securityRuleCount and status should likely be required, not optional.
+ */
 export interface IGetSurveyAttachment {
   id: number;
   fileName: string;
@@ -172,6 +175,8 @@ export interface IGetSurveyAttachment {
   securityToken: any;
   securityReviewTimestamp: string;
   revisionCount: number;
+  securityRuleCount?: number;
+  status?: AttachmentStatus;
 }
 
 export type IGetSurveyReportAttachment = IGetSurveyAttachment & { fileType: 'Report' };

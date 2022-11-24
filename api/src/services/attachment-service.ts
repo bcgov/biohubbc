@@ -7,7 +7,8 @@ import {
   IGetProjectReportSecurityReason,
   IGetReportAttachment,
   IGetSurveyAttachmentSecurityReason,
-  IGetSurveyReportSecurityReason
+  IGetSurveyReportSecurityReason,
+  WithSecurityRuleCount
 } from '../repositories/attachment-repository';
 import { DBService } from './db-service';
 
@@ -15,6 +16,7 @@ export interface IAttachmentType {
   id: number;
   type: 'Report' | 'Other';
 }
+
 export class AttachmentService extends DBService {
   attachmentRepository: AttachmentRepository;
 
@@ -32,8 +34,16 @@ export class AttachmentService extends DBService {
     return this.attachmentRepository.getProjectReportAttachments(projectId);
   }
 
-  async getProjectAttachmentsWithStatus(projectId: number): Promise<any> {
-    return Promise.resolve();
+  async getProjectAttachmentsWithSecurityCounts(
+    projectId: number
+  ): Promise<WithSecurityRuleCount<IGetProjectAttachment>[]> {
+    return this.attachmentRepository.getProjectAttachmentsWithSecurityCounts(projectId);
+  }
+
+  async getProjectReportAttachmentsWithSecurityCounts(
+    projectId: number
+  ): Promise<WithSecurityRuleCount<IGetProjectAttachment>[]> {
+    return this.attachmentRepository.getProjectReportAttachmentsWithSecurityCounts(projectId);
   }
 
   async getProjectReportAttachment(projectId: number, attachmentId: number): Promise<IGetReportAttachment> {
@@ -58,6 +68,22 @@ export class AttachmentService extends DBService {
 
   async addSecurityToSurveyAttachment(securityIds: number[], attachmentId: number): Promise<void> {
     return this.attachmentRepository.addSecurityToSurveyAttachments(securityIds, attachmentId);
+  }
+
+  async removeAllSecurityFromAProjectAttachment(attachmentId: number): Promise<void> {
+    return this.attachmentRepository.removeAllSecurityFromAProjectAttachment(attachmentId);
+  }
+
+  async removeAllSecurityFromAProjectReportAttachment(attachmentId: number): Promise<void> {
+    return this.attachmentRepository.removeAllSecurityFromAProjectReportAttachment(attachmentId);
+  }
+
+  async removeAllSecurityFromASurveyAttachment(attachmentId: number): Promise<void> {
+    return this.attachmentRepository.removeAllSecurityFromASurveyAttachment(attachmentId);
+  }
+
+  async removeAllSecurityFromASurveyReportAttachment(attachmentId: number): Promise<void> {
+    return this.attachmentRepository.removeAllSecurityFromASurveyReportAttachment(attachmentId);
   }
 
   /**
