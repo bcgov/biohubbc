@@ -2,7 +2,6 @@ import Box from '@material-ui/core/Box';
 import Checkbox from '@material-ui/core/Checkbox';
 import Chip from '@material-ui/core/Chip';
 import { grey } from '@material-ui/core/colors';
-import Drawer from '@material-ui/core/Drawer';
 import IconButton from '@material-ui/core/IconButton';
 import Link from '@material-ui/core/Link';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -188,14 +187,6 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
     }
   };
 
-  const [open, setOpen] = React.useState(false);
-  const openDrawer = () => {
-    setOpen(true);
-  };
-  const closeDrawer = () => {
-    setOpen(false);
-  };
-
   const AttachmentStatusChip = (status?: AttachmentStatus, securityRuleCount?: number) => {
     let label = 'Submitted';
     let color: 'default' | 'primary' | 'secondary' | undefined = 'primary';
@@ -221,15 +212,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
         break;
     }
 
-    return (
-      <Chip
-        size="small"
-        color={color}
-        label={label}
-        icon={icon ? <Icon path={icon} size={0.8} /> : undefined}
-        onClick={openDrawer}
-      />
-    );
+    return <Chip size="small" color={color} label={label} icon={icon ? <Icon path={icon} size={0.8} /> : undefined} />;
   };
 
   return (
@@ -311,10 +294,6 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
           </Table>
         </TableContainer>
       </Box>
-
-      <Drawer anchor="right" open={open} onClose={closeDrawer}>
-        <Box width="500px">Content</Box>
-      </Drawer>
     </>
   );
 };

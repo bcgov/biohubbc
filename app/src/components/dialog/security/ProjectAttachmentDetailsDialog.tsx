@@ -10,6 +10,7 @@ import { defaultErrorDialogProps, DialogContext } from 'contexts/dialogContext';
 import { IAttachmentType } from 'features/projects/view/ProjectAttachments';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import useDataLoader from 'hooks/useDataLoader';
 import {
   IGetAttachmentDetails,
   IGetProjectAttachment,
@@ -48,6 +49,14 @@ const ProjectAttachmentDetailsDialog: React.FC<IProjectAttachmentDetailsDialogPr
   const [showAddSecurityDialog, setShowAddSecurityDialog] = useState(false);
 
   const dialogContext = useContext(DialogContext);
+
+  const reportAttachmentDetailsDataLoader = useDataLoader((attachmentId: number) =>
+    biohubApi.project.getProjectReportDetails(props.projectId, attachmentId)
+  );
+
+  const attachmentDetailsDataLoader = useDataLoader((attachmentId: number) =>
+    biohubApi.project.getProjectAttachmentDetails(props.projectId, attachmentId)
+  );
 
   const defaultYesNoDialogProps = {
     open: false,
@@ -189,30 +198,18 @@ const ProjectAttachmentDetailsDialog: React.FC<IProjectAttachmentDetailsDialogPr
   };
 
   const getReportDetails = async (attachment: IGetProjectAttachment) => {
-    try {
-      const response = await biohubApi.project.getProjectReportDetails(props.projectId, attachment.id);
+    reportAttachmentDetailsDataLoader.load(attachment.id);
 
-      if (!response) {
-        return;
-      }
-
-      setReportDetails(response);
-    } catch (error) {
-      return error;
+    if (reportAttachmentDetailsDataLoader.data) {
+      setReportDetails(reportAttachmentDetailsDataLoader.data);
     }
   };
 
   const getAttachmentDetails = async (attachment: IGetProjectAttachment) => {
-    try {
-      const response = await biohubApi.project.getProjectAttachmentDetails(props.projectId, attachment.id);
+    attachmentDetailsDataLoader.load(attachment.id);
 
-      if (!response) {
-        return;
-      }
-
-      setAttachmentDetails(response);
-    } catch (error) {
-      return error;
+    if (attachmentDetailsDataLoader.data) {
+      setAttachmentDetails(attachmentDetailsDataLoader.data);
     }
   };
 
