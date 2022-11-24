@@ -1,5 +1,4 @@
 import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
 import Checkbox from '@material-ui/core/Checkbox';
 import Chip from '@material-ui/core/Chip';
 import { grey } from '@material-ui/core/colors';
@@ -22,25 +21,22 @@ import {
   mdiCheckboxOutline,
   mdiDotsVertical,
   mdiInformationOutline,
-  mdiLockOpenVariantOutline,
-  mdiLockOutline,
+  mdiLockCheckOutline,
+  mdiLockOpenCheckOutline,
   mdiTrashCanOutline,
   mdiTrayArrowDown
 } from '@mdi/js';
 import Icon from '@mdi/react';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
-import ViewFileWithDetailsDialog from 'components/dialog/ViewFileWithDetailsDialog';
-import { AttachmentType } from 'constants/attachments';
+import AllAttachmentDetailsDialog from 'components/dialog/security/AllAttachmentDetailsDialog';
 import { AttachmentsI18N, EditReportMetaDataI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
 import { IAttachmentType } from 'features/projects/view/ProjectAttachments';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { IGetAttachmentDetails, IGetProjectAttachment, IGetReportDetails } from 'interfaces/useProjectApi.interface';
+import { AttachmentStatus, IGetProjectAttachment } from 'interfaces/useProjectApi.interface';
 import { IGetSurveyAttachment } from 'interfaces/useSurveyApi.interface';
 import React, { useContext, useState } from 'react';
-import { getFormattedFileSize } from 'utils/Utils';
-import { IEditReportMetaForm } from '../attachments/EditReportMetaForm';
 
 const useStyles = makeStyles((theme: Theme) => ({
   attachmentsTable: {
@@ -67,8 +63,6 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
   const [rowsPerPage] = useState(10);
   const [page] = useState(0);
 
-  const [reportDetails, setReportDetails] = useState<IGetReportDetails | null>(null);
-  const [attachmentDetails, setAttachmentDetails] = useState<IGetAttachmentDetails | null>(null);
   const [showViewFileWithDetailsDialog, setShowViewFileWithDetailsDialog] = useState<boolean>(false);
 
   const [currentAttachment, setCurrentAttachment] = useState<IGetProjectAttachment | IGetSurveyAttachment | null>(null);
@@ -82,14 +76,8 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
   };
 
   const handleViewDetailsClick = (attachment: IGetProjectAttachment | IGetSurveyAttachment) => {
+    console.log('attachment', attachment);
     setCurrentAttachment(attachment);
-    if (attachment.fileType === 'Report') {
-      getReportDetails(attachment);
-      setAttachmentDetails(null);
-    } else {
-      getAttachmentDetails(attachment);
-      setReportDetails(null);
-    }
     setShowViewFileWithDetailsDialog(true);
   };
 
@@ -132,25 +120,6 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
     });
   };
 
-  const showToggleSecurityStatusAttachmentDialog = (attachment: IGetProjectAttachment | IGetSurveyAttachment) => {
-    dialogContext.setYesNoDialog({
-      ...defaultYesNoDialogProps,
-      dialogTitle: 'Change Security Status',
-      dialogText: attachment.securityToken
-        ? `Changing this attachment's security status to unsecured will make it accessible by all users. Are you sure you want to continue?`
-        : `Changing this attachment's security status to secured will restrict it to yourself and other authorized users. Are you sure you want to continue?`,
-      open: true,
-      onYes: () => {
-        if (attachment.securityToken) {
-          makeAttachmentUnsecure(attachment);
-        } else {
-          makeAttachmentSecure(attachment);
-        }
-        dialogContext.setYesNoDialog({ open: false });
-      }
-    });
-  };
-
   const deleteAttachment = async (attachment: IGetProjectAttachment | IGetSurveyAttachment) => {
     if (!attachment?.id) {
       return;
@@ -187,46 +156,6 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
     }
   };
 
-  const getReportDetails = async (attachment: IGetProjectAttachment | IGetSurveyAttachment) => {
-    try {
-      let response;
-
-      if (props.surveyId) {
-        response = await biohubApi.survey.getSurveyReportDetails(props.projectId, props.surveyId, attachment.id);
-      } else {
-        response = await biohubApi.project.getProjectReportDetails(props.projectId, attachment.id);
-      }
-
-      if (!response) {
-        return;
-      }
-
-      setReportDetails(response);
-    } catch (error) {
-      return error;
-    }
-  };
-
-  const getAttachmentDetails = async (attachment: IGetProjectAttachment | IGetSurveyAttachment) => {
-    try {
-      let response;
-
-      if (props.surveyId) {
-        response = await biohubApi.survey.getSurveyAttachmentDetails(props.projectId, props.surveyId, attachment.id);
-      } else {
-        response = await biohubApi.project.getProjectAttachmentDetails(props.projectId, attachment.id);
-      }
-
-      if (!response) {
-        return;
-      }
-
-      setAttachmentDetails(response);
-    } catch (error) {
-      return error;
-    }
-  };
-
   const openAttachment = async (attachment: IGetProjectAttachment | IGetSurveyAttachment) => {
     try {
       let response;
@@ -259,108 +188,6 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
     }
   };
 
-  const openAttachmentFromReportMetaDialog = async () => {
-    if (currentAttachment) {
-      openAttachment(currentAttachment);
-    }
-  };
-
-  const makeAttachmentSecure = async (attachment: IGetProjectAttachment | IGetSurveyAttachment) => {
-    if (!attachment || !attachment.id) {
-      return;
-    }
-
-    try {
-      let response;
-
-      if (props.surveyId) {
-        response = await biohubApi.survey.makeAttachmentSecure(
-          props.projectId,
-          props.surveyId,
-          attachment.id,
-          attachment.fileType
-        );
-      } else {
-        response = await biohubApi.project.makeAttachmentSecure(props.projectId, attachment.id, attachment.fileType);
-      }
-
-      if (!response) {
-        return;
-      }
-
-      props.getAttachments(true);
-    } catch (error) {
-      return error;
-    }
-  };
-
-  const makeAttachmentUnsecure = async (attachment: IGetProjectAttachment | IGetSurveyAttachment) => {
-    if (!attachment || !attachment.id) {
-      return;
-    }
-
-    try {
-      let response;
-
-      if (props.surveyId) {
-        response = await biohubApi.survey.makeAttachmentUnsecure(
-          props.projectId,
-          props.surveyId,
-          attachment.id,
-          attachment.securityToken,
-          attachment.fileType
-        );
-      } else {
-        response = await biohubApi.project.makeAttachmentUnsecure(
-          props.projectId,
-          attachment.id,
-          attachment.securityToken,
-          attachment.fileType
-        );
-      }
-
-      if (!response) {
-        return;
-      }
-
-      props.getAttachments(true);
-    } catch (error) {
-      return error;
-    }
-  };
-
-  const handleDialogEditSave = async (values: IEditReportMetaForm) => {
-    if (!reportDetails?.metadata) {
-      return;
-    }
-
-    const fileMeta = values;
-
-    try {
-      if (props.surveyId) {
-        await biohubApi.survey.updateSurveyReportMetadata(
-          props.projectId,
-          props.surveyId,
-          reportDetails.metadata.id,
-          AttachmentType.REPORT,
-          fileMeta,
-          reportDetails.metadata.revision_count
-        );
-      } else {
-        await biohubApi.project.updateProjectReportMetadata(
-          props.projectId,
-          reportDetails.metadata.id,
-          AttachmentType.REPORT,
-          fileMeta,
-          reportDetails.metadata.revision_count
-        );
-      }
-    } catch (error) {
-      const apiError = error as APIError;
-      showErrorDialog({ dialogText: apiError.message, dialogErrorDetails: apiError.errors, open: true });
-    }
-  };
-
   const [open, setOpen] = React.useState(false);
   const openDrawer = () => {
     setOpen(true);
@@ -369,28 +196,51 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
     setOpen(false);
   };
 
+  const AttachmentStatusChip = (status?: AttachmentStatus, securityRuleCount?: number) => {
+    let label = 'Submitted';
+    let color: 'default' | 'primary' | 'secondary' | undefined = 'primary';
+    let icon = undefined;
+
+    switch (status) {
+      case 'SUBMITTED':
+        break;
+      case 'PENDING_REVIEW':
+        label = 'Pending review';
+        color = 'secondary';
+        icon = mdiAlertCircle;
+        break;
+      case 'SECURED':
+        label = securityRuleCount ? `Secured (${securityRuleCount})` : 'Secured';
+        color = 'default';
+        icon = mdiLockCheckOutline;
+        break;
+      case 'UNSECURED':
+        label = 'Unsecured';
+        color = 'default';
+        icon = mdiLockOpenCheckOutline;
+        break;
+    }
+
+    return (
+      <Chip
+        size="small"
+        color={color}
+        label={label}
+        icon={icon ? <Icon path={icon} size={0.8} /> : undefined}
+        onClick={openDrawer}
+      />
+    );
+  };
+
   return (
     <>
-      <ViewFileWithDetailsDialog
+      <AllAttachmentDetailsDialog
         projectId={props.projectId}
-        attachmentId={currentAttachment?.id}
         surveyId={props.surveyId}
-        dialogProps={{ fullWidth: true, maxWidth: 'lg', open: showViewFileWithDetailsDialog }}
+        currentAttachment={currentAttachment}
         open={showViewFileWithDetailsDialog}
-        onClose={() => {
+        close={() => {
           setShowViewFileWithDetailsDialog(false);
-        }}
-        onSave={handleDialogEditSave}
-        onFileDownload={openAttachmentFromReportMetaDialog}
-        reportDetails={reportDetails}
-        attachmentDetails={attachmentDetails}
-        attachmentSize={(currentAttachment && getFormattedFileSize(currentAttachment.size)) || '0 KB'}
-        fileType={currentAttachment && currentAttachment.fileType}
-        refresh={() => {
-          currentAttachment &&
-            (currentAttachment.fileType === 'Report'
-              ? getReportDetails(currentAttachment)
-              : getAttachmentDetails(currentAttachment));
         }}
       />
 
@@ -438,29 +288,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
                         </Link>
                       </TableCell>
                       <TableCell>{row.fileType}</TableCell>
-                      <TableCell>
-                        <Chip
-                          size="small"
-                          color="secondary"
-                          label={row.securityReviewTimestamp ? 'Reviewed' : 'Pending Review'}
-                          icon={<Icon path={mdiAlertCircle} size={0.8} />}
-                          onClick={openDrawer}
-                        />
-                        <Box my={-1} hidden>
-                          <Button
-                            size="small"
-                            color="primary"
-                            variant="outlined"
-                            startIcon={
-                              <Icon path={row.securityToken ? mdiLockOutline : mdiLockOpenVariantOutline} size={0.75} />
-                            }
-                            aria-label="toggle attachment security status"
-                            data-testid="toggle-attachment-security-status"
-                            onClick={() => showToggleSecurityStatusAttachmentDialog(row)}>
-                            <strong>{row.securityToken ? 'Secured' : 'Unsecured'}</strong>
-                          </Button>
-                        </Box>
-                      </TableCell>
+                      <TableCell>{AttachmentStatusChip(row.status, row.securityRuleCount)}</TableCell>
                       <TableCell align="right">
                         <AttachmentItemMenuButton
                           attachment={row}

@@ -4,7 +4,8 @@ import {
   IGetAttachmentAuthor,
   IGetAttachmentSecurityReason,
   IGetProjectAttachment,
-  IGetProjectReportAttachment
+  IGetProjectReportAttachment,
+  WithSecurityRuleCount
 } from '../repositories/attachment-repository';
 import { DBService } from './db-service';
 
@@ -12,6 +13,7 @@ export interface IAttachmentType {
   id: number;
   type: 'Report' | 'Other';
 }
+
 export class AttachmentService extends DBService {
   attachmentRepository: AttachmentRepository;
 
@@ -29,8 +31,16 @@ export class AttachmentService extends DBService {
     return this.attachmentRepository.getProjectReportAttachments(projectId);
   }
 
-  async getProjectAttachmentsWithStatus(projectId: number): Promise<any> {
-    return Promise.resolve();
+  async getProjectAttachmentsWithSecurityCounts(
+    projectId: number
+  ): Promise<WithSecurityRuleCount<IGetProjectAttachment>[]> {
+    return this.attachmentRepository.getProjectAttachmentsWithSecurityCounts(projectId);
+  }
+
+  async getProjectReportAttachmentsWithSecurityCounts(
+    projectId: number
+  ): Promise<WithSecurityRuleCount<IGetProjectAttachment>[]> {
+    return this.attachmentRepository.getProjectReportAttachmentsWithSecurityCounts(projectId);
   }
 
   async getProjectReportAttachment(projectId: number, attachmentId: number): Promise<IGetProjectReportAttachment> {

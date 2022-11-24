@@ -15,7 +15,7 @@ import EditReportMetaForm, {
   EditReportMetaFormInitialValues,
   EditReportMetaFormYupSchema,
   IEditReportMetaForm
-} from '../attachments/EditReportMetaForm';
+} from '../../attachments/EditReportMetaForm';
 
 const useStyles = makeStyles((theme) => ({
   wrapper: {
