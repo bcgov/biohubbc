@@ -187,14 +187,6 @@ describe('useProjectApi', () => {
     expect(result).toEqual(true);
   });
 
-  it('makeAttachmentSecure works as expected', async () => {
-    mock.onPut(`/api/project/${projectId}/attachments/${attachmentId}/makeSecure`).reply(200, 1);
-
-    const result = await useProjectApi(axios).makeAttachmentSecure(projectId, attachmentId, attachmentType);
-
-    expect(result).toEqual(1);
-  });
-
   it('makeAttachmentUnsecure works as expected', async () => {
     mock.onPut(`/api/project/${projectId}/attachments/${attachmentId}/makeUnsecure`).reply(200, 1);
 

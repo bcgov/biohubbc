@@ -272,30 +272,6 @@ describe('useSurveyApi', () => {
     expect(result).toEqual('url.com');
   });
 
-  it('makeAttachmentUnsecure works as expected', async () => {
-    mock
-      .onPut(`/api/project/${projectId}/survey/${surveyId}/attachments/${attachmentId}/makeUnsecure`)
-      .reply(200, true);
-
-    const result = await useSurveyApi(axios).makeAttachmentUnsecure(
-      projectId,
-      surveyId,
-      attachmentId,
-      'token',
-      'Image'
-    );
-
-    expect(result).toEqual(true);
-  });
-
-  it('makeAttachmentSecure works as expected', async () => {
-    mock.onPut(`/api/project/${projectId}/survey/${surveyId}/attachments/${attachmentId}/makeSecure`).reply(200, true);
-
-    const result = await useSurveyApi(axios).makeAttachmentSecure(projectId, surveyId, attachmentId, 'Image');
-
-    expect(result).toEqual(true);
-  });
-
   it('updateSurveyReportMetadata works as expected', async () => {
     mock
       .onPut(`/api/project/${projectId}/survey/${surveyId}/attachments/${attachmentId}/report/update`)

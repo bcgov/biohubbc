@@ -213,7 +213,7 @@ const ProjectAttachmentDetailsDialog: React.FC<IProjectAttachmentDetailsDialogPr
     }
   };
 
-  const loadDetails = () => {
+  const loadDetails = useCallback(() => {
     if (props.currentAttachment) {
       if (props.currentAttachment?.fileType === 'Report') {
         getReportDetails(props.currentAttachment);
@@ -223,7 +223,7 @@ const ProjectAttachmentDetailsDialog: React.FC<IProjectAttachmentDetailsDialogPr
         setReportDetails(null);
       }
     }
-  };
+  });
 
   useEffect(() => {
     loadDetails();
