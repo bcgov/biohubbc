@@ -1,12 +1,12 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { PROJECT_ROLE } from '../../../../../constants/roles';
-import { getDBConnection } from '../../../../../database/db';
-import { HTTP400 } from '../../../../../errors/http-error';
-import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
-import { AttachmentService } from '../../../../../services/attachment-service';
-import { SecuritySearchService } from '../../../../../services/security-search-service';
-import { getLogger } from '../../../../../utils/logger';
+import { PROJECT_ROLE } from '../../../../../../../constants/roles';
+import { getDBConnection } from '../../../../../../../database/db';
+import { HTTP400 } from '../../../../../../../errors/http-error';
+import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
+import { AttachmentService } from '../../../../../../../services/attachment-service';
+import { SecuritySearchService } from '../../../../../../../services/security-search-service';
+import { getLogger } from '../../../../../../../utils/logger';
 
 const defaultLog = getLogger('/api/project/{projectId}/attachments/{attachmentId}/getSignedUrl');
 
@@ -22,11 +22,11 @@ export const GET: Operation = [
       ]
     };
   }),
-  getProjectAttachmentDetails()
+  getSurveyAttachmentDetails()
 ];
 
 GET.apiDoc = {
-  description: 'Retrieves the report metadata of a project attachment if filetype is Report.',
+  description: 'Retrieves the survey details of a project attachment if filetype is Report.',
   tags: ['attachment'],
   security: [
     {
@@ -104,16 +104,16 @@ GET.apiDoc = {
   }
 };
 
-export function getProjectAttachmentDetails(): RequestHandler {
+export function getSurveyAttachmentDetails(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({
-      label: 'getProjectAttachmentDetails',
+      label: 'getSurveyAttachmentDetails',
       message: 'params',
       req_params: req.params,
       req_query: req.query
     });
 
-    if (!req.params.projectId) {
+    if (!req.params.surveyId) {
       throw new HTTP400('Missing required path param `projectId`');
     }
 
@@ -128,7 +128,7 @@ export function getProjectAttachmentDetails(): RequestHandler {
 
       const attachmentService = new AttachmentService(connection);
 
-      const projectAttachmentSecurity = await attachmentService.getProjectAttachmentSecurityReasons(
+      const surveyAttachmentSecurity = await attachmentService.getSurveyAttachmentSecurityReasons(
         Number(req.params.attachmentId)
       );
 
@@ -138,7 +138,7 @@ export function getProjectAttachmentDetails(): RequestHandler {
 
       await connection.commit();
 
-      const mappedSecurityObj = projectAttachmentSecurity.map((item) => {
+      const mappedSecurityObj = surveyAttachmentSecurity.map((item) => {
         return {
           security_reason_id: item.persecution_security_id,
           security_reason_title: persecutionRules[item.persecution_security_id - 1].reasonTitle,
@@ -149,9 +149,6 @@ export function getProjectAttachmentDetails(): RequestHandler {
       const attachmentDetails = {
         security_reasons: mappedSecurityObj
       };
-
-      console.log('****************** project attachment details ***************');
-      console.log(attachmentDetails);
 
       return res.status(200).json(attachmentDetails);
     } catch (error) {

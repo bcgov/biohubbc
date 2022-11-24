@@ -451,7 +451,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
     attachmentId: number
   ): Promise<IGetReportDetails> => {
     const { data } = await axios.get(
-      `/api/project/${projectId}/survey/${surveyId}/attachments/${attachmentId}/report/get`,
+      `/api/project/${projectId}/survey/${surveyId}/attachments/${attachmentId}/metadata/get`,
       {
         params: {},
         paramsSerializer: (params) => {
@@ -468,7 +468,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
     surveyId: number,
     attachmentId: number
   ): Promise<IGetAttachmentDetails> => {
-    const { data } = await axios.get(`/api/project/${surveyId}/attachments/${attachmentId}/get`, {
+    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/attachments/${attachmentId}/get`, {
       params: {},
       paramsSerializer: (params: any) => {
         return qs.stringify(params);

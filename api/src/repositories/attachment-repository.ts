@@ -24,7 +24,7 @@ export interface IGetProjectAttachment {
   security_review_timestamp: string | null;
 }
 
-export interface IGetProjectReportAttachment {
+export interface IGetReportAttachment {
   id: number;
   file_name: string;
   title: string;
@@ -50,9 +50,27 @@ export interface IGetAttachmentAuthor {
   revision_count: number;
 }
 
-export interface IGetAttachmentSecurityReason {
-  project_report_author_id: number;
+export interface IGetProjectReportSecurityReason {
+  project_report_persecution_id: number;
   project_report_attachment_id: number;
+  persecution_security_id: number;
+}
+
+export interface IGetProjectAttachmentSecurityReason {
+  project_attachment_persecution_id: number;
+  project_attachment_id: number;
+  persecution_security_id: number;
+}
+
+export interface IGetSurveyReportSecurityReason {
+  survey_report_persecution_id: number;
+  survey_report_attachment_id: number;
+  persecution_security_id: number;
+}
+
+export interface IGetSurveyAttachmentSecurityReason {
+  survey_attachment_persecution_id: number;
+  survey_attachment_id: number;
   persecution_security_id: number;
 }
 
@@ -105,7 +123,7 @@ export class AttachmentRepository extends BaseRepository {
     return response.rows;
   }
 
-  async getProjectReportAttachments(projectId: number): Promise<IGetProjectReportAttachment[]> {
+  async getProjectReportAttachments(projectId: number): Promise<IGetReportAttachment[]> {
     const sqlStatement = SQL`
       SELECT
         project_report_attachment_id as id,
@@ -126,7 +144,7 @@ export class AttachmentRepository extends BaseRepository {
         project_id = ${projectId};
     `;
 
-    const response = await this.connection.sql<IGetProjectReportAttachment>(sqlStatement);
+    const response = await this.connection.sql<IGetReportAttachment>(sqlStatement);
 
     if (!response || !response.rows) {
       throw new ApiExecuteSQLError('Failed to get project report attachments by projectId', [
@@ -188,7 +206,7 @@ export class AttachmentRepository extends BaseRepository {
   async addSecurityToProjectAttachments(securityIds: number[], attachmentId: number): Promise<void> {
     const insertStatement = SQL`
       INSERT INTO project_attachment_persecution (
-        project_attachment_id, 
+        project_attachment_id,
         persecution_security_id
       ) VALUES `;
 
@@ -213,7 +231,7 @@ export class AttachmentRepository extends BaseRepository {
   async addSecurityToSurveyAttachments(securityIds: number[], attachmentId: number): Promise<void> {
     const insertStatement = SQL`
       INSERT INTO survey_attachment_persecution (
-        survey_attachment_id, 
+        survey_attachment_id,
         persecution_security_id
       ) VALUES `;
 
@@ -294,7 +312,7 @@ export class AttachmentRepository extends BaseRepository {
   async addSecurityToProjectReportAttachments(securityIds: number[], attachmentId: number): Promise<void> {
     const insertStatement = SQL`
       INSERT INTO project_report_persecution (
-        project_report_attachment_id, 
+        project_report_attachment_id,
         persecution_security_id
       ) VALUES `;
 
@@ -320,7 +338,7 @@ export class AttachmentRepository extends BaseRepository {
   async addSecurityToSurveyReportAttachments(securityIds: number[], attachmentId: number): Promise<void> {
     const insertStatement = SQL`
       INSERT INTO survey_report_persecution (
-        survey_report_attachment_id, 
+        survey_report_attachment_id,
         persecution_security_id
       ) VALUES `;
 
@@ -344,7 +362,7 @@ export class AttachmentRepository extends BaseRepository {
 
   async addSecurityReviewTimeToProjectReportAttachment(attachmentId: number): Promise<void> {
     const updateSQL = SQL`
-      UPDATE  project_report_attachment 
+      UPDATE  project_report_attachment
       SET security_review_timestamp=now()
       WHERE project_report_attachment_id=${attachmentId};`;
 
@@ -357,7 +375,7 @@ export class AttachmentRepository extends BaseRepository {
 
   async addSecurityReviewTimeToProjectAttachment(attachmentId: number): Promise<void> {
     const updateSQL = SQL`
-      UPDATE  project_attachment 
+      UPDATE  project_attachment
       SET security_review_timestamp=now()
       WHERE project_attachment_id=${attachmentId};`;
 
@@ -370,7 +388,7 @@ export class AttachmentRepository extends BaseRepository {
 
   async addSecurityReviewTimeToSurveyReportAttachment(attachmentId: number): Promise<void> {
     const updateSQL = SQL`
-      UPDATE  survey_report_attachment 
+      UPDATE  survey_report_attachment
       SET security_review_timestamp=now()
       WHERE survey_report_attachment_id=${attachmentId};`;
 
@@ -383,7 +401,7 @@ export class AttachmentRepository extends BaseRepository {
 
   async addSecurityReviewTimeToSurveyAttachment(attachmentId: number): Promise<void> {
     const updateSQL = SQL`
-      UPDATE  survey_attachment 
+      UPDATE  survey_attachment
       SET security_review_timestamp=now()
       WHERE survey_attachment_id=${attachmentId};`;
 
@@ -450,7 +468,7 @@ export class AttachmentRepository extends BaseRepository {
     }
   }
 
-  async getProjectReportAttachmentById(projectId: number, attachmentId: number): Promise<IGetProjectReportAttachment> {
+  async getProjectReportAttachmentById(projectId: number, attachmentId: number): Promise<IGetReportAttachment> {
     const sqlStatement = SQL`
       SELECT
         project_report_attachment_id as id,
@@ -473,7 +491,39 @@ export class AttachmentRepository extends BaseRepository {
         project_id = ${projectId};
     `;
 
-    const response = await this.connection.sql<IGetProjectReportAttachment>(sqlStatement);
+    const response = await this.connection.sql<IGetReportAttachment>(sqlStatement);
+
+    if (!response || !response.rows) {
+      throw new HTTP400('Failed to get project attachment by attachment id');
+    }
+
+    return response.rows[0];
+  }
+
+  async getSurveyReportAttachmentById(surveyId: number, attachmentId: number): Promise<IGetReportAttachment> {
+    const sqlStatement = SQL`
+    SELECT
+      survey_report_attachment_id as id,
+      file_name,
+      title,
+      description,
+      year::int as year_published,
+      update_date::text as last_modified,
+      create_date,
+      file_size,
+      key,
+      security_token,
+      security_review_timestamp,
+      revision_count
+    FROM
+      survey_report_attachment
+    where
+      survey_report_attachment_id = ${attachmentId}
+    and
+      survey_id = ${surveyId}
+    `;
+
+    const response = await this.connection.sql<IGetReportAttachment>(sqlStatement);
 
     if (!response || !response.rows) {
       throw new HTTP400('Failed to get project attachment by attachment id');
@@ -501,7 +551,26 @@ export class AttachmentRepository extends BaseRepository {
     return response.rows;
   }
 
-  async getProjectReportSecurityReasons(projectReportAttachmentId: number): Promise<IGetAttachmentSecurityReason[]> {
+  async getSurveyAttachmentAuthors(surveyReportAttachmentId: number): Promise<IGetAttachmentAuthor[]> {
+    const sqlStatement = SQL`
+      SELECT
+        survey_report_author.*
+      FROM
+        survey_report_author
+      where
+        survey_report_attachment_id = ${surveyReportAttachmentId}
+    `;
+
+    const response = await this.connection.sql<IGetAttachmentAuthor>(sqlStatement);
+
+    if (!response || !response.rows) {
+      throw new HTTP400('Failed to get project attachment authors by attachment id');
+    }
+
+    return response.rows;
+  }
+
+  async getProjectReportSecurityReasons(projectReportAttachmentId: number): Promise<IGetProjectReportSecurityReason[]> {
     const sqlStatement = SQL`
       SELECT
         project_report_persecution.*
@@ -511,7 +580,7 @@ export class AttachmentRepository extends BaseRepository {
         project_report_attachment_id = ${projectReportAttachmentId}
     `;
 
-    const response = await this.connection.sql<IGetAttachmentSecurityReason>(sqlStatement);
+    const response = await this.connection.sql<IGetProjectReportSecurityReason>(sqlStatement);
 
     if (!response || !response.rows) {
       throw new HTTP400('Failed to get project attachment security reasons by attachment id');
@@ -520,7 +589,28 @@ export class AttachmentRepository extends BaseRepository {
     return response.rows;
   }
 
-  async getProjectAttachmentSecurityReasons(projectAttachmentId: number): Promise<IGetAttachmentSecurityReason[]> {
+  async getSurveyReportSecurityReasons(surveyReportAttachmentId: number): Promise<IGetSurveyReportSecurityReason[]> {
+    const sqlStatement = SQL`
+      SELECT
+        survey_report_persecution.*
+      FROM
+        survey_report_persecution
+      where
+        survey_report_attachment_id = ${surveyReportAttachmentId}
+    `;
+
+    const response = await this.connection.sql<IGetSurveyReportSecurityReason>(sqlStatement);
+
+    if (!response || !response.rows) {
+      throw new HTTP400('Failed to get survey attachment security reasons by attachment id');
+    }
+
+    return response.rows;
+  }
+
+  async getProjectAttachmentSecurityReasons(
+    projectAttachmentId: number
+  ): Promise<IGetProjectAttachmentSecurityReason[]> {
     const sqlStatement = SQL`
       SELECT
         project_attachment_persecution.*
@@ -530,10 +620,29 @@ export class AttachmentRepository extends BaseRepository {
         project_attachment_id = ${projectAttachmentId}
     `;
 
-    const response = await this.connection.sql<IGetAttachmentSecurityReason>(sqlStatement);
+    const response = await this.connection.sql<IGetProjectAttachmentSecurityReason>(sqlStatement);
 
     if (!response || !response.rows) {
       throw new HTTP400('Failed to get project attachment security reasons by attachment id');
+    }
+
+    return response.rows;
+  }
+
+  async getSurveyAttachmentSecurityReasons(surveyAttachmentId: number): Promise<IGetSurveyAttachmentSecurityReason[]> {
+    const sqlStatement = SQL`
+      SELECT
+        survey_attachment_persecution.*
+      FROM
+        survey_attachment_persecution
+      where
+        survey_attachment_id = ${surveyAttachmentId}
+      `;
+
+    const response = await this.connection.sql<IGetSurveyAttachmentSecurityReason>(sqlStatement);
+
+    if (!response || !response.rows) {
+      throw new HTTP400('Failed to get  attachment security reasons by attachment id');
     }
 
     return response.rows;

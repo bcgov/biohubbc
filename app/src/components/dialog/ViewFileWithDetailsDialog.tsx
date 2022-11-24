@@ -369,7 +369,7 @@ const ViewFileWithDetailsDialog: React.FC<IViewFileWithDetailsDialogProps> = (pr
                     props.attachmentDetails?.security_reasons?.map((row, index) => {
                       return (
                         <TableRow key={`${row.security_reason_id}-${index}`}>
-                          <TableCell>Security Administration</TableCell>
+                          <TableCell>Persecution or Harm</TableCell>
                           <TableCell>
                             <Typography style={{ fontWeight: 700 }}>{row.security_reason_title}</Typography>
                             <Typography variant="body1" color="textSecondary">
@@ -380,7 +380,6 @@ const ViewFileWithDetailsDialog: React.FC<IViewFileWithDetailsDialogProps> = (pr
                             <Typography variant="body2" component="div">
                               Expired
                             </Typography>
-
                             <Typography variant="body2" component="div" color="textSecondary">
                               {row.date_expired ? row.date_expired : 'N/A'}
                             </Typography>
