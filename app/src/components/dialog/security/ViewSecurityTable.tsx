@@ -21,6 +21,7 @@ export interface IViewSecurityTableProps {
   securityDetails: IGetReportDetails | IGetAttachmentDetails | null;
   showAddSecurityDialog: (value: boolean) => void;
   showDeleteSecurityReasonDialog: (securityReasons: IGetSecurityReasons[]) => void;
+  updateReviewTime: () => void;
 }
 
 /**
@@ -52,6 +53,7 @@ const ViewSecurityTable: React.FC<IViewSecurityTableProps> = (props) => {
                 if (props.securityDetails?.security_reasons) {
                   props.showDeleteSecurityReasonDialog(props.securityDetails?.security_reasons);
                 }
+                props.updateReviewTime()
               }}
               startIcon={<Icon path={mdiLockOpenOutline} size={0.8} />}>
               Remove Security

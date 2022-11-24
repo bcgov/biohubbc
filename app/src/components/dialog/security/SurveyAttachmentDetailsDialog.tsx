@@ -225,7 +225,7 @@ const SurveyAttachmentDetailsDialog: React.FC<ISurveyAttachmentDetailsDialogProp
     }
   };
 
-  const loadDetails = useCallback(() => {
+  const loadDetails = () => {
     if (props.currentAttachment) {
       if (props.currentAttachment?.fileType === 'Report') {
         getReportDetails(props.currentAttachment);
@@ -235,7 +235,7 @@ const SurveyAttachmentDetailsDialog: React.FC<ISurveyAttachmentDetailsDialogProp
         setReportDetails(null);
       }
     }
-  });
+  };
 
   useEffect(() => {
     loadDetails();
@@ -292,6 +292,8 @@ const SurveyAttachmentDetailsDialog: React.FC<ISurveyAttachmentDetailsDialogProp
           )}
 
           <ViewSecurityTable
+
+            updateReviewTime={() => {}}
             securityDetails={reportDetails || attachmentDetails}
             showAddSecurityDialog={setShowAddSecurityDialog}
             showDeleteSecurityReasonDialog={showDeleteSecurityReasonDialog}

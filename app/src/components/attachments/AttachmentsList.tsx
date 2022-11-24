@@ -224,6 +224,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
         open={showViewFileWithDetailsDialog}
         close={() => {
           setShowViewFileWithDetailsDialog(false);
+          props.getAttachments(true);
         }}
       />
 

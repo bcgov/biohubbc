@@ -212,6 +212,21 @@ const ProjectAttachmentDetailsDialog: React.FC<IProjectAttachmentDetailsDialogPr
     }
   };
 
+  const updateReviewTime = async () => {
+    try {
+      if (props.attachmentId) {
+        if (isReportType) {
+          await biohubApi.security.updateProjectReportAttachmentSecurityReviewTime(props.projectId, props.attachmentId);
+        } else {
+          await biohubApi.security.updateProjectAttachmentSecurityReviewTime(props.projectId, props.attachmentId);
+        }
+      }
+    } catch (error) {
+      const apiError = error as APIError;
+      showErrorDialog({ dialogText: apiError.message, dialogErrorDetails: apiError.errors, open: true });
+    }
+  };
+
   if (!props.open) {
     return <></>;
   }
@@ -275,6 +290,7 @@ const ProjectAttachmentDetailsDialog: React.FC<IProjectAttachmentDetailsDialogPr
             }
             showAddSecurityDialog={setShowAddSecurityDialog}
             showDeleteSecurityReasonDialog={showDeleteSecurityReasonDialog}
+            updateReviewTime={updateReviewTime}
           />
         </DialogContent>
         <DialogActions>
