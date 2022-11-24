@@ -315,6 +315,74 @@ export class AttachmentRepository extends BaseRepository {
   }
 
   /**
+   * SQL to delete all security reasons from a Project Attachment
+   * 
+   * @param {number} attachmentId 
+   * @return {*}  {Promise<void>}
+   * @memberof AttachmentRepository
+   */
+  async removeAllSecurityFromAProjectAttachment(attachmentId: number): Promise<void> {
+    const deleteSQL = SQL`
+      DELETE FROM
+        project_attachment_persecution
+      WHERE project_attachment_id = ${attachmentId};
+    `;
+
+    await this.connection.sql(deleteSQL);
+  }
+
+   /**
+   * SQL to delete all security reasons from a Project Report Attachment
+   * 
+   * @param {number} attachmentId 
+   * @return {*}  {Promise<void>}
+   * @memberof AttachmentRepository
+   */
+    async removeAllSecurityFromAProjectReportAttachment(attachmentId: number): Promise<void> {
+      const deleteSQL = SQL`
+        DELETE FROM
+          project_report_attachment_persecution
+        WHERE project_attachment_id = ${attachmentId};
+      `;
+  
+      await this.connection.sql(deleteSQL);
+    }
+
+     /**
+   * SQL to delete all security reasons from a Survey Attachment
+   * 
+   * @param {number} attachmentId 
+   * @return {*}  {Promise<void>}
+   * @memberof AttachmentRepository
+   */
+  async removeAllSecurityFromASurveyAttachment(attachmentId: number): Promise<void> {
+    const deleteSQL = SQL`
+      DELETE FROM
+        survey_attachment_persecution
+      WHERE survey_attachment_id = ${attachmentId};
+    `;
+
+    await this.connection.sql(deleteSQL);
+  }
+
+   /**
+   * SQL to delete all security reasons from a Survey Report Attachment
+   * 
+   * @param {number} attachmentId 
+   * @return {*}  {Promise<void>}
+   * @memberof AttachmentRepository
+   */
+    async removeAllSecurityFromASurveyReportAttachment(attachmentId: number): Promise<void> {
+      const deleteSQL = SQL`
+        DELETE FROM
+          survey_report_attachment_persecution
+        WHERE survey_attachment_id = ${attachmentId};
+      `;
+  
+      await this.connection.sql(deleteSQL);
+    }
+
+  /**
    * SQL query to delete security for Project Attachment
    *
    * @param {number} securityId

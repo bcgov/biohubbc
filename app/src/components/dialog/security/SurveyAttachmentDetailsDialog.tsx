@@ -250,6 +250,7 @@ const SurveyAttachmentDetailsDialog: React.FC<ISurveyAttachmentDetailsDialogProp
     <>
       <SecurityDialog
         open={showAddSecurityDialog}
+        selectedSecurityRules={[]}
         onAccept={async (securityReasons) => {
           // formik form is retuning array of strings not numbers if printed out in console
           // linter wrongly believes formik to be number[] so wrapped map in string to force values into number[]

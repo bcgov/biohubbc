@@ -242,9 +242,10 @@ const ProjectAttachmentDetailsDialog: React.FC<IProjectAttachmentDetailsDialogPr
     <>
       <SecurityDialog
         open={showAddSecurityDialog}
+        selectedSecurityRules={reportDetails?.security_reasons || attachmentDetails?.security_reasons || []}
         onAccept={async (securityReasons) => {
-          // formik form is retuning array of strings not numbers if printed out in console
-          // linter wrongly believes formik to be number[] so wrapped map in string to force values into number[]
+          // formik form is retuning array of strings not numbers
+          // linter believes formik to be number[] so wrapped map in string to force values into number[]
           if (securityReasons.security_reasons.length > 0) {
             await addSecurityReasons(
               securityReasons.security_reasons.map((item) => parseInt(`${item.security_reason_id}`))

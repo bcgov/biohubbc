@@ -67,6 +67,22 @@ export class AttachmentService extends DBService {
     return this.attachmentRepository.addSecurityToSurveyAttachments(securityIds, attachmentId);
   }
 
+  async removeAllSecurityFromAProjectAttachment(attachmentId: number): Promise<void> {
+    return this.attachmentRepository.removeAllSecurityFromAProjectAttachment(attachmentId);
+  }
+
+  async removeAllSecurityFromAProjectReportAttachment(attachmentId: number): Promise<void> {
+    return this.attachmentRepository.removeAllSecurityFromAProjectReportAttachment(attachmentId);
+  }
+
+  async removeAllSecurityFromASurveyAttachment(attachmentId: number): Promise<void> {
+    return this.attachmentRepository.removeAllSecurityFromASurveyAttachment(attachmentId);
+  }
+
+  async removeAllSecurityFromASurveyReportAttachment(attachmentId: number): Promise<void> {
+    return this.attachmentRepository.removeAllSecurityFromASurveyReportAttachment(attachmentId);
+  }
+
   /**
    * Function to run array of SQL queries to delete Project Attachments
    *
