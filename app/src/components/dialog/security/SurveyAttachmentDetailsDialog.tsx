@@ -32,7 +32,6 @@ export interface ISurveyAttachmentDetailsDialogProps {
   currentAttachment: IGetProjectAttachment | null;
   open: boolean;
   onClose: () => void;
-
   dialogProps?: DialogProps;
 }
 
@@ -226,7 +225,7 @@ const SurveyAttachmentDetailsDialog: React.FC<ISurveyAttachmentDetailsDialogProp
     }
   };
 
-  const loadDetails = () => {
+  const loadDetails = useCallback(() => {
     if (props.currentAttachment) {
       if (props.currentAttachment?.fileType === 'Report') {
         getReportDetails(props.currentAttachment);
@@ -236,7 +235,7 @@ const SurveyAttachmentDetailsDialog: React.FC<ISurveyAttachmentDetailsDialogProp
         setReportDetails(null);
       }
     }
-  };
+  });
 
   useEffect(() => {
     loadDetails();

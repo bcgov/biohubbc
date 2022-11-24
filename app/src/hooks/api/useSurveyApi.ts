@@ -203,31 +203,6 @@ const useSurveyApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Make security status of survey attachment secure.
-   *
-   * @param {number} projectId
-   * @param {number} surveyId
-   * @param {number} attachmentId
-   * @param {string} attachmentType
-   * @return {*}  {Promise<any>}
-   */
-  const makeAttachmentSecure = async (
-    projectId: number,
-    surveyId: number,
-    attachmentId: number,
-    attachmentType: string
-  ): Promise<any> => {
-    const { data } = await axios.put(
-      `/api/project/${projectId}/survey/${surveyId}/attachments/${attachmentId}/makeSecure`,
-      {
-        attachmentType
-      }
-    );
-
-    return data;
-  };
-
-  /**
    * Make security status of survey attachment unsecure.
    *
    * @param {number} projectId
@@ -510,7 +485,6 @@ const useSurveyApi = (axios: AxiosInstance) => {
     deleteSurvey,
     getAvailableSurveyFundingSources,
     makeAttachmentUnsecure,
-    makeAttachmentSecure,
     getSummarySubmissionSignedURL,
     deleteSummarySubmission,
     uploadSurveyDataToBioHub
