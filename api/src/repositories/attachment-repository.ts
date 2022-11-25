@@ -103,8 +103,6 @@ export class AttachmentRepository extends BaseRepository {
    * @memberof AttachmentRepository
    */
   async getProjectAttachments(projectId: number): Promise<IGetProjectAttachment[]> {
-    defaultLog.debug({ label: 'getProjectAttachments' });
-
     const sqlStatement = SQL`
       SELECT
         project_attachment_id AS id,
@@ -125,7 +123,7 @@ export class AttachmentRepository extends BaseRepository {
 
     const response = await this.connection.sql<IGetProjectAttachment>(sqlStatement);
 
-    if (!response || !response.rows) {
+    if (!response.rows) {
       throw new ApiExecuteSQLError('Failed to get project attachments by projectId', [
         'AttachmentRepository->getProjectAttachments',
         'rows was null or undefined, expected rows != null'
@@ -159,7 +157,7 @@ export class AttachmentRepository extends BaseRepository {
 
     const response = await this.connection.sql<IGetReportAttachment>(sqlStatement);
 
-    if (!response || !response.rows) {
+    if (!response.rows) {
       throw new ApiExecuteSQLError('Failed to get project report attachments by projectId', [
         'AttachmentRepository->getProjectReportAttachments',
         'rows was null or undefined, expected rows != null'
@@ -179,8 +177,6 @@ export class AttachmentRepository extends BaseRepository {
   async getProjectAttachmentsWithSecurityCounts(
     projectId: number
   ): Promise<WithSecurityRuleCount<IGetProjectAttachment>[]> {
-    defaultLog.debug({ label: 'getProjectAttachmentsWithSecurityCounts' });
-
     const sqlStatement = SQL`
       SELECT
         pa.project_attachment_id AS id,
@@ -213,7 +209,7 @@ export class AttachmentRepository extends BaseRepository {
 
     const response = await this.connection.sql<WithSecurityRuleCount<IGetProjectAttachment>>(sqlStatement);
 
-    if (!response || !response.rows) {
+    if (!response.rows) {
       throw new ApiExecuteSQLError('Failed to get project attachments with security rule count by projectId', [
         'AttachmentRepository->getProjectAttachmentsWithSecurityCounts',
         'rows was null or undefined, expected rows != null'
@@ -233,8 +229,6 @@ export class AttachmentRepository extends BaseRepository {
   async getProjectReportAttachmentsWithSecurityCounts(
     projectId: number
   ): Promise<WithSecurityRuleCount<IGetProjectAttachment>[]> {
-    defaultLog.debug({ label: 'getProjectAttachmentsWithSecurityCounts' });
-
     const sqlStatement = SQL`
       SELECT
         pra.project_report_attachment_id as id,
@@ -270,9 +264,9 @@ export class AttachmentRepository extends BaseRepository {
 
     const response = await this.connection.sql<WithSecurityRuleCount<IGetProjectAttachment>>(sqlStatement);
 
-    if (!response || !response.rows) {
-      throw new ApiExecuteSQLError('Failed to get project attachments with security rule count by projectId', [
-        'AttachmentRepository->getProjectAttachmentsWithSecurityCounts',
+    if (!response.rows) {
+      throw new ApiExecuteSQLError('Failed to get project report attachments with security rule count by projectId', [
+        'AttachmentRepository->getProjectReportAttachmentsWithSecurityCounts',
         'rows was null or undefined, expected rows != null'
       ]);
     }
@@ -633,7 +627,7 @@ export class AttachmentRepository extends BaseRepository {
 
     const response = await this.connection.sql<IGetReportAttachment>(sqlStatement);
 
-    if (!response || !response.rows) {
+    if (!response.rows) {
       throw new HTTP400('Failed to get project attachment by attachment id');
     }
 
@@ -665,7 +659,7 @@ export class AttachmentRepository extends BaseRepository {
 
     const response = await this.connection.sql<IGetReportAttachment>(sqlStatement);
 
-    if (!response || !response.rows) {
+    if (!response.rows) {
       throw new HTTP400('Failed to get project attachment by attachment id');
     }
 
@@ -684,7 +678,7 @@ export class AttachmentRepository extends BaseRepository {
 
     const response = await this.connection.sql<IGetAttachmentAuthor>(sqlStatement);
 
-    if (!response || !response.rows) {
+    if (!response.rows) {
       throw new HTTP400('Failed to get project attachment authors by attachment id');
     }
 
@@ -703,7 +697,7 @@ export class AttachmentRepository extends BaseRepository {
 
     const response = await this.connection.sql<IGetAttachmentAuthor>(sqlStatement);
 
-    if (!response || !response.rows) {
+    if (!response.rows) {
       throw new HTTP400('Failed to get project attachment authors by attachment id');
     }
 
@@ -722,7 +716,7 @@ export class AttachmentRepository extends BaseRepository {
 
     const response = await this.connection.sql<IGetProjectReportSecurityReason>(sqlStatement);
 
-    if (!response || !response.rows) {
+    if (!response.rows) {
       throw new HTTP400('Failed to get project attachment security reasons by attachment id');
     }
 
@@ -741,7 +735,7 @@ export class AttachmentRepository extends BaseRepository {
 
     const response = await this.connection.sql<IGetSurveyReportSecurityReason>(sqlStatement);
 
-    if (!response || !response.rows) {
+    if (!response.rows) {
       throw new HTTP400('Failed to get survey attachment security reasons by attachment id');
     }
 
@@ -762,7 +756,7 @@ export class AttachmentRepository extends BaseRepository {
 
     const response = await this.connection.sql<IGetProjectAttachmentSecurityReason>(sqlStatement);
 
-    if (!response || !response.rows) {
+    if (!response.rows) {
       throw new HTTP400('Failed to get project attachment security reasons by attachment id');
     }
 
@@ -781,7 +775,7 @@ export class AttachmentRepository extends BaseRepository {
 
     const response = await this.connection.sql<IGetSurveyAttachmentSecurityReason>(sqlStatement);
 
-    if (!response || !response.rows) {
+    if (!response.rows) {
       throw new HTTP400('Failed to get  attachment security reasons by attachment id');
     }
 

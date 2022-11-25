@@ -7,7 +7,7 @@ import { GET } from './get';
 
 chai.use(sinonChai);
 
-describe.only('project/{projectId}/survey/{surveyId}/attachments/{attachmentId}/metadata/get', () => {
+describe('project/{projectId}/survey/{surveyId}/attachments/{attachmentId}/metadata/get', () => {
   describe('openApiSchema', () => {
     describe('req validation', () => {
       const requestValidator = new OpenAPIRequestValidator((GET.apiDoc as unknown) as OpenAPIRequestValidatorArgs);
