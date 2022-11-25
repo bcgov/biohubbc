@@ -108,9 +108,17 @@ export function deleteProjectSecurityReasons(): RequestHandler {
       const attachmentService = new AttachmentService(connection);
 
       if (attachmentType == 'Report') {
-        await attachmentService.removeSecurityFromProjectReportAttachment(securityIds, attachmentId);
+        if (securityIds.length === 0) {
+          await attachmentService.removeAllSecurityFromProjectReportAttachment(attachmentId);
+        } else {
+          await attachmentService.removeSecurityFromProjectReportAttachment(securityIds, attachmentId);
+        }
       } else {
-        await attachmentService.removeSecurityFromProjectAttachment(securityIds, attachmentId);
+        if (securityIds.length === 0) {
+          await attachmentService.removeAllSecurityFromProjectAttachment(attachmentId);
+        } else {
+          await attachmentService.removeSecurityFromProjectAttachment(securityIds, attachmentId);
+        }
       }
 
       await connection.commit();

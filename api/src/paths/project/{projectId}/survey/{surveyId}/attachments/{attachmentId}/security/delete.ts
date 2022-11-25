@@ -116,9 +116,17 @@ export function deleteSurveySecurityReasons(): RequestHandler {
       const attachmentService = new AttachmentService(connection);
 
       if (attachmentType == 'Report') {
-        await attachmentService.removeSecurityFromSurveyReportAttachment(securityIds, attachmentId);
+        if (securityIds.length === 0) {
+          await attachmentService.removeAllSecurityFromSurveyReportAttachment(attachmentId);
+        } else {
+          await attachmentService.removeSecurityFromSurveyReportAttachment(securityIds, attachmentId);
+        }
       } else {
-        await attachmentService.removeSecurityFromSurveyAttachment(securityIds, attachmentId);
+        if (securityIds.length === 0) {
+          await attachmentService.removeAllSecurityFromSurveyAttachment(attachmentId);
+        } else {
+          await attachmentService.removeSecurityFromSurveyAttachment(securityIds, attachmentId);
+        }
       }
 
       await connection.commit();
