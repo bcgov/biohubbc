@@ -1,13 +1,15 @@
 import { IDBConnection } from '../database/db';
 import {
   AttachmentRepository,
-  IGetAttachmentAuthor,
-  IGetProjectAttachment,
-  IGetProjectAttachmentSecurityReason,
-  IGetProjectReportSecurityReason,
-  IGetReportAttachment,
-  IGetSurveyAttachmentSecurityReason,
-  IGetSurveyReportSecurityReason,
+  IAttachmentAuthor,
+  IProjectAttachment,
+  IProjectAttachmentSecurityReason,
+  IProjectReportAttachment,
+  IProjectReportSecurityReason,
+  ISurveyAttachment,
+  ISurveyAttachmentSecurityReason,
+  ISurveyReportAttachment,
+  ISurveyReportSecurityReason,
   WithSecurityRuleCount
 } from '../repositories/attachment-repository';
 import { DBService } from './db-service';
@@ -26,44 +28,64 @@ export class AttachmentService extends DBService {
     this.attachmentRepository = new AttachmentRepository(connection);
   }
 
-  async getProjectAttachments(projectId: number): Promise<IGetProjectAttachment[]> {
+  async getProjectAttachments(projectId: number): Promise<IProjectAttachment[]> {
     return this.attachmentRepository.getProjectAttachments(projectId);
   }
 
-  async getProjectReportAttachments(projectId: number): Promise<IGetReportAttachment[]> {
+  async getProjectReportAttachments(projectId: number): Promise<IProjectReportAttachment[]> {
     return this.attachmentRepository.getProjectReportAttachments(projectId);
   }
 
   async getProjectAttachmentsWithSecurityCounts(
     projectId: number
-  ): Promise<WithSecurityRuleCount<IGetProjectAttachment>[]> {
+  ): Promise<WithSecurityRuleCount<IProjectAttachment>[]> {
     return this.attachmentRepository.getProjectAttachmentsWithSecurityCounts(projectId);
   }
 
   async getProjectReportAttachmentsWithSecurityCounts(
     projectId: number
-  ): Promise<WithSecurityRuleCount<IGetProjectAttachment>[]> {
+  ): Promise<WithSecurityRuleCount<IProjectReportAttachment>[]> {
     return this.attachmentRepository.getProjectReportAttachmentsWithSecurityCounts(projectId);
   }
 
-  async getProjectReportAttachment(projectId: number, attachmentId: number): Promise<IGetReportAttachment> {
+  async getProjectReportAttachmentById(projectId: number, attachmentId: number): Promise<IProjectReportAttachment> {
     return this.attachmentRepository.getProjectReportAttachmentById(projectId, attachmentId);
   }
 
-  async getProjectAttachmentAuthors(attachmentId: number): Promise<IGetAttachmentAuthor[]> {
+  async getProjectAttachmentAuthors(attachmentId: number): Promise<IAttachmentAuthor[]> {
     return this.attachmentRepository.getProjectAttachmentAuthors(attachmentId);
   }
 
-  async getProjectReportSecurityReasons(attachmentId: number): Promise<IGetProjectReportSecurityReason[]> {
+  async getProjectReportSecurityReasons(attachmentId: number): Promise<IProjectReportSecurityReason[]> {
     return this.attachmentRepository.getProjectReportSecurityReasons(attachmentId);
   }
 
-  async getProjectAttachmentSecurityReasons(attachmentId: number): Promise<IGetProjectAttachmentSecurityReason[]> {
+  async getProjectAttachmentSecurityReasons(attachmentId: number): Promise<IProjectAttachmentSecurityReason[]> {
     return this.attachmentRepository.getProjectAttachmentSecurityReasons(attachmentId);
   }
 
   async addSecurityToProjectAttachment(securityIds: number[], attachmentId: number): Promise<void> {
     return this.attachmentRepository.addSecurityToProjectAttachments(securityIds, attachmentId);
+  }
+
+  async getSurveyAttachments(surveyId: number): Promise<ISurveyAttachment[]> {
+    return this.attachmentRepository.getSurveyAttachments(surveyId);
+  }
+
+  async getSurveyReportAttachments(surveyId: number): Promise<ISurveyReportAttachment[]> {
+    return this.attachmentRepository.getSurveyReportAttachments(surveyId);
+  }
+
+  async getSurveyAttachmentsWithSecurityCounts(
+    surveyId: number
+  ): Promise<WithSecurityRuleCount<ISurveyAttachment>[]> {
+    return this.attachmentRepository.getSurveyAttachmentsWithSecurityCounts(surveyId);
+  }
+
+  async getSurveyReportAttachmentsWithSecurityCounts(
+    surveyId: number
+  ): Promise<WithSecurityRuleCount<ISurveyReportAttachment>[]> {
+    return this.attachmentRepository.getSurveyReportAttachmentsWithSecurityCounts(surveyId);
   }
 
   async addSecurityToSurveyAttachment(securityIds: number[], attachmentId: number): Promise<void> {
@@ -270,18 +292,18 @@ export class AttachmentService extends DBService {
     return this.attachmentRepository.addSecurityReviewTimeToSurveyAttachment(attachmentId);
   }
 
-  async getSurveyReportAttachment(projectId: number, attachmentId: number): Promise<IGetReportAttachment> {
+  async getSurveyReportAttachment(projectId: number, attachmentId: number): Promise<IProjectReportAttachment> {
     return this.attachmentRepository.getSurveyReportAttachmentById(projectId, attachmentId);
   }
 
-  async getSurveyAttachmentAuthors(attachmentId: number): Promise<IGetAttachmentAuthor[]> {
+  async getSurveyAttachmentAuthors(attachmentId: number): Promise<IAttachmentAuthor[]> {
     return this.attachmentRepository.getSurveyAttachmentAuthors(attachmentId);
   }
-  async getSurveyReportSecurityReasons(attachmentId: number): Promise<IGetSurveyReportSecurityReason[]> {
+  async getSurveyReportSecurityReasons(attachmentId: number): Promise<ISurveyReportSecurityReason[]> {
     return this.attachmentRepository.getSurveyReportSecurityReasons(attachmentId);
   }
 
-  async getSurveyAttachmentSecurityReasons(attachmentId: number): Promise<IGetSurveyAttachmentSecurityReason[]> {
+  async getSurveyAttachmentSecurityReasons(attachmentId: number): Promise<ISurveyAttachmentSecurityReason[]> {
     return this.attachmentRepository.getSurveyAttachmentSecurityReasons(attachmentId);
   }
 }

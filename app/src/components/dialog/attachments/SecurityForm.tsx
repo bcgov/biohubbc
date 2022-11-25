@@ -8,11 +8,9 @@ import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
 import CheckBox from '@material-ui/icons/CheckBox';
 import CheckBoxOutlineBlank from '@material-ui/icons/CheckBoxOutlineBlank';
-import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { FieldArray, useFormikContext } from 'formik';
 import { SecurityReason } from 'interfaces/useSecurityApi.interface';
 import React from 'react';
-import { getFormattedDate } from 'utils/Utils';
 import yup from 'utils/YupSchema';
 
 // `security_reason_id` is a string so `isSecurityReasonSelected` makes correct comparison
@@ -63,13 +61,14 @@ const SecurityForm: React.FC<ISecurityFormProps> = (props) => {
     return values.security_reasons.map((item) => item.security_reason_id).indexOf(`${securityReasonId}`);
   };
 
-  const getExpiryDateString = (expiryDate?: string | null): string => {
-    if (expiryDate) {
-      return getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, expiryDate);
-    }
+  // expiry dates require more work before being implemented
+  // const getExpiryDateString = (expiryDate?: string | null): string => {
+  //   if (expiryDate) {
+  //     return getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, expiryDate);
+  //   }
 
-    return 'N/A';
-  };
+  //   return 'N/A';
+  // };
 
   return (
     <FieldArray
@@ -82,7 +81,7 @@ const SecurityForm: React.FC<ISecurityFormProps> = (props) => {
                 <TableCell width="70" padding="checkbox"></TableCell>
                 <TableCell width="200">Category</TableCell>
                 <TableCell>Reason</TableCell>
-                <TableCell width="160">Expiry Date</TableCell>
+                {/* <TableCell width="160">Expiry Date</TableCell> */}
               </TableRow>
             </TableHead>
             <TableBody>
@@ -94,6 +93,7 @@ const SecurityForm: React.FC<ISecurityFormProps> = (props) => {
                         name={`security_reasons.[${index}].security_reason_id`}
                         icon={<CheckBoxOutlineBlank fontSize="small" />}
                         checkedIcon={<CheckBox fontSize="small" />}
+                        color="primary"
                         style={{ marginRight: 8 }}
                         checked={isSecurityReasonSelected(availableSecurityReason.security_reason_id)}
                         onChange={(event) => {
@@ -116,7 +116,7 @@ const SecurityForm: React.FC<ISecurityFormProps> = (props) => {
                         {availableSecurityReason.reasonDescription}
                       </Typography>
                     </TableCell>
-                    <TableCell>{getExpiryDateString(availableSecurityReason.expirationDate)}</TableCell>
+                    {/* <TableCell>{getExpiryDateString(availableSecurityReason.expirationDate)}</TableCell> */}
                   </TableRow>
                 );
               })}

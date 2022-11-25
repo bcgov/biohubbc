@@ -238,7 +238,7 @@ const ProjectReportAttachmentDialog: React.FC<IProjectReportAttachmentDialogProp
             showAddSecurityDialog={setShowAddSecurityDialog}
             showDeleteSecurityReasonDialog={showDeleteSecurityReasonDialog}
             updateReviewTime={updateReviewTime}
-            status={props.currentAttachment?.status}
+            isAwaitingReview={!props.currentAttachment?.securityReviewTimestamp}
             refresh={refreshAttachmentDetails}
           />
         </DialogContent>

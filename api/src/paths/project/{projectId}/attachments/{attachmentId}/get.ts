@@ -128,6 +128,11 @@ export function getProjectAttachmentDetails(): RequestHandler {
 
       const attachmentService = new AttachmentService(connection);
 
+      const attachmentData = await attachmentService.getProjectReportAttachmentById(
+        Number(req.params.projectId),
+        Number(req.params.attachmentId)
+      );
+
       const projectAttachmentSecurity = await attachmentService.getProjectAttachmentSecurityReasons(
         Number(req.params.attachmentId)
       );
@@ -142,12 +147,17 @@ export function getProjectAttachmentDetails(): RequestHandler {
         return {
           security_reason_id: item.persecution_security_id,
           security_reason_title: persecutionRules[item.persecution_security_id - 1].reasonTitle,
-          security_reason_description: persecutionRules[item.persecution_security_id - 1].reasonDescription
+          security_reason_description: persecutionRules[item.persecution_security_id - 1].reasonDescription,
+          user_identifier: item.user_identifier,
+          security_date_applied: item.create_date
         };
       });
 
       const attachmentDetails = {
-        security_reasons: mappedSecurityObj
+        security_reasons: mappedSecurityObj,
+        metadata: {
+          last_modified: attachmentData.create_date
+        }
       };
 
       return res.status(200).json(attachmentDetails);
