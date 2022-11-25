@@ -137,6 +137,50 @@ export class AttachmentService extends DBService {
   }
 
   /**
+   * Delete all security for Project Report Attachment
+   *
+   * @param {number} attachmentId
+   * @return {*}  {Promise<void>}
+   * @memberof AttachmentService
+   */
+  async removeAllSecurityFromProjectReportAttachment(attachmentId: number): Promise<void> {
+    await this.attachmentRepository.removeAllSecurityFromProjectReportAttachment(attachmentId);
+  }
+
+  /**
+   * Delete all security for Project Attachment
+   *
+   * @param {number} attachmentId
+   * @return {*}  {Promise<void>}
+   * @memberof AttachmentService
+   */
+  async removeAllSecurityFromProjectAttachment(attachmentId: number): Promise<void> {
+    await this.attachmentRepository.removeAllSecurityFromProjectAttachment(attachmentId);
+  }
+
+  /**
+   * Delete all security for Survey Report Attachment
+   *
+   * @param {number} attachmentId
+   * @return {*}  {Promise<void>}
+   * @memberof AttachmentService
+   */
+  async removeAllSecurityFromSurveyReportAttachment(attachmentId: number): Promise<void> {
+    await this.attachmentRepository.removeAllSecurityFromSurveyReportAttachment(attachmentId);
+  }
+
+  /**
+   * Delete all security for Survey Attachment
+   *
+   * @param {number} attachmentId
+   * @return {*}  {Promise<void>}
+   * @memberof AttachmentService
+   */
+  async removeAllSecurityFromSurveyAttachment(attachmentId: number): Promise<void> {
+    await this.attachmentRepository.removeAllSecurityFromSurveyAttachment(attachmentId);
+  }
+
+  /**
    * Function to run array of SQL queries to delete Survey Report Attachments
    *
    * @param {number[]} securityIds

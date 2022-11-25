@@ -53,9 +53,7 @@ const ReportSecurityTable: React.FC<IReportSecurityTableProps> = (props) => {
               variant="contained"
               color="primary"
               onClick={async () => {
-                if (props.securityDetails?.security_reasons) {
-                  await props.showDeleteSecurityReasonDialog(props.securityDetails?.security_reasons);
-                }
+                await props.showDeleteSecurityReasonDialog([]);
                 await props.updateReviewTime();
                 await props.refresh();
               }}

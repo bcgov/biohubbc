@@ -467,6 +467,33 @@ export class AttachmentRepository extends BaseRepository {
   }
 
   /**
+   * SQL query to delete all security for Project Attachment
+   *
+   * @param {number} securityId
+   * @param {number} attachmentId
+   * @return {*}  {Promise<void>}
+   * @memberof AttachmentRepository
+   */
+  async removeAllSecurityFromProjectAttachment(attachmentId: number): Promise<void> {
+    const sqlStatement = SQL`
+        DELETE FROM
+          project_attachment_persecution
+        WHERE
+          project_attachment_id = ${attachmentId}
+        ;
+        `;
+
+    const response = await this.connection.sql(sqlStatement);
+
+    if (!response.rowCount) {
+      throw new ApiExecuteSQLError('Failed to Delete all Project Attachment Security', [
+        'AttachmentRepository->removeAllSecurityFromProjectAttachment',
+        'rowCount was 0 or undefined, expected rowCount == 1'
+      ]);
+    }
+  }
+
+  /**
    * SQL query to delete security for Survey Attachment
    *
    * @param {number} securityId
@@ -489,6 +516,33 @@ export class AttachmentRepository extends BaseRepository {
     if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to Delete Survey Attachment Security', [
         'AttachmentRepository->removeSecurityFromSurveyAttachment',
+        'rowCount was 0 or undefined, expected rowCount == 1'
+      ]);
+    }
+  }
+
+  /**
+   * SQL query to delete all security for Survey Attachment
+   *
+   * @param {number} securityId
+   * @param {number} attachmentId
+   * @return {*}  {Promise<void>}
+   * @memberof AttachmentRepository
+   */
+  async removeAllSecurityFromSurveyAttachment(attachmentId: number): Promise<void> {
+    const sqlStatement = SQL`
+        DELETE FROM
+          survey_attachment_persecution
+        WHERE
+          survey_attachment_id = ${attachmentId}
+        ;
+        `;
+
+    const response = await this.connection.sql(sqlStatement);
+
+    if (!response.rowCount) {
+      throw new ApiExecuteSQLError('Failed to Delete all Survey Attachment Security', [
+        'AttachmentRepository->removeAllSecurityFromSurveyAttachment',
         'rowCount was 0 or undefined, expected rowCount == 1'
       ]);
     }
@@ -575,6 +629,32 @@ export class AttachmentRepository extends BaseRepository {
   }
 
   /**
+   * SQL query to delete all security for Project Report Attachment
+   *
+   * @param {number} attachmentId
+   * @return {*}  {Promise<void>}
+   * @memberof AttachmentRepository
+   */
+  async removeAllSecurityFromProjectReportAttachment(attachmentId: number): Promise<void> {
+    const sqlStatement = SQL`
+      DELETE FROM
+        project_report_persecution
+      WHERE
+        project_report_attachment_id = ${attachmentId}
+      ;
+      `;
+
+    const response = await this.connection.sql(sqlStatement);
+
+    if (!response.rowCount) {
+      throw new ApiExecuteSQLError('Failed to Delete All Project Report Attachment Security', [
+        'AttachmentRepository->removeAllSecurityFromProjectReportAttachment',
+        'rowCount was 0 or undefined, expected rowCount == 1'
+      ]);
+    }
+  }
+
+  /**
    * SQL query to delete security for Survey Report Attachment
    *
    * @param {number} securityId
@@ -597,6 +677,33 @@ export class AttachmentRepository extends BaseRepository {
     if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to Delete Survey Report Attachment Security', [
         'AttachmentRepository->removeSecurityFromSurveyReportAttachment',
+        'rowCount was 0 or undefined, expected rowCount == 1'
+      ]);
+    }
+  }
+
+  /**
+   * SQL query to delete all security for Survey Report Attachment
+   *
+   * @param {number} securityId
+   * @param {number} attachmentId
+   * @return {*}  {Promise<void>}
+   * @memberof AttachmentRepository
+   */
+  async removeAllSecurityFromSurveyReportAttachment(attachmentId: number): Promise<void> {
+    const sqlStatement = SQL`
+          DELETE FROM
+            survey_report_persecution
+          WHERE
+            survey_report_attachment_id = ${attachmentId}
+          ;
+          `;
+
+    const response = await this.connection.sql(sqlStatement);
+
+    if (!response.rowCount) {
+      throw new ApiExecuteSQLError('Failed to Delete Survey Report Attachment Security', [
+        'AttachmentRepository->removeAllSecurityFromSurveyReportAttachment',
         'rowCount was 0 or undefined, expected rowCount == 1'
       ]);
     }
