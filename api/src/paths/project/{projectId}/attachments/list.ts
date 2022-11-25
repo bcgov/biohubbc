@@ -7,7 +7,7 @@ import { GetAttachmentsData } from '../../../../models/project-survey-attachment
 import {
   AttachmentStatus,
   IGetProjectAttachment,
-  IGetReportAttachment,
+  IGetProjectReportAttachment,
   WithSecurityRuleCount
 } from '../../../../repositories/attachment-repository';
 import { authorizeRequestHandler, userHasValidRole } from '../../../../request-handlers/security/authorization';
@@ -121,7 +121,7 @@ export function getAttachments(): RequestHandler {
       const reportAttachmentsData = await attachmentService.getProjectReportAttachmentsWithSecurityCounts(projectId);
 
       const injectAttachmentStatus = (
-        attachment: WithSecurityRuleCount<IGetProjectAttachment | IGetReportAttachment>
+        attachment: WithSecurityRuleCount<IGetProjectAttachment | IGetProjectReportAttachment>
       ) => {
         const status: AttachmentStatus = attachment.security_review_timestamp
           ? attachment.security_rule_count > 0

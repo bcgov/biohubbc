@@ -4,8 +4,8 @@ import {
   IGetAttachmentAuthor,
   IGetProjectAttachment,
   IGetProjectAttachmentSecurityReason,
+  IGetProjectReportAttachment,
   IGetProjectReportSecurityReason,
-  IGetReportAttachment,
   IGetSurveyAttachmentSecurityReason,
   IGetSurveyReportSecurityReason,
   WithSecurityRuleCount
@@ -30,7 +30,7 @@ export class AttachmentService extends DBService {
     return this.attachmentRepository.getProjectAttachments(projectId);
   }
 
-  async getProjectReportAttachments(projectId: number): Promise<IGetReportAttachment[]> {
+  async getProjectReportAttachments(projectId: number): Promise<IGetProjectReportAttachment[]> {
     return this.attachmentRepository.getProjectReportAttachments(projectId);
   }
 
@@ -46,7 +46,7 @@ export class AttachmentService extends DBService {
     return this.attachmentRepository.getProjectReportAttachmentsWithSecurityCounts(projectId);
   }
 
-  async getProjectReportAttachment(projectId: number, attachmentId: number): Promise<IGetReportAttachment> {
+  async getProjectReportAttachment(projectId: number, attachmentId: number): Promise<IGetProjectReportAttachment> {
     return this.attachmentRepository.getProjectReportAttachmentById(projectId, attachmentId);
   }
 
@@ -226,7 +226,7 @@ export class AttachmentService extends DBService {
     return this.attachmentRepository.addSecurityReviewTimeToSurveyAttachment(attachmentId);
   }
 
-  async getSurveyReportAttachment(projectId: number, attachmentId: number): Promise<IGetReportAttachment> {
+  async getSurveyReportAttachment(projectId: number, attachmentId: number): Promise<IGetProjectReportAttachment> {
     return this.attachmentRepository.getSurveyReportAttachmentById(projectId, attachmentId);
   }
 

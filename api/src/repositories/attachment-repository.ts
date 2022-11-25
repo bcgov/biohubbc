@@ -31,7 +31,7 @@ export interface IGetProjectAttachment {
   security_review_timestamp: string | null;
 }
 
-export interface IGetReportAttachment {
+export interface IGetProjectReportAttachment {
   id: number;
   file_name: string;
   create_user: number;
@@ -135,7 +135,7 @@ export class AttachmentRepository extends BaseRepository {
     return response.rows;
   }
 
-  async getProjectReportAttachments(projectId: number): Promise<IGetReportAttachment[]> {
+  async getProjectReportAttachments(projectId: number): Promise<IGetProjectReportAttachment[]> {
     const sqlStatement = SQL`
       SELECT
         project_report_attachment_id as id,
@@ -157,7 +157,7 @@ export class AttachmentRepository extends BaseRepository {
         project_id = ${projectId};
     `;
 
-    const response = await this.connection.sql<IGetReportAttachment>(sqlStatement);
+    const response = await this.connection.sql<IGetProjectReportAttachment>(sqlStatement);
 
     if (!response || !response.rows) {
       throw new ApiExecuteSQLError('Failed to get project report attachments by projectId', [
@@ -170,7 +170,7 @@ export class AttachmentRepository extends BaseRepository {
   }
 
   /**
-   * SQL query to get report attachments for a single project, including security rule counts
+   * SQL query to get attachments for a single project, including security rule counts
    *
    * @param {number} projectId
    * @return {*}
@@ -326,6 +326,183 @@ export class AttachmentRepository extends BaseRepository {
     } catch (error) {
       defaultLog.error({ label: 'addSecurityToProjectReportAttachments', message: 'error', error });
     }
+  }
+
+  async getSurveyAttachments(projectId: number): Promise<IGetSurveyAttachment[]> {
+    defaultLog.debug({ label: 'getProjectAttachments' });
+
+    const sqlStatement = SQL`
+      SELECT
+        project_attachment_id AS id,
+        file_name,
+        file_type,
+        create_user,
+        update_date,
+        create_date,
+        file_size,
+        key,
+        security_token,
+        security_review_timestamp
+      FROM
+        project_attachment
+      WHERE
+        project_id = ${projectId};
+    `;
+
+    const response = await this.connection.sql<IGetProjectAttachment>(sqlStatement);
+
+    if (!response || !response.rows) {
+      throw new ApiExecuteSQLError('Failed to get project attachments by projectId', [
+        'AttachmentRepository->getProjectAttachments',
+        'rows was null or undefined, expected rows != null'
+      ]);
+    }
+
+    return response.rows;
+  }
+
+  async getSurveyReportAttachments(projectId: number): Promise<IGetSurveyReportAttachment[]> {
+    const sqlStatement = SQL`
+      SELECT
+        project_report_attachment_id as id,
+        file_name,
+        create_user,
+        title,
+        description,
+        year::int as year_published,
+        update_date::text as last_modified,
+        create_date,
+        file_size,
+        key,
+        security_token,
+        security_review_timestamp,
+        revision_count
+      FROM
+        project_report_attachment
+      WHERE
+        project_id = ${projectId};
+    `;
+
+    const response = await this.connection.sql<IGetProjectReportAttachment>(sqlStatement);
+
+    if (!response || !response.rows) {
+      throw new ApiExecuteSQLError('Failed to get project report attachments by projectId', [
+        'AttachmentRepository->getProjectReportAttachments',
+        'rows was null or undefined, expected rows != null'
+      ]);
+    }
+
+    return response.rows;
+  }
+
+  /**
+   * SQL query to get attachments for a single survey, including security rule counts
+   *
+   * @param {number} projectId
+   * @return {*}
+   * @memberof AttachmentRepository
+   */
+  async getSurveyAttachmentsWithSecurityCounts(
+    projectId: number
+  ): Promise<WithSecurityRuleCount<IGetSurveyAttachment>[]> {
+    defaultLog.debug({ label: 'getProjectAttachmentsWithSecurityCounts' });
+
+    const sqlStatement = SQL`
+      SELECT
+        pa.project_attachment_id AS id,
+        pa.file_name,
+        pa.file_type,
+        pa.create_user,
+        pa.update_date,
+        pa.create_date,
+        pa.file_size,
+        pa.key,
+        pa.security_token,
+        pa.security_review_timestamp,
+        COALESCE(src.count, 0) AS security_rule_count
+      FROM
+        project_attachment pa
+      LEFT JOIN (
+          SELECT DISTINCT ON (pap.project_attachment_id)
+            pap.project_attachment_id,
+            COUNT(pap.project_attachment_id) AS count
+          FROM
+            project_attachment_persecution pap
+          GROUP BY
+            pap.project_attachment_id
+      ) src
+      ON
+        pa.project_attachment_id = src.project_attachment_id
+      WHERE
+        pa.project_id = ${projectId};
+    `;
+
+    const response = await this.connection.sql<WithSecurityRuleCount<IGetProjectAttachment>>(sqlStatement);
+
+    if (!response || !response.rows) {
+      throw new ApiExecuteSQLError('Failed to get project attachments with security rule count by projectId', [
+        'AttachmentRepository->getProjectAttachmentsWithSecurityCounts',
+        'rows was null or undefined, expected rows != null'
+      ]);
+    }
+
+    return response.rows;
+  }
+
+  /**
+   * SQL query to get report attachments for a single survey, including security rule counts
+   *
+   * @param {number} projectId
+   * @return {*}
+   * @memberof AttachmentRepository
+   */
+  async getSurveyReportAttachmentsWithSecurityCounts(
+    projectId: number
+  ): Promise<WithSecurityRuleCount<IGetSurveyAttachment>[]> {
+    defaultLog.debug({ label: 'getProjectAttachmentsWithSecurityCounts' });
+    const sqlStatement = SQL`
+      SELECT
+        pra.project_report_attachment_id as id,
+        pra.file_name,
+        pra.create_user,
+        pra.title,
+        pra.description,
+        pra.year::int as year_published,
+        pra.update_date::text as last_modified,
+        pra.create_date,
+        pra.file_size,
+        pra.key,
+        pra.security_token,
+        pra.security_review_timestamp,
+        pra.revision_count,
+        COALESCE(src.count, 0) AS security_rule_count
+      FROM
+        project_report_attachment pra
+      LEFT JOIN (
+          SELECT DISTINCT ON (prp.project_report_attachment_id)
+            prp.project_report_attachment_id,
+            COUNT(prp.project_report_attachment_id) AS count
+          FROM
+            project_report_persecution prp
+          GROUP BY
+            prp.project_report_attachment_id
+      ) src
+      ON
+        pra.project_report_attachment_id = src.project_report_attachment_id
+      WHERE
+        pra.project_id = ${projectId}
+    `;
+
+    const response = await this.connection.sql<WithSecurityRuleCount<IGetProjectAttachment>>(sqlStatement);
+
+    if (!response || !response.rows) {
+      throw new ApiExecuteSQLError('Failed to get project attachments with security rule count by projectId', [
+        'AttachmentRepository->getProjectAttachmentsWithSecurityCounts',
+        'rows was null or undefined, expected rows != null'
+      ]);
+    }
+
+    return response.rows;
   }
 
   async addSecurityToSurveyAttachments(securityIds: number[], attachmentId: number): Promise<void> {
@@ -608,7 +785,7 @@ export class AttachmentRepository extends BaseRepository {
     }
   }
 
-  async getProjectReportAttachmentById(projectId: number, attachmentId: number): Promise<IGetReportAttachment> {
+  async getProjectReportAttachmentById(projectId: number, attachmentId: number): Promise<IGetProjectReportAttachment> {
     const sqlStatement = SQL`
       SELECT
         project_report_attachment_id as id,
@@ -631,7 +808,7 @@ export class AttachmentRepository extends BaseRepository {
         project_id = ${projectId};
     `;
 
-    const response = await this.connection.sql<IGetReportAttachment>(sqlStatement);
+    const response = await this.connection.sql<IGetProjectReportAttachment>(sqlStatement);
 
     if (!response || !response.rows) {
       throw new HTTP400('Failed to get project attachment by attachment id');
@@ -640,7 +817,7 @@ export class AttachmentRepository extends BaseRepository {
     return response.rows[0];
   }
 
-  async getSurveyReportAttachmentById(surveyId: number, attachmentId: number): Promise<IGetReportAttachment> {
+  async getSurveyReportAttachmentById(surveyId: number, attachmentId: number): Promise<IGetProjectReportAttachment> {
     const sqlStatement = SQL`
     SELECT
       survey_report_attachment_id as id,
@@ -663,7 +840,7 @@ export class AttachmentRepository extends BaseRepository {
       survey_id = ${surveyId}
     `;
 
-    const response = await this.connection.sql<IGetReportAttachment>(sqlStatement);
+    const response = await this.connection.sql<IGetProjectReportAttachment>(sqlStatement);
 
     if (!response || !response.rows) {
       throw new HTTP400('Failed to get project attachment by attachment id');

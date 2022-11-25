@@ -11,7 +11,7 @@ import {
  * @param {number} surveyId
  * @returns {SQLStatement} sql query object
  */
-export const getSurveyAttachmentsSQL = (surveyId: number): SQLStatement | null => {
+export const __deprecated_getSurveyAttachmentsSQL = (surveyId: number): SQLStatement | null => {
   if (!surveyId) {
     return null;
   }
@@ -42,7 +42,7 @@ export const getSurveyAttachmentsSQL = (surveyId: number): SQLStatement | null =
  * @param {number} surveyId
  * @returns {SQLStatement} sql query object
  */
-export const getSurveyReportAttachmentsSQL = (surveyId: number): SQLStatement | null => {
+export const __deprecated_getSurveyReportAttachmentsSQL = (surveyId: number): SQLStatement | null => {
   if (!surveyId) {
     return null;
   }

@@ -7,18 +7,16 @@ import {
   deleteSurveyReportAttachmentSQL,
   getSurveyAttachmentByFileNameSQL,
   getSurveyAttachmentS3KeySQL,
-  getSurveyAttachmentsSQL,
   getSurveyReportAttachmentByFileNameSQL,
   getSurveyReportAttachmentS3KeySQL,
-  getSurveyReportAttachmentSQL,
-  getSurveyReportAttachmentsSQL,
-  getSurveyReportAuthorsSQL,
   insertSurveyReportAttachmentAuthorSQL,
   postSurveyAttachmentSQL,
   postSurveyReportAttachmentSQL,
   putSurveyAttachmentSQL,
   putSurveyReportAttachmentSQL,
-  updateSurveyReportAttachmentMetadataSQL
+  updateSurveyReportAttachmentMetadataSQL,
+  __deprecated_getSurveyAttachmentsSQL,
+  __deprecated_getSurveyReportAttachmentsSQL
 } from './survey-attachments-queries';
 
 const post_sample_attachment_meta = {
@@ -48,13 +46,13 @@ const put_sample_attachment_meta = {
 
 describe('getSurveyAttachmentsSQL', () => {
   it('returns null response when null surveyId provided', () => {
-    const response = getSurveyAttachmentsSQL((null as unknown) as number);
+    const response = __deprecated_getSurveyAttachmentsSQL((null as unknown) as number);
 
     expect(response).to.be.null;
   });
 
   it('returns non null response when valid surveyId provided', () => {
-    const response = getSurveyAttachmentsSQL(1);
+    const response = __deprecated_getSurveyAttachmentsSQL(1);
 
     expect(response).to.not.be.null;
   });
@@ -188,13 +186,13 @@ describe('deleteSurveyReportAttachmentSQL', () => {
 
 describe('getSurveyReportAttachmentsSQL', () => {
   it('returns null response when null surveyId provided', () => {
-    const response = getSurveyReportAttachmentsSQL((null as unknown) as number);
+    const response = __deprecated_getSurveyReportAttachmentsSQL((null as unknown) as number);
 
     expect(response).to.be.null;
   });
 
   it('returns non null response when valid surveyId provided', () => {
-    const response = getSurveyReportAttachmentsSQL(1);
+    const response = __deprecated_getSurveyReportAttachmentsSQL(1);
 
     expect(response).to.not.be.null;
   });
@@ -392,19 +390,19 @@ describe('getSurveyReportAuthorSQL', () => {
 
 describe('getSurveyReportAttachmentSQL', () => {
   it('returns null response when null surveyId provided', () => {
-    const response = getSurveyReportAttachmentSQL((null as unknown) as number, 1);
+    const response = __deprecated_getSurveyReportAttachmentsSQL((null as unknown) as number, 1);
 
     expect(response).to.be.null;
   });
 
   it('returns null response when null attachmentId provided', () => {
-    const response = getSurveyReportAttachmentSQL(1, (null as unknown) as number);
+    const response = __deprecated_getSurveyReportAttachmentsSQL(1, (null as unknown) as number);
 
     expect(response).to.be.null;
   });
 
   it('returns non null response when valid projectReportAttachmentId provided', () => {
-    const response = getSurveyReportAttachmentSQL(1, 2);
+    const response = __deprecated_getSurveyReportAttachmentsSQL(1, 2);
 
     expect(response).to.not.be.null;
   });
