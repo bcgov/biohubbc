@@ -289,6 +289,7 @@ const SurveyAttachmentDetailsDialog: React.FC<ISurveyAttachmentDetailsDialogProp
           )}
 
           <ViewSecurityTable
+            updateReviewTime={() => {}}
             securityDetails={reportDetails || attachmentDetails}
             showAddSecurityDialog={setShowAddSecurityDialog}
             showDeleteSecurityReasonDialog={showDeleteSecurityReasonDialog}
