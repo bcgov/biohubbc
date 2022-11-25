@@ -280,7 +280,6 @@ export class AttachmentRepository extends BaseRepository {
     return response.rows;
   }
 
-  // TODO functions need to handle duplicate keys (re adding existing security reasons)
   async addSecurityToProjectAttachments(securityIds: number[], attachmentId: number): Promise<void> {
     const insertStatement = SQL`
       INSERT INTO project_attachment_persecution (
@@ -288,16 +287,15 @@ export class AttachmentRepository extends BaseRepository {
         persecution_security_id
       ) VALUES `;
 
-    securityIds.forEach((id, index) => {
-      insertStatement.append(SQL`
-      (${attachmentId},${id})`);
+    insertStatement.append(
+      securityIds
+        .map((id, index) => {
+          return `(${attachmentId},${id})`;
+        })
+        .join(',')
+    );
 
-      if (index !== securityIds.length - 1) {
-        insertStatement.append(',');
-      }
-    });
-
-    insertStatement.append(' ON CONFLICT (persecution_security_id) DO NOTHING;');
+    insertStatement.append(' ON CONFLICT (project_attachment_id, persecution_security_id) DO NOTHING;');
 
     try {
       await this.connection.sql(insertStatement);
@@ -306,7 +304,30 @@ export class AttachmentRepository extends BaseRepository {
     }
   }
 
-  // TODO functions need to handle duplicate keys (re adding existing security reasons)
+  async addSecurityToProjectReportAttachments(securityIds: number[], attachmentId: number): Promise<void> {
+    const insertStatement = SQL`
+    INSERT INTO project_report_persecution (
+      project_report_attachment_id,
+      persecution_security_id
+    ) VALUES `;
+
+    insertStatement.append(
+      securityIds
+        .map((id, index) => {
+          return `(${attachmentId},${id})`;
+        })
+        .join(',')
+    );
+
+    insertStatement.append(' ON CONFLICT (persecution_security_id) DO NOTHING;');
+
+    try {
+      await this.connection.sql(insertStatement);
+    } catch (error) {
+      defaultLog.error({ label: 'addSecurityToProjectReportAttachments', message: 'error', error });
+    }
+  }
+
   async addSecurityToSurveyAttachments(securityIds: number[], attachmentId: number): Promise<void> {
     const insertStatement = SQL`
       INSERT INTO survey_attachment_persecution (
@@ -314,14 +335,13 @@ export class AttachmentRepository extends BaseRepository {
         persecution_security_id
       ) VALUES `;
 
-    securityIds.forEach((id, index) => {
-      insertStatement.append(SQL`
-      (${attachmentId},${id})`);
-
-      if (index !== securityIds.length - 1) {
-        insertStatement.append(',');
-      }
-    });
+    insertStatement.append(
+      securityIds
+        .map((id, index) => {
+          return `(${attachmentId},${id})`;
+        })
+        .join(',')
+    );
 
     insertStatement.append(' ON CONFLICT (persecution_security_id) DO NOTHING;');
 
@@ -329,6 +349,30 @@ export class AttachmentRepository extends BaseRepository {
       await this.connection.sql(insertStatement);
     } catch (error) {
       defaultLog.error({ label: 'addSecurityToSurveyAttachments', message: 'error', error });
+    }
+  }
+
+  async addSecurityToSurveyReportAttachments(securityIds: number[], attachmentId: number): Promise<void> {
+    const insertStatement = SQL`
+        INSERT INTO survey_report_persecution (
+          survey_report_attachment_id,
+          persecution_security_id
+        ) VALUES `;
+
+    insertStatement.append(
+      securityIds
+        .map((id, index) => {
+          return `(${attachmentId},${id})`;
+        })
+        .join(',')
+    );
+
+    insertStatement.append(' ON CONFLICT (persecution_security_id) DO NOTHING;');
+
+    try {
+      await this.connection.sql(insertStatement);
+    } catch (error) {
+      defaultLog.error({ label: 'addSecurityToSurveyReportAttachments', message: 'error', error });
     }
   }
 
@@ -453,58 +497,6 @@ export class AttachmentRepository extends BaseRepository {
         'AttachmentRepository->removeSecurityFromSurveyAttachment',
         'rowCount was 0 or undefined, expected rowCount == 1'
       ]);
-    }
-  }
-
-  // TODO functions need to handle duplicate keys (re adding existing security reasons)
-  async addSecurityToProjectReportAttachments(securityIds: number[], attachmentId: number): Promise<void> {
-    const insertStatement = SQL`
-      INSERT INTO project_report_persecution (
-        project_report_attachment_id,
-        persecution_security_id
-      ) VALUES `;
-
-    securityIds.forEach((id, index) => {
-      insertStatement.append(SQL`
-      (${attachmentId},${id})`);
-
-      if (index !== securityIds.length - 1) {
-        insertStatement.append(',');
-      }
-    });
-
-    insertStatement.append(' ON CONFLICT (persecution_security_id) DO NOTHING;');
-
-    try {
-      await this.connection.sql(insertStatement);
-    } catch (error) {
-      defaultLog.error({ label: 'addSecurityToProjectReportAttachments', message: 'error', error });
-    }
-  }
-
-  // TODO functions need to handle duplicate keys (re adding existing security reasons)
-  async addSecurityToSurveyReportAttachments(securityIds: number[], attachmentId: number): Promise<void> {
-    const insertStatement = SQL`
-      INSERT INTO survey_report_persecution (
-        survey_report_attachment_id,
-        persecution_security_id
-      ) VALUES `;
-
-    securityIds.forEach((id, index) => {
-      insertStatement.append(SQL`
-      (${attachmentId},${id})`);
-
-      if (index !== securityIds.length - 1) {
-        insertStatement.append(',');
-      }
-    });
-
-    insertStatement.append(' ON CONFLICT (persecution_security_id) DO NOTHING;');
-
-    try {
-      await this.connection.sql(insertStatement);
-    } catch (error) {
-      defaultLog.error({ label: 'addSecurityToSurveyReportAttachments', message: 'error', error });
     }
   }
 

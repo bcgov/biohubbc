@@ -150,9 +150,6 @@ export function getProjectAttachmentDetails(): RequestHandler {
         security_reasons: mappedSecurityObj
       };
 
-      console.log('****************** project attachment details ***************');
-      console.log(attachmentDetails);
-
       return res.status(200).json(attachmentDetails);
     } catch (error) {
       defaultLog.error({ label: 'getProjectReportDetails', message: 'error', error });
