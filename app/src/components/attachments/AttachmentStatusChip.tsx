@@ -1,21 +1,16 @@
-import React from 'react'
-import {
-  mdiAlertCircle,  
-  mdiLockCheckOutline,
-  mdiLockOpenCheckOutline,
-} from '@mdi/js';
-
-import { AttachmentStatus } from 'interfaces/useProjectApi.interface';
 import { Chip } from '@material-ui/core';
+import { mdiAlertCircle, mdiLockCheckOutline, mdiLockOpenCheckOutline } from '@mdi/js';
 import Icon from '@mdi/react';
+import { AttachmentStatus } from 'interfaces/useProjectApi.interface';
+import React from 'react';
 
 interface IAttachmentStatusChip {
   status?: AttachmentStatus;
-  securityRuleCount?: number
+  securityRuleCount?: number;
 }
 
 const AttachmentStatusChip: React.FC<IAttachmentStatusChip> = (props) => {
-  const { status, securityRuleCount } = props
+  const { status, securityRuleCount } = props;
 
   let label = 'Submitted';
   let color: 'default' | 'primary' | 'secondary' | undefined = 'primary';
@@ -41,14 +36,7 @@ const AttachmentStatusChip: React.FC<IAttachmentStatusChip> = (props) => {
       break;
   }
 
-  return (
-    <Chip
-      size="small"
-      color={color}
-      label={label}
-      icon={icon ? <Icon path={icon} size={0.8} /> : undefined}
-    />
-  );
+  return <Chip size="small" color={color} label={label} icon={icon ? <Icon path={icon} size={0.8} /> : undefined} />;
 };
 
-export default AttachmentStatusChip
+export default AttachmentStatusChip;
