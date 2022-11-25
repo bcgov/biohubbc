@@ -224,7 +224,7 @@ const SurveyAttachmentDetailsDialog: React.FC<ISurveyAttachmentDetailsDialogProp
     }
   };
 
-  const loadDetails = useCallback(() => {
+  const loadDetails = (() => {
     if (props.currentAttachment) {
       if (props.currentAttachment?.fileType === 'Report') {
         getReportDetails(props.currentAttachment);

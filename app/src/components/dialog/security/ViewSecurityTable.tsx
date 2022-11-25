@@ -122,8 +122,8 @@ const ViewSecurityTable: React.FC<IViewSecurityTableProps> = (props) => {
                     </Typography>
                     <Typography variant="body2" component="div" color="textSecondary">
                       {getFormattedDateRangeString(
-                        DATE_FORMAT.ShortMediumDateFormat,
-                        '' //props.securityDetails?.metadata?.last_modified ||
+                        DATE_FORMAT.ShortDateFormat,
+                        props.securityDetails?.metadata?.last_modified || ''
                       )}
                     </Typography>
                   </TableCell>

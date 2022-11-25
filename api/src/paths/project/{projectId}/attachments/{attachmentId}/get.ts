@@ -128,6 +128,8 @@ export function getProjectAttachmentDetails(): RequestHandler {
 
       const attachmentService = new AttachmentService(connection);
 
+      const attachmentData = await attachmentService.getProjectReportAttachment(Number(req.params.projectId), Number(req.params.attachmentId));
+
       const projectAttachmentSecurity = await attachmentService.getProjectAttachmentSecurityReasons(
         Number(req.params.attachmentId)
       );
@@ -147,7 +149,10 @@ export function getProjectAttachmentDetails(): RequestHandler {
       });
 
       const attachmentDetails = {
-        security_reasons: mappedSecurityObj
+        security_reasons: mappedSecurityObj,
+        metadata: {
+          last_modified: attachmentData.create_date
+        }
       };
 
       return res.status(200).json(attachmentDetails);

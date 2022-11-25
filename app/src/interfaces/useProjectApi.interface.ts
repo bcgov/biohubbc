@@ -305,6 +305,7 @@ export interface IGetReportDetails {
 }
 
 export interface IGetAttachmentDetails {
+  metadata: {last_modified: string};
   authors: IGetReportAuthors[];
   security_reasons: IGetSecurityReasons[];
 }
