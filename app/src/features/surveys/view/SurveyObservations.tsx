@@ -18,9 +18,9 @@ import {
   mdiTrashCanOutline
 } from '@mdi/js';
 import Icon from '@mdi/react';
-import FileUpload from 'components/attachments/FileUpload';
-import { IUploadHandler } from 'components/attachments/FileUploadItem';
 import ComponentDialog from 'components/dialog/ComponentDialog';
+import FileUpload from 'components/file-upload/FileUpload';
+import { IUploadHandler } from 'components/file-upload/FileUploadItem';
 import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
 // import { ConfigContext } from 'contexts/configContext';
 import { DialogContext } from 'contexts/dialogContext';

@@ -94,7 +94,7 @@ export const DropZone: React.FC<IDropZoneProps & IDropZoneConfigProps> = (props)
             <input {...getInputProps()} data-testid="drop-zone-input" />
             <Box p={2} display="flex" flexDirection="column" alignItems="center">
               <Icon className={classes.dropZoneIcon} path={mdiTrayArrowUp} size={1.5} />
-              <Box mt={0.5} className={classes.dropZoneTitle}>
+              <Box mt={0.5} className={classes.dropZoneTitle} data-testid="dropzone-instruction-text">
                 Drag your {(multiple && 'files') || 'file'} here, or <Link underline="always">Browse Files</Link>
               </Box>
               <Box textAlign="center">
@@ -107,14 +107,22 @@ export const DropZone: React.FC<IDropZoneProps & IDropZoneConfigProps> = (props)
                 )}
                 {!!maxFileSize && maxFileSize !== Infinity && (
                   <Box>
-                    <Typography component="span" variant="subtitle2" color="textSecondary">
+                    <Typography
+                      component="span"
+                      variant="subtitle2"
+                      color="textSecondary"
+                      data-testid="dropzone-max-size-text">
                       {`Maximum file size: ${Math.round(maxFileSize / BYTES_PER_MEGABYTE)} MB`}
                     </Typography>
                   </Box>
                 )}
                 {!!maxNumFiles && (
                   <Box>
-                    <Typography component="span" variant="subtitle2" color="textSecondary">
+                    <Typography
+                      component="span"
+                      variant="subtitle2"
+                      color="textSecondary"
+                      data-testid="dropzone-max-files-text">
                       {`Maximum files: ${maxNumFiles}`}
                     </Typography>
                   </Box>

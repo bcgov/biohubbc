@@ -1,12 +1,16 @@
 import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
-import { ProjectSurveyAttachmentValidExtensions } from 'constants/attachments';
+import ReportMetaForm, { IReportMetaForm } from 'components/attachments/ReportMetaForm';
+import FileUpload, { IReplaceHandler } from 'components/file-upload/FileUpload';
+import {
+  IFileHandler,
+  IOnUploadSuccess,
+  IUploadHandler,
+  UploadFileStatus
+} from 'components/file-upload/FileUploadItem';
+import { AttachmentType, ProjectSurveyAttachmentValidExtensions } from 'constants/attachments';
 import { useFormikContext } from 'formik';
 import React from 'react';
-import { AttachmentType } from '../../constants/attachments';
-import ReportMetaForm, { IReportMetaForm } from '../attachments/ReportMetaForm';
-import FileUpload, { IReplaceHandler } from './FileUpload';
-import { IFileHandler, IOnUploadSuccess, IUploadHandler, UploadFileStatus } from './FileUploadItem';
 
 export interface IFileUploadWithMetaProps {
   attachmentType: AttachmentType.REPORT | AttachmentType.OTHER;
