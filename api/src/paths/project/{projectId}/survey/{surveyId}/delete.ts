@@ -135,7 +135,7 @@ export function deleteSurvey(): RequestHandler {
 }
 
 export const getSurveyAttachmentS3Keys = async (surveyId: number, connection: IDBConnection) => {
-  const getSurveyAttachmentSQLStatement = queries.survey.getSurveyAttachmentsSQL(surveyId);
+  const getSurveyAttachmentSQLStatement = queries.survey.__deprecated_getSurveyAttachmentsSQL(surveyId);
 
   if (!getSurveyAttachmentSQLStatement) {
     throw new HTTP400('Failed to build SQL get statement');
