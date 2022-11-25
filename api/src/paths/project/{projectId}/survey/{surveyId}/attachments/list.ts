@@ -1,12 +1,10 @@
-import { AttachmentStatus } from 'aws-sdk/clients/ec2';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { PROJECT_ROLE, SYSTEM_ROLE } from '../../../../../../constants/roles';
+import { PROJECT_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
 import { HTTP400 } from '../../../../../../errors/http-error';
 import { GetAttachmentsData } from '../../../../../../models/project-survey-attachments';
-import { IGetSurveyAttachment, IGetSurveyReportAttachment, WithSecurityRuleCount } from '../../../../../../repositories/attachment-repository';
-import { authorizeRequestHandler, userHasValidRole } from '../../../../../../request-handlers/security/authorization';
+import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 import { AttachmentService } from '../../../../../../services/attachment-service';
 import { getLogger } from '../../../../../../utils/logger';
 
@@ -114,32 +112,17 @@ export function getSurveyAttachments(): RequestHandler {
 
     try {
       await connection.open();
-      const isUserAdmin = userHasValidRole([SYSTEM_ROLE.DATA_ADMINISTRATOR], req['system_user']['role_names']);
 
       const attachmentService = new AttachmentService(connection);
 
       const attachmentsData = await attachmentService.getSurveyAttachmentsWithSecurityCounts(surveyId);
       const reportAttachmentsData = await attachmentService.getSurveyReportAttachmentsWithSecurityCounts(surveyId);
 
-      const injectAttachmentStatus = (
-        attachment: WithSecurityRuleCount<IGetSurveyAttachment | IGetSurveyReportAttachment>
-      ) => {
-        const status: AttachmentStatus = attachment.security_review_timestamp
-          ? attachment.security_rule_count > 0
-            ? 'SECURED'
-            : 'UNSECURED'
-          : isUserAdmin
-          ? 'PENDING_REVIEW'
-          : 'SUBMITTED';
-
-        return { ...attachment, status };
-      };
-
       await connection.commit();
 
       const getAttachmentsData = new GetAttachmentsData(
-        attachmentsData.map(injectAttachmentStatus),
-        reportAttachmentsData.map(injectAttachmentStatus)
+        attachmentsData,
+        reportAttachmentsData
       );
 
       return res.status(200).json(getAttachmentsData);

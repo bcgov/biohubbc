@@ -11,6 +11,7 @@ export type AttachmentStatus = 'PENDING_REVIEW' | 'SECURED' | 'UNSECURED' | 'SUB
 
 /**
  * @TODO securityRuleCount and status should likely be required, not optional.
+ * @TODO should we not reference the repo interface?
  */
 export interface IGetProjectAttachment {
   id: number;
