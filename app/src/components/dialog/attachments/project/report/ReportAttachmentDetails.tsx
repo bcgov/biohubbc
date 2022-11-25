@@ -9,7 +9,7 @@ import { IEditReportMetaForm } from 'components/attachments/EditReportMetaForm';
 import ReportMeta from 'components/attachments/ReportMeta';
 import { IGetReportDetails } from 'interfaces/useProjectApi.interface';
 import { default as React, useState } from 'react';
-import EditFileWithMetaDialog from './EditFileWithMetaDialog';
+import EditFileWithMetaDialog from '../../EditFileWithMetaDialog';
 
 const useStyles = makeStyles((theme: Theme) => ({
   docTitle: {

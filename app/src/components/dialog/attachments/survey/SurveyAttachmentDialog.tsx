@@ -4,7 +4,6 @@ import Dialog, { DialogProps } from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import Typography from '@material-ui/core/Typography';
-import { IEditReportMetaForm } from 'components/attachments/EditReportMetaForm';
 import { AttachmentsI18N } from 'constants/i18n';
 import { defaultErrorDialogProps, DialogContext } from 'contexts/dialogContext';
 import { IAttachmentType } from 'features/projects/view/ProjectAttachments';
@@ -12,22 +11,22 @@ import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { IGetProjectAttachment, IGetSecurityReasons } from 'interfaces/useProjectApi.interface';
+import { IGetSurveyAttachment } from 'interfaces/useSurveyApi.interface';
 import { default as React, useContext, useState } from 'react';
 import { getFormattedFileSize } from 'utils/Utils';
-import { AttachmentType } from '../../../constants/attachments';
-import { IErrorDialogProps } from '../ErrorDialog';
-import AttachmentDetails from './AttachmentDetails';
-import ReportAttachmentDetails from './ReportAttachmentDetails';
-import SecurityDialog from './SecurityDialog';
-import ViewSecurityTable from './ViewSecurityTable';
+import { AttachmentType } from '../../../../constants/attachments';
+import { IErrorDialogProps } from '../../ErrorDialog';
+import AttachmentDetails from '../project/attachment/AttachmentDetails';
+import AttachmentSecurityTable from '../project/attachment/AttachmentSecurityTable';
+import SecurityDialog from '../SecurityDialog';
 
-export interface IProjectAttachmentDetailsDialogProps {
+export interface ISurveyAttachmentDialogProps {
   projectId: number;
+  surveyId: number;
   attachmentId: number | undefined;
-  currentAttachment: IGetProjectAttachment | null;
+  currentAttachment: IGetSurveyAttachment | null;
   open: boolean;
   onClose: () => void;
-
   dialogProps?: DialogProps;
 }
 
@@ -36,22 +35,16 @@ export interface IProjectAttachmentDetailsDialogProps {
  *
  * @return {*}
  */
-const ProjectAttachmentDetailsDialog: React.FC<IProjectAttachmentDetailsDialogProps> = (props) => {
+const SurveyAttachmentDialog: React.FC<ISurveyAttachmentDialogProps> = (props) => {
   const biohubApi = useBiohubApi();
 
   const [showAddSecurityDialog, setShowAddSecurityDialog] = useState(false);
 
   const dialogContext = useContext(DialogContext);
 
-  const reportAttachmentDetailsDataLoader = useDataLoader((attachmentId: number) =>
-    biohubApi.project.getProjectReportDetails(props.projectId, attachmentId)
-  );
-
   const attachmentDetailsDataLoader = useDataLoader((attachmentId: number) =>
-    biohubApi.project.getProjectAttachmentDetails(props.projectId, attachmentId)
+    biohubApi.survey.getSurveyAttachmentDetails(props.projectId, props.surveyId, attachmentId)
   );
-
-  const isReportType = props.currentAttachment?.fileType === AttachmentType.REPORT;
 
   const defaultYesNoDialogProps = {
     open: false,
@@ -64,24 +57,15 @@ const ProjectAttachmentDetailsDialog: React.FC<IProjectAttachmentDetailsDialogPr
     if (props.attachmentId) {
       const attachmentData: IAttachmentType = {
         id: props.attachmentId,
-        type: mapFileTypeToAttachmentType((props.currentAttachment && props.currentAttachment.fileType) || 'Other')
+        type: AttachmentType.OTHER
       };
 
-      await biohubApi.security.addProjectSecurityReasons(props.projectId, securityReasons, [attachmentData]);
-
-      refreshAttachmentDetails();
+      await biohubApi.security.addSurveySecurityReasons(props.projectId, props.surveyId, securityReasons, [
+        attachmentData
+      ]);
 
       setShowAddSecurityDialog(false);
     }
-  };
-
-  const mapFileTypeToAttachmentType = (type: string): AttachmentType => {
-    let attachmentType = AttachmentType.OTHER;
-    if (type === 'Report') {
-      attachmentType = AttachmentType.REPORT;
-    }
-
-    return attachmentType;
   };
 
   const removeSecurity = async (securityReasons: IGetSecurityReasons[]) => {
@@ -90,19 +74,12 @@ const ProjectAttachmentDetailsDialog: React.FC<IProjectAttachmentDetailsDialogPr
     });
 
     if (props.attachmentId) {
-      if (props.currentAttachment && props.currentAttachment.fileType === AttachmentType.REPORT) {
-        await biohubApi.security.deleteProjectReportAttachmentSecurityReasons(
-          props.projectId,
-          props.attachmentId,
-          securityIds
-        );
-      } else {
-        await biohubApi.security.deleteProjectAttachmentSecurityReasons(
-          props.projectId,
-          props.attachmentId,
-          securityIds
-        );
-      }
+      await biohubApi.security.deleteSurveyAttachmentSecurityReasons(
+        props.projectId,
+        props.surveyId,
+        props.attachmentId,
+        securityIds
+      );
     }
   };
 
@@ -143,8 +120,9 @@ const ProjectAttachmentDetailsDialog: React.FC<IProjectAttachmentDetailsDialogPr
 
   const openAttachment = async (attachment: IGetProjectAttachment) => {
     try {
-      const response = await biohubApi.project.getAttachmentSignedURL(
+      const response = await biohubApi.survey.getSurveyAttachmentSignedURL(
         props.projectId,
+        props.surveyId,
         attachment.id,
         attachment.fileType
       );
@@ -172,54 +150,21 @@ const ProjectAttachmentDetailsDialog: React.FC<IProjectAttachmentDetailsDialogPr
     }
   };
 
-  const handleDialogEditSave = async (values: IEditReportMetaForm) => {
-    if (!reportAttachmentDetailsDataLoader.data || !reportAttachmentDetailsDataLoader.data.metadata) {
-      return;
-    }
-
-    const fileMeta = values;
-
-    try {
-      await biohubApi.project.updateProjectReportMetadata(
-        props.projectId,
-        reportAttachmentDetailsDataLoader.data.metadata.id,
-        AttachmentType.REPORT,
-        fileMeta,
-        reportAttachmentDetailsDataLoader.data.metadata.revision_count
-      );
-    } catch (error) {
-      const apiError = error as APIError;
-      showErrorDialog({ dialogText: apiError.message, dialogErrorDetails: apiError.errors, open: true });
-    }
-  };
-
   // Initial load of attachment details
   if (props.currentAttachment) {
-    if (isReportType) {
-      reportAttachmentDetailsDataLoader.load(props.currentAttachment.id);
-    } else {
-      attachmentDetailsDataLoader.load(props.currentAttachment.id);
-    }
+    attachmentDetailsDataLoader.load(props.currentAttachment.id);
   }
 
   const refreshAttachmentDetails = () => {
     if (props.currentAttachment) {
-      if (isReportType) {
-        reportAttachmentDetailsDataLoader.refresh(props.currentAttachment.id);
-      } else {
-        attachmentDetailsDataLoader.refresh(props.currentAttachment.id);
-      }
+      attachmentDetailsDataLoader.refresh(props.currentAttachment.id);
     }
   };
 
   const updateReviewTime = async () => {
     try {
       if (props.attachmentId) {
-        if (isReportType) {
-          await biohubApi.security.updateProjectReportAttachmentSecurityReviewTime(props.projectId, props.attachmentId);
-        } else {
-          await biohubApi.security.updateProjectAttachmentSecurityReviewTime(props.projectId, props.attachmentId);
-        }
+        await biohubApi.security.updateSurveyAttachmentSecurityReviewTime(props.projectId, props.attachmentId);
       }
     } catch (error) {
       const apiError = error as APIError;
@@ -235,11 +180,7 @@ const ProjectAttachmentDetailsDialog: React.FC<IProjectAttachmentDetailsDialogPr
     <>
       <SecurityDialog
         open={showAddSecurityDialog}
-        selectedSecurityRules={
-          (isReportType && reportAttachmentDetailsDataLoader.data?.security_reasons) ||
-          attachmentDetailsDataLoader.data?.security_reasons ||
-          []
-        }
+        selectedSecurityRules={attachmentDetailsDataLoader.data?.security_reasons || []}
         onAccept={async (securityReasons) => {
           // formik form is retuning array of strings not numbers
           // linter believes formik to be number[] so wrapped map in string to force values into number[]
@@ -263,34 +204,19 @@ const ProjectAttachmentDetailsDialog: React.FC<IProjectAttachmentDetailsDialogPr
           </Typography>
         </DialogTitle>
         <DialogContent>
-          {isReportType && reportAttachmentDetailsDataLoader.data && (
-            <ReportAttachmentDetails
-              title={reportAttachmentDetailsDataLoader.data?.metadata?.title || ''}
-              onFileDownload={openAttachmentFromReportMetaDialog}
-              onSave={handleDialogEditSave}
-              securityDetails={reportAttachmentDetailsDataLoader.data}
-              attachmentSize={(props.currentAttachment && getFormattedFileSize(props.currentAttachment.size)) || '0 KB'}
-              refresh={() =>
-                props.currentAttachment?.id && reportAttachmentDetailsDataLoader.refresh(props.currentAttachment.id)
-              }
-            />
-          )}
+          <AttachmentDetails
+            title={props.currentAttachment?.fileName || ''}
+            attachmentSize={(props.currentAttachment && getFormattedFileSize(props.currentAttachment.size)) || '0 KB'}
+            onFileDownload={openAttachmentFromReportMetaDialog}
+          />
 
-          {!isReportType && attachmentDetailsDataLoader.data && (
-            <AttachmentDetails
-              title={props.currentAttachment?.fileName || ''}
-              attachmentSize={(props.currentAttachment && getFormattedFileSize(props.currentAttachment.size)) || '0 KB'}
-              onFileDownload={openAttachmentFromReportMetaDialog}
-            />
-          )}
-
-          <ViewSecurityTable
-            securityDetails={
-              (isReportType && reportAttachmentDetailsDataLoader.data) || attachmentDetailsDataLoader.data || null
-            }
+          <AttachmentSecurityTable
+            securityDetails={attachmentDetailsDataLoader.data || null}
             showAddSecurityDialog={setShowAddSecurityDialog}
             showDeleteSecurityReasonDialog={showDeleteSecurityReasonDialog}
+            status={props.currentAttachment?.status}
             updateReviewTime={updateReviewTime}
+            refresh={refreshAttachmentDetails}
           />
         </DialogContent>
         <DialogActions>
@@ -303,4 +229,4 @@ const ProjectAttachmentDetailsDialog: React.FC<IProjectAttachmentDetailsDialogPr
   );
 };
 
-export default ProjectAttachmentDetailsDialog;
+export default SurveyAttachmentDialog;

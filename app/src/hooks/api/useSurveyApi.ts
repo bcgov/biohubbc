@@ -170,7 +170,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
     attachmentMeta: IEditReportMetaForm,
     revisionCount: number
   ): Promise<number> => {
-    const obj = {
+    const requestBody = {
       attachment_type: attachmentType,
       attachment_meta: {
         title: attachmentMeta.title,
@@ -182,8 +182,8 @@ const useSurveyApi = (axios: AxiosInstance) => {
     };
 
     const { data } = await axios.put(
-      `/api/project/${projectId}/survey/${surveyId}/attachments/${attachmentId}/report/update`,
-      obj
+      `/api/project/${projectId}/survey/${surveyId}/attachments/${attachmentId}/metadata/update`,
+      requestBody
     );
 
     return data;
