@@ -16,6 +16,7 @@ import {
   IGetReportDetails,
   IGetSecurityReasons
 } from 'interfaces/useProjectApi.interface';
+import { IGetSurveyAttachment } from 'interfaces/useSurveyApi.interface';
 import { default as React, useContext, useEffect, useState } from 'react';
 import { getFormattedFileSize } from 'utils/Utils';
 import { AttachmentType } from '../../../constants/attachments';
@@ -29,7 +30,7 @@ export interface ISurveyAttachmentDetailsDialogProps {
   projectId: number;
   surveyId: number;
   attachmentId: number | undefined;
-  currentAttachment: IGetProjectAttachment | null;
+  currentAttachment: IGetSurveyAttachment | null;
   open: boolean;
   onClose: () => void;
   dialogProps?: DialogProps;
@@ -57,19 +58,15 @@ const SurveyAttachmentDetailsDialog: React.FC<ISurveyAttachmentDetailsDialogProp
   };
 
   const addSecurityReasons = async (securityReasons: number[]) => {
-    console.log('securityReasons', securityReasons);
-    console.log('props.attachmentId', props.attachmentId);
-
     if (props.attachmentId) {
       const attachmentData: IAttachmentType = {
         id: props.attachmentId,
         type: mapFileTypeToAttachmentType((props.currentAttachment && props.currentAttachment.fileType) || 'Other')
       };
 
-      const response = await biohubApi.security.addProjectSecurityReasons(props.projectId, securityReasons, [
+      await biohubApi.security.addSurveySecurityReasons(props.projectId, props.surveyId, securityReasons, [
         attachmentData
       ]);
-      console.log('response', response);
 
       setShowAddSecurityDialog(false);
     }
@@ -249,7 +246,7 @@ const SurveyAttachmentDetailsDialog: React.FC<ISurveyAttachmentDetailsDialogProp
     <>
       <SecurityDialog
         open={showAddSecurityDialog}
-        selectedSecurityRules={[]}
+        selectedSecurityRules={reportDetails?.security_reasons || attachmentDetails?.security_reasons || []}
         onAccept={async (securityReasons) => {
           // formik form is retuning array of strings not numbers if printed out in console
           // linter wrongly believes formik to be number[] so wrapped map in string to force values into number[]
@@ -292,8 +289,6 @@ const SurveyAttachmentDetailsDialog: React.FC<ISurveyAttachmentDetailsDialogProp
           )}
 
           <ViewSecurityTable
-
-            updateReviewTime={() => {}}
             securityDetails={reportDetails || attachmentDetails}
             showAddSecurityDialog={setShowAddSecurityDialog}
             showDeleteSecurityReasonDialog={showDeleteSecurityReasonDialog}

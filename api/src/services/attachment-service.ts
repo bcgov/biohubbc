@@ -177,6 +177,8 @@ export class AttachmentService extends DBService {
   async addSecurityToProjectAttachments(securityIds: number[], attachments: IAttachmentType[]): Promise<void[]> {
     const actions: Promise<void>[] = [];
     attachments.forEach((item) => {
+      console.log('________________');
+      console.log(item);
       if (item.type === 'Report') {
         actions.push(this.addSecurityToProjectReportAttachment(securityIds, item.id));
         actions.push(this.addSecurityReviewToProjectReportAttachment(item.id));
@@ -232,34 +234,10 @@ export class AttachmentService extends DBService {
     return this.attachmentRepository.getSurveyAttachmentAuthors(attachmentId);
   }
   async getSurveyReportSecurityReasons(attachmentId: number): Promise<IGetSurveyReportSecurityReason[]> {
-    //return this.attachmentRepository.getSurveyReportSecurityReasons(attachmentId);
-    return [
-      {
-        survey_report_persecution_id: 1,
-        survey_report_attachment_id: 2,
-        persecution_security_id: 3
-      },
-      {
-        survey_report_persecution_id: 2,
-        survey_report_attachment_id: 3,
-        persecution_security_id: 4
-      }
-    ];
+    return this.attachmentRepository.getSurveyReportSecurityReasons(attachmentId);
   }
-  async getSurveyAttachmentSecurityReasons(attachmentId: number): Promise<IGetSurveyAttachmentSecurityReason[]> {
-    //return this.attachmentRepository.getSurveyAttachmentSecurityReasons(attachmentId);
 
-    return [
-      {
-        survey_attachment_persecution_id: 1,
-        survey_attachment_id: 2,
-        persecution_security_id: 3
-      },
-      {
-        survey_attachment_persecution_id: 2,
-        survey_attachment_id: 3,
-        persecution_security_id: 4
-      }
-    ];
+  async getSurveyAttachmentSecurityReasons(attachmentId: number): Promise<IGetSurveyAttachmentSecurityReason[]> {
+    return this.attachmentRepository.getSurveyAttachmentSecurityReasons(attachmentId);
   }
 }
