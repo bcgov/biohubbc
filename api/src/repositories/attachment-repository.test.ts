@@ -8,37 +8,32 @@ import { getMockDBConnection } from '../__mocks__/db';
 
 chai.use(sinonChai);
 
-describe('AttachmentRepository', () => {
+describe.only('AttachmentRepository', () => {
   afterEach(() => {
     sinon.restore();
   });
 
   describe('getProjectAttachments', () => {
-    it('should return a submission', async () => {
+    it('should return rows', async () => {
       const mockResponse = ({ rows: [{ id: 1 }] } as any) as Promise<QueryResult<any>>;
-      const dbConnection = getMockDBConnection({
-        sql: async () => {
-          return mockResponse;
-        }
-      });
-      const repo = new AttachmentRepository(dbConnection);
-      const response = await repo.getProjectAttachments(1);
+      const dbConnection = getMockDBConnection({ sql: () => mockResponse });
+
+      const repository = new AttachmentRepository(dbConnection);
+
+      const response = await repository.getProjectAttachments(1);
 
       expect(response).to.not.be.null;
       expect(response).to.eql([{ id: 1 }]);
     });
 
     it('should throw an error', async () => {
-      const mockResponse = ({} as any) as Promise<QueryResult<any>>;
-      const dbConnection = getMockDBConnection({
-        sql: async () => {
-          return mockResponse;
-        }
-      });
-      const repo = new AttachmentRepository(dbConnection);
+      const mockResponse = ({ rows: undefined } as any) as Promise<QueryResult<any>>;
+      const dbConnection = getMockDBConnection({ sql: () => mockResponse });
+
+      const repository = new AttachmentRepository(dbConnection);
 
       try {
-        await repo.getProjectAttachments(1);
+        await repository.getProjectAttachments(1);
         expect.fail();
       } catch (error) {
         expect((error as Error).message).to.equal('Failed to get project attachments by projectId');
@@ -47,35 +42,90 @@ describe('AttachmentRepository', () => {
   });
 
   describe('getProjectReportAttachments', () => {
-    it('should return a submission', async () => {
+    it('should return rows', async () => {
       const mockResponse = ({ rows: [{ id: 1 }] } as any) as Promise<QueryResult<any>>;
-      const dbConnection = getMockDBConnection({
-        sql: async () => {
-          return mockResponse;
-        }
-      });
-      const repo = new AttachmentRepository(dbConnection);
-      const response = await repo.getProjectReportAttachments(1);
+      const dbConnection = getMockDBConnection({ sql: () => mockResponse });
+
+      const repository = new AttachmentRepository(dbConnection);
+
+      const response = await repository.getProjectReportAttachments(1);
 
       expect(response).to.not.be.null;
       expect(response).to.eql([{ id: 1 }]);
     });
 
     it('should throw an error', async () => {
-      const mockResponse = ({} as any) as Promise<QueryResult<any>>;
-      const dbConnection = getMockDBConnection({
-        sql: async () => {
-          return mockResponse;
-        }
-      });
-      const repo = new AttachmentRepository(dbConnection);
+      const mockResponse = ({ rows: undefined } as any) as Promise<QueryResult<any>>;
+      const dbConnection = getMockDBConnection({ sql: () => mockResponse });
+
+      const repository = new AttachmentRepository(dbConnection);
 
       try {
-        await repo.getProjectReportAttachments(1);
+        await repository.getProjectReportAttachments(1);
         expect.fail();
       } catch (error) {
         expect((error as Error).message).to.equal('Failed to get project report attachments by projectId');
       }
+    });
+
+    describe('getProjectAttachmentsWithSecurityCounts', () => {
+      it('should return rows', async () => {
+        const mockResponse = ({ rows: [{ id: 1 }] } as any) as Promise<QueryResult<any>>;
+        const dbConnection = getMockDBConnection({ sql: () => mockResponse });
+
+        const repository = new AttachmentRepository(dbConnection);
+
+        const response = await repository.getProjectAttachmentsWithSecurityCounts(1);
+
+        expect(response).to.not.be.null;
+        expect(response).to.eql([{ id: 1 }]);
+      });
+
+      it('should throw an error', async () => {
+        const mockResponse = ({ rows: undefined } as any) as Promise<QueryResult<any>>;
+        const dbConnection = getMockDBConnection({ sql: () => mockResponse });
+
+        const repository = new AttachmentRepository(dbConnection);
+
+        try {
+          await repository.getProjectAttachmentsWithSecurityCounts(1);
+          expect.fail();
+        } catch (error) {
+          expect((error as Error).message).to.equal(
+            'Failed to get project attachments with security rule count by projectId'
+          );
+        }
+      });
+    });
+
+    describe('getProjectReportAttachmentsWithSecurityCounts', () => {
+      it('should return rows', async () => {
+        const mockResponse = ({ rows: [{ id: 1 }] } as any) as Promise<QueryResult<any>>;
+        const dbConnection = getMockDBConnection({ sql: () => mockResponse });
+
+        const repository = new AttachmentRepository(dbConnection);
+
+        const response = await repository.getProjectReportAttachmentsWithSecurityCounts(1);
+
+        expect(response).to.not.be.null;
+        expect(response).to.eql([{ id: 1 }]);
+      });
+
+      it('should throw an error', async () => {
+        const mockResponse = ({ rows: undefined } as any) as Promise<QueryResult<any>>;
+        const dbConnection = getMockDBConnection({ sql: () => mockResponse });
+
+        const repository = new AttachmentRepository(dbConnection);
+
+        try {
+          await repository.getProjectReportAttachmentsWithSecurityCounts(1);
+          expect.fail();
+        } catch (error) {
+          expect((error as Error).message).to.equal(
+            'Failed to get project report attachments with security rule count by projectId'
+          );
+        }
+      });
     });
   });
 });

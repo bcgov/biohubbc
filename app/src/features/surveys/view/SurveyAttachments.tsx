@@ -4,7 +4,7 @@ import { mdiMenuDown, mdiTrayArrowUp } from '@mdi/js';
 import Icon from '@mdi/react';
 import AttachmentsList from 'components/attachments/AttachmentsList';
 import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
-import FileUploadWithMetaDialog from 'components/dialog/security/FileUploadWithMetaDialog';
+import FileUploadWithMetaDialog from 'components/dialog/attachments/FileUploadWithMetaDialog';
 import { IUploadHandler } from 'components/file-upload/FileUploadItem';
 import { H2MenuToolbar } from 'components/toolbar/ActionToolbars';
 import { useBiohubApi } from 'hooks/useBioHubApi';

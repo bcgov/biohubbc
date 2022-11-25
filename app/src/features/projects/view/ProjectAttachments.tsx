@@ -11,8 +11,8 @@ import { mdiAttachment, mdiChevronDown, mdiFilePdfBox, mdiLockOutline } from '@m
 import Icon from '@mdi/react';
 import AttachmentsList from 'components/attachments/AttachmentsList';
 import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
-import FileUploadWithMetaDialog from 'components/dialog/security/FileUploadWithMetaDialog';
-import SecurityDialog from 'components/dialog/security/SecurityDialog';
+import FileUploadWithMetaDialog from 'components/dialog/attachments/FileUploadWithMetaDialog';
+import SecurityDialog from 'components/dialog/attachments/SecurityDialog';
 import { IUploadHandler } from 'components/file-upload/FileUploadItem';
 import { SystemRoleGuard } from 'components/security/Guards';
 import { SYSTEM_ROLE } from 'constants/roles';

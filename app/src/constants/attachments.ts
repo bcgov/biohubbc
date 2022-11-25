@@ -3,6 +3,13 @@ export enum AttachmentType {
   OTHER = 'Other'
 }
 
+export enum AttachmentStatus {
+  PENDING_REVIEW = 'PENDING_REVIEW',
+  SECURED = 'SECURED',
+  UNSECURED = 'UNSECURED',
+  SUBMITTED = 'SUBMITTED'
+}
+
 export enum ProjectSurveyAttachmentValidExtensions {
   AUDIO = '.wav, .mp3, .mp4, .wma',
   DATA = '.txt, .xls, .xlsx, .xlsm, .xlsb, .accdb, .mdb, .ods, .csv',

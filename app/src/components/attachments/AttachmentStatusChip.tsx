@@ -1,7 +1,7 @@
 import { Chip } from '@material-ui/core';
 import { mdiAlertCircle, mdiLockCheckOutline, mdiLockOpenCheckOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import { AttachmentStatus } from 'interfaces/useProjectApi.interface';
+import { AttachmentStatus } from 'constants/attachments';
 import React from 'react';
 
 interface IAttachmentStatusChip {

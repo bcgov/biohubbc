@@ -1,8 +1,8 @@
 import { IGetProjectAttachment } from 'interfaces/useProjectApi.interface';
 import { IGetSurveyAttachment } from 'interfaces/useSurveyApi.interface';
 import { default as React } from 'react';
-import ProjectAttachmentDetailsDialog from './ProjectAttachmentDetailsDialog';
-import SurveyAttachmentDetailsDialog from './SurveyAttachmentDetailsDialog';
+import ProjectAttachmentTypeSelector from './project/ProjectAttachmentTypeSelector';
+import SurveyAttachmentTypeSelector from './survey/SurveyAttachmentTypeSelector';
 
 export interface IAllAttachmentDetailsDialogProps {
   projectId: number;
@@ -25,24 +25,20 @@ const AllAttachmentDetailsDialog: React.FC<IAllAttachmentDetailsDialogProps> = (
   return (
     <>
       {props.surveyId && (
-        <SurveyAttachmentDetailsDialog
+        <SurveyAttachmentTypeSelector
           projectId={props.projectId}
           surveyId={props.surveyId}
-          attachmentId={props.currentAttachment?.id}
           currentAttachment={props.currentAttachment}
-          dialogProps={{ fullWidth: true, maxWidth: 'lg', open: props.open }}
           open={props.open}
-          onClose={props.close}
+          close={props.close}
         />
       )}
       {!props.surveyId && (
-        <ProjectAttachmentDetailsDialog
+        <ProjectAttachmentTypeSelector
           projectId={props.projectId}
-          attachmentId={props.currentAttachment?.id}
           currentAttachment={props.currentAttachment}
-          dialogProps={{ fullWidth: true, maxWidth: 'lg', open: props.open }}
           open={props.open}
-          onClose={props.close}
+          close={props.close}
         />
       )}
     </>
