@@ -416,11 +416,11 @@ export class AttachmentRepository extends BaseRepository {
         sa.security_review_timestamp,
         COALESCE(src.count, 0) AS security_rule_count
       FROM
-        survey_attachment pa
+        survey_attachment sa
       LEFT JOIN (
           SELECT DISTINCT ON (sap.survey_attachment_id)
             sap.survey_attachment_id,
-            COUNT(pap.survey_attachment_id) AS count
+            COUNT(sap.survey_attachment_id) AS count
           FROM
             survey_attachment_persecution sap
           GROUP BY
@@ -483,9 +483,9 @@ export class AttachmentRepository extends BaseRepository {
             srp.survey_report_attachment_id
       ) src
       ON
-        srp.survey_report_attachment_id = src.survey_report_attachment_id
+        sra.survey_report_attachment_id = src.survey_report_attachment_id
       WHERE
-        srp.survey_id = ${surveyId}
+        sra.survey_id = ${surveyId}
     `;
 
     const response = await this.connection.sql<WithSecurityRuleCount<ISurveyReportAttachment>>(sqlStatement);
