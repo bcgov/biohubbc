@@ -214,7 +214,7 @@ const SurveyAttachmentDialog: React.FC<ISurveyAttachmentDialogProps> = (props) =
             securityDetails={attachmentDetailsDataLoader.data || null}
             showAddSecurityDialog={setShowAddSecurityDialog}
             showDeleteSecurityReasonDialog={showDeleteSecurityReasonDialog}
-            status={props.currentAttachment?.status}
+            isAwaitingReview={!props.currentAttachment?.securityReviewTimestamp}
             updateReviewTime={updateReviewTime}
             refresh={refreshAttachmentDetails}
           />

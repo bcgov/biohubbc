@@ -12,7 +12,6 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import { mdiLockOpenOutline, mdiLockOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import { AttachmentStatus } from 'constants/attachments';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { IGetReportDetails, IGetSecurityReasons } from 'interfaces/useProjectApi.interface';
 import { default as React } from 'react';
@@ -23,7 +22,7 @@ export interface IReportSecurityTableProps {
   showAddSecurityDialog: (value: boolean) => void;
   showDeleteSecurityReasonDialog: (securityReasons: IGetSecurityReasons[]) => void;
   updateReviewTime: () => void;
-  status?: AttachmentStatus | undefined;
+  isAwaitingReview: boolean;
   refresh: () => void;
 }
 
@@ -113,7 +112,7 @@ const ReportSecurityTable: React.FC<IReportSecurityTableProps> = (props) => {
               {props.securityDetails &&
                 props.securityDetails?.security_reasons &&
                 props.securityDetails?.security_reasons?.length === 0 &&
-                (props.status === AttachmentStatus.PENDING_REVIEW || props.status === AttachmentStatus.SUBMITTED) && (
+                (props.isAwaitingReview) && (
                   <TableRow key={`0`}>
                     <TableCell>Security Administration</TableCell>
                     <TableCell>
@@ -139,8 +138,7 @@ const ReportSecurityTable: React.FC<IReportSecurityTableProps> = (props) => {
 
               {props.securityDetails &&
                 props.securityDetails?.security_reasons &&
-                props.securityDetails?.security_reasons?.length === 0 &&
-                props.status === AttachmentStatus.UNSECURED && (
+                props.securityDetails?.security_reasons?.length === 0 && (
                   <TableRow key={`0`}>
                     <TableCell>Security Administration</TableCell>
                     <TableCell>

@@ -243,7 +243,7 @@ const SurveyReportAttachmentDialog: React.FC<ISurveyReportAttachmentDialogProps>
             showAddSecurityDialog={setShowAddSecurityDialog}
             showDeleteSecurityReasonDialog={showDeleteSecurityReasonDialog}
             updateReviewTime={updateReviewTime}
-            status={props.currentAttachment?.status}
+            isAwaitingReview={!props.currentAttachment?.securityReviewTimestamp}
             refresh={refreshAttachmentDetails}
           />
         </DialogContent>
