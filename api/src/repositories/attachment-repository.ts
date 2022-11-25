@@ -289,7 +289,7 @@ export class AttachmentRepository extends BaseRepository {
 
     insertStatement.append(
       securityIds
-        .map((id, index) => {
+        .map((id) => {
           return `(${attachmentId},${id})`;
         })
         .join(',')
@@ -313,13 +313,13 @@ export class AttachmentRepository extends BaseRepository {
 
     insertStatement.append(
       securityIds
-        .map((id, index) => {
+        .map((id) => {
           return `(${attachmentId},${id})`;
         })
         .join(',')
     );
 
-    insertStatement.append(' ON CONFLICT (persecution_security_id) DO NOTHING;');
+    insertStatement.append(' ON CONFLICT (project_report_attachment_id, persecution_security_id) DO NOTHING;');
 
     try {
       await this.connection.sql(insertStatement);
@@ -337,13 +337,13 @@ export class AttachmentRepository extends BaseRepository {
 
     insertStatement.append(
       securityIds
-        .map((id, index) => {
+        .map((id) => {
           return `(${attachmentId},${id})`;
         })
         .join(',')
     );
 
-    insertStatement.append(' ON CONFLICT (persecution_security_id) DO NOTHING;');
+    insertStatement.append(' ON CONFLICT (survey_attachment_id, persecution_security_id) DO NOTHING;');
 
     try {
       await this.connection.sql(insertStatement);
@@ -361,13 +361,13 @@ export class AttachmentRepository extends BaseRepository {
 
     insertStatement.append(
       securityIds
-        .map((id, index) => {
+        .map((id) => {
           return `(${attachmentId},${id})`;
         })
         .join(',')
     );
 
-    insertStatement.append(' ON CONFLICT (persecution_security_id) DO NOTHING;');
+    insertStatement.append(' ON CONFLICT (survey_report_attachment_id, persecution_security_id) DO NOTHING;');
 
     try {
       await this.connection.sql(insertStatement);
