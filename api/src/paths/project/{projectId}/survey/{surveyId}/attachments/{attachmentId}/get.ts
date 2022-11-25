@@ -142,7 +142,9 @@ export function getSurveyAttachmentDetails(): RequestHandler {
         return {
           security_reason_id: item.persecution_security_id,
           security_reason_title: persecutionRules[item.persecution_security_id - 1].reasonTitle,
-          security_reason_description: persecutionRules[item.persecution_security_id - 1].reasonDescription
+          security_reason_description: persecutionRules[item.persecution_security_id - 1].reasonDescription,
+          user_identifier: item.user_identifier,
+          security_date_applied: item.create_date
         };
       });
 

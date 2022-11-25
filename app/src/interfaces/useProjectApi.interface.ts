@@ -303,6 +303,7 @@ export interface IGetReportDetails {
 }
 
 export interface IGetAttachmentDetails {
+  metadata: { last_modified: string };
   authors: IGetReportAuthors[];
   security_reasons: IGetSecurityReasons[];
 }
@@ -326,6 +327,8 @@ export interface IGetSecurityReasons {
   security_reason_title: string;
   security_reason_description: string;
   date_expired: string;
+  user_identifier: string;
+  security_date_applied: string;
 }
 
 export interface IGetProjectParticipantsResponseArrayItem {

@@ -52,24 +52,32 @@ export interface IProjectReportSecurityReason {
   project_report_persecution_id: number;
   project_report_attachment_id: number;
   persecution_security_id: number;
+  create_date: string;
+  user_identifier: string;
 }
 
 export interface IProjectAttachmentSecurityReason {
   project_attachment_persecution_id: number;
   project_attachment_id: number;
   persecution_security_id: number;
+  create_date: string;
+  user_identifier: string;
 }
 
 export interface ISurveyReportSecurityReason {
   survey_report_persecution_id: number;
   survey_report_attachment_id: number;
   persecution_security_id: number;
+  create_date: string;
+  user_identifier: string;
 }
 
 export interface ISurveyAttachmentSecurityReason {
   survey_attachment_persecution_id: number;
   survey_attachment_id: number;
   persecution_security_id: number;
+  create_date: string;
+  user_identifier: string;
 }
 
 const defaultLog = getLogger('repositories/attachment-repository');
@@ -408,11 +416,11 @@ export class AttachmentRepository extends BaseRepository {
         sa.security_review_timestamp,
         COALESCE(src.count, 0) AS security_rule_count
       FROM
-        survey_attachment pa
+        survey_attachment sa
       LEFT JOIN (
           SELECT DISTINCT ON (sap.survey_attachment_id)
             sap.survey_attachment_id,
-            COUNT(pap.survey_attachment_id) AS count
+            COUNT(sap.survey_attachment_id) AS count
           FROM
             survey_attachment_persecution sap
           GROUP BY
@@ -475,9 +483,9 @@ export class AttachmentRepository extends BaseRepository {
             srp.survey_report_attachment_id
       ) src
       ON
-        srp.survey_report_attachment_id = src.survey_report_attachment_id
+        sra.survey_report_attachment_id = src.survey_report_attachment_id
       WHERE
-        srp.survey_id = ${surveyId}
+        sra.survey_id = ${surveyId}
     `;
 
     const response = await this.connection.sql<WithSecurityRuleCount<ISurveyReportAttachment>>(sqlStatement);
@@ -637,6 +645,33 @@ export class AttachmentRepository extends BaseRepository {
   }
 
   /**
+   * SQL query to delete all security for Project Attachment
+   *
+   * @param {number} securityId
+   * @param {number} attachmentId
+   * @return {*}  {Promise<void>}
+   * @memberof AttachmentRepository
+   */
+  async removeAllSecurityFromProjectAttachment(attachmentId: number): Promise<void> {
+    const sqlStatement = SQL`
+        DELETE FROM
+          project_attachment_persecution
+        WHERE
+          project_attachment_id = ${attachmentId}
+        ;
+        `;
+
+    const response = await this.connection.sql(sqlStatement);
+
+    if (!response.rowCount) {
+      throw new ApiExecuteSQLError('Failed to Delete all Project Attachment Security', [
+        'AttachmentRepository->removeAllSecurityFromProjectAttachment',
+        'rowCount was 0 or undefined, expected rowCount == 1'
+      ]);
+    }
+  }
+
+  /**
    * SQL query to delete security for Survey Attachment
    *
    * @param {number} securityId
@@ -659,6 +694,33 @@ export class AttachmentRepository extends BaseRepository {
     if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to Delete Survey Attachment Security', [
         'AttachmentRepository->removeSecurityFromSurveyAttachment',
+        'rowCount was 0 or undefined, expected rowCount == 1'
+      ]);
+    }
+  }
+
+  /**
+   * SQL query to delete all security for Survey Attachment
+   *
+   * @param {number} securityId
+   * @param {number} attachmentId
+   * @return {*}  {Promise<void>}
+   * @memberof AttachmentRepository
+   */
+  async removeAllSecurityFromSurveyAttachment(attachmentId: number): Promise<void> {
+    const sqlStatement = SQL`
+        DELETE FROM
+          survey_attachment_persecution
+        WHERE
+          survey_attachment_id = ${attachmentId}
+        ;
+        `;
+
+    const response = await this.connection.sql(sqlStatement);
+
+    if (!response.rowCount) {
+      throw new ApiExecuteSQLError('Failed to Delete all Survey Attachment Security', [
+        'AttachmentRepository->removeAllSecurityFromSurveyAttachment',
         'rowCount was 0 or undefined, expected rowCount == 1'
       ]);
     }
@@ -745,6 +807,32 @@ export class AttachmentRepository extends BaseRepository {
   }
 
   /**
+   * SQL query to delete all security for Project Report Attachment
+   *
+   * @param {number} attachmentId
+   * @return {*}  {Promise<void>}
+   * @memberof AttachmentRepository
+   */
+  async removeAllSecurityFromProjectReportAttachment(attachmentId: number): Promise<void> {
+    const sqlStatement = SQL`
+      DELETE FROM
+        project_report_persecution
+      WHERE
+        project_report_attachment_id = ${attachmentId}
+      ;
+      `;
+
+    const response = await this.connection.sql(sqlStatement);
+
+    if (!response.rowCount) {
+      throw new ApiExecuteSQLError('Failed to Delete All Project Report Attachment Security', [
+        'AttachmentRepository->removeAllSecurityFromProjectReportAttachment',
+        'rowCount was 0 or undefined, expected rowCount == 1'
+      ]);
+    }
+  }
+
+  /**
    * SQL query to delete security for Survey Report Attachment
    *
    * @param {number} securityId
@@ -767,6 +855,33 @@ export class AttachmentRepository extends BaseRepository {
     if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to Delete Survey Report Attachment Security', [
         'AttachmentRepository->removeSecurityFromSurveyReportAttachment',
+        'rowCount was 0 or undefined, expected rowCount == 1'
+      ]);
+    }
+  }
+
+  /**
+   * SQL query to delete all security for Survey Report Attachment
+   *
+   * @param {number} securityId
+   * @param {number} attachmentId
+   * @return {*}  {Promise<void>}
+   * @memberof AttachmentRepository
+   */
+  async removeAllSecurityFromSurveyReportAttachment(attachmentId: number): Promise<void> {
+    const sqlStatement = SQL`
+          DELETE FROM
+            survey_report_persecution
+          WHERE
+            survey_report_attachment_id = ${attachmentId}
+          ;
+          `;
+
+    const response = await this.connection.sql(sqlStatement);
+
+    if (!response.rowCount) {
+      throw new ApiExecuteSQLError('Failed to Delete Survey Report Attachment Security', [
+        'AttachmentRepository->removeAllSecurityFromSurveyReportAttachment',
         'rowCount was 0 or undefined, expected rowCount == 1'
       ]);
     }
@@ -877,11 +992,12 @@ export class AttachmentRepository extends BaseRepository {
   async getProjectReportSecurityReasons(projectReportAttachmentId: number): Promise<IProjectReportSecurityReason[]> {
     const sqlStatement = SQL`
       SELECT
-        project_report_persecution.*
+        prp.*, sa.user_identifier
       FROM
-        project_report_persecution
-      where
-        project_report_attachment_id = ${projectReportAttachmentId}
+        project_report_persecution prp, system_user sa
+      WHERE
+          prp.create_user = sa.system_user_id
+      AND project_report_attachment_id = ${projectReportAttachmentId};
     `;
 
     const response = await this.connection.sql<IProjectReportSecurityReason>(sqlStatement);
@@ -896,11 +1012,12 @@ export class AttachmentRepository extends BaseRepository {
   async getSurveyReportSecurityReasons(surveyReportAttachmentId: number): Promise<ISurveyReportSecurityReason[]> {
     const sqlStatement = SQL`
       SELECT
-        survey_report_persecution.*
+        srp.*, sa.user_identifier
       FROM
-        survey_report_persecution
-      where
-        survey_report_attachment_id = ${surveyReportAttachmentId}
+        survey_report_persecution srp, system_user sa
+      WHERE
+        srp.create_user = sa.system_user_id
+      AND srp.survey_report_attachment_id = ${surveyReportAttachmentId};
     `;
 
     const response = await this.connection.sql<ISurveyReportSecurityReason>(sqlStatement);
@@ -917,11 +1034,12 @@ export class AttachmentRepository extends BaseRepository {
   ): Promise<IProjectAttachmentSecurityReason[]> {
     const sqlStatement = SQL`
       SELECT
-        project_attachment_persecution.*
+        pap.*, sa.user_identifier
       FROM
-        project_attachment_persecution
-      where
-        project_attachment_id = ${projectAttachmentId}
+        project_attachment_persecution pap,  system_user sa
+      WHERE
+        pap.create_user = sa.system_user_id
+      AND pap.project_attachment_id = ${projectAttachmentId};
     `;
 
     const response = await this.connection.sql<IProjectAttachmentSecurityReason>(sqlStatement);
@@ -936,11 +1054,12 @@ export class AttachmentRepository extends BaseRepository {
   async getSurveyAttachmentSecurityReasons(surveyAttachmentId: number): Promise<ISurveyAttachmentSecurityReason[]> {
     const sqlStatement = SQL`
       SELECT
-        survey_attachment_persecution.*
+        sap.*, sa.user_identifier
       FROM
-        survey_attachment_persecution
-      where
-        survey_attachment_id = ${surveyAttachmentId}
+        survey_attachment_persecution sap, system_user sa
+      WHERE
+          sap.create_user = sa.system_user_id
+      AND sap.survey_attachment_id = ${surveyAttachmentId};
       `;
 
     const response = await this.connection.sql<ISurveyAttachmentSecurityReason>(sqlStatement);

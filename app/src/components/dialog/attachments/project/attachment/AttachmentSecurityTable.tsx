@@ -10,7 +10,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
-import { mdiLockOpenOutline, mdiLockOutline } from '@mdi/js';
+import { mdiLockOpenOutline, mdiLockOutline, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { IGetAttachmentDetails, IGetSecurityReasons } from 'interfaces/useProjectApi.interface';
@@ -71,6 +71,9 @@ const AttachmentSecurityTable: React.FC<IAttachmentSecurityTableProps> = (props)
                 <TableCell width="200">Category</TableCell>
                 <TableCell>Reason</TableCell>
                 <TableCell width="160">Dates</TableCell>
+                {props.securityDetails &&
+                  props.securityDetails?.security_reasons &&
+                  props.securityDetails?.security_reasons?.length > 0 && <TableCell width="160">Applied</TableCell>}
                 <TableCell width="160">Actions</TableCell>
               </TableRow>
             </TableHead>
@@ -98,11 +101,20 @@ const AttachmentSecurityTable: React.FC<IAttachmentSecurityTableProps> = (props)
                         </Typography>
                       </TableCell>
                       <TableCell>
+                        <Typography variant="body2" component="div">
+                          {getFormattedDateRangeString(DATE_FORMAT.ShortDateFormat, row.security_date_applied || '')}
+                        </Typography>
+
+                        <Typography variant="body2" component="div" color="textSecondary">
+                          by {row.user_identifier}
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
                         <Button
-                          variant="contained"
-                          color="primary"
+                          variant="outlined"
+                          color="default"
                           onClick={() => props.showDeleteSecurityReasonDialog([row])}
-                          startIcon={<Icon path={mdiLockOpenOutline} size={0.8} />}>
+                          startIcon={<Icon path={mdiTrashCanOutline} size={0.8} />}>
                           Remove
                         </Button>
                       </TableCell>
@@ -128,8 +140,8 @@ const AttachmentSecurityTable: React.FC<IAttachmentSecurityTableProps> = (props)
                       </Typography>
                       <Typography variant="body2" component="div" color="textSecondary">
                         {getFormattedDateRangeString(
-                          DATE_FORMAT.ShortMediumDateFormat,
-                          '' //props.securityDetails?.metadata?.last_modified || ''
+                          DATE_FORMAT.ShortDateFormat,
+                          props.securityDetails?.metadata?.last_modified || ''
                         )}
                       </Typography>
                     </TableCell>
