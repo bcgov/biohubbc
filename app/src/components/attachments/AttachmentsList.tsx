@@ -1,6 +1,5 @@
 import Box from '@material-ui/core/Box';
 import Checkbox from '@material-ui/core/Checkbox';
-import Icon from '@mdi/react';
 import { grey } from '@material-ui/core/colors';
 import IconButton from '@material-ui/core/IconButton';
 import Link from '@material-ui/core/Link';
@@ -22,8 +21,9 @@ import {
   mdiTrashCanOutline,
   mdiTrayArrowDown
 } from '@mdi/js';
+import Icon from '@mdi/react';
+import AllAttachmentDetailsDialog from 'components/dialog/attachments/AttachmentTypeSelector';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
-import AllAttachmentDetailsDialog from 'components/dialog/security/AllAttachmentDetailsDialog';
 import { AttachmentsI18N, EditReportMetaDataI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
 import { IAttachmentType } from 'features/projects/view/ProjectAttachments';
@@ -72,7 +72,6 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
   };
 
   const handleViewDetailsClick = (attachment: IGetProjectAttachment | IGetSurveyAttachment) => {
-    console.log('attachment', attachment);
     setCurrentAttachment(attachment);
     setShowViewFileWithDetailsDialog(true);
   };

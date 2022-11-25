@@ -10,23 +10,18 @@ import { defaultErrorDialogProps, DialogContext } from 'contexts/dialogContext';
 import { IAttachmentType } from 'features/projects/view/ProjectAttachments';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import {
-  IGetAttachmentDetails,
-  IGetProjectAttachment,
-  IGetReportDetails,
-  IGetSecurityReasons
-} from 'interfaces/useProjectApi.interface';
+import useDataLoader from 'hooks/useDataLoader';
+import { IGetProjectAttachment, IGetSecurityReasons } from 'interfaces/useProjectApi.interface';
 import { IGetSurveyAttachment } from 'interfaces/useSurveyApi.interface';
-import { default as React, useContext, useEffect, useState } from 'react';
+import { default as React, useContext, useState } from 'react';
 import { getFormattedFileSize } from 'utils/Utils';
-import { AttachmentType } from '../../../constants/attachments';
-import { IErrorDialogProps } from '../ErrorDialog';
-import AttachmentDetails from './AttachmentDetails';
-import ReportAttachmentDetails from './ReportAttachmentDetails';
-import SecurityDialog from './SecurityDialog';
-import ViewSecurityTable from './ViewSecurityTable';
+import { AttachmentType } from '../../../../constants/attachments';
+import { IErrorDialogProps } from '../../ErrorDialog';
+import ReportAttachmentDetails from '../project/report/ReportAttachmentDetails';
+import ReportSecurityTable from '../project/report/ReportSecurityTable';
+import SecurityDialog from '../SecurityDialog';
 
-export interface ISurveyAttachmentDetailsDialogProps {
+export interface ISurveyReportAttachmentDialogProps {
   projectId: number;
   surveyId: number;
   attachmentId: number | undefined;
@@ -41,14 +36,16 @@ export interface ISurveyAttachmentDetailsDialogProps {
  *
  * @return {*}
  */
-const SurveyAttachmentDetailsDialog: React.FC<ISurveyAttachmentDetailsDialogProps> = (props) => {
+const SurveyReportAttachmentDialog: React.FC<ISurveyReportAttachmentDialogProps> = (props) => {
   const biohubApi = useBiohubApi();
 
-  const [reportDetails, setReportDetails] = useState<IGetReportDetails | null>(null);
-  const [attachmentDetails, setAttachmentDetails] = useState<IGetAttachmentDetails | null>(null);
   const [showAddSecurityDialog, setShowAddSecurityDialog] = useState(false);
 
   const dialogContext = useContext(DialogContext);
+
+  const reportAttachmentDetailsDataLoader = useDataLoader((attachmentId: number) =>
+    biohubApi.survey.getSurveyReportDetails(props.projectId, props.surveyId, attachmentId)
+  );
 
   const defaultYesNoDialogProps = {
     open: false,
@@ -61,7 +58,7 @@ const SurveyAttachmentDetailsDialog: React.FC<ISurveyAttachmentDetailsDialogProp
     if (props.attachmentId) {
       const attachmentData: IAttachmentType = {
         id: props.attachmentId,
-        type: mapFileTypeToAttachmentType((props.currentAttachment && props.currentAttachment.fileType) || 'Other')
+        type: AttachmentType.REPORT
       };
 
       await biohubApi.security.addSurveySecurityReasons(props.projectId, props.surveyId, securityReasons, [
@@ -72,34 +69,18 @@ const SurveyAttachmentDetailsDialog: React.FC<ISurveyAttachmentDetailsDialogProp
     }
   };
 
-  const mapFileTypeToAttachmentType = (type: string): AttachmentType => {
-    let attachmentType = AttachmentType.OTHER;
-    if (type === 'Report') {
-      attachmentType = AttachmentType.REPORT;
-    }
-
-    return attachmentType;
-  };
-
   const removeSecurity = async (securityReasons: IGetSecurityReasons[]) => {
     const securityIds = securityReasons.map((security) => {
       return security.security_reason_id;
     });
 
     if (props.attachmentId) {
-      if (props.currentAttachment && props.currentAttachment.fileType === AttachmentType.REPORT) {
-        await biohubApi.security.deleteProjectReportAttachmentSecurityReasons(
-          props.projectId,
-          props.attachmentId,
-          securityIds
-        );
-      } else {
-        await biohubApi.security.deleteProjectAttachmentSecurityReasons(
-          props.projectId,
-          props.attachmentId,
-          securityIds
-        );
-      }
+      await biohubApi.security.deleteSurveyReportAttachmentSecurityReasons(
+        props.projectId,
+        props.surveyId,
+        props.attachmentId,
+        securityIds
+      );
     }
   };
 
@@ -126,7 +107,9 @@ const SurveyAttachmentDetailsDialog: React.FC<ISurveyAttachmentDetailsDialogProp
       yesButtonProps: { color: 'secondary' },
       onYes: async () => {
         await removeSecurity(securityReasons);
-        loadDetails();
+
+        refreshAttachmentDetails();
+
         dialogContext.setYesNoDialog({ open: false });
       }
     });
@@ -169,7 +152,7 @@ const SurveyAttachmentDetailsDialog: React.FC<ISurveyAttachmentDetailsDialogProp
   };
 
   const handleDialogEditSave = async (values: IEditReportMetaForm) => {
-    if (!reportDetails || !reportDetails.metadata) {
+    if (!reportAttachmentDetailsDataLoader.data || !reportAttachmentDetailsDataLoader.data.metadata) {
       return;
     }
 
@@ -179,10 +162,10 @@ const SurveyAttachmentDetailsDialog: React.FC<ISurveyAttachmentDetailsDialogProp
       await biohubApi.survey.updateSurveyReportMetadata(
         props.projectId,
         props.surveyId,
-        reportDetails.metadata.id,
+        reportAttachmentDetailsDataLoader.data.metadata.id,
         AttachmentType.REPORT,
         fileMeta,
-        reportDetails.metadata.revision_count
+        reportAttachmentDetailsDataLoader.data.metadata.revision_count
       );
     } catch (error) {
       const apiError = error as APIError;
@@ -190,53 +173,27 @@ const SurveyAttachmentDetailsDialog: React.FC<ISurveyAttachmentDetailsDialogProp
     }
   };
 
-  const getReportDetails = async (attachment: IGetProjectAttachment) => {
-    try {
-      const response = await biohubApi.survey.getSurveyReportDetails(props.projectId, props.surveyId, attachment.id);
+  // Initial load of attachment details
+  if (props.currentAttachment) {
+    reportAttachmentDetailsDataLoader.load(props.currentAttachment.id);
+  }
 
-      if (!response) {
-        return;
-      }
-
-      setReportDetails(response);
-    } catch (error) {
-      return error;
-    }
-  };
-
-  const getAttachmentDetails = async (attachment: IGetProjectAttachment) => {
-    try {
-      const response = await biohubApi.survey.getSurveyAttachmentDetails(
-        props.projectId,
-        props.surveyId,
-        attachment.id
-      );
-
-      if (!response) {
-        return;
-      }
-
-      setAttachmentDetails(response);
-    } catch (error) {
-      return error;
-    }
-  };
-
-  const loadDetails = () => {
+  const refreshAttachmentDetails = () => {
     if (props.currentAttachment) {
-      if (props.currentAttachment?.fileType === 'Report') {
-        getReportDetails(props.currentAttachment);
-        setAttachmentDetails(null);
-      } else {
-        getAttachmentDetails(props.currentAttachment);
-        setReportDetails(null);
-      }
+      reportAttachmentDetailsDataLoader.refresh(props.currentAttachment.id);
     }
   };
 
-  useEffect(() => {
-    loadDetails();
-  }, [props.open, props.currentAttachment, loadDetails]);
+  const updateReviewTime = async () => {
+    try {
+      if (props.attachmentId) {
+        await biohubApi.security.updateProjectReportAttachmentSecurityReviewTime(props.projectId, props.attachmentId);
+      }
+    } catch (error) {
+      const apiError = error as APIError;
+      showErrorDialog({ dialogText: apiError.message, dialogErrorDetails: apiError.errors, open: true });
+    }
+  };
 
   if (!props.open) {
     return <></>;
@@ -246,17 +203,18 @@ const SurveyAttachmentDetailsDialog: React.FC<ISurveyAttachmentDetailsDialogProp
     <>
       <SecurityDialog
         open={showAddSecurityDialog}
-        selectedSecurityRules={reportDetails?.security_reasons || attachmentDetails?.security_reasons || []}
+        selectedSecurityRules={reportAttachmentDetailsDataLoader.data?.security_reasons || []}
         onAccept={async (securityReasons) => {
-          // formik form is retuning array of strings not numbers if printed out in console
-          // linter wrongly believes formik to be number[] so wrapped map in string to force values into number[]
+          // formik form is retuning array of strings not numbers
+          // linter believes formik to be number[] so wrapped map in string to force values into number[]
           if (securityReasons.security_reasons.length > 0) {
             await addSecurityReasons(
               securityReasons.security_reasons.map((item) => parseInt(`${item.security_reason_id}`))
             );
           }
 
-          loadDetails();
+          refreshAttachmentDetails();
+
           setShowAddSecurityDialog(false);
         }}
         onClose={() => setShowAddSecurityDialog(false)}
@@ -269,30 +227,24 @@ const SurveyAttachmentDetailsDialog: React.FC<ISurveyAttachmentDetailsDialogProp
           </Typography>
         </DialogTitle>
         <DialogContent>
-          {reportDetails && (
-            <ReportAttachmentDetails
-              title={reportDetails?.metadata?.title || ''}
-              onFileDownload={openAttachmentFromReportMetaDialog}
-              onSave={handleDialogEditSave}
-              securityDetails={reportDetails}
-              attachmentSize={(props.currentAttachment && getFormattedFileSize(props.currentAttachment.size)) || '0 KB'}
-              refresh={loadDetails}
-            />
-          )}
+          <ReportAttachmentDetails
+            title={reportAttachmentDetailsDataLoader.data?.metadata?.title || ''}
+            onFileDownload={openAttachmentFromReportMetaDialog}
+            onSave={handleDialogEditSave}
+            securityDetails={reportAttachmentDetailsDataLoader.data || null}
+            attachmentSize={(props.currentAttachment && getFormattedFileSize(props.currentAttachment.size)) || '0 KB'}
+            refresh={() =>
+              props.currentAttachment?.id && reportAttachmentDetailsDataLoader.refresh(props.currentAttachment.id)
+            }
+          />
 
-          {!reportDetails && (
-            <AttachmentDetails
-              title={props.currentAttachment?.fileName || ''}
-              attachmentSize={(props.currentAttachment && getFormattedFileSize(props.currentAttachment.size)) || '0 KB'}
-              onFileDownload={openAttachmentFromReportMetaDialog}
-            />
-          )}
-
-          <ViewSecurityTable
-            updateReviewTime={() => {}}
-            securityDetails={reportDetails || attachmentDetails}
+          <ReportSecurityTable
+            securityDetails={reportAttachmentDetailsDataLoader.data || null}
             showAddSecurityDialog={setShowAddSecurityDialog}
             showDeleteSecurityReasonDialog={showDeleteSecurityReasonDialog}
+            updateReviewTime={updateReviewTime}
+            status={props.currentAttachment?.status}
+            refresh={refreshAttachmentDetails}
           />
         </DialogContent>
         <DialogActions>
@@ -305,4 +257,4 @@ const SurveyAttachmentDetailsDialog: React.FC<ISurveyAttachmentDetailsDialogProp
   );
 };
 
-export default SurveyAttachmentDetailsDialog;
+export default SurveyReportAttachmentDialog;

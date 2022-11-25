@@ -9,8 +9,6 @@ import {
   getProjectAttachmentS3KeySQL,
   getProjectReportAttachmentByFileNameSQL,
   getProjectReportAttachmentS3KeySQL,
-  getProjectReportAttachmentSQL,
-  getProjectReportAuthorsSQL,
   insertProjectReportAttachmentAuthorSQL,
   postProjectAttachmentSQL,
   postProjectReportAttachmentSQL,
@@ -396,40 +394,6 @@ describe('deleteProjectReportAttachmentAuthorsSQL', () => {
 
   it('returns not null response when valid params are provided', () => {
     const response = deleteProjectReportAttachmentAuthorsSQL(1);
-
-    expect(response).to.not.be.null;
-  });
-});
-
-describe('getProjectReportAttachmentSQL', () => {
-  it('returns null response when null projectId provided', () => {
-    const response = getProjectReportAttachmentSQL((null as unknown) as number, 1);
-
-    expect(response).to.be.null;
-  });
-
-  it('returns null response when null attachmentId provided', () => {
-    const response = getProjectReportAttachmentSQL(1, (null as unknown) as number);
-
-    expect(response).to.be.null;
-  });
-
-  it('returns non null response when valid projectId and attachmentId provided', () => {
-    const response = getProjectReportAttachmentSQL(1, 2);
-
-    expect(response).to.not.be.null;
-  });
-});
-
-describe('getProjectReportAuthorSQL', () => {
-  it('returns null response when null projectReportAttachmentId provided', () => {
-    const response = getProjectReportAuthorsSQL((null as unknown) as number);
-
-    expect(response).to.be.null;
-  });
-
-  it('returns non null response when valid projectReportAttachmentId provided', () => {
-    const response = getProjectReportAuthorsSQL(1);
 
     expect(response).to.not.be.null;
   });

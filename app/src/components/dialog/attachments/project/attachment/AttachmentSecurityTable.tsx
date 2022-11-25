@@ -12,16 +12,19 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import { mdiLockOpenOutline, mdiLockOutline } from '@mdi/js';
 import Icon from '@mdi/react';
+import { AttachmentStatus } from 'constants/attachments';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
-import { IGetAttachmentDetails, IGetReportDetails, IGetSecurityReasons } from 'interfaces/useProjectApi.interface';
+import { IGetAttachmentDetails, IGetSecurityReasons } from 'interfaces/useProjectApi.interface';
 import { default as React } from 'react';
 import { getFormattedDateRangeString } from 'utils/Utils';
 
-export interface IViewSecurityTableProps {
-  securityDetails: IGetReportDetails | IGetAttachmentDetails | null;
+export interface IAttachmentSecurityTableProps {
+  securityDetails: IGetAttachmentDetails | null;
   showAddSecurityDialog: (value: boolean) => void;
   showDeleteSecurityReasonDialog: (securityReasons: IGetSecurityReasons[]) => void;
   updateReviewTime: () => void;
+  status?: AttachmentStatus | undefined;
+  refresh: () => void;
 }
 
 /**
@@ -29,7 +32,7 @@ export interface IViewSecurityTableProps {
  *
  * @return {*}
  */
-const ViewSecurityTable: React.FC<IViewSecurityTableProps> = (props) => {
+const AttachmentSecurityTable: React.FC<IAttachmentSecurityTableProps> = (props) => {
   return (
     <>
       <Paper variant="outlined" style={{ marginTop: '24px' }}>
@@ -49,11 +52,12 @@ const ViewSecurityTable: React.FC<IViewSecurityTableProps> = (props) => {
             <Button
               variant="contained"
               color="primary"
-              onClick={() => {
+              onClick={async () => {
                 if (props.securityDetails?.security_reasons) {
-                  props.showDeleteSecurityReasonDialog(props.securityDetails?.security_reasons);
+                  await props.showDeleteSecurityReasonDialog(props.securityDetails?.security_reasons);
                 }
-                props.updateReviewTime()
+                await props.updateReviewTime();
+                await props.refresh();
               }}
               startIcon={<Icon path={mdiLockOpenOutline} size={0.8} />}>
               Remove Security
@@ -107,29 +111,56 @@ const ViewSecurityTable: React.FC<IViewSecurityTableProps> = (props) => {
                   );
                 })}
 
-              {props.securityDetails && props.securityDetails?.security_reasons?.length === 0 && (
-                <TableRow key={`0`}>
-                  <TableCell>Security Administration</TableCell>
-                  <TableCell>
-                    <Typography style={{ fontWeight: 700 }}>Awaiting Security Review</Typography>
-                    <Typography variant="body1" color="textSecondary">
-                      Awaiting review to determine if security-reasons should be assigned
-                    </Typography>
-                  </TableCell>
-                  <TableCell>
-                    <Typography variant="body2" component="div">
-                      Submitted
-                    </Typography>
-                    <Typography variant="body2" component="div" color="textSecondary">
-                      {getFormattedDateRangeString(
-                        DATE_FORMAT.ShortMediumDateFormat,
-                        '' //props.securityDetails?.metadata?.last_modified ||
-                      )}
-                    </Typography>
-                  </TableCell>
-                  <TableCell></TableCell>
-                </TableRow>
-              )}
+              {props.securityDetails &&
+                props.securityDetails?.security_reasons &&
+                props.securityDetails?.security_reasons?.length === 0 &&
+                (props.status === AttachmentStatus.PENDING_REVIEW || props.status === AttachmentStatus.SUBMITTED) && (
+                  <TableRow key={`0`}>
+                    <TableCell>Security Administration</TableCell>
+                    <TableCell>
+                      <Typography style={{ fontWeight: 700 }}>Awaiting Security Review</Typography>
+                      <Typography variant="body1" color="textSecondary">
+                        Awaiting review to determine if security-reasons should be assigned
+                      </Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Typography variant="body2" component="div">
+                        Submitted
+                      </Typography>
+                      <Typography variant="body2" component="div" color="textSecondary">
+                        {getFormattedDateRangeString(
+                          DATE_FORMAT.ShortMediumDateFormat,
+                          '' //props.securityDetails?.metadata?.last_modified || ''
+                        )}
+                      </Typography>
+                    </TableCell>
+                    <TableCell></TableCell>
+                  </TableRow>
+                )}
+
+              {props.securityDetails &&
+                props.securityDetails?.security_reasons &&
+                props.securityDetails?.security_reasons?.length === 0 &&
+                props.status === AttachmentStatus.UNSECURED && (
+                  <TableRow key={`0`}>
+                    <TableCell>Security Administration</TableCell>
+                    <TableCell>
+                      <Typography style={{ fontWeight: 700 }}>Unsecured</Typography>
+                      <Typography variant="body1" color="textSecondary">
+                        No security reasons required for this record
+                      </Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Typography variant="body2" component="div">
+                        Expiry Date
+                      </Typography>
+                      <Typography variant="body2" component="div" color="textSecondary">
+                        No Expiry Date
+                      </Typography>
+                    </TableCell>
+                    <TableCell></TableCell>
+                  </TableRow>
+                )}
             </TableBody>
           </Table>
         </TableContainer>
@@ -138,4 +169,4 @@ const ViewSecurityTable: React.FC<IViewSecurityTableProps> = (props) => {
   );
 };
 
-export default ViewSecurityTable;
+export default AttachmentSecurityTable;

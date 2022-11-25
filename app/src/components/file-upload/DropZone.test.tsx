@@ -9,10 +9,22 @@ const renderContainer = () => {
 };
 
 describe('DropZone', () => {
-  it('matches the snapshot', () => {
-    const { asFragment } = renderContainer();
+  it('renders default instruction text', () => {
+    const { getByTestId } = renderContainer();
 
-    expect(asFragment()).toMatchSnapshot();
+    expect(getByTestId('dropzone-instruction-text').textContent).toEqual('Drag your files here, or Browse Files');
+  });
+
+  it('renders default maximum file size text', () => {
+    const { getByTestId } = renderContainer();
+
+    expect(getByTestId('dropzone-max-size-text').textContent).toEqual('Maximum file size: 50 MB');
+  });
+
+  it('renders default maximum file cunt text', () => {
+    const { getByTestId } = renderContainer();
+
+    expect(getByTestId('dropzone-max-files-text').textContent).toEqual('Maximum files: 10');
   });
 
   it('calls the `onFiles` callback when files are selected', async () => {
