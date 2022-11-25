@@ -1,4 +1,3 @@
-import { AttachmentStatus } from 'constants/attachments';
 import { IProjectCoordinatorForm } from 'features/projects/components/ProjectCoordinatorForm';
 import { IProjectDetailsForm } from 'features/projects/components/ProjectDetailsForm';
 import { IProjectFundingForm } from 'features/projects/components/ProjectFundingForm';
@@ -8,9 +7,9 @@ import { IProjectObjectivesForm } from 'features/projects/components/ProjectObje
 import { IProjectPartnershipsForm } from 'features/projects/components/ProjectPartnershipsForm';
 import { Feature } from 'geojson';
 
-
 /**
  * @TODO securityRuleCount and status should likely be required, not optional.
+ * @TODO should we not reference the repo interface?
  */
 export interface IGetProjectAttachment {
   id: number;
@@ -22,7 +21,6 @@ export interface IGetProjectAttachment {
   securityReviewTimestamp: string;
   revisionCount: number;
   securityRuleCount?: number;
-  status?: AttachmentStatus;
 }
 
 export type IGetProjectReportAttachment = IGetProjectAttachment & { fileType: 'Report' };

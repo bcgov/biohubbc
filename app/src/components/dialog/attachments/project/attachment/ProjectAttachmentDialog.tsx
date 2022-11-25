@@ -35,10 +35,9 @@ export interface IProjectAttachmentDialogProps {
  */
 const ProjectAttachmentDialog: React.FC<IProjectAttachmentDialogProps> = (props) => {
   const biohubApi = useBiohubApi();
+  const dialogContext = useContext(DialogContext);
 
   const [showAddSecurityDialog, setShowAddSecurityDialog] = useState(false);
-
-  const dialogContext = useContext(DialogContext);
 
   const attachmentDetailsDataLoader = useDataLoader((attachmentId: number) =>
     biohubApi.project.getProjectAttachmentDetails(props.projectId, attachmentId)
@@ -206,7 +205,7 @@ const ProjectAttachmentDialog: React.FC<IProjectAttachmentDialogProps> = (props)
             securityDetails={attachmentDetailsDataLoader.data || null}
             showAddSecurityDialog={setShowAddSecurityDialog}
             showDeleteSecurityReasonDialog={showDeleteSecurityReasonDialog}
-            status={props.currentAttachment?.status}
+            isAwaitingReview={!props.currentAttachment?.securityReviewTimestamp}
             updateReviewTime={updateReviewTime}
             refresh={refreshAttachmentDetails}
           />

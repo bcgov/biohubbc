@@ -175,7 +175,7 @@ export function getProjectReportDetails(): RequestHandler {
 
       const attachmentService = new AttachmentService(connection);
 
-      const projectReportAttachment = await attachmentService.getProjectReportAttachment(
+      const projectReportAttachment = await attachmentService.getProjectReportAttachmentById(
         Number(req.params.projectId),
         Number(req.params.attachmentId)
       );

@@ -1,4 +1,3 @@
-import { AttachmentStatus } from 'constants/attachments';
 import { IAgreementsForm } from 'features/surveys/components/AgreementsForm';
 import { IGeneralInformationForm } from 'features/surveys/components/GeneralInformationForm';
 import { IProprietaryDataForm } from 'features/surveys/components/ProprietaryDataForm';
@@ -177,7 +176,6 @@ export interface IGetSurveyAttachment {
   securityReviewTimestamp: string;
   revisionCount: number;
   securityRuleCount?: number;
-  status?: AttachmentStatus;
 }
 
 export type IGetSurveyReportAttachment = IGetSurveyAttachment & { fileType: 'Report' };
