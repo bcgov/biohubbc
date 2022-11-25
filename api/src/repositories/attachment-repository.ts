@@ -888,9 +888,9 @@ export class AttachmentRepository extends BaseRepository {
         prp.*, sa.user_identifier
       FROM
         project_report_persecution prp, system_user sa
-      where
+      WHERE
           prp.create_user = sa.system_user_id
-      AND project_report_attachment_id = ${projectReportAttachmentId}
+      AND project_report_attachment_id = ${projectReportAttachmentId};
     `;
 
     const response = await this.connection.sql<IProjectReportSecurityReason>(sqlStatement);
@@ -910,7 +910,7 @@ export class AttachmentRepository extends BaseRepository {
         survey_report_persecution srp, system_user sa
       WHERE
         srp.create_user = sa.system_user_id
-      AND srp.survey_report_attachment_id = ${surveyReportAttachmentId}
+      AND srp.survey_report_attachment_id = ${surveyReportAttachmentId};
     `;
 
     const response = await this.connection.sql<ISurveyReportSecurityReason>(sqlStatement);
@@ -930,9 +930,9 @@ export class AttachmentRepository extends BaseRepository {
         pap.*, sa.user_identifier
       FROM
         project_attachment_persecution pap,  system_user sa
-      where
+      WHERE
         pap.create_user = sa.system_user_id
-      and pap.project_attachment_id = ${projectAttachmentId}
+      AND pap.project_attachment_id = ${projectAttachmentId};
     `;
 
     const response = await this.connection.sql<IProjectAttachmentSecurityReason>(sqlStatement);
@@ -952,7 +952,7 @@ export class AttachmentRepository extends BaseRepository {
         survey_attachment_persecution sap, system_user sa
       WHERE
           sap.create_user = sa.system_user_id
-      AND sap.survey_attachment_id = ${surveyAttachmentId}
+      AND sap.survey_attachment_id = ${surveyAttachmentId};
       `;
 
     const response = await this.connection.sql<ISurveyAttachmentSecurityReason>(sqlStatement);
