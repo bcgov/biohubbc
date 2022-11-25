@@ -1,6 +1,6 @@
 import Box from '@material-ui/core/Box';
 import Checkbox from '@material-ui/core/Checkbox';
-import Chip from '@material-ui/core/Chip';
+import Icon from '@mdi/react';
 import { grey } from '@material-ui/core/colors';
 import IconButton from '@material-ui/core/IconButton';
 import Link from '@material-ui/core/Link';
@@ -16,16 +16,12 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import {
-  mdiAlertCircle,
   mdiCheckboxOutline,
   mdiDotsVertical,
   mdiInformationOutline,
-  mdiLockCheckOutline,
-  mdiLockOpenCheckOutline,
   mdiTrashCanOutline,
   mdiTrayArrowDown
 } from '@mdi/js';
-import Icon from '@mdi/react';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import AllAttachmentDetailsDialog from 'components/dialog/security/AllAttachmentDetailsDialog';
 import { AttachmentsI18N, EditReportMetaDataI18N } from 'constants/i18n';
@@ -33,9 +29,10 @@ import { DialogContext } from 'contexts/dialogContext';
 import { IAttachmentType } from 'features/projects/view/ProjectAttachments';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { AttachmentStatus, IGetProjectAttachment } from 'interfaces/useProjectApi.interface';
+import { IGetProjectAttachment } from 'interfaces/useProjectApi.interface';
 import { IGetSurveyAttachment } from 'interfaces/useSurveyApi.interface';
 import React, { useContext, useState } from 'react';
+import AttachmentStatusChip from './AttachmentStatusChip';
 
 const useStyles = makeStyles((theme: Theme) => ({
   attachmentsTable: {
@@ -187,34 +184,6 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
     }
   };
 
-  const AttachmentStatusChip = (status?: AttachmentStatus, securityRuleCount?: number) => {
-    let label = 'Submitted';
-    let color: 'default' | 'primary' | 'secondary' | undefined = 'primary';
-    let icon = undefined;
-
-    switch (status) {
-      case 'SUBMITTED':
-        break;
-      case 'PENDING_REVIEW':
-        label = 'Pending review';
-        color = 'secondary';
-        icon = mdiAlertCircle;
-        break;
-      case 'SECURED':
-        label = securityRuleCount ? `Secured (${securityRuleCount})` : 'Secured';
-        color = 'default';
-        icon = mdiLockCheckOutline;
-        break;
-      case 'UNSECURED':
-        label = 'Unsecured';
-        color = 'default';
-        icon = mdiLockOpenCheckOutline;
-        break;
-    }
-
-    return <Chip size="small" color={color} label={label} icon={icon ? <Icon path={icon} size={0.8} /> : undefined} />;
-  };
-
   return (
     <>
       <AllAttachmentDetailsDialog
@@ -272,7 +241,9 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
                         </Link>
                       </TableCell>
                       <TableCell>{row.fileType}</TableCell>
-                      <TableCell>{AttachmentStatusChip(row.status, row.securityRuleCount)}</TableCell>
+                      <TableCell>
+                        <AttachmentStatusChip status={row.status} securityRuleCount={row.securityRuleCount} />
+                      </TableCell>
                       <TableCell align="right">
                         <AttachmentItemMenuButton
                           attachment={row}
