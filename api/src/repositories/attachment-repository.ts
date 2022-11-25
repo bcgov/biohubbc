@@ -52,24 +52,32 @@ export interface IProjectReportSecurityReason {
   project_report_persecution_id: number;
   project_report_attachment_id: number;
   persecution_security_id: number;
+  create_date: string;
+  user_identifier: string;
 }
 
 export interface IProjectAttachmentSecurityReason {
   project_attachment_persecution_id: number;
   project_attachment_id: number;
   persecution_security_id: number;
+  create_date: string;
+  user_identifier: string;
 }
 
 export interface ISurveyReportSecurityReason {
   survey_report_persecution_id: number;
   survey_report_attachment_id: number;
   persecution_security_id: number;
+  create_date: string;
+  user_identifier: string;
 }
 
 export interface ISurveyAttachmentSecurityReason {
   survey_attachment_persecution_id: number;
   survey_attachment_id: number;
   persecution_security_id: number;
+  create_date: string;
+  user_identifier: string;
 }
 
 const defaultLog = getLogger('repositories/attachment-repository');
@@ -877,11 +885,12 @@ export class AttachmentRepository extends BaseRepository {
   async getProjectReportSecurityReasons(projectReportAttachmentId: number): Promise<IProjectReportSecurityReason[]> {
     const sqlStatement = SQL`
       SELECT
-        project_report_persecution.*
+        prp.*, sa.user_identifier
       FROM
-        project_report_persecution
+        project_report_persecution prp, system_user sa
       where
-        project_report_attachment_id = ${projectReportAttachmentId}
+          prp.create_user = sa.system_user_id
+      AND project_report_attachment_id = ${projectReportAttachmentId}
     `;
 
     const response = await this.connection.sql<IProjectReportSecurityReason>(sqlStatement);
@@ -896,11 +905,12 @@ export class AttachmentRepository extends BaseRepository {
   async getSurveyReportSecurityReasons(surveyReportAttachmentId: number): Promise<ISurveyReportSecurityReason[]> {
     const sqlStatement = SQL`
       SELECT
-        survey_report_persecution.*
+        srp.*, sa.user_identifier
       FROM
-        survey_report_persecution
-      where
-        survey_report_attachment_id = ${surveyReportAttachmentId}
+        survey_report_persecution srp, system_user sa
+      WHERE
+        srp.create_user = sa.system_user_id
+      AND srp.survey_report_attachment_id = ${surveyReportAttachmentId}
     `;
 
     const response = await this.connection.sql<ISurveyReportSecurityReason>(sqlStatement);
@@ -917,11 +927,12 @@ export class AttachmentRepository extends BaseRepository {
   ): Promise<IProjectAttachmentSecurityReason[]> {
     const sqlStatement = SQL`
       SELECT
-        project_attachment_persecution.*
+        pap.*, sa.user_identifier
       FROM
-        project_attachment_persecution
+        project_attachment_persecution pap,  system_user sa
       where
-        project_attachment_id = ${projectAttachmentId}
+        pap.create_user = sa.system_user_id
+      and pap.project_attachment_id = ${projectAttachmentId}
     `;
 
     const response = await this.connection.sql<IProjectAttachmentSecurityReason>(sqlStatement);
@@ -936,11 +947,12 @@ export class AttachmentRepository extends BaseRepository {
   async getSurveyAttachmentSecurityReasons(surveyAttachmentId: number): Promise<ISurveyAttachmentSecurityReason[]> {
     const sqlStatement = SQL`
       SELECT
-        survey_attachment_persecution.*
+        sap.*, sa.user_identifier
       FROM
-        survey_attachment_persecution
-      where
-        survey_attachment_id = ${surveyAttachmentId}
+        survey_attachment_persecution sap, system_user sa
+      WHERE
+          sap.create_user = sa.system_user_id
+      AND sap.survey_attachment_id = ${surveyAttachmentId}
       `;
 
     const response = await this.connection.sql<ISurveyAttachmentSecurityReason>(sqlStatement);
