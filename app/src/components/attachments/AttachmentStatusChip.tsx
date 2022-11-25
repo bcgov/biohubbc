@@ -1,44 +1,45 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import {
   mdiAlertCircle,  
   mdiLockCheckOutline,
   mdiLockOpenCheckOutline,
 } from '@mdi/js';
 
-import { AttachmentStatus } from 'interfaces/useProjectApi.interface';
 import { Chip } from '@material-ui/core';
 import Icon from '@mdi/react';
+import { AuthStateContext } from 'contexts/authStateContext';
+import { SYSTEM_ROLE } from 'constants/roles';
 
 interface IAttachmentStatusChip {
-  status?: AttachmentStatus;
-  securityRuleCount?: number
+  securityReviewTimestamp: string | null;
+  securityRuleCount?: number;
 }
 
 const AttachmentStatusChip: React.FC<IAttachmentStatusChip> = (props) => {
-  const { status, securityRuleCount } = props
+  const { securityRuleCount, securityReviewTimestamp } = props
+
+  const { keycloakWrapper } = useContext(AuthStateContext);
+
+  const isDataAdmin = keycloakWrapper?.hasSystemRole([SYSTEM_ROLE.DATA_ADMINISTRATOR]);
 
   let label = 'Submitted';
   let color: 'default' | 'primary' | 'secondary' | undefined = 'primary';
   let icon = undefined;
 
-  switch (status) {
-    case 'SUBMITTED':
-      break;
-    case 'PENDING_REVIEW':
-      label = 'Pending review';
-      color = 'secondary';
-      icon = mdiAlertCircle;
-      break;
-    case 'SECURED':
+  if (securityReviewTimestamp) {
+    if (securityRuleCount && securityRuleCount > 0) {
       label = securityRuleCount ? `Secured (${securityRuleCount})` : 'Secured';
       color = 'default';
       icon = mdiLockCheckOutline;
-      break;
-    case 'UNSECURED':
+    } else {
       label = 'Unsecured';
       color = 'default';
       icon = mdiLockOpenCheckOutline;
-      break;
+    }
+  } else if (isDataAdmin) {
+    label = 'Pending review';
+    color = 'secondary';
+    icon = mdiAlertCircle;
   }
 
   return (

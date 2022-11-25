@@ -242,7 +242,10 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
                       </TableCell>
                       <TableCell>{row.fileType}</TableCell>
                       <TableCell>
-                        <AttachmentStatusChip status={row.status} securityRuleCount={row.securityRuleCount} />
+                        <AttachmentStatusChip
+                          securityReviewTimestamp={row.securityReviewTimestamp}
+                          securityRuleCount={row.securityRuleCount}
+                        />
                       </TableCell>
                       <TableCell align="right">
                         <AttachmentItemMenuButton

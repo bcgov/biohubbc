@@ -4,7 +4,7 @@ import { IProprietaryDataForm } from 'features/surveys/components/ProprietaryDat
 import { IPurposeAndMethodologyForm } from 'features/surveys/components/PurposeAndMethodologyForm';
 import { IStudyAreaForm } from 'features/surveys/components/StudyAreaForm';
 import { Feature } from 'geojson';
-import { AttachmentStatus, IGetProjectForUpdateResponseFundingSource } from 'interfaces/useProjectApi.interface';
+import { IGetProjectForUpdateResponseFundingSource } from 'interfaces/useProjectApi.interface';
 import { StringBoolean } from 'types/misc';
 
 /**
@@ -176,7 +176,6 @@ export interface IGetSurveyAttachment {
   securityReviewTimestamp: string;
   revisionCount: number;
   securityRuleCount?: number;
-  status?: AttachmentStatus;
 }
 
 export type IGetSurveyReportAttachment = IGetSurveyAttachment & { fileType: 'Report' };
