@@ -285,19 +285,19 @@ export async function up(knex: Knex): Promise<void> {
     CREATE UNIQUE INDEX project_attachment_proprietary_uk1 ON project_attachment_proprietary(project_attachment_id, proprietary_security_id);
     CREATE INDEX "Ref141222" ON project_attachment_proprietary(project_attachment_id);
 
-    CREATE UNIQUE INDEX project_report_persecution_uk1 ON project_report_persecution(persecution_security_id);
+    CREATE UNIQUE INDEX project_report_persecution_uk1 ON project_report_persecution(persecution_security_id, project_report_attachment_id);
     CREATE INDEX "Ref206226" ON project_report_persecution(project_report_attachment_id);
-    CREATE UNIQUE INDEX project_report_proprietary_uk1 ON project_report_proprietary(proprietary_security_id);
+    CREATE UNIQUE INDEX project_report_proprietary_uk1 ON project_report_proprietary(proprietary_security_id, project_report_attachment_id);
     CREATE INDEX "Ref206224" ON project_report_proprietary(project_report_attachment_id);
 
-    CREATE UNIQUE INDEX survey_attachment_persecution_uk1 ON survey_attachment_persecution(persecution_security_id);
+    CREATE UNIQUE INDEX survey_attachment_persecution_uk1 ON survey_attachment_persecution(persecution_security_id, survey_attachment_id);
     CREATE INDEX "Ref161228" ON survey_attachment_persecution(survey_attachment_id);
-    CREATE UNIQUE INDEX survey_attachment_proprietary_uk1 ON survey_attachment_proprietary(proprietary_security_id);
+    CREATE UNIQUE INDEX survey_attachment_proprietary_uk1 ON survey_attachment_proprietary(proprietary_security_id, survey_attachment_id);
     CREATE INDEX "Ref161227" ON survey_attachment_proprietary(survey_attachment_id);
 
-    CREATE UNIQUE INDEX survey_report_persecution_uk1 ON survey_report_persecution(persecution_security_id);
+    CREATE UNIQUE INDEX survey_report_persecution_uk1 ON survey_report_persecution(persecution_security_id, survey_report_attachment_id);
     CREATE INDEX "Ref213230" ON survey_report_persecution(survey_report_attachment_id);
-    CREATE UNIQUE INDEX survey_report_proprietary_uk1 ON survey_report_proprietary(proprietary_security_id);
+    CREATE UNIQUE INDEX survey_report_proprietary_uk1 ON survey_report_proprietary(proprietary_security_id, survey_report_attachment_id);
     CREATE INDEX "Ref213229" ON survey_report_proprietary(survey_report_attachment_id);
 
     CREATE UNIQUE INDEX survey_occurrence_proprietary_uk1 ON survey_occurrence_proprietary(proprietary_security_id, survey_id);
