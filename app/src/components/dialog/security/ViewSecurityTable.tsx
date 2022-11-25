@@ -96,8 +96,7 @@ const ViewSecurityTable: React.FC<IViewSecurityTableProps> = (props) => {
                       </TableCell>
                       <TableCell>
                         <Button
-                          variant="contained"
-                          color="primary"
+                          variant="outlined"
                           onClick={() => props.showDeleteSecurityReasonDialog([row])}
                           startIcon={<Icon path={mdiLockOpenOutline} size={0.8} />}>
                           Remove
