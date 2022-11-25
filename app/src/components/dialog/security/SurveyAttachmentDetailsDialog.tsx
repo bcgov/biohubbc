@@ -88,14 +88,16 @@ const SurveyAttachmentDetailsDialog: React.FC<ISurveyAttachmentDetailsDialogProp
 
     if (props.attachmentId) {
       if (props.currentAttachment && props.currentAttachment.fileType === AttachmentType.REPORT) {
-        await biohubApi.security.deleteProjectReportAttachmentSecurityReasons(
+        await biohubApi.security.deleteSurveyReportAttachmentSecurityReasons(
           props.projectId,
+          props.surveyId,
           props.attachmentId,
           securityIds
         );
       } else {
-        await biohubApi.security.deleteProjectAttachmentSecurityReasons(
+        await biohubApi.security.deleteSurveyAttachmentSecurityReasons(
           props.projectId,
+          props.surveyId,
           props.attachmentId,
           securityIds
         );
