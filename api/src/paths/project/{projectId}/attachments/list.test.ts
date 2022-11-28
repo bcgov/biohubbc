@@ -2,10 +2,8 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import SQL from 'sql-template-strings';
 import * as db from '../../../../database/db';
 import { HTTPError } from '../../../../errors/http-error';
-import project_queries from '../../../../queries/project';
 import { getMockDBConnection } from '../../../../__mocks__/db';
 import * as listAttachments from './list';
 
@@ -45,8 +43,6 @@ describe('lists the project attachments', () => {
         return 20;
       }
     });
-
-    sinon.stub(project_queries, '__deprecated_getProjectAttachmentsSQL').returns(null);
 
     try {
       const result = listAttachments.getAttachments();
@@ -98,8 +94,6 @@ describe('lists the project attachments', () => {
       },
       query: mockQuery
     });
-
-    sinon.stub(project_queries, '__deprecated_getProjectAttachmentsSQL').returns(SQL`something`);
 
     const result = listAttachments.getAttachments();
 
@@ -166,8 +160,6 @@ describe('lists the project attachments', () => {
       query: mockQuery
     });
 
-    sinon.stub(project_queries, '__deprecated_getProjectAttachmentsSQL').returns(SQL`something`);
-
     const result = listAttachments.getAttachments();
 
     await result(sampleReq, sampleRes as any, (null as unknown) as any);
@@ -205,8 +197,6 @@ describe('lists the project attachments', () => {
       },
       query: mockQuery
     });
-
-    sinon.stub(project_queries, '__deprecated_getProjectAttachmentsSQL').returns(SQL`something`);
 
     const result = listAttachments.getAttachments();
 
