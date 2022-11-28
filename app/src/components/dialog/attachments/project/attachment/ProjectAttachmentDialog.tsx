@@ -44,8 +44,6 @@ const ProjectAttachmentDialog: React.FC<IProjectAttachmentDialogProps> = (props)
     biohubApi.project.getProjectAttachmentDetails(props.projectId, attachmentId)
   );
 
-  console.log('props.currentAttachment', props.currentAttachment);
-
   const defaultYesNoDialogProps = {
     open: false,
     onClose: () => dialogContext.setYesNoDialog({ open: false }),
