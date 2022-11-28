@@ -69,9 +69,6 @@ const ReportSecurityTable: React.FC<IReportSecurityTableProps> = (props) => {
                 <TableCell width="200">Category</TableCell>
                 <TableCell>Reason</TableCell>
                 <TableCell width="160">Dates</TableCell>
-                {props.securityDetails &&
-                  props.securityDetails?.security_reasons &&
-                  props.securityDetails?.security_reasons?.length > 0 && <TableCell width="160">Applied</TableCell>}
                 <TableCell width="160">Actions</TableCell>
               </TableRow>
             </TableHead>
@@ -87,15 +84,6 @@ const ReportSecurityTable: React.FC<IReportSecurityTableProps> = (props) => {
                         <Typography style={{ fontWeight: 700 }}>{row.security_reason_title}</Typography>
                         <Typography variant="body1" color="textSecondary">
                           {row.security_reason_description}
-                        </Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Typography variant="body2" component="div">
-                          Expired
-                        </Typography>
-
-                        <Typography variant="body2" component="div" color="textSecondary">
-                          {row.date_expired ? row.date_expired : 'N/A'}
                         </Typography>
                       </TableCell>
                       <TableCell>
