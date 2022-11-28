@@ -83,7 +83,8 @@ export interface ISurveyAttachmentSecurityReason {
 const defaultLog = getLogger('repositories/attachment-repository');
 
 /**
- * A repository class for accessing attachment data.
+ * A repository class for accessing project and survey attachment data and
+ * enumerating attachment security rules.
  *
  * @export
  * @class AttachmentRepository
@@ -91,18 +92,10 @@ const defaultLog = getLogger('repositories/attachment-repository');
  */
 export class AttachmentRepository extends BaseRepository {
   /**
-   * PROJECT ATTACHMENTS
-   *
-   * @memberof AttachmentRepository
-   * @type Project Attachments
-   *
-   */
-
-  /**
    * SQL query to get report attachments for a single project.
    *
-   * @param {number} projectId
-   * @return {*}
+   * @param {number} projectId The project ID
+   * @return {Promise<IProjectAttachment[]>} Promise resolving all project attachments
    * @memberof AttachmentRepository
    */
   async getProjectAttachments(projectId: number): Promise<IProjectAttachment[]> {
@@ -138,11 +131,42 @@ export class AttachmentRepository extends BaseRepository {
     return response.rows;
   }
 
+  async getProjectAttachmentById(projectId: number, attachmentId: number): Promise<IProjectAttachment> {
+    const sqlStatement = SQL`
+      SELECT
+        project_attachment_id AS id,
+        file_name,
+        file_type,
+        create_user,
+        update_date,
+        create_date,
+        file_size,
+        key,
+        security_token,
+        security_review_timestamp
+      FROM
+        project_attachment
+      WHERE
+        project_attachment_id = ${attachmentId}
+      AND
+        project_id = ${projectId};
+    `;
+
+    const response = await this.connection.sql<IProjectAttachment>(sqlStatement);
+
+    if (!response.rows) {
+      throw new HTTP400('Failed to get project attachment by attachment id');
+    }
+
+    return response.rows[0];
+  }
+
   /**
-   * SQL query to get attachments for a single project, including security rule counts
+   * SQL query to get attachments for a single project, including security rule counts.
    *
    * @param {number} projectId
-   * @return {*}
+   * @return {Promise<WithSecurityCounts<IProjectAttachment[]>>} Promise resolving all project attachments with 
+   * security rule counts.
    * @memberof AttachmentRepository
    */
   async getProjectAttachmentsWithSecurityCounts(
