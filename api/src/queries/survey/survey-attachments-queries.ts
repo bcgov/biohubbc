@@ -6,67 +6,6 @@ import {
 } from '../../models/project-survey-attachments';
 
 /**
- * SQL query to get attachments for a single survey.
- *
- * @param {number} surveyId
- * @returns {SQLStatement} sql query object
- */
-export const __deprecated_getSurveyAttachmentsSQL = (surveyId: number): SQLStatement | null => {
-  if (!surveyId) {
-    return null;
-  }
-
-  const sqlStatement: SQLStatement = SQL`
-    SELECT
-      survey_attachment_id as id,
-      file_name,
-      update_date,
-      create_date,
-      file_size,
-      file_type,
-      key,
-      security_token,
-      security_review_timestamp
-    from
-      survey_attachment
-    where
-      survey_id = ${surveyId};
-  `;
-
-  return sqlStatement;
-};
-
-/**
- * SQL query to get the list of report attachments for a single survey.
- *
- * @param {number} surveyId
- * @returns {SQLStatement} sql query object
- */
-export const __deprecated_getSurveyReportAttachmentsSQL = (surveyId: number): SQLStatement | null => {
-  if (!surveyId) {
-    return null;
-  }
-
-  const sqlStatement: SQLStatement = SQL`
-    SELECT
-      survey_report_attachment_id as id,
-      file_name,
-      update_date,
-      create_date,
-      file_size,
-      key,
-      security_token,
-      security_review_timestamp
-    from
-      survey_report_attachment
-    where
-      survey_id = ${surveyId};
-  `;
-
-  return sqlStatement;
-};
-
-/**
  * SQL query to delete an attachment for a single survey.
  *
  * @param {number} attachmentId

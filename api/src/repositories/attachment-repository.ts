@@ -571,14 +571,6 @@ export class AttachmentRepository extends BaseRepository {
     }
   }
 
-  /**
-   * SURVEY ATTACHMENTS
-   *
-   * @memberof AttachmentRepository
-   * @type Survey Attachments
-   *
-   */
-
   async getSurveyAttachments(surveyId: number): Promise<ISurveyAttachment[]> {
     defaultLog.debug({ label: 'getProjectAttachments' });
 

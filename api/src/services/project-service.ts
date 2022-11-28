@@ -853,20 +853,14 @@ export class ProjectService extends DBService {
      * Get the attachment S3 keys for all attachments associated to this project and surveys under this project
      * Used to delete them from S3 separately later
      */
-    const getProjectAttachmentSQLStatement = queries.project.__deprecated_getProjectAttachmentsSQL(projectId);
+
+    // @TODO need to add a constructor to this class which
+    // instantiates `this.attachmentService = new AttachmentService(connection);`.
+    const getProjectAttachments = this.attachmentService.getProjectAttachments(projectId);
     const getSurveyIdsSQLStatement = queries.survey.getSurveyIdsSQL(projectId);
 
-    if (!getProjectAttachmentSQLStatement || !getSurveyIdsSQLStatement) {
+    if (!getSurveyIdsSQLStatement) {
       throw new HTTP400('Failed to build SQL get statement');
-    }
-
-    const getProjectAttachmentsResult = await this.connection.query(
-      getProjectAttachmentSQLStatement.text,
-      getProjectAttachmentSQLStatement.values
-    );
-
-    if (!getProjectAttachmentsResult || !getProjectAttachmentsResult.rows) {
-      throw new HTTP400('Failed to get project attachments');
     }
 
     const getSurveyIdsResult = await this.connection.query(
@@ -885,7 +879,7 @@ export class ProjectService extends DBService {
       )
     );
 
-    const projectAttachmentS3Keys: string[] = getProjectAttachmentsResult.rows.map((attachment: any) => {
+    const projectAttachmentS3Keys: string[] = getProjectAttachments.map((attachment: any) => {
       return attachment.key;
     });
 
