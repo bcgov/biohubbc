@@ -204,6 +204,7 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
               style={{ marginLeft: '8px' }}
               variant="contained"
               color="primary"
+              disabled={[...attachmentsList, ...reportAttachmentsList].length === 0}
               startIcon={<Icon path={mdiLockOutline} size={0.8} />}
               onClick={() => setSecurityDialogOpen(true)}>
               Apply Security
