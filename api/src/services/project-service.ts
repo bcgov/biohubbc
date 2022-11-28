@@ -1,6 +1,7 @@
 import moment from 'moment';
 import { PROJECT_ROLE } from '../constants/roles';
 import { COMPLETION_STATUS } from '../constants/status';
+import { IDBConnection } from '../database/db';
 import { HTTP400, HTTP409 } from '../errors/http-error';
 import { IPostIUCN, PostFundingSource, PostProjectObject } from '../models/project-create';
 import {
@@ -30,9 +31,18 @@ import { getSurveyAttachmentS3Keys } from '../paths/project/{projectId}/survey/{
 import { GET_ENTITIES, IUpdateProject } from '../paths/project/{projectId}/update';
 import { queries } from '../queries/queries';
 import { deleteFileFromS3 } from '../utils/file-utils';
+import { AttachmentService } from './attachment-service';
 import { DBService } from './db-service';
 
 export class ProjectService extends DBService {
+
+  attachmentService: AttachmentService;
+
+  constructor(connection: IDBConnection) {
+    super(connection);
+    this.attachmentService = new AttachmentService(connection);
+  }
+
   /**
    * Gets the project participant, adding them if they do not already exist.
    *
@@ -853,10 +863,7 @@ export class ProjectService extends DBService {
      * Get the attachment S3 keys for all attachments associated to this project and surveys under this project
      * Used to delete them from S3 separately later
      */
-
-    // @TODO need to add a constructor to this class which
-    // instantiates `this.attachmentService = new AttachmentService(connection);`.
-    const getProjectAttachments = this.attachmentService.getProjectAttachments(projectId);
+    const getProjectAttachments = await this.attachmentService.getProjectAttachments(projectId)
     const getSurveyIdsSQLStatement = queries.survey.getSurveyIdsSQL(projectId);
 
     if (!getSurveyIdsSQLStatement) {
