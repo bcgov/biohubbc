@@ -9,7 +9,11 @@ import { IUploadHandler } from 'components/file-upload/FileUploadItem';
 import { H2MenuToolbar } from 'components/toolbar/ActionToolbars';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetProjectForViewResponse, IUploadAttachmentResponse } from 'interfaces/useProjectApi.interface';
-import { IGetSurveyAttachment, IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
+import {
+  IGetSurveyAttachment,
+  IGetSurveyForViewResponse,
+  IGetSurveyReportAttachment
+} from 'interfaces/useSurveyApi.interface';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import { AttachmentType } from '../../../constants/attachments';
@@ -35,6 +39,9 @@ const SurveyAttachments: React.FC<ISurveyAttachmentsProps> = () => {
     AttachmentType.OTHER
   );
   const [attachmentsList, setAttachmentsList] = useState<IGetSurveyAttachment[]>([]);
+  const [reportAttachmentsList, setReportAttachmentsList] = useState<IGetSurveyReportAttachment[]>([]);
+
+  // Tracks which attachment rows have been selected, via the table checkboxes.
 
   const handleUploadReportClick = () => {
     setAttachmentType(AttachmentType.REPORT);
@@ -58,6 +65,7 @@ const SurveyAttachments: React.FC<ISurveyAttachmentsProps> = () => {
           return;
         }
 
+        setReportAttachmentsList([...response.reportAttachmentsList]);
         setAttachmentsList([...response.attachmentsList]);
       } catch (error) {
         return error;
@@ -116,7 +124,7 @@ const SurveyAttachments: React.FC<ISurveyAttachmentsProps> = () => {
           <AttachmentsList
             projectId={projectId}
             surveyId={surveyId}
-            attachmentsList={attachmentsList}
+            attachmentsList={[...attachmentsList, ...reportAttachmentsList]}
             getAttachments={getAttachments}
           />
         </Box>

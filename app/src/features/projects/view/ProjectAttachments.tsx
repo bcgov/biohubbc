@@ -102,16 +102,16 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
     };
   };
 
+  useEffect(() => {
+    getAttachments(false);
+    // eslint-disable-next-line
+  }, []);
+
   const addSecurityReasons = (securityReasons: number[]) => {
     biohubApi.security.addProjectSecurityReasons(projectId, securityReasons, selectedAttachmentRows).finally(() => {
       setSecurityDialogOpen(false);
     });
   };
-
-  useEffect(() => {
-    getAttachments(false);
-    // eslint-disable-next-line
-  }, []);
 
   const [securityDialogOpen, setSecurityDialogOpen] = useState(false);
 

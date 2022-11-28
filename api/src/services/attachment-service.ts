@@ -76,9 +76,7 @@ export class AttachmentService extends DBService {
     return this.attachmentRepository.getSurveyReportAttachments(surveyId);
   }
 
-  async getSurveyAttachmentsWithSecurityCounts(
-    surveyId: number
-  ): Promise<WithSecurityRuleCount<ISurveyAttachment>[]> {
+  async getSurveyAttachmentsWithSecurityCounts(surveyId: number): Promise<WithSecurityRuleCount<ISurveyAttachment>[]> {
     return this.attachmentRepository.getSurveyAttachmentsWithSecurityCounts(surveyId);
   }
 

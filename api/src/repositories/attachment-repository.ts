@@ -4,9 +4,9 @@ import { HTTP400 } from '../errors/http-error';
 import { getLogger } from '../utils/logger';
 import { BaseRepository } from './base-repository';
 
-export interface ISurveyAttachment extends IProjectAttachment {};
+export type ISurveyAttachment = IProjectAttachment;
 
-export interface ISurveyReportAttachment extends IProjectReportAttachment {};
+export type ISurveyReportAttachment = IProjectReportAttachment;
 
 export interface IProjectAttachment {
   id: number;
@@ -397,9 +397,7 @@ export class AttachmentRepository extends BaseRepository {
    * @return {*}
    * @memberof AttachmentRepository
    */
-  async getSurveyAttachmentsWithSecurityCounts(
-    surveyId: number
-  ): Promise<WithSecurityRuleCount<ISurveyAttachment>[]> {
+  async getSurveyAttachmentsWithSecurityCounts(surveyId: number): Promise<WithSecurityRuleCount<ISurveyAttachment>[]> {
     defaultLog.debug({ label: 'getSurveyAttachmentsWithSecurityCounts' });
 
     const sqlStatement = SQL`
@@ -1029,9 +1027,7 @@ export class AttachmentRepository extends BaseRepository {
     return response.rows;
   }
 
-  async getProjectAttachmentSecurityReasons(
-    projectAttachmentId: number
-  ): Promise<IProjectAttachmentSecurityReason[]> {
+  async getProjectAttachmentSecurityReasons(projectAttachmentId: number): Promise<IProjectAttachmentSecurityReason[]> {
     const sqlStatement = SQL`
       SELECT
         pap.*, sa.user_identifier

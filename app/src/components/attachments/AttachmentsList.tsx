@@ -53,6 +53,7 @@ export interface IAttachmentsListProps {
 }
 
 const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
+  console.log('In the attachmentsList:', props);
   const classes = useStyles();
   const biohubApi = useBiohubApi();
 
