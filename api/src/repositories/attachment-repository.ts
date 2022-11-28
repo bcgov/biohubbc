@@ -4,9 +4,9 @@ import { HTTP400 } from '../errors/http-error';
 import { getLogger } from '../utils/logger';
 import { BaseRepository } from './base-repository';
 
-export interface ISurveyAttachment extends IProjectAttachment {}
+export type ISurveyAttachment = IProjectAttachment;
 
-export interface ISurveyReportAttachment extends IProjectReportAttachment {}
+export type ISurveyReportAttachment = IProjectReportAttachment;
 
 export interface IProjectAttachment {
   id: number;

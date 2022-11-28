@@ -188,6 +188,7 @@ export type IGetSurveyReportAttachment = IGetSurveyAttachment & { fileType: 'Rep
  */
 export interface IGetSurveyAttachmentsResponse {
   attachmentsList: IGetSurveyAttachment[];
+  reportAttachmentsList: IGetSurveyReportAttachment[];
 }
 
 export interface ISurveyPermits {

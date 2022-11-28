@@ -102,16 +102,16 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
     };
   };
 
+  useEffect(() => {
+    getAttachments(false);
+    // eslint-disable-next-line
+  }, []);
+
   const addSecurityReasons = (securityReasons: number[]) => {
     biohubApi.security.addProjectSecurityReasons(projectId, securityReasons, selectedAttachmentRows).finally(() => {
       setSecurityDialogOpen(false);
     });
   };
-
-  useEffect(() => {
-    getAttachments(false);
-    // eslint-disable-next-line
-  }, []);
 
   const [securityDialogOpen, setSecurityDialogOpen] = useState(false);
 
@@ -204,6 +204,7 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
               style={{ marginLeft: '8px' }}
               variant="contained"
               color="primary"
+              disabled={[...attachmentsList, ...reportAttachmentsList].length === 0}
               startIcon={<Icon path={mdiLockOutline} size={0.8} />}
               onClick={() => setSecurityDialogOpen(true)}>
               Apply Security
