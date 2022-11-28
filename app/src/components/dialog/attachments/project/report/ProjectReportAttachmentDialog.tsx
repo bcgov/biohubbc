@@ -26,6 +26,7 @@ export interface IProjectReportAttachmentDialogProps {
   currentAttachment: IGetProjectAttachment | null;
   open: boolean;
   onClose: () => void;
+  refresh: (id: number) => void;
   dialogProps?: DialogProps;
 }
 
@@ -104,6 +105,11 @@ const ProjectReportAttachmentDialog: React.FC<IProjectReportAttachmentDialogProp
       yesButtonProps: { color: 'secondary' },
       onYes: async () => {
         await removeSecurity(securityReasons);
+
+        await updateReviewTime();
+        if (props.attachmentId) {
+          await props.refresh(props.attachmentId);
+        }
 
         refreshAttachmentDetails();
 
@@ -237,9 +243,7 @@ const ProjectReportAttachmentDialog: React.FC<IProjectReportAttachmentDialogProp
             securityDetails={reportAttachmentDetailsDataLoader.data || null}
             showAddSecurityDialog={setShowAddSecurityDialog}
             showDeleteSecurityReasonDialog={showDeleteSecurityReasonDialog}
-            updateReviewTime={updateReviewTime}
             isAwaitingReview={!props.currentAttachment?.securityReviewTimestamp}
-            refresh={refreshAttachmentDetails}
           />
         </DialogContent>
         <DialogActions>

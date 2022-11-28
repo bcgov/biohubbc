@@ -10,6 +10,7 @@ export interface IAllAttachmentDetailsDialogProps {
   currentAttachment: IGetProjectAttachment | IGetSurveyAttachment | null;
   open: boolean;
   close: () => void;
+  refresh: (id: number) => void;
 }
 
 /**
@@ -21,7 +22,6 @@ const AllAttachmentDetailsDialog: React.FC<IAllAttachmentDetailsDialogProps> = (
   if (!props.open) {
     return <></>;
   }
-  console.log('props in the AllAttachmentDetailsDialog: ', props);
 
   return (
     <>
@@ -32,6 +32,7 @@ const AllAttachmentDetailsDialog: React.FC<IAllAttachmentDetailsDialogProps> = (
           currentAttachment={props.currentAttachment}
           open={props.open}
           close={props.close}
+          refresh={props.refresh}
         />
       )}
       {!props.surveyId && (
@@ -40,6 +41,7 @@ const AllAttachmentDetailsDialog: React.FC<IAllAttachmentDetailsDialogProps> = (
           currentAttachment={props.currentAttachment}
           open={props.open}
           close={props.close}
+          refresh={props.refresh}
         />
       )}
     </>
