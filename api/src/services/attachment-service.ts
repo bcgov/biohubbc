@@ -28,16 +28,12 @@ export class AttachmentService extends DBService {
     this.attachmentRepository = new AttachmentRepository(connection);
   }
 
-  /**
-   * PROJECT ATTACHMENTS
-   *
-   * @memberof AttachmentService
-   * @type Project Attachments
-   *
-   */
-
   async getProjectAttachments(projectId: number): Promise<IProjectAttachment[]> {
     return this.attachmentRepository.getProjectAttachments(projectId);
+  }
+
+  async getProjectAttachmentById(projectId: number, attachmentId: number): Promise<IProjectAttachment> {
+    return this.attachmentRepository.getProjectAttachmentById(projectId, attachmentId);
   }
 
   async getProjectAttachmentsWithSecurityCounts(
