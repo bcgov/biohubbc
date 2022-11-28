@@ -14,9 +14,7 @@ import {
   postProjectReportAttachmentSQL,
   putProjectAttachmentSQL,
   putProjectReportAttachmentSQL,
-  updateProjectReportAttachmentMetadataSQL,
-  __deprecated_getProjectAttachmentsSQL,
-  __deprecated_getProjectReportAttachmentsSQL
+  updateProjectReportAttachmentMetadataSQL
 } from './project-attachments-queries';
 
 const post_sample_attachment_meta = {
@@ -43,34 +41,6 @@ const put_sample_attachment_meta = {
   description: 'description',
   revision_count: 0
 };
-
-describe('__deprecated_getProjectAttachmentsSQL', () => {
-  it('returns null response when null projectId provided', () => {
-    const response = __deprecated_getProjectAttachmentsSQL((null as unknown) as number);
-
-    expect(response).to.be.null;
-  });
-
-  it('returns non null response when valid projectId provided', () => {
-    const response = __deprecated_getProjectAttachmentsSQL(1);
-
-    expect(response).to.not.be.null;
-  });
-});
-
-describe('__deprecated_getProjectReportAttachmentsSQL', () => {
-  it('returns null response when null projectId provided', () => {
-    const response = __deprecated_getProjectReportAttachmentsSQL((null as unknown) as number);
-
-    expect(response).to.be.null;
-  });
-
-  it('returns non null response when valid projectId provided', () => {
-    const response = __deprecated_getProjectReportAttachmentsSQL(1);
-
-    expect(response).to.not.be.null;
-  });
-});
 
 describe('deleteProjectAttachmentSQL', () => {
   it('returns null response when null attachmentId provided', () => {

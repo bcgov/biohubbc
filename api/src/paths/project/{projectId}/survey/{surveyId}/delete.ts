@@ -5,6 +5,7 @@ import { getDBConnection, IDBConnection } from '../../../../../database/db';
 import { HTTP400 } from '../../../../../errors/http-error';
 import { queries } from '../../../../../queries/queries';
 import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
+import { AttachmentService } from '../../../../../services/attachment-service';
 import { PlatformService } from '../../../../../services/platform-service';
 import { deleteFileFromS3 } from '../../../../../utils/file-utils';
 import { getLogger } from '../../../../../utils/logger';
@@ -135,20 +136,8 @@ export function deleteSurvey(): RequestHandler {
 }
 
 export const getSurveyAttachmentS3Keys = async (surveyId: number, connection: IDBConnection) => {
-  const getSurveyAttachmentSQLStatement = queries.survey.__deprecated_getSurveyAttachmentsSQL(surveyId);
+  const attachmentService = new AttachmentService(connection);
 
-  if (!getSurveyAttachmentSQLStatement) {
-    throw new HTTP400('Failed to build SQL get statement');
-  }
-
-  const getResult = await connection.query(
-    getSurveyAttachmentSQLStatement.text,
-    getSurveyAttachmentSQLStatement.values
-  );
-
-  if (!getResult || !getResult.rows) {
-    throw new HTTP400('Failed to get survey attachments');
-  }
-
-  return getResult.rows.map((attachment: any) => attachment.key);
+  const surveyAttachments = await attachmentService.getSurveyAttachments(surveyId);
+  return surveyAttachments.map((attachment) => attachment.key);
 };

@@ -154,7 +154,7 @@ export function getSurveyAttachmentDetails(): RequestHandler {
 
       return res.status(200).json(attachmentDetails);
     } catch (error) {
-      defaultLog.error({ label: 'getProjectReportDetails', message: 'error', error });
+      defaultLog.error({ label: 'getSurveyAttachmentDetails', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {
