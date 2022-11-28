@@ -21,7 +21,6 @@ const AllAttachmentDetailsDialog: React.FC<IAllAttachmentDetailsDialogProps> = (
   if (!props.open) {
     return <></>;
   }
-  console.log('props in the AllAttachmentDetailsDialog: ', props);
 
   return (
     <>
