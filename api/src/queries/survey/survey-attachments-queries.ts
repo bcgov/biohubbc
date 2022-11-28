@@ -11,7 +11,7 @@ import {
  * @param {number} surveyId
  * @returns {SQLStatement} sql query object
  */
-export const getSurveyAttachmentsSQL = (surveyId: number): SQLStatement | null => {
+export const __deprecated_getSurveyAttachmentsSQL = (surveyId: number): SQLStatement | null => {
   if (!surveyId) {
     return null;
   }
@@ -25,7 +25,8 @@ export const getSurveyAttachmentsSQL = (surveyId: number): SQLStatement | null =
       file_size,
       file_type,
       key,
-      security_token
+      security_token,
+      security_review_timestamp
     from
       survey_attachment
     where
@@ -41,7 +42,7 @@ export const getSurveyAttachmentsSQL = (surveyId: number): SQLStatement | null =
  * @param {number} surveyId
  * @returns {SQLStatement} sql query object
  */
-export const getSurveyReportAttachmentsSQL = (surveyId: number): SQLStatement | null => {
+export const __deprecated_getSurveyReportAttachmentsSQL = (surveyId: number): SQLStatement | null => {
   if (!surveyId) {
     return null;
   }
@@ -54,45 +55,12 @@ export const getSurveyReportAttachmentsSQL = (surveyId: number): SQLStatement | 
       create_date,
       file_size,
       key,
-      security_token
+      security_token,
+      security_review_timestamp
     from
       survey_report_attachment
     where
       survey_id = ${surveyId};
-  `;
-
-  return sqlStatement;
-};
-
-/**
- * SQL query to get report attachments for a single survey.
- *
- * @param {number} surveyId
- * @returns {SQLStatement} sql query object
- */
-export const getSurveyReportAttachmentSQL = (surveyId: number, attachmentId: number): SQLStatement | null => {
-  if (!surveyId || !attachmentId) {
-    return null;
-  }
-  const sqlStatement: SQLStatement = SQL`
-  SELECT
-    survey_report_attachment_id as attachment_id,
-    file_name,
-    title,
-    description,
-    year as year_published,
-    update_date,
-    create_date,
-    file_size,
-    key,
-    security_token,
-    revision_count
-  FROM
-    survey_report_attachment
-  where
-    survey_report_attachment_id = ${attachmentId}
-  and
-    survey_id = ${surveyId}
   `;
 
   return sqlStatement;
@@ -501,31 +469,6 @@ export const deleteSurveyReportAttachmentAuthorsSQL = (attachmentId: number): SQ
       survey_report_author
     WHERE
       survey_report_attachment_id = ${attachmentId};
-  `;
-
-  return sqlStatement;
-};
-
-/**
- * Get the metadata fields of  survey report attachment, for the specified `surveyId` and `attachmentId`.
- *
- * @param {number} surveyId
- * @param {number} attachmentId
- * @param {PutReportAttachmentMetadata} metadata
- * @return {*}  {(SQLStatement | null)}
- */
-export const getSurveyReportAuthorsSQL = (surveyReportAttachmentId: number): SQLStatement | null => {
-  if (!surveyReportAttachmentId) {
-    return null;
-  }
-
-  const sqlStatement: SQLStatement = SQL`
-    SELECT
-      survey_report_author.*
-    FROM
-      survey_report_author
-    where
-      survey_report_attachment_id = ${surveyReportAttachmentId}
   `;
 
   return sqlStatement;

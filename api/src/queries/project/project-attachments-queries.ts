@@ -6,12 +6,17 @@ import {
 } from '../../models/project-survey-attachments';
 
 /**
+ * @TODO technical debt: move all these queries to the new Attachments Repository.
+ */
+
+/**
  * SQL query to get attachments for a single project.
  *
  * @param {number} projectId
  * @returns {SQLStatement} sql query object
+ * @TODO deprecate this method, see attachment service
  */
-export const getProjectAttachmentsSQL = (projectId: number): SQLStatement | null => {
+export const __deprecated_getProjectAttachmentsSQL = (projectId: number): SQLStatement | null => {
   if (!projectId) {
     return null;
   }
@@ -25,7 +30,8 @@ export const getProjectAttachmentsSQL = (projectId: number): SQLStatement | null
       create_date,
       file_size,
       key,
-      security_token
+      security_token,
+      security_review_timestamp
     from
       project_attachment
     where
@@ -40,8 +46,9 @@ export const getProjectAttachmentsSQL = (projectId: number): SQLStatement | null
  *
  * @param {number} projectId
  * @returns {SQLStatement} sql query object
+ * @TODO deprecate this method, see attachment service
  */
-export const getProjectReportAttachmentsSQL = (projectId: number): SQLStatement | null => {
+export const __deprecated_getProjectReportAttachmentsSQL = (projectId: number): SQLStatement | null => {
   if (!projectId) {
     return null;
   }
@@ -54,7 +61,8 @@ export const getProjectReportAttachmentsSQL = (projectId: number): SQLStatement 
       create_date,
       file_size,
       key,
-      security_token
+      security_token,
+      security_review_timestamp
     from
       project_report_attachment
     where
@@ -479,68 +487,6 @@ export const deleteProjectReportAttachmentAuthorsSQL = (attachmentId: number): S
       FROM project_report_author
     WHERE
       project_report_attachment_id = ${attachmentId};
-  `;
-
-  return sqlStatement;
-};
-
-/**
- * Get the metadata fields of  project report attachment, for the specified `projectId` and `attachmentId`.
- *
- * @param {number} projectId
- * @param {number} attachmentId
- * @param {PutReportAttachmentMetadata} metadata
- * @return {*}  {(SQLStatement | null)}
- */
-export const getProjectReportAttachmentSQL = (projectId: number, attachmentId: number): SQLStatement | null => {
-  if (!projectId || !attachmentId) {
-    return null;
-  }
-
-  const sqlStatement: SQLStatement = SQL`
-    SELECT
-      project_report_attachment_id as attachment_id,
-      file_name,
-      title,
-      description,
-      year as year_published,
-      update_date,
-      create_date,
-      file_size,
-      key,
-      security_token,
-      revision_count
-    FROM
-      project_report_attachment
-    where
-      project_report_attachment_id = ${attachmentId}
-    and
-      project_id = ${projectId}
-  `;
-
-  return sqlStatement;
-};
-
-/**
- * Get the metadata fields of  project report attachment, for the specified `projectId` and `attachmentId`.
- *
- * @param {number} projectId
- * @param {number} attachmentId
- * @param {PutReportAttachmentMetadata} metadata
- * @return {*}  {(SQLStatement | null)}
- */
-export const getProjectReportAuthorsSQL = (projectReportAttachmentId: number): SQLStatement | null => {
-  if (!projectReportAttachmentId) {
-    return null;
-  }
-
-  const sqlStatement: SQLStatement = SQL`
-    SELECT
-      project_report_author.*
-    FROM
-      project_report_author
-    where
-      project_report_attachment_id = ${projectReportAttachmentId}
   `;
 
   return sqlStatement;

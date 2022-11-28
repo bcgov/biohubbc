@@ -7,6 +7,10 @@ import { IProjectObjectivesForm } from 'features/projects/components/ProjectObje
 import { IProjectPartnershipsForm } from 'features/projects/components/ProjectPartnershipsForm';
 import { Feature } from 'geojson';
 
+/**
+ * @TODO securityRuleCount and status should likely be required, not optional.
+ * @TODO should we not reference the repo interface?
+ */
 export interface IGetProjectAttachment {
   id: number;
   fileName: string;
@@ -14,8 +18,12 @@ export interface IGetProjectAttachment {
   lastModified: string;
   size: number;
   securityToken: string;
+  securityReviewTimestamp: string;
   revisionCount: number;
+  securityRuleCount?: number;
 }
+
+export type IGetProjectReportAttachment = IGetProjectAttachment & { fileType: 'Report' };
 
 /**
  * An interface for an instance of filter fields for project advanced filter search
@@ -40,6 +48,7 @@ export interface IProjectAdvancedFilterRequest {
  */
 export interface IGetProjectAttachmentsResponse {
   attachmentsList: IGetProjectAttachment[];
+  reportAttachmentsList: IGetProjectReportAttachment[];
 }
 
 /**
@@ -287,19 +296,39 @@ export interface IUploadAttachmentResponse {
   revision_count: number;
 }
 
-export interface IGetReportMetaData {
-  attachment_id: number;
+export interface IGetReportDetails {
+  metadata: IGetReportMetadata | null;
+  authors: IGetReportAuthors[];
+  security_reasons: IGetSecurityReasons[];
+}
+
+export interface IGetAttachmentDetails {
+  metadata: { last_modified: string };
+  authors: IGetReportAuthors[];
+  security_reasons: IGetSecurityReasons[];
+}
+
+export interface IGetReportMetadata {
+  id: number;
   title: string;
   year_published: number;
   description: string;
   last_modified: string;
   revision_count: number;
-  authors: IGetReportAuthors[];
 }
 
 export interface IGetReportAuthors {
   first_name: string;
   last_name: string;
+}
+
+export interface IGetSecurityReasons {
+  security_reason_id: number;
+  security_reason_title: string;
+  security_reason_description: string;
+  date_expired: string;
+  user_identifier: string;
+  security_date_applied: string;
 }
 
 export interface IGetProjectParticipantsResponseArrayItem {

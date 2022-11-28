@@ -42,9 +42,7 @@ export interface IEditProjectForm {
  * @return {*}
  */
 const EditProjectForm: React.FC<IEditProjectForm> = (props) => {
-  const { codes, formikRef, projectData } = props;
-
-  console.log('projectData', projectData);
+  const { codes, formikRef } = props;
 
   const classes = useStyles();
 

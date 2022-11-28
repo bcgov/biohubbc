@@ -1,179 +1,228 @@
 import chai, { expect } from 'chai';
 import { describe } from 'mocha';
-import sinon from 'sinon';
+import OpenAPIRequestValidator, { OpenAPIRequestValidatorArgs } from 'openapi-request-validator';
+import OpenAPIResponseValidator, { OpenAPIResponseValidatorArgs } from 'openapi-response-validator';
 import sinonChai from 'sinon-chai';
-import SQL from 'sql-template-strings';
-import * as db from '../../../../../../../../database/db';
-import { HTTPError } from '../../../../../../../../errors/http-error';
-import survey_queries from '../../../../../../../../queries/survey';
-import { getMockDBConnection } from '../../../../../../../../__mocks__/db';
-import * as get_survey_metadata from './get';
+import { GET } from './get';
 
 chai.use(sinonChai);
 
-describe('gets metadata for a survey report', () => {
-  const dbConnectionObj = getMockDBConnection();
+describe('project/{projectId}/survey/{surveyId}/attachments/{attachmentId}/metadata/get', () => {
+  describe('openApiSchema', () => {
+    describe('req validation', () => {
+      const requestValidator = new OpenAPIRequestValidator((GET.apiDoc as unknown) as OpenAPIRequestValidatorArgs);
 
-  const sampleReq = {
-    keycloak_token: {},
-    body: {},
-    params: {
-      projectId: 1,
-      surveyId: 1,
-      attachmentId: 1
-    }
-  } as any;
+      describe('should throw an error', () => {
+        it('required path params missing', () => {
+          const req = {
+            headers: {
+              'content-type': 'application/json'
+            },
+            params: {}
+          };
 
-  let actualResult: any = null;
+          const result = requestValidator.validateRequest(req);
 
-  const sampleRes = {
-    status: () => {
-      return {
-        json: (result: any) => {
-          actualResult = result;
-        }
-      };
-    }
-  };
+          expect(result.status).to.equal(400);
 
-  afterEach(() => {
-    sinon.restore();
-  });
+          expect(result.errors[0].path).to.equal('projectId');
+          expect(result.errors[0].message).to.equal("must have required property 'projectId'");
+          expect(result.errors[0].location).to.equal('path');
 
-  it('should throw a 400 error when no projectId is provided', async () => {
-    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
+          expect(result.errors[1].path).to.equal('surveyId');
+          expect(result.errors[1].message).to.equal("must have required property 'surveyId'");
+          expect(result.errors[1].location).to.equal('path');
 
-    try {
-      const result = get_survey_metadata.getSurveyReportMetaData();
-      await result(
-        { ...sampleReq, params: { ...sampleReq.params, projectId: null } },
-        (null as unknown) as any,
-        (null as unknown) as any
-      );
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal('Missing required path param `projectId`');
-    }
-  });
+          expect(result.errors[2].path).to.equal('attachmentId');
+          expect(result.errors[2].message).to.equal("must have required property 'attachmentId'");
+          expect(result.errors[2].location).to.equal('path');
 
-  it('should throw a 400 error when no surveyId is provided', async () => {
-    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
+          expect(result.errors[3]).to.be.undefined;
+        });
 
-    try {
-      const result = get_survey_metadata.getSurveyReportMetaData();
-      await result(
-        { ...sampleReq, params: { ...sampleReq.params, surveyId: null } },
-        (null as unknown) as any,
-        (null as unknown) as any
-      );
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal('Missing required path param `surveyId`');
-    }
-  });
+        it('path params null', () => {
+          const req = {
+            headers: {
+              'content-type': 'application/json'
+            },
+            params: {
+              projectId: null,
+              surveyId: null,
+              attachmentId: null
+            }
+          };
 
-  it('should throw a 400 error when no attachmentId is provided', async () => {
-    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
+          const result = requestValidator.validateRequest(req);
 
-    try {
-      const result = get_survey_metadata.getSurveyReportMetaData();
-      await result(
-        { ...sampleReq, params: { ...sampleReq.params, attachmentId: null } },
-        (null as unknown) as any,
-        (null as unknown) as any
-      );
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal('Missing required path param `attachmentId`');
-    }
-  });
+          expect(result.status).to.equal(400);
 
-  it('should throw a 400 error when no sql statement returned for getProjectReportAttachmentSQL', async () => {
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      }
+          expect(result.errors[0].path).to.equal('projectId');
+          expect(result.errors[0].message).to.equal('must be integer');
+          expect(result.errors[0].location).to.equal('path');
+
+          expect(result.errors[1].path).to.equal('surveyId');
+          expect(result.errors[1].message).to.equal('must be integer');
+          expect(result.errors[1].location).to.equal('path');
+
+          expect(result.errors[2].path).to.equal('attachmentId');
+          expect(result.errors[2].message).to.equal('must be integer');
+          expect(result.errors[2].location).to.equal('path');
+
+          expect(result.errors[3]).to.be.undefined;
+        });
+
+        it('path params invalid value', () => {
+          const req = {
+            headers: {
+              'content-type': 'application/json'
+            },
+            params: {
+              projectId: 0,
+              surveyId: 0,
+              attachmentId: 0
+            }
+          };
+
+          const result = requestValidator.validateRequest(req);
+
+          expect(result.status).to.equal(400);
+
+          expect(result.errors[0].path).to.equal('projectId');
+          expect(result.errors[0].message).to.equal('must be >= 1');
+          expect(result.errors[0].location).to.equal('path');
+
+          expect(result.errors[1].path).to.equal('surveyId');
+          expect(result.errors[1].message).to.equal('must be >= 1');
+          expect(result.errors[1].location).to.equal('path');
+
+          expect(result.errors[2].path).to.equal('attachmentId');
+          expect(result.errors[2].message).to.equal('must be >= 1');
+          expect(result.errors[2].location).to.equal('path');
+
+          expect(result.errors[3]).to.be.undefined;
+        });
+      });
     });
 
-    sinon.stub(survey_queries, 'getSurveyReportAttachmentSQL').returns(null);
+    describe('response validation', () => {
+      const responseValidator = new OpenAPIResponseValidator((GET.apiDoc as unknown) as OpenAPIResponseValidatorArgs);
 
-    try {
-      const result = get_survey_metadata.getSurveyReportMetaData();
+      describe('should succeed when', () => {
+        it('all required properties are valid', async () => {
+          const res = {
+            metadata: {
+              id: 1,
+              title: '',
+              last_modified: '',
+              description: '',
+              year_published: 2022,
+              revision_count: 0
+            },
+            authors: [],
+            security_reasons: []
+          };
 
-      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal('Failed to build metadata SQLStatement');
-    }
-  });
+          const result = responseValidator.validateResponse(200, res);
 
-  it('should throw a 400 error when no sql statement returned for getSurveyReportAuthorsSQL', async () => {
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      }
-    });
+          expect(result).to.be.undefined;
+        });
 
-    sinon.stub(survey_queries, 'getSurveyReportAuthorsSQL').returns(null);
+        it('all optional properties are valid', async () => {
+          const res = {
+            metadata: {
+              id: 1,
+              title: '',
+              last_modified: '',
+              description: '',
+              year_published: 2022,
+              revision_count: 0
+            },
+            authors: [
+              { first_name: '', last_name: '' },
+              { first_name: '', last_name: '' }
+            ],
+            security_reasons: []
+          };
 
-    try {
-      const result = get_survey_metadata.getSurveyReportMetaData();
+          const result = responseValidator.validateResponse(200, res);
 
-      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal('Failed to build metadata SQLStatement');
-    }
-  });
+          expect(result).to.be.undefined;
+        });
+      });
 
-  it('should return a project report metadata, on success', async () => {
-    const mockQuery = sinon.stub();
+      describe('should fail when', () => {
+        it('required root properties are missing', async () => {
+          const res = {};
 
-    mockQuery.onCall(0).resolves({
-      rowCount: 1,
-      rows: [
-        {
-          attachment_id: 1,
-          title: 'My report',
-          update_date: '2020-10-10',
-          description: 'some description',
-          year_published: 2020,
-          revision_count: '1'
-        }
-      ]
-    });
-    mockQuery.onCall(1).resolves({ rowCount: 1, rows: [{ first_name: 'John', last_name: 'Smith' }] });
+          const result = responseValidator.validateResponse(200, res);
 
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      },
-      query: mockQuery
-    });
+          expect(result.message).to.equal('The response was not valid.');
 
-    sinon.stub(survey_queries, 'getSurveyReportAttachmentSQL').returns(SQL`something`);
-    sinon.stub(survey_queries, 'getSurveyReportAuthorsSQL').returns(SQL`something`);
+          expect(result.errors[0].path).to.equal('response');
+          expect(result.errors[0].message).to.equal("must have required property 'metadata'");
 
-    const result = get_survey_metadata.getSurveyReportMetaData();
+          expect(result.errors[1].path).to.equal('response');
+          expect(result.errors[1].message).to.equal("must have required property 'authors'");
 
-    await result(sampleReq, sampleRes as any, (null as unknown) as any);
+          expect(result.errors[2].path).to.equal('response');
+          expect(result.errors[2].message).to.equal("must have required property 'security_reasons'");
+        });
+      });
 
-    expect(actualResult).to.be.eql({
-      attachment_id: 1,
-      title: 'My report',
-      last_modified: '2020-10-10',
-      description: 'some description',
-      year_published: 2020,
-      revision_count: '1',
-      authors: [{ first_name: 'John', last_name: 'Smith' }]
+      it('required `metadata` properties are missing', async () => {
+        const res = {
+          metadata: {},
+          authors: [],
+          security_reasons: []
+        };
+
+        const result = responseValidator.validateResponse(200, res);
+
+        expect(result.message).to.equal('The response was not valid.');
+
+        expect(result.errors[0].path).to.equal('metadata');
+        expect(result.errors[0].message).to.equal("must have required property 'id'");
+
+        expect(result.errors[1].path).to.equal('metadata');
+        expect(result.errors[1].message).to.equal("must have required property 'title'");
+
+        expect(result.errors[2].path).to.equal('metadata');
+        expect(result.errors[2].message).to.equal("must have required property 'last_modified'");
+
+        expect(result.errors[3].path).to.equal('metadata');
+        expect(result.errors[3].message).to.equal("must have required property 'description'");
+
+        expect(result.errors[4].path).to.equal('metadata');
+        expect(result.errors[4].message).to.equal("must have required property 'year_published'");
+
+        expect(result.errors[5].path).to.equal('metadata');
+        expect(result.errors[5].message).to.equal("must have required property 'revision_count'");
+      });
+
+      it('required `author` properties are missing', async () => {
+        const res = {
+          metadata: {
+            id: 1,
+            title: '',
+            last_modified: '',
+            description: '',
+            year_published: 2022,
+            revision_count: 0
+          },
+          authors: [{ first_name: '', last_name: '' }, {}],
+          security_reasons: []
+        };
+
+        const result = responseValidator.validateResponse(200, res);
+
+        expect(result.message).to.equal('The response was not valid.');
+
+        expect(result.errors[0].path).to.equal('authors/1');
+        expect(result.errors[0].message).to.equal("must have required property 'first_name'");
+
+        expect(result.errors[1].path).to.equal('authors/1');
+        expect(result.errors[1].message).to.equal("must have required property 'last_name'");
+      });
     });
   });
 });

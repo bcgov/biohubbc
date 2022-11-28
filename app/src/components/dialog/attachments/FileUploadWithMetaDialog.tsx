@@ -9,11 +9,15 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 import useTheme from '@material-ui/core/styles/useTheme';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import FileUploadWithMeta from 'components/attachments/FileUploadWithMeta';
+import { IFileHandler, IUploadHandler } from 'components/file-upload/FileUploadItem';
+import { AttachmentType } from 'constants/attachments';
 import { Formik, FormikProps } from 'formik';
 import React, { useRef, useState } from 'react';
-import { AttachmentType } from '../../constants/attachments';
-import { IFileHandler, IUploadHandler } from '../attachments/FileUploadItem';
-import { IReportMetaForm, ReportMetaFormInitialValues, ReportMetaFormYupSchema } from '../attachments/ReportMetaForm';
+import {
+  IReportMetaForm,
+  ReportMetaFormInitialValues,
+  ReportMetaFormYupSchema
+} from '../../attachments/ReportMetaForm';
 
 const useStyles = makeStyles((theme) => ({
   wrapper: {

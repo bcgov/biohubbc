@@ -9,8 +9,9 @@ import Typography from '@material-ui/core/Typography';
 import { Formik, FormikProps } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
+import { SecurityReason } from 'interfaces/useSecurityApi.interface';
 import React, { useRef, useState } from 'react';
-import SecurityForm, { ISecurityForm, SecurityInitialValues, SecurityYupSchema } from './SecurityForm';
+import SecurityForm, { ISecurityForm, SecurityYupSchema } from './SecurityForm';
 
 export interface ISecurityDialogProps {
   /**
@@ -20,6 +21,11 @@ export interface ISecurityDialogProps {
    * @memberof IComponentDialogProps
    */
   open: boolean;
+  /**
+   *
+   * @memberof IComponentDialogProps
+   */
+  selectedSecurityRules: any[];
   /**
    * TODO: finish Secuirty Dialog Implementation
    *
@@ -75,10 +81,24 @@ const SecurityDialog: React.FC<ISecurityDialogProps> = (props) => {
     return <CircularProgress className="pageProgress" size={40} />;
   };
 
+  /**
+   * Map previously applied security reasons into initial `ISecurityForm` for list of security reasons
+   *
+   * @param securityReasons SecurityReason[]
+   * @returns {*} {ISecurityForm}
+   */
+  const prepInitialSecurityValues = (securityReasons: SecurityReason[]): ISecurityForm => {
+    return {
+      security_reasons: securityReasons.map((item) => {
+        return { security_reason_id: `${item.security_reason_id}` };
+      })
+    };
+  };
+
   return (
     <Formik
       innerRef={formikRef}
-      initialValues={SecurityInitialValues}
+      initialValues={prepInitialSecurityValues(props.selectedSecurityRules)}
       validationSchema={SecurityYupSchema}
       validateOnBlur={true}
       validateOnChange={false}

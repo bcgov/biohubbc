@@ -163,6 +163,9 @@ export interface IGetSpecies {
   ancillary_species_names: string[];
 }
 
+/**
+ * @TODO securityRuleCount and status should likely be required, not optional.
+ */
 export interface IGetSurveyAttachment {
   id: number;
   fileName: string;
@@ -170,8 +173,12 @@ export interface IGetSurveyAttachment {
   lastModified: string;
   size: number;
   securityToken: any;
+  securityReviewTimestamp: string;
   revisionCount: number;
+  securityRuleCount?: number;
 }
+
+export type IGetSurveyReportAttachment = IGetSurveyAttachment & { fileType: 'Report' };
 
 /**
  * Get survey attachments response object.

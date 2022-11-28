@@ -10,15 +10,18 @@ import Typography from '@material-ui/core/Typography';
 import { mdiAttachment, mdiChevronDown, mdiFilePdfBox, mdiLockOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import AttachmentsList from 'components/attachments/AttachmentsList';
-import { IUploadHandler } from 'components/attachments/FileUploadItem';
 import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
-import FileUploadWithMetaDialog from 'components/dialog/FileUploadWithMetaDialog';
-import SecurityDialog from 'components/dialog/SecurityDialog';
+import FileUploadWithMetaDialog from 'components/dialog/attachments/FileUploadWithMetaDialog';
+import SecurityDialog from 'components/dialog/attachments/SecurityDialog';
+import { IUploadHandler } from 'components/file-upload/FileUploadItem';
+import { SystemRoleGuard } from 'components/security/Guards';
+import { SYSTEM_ROLE } from 'constants/roles';
 // import { H2MenuToolbar } from 'components/toolbar/ActionToolbars';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import {
   IGetProjectAttachment,
   IGetProjectForViewResponse,
+  IGetProjectReportAttachment,
   IUploadAttachmentResponse
 } from 'interfaces/useProjectApi.interface';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -27,6 +30,11 @@ import { AttachmentType } from '../../../constants/attachments';
 
 export interface IProjectAttachmentsProps {
   projectForViewData: IGetProjectForViewResponse;
+}
+
+export interface IAttachmentType {
+  id: number;
+  type: 'Report' | 'Other';
 }
 
 /**
@@ -44,6 +52,10 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
     AttachmentType.OTHER
   );
   const [attachmentsList, setAttachmentsList] = useState<IGetProjectAttachment[]>([]);
+  const [reportAttachmentsList, setReportAttachmentsList] = useState<IGetProjectReportAttachment[]>([]);
+
+  // Tracks which attachment rows have been selected, via the table checkboxes.
+  const [selectedAttachmentRows, setSelectedAttachmentRows] = useState<IAttachmentType[]>([]);
 
   const handleUploadReportClick = () => {
     setAttachmentType(AttachmentType.REPORT);
@@ -63,10 +75,11 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
       try {
         const response = await biohubApi.project.getProjectAttachments(projectId);
 
-        if (!response?.attachmentsList) {
+        if (!response?.attachmentsList && !response?.reportAttachmentsList) {
           return;
         }
 
+        setReportAttachmentsList([...response.reportAttachmentsList]);
         setAttachmentsList([...response.attachmentsList]);
       } catch (error) {
         return error;
@@ -87,6 +100,12 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
         setOpenUploadAttachments(false);
       });
     };
+  };
+
+  const addSecurityReasons = (securityReasons: number[]) => {
+    biohubApi.security.addProjectSecurityReasons(projectId, securityReasons, selectedAttachmentRows).finally(() => {
+      setSecurityDialogOpen(false);
+    });
   };
 
   useEffect(() => {
@@ -123,8 +142,15 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
 
       <SecurityDialog
         open={securityDialogOpen}
-        onAccept={() => {
-          setSecurityDialogOpen(false);
+        selectedSecurityRules={[]}
+        onAccept={(securityReasons) => {
+          if (selectedAttachmentRows.length > 0) {
+            // formik form is retuning array of strings not numbers if printed out in console
+            // linter wrongly believes formik to be number[] so wrapped map in string to force values into number[]
+            addSecurityReasons(securityReasons.security_reasons.map((item) => parseInt(`${item.security_reason_id}`)));
+          } else {
+            setSecurityDialogOpen(false);
+          }
         }}
         onClose={() => setSecurityDialogOpen(false)}
       />
@@ -173,19 +199,36 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
               <Typography variant="inherit">Submit Attachments</Typography>
             </MenuItem>
           </Menu>
-          <Button
-            style={{ marginLeft: '8px' }}
-            variant="contained"
-            color="primary"
-            startIcon={<Icon path={mdiLockOutline} size={0.8} />}
-            onClick={() => setSecurityDialogOpen(true)}>
-            Apply Security
-          </Button>
+          <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+            <Button
+              style={{ marginLeft: '8px' }}
+              variant="contained"
+              color="primary"
+              startIcon={<Icon path={mdiLockOutline} size={0.8} />}
+              onClick={() => setSecurityDialogOpen(true)}>
+              Apply Security
+            </Button>
+          </SystemRoleGuard>
         </Box>
       </Toolbar>
       <Divider></Divider>
       <Box px={1}>
-        <AttachmentsList projectId={projectId} attachmentsList={attachmentsList} getAttachments={getAttachments} />
+        <AttachmentsList
+          projectId={projectId}
+          attachmentsList={[...attachmentsList, ...reportAttachmentsList]}
+          getAttachments={getAttachments}
+          onCheckboxChange={(value) => {
+            setSelectedAttachmentRows((currentRows) => {
+              const hasMatchingValue = currentRows.find((item) => item.id === value.id && item.type === value.type);
+
+              if (hasMatchingValue) {
+                return currentRows;
+              }
+
+              return [...currentRows, value];
+            });
+          }}
+        />
       </Box>
     </>
   );

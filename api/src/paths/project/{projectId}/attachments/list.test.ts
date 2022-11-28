@@ -46,7 +46,7 @@ describe('lists the project attachments', () => {
       }
     });
 
-    sinon.stub(project_queries, 'getProjectAttachmentsSQL').returns(null);
+    sinon.stub(project_queries, '__deprecated_getProjectAttachmentsSQL').returns(null);
 
     try {
       const result = listAttachments.getAttachments();
@@ -99,7 +99,7 @@ describe('lists the project attachments', () => {
       query: mockQuery
     });
 
-    sinon.stub(project_queries, 'getProjectAttachmentsSQL').returns(SQL`something`);
+    sinon.stub(project_queries, '__deprecated_getProjectAttachmentsSQL').returns(SQL`something`);
 
     const result = listAttachments.getAttachments();
 
@@ -166,7 +166,7 @@ describe('lists the project attachments', () => {
       query: mockQuery
     });
 
-    sinon.stub(project_queries, 'getProjectAttachmentsSQL').returns(SQL`something`);
+    sinon.stub(project_queries, '__deprecated_getProjectAttachmentsSQL').returns(SQL`something`);
 
     const result = listAttachments.getAttachments();
 
@@ -206,7 +206,7 @@ describe('lists the project attachments', () => {
       query: mockQuery
     });
 
-    sinon.stub(project_queries, 'getProjectAttachmentsSQL').returns(SQL`something`);
+    sinon.stub(project_queries, '__deprecated_getProjectAttachmentsSQL').returns(SQL`something`);
 
     const result = listAttachments.getAttachments();
 

@@ -272,33 +272,9 @@ describe('useSurveyApi', () => {
     expect(result).toEqual('url.com');
   });
 
-  it('makeAttachmentUnsecure works as expected', async () => {
-    mock
-      .onPut(`/api/project/${projectId}/survey/${surveyId}/attachments/${attachmentId}/makeUnsecure`)
-      .reply(200, true);
-
-    const result = await useSurveyApi(axios).makeAttachmentUnsecure(
-      projectId,
-      surveyId,
-      attachmentId,
-      'token',
-      'Image'
-    );
-
-    expect(result).toEqual(true);
-  });
-
-  it('makeAttachmentSecure works as expected', async () => {
-    mock.onPut(`/api/project/${projectId}/survey/${surveyId}/attachments/${attachmentId}/makeSecure`).reply(200, true);
-
-    const result = await useSurveyApi(axios).makeAttachmentSecure(projectId, surveyId, attachmentId, 'Image');
-
-    expect(result).toEqual(true);
-  });
-
   it('updateSurveyReportMetadata works as expected', async () => {
     mock
-      .onPut(`/api/project/${projectId}/survey/${surveyId}/attachments/${attachmentId}/metadata/update`)
+      .onPut(`/api/project/${projectId}/survey/${surveyId}/attachments/${attachmentId}/report/update`)
       .reply(200, 'result 1');
 
     const result = await useSurveyApi(axios).updateSurveyReportMetadata(
@@ -315,7 +291,7 @@ describe('useSurveyApi', () => {
 
   it('getSurveyReportMetadata works as expected', async () => {
     mock
-      .onGet(`/api/project/${projectId}/survey/${surveyId}/attachments/${attachmentId}/metadata/get`)
+      .onGet(`/api/project/${projectId}/survey/${surveyId}/attachments/${attachmentId}/report/get`)
       .reply(200, 'result 1');
 
     const result = await useSurveyApi(axios).getSurveyReportMetadata(projectId, surveyId, attachmentId);

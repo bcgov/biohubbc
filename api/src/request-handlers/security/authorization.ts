@@ -148,13 +148,13 @@ export const executeAuthorizeConfig = async (
   for (const authorizeRule of authorizeRules) {
     switch (authorizeRule.discriminator) {
       case 'SystemRole':
-        authorizeResults.push(await authorizeBySystemRole(req, authorizeRule, connection));
+        authorizeResults.push(await authorizeBySystemRole(req, authorizeRule, connection).catch(() => false));
         break;
       case 'ProjectRole':
-        authorizeResults.push(await authorizeByProjectRole(req, authorizeRule, connection));
+        authorizeResults.push(await authorizeByProjectRole(req, authorizeRule, connection).catch(() => false));
         break;
       case 'SystemUser':
-        authorizeResults.push(await authorizeBySystemUser(req, connection));
+        authorizeResults.push(await authorizeBySystemUser(req, connection).catch(() => false));
         break;
     }
   }

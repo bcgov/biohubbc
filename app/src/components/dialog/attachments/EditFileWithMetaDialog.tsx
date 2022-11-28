@@ -8,15 +8,14 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import useTheme from '@material-ui/core/styles/useTheme';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
-import EditFileWithMeta from 'components/attachments/EditFileWithMeta';
 import { Formik, FormikProps } from 'formik';
-import { IGetReportMetaData } from 'interfaces/useProjectApi.interface';
+import { IGetReportDetails } from 'interfaces/useProjectApi.interface';
 import React, { useRef, useState } from 'react';
-import {
+import EditReportMetaForm, {
   EditReportMetaFormInitialValues,
   EditReportMetaFormYupSchema,
   IEditReportMetaForm
-} from '../attachments/EditReportMetaForm';
+} from '../../attachments/EditReportMetaForm';
 
 const useStyles = makeStyles((theme) => ({
   wrapper: {
@@ -49,10 +48,10 @@ export interface IEditFileWithMetaDialogProps {
   /**
    * Report meta data
    *
-   * @type {IGetReportMetaData | null}
+   * @type {IGetReportDetails | null}
    * @memberof IEditFileWithMetaDialogProps
    */
-  reportMetaData: IGetReportMetaData | null;
+  reportMetaData: IGetReportDetails | null;
   /**
    * Set to `true` to open the dialog, `false` to close the dialog.
    *
@@ -71,7 +70,13 @@ export interface IEditFileWithMetaDialogProps {
    *
    * @memberof IEditFileWithMetaDialogProps
    */
-  onSave: (fileMeta: IEditReportMetaForm) => Promise<any>;
+  onSave: (fileMeta: IEditReportMetaForm) => Promise<void>;
+  /**
+   *
+   *
+   * @memberof IEditFileWithMetaDialogProps
+   */
+  refresh: () => void;
 }
 
 /**
@@ -106,13 +111,19 @@ const EditFileWithMetaDialog: React.FC<IEditFileWithMetaDialogProps> = (props) =
       aria-describedby="component-dialog-description">
       <Formik
         innerRef={formikRef}
-        initialValues={props.reportMetaData || EditReportMetaFormInitialValues}
+        initialValues={
+          // TODO currently spreading data here to match the old format expected by the `EditReportMetaForm`. Update
+          // this, and related code/endpoints, to accept the data in its new object structure.
+          (props.reportMetaData && { ...props.reportMetaData.metadata, authors: props.reportMetaData.authors }) ||
+          EditReportMetaFormInitialValues
+        }
         validationSchema={EditReportMetaFormYupSchema}
         validateOnBlur={true}
         validateOnChange={false}
         onSubmit={(values) => {
           setIsSaving(true);
           props.onSave(values).finally(() => {
+            props.refresh();
             setIsSaving(false);
             props.onClose();
           });
@@ -121,7 +132,9 @@ const EditFileWithMetaDialog: React.FC<IEditFileWithMetaDialogProps> = (props) =
           <>
             <DialogTitle id="component-dialog-title">{props.dialogTitle}</DialogTitle>
             <DialogContent>
-              <EditFileWithMeta />
+              <Box mb={3}>
+                <EditReportMetaForm />
+              </Box>
             </DialogContent>
             <DialogActions>
               <Box className={classes.wrapper}>

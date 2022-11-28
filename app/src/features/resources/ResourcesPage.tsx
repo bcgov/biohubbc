@@ -181,7 +181,7 @@ const ResourcesPage: React.FC = () => {
                 </TableCell>
                 <TableCell>{row.type}</TableCell>
                 <TableCell align="center">
-                  <IconButton href={row.url} aria-label={'Download' + ' ' + row.name}>
+                  <IconButton href={row.url} aria-label={'Download ' + row.name}>
                     <Icon path={mdiTrayArrowDown} size={0.8} />
                   </IconButton>
                 </TableCell>

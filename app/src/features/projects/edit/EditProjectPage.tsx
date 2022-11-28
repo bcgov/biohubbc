@@ -89,7 +89,6 @@ const EditProjectPage: React.FC = (props) => {
 
   useEffect(() => {
     const setFormikValues = (data: IUpdateProjectRequest) => {
-      console.log('data', data);
       formikRef.current?.setValues(data);
     };
 
@@ -145,9 +144,6 @@ const EditProjectPage: React.FC = (props) => {
    * @return {*}
    */
   const updateProject = async (projectPostObject: IUpdateProjectRequest) => {
-    console.log('projectPostObject', projectPostObject);
-    console.log('queryParams.projectId', queryParams.projectId);
-
     const response = await biohubApi.project.updateProject(queryParams.projectId, projectPostObject);
 
     if (!response?.id) {
