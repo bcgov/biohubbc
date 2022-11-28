@@ -218,6 +218,7 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
           projectId={projectId}
           attachmentsList={[...attachmentsList, ...reportAttachmentsList]}
           getAttachments={getAttachments}
+          selectedAttachments={selectedAttachmentRows}
           onCheckboxChange={(value) => {
             setSelectedAttachmentRows((currentRows) => {
               const hasMatchingValue = currentRows.find((item) => item.id === value.id && item.type === value.type);
