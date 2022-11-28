@@ -414,11 +414,11 @@ export class AttachmentRepository extends BaseRepository {
         sa.security_review_timestamp,
         COALESCE(src.count, 0) AS security_rule_count
       FROM
-        survey_attachment sa
+        survey_attachment pa
       LEFT JOIN (
           SELECT DISTINCT ON (sap.survey_attachment_id)
             sap.survey_attachment_id,
-            COUNT(sap.survey_attachment_id) AS count
+            COUNT(pap.survey_attachment_id) AS count
           FROM
             survey_attachment_persecution sap
           GROUP BY
@@ -481,9 +481,9 @@ export class AttachmentRepository extends BaseRepository {
             srp.survey_report_attachment_id
       ) src
       ON
-        sra.survey_report_attachment_id = src.survey_report_attachment_id
+        srp.survey_report_attachment_id = src.survey_report_attachment_id
       WHERE
-        sra.survey_id = ${surveyId}
+        srp.survey_id = ${surveyId}
     `;
 
     const response = await this.connection.sql<WithSecurityRuleCount<ISurveyReportAttachment>>(sqlStatement);
@@ -661,7 +661,7 @@ export class AttachmentRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement);
 
-    if (!response.rowCount) {
+    if (!response) {
       throw new ApiExecuteSQLError('Failed to Delete all Project Attachment Security', [
         'AttachmentRepository->removeAllSecurityFromProjectAttachment',
         'rowCount was 0 or undefined, expected rowCount == 1'
@@ -716,7 +716,7 @@ export class AttachmentRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement);
 
-    if (!response.rowCount) {
+    if (!response) {
       throw new ApiExecuteSQLError('Failed to Delete all Survey Attachment Security', [
         'AttachmentRepository->removeAllSecurityFromSurveyAttachment',
         'rowCount was 0 or undefined, expected rowCount == 1'
@@ -822,7 +822,7 @@ export class AttachmentRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement);
 
-    if (!response.rowCount) {
+    if (!response) {
       throw new ApiExecuteSQLError('Failed to Delete All Project Report Attachment Security', [
         'AttachmentRepository->removeAllSecurityFromProjectReportAttachment',
         'rowCount was 0 or undefined, expected rowCount == 1'
