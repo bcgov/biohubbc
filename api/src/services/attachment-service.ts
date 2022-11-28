@@ -76,9 +76,7 @@ export class AttachmentService extends DBService {
     return this.attachmentRepository.getSurveyReportAttachments(surveyId);
   }
 
-  async getSurveyAttachmentsWithSecurityCounts(
-    surveyId: number
-  ): Promise<WithSecurityRuleCount<ISurveyAttachment>[]> {
+  async getSurveyAttachmentsWithSecurityCounts(surveyId: number): Promise<WithSecurityRuleCount<ISurveyAttachment>[]> {
     return this.attachmentRepository.getSurveyAttachmentsWithSecurityCounts(surveyId);
   }
 
@@ -243,8 +241,6 @@ export class AttachmentService extends DBService {
   async addSecurityToProjectAttachments(securityIds: number[], attachments: IAttachmentType[]): Promise<void[]> {
     const actions: Promise<void>[] = [];
     attachments.forEach((item) => {
-      console.log('________________');
-      console.log(item);
       if (item.type === 'Report') {
         actions.push(this.addSecurityToProjectReportAttachment(securityIds, item.id));
         actions.push(this.addSecurityReviewToProjectReportAttachment(item.id));
