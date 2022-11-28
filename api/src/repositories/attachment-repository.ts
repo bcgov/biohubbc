@@ -887,7 +887,7 @@ export class AttachmentRepository extends BaseRepository {
     }
   }
 
-  async getProjectReportAttachmentById(projectId: number, attachmentId: number): Promise<IGetReportAttachment> {
+  async getProjectReportAttachmentById(projectId: number, attachmentId: number): Promise<IProjectReportAttachment> {
     const sqlStatement = SQL`
       SELECT
         project_report_attachment_id as id,
