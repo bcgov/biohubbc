@@ -125,7 +125,7 @@ const AttachmentSecurityTable: React.FC<IAttachmentSecurityTableProps> = (props)
               {props.securityDetails &&
                 props.securityDetails?.security_reasons &&
                 props.securityDetails?.security_reasons?.length === 0 &&
-                (props.isAwaitingReview) && (
+                props.isAwaitingReview && (
                   <TableRow key={`0`}>
                     <TableCell>Security Administration</TableCell>
                     <TableCell>
@@ -151,7 +151,8 @@ const AttachmentSecurityTable: React.FC<IAttachmentSecurityTableProps> = (props)
 
               {props.securityDetails &&
                 props.securityDetails?.security_reasons &&
-                props.securityDetails?.security_reasons?.length === 0 && (
+                props.securityDetails?.security_reasons?.length === 0 &&
+                !props.isAwaitingReview && (
                   <TableRow key={`0`}>
                     <TableCell>Security Administration</TableCell>
                     <TableCell>
