@@ -25,6 +25,7 @@ export interface IProjectAttachmentDialogProps {
   currentAttachment: IGetProjectAttachment | null;
   open: boolean;
   onClose: () => void;
+  refresh: (id: number) => void;
   dialogProps?: DialogProps;
 }
 
@@ -42,6 +43,8 @@ const ProjectAttachmentDialog: React.FC<IProjectAttachmentDialogProps> = (props)
   const attachmentDetailsDataLoader = useDataLoader((attachmentId: number) =>
     biohubApi.project.getProjectAttachmentDetails(props.projectId, attachmentId)
   );
+
+  console.log('props.currentAttachment', props.currentAttachment);
 
   const defaultYesNoDialogProps = {
     open: false,
@@ -99,7 +102,13 @@ const ProjectAttachmentDialog: React.FC<IProjectAttachmentDialogProps> = (props)
       onYes: async () => {
         await removeSecurity(securityReasons);
 
-        refreshAttachmentDetails();
+        await updateReviewTime();
+
+        if (props.attachmentId) {
+          await props.refresh(props.attachmentId);
+        }
+
+        await refreshAttachmentDetails();
 
         dialogContext.setYesNoDialog({ open: false });
       }
@@ -206,8 +215,6 @@ const ProjectAttachmentDialog: React.FC<IProjectAttachmentDialogProps> = (props)
             showAddSecurityDialog={setShowAddSecurityDialog}
             showDeleteSecurityReasonDialog={showDeleteSecurityReasonDialog}
             isAwaitingReview={!props.currentAttachment?.securityReviewTimestamp}
-            updateReviewTime={updateReviewTime}
-            refresh={refreshAttachmentDetails}
           />
         </DialogContent>
         <DialogActions>

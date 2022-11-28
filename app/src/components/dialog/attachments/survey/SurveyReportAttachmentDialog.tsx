@@ -28,6 +28,7 @@ export interface ISurveyReportAttachmentDialogProps {
   currentAttachment: IGetSurveyAttachment | null;
   open: boolean;
   onClose: () => void;
+  refresh: (id: number) => void;
   dialogProps?: DialogProps;
 }
 
@@ -107,8 +108,12 @@ const SurveyReportAttachmentDialog: React.FC<ISurveyReportAttachmentDialogProps>
       yesButtonProps: { color: 'secondary' },
       onYes: async () => {
         await removeSecurity(securityReasons);
+        await updateReviewTime();
+        if (props.attachmentId) {
+          await props.refresh(props.attachmentId);
+        }
 
-        refreshAttachmentDetails();
+        await refreshAttachmentDetails();
 
         dialogContext.setYesNoDialog({ open: false });
       }
@@ -187,7 +192,7 @@ const SurveyReportAttachmentDialog: React.FC<ISurveyReportAttachmentDialogProps>
   const updateReviewTime = async () => {
     try {
       if (props.attachmentId) {
-        await biohubApi.security.updateProjectReportAttachmentSecurityReviewTime(props.projectId, props.attachmentId);
+        await biohubApi.security.updateSurveyReportAttachmentSecurityReviewTime(props.surveyId, props.attachmentId);
       }
     } catch (error) {
       const apiError = error as APIError;
@@ -242,9 +247,7 @@ const SurveyReportAttachmentDialog: React.FC<ISurveyReportAttachmentDialogProps>
             securityDetails={reportAttachmentDetailsDataLoader.data || null}
             showAddSecurityDialog={setShowAddSecurityDialog}
             showDeleteSecurityReasonDialog={showDeleteSecurityReasonDialog}
-            updateReviewTime={updateReviewTime}
             isAwaitingReview={!props.currentAttachment?.securityReviewTimestamp}
-            refresh={refreshAttachmentDetails}
           />
         </DialogContent>
         <DialogActions>

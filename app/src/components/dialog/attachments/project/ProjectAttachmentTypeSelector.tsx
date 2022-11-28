@@ -10,6 +10,7 @@ export interface IProjectAttachmentTypeSelectorProps {
   currentAttachment: IGetProjectAttachment | IGetSurveyAttachment | null;
   open: boolean;
   close: () => void;
+  refresh: (id: number) => void;
 }
 
 /**
@@ -32,6 +33,7 @@ const ProjectAttachmentTypeSelector: React.FC<IProjectAttachmentTypeSelectorProp
           dialogProps={{ fullWidth: true, maxWidth: 'lg', open: props.open }}
           open={props.open}
           onClose={props.close}
+          refresh={props.refresh}
         />
       )}
 
@@ -43,6 +45,7 @@ const ProjectAttachmentTypeSelector: React.FC<IProjectAttachmentTypeSelectorProp
           dialogProps={{ fullWidth: true, maxWidth: 'lg', open: props.open }}
           open={props.open}
           onClose={props.close}
+          refresh={props.refresh}
         />
       )}
     </>

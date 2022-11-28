@@ -21,9 +21,7 @@ export interface IReportSecurityTableProps {
   securityDetails: IGetReportDetails | null;
   showAddSecurityDialog: (value: boolean) => void;
   showDeleteSecurityReasonDialog: (securityReasons: IGetSecurityReasons[]) => void;
-  updateReviewTime: () => void;
   isAwaitingReview: boolean;
-  refresh: () => void;
 }
 
 /**
@@ -51,10 +49,9 @@ const ReportSecurityTable: React.FC<IReportSecurityTableProps> = (props) => {
             <Button
               variant="contained"
               color="primary"
+              disabled={!props.isAwaitingReview && props.securityDetails?.security_reasons.length === 0}
               onClick={async () => {
                 await props.showDeleteSecurityReasonDialog([]);
-                await props.updateReviewTime();
-                await props.refresh();
               }}
               startIcon={<Icon path={mdiLockOpenOutline} size={0.8} />}>
               Remove Security
