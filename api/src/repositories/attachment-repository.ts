@@ -92,14 +92,6 @@ const defaultLog = getLogger('repositories/attachment-repository');
  */
 export class AttachmentRepository extends BaseRepository {
   /**
-   * PROJECT ATTACHMENTS
-   *
-   * @memberof AttachmentRepository
-   * @type Project Attachments
-   *
-   */
-
-  /**
    * SQL query to get report attachments for a single project.
    *
    * @param {number} projectId The project ID
@@ -139,7 +131,16 @@ export class AttachmentRepository extends BaseRepository {
     return response.rows;
   }
 
+  /**
+   * Query to get a single project attachment by attachment ID/
+   * @param projectId The ID of the project
+   * @param attachmentId The ID of the attachment
+   * @returns {Promise<IProjectAttachment>} A promise resolving the project attachment having the
+   * given ID.
+   */
   async getProjectAttachmentById(projectId: number, attachmentId: number): Promise<IProjectAttachment> {
+    defaultLog.debug({ label: 'getProjectAttachmentById' });
+
     const sqlStatement = SQL`
       SELECT
         project_attachment_id AS id,
@@ -163,7 +164,10 @@ export class AttachmentRepository extends BaseRepository {
     const response = await this.connection.sql<IProjectAttachment>(sqlStatement);
 
     if (!response.rows) {
-      throw new HTTP400('Failed to get project attachment by attachment id');
+      throw new ApiExecuteSQLError('Failed to get project attachment by attachmentId', [
+        'AttachmentRepository->getProjectAttachmentById',
+        'rows was null or undefined, expected rows != null'
+      ]);
     }
 
     return response.rows[0];
@@ -224,7 +228,15 @@ export class AttachmentRepository extends BaseRepository {
     return response.rows;
   }
 
+  /**
+   * Query to get all security reasons for a project attachment with the given ID.
+   * @param projectAttachmentId The ID of the project attachment
+   * @returns {Promise<IProjectAttachmentSecurityReason[]>} Promise resolving all security reasons belonging to the
+   * attachment with the given ID.
+   */
   async getProjectAttachmentSecurityReasons(projectAttachmentId: number): Promise<IProjectAttachmentSecurityReason[]> {
+    defaultLog.debug({ label: 'getProjectAttachmentSecurityReasons' });
+
     const sqlStatement = SQL`
       SELECT
         pap.*, sa.user_identifier
@@ -238,12 +250,21 @@ export class AttachmentRepository extends BaseRepository {
     const response = await this.connection.sql<IProjectAttachmentSecurityReason>(sqlStatement);
 
     if (!response.rows) {
-      throw new HTTP400('Failed to get project attachment security reasons by attachment id');
+      throw new ApiExecuteSQLError('Failed to get project attachments with security rule count by projectId', [
+        'AttachmentRepository->getProjectAttachmentSecurityReasons',
+        'rows was null or undefined, expected rows != null'
+      ]);
     }
 
     return response.rows;
   }
 
+  /**
+   * Query to attach multiple security rules to an attachment.
+   * @param securityIds The IDs of the security rules to attach to the attachment
+   * @param attachmentId The ID of the attachment getting the security rules.
+   * @returns {Promise<void>}
+   */
   async addSecurityToProjectAttachments(securityIds: number[], attachmentId: number): Promise<void> {
     const insertStatement = SQL`
       INSERT INTO project_attachment_persecution (
