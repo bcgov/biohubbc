@@ -653,8 +653,6 @@ export class AttachmentRepository extends BaseRepository {
 
     const response = await this.connection.sql<WithSecurityRuleCount<IProjectAttachment>>(sqlStatement);
 
-    console.log('response', response);
-
     if (!response || !response.rows) {
       throw new ApiExecuteSQLError('Failed to get project attachments with security rule count by projectId', [
         'AttachmentRepository->getProjectAttachmentsWithSecurityCounts',
@@ -1064,5 +1062,47 @@ export class AttachmentRepository extends BaseRepository {
     }
 
     return response.rows;
+  }
+
+  async getSurveyAttachmentCountToReview(surveyId: number): Promise<number> {
+    const sqlStatement = SQL`
+      SELECT
+        count(*)
+      FROM
+        survey_attachment
+      where
+        survey_id = ${surveyId}
+      and
+        security_review_timestamp is null;
+    `;
+
+    const response = await this.connection.sql(sqlStatement);
+
+    if (!response.rows) {
+      throw new HTTP400('Failed to get count of survey attachments that need review');
+    }
+
+    return response.rows[0].count;
+  }
+
+  async getSurveyReportCountToReview(surveyId: number): Promise<number> {
+    const sqlStatement = SQL`
+      SELECT
+        count(*)
+      FROM
+        survey_report_attachment
+      where
+        survey_id = ${surveyId}
+      and
+        security_review_timestamp is null;
+    `;
+
+    const response = await this.connection.sql(sqlStatement);
+
+    if (!response.rows) {
+      throw new HTTP400('Failed to get count of survey reports that need review');
+    }
+
+    return response.rows[0].count;
   }
 }

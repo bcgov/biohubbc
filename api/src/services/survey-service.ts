@@ -1,4 +1,5 @@
 import SQL from 'sql-template-strings';
+import { IDBConnection } from '../database/db';
 import { ApiGeneralError } from '../errors/api-error';
 import { PostProprietorData, PostSurveyObject } from '../models/survey-create';
 import { PutSurveyObject } from '../models/survey-update';
@@ -17,11 +18,20 @@ import {
   SurveySupplementaryData
 } from '../models/survey-view';
 import { queries } from '../queries/queries';
+import { AttachmentRepository } from '../repositories/attachment-repository';
 import { DBService } from './db-service';
 import { PermitService } from './permit-service';
 import { TaxonomyService } from './taxonomy-service';
 
 export class SurveyService extends DBService {
+  attachmentRepository: AttachmentRepository;
+
+  constructor(connection: IDBConnection) {
+    super(connection);
+
+    this.attachmentRepository = new AttachmentRepository(connection);
+  }
+
   async getSurveyIdsByProjectId(projectId: number): Promise<{ id: number }[]> {
     const sqlStatement = queries.survey.getSurveyIdsSQL(projectId);
 
@@ -38,7 +48,8 @@ export class SurveyService extends DBService {
       fundingData,
       purposeAndMethodologyData,
       proprietorData,
-      locationData
+      locationData,
+      countDocumentsPendingReview
     ] = await Promise.all([
       this.getSurveyData(surveyId),
       this.getSpeciesData(surveyId),
@@ -46,7 +57,8 @@ export class SurveyService extends DBService {
       this.getSurveyFundingSourcesData(surveyId),
       this.getSurveyPurposeAndMethodology(surveyId),
       this.getSurveyProprietorDataForView(surveyId),
-      this.getSurveyLocationData(surveyId)
+      this.getSurveyLocationData(surveyId),
+      this.getCountDocumentsPendingReview(surveyId)
     ]);
 
     return {
@@ -56,7 +68,8 @@ export class SurveyService extends DBService {
       purpose_and_methodology: purposeAndMethodologyData,
       funding: fundingData,
       proprietor: proprietorData,
-      location: locationData
+      location: locationData,
+      docs_to_be_reviewed: countDocumentsPendingReview
     };
   }
 
@@ -600,5 +613,15 @@ export class SurveyService extends DBService {
     if (!response) {
       throw new ApiGeneralError('Failed to delete survey vantage codes');
     }
+  }
+
+  async getCountDocumentsPendingReview(surveyId: number): Promise<number> {
+    const attachmentsCount = await this.attachmentRepository.getSurveyAttachmentCountToReview(surveyId);
+
+    const reportsCount = await this.attachmentRepository.getSurveyReportCountToReview(surveyId);
+
+    const documentCount = Number(attachmentsCount[0]) + Number(reportsCount[0]);
+
+    return documentCount;
   }
 }
