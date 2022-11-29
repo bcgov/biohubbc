@@ -221,18 +221,20 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
             <TableHead>
               <TableRow>
                 <TableCell width="60px" padding="checkbox">
-                  <Checkbox 
+                  <Checkbox
                     color="primary"
                     onChange={(e) => {
                       if (e.target.checked) {
-                        props.onCheckAllChange?.(props.attachmentsList.map(item => {
-                          return { id: item.id, type: item.fileType } as IAttachmentType;
-                        }));
+                        props.onCheckAllChange?.(
+                          props.attachmentsList.map((item) => {
+                            return { id: item.id, type: item.fileType } as IAttachmentType;
+                          })
+                        );
                       } else {
                         props.onCheckAllChange?.([]);
                       }
                     }}
-                    />
+                  />
                 </TableCell>
                 <TableCell>Name</TableCell>
                 <TableCell>Type</TableCell>
@@ -250,7 +252,11 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
                           color="primary"
                           checkedIcon={<Icon path={mdiCheckboxOutline} size={1} />}
                           value={index}
-                          checked={props.selectedAttachments.find(item => row.id === item.id && row.fileType === item.type) !== undefined}
+                          checked={
+                            props.selectedAttachments.find(
+                              (item) => row.id === item.id && row.fileType === item.type
+                            ) !== undefined
+                          }
                           onChange={(e) => {
                             const attachment: IAttachmentType[] = props.attachmentsList
                               .filter((item, index) => index === Number(e.target.value))
