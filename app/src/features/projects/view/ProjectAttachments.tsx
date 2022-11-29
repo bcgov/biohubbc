@@ -143,14 +143,14 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
       <SecurityDialog
         open={securityDialogOpen}
         selectedSecurityRules={[]}
-        onAccept={(securityReasons) => {
+        onAccept={async (securityReasons) => {
           if (selectedAttachmentRows.length > 0) {
             // formik form is retuning array of strings not numbers if printed out in console
             // linter wrongly believes formik to be number[] so wrapped map in string to force values into number[]
-            addSecurityReasons(securityReasons.security_reasons.map((item) => parseInt(`${item.security_reason_id}`)));
-          } else {
-            setSecurityDialogOpen(false);
+            await addSecurityReasons(securityReasons.security_reasons.map((item) => parseInt(`${item.security_reason_id}`)));
           }
+          await getAttachments(true);
+          setSecurityDialogOpen(false);
         }}
         onClose={() => setSecurityDialogOpen(false)}
       />
@@ -219,16 +219,16 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
           attachmentsList={[...attachmentsList, ...reportAttachmentsList]}
           getAttachments={getAttachments}
           selectedAttachments={selectedAttachmentRows}
-          onCheckboxChange={(value) => {
-            setSelectedAttachmentRows((currentRows) => {
-              const hasMatchingValue = currentRows.find((item) => item.id === value.id && item.type === value.type);
-
-              if (hasMatchingValue) {
-                return currentRows;
-              }
-
-              return [...currentRows, value];
-            });
+          onCheckAllChange={items => setSelectedAttachmentRows(items)}
+          onCheckboxChange={(value, add) => {
+            const found = selectedAttachmentRows.findIndex(item => item.id === value.id && item.type === value.type);
+            const updated = [...selectedAttachmentRows];
+            if (found < 0 && add) { 
+              updated.push(value);
+            } else if (found >= 0 && !add) {
+              updated.splice(found, 1);
+            }
+            setSelectedAttachmentRows(updated)
           }}
         />
       </Box>
