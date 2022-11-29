@@ -1235,7 +1235,7 @@ export class AttachmentRepository extends BaseRepository {
    * @return {Promise<IReportAttachmentAuthor[]>} Promise resolving the report authors
    * @memberof AttachmentRepository
    */
-  async getProjectAttachmentAuthors(reportAttachmentId: number): Promise<IReportAttachmentAuthor[]> {
+  async getProjectReportAttachmentAuthors(reportAttachmentId: number): Promise<IReportAttachmentAuthor[]> {
     defaultLog.debug({ label: 'getProjectAttachmentAuthors' });
 
     const sqlStatement = SQL`
@@ -1265,7 +1265,7 @@ export class AttachmentRepository extends BaseRepository {
    * @return {Promise<IReportAttachmentAuthor[]>} Promise resolving the report authors
    * @memberof AttachmentRepository
    */
-  async getSurveyAttachmentAuthors(reportAttachmentId: number): Promise<IReportAttachmentAuthor[]> {
+  async getSurveyReportAttachmentAuthors(reportAttachmentId: number): Promise<IReportAttachmentAuthor[]> {
     defaultLog.debug({ label: 'getSurveyAttachmentAuthors' });
 
     const sqlStatement = SQL`
