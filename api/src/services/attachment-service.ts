@@ -28,6 +28,14 @@ export class AttachmentService extends DBService {
     this.attachmentRepository = new AttachmentRepository(connection);
   }
 
+  /**
+   * PROJECT ATTACHMENTS
+   *
+   * @memberof AttachmentService
+   * @type Project Attachments
+   *
+   */
+
   async getProjectAttachments(projectId: number): Promise<IProjectAttachment[]> {
     return this.attachmentRepository.getProjectAttachments(projectId);
   }
@@ -240,14 +248,6 @@ export class AttachmentService extends DBService {
     for (const securityId of securityIds) {
       await this.attachmentRepository.removeSecurityFromSurveyReportAttachment(securityId, attachmentId);
     }
-  }
-
-  async addSecurityToSurveyReportAttachments(securityIds: number[], attachmentIds: number[]): Promise<void[]> {
-    // const promises = attachmentIds.map((item) => this.addSecurityToProjectReportAttachment(securityIds, item));
-
-    const results = await Promise.all([]);
-
-    return results;
   }
 
   async addSecurityToProjectAttachments(securityIds: number[], attachments: IAttachmentType[]): Promise<void[]> {

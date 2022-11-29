@@ -1,6 +1,7 @@
 import moment from 'moment';
 import { PROJECT_ROLE } from '../constants/roles';
 import { COMPLETION_STATUS } from '../constants/status';
+import { IDBConnection } from '../database/db';
 import { HTTP400, HTTP409 } from '../errors/http-error';
 import { IPostIUCN, PostFundingSource, PostProjectObject } from '../models/project-create';
 import {
@@ -30,9 +31,17 @@ import { getSurveyAttachmentS3Keys } from '../paths/project/{projectId}/survey/{
 import { GET_ENTITIES, IUpdateProject } from '../paths/project/{projectId}/update';
 import { queries } from '../queries/queries';
 import { deleteFileFromS3 } from '../utils/file-utils';
+import { AttachmentService } from './attachment-service';
 import { DBService } from './db-service';
 
 export class ProjectService extends DBService {
+  attachmentService: AttachmentService;
+
+  constructor(connection: IDBConnection) {
+    super(connection);
+    this.attachmentService = new AttachmentService(connection);
+  }
+
   /**
    * Gets the project participant, adding them if they do not already exist.
    *
@@ -853,20 +862,11 @@ export class ProjectService extends DBService {
      * Get the attachment S3 keys for all attachments associated to this project and surveys under this project
      * Used to delete them from S3 separately later
      */
-    const getProjectAttachmentSQLStatement = queries.project.__deprecated_getProjectAttachmentsSQL(projectId);
+    const getProjectAttachments = await this.attachmentService.getProjectAttachments(projectId);
     const getSurveyIdsSQLStatement = queries.survey.getSurveyIdsSQL(projectId);
 
-    if (!getProjectAttachmentSQLStatement || !getSurveyIdsSQLStatement) {
+    if (!getSurveyIdsSQLStatement) {
       throw new HTTP400('Failed to build SQL get statement');
-    }
-
-    const getProjectAttachmentsResult = await this.connection.query(
-      getProjectAttachmentSQLStatement.text,
-      getProjectAttachmentSQLStatement.values
-    );
-
-    if (!getProjectAttachmentsResult || !getProjectAttachmentsResult.rows) {
-      throw new HTTP400('Failed to get project attachments');
     }
 
     const getSurveyIdsResult = await this.connection.query(
@@ -885,7 +885,7 @@ export class ProjectService extends DBService {
       )
     );
 
-    const projectAttachmentS3Keys: string[] = getProjectAttachmentsResult.rows.map((attachment: any) => {
+    const projectAttachmentS3Keys: string[] = getProjectAttachments.map((attachment: any) => {
       return attachment.key;
     });
 
