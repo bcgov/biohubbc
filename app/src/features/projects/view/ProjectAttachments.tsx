@@ -114,10 +114,8 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
     // eslint-disable-next-line
   }, []);
 
-  const addSecurityReasons = (securityReasons: number[]) => {
-    biohubApi.security.addProjectSecurityReasons(projectId, securityReasons, selectedAttachmentRows).finally(() => {
-      setSecurityDialogOpen(false);
-    });
+  const addSecurityReasons = async (securityReasons: number[]) => {
+    await biohubApi.security.addProjectSecurityReasons(projectId, securityReasons, selectedAttachmentRows)
   };
 
   const [securityDialogOpen, setSecurityDialogOpen] = useState(false);
@@ -158,7 +156,7 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
               securityReasons.security_reasons.map((item) => parseInt(`${item.security_reason_id}`))
             );
           }
-          await getAttachments(true);
+          await getAttachments(true)
           setSecurityDialogOpen(false);
         }}
         onClose={() => setSecurityDialogOpen(false)}
