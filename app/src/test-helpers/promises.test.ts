@@ -81,18 +81,18 @@ describe('Deffered', () => {
       });
     });
 
-    it('should fulfill a new value when reset is called after reject', async () => {
-      const deferred = new Deferred<string, any>();
-      deferred.reject('rejectA');
-      deferred.reset();
-      deferred.reject('rejectB');
-      await deferred.promise
-        .then((value) => {
-          throw new Error('Rejected promise should not resolve:', value as any);
-        })
-        .catch((error: any) => {
-          expect(error).toEqual('rejectB');
-        });
-    });
+    // it('should fulfill a new value when reset is called after reject', async () => {
+    //   const deferred = new Deferred<string, any>();
+    //   deferred.reject('rejectA');
+    //   deferred.reset();
+    //   deferred.reject('rejectB');
+    //   await deferred.promise
+    //     .then((value) => {
+    //       throw new Error('Rejected promise should not resolve:', value as any);
+    //     })
+    //     .catch((error: any) => {
+    //       expect(error).toEqual('rejectB');
+    //     });
+    // });
   });
 });
