@@ -40,6 +40,7 @@ export interface ISurveyFundingSourceForView {
   funding_start_date: string;
   funding_end_date: string;
   agency_name: string;
+  funding_source_project_id: string;
 }
 
 export type ISurveyAvailableFundingSources = IGetProjectForUpdateResponseFundingSource;

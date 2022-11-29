@@ -109,9 +109,11 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
         <Divider></Divider>
         <List disablePadding>
           {!permit.permits.length && (
-            <ListItem divider disableGutters>
-              No Permits
-            </ListItem>
+            <List disablePadding>
+              <ListItem divider disableGutters>
+                No Permits
+              </ListItem>
+            </List>
           )}
           {permit.permits?.map((item, index: number) => {
             return (
@@ -128,15 +130,16 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
           Funding Sources
         </Typography>
         <Divider></Divider>
-        <List disablePadding>
           {!funding.funding_sources.length && (
-            <ListItem divider disableGutters>
-              <Typography variant="body1">No Funding Sources</Typography>
-            </ListItem>
+            <List disablePadding>
+              <ListItem divider disableGutters>
+                <Typography variant="body1">No Funding Sources</Typography>
+              </ListItem>
+            </List>
           )}
-          {funding.funding_sources?.map((item, index: number) => {
-            return (
-              <>
+          <List disablePadding>
+            {funding.funding_sources?.map((item, index: number) => {
+              return (
                 <ListItem divider disableGutters key={index}>
                   <Box flex="1 1 auto">
                     <Box pb={1.25}>
@@ -150,7 +153,9 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
                           <Typography component="dt" variant="subtitle2" color="textSecondary">
                             Project ID
                           </Typography>
-                          <Typography component="dd"></Typography>
+                          <Typography component="dd">
+                            {item.funding_source_project_id}
+                          </Typography>
                         </Grid>
                         <Grid item sm={6}>
                           <Typography component="dt" variant="subtitle2" color="textSecondary">
@@ -174,10 +179,9 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
                     </Box>
                   </Box>
                 </ListItem>
-              </>
-            );
-          })}
-        </List>
+              );
+            })}
+          </List>
       </Box>
     </>
   );

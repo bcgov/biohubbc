@@ -1,8 +1,8 @@
 import React, { useContext } from 'react'
 import {
-  mdiAlertCircle,  
-  mdiLockCheckOutline,
-  mdiLockOpenCheckOutline,
+  mdiAlertCircle  
+  // mdiLockCheckOutline,
+  // mdiLockOpenCheckOutline,
 } from '@mdi/js';
 
 import { Chip } from '@material-ui/core';
@@ -30,11 +30,11 @@ const AttachmentStatusChip: React.FC<IAttachmentStatusChip> = (props) => {
     if (securityRuleCount && securityRuleCount > 0) {
       label = securityRuleCount ? `Secured (${securityRuleCount})` : 'Secured';
       color = 'default';
-      icon = mdiLockCheckOutline;
+      icon = '';
     } else {
       label = 'Unsecured';
       color = 'default';
-      icon = mdiLockOpenCheckOutline;
+      icon = '';
     }
   } else if (isDataAdmin) {
     label = 'Pending review';
