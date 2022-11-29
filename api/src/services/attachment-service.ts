@@ -49,8 +49,8 @@ export class AttachmentService extends DBService {
   }
 
   /**
-   * Finds all project attachments for the given project ID, including security rule counts.
-   * @param {number} projectId 
+   * Finds all project attachments for the given project attachment ID, including security rule counts.
+   * @param {number} projectId the ID of the project
    * @returns {Promise<IProjectAttachment[]>} Promise resolving all project attachments with security
    * counts.
    */
@@ -107,7 +107,7 @@ export class AttachmentService extends DBService {
    * @param {number} attachmentId the ID of the project attachment
    * @returns {Promise<void>}
    */
-  async removeSecurityRuleFromProjectAttachment(securityIds: number[], attachmentId: number): Promise<void> {
+  async removeSecurityRulesFromProjectAttachment(securityIds: number[], attachmentId: number): Promise<void> {
     await Promise.all(securityIds.map((securityId) => (
       this.attachmentRepository.removeSecurityRuleFromProjectAttachment(securityId, attachmentId)
     )))
@@ -143,10 +143,22 @@ export class AttachmentService extends DBService {
     return this.attachmentRepository.getProjectReportAttachmentsWithSecurityCounts(projectId);
   }
 
+  /**
+   * Finds a project report attachment by having the given project ID and report attachment ID
+   * @param {number} projectId the ID of the project
+   * @param {number} reportAttachmentId the ID of the report attachment
+   * @returns {Promise<IProjectReportAttachment>} Promise resolving the given project report attachment
+   */
   async getProjectReportAttachmentById(projectId: number, reportAttachmentId: number): Promise<IProjectReportAttachment> {
     return this.attachmentRepository.getProjectReportAttachmentById(projectId, reportAttachmentId);
   }
 
+  /**
+   * Finds all security reasons belonging to the given project report attachment
+   * @param {number} reportAttachmentId the ID of the project report attachment
+   * @returns {Promise<IProjectReportAttachmentSecurityReason[]>} Promise resolving all project report attachment security
+   * reasons for the given report attachment
+   */
   async getProjectReportAttachmentSecurityReasons(reportAttachmentId: number): Promise<IProjectReportSecurityReason[]> {
     return this.attachmentRepository.getProjectReportAttachmentSecurityReasons(reportAttachmentId);
   }
@@ -157,7 +169,7 @@ export class AttachmentService extends DBService {
     )));
   }
 
-  async removeSecurityRuleFromProjectReportAttachment(securityIds: number[], reportAttachmentId: number): Promise<void> {
+  async removeSecurityRulesFromProjectReportAttachment(securityIds: number[], reportAttachmentId: number): Promise<void> {
     await Promise.all(securityIds.map((securityId) => (
       this.attachmentRepository.removeSecurityRuleFromProjectReportAttachment(securityId, reportAttachmentId)
     )));
@@ -179,7 +191,7 @@ export class AttachmentService extends DBService {
     return this.attachmentRepository.addSecurityRulesToSurveyAttachment(securityIds, attachmentId);
   }
 
-  async removeSecurityRuleFromSurveyAttachment(securityIds: number[], attachmentId: number): Promise<void> {
+  async removeSecurityRulesFromSurveyAttachment(securityIds: number[], attachmentId: number): Promise<void> {
     await Promise.all(securityIds.map((securityId) => (
       this.attachmentRepository.removeSecurityRuleFromSurveyAttachment(securityId, attachmentId)
     )));
@@ -211,7 +223,7 @@ export class AttachmentService extends DBService {
     await this.attachmentRepository.removeAllSecurityFromSurveyReportAttachment(reportAttachmentId);
   }
 
-  async removeSecurityRuleFromSurveyReportAttachment(securityIds: number[], reportAttachmentId: number): Promise<void> {
+  async removeSecurityRulesFromSurveyReportAttachment(securityIds: number[], reportAttachmentId: number): Promise<void> {
     await Promise.all(securityIds.map((securityId) => (
       this.attachmentRepository.removeSecurityRuleFromSurveyReportAttachment(securityId, reportAttachmentId)
     )));
