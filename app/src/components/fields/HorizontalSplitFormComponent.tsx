@@ -15,7 +15,6 @@ export interface IHorizontalSplitFormComponentProps {
  * @return {*}
  */
 const HorizontalSplitFormComponent: React.FC<IHorizontalSplitFormComponentProps> = (props) => {
-  // const classes = useStyles();
   const { title, summary, component } = props;
 
   return (

@@ -1,6 +1,5 @@
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
-// import DialogContentText from '@material-ui/core/DialogContentText';
 import Divider from '@material-ui/core/Divider';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import Menu from '@material-ui/core/Menu';
@@ -16,7 +15,6 @@ import SecurityDialog from 'components/dialog/attachments/SecurityDialog';
 import { IUploadHandler } from 'components/file-upload/FileUploadItem';
 import { SystemRoleGuard } from 'components/security/Guards';
 import { SYSTEM_ROLE } from 'constants/roles';
-// import { H2MenuToolbar } from 'components/toolbar/ActionToolbars';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import {
   IGetProjectAttachment,
@@ -24,7 +22,6 @@ import {
   IGetProjectReportAttachment,
   IUploadAttachmentResponse
 } from 'interfaces/useProjectApi.interface';
-import { IGetSurveyAttachment } from 'interfaces/useSurveyApi.interface';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import { AttachmentType } from '../../../constants/attachments';
@@ -68,12 +65,10 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
   };
 
   const getAttachments = useCallback(
-    async (forceFetch: boolean): Promise<(IGetProjectAttachment | IGetSurveyAttachment)[] | undefined> => {
+    async (forceFetch: boolean): Promise<IGetProjectAttachment[] | undefined> => {
       if (attachmentsList.length && !forceFetch) {
         return;
       }
-
-      let newAttachments: (IGetProjectAttachment | IGetSurveyAttachment)[] = [];
 
       try {
         const response = await biohubApi.project.getProjectAttachments(projectId);
@@ -85,12 +80,10 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
         setReportAttachmentsList([...response.reportAttachmentsList]);
         setAttachmentsList([...response.attachmentsList]);
 
-        newAttachments = [...response.reportAttachmentsList, ...response.attachmentsList];
+        return [...response.reportAttachmentsList, ...response.attachmentsList];
       } catch (error) {
         return;
       }
-
-      return newAttachments;
     },
     [biohubApi.project, projectId, attachmentsList.length]
   );
@@ -114,10 +107,8 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
     // eslint-disable-next-line
   }, []);
 
-  const addSecurityReasons = (securityReasons: number[]) => {
-    biohubApi.security.addProjectSecurityReasons(projectId, securityReasons, selectedAttachmentRows).finally(() => {
-      setSecurityDialogOpen(false);
-    });
+  const addSecurityReasons = async (securityReasons: number[]) => {
+    await biohubApi.security.addProjectSecurityReasons(projectId, securityReasons, selectedAttachmentRows)
   };
 
   const [securityDialogOpen, setSecurityDialogOpen] = useState(false);
@@ -150,14 +141,16 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
       <SecurityDialog
         open={securityDialogOpen}
         selectedSecurityRules={[]}
-        onAccept={(securityReasons) => {
+        onAccept={async (securityReasons) => {
           if (selectedAttachmentRows.length > 0) {
             // formik form is retuning array of strings not numbers if printed out in console
             // linter wrongly believes formik to be number[] so wrapped map in string to force values into number[]
-            addSecurityReasons(securityReasons.security_reasons.map((item) => parseInt(`${item.security_reason_id}`)));
-          } else {
-            setSecurityDialogOpen(false);
+            await addSecurityReasons(
+              securityReasons.security_reasons.map((item) => parseInt(`${item.security_reason_id}`))
+            );
           }
+          await getAttachments(true)
+          setSecurityDialogOpen(false);
         }}
         onClose={() => setSecurityDialogOpen(false)}
       />
@@ -225,16 +218,17 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
           projectId={projectId}
           attachmentsList={[...attachmentsList, ...reportAttachmentsList]}
           getAttachments={getAttachments}
-          onCheckboxChange={(value) => {
-            setSelectedAttachmentRows((currentRows) => {
-              const hasMatchingValue = currentRows.find((item) => item.id === value.id && item.type === value.type);
-
-              if (hasMatchingValue) {
-                return currentRows;
-              }
-
-              return [...currentRows, value];
-            });
+          selectedAttachments={selectedAttachmentRows}
+          onCheckAllChange={(items) => setSelectedAttachmentRows(items)}
+          onCheckboxChange={(value, add) => {
+            const found = selectedAttachmentRows.findIndex((item) => item.id === value.id && item.type === value.type);
+            const updated = [...selectedAttachmentRows];
+            if (found < 0 && add) {
+              updated.push(value);
+            } else if (found >= 0 && !add) {
+              updated.splice(found, 1);
+            }
+            setSelectedAttachmentRows(updated);
           }}
         />
       </Box>

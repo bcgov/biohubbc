@@ -163,9 +163,6 @@ export interface IGetSpecies {
   ancillary_species_names: string[];
 }
 
-/**
- * @TODO securityRuleCount and status should likely be required, not optional.
- */
 export interface IGetSurveyAttachment {
   id: number;
   fileName: string;
