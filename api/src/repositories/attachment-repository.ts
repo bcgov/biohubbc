@@ -92,6 +92,14 @@ const defaultLog = getLogger('repositories/attachment-repository');
  */
 export class AttachmentRepository extends BaseRepository {
   /**
+   * PROJECT ATTACHMENTS
+   *
+   * @memberof AttachmentRepository
+   * @type Project Attachments
+   *
+   */
+
+  /**
    * SQL query to get report attachments for a single project.
    *
    * @param {number} projectId The project ID
@@ -260,6 +268,18 @@ export class AttachmentRepository extends BaseRepository {
     }
   }
 
+  async addSecurityReviewTimeToProjectAttachment(attachmentId: number): Promise<void> {
+    const updateSQL = SQL`
+      UPDATE  project_attachment
+      SET security_review_timestamp=now()
+      WHERE project_attachment_id=${attachmentId};`;
+
+    try {
+      await this.connection.sql(updateSQL);
+    } catch (error) {
+      defaultLog.error({ label: 'addSecurityReviewTimeToAttachment', message: 'error', error });
+    }
+  }
   /**
    * SQL query to delete security for Project Attachment
    *
@@ -312,19 +332,6 @@ export class AttachmentRepository extends BaseRepository {
         'AttachmentRepository->removeAllSecurityFromProjectAttachment',
         'rowCount was 0 or undefined, expected rowCount == 1'
       ]);
-    }
-  }
-
-  async addSecurityReviewTimeToProjectAttachment(attachmentId: number): Promise<void> {
-    const updateSQL = SQL`
-      UPDATE  project_attachment
-      SET security_review_timestamp=now()
-      WHERE project_attachment_id=${attachmentId};`;
-
-    try {
-      await this.connection.sql(updateSQL);
-    } catch (error) {
-      defaultLog.error({ label: 'addSecurityReviewTimeToAttachment', message: 'error', error });
     }
   }
 
@@ -702,6 +709,19 @@ export class AttachmentRepository extends BaseRepository {
     }
   }
 
+  async addSecurityReviewTimeToSurveyAttachment(attachmentId: number): Promise<void> {
+    const updateSQL = SQL`
+      UPDATE  survey_attachment
+      SET security_review_timestamp=now()
+      WHERE survey_attachment_id=${attachmentId};`;
+
+    try {
+      await this.connection.sql(updateSQL);
+    } catch (error) {
+      defaultLog.error({ label: 'addSecurityReviewTimeToAttachment', message: 'error', error });
+    }
+  }
+
   /**
    * SQL query to delete security for Survey Attachment
    *
@@ -754,19 +774,6 @@ export class AttachmentRepository extends BaseRepository {
         'AttachmentRepository->removeAllSecurityFromSurveyAttachment',
         'rowCount was 0 or undefined, expected rowCount == 1'
       ]);
-    }
-  }
-
-  async addSecurityReviewTimeToSurveyAttachment(attachmentId: number): Promise<void> {
-    const updateSQL = SQL`
-      UPDATE  survey_attachment
-      SET security_review_timestamp=now()
-      WHERE survey_attachment_id=${attachmentId};`;
-
-    try {
-      await this.connection.sql(updateSQL);
-    } catch (error) {
-      defaultLog.error({ label: 'addSecurityReviewTimeToAttachment', message: 'error', error });
     }
   }
 
@@ -953,7 +960,7 @@ export class AttachmentRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement);
 
-    if (!response.rowCount) {
+    if (!response) {
       throw new ApiExecuteSQLError('Failed to Delete Survey Report Attachment Security', [
         'AttachmentRepository->removeAllSecurityFromSurveyReportAttachment',
         'rowCount was 0 or undefined, expected rowCount == 1'
@@ -1012,6 +1019,14 @@ export class AttachmentRepository extends BaseRepository {
 
     return response.rows;
   }
+
+  /**
+   * Other
+   *
+   * @memberof AttachmentRepository
+   * @type Misc
+   *
+   */
 
   async getProjectAttachmentAuthors(projectReportAttachmentId: number): Promise<IAttachmentAuthor[]> {
     const sqlStatement = SQL`

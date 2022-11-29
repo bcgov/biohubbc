@@ -21,9 +21,7 @@ export interface IAttachmentSecurityTableProps {
   securityDetails: IGetAttachmentDetails | null;
   showAddSecurityDialog: (value: boolean) => void;
   showDeleteSecurityReasonDialog: (securityReasons: IGetSecurityReasons[]) => void;
-  updateReviewTime: () => void;
   isAwaitingReview: boolean;
-  refresh: () => void;
 }
 
 /**
@@ -51,12 +49,9 @@ const AttachmentSecurityTable: React.FC<IAttachmentSecurityTableProps> = (props)
             <Button
               variant="contained"
               color="primary"
+              disabled={!props.isAwaitingReview && props.securityDetails?.security_reasons.length === 0}
               onClick={async () => {
-                if (props.securityDetails?.security_reasons) {
-                  await props.showDeleteSecurityReasonDialog(props.securityDetails?.security_reasons);
-                }
-                await props.updateReviewTime();
-                await props.refresh();
+                await props.showDeleteSecurityReasonDialog([]);
               }}
               startIcon={<Icon path={mdiLockOpenOutline} size={0.8} />}>
               Remove Security
