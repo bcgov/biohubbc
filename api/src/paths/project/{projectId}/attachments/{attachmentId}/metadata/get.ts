@@ -182,7 +182,7 @@ export function getProjectReportDetails(): RequestHandler {
 
       const projectReportAuthors = await attachmentService.getProjectAttachmentAuthors(Number(req.params.attachmentId));
 
-      const projectReportSecurity = await attachmentService.getProjectReportSecurityReasons(
+      const projectReportSecurity = await attachmentService.getProjectReportAttachmentSecurityReasons(
         Number(req.params.attachmentId)
       );
 
