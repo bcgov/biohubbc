@@ -118,12 +118,12 @@ export function getSurveyAttachments(): RequestHandler {
       const attachmentsData = await attachmentService.getSurveyAttachmentsWithSecurityCounts(surveyId);
       const reportAttachmentsData = await attachmentService.getSurveyReportAttachmentsWithSecurityCounts(surveyId);
 
+      console.log('attachmentsData', attachmentsData);
+      console.log('reportAttachmentsData', reportAttachmentsData);
+
       await connection.commit();
 
-      const getAttachmentsData = new GetAttachmentsData(
-        attachmentsData,
-        reportAttachmentsData
-      );
+      const getAttachmentsData = new GetAttachmentsData(attachmentsData, reportAttachmentsData);
 
       return res.status(200).json(getAttachmentsData);
     } catch (error) {

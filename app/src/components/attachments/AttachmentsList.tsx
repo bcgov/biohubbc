@@ -48,7 +48,7 @@ export interface IAttachmentsListProps {
   projectId: number;
   surveyId?: number;
   attachmentsList: (IGetProjectAttachment | IGetSurveyAttachment)[];
-  getAttachments: (forceFetch: boolean) => void;
+  getAttachments: (forceFetch: boolean) => Promise<(IGetProjectAttachment | IGetSurveyAttachment)[] | undefined>;
   onCheckboxChange?: (attachmentType: IAttachmentType) => void;
 }
 
@@ -74,6 +74,22 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
   const handleViewDetailsClick = (attachment: IGetProjectAttachment | IGetSurveyAttachment) => {
     setCurrentAttachment(attachment);
     setShowViewFileWithDetailsDialog(true);
+  };
+
+  const refreshCurrentAttachment = async (id: number) => {
+    const updatedAttachments = await props.getAttachments(true);
+
+    if (updatedAttachments) {
+      const cur = updatedAttachments.find((attachment) => {
+        if (attachment.id === id) {
+          return attachment;
+        }
+      });
+
+      if (cur) {
+        setCurrentAttachment(cur);
+      }
+    }
   };
 
   const dialogContext = useContext(DialogContext);
@@ -194,6 +210,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
           setShowViewFileWithDetailsDialog(false);
           props.getAttachments(true);
         }}
+        refresh={refreshCurrentAttachment}
       />
 
       <Box>
