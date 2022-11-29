@@ -100,9 +100,9 @@ export function updateAttachmentSecurityReviewTime(): RequestHandler {
       const attachmentService = new AttachmentService(connection);
 
       if (attachmentType == 'Report') {
-        await attachmentService.addSecurityReviewToProjectReportAttachment(attachmentId);
+        await attachmentService.addSecurityReviewTimeToProjectReportAttachment(attachmentId);
       } else {
-        await attachmentService.addSecurityReviewToProjectAttachment(attachmentId);
+        await attachmentService.addSecurityReviewTimeToProjectAttachment(attachmentId);
       }
 
       await connection.commit();
