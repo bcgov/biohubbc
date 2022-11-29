@@ -186,14 +186,14 @@ export function getSurveyReportDetails(): RequestHandler {
       await connection.open();
       const attachmentService = new AttachmentService(connection);
 
-      const surveyReportAttachment = await attachmentService.getSurveyReportAttachment(
+      const surveyReportAttachment = await attachmentService.getSurveyReportAttachmentById(
         Number(req.params.surveyId),
         Number(req.params.attachmentId)
       );
 
       const surveyReportAuthors = await attachmentService.getSurveyAttachmentAuthors(Number(req.params.attachmentId));
 
-      const surveyReportSecurity = await attachmentService.getSurveyReportSecurityReasons(
+      const surveyReportSecurity = await attachmentService.getSurveyReportAttachmentSecurityReasons(
         Number(req.params.attachmentId)
       );
       const securitySearchService = new SecuritySearchService();

@@ -122,7 +122,7 @@ export function addSurveyAttachmentSecurity(): RequestHandler {
 
       const attachmentService = new AttachmentService(connection);
 
-      await attachmentService.addSecurityToSurveyAttachments(securityIds, attachments);
+      await attachmentService.addSecurityRulesToSurveyAttachmentsOrSurveyReports(securityIds, attachments);
 
       await connection.commit();
 

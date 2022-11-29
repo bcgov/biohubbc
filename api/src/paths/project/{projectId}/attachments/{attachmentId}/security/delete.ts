@@ -111,13 +111,13 @@ export function deleteProjectSecurityReasons(): RequestHandler {
         if (securityIds.length === 0) {
           await attachmentService.removeAllSecurityFromProjectReportAttachment(attachmentId);
         } else {
-          await attachmentService.removeSecurityFromProjectReportAttachment(securityIds, attachmentId);
+          await attachmentService.removeSecurityRulesFromProjectReportAttachment(securityIds, attachmentId);
         }
       } else {
         if (securityIds.length === 0) {
           await attachmentService.removeAllSecurityFromProjectAttachment(attachmentId);
         } else {
-          await attachmentService.removeSecurityFromProjectAttachment(securityIds, attachmentId);
+          await attachmentService.removeSecurityRulesFromProjectAttachment(securityIds, attachmentId);
         }
       }
 
