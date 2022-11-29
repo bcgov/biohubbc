@@ -110,9 +110,9 @@ export function updateSurveyAttachmentSecurityReviewTime(): RequestHandler {
       const attachmentService = new AttachmentService(connection);
 
       if (attachmentType == 'Report') {
-        await attachmentService.addSecurityReviewToSurveyReportAttachment(attachmentId);
+        await attachmentService.addSecurityReviewTimeToSurveyReportAttachment(attachmentId);
       } else {
-        await attachmentService.addSecurityReviewToSurveyAttachment(attachmentId);
+        await attachmentService.addSecurityReviewTimeToSurveyAttachment(attachmentId);
       }
 
       await connection.commit();
