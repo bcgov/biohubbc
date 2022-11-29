@@ -90,10 +90,6 @@ const defaultLog = getLogger('repositories/attachment-repository');
  * @class AttachmentRepository
  * @extends {BaseRepository}
  */
-
-/**
- * @TODO add type parameters to jsdoc
- */
 export class AttachmentRepository extends BaseRepository {
   /**
    * SQL query to get report attachments for a single project.
@@ -137,8 +133,8 @@ export class AttachmentRepository extends BaseRepository {
 
   /**
    * Query to get a single project attachment by attachment ID/
-   * @param projectId The ID of the project
-   * @param attachmentId The ID of the attachment
+   * @param {number} projectId The ID of the project
+   * @param {number} attachmentId The ID of the attachment
    * @return {Promise<IProjectAttachment>} A promise resolving the project attachment having the
    * given ID.
    * @memberof AttachmentRepository
@@ -234,7 +230,7 @@ export class AttachmentRepository extends BaseRepository {
 
   /**
    * Query to get all security reasons for a project attachment with the given ID.
-   * @param attachmentId The ID of the project attachment
+   * @param {number} attachmentId The ID of the project attachment
    * @return {Promise<IProjectAttachmentSecurityReason[]>} Promise resolving all security reasons belonging to the
    * project attachment with the given ID.
    * @memberof AttachmentRepository
@@ -269,8 +265,8 @@ export class AttachmentRepository extends BaseRepository {
 
   /**
    * Query to attach multiple security rules to a project attachment.
-   * @param securityIds The IDs of the security rules to attach to the project attachment
-   * @param attachmentId The ID of the attachment getting the security rules.
+   * @param {number[]} securityIds The IDs of the security rules to attach to the project attachment
+   * @param {number} attachmentId The ID of the attachment getting the security rules.
    * @return {Promise<void>}
    * @memberof AttachmentRepository
    */
@@ -300,7 +296,7 @@ export class AttachmentRepository extends BaseRepository {
   /**
    * Query to update the security review timestamp to reflect the current time for a given
    * project attachment.
-   * @param attachmentId The ID of the attachment
+   * @param {number} attachmentId The ID of the attachment
    * @return {Promise<void>}
    * @memberof AttachmentRepository
    */
@@ -389,7 +385,7 @@ export class AttachmentRepository extends BaseRepository {
 
   /**
    * Query to return all project report attachments belonging to the given project.
-   * @param projectId the ID of the project
+   * @param {number} projectId the ID of the project
    * @return {Promise<IProjectReportAttachment[]>} Promise resolving all of the attachments for the
    * given project
    * @memberof AttachmentRepository
@@ -490,8 +486,8 @@ export class AttachmentRepository extends BaseRepository {
 
   /**
    * Query to return the report attachment having the given ID and belonging to the given project.
-   * @param projectId the ID of the project
-   * @param attachmentId the ID of the report attachment
+   * @param {number} projectId the ID of the project
+   * @param {number} reportAttachmentId the ID of the report attachment
    * @return {Promise<IProjectReportAttachment>} Promise resolving the report attachment
    * @memberof AttachmentRepository
    */
@@ -534,7 +530,7 @@ export class AttachmentRepository extends BaseRepository {
 
   /**
    * Query to return all security reasons for a given project report attachment
-   * @param reportAttachmentId the ID of the given project report attachment
+   * @param {number} reportAttachmentId the ID of the given project report attachment
    * @return {Promise<IProjectReportSecurityReason[]>} Promise resolving the security reasons for the report.
    * @memberof AttachmentRepository
    */
@@ -568,8 +564,8 @@ export class AttachmentRepository extends BaseRepository {
 
   /**
    * Query to attach multiple security rules to a project report attachment.
-   * @param securityIds The IDs of the security rules to attach to the report attachment
-   * @param reportAttachmentId The ID of the report attachment getting the security rules.
+   * @param {number[]} securityIds The IDs of the security rules to attach to the report attachment
+   * @param {number} reportAttachmentId The ID of the report attachment getting the security rules.
    * @return {Promise<void>}
    * @memberof AttachmentRepository
    */
@@ -599,7 +595,7 @@ export class AttachmentRepository extends BaseRepository {
   /**
    * Query to update the security review timestamp to reflect the current time for a given
    * project report attachment.
-   * @param reportAttachmentId The ID of the report attachment
+   * @param {number} reportAttachmentId The ID of the report attachment
    * @return {Promise<void>}
    * @memberof AttachmentRepository
    */
@@ -780,7 +776,7 @@ export class AttachmentRepository extends BaseRepository {
 
   /**
    * Query to get all security reasons for a survey attachment with the given ID.
-   * @param attachmentId The ID of the survey attachment
+   * @param {number} attachmentId The ID of the survey attachment
    * @return {Promise<ISurveyAttachmentSecurityReason[]>} Promise resolving all security reasons belonging to the
    * survey attachment with the given ID.
    * @memberof AttachmentRepository
@@ -815,8 +811,8 @@ export class AttachmentRepository extends BaseRepository {
 
   /**
    * Query to attach multiple security rules to a survey attachment.
-   * @param securityIds The IDs of the security rules to attach to the survey attachment
-   * @param attachmentId The ID of the attachment getting the security rules.
+   * @param {number[]} securityIds The IDs of the security rules to attach to the survey attachment
+   * @param {number} attachmentId The ID of the attachment getting the security rules.
    * @return {Promise<void>}
    * @memberof AttachmentRepository
    */
@@ -846,7 +842,7 @@ export class AttachmentRepository extends BaseRepository {
   /**
    * Query to update the security review timestamp to reflect the current time for a given
    * survey attachment.
-   * @param attachmentId The ID of the attachment
+   * @param {number} attachmentId The ID of the attachment
    * @return {Promise<void>}
    * @memberof AttachmentRepository
    */
@@ -935,7 +931,7 @@ export class AttachmentRepository extends BaseRepository {
 
   /**
    * Query to return all survey report attachments belonging to the given survey.
-   * @param surveyId the ID of the survey
+   * @param {number} surveyId the ID of the survey
    * @return {Promise<ISurveyReportAttachment[]>} Promise resolving all of the attachments for the
    * given survey
    * @memberof AttachmentRepository
@@ -1036,8 +1032,8 @@ export class AttachmentRepository extends BaseRepository {
 
   /**
    * Query to attach multiple security rules to a survey report attachment.
-   * @param securityIds The IDs of the security rules to attach to the report attachment
-   * @param reportAttachmentId The ID of the report attachment getting the security rules.
+   * @param {number[]} securityIds The IDs of the security rules to attach to the report attachment
+   * @param {number} reportAttachmentId The ID of the report attachment getting the security rules.
    * @return {Promise<void>}
    * @memberof AttachmentRepository
    */
@@ -1067,7 +1063,7 @@ export class AttachmentRepository extends BaseRepository {
   /**
    * Query to update the security review timestamp to reflect the current time for a given
    * survey report attachment.
-   * @param reportAttachmentId The ID of the report attachment
+   * @param {number} reportAttachmentId The ID of the report attachment
    * @return {Promise<void>}
    * @memberof AttachmentRepository
    */
@@ -1156,8 +1152,8 @@ export class AttachmentRepository extends BaseRepository {
 
   /**
    * Query to return the report attachment having the given ID and belonging to the given survey.
-   * @param surveyId the ID of the survey
-   * @param reportAttachmentId the ID of the report attachment
+   * @param {number} surveyId the ID of the survey
+   * @param {number} reportAttachmentId the ID of the report attachment
    * @return {Promise<IProjectReportAttachment>} Promise resolving the report attachment
    * @memberof AttachmentRepository
    */
@@ -1201,7 +1197,7 @@ export class AttachmentRepository extends BaseRepository {
 
   /**
    * Query to return all security reasons for a given survey report attachment
-   * @param reportAttachmentId the ID of the given survey report attachment
+   * @param {number} reportAttachmentId the ID of the given survey report attachment
    * @return {Promise<IProjectReportSecurityReason[]>} Promise resolving the security reasons for the report.
    * @memberof AttachmentRepository
    */
@@ -1235,7 +1231,7 @@ export class AttachmentRepository extends BaseRepository {
 
   /**
    * Query to return all of the authors belonging to a project report attachment
-   * @param reportAttachmentId The ID of the report attachment
+   * @param {number} reportAttachmentId The ID of the report attachment
    * @return {Promise<IReportAttachmentAuthor[]>} Promise resolving the report authors
    * @memberof AttachmentRepository
    */
@@ -1265,7 +1261,7 @@ export class AttachmentRepository extends BaseRepository {
 
   /**
    * Query to return all of the authors belonging to a survey report attachment
-   * @param reportAttachmentId The ID of the report attachment
+   * @param {number} reportAttachmentId The ID of the report attachment
    * @return {Promise<IReportAttachmentAuthor[]>} Promise resolving the report authors
    * @memberof AttachmentRepository
    */
