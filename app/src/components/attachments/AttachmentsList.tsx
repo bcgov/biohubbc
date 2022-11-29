@@ -22,7 +22,7 @@ import {
   mdiTrayArrowDown
 } from '@mdi/js';
 import Icon from '@mdi/react';
-import AllAttachmentDetailsDialog from 'components/dialog/attachments/AttachmentTypeSelector';
+import AttachmentTypeSelector from 'components/dialog/attachments/AttachmentTypeSelector';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { AttachmentsI18N, EditReportMetaDataI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
@@ -76,14 +76,15 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
     setShowViewFileWithDetailsDialog(true);
   };
 
-  const refreshCurrentAttachment = async (id: number) => {
+  const refreshCurrentAttachment = async (id: number, type: string) => {
     const updatedAttachments = await props.getAttachments(true);
 
     if (updatedAttachments) {
       const cur = updatedAttachments.find((attachment) => {
-        if (attachment.id === id) {
+        if (attachment.id === id && attachment.fileType === type) {
           return attachment;
         }
+        return null;
       });
 
       if (cur) {
@@ -201,7 +202,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
 
   return (
     <>
-      <AllAttachmentDetailsDialog
+      <AttachmentTypeSelector
         projectId={props.projectId}
         surveyId={props.surveyId}
         currentAttachment={currentAttachment}

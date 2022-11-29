@@ -1,12 +1,14 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SYSTEM_ROLE } from '../../../../../../../constants/roles';
-import { getDBConnection } from '../../../../../../../database/db';
-import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
-import { AttachmentService } from '../../../../../../../services/attachment-service';
-import { getLogger } from '../../../../../../../utils/logger';
+import { SYSTEM_ROLE } from '../../../../../../../../../constants/roles';
+import { getDBConnection } from '../../../../../../../../../database/db';
+import { authorizeRequestHandler } from '../../../../../../../../../request-handlers/security/authorization';
+import { AttachmentService } from '../../../../../../../../../services/attachment-service';
+import { getLogger } from '../../../../../../../../../utils/logger';
 
-const defaultLog = getLogger('/api/project/{projectId}/attachments/{attachmentId}/security/review-time/update');
+const defaultLog = getLogger(
+  '/api/project/{projectId}/survey/{surveyId}/attachments/{attachmentId}/security/review-time/update'
+);
 
 export const POST: Operation = [
   authorizeRequestHandler(() => {
@@ -19,7 +21,7 @@ export const POST: Operation = [
       ]
     };
   }),
-  updateAttachmentSecurityReviewTime()
+  updateSurveyAttachmentSecurityReviewTime()
 ];
 
 POST.apiDoc = {
@@ -34,6 +36,14 @@ POST.apiDoc = {
     {
       in: 'path',
       name: 'projectId',
+      schema: {
+        type: 'number'
+      },
+      required: true
+    },
+    {
+      in: 'path',
+      name: 'surveyId',
       schema: {
         type: 'number'
       },
@@ -86,9 +96,9 @@ POST.apiDoc = {
   }
 };
 
-export function updateAttachmentSecurityReviewTime(): RequestHandler {
+export function updateSurveyAttachmentSecurityReviewTime(): RequestHandler {
   return async (req, res) => {
-    defaultLog.debug({ label: 'update Project Security Timestamp', message: 'params', req_params: req.params });
+    defaultLog.debug({ label: 'update Survey Security Timestamp', message: 'params', req_params: req.params });
 
     const connection = getDBConnection(req['keycloak_token']);
 
@@ -100,16 +110,16 @@ export function updateAttachmentSecurityReviewTime(): RequestHandler {
       const attachmentService = new AttachmentService(connection);
 
       if (attachmentType == 'Report') {
-        await attachmentService.addSecurityReviewToProjectReportAttachment(attachmentId);
+        await attachmentService.addSecurityReviewToSurveyReportAttachment(attachmentId);
       } else {
-        await attachmentService.addSecurityReviewToProjectAttachment(attachmentId);
+        await attachmentService.addSecurityReviewToSurveyAttachment(attachmentId);
       }
 
       await connection.commit();
 
       return res.status(200).send();
     } catch (error) {
-      defaultLog.error({ label: 'updateAttachmentSecurityReviewTime', message: 'error', error });
+      defaultLog.error({ label: 'updateSurveyAttachmentSecurityReviewTime', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

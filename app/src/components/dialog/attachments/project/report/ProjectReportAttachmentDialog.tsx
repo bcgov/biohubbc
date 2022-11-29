@@ -26,7 +26,7 @@ export interface IProjectReportAttachmentDialogProps {
   currentAttachment: IGetProjectAttachment | null;
   open: boolean;
   onClose: () => void;
-  refresh: (id: number) => void;
+  refresh: (id: number, type: string) => void;
   dialogProps?: DialogProps;
 }
 
@@ -107,11 +107,10 @@ const ProjectReportAttachmentDialog: React.FC<IProjectReportAttachmentDialogProp
         await removeSecurity(securityReasons);
 
         await updateReviewTime();
-        if (props.attachmentId) {
-          await props.refresh(props.attachmentId);
-        }
 
-        refreshAttachmentDetails();
+        await refreshCurrentAttachment();
+
+        await refreshAttachmentDetails();
 
         dialogContext.setYesNoDialog({ open: false });
       }
@@ -182,6 +181,12 @@ const ProjectReportAttachmentDialog: React.FC<IProjectReportAttachmentDialogProp
   const refreshAttachmentDetails = () => {
     if (props.currentAttachment) {
       reportAttachmentDetailsDataLoader.refresh(props.currentAttachment.id);
+    }
+  };
+
+  const refreshCurrentAttachment = async () => {
+    if (props.attachmentId && props.currentAttachment?.fileType) {
+      await props.refresh(props.attachmentId, props.currentAttachment?.fileType);
     }
   };
 

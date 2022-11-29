@@ -28,7 +28,7 @@ export interface ISurveyReportAttachmentDialogProps {
   currentAttachment: IGetSurveyAttachment | null;
   open: boolean;
   onClose: () => void;
-  refresh: (id: number) => void;
+  refresh: (id: number, type: string) => void;
   dialogProps?: DialogProps;
 }
 
@@ -109,9 +109,8 @@ const SurveyReportAttachmentDialog: React.FC<ISurveyReportAttachmentDialogProps>
       onYes: async () => {
         await removeSecurity(securityReasons);
         await updateReviewTime();
-        if (props.attachmentId) {
-          await props.refresh(props.attachmentId);
-        }
+
+        await refreshCurrentAttachment();
 
         await refreshAttachmentDetails();
 
@@ -189,10 +188,20 @@ const SurveyReportAttachmentDialog: React.FC<ISurveyReportAttachmentDialogProps>
     }
   };
 
+  const refreshCurrentAttachment = async () => {
+    if (props.attachmentId && props.currentAttachment?.fileType) {
+      await props.refresh(props.attachmentId, props.currentAttachment?.fileType);
+    }
+  };
+
   const updateReviewTime = async () => {
     try {
       if (props.attachmentId) {
-        await biohubApi.security.updateSurveyReportAttachmentSecurityReviewTime(props.surveyId, props.attachmentId);
+        await biohubApi.security.updateSurveyReportAttachmentSecurityReviewTime(
+          props.surveyId,
+          props.attachmentId,
+          props.surveyId
+        );
       }
     } catch (error) {
       const apiError = error as APIError;

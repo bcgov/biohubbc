@@ -195,10 +195,11 @@ const useSecurityApi = (axios: AxiosInstance) => {
    */
   const updateSurveyReportAttachmentSecurityReviewTime = async (
     projectId: number,
-    attachmentId: number
+    attachmentId: number,
+    surveyId: number
   ): Promise<any> => {
     const { data } = await axios.post(
-      `/api/project/${projectId}/attachments/${attachmentId}/security/review-time/update`,
+      `/api/project/${projectId}/survey/${surveyId}/attachments/${attachmentId}/security/review-time/update`,
       {
         attachmentType: AttachmentType.REPORT
       }
@@ -214,9 +215,13 @@ const useSecurityApi = (axios: AxiosInstance) => {
    * @param {number} attachmentId
    * @return {*}  {Promise<any>}
    */
-  const updateSurveyAttachmentSecurityReviewTime = async (projectId: number, attachmentId: number): Promise<any> => {
+  const updateSurveyAttachmentSecurityReviewTime = async (
+    projectId: number,
+    attachmentId: number,
+    surveyId: number
+  ): Promise<any> => {
     const { data } = await axios.post(
-      `/api/project/${projectId}/attachments/${attachmentId}/security/review-time/update`,
+      `/api/project/${projectId}/survey/${surveyId}/attachments/${attachmentId}/security/review-time/update`,
       {
         attachmentType: AttachmentType.OTHER
       }
