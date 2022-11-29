@@ -902,7 +902,7 @@ export class AttachmentRepository extends BaseRepository {
   }
 
   /**
-   * SQL query to delete all security rules for a syrvey attachment.
+   * SQL query to delete all security rules for a survey attachment.
    * @param {number} attachmentId the ID of the survey attachment
    * @return {Promise<void>}
    * @memberof AttachmentRepository
