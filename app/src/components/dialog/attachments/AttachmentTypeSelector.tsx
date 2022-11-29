@@ -1,16 +1,19 @@
+import { AttachmentType } from 'constants/attachments';
 import { IGetProjectAttachment } from 'interfaces/useProjectApi.interface';
 import { IGetSurveyAttachment } from 'interfaces/useSurveyApi.interface';
 import { default as React } from 'react';
-import ProjectAttachmentTypeSelector from './project/ProjectAttachmentTypeSelector';
-import SurveyAttachmentTypeSelector from './survey/SurveyAttachmentTypeSelector';
+import ProjectAttachmentDialog from './project/attachment/ProjectAttachmentDialog';
+import ProjectReportAttachmentDialog from './project/report/ProjectReportAttachmentDialog';
+import SurveyAttachmentDialog from './survey/SurveyAttachmentDialog';
+import SurveyReportAttachmentDialog from './survey/SurveyReportAttachmentDialog';
 
-export interface IAllAttachmentDetailsDialogProps {
+export interface IAttachmentTypeSelectorProps {
   projectId: number;
   surveyId?: number;
   currentAttachment: IGetProjectAttachment | IGetSurveyAttachment | null;
   open: boolean;
   close: () => void;
-  refresh: (id: number) => void;
+  refresh: (id: number, type:string) => void;
 }
 
 /**
@@ -18,7 +21,7 @@ export interface IAllAttachmentDetailsDialogProps {
  *
  * @return {*}
  */
-const AllAttachmentDetailsDialog: React.FC<IAllAttachmentDetailsDialogProps> = (props) => {
+const AttachmentTypeSelector: React.FC<IAttachmentTypeSelectorProps> = (props) => {
   if (!props.open) {
     return <></>;
   }
@@ -26,26 +29,63 @@ const AllAttachmentDetailsDialog: React.FC<IAllAttachmentDetailsDialogProps> = (
   return (
     <>
       {props.surveyId && (
-        <SurveyAttachmentTypeSelector
-          projectId={props.projectId}
-          surveyId={props.surveyId}
-          currentAttachment={props.currentAttachment}
-          open={props.open}
-          close={props.close}
-          refresh={props.refresh}
-        />
+        <>
+          {props.currentAttachment?.fileType === AttachmentType.REPORT && (
+            <SurveyReportAttachmentDialog
+              projectId={props.projectId}
+              surveyId={props.surveyId}
+              attachmentId={props.currentAttachment?.id}
+              currentAttachment={props.currentAttachment}
+              dialogProps={{ fullWidth: true, maxWidth: 'lg', open: props.open }}
+              open={props.open}
+              onClose={props.close}
+              refresh={props.refresh}
+            />
+          )}
+
+          {props.currentAttachment?.fileType === AttachmentType.OTHER && (
+            <SurveyAttachmentDialog
+              projectId={props.projectId}
+              surveyId={props.surveyId}
+              attachmentId={props.currentAttachment?.id}
+              currentAttachment={props.currentAttachment}
+              dialogProps={{ fullWidth: true, maxWidth: 'lg', open: props.open }}
+              open={props.open}
+              onClose={props.close}
+              refresh={props.refresh}
+            />
+          )}
+        </>
       )}
       {!props.surveyId && (
-        <ProjectAttachmentTypeSelector
-          projectId={props.projectId}
-          currentAttachment={props.currentAttachment}
-          open={props.open}
-          close={props.close}
-          refresh={props.refresh}
-        />
+        <>
+          {props.currentAttachment?.fileType === AttachmentType.REPORT && (
+            <ProjectReportAttachmentDialog
+              projectId={props.projectId}
+              attachmentId={props.currentAttachment?.id}
+              currentAttachment={props.currentAttachment}
+              dialogProps={{ fullWidth: true, maxWidth: 'lg', open: props.open }}
+              open={props.open}
+              onClose={props.close}
+              refresh={props.refresh}
+            />
+          )}
+
+          {props.currentAttachment?.fileType === AttachmentType.OTHER && (
+            <ProjectAttachmentDialog
+              projectId={props.projectId}
+              attachmentId={props.currentAttachment?.id}
+              currentAttachment={props.currentAttachment}
+              dialogProps={{ fullWidth: true, maxWidth: 'lg', open: props.open }}
+              open={props.open}
+              onClose={props.close}
+              refresh={props.refresh}
+            />
+          )}
+        </>
       )}
     </>
   );
 };
 
-export default AllAttachmentDetailsDialog;
+export default AttachmentTypeSelector;

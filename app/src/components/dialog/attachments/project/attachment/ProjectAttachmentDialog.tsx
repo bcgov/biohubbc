@@ -25,7 +25,7 @@ export interface IProjectAttachmentDialogProps {
   currentAttachment: IGetProjectAttachment | null;
   open: boolean;
   onClose: () => void;
-  refresh: (id: number) => void;
+  refresh: (id: number, type: string) => void;
   dialogProps?: DialogProps;
 }
 
@@ -102,9 +102,7 @@ const ProjectAttachmentDialog: React.FC<IProjectAttachmentDialogProps> = (props)
 
         await updateReviewTime();
 
-        if (props.attachmentId) {
-          await props.refresh(props.attachmentId);
-        }
+        await refreshCurrentAttachment();
 
         await refreshAttachmentDetails();
 
@@ -156,6 +154,12 @@ const ProjectAttachmentDialog: React.FC<IProjectAttachmentDialogProps> = (props)
   const refreshAttachmentDetails = () => {
     if (props.currentAttachment) {
       attachmentDetailsDataLoader.refresh(props.currentAttachment.id);
+    }
+  };
+
+  const refreshCurrentAttachment = async () => {
+    if (props.attachmentId && props.currentAttachment?.fileType) {
+      await props.refresh(props.attachmentId, props.currentAttachment?.fileType);
     }
   };
 

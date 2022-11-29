@@ -24,7 +24,6 @@ import {
   IGetProjectReportAttachment,
   IUploadAttachmentResponse
 } from 'interfaces/useProjectApi.interface';
-import { IGetSurveyAttachment } from 'interfaces/useSurveyApi.interface';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import { AttachmentType } from '../../../constants/attachments';
@@ -68,12 +67,10 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
   };
 
   const getAttachments = useCallback(
-    async (forceFetch: boolean): Promise<(IGetProjectAttachment | IGetSurveyAttachment)[] | undefined> => {
+    async (forceFetch: boolean): Promise<IGetProjectAttachment[] | undefined> => {
       if (attachmentsList.length && !forceFetch) {
         return;
       }
-
-      let newAttachments: (IGetProjectAttachment | IGetSurveyAttachment)[] = [];
 
       try {
         const response = await biohubApi.project.getProjectAttachments(projectId);
@@ -85,12 +82,10 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
         setReportAttachmentsList([...response.reportAttachmentsList]);
         setAttachmentsList([...response.attachmentsList]);
 
-        newAttachments = [...response.reportAttachmentsList, ...response.attachmentsList];
+        return [...response.reportAttachmentsList, ...response.attachmentsList];
       } catch (error) {
         return;
       }
-
-      return newAttachments;
     },
     [biohubApi.project, projectId, attachmentsList.length]
   );
