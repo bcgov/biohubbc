@@ -11,6 +11,7 @@ import {
   ICreateSurveyRequest,
   ICreateSurveyResponse,
   IGetSurveyAttachmentsResponse,
+  IGetSurveyForEdit,
   IGetSurveyForViewResponse,
   ISurveyAvailableFundingSources,
   SurveyUpdateObject,
@@ -46,6 +47,19 @@ const useSurveyApi = (axios: AxiosInstance) => {
    */
   const getSurveyForView = async (projectId: number, surveyId: number): Promise<IGetSurveyForViewResponse> => {
     const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/view`);
+
+    return data;
+  };
+
+  /**
+   * Get project survey details based on its ID for editing purposes.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @return {*} {Promise<IGetSurveyForEdit>}
+   */
+  const getSurveyForEdit = async (projectId: number, surveyId: number): Promise<IGetSurveyForEdit> => {
+    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/edit`);
 
     return data;
   };
@@ -470,6 +484,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
     createSurvey,
     getSurveyForView,
     getSurveysList,
+    getSurveyForEdit,
     updateSurvey,
     uploadSurveyAttachments,
     uploadSurveyReports,

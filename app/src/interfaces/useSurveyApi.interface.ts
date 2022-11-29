@@ -20,6 +20,9 @@ export interface ICreateSurveyRequest
     IProprietaryDataForm,
     IAgreementsForm {}
 
+
+export interface IGetSurveyForEdit extends SurveyUpdateObject {};
+
 /**
  * Create survey response object.
  *
