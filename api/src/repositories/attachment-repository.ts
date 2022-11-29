@@ -90,6 +90,10 @@ const defaultLog = getLogger('repositories/attachment-repository');
  * @class AttachmentRepository
  * @extends {BaseRepository}
  */
+
+/**
+ * @TODO add type parameters to jsdoc
+ */
 export class AttachmentRepository extends BaseRepository {
   /**
    * SQL query to get report attachments for a single project.

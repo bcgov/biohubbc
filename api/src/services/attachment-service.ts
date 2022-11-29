@@ -30,9 +30,8 @@ export class AttachmentService extends DBService {
   }
 
   /**
-   *
    * Finds all of the project attachments for the given project ID.
-   * @param {number} projectId 
+   * @param {number} projectId the ID of the project
    * @returns {Promise<IProjectAttachment[]>} Promise resolving all project attachments.
    */
   async getProjectAttachments(projectId: number): Promise<IProjectAttachment[]> {
@@ -102,20 +101,42 @@ export class AttachmentService extends DBService {
     )));
   }
 
+  /**
+   * Detaches the specified list of security rules from a given project attachment
+   * @param {number[]} securityIds the array of security IDs to detach
+   * @param {number} attachmentId the ID of the project attachment
+   * @returns {Promise<void>}
+   */
   async removeSecurityRuleFromProjectAttachment(securityIds: number[], attachmentId: number): Promise<void> {
     await Promise.all(securityIds.map((securityId) => (
       this.attachmentRepository.removeSecurityRuleFromProjectAttachment(securityId, attachmentId)
     )))
   }
 
+  /**
+   * Detaches all security rules from a given project attachment
+   * @param {number} attachmentId the ID of the project attachment
+   * @returns {Promise<void>}
+   */
   async removeAllSecurityFromProjectAttachment(attachmentId: number): Promise<void> {
     return this.attachmentRepository.removeAllSecurityFromProjectAttachment(attachmentId);
   }
 
+  /**
+   * Finds all of the project report attachments for the given project ID.
+   * @param {number} projectId the ID of the project
+   * @returns {Promise<IProjectReportAttachment[]>} Promise resolving all project report attachments.
+   */
   async getProjectReportAttachments(projectId: number): Promise<IProjectReportAttachment[]> {
     return this.attachmentRepository.getProjectReportAttachments(projectId);
   }
 
+  /**
+   * Finds all project report attachments for the given project ID, including security rule counts.
+   * @param {number} projectId 
+   * @returns {Promise<IProjectReportAttachment[]>} Promise resolving all project report attachments with
+   * security counts.
+   */
   async getProjectReportAttachmentsWithSecurityCounts(
     projectId: number
   ): Promise<WithSecurityRuleCount<IProjectReportAttachment>[]> {
@@ -249,7 +270,7 @@ export class AttachmentService extends DBService {
   }
 
   async getSurveyAttachmentAuthors(attachmentId: number): Promise<IReportAttachmentAuthor[]> {
-    return this.attachmentRepository.getSurveyAttachmentAuthors(attachmentId);
+    return this.attachmentRepository.getSurveyReportAttachmentAuthors(attachmentId);
   }
   async getSurveyReportAttachmentSecurityReasons(reportAttachmentId: number): Promise<ISurveyReportSecurityReason[]> {
     return this.attachmentRepository.getSurveyReportAttachmentSecurityReasons(reportAttachmentId);
