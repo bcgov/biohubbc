@@ -48,8 +48,10 @@ export interface IAttachmentsListProps {
   projectId: number;
   surveyId?: number;
   attachmentsList: (IGetProjectAttachment | IGetSurveyAttachment)[];
+  selectedAttachments: IAttachmentType[];
+  onCheckboxChange?: (attachmentType: IAttachmentType, add: boolean) => void;
+  onCheckAllChange?: (types: IAttachmentType[]) => void;
   getAttachments: (forceFetch: boolean) => Promise<(IGetProjectAttachment | IGetSurveyAttachment)[] | undefined>;
-  onCheckboxChange?: (attachmentType: IAttachmentType) => void;
 }
 
 const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
@@ -219,7 +221,20 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
             <TableHead>
               <TableRow>
                 <TableCell width="60px" padding="checkbox">
-                  <Checkbox color="primary" />
+                  <Checkbox
+                    color="primary"
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        props.onCheckAllChange?.(
+                          props.attachmentsList.map((attachment) => {
+                            return { id: attachment.id, type: attachment.fileType } as IAttachmentType;
+                          })
+                        );
+                      } else {
+                        props.onCheckAllChange?.([]);
+                      }
+                    }}
+                  />
                 </TableCell>
                 <TableCell>Name</TableCell>
                 <TableCell>Type</TableCell>
@@ -237,13 +252,18 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
                           color="primary"
                           checkedIcon={<Icon path={mdiCheckboxOutline} size={1} />}
                           value={index}
+                          checked={
+                            props.selectedAttachments.find(
+                              (item) => row.id === item.id && row.fileType === item.type
+                            ) !== undefined
+                          }
                           onChange={(e) => {
                             const attachment: IAttachmentType[] = props.attachmentsList
                               .filter((item, index) => index === Number(e.target.value))
                               .map((item) => {
                                 return { id: item.id, type: item.fileType } as IAttachmentType;
                               });
-                            props.onCheckboxChange?.(attachment[0]);
+                            props.onCheckboxChange?.(attachment[0], e.target.checked);
                           }}
                         />
                       </TableCell>

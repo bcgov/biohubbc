@@ -125,6 +125,7 @@ const SurveyAttachments: React.FC<ISurveyAttachmentsProps> = () => {
             projectId={projectId}
             surveyId={surveyId}
             attachmentsList={[...attachmentsList, ...reportAttachmentsList]}
+            selectedAttachments={[]}
             getAttachments={getAttachments}
           />
         </Box>
