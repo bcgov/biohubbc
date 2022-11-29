@@ -262,7 +262,7 @@ describe('useProjectApi', () => {
   it('getProjectReportMetadata works as expected', async () => {
     mock.onGet(`/api/project/${projectId}/attachments/${attachmentId}/metadata/get`).reply(200, 'result 1');
 
-    const result = await useProjectApi(axios).getProjectReportMetadata(projectId, attachmentId);
+    const result = await useProjectApi(axios).getProjectReportDetails(projectId, attachmentId);
 
     expect(result).toEqual('result 1');
   });
