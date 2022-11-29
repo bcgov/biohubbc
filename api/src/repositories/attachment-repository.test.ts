@@ -8,7 +8,7 @@ import { getMockDBConnection } from '../__mocks__/db';
 
 chai.use(sinonChai);
 
-describe.only('AttachmentRepository', () => {
+describe('AttachmentRepository', () => {
   afterEach(() => {
     sinon.restore();
   });

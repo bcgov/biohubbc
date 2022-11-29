@@ -21,9 +21,7 @@ export interface IAttachmentSecurityTableProps {
   securityDetails: IGetAttachmentDetails | null;
   showAddSecurityDialog: (value: boolean) => void;
   showDeleteSecurityReasonDialog: (securityReasons: IGetSecurityReasons[]) => void;
-  updateReviewTime: () => void;
   isAwaitingReview: boolean;
-  refresh: () => void;
 }
 
 /**
@@ -51,12 +49,9 @@ const AttachmentSecurityTable: React.FC<IAttachmentSecurityTableProps> = (props)
             <Button
               variant="contained"
               color="primary"
+              disabled={!props.isAwaitingReview && props.securityDetails?.security_reasons.length === 0}
               onClick={async () => {
-                if (props.securityDetails?.security_reasons) {
-                  await props.showDeleteSecurityReasonDialog(props.securityDetails?.security_reasons);
-                }
-                await props.updateReviewTime();
-                await props.refresh();
+                await props.showDeleteSecurityReasonDialog([]);
               }}
               startIcon={<Icon path={mdiLockOpenOutline} size={0.8} />}>
               Remove Security
@@ -71,9 +66,6 @@ const AttachmentSecurityTable: React.FC<IAttachmentSecurityTableProps> = (props)
                 <TableCell width="200">Category</TableCell>
                 <TableCell>Reason</TableCell>
                 <TableCell width="160">Dates</TableCell>
-                {props.securityDetails &&
-                  props.securityDetails?.security_reasons &&
-                  props.securityDetails?.security_reasons?.length > 0 && <TableCell width="160">Applied</TableCell>}
                 <TableCell width="160">Actions</TableCell>
               </TableRow>
             </TableHead>
@@ -89,15 +81,6 @@ const AttachmentSecurityTable: React.FC<IAttachmentSecurityTableProps> = (props)
                         <Typography style={{ fontWeight: 700 }}>{row.security_reason_title}</Typography>
                         <Typography variant="body1" color="textSecondary">
                           {row.security_reason_description}
-                        </Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Typography variant="body2" component="div">
-                          Expired
-                        </Typography>
-
-                        <Typography variant="body2" component="div" color="textSecondary">
-                          {row.date_expired ? row.date_expired : 'N/A'}
                         </Typography>
                       </TableCell>
                       <TableCell>
@@ -125,7 +108,7 @@ const AttachmentSecurityTable: React.FC<IAttachmentSecurityTableProps> = (props)
               {props.securityDetails &&
                 props.securityDetails?.security_reasons &&
                 props.securityDetails?.security_reasons?.length === 0 &&
-                (props.isAwaitingReview) && (
+                props.isAwaitingReview && (
                   <TableRow key={`0`}>
                     <TableCell>Security Administration</TableCell>
                     <TableCell>
@@ -151,7 +134,8 @@ const AttachmentSecurityTable: React.FC<IAttachmentSecurityTableProps> = (props)
 
               {props.securityDetails &&
                 props.securityDetails?.security_reasons &&
-                props.securityDetails?.security_reasons?.length === 0 && (
+                props.securityDetails?.security_reasons?.length === 0 &&
+                !props.isAwaitingReview && (
                   <TableRow key={`0`}>
                     <TableCell>Security Administration</TableCell>
                     <TableCell>

@@ -24,6 +24,7 @@ import {
   IGetProjectReportAttachment,
   IUploadAttachmentResponse
 } from 'interfaces/useProjectApi.interface';
+import { IGetSurveyAttachment } from 'interfaces/useSurveyApi.interface';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import { AttachmentType } from '../../../constants/attachments';
@@ -67,10 +68,12 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
   };
 
   const getAttachments = useCallback(
-    async (forceFetch: boolean) => {
+    async (forceFetch: boolean): Promise<(IGetProjectAttachment | IGetSurveyAttachment)[] | undefined> => {
       if (attachmentsList.length && !forceFetch) {
         return;
       }
+
+      let newAttachments: (IGetProjectAttachment | IGetSurveyAttachment)[] = [];
 
       try {
         const response = await biohubApi.project.getProjectAttachments(projectId);
@@ -81,9 +84,13 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
 
         setReportAttachmentsList([...response.reportAttachmentsList]);
         setAttachmentsList([...response.attachmentsList]);
+
+        newAttachments = [...response.reportAttachmentsList, ...response.attachmentsList];
       } catch (error) {
-        return error;
+        return;
       }
+
+      return newAttachments;
     },
     [biohubApi.project, projectId, attachmentsList.length]
   );
@@ -102,16 +109,16 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
     };
   };
 
+  useEffect(() => {
+    getAttachments(false);
+    // eslint-disable-next-line
+  }, []);
+
   const addSecurityReasons = (securityReasons: number[]) => {
     biohubApi.security.addProjectSecurityReasons(projectId, securityReasons, selectedAttachmentRows).finally(() => {
       setSecurityDialogOpen(false);
     });
   };
-
-  useEffect(() => {
-    getAttachments(false);
-    // eslint-disable-next-line
-  }, []);
 
   const [securityDialogOpen, setSecurityDialogOpen] = useState(false);
 
@@ -204,6 +211,7 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
               style={{ marginLeft: '8px' }}
               variant="contained"
               color="primary"
+              disabled={[...attachmentsList, ...reportAttachmentsList].length === 0}
               startIcon={<Icon path={mdiLockOutline} size={0.8} />}
               onClick={() => setSecurityDialogOpen(true)}>
               Apply Security

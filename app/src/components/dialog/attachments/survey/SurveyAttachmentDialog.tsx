@@ -27,6 +27,7 @@ export interface ISurveyAttachmentDialogProps {
   currentAttachment: IGetSurveyAttachment | null;
   open: boolean;
   onClose: () => void;
+  refresh: (id: number) => void;
   dialogProps?: DialogProps;
 }
 
@@ -107,7 +108,12 @@ const SurveyAttachmentDialog: React.FC<ISurveyAttachmentDialogProps> = (props) =
       onYes: async () => {
         await removeSecurity(securityReasons);
 
-        refreshAttachmentDetails();
+        await updateReviewTime();
+        if (props.attachmentId) {
+          await props.refresh(props.attachmentId);
+        }
+
+        await refreshAttachmentDetails();
 
         dialogContext.setYesNoDialog({ open: false });
       }
@@ -215,8 +221,6 @@ const SurveyAttachmentDialog: React.FC<ISurveyAttachmentDialogProps> = (props) =
             showAddSecurityDialog={setShowAddSecurityDialog}
             showDeleteSecurityReasonDialog={showDeleteSecurityReasonDialog}
             isAwaitingReview={!props.currentAttachment?.securityReviewTimestamp}
-            updateReviewTime={updateReviewTime}
-            refresh={refreshAttachmentDetails}
           />
         </DialogContent>
         <DialogActions>
