@@ -6,6 +6,7 @@ import { getDBConnection, IDBConnection } from '../../../../../../../database/db
 import { HTTP400 } from '../../../../../../../errors/http-error';
 import { queries } from '../../../../../../../queries/queries';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
+import { AttachmentService } from '../../../../../../../services/attachment-service';
 import { deleteFileFromS3 } from '../../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../../utils/logger';
 import { attachmentApiDocObject } from '../../../../../../../utils/shared-api-docs';
@@ -109,17 +110,16 @@ export function deleteAttachment(): RequestHandler {
     try {
       await connection.open();
 
-      // If the attachment record is currently secured, need to unsecure it prior to deleting it
-      if (req.body.securityToken) {
-        await unsecureSurveyAttachmentRecord(req.body.securityToken, req.body.attachmentType, connection);
-      }
+      const attachmentService = new AttachmentService(connection);
 
       let deleteResult: { key: string };
       if (req.body.attachmentType === ATTACHMENT_TYPE.REPORT) {
+        await attachmentService.removeAllSecurityFromSurveyReportAttachment(Number(req.params.attachmentId));
         await deleteSurveyReportAttachmentAuthors(Number(req.params.attachmentId), connection);
 
         deleteResult = await deleteSurveyReportAttachment(Number(req.params.attachmentId), connection);
       } else {
+        await attachmentService.removeAllSecurityFromSurveyAttachment(Number(req.params.attachmentId));
         deleteResult = await deleteSurveyAttachment(Number(req.params.attachmentId), connection);
       }
 
@@ -141,30 +141,6 @@ export function deleteAttachment(): RequestHandler {
     }
   };
 }
-
-const unsecureSurveyAttachmentRecord = async (
-  securityToken: any,
-  attachmentType: string,
-  connection: IDBConnection
-): Promise<void> => {
-  const unsecureRecordSQLStatement =
-    attachmentType === 'Report'
-      ? queries.security.unsecureAttachmentRecordSQL('survey_report_attachment', securityToken)
-      : queries.security.unsecureAttachmentRecordSQL('survey_attachment', securityToken);
-
-  if (!unsecureRecordSQLStatement) {
-    throw new HTTP400('Failed to build SQL unsecure record statement');
-  }
-
-  const unsecureRecordSQLResponse = await connection.query(
-    unsecureRecordSQLStatement.text,
-    unsecureRecordSQLStatement.values
-  );
-
-  if (!unsecureRecordSQLResponse || !unsecureRecordSQLResponse.rowCount) {
-    throw new HTTP400('Failed to unsecure record');
-  }
-};
 
 export const deleteSurveyAttachment = async (
   attachmentId: number,

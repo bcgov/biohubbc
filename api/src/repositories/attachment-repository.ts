@@ -165,7 +165,7 @@ export class AttachmentRepository extends BaseRepository {
    * SQL query to get attachments for a single project, including security rule counts.
    *
    * @param {number} projectId
-   * @return {Promise<WithSecurityCounts<IProjectAttachment[]>>} Promise resolving all project attachments with 
+   * @return {Promise<WithSecurityCounts<IProjectAttachment[]>>} Promise resolving all project attachments with
    * security rule counts.
    * @memberof AttachmentRepository
    */
