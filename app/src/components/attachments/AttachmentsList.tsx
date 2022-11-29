@@ -226,8 +226,8 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
                     onChange={(e) => {
                       if (e.target.checked) {
                         props.onCheckAllChange?.(
-                          props.attachmentsList.map((item) => {
-                            return { id: item.id, type: item.fileType } as IAttachmentType;
+                          props.attachmentsList.map((attachment) => {
+                            return { id: attachment.id, type: attachment.fileType } as IAttachmentType;
                           })
                         );
                       } else {
