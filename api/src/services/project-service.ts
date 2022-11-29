@@ -35,7 +35,6 @@ import { AttachmentService } from './attachment-service';
 import { DBService } from './db-service';
 
 export class ProjectService extends DBService {
-
   attachmentService: AttachmentService;
 
   constructor(connection: IDBConnection) {
@@ -863,7 +862,7 @@ export class ProjectService extends DBService {
      * Get the attachment S3 keys for all attachments associated to this project and surveys under this project
      * Used to delete them from S3 separately later
      */
-    const getProjectAttachments = await this.attachmentService.getProjectAttachments(projectId)
+    const getProjectAttachments = await this.attachmentService.getProjectAttachments(projectId);
     const getSurveyIdsSQLStatement = queries.survey.getSurveyIdsSQL(projectId);
 
     if (!getSurveyIdsSQLStatement) {
