@@ -110,7 +110,7 @@ const ProjectReportAttachmentDialog: React.FC<IProjectReportAttachmentDialogProp
 
         await refreshCurrentAttachment();
 
-        await refreshAttachmentDetails();
+        refreshAttachmentDetails();
 
         dialogContext.setYesNoDialog({ open: false });
       }

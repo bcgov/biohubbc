@@ -104,7 +104,7 @@ const ProjectAttachmentDialog: React.FC<IProjectAttachmentDialogProps> = (props)
 
         await refreshCurrentAttachment();
 
-        await refreshAttachmentDetails();
+        refreshAttachmentDetails();
 
         dialogContext.setYesNoDialog({ open: false });
       }

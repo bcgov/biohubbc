@@ -7,10 +7,6 @@ import { IProjectObjectivesForm } from 'features/projects/components/ProjectObje
 import { IProjectPartnershipsForm } from 'features/projects/components/ProjectPartnershipsForm';
 import { Feature } from 'geojson';
 
-/**
- * @TODO securityRuleCount and status should likely be required, not optional.
- * @TODO should we not reference the repo interface?
- */
 export interface IGetProjectAttachment {
   id: number;
   fileName: string;

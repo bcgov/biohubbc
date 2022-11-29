@@ -112,7 +112,7 @@ const SurveyReportAttachmentDialog: React.FC<ISurveyReportAttachmentDialogProps>
 
         await refreshCurrentAttachment();
 
-        await refreshAttachmentDetails();
+        refreshAttachmentDetails();
 
         dialogContext.setYesNoDialog({ open: false });
       }
