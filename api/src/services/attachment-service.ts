@@ -20,7 +20,6 @@ export interface IAttachmentType {
 }
 
 /**
- * @TODO make sure all repo names match their service names
  * @TODO replace all function-level `await`s with a return.
  */
 export class AttachmentService extends DBService {
@@ -58,42 +57,21 @@ export class AttachmentService extends DBService {
     return this.attachmentRepository.addSecurityRulesToProjectAttachment(securityIds, attachmentId);
   }
 
-  async addSecurityRulesToProjectAttachments(securityIds: number[], attachmentIds: number[]): Promise<void[]> {
-    const promises = attachmentIds.map((item) => this.addSecurityRulesToProjectAttachment(securityIds, item));
-
-    const results = await Promise.all(promises);
-
-    return results;
+  async addSecurityRulesToProjectAttachments(securityIds: number[], attachmentIds: number[]): Promise<void> {
+    await Promise.all(attachmentIds.map((attachmentId) => (
+      this.addSecurityRulesToProjectAttachment(securityIds, attachmentId)
+    )));
   }
 
-
-  /**
-   * @TODO return Promise.all
-   */
   async removeSecurityRuleFromProjectAttachment(securityIds: number[], attachmentId: number): Promise<void> {
-    for (const securityId of securityIds) {
-      await this.attachmentRepository.removeSecurityRuleFromProjectAttachment(securityId, attachmentId);
-    }
+    await Promise.all(securityIds.map((securityId) => (
+      this.attachmentRepository.removeSecurityRuleFromProjectAttachment(securityId, attachmentId)
+    )))
   }
 
-  /**
-   * Delete all security for Project Attachment
-   *
-   * @param {number} attachmentId
-   * @return {*}  {Promise<void>}
-   * @memberof AttachmentService
-   */
   async removeAllSecurityFromProjectAttachment(attachmentId: number): Promise<void> {
-    await this.attachmentRepository.removeAllSecurityFromProjectAttachment(attachmentId);
+    return this.attachmentRepository.removeAllSecurityFromProjectAttachment(attachmentId);
   }
-
-  /**
-   * PROJECT REPORT ATTACHMENTS
-   *
-   * @memberof AttachmentService
-   * @type Project Report Attachments
-   *
-   */
 
   async getProjectReportAttachments(projectId: number): Promise<IProjectReportAttachment[]> {
     return this.attachmentRepository.getProjectReportAttachments(projectId);
@@ -113,30 +91,20 @@ export class AttachmentService extends DBService {
     return this.attachmentRepository.getProjectReportAttachmentSecurityReasons(reportAttachmentId);
   }
 
-  async addSecurityRulesToProjectReportAttachments(securityIds: number[], attachmentIds: number[]): Promise<void[]> {
-    const promises = attachmentIds.map((item) => this.addSecurityRulesToProjectReportAttachment(securityIds, item));
-
-    const results = await Promise.all(promises);
-
-    return results;
+  async addSecurityRulesToProjectReportAttachments(securityIds: number[], attachmentIds: number[]): Promise<void> {
+    await Promise.all(attachmentIds.map((attachmentId) => (
+      this.addSecurityRulesToProjectReportAttachment(securityIds, attachmentId)
+    )));
   }
 
-  /**
-   * Function to run array of SQL queries to delete Project Report Attachments
-   *
-   * @param {number[]} securityIds
-   * @param {number} attachmentId
-   * @return {*}  {Promise<{ project_report_persecution_id: number }[]>}
-   * @memberof AttachmentService
-   */
   async removeSecurityRuleFromProjectReportAttachment(securityIds: number[], reportAttachmentId: number): Promise<void> {
-    for (const securityId of securityIds) {
-      await this.attachmentRepository.removeSecurityRuleFromProjectReportAttachment(securityId, reportAttachmentId);
-    }
+    await Promise.all(securityIds.map((securityId) => (
+      this.attachmentRepository.removeSecurityRuleFromProjectReportAttachment(securityId, reportAttachmentId)
+    )));
   }
 
   async removeAllSecurityFromProjectReportAttachment(reportAttachmentId: number): Promise<void> {
-    await this.attachmentRepository.removeAllSecurityFromProjectReportAttachment(reportAttachmentId);
+    return this.attachmentRepository.removeAllSecurityFromProjectReportAttachment(reportAttachmentId);
   }
 
   async getSurveyAttachments(surveyId: number): Promise<ISurveyAttachment[]> {
@@ -152,29 +120,14 @@ export class AttachmentService extends DBService {
   }
 
   async removeSecurityRuleFromSurveyAttachment(securityIds: number[], attachmentId: number): Promise<void> {
-    for (const securityId of securityIds) {
-      await this.attachmentRepository.removeSecurityRuleFromSurveyAttachment(securityId, attachmentId);
-    }
+    await Promise.all(securityIds.map((securityId) => (
+      this.attachmentRepository.removeSecurityRuleFromSurveyAttachment(securityId, attachmentId)
+    )));
   }
 
-  /**
-   * Delete all security for Survey Attachment
-   *
-   * @param {number} attachmentId
-   * @return {*}  {Promise<void>}
-   * @memberof AttachmentService
-   */
   async removeAllSecurityFromSurveyAttachment(attachmentId: number): Promise<void> {
-    await this.attachmentRepository.removeAllSecurityFromSurveyAttachment(attachmentId);
+    return this.attachmentRepository.removeAllSecurityFromSurveyAttachment(attachmentId);
   }
-
-  /**
-   * SURVEY REPORT ATTACHMENTS
-   *
-   * @memberof AttachmentService
-   * @type Survey Report Attachments
-   *
-   */
 
   async getSurveyReportAttachments(surveyId: number): Promise<ISurveyReportAttachment[]> {
     return this.attachmentRepository.getSurveyReportAttachments(surveyId);
@@ -194,63 +147,46 @@ export class AttachmentService extends DBService {
     return this.attachmentRepository.addSecurityRulesToSurveyReportAttachment(securityIds, reportAttachmentId);
   }
 
-  /**
-   * Delete all security for Survey Report Attachment
-   *
-   * @param {number} attachmentId
-   * @return {*}  {Promise<void>}
-   * @memberof AttachmentService
-   */
   async removeAllSecurityFromSurveyReportAttachment(reportAttachmentId: number): Promise<void> {
     await this.attachmentRepository.removeAllSecurityFromSurveyReportAttachment(reportAttachmentId);
   }
 
-  /**
-   * Function to run array of SQL queries to delete Survey Report Attachments
-   *
-   * @param {number[]} securityIds
-   * @param {number} attachmentId
-   * @return {*}  {Promise<{ survey_report_persecution_id: number }[]>}
-   * @memberof AttachmentService
-   */
   async removeSecurityRuleFromSurveyReportAttachment(securityIds: number[], reportAttachmentId: number): Promise<void> {
-    for (const securityId of securityIds) {
-      await this.attachmentRepository.removeSecurityRuleFromSurveyReportAttachment(securityId, reportAttachmentId);
-    }
+    await Promise.all(securityIds.map((securityId) => (
+      this.attachmentRepository.removeSecurityRuleFromSurveyReportAttachment(securityId, reportAttachmentId)
+    )));
   }
 
-  async addSecurityToProjectAttachments(securityIds: number[], attachments: IAttachmentType[]): Promise<void[]> {
-    const actions: Promise<void>[] = [];
-    attachments.forEach((item) => {
-      if (item.type === 'Report') {
-        actions.push(this.addSecurityRulesToProjectReportAttachment(securityIds, item.id));
-        actions.push(this.addSecurityReviewTimeToProjectReportAttachment(item.id));
+  async addSecurityRulesToProjectAttachmentsOrProjectReports(securityIds: number[], attachments: IAttachmentType[]): Promise<void> {
+    await Promise.all(attachments.map((attachment: IAttachmentType) => {
+      if (attachment.type === 'Report') {
+        return Promise.all([
+          this.addSecurityRulesToProjectReportAttachment(securityIds, attachment.id),
+          this.addSecurityReviewTimeToProjectReportAttachment(attachment.id)
+        ]);
       } else {
-        actions.push(this.addSecurityRulesToProjectAttachment(securityIds, item.id));
-        actions.push(this.addSecurityReviewTimeToProjectAttachment(item.id));
+        return Promise.all([
+          this.addSecurityRulesToProjectAttachment(securityIds, attachment.id),
+          this.addSecurityReviewTimeToProjectAttachment(attachment.id)
+        ]);
       }
-    });
-
-    const results = await Promise.all(actions);
-
-    return results;
+    }));
   }
 
-  async addSecurityToSurveyAttachments(securityIds: number[], attachments: IAttachmentType[]): Promise<void[]> {
-    const actions: Promise<void>[] = [];
-    attachments.forEach((item) => {
-      if (item.type === 'Report') {
-        actions.push(this.addSecurityRulesToSurveyReportAttachment(securityIds, item.id));
-        actions.push(this.addSecurityReviewToSurveyReportAttachment(item.id));
+  async addSecurityRulesToSurveyAttachmentsOrSurveyReports(securityIds: number[], attachments: IAttachmentType[]): Promise<void> {
+    await Promise.all(attachments.map((attachment: IAttachmentType) => {
+      if (attachment.type === 'Report') {
+        return Promise.all([
+          this.addSecurityRulesToSurveyReportAttachment(securityIds, attachment.id),
+          this.addSecurityReviewTimeToSurveyReportAttachment(attachment.id)
+        ]);
       } else {
-        actions.push(this.addSecurityRulesToSurveyAttachment(securityIds, item.id));
-        actions.push(this.addSecurityReviewToSurveyAttachment(item.id));
+        return Promise.all([
+          this.addSecurityRulesToSurveyAttachment(securityIds, attachment.id),
+          this.addSecurityReviewTimeToSurveyAttachment(attachment.id)
+        ]);
       }
-    });
-
-    const results = await Promise.all(actions);
-
-    return results;
+    }));
   }
 
   async addSecurityReviewTimeToProjectReportAttachment(reportAttachmentId: number): Promise<void> {
@@ -261,15 +197,15 @@ export class AttachmentService extends DBService {
     return this.attachmentRepository.addSecurityReviewTimeToProjectAttachment(attachmentId);
   }
 
-  async addSecurityReviewToSurveyReportAttachment(reportAttachmentId: number): Promise<void> {
+  async addSecurityReviewTimeToSurveyReportAttachment(reportAttachmentId: number): Promise<void> {
     return this.attachmentRepository.addSecurityReviewTimeToSurveyReportAttachment(reportAttachmentId);
   }
 
-  async addSecurityReviewToSurveyAttachment(attachmentId: number): Promise<void> {
+  async addSecurityReviewTimeToSurveyAttachment(attachmentId: number): Promise<void> {
     return this.attachmentRepository.addSecurityReviewTimeToSurveyAttachment(attachmentId);
   }
 
-  async getSurveyReportAttachment(projectId: number, reportAttachmentId: number): Promise<IProjectReportAttachment> {
+  async getSurveyReportAttachmentById(projectId: number, reportAttachmentId: number): Promise<IProjectReportAttachment> {
     return this.attachmentRepository.getSurveyReportAttachmentById(projectId, reportAttachmentId);
   }
 
