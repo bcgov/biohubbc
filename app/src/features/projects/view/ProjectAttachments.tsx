@@ -108,7 +108,7 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
   }, []);
 
   const addSecurityReasons = async (securityReasons: number[]) => {
-    await biohubApi.security.addProjectSecurityReasons(projectId, securityReasons, selectedAttachmentRows)
+    await biohubApi.security.addProjectSecurityReasons(projectId, securityReasons, selectedAttachmentRows);
   };
 
   const [securityDialogOpen, setSecurityDialogOpen] = useState(false);
@@ -149,7 +149,7 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
               securityReasons.security_reasons.map((item) => parseInt(`${item.security_reason_id}`))
             );
           }
-          await getAttachments(true)
+          await getAttachments(true);
           setSecurityDialogOpen(false);
         }}
         onClose={() => setSecurityDialogOpen(false)}

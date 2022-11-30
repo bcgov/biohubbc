@@ -275,10 +275,12 @@ export class AttachmentRepository extends BaseRepository {
 
     const queryBuilder = getKnex()
       .table('project_attachment_persecution')
-      .insert(securityIds.map((persecution_security_id: number) => ({
-        persecution_security_id,
-        project_attachment_id: attachmentId
-      })))
+      .insert(
+        securityIds.map((persecution_security_id: number) => ({
+          persecution_security_id,
+          project_attachment_id: attachmentId
+        }))
+      )
       .onConflict(['project_attachment_id', 'persecution_security_id'])
       .ignore()
       .returning('persecution_security_id');
@@ -363,7 +365,7 @@ export class AttachmentRepository extends BaseRepository {
    */
   async removeAllSecurityFromProjectAttachment(attachmentId: number): Promise<void> {
     defaultLog.debug({ label: 'removeAllSecurityFromProjectAttachment' });
-  
+
     const sqlStatement = SQL`
       DELETE FROM
         project_attachment_persecution
@@ -491,9 +493,12 @@ export class AttachmentRepository extends BaseRepository {
    * @return {Promise<IProjectReportAttachment>} Promise resolving the report attachment
    * @memberof AttachmentRepository
    */
-  async getProjectReportAttachmentById(projectId: number, reportAttachmentId: number): Promise<IProjectReportAttachment> {
+  async getProjectReportAttachmentById(
+    projectId: number,
+    reportAttachmentId: number
+  ): Promise<IProjectReportAttachment> {
     defaultLog.debug({ label: 'getProjectReportAttachmentById' });
-  
+
     const sqlStatement = SQL`
       SELECT
         project_report_attachment_id as id,
@@ -571,13 +576,15 @@ export class AttachmentRepository extends BaseRepository {
    */
   async addSecurityRulesToProjectReportAttachment(securityIds: number[], reportAttachmentId: number): Promise<void> {
     defaultLog.debug({ label: 'addSecurityRulesToProjectReportAttachment' });
-  
+
     const queryBuilder = getKnex()
       .table('project_report_persecution')
-      .insert(securityIds.map((persecution_security_id: number) => ({
-        persecution_security_id,
-        project_report_attachment_id: reportAttachmentId
-      })))
+      .insert(
+        securityIds.map((persecution_security_id: number) => ({
+          persecution_security_id,
+          project_report_attachment_id: reportAttachmentId
+        }))
+      )
       .onConflict(['project_report_attachment_id', 'persecution_security_id'])
       .ignore()
       .returning('persecution_security_id');
@@ -821,10 +828,12 @@ export class AttachmentRepository extends BaseRepository {
 
     const queryBuilder = getKnex()
       .table('survey_attachment_persecution')
-      .insert(securityIds.map((persecution_security_id: number) => ({
-        persecution_security_id,
-        survey_attachment_id: attachmentId
-      })))
+      .insert(
+        securityIds.map((persecution_security_id: number) => ({
+          persecution_security_id,
+          survey_attachment_id: attachmentId
+        }))
+      )
       .onConflict(['survey_attachment_id', 'persecution_security_id'])
       .ignore()
       .returning('persecution_security_id');
@@ -918,7 +927,7 @@ export class AttachmentRepository extends BaseRepository {
         RETURNING
           survey_attachment_id;
         `;
-  
+
     const response = await this.connection.sql<{ survey_attachment_id: number }>(sqlStatement);
 
     if (!response) {
@@ -1042,10 +1051,12 @@ export class AttachmentRepository extends BaseRepository {
 
     const queryBuilder = getKnex()
       .table('survey_report_persecution')
-      .insert(securityIds.map((persecution_security_id: number) => ({
-        persecution_security_id,
-        survey_report_attachment_id: reportAttachmentId
-      })))
+      .insert(
+        securityIds.map((persecution_security_id: number) => ({
+          persecution_security_id,
+          survey_report_attachment_id: reportAttachmentId
+        }))
+      )
       .onConflict(['survey_report_attachment_id', 'persecution_security_id'])
       .ignore()
       .returning('persecution_security_id');
@@ -1193,7 +1204,6 @@ export class AttachmentRepository extends BaseRepository {
 
     return response.rows[0];
   }
-
 
   /**
    * Query to return all security reasons for a given survey report attachment

@@ -180,7 +180,9 @@ export function getProjectReportDetails(): RequestHandler {
         Number(req.params.attachmentId)
       );
 
-      const projectReportAuthors = await attachmentService.getProjectReportAttachmentAuthors(Number(req.params.attachmentId));
+      const projectReportAuthors = await attachmentService.getProjectReportAttachmentAuthors(
+        Number(req.params.attachmentId)
+      );
 
       const projectReportSecurity = await attachmentService.getProjectReportAttachmentSecurityReasons(
         Number(req.params.attachmentId)

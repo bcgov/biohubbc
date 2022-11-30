@@ -13,7 +13,7 @@ export interface IAttachmentTypeSelectorProps {
   currentAttachment: IGetProjectAttachment | IGetSurveyAttachment | null;
   open: boolean;
   close: () => void;
-  refresh: (id: number, type:string) => void;
+  refresh: (id: number, type: string) => void;
 }
 
 /**

@@ -1,11 +1,11 @@
 import { IDBConnection } from '../database/db';
 import {
   AttachmentRepository,
-  IReportAttachmentAuthor,
   IProjectAttachment,
   IProjectAttachmentSecurityReason,
   IProjectReportAttachment,
   IProjectReportSecurityReason,
+  IReportAttachmentAuthor,
   ISurveyAttachment,
   ISurveyAttachmentSecurityReason,
   ISurveyReportAttachment,
@@ -110,9 +110,9 @@ export class AttachmentService extends DBService {
    * @memberof AttachmentService
    */
   async addSecurityRulesToProjectAttachments(securityIds: number[], attachmentIds: number[]): Promise<void> {
-    await Promise.all(attachmentIds.map((attachmentId) => (
-      this.addSecurityRulesToProjectAttachment(securityIds, attachmentId)
-    )));
+    await Promise.all(
+      attachmentIds.map((attachmentId) => this.addSecurityRulesToProjectAttachment(securityIds, attachmentId))
+    );
   }
 
   /**
@@ -123,9 +123,11 @@ export class AttachmentService extends DBService {
    * @memberof AttachmentService
    */
   async removeSecurityRulesFromProjectAttachment(securityIds: number[], attachmentId: number): Promise<void> {
-    await Promise.all(securityIds.map((securityId) => (
-      this.attachmentRepository.removeSecurityRuleFromProjectAttachment(securityId, attachmentId)
-    )))
+    await Promise.all(
+      securityIds.map((securityId) =>
+        this.attachmentRepository.removeSecurityRuleFromProjectAttachment(securityId, attachmentId)
+      )
+    );
   }
 
   /**
@@ -150,7 +152,7 @@ export class AttachmentService extends DBService {
 
   /**
    * Finds all project report attachments for the given project ID, including security rule counts.
-   * @param {number} projectId 
+   * @param {number} projectId
    * @return {Promise<WithSecurityRuleCount<IProjectReportAttachment>[]>} Promise resolving all project report attachments with
    * security counts.
    * @memberof AttachmentService
@@ -168,7 +170,10 @@ export class AttachmentService extends DBService {
    * @return {Promise<IProjectReportAttachment>} Promise resolving the given project report attachment
    * @memberof AttachmentService
    */
-  async getProjectReportAttachmentById(projectId: number, reportAttachmentId: number): Promise<IProjectReportAttachment> {
+  async getProjectReportAttachmentById(
+    projectId: number,
+    reportAttachmentId: number
+  ): Promise<IProjectReportAttachment> {
     return this.attachmentRepository.getProjectReportAttachmentById(projectId, reportAttachmentId);
   }
 
@@ -191,9 +196,9 @@ export class AttachmentService extends DBService {
    * @memberof AttachmentService
    */
   async addSecurityRulesToProjectReportAttachments(securityIds: number[], attachmentIds: number[]): Promise<void> {
-    await Promise.all(attachmentIds.map((attachmentId) => (
-      this.addSecurityRulesToProjectReportAttachment(securityIds, attachmentId)
-    )));
+    await Promise.all(
+      attachmentIds.map((attachmentId) => this.addSecurityRulesToProjectReportAttachment(securityIds, attachmentId))
+    );
   }
 
   /**
@@ -203,10 +208,15 @@ export class AttachmentService extends DBService {
    * @return {Promise<void>}
    * @memberof AttachmentService
    */
-  async removeSecurityRulesFromProjectReportAttachment(securityIds: number[], reportAttachmentId: number): Promise<void> {
-    await Promise.all(securityIds.map((securityId) => (
-      this.attachmentRepository.removeSecurityRuleFromProjectReportAttachment(securityId, reportAttachmentId)
-    )));
+  async removeSecurityRulesFromProjectReportAttachment(
+    securityIds: number[],
+    reportAttachmentId: number
+  ): Promise<void> {
+    await Promise.all(
+      securityIds.map((securityId) =>
+        this.attachmentRepository.removeSecurityRuleFromProjectReportAttachment(securityId, reportAttachmentId)
+      )
+    );
   }
 
   /**
@@ -259,9 +269,11 @@ export class AttachmentService extends DBService {
    * @memberof AttachmentService
    */
   async removeSecurityRulesFromSurveyAttachment(securityIds: number[], attachmentId: number): Promise<void> {
-    await Promise.all(securityIds.map((securityId) => (
-      this.attachmentRepository.removeSecurityRuleFromSurveyAttachment(securityId, attachmentId)
-    )));
+    await Promise.all(
+      securityIds.map((securityId) =>
+        this.attachmentRepository.removeSecurityRuleFromSurveyAttachment(securityId, attachmentId)
+      )
+    );
   }
 
   /**
@@ -286,7 +298,7 @@ export class AttachmentService extends DBService {
 
   /**
    * Finds all survey report attachments for the given survey ID, including security rule counts.
-   * @param {number} surveyId 
+   * @param {number} surveyId
    * @return {Promise<WithSecurityRuleCount<ISurveyReportAttachment>[]>} Promise resolving all survey report attachments with
    * security counts.
    * @memberof AttachmentService
@@ -336,10 +348,15 @@ export class AttachmentService extends DBService {
    * @return {Promise<void>}
    * @memberof AttachmentService
    */
-  async removeSecurityRulesFromSurveyReportAttachment(securityIds: number[], reportAttachmentId: number): Promise<void> {
-    await Promise.all(securityIds.map((securityId) => (
-      this.attachmentRepository.removeSecurityRuleFromSurveyReportAttachment(securityId, reportAttachmentId)
-    )));
+  async removeSecurityRulesFromSurveyReportAttachment(
+    securityIds: number[],
+    reportAttachmentId: number
+  ): Promise<void> {
+    await Promise.all(
+      securityIds.map((securityId) =>
+        this.attachmentRepository.removeSecurityRuleFromSurveyReportAttachment(securityId, reportAttachmentId)
+      )
+    );
   }
 
   /**
@@ -350,20 +367,25 @@ export class AttachmentService extends DBService {
    * @return {Promise<void>}
    * @memberof AttachmentService
    */
-  async addSecurityRulesToProjectAttachmentsOrProjectReports(securityIds: number[], attachments: IAttachmentType[]): Promise<void> {
-    await Promise.all(attachments.map((attachment: IAttachmentType) => {
-      if (attachment.type === 'Report') {
-        return Promise.all([
-          this.addSecurityRulesToProjectReportAttachment(securityIds, attachment.id),
-          this.addSecurityReviewTimeToProjectReportAttachment(attachment.id)
-        ]);
-      } else {
-        return Promise.all([
-          this.addSecurityRulesToProjectAttachment(securityIds, attachment.id),
-          this.addSecurityReviewTimeToProjectAttachment(attachment.id)
-        ]);
-      }
-    }));
+  async addSecurityRulesToProjectAttachmentsOrProjectReports(
+    securityIds: number[],
+    attachments: IAttachmentType[]
+  ): Promise<void> {
+    await Promise.all(
+      attachments.map((attachment: IAttachmentType) => {
+        if (attachment.type === 'Report') {
+          return Promise.all([
+            this.addSecurityRulesToProjectReportAttachment(securityIds, attachment.id),
+            this.addSecurityReviewTimeToProjectReportAttachment(attachment.id)
+          ]);
+        } else {
+          return Promise.all([
+            this.addSecurityRulesToProjectAttachment(securityIds, attachment.id),
+            this.addSecurityReviewTimeToProjectAttachment(attachment.id)
+          ]);
+        }
+      })
+    );
   }
 
   /**
@@ -374,20 +396,25 @@ export class AttachmentService extends DBService {
    * @return {Promise<void>}
    * @memberof AttachmentService
    */
-  async addSecurityRulesToSurveyAttachmentsOrSurveyReports(securityIds: number[], attachments: IAttachmentType[]): Promise<void> {
-    await Promise.all(attachments.map((attachment: IAttachmentType) => {
-      if (attachment.type === 'Report') {
-        return Promise.all([
-          this.addSecurityRulesToSurveyReportAttachment(securityIds, attachment.id),
-          this.addSecurityReviewTimeToSurveyReportAttachment(attachment.id)
-        ]);
-      } else {
-        return Promise.all([
-          this.addSecurityRulesToSurveyAttachment(securityIds, attachment.id),
-          this.addSecurityReviewTimeToSurveyAttachment(attachment.id)
-        ]);
-      }
-    }));
+  async addSecurityRulesToSurveyAttachmentsOrSurveyReports(
+    securityIds: number[],
+    attachments: IAttachmentType[]
+  ): Promise<void> {
+    await Promise.all(
+      attachments.map((attachment: IAttachmentType) => {
+        if (attachment.type === 'Report') {
+          return Promise.all([
+            this.addSecurityRulesToSurveyReportAttachment(securityIds, attachment.id),
+            this.addSecurityReviewTimeToSurveyReportAttachment(attachment.id)
+          ]);
+        } else {
+          return Promise.all([
+            this.addSecurityRulesToSurveyAttachment(securityIds, attachment.id),
+            this.addSecurityReviewTimeToSurveyAttachment(attachment.id)
+          ]);
+        }
+      })
+    );
   }
 
   /**
@@ -424,7 +451,7 @@ export class AttachmentService extends DBService {
    * Updates the security review timestamp belonging to the given survey attachment
    * @param {number} attachmentId the ID of the survey
    * @return {Promise<void>}
-   * @memberof AttachmentService 
+   * @memberof AttachmentService
    */
   async addSecurityReviewTimeToSurveyAttachment(attachmentId: number): Promise<void> {
     return this.attachmentRepository.addSecurityReviewTimeToSurveyAttachment(attachmentId);
