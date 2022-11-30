@@ -106,10 +106,11 @@ export class ValidationService extends DBService {
 
       // Parse Archive into JSON file for custom validation
       await this.parseDWCToJSON(submissionId, dwcPrep.archive);
+      
+      await this.templateScrapeAndUploadOccurrences(submissionId);
+
       // insert validated status
       await this.submissionRepository.insertSubmissionStatus(submissionId, SUBMISSION_STATUS_TYPE.TEMPLATE_VALIDATED);
-
-      await this.templateScrapeAndUploadOccurrences(submissionId);
     } catch (error) {
       if (error instanceof SubmissionError) {
         await this.errorService.insertSubmissionError(submissionId, error);
@@ -127,17 +128,14 @@ export class ValidationService extends DBService {
       // template validation
       await this.templateValidation(submissionPrep.xlsx, surveyId);
 
-      // insert template validated status
-      await this.submissionRepository.insertSubmissionStatus(submissionId, SUBMISSION_STATUS_TYPE.TEMPLATE_VALIDATED);
-
       // template transformation
       await this.templateTransformation(submissionId, submissionPrep.xlsx, submissionPrep.s3InputKey, surveyId);
 
-      // insert template validated status
-      await this.submissionRepository.insertSubmissionStatus(submissionId, SUBMISSION_STATUS_TYPE.TEMPLATE_TRANSFORMED);
-
       // occurrence scraping
       await this.templateScrapeAndUploadOccurrences(submissionId);
+
+      // insert template validated status
+      await this.submissionRepository.insertSubmissionStatus(submissionId, SUBMISSION_STATUS_TYPE.TEMPLATE_TRANSFORMED);
     } catch (error) {
       if (error instanceof SubmissionError) {
         await this.errorService.insertSubmissionError(submissionId, error);
@@ -421,6 +419,7 @@ export class ValidationService extends DBService {
     s3OutputKey: string,
     xlsxCsv: XLSXCSV
   ) {
+    console.log("PERSIST TRANSFORMATION RESULTS")
     // Build the archive zip file
     const dwcArchiveZip = new AdmZip();
     fileBuffers.forEach((file) => dwcArchiveZip.addFile(`${file.name}.csv`, file.buffer));
