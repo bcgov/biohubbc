@@ -18,7 +18,7 @@ const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBioh
   mockUseBiohubApi
 );
 
-describe('AttachmentsList', () => {
+describe.skip('AttachmentsList', () => {
   beforeEach(() => {
     // clear mocks before each test
     mockBiohubApi().project.getAttachmentSignedURL.mockClear();
