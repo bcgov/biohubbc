@@ -62,6 +62,10 @@ const SurveysList: React.FC<ISurveysListProps> = (props) => {
     return <Chip color="secondary" style={{ minWidth: '100px' }} className={clsx(chipStatusClass)} label={chipLabel} />;
   };
 
+  const getSurveyDocReviewLabel = (numDoc: number) => {
+    return `Pending Review(${numDoc})`;
+  };
+
   return (
     <>
       <TableContainer>
@@ -101,12 +105,14 @@ const SurveysList: React.FC<ISurveysListProps> = (props) => {
                     )}
                   </TableCell> */}
                   <TableCell>
-                    <Chip
-                      size="small"
-                      color="secondary"
-                      label="Pending Review"
-                      icon={<Icon path={mdiAlertCircle} size={0.8} />}
-                    />
+                    {row.docs_to_be_reviewed > 0 && (
+                      <Chip
+                        size="small"
+                        color="secondary"
+                        label={getSurveyDocReviewLabel(row.docs_to_be_reviewed)}
+                        icon={<Icon path={mdiAlertCircle} size={0.8} />}
+                      />
+                    )}
 
                     <Box hidden>{getChipIcon(getSurveyCompletionStatusType(row))}</Box>
                   </TableCell>

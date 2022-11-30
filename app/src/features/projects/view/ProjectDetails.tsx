@@ -36,7 +36,7 @@ const useStyles = makeStyles((theme: Theme) => ({
       flex: '1 1 auto'
     },
     '& .MuiListItem-root': {
-    paddingTop: theme.spacing(1.5),
+      paddingTop: theme.spacing(1.5),
       paddingBottom: theme.spacing(1.5)
     },
     '& .MuiListItem-root:first-of-type': {

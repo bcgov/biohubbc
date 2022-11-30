@@ -83,6 +83,7 @@ export interface SurveyViewObject {
   purpose_and_methodology: IGetSurveyForViewResponsePurposeAndMethodology;
   funding: ISurveyFundingSources;
   proprietor: IGetSurveyForViewResponseProprietor | null;
+  docs_to_be_reviewed: number;
 }
 
 export interface SurveyUpdateObject {

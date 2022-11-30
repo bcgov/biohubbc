@@ -76,7 +76,8 @@ export const surveyObject: SurveyViewObject = {
     focal_species_names: ['focal species 1'],
     ancillary_species: [2],
     ancillary_species_names: ['ancillary species 2']
-  }
+  },
+  docs_to_be_reviewed: 0
 };
 
 export const surveySupplementaryData: SurveySupplementaryData = {
