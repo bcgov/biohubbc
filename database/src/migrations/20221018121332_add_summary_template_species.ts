@@ -6,39 +6,50 @@ import {
 
 const DB_SCHEMA = process.env.DB_SCHEMA;
 
-enum WILD_TAXON_IDS {
-  MOOSE = 4147, // M_ALAM
-  GOAT = 4165, // M-ORAM
-  SHEEP = 8619, // M-OVDA
-  ELK = 4149 // M-CECA
-}
+const taxonIdLists = {
+  // M-OVCA; M-OVCA-CA; M-OVDA; M-OVDA-DA; M-OVDA-ST.
+  SHEEP: ['4166', '474', '8619', '475', '476'],
+
+  // M-CEEL; M-CEEL-RO; M-CECA; M-CECA-RO.
+  ELK: ['2227', '2228', '4149', '6901'],
+
+  // M-ALAM; M-ALAM-AN; M-ALAM-GI; M-ALAM-SH.
+  MOOSE: ['4147', '6897', '6898', '6899'],
+
+  // M-ORAM
+  GOAT: ['4165']
+};
 
 interface IValidationSchema {
   validation: string; // Validation JSON
   summaryTemplateName: SUMMARY_TEMPLATE_NAME; // Name of the summary template
-  species: number; // Wild taxonomic units code
+  species: keyof typeof taxonIdLists; // Wild taxonomic units code
 }
 
 const validationSchema: IValidationSchema[] = [
   {
+    // Moose
     validation: JSON.stringify(summaryTemplateValidationJson),
     summaryTemplateName: SUMMARY_TEMPLATE_NAME.MOOSE_SUMMARY_RESULTS,
-    species: WILD_TAXON_IDS.MOOSE
+    species: 'MOOSE'
   },
   {
+    // Sheep
     validation: JSON.stringify(summaryTemplateValidationJson),
     summaryTemplateName: SUMMARY_TEMPLATE_NAME.SHEEP_SUMMARY_RESULTS,
-    species: WILD_TAXON_IDS.SHEEP
+    species: 'SHEEP'
   },
   {
+    // Goat
     validation: JSON.stringify(summaryTemplateValidationJson),
     summaryTemplateName: SUMMARY_TEMPLATE_NAME.GOAT_SUMMARY_RESULTS,
-    species: WILD_TAXON_IDS.GOAT
+    species: 'GOAT'
   },
   {
+    // Elk
     validation: JSON.stringify(summaryTemplateValidationJson),
     summaryTemplateName: SUMMARY_TEMPLATE_NAME.ELK_SUMMARY_RESULTS,
-    species: WILD_TAXON_IDS.ELK
+    species: 'ELK'
   }
 ];
 
@@ -56,14 +67,16 @@ export async function up(knex: Knex): Promise<void> {
   `);
 
   for (const schema of validationSchema) {
-    await knex.raw(`
-      INSERT INTO
-        ${DB_SCHEMA}.summary_template_species (summary_template_id, wldtaxonomic_units_id, validation, create_date)
-      VALUES (
-        (SELECT summary_template_id FROM summary_template WHERE name = '${schema.summaryTemplateName}'),
-        '${schema.species}', '${schema.validation}', now()
-      );
-    `);
+    for (const taxonomicCode of taxonIdLists[schema.species]) {
+      await knex.raw(`
+        INSERT INTO
+          ${DB_SCHEMA}.summary_template_species (summary_template_id, wldtaxonomic_units_id, validation, create_date)
+        VALUES (
+          (SELECT summary_template_id FROM summary_template WHERE name = '${schema.summaryTemplateName}'),
+          '${taxonomicCode}', '${schema.validation}', now()
+        );
+      `);
+    }
   }
 }
 
