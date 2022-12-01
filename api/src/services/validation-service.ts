@@ -99,14 +99,14 @@ export class ValidationService extends DBService {
       // update submission
       await this.persistValidationResults(csvState.csv_state, csvState.media_state);
 
-      // insert validated status
-      await this.submissionRepository.insertSubmissionStatus(submissionId, SUBMISSION_STATUS_TYPE.TEMPLATE_VALIDATED);
-
       await this.occurrenceService.updateSurveyOccurrenceSubmission(
         submissionId,
         dwcPrep.archive.rawFile.fileName,
         dwcPrep.s3InputKey
-      );
+        );
+        
+      // insert validated status
+      await this.submissionRepository.insertSubmissionStatus(submissionId, SUBMISSION_STATUS_TYPE.TEMPLATE_VALIDATED);
 
       // Parse Archive into JSON file for custom validation
       await this.parseDWCToJSON(submissionId, dwcPrep.archive);
