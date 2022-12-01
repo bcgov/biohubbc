@@ -98,6 +98,10 @@ export class ValidationService extends DBService {
       const csvState = this.validateDWC(dwcPrep.archive);
       // update submission
       await this.persistValidationResults(csvState.csv_state, csvState.media_state);
+      
+      // insert validated status
+      await this.submissionRepository.insertSubmissionStatus(submissionId, SUBMISSION_STATUS_TYPE.TEMPLATE_VALIDATED);
+
       await this.occurrenceService.updateSurveyOccurrenceSubmission(
         submissionId,
         dwcPrep.archive.rawFile.fileName,
@@ -109,8 +113,6 @@ export class ValidationService extends DBService {
 
       await this.templateScrapeAndUploadOccurrences(submissionId);
 
-      // insert validated status
-      await this.submissionRepository.insertSubmissionStatus(submissionId, SUBMISSION_STATUS_TYPE.TEMPLATE_VALIDATED);
     } catch (error) {
       if (error instanceof SubmissionError) {
         await this.errorService.insertSubmissionError(submissionId, error);
@@ -128,14 +130,18 @@ export class ValidationService extends DBService {
       // template validation
       await this.templateValidation(submissionPrep.xlsx, surveyId);
 
+      // insert template validated status
+      await this.submissionRepository.insertSubmissionStatus(submissionId, SUBMISSION_STATUS_TYPE.TEMPLATE_VALIDATED);
+
       // template transformation
       await this.templateTransformation(submissionId, submissionPrep.xlsx, submissionPrep.s3InputKey, surveyId);
+
+      // insert template transformed status
+      await this.submissionRepository.insertSubmissionStatus(submissionId, SUBMISSION_STATUS_TYPE.TEMPLATE_TRANSFORMED);
 
       // occurrence scraping
       await this.templateScrapeAndUploadOccurrences(submissionId);
 
-      // insert template validated status
-      await this.submissionRepository.insertSubmissionStatus(submissionId, SUBMISSION_STATUS_TYPE.TEMPLATE_TRANSFORMED);
     } catch (error) {
       if (error instanceof SubmissionError) {
         await this.errorService.insertSubmissionError(submissionId, error);
