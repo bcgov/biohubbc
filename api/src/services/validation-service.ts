@@ -98,7 +98,7 @@ export class ValidationService extends DBService {
       const csvState = this.validateDWC(dwcPrep.archive);
       // update submission
       await this.persistValidationResults(csvState.csv_state, csvState.media_state);
-      
+
       // insert validated status
       await this.submissionRepository.insertSubmissionStatus(submissionId, SUBMISSION_STATUS_TYPE.TEMPLATE_VALIDATED);
 
@@ -112,7 +112,6 @@ export class ValidationService extends DBService {
       await this.parseDWCToJSON(submissionId, dwcPrep.archive);
 
       await this.templateScrapeAndUploadOccurrences(submissionId);
-
     } catch (error) {
       if (error instanceof SubmissionError) {
         await this.errorService.insertSubmissionError(submissionId, error);
@@ -141,7 +140,6 @@ export class ValidationService extends DBService {
 
       // occurrence scraping
       await this.templateScrapeAndUploadOccurrences(submissionId);
-
     } catch (error) {
       if (error instanceof SubmissionError) {
         await this.errorService.insertSubmissionError(submissionId, error);
