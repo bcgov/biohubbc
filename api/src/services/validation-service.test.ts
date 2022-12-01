@@ -766,7 +766,7 @@ describe('ValidationService', () => {
       expect(validate).to.be.calledOnce;
       expect(transform).to.be.calledOnce;
       expect(upload).to.be.calledOnce;
-      expect(status).to.be.calledOnce;
+      expect(status).to.be.calledTwice;
     });
 
     it('should insert submission error', async () => {
