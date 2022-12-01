@@ -106,7 +106,7 @@ export class ValidationService extends DBService {
 
       // Parse Archive into JSON file for custom validation
       await this.parseDWCToJSON(submissionId, dwcPrep.archive);
-      
+
       await this.templateScrapeAndUploadOccurrences(submissionId);
 
       // insert validated status
@@ -419,7 +419,6 @@ export class ValidationService extends DBService {
     s3OutputKey: string,
     xlsxCsv: XLSXCSV
   ) {
-    console.log("PERSIST TRANSFORMATION RESULTS")
     // Build the archive zip file
     const dwcArchiveZip = new AdmZip();
     fileBuffers.forEach((file) => dwcArchiveZip.addFile(`${file.name}.csv`, file.buffer));
