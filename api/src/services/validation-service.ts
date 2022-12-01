@@ -103,8 +103,8 @@ export class ValidationService extends DBService {
         submissionId,
         dwcPrep.archive.rawFile.fileName,
         dwcPrep.s3InputKey
-        );
-        
+      );
+
       // insert validated status
       await this.submissionRepository.insertSubmissionStatus(submissionId, SUBMISSION_STATUS_TYPE.TEMPLATE_VALIDATED);
 
