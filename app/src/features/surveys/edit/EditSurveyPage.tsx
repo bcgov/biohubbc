@@ -15,13 +15,8 @@ import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useQuery } from 'hooks/useQuery';
-import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
-import {
-  IGetSurveyForEdit,
-  ISurveyAvailableFundingSources,
-  SurveyUpdateObject
-} from 'interfaces/useSurveyApi.interface';
-import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { IEditSurveyRequest, SurveyUpdateObject } from 'interfaces/useSurveyApi.interface';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
 import EditSurveyForm from './EditSurveyForm';
 
@@ -59,10 +54,7 @@ const EditSurveyPage = () => {
   const history = useHistory();
   const queryParams = useQuery();
 
-  const [isLoadingProject, setIsLoadingProject] = useState(false);
-  const [projectWithDetails, setProjectWithDetails] = useState<IGetProjectForViewResponse | null>(null);
-  const [surveyFundingSources, setSurveyFundingSources] = useState<ISurveyAvailableFundingSources[]>([]);
-  const [formikRef] = useState(useRef<FormikProps<SurveyUpdateObject>>(null));
+  const [formikRef] = useState(useRef<FormikProps<IEditSurveyRequest>>(null));
 
   // Ability to bypass showing the 'Are you sure you want to cancel' dialog
   const [enableCancelCheck, setEnableCancelCheck] = useState(true);
@@ -72,23 +64,33 @@ const EditSurveyPage = () => {
   const codesDataLoader = useDataLoader(() => biohubApi.codes.getAllCodeSets());
   codesDataLoader.load();
 
-  const editSurveyDataLoader = useDataLoader((projectId: number, surveyId: number) =>
-    biohubApi.survey.getSurveyForEdit(projectId, surveyId)
+  const getProjectForViewDL = useDataLoader((projectId: number) => biohubApi.project.getProjectForView(projectId));
+  getProjectForViewDL.load(urlParams['id']);
+
+  const getSurveyFundingSourcesDL = useDataLoader((projectId: number) =>
+    biohubApi.survey.getAvailableSurveyFundingSources(projectId)
+  );
+  getSurveyFundingSourcesDL.load(urlParams['id']);
+
+  const editSurveyDL = useDataLoader((projectId: number, surveyId: number) =>
+    biohubApi.survey.getSurveyForUpdate(projectId, surveyId)
   );
 
-  if (queryParams.projectId && queryParams.surveyId) {
-    editSurveyDataLoader.load(queryParams.projectId, queryParams.surveyId);
+  if (!editSurveyDL.data && queryParams.surveyId) {
+    editSurveyDL.load(urlParams['id'], queryParams.surveyId);
   }
 
   useEffect(() => {
-    const setFormikValues = (data: IGetSurveyForEdit) => {
+    const setFormikValues = (data: IEditSurveyRequest) => {
       formikRef.current?.setValues(data);
     };
 
-    if (editSurveyDataLoader.data) {
-      setFormikValues(editSurveyDataLoader.data);
+    console.log('editSurveyDL.data', editSurveyDL.data);
+
+    if (editSurveyDL.data) {
+      setFormikValues((editSurveyDL.data.surveyData as unknown) as IEditSurveyRequest);
     }
-  }, [editSurveyDataLoader]);
+  }, [editSurveyDL]);
 
   const defaultCancelDialogProps = {
     dialogTitle: CreateSurveyI18N.cancelTitle,
@@ -102,35 +104,13 @@ const EditSurveyPage = () => {
     },
     onYes: () => {
       dialogContext.setYesNoDialog({ open: false });
-      history.push(`/admin/projects/${projectWithDetails?.id}/surveys`);
+      history.push(`/admin/projects/${getProjectForViewDL.data?.id}/survey/${queryParams.surveyId}`);
     }
   };
 
-  const getProject = useCallback(async () => {
-    const [projectWithDetailsResponse, surveyFundingSourcesResponse] = await Promise.all([
-      biohubApi.project.getProjectForView(urlParams['id']),
-      biohubApi.survey.getAvailableSurveyFundingSources(urlParams['id'])
-    ]);
-
-    if (!projectWithDetailsResponse || !surveyFundingSourcesResponse) {
-      // TODO error handling/messaging
-      return;
-    }
-
-    setSurveyFundingSources(surveyFundingSourcesResponse);
-    setProjectWithDetails(projectWithDetailsResponse);
-  }, [biohubApi.project, biohubApi.survey, urlParams]);
-
-  useEffect(() => {
-    if (!isLoadingProject && !projectWithDetails) {
-      getProject();
-      setIsLoadingProject(true);
-    }
-  }, [isLoadingProject, projectWithDetails, getProject]);
-
   const handleCancel = () => {
     dialogContext.setYesNoDialog(defaultCancelDialogProps);
-    history.push(`/admin/projects/${projectWithDetails?.id}/surveys`);
+    history.push(`/admin/projects/${getProjectForViewDL.data?.id}/survey/${queryParams.surveyId}`);
   };
 
   const showCreateErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
@@ -153,9 +133,15 @@ const EditSurveyPage = () => {
    *
    * @return {*}
    */
-  const handleSubmit = async (values: IGetSurveyForEdit) => {
+  const handleSubmit = async (values: IEditSurveyRequest) => {
     try {
-      const response = { id: null }; //await biohubApi.survey.createSurvey(Number(projectWithDetails?.id), values);
+      console.log('values', values);
+
+      const response = await biohubApi.survey.updateSurvey(
+        urlParams['id'],
+        Number(getProjectForViewDL.data?.id),
+        (values as unknown) as SurveyUpdateObject
+      );
 
       if (!response?.id) {
         showCreateErrorDialog({
@@ -166,7 +152,7 @@ const EditSurveyPage = () => {
 
       setEnableCancelCheck(false);
 
-      history.push(`/admin/projects/${projectWithDetails?.id}/surveys/${response.id}/details`);
+      history.push(`/admin/projects/${getProjectForViewDL.data?.id}/surveys/${response.id}/details`);
     } catch (error) {
       const apiError = error as APIError;
       showCreateErrorDialog({
@@ -203,9 +189,12 @@ const EditSurveyPage = () => {
     return true;
   };
 
-  if (!codesDataLoader.data || !projectWithDetails) {
+  if (!codesDataLoader.data || !getProjectForViewDL.data) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
+
+  console.log('formikRef.current?.errors',formikRef.current?.errors);
+
 
   return (
     <>
@@ -222,7 +211,7 @@ const EditSurveyPage = () => {
                 <Typography variant="body2">Projects</Typography>
               </Link>
               <Link color="primary" onClick={handleCancel} aria-current="page" className={classes.breadCrumbLink}>
-                <Typography variant="body2">{projectWithDetails.project.project_name}</Typography>
+                <Typography variant="body2">{getProjectForViewDL.data.project.project_name}</Typography>
               </Link>
               <Typography variant="body2">Edit Survey</Typography>
             </Breadcrumbs>
@@ -233,8 +222,8 @@ const EditSurveyPage = () => {
           </Box>
           <EditSurveyForm
             codes={codesDataLoader.data}
-            projectData={projectWithDetails}
-            surveyFundingSources={surveyFundingSources}
+            projectData={getProjectForViewDL.data}
+            surveyFundingSources={getSurveyFundingSourcesDL.data || []}
             handleSubmit={handleSubmit}
             handleCancel={() => {}}
             formikRef={formikRef}

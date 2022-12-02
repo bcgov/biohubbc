@@ -20,9 +20,6 @@ export interface ICreateSurveyRequest
     IProprietaryDataForm,
     IAgreementsForm {}
 
-
-export interface IGetSurveyForEdit extends SurveyUpdateObject {};
-
 /**
  * Create survey response object.
  *
@@ -202,3 +199,21 @@ export interface ISurveyPermits {
     permit_type: string;
   }[];
 }
+
+export interface IUpdateAgreementsForm {
+  agreements: {
+    sedis_procedures_accepted: StringBoolean;
+    foippa_requirements_accepted: StringBoolean;
+  };
+}
+
+export interface IGetSurveyForUpdateResponse {
+  surveyData: SurveyUpdateObject;
+}
+
+export interface IEditSurveyRequest
+  extends IGeneralInformationForm,
+    IPurposeAndMethodologyForm,
+    IStudyAreaForm,
+    IProprietaryDataForm,
+    IUpdateAgreementsForm {}

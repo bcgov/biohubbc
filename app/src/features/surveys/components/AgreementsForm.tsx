@@ -8,6 +8,7 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
 import { useFormikContext } from 'formik';
 import React from 'react';
+import { StringBoolean } from 'types/misc';
 import yup from 'utils/YupSchema';
 
 const useStyles = makeStyles({
@@ -26,22 +27,22 @@ const useStyles = makeStyles({
 
 export interface IAgreementsForm {
   agreements: {
-    sedis_procedures_accepted: boolean;
-    foippa_requirements_accepted: boolean;
+    sedis_procedures_accepted: StringBoolean;
+    foippa_requirements_accepted: StringBoolean;
   };
 }
 
 export const AgreementsInitialValues: IAgreementsForm = {
   agreements: {
-    sedis_procedures_accepted: false,
-    foippa_requirements_accepted: false
+    sedis_procedures_accepted: 'false',
+    foippa_requirements_accepted: 'false'
   }
 };
 
 export const AgreementsYupSchema = yup.object().shape({
   agreements: yup.object().shape({
-    sedis_procedures_accepted: yup.bool().oneOf([true], 'You must agree to the SEDIS procedures'),
-    foippa_requirements_accepted: yup.bool().oneOf([true], 'You must agree to the FOIPPA requirements')
+    sedis_procedures_accepted: yup.string().oneOf(['true'], 'You must agree to the SEDIS procedures'),
+    foippa_requirements_accepted: yup.string().oneOf(['true'], 'You must agree to the FOIPPA requirements')
   })
 });
 
@@ -53,7 +54,7 @@ export const AgreementsYupSchema = yup.object().shape({
 const AgreementsForm = () => {
   const classes = useStyles();
 
-  const { errors, touched, values, handleChange } = useFormikContext<IAgreementsForm>();
+  const { errors, touched, values, setFieldValue } = useFormikContext<IAgreementsForm>();
 
   return (
     <form>
@@ -69,13 +70,20 @@ const AgreementsForm = () => {
             required={true}
             component="fieldset"
             error={
-              touched.agreements?.sedis_procedures_accepted && Boolean(errors.agreements?.sedis_procedures_accepted)
+              touched.agreements?.sedis_procedures_accepted && errors.agreements?.sedis_procedures_accepted === 'true'
+                ? true
+                : false
             }>
             <FormControlLabel
               control={
                 <Checkbox
-                  checked={values.agreements?.sedis_procedures_accepted}
-                  onChange={handleChange}
+                  checked={values.agreements?.sedis_procedures_accepted === 'true' ? true : false}
+                  onChange={() =>
+                    setFieldValue(
+                      'agreements.sedis_procedures_accepted',
+                      values.agreements?.sedis_procedures_accepted === 'true' ? 'false' : 'true'
+                    )
+                  }
                   name="agreements.sedis_procedures_accepted"
                   color="primary"
                 />
@@ -99,13 +107,20 @@ const AgreementsForm = () => {
             component="fieldset"
             error={
               touched.agreements?.foippa_requirements_accepted &&
-              Boolean(errors.agreements?.foippa_requirements_accepted)
+              errors.agreements?.foippa_requirements_accepted === 'true'
+                ? true
+                : false
             }>
             <FormControlLabel
               control={
                 <Checkbox
-                  checked={values.agreements?.foippa_requirements_accepted}
-                  onChange={handleChange}
+                  checked={values.agreements?.foippa_requirements_accepted === 'true' ? true : false}
+                  onChange={() =>
+                    setFieldValue(
+                      'agreements.foippa_requirements_accepted',
+                      values.agreements?.foippa_requirements_accepted === 'true' ? 'false' : 'true'
+                    )
+                  }
                   name="agreements.foippa_requirements_accepted"
                   color="primary"
                 />

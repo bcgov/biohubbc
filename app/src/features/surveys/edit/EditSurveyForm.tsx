@@ -15,25 +15,20 @@ import {
   IGetProjectForUpdateResponseFundingSource,
   IGetProjectForViewResponse
 } from 'interfaces/useProjectApi.interface';
-import { ICreateSurveyRequest, IGetSurveyForEdit } from 'interfaces/useSurveyApi.interface';
+import { IEditSurveyRequest } from 'interfaces/useSurveyApi.interface';
 import moment from 'moment';
-import React, { useContext, useRef, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { useHistory } from 'react-router';
+import { StringBoolean } from 'types/misc';
 import { getFormattedAmount, getFormattedDate, getFormattedDateRangeString } from 'utils/Utils';
 import yup from 'utils/YupSchema';
-import AgreementsForm, { AgreementsInitialValues, AgreementsYupSchema } from '../components/AgreementsForm';
+import AgreementsForm, { AgreementsYupSchema } from '../components/AgreementsForm';
 import GeneralInformationForm, {
   GeneralInformationInitialValues,
   GeneralInformationYupSchema
 } from '../components/GeneralInformationForm';
-import ProprietaryDataForm, {
-  ProprietaryDataInitialValues,
-  ProprietaryDataYupSchema
-} from '../components/ProprietaryDataForm';
-import PurposeAndMethodologyForm, {
-  PurposeAndMethodologyInitialValues,
-  PurposeAndMethodologyYupSchema
-} from '../components/PurposeAndMethodologyForm';
+import ProprietaryDataForm, { ProprietaryDataYupSchema } from '../components/ProprietaryDataForm';
+import PurposeAndMethodologyForm, { PurposeAndMethodologyYupSchema } from '../components/PurposeAndMethodologyForm';
 import StudyAreaForm, { StudyAreaInitialValues, StudyAreaYupSchema } from '../components/StudyAreaForm';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -42,14 +37,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     '& + button': {
       marginLeft: '0.5rem'
     }
-  },
-  breadCrumbLink: {
-    display: 'flex',
-    alignItems: 'center',
-    cursor: 'pointer'
-  },
-  breadCrumbLinkIcon: {
-    marginRight: '0.25rem'
   },
   sectionDivider: {
     height: '1px',
@@ -62,9 +49,9 @@ export interface IEditSurveyForm {
   codes: IGetAllCodeSetsResponse;
   projectData: IGetProjectForViewResponse;
   surveyFundingSources: IGetProjectForUpdateResponseFundingSource[];
-  handleSubmit: (formikData: IGetSurveyForEdit) => void;
+  handleSubmit: (formikData: IEditSurveyRequest) => void;
   handleCancel: () => void;
-  formikRef: React.RefObject<FormikProps<IGetSurveyForEdit>>;
+  formikRef: React.RefObject<FormikProps<IEditSurveyRequest>>;
 }
 
 /**
@@ -77,15 +64,36 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
   const history = useHistory();
   const dialogContext = useContext(DialogContext);
 
-  const [formikRef] = useState(useRef<FormikProps<any>>(null));
-
   // Initial values for the survey form sections
-  const [surveyInitialValues] = useState<ICreateSurveyRequest>({
+  const [surveyInitialValues] = useState<IEditSurveyRequest>({
     ...GeneralInformationInitialValues,
-    ...PurposeAndMethodologyInitialValues,
+    ...{
+      purpose_and_methodology: {
+        intended_outcome_id: ('' as unknown) as number,
+        additional_details: '',
+        field_method_id: ('' as unknown) as number,
+        ecological_season_id: ('' as unknown) as number,
+        vantage_code_ids: [],
+        surveyed_all_areas: ('' as unknown) as StringBoolean
+      }
+    },
     ...StudyAreaInitialValues,
-    ...ProprietaryDataInitialValues,
-    ...AgreementsInitialValues
+    ...{
+      proprietor: {
+        survey_data_proprietary: ('' as unknown) as StringBoolean,
+        proprietary_data_category: 0,
+        proprietor_name: '',
+        first_nations_id: 0,
+        category_rationale: '',
+        disa_required: ('' as unknown) as StringBoolean
+      }
+    },
+    ...{
+      agreements: {
+        sedis_procedures_accepted: ('' as unknown) as StringBoolean,
+        foippa_requirements_accepted: ('' as unknown) as StringBoolean
+      }
+    }
   });
 
   const defaultCancelDialogProps = {
@@ -105,7 +113,7 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
   };
 
   // Yup schemas for the survey form sections
-  const surveyYupSchemas = GeneralInformationYupSchema({
+  const surveyEditYupSchemas = GeneralInformationYupSchema({
     start_date: yup
       .string()
       .isValidDateString()
@@ -138,6 +146,7 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
         DATE_FORMAT.ShortDateFormat,
         `Survey end date cannot be after ${getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, DATE_LIMIT.max)}`
       )
+      .nullable()
   })
     .concat(StudyAreaYupSchema)
     .concat(PurposeAndMethodologyYupSchema)
@@ -149,12 +158,13 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
     history.push(`/admin/projects/${props.projectData?.id}/surveys`);
   };
 
+  console.log('props.formikRef.current?.values', props.formikRef.current?.values);
   return (
     <Box p={5} component={Paper} display="block">
       <Formik
-        innerRef={formikRef}
-        initialValues={(surveyInitialValues as unknown) as IGetSurveyForEdit}
-        validationSchema={surveyYupSchemas}
+        innerRef={props.formikRef}
+        initialValues={surveyInitialValues}
+        validationSchema={surveyEditYupSchemas}
         validateOnBlur={true}
         validateOnChange={false}
         onSubmit={props.handleSubmit}>
@@ -257,7 +267,7 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
               type="submit"
               variant="contained"
               color="primary"
-              onClick={() => formikRef.current?.submitForm()}
+              onClick={() => props.formikRef.current?.submitForm()}
               className={classes.actionButton}>
               Save and Exit
             </Button>

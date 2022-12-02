@@ -1,16 +1,32 @@
 import { Button } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
-import Alert from '@material-ui/lab/Alert';
-import AlertTitle from '@material-ui/lab/AlertTitle';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Container from '@material-ui/core/Container';
-import Link from '@material-ui/core/Link';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+// import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
 import Grid from '@material-ui/core/Grid';
+import Link from '@material-ui/core/Link';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
 import Paper from '@material-ui/core/Paper';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
-import { mdiCogOutline,mdiPencilOutline, mdiChevronDown, mdiCalendarRangeOutline, mdiChevronRight, mdiTrashCanOutline, mdiInformationOutline } from '@mdi/js';
+import Alert from '@material-ui/lab/Alert';
+import AlertTitle from '@material-ui/lab/AlertTitle';
+import {
+  mdiCalendarRangeOutline,
+  mdiChevronDown,
+  mdiChevronRight,
+  mdiCogOutline,
+  mdiInformationOutline,
+  mdiPencilOutline,
+  mdiTrashCanOutline
+} from '@mdi/js';
 import Icon from '@mdi/react';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { SystemRoleGuard } from 'components/security/Guards';
@@ -26,14 +42,6 @@ import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
 import React, { useContext } from 'react';
 import { useHistory } from 'react-router';
 import { getFormattedDateRangeString } from 'utils/Utils';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-// import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
 
 const useStyles = makeStyles((theme: Theme) => ({
   projectNav: {
@@ -248,115 +256,139 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
 
   return (
     <>
-    <Paper square={true} elevation={0}>
-      <Container maxWidth="xl">
-        <Box py={4}>
-          <Box mb={2}>
-            <Breadcrumbs separator={<Icon path={mdiChevronRight} size={0.8} />}>
-              <Link
-                color="primary"
-                onClick={() => history.push('/admin/projects')}
-                aria-current="page">
-                <Typography variant="body1" component="span">Projects</Typography>
-              </Link>
-              <Link
-                color="primary"
-                onClick={() => history.push(`/admin/projects/${projectWithDetails.id}/surveys`)}
-                aria-current="page">
-                <Typography variant="body1" component="span">{projectWithDetails.project.project_name}</Typography>
-              </Link>
-              <Typography variant="body1" component="span">{surveyWithDetails.surveyData.survey_details.survey_name}</Typography>
-            </Breadcrumbs>
-          </Box>
-          <Box display="flex" justifyContent="space-between">
-            <Box className={classes.pageTitleContainer}>
-              <Typography variant="h1" className={classes.pageTitle}>
-                Survey: <span>{surveyWithDetails.surveyData.survey_details.survey_name}</span>
-              </Typography>
-              <Box mt={0.75} display="flex" alignItems="center">
-                <Typography component="span" variant="subtitle1" color="textSecondary" style={{ display: 'flex', alignItems: 'center' }}>
-                  <Icon path={mdiCalendarRangeOutline} size={0.8} style={{ marginRight: '0.5rem' }} />
-                  <strong>Survey Timeline:&nbsp;&nbsp;</strong>
-                  {getFormattedDateRangeString(
-                    DATE_FORMAT.ShortMediumDateFormat,
-                    surveyWithDetails.surveyData.survey_details.start_date,
-                    surveyWithDetails.surveyData.survey_details.end_date
-                  )}
+      <Paper square={true} elevation={0}>
+        <Container maxWidth="xl">
+          <Box py={4}>
+            <Box mb={2}>
+              <Breadcrumbs separator={<Icon path={mdiChevronRight} size={0.8} />}>
+                <Link color="primary" onClick={() => history.push('/admin/projects')} aria-current="page">
+                  <Typography variant="body1" component="span">
+                    Projects
+                  </Typography>
+                </Link>
+                <Link
+                  color="primary"
+                  onClick={() => history.push(`/admin/projects/${projectWithDetails.id}/surveys`)}
+                  aria-current="page">
+                  <Typography variant="body1" component="span">
+                    {projectWithDetails.project.project_name}
+                  </Typography>
+                </Link>
+                <Typography variant="body1" component="span">
+                  {surveyWithDetails.surveyData.survey_details.survey_name}
                 </Typography>
+              </Breadcrumbs>
+            </Box>
+            <Box display="flex" justifyContent="space-between">
+              <Box className={classes.pageTitleContainer}>
+                <Typography variant="h1" className={classes.pageTitle}>
+                  Survey: <span>{surveyWithDetails.surveyData.survey_details.survey_name}</span>
+                </Typography>
+                <Box mt={0.75} display="flex" alignItems="center">
+                  <Typography
+                    component="span"
+                    variant="subtitle1"
+                    color="textSecondary"
+                    style={{ display: 'flex', alignItems: 'center' }}>
+                    <Icon path={mdiCalendarRangeOutline} size={0.8} style={{ marginRight: '0.5rem' }} />
+                    <strong>Survey Timeline:&nbsp;&nbsp;</strong>
+                    {getFormattedDateRangeString(
+                      DATE_FORMAT.ShortMediumDateFormat,
+                      surveyWithDetails.surveyData.survey_details.start_date,
+                      surveyWithDetails.surveyData.survey_details.end_date
+                    )}
+                  </Typography>
+                </Box>
+              </Box>
+              <Box display="flex" alignItems="flex-start" flex="0 0 auto" className={classes.pageTitleActions}>
+                <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN]}>
+                  <Button color="primary" variant="contained" onClick={showUploadSurveyDialog}>
+                    Submit Data
+                  </Button>
+                </SystemRoleGuard>
+                <Button
+                  variant="outlined"
+                  startIcon={<Icon path={mdiCogOutline} size={0.8} />}
+                  endIcon={<Icon path={mdiChevronDown} size={0.8} />}
+                  aria-controls="simple-menu"
+                  aria-haspopup="true"
+                  onClick={openSurveyMenu}
+                  style={{ marginLeft: '0.5rem' }}>
+                  Survey Settings
+                </Button>
+                <Menu
+                  style={{ marginTop: '8px' }}
+                  id="projectSettingsMenu"
+                  anchorEl={anchorEl}
+                  getContentAnchorEl={null}
+                  anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'right'
+                  }}
+                  transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right'
+                  }}
+                  keepMounted
+                  open={Boolean(anchorEl)}
+                  onClose={closeSurveyMenu}>
+                  <MenuItem
+                    onClick={() =>
+                      history.push(
+                        `/admin/projects/${projectWithDetails.id}/survey/edit?surveyId=${surveyWithDetails.surveyData.survey_details.id}`
+                      )
+                    }>
+                    <ListItemIcon>
+                      <Icon path={mdiPencilOutline} size={0.8} />
+                    </ListItemIcon>
+                    <Typography variant="inherit">Edit Survey Details</Typography>
+                  </MenuItem>
+                  {enableDeleteSurveyButton && (
+                    <MenuItem
+                      data-testid="delete-survey-button"
+                      onClick={showDeleteSurveyDialog}
+                      disabled={!enableDeleteSurveyButton}>
+                      <ListItemIcon>
+                        <Icon path={mdiTrashCanOutline} size={0.8} />
+                      </ListItemIcon>
+                      <Typography variant="inherit">Delete Survey</Typography>
+                    </MenuItem>
+                  )}
+                </Menu>
               </Box>
             </Box>
-            <Box display="flex" alignItems="flex-start" flex="0 0 auto" className={classes.pageTitleActions}>
-              <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN]}>
-                <Button color="primary" variant="contained" onClick={showUploadSurveyDialog}>
-                  Submit Data
-                </Button>
-              </SystemRoleGuard>
-              <Button
-                variant="outlined"
-                startIcon={<Icon path={mdiCogOutline} size={0.8} />}
-                endIcon={<Icon path={mdiChevronDown} size={0.8} />}
-                aria-controls="simple-menu"
-                aria-haspopup="true"
-                onClick={openSurveyMenu}
-                style={{marginLeft: '0.5rem'}}>
-                Survey Settings
-              </Button>
-              <Menu
-                style={{ marginTop: '8px' }}
-                id="projectSettingsMenu"
-                anchorEl={anchorEl}
-                getContentAnchorEl={null}
-                anchorOrigin={{
-                  vertical: 'bottom',
-                  horizontal: 'right'
-                }}
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right'
-                }}
-                keepMounted
-                open={Boolean(anchorEl)}
-                onClose={closeSurveyMenu}>
-                <MenuItem>
-                  <ListItemIcon>
-                    <Icon path={mdiPencilOutline} size={0.8} />
-                  </ListItemIcon>
-                  <Typography variant="inherit">Edit Survey Details</Typography>
-                </MenuItem>
-                {enableDeleteSurveyButton && (
-                  <MenuItem data-testid="delete-survey-button" onClick={showDeleteSurveyDialog} disabled={!enableDeleteSurveyButton}>
-                    <ListItemIcon>
-                      <Icon path={mdiTrashCanOutline} size={0.8} />
-                    </ListItemIcon>
-                    <Typography variant="inherit">Delete Survey</Typography>
-                  </MenuItem>
-                )}
-              </Menu>
-            </Box>
           </Box>
-        </Box>
-      </Container>
-    </Paper>
-
-    <Container maxWidth="xl" style={{marginTop: '24px'}}>
-      <Paper elevation={0}>
-        <Alert variant="filled" severity="error" icon={<Icon path={mdiInformationOutline} size={1.25} />}>
-          <AlertTitle style={{fontWeight: 700}}>Security Requested</AlertTitle>
-          <Box display="flex" alignItems="center">
-            <Typography variant="body2" display="inline" color="inherit">Additional security has been reqeusted for this survey.</Typography>&nbsp;<Button variant="text" style={{textDecoration: 'underline', fontSize: 'inherit', margin: '-6px 0'}} color="inherit" onClick={openSecurityDialog}>View Details</Button>
-          </Box>
-        </Alert>
+        </Container>
       </Paper>
-    </Container>
-    
-    <Dialog
+
+      <Container maxWidth="xl" style={{ marginTop: '24px' }}>
+        <Paper elevation={0}>
+          <Alert variant="filled" severity="error" icon={<Icon path={mdiInformationOutline} size={1.25} />}>
+            <AlertTitle style={{ fontWeight: 700 }}>Security Requested</AlertTitle>
+            <Box display="flex" alignItems="center">
+              <Typography variant="body2" display="inline" color="inherit">
+                Additional security has been reqeusted for this survey.
+              </Typography>
+              &nbsp;
+              <Button
+                variant="text"
+                style={{ textDecoration: 'underline', fontSize: 'inherit', margin: '-6px 0' }}
+                color="inherit"
+                onClick={openSecurityDialog}>
+                View Details
+              </Button>
+            </Box>
+          </Alert>
+        </Paper>
+      </Container>
+
+      <Dialog
         open={open}
         onClose={closeSecurityDialog}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
         fullWidth
-        maxWidth="md"
-      >
+        maxWidth="md">
         <DialogTitle id="alert-dialog-title">Security Requested</DialogTitle>
         <DialogContent>
           {/* <DialogContentText>
@@ -385,11 +417,14 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
                 Category Rationale
               </Typography>
               <Typography style={{ wordBreak: 'break-all' }}>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
+                dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
+                ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
+                fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia
+                deserunt mollit anim id est laborum
               </Typography>
             </Grid>
           </Grid>
-
         </DialogContent>
         <DialogActions>
           <Button onClick={closeSecurityDialog} variant="outlined" autoFocus>
@@ -397,7 +432,6 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
           </Button>
         </DialogActions>
       </Dialog>
-    
     </>
   );
 };

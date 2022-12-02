@@ -83,8 +83,6 @@ const EditProjectPage: React.FC = (props) => {
 
   if (queryParams.projectId) {
     editProjectDataLoader.load(queryParams.projectId);
-  } else {
-    alert('wrong');
   }
 
   useEffect(() => {
