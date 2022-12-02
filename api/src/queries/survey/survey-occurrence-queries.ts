@@ -185,7 +185,7 @@ export const getLatestSurveyOccurrenceSubmissionSQL = (surveyId: number): SQLSta
     WHERE
       os.survey_id = ${surveyId}
     ORDER BY
-      os.event_timestamp DESC
+      os.event_timestamp DESC, ss.submission_status_id DESC
     LIMIT 1
     ;
   `;
