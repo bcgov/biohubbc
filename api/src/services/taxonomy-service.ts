@@ -27,13 +27,13 @@ export class TaxonomyService {
    * @returns {Promise<SearchResponse<ITaxonomySource, Record<string, AggregationsAggregate>> | undefined>}
    * Promise resolving the search results from Elasticsearch
    */
-  private async elasticSearch(
+  async _elasticSearch(
     searchRequest: SearchRequest
   ): Promise<SearchResponse<ITaxonomySource, Record<string, AggregationsAggregate>> | undefined> {
     try {
       const client = new Client({ node: process.env.ELASTICSEARCH_URL });
       return client.search({
-        index: 'taxonomy_2.0.0',
+        index: process.env.ELASTICSEARCH_TAXONOMY_INDEX,
         ...searchRequest
       });
     } catch (error) {
@@ -46,7 +46,7 @@ export class TaxonomyService {
    * @param source The source object from the search query
    * @returns {boolean} `true` if the the `end_date` property is not defined or if the date hasn't passed, `false` otherwise.
    */
-  private isValidTaxonomySource = (source: ITaxonomySource | undefined): boolean => {
+  _isValidTaxonomySource = (source: ITaxonomySource | undefined): boolean => {
     if (source?.end_date) {
       return new Date() < new Date(source.end_date);
     }
@@ -59,10 +59,9 @@ export class TaxonomyService {
    * @param {SearchHit<ITaxonomySource>[]} data The data response fromEelasticsearch
    * @returns {{ id: string, label: string }} An ID and label pair for each taxonomic code
    */
-  private sanitizeSpeciesData = (data: SearchHit<ITaxonomySource>[]): { id: string; label: string }[] => {
-    defaultLog.debug({ label: 'sanitizeSpeciesData', data });
+  _sanitizeSpeciesData = (data: SearchHit<ITaxonomySource>[]): { id: string; label: string }[] => {
     return data
-      .filter((item: SearchHit<ITaxonomySource>) => this.isValidTaxonomySource(item._source))
+      .filter((item: SearchHit<ITaxonomySource>) => this._isValidTaxonomySource(item._source))
       .map((item: SearchHit<ITaxonomySource>) => {
         const { _id: id, _source } = item;
 
@@ -89,7 +88,7 @@ export class TaxonomyService {
    * @returns The response from Elasticsearch
    */
   async getTaxonomyFromIds(ids: number[]) {
-    const response = await this.elasticSearch({
+    const response = await this._elasticSearch({
       query: {
         terms: {
           _id: ids
@@ -106,7 +105,7 @@ export class TaxonomyService {
    * @returns {Promise<{ id: string, label: string}[]>} Promise resolving an ID and label pair for each taxonomic code
    */
   async getSpeciesFromIds(ids: string[]): Promise<{ id: string; label: string }[]> {
-    const response = await this.elasticSearch({
+    const response = await this._elasticSearch({
       query: {
         terms: {
           _id: ids
@@ -114,7 +113,7 @@ export class TaxonomyService {
       }
     });
 
-    return response ? this.sanitizeSpeciesData(response.hits.hits) : [];
+    return response ? this._sanitizeSpeciesData(response.hits.hits) : [];
   }
 
   /**
@@ -148,7 +147,7 @@ export class TaxonomyService {
       });
     });
 
-    const response = await this.elasticSearch({
+    const response = await this._elasticSearch({
       query: {
         bool: {
           should: searchConfig
@@ -156,6 +155,8 @@ export class TaxonomyService {
       }
     });
 
-    return response ? this.sanitizeSpeciesData(response.hits.hits) : [];
+    defaultLog.debug({ label: 'searchSpecies', response });
+
+    return response ? this._sanitizeSpeciesData(response.hits.hits) : [];
   }
 }
