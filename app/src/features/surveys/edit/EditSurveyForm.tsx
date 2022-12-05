@@ -7,8 +7,6 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
 import { ScrollToFormikError } from 'components/formik/ScrollToFormikError';
 import { DATE_FORMAT, DATE_LIMIT } from 'constants/dateTimeFormats';
-import { CreateSurveyI18N } from 'constants/i18n';
-import { DialogContext } from 'contexts/dialogContext';
 import { Formik, FormikProps } from 'formik';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import {
@@ -17,8 +15,7 @@ import {
 } from 'interfaces/useProjectApi.interface';
 import { IEditSurveyRequest } from 'interfaces/useSurveyApi.interface';
 import moment from 'moment';
-import React, { useContext, useState } from 'react';
-import { useHistory } from 'react-router';
+import React, { useState } from 'react';
 import { StringBoolean } from 'types/misc';
 import { getFormattedAmount, getFormattedDate, getFormattedDateRangeString } from 'utils/Utils';
 import yup from 'utils/YupSchema';
@@ -61,8 +58,6 @@ export interface IEditSurveyForm {
  */
 const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
   const classes = useStyles();
-  const history = useHistory();
-  const dialogContext = useContext(DialogContext);
 
   // Initial values for the survey form sections
   const [surveyInitialValues] = useState<IEditSurveyRequest>({
@@ -95,22 +90,6 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
       }
     }
   });
-
-  const defaultCancelDialogProps = {
-    dialogTitle: CreateSurveyI18N.cancelTitle,
-    dialogText: CreateSurveyI18N.cancelText,
-    open: false,
-    onClose: () => {
-      dialogContext.setYesNoDialog({ open: false });
-    },
-    onNo: () => {
-      dialogContext.setYesNoDialog({ open: false });
-    },
-    onYes: () => {
-      dialogContext.setYesNoDialog({ open: false });
-      history.push(`/admin/projects/${props.projectData?.id}/surveys`);
-    }
-  };
 
   // Yup schemas for the survey form sections
   const surveyEditYupSchemas = GeneralInformationYupSchema({
@@ -153,12 +132,6 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
     .concat(ProprietaryDataYupSchema)
     .concat(AgreementsYupSchema);
 
-  const handleCancel = () => {
-    dialogContext.setYesNoDialog(defaultCancelDialogProps);
-    history.push(`/admin/projects/${props.projectData?.id}/surveys`);
-  };
-
-  console.log('props.formikRef.current?.values', props.formikRef.current?.values);
   return (
     <Box p={5} component={Paper} display="block">
       <Formik
@@ -271,7 +244,7 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
               className={classes.actionButton}>
               Save and Exit
             </Button>
-            <Button variant="outlined" color="primary" onClick={handleCancel} className={classes.actionButton}>
+            <Button variant="outlined" color="primary" onClick={props.handleCancel} className={classes.actionButton}>
               Cancel
             </Button>
           </Box>

@@ -119,6 +119,7 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
 
   const handleGetInitList = async (initialvalues: number[]) => {
     const response = await biohubApi.taxonomy.getSpeciesFromIds(initialvalues);
+
     return convertOptions(response.searchResponse);
   };
 

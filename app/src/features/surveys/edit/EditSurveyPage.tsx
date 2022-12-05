@@ -7,7 +7,7 @@ import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
-import { CreateSurveyI18N } from 'constants/i18n';
+import { EditSurveyI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
 import { FormikProps } from 'formik';
 import * as History from 'history';
@@ -85,16 +85,15 @@ const EditSurveyPage = () => {
       formikRef.current?.setValues(data);
     };
 
-    console.log('editSurveyDL.data', editSurveyDL.data);
-
     if (editSurveyDL.data) {
       setFormikValues((editSurveyDL.data.surveyData as unknown) as IEditSurveyRequest);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editSurveyDL]);
 
   const defaultCancelDialogProps = {
-    dialogTitle: CreateSurveyI18N.cancelTitle,
-    dialogText: CreateSurveyI18N.cancelText,
+    dialogTitle: EditSurveyI18N.cancelTitle,
+    dialogText: EditSurveyI18N.cancelText,
     open: false,
     onClose: () => {
       dialogContext.setYesNoDialog({ open: false });
@@ -110,13 +109,18 @@ const EditSurveyPage = () => {
 
   const handleCancel = () => {
     dialogContext.setYesNoDialog(defaultCancelDialogProps);
-    history.push(`/admin/projects/${getProjectForViewDL.data?.id}/survey/${queryParams.surveyId}`);
+    history.push(`/admin/projects/${getProjectForViewDL.data?.id}/surveys/${queryParams.surveyId}/details`);
   };
 
-  const showCreateErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
+  const handleCancelToProject = () => {
+    dialogContext.setYesNoDialog(defaultCancelDialogProps);
+    history.push(`/admin/projects/${getProjectForViewDL.data?.id}`);
+  };
+
+  const showEditErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
     dialogContext.setErrorDialog({
-      dialogTitle: CreateSurveyI18N.createErrorTitle,
-      dialogText: CreateSurveyI18N.createErrorText,
+      dialogTitle: EditSurveyI18N.createErrorTitle,
+      dialogText: EditSurveyI18N.createErrorText,
       onClose: () => {
         dialogContext.setErrorDialog({ open: false });
       },
@@ -139,12 +143,12 @@ const EditSurveyPage = () => {
 
       const response = await biohubApi.survey.updateSurvey(
         urlParams['id'],
-        Number(getProjectForViewDL.data?.id),
+        Number(queryParams.surveyId),
         (values as unknown) as SurveyUpdateObject
       );
 
       if (!response?.id) {
-        showCreateErrorDialog({
+        showEditErrorDialog({
           dialogError: 'The response from the server was null, or did not contain a survey ID.'
         });
         return;
@@ -155,7 +159,7 @@ const EditSurveyPage = () => {
       history.push(`/admin/projects/${getProjectForViewDL.data?.id}/surveys/${response.id}/details`);
     } catch (error) {
       const apiError = error as APIError;
-      showCreateErrorDialog({
+      showEditErrorDialog({
         dialogTitle: 'Error Creating Survey',
         dialogError: apiError?.message,
         dialogErrorDetails: apiError?.errors
@@ -193,9 +197,6 @@ const EditSurveyPage = () => {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
-  console.log('formikRef.current?.errors',formikRef.current?.errors);
-
-
   return (
     <>
       <Prompt when={enableCancelCheck} message={handleLocationChange} />
@@ -210,8 +211,15 @@ const EditSurveyPage = () => {
                 className={classes.breadCrumbLink}>
                 <Typography variant="body2">Projects</Typography>
               </Link>
-              <Link color="primary" onClick={handleCancel} aria-current="page" className={classes.breadCrumbLink}>
+              <Link
+                color="primary"
+                onClick={handleCancelToProject}
+                aria-current="page"
+                className={classes.breadCrumbLink}>
                 <Typography variant="body2">{getProjectForViewDL.data.project.project_name}</Typography>
+              </Link>
+              <Link color="primary" onClick={handleCancel} aria-current="page" className={classes.breadCrumbLink}>
+                <Typography variant="body2">{editSurveyDL.data?.surveyData.survey_details?.survey_name}</Typography>
               </Link>
               <Typography variant="body2">Edit Survey</Typography>
             </Breadcrumbs>
@@ -225,7 +233,7 @@ const EditSurveyPage = () => {
             projectData={getProjectForViewDL.data}
             surveyFundingSources={getSurveyFundingSourcesDL.data || []}
             handleSubmit={handleSubmit}
-            handleCancel={() => {}}
+            handleCancel={handleCancel}
             formikRef={formikRef}
           />
         </Container>

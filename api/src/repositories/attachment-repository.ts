@@ -588,7 +588,7 @@ export class AttachmentRepository extends BaseRepository {
         file_type,
         create_date,
         update_date,
-        create_data,
+        create_date,
         file_size,
         key,
         security_token,

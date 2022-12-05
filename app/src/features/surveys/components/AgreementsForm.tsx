@@ -70,9 +70,7 @@ const AgreementsForm = () => {
             required={true}
             component="fieldset"
             error={
-              touched.agreements?.sedis_procedures_accepted && errors.agreements?.sedis_procedures_accepted === 'true'
-                ? true
-                : false
+              touched.agreements?.sedis_procedures_accepted && Boolean(errors.agreements?.sedis_procedures_accepted)
             }>
             <FormControlLabel
               control={
@@ -107,20 +105,21 @@ const AgreementsForm = () => {
             component="fieldset"
             error={
               touched.agreements?.foippa_requirements_accepted &&
-              errors.agreements?.foippa_requirements_accepted === 'true'
-                ? true
-                : false
+              Boolean(errors.agreements?.foippa_requirements_accepted)
             }>
             <FormControlLabel
               control={
                 <Checkbox
                   checked={values.agreements?.foippa_requirements_accepted === 'true' ? true : false}
-                  onChange={() =>
+                  onChange={() => {
                     setFieldValue(
                       'agreements.foippa_requirements_accepted',
                       values.agreements?.foippa_requirements_accepted === 'true' ? 'false' : 'true'
-                    )
-                  }
+                    );
+
+                    console.log('values', values);
+                    console.log('errors', errors);
+                  }}
                   name="agreements.foippa_requirements_accepted"
                   color="primary"
                 />

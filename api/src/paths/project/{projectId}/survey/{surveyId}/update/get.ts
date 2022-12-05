@@ -173,38 +173,7 @@ GET.apiDoc = {
                       funding_sources: {
                         type: 'array',
                         items: {
-                          type: 'object',
-                          required: [
-                            'pfs_id',
-                            'agency_name',
-                            'funding_amount',
-                            'funding_start_date',
-                            'funding_end_date'
-                          ],
-                          properties: {
-                            pfs_id: {
-                              type: 'number',
-                              nullable: true
-                            },
-                            agency_name: {
-                              type: 'string',
-                              nullable: true
-                            },
-                            funding_amount: {
-                              type: 'number',
-                              nullable: true
-                            },
-                            funding_start_date: {
-                              type: 'string',
-                              nullable: true,
-                              description: 'ISO 8601 date string'
-                            },
-                            funding_end_date: {
-                              type: 'string',
-                              nullable: true,
-                              description: 'ISO 8601 date string'
-                            }
-                          }
+                          type: 'integer'
                         }
                       }
                     }
@@ -338,7 +307,13 @@ export function getSurveyForUpdate(): RequestHandler {
 
       let proprietor: any = surveyObject.proprietor;
 
-      if (!proprietor) {
+      if (surveyObject.proprietor?.proprietor_type_id) {
+        proprietor['survey_data_proprietary'] = 'true';
+        proprietor['proprietary_data_category'] = surveyObject.proprietor?.proprietor_type_id;
+        proprietor['first_nations_id'] =
+          surveyObject.proprietor?.first_nations_id !== null ? surveyObject.proprietor?.first_nations_id : 0;
+        proprietor['disa_required'] = surveyObject.proprietor?.disa_required === true ? 'true' : 'false';
+      } else {
         proprietor = {
           survey_data_proprietary: 'false',
           proprietor_type_name: '',
@@ -349,21 +324,27 @@ export function getSurveyForUpdate(): RequestHandler {
           proprietor_name: '',
           disa_required: 'false'
         };
-      } else {
-        proprietor['proprietary_data_category'] = surveyObject.proprietor?.proprietor_type_id || 0;
       }
 
-      console.log('proprietor', proprietor);
+      const funding: any = [];
+
+      if (surveyObject.funding && surveyObject.funding.funding_sources) {
+        surveyObject.funding.funding_sources.forEach((fund) => {
+          funding.push(fund.pfs_id);
+        });
+      }
 
       const surveyData = {
         ...surveyObject,
         proprietor: proprietor,
+        funding: {
+          funding_sources: funding
+        },
         agreements: {
-          sedis_procedures_accepted: '',
-          foippa_requirements_accepted: ''
+          sedis_procedures_accepted: 'false',
+          foippa_requirements_accepted: 'false'
         }
       };
-      console.log('surveyData', surveyData);
 
       await connection.commit();
 

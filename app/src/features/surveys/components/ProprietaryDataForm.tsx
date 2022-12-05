@@ -66,7 +66,7 @@ export const ProprietaryDataYupSchema = yup.object().shape({
     proprietor_name: yup
       .string()
       .when('survey_data_proprietary', { is: 'true', then: yup.string().required('Required') }),
-    first_nations_id: yup.number().when('survey_data_category', { is: 2, then: yup.number().min(1, 'required') }),
+    first_nations_id: yup.number().when('proprietary_data_category', { is: 2, then: yup.number().min(1, 'required') }),
     category_rationale: yup
       .string()
       .max(3000, 'Cannot exceed 3000 characters')
