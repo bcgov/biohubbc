@@ -48,18 +48,18 @@ export class TaxonomyService {
    */
   private isValidTaxonomySource = (source: ITaxonomySource | undefined): boolean => {
     if (source?.end_date) {
-      return (new Date() < new Date(source.end_date))
+      return new Date() < new Date(source.end_date);
     }
 
-    return true
-  }
+    return true;
+  };
 
   /**
    * Sanitizes species data retrieved from Elasticsearch.
    * @param {SearchHit<ITaxonomySource>[]} data The data response fromEelasticsearch
    * @returns {{ id: string, label: string }} An ID and label pair for each taxonomic code
    */
-  private sanitizeSpeciesData = (data: SearchHit<ITaxonomySource>[]): { id: string, label: string }[] => {
+  private sanitizeSpeciesData = (data: SearchHit<ITaxonomySource>[]): { id: string; label: string }[] => {
     defaultLog.debug({ label: 'sanitizeSpeciesData', data });
     return data
       .filter((item: SearchHit<ITaxonomySource>) => this.isValidTaxonomySource(item._source))
@@ -105,7 +105,7 @@ export class TaxonomyService {
    * @param ids The array of taxonomic code IDs
    * @returns {Promise<{ id: string, label: string}[]>} Promise resolving an ID and label pair for each taxonomic code
    */
-  async getSpeciesFromIds(ids: string[]): Promise<{ id: string, label: string}[]> {
+  async getSpeciesFromIds(ids: string[]): Promise<{ id: string; label: string }[]> {
     const response = await this.elasticSearch({
       query: {
         terms: {
@@ -122,7 +122,7 @@ export class TaxonomyService {
    * @param term The search term string
    * @returns {Promise<{ id: string, label: string}[]>} Promise resolving an ID and label pair for each taxonomic code
    */
-  async searchSpecies(term: string): Promise<{ id: string, label: string}[]> {
+  async searchSpecies(term: string): Promise<{ id: string; label: string }[]> {
     const searchConfig: object[] = [];
 
     const splitTerms = term.split(' ');

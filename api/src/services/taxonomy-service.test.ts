@@ -11,4 +11,22 @@ describe('TaxonomyService', () => {
 
     expect(taxonomyService).to.be.instanceof(TaxonomyService);
   });
+
+  describe('sanitizeSpeciesData', async () => {
+    it('should filter out species codes that have expired', async () => {
+      //
+    });
+
+    it('should not filter out species codes that have undefined end dates', () => {
+      //
+    });
+
+    it('should only filter out species codes whose end date has already passed', async () => {
+      //
+    });
+  });
+
+  describe('isValidTaxonomySource', async () => {
+    //
+  });
 });
