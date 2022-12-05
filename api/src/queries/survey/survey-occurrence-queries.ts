@@ -54,11 +54,16 @@ export const insertSurveyOccurrenceSubmissionSQL = (data: {
     valueItems.push({ columnValue: data.outputKey });
   }
 
+  const fakeSpeciesJSON = JSON.stringify({ taxonId: 'M-ALAM' });
+
+  console.log('fakeSpeciesJSON: ', fakeSpeciesJSON);
+
   const sqlStatement: SQLStatement = SQL`
     INSERT INTO occurrence_submission (
       survey_id,
       source,
       event_timestamp,
+      darwin_core_source,
   `;
 
   appendSQLColumns(sqlStatement, columnItems);
@@ -68,6 +73,7 @@ export const insertSurveyOccurrenceSubmissionSQL = (data: {
       ${data.surveyId},
       ${data.source},
       now(),
+      ${fakeSpeciesJSON},
   `);
 
   appendSQLValues(sqlStatement, valueItems);
@@ -157,6 +163,7 @@ export const getLatestSurveyOccurrenceSubmissionSQL = (surveyId: number): SQLSta
       os.input_file_name,
       os.output_key,
       os.output_file_name,
+      os.darwin_core_source,
       ss.submission_status_id,
       ss.submission_status_type_id,
       sst.name as submission_status_type_name,

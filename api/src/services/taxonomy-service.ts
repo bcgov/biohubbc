@@ -96,4 +96,34 @@ export class TaxonomyService {
 
     return response ? this.sanitizeSpeciesData(response.hits.hits) : [];
   }
+
+  private formatScientificName = (data: SearchHit<any>[]) => {
+    console.log('data coming in is : ', data);
+    return data.map((item) => {
+      const label = [
+        [
+          [item._source.tty_kingdom, item._source.tty_name].filter(Boolean).join(' '),
+          [item._source.unit_name1, item._source.unit_name2, item._source.unit_name3].filter(Boolean).join(' ')
+        ]
+          .filter(Boolean)
+          .join(', ')
+      ]
+        .filter(Boolean)
+        .join(': ');
+
+      return { scientific_name: label };
+    });
+  };
+
+  async getScientificNameBySpeciesCode(code: string) {
+    const response = await this.elasticSearch({
+      query: {
+        term: {
+          'code.keyword': code.toUpperCase()
+        }
+      }
+    });
+
+    return response ? this.formatScientificName(response.hits.hits) : [];
+  }
 }

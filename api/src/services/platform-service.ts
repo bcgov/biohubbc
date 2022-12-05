@@ -8,6 +8,7 @@ import { DBService } from './db-service';
 import { EmlService } from './eml-service';
 import { KeycloakService } from './keycloak-service';
 import { SurveyService } from './survey-service';
+import { TaxonomyService } from './taxonomy-service';
 
 export interface IDwCADataset {
   archiveFile: {
@@ -156,6 +157,16 @@ export class PlatformService extends DBService {
 
     const surveyService = new SurveyService(this.connection);
     const surveyData = await surveyService.getLatestSurveyOccurrenceSubmission(surveyId);
+
+    console.log('surveySubmissionData is: ', surveyData);
+
+    const term = surveyData.darwin_core_source.taxonId;
+
+    const taxonomyService = new TaxonomyService();
+
+    const newResponse = await taxonomyService.getScientificNameBySpeciesCode(term);
+
+    console.log('new response: ', newResponse);
 
     if (!surveyData.output_key) {
       throw new HTTP400('no s3Key found');

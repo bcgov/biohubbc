@@ -74,7 +74,7 @@ export function searchSpecies(): RequestHandler {
     const term = String(req.query.terms) || '';
     try {
       const taxonomySearch = new TaxonomyService();
-      const response = await taxonomySearch.searchSpecies(term.toLowerCase());
+      const response = await taxonomySearch.searchSpecies(term);
 
       res.status(200).json({ searchResponse: response });
     } catch (error) {

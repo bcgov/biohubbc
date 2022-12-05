@@ -110,7 +110,7 @@ export enum SUBMISSION_MESSAGE_TYPE {
   'FAILED_PREP_DWC_ARCHIVE' = 'Failed to prep DarwinCore Archive',
   'FAILED_PREP_XLSX' = 'Failed to prep XLSX',
   'FAILED_PERSIST_PARSE_ERRORS' = 'Failed to persist parse errors',
-  'FAILED_GET_VALIDATION_RULES' = 'Failed to get validation rules',
+  'FAILED_GET_VALIDATION_RULES' = 'Failed to get validation rules.  It is possible that your focal species is incorrect.',
   'FAILED_GET_TRANSFORMATION_RULES' = 'Failed to get transformation rules',
   'FAILED_PERSIST_TRANSFORMATION_RESULTS' = 'Failed to persist transformation results',
   'FAILED_TRANSFORM_XLSX' = 'Failed to transform XLSX',

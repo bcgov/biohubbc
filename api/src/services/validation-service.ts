@@ -124,20 +124,32 @@ export class ValidationService extends DBService {
       // template preparation
       const submissionPrep = await this.templatePreparation(submissionId);
 
+      console.log('function: processFile- submission prep done');
+
       // template validation
       await this.templateValidation(submissionPrep.xlsx, surveyId);
+
+      console.log('function: processFile- template validated');
 
       // insert template validated status
       await this.submissionRepository.insertSubmissionStatus(submissionId, SUBMISSION_STATUS_TYPE.TEMPLATE_VALIDATED);
 
+      console.log('function: processFile: insertSubmissionStatus for validation');
+
       // template transformation
       await this.templateTransformation(submissionId, submissionPrep.xlsx, submissionPrep.s3InputKey, surveyId);
+
+      console.log('function: processFile: template transformed');
 
       // insert template validated status
       await this.submissionRepository.insertSubmissionStatus(submissionId, SUBMISSION_STATUS_TYPE.TEMPLATE_TRANSFORMED);
 
+      console.log('function: processFile: insertSubmissionStatus for transformation');
+
       // occurrence scraping
       await this.templateScrapeAndUploadOccurrences(submissionId);
+
+      console.log('function: processFile: templateScrapeAndUploadOccurrences');
     } catch (error) {
       if (error instanceof SubmissionError) {
         await this.errorService.insertSubmissionError(submissionId, error);
@@ -229,9 +241,18 @@ export class ValidationService extends DBService {
   async templateTransformation(submissionId: number, xlsx: XLSXCSV, s3InputKey: string, surveyId: number) {
     try {
       const xlsxSchema = await this.getTransformationSchema(xlsx, surveyId);
+
+      console.log('template transformation - xlsxSchema : ', xlsxSchema);
       const xlsxParser = this.getTransformationRules(xlsxSchema);
+
+      console.log('template transformation  - xlxsParser: ', xlsxParser);
       const fileBuffer = await this.transformXLSX(xlsx, xlsxParser);
+
+      console.log('template transformation  - fileBuffer: ', fileBuffer);
+
       await this.persistTransformationResults(submissionId, fileBuffer, s3InputKey, xlsx);
+
+      console.log('transformation resultes persisted');
     } catch (error) {
       if (error instanceof SubmissionError) {
         error.setStatus(SUBMISSION_STATUS_TYPE.FAILED_TRANSFORMED);
@@ -271,6 +292,7 @@ export class ValidationService extends DBService {
     const templateVersion = file.workbook.rawWorkbook.Custprops.sims_version;
 
     const surveyData = await this.surveyService.getSurveyById(surveyId);
+    console.log('surveyData is: ', surveyData);
 
     const surveyFieldMethodId = surveyData.purpose_and_methodology.field_method_id;
     const surveySpecies = surveyData.species.focal_species;
@@ -285,6 +307,8 @@ export class ValidationService extends DBService {
 
   async getValidationSchema(file: XLSXCSV, surveyId: number): Promise<any> {
     const templateMethodologySpeciesRecord = await this.getTemplateMethodologySpeciesRecord(file, surveyId);
+
+    console.log('getValidationSchema - templateMethodologySpeciesRecord: ', templateMethodologySpeciesRecord);
 
     const validationSchema = templateMethodologySpeciesRecord?.validation;
     if (!validationSchema) {
@@ -385,6 +409,8 @@ export class ValidationService extends DBService {
 
   async getTransformationSchema(file: XLSXCSV, surveyId: number): Promise<any> {
     const templateMethodologySpeciesRecord = await this.getTemplateMethodologySpeciesRecord(file, surveyId);
+
+    console.log('getTransformationSchema: ', templateMethodologySpeciesRecord);
 
     const transformationSchema = templateMethodologySpeciesRecord?.transform;
     if (!transformationSchema) {
