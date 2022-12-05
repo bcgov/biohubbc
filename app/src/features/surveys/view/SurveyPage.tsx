@@ -1,5 +1,3 @@
-// import Alert from '@material-ui/lab/Alert';
-// import AlertTitle from '@material-ui/lab/AlertTitle';
 import Box from '@material-ui/core/Box';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Container from '@material-ui/core/Container';
@@ -96,11 +94,6 @@ const SurveyPage: React.FC = () => {
       <SurveyHeader projectWithDetails={projectWithDetails} surveyWithDetails={surveyWithDetails} refresh={getSurvey} />
       <Container maxWidth="xl">
         <Box my={3}>
-
-        {/* <Alert variant="filled" severity="warning" color="warning" style={{marginBottom: '24px'}}>
-          <AlertTitle>Security Requested</AlertTitle>
-          Additional security has been requested for this survey.
-        </Alert> */}
 
           <Grid container spacing={3}>
             <Grid item md={12} lg={4}>

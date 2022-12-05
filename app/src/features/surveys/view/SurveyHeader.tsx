@@ -2,12 +2,6 @@ import { Button } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Container from '@material-ui/core/Container';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-// import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Grid from '@material-ui/core/Grid';
 import Link from '@material-ui/core/Link';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import Menu from '@material-ui/core/Menu';
@@ -16,14 +10,11 @@ import Paper from '@material-ui/core/Paper';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
-import Alert from '@material-ui/lab/Alert';
-import AlertTitle from '@material-ui/lab/AlertTitle';
 import {
   mdiCalendarRangeOutline,
   mdiChevronDown,
   mdiChevronRight,
   mdiCogOutline,
-  mdiInformationOutline,
   mdiPencilOutline,
   mdiTrashCanOutline
 } from '@mdi/js';
@@ -244,16 +235,6 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
     setAnchorEl(null);
   };
 
-  const [open, setOpen] = React.useState(false);
-
-  const openSecurityDialog = () => {
-    setOpen(true);
-  };
-
-  const closeSecurityDialog = () => {
-    setOpen(false);
-  };
-
   return (
     <>
       <Paper square={true} elevation={0}>
@@ -360,78 +341,6 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
           </Box>
         </Container>
       </Paper>
-
-      <Container maxWidth="xl" style={{ marginTop: '24px' }}>
-        <Paper elevation={0}>
-          <Alert variant="filled" severity="error" icon={<Icon path={mdiInformationOutline} size={1.25} />}>
-            <AlertTitle style={{ fontWeight: 700 }}>Security Requested</AlertTitle>
-            <Box display="flex" alignItems="center">
-              <Typography variant="body2" display="inline" color="inherit">
-                Additional security has been reqeusted for this survey.
-              </Typography>
-              &nbsp;
-              <Button
-                variant="text"
-                style={{ textDecoration: 'underline', fontSize: 'inherit', margin: '-6px 0' }}
-                color="inherit"
-                onClick={openSecurityDialog}>
-                View Details
-              </Button>
-            </Box>
-          </Alert>
-        </Paper>
-      </Container>
-
-      <Dialog
-        open={open}
-        onClose={closeSecurityDialog}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-        fullWidth
-        maxWidth="md">
-        <DialogTitle id="alert-dialog-title">Security Requested</DialogTitle>
-        <DialogContent>
-          {/* <DialogContentText>
-            Additional Security has been requested for this survey. See details below.
-          </DialogContentText> */}
-
-          <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
-              <Typography component="dt" variant="subtitle2" color="textSecondary">
-                Proprietor Name
-              </Typography>
-              <Typography component="dd" variant="body1">
-                Proprietor Names
-              </Typography>
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <Typography component="dt" variant="subtitle2" color="textSecondary">
-                Data Category
-              </Typography>
-              <Typography component="dd" variant="body1">
-                Awaiting Publication
-              </Typography>
-            </Grid>
-            <Grid item>
-              <Typography component="dt" variant="subtitle2" color="textSecondary">
-                Category Rationale
-              </Typography>
-              <Typography style={{ wordBreak: 'break-all' }}>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-                dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
-                ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-                fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia
-                deserunt mollit anim id est laborum
-              </Typography>
-            </Grid>
-          </Grid>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={closeSecurityDialog} variant="outlined" autoFocus>
-            Close
-          </Button>
-        </DialogActions>
-      </Dialog>
     </>
   );
 };

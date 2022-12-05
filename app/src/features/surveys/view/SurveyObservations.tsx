@@ -499,7 +499,7 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
             (submissionStatus.status === SUBMISSION_STATUS_TYPE.DARWIN_CORE_VALIDATED ||
             submissionStatus.status === SUBMISSION_STATUS_TYPE.TEMPLATE_VALIDATED ||
             submissionStatus.status === SUBMISSION_STATUS_TYPE.TEMPLATE_TRANSFORMED) && (
-            <Box px={3}>
+            <Box>
               {displayAlertBox(
                 'info',
                 mdiFileOutline,
