@@ -119,13 +119,13 @@ export function deleteSurveySecurityReasons(): RequestHandler {
         if (securityIds.length === 0) {
           await attachmentService.removeAllSecurityFromSurveyReportAttachment(attachmentId);
         } else {
-          await attachmentService.removeSecurityFromSurveyReportAttachment(securityIds, attachmentId);
+          await attachmentService.removeSecurityRulesFromSurveyReportAttachment(securityIds, attachmentId);
         }
       } else {
         if (securityIds.length === 0) {
           await attachmentService.removeAllSecurityFromSurveyAttachment(attachmentId);
         } else {
-          await attachmentService.removeSecurityFromSurveyAttachment(securityIds, attachmentId);
+          await attachmentService.removeSecurityRulesFromSurveyAttachment(securityIds, attachmentId);
         }
       }
 

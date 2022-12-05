@@ -22,7 +22,7 @@ import {
   mdiTrayArrowDown
 } from '@mdi/js';
 import Icon from '@mdi/react';
-import AllAttachmentDetailsDialog from 'components/dialog/attachments/AttachmentTypeSelector';
+import AttachmentTypeSelector from 'components/dialog/attachments/AttachmentTypeSelector';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { AttachmentsI18N, EditReportMetaDataI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
@@ -48,8 +48,10 @@ export interface IAttachmentsListProps {
   projectId: number;
   surveyId?: number;
   attachmentsList: (IGetProjectAttachment | IGetSurveyAttachment)[];
+  selectedAttachments: IAttachmentType[];
+  onCheckboxChange?: (attachmentType: IAttachmentType, add: boolean) => void;
+  onCheckAllChange?: (types: IAttachmentType[]) => void;
   getAttachments: (forceFetch: boolean) => Promise<(IGetProjectAttachment | IGetSurveyAttachment)[] | undefined>;
-  onCheckboxChange?: (attachmentType: IAttachmentType) => void;
 }
 
 const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
@@ -76,14 +78,15 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
     setShowViewFileWithDetailsDialog(true);
   };
 
-  const refreshCurrentAttachment = async (id: number) => {
+  const refreshCurrentAttachment = async (id: number, type: string) => {
     const updatedAttachments = await props.getAttachments(true);
 
     if (updatedAttachments) {
       const cur = updatedAttachments.find((attachment) => {
-        if (attachment.id === id) {
+        if (attachment.id === id && attachment.fileType === type) {
           return attachment;
         }
+        return null;
       });
 
       if (cur) {
@@ -201,7 +204,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
 
   return (
     <>
-      <AllAttachmentDetailsDialog
+      <AttachmentTypeSelector
         projectId={props.projectId}
         surveyId={props.surveyId}
         currentAttachment={currentAttachment}
@@ -219,7 +222,20 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
             <TableHead>
               <TableRow>
                 <TableCell width="60px" padding="checkbox">
-                  <Checkbox color="primary" />
+                  <Checkbox
+                    color="primary"
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        props.onCheckAllChange?.(
+                          props.attachmentsList.map((attachment) => {
+                            return { id: attachment.id, type: attachment.fileType } as IAttachmentType;
+                          })
+                        );
+                      } else {
+                        props.onCheckAllChange?.([]);
+                      }
+                    }}
+                  />
                 </TableCell>
                 <TableCell>Name</TableCell>
                 <TableCell>Type</TableCell>
@@ -237,13 +253,18 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
                           color="primary"
                           checkedIcon={<Icon path={mdiCheckboxOutline} size={1} />}
                           value={index}
+                          checked={
+                            props.selectedAttachments.find(
+                              (item) => row.id === item.id && row.fileType === item.type
+                            ) !== undefined
+                          }
                           onChange={(e) => {
                             const attachment: IAttachmentType[] = props.attachmentsList
                               .filter((item, index) => index === Number(e.target.value))
                               .map((item) => {
                                 return { id: item.id, type: item.fileType } as IAttachmentType;
                               });
-                            props.onCheckboxChange?.(attachment[0]);
+                            props.onCheckboxChange?.(attachment[0], e.target.checked);
                           }}
                         />
                       </TableCell>

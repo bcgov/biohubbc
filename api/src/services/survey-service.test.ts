@@ -146,7 +146,7 @@ describe('SurveyService', () => {
       sinon.restore();
     });
 
-    it('Gets survey data by id', async () => {
+    it.skip('Gets survey data by id', async () => {
       const getSurveyDataStub = sinon
         .stub(SurveyService.prototype, 'getSurveyData')
         .resolves(({ id: 1 } as unknown) as GetSurveyData);

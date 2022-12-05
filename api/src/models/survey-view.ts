@@ -9,6 +9,7 @@ export type SurveyObject = {
   funding: GetSurveyFundingSources;
   proprietor: GetSurveyProprietorData | null;
   location: GetSurveyLocationData;
+  docs_to_be_reviewed: number;
 };
 
 export class GetSurveyData {
@@ -175,10 +176,6 @@ export class GetSurveyLocationData {
   }
 }
 
-/**
- * @TODO Survey attachments interface has been superceded; See AttachmentRepository. This
- * interface should be deleted.
- */
 interface IGetAttachmentsSource {
   file_name: string;
   file_type: string;
@@ -216,10 +213,6 @@ export class GetAttachmentsData {
   }
 }
 
-/**
- * @TODO Survey report attachments interface has been superceded; See AttachmentRepository. This
- * interface should be deleted.
- */
 interface IGetReportAttachmentsSource {
   file_name: string;
   title: string;

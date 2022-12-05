@@ -54,7 +54,7 @@ const SurveyAttachments: React.FC<ISurveyAttachmentsProps> = () => {
   };
 
   const getAttachments = useCallback(
-    async (forceFetch: boolean) => {
+    async (forceFetch: boolean): Promise<IGetSurveyAttachment[] | undefined> => {
       if (attachmentsList.length && !forceFetch) {
         return;
       }
@@ -68,8 +68,9 @@ const SurveyAttachments: React.FC<ISurveyAttachmentsProps> = () => {
 
         setReportAttachmentsList([...response.reportAttachmentsList]);
         setAttachmentsList([...response.attachmentsList]);
+        return [...response.reportAttachmentsList, ...response.attachmentsList];
       } catch (error) {
-        return error;
+        return;
       }
     },
     [biohubApi.survey, projectId, surveyId, attachmentsList.length]
@@ -128,6 +129,7 @@ const SurveyAttachments: React.FC<ISurveyAttachmentsProps> = () => {
             projectId={projectId}
             surveyId={surveyId}
             attachmentsList={[...attachmentsList, ...reportAttachmentsList]}
+            selectedAttachments={[]}
             getAttachments={getAttachments}
           />
         </Box>

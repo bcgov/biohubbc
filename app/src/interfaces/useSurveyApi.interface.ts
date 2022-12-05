@@ -84,6 +84,7 @@ export interface SurveyViewObject {
   purpose_and_methodology: IGetSurveyForViewResponsePurposeAndMethodology;
   funding: ISurveyFundingSources;
   proprietor: IGetSurveyForViewResponseProprietor | null;
+  docs_to_be_reviewed: number;
 }
 
 export interface SurveyUpdateObject {
@@ -164,9 +165,6 @@ export interface IGetSpecies {
   ancillary_species_names: string[];
 }
 
-/**
- * @TODO securityRuleCount and status should likely be required, not optional.
- */
 export interface IGetSurveyAttachment {
   id: number;
   fileName: string;

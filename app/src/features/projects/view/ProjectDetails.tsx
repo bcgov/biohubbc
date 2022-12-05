@@ -1,7 +1,6 @@
 import Box from '@material-ui/core/Box';
 import { grey } from '@material-ui/core/colors';
 import Divider from '@material-ui/core/Divider';
-// import Paper from '@material-ui/core/Paper';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Toolbar from '@material-ui/core/Toolbar';
