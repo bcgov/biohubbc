@@ -98,7 +98,6 @@ export class TaxonomyService {
   }
 
   private formatScientificName = (data: SearchHit<any>[]) => {
-    console.log('data coming in is : ', data);
     return data.map((item) => {
       const label = [
         [
