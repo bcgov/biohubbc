@@ -170,8 +170,6 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
 
           <Divider className={classes.sectionDivider} />
 
-          <Divider className={classes.sectionDivider} />
-
           <HorizontalSplitFormComponent
             title="Purpose and Methodology"
             summary=""
