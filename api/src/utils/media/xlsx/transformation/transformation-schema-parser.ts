@@ -103,4 +103,16 @@ export class TransformationSchemaParser {
 
     return parsedJson;
   }
+
+
+
+  // getSpeciesName(): string {
+
+  //   console.log('getSpeciesName : ')
+  //   return jsonpath.query(this.transformationSchema, this.getSpeciesNameJsonPath())?.[0] || null;
+  // }
+
+  // getSpeciesNameJsonPath(): string {
+  //   return '$.taxonId';
+  // }
 }

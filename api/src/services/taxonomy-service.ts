@@ -9,7 +9,7 @@ export class TaxonomyService {
     try {
       const client = new Client({ node: process.env.ELASTICSEARCH_URL });
       return client.search({
-        index: 'taxonomy',
+        index: 'taxonomy_2.0.0',
         ...searchRequest
       });
     } catch (error) {
@@ -102,8 +102,9 @@ export class TaxonomyService {
     return data.map((item) => {
       const label = [
         [
-          [item._source.tty_kingdom, item._source.tty_name].filter(Boolean).join(' '),
-          [item._source.unit_name1, item._source.unit_name2, item._source.unit_name3].filter(Boolean).join(' ')
+          [item._source.unit_name1, item._source.unit_name2, item._source.unit_name3, item._source.taxon_authority]
+            .filter(Boolean)
+            .join(' ')
         ]
           .filter(Boolean)
           .join(', ')

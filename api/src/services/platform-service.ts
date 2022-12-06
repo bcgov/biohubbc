@@ -1,6 +1,7 @@
 import AdmZip from 'adm-zip';
 import axios from 'axios';
 import FormData from 'form-data';
+import jsonpath from 'jsonpath';
 import { URL } from 'url';
 import { HTTP400 } from '../errors/http-error';
 import { getFileFromS3 } from '../utils/file-utils';
@@ -158,15 +159,21 @@ export class PlatformService extends DBService {
     const surveyService = new SurveyService(this.connection);
     const surveyData = await surveyService.getLatestSurveyOccurrenceSubmission(surveyId);
 
-    console.log('surveySubmissionData is: ', surveyData);
+    let jsonObject = surveyData.darwin_core_source;
 
-    const term = surveyData.darwin_core_source.taxonId;
+    const term = jsonpath.query(jsonObject, '$.taxonId');
+
+    console.log('******** term ********: ', term);
 
     const taxonomyService = new TaxonomyService();
 
-    const newResponse = await taxonomyService.getScientificNameBySpeciesCode(term);
+    const newResponse = await taxonomyService.getScientificNameBySpeciesCode(term[0].toString());
 
     console.log('new response: ', newResponse);
+
+    jsonObject = { ...jsonObject, scientific_name: newResponse[0].scientific_name };
+
+    console.log('updatedJsonObject: ', jsonObject);
 
     if (!surveyData.output_key) {
       throw new HTTP400('no s3Key found');
