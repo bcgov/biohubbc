@@ -1,5 +1,8 @@
 import Box from '@material-ui/core/Box';
+import { grey } from '@material-ui/core/colors';
 import Divider from '@material-ui/core/Divider';
+import { Theme } from '@material-ui/core/styles/createMuiTheme';
+import makeStyles from '@material-ui/core/styles/makeStyles';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import SurveyProprietaryData from 'features/surveys/view/components/SurveyProprietaryData';
@@ -9,9 +12,6 @@ import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
 import React from 'react';
 import SurveyGeneralInformation from './components/SurveyGeneralInformation';
-import { Theme } from '@material-ui/core/styles/createMuiTheme';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import { grey } from '@material-ui/core/colors';
 
 const useStyles = makeStyles((theme: Theme) => ({
   surveyMetadataContainer: {
@@ -45,7 +45,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         marginBottom: theme.spacing(1.5)
       }
     }
-  },
+  }
 }));
 
 export interface ISurveyDetailsProps {
@@ -80,9 +80,7 @@ const SurveyDetails: React.FC<ISurveyDetailsProps> = (props) => {
           refresh={refresh}
         />
         <Box component="section">
-          <Typography component="h4">
-            Purpose and Methodology
-          </Typography>
+          <Typography component="h4">Purpose and Methodology</Typography>
           <Divider></Divider>
           <SurveyPurposeAndMethodologyData
             projectForViewData={projectForViewData}
@@ -92,9 +90,7 @@ const SurveyDetails: React.FC<ISurveyDetailsProps> = (props) => {
           />
         </Box>
         <Box component="section">
-          <Typography component="h4">
-            Proprietary Information
-          </Typography>
+          <Typography component="h4">Proprietary Information</Typography>
           <Divider></Divider>
           <SurveyProprietaryData
             projectForViewData={projectForViewData}

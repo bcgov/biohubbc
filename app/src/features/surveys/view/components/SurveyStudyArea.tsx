@@ -1,9 +1,11 @@
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
-import IconButton from '@material-ui/core/IconButton';
+import { grey } from '@material-ui/core/colors';
 import Divider from '@material-ui/core/Divider';
+import IconButton from '@material-ui/core/IconButton';
 import Paper from '@material-ui/core/Paper';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import Typography from '@material-ui/core/Typography';
 import { mdiChevronRight, mdiPencilOutline, mdiRefresh } from '@mdi/js';
 import Icon from '@mdi/react';
@@ -28,8 +30,6 @@ import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
 import { LatLngBoundsExpression } from 'leaflet';
 import React, { useCallback, useEffect, useState } from 'react';
 import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
-import { grey } from '@material-ui/core/colors';
-import { Theme } from '@material-ui/core/styles/createMuiTheme';
 
 export interface ISurveyStudyAreaProps {
   surveyForViewData: IGetSurveyForViewResponse;
@@ -276,7 +276,7 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
           </Box>
         </Box>
 
-        <Box mt={3} style={{display: 'none'}}>
+        <Box mt={3} style={{ display: 'none' }}>
           <Button
             variant="text"
             color="primary"
@@ -288,7 +288,6 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
             Show More
           </Button>
         </Box>
-
       </Paper>
     </>
   );

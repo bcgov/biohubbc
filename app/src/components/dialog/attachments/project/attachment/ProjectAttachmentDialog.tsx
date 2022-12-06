@@ -10,14 +10,13 @@ import { IAttachmentType } from 'features/projects/view/ProjectAttachments';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
-import { IGetProjectAttachment, IGetSecurityReasons } from 'interfaces/useProjectApi.interface';
+import { IGetProjectAttachment } from 'interfaces/useProjectApi.interface';
 import { default as React, useContext, useState } from 'react';
 import { getFormattedFileSize } from 'utils/Utils';
 import { AttachmentType } from '../../../../../constants/attachments';
 import { IErrorDialogProps } from '../../../ErrorDialog';
 import SecurityDialog from '../../SecurityDialog';
 import AttachmentDetails from './../attachment/AttachmentDetails';
-import AttachmentSecurityTable from './AttachmentSecurityTable';
 
 export interface IProjectAttachmentDialogProps {
   projectId: number;
@@ -44,13 +43,6 @@ const ProjectAttachmentDialog: React.FC<IProjectAttachmentDialogProps> = (props)
     biohubApi.project.getProjectAttachmentDetails(props.projectId, attachmentId)
   );
 
-  const defaultYesNoDialogProps = {
-    open: false,
-    onClose: () => dialogContext.setYesNoDialog({ open: false }),
-    onNo: () => dialogContext.setYesNoDialog({ open: false }),
-    onYes: () => dialogContext.setYesNoDialog({ open: false })
-  };
-
   const addSecurityReasons = async (securityReasons: number[]) => {
     if (props.attachmentId) {
       const attachmentData: IAttachmentType = {
@@ -64,51 +56,6 @@ const ProjectAttachmentDialog: React.FC<IProjectAttachmentDialogProps> = (props)
 
       setShowAddSecurityDialog(false);
     }
-  };
-
-  const removeSecurity = async (securityReasons: IGetSecurityReasons[]) => {
-    const securityIds = securityReasons.map((security) => {
-      return security.security_reason_id;
-    });
-
-    if (props.attachmentId) {
-      await biohubApi.security.deleteProjectAttachmentSecurityReasons(props.projectId, props.attachmentId, securityIds);
-    }
-  };
-
-  const showDeleteSecurityReasonDialog = (securityReasons: IGetSecurityReasons[]) => {
-    let yesNoDialogProps;
-
-    if (securityReasons.length === 1) {
-      yesNoDialogProps = {
-        ...defaultYesNoDialogProps,
-        dialogTitle: 'Remove Security Reason',
-        dialogText: 'Are you sure you want to remove the selected security reason? This action cannot be undone.'
-      };
-    } else {
-      yesNoDialogProps = {
-        ...defaultYesNoDialogProps,
-        dialogTitle: 'Remove Security Reasons',
-        dialogText: 'Are you sure you want to remove all security reasons? This action cannot be undone.'
-      };
-    }
-
-    dialogContext.setYesNoDialog({
-      ...yesNoDialogProps,
-      open: true,
-      yesButtonProps: { color: 'secondary' },
-      onYes: async () => {
-        await removeSecurity(securityReasons);
-
-        await updateReviewTime();
-
-        await refreshCurrentAttachment();
-
-        refreshAttachmentDetails();
-
-        dialogContext.setYesNoDialog({ open: false });
-      }
-    });
   };
 
   const showErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
@@ -157,23 +104,6 @@ const ProjectAttachmentDialog: React.FC<IProjectAttachmentDialogProps> = (props)
     }
   };
 
-  const refreshCurrentAttachment = async () => {
-    if (props.attachmentId && props.currentAttachment?.fileType) {
-      await props.refresh(props.attachmentId, props.currentAttachment?.fileType);
-    }
-  };
-
-  const updateReviewTime = async () => {
-    try {
-      if (props.attachmentId) {
-        await biohubApi.security.updateProjectAttachmentSecurityReviewTime(props.projectId, props.attachmentId);
-      }
-    } catch (error) {
-      const apiError = error as APIError;
-      showErrorDialog({ dialogText: apiError.message, dialogErrorDetails: apiError.errors, open: true });
-    }
-  };
-
   if (!props.open) {
     return <></>;
   }
@@ -210,13 +140,6 @@ const ProjectAttachmentDialog: React.FC<IProjectAttachmentDialogProps> = (props)
             title={props.currentAttachment?.fileName || ''}
             attachmentSize={(props.currentAttachment && getFormattedFileSize(props.currentAttachment.size)) || '0 KB'}
             onFileDownload={openAttachmentFromReportMetaDialog}
-          />
-
-          <AttachmentSecurityTable
-            securityDetails={attachmentDetailsDataLoader.data || null}
-            showAddSecurityDialog={setShowAddSecurityDialog}
-            showDeleteSecurityReasonDialog={showDeleteSecurityReasonDialog}
-            isAwaitingReview={!props.currentAttachment?.securityReviewTimestamp}
           />
         </DialogContent>
         <DialogActions>

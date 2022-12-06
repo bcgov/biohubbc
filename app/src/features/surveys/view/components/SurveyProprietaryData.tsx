@@ -21,7 +21,6 @@ export interface ISurveyProprietaryDataProps {
  * @return {*}
  */
 const SurveyProprietaryData: React.FC<ISurveyProprietaryDataProps> = (props) => {
-
   const {
     surveyForViewData: {
       surveyData: { proprietor }

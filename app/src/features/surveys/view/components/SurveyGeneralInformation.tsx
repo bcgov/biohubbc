@@ -32,11 +32,8 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
 
   return (
     <>
-
       <Box component="section">
-        <Typography component="h4">
-          General Information
-        </Typography>
+        <Typography component="h4">General Information</Typography>
         <Divider></Divider>
         <Box component="dl" my={0}>
           <Grid container spacing={1}>
@@ -103,9 +100,7 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
       </Box>
 
       <Box component="section">
-        <Typography component="h4">
-          Permits
-        </Typography>
+        <Typography component="h4">Permits</Typography>
         <Divider></Divider>
         <List disablePadding>
           {!permit.permits.length && (
@@ -118,7 +113,9 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
           {permit.permits?.map((item, index: number) => {
             return (
               <ListItem divider disableGutters key={index}>
-                <Typography variant="body1">{item.permit_type} - {item.permit_number}</Typography>
+                <Typography variant="body1">
+                  {item.permit_type} - {item.permit_number}
+                </Typography>
               </ListItem>
             );
           })}
@@ -126,62 +123,56 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
       </Box>
 
       <Box component="section">
-        <Typography component="h4">
-          Funding Sources
-        </Typography>
+        <Typography component="h4">Funding Sources</Typography>
         <Divider></Divider>
-          {!funding.funding_sources.length && (
-            <List disablePadding>
-              <ListItem divider disableGutters>
-                <Typography variant="body1">No Funding Sources</Typography>
-              </ListItem>
-            </List>
-          )}
+        {!funding.funding_sources.length && (
           <List disablePadding>
-            {funding.funding_sources?.map((item, index: number) => {
-              return (
-                <ListItem divider disableGutters key={index}>
-                  <Box flex="1 1 auto">
-                    <Box pb={1.25}>
-                      <Typography component="span">
-                        {item.agency_name}
-                      </Typography>
-                    </Box>
-                    <Box component="dl" m={0}>
-                      <Grid container spacing={1}>
-                        <Grid item sm={6}>
-                          <Typography component="dt" variant="subtitle2" color="textSecondary">
-                            Project ID
-                          </Typography>
-                          <Typography component="dd">
-                            {item.funding_source_project_id}
-                          </Typography>
-                        </Grid>
-                        <Grid item sm={6}>
-                          <Typography component="dt" variant="subtitle2" color="textSecondary">
-                            Timeline
-                          </Typography>
-                          <Typography component="dd">
-                            {getFormattedDateRangeString(
-                              DATE_FORMAT.ShortMediumDateFormat,
-                              item.funding_start_date,
-                              item.funding_end_date
-                            )}
-                          </Typography>
-                        </Grid>
-                        <Grid item sm={12}>
-                          <Typography component="dt" variant="subtitle2" color="textSecondary">
-                            Funding Amount
-                          </Typography>
-                          <Typography component="dd">{getFormattedAmount(item.funding_amount)}</Typography>
-                        </Grid>
-                      </Grid>
-                    </Box>
-                  </Box>
-                </ListItem>
-              );
-            })}
+            <ListItem divider disableGutters>
+              <Typography variant="body1">No Funding Sources</Typography>
+            </ListItem>
           </List>
+        )}
+        <List disablePadding>
+          {funding.funding_sources?.map((item, index: number) => {
+            return (
+              <ListItem divider disableGutters key={index}>
+                <Box flex="1 1 auto">
+                  <Box pb={1.25}>
+                    <Typography component="span">{item.agency_name}</Typography>
+                  </Box>
+                  <Box component="dl" m={0}>
+                    <Grid container spacing={1}>
+                      <Grid item sm={6}>
+                        <Typography component="dt" variant="subtitle2" color="textSecondary">
+                          Project ID
+                        </Typography>
+                        <Typography component="dd">{item.funding_source_project_id}</Typography>
+                      </Grid>
+                      <Grid item sm={6}>
+                        <Typography component="dt" variant="subtitle2" color="textSecondary">
+                          Timeline
+                        </Typography>
+                        <Typography component="dd">
+                          {getFormattedDateRangeString(
+                            DATE_FORMAT.ShortMediumDateFormat,
+                            item.funding_start_date,
+                            item.funding_end_date
+                          )}
+                        </Typography>
+                      </Grid>
+                      <Grid item sm={12}>
+                        <Typography component="dt" variant="subtitle2" color="textSecondary">
+                          Funding Amount
+                        </Typography>
+                        <Typography component="dd">{getFormattedAmount(item.funding_amount)}</Typography>
+                      </Grid>
+                    </Grid>
+                  </Box>
+                </Box>
+              </ListItem>
+            );
+          })}
+        </List>
       </Box>
     </>
   );

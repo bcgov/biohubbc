@@ -1,5 +1,4 @@
 import Box from '@material-ui/core/Box';
-import Checkbox from '@material-ui/core/Checkbox';
 import { grey } from '@material-ui/core/colors';
 import IconButton from '@material-ui/core/IconButton';
 import Link from '@material-ui/core/Link';
@@ -14,16 +13,11 @@ import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import {
-  mdiCheckboxOutline,
-  mdiDotsVertical,
-  mdiInformationOutline,
-  mdiTrashCanOutline,
-  mdiTrayArrowDown
-} from '@mdi/js';
+import { mdiDotsVertical, mdiInformationOutline, mdiTrashCanOutline, mdiTrayArrowDown } from '@mdi/js';
 import Icon from '@mdi/react';
 import AttachmentTypeSelector from 'components/dialog/attachments/AttachmentTypeSelector';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
+import { AttachmentType } from 'constants/attachments';
 import { AttachmentsI18N, EditReportMetaDataI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
 import { IAttachmentType } from 'features/projects/view/ProjectAttachments';
@@ -32,7 +26,6 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetProjectAttachment } from 'interfaces/useProjectApi.interface';
 import { IGetSurveyAttachment } from 'interfaces/useSurveyApi.interface';
 import React, { useContext, useState } from 'react';
-import AttachmentStatusChip from './AttachmentStatusChip';
 
 const useStyles = makeStyles((theme: Theme) => ({
   attachmentsTable: {
@@ -219,31 +212,13 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
         }}
         refresh={refreshCurrentAttachment}
       />
-
       <Box>
         <TableContainer>
           <Table className={classes.attachmentsTable} aria-label="attachments-list-table">
             <TableHead>
               <TableRow>
-                <TableCell width="60px" padding="checkbox">
-                  <Checkbox
-                    color="primary"
-                    onChange={(e) => {
-                      if (e.target.checked) {
-                        props.onCheckAllChange?.(
-                          props.attachmentsList.map((attachment) => {
-                            return { id: attachment.id, type: attachment.fileType } as IAttachmentType;
-                          })
-                        );
-                      } else {
-                        props.onCheckAllChange?.([]);
-                      }
-                    }}
-                  />
-                </TableCell>
                 <TableCell>Name</TableCell>
                 <TableCell>Type</TableCell>
-                <TableCell width="140px">Status</TableCell>
                 <TableCell width="80px"></TableCell>
               </TableRow>
             </TableHead>
@@ -252,41 +227,12 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
                 props.attachmentsList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => {
                   return (
                     <TableRow key={`${row.fileName}-${index}`}>
-                      <TableCell padding="checkbox">
-                        <Checkbox
-                          color="primary"
-                          checkedIcon={<Icon path={mdiCheckboxOutline} size={1} />}
-                          value={index}
-                          checked={
-                            props.selectedAttachments.find(
-                              (item) => row.id === item.id && row.fileType === item.type
-                            ) !== undefined
-                          }
-                          onChange={(e) => {
-                            const attachment: IAttachmentType[] = props.attachmentsList
-                              .filter((item, index) => index === Number(e.target.value))
-                              .map((item) => {
-                                return { id: item.id, type: item.fileType } as IAttachmentType;
-                              });
-                            props.onCheckboxChange?.(attachment[0], e.target.checked);
-                          }}
-                        />
-                      </TableCell>
                       <TableCell scope="row" className={classes.attachmentNameCol}>
-                        <Link
-                          style={{ fontWeight: 'bold' }}
-                          underline="always"
-                          onClick={() => openAttachment(row)}>
+                        <Link style={{ fontWeight: 'bold' }} underline="always" onClick={() => openAttachment(row)}>
                           {row.fileName}
                         </Link>
                       </TableCell>
                       <TableCell>{row.fileType}</TableCell>
-                      <TableCell>
-                        <AttachmentStatusChip
-                          securityReviewTimestamp={row.securityReviewTimestamp}
-                          securityRuleCount={row.securityRuleCount}
-                        />
-                      </TableCell>
                       <TableCell align="right">
                         <AttachmentItemMenuButton
                           attachment={row}
@@ -368,18 +314,19 @@ const AttachmentItemMenuButton: React.FC<IAttachmentItemMenuButtonProps> = (prop
               </ListItemIcon>
               Download Document
             </MenuItem>
-            <MenuItem
-              onClick={() => {
-                props.handleViewDetailsClick(props.attachment);
-                setAnchorEl(null);
-              }}
-              data-testid="attachment-action-menu-details">
-              <ListItemIcon>
-                <Icon path={mdiInformationOutline} size={0.8} />
-              </ListItemIcon>
-              View Document Details
-            </MenuItem>
-
+            {props.attachment.fileType === AttachmentType.REPORT && (
+              <MenuItem
+                onClick={() => {
+                  props.handleViewDetailsClick(props.attachment);
+                  setAnchorEl(null);
+                }}
+                data-testid="attachment-action-menu-details">
+                <ListItemIcon>
+                  <Icon path={mdiInformationOutline} size={0.8} />
+                </ListItemIcon>
+                View Document Details
+              </MenuItem>
+            )}
             <MenuItem
               onClick={() => {
                 props.handleDeleteFileClick(props.attachment);

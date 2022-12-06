@@ -327,7 +327,6 @@ export function getSurveyList(): RequestHandler {
       const surveyIds = surveyIdsResponse.map((item: { id: any }) => item.id);
 
       const surveys = await surveyService.getSurveysByIds(surveyIds);
-      console.log('surveys :', surveys);
 
       await connection.commit();
 

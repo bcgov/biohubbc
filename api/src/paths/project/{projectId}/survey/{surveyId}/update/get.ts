@@ -294,7 +294,6 @@ GET.apiDoc = {
 export function getSurveyForUpdate(): RequestHandler {
   return async (req, res) => {
     const surveyId = Number(req.params.surveyId);
-    console.log('surveyId', surveyId);
 
     const connection = getDBConnection(req['keycloak_token']);
 

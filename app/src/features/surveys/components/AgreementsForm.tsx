@@ -116,9 +116,6 @@ const AgreementsForm = () => {
                       'agreements.foippa_requirements_accepted',
                       values.agreements?.foippa_requirements_accepted === 'true' ? 'false' : 'true'
                     );
-
-                    console.log('values', values);
-                    console.log('errors', errors);
                   }}
                   name="agreements.foippa_requirements_accepted"
                   color="primary"

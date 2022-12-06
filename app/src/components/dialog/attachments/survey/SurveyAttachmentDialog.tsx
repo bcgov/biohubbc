@@ -10,14 +10,13 @@ import { IAttachmentType } from 'features/projects/view/ProjectAttachments';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
-import { IGetProjectAttachment, IGetSecurityReasons } from 'interfaces/useProjectApi.interface';
+import { IGetProjectAttachment } from 'interfaces/useProjectApi.interface';
 import { IGetSurveyAttachment } from 'interfaces/useSurveyApi.interface';
 import { default as React, useContext, useState } from 'react';
 import { getFormattedFileSize } from 'utils/Utils';
 import { AttachmentType } from '../../../../constants/attachments';
 import { IErrorDialogProps } from '../../ErrorDialog';
 import AttachmentDetails from '../project/attachment/AttachmentDetails';
-import AttachmentSecurityTable from '../project/attachment/AttachmentSecurityTable';
 import SecurityDialog from '../SecurityDialog';
 
 export interface ISurveyAttachmentDialogProps {
@@ -47,13 +46,6 @@ const SurveyAttachmentDialog: React.FC<ISurveyAttachmentDialogProps> = (props) =
     biohubApi.survey.getSurveyAttachmentDetails(props.projectId, props.surveyId, attachmentId)
   );
 
-  const defaultYesNoDialogProps = {
-    open: false,
-    onClose: () => dialogContext.setYesNoDialog({ open: false }),
-    onNo: () => dialogContext.setYesNoDialog({ open: false }),
-    onYes: () => dialogContext.setYesNoDialog({ open: false })
-  };
-
   const addSecurityReasons = async (securityReasons: number[]) => {
     if (props.attachmentId) {
       const attachmentData: IAttachmentType = {
@@ -67,56 +59,6 @@ const SurveyAttachmentDialog: React.FC<ISurveyAttachmentDialogProps> = (props) =
 
       setShowAddSecurityDialog(false);
     }
-  };
-
-  const removeSecurity = async (securityReasons: IGetSecurityReasons[]) => {
-    const securityIds = securityReasons.map((security) => {
-      return security.security_reason_id;
-    });
-
-    if (props.attachmentId) {
-      await biohubApi.security.deleteSurveyAttachmentSecurityReasons(
-        props.projectId,
-        props.surveyId,
-        props.attachmentId,
-        securityIds
-      );
-    }
-  };
-
-  const showDeleteSecurityReasonDialog = (securityReasons: IGetSecurityReasons[]) => {
-    let yesNoDialogProps;
-
-    if (securityReasons.length === 1) {
-      yesNoDialogProps = {
-        ...defaultYesNoDialogProps,
-        dialogTitle: 'Remove Security Reason',
-        dialogText: 'Are you sure you want to remove the selected security reason? This action cannot be undone.'
-      };
-    } else {
-      yesNoDialogProps = {
-        ...defaultYesNoDialogProps,
-        dialogTitle: 'Remove Security Reasons',
-        dialogText: 'Are you sure you want to remove all security reasons? This action cannot be undone.'
-      };
-    }
-
-    dialogContext.setYesNoDialog({
-      ...yesNoDialogProps,
-      open: true,
-      yesButtonProps: { color: 'secondary' },
-      onYes: async () => {
-        await removeSecurity(securityReasons);
-
-        await updateReviewTime();
-
-        await refreshCurrentAttachment();
-
-        refreshAttachmentDetails();
-
-        dialogContext.setYesNoDialog({ open: false });
-      }
-    });
   };
 
   const showErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
@@ -166,27 +108,6 @@ const SurveyAttachmentDialog: React.FC<ISurveyAttachmentDialogProps> = (props) =
     }
   };
 
-  const refreshCurrentAttachment = async () => {
-    if (props.attachmentId && props.currentAttachment?.fileType) {
-      await props.refresh(props.attachmentId, props.currentAttachment?.fileType);
-    }
-  };
-
-  const updateReviewTime = async () => {
-    try {
-      if (props.attachmentId) {
-        await biohubApi.security.updateSurveyAttachmentSecurityReviewTime(
-          props.projectId,
-          props.attachmentId,
-          props.surveyId
-        );
-      }
-    } catch (error) {
-      const apiError = error as APIError;
-      showErrorDialog({ dialogText: apiError.message, dialogErrorDetails: apiError.errors, open: true });
-    }
-  };
-
   if (!props.open) {
     return <></>;
   }
@@ -223,13 +144,6 @@ const SurveyAttachmentDialog: React.FC<ISurveyAttachmentDialogProps> = (props) =
             title={props.currentAttachment?.fileName || ''}
             attachmentSize={(props.currentAttachment && getFormattedFileSize(props.currentAttachment.size)) || '0 KB'}
             onFileDownload={openAttachmentFromReportMetaDialog}
-          />
-
-          <AttachmentSecurityTable
-            securityDetails={attachmentDetailsDataLoader.data || null}
-            showAddSecurityDialog={setShowAddSecurityDialog}
-            showDeleteSecurityReasonDialog={showDeleteSecurityReasonDialog}
-            isAwaitingReview={!props.currentAttachment?.securityReviewTimestamp}
           />
         </DialogContent>
         <DialogActions>

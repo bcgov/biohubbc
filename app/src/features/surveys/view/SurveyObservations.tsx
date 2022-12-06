@@ -13,9 +13,9 @@ import {
   mdiClockOutline,
   mdiDownload,
   mdiFileOutline,
-  mdiTrayArrowUp,
   mdiInformationOutline,
-  mdiTrashCanOutline
+  mdiTrashCanOutline,
+  mdiTrayArrowUp
 } from '@mdi/js';
 import Icon from '@mdi/react';
 import ComponentDialog from 'components/dialog/ComponentDialog';
@@ -427,7 +427,7 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
           label="Observations"
           buttonLabel="Submit Observations"
           buttonTitle="Submit Observations"
-          buttonProps={{variant: 'contained', color: 'primary'}}
+          buttonProps={{ variant: 'contained', color: 'primary' }}
           buttonStartIcon={<Icon path={mdiTrayArrowUp} size={0.8} />}
           buttonOnClick={() => showUploadDialog()}
         />
@@ -440,9 +440,7 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
               <Box textAlign="center">
                 <Typography data-testid="observations-nodata" variant="body2" color="textSecondary">
                   No Observation Data. &nbsp;
-                  <Link onClick={() => setOpenImportObservations(true)}>
-                    Click Here to Import
-                  </Link>
+                  <Link onClick={() => setOpenImportObservations(true)}>Click Here to Import</Link>
                 </Typography>
               </Box>
             </>
@@ -470,44 +468,37 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
 
           {!isValidating &&
             (submissionStatus?.status === SUBMISSION_STATUS_TYPE.REJECTED ||
-            submissionStatus?.status === SUBMISSION_STATUS_TYPE.FAILED_OCCURRENCE_PREPARATION ||
-            submissionStatus?.status === SUBMISSION_STATUS_TYPE.INVALID_MEDIA ||
-            submissionStatus?.status === SUBMISSION_STATUS_TYPE.FAILED_VALIDATION ||
-            submissionStatus?.status === SUBMISSION_STATUS_TYPE.FAILED_TRANSFORMED ||
-            submissionStatus?.status === SUBMISSION_STATUS_TYPE.FAILED_PROCESSING_OCCURRENCE_DATA) && (
-            <Box>
-              {displayAlertBox(
-                'error',
-                mdiAlertCircleOutline,
-                submissionStatus.inputFileName,
-                `Validation error: ${submissionStatus?.status}`
-              )}
-              <Box my={3}>
-                <Typography data-testid="observations-error-details" variant="body1">
-                  Resolve the following errors in your local file and re-import.
-                </Typography>
-              </Box>
+              submissionStatus?.status === SUBMISSION_STATUS_TYPE.FAILED_OCCURRENCE_PREPARATION ||
+              submissionStatus?.status === SUBMISSION_STATUS_TYPE.INVALID_MEDIA ||
+              submissionStatus?.status === SUBMISSION_STATUS_TYPE.FAILED_VALIDATION ||
+              submissionStatus?.status === SUBMISSION_STATUS_TYPE.FAILED_TRANSFORMED ||
+              submissionStatus?.status === SUBMISSION_STATUS_TYPE.FAILED_PROCESSING_OCCURRENCE_DATA) && (
               <Box>
-                {displayMessages(submissionErrors, messageGrouping, mdiAlertCircleOutline)}
-                {displayMessages(submissionWarnings, messageGrouping, mdiInformationOutline)}
+                {displayAlertBox(
+                  'error',
+                  mdiAlertCircleOutline,
+                  submissionStatus.inputFileName,
+                  `Validation error: ${submissionStatus?.status}`
+                )}
+                <Box my={3}>
+                  <Typography data-testid="observations-error-details" variant="body1">
+                    Resolve the following errors in your local file and re-import.
+                  </Typography>
+                </Box>
+                <Box>
+                  {displayMessages(submissionErrors, messageGrouping, mdiAlertCircleOutline)}
+                  {displayMessages(submissionWarnings, messageGrouping, mdiInformationOutline)}
+                </Box>
               </Box>
-            </Box>
-          )}
+            )}
 
           {!isValidating &&
             submissionStatus &&
             (submissionStatus.status === SUBMISSION_STATUS_TYPE.DARWIN_CORE_VALIDATED ||
-            submissionStatus.status === SUBMISSION_STATUS_TYPE.TEMPLATE_VALIDATED ||
-            submissionStatus.status === SUBMISSION_STATUS_TYPE.TEMPLATE_TRANSFORMED) && (
-            <Box>
-              {displayAlertBox(
-                'info',
-                mdiFileOutline,
-                submissionStatus.inputFileName,
-                ''
-              )}
-            </Box>
-          )}
+              submissionStatus.status === SUBMISSION_STATUS_TYPE.TEMPLATE_VALIDATED ||
+              submissionStatus.status === SUBMISSION_STATUS_TYPE.TEMPLATE_TRANSFORMED) && (
+              <Box>{displayAlertBox('info', mdiFileOutline, submissionStatus.inputFileName, '')}</Box>
+            )}
 
           {isValidating && submissionStatus && (
             <Box>

@@ -21,7 +21,6 @@ export interface ISurveyPurposeAndMethodologyDataProps {
  * @return {*}
  */
 const SurveyPurposeAndMethodologyData: React.FC<ISurveyPurposeAndMethodologyDataProps> = (props) => {
-
   const {
     surveyForViewData: {
       surveyData: { purpose_and_methodology }
@@ -114,10 +113,15 @@ const SurveyPurposeAndMethodologyData: React.FC<ISurveyPurposeAndMethodologyData
                 <Typography component="dt" variant="subtitle2" color="textSecondary">
                   Additional Details
                 </Typography>
-                {purpose_and_methodology.additional_details
-                  ? <Typography component="dd" variant="body1">{purpose_and_methodology.additional_details}</Typography>
-                  : <Typography component="dd" variant="body1">No additional details</Typography>
-                }
+                {purpose_and_methodology.additional_details ? (
+                  <Typography component="dd" variant="body1">
+                    {purpose_and_methodology.additional_details}
+                  </Typography>
+                ) : (
+                  <Typography component="dd" variant="body1">
+                    No additional details
+                  </Typography>
+                )}
               </Grid>
             </Grid>
           )}

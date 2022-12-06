@@ -12,9 +12,9 @@ import {
   mdiAlertCircleOutline,
   mdiDownload,
   mdiFileOutline,
-  mdiTrayArrowUp,
   mdiInformationOutline,
-  mdiTrashCanOutline
+  mdiTrashCanOutline,
+  mdiTrayArrowUp
 } from '@mdi/js';
 import Icon from '@mdi/react';
 import ComponentDialog from 'components/dialog/ComponentDialog';
@@ -302,7 +302,7 @@ const SurveySummaryResults = () => {
       <Paper elevation={0}>
         <H2ButtonToolbar
           label="Summary Results"
-          buttonProps={{variant: 'contained', color: 'primary'}}
+          buttonProps={{ variant: 'contained', color: 'primary' }}
           buttonLabel="Submit Summary Results"
           buttonTitle="Submit Summary Results"
           buttonStartIcon={<Icon path={mdiTrayArrowUp} size={0.8} />}

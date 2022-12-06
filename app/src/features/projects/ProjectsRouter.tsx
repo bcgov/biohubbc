@@ -86,7 +86,7 @@ const ProjectsRouter: React.FC = () => {
       </AppRoute>
 
       <AppRoute exact path="/admin/projects/:id/survey/edit" layout={ProjectsLayout}>
-          <EditSurveyPage />
+        <EditSurveyPage />
       </AppRoute>
 
       <AppRoute exact path="/admin/projects/:id/attachments" layout={ProjectsLayout}>

@@ -6,15 +6,13 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
-import { mdiAttachment, mdiChevronDown, mdiFilePdfBox, mdiLockOutline } from '@mdi/js';
+import { mdiAttachment, mdiChevronDown, mdiFilePdfBox } from '@mdi/js';
 import Icon from '@mdi/react';
 import AttachmentsList from 'components/attachments/AttachmentsList';
 import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
 import FileUploadWithMetaDialog from 'components/dialog/attachments/FileUploadWithMetaDialog';
 import SecurityDialog from 'components/dialog/attachments/SecurityDialog';
 import { IUploadHandler } from 'components/file-upload/FileUploadItem';
-import { SystemRoleGuard } from 'components/security/Guards';
-import { SYSTEM_ROLE } from 'constants/roles';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import {
   IGetProjectAttachment,
@@ -199,17 +197,6 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
               <Typography variant="inherit">Submit Attachments</Typography>
             </MenuItem>
           </Menu>
-          <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-            <Button
-              style={{ marginLeft: '8px' }}
-              variant="contained"
-              color="primary"
-              disabled={[...attachmentsList, ...reportAttachmentsList].length === 0}
-              startIcon={<Icon path={mdiLockOutline} size={0.8} />}
-              onClick={() => setSecurityDialogOpen(true)}>
-              Apply Security
-            </Button>
-          </SystemRoleGuard>
         </Box>
       </Toolbar>
       <Divider></Divider>

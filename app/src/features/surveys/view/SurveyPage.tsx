@@ -94,7 +94,6 @@ const SurveyPage: React.FC = () => {
       <SurveyHeader projectWithDetails={projectWithDetails} surveyWithDetails={surveyWithDetails} refresh={getSurvey} />
       <Container maxWidth="xl">
         <Box my={3}>
-
           <Grid container spacing={3}>
             <Grid item md={12} lg={4}>
               <Paper elevation={0}>

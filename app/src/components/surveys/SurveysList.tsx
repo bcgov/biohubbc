@@ -1,5 +1,3 @@
-import Box from '@material-ui/core/Box';
-import Chip from '@material-ui/core/Chip';
 import Link from '@material-ui/core/Link';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
@@ -8,13 +6,8 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
-// import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
-import clsx from 'clsx';
-// import { DATE_FORMAT } from 'constants/dateTimeFormats';
-import { SurveyStatusType } from 'constants/misc';
 import { SurveyViewObject } from 'interfaces/useSurveyApi.interface';
-import moment from 'moment';
 import React, { useState } from 'react';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -34,34 +27,6 @@ const SurveysList: React.FC<ISurveysListProps> = (props) => {
   const [rowsPerPage] = useState(5);
   const [page] = useState(0);
 
-  const getSurveyCompletionStatusType = (surveyObject: SurveyViewObject): SurveyStatusType => {
-    if (
-      surveyObject.survey_details.end_date &&
-      moment(surveyObject.survey_details.end_date).endOf('day').isBefore(moment())
-    ) {
-      return SurveyStatusType.COMPLETED;
-    }
-
-    return SurveyStatusType.ACTIVE;
-  };
-
-  const getChipIcon = (status_name: string) => {
-    let chipLabel;
-    let chipStatusClass;
-
-    if (SurveyStatusType.ACTIVE === status_name) {
-      chipLabel = 'Active';
-    } else if (SurveyStatusType.COMPLETED === status_name) {
-      chipLabel = 'Completed';
-    }
-
-    return <Chip color="secondary" style={{ minWidth: '100px' }} className={clsx(chipStatusClass)} label={chipLabel} />;
-  };
-
-  const getSurveyDocReviewLabel = (numDoc: number) => {
-    return `Pending Review (${numDoc})`;
-  };
-
   return (
     <>
       <TableContainer>
@@ -71,7 +36,6 @@ const SurveysList: React.FC<ISurveysListProps> = (props) => {
               <TableCell>Name</TableCell>
               <TableCell>Species</TableCell>
               <TableCell>Purpose</TableCell>
-              <TableCell width="220px">Status</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -90,28 +54,6 @@ const SurveysList: React.FC<ISurveysListProps> = (props) => {
                     {[...row.species?.focal_species_names, ...row.species?.ancillary_species_names].join(', ')}
                   </TableCell>
                   <TableCell>Community Composition</TableCell>
-                  {/* <TableCell>
-                    Call Playback
-                  </TableCell> */}
-                  {/* <TableCell>
-                    {getFormattedDateRangeString(
-                      DATE_FORMAT.ShortMediumDateFormat,
-                      row.survey_details.start_date,
-                      row.survey_details.end_date
-                    )}
-                  </TableCell> */}
-                  <TableCell>
-                    {row.docs_to_be_reviewed > 0 && (
-                      <Chip
-                        size="small"
-                        color="secondary"
-                        label={getSurveyDocReviewLabel(row.docs_to_be_reviewed)}
-                        //icon={<Icon path={mdiAlertCircle} size={0.8} />}
-                      />
-                    )}
-
-                    <Box hidden>{getChipIcon(getSurveyCompletionStatusType(row))}</Box>
-                  </TableCell>
                 </TableRow>
               ))}
             {!props.surveysList.length && (
@@ -124,19 +66,6 @@ const SurveysList: React.FC<ISurveysListProps> = (props) => {
           </TableBody>
         </Table>
       </TableContainer>
-      {/* {props.surveysList.length > 0 && (
-        <TablePagination
-          rowsPerPageOptions={[5, 10, 15, 20]}
-          component="div"
-          count={props.surveysList.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onChangePage={(event: unknown, newPage: number) => handleChangePage(event, newPage, setPage)}
-          onChangeRowsPerPage={(event: React.ChangeEvent<HTMLInputElement>) =>
-            handleChangeRowsPerPage(event, setPage, setRowsPerPage)
-          }
-        />
-      )} */}
     </>
   );
 };

@@ -115,7 +115,7 @@ const SurveyAttachments: React.FC<ISurveyAttachmentsProps> = () => {
           label="Documents"
           buttonLabel="Submit Documents"
           buttonTitle="Submit Documents"
-          buttonProps={{variant: 'contained'}}
+          buttonProps={{ variant: 'contained' }}
           buttonStartIcon={<Icon path={mdiTrayArrowUp} size={0.8} />}
           buttonEndIcon={<Icon path={mdiMenuDown} size={0.8} />}
           menuItems={[
