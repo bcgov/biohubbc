@@ -41,6 +41,10 @@ const useStyles = makeStyles((theme: Theme) => ({
   attachmentsTableLockIcon: {
     marginTop: '3px',
     color: grey[600]
+  },
+  attachmentNameCol: {
+    overflow: 'hidden',
+    textOverflow: 'ellipsis'
   }
 }));
 
@@ -268,11 +272,10 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
                           }}
                         />
                       </TableCell>
-                      <TableCell scope="row">
+                      <TableCell scope="row" className={classes.attachmentNameCol}>
                         <Link
                           style={{ fontWeight: 'bold' }}
                           underline="always"
-                          component="button"
                           onClick={() => openAttachment(row)}>
                           {row.fileName}
                         </Link>
