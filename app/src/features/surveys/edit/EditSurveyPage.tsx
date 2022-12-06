@@ -1,4 +1,4 @@
-import { Button, Paper } from '@material-ui/core';
+import { Breadcrumbs, Button, Link, Paper } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Container from '@material-ui/core/Container';
@@ -179,6 +179,11 @@ const EditSurveyPage = () => {
     }
   };
 
+  const handleCancelToProject = () => {
+    dialogContext.setYesNoDialog(defaultCancelDialogProps);
+    history.push(`/admin/projects/${getProjectForViewDL.data?.id}`);
+  };
+
   /**
    * Intercepts all navigation attempts (when used with a `Prompt`).
    *
@@ -214,45 +219,60 @@ const EditSurveyPage = () => {
       <Prompt when={enableCancelCheck} message={handleLocationChange} />
       <Paper square={true} elevation={0}>
         <Container maxWidth="xl">
-          <Box py={4} display="flex" justifyContent="space-between">
-            <Box className={classes.pageTitleContainer}>
-              <Typography variant="h1" className={classes.pageTitle}>
-                Edit Survey
-              </Typography>
+          <Box py={3}>
+            <Box mb={3}>
+              <Breadcrumbs>
+                <Link
+                  color="primary"
+                  onClick={() => history.push('/admin/projects')}
+                  aria-current="page"
+                  className={classes.breadCrumbLink}>
+                  <Typography variant="body2">Projects</Typography>
+                </Link>
+                <Link
+                  color="primary"
+                  onClick={handleCancelToProject}
+                  aria-current="page"
+                  className={classes.breadCrumbLink}>
+                  <Typography variant="body2">{getProjectForViewDL.data.project.project_name}</Typography>
+                </Link>
+                <Link color="primary" onClick={handleCancel} aria-current="page" className={classes.breadCrumbLink}>
+                  <Typography variant="body2">{editSurveyDL.data?.surveyData.survey_details?.survey_name}</Typography>
+                </Link>
+                <Typography variant="body2">Edit Survey</Typography>
+              </Breadcrumbs>
             </Box>
-            <Box flex="0 0 auto" className={classes.pageTitleActions}>
-              <Button
-                color="primary"
-                variant="contained"
-                onClick={() => {
-                  if (formikRef && formikRef.current && formikRef.current.values) {
-                    handleSubmit(formikRef.current?.values);
-                  }
-                }}>
-                Save and Exit
-              </Button>
-              <Button color="primary" variant="outlined" onClick={handleCancel}>
-                Cancel
-              </Button>
+
+            <Box mb={3}>
+              <Box py={3} display="flex" justifyContent="space-between">
+                <Box className={classes.pageTitleContainer}>
+                  <Typography variant="h1">Edit Survey</Typography>
+                </Box>
+                <Box flex="0 0 auto" className={classes.pageTitleActions}>
+                  <Button color="primary" variant="contained" onClick={() => formikRef.current?.submitForm()}>
+                    Save and Exit
+                  </Button>
+                  <Button color="primary" variant="outlined" onClick={handleCancel}>
+                    Cancel
+                  </Button>
+                </Box>
+              </Box>
             </Box>
           </Box>
         </Container>
       </Paper>
-
-      <Container maxWidth="xl">
-        <Box my={3}>
-          <Paper elevation={0}>
-            <EditSurveyForm
-              codes={codesDataLoader.data}
-              projectData={getProjectForViewDL.data}
-              surveyFundingSources={getSurveyFundingSourcesDL.data || []}
-              handleSubmit={handleSubmit}
-              handleCancel={handleCancel}
-              formikRef={formikRef}
-            />
-          </Paper>
-        </Box>
-      </Container>
+      <Box my={3}>
+        <Container maxWidth="xl">
+          <EditSurveyForm
+            codes={codesDataLoader.data}
+            projectData={getProjectForViewDL.data}
+            surveyFundingSources={getSurveyFundingSourcesDL.data || []}
+            handleSubmit={handleSubmit}
+            handleCancel={handleCancel}
+            formikRef={formikRef}
+          />
+        </Container>
+      </Box>
     </>
   );
 };

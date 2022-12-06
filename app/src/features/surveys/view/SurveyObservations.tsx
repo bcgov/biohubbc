@@ -14,15 +14,14 @@ import {
   mdiDownload,
   mdiFileOutline,
   mdiInformationOutline,
-  mdiTrashCanOutline,
-  mdiTrayArrowUp
+  mdiPlus,
+  mdiTrashCanOutline
 } from '@mdi/js';
 import Icon from '@mdi/react';
 import ComponentDialog from 'components/dialog/ComponentDialog';
 import FileUpload from 'components/file-upload/FileUpload';
 import { IUploadHandler } from 'components/file-upload/FileUploadItem';
 import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
-// import { ConfigContext } from 'contexts/configContext';
 import { DialogContext } from 'contexts/dialogContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useInterval } from 'hooks/useInterval';
@@ -425,10 +424,10 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
       <Paper elevation={0}>
         <H2ButtonToolbar
           label="Observations"
-          buttonLabel="Submit Observations"
-          buttonTitle="Submit Observations"
+          buttonLabel="Import Observations"
+          buttonTitle="Import Observations"
           buttonProps={{ variant: 'contained', color: 'primary' }}
-          buttonStartIcon={<Icon path={mdiTrayArrowUp} size={0.8} />}
+          buttonStartIcon={<Icon path={mdiPlus} size={0.8} />}
           buttonOnClick={() => showUploadDialog()}
         />
 

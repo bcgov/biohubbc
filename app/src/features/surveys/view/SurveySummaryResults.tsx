@@ -13,8 +13,8 @@ import {
   mdiDownload,
   mdiFileOutline,
   mdiInformationOutline,
-  mdiTrashCanOutline,
-  mdiTrayArrowUp
+  mdiPlus,
+  mdiTrashCanOutline
 } from '@mdi/js';
 import Icon from '@mdi/react';
 import ComponentDialog from 'components/dialog/ComponentDialog';
@@ -303,9 +303,9 @@ const SurveySummaryResults = () => {
         <H2ButtonToolbar
           label="Summary Results"
           buttonProps={{ variant: 'contained', color: 'primary' }}
-          buttonLabel="Submit Summary Results"
-          buttonTitle="Submit Summary Results"
-          buttonStartIcon={<Icon path={mdiTrayArrowUp} size={0.8} />}
+          buttonLabel="Import Summary Results"
+          buttonTitle="Import Summary Results"
+          buttonStartIcon={<Icon path={mdiPlus} size={0.8} />}
           buttonOnClick={() => showUploadDialog()}
         />
 

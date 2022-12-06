@@ -6,7 +6,7 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
-import { mdiAttachment, mdiChevronDown, mdiFilePdfBox } from '@mdi/js';
+import { mdiAttachment, mdiChevronDown, mdiFilePdfBox, mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
 import AttachmentsList from 'components/attachments/AttachmentsList';
 import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
@@ -165,8 +165,9 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
             endIcon={<Icon path={mdiChevronDown} size={0.8} />}
             aria-controls="simple-menu"
             aria-haspopup="true"
+            startIcon={<Icon path={mdiPlus} size={1} />}
             onClick={handleClick}>
-            Submit Documents
+            Add Documents
           </Button>
           <Menu
             style={{ marginTop: '8px' }}
@@ -188,13 +189,13 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
               <ListItemIcon>
                 <Icon path={mdiFilePdfBox} size={1} />
               </ListItemIcon>
-              <Typography variant="inherit">Submit Report</Typography>
+              <Typography variant="inherit">Add Report</Typography>
             </MenuItem>
             <MenuItem onClick={handleUploadAttachmentClick}>
               <ListItemIcon>
                 <Icon path={mdiAttachment} size={1} />
               </ListItemIcon>
-              <Typography variant="inherit">Submit Attachments</Typography>
+              <Typography variant="inherit">Add Attachments</Typography>
             </MenuItem>
           </Menu>
         </Box>
