@@ -220,43 +220,39 @@ const EditSurveyPage = () => {
       <Paper square={true} elevation={0}>
         <Container maxWidth="xl">
           <Box py={3}>
-            <Box mb={3}>
-              <Breadcrumbs>
-                <Link
-                  color="primary"
-                  onClick={() => history.push('/admin/projects')}
-                  aria-current="page"
-                  className={classes.breadCrumbLink}>
-                  <Typography variant="body2">Projects</Typography>
-                </Link>
-                <Link
-                  color="primary"
-                  onClick={handleCancelToProject}
-                  aria-current="page"
-                  className={classes.breadCrumbLink}>
-                  <Typography variant="body2">{getProjectForViewDL.data.project.project_name}</Typography>
-                </Link>
-                <Link color="primary" onClick={handleCancel} aria-current="page" className={classes.breadCrumbLink}>
-                  <Typography variant="body2">{editSurveyDL.data?.surveyData.survey_details?.survey_name}</Typography>
-                </Link>
-                <Typography variant="body2">Edit Survey</Typography>
-              </Breadcrumbs>
-            </Box>
+            <Breadcrumbs>
+              <Link
+                color="primary"
+                onClick={() => history.push('/admin/projects')}
+                aria-current="page"
+                className={classes.breadCrumbLink}>
+                <Typography variant="body2">Projects</Typography>
+              </Link>
+              <Link
+                color="primary"
+                onClick={handleCancelToProject}
+                aria-current="page"
+                className={classes.breadCrumbLink}>
+                <Typography variant="body2">{getProjectForViewDL.data.project.project_name}</Typography>
+              </Link>
+              <Link color="primary" onClick={handleCancel} aria-current="page" className={classes.breadCrumbLink}>
+                <Typography variant="body2">{editSurveyDL.data?.surveyData.survey_details?.survey_name}</Typography>
+              </Link>
+              <Typography variant="body2">Edit Survey</Typography>
+            </Breadcrumbs>
+          </Box>
 
-            <Box mb={3}>
-              <Box py={3} display="flex" justifyContent="space-between">
-                <Box className={classes.pageTitleContainer}>
-                  <Typography variant="h1">Edit Survey</Typography>
-                </Box>
-                <Box flex="0 0 auto" className={classes.pageTitleActions}>
-                  <Button color="primary" variant="contained" onClick={() => formikRef.current?.submitForm()}>
-                    Save and Exit
-                  </Button>
-                  <Button color="primary" variant="outlined" onClick={handleCancel}>
-                    Cancel
-                  </Button>
-                </Box>
-              </Box>
+          <Box py={3} display="flex" justifyContent="space-between">
+            <Box className={classes.pageTitleContainer}>
+              <Typography variant="h1">Edit Survey</Typography>
+            </Box>
+            <Box flex="0 0 auto" className={classes.pageTitleActions}>
+              <Button color="primary" variant="contained" onClick={() => formikRef.current?.submitForm()}>
+                Save and Exit
+              </Button>
+              <Button color="primary" variant="outlined" onClick={handleCancel}>
+                Cancel
+              </Button>
             </Box>
           </Box>
         </Container>
