@@ -425,7 +425,7 @@ describe('GetSurveyPurposeAndMethodologyData', () => {
     });
 
     it('sets additional_details', () => {
-      expect(data.additional_details).to.equal(null);
+      expect(data.additional_details).to.equal('');
     });
 
     it('sets field_method_id', () => {
