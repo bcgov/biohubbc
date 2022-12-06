@@ -153,7 +153,6 @@ const EditSurveyPage = () => {
    */
   const handleSubmit = async (values: IEditSurveyRequest) => {
     try {
-      console.log('values', values);
 
       const response = await biohubApi.survey.updateSurvey(
         urlParams['id'],
