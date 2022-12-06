@@ -51,7 +51,6 @@ parameters:
   - name: ELASTICSEARCH_TAXONOMY_INDEX
     description: Platform Elasticsearch Taxonomy Index
     required: true
-    value: 'taxonomy_2.0.0'
   - name: TZ
     description: Application timezone
     required: false
