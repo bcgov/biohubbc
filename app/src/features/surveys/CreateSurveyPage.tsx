@@ -1,10 +1,8 @@
 import Box from '@material-ui/core/Box';
-import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Container from '@material-ui/core/Container';
 import Divider from '@material-ui/core/Divider';
-import Link from '@material-ui/core/Link';
 import Paper from '@material-ui/core/Paper';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
@@ -61,6 +59,26 @@ const useStyles = makeStyles((theme: Theme) => ({
     height: '1px',
     marginTop: theme.spacing(5),
     marginBottom: theme.spacing(5)
+  },
+  pageTitleContainer: {
+    maxWidth: '170ch',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis'
+  },
+  pageTitle: {
+    display: '-webkit-box',
+    '-webkit-line-clamp': 2,
+    '-webkit-box-orient': 'vertical',
+    paddingTop: theme.spacing(0.5),
+    paddingBottom: theme.spacing(0.5),
+    overflow: 'hidden'
+  },
+  pageTitleActions: {
+    paddingTop: theme.spacing(0.75),
+    paddingBottom: theme.spacing(0.75),
+    '& button': {
+      marginLeft: theme.spacing(1)
+    }
   }
 }));
 
@@ -275,27 +293,30 @@ const CreateSurveyPage = () => {
   return (
     <>
       <Prompt when={enableCancelCheck} message={handleLocationChange} />
+      <Paper square={true} elevation={0}>
+        <Container maxWidth="xl">
+          <Box py={4} display="flex" justifyContent="space-between">
+            <Box display="flex" justifyContent="space-between">
+              <Box className={classes.pageTitleContainer}>
+                <Typography variant="h1" className={classes.pageTitle}>
+                  Create Survey
+                </Typography>
+              </Box>
+            </Box>
+            <Box flex="0 0 auto" className={classes.pageTitleActions}>
+              <Button color="primary" variant="contained" onClick={() => formikRef.current?.submitForm()}>
+                Save and Exit
+              </Button>
+              <Button color="primary" variant="outlined" onClick={handleCancel}>
+                Cancel
+              </Button>
+            </Box>
+          </Box>
+        </Container>
+      </Paper>
+
       <Box my={3}>
         <Container maxWidth="xl">
-          <Box mb={3}>
-            <Breadcrumbs>
-              <Link
-                color="primary"
-                onClick={() => history.push('/admin/projects')}
-                aria-current="page"
-                className={classes.breadCrumbLink}>
-                <Typography variant="body2">Projects</Typography>
-              </Link>
-              <Link color="primary" onClick={handleCancel} aria-current="page" className={classes.breadCrumbLink}>
-                <Typography variant="body2">{projectWithDetails.project.project_name}</Typography>
-              </Link>
-              <Typography variant="body2">Create Survey</Typography>
-            </Breadcrumbs>
-          </Box>
-
-          <Box mb={5}>
-            <Typography variant="h1">Create Survey</Typography>
-          </Box>
           <Box p={5} component={Paper} display="block">
             <Formik
               innerRef={formikRef}
