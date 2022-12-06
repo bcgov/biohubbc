@@ -159,21 +159,51 @@ export class PlatformService extends DBService {
     const surveyService = new SurveyService(this.connection);
     const surveyData = await surveyService.getLatestSurveyOccurrenceSubmission(surveyId);
 
-    let jsonObject = surveyData.darwin_core_source;
+    console.log('**************************************');
 
-    const term = jsonpath.query(jsonObject, '$.taxonId');
+    const jsonObject = surveyData.darwin_core_source;
+
+    const term = jsonpath.query(jsonObject, '$..taxonId');
 
     console.log('******** term ********: ', term);
 
+    const paths = jsonpath.paths(jsonObject, '$..taxonId');
+
+    console.log('******** paths  ********: ', paths);
+
+    const nodes = jsonpath.nodes(jsonObject, '$..taxonId');
+
+    console.log('******** nodes  ********: ', nodes);
+
     const taxonomyService = new TaxonomyService();
 
-    const newResponse = await taxonomyService.getScientificNameBySpeciesCode(term[0].toString());
+    const changedNodes = nodes.map(async (node) => {
+      console.log('inside map - node is:', node);
 
-    console.log('new response: ', newResponse);
+      console.log('inside map - path is : ', node.path);
 
-    jsonObject = { ...jsonObject, scientific_name: newResponse[0].scientific_name };
+      const scientific_name = await taxonomyService.getScientificNameBySpeciesCode(node.value);
 
-    console.log('updatedJsonObject: ', jsonObject);
+      console.log('inside map - scientific name is : ', scientific_name[0].scientific_name);
+
+      jsonpath.apply(jsonObject, '$..taxonId', function (value) {
+        return {
+          value,
+          scientific_name: scientific_name[0].scientific_name
+        };
+      });
+
+      console.log('jsonObject is inside map: ', jsonObject);
+    });
+    console.log('jsonObject  nodes after map: ', changedNodes);
+
+    // const newResponse = await taxonomyService.getScientificNameBySpeciesCode(term[0].toString());
+
+    // console.log('new response: ', newResponse);
+
+    //jsonObject = { ...jsonObject, scientific_name: newResponse[0].scientific_name };
+
+    // console.log('updatedJsonObject: ', jsonObject);
 
     if (!surveyData.output_key) {
       throw new HTTP400('no s3Key found');

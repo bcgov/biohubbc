@@ -57,7 +57,15 @@ export const insertSurveyOccurrenceSubmissionSQL = (data: {
   const fakeSpeciesJSON = JSON.stringify({
     id1: 1,
     some_text: 'abcd',
-    taxonId: 'M-ALAM'
+    abc: {
+      taxonId: 'M-ALAM'
+    },
+    def: {
+      ghi: { taxonId: 'M-OVDA' }
+    },
+    def1: {
+      ghi1: { taxonId: 'M-OVCA' }
+    }
   });
 
   console.log('fakeSpeciesJSON: ', fakeSpeciesJSON);
