@@ -302,16 +302,19 @@ const CreateSurveyPage = () => {
           <Box py={4}>
             <Box mb={2}>
               <Breadcrumbs separator={<Icon path={mdiChevronRight} size={0.8} />}>
-                <Link
-                  color="primary"
-                  onClick={() => history.push('/admin/projects')}
-                  aria-current="page">
-                  <Typography variant="body1" component="span">Projects</Typography>
+                <Link color="primary" onClick={() => history.push('/admin/projects')} aria-current="page">
+                  <Typography variant="body1" component="span">
+                    Projects
+                  </Typography>
                 </Link>
                 <Link color="primary" onClick={handleCancel} aria-current="page">
-                  <Typography variant="body1" component="span">{projectWithDetails.project.project_name}</Typography>
+                  <Typography variant="body1" component="span">
+                    {projectWithDetails.project.project_name}
+                  </Typography>
                 </Link>
-                <Typography variant="body1" component="span">Create Survey</Typography>
+                <Typography variant="body1" component="span">
+                  Create Survey
+                </Typography>
               </Breadcrumbs>
             </Box>
 

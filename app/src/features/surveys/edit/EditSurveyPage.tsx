@@ -216,18 +216,12 @@ const EditSurveyPage = () => {
           <Box py={4}>
             <Box mb={2}>
               <Breadcrumbs separator={<Icon path={mdiChevronRight} size={0.8} />}>
-                <Link
-                  color="primary"
-                  onClick={() => history.push('/admin/projects')}
-                  aria-current="page">
+                <Link color="primary" onClick={() => history.push('/admin/projects')} aria-current="page">
                   <Typography variant="body1" component="span">
                     Projects
                   </Typography>
                 </Link>
-                <Link
-                  color="primary"
-                  onClick={handleCancelToProject}
-                  aria-current="page">
+                <Link color="primary" onClick={handleCancelToProject} aria-current="page">
                   <Typography variant="body1" component="span">
                     {getProjectForViewDL.data.project.project_name}
                   </Typography>
