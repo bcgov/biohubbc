@@ -69,12 +69,15 @@ export async function up(knex: Knex): Promise<void> {
   for (const schema of validationSchema) {
     for (const taxonomicCode of taxonIdLists[schema.species]) {
       await knex.raw(`
-        INSERT IGNORE INTO
+        INSERT INTO
           ${DB_SCHEMA}.summary_template_species (summary_template_id, wldtaxonomic_units_id, validation, create_date)
         VALUES (
-          (SELECT summary_template_id FROM summary_template WHERE name = '${schema.summaryTemplateName}'),
-          '${taxonomicCode}', '${schema.validation}', now()
-        );
+          (SELECT summary_template_id FROM ${DB_SCHEMA}.summary_template WHERE name = '${schema.summaryTemplateName}'),
+          '${taxonomicCode}',
+          '${schema.validation}',
+          now()
+        )
+        ON CONFLICT (summary_template_id, wldtaxonomic_units_id) DO NOTHING;
       `);
     }
   }
