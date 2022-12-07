@@ -28,14 +28,6 @@ const useStyles = makeStyles((theme: Theme) => ({
       marginLeft: '0.5rem'
     }
   },
-  breadCrumbLink: {
-    display: 'flex',
-    alignItems: 'center',
-    cursor: 'pointer'
-  },
-  breadCrumbLinkIcon: {
-    marginRight: '0.25rem'
-  },
   sectionDivider: {
     height: '1px',
     marginTop: theme.spacing(5),
@@ -221,27 +213,33 @@ const EditSurveyPage = () => {
       <Prompt when={enableCancelCheck} message={handleLocationChange} />
       <Paper square={true} elevation={0}>
         <Container maxWidth="xl">
-          <Box py={3}>
-            <Box>
+          <Box py={4}>
+            <Box mb={2}>
               <Breadcrumbs separator={<Icon path={mdiChevronRight} size={0.8} />}>
                 <Link
                   color="primary"
                   onClick={() => history.push('/admin/projects')}
-                  aria-current="page"
-                  className={classes.breadCrumbLink}>
-                  <Typography variant="body2">Projects</Typography>
+                  aria-current="page">
+                  <Typography variant="body1" component="span">
+                    Projects
+                  </Typography>
                 </Link>
                 <Link
                   color="primary"
                   onClick={handleCancelToProject}
-                  aria-current="page"
-                  className={classes.breadCrumbLink}>
-                  <Typography variant="body2">{getProjectForViewDL.data.project.project_name}</Typography>
+                  aria-current="page">
+                  <Typography variant="body1" component="span">
+                    {getProjectForViewDL.data.project.project_name}
+                  </Typography>
                 </Link>
-                <Link color="primary" onClick={handleCancel} aria-current="page" className={classes.breadCrumbLink}>
-                  <Typography variant="body2">{editSurveyDL.data?.surveyData.survey_details?.survey_name}</Typography>
+                <Link color="primary" onClick={handleCancel} aria-current="page">
+                  <Typography variant="body1" component="span">
+                    {editSurveyDL.data?.surveyData.survey_details?.survey_name}
+                  </Typography>
                 </Link>
-                <Typography variant="body2">Edit Survey</Typography>
+                <Typography variant="body1" component="span">
+                  Edit Survey
+                </Typography>
               </Breadcrumbs>
             </Box>
 
