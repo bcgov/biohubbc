@@ -2,6 +2,7 @@ import Box from '@material-ui/core/Box';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
+import Paper from '@material-ui/core/Paper';
 import SurveyDetails from 'features/surveys/view/SurveyDetails';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
@@ -91,33 +92,44 @@ const SurveyPage: React.FC = () => {
   return (
     <>
       <SurveyHeader projectWithDetails={projectWithDetails} surveyWithDetails={surveyWithDetails} refresh={getSurvey} />
-
       <Container maxWidth="xl">
         <Box my={3}>
           <Grid container spacing={3}>
-            <Grid item sm={12} lg={8}>
-              <SurveyDetails
-                projectForViewData={projectWithDetails}
-                surveyForViewData={surveyWithDetails}
-                codes={codes}
-                refresh={getSurvey}
-              />
-              <Box mt={3}>
-                <SurveyObservations refresh={getSurvey} />
-              </Box>
-              <Box mt={3}>
-                <SurveySummaryResults />
-              </Box>
-              <Box mt={3}>
-                <SurveyAttachments projectForViewData={projectWithDetails} surveyForViewData={surveyWithDetails} />
-              </Box>
+            <Grid item md={12} lg={4}>
+              <Paper elevation={0}>
+                <SurveyDetails
+                  projectForViewData={projectWithDetails}
+                  surveyForViewData={surveyWithDetails}
+                  codes={codes}
+                  refresh={getSurvey}
+                />
+              </Paper>
             </Grid>
-            <Grid item sm={12} lg={4}>
-              <SurveyStudyArea
-                surveyForViewData={surveyWithDetails}
-                projectForViewData={projectWithDetails}
-                refresh={getSurvey}
-              />
+            <Grid item md={12} lg={8}>
+              <Box mb={3}>
+                <Paper elevation={0}>
+                  <SurveyObservations refresh={getSurvey} />
+                </Paper>
+              </Box>
+              <Box mb={3}>
+                <Paper elevation={0}>
+                  <SurveySummaryResults />
+                </Paper>
+              </Box>
+              <Box mb={3}>
+                <Paper elevation={0}>
+                  <SurveyAttachments projectForViewData={projectWithDetails} surveyForViewData={surveyWithDetails} />
+                </Paper>
+              </Box>
+              <Box mb={3}>
+                <Paper elevation={0}>
+                  <SurveyStudyArea
+                    surveyForViewData={surveyWithDetails}
+                    projectForViewData={projectWithDetails}
+                    refresh={getSurvey}
+                  />
+                </Paper>
+              </Box>
             </Grid>
           </Grid>
         </Box>

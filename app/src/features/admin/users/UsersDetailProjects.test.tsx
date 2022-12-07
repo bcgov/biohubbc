@@ -78,7 +78,8 @@ describe('UsersDetailProjects', () => {
 
     await waitFor(() => {
       expect(getAllByTestId('projects_header').length).toEqual(1);
-      expect(getAllByText('Assigned Projects ()').length).toEqual(1);
+      expect(getAllByText('Assigned Projects').length).toEqual(1);
+      expect(getAllByText('()').length).toEqual(1);
       expect(getAllByText('No Projects').length).toEqual(1);
     });
   });
@@ -109,7 +110,8 @@ describe('UsersDetailProjects', () => {
 
     await waitFor(() => {
       expect(getAllByTestId('projects_header').length).toEqual(1);
-      expect(getAllByText('Assigned Projects (1)').length).toEqual(1);
+      expect(getAllByText('Assigned Projects').length).toEqual(1);
+      expect(getAllByText('(1)').length).toEqual(1);
       expect(getAllByText('projectName').length).toEqual(1);
     });
   });
@@ -147,7 +149,8 @@ describe('UsersDetailProjects', () => {
 
     await waitFor(() => {
       expect(getAllByTestId('projects_header').length).toEqual(1);
-      expect(getAllByText('Assigned Projects (2)').length).toEqual(1);
+      expect(getAllByText('Assigned Projects').length).toEqual(1);
+      expect(getAllByText('(2)').length).toEqual(1);
       expect(getAllByText('projectName').length).toEqual(1);
       expect(getAllByText('secondProjectName').length).toEqual(1);
     });
@@ -268,7 +271,8 @@ describe('UsersDetailProjects', () => {
       );
 
       await waitFor(() => {
-        expect(getAllByText('Assigned Projects (2)').length).toEqual(1);
+        expect(getAllByText('Assigned Projects').length).toEqual(1);
+        expect(getAllByText('(2)').length).toEqual(1);
         expect(getAllByText('projectName').length).toEqual(1);
         expect(getAllByText('secondProjectName').length).toEqual(1);
       });
@@ -292,7 +296,8 @@ describe('UsersDetailProjects', () => {
       fireEvent.click(getByText('Yes'));
 
       await waitFor(() => {
-        expect(getAllByText('Assigned Projects (1)').length).toEqual(1);
+        expect(getAllByText('Assigned Projects').length).toEqual(1);
+        expect(getAllByText('(1)').length).toEqual(1);
         expect(getAllByText('secondProjectName').length).toEqual(1);
       });
     });
@@ -328,7 +333,8 @@ describe('UsersDetailProjects', () => {
       );
 
       await waitFor(() => {
-        expect(getAllByText('Assigned Projects (1)').length).toEqual(1);
+        expect(getAllByText('Assigned Projects').length).toEqual(1);
+        expect(getAllByText('(1)').length).toEqual(1);
         expect(getAllByText('projectName').length).toEqual(1);
       });
 
@@ -372,7 +378,8 @@ describe('UsersDetailProjects', () => {
       );
 
       await waitFor(() => {
-        expect(getAllByText('Assigned Projects (1)').length).toEqual(1);
+        expect(getAllByText('Assigned Projects').length).toEqual(1);
+        expect(getAllByText('(1)').length).toEqual(1);
         expect(getAllByText('projectName').length).toEqual(1);
       });
 
@@ -430,7 +437,8 @@ describe('UsersDetailProjects', () => {
       );
 
       await waitFor(() => {
-        expect(getAllByText('Assigned Projects (1)').length).toEqual(1);
+        expect(getAllByText('Assigned Projects').length).toEqual(1);
+        expect(getAllByText('(1)').length).toEqual(1);
         expect(getAllByText('projectName').length).toEqual(1);
       });
 

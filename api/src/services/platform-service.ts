@@ -1,5 +1,6 @@
 import AdmZip from 'adm-zip';
 import axios from 'axios';
+import jsonpatch, { Operation } from 'fast-json-patch';
 import FormData from 'form-data';
 import { JSONPath } from 'jsonpath-plus';
 import { URL } from 'url';
@@ -164,9 +165,11 @@ export class PlatformService extends DBService {
 
     const jsonObject = surveyData.darwin_core_source;
 
-    const term = JSONPath({ path: '$..taxonId', json: jsonObject });
+    console.log(jsonObject);
 
-    console.log('******** term ********: ', term);
+    // const term = JSONPath({ path: '$..taxonId', json: jsonObject });
+
+    // console.log('******** term ********: ', term);
 
     //const paths = jsonpath.paths(jsonObject, '$..taxonId');
 
@@ -176,47 +179,95 @@ export class PlatformService extends DBService {
 
     //console.log('******** nodes  ********: ', nodes);
 
+    // const pathsToPatch: string[] = JSONPath({
+    //   json: hierarchicalRowObjects,
+    //   path: `$${'._children[*]'.repeat(distanceToRoot - 1)}._children[?(@._childKeys.indexOf("${
+    //     rowObjectsItem._parentKey
+    //   }") != -1)]`,
+    //   resultType: 'pointer'
+    // });
+
+    // const patchOperations: Operation[] = pathsToPatch.map((pathToPatch) => {
+    //   return { op: 'add', path: `${pathToPatch}/_children/`, value: rowObjectsItem };
+    // });
+
+    // jsonpatch.applyPatch(hierarchicalRowObjects, patchOperations);
+
     const taxonomyService = new TaxonomyService();
 
     console.log('jsonObject:', jsonObject);
 
-    const callback = async (item: any, type: any, payload: any) => {
-      console.log('item:', item);
-      console.log('type:', type);
-      console.log('payload:', payload);
-      const scientific_name = await taxonomyService.getScientificNameBySpeciesCode(item.taxonId);
+    //step 1: get the path of the code that needs to be changed
 
-      console.log('payload.parent:', payload.parent);
+    const json_path_with_details = JSONPath({ path: '$..[taxonId]^', json: jsonObject, resultType: 'all' });
 
-      item['scientific_name'] = scientific_name[0].scientific_name;
+    console.log('json_path_with_details', json_path_with_details);
 
-      // jsonObject[payload.parentProperty] = item;
+    //step 2:  get the scientific name from elastic search
 
-      console.log('item:', item);
-      console.log('jsonObject:', jsonObject);
+    json_path_with_details.map(async (item: any) => {
+      console.log('***************** each item **************');
+      console.log(item);
+      console.log('taxonId: ', item.value['taxonId']);
 
-      return jsonObject;
-    };
+      const scientific_name_array = await taxonomyService.getScientificNameBySpeciesCode(item.value['taxonId']);
 
-    const updateJsonObject = async () => {
-      let newJson;
+      const scientific_name_object_to_be_inserted = scientific_name_array[0];
+      console.log('scientific_name is : ', scientific_name_object_to_be_inserted);
 
-      const json_path = await JSONPath('$..[taxonId]^', jsonObject, callback, undefined);
+      console.log('-------------------------------------------------------------------');
 
-      // const findTaxon = await JSONPath({
-      //   path: '$..[taxonId]^',
-      //   json: jsonObject,
+      let someObject = { firstName: 'Albert', contactDetails: { phoneNumbers: [] } };
 
-      // });
+      console.log('document before patch', someObject);
+      const patch: Operation[] = [
+        //{ op: 'replace', path: '/firstName', value: 'Joachim' },
+        { op: 'add', path: '/lastName', value: 'Wester' },
+        { op: 'add', path: '/contactDetails/phoneNumbers/0', value: { number: '555-123' } },
+        { op: 'add', path: '/lastName', value: { number: '555-123', scientific: 'science name' } }
+      ];
+      someObject = jsonpatch.applyPatch(someObject, patch).newDocument;
 
-      console.log('json_path:', json_path);
+      console.log('document after patch applies: ', someObject);
 
-      return newJson;
-    };
+      console.log('-------------------------------------------------------------------');
+    });
 
-    const newJson = await updateJsonObject();
+    //step 3:  insert the scientific name in the same spot.
 
-    console.log('-----------------------------------newJson:', newJson);
+    // const callback = async (item: any, type: any, payload: any) => {
+    //   console.log('item:', item);
+    //   console.log('type:', type);
+    //   console.log('payload:', payload);
+    //   const scientific_name = await taxonomyService.getScientificNameBySpeciesCode(item.taxonId);
+
+    //   console.log('payload.parent:', payload.parent);
+
+    //   item['scientific_name'] = scientific_name[0].scientific_name;
+
+    //   // jsonObject[payload.parentProperty] = item;
+
+    //   console.log('item:', item);
+    //   console.log('jsonObject:', jsonObject);
+
+    //   return jsonObject;
+    // };
+
+    // const updateJsonObject = async () => {
+    //   let newJson;
+
+    //   const json_path = await JSONPath('$..[taxonId]^', jsonObject, callback, undefined);
+
+    //   // const findTaxon = await JSONPath({
+    //   //   path: '$..[taxonId]^',
+    //   //   json: jsonObject,
+
+    //   // });
+
+    //   console.log('json_paths:', json_path);
+
+    //   return newJson;
+    // };
 
     // const newResponse = await taxonomyService.getScientificNameBySpeciesCode(term[0].toString());
 

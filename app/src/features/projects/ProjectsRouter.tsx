@@ -1,11 +1,13 @@
 import ProjectsLayout from 'features/projects/ProjectsLayout';
 import ProjectPage from 'features/projects/view/ProjectPage';
 import CreateSurveyPage from 'features/surveys/CreateSurveyPage';
+import EditSurveyPage from 'features/surveys/edit/EditSurveyPage';
 import SurveyPage from 'features/surveys/view/SurveyPage';
 import React from 'react';
 import { Redirect, Switch } from 'react-router';
 import AppRoute from 'utils/AppRoute';
 import CreateProjectPage from './create/CreateProjectPage';
+import EditProjectPage from './edit/EditProjectPage';
 import ProjectsListPage from './list/ProjectsListPage';
 import ProjectParticipantsPage from './participants/ProjectParticipantsPage';
 
@@ -26,6 +28,12 @@ const ProjectsRouter: React.FC = () => {
       <AppRoute exact path="/admin/projects/create" layout={ProjectsLayout}>
         <ProjectsLayout>
           <CreateProjectPage />
+        </ProjectsLayout>
+      </AppRoute>
+
+      <AppRoute exact path="/admin/projects/edit" layout={ProjectsLayout}>
+        <ProjectsLayout>
+          <EditProjectPage />
         </ProjectsLayout>
       </AppRoute>
 
@@ -75,6 +83,10 @@ const ProjectsRouter: React.FC = () => {
 
       <AppRoute exact path="/admin/projects/:id/survey/create" layout={ProjectsLayout}>
         <CreateSurveyPage />
+      </AppRoute>
+
+      <AppRoute exact path="/admin/projects/:id/survey/edit" layout={ProjectsLayout}>
+        <EditSurveyPage />
       </AppRoute>
 
       <AppRoute exact path="/admin/projects/:id/attachments" layout={ProjectsLayout}>

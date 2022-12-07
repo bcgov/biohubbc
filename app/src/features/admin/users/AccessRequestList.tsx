@@ -1,5 +1,6 @@
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
+import Divider from '@material-ui/core/Divider';
 import Paper from '@material-ui/core/Paper';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Table from '@material-ui/core/Table';
@@ -34,6 +35,9 @@ const useStyles = makeStyles(() => ({
     '& td': {
       verticalAlign: 'middle'
     }
+  },
+  toolbarCount: {
+    fontWeight: 400
   }
 }));
 
@@ -190,57 +194,63 @@ const AccessRequestList: React.FC<IAccessRequestListProps> = (props) => {
           )
         }}
       />
-      <Paper>
-        <Toolbar disableGutters>
-          <Box px={2}>
-            <Typography variant="h2">Access Requests ({accessRequests?.length || 0})</Typography>
-          </Box>
+      <Paper elevation={0}>
+        <Toolbar>
+          <Typography variant="h4" component="h2">
+            Access Requests{' '}
+            <Typography className={classes.toolbarCount} component="span" variant="inherit" color="textSecondary">
+              ({accessRequests?.length || 0})
+            </Typography>
+          </Typography>
         </Toolbar>
-        <TableContainer>
-          <Table className={classes.table}>
-            <TableHead>
-              <TableRow>
-                <TableCell>Username</TableCell>
-                <TableCell>Date of Request</TableCell>
-                <TableCell>Access Status</TableCell>
-                <TableCell width="130px" align="center">
-                  Actions
-                </TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody data-testid="access-request-table">
-              {!accessRequests?.length && (
-                <TableRow data-testid={'access-request-row-0'}>
-                  <TableCell colSpan={4} align="center">
-                    No Access Requests
+        <Divider></Divider>
+        <Box px={1}>
+          <TableContainer>
+            <Table className={classes.table}>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Username</TableCell>
+                  <TableCell>Date of Request</TableCell>
+                  <TableCell>Status</TableCell>
+                  <TableCell width="150px" align="center">
+                    Actions
                   </TableCell>
                 </TableRow>
-              )}
-              {accessRequests?.map((row, index) => {
-                return (
-                  <TableRow data-testid={`access-request-row-${index}`} key={index}>
-                    <TableCell>{row.data?.username || ''}</TableCell>
-                    <TableCell>{getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, row.create_date)}</TableCell>
-                    <TableCell>
-                      <AccessStatusChip status={row.status_name} />
-                    </TableCell>
-
-                    <TableCell align="center">
-                      {row.status_name === AdministrativeActivityStatusType.PENDING && (
-                        <Button
-                          color="primary"
-                          variant="outlined"
-                          onClick={() => setActiveReviewDialog({ open: true, request: row })}>
-                          <strong>Review</strong>
-                        </Button>
-                      )}
+              </TableHead>
+              <TableBody data-testid="access-request-table">
+                {!accessRequests?.length && (
+                  <TableRow data-testid={'access-request-row-0'}>
+                    <TableCell colSpan={4} align="center">
+                      No Access Requests
                     </TableCell>
                   </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
-        </TableContainer>
+                )}
+                {accessRequests?.map((row, index) => {
+                  return (
+                    <TableRow data-testid={`access-request-row-${index}`} key={index}>
+                      <TableCell>{row.data?.username || ''}</TableCell>
+                      <TableCell>{getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, row.create_date)}</TableCell>
+                      <TableCell>
+                        <AccessStatusChip status={row.status_name} />
+                      </TableCell>
+
+                      <TableCell align="center">
+                        {row.status_name === AdministrativeActivityStatusType.PENDING && (
+                          <Button
+                            color="primary"
+                            variant="outlined"
+                            onClick={() => setActiveReviewDialog({ open: true, request: row })}>
+                            Review
+                          </Button>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Box>
       </Paper>
     </>
   );

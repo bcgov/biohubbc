@@ -1,16 +1,23 @@
 import Box from '@material-ui/core/Box';
-import Paper from '@material-ui/core/Paper';
-import { mdiMenuDown, mdiTrayArrowUp } from '@mdi/js';
+import Button from '@material-ui/core/Button';
+import Divider from '@material-ui/core/Divider';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
+import { mdiAttachment, mdiChevronDown, mdiFilePdfBox, mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
 import AttachmentsList from 'components/attachments/AttachmentsList';
-import { IUploadHandler } from 'components/attachments/FileUploadItem';
 import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
-import FileUploadWithMetaDialog from 'components/dialog/FileUploadWithMetaDialog';
-import { H2MenuToolbar } from 'components/toolbar/ActionToolbars';
+import FileUploadWithMetaDialog from 'components/dialog/attachments/FileUploadWithMetaDialog';
+import SecurityDialog from 'components/dialog/attachments/SecurityDialog';
+import { IUploadHandler } from 'components/file-upload/FileUploadItem';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import {
   IGetProjectAttachment,
   IGetProjectForViewResponse,
+  IGetProjectReportAttachment,
   IUploadAttachmentResponse
 } from 'interfaces/useProjectApi.interface';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -19,6 +26,11 @@ import { AttachmentType } from '../../../constants/attachments';
 
 export interface IProjectAttachmentsProps {
   projectForViewData: IGetProjectForViewResponse;
+}
+
+export interface IAttachmentType {
+  id: number;
+  type: 'Report' | 'Other';
 }
 
 /**
@@ -36,6 +48,10 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
     AttachmentType.OTHER
   );
   const [attachmentsList, setAttachmentsList] = useState<IGetProjectAttachment[]>([]);
+  const [reportAttachmentsList, setReportAttachmentsList] = useState<IGetProjectReportAttachment[]>([]);
+
+  // Tracks which attachment rows have been selected, via the table checkboxes.
+  const [selectedAttachmentRows, setSelectedAttachmentRows] = useState<IAttachmentType[]>([]);
 
   const handleUploadReportClick = () => {
     setAttachmentType(AttachmentType.REPORT);
@@ -47,7 +63,7 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
   };
 
   const getAttachments = useCallback(
-    async (forceFetch: boolean) => {
+    async (forceFetch: boolean): Promise<IGetProjectAttachment[] | undefined> => {
       if (attachmentsList.length && !forceFetch) {
         return;
       }
@@ -55,13 +71,16 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
       try {
         const response = await biohubApi.project.getProjectAttachments(projectId);
 
-        if (!response?.attachmentsList) {
+        if (!response?.attachmentsList && !response?.reportAttachmentsList) {
           return;
         }
 
+        setReportAttachmentsList([...response.reportAttachmentsList]);
         setAttachmentsList([...response.attachmentsList]);
+
+        return [...response.reportAttachmentsList, ...response.attachmentsList];
       } catch (error) {
-        return error;
+        return;
       }
     },
     [biohubApi.project, projectId, attachmentsList.length]
@@ -86,6 +105,23 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
     // eslint-disable-next-line
   }, []);
 
+  const addSecurityReasons = async (securityReasons: number[]) => {
+    await biohubApi.security.addProjectSecurityReasons(projectId, securityReasons, selectedAttachmentRows);
+  };
+
+  const [securityDialogOpen, setSecurityDialogOpen] = useState(false);
+
+  // Show/Hide Project Settings Menu
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
   return (
     <>
       <FileUploadWithMetaDialog
@@ -99,22 +135,91 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
         }}
         uploadHandler={getUploadHandler()}
       />
-      <Paper>
-        <H2MenuToolbar
-          label="Documents"
-          buttonLabel="Upload"
-          buttonTitle="Upload Document"
-          buttonStartIcon={<Icon path={mdiTrayArrowUp} size={1} />}
-          buttonEndIcon={<Icon path={mdiMenuDown} size={1} />}
-          menuItems={[
-            { menuLabel: 'Upload Report', menuOnClick: handleUploadReportClick },
-            { menuLabel: 'Upload Attachments', menuOnClick: handleUploadAttachmentClick }
-          ]}
-        />
-        <Box px={3} pb={2}>
-          <AttachmentsList projectId={projectId} attachmentsList={attachmentsList} getAttachments={getAttachments} />
+
+      <SecurityDialog
+        open={securityDialogOpen}
+        selectedSecurityRules={[]}
+        onAccept={async (securityReasons) => {
+          if (selectedAttachmentRows.length > 0) {
+            // formik form is retuning array of strings not numbers if printed out in console
+            // linter wrongly believes formik to be number[] so wrapped map in string to force values into number[]
+            await addSecurityReasons(
+              securityReasons.security_reasons.map((item) => parseInt(`${item.security_reason_id}`))
+            );
+          }
+          await getAttachments(true);
+          setSecurityDialogOpen(false);
+        }}
+        onClose={() => setSecurityDialogOpen(false)}
+      />
+
+      {/* Need to use the regular toolbar in lieu of these action toolbars given it doesn't support multiple buttons */}
+      <Toolbar style={{ display: 'flex', justifyContent: 'space-between' }}>
+        <Typography variant="h4" component="h2">
+          Documents
+        </Typography>
+        <Box>
+          <Button
+            color="primary"
+            variant="contained"
+            endIcon={<Icon path={mdiChevronDown} size={0.8} />}
+            aria-controls="simple-menu"
+            aria-haspopup="true"
+            startIcon={<Icon path={mdiPlus} size={1} />}
+            onClick={handleClick}>
+            Add Documents
+          </Button>
+          <Menu
+            style={{ marginTop: '8px' }}
+            id="attachmentsMenu"
+            anchorEl={anchorEl}
+            getContentAnchorEl={null}
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'right'
+            }}
+            transformOrigin={{
+              vertical: 'top',
+              horizontal: 'right'
+            }}
+            keepMounted
+            open={Boolean(anchorEl)}
+            onClose={handleClose}>
+            <MenuItem onClick={handleUploadReportClick}>
+              <ListItemIcon>
+                <Icon path={mdiFilePdfBox} size={1} />
+              </ListItemIcon>
+              <Typography variant="inherit">Add Report</Typography>
+            </MenuItem>
+            <MenuItem onClick={handleUploadAttachmentClick}>
+              <ListItemIcon>
+                <Icon path={mdiAttachment} size={1} />
+              </ListItemIcon>
+              <Typography variant="inherit">Add Attachments</Typography>
+            </MenuItem>
+          </Menu>
         </Box>
-      </Paper>
+      </Toolbar>
+      <Divider></Divider>
+      <Box px={1}>
+        <AttachmentsList
+          projectId={projectId}
+          attachmentsList={[...attachmentsList, ...reportAttachmentsList]}
+          getAttachments={getAttachments}
+          selectedAttachments={selectedAttachmentRows}
+          onCheckAllChange={(items) => setSelectedAttachmentRows(items)}
+          onCheckboxChange={(value, add) => {
+            const found = selectedAttachmentRows.findIndex((item) => item.id === value.id && item.type === value.type);
+            const updated = [...selectedAttachmentRows];
+            if (found < 0 && add) {
+              updated.push(value);
+            } else if (found >= 0 && !add) {
+              updated.splice(found, 1);
+            }
+            setSelectedAttachmentRows(updated);
+          }}
+        />
+      </Box>
     </>
   );
 };

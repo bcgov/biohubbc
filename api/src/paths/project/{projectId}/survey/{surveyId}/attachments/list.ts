@@ -4,8 +4,8 @@ import { PROJECT_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
 import { HTTP400 } from '../../../../../../errors/http-error';
 import { GetAttachmentsData } from '../../../../../../models/project-survey-attachments';
-import { queries } from '../../../../../../queries/queries';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
+import { AttachmentService } from '../../../../../../services/attachment-service';
 import { getLogger } from '../../../../../../utils/logger';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/attachments/list');
@@ -108,38 +108,19 @@ export function getSurveyAttachments(): RequestHandler {
     }
 
     const connection = getDBConnection(req['keycloak_token']);
+    const surveyId = Number(req.params.surveyId);
 
     try {
-      const getSurveyAttachmentsSQLStatement = queries.survey.getSurveyAttachmentsSQL(Number(req.params.surveyId));
-      const getSurveyReportAttachmentsSQLStatement = queries.survey.getSurveyReportAttachmentsSQL(
-        Number(req.params.surveyId)
-      );
-
-      if (!getSurveyAttachmentsSQLStatement || !getSurveyReportAttachmentsSQLStatement) {
-        throw new HTTP400('Failed to build SQL get statement');
-      }
-
       await connection.open();
 
-      const attachmentsData = await connection.query(
-        getSurveyAttachmentsSQLStatement.text,
-        getSurveyAttachmentsSQLStatement.values
-      );
+      const attachmentService = new AttachmentService(connection);
 
-      const reportAttachmentsData = await connection.query(
-        getSurveyReportAttachmentsSQLStatement.text,
-        getSurveyReportAttachmentsSQLStatement.values
-      );
+      const attachmentsData = await attachmentService.getSurveyAttachmentsWithSecurityCounts(surveyId);
+      const reportAttachmentsData = await attachmentService.getSurveyReportAttachmentsWithSecurityCounts(surveyId);
 
       await connection.commit();
 
-      const getAttachmentsData =
-        (attachmentsData &&
-          reportAttachmentsData &&
-          attachmentsData.rows &&
-          reportAttachmentsData.rows &&
-          new GetAttachmentsData([...attachmentsData.rows, ...reportAttachmentsData.rows])) ||
-        null;
+      const getAttachmentsData = new GetAttachmentsData(attachmentsData, reportAttachmentsData);
 
       return res.status(200).json(getAttachmentsData);
     } catch (error) {

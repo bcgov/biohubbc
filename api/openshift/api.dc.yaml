@@ -48,6 +48,9 @@ parameters:
     description: Platform Elasticsearch URL
     required: true
     value: 'https://elasticsearch-af2668-dev.apps.silver.devops.gov.bc.ca'
+  - name: ELASTICSEARCH_TAXONOMY_INDEX
+    description: Platform Elasticsearch Taxonomy Index
+    required: true
   - name: TZ
     description: Application timezone
     required: false
@@ -215,6 +218,8 @@ objects:
                   value: ${NODE_ENV}
                 - name: ELASTICSEARCH_URL
                   value: ${ELASTICSEARCH_URL}
+                - name: ELASTICSEARCH_TAXONOMY_INDEX
+                  value: ${ELASTICSEARCH_TAXONOMY_INDEX}
                 - name: TZ
                   value: ${TZ}
                 - name: VERSION

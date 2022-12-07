@@ -83,7 +83,7 @@ export async function uploadBufferToS3(
     Metadata: metadata
   })
     .promise()
-    .catch((error) => {
+    .catch(() => {
       throw SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_UPLOAD_FILE_TO_S3);
     });
 }
@@ -103,7 +103,7 @@ export async function getFileFromS3(key: string, versionId?: string): Promise<Ge
     VersionId: versionId
   })
     .promise()
-    .catch((error) => {
+    .catch(() => {
       throw SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_GET_FILE_FROM_S3);
     });
 }
