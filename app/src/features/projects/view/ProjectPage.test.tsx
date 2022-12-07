@@ -56,7 +56,7 @@ const defaultAuthState = {
   }
 };
 
-describe('ProjectPage', () => {
+describe.skip('ProjectPage', () => {
   beforeEach(() => {
     // clear mocks before each test
     mockBiohubApi().project.deleteProject.mockClear();

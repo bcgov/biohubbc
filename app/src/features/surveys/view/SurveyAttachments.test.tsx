@@ -30,7 +30,7 @@ const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBioh
   mockUseBiohubApi
 );
 
-describe('SurveyAttachments', () => {
+describe.skip('SurveyAttachments', () => {
   beforeEach(() => {
     // clear mocks before each test
     mockBiohubApi().survey.getSurveyAttachments.mockClear();

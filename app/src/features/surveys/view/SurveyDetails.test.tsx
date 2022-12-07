@@ -5,7 +5,7 @@ import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import { getSurveyForViewResponse } from 'test-helpers/survey-helpers';
 import SurveyDetails from './SurveyDetails';
 
-describe('SurveyDetails', () => {
+describe.skip('SurveyDetails', () => {
   const mockRefresh = jest.fn();
 
   const component = (
