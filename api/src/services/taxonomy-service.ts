@@ -39,7 +39,6 @@ export class TaxonomyService {
     searchRequest: SearchRequest
   ): Promise<SearchResponse<ITaxonomySource, Record<string, AggregationsAggregate>> | undefined> {
     try {
-      defaultLog.debug({ label: '_elasticSearch', searchRequest });
       const client = new Client({ node: process.env.ELASTICSEARCH_URL });
 
       return client.search({
