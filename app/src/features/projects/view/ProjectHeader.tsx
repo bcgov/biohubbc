@@ -1,32 +1,45 @@
+import { CircularProgress } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Button from '@material-ui/core/Button';
-import Chip from '@material-ui/core/Chip';
 import Container from '@material-ui/core/Container';
-import IconButton from '@material-ui/core/IconButton';
 import Link from '@material-ui/core/Link';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
 import Paper from '@material-ui/core/Paper';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
-import { mdiTrashCanOutline } from '@mdi/js';
+import {
+  mdiAccountMultipleOutline,
+  mdiCalendarRangeOutline,
+  mdiChevronDown,
+  mdiChevronRight,
+  mdiCogOutline,
+  mdiPencilOutline,
+  mdiTrashCanOutline
+} from '@mdi/js';
 import Icon from '@mdi/react';
-import clsx from 'clsx';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { DeleteProjectI18N } from 'constants/i18n';
-import { ProjectStatusType } from 'constants/misc';
 import { SYSTEM_ROLE } from 'constants/roles';
 import { AuthStateContext } from 'contexts/authStateContext';
 import { DialogContext } from 'contexts/dialogContext';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import useDataLoader from 'hooks/useDataLoader';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import React, { useContext } from 'react';
 import { useHistory } from 'react-router';
 import { getFormattedDateRangeString } from 'utils/Utils';
 
 const useStyles = makeStyles((theme: Theme) => ({
+  titleActions: {
+    paddingTop: theme.spacing(0.75),
+    paddingBottom: theme.spacing(0.75)
+  },
   projectNav: {
     minWidth: '15rem',
     '& a': {
@@ -43,10 +56,18 @@ const useStyles = makeStyles((theme: Theme) => ({
       }
     }
   },
-  breadCrumbLink: {
-    display: 'flex',
-    alignItems: 'center',
-    cursor: 'pointer'
+  projectTitleContainer: {
+    maxWidth: '150ch',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis'
+  },
+  projectTitle: {
+    display: '-webkit-box',
+    '-webkit-line-clamp': 2,
+    '-webkit-box-orient': 'vertical',
+    paddingTop: theme.spacing(0.5),
+    paddingBottom: theme.spacing(0.5),
+    overflow: 'hidden'
   },
   chip: {
     color: '#ffffff'
@@ -57,17 +78,22 @@ const useStyles = makeStyles((theme: Theme) => ({
   chipCompleted: {
     backgroundColor: theme.palette.primary.main
   },
-  spacingRight: {
-    paddingRight: '1rem'
-  },
-  actionButton: {
-    minWidth: '6rem',
-    '& + button': {
-      marginLeft: '0.5rem'
+  projectMeta: {
+    marginTop: theme.spacing(3),
+    marginBottom: 0,
+    '& dd': {
+      flex: '0 0 200px',
+      color: theme.palette.text.secondary
+    },
+    '& dt': {
+      flex: '1 1 auto'
     }
   },
-  projectTitle: {
-    fontWeight: 400
+  projectMetaRow: {
+    display: 'flex',
+    '& + div': {
+      marginTop: theme.spacing(0.25)
+    }
   }
 }));
 
@@ -93,6 +119,9 @@ const ProjectHeader: React.FC<IProjectHeaderProps> = (props) => {
   const dialogContext = useContext(DialogContext);
 
   const { keycloakWrapper } = useContext(AuthStateContext);
+
+  const codesDataLoader = useDataLoader(() => biohubApi.codes.getAllCodeSets());
+  codesDataLoader.load();
 
   const defaultYesNoDialogProps = {
     dialogTitle: DeleteProjectI18N.deleteTitle,
@@ -151,21 +180,6 @@ const ProjectHeader: React.FC<IProjectHeaderProps> = (props) => {
     dialogContext.setErrorDialog({ ...deleteErrorDialogProps, ...textDialogProps, open: true });
   };
 
-  const getChipIcon = (status_name: string) => {
-    let chipLabel;
-    let chipStatusClass;
-
-    if (ProjectStatusType.ACTIVE === status_name) {
-      chipLabel = 'Active';
-      chipStatusClass = classes.chipActive;
-    } else if (ProjectStatusType.COMPLETED === status_name) {
-      chipLabel = 'Complete';
-      chipStatusClass = classes.chipCompleted;
-    }
-
-    return <Chip size="small" className={clsx(classes.chip, chipStatusClass)} label={chipLabel} />;
-  };
-
   // Show delete button if you are a system admin or a project admin
   const showDeleteProjectButton = keycloakWrapper?.hasSystemRole([
     SYSTEM_ROLE.SYSTEM_ADMIN,
@@ -173,69 +187,120 @@ const ProjectHeader: React.FC<IProjectHeaderProps> = (props) => {
     SYSTEM_ROLE.DATA_ADMINISTRATOR
   ]);
 
-  return (
-    <Paper square={true}>
-      <Container maxWidth="xl">
-        <Box pt={3} pb={2}>
-          <Breadcrumbs>
-            <Link
-              color="primary"
-              onClick={() => history.push('/admin/projects')}
-              aria-current="page"
-              className={classes.breadCrumbLink}>
-              <Typography variant="body2">Projects</Typography>
-            </Link>
-            <Typography variant="body2">{projectWithDetails.project.project_name}</Typography>
-          </Breadcrumbs>
-        </Box>
+  // Show/Hide Project Settings Menu
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
-        <Box display="flex" justifyContent="space-between" alignItems="flex-start">
-          <Box pb={3}>
-            <Box mb={1.5} display="flex">
-              <Typography className={classes.spacingRight} variant="h1">
-                Project - <span className={classes.projectTitle}>{projectWithDetails.project.project_name}</span>
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  if (!codesDataLoader.data) {
+    return <CircularProgress className="pageProgress" size={40} />;
+  }
+
+  return (
+    <Paper square={true} elevation={0}>
+      <Container maxWidth="xl">
+        <Box py={4}>
+          <Box mb={2}>
+            <Breadcrumbs separator={<Icon path={mdiChevronRight} size={0.8} />}>
+              <Link color="primary" onClick={() => history.push('/admin/projects')} aria-current="page">
+                <Typography variant="body1" component="span">
+                  Projects
+                </Typography>
+              </Link>
+              <Typography variant="body1" component="span">
+                {projectWithDetails.project.project_name}
               </Typography>
-            </Box>
-            <Box mb={0.75} display="flex" alignItems="center">
-              {getChipIcon(projectWithDetails.project.completion_status)}
-              &nbsp;&nbsp;
-              <Typography component="span" variant="subtitle1" color="textSecondary">
-                {projectWithDetails.project.end_date ? (
-                  <>
-                    <span>Timeline:</span>{' '}
-                    {getFormattedDateRangeString(
-                      DATE_FORMAT.ShortMediumDateFormat,
-                      projectWithDetails.project.start_date,
-                      projectWithDetails.project.end_date
-                    )}
-                  </>
-                ) : (
-                  <>
-                    <span>Start Date:</span>{' '}
-                    {getFormattedDateRangeString(
-                      DATE_FORMAT.ShortMediumDateFormat,
-                      projectWithDetails.project.start_date
-                    )}
-                  </>
-                )}
-              </Typography>
-            </Box>
+            </Breadcrumbs>
           </Box>
-          <Box ml={4} mb={4}>
-            <Button
-              variant="outlined"
-              disableElevation
-              className={classes.actionButton}
-              data-testid="manage-project-team-button"
-              aria-label="Manage Project Team"
-              onClick={() => history.push('users')}>
-              Manage Project Team
-            </Button>
-            {showDeleteProjectButton && (
-              <IconButton data-testid="delete-project-button" onClick={showDeleteProjectDialog}>
-                <Icon path={mdiTrashCanOutline} size={1} />
-              </IconButton>
-            )}
+
+          <Box display="flex" justifyContent="space-between">
+            <Box className={classes.projectTitleContainer}>
+              <Typography variant="h1" className={classes.projectTitle}>
+                Project: <span>{projectWithDetails.project.project_name}</span>
+              </Typography>
+              <Box mt={0.75} display="flex" alignItems="center">
+                {/* {getChipIcon(projectWithDetails.project.completion_status)} */}
+                <Typography
+                  component="span"
+                  variant="subtitle1"
+                  color="textSecondary"
+                  style={{ display: 'flex', alignItems: 'center' }}>
+                  {projectWithDetails.project.end_date ? (
+                    <>
+                      <Icon path={mdiCalendarRangeOutline} size={0.8} style={{ marginRight: '0.5rem' }} />
+                      <strong>Project Timeline:&nbsp;&nbsp;</strong>
+                      {getFormattedDateRangeString(
+                        DATE_FORMAT.ShortMediumDateFormat,
+                        projectWithDetails.project.start_date,
+                        projectWithDetails.project.end_date
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      <span>Start Date:</span>{' '}
+                      {getFormattedDateRangeString(
+                        DATE_FORMAT.ShortMediumDateFormat,
+                        projectWithDetails.project.start_date
+                      )}
+                    </>
+                  )}
+                </Typography>
+              </Box>
+            </Box>
+            <Box flex="0 0 auto" className={classes.titleActions}>
+              <Button
+                variant="outlined"
+                startIcon={<Icon path={mdiCogOutline} size={0.8} />}
+                endIcon={<Icon path={mdiChevronDown} size={0.8} />}
+                aria-controls="simple-menu"
+                aria-haspopup="true"
+                onClick={handleClick}>
+                Project Settings
+              </Button>
+              <Menu
+                style={{ marginTop: '8px' }}
+                id="projectSettingsMenu"
+                anchorEl={anchorEl}
+                getContentAnchorEl={null}
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'right'
+                }}
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right'
+                }}
+                keepMounted
+                open={Boolean(anchorEl)}
+                onClose={handleClose}>
+                <MenuItem onClick={() => history.push('users')}>
+                  <ListItemIcon>
+                    <Icon path={mdiAccountMultipleOutline} size={0.8} />
+                  </ListItemIcon>
+                  <Typography variant="inherit">Manage Project Team</Typography>
+                </MenuItem>
+                <MenuItem onClick={() => history.push(`/admin/projects/edit?projectId=${projectWithDetails.id}`)}>
+                  <ListItemIcon>
+                    <Icon path={mdiPencilOutline} size={0.8} />
+                  </ListItemIcon>
+                  <Typography variant="inherit">Edit Project Details</Typography>
+                </MenuItem>
+                {showDeleteProjectButton && (
+                  <MenuItem onClick={showDeleteProjectDialog} data-testid={'delete-project-button'}>
+                    <ListItemIcon>
+                      <Icon path={mdiTrashCanOutline} size={0.8} />
+                    </ListItemIcon>
+                    <Typography variant="inherit">Delete Project</Typography>
+                  </MenuItem>
+                )}
+              </Menu>
+            </Box>
           </Box>
         </Box>
       </Container>

@@ -11,29 +11,42 @@ const defaultLog = getLogger('models/project-survey-attachments');
  */
 export class GetAttachmentsData {
   attachmentsList: any[];
+  reportAttachmentsList: any[];
 
-  constructor(attachmentsData?: any) {
+  constructor(attachmentsData?: any, reportAttachmentsData?: any) {
     defaultLog.debug({ label: 'GetAttachmentsData', message: 'params', attachmentsData });
 
-    this.attachmentsList =
-      (attachmentsData?.length &&
-        attachmentsData.map((item: any) => {
-          return {
-            id: item.id,
-            fileName: item.file_name,
-            fileType: item.file_type || 'Report',
-            lastModified: moment(item.update_date || item.create_date).toISOString(),
-            size: item.file_size,
-            securityToken: item.security_token
-          };
-        })) ||
-      [];
+    const mapAttachment = (item: any) => {
+      return {
+        id: item.id,
+        fileName: item.file_name,
+        fileType: item.file_type || 'Report',
+        lastModified: moment(item.update_date || item.create_date).toISOString(),
+        size: item.file_size,
+        securityToken: item.security_token,
+        securityReviewTimestamp: item.security_review_timestamp,
+        securityRuleCount: item.security_rule_count && Number(item.security_rule_count),
+        status: item.status
+      };
+    };
+
+    this.attachmentsList = (attachmentsData?.length && attachmentsData.map(mapAttachment)) || [];
+    this.reportAttachmentsList = (reportAttachmentsData?.length && reportAttachmentsData.map(mapAttachment)) || [];
   }
 }
 
 export interface IReportAttachmentAuthor {
   first_name: string;
   last_name: string;
+}
+
+export interface ISecurityReason {
+  security_reason_id: number;
+  category: string;
+  sub_category: string;
+  reason: string;
+  reason_description: string;
+  date_expired: string;
 }
 
 export class PostReportAttachmentMetadata {
@@ -67,21 +80,37 @@ export class GetReportAttachmentMetadata {
   description: string;
   year_published: number;
   revision_count: number;
+  security_review_timestamp: string;
   authors: IReportAttachmentAuthor[];
+  security_reasons: ISecurityReason[];
 
-  constructor(metaObj?: any, authorObj?: any) {
+  constructor(metaObj?: any, authorObj?: any, securityObj?: any) {
     this.attachment_id = (metaObj && metaObj?.attachment_id) || null;
     this.title = (metaObj && metaObj?.title) || null;
     this.last_modified = (metaObj && metaObj?.update_date.toString()) || null;
     this.description = (metaObj && metaObj?.description) || null;
     this.year_published = Number((metaObj && metaObj?.year_published) || null);
     this.revision_count = (metaObj && metaObj?.revision_count) || null;
+    this.security_review_timestamp = (metaObj && metaObj?.security_review_timestamp) || null;
     this.authors =
       (authorObj &&
         authorObj?.map((author: any) => {
           return {
             first_name: author?.first_name,
             last_name: author?.last_name
+          };
+        })) ||
+      [];
+    this.security_reasons =
+      (securityObj &&
+        securityObj?.map((reason: any) => {
+          return {
+            security_reason_id: reason?.security_reason_id,
+            category: reason?.category,
+            sub_category: reason?.sub_category,
+            reason: reason?.reason,
+            reason_description: reason?.reason_description,
+            date_submitted: this.last_modified
           };
         })) ||
       [];

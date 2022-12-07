@@ -32,7 +32,7 @@ const renderContainer = () => {
   );
 };
 
-describe('SurveyProprietaryData', () => {
+describe.skip('SurveyProprietaryData', () => {
   beforeEach(() => {
     // clear mocks before each test
     mockBiohubApi().survey.getSurveyForView.mockClear();

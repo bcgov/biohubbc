@@ -138,6 +138,8 @@ describe('GetReportAttachmentMetaData', () => {
         year_published: 0,
         authors: [],
         description: null,
+        security_review_timestamp: null,
+        security_reasons: [],
         last_modified: null,
         revision_count: null
       });

@@ -1,11 +1,13 @@
 import moment from 'moment';
 import { PROJECT_ROLE } from '../constants/roles';
 import { COMPLETION_STATUS } from '../constants/status';
+import { IDBConnection } from '../database/db';
 import { HTTP400, HTTP409 } from '../errors/http-error';
 import { IPostIUCN, PostFundingSource, PostProjectObject } from '../models/project-create';
 import {
   IPutIUCN,
   PutCoordinatorData,
+  PutFundingData,
   PutFundingSource,
   PutIUCNData,
   PutLocationData,
@@ -29,9 +31,17 @@ import { getSurveyAttachmentS3Keys } from '../paths/project/{projectId}/survey/{
 import { GET_ENTITIES, IUpdateProject } from '../paths/project/{projectId}/update';
 import { queries } from '../queries/queries';
 import { deleteFileFromS3 } from '../utils/file-utils';
+import { AttachmentService } from './attachment-service';
 import { DBService } from './db-service';
 
 export class ProjectService extends DBService {
+  attachmentService: AttachmentService;
+
+  constructor(connection: IDBConnection) {
+    super(connection);
+    this.attachmentService = new AttachmentService(connection);
+  }
+
   /**
    * Gets the project participant, adding them if they do not already exist.
    *
@@ -259,8 +269,8 @@ export class ProjectService extends DBService {
     }
     if (entities.includes(GET_ENTITIES.funding)) {
       promises.push(
-        this.getProjectData(projectId).then((value) => {
-          results.project = value;
+        this.getFundingData(projectId).then((value) => {
+          results.funding = value;
         })
       );
     }
@@ -434,7 +444,7 @@ export class ProjectService extends DBService {
     // Handle funding sources
     promises.push(
       Promise.all(
-        postProjectData.funding.funding_sources.map((fundingSource: PostFundingSource) =>
+        postProjectData.funding.fundingSources.map((fundingSource: PostFundingSource) =>
           this.insertFundingSource(fundingSource, projectId)
         )
       )
@@ -776,27 +786,31 @@ export class ProjectService extends DBService {
   }
 
   async updateFundingData(projectId: number, entities: IUpdateProject): Promise<void> {
-    const putFundingSource = entities?.funding && new PutFundingSource(entities.funding);
+    const putFundingData = entities?.funding && new PutFundingData(entities.funding);
 
-    const surveyFundingSourceDeleteStatement = queries.survey.deleteSurveyFundingSourceByProjectFundingSourceIdSQL(
-      putFundingSource?.id
-    );
-    const projectFundingSourceDeleteStatement = queries.project.deleteProjectFundingSourceSQL(
-      projectId,
-      putFundingSource?.id
+    const fundingIds = putFundingData?.fundingSources.map((data) => {
+      return data.id;
+    });
+
+    const surveyFundingSourceDeleteStatement = queries.survey.deleteSurveyFundingSourceConnectionToProjectSQL(
+      fundingIds
     );
 
-    if (!projectFundingSourceDeleteStatement || !surveyFundingSourceDeleteStatement) {
-      throw new HTTP400('Failed to build SQL delete statement');
+    if (surveyFundingSourceDeleteStatement) {
+      const surveyFundingSourceDeleteResult = await this.connection.query(
+        surveyFundingSourceDeleteStatement.text,
+        surveyFundingSourceDeleteStatement.values
+      );
+
+      if (!surveyFundingSourceDeleteResult) {
+        throw new HTTP409('Failed to delete survey funding source');
+      }
     }
 
-    const surveyFundingSourceDeleteResult = await this.connection.query(
-      surveyFundingSourceDeleteStatement.text,
-      surveyFundingSourceDeleteStatement.values
-    );
+    const projectFundingSourceDeleteStatement = queries.project.deleteAllProjectFundingSourceSQL(projectId);
 
-    if (!surveyFundingSourceDeleteResult) {
-      throw new HTTP409('Failed to delete survey funding source');
+    if (!projectFundingSourceDeleteStatement) {
+      throw new HTTP400('Failed to build SQL insert statement');
     }
 
     const projectFundingSourceDeleteResult = await this.connection.query(
@@ -808,17 +822,19 @@ export class ProjectService extends DBService {
       throw new HTTP409('Failed to delete project funding source');
     }
 
-    const sqlInsertStatement = queries.project.putProjectFundingSourceSQL(putFundingSource, projectId);
+    putFundingData?.fundingSources.forEach(async (putFundingSource: PutFundingSource) => {
+      const sqlInsertStatement = queries.project.putProjectFundingSourceSQL(putFundingSource, projectId);
 
-    if (!sqlInsertStatement) {
-      throw new HTTP400('Failed to build SQL insert statement');
-    }
+      if (!sqlInsertStatement) {
+        throw new HTTP400('Failed to build SQL insert statement');
+      }
 
-    const insertResult = await this.connection.query(sqlInsertStatement.text, sqlInsertStatement.values);
+      const insertResult = await this.connection.query(sqlInsertStatement.text, sqlInsertStatement.values);
 
-    if (!insertResult) {
-      throw new HTTP409('Failed to put (insert) project funding source with incremented revision count');
-    }
+      if (!insertResult) {
+        throw new HTTP409('Failed to put (insert) project funding source with incremented revision count');
+      }
+    });
   }
 
   async deleteProject(projectId: number): Promise<boolean | null> {
@@ -846,20 +862,11 @@ export class ProjectService extends DBService {
      * Get the attachment S3 keys for all attachments associated to this project and surveys under this project
      * Used to delete them from S3 separately later
      */
-    const getProjectAttachmentSQLStatement = queries.project.getProjectAttachmentsSQL(projectId);
+    const getProjectAttachments = await this.attachmentService.getProjectAttachments(projectId);
     const getSurveyIdsSQLStatement = queries.survey.getSurveyIdsSQL(projectId);
 
-    if (!getProjectAttachmentSQLStatement || !getSurveyIdsSQLStatement) {
+    if (!getSurveyIdsSQLStatement) {
       throw new HTTP400('Failed to build SQL get statement');
-    }
-
-    const getProjectAttachmentsResult = await this.connection.query(
-      getProjectAttachmentSQLStatement.text,
-      getProjectAttachmentSQLStatement.values
-    );
-
-    if (!getProjectAttachmentsResult || !getProjectAttachmentsResult.rows) {
-      throw new HTTP400('Failed to get project attachments');
     }
 
     const getSurveyIdsResult = await this.connection.query(
@@ -878,7 +885,7 @@ export class ProjectService extends DBService {
       )
     );
 
-    const projectAttachmentS3Keys: string[] = getProjectAttachmentsResult.rows.map((attachment: any) => {
+    const projectAttachmentS3Keys: string[] = getProjectAttachments.map((attachment: any) => {
       return attachment.key;
     });
 

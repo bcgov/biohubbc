@@ -2,11 +2,11 @@
 
 exports[`HorizontalSplitFormComponent renders correctly 1`] = `
 <DocumentFragment>
-  <section
-    class="MuiBox-root MuiBox-root-3 makeStyles-projectFormSection-1"
+  <div
+    class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
   >
     <div
-      class="MuiBox-root MuiBox-root-4 makeStyles-sectionDetails-2"
+      class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-lg-4"
     >
       <h2
         class="MuiTypography-root MuiTypography-h3"
@@ -14,7 +14,7 @@ exports[`HorizontalSplitFormComponent renders correctly 1`] = `
         Section title
       </h2>
       <div
-        class="MuiBox-root MuiBox-root-5"
+        class="MuiBox-root MuiBox-root-1"
       >
         <p
           class="MuiTypography-root MuiTypography-body1 MuiTypography-colorTextSecondary"
@@ -24,10 +24,10 @@ exports[`HorizontalSplitFormComponent renders correctly 1`] = `
       </div>
     </div>
     <div
-      class="MuiBox-root MuiBox-root-6"
+      class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-lg-8"
     >
       <div
-        class="MuiBox-root MuiBox-root-7"
+        class="MuiBox-root MuiBox-root-2"
       >
         <p
           class="MuiTypography-root MuiTypography-body1"
@@ -36,6 +36,6 @@ exports[`HorizontalSplitFormComponent renders correctly 1`] = `
         </p>
       </div>
     </div>
-  </section>
+  </div>
 </DocumentFragment>
 `;

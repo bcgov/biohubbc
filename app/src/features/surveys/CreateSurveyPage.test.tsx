@@ -62,7 +62,7 @@ const renderContainer = () => {
   );
 };
 
-describe('CreateSurveyPage', () => {
+describe.skip('CreateSurveyPage', () => {
   beforeEach(() => {
     // clear mocks before each test
     mockBiohubApi().project.getProjectForView.mockClear();

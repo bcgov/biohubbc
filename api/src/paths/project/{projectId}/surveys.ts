@@ -277,6 +277,9 @@ GET.apiDoc = {
                       type: 'string'
                     }
                   }
+                },
+                docs_to_be_reviewed: {
+                  type: 'number'
                 }
               }
             }
