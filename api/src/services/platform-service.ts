@@ -163,7 +163,7 @@ export class PlatformService extends DBService {
     console.log('**************************************');
     console.log('surveyData:', surveyData);
 
-    const jsonObject = surveyData.darwin_core_source;
+    let jsonObject = surveyData.darwin_core_source;
 
     console.log(jsonObject);
 
@@ -205,77 +205,45 @@ export class PlatformService extends DBService {
 
     //step 2:  get the scientific name from elastic search
 
+    //let someObject = { firstName: 'Albert', contactDetails: { phoneNumbers: [] } };
+
+    let patch;
+
     json_path_with_details.map(async (item: any) => {
       console.log('***************** each item **************');
-      console.log(item);
-      console.log('taxonId: ', item.value['taxonId']);
+      // console.log(item);
+      // console.log('taxonId: ', item.value['taxonId']);
 
       const scientific_name_array = await taxonomyService.getScientificNameBySpeciesCode(item.value['taxonId']);
 
       const scientific_name_object_to_be_inserted = scientific_name_array[0];
       console.log('scientific_name is : ', scientific_name_object_to_be_inserted);
 
-      console.log('-------------------------------------------------------------------');
+      console.log('item.path: ', item.pointer);
 
-      let someObject = { firstName: 'Albert', contactDetails: { phoneNumbers: [] } };
-
-      console.log('document before patch', someObject);
       const patch: Operation[] = [
-        //{ op: 'replace', path: '/firstName', value: 'Joachim' },
-        { op: 'add', path: '/lastName', value: 'Wester' },
-        { op: 'add', path: '/contactDetails/phoneNumbers/0', value: { number: '555-123' } },
-        { op: 'add', path: '/lastName', value: { number: '555-123', scientific: 'science name' } }
+        {
+          op: 'add',
+          path: item.pointer,
+          value: {
+            taxonId: item.value['taxonId'],
+            scientific_name: scientific_name_object_to_be_inserted['scientific_name']
+          }
+        }
       ];
-      someObject = jsonpatch.applyPatch(someObject, patch).newDocument;
 
-      console.log('document after patch applies: ', someObject);
+      jsonObject = jsonpatch.applyPatch(jsonObject, patch).newDocument;
+
+      console.log('updated jsonObject', jsonObject);
 
       console.log('-------------------------------------------------------------------');
+
+      return patch;
     });
 
-    //step 3:  insert the scientific name in the same spot.
+    console.log('patch outside the function', patch);
 
-    // const callback = async (item: any, type: any, payload: any) => {
-    //   console.log('item:', item);
-    //   console.log('type:', type);
-    //   console.log('payload:', payload);
-    //   const scientific_name = await taxonomyService.getScientificNameBySpeciesCode(item.taxonId);
-
-    //   console.log('payload.parent:', payload.parent);
-
-    //   item['scientific_name'] = scientific_name[0].scientific_name;
-
-    //   // jsonObject[payload.parentProperty] = item;
-
-    //   console.log('item:', item);
-    //   console.log('jsonObject:', jsonObject);
-
-    //   return jsonObject;
-    // };
-
-    // const updateJsonObject = async () => {
-    //   let newJson;
-
-    //   const json_path = await JSONPath('$..[taxonId]^', jsonObject, callback, undefined);
-
-    //   // const findTaxon = await JSONPath({
-    //   //   path: '$..[taxonId]^',
-    //   //   json: jsonObject,
-
-    //   // });
-
-    //   console.log('json_paths:', json_path);
-
-    //   return newJson;
-    // };
-
-    // const newResponse = await taxonomyService.getScientificNameBySpeciesCode(term[0].toString());
-
-    // console.log('new response: ', newResponse);
-
-    //jsonObject = { ...jsonObject, scientific_name: newResponse[0].scientific_name };
-
-    // console.log('updatedJsonObject: ', jsonObject);
+    console.log('outside of function - updated jsonObject', jsonObject);
 
     if (!surveyData.output_key) {
       throw new HTTP400('no s3Key found');

@@ -242,8 +242,6 @@ export class TaxonomyService {
       }
     });
 
-    console.log('result of elastic search: ', response?.hits.hits);
-
     return response ? this.formatScientificName(response.hits.hits) : [];
   }
 }
