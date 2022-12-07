@@ -1,5 +1,5 @@
 import { Client } from '@elastic/elasticsearch';
-import { AggregationsAggregate, SearchHit, SearchRequest, SearchResponse } from '@elastic/elasticsearch/lib/api/types';
+import { AggregationsAggregate, QueryDslBoolQuery, SearchHit, SearchRequest, SearchResponse } from '@elastic/elasticsearch/lib/api/types';
 // import moment from 'moment';
 import { getLogger } from '../utils/logger';
 
@@ -36,66 +36,10 @@ export class TaxonomyService {
 
       return client.search({
         index: process.env.ELASTICSEARCH_TAXONOMY_INDEX,
-        ...this._filterExpiredCodes(searchRequest),
+        ...searchRequest,
       });
     } catch (error) {
       defaultLog.debug({ label: 'elasticSearch', message: 'error', error });
-    }
-  }
-
-  /**
-   * Determines if the source object from a taxonomy search query is valid (namely, that it has not expired).
-   * @param source The source object from the search query
-   * @returns {boolean} `true` if the the `end_date` property is not defined or if the date hasn't passed, `false` otherwise.
-   */
-  _isValidTaxonomySource = (source: ITaxonomySource | undefined): boolean => {
-    if (source?.end_date) {
-      return new Date() < new Date(source.end_date);
-    }
-
-    return true;
-  };
-
-  _filterExpiredCodes = (searchRequest: SearchRequest): SearchRequest => {
-    return {
-      "query": {
-        "bool": {
-          "must": [
-            {
-              "bool": {
-                "should": {
-                  "terms": {
-                    "_id": [44863, 27733, 27732, 27731, 2065, 35443]
-                  }
-                }
-              }
-            },
-            {
-              "bool": {
-                "minimum_should_match": 1,
-                "should": [
-                  {
-                    "bool": {
-                      "must_not": {
-                        "exists": {
-                          "field": "end_date"
-                        }
-                      }
-                    }
-                  },
-                  {
-                    "range": {
-                      "end_date": {
-                        "gt": "now"
-                      }
-                    }
-                  }
-                ]
-              }
-            }
-          ]
-        }
-      }
     }
   }
 
@@ -105,9 +49,7 @@ export class TaxonomyService {
    * @returns {{ id: string, label: string }} An ID and label pair for each taxonomic code
    */
   _sanitizeSpeciesData = (data: SearchHit<ITaxonomySource>[]): { id: string; label: string }[] => {
-    return data
-      .filter((item: SearchHit<ITaxonomySource>) => this._isValidTaxonomySource(item._source))
-      .map((item: SearchHit<ITaxonomySource>) => {
+    return data.map((item: SearchHit<ITaxonomySource>) => {
         const { _id: id, _source } = item;
 
         const label = [
@@ -195,8 +137,37 @@ export class TaxonomyService {
     const response = await this._elasticSearch({
       query: {
         bool: {
-          should: searchConfig
-        }
+          must: [
+            {
+              bool: {
+                should: searchConfig
+              }
+            },
+            {
+              bool: {
+                minimum_should_match: 1,
+                should: [
+                  {
+                    bool: {
+                      must_not: {
+                        exists: {
+                          field: "end_date"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    range: {
+                      end_date: {
+                        gt: "now"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        } as QueryDslBoolQuery
       }
     });
 
