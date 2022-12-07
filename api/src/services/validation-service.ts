@@ -98,16 +98,18 @@ export class ValidationService extends DBService {
       const csvState = this.validateDWC(dwcPrep.archive);
       // update submission
       await this.persistValidationResults(csvState.csv_state, csvState.media_state);
+
       await this.occurrenceService.updateSurveyOccurrenceSubmission(
         submissionId,
         dwcPrep.archive.rawFile.fileName,
         dwcPrep.s3InputKey
       );
 
-      // Parse Archive into JSON file for custom validation
-      await this.parseDWCToJSON(submissionId, dwcPrep.archive);
       // insert validated status
       await this.submissionRepository.insertSubmissionStatus(submissionId, SUBMISSION_STATUS_TYPE.TEMPLATE_VALIDATED);
+
+      // Parse Archive into JSON file for custom validation
+      await this.parseDWCToJSON(submissionId, dwcPrep.archive);
 
       await this.templateScrapeAndUploadOccurrences(submissionId);
     } catch (error) {
@@ -133,7 +135,7 @@ export class ValidationService extends DBService {
       // template transformation
       await this.templateTransformation(submissionId, submissionPrep.xlsx, submissionPrep.s3InputKey, surveyId);
 
-      // insert template validated status
+      // insert template transformed status
       await this.submissionRepository.insertSubmissionStatus(submissionId, SUBMISSION_STATUS_TYPE.TEMPLATE_TRANSFORMED);
 
       // occurrence scraping
