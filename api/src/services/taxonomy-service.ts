@@ -1,6 +1,11 @@
 import { Client } from '@elastic/elasticsearch';
-import { AggregationsAggregate, QueryDslBoolQuery, SearchHit, SearchRequest, SearchResponse } from '@elastic/elasticsearch/lib/api/types';
-// import moment from 'moment';
+import {
+  AggregationsAggregate,
+  QueryDslBoolQuery,
+  SearchHit,
+  SearchRequest,
+  SearchResponse
+} from '@elastic/elasticsearch/lib/api/types';
 import { getLogger } from '../utils/logger';
 
 const defaultLog = getLogger('services/taxonomy-service');
@@ -19,10 +24,12 @@ export interface ITaxonomySource {
 }
 
 /**
+ *
  * Service for retreiving and processing taxonomic data from Elasticsearch.
  */
 export class TaxonomyService {
   /**
+   *
    * Performs a query in Elasticsearch based on the given search criteria
    * @param {SearchRequest} searchRequest The Elastic search request object
    * @returns {Promise<SearchResponse<ITaxonomySource, Record<string, AggregationsAggregate>> | undefined>}
@@ -32,11 +39,12 @@ export class TaxonomyService {
     searchRequest: SearchRequest
   ): Promise<SearchResponse<ITaxonomySource, Record<string, AggregationsAggregate>> | undefined> {
     try {
+      defaultLog.debug({ label: '_elasticSearch', searchRequest });
       const client = new Client({ node: process.env.ELASTICSEARCH_URL });
 
       return client.search({
         index: process.env.ELASTICSEARCH_TAXONOMY_INDEX,
-        ...searchRequest,
+        ...searchRequest
       });
     } catch (error) {
       defaultLog.debug({ label: 'elasticSearch', message: 'error', error });
@@ -44,37 +52,41 @@ export class TaxonomyService {
   }
 
   /**
+   *
    * Sanitizes species data retrieved from Elasticsearch.
    * @param {SearchHit<ITaxonomySource>[]} data The data response fromEelasticsearch
-   * @returns {{ id: string, label: string }} An ID and label pair for each taxonomic code
+   * @returns {{ id: string, label: string }[]} An ID and label pair for each taxonomic code
+   * @memberof TaxonomyService
    */
   _sanitizeSpeciesData = (data: SearchHit<ITaxonomySource>[]): { id: string; label: string }[] => {
     return data.map((item: SearchHit<ITaxonomySource>) => {
-        const { _id: id, _source } = item;
+      const { _id: id, _source } = item;
 
-        const label = [
-          _source?.code,
-          [
-            [_source?.tty_kingdom, _source?.tty_name].filter(Boolean).join(' '),
-            [_source?.unit_name1, _source?.unit_name2, _source?.unit_name3].filter(Boolean).join(' '),
-            _source?.english_name
-          ]
-            .filter(Boolean)
-            .join(', ')
+      const label = [
+        _source?.code,
+        [
+          [_source?.tty_kingdom, _source?.tty_name].filter(Boolean).join(' '),
+          [_source?.unit_name1, _source?.unit_name2, _source?.unit_name3].filter(Boolean).join(' '),
+          _source?.english_name
         ]
           .filter(Boolean)
-          .join(': ');
+          .join(', ')
+      ]
+        .filter(Boolean)
+        .join(': ');
 
-        return { id, label };
-      });
+      return { id, label };
+    });
   };
 
   /**
+   *
    * Searches the taxonomy Elasticsearch index by taxonomic code IDs
-   * @param ids The array of taxonomic code IDs
-   * @returns The response from Elasticsearch
+   * @param {string[] | number[]} ids The array of taxonomic code IDs
+   * @return {Promise<(ITaxonomySource | undefined)[]>} The source of the response from Elasticsearch
+   * @memberof TaxonomyService
    */
-  async getTaxonomyFromIds(ids: number[]) {
+  async getTaxonomyFromIds(ids: string[] | number[]) {
     const response = await this._elasticSearch({
       query: {
         terms: {
@@ -87,11 +99,13 @@ export class TaxonomyService {
   }
 
   /**
+   *
    * Searches the taxonomy Elasticsearch index by taxonomic code IDs and santizes the response
-   * @param ids The array of taxonomic code IDs
+   * @param {string[] | number[]} ids The array of taxonomic code IDs
    * @returns {Promise<{ id: string, label: string}[]>} Promise resolving an ID and label pair for each taxonomic code
+   * @memberof TaxonomyService
    */
-  async getSpeciesFromIds(ids: string[]): Promise<{ id: string; label: string }[]> {
+  async getSpeciesFromIds(ids: string[] | number[]): Promise<{ id: string; label: string }[]> {
     const response = await this._elasticSearch({
       query: {
         terms: {
@@ -104,9 +118,11 @@ export class TaxonomyService {
   }
 
   /**
+   *
    * Maps a taxonomic search term to an Elasticsearch query, then performs the query and sanitizes the response
-   * @param term The search term string
+   * @param {string} term The search term string
    * @returns {Promise<{ id: string, label: string}[]>} Promise resolving an ID and label pair for each taxonomic code
+   * @memberof TaxonomyService
    */
   async searchSpecies(term: string): Promise<{ id: string; label: string }[]> {
     const searchConfig: object[] = [];
@@ -151,7 +167,7 @@ export class TaxonomyService {
                     bool: {
                       must_not: {
                         exists: {
-                          field: "end_date"
+                          field: 'end_date'
                         }
                       }
                     }
@@ -159,7 +175,7 @@ export class TaxonomyService {
                   {
                     range: {
                       end_date: {
-                        gt: "now"
+                        gt: 'now'
                       }
                     }
                   }
@@ -170,8 +186,6 @@ export class TaxonomyService {
         } as QueryDslBoolQuery
       }
     });
-
-    defaultLog.debug({ label: 'searchSpecies', response });
 
     return response ? this._sanitizeSpeciesData(response.hits.hits) : [];
   }
