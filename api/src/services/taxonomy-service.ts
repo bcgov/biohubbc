@@ -118,7 +118,11 @@ export class TaxonomyService {
 
   /**
    *
-   * Maps a taxonomic search term to an Elasticsearch query, then performs the query and sanitizes the response
+   * Maps a taxonomic search term to an Elasticsearch query, then performs the query and sanitizes the response.
+   * The query also includes a boolean match to only include records whose `end_date` field is either
+   * undefined/null or is a date that hasn't occurred yet. This filtering is not done on similar ES queries,
+   * since we must still be able to search by a given taxonomic code ID, even if is one that is expired.
+   *
    * @param {string} term The search term string
    * @returns {Promise<{ id: string, label: string}[]>} Promise resolving an ID and label pair for each taxonomic code
    * @memberof TaxonomyService
