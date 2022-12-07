@@ -239,7 +239,9 @@ const EditSurveyPage = () => {
 
             <Box display="flex" justifyContent="space-between">
               <Box className={classes.pageTitleContainer}>
-                <Typography variant="h1" className={classes.pageTitle}>Edit Survey</Typography>
+                <Typography variant="h1" className={classes.pageTitle}>
+                  Edit Survey
+                </Typography>
               </Box>
               <Box flex="0 0 auto" className={classes.pageTitleActions}>
                 <Button color="primary" variant="contained" onClick={() => formikRef.current?.submitForm()}>
