@@ -198,23 +198,6 @@ POST.apiDoc = {
                   }
                 }
               }
-            },
-            agreements: {
-              type: 'object',
-              properties: {
-                foippa_requirements_accepted: {
-                  type: 'boolean',
-                  enum: [true],
-                  description:
-                    'Data meets or exceeds the Freedom of Information and Protection of Privacy Act (FOIPPA) Requirements'
-                },
-                sedis_procedures_accepted: {
-                  type: 'boolean',
-                  enum: [true],
-                  description:
-                    'Data is in accordance with the Species and Ecosystems Data and Information Security (SEDIS) Procedures'
-                }
-              }
             }
           }
         }

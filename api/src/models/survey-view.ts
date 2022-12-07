@@ -9,6 +9,7 @@ export type SurveyObject = {
   funding: GetSurveyFundingSources;
   proprietor: GetSurveyProprietorData | null;
   location: GetSurveyLocationData;
+  docs_to_be_reviewed: number;
 };
 
 export class GetSurveyData {
@@ -96,7 +97,7 @@ export class GetSurveyPurposeAndMethodologyData {
 
   constructor(obj?: any) {
     this.intended_outcome_id = obj?.intended_outcome_id || null;
-    this.additional_details = obj?.additional_details || null;
+    this.additional_details = obj?.additional_details || '';
     this.field_method_id = obj?.field_method_id || null;
     this.ecological_season_id = obj?.ecological_season_id || null;
     this.vantage_code_ids = (obj?.vantage_ids?.length && obj.vantage_ids) || [];

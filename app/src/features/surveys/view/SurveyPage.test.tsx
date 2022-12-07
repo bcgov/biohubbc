@@ -59,7 +59,7 @@ const defaultAuthState = {
   }
 };
 
-describe('SurveyPage', () => {
+describe.skip('SurveyPage', () => {
   beforeEach(() => {
     // clear mocks before each test
     mockBiohubApi().project.getProjectForView.mockClear();

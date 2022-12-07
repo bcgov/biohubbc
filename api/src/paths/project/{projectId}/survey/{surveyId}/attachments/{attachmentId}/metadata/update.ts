@@ -10,7 +10,7 @@ import { authorizeRequestHandler } from '../../../../../../../../request-handler
 import { getLogger } from '../../../../../../../../utils/logger';
 import { deleteSurveyReportAttachmentAuthors, insertSurveyReportAttachmentAuthor } from '../../report/upload';
 
-const defaultLog = getLogger('/api/project/{projectId}/attachments/{attachmentId}/metadata/update');
+const defaultLog = getLogger('`/api/project/{projectId}/survey/{surveyId}/attachments/${attachmentId}/metadata/update');
 
 export const PUT: Operation = [
   authorizeRequestHandler((req) => {

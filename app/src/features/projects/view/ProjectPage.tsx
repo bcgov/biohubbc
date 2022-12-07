@@ -2,15 +2,16 @@ import Box from '@material-ui/core/Box';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
+import Paper from '@material-ui/core/Paper';
 import LocationBoundary from 'features/projects/view/components/LocationBoundary';
 import ProjectAttachments from 'features/projects/view/ProjectAttachments';
-import ProjectDetails from 'features/projects/view/ProjectDetails';
 import SurveysListPage from 'features/surveys/list/SurveysListPage';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
+import ProjectDetails from './ProjectDetails';
 import ProjectHeader from './ProjectHeader';
 
 /**
@@ -74,21 +75,33 @@ const ProjectPage: React.FC = () => {
       <ProjectHeader projectWithDetails={projectWithDetails} refresh={getProject} />
 
       <Container maxWidth="xl">
-        <Box my={3}>
+        <Box py={3}>
+          {/* <Alert variant="filled" severity="error" elevation={1} style={{marginBottom: '24px'}}>
+            <AlertTitle style={{'fontWeight': 700}}>Security Review Required</AlertTitle>
+          </Alert> */}
+
           <Grid container spacing={3}>
-            <Grid item xs={12} lg={8}>
-              <Box>
+            <Grid item md={12} lg={4}>
+              <Paper elevation={0}>
                 <ProjectDetails projectForViewData={projectWithDetails} codes={codes} refresh={getProject} />
-              </Box>
-              <Box mt={3}>
-                <SurveysListPage projectForViewData={projectWithDetails} />
-              </Box>
-              <Box mt={3}>
-                <ProjectAttachments projectForViewData={projectWithDetails} />
-              </Box>
+              </Paper>
             </Grid>
-            <Grid item xs={12} lg={4}>
-              <LocationBoundary projectForViewData={projectWithDetails} codes={codes} refresh={getProject} />
+            <Grid item md={12} lg={8}>
+              <Box mb={3}>
+                <Paper elevation={0}>
+                  <SurveysListPage projectForViewData={projectWithDetails} />
+                </Paper>
+              </Box>
+              <Box mb={3}>
+                <Paper elevation={0}>
+                  <ProjectAttachments projectForViewData={projectWithDetails} />
+                </Paper>
+              </Box>
+              <Box>
+                <Paper elevation={0}>
+                  <LocationBoundary projectForViewData={projectWithDetails} codes={codes} refresh={getProject} />
+                </Paper>
+              </Box>
             </Grid>
           </Grid>
         </Box>

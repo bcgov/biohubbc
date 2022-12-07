@@ -18,3 +18,7 @@ export enum SurveyStatusType {
   COMPLETED = 'Completed',
   ACTIVE = 'Active'
 }
+
+export enum DocumentReviewStatus {
+  PENDING = 'Pending Review'
+}

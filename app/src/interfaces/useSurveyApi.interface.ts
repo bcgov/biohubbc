@@ -40,6 +40,7 @@ export interface ISurveyFundingSourceForView {
   funding_start_date: string;
   funding_end_date: string;
   agency_name: string;
+  funding_source_project_id: string;
 }
 
 export type ISurveyAvailableFundingSources = IGetProjectForUpdateResponseFundingSource;
@@ -83,6 +84,7 @@ export interface SurveyViewObject {
   purpose_and_methodology: IGetSurveyForViewResponsePurposeAndMethodology;
   funding: ISurveyFundingSources;
   proprietor: IGetSurveyForViewResponseProprietor | null;
+  docs_to_be_reviewed: number;
 }
 
 export interface SurveyUpdateObject {
@@ -170,8 +172,12 @@ export interface IGetSurveyAttachment {
   lastModified: string;
   size: number;
   securityToken: any;
+  securityReviewTimestamp: string;
   revisionCount: number;
+  securityRuleCount?: number;
 }
+
+export type IGetSurveyReportAttachment = IGetSurveyAttachment & { fileType: 'Report' };
 
 /**
  * Get survey attachments response object.
@@ -181,6 +187,7 @@ export interface IGetSurveyAttachment {
  */
 export interface IGetSurveyAttachmentsResponse {
   attachmentsList: IGetSurveyAttachment[];
+  reportAttachmentsList: IGetSurveyReportAttachment[];
 }
 
 export interface ISurveyPermits {
@@ -190,3 +197,21 @@ export interface ISurveyPermits {
     permit_type: string;
   }[];
 }
+
+export interface IUpdateAgreementsForm {
+  agreements: {
+    sedis_procedures_accepted: StringBoolean;
+    foippa_requirements_accepted: StringBoolean;
+  };
+}
+
+export interface IGetSurveyForUpdateResponse {
+  surveyData: SurveyUpdateObject;
+}
+
+export interface IEditSurveyRequest
+  extends IGeneralInformationForm,
+    IPurposeAndMethodologyForm,
+    IStudyAreaForm,
+    IProprietaryDataForm,
+    IUpdateAgreementsForm {}

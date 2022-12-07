@@ -29,11 +29,6 @@ h3.MuiTypography-root + p {
   }
 }
 
-dd {
-  margin: 0;
-  font-size: 1rem;
-}
-
 .ddInline {
   dd {
     position: relative;
@@ -70,7 +65,7 @@ dd {
 }
 
 .pageProgress {
-  position: absolute;
+  position: fixed;
   top: 50%;
   left: 50%;
   margin-left: -20px;
