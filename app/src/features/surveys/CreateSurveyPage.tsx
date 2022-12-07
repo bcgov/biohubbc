@@ -10,6 +10,8 @@ import Paper from '@material-ui/core/Paper';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
+import { mdiChevronRight } from '@mdi/js';
+import Icon from '@mdi/react';
 // import { mdiChevronRight } from '@mdi/js';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
@@ -299,35 +301,37 @@ const CreateSurveyPage = () => {
       <Prompt when={enableCancelCheck} message={handleLocationChange} />
       <Paper square={true} elevation={0}>
         <Container maxWidth="xl">
-          <Box py={3} display="flex">
-            <Breadcrumbs>
-              <Link
-                color="primary"
-                onClick={() => history.push('/admin/projects')}
-                aria-current="page"
-                className={classes.breadCrumbLink}>
-                <Typography variant="body2">Projects</Typography>
-              </Link>
-              <Link color="primary" onClick={handleCancel} aria-current="page" className={classes.breadCrumbLink}>
-                <Typography variant="body2">{projectWithDetails.project.project_name}</Typography>
-              </Link>
-              <Typography variant="body2">Create Survey</Typography>
-            </Breadcrumbs>
-          </Box>
-
-          <Box py={3} display="flex" justifyContent="space-between">
-            <Box className={classes.pageTitleContainer}>
-              <Typography variant="h1" className={classes.pageTitle}>
-                Create Survey
-              </Typography>
+          <Box py={3}>
+            <Box>
+              <Breadcrumbs separator={<Icon path={mdiChevronRight} size={0.8} />}>
+                <Link
+                  color="primary"
+                  onClick={() => history.push('/admin/projects')}
+                  aria-current="page"
+                  className={classes.breadCrumbLink}>
+                  <Typography variant="body2">Projects</Typography>
+                </Link>
+                <Link color="primary" onClick={handleCancel} aria-current="page" className={classes.breadCrumbLink}>
+                  <Typography variant="body2">{projectWithDetails.project.project_name}</Typography>
+                </Link>
+                <Typography variant="body2">Create Survey</Typography>
+              </Breadcrumbs>
             </Box>
-            <Box flex="0 0 auto" className={classes.pageTitleActions}>
-              <Button color="primary" variant="contained" onClick={() => formikRef.current?.submitForm()}>
-                Save and Exit
-              </Button>
-              <Button color="primary" variant="outlined" onClick={handleCancel}>
-                Cancel
-              </Button>
+
+            <Box display="flex" justifyContent="space-between">
+              <Box className={classes.pageTitleContainer}>
+                <Typography variant="h1" className={classes.pageTitle}>
+                  Create Survey
+                </Typography>
+              </Box>
+              <Box flex="0 0 auto" className={classes.pageTitleActions}>
+                <Button color="primary" variant="contained" onClick={() => formikRef.current?.submitForm()}>
+                  Save and Exit
+                </Button>
+                <Button color="primary" variant="outlined" onClick={handleCancel}>
+                  Cancel
+                </Button>
+              </Box>
             </Box>
           </Box>
         </Container>
