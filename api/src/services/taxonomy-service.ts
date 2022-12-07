@@ -1,10 +1,11 @@
 import { Client } from '@elastic/elasticsearch';
 import { AggregationsAggregate, SearchHit, SearchRequest, SearchResponse } from '@elastic/elasticsearch/lib/api/types';
+// import moment from 'moment';
 import { getLogger } from '../utils/logger';
 
 const defaultLog = getLogger('services/taxonomy-service');
 
-interface ITaxonomySource {
+export interface ITaxonomySource {
   unit_name1: string;
   unit_name2: string;
   unit_name3: string;
@@ -32,9 +33,10 @@ export class TaxonomyService {
   ): Promise<SearchResponse<ITaxonomySource, Record<string, AggregationsAggregate>> | undefined> {
     try {
       const client = new Client({ node: process.env.ELASTICSEARCH_URL });
+
       return client.search({
         index: process.env.ELASTICSEARCH_TAXONOMY_INDEX,
-        ...searchRequest
+        ...this._filterExpiredCodes(searchRequest),
       });
     } catch (error) {
       defaultLog.debug({ label: 'elasticSearch', message: 'error', error });
@@ -53,6 +55,49 @@ export class TaxonomyService {
 
     return true;
   };
+
+  _filterExpiredCodes = (searchRequest: SearchRequest): SearchRequest => {
+    return {
+      "query": {
+        "bool": {
+          "must": [
+            {
+              "bool": {
+                "should": {
+                  "terms": {
+                    "_id": [44863, 27733, 27732, 27731, 2065, 35443]
+                  }
+                }
+              }
+            },
+            {
+              "bool": {
+                "minimum_should_match": 1,
+                "should": [
+                  {
+                    "bool": {
+                      "must_not": {
+                        "exists": {
+                          "field": "end_date"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "range": {
+                      "end_date": {
+                        "gt": "now"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
 
   /**
    * Sanitizes species data retrieved from Elasticsearch.
