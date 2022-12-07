@@ -160,6 +160,7 @@ export class PlatformService extends DBService {
     const surveyData = await surveyService.getLatestSurveyOccurrenceSubmission(surveyId);
 
     console.log('**************************************');
+    console.log('surveyData:', surveyData);
 
     const jsonObject = surveyData.darwin_core_source;
 
@@ -177,36 +178,45 @@ export class PlatformService extends DBService {
 
     const taxonomyService = new TaxonomyService();
 
-    console.log('json object is: ', jsonObject);
-
-    const manipulatedObject = await JSONPath({
-      path: '$..[taxonId]^',
-      json: jsonObject,
-      callback: async (item, type, payload) => {
-        console.log('item is:', item);
-        console.log('type is:  ', type);
-        console.log('payload is : ', payload);
-        const scientific_name = await taxonomyService.getScientificNameBySpeciesCode(item.taxonId);
-
-        //console.log('scientific_name inside the callback: ', scientific_name[0]);
-
-        item = {
-          ...item,
-          scientific_name: scientific_name[0].scientific_name
-        };
-
-        console.log('path to json :', jsonObject[payload.path]);
-
-        jsonObject[payload.path] = item;
-
-        console.log('manipulated item: ', item);
-        return item;
-      }
-    });
-
-    console.log('manipulated object: ', manipulatedObject);
-
     console.log('jsonObject:', jsonObject);
+
+    const callback = async (item: any, type: any, payload: any) => {
+      console.log('item:', item);
+      console.log('type:', type);
+      console.log('payload:', payload);
+      const scientific_name = await taxonomyService.getScientificNameBySpeciesCode(item.taxonId);
+
+      console.log('payload.parent:', payload.parent);
+
+      item['scientific_name'] = scientific_name[0].scientific_name;
+
+      // jsonObject[payload.parentProperty] = item;
+
+      console.log('item:', item);
+      console.log('jsonObject:', jsonObject);
+
+      return jsonObject;
+    };
+
+    const updateJsonObject = async () => {
+      let newJson;
+
+      const json_path = await JSONPath('$..[taxonId]^', jsonObject, callback, undefined);
+
+      // const findTaxon = await JSONPath({
+      //   path: '$..[taxonId]^',
+      //   json: jsonObject,
+
+      // });
+
+      console.log('json_path:', json_path);
+
+      return newJson;
+    };
+
+    const newJson = await updateJsonObject();
+
+    console.log('-----------------------------------newJson:', newJson);
 
     // const newResponse = await taxonomyService.getScientificNameBySpeciesCode(term[0].toString());
 
