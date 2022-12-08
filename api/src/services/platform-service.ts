@@ -169,11 +169,11 @@ export class PlatformService extends DBService {
     const json_path_with_details = JSONPath({ path: '$..[taxonId]^', json: jsonObject, resultType: 'all' });
 
     let patch: Operation[];
+
     await Promise.all(
       json_path_with_details.map(async (item: any) => {
-        const scientific_name_array = await taxonomyService.getScientificNameBySpeciesCode(item.value['taxonId']);
-
-        const scientific_name_object_to_be_inserted = scientific_name_array[0];
+        const scientific_name = await taxonomyService.getScientificNameBySpeciesCode(item.value['taxonId']);
+        console.log('scientific_name: ', scientific_name);
 
         patch = [
           {
@@ -181,7 +181,7 @@ export class PlatformService extends DBService {
             path: item.pointer,
             value: {
               taxonId: item.value['taxonId'],
-              scientific_name: scientific_name_object_to_be_inserted['scientific_name']
+              scientific_name: scientific_name
             }
           }
         ];

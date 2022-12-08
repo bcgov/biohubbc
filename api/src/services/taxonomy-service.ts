@@ -193,22 +193,20 @@ export class TaxonomyService {
     return response ? this._sanitizeSpeciesData(response.hits.hits) : [];
   }
 
-  private formatScientificName = (data: SearchHit<any>[]) => {
-    return data.map((item) => {
-      const label = [
-        [
-          [item._source.unit_name1, item._source.unit_name2, item._source.unit_name3, item._source.taxon_authority]
-            .filter(Boolean)
-            .join(' ')
-        ]
+  private formatScientificName = (data: SearchHit<any>) => {
+    const label = [
+      [
+        [data._source.unit_name1, data._source.unit_name2, data._source.unit_name3, data._source.taxon_authority]
           .filter(Boolean)
-          .join(', ')
+          .join(' ')
       ]
         .filter(Boolean)
-        .join(': ');
+        .join(', ')
+    ]
+      .filter(Boolean)
+      .join(': ');
 
-      return { scientific_name: label };
-    });
+    return label;
   };
 
   async getScientificNameBySpeciesCode(code: string) {
@@ -242,6 +240,6 @@ export class TaxonomyService {
       }
     });
 
-    return response ? this.formatScientificName(response.hits.hits) : [];
+    return response ? this.formatScientificName(response.hits.hits[0]) : null;
   }
 }
