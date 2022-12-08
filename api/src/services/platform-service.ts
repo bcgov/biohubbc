@@ -170,14 +170,15 @@ export class PlatformService extends DBService {
 
     const patcharray: Operation[] = await Promise.all(
       json_path_with_details.map(async (item: any) => {
-        const scientific_name = await taxonomyService.getScientificNameBySpeciesCode(item.value['taxonId']);
+        const enriched_data = await taxonomyService.getEnrichedDataForSpeciesCode(item.value['taxonId']);
 
         const patch: Operation = {
           op: 'add',
           path: item.pointer,
           value: {
             taxonId: item.value['taxonId'],
-            scientific_name: scientific_name
+            scientific_name: enriched_data?.scientific_name,
+            english_name: enriched_data?.english_name
           }
         };
 

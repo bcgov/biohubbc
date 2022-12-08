@@ -193,23 +193,19 @@ export class TaxonomyService {
     return response ? this._sanitizeSpeciesData(response.hits.hits) : [];
   }
 
-  private formatScientificName = (data: SearchHit<any>) => {
-    const label = [
-      [
-        [data._source.unit_name1, data._source.unit_name2, data._source.unit_name3, data._source.taxon_authority]
-          .filter(Boolean)
-          .join(' ')
-      ]
-        .filter(Boolean)
-        .join(', ')
-    ]
+  private formatEnrichedData = (data: SearchHit<any>) => {
+    const scientific_name = [data._source.unit_name1, data._source.unit_name2, data._source.unit_name3]
       .filter(Boolean)
-      .join(': ');
+      .join(' ');
+    const english_name = data._source.english_name;
+    console.log('english name: ', english_name);
 
-    return label;
+    console.log('label is: ', scientific_name);
+
+    return { scientific_name, english_name };
   };
 
-  async getScientificNameBySpeciesCode(code: string) {
+  async getEnrichedDataForSpeciesCode(code: string) {
     const response = await this._elasticSearch({
       query: {
         bool: {
@@ -240,6 +236,6 @@ export class TaxonomyService {
       }
     });
 
-    return response ? this.formatScientificName(response.hits.hits[0]) : null;
+    return response ? this.formatEnrichedData(response.hits.hits[0]) : null;
   }
 }
