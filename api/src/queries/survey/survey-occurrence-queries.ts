@@ -68,8 +68,6 @@ export const insertSurveyOccurrenceSubmissionSQL = (data: {
     }
   });
 
-  console.log('fakeSpeciesJSON: ', fakeSpeciesJSON);
-
   const sqlStatement: SQLStatement = SQL`
     INSERT INTO occurrence_submission (
       survey_id,

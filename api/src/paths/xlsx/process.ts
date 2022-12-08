@@ -110,14 +110,8 @@ export function processFile(): RequestHandler {
     try {
       await connection.open();
 
-      console.log('received a submission file');
-
       const validationService = new ValidationService(connection);
-      const response = await validationService.processFile(submissionId, surveyId);
-
-      console.log('response from xlsx/process endpoint: ', response);
-
-      console.log('File processing complete');
+      await validationService.processFile(submissionId, surveyId);
 
       await connection.commit();
     } catch (error) {

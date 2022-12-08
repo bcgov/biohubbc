@@ -168,27 +168,24 @@ export class PlatformService extends DBService {
 
     const json_path_with_details = JSONPath({ path: '$..[taxonId]^', json: jsonObject, resultType: 'all' });
 
-    let patch: Operation[];
-
-    await Promise.all(
+    const patcharray: Operation[] = await Promise.all(
       json_path_with_details.map(async (item: any) => {
         const scientific_name = await taxonomyService.getScientificNameBySpeciesCode(item.value['taxonId']);
-        console.log('scientific_name: ', scientific_name);
 
-        patch = [
-          {
-            op: 'add',
-            path: item.pointer,
-            value: {
-              taxonId: item.value['taxonId'],
-              scientific_name: scientific_name
-            }
+        const patch: Operation = {
+          op: 'add',
+          path: item.pointer,
+          value: {
+            taxonId: item.value['taxonId'],
+            scientific_name: scientific_name
           }
-        ];
+        };
 
-        jsonObject = jsonpatch.applyPatch(jsonObject, patch).newDocument;
+        return patch;
       })
     );
+
+    jsonObject = jsonpatch.applyPatch(jsonObject, patcharray).newDocument;
 
     console.log('manipulated jsonObject', jsonObject);
 
