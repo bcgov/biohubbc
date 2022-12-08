@@ -160,59 +160,19 @@ export class PlatformService extends DBService {
     const surveyService = new SurveyService(this.connection);
     const surveyData = await surveyService.getLatestSurveyOccurrenceSubmission(surveyId);
 
-    console.log('**************************************');
-    console.log('surveyData:', surveyData);
-
     let jsonObject = surveyData.darwin_core_source;
-
-    console.log(jsonObject);
-
-    // const term = JSONPath({ path: '$..taxonId', json: jsonObject });
-
-    // console.log('******** term ********: ', term);
-
-    //const paths = jsonpath.paths(jsonObject, '$..taxonId');
-
-    //console.log('******** paths  ********: ', paths);
-
-    //const nodes = jsonpath.nodes(jsonObject, '$..taxonId');
-
-    //console.log('******** nodes  ********: ', nodes);
-
-    // const pathsToPatch: string[] = JSONPath({
-    //   json: hierarchicalRowObjects,
-    //   path: `$${'._children[*]'.repeat(distanceToRoot - 1)}._children[?(@._childKeys.indexOf("${
-    //     rowObjectsItem._parentKey
-    //   }") != -1)]`,
-    //   resultType: 'pointer'
-    // });
-
-    // const patchOperations: Operation[] = pathsToPatch.map((pathToPatch) => {
-    //   return { op: 'add', path: `${pathToPatch}/_children/`, value: rowObjectsItem };
-    // });
-
-    // jsonpatch.applyPatch(hierarchicalRowObjects, patchOperations);
 
     const taxonomyService = new TaxonomyService();
 
-    console.log('jsonObject:', jsonObject);
-
-    //step 1: get the path of the code that needs to be changed
+    console.log('initial jsonObject:', jsonObject);
 
     const json_path_with_details = JSONPath({ path: '$..[taxonId]^', json: jsonObject, resultType: 'all' });
 
     console.log('json_path_with_details', json_path_with_details);
 
-    //step 2:  get the scientific name from elastic search
-
-    //let someObject = { firstName: 'Albert', contactDetails: { phoneNumbers: [] } };
-
-    let patch;
-
-    json_path_with_details.map(async (item: any) => {
+    let patch: Operation[];
+    const manipulated = json_path_with_details.map(async (item: any) => {
       console.log('***************** each item **************');
-      // console.log(item);
-      // console.log('taxonId: ', item.value['taxonId']);
 
       const scientific_name_array = await taxonomyService.getScientificNameBySpeciesCode(item.value['taxonId']);
 
@@ -221,7 +181,7 @@ export class PlatformService extends DBService {
 
       console.log('item.path: ', item.pointer);
 
-      const patch: Operation[] = [
+      patch = [
         {
           op: 'add',
           path: item.pointer,
@@ -234,16 +194,14 @@ export class PlatformService extends DBService {
 
       jsonObject = jsonpatch.applyPatch(jsonObject, patch).newDocument;
 
-      console.log('updated jsonObject', jsonObject);
-
       console.log('-------------------------------------------------------------------');
 
-      return patch;
+      return jsonObject;
     });
 
-    console.log('patch outside the function', patch);
-
     console.log('outside of function - updated jsonObject', jsonObject);
+
+    console.log('manipulated: ', await manipulated);
 
     if (!surveyData.output_key) {
       throw new HTTP400('no s3Key found');
