@@ -168,40 +168,29 @@ export class PlatformService extends DBService {
 
     const json_path_with_details = JSONPath({ path: '$..[taxonId]^', json: jsonObject, resultType: 'all' });
 
-    console.log('json_path_with_details', json_path_with_details);
-
     let patch: Operation[];
-    const manipulated = json_path_with_details.map(async (item: any) => {
-      console.log('***************** each item **************');
+    await Promise.all(
+      json_path_with_details.map(async (item: any) => {
+        const scientific_name_array = await taxonomyService.getScientificNameBySpeciesCode(item.value['taxonId']);
 
-      const scientific_name_array = await taxonomyService.getScientificNameBySpeciesCode(item.value['taxonId']);
+        const scientific_name_object_to_be_inserted = scientific_name_array[0];
 
-      const scientific_name_object_to_be_inserted = scientific_name_array[0];
-      console.log('scientific_name is : ', scientific_name_object_to_be_inserted);
-
-      console.log('item.path: ', item.pointer);
-
-      patch = [
-        {
-          op: 'add',
-          path: item.pointer,
-          value: {
-            taxonId: item.value['taxonId'],
-            scientific_name: scientific_name_object_to_be_inserted['scientific_name']
+        patch = [
+          {
+            op: 'add',
+            path: item.pointer,
+            value: {
+              taxonId: item.value['taxonId'],
+              scientific_name: scientific_name_object_to_be_inserted['scientific_name']
+            }
           }
-        }
-      ];
+        ];
 
-      jsonObject = jsonpatch.applyPatch(jsonObject, patch).newDocument;
+        jsonObject = jsonpatch.applyPatch(jsonObject, patch).newDocument;
+      })
+    );
 
-      console.log('-------------------------------------------------------------------');
-
-      return jsonObject;
-    });
-
-    console.log('outside of function - updated jsonObject', jsonObject);
-
-    console.log('manipulated: ', await manipulated);
+    console.log('manipulated jsonObject', jsonObject);
 
     if (!surveyData.output_key) {
       throw new HTTP400('no s3Key found');
