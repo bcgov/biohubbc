@@ -16,6 +16,9 @@ import {
 import { DWCArchiveValidator } from '../dwc/dwc-archive-file';
 import { XLSXCSVValidator } from '../xlsx/xlsx-file';
 import {
+  getParentChildKeyMatchValidator
+} from '../xlsx/validation/xlsx-validation'
+import {
   getFileEmptyValidator,
   getFileMimeTypeValidator,
   getRequiredFilesValidator
@@ -34,6 +37,10 @@ export const ValidationRulesRegistry = {
     {
       name: 'submission_required_files_validator',
       generator: getRequiredFilesValidator
+    },
+    {
+      name: 'workbook_parent_child_key_match_validator',
+      generator: getParentChildKeyMatchValidator
     },
     {
       name: 'file_duplicate_columns_validator',
@@ -144,11 +151,38 @@ export class ValidationSchemaParser {
     return rules;
   }
 
-  getAllWorkbookValidations(): WorkBookValidator[] {
-    /**
-     * @TODO 
-     **/  
-    return [];
+  /**
+   * @todo jsdoc
+   *
+   * @return {*}  {WorkBookValidator[]}
+   * @memberof ValidationSchemaParser
+   */
+  getWorkbookValidations(): WorkBookValidator[] {
+    const validationSchemas = this.getWorkbookValidationSchemas();
+
+    const rules: WorkBookValidator[] = [];
+
+    validationSchemas.forEach((validationSchema) => {
+      const keys = Object.keys(validationSchema);
+
+      if (keys.length !== 1) {
+        return;
+      }
+
+      const key = keys[0];
+
+      const generatorFunction = ValidationRulesRegistry.findMatchingRule(key);
+
+      if (!generatorFunction) {
+        return;
+      }
+
+      const rule = generatorFunction(validationSchema);
+
+      rules.push(rule);
+    });
+
+    return rules;
   }
 
   getAllColumnValidations(fileName: string): CSVValidator[] {
@@ -195,6 +229,10 @@ export class ValidationSchemaParser {
 
   getSubmissionValidationSchemas(): object[] {
     return jsonpath.query(this.validationSchema, this.getSubmissionValidationsJsonPath())?.[0] || [];
+  }
+
+  getWorkbookValidationSchemas(): object[] {
+    return jsonpath.query(this.validationSchema, this.getWorkbookValidationsJsonPath())?.[0] || [];
   }
 
   getFileValidationSchemas(fileName: string): object[] {
@@ -247,6 +285,10 @@ export class ValidationSchemaParser {
 
   getSubmissionValidationsJsonPath(): string {
     return '$.validations';
+  }
+
+  getWorkbookValidationsJsonPath(): string {
+    return '$.'
   }
 
   getFileValidationsJsonPath(fileName: string): string {

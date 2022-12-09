@@ -25,6 +25,11 @@ export class XLSXCSV {
     this.workbook = new CSVWorkBook(xlsx.read(this.rawFile.buffer, { ...options }));
   }
 
+  /**
+   * Determines validity of submission media.
+   * @param validationSchemaParser 
+   * @returns 
+   */
   isMediaValid(validationSchemaParser: ValidationSchemaParser): IMediaState {
     const validators = validationSchemaParser.getSubmissionValidations();
 
@@ -33,12 +38,34 @@ export class XLSXCSV {
     return mediaValidation.getState();
   }
 
-  isContentValid(validationSchemaParser: ValidationSchemaParser): ICsvState[] {
+  /**
+   * Determines the validity of a workbook belonging to a submission. Workbook validators
+   * are different in that they validate an entire submission, but return validations
+   * particular to worksheets within the workbook.
+   * @param validationSchemaParser 
+   * @returns 
+   */
+  isWorkbookValid(validationSchemaParser: ValidationSchemaParser): ICsvState[] {
     const csvStates: ICsvState[] = [];
 
-    const workbookValidators = validationSchemaParser.getAllWorkbookValidations();
+    const workbookValidators = validationSchemaParser.getWorkbookValidations();
 
     this.workbook.validate(workbookValidators)
+
+    Object.values(this.workbook.worksheets).forEach((worksheet: CSVWorksheet) => {
+      csvStates.push(worksheet.csvValidation.getState());
+    });
+
+    return csvStates;
+  }
+
+  /**
+   * Determines the validity of individual worksheets belonging to a submission
+   * @param validationSchemaParser 
+   * @returns 
+   */
+  isContentValid(validationSchemaParser: ValidationSchemaParser): ICsvState[] {
+    const csvStates: ICsvState[] = [];
 
     Object.keys(this.workbook.worksheets).forEach((fileName) => {
       const fileValidators = validationSchemaParser.getFileValidations(fileName);

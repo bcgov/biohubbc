@@ -3,10 +3,14 @@ import { CSVWorkBook, WorkBookValidator } from '../../csv/csv-file';
 
 
 export type ParentChildKeyMatchValidatorConfig = {
-  childWorksheetName: string;
-  parentWorksheetName: string;
-  childColumnNames: string[];
-  parentColumnNames: string[];
+  submission_required_files_validator: {
+    name?: string;
+    description?: string;
+    child_worksheet_name: string;
+    parent_worksheet_name: string;
+    child_column_names: string[];
+    parent_column_names: string[];
+  }
 };
 
 /**
@@ -21,19 +25,19 @@ export const getParentChildKeyMatchValidator = (config?: ParentChildKeyMatchVali
     }
     
     const {
-      childWorksheetName,
-      parentWorksheetName,
-      childColumnNames,
-      parentColumnNames
-    } = config
+      child_worksheet_name,
+      parent_worksheet_name,
+      child_column_names,
+      parent_column_names
+    } = config.submission_required_files_validator
 
     // If parent and child column name lengths don't agree, skip validation
-    if (parentColumnNames.length != childColumnNames.length) {
+    if (parent_column_names.length != child_column_names.length) {
       return csvWorkbook
     }
 
-    const parentWorksheet = csvWorkbook.worksheets[parentWorksheetName]
-    const childWorksheet = csvWorkbook.worksheets[childWorksheetName]
+    const parentWorksheet = csvWorkbook.worksheets[parent_worksheet_name]
+    const childWorksheet = csvWorkbook.worksheets[child_worksheet_name]
 
     if (!parentWorksheet || !childWorksheet) {
       return csvWorkbook
@@ -42,9 +46,9 @@ export const getParentChildKeyMatchValidator = (config?: ParentChildKeyMatchVali
     const parentRows = parentWorksheet.getRowObjects()
     const childRows = childWorksheet.getRowObjects()
 
-    for (let columnIndex of childColumnNames.keys()) {
-      const parentColumnName = parentColumnNames[columnIndex]
-      const childColumnName = childColumnNames[columnIndex]
+    for (let columnIndex of child_column_names.keys()) {
+      const parentColumnName = parent_column_names[columnIndex]
+      const childColumnName = child_column_names[columnIndex]
 
       const parentColumnValues: any[] = parentRows.map((rowObject) => rowObject[parentColumnName])
       const childColumnValues: any[] = childRows.map((rowObject) => rowObject[childColumnName])

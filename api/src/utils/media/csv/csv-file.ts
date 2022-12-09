@@ -22,6 +22,16 @@ export class CSVWorkBook {
     this.worksheets = worksheets;
   }
 
+  /**
+   * Performs all of the given workbook validators on the workbook. Results of the validation
+   * are stored in the `csvValidation` property on each of the worksheets within the workbook. This
+   * method returns the corresponding validations in an object.
+   *
+   * @param {WorkBookValidator[]} validators A series of validators to be run on the workbook
+   * @return {*}  {WorkBookValidation} A key-value pair representing all CSV validations for each worksheet,
+   * where the keys are the names of the worksheets and the values are the corresponding CSV validations.
+   * @memberof CSVWorkBook
+   */
   validate(validators: WorkBookValidator[]): WorkBookValidation {
     validators.forEach((validator) => validator(this));
 
@@ -218,6 +228,14 @@ export class CSVWorksheet {
     return row[headerIndex];
   }
 
+  /**
+   * Runs all of the given validators on the worksheet, whereby the results of all validations
+   * are stored in `this.csvValidation`.
+   *
+   * @param {CSVValidator[]} validators A series of CSV validators to be run on the worksheet.
+   * @return {*}  {CSVValidation} The result of all validations, namely `this.csvValidation`.
+   * @memberof CSVWorksheet
+   */
   validate(validators: CSVValidator[]): CSVValidation {
     validators.forEach((validator) => validator(this));
 
