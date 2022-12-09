@@ -1,16 +1,14 @@
 import AdmZip from 'adm-zip';
 import axios from 'axios';
-import jsonpatch, { Operation } from 'fast-json-patch';
 import FormData from 'form-data';
-import { JSONPath } from 'jsonpath-plus';
 import { URL } from 'url';
 import { HTTP400 } from '../errors/http-error';
 import { getFileFromS3 } from '../utils/file-utils';
 import { DBService } from './db-service';
+import { DwCService } from './dwc-service';
 import { EmlService } from './eml-service';
 import { KeycloakService } from './keycloak-service';
 import { SurveyService } from './survey-service';
-import { TaxonomyService } from './taxonomy-service';
 
 export interface IDwCADataset {
   archiveFile: {
@@ -160,35 +158,15 @@ export class PlatformService extends DBService {
     const surveyService = new SurveyService(this.connection);
     const surveyData = await surveyService.getLatestSurveyOccurrenceSubmission(surveyId);
 
-    let jsonObject = surveyData.darwin_core_source;
+    if (!surveyData.darwin_core_source) {
+      throw new HTTP400('no transformation result found');
+    }
 
-    const taxonomyService = new TaxonomyService();
+    const dwcService = new DwCService({ projectId: projectId }, this.connection);
 
-    console.log('initial jsonObject:', jsonObject);
+    const enrichedJSON = await dwcService.enrichTaxonIDs(surveyData.darwin_core_source);
 
-    const json_path_with_details = JSONPath({ path: '$..[taxonId]^', json: jsonObject, resultType: 'all' });
-
-    const patcharray: Operation[] = await Promise.all(
-      json_path_with_details.map(async (item: any) => {
-        const enriched_data = await taxonomyService.getEnrichedDataForSpeciesCode(item.value['taxonId']);
-
-        const patch: Operation = {
-          op: 'add',
-          path: item.pointer,
-          value: {
-            taxonId: item.value['taxonId'],
-            scientific_name: enriched_data?.scientific_name,
-            english_name: enriched_data?.english_name
-          }
-        };
-
-        return patch;
-      })
-    );
-
-    jsonObject = jsonpatch.applyPatch(jsonObject, patcharray).newDocument;
-
-    console.log('manipulated jsonObject', jsonObject);
+    console.log('enrichedJSON', enrichedJSON);
 
     if (!surveyData.output_key) {
       throw new HTTP400('no s3Key found');

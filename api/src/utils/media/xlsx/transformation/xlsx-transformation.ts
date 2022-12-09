@@ -58,7 +58,7 @@ export class XLSXTransformation {
   }
 
   /**
-   * Flattens the worksheet data into arrays of objects.
+   * Flattens the worksheet data into arrays of objects.par
    *
    * @return {*}  {FlattenedRowPartsBySourceFile[][]}
    * @memberof XLSXTransformation

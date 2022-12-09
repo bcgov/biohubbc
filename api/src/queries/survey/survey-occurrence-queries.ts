@@ -54,18 +54,23 @@ export const insertSurveyOccurrenceSubmissionSQL = (data: {
     valueItems.push({ columnValue: data.outputKey });
   }
 
+  // const fakeSpeciesJSON = JSON.stringify({
+  //   id1: 1,
+  //   some_text: 'abcd',
+  //   abc: {
+  //     taxonId: 'M-ALAM'
+  //   },
+  //   def: {
+  //     ghi: { taxonId: 'M-OVDA' }
+  //   },
+  //   def1: {
+  //     ghi1: { taxonId: 'M-OVCA' }
+  //   }
+  // });
+
   const fakeSpeciesJSON = JSON.stringify({
     id1: 1,
-    some_text: 'abcd',
-    abc: {
-      taxonId: 'M-ALAM'
-    },
-    def: {
-      ghi: { taxonId: 'M-OVDA' }
-    },
-    def1: {
-      ghi1: { taxonId: 'M-OVCA' }
-    }
+    some_text: 'abcd'
   });
 
   const sqlStatement: SQLStatement = SQL`
