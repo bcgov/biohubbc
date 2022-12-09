@@ -14,10 +14,8 @@ import {
   getValidRangeFieldsValidator
 } from '../csv/validation/csv-row-validator';
 import { DWCArchiveValidator } from '../dwc/dwc-archive-file';
+import { getParentChildKeyMatchValidator } from '../xlsx/validation/xlsx-validation';
 import { XLSXCSVValidator } from '../xlsx/xlsx-file';
-import {
-  getParentChildKeyMatchValidator
-} from '../xlsx/validation/xlsx-validation'
 import {
   getFileEmptyValidator,
   getFileMimeTypeValidator,
@@ -151,12 +149,6 @@ export class ValidationSchemaParser {
     return rules;
   }
 
-  /**
-   * @TODO jsdoc
-   *
-   * @return {*}  {WorkBookValidator[]}
-   * @memberof ValidationSchemaParser
-   */
   getWorkbookValidations(): WorkBookValidator[] {
     const validationSchemas = this.getWorkbookValidationSchemas();
 
@@ -288,7 +280,7 @@ export class ValidationSchemaParser {
   }
 
   getWorkbookValidationsJsonPath(): string {
-    return '$.'
+    return '$.';
   }
 
   getFileValidationsJsonPath(fileName: string): string {

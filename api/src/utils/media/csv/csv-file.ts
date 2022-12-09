@@ -35,9 +35,9 @@ export class CSVWorkBook {
   validate(validators: WorkBookValidator[]): WorkBookValidation {
     validators.forEach((validator) => validator(this));
 
-    const validations: WorkBookValidation = {}
+    const validations: WorkBookValidation = {};
     Object.entries(this.worksheets).forEach(([key, value]) => {
-      validations[key] = value.csvValidation
+      validations[key] = value.csvValidation;
     });
 
     return validations;
@@ -323,4 +323,4 @@ export class CSVValidation extends MediaValidation {
   }
 }
 
-export type WorkBookValidation =  { [name: string]: CSVValidation };
+export type WorkBookValidation = { [name: string]: CSVValidation };

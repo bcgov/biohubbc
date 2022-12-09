@@ -310,10 +310,7 @@ export class ValidationService extends DBService {
       throw SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.INVALID_MEDIA);
     }
 
-    const csvState: ICsvState[] = [
-      ...file.isWorkbookValid(parser),
-      ...file.isContentValid(parser)
-    ];
+    const csvState: ICsvState[] = [...file.isWorkbookValid(parser), ...file.isContentValid(parser)];
 
     return {
       csv_state: csvState,
@@ -471,10 +468,7 @@ export class ValidationService extends DBService {
       throw SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.INVALID_MEDIA);
     }
 
-    const csvState: ICsvState[] = [
-      ...dwc.isWorkbookValid(parser),
-      ...dwc.isContentValid(parser)
-    ];
+    const csvState: ICsvState[] = [...dwc.isWorkbookValid(parser), ...dwc.isContentValid(parser)];
 
     return {
       csv_state: csvState,

@@ -87,17 +87,14 @@ export class DWCArchive {
     }
   }
 
-  /**
-   * @TODO Should we instead maintain `this.workbook`?
-   */
   _workbookFromWorksheets() {
-    const workbook = xlsx.utils.book_new()
+    const workbook = xlsx.utils.book_new();
 
     Object.entries(this.worksheets).forEach(([key, worksheet]) => {
-      xlsx.utils.book_append_sheet(workbook, worksheet, key)
-    })
+      xlsx.utils.book_append_sheet(workbook, worksheet, key);
+    });
 
-    return workbook
+    return workbook;
   }
 
   isMediaValid(validationSchemaParser: ValidationSchemaParser): IMediaState {
@@ -113,8 +110,8 @@ export class DWCArchive {
 
     const workbookValidators = validationSchemaParser.getWorkbookValidations();
 
-    const csvWorkbook = new CSVWorkBook(this._workbookFromWorksheets())
-    csvWorkbook.validate(workbookValidators)
+    const csvWorkbook = new CSVWorkBook(this._workbookFromWorksheets());
+    csvWorkbook.validate(workbookValidators);
 
     Object.values(csvWorkbook.worksheets).forEach((worksheet: CSVWorksheet) => {
       csvStates.push(worksheet.csvValidation.getState());

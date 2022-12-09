@@ -31,7 +31,8 @@ export const submissionValidationSchema = {
       }
     },
     workbookValidations: {
-      description: 'An array of validations to apply across multiple worksheets within the given workbook submission file',
+      description:
+        'An array of validations to apply across multiple worksheets within the given workbook submission file',
       type: 'array',
       items: {
         $ref: '#/$defs/workbook_validation'
@@ -182,16 +183,13 @@ export const submissionValidationSchema = {
       additionalProperties: false
     },
     workbook_parent_child_key_match_validator: {
-      description: 'Validates that this workbook submission file does not contain keys belonging to a child sheet that are missing in its parent sheet',
+      description:
+        'Validates that this workbook submission file does not contain keys belonging to a child sheet that are missing in its parent sheet',
       type: 'object',
       properties: {
         workbook_parent_child_key_match_validator: {
           type: 'object',
-          required: [
-            'child_worksheet_name',
-            'parent_worksheet_name',
-            'column_names'
-          ],
+          required: ['child_worksheet_name', 'parent_worksheet_name', 'column_names'],
           properties: {
             name: {
               type: 'string'
@@ -199,9 +197,7 @@ export const submissionValidationSchema = {
             description: {
               type: 'string'
             },
-            required_files: {
-              
-            },
+            required_files: {},
             child_worksheet_name: {
               type: 'string'
             },
