@@ -384,21 +384,13 @@ export const submissionValidationSchema = {
       description: 'Validates that the column(s) are unique',
       type: 'object',
       properties: {
-        column_unique_validator: {
-          type: 'object',
-          properties: {
-            description: {
-              type: 'string'
-            },
-            columns: {
-              type: 'array',
-              items: {
-                type: 'string'
-              }
-            }
+        columns: {
+          type: 'array',
+          items: {
+            type: 'string'
           },
           additionalProperties: false
-        },
+        }
       },
       additionalProperties: false
     },

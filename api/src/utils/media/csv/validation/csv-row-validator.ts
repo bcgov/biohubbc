@@ -354,11 +354,7 @@ export const getValidFormatFieldsValidator = (config?: ColumnFormatValidatorConf
 };
 
 export type ColumnUniqueValidatorConfig = {
-  description: string;
-  column_unique_validator: {
-    description: string;
-    columns: string[];
-  }
+  columns: string[];
 };
 
 export const getUniqueColumnsValidator = (config?: ColumnUniqueValidatorConfig): CSVValidator => {
@@ -367,30 +363,29 @@ export const getUniqueColumnsValidator = (config?: ColumnUniqueValidatorConfig):
       return csvWorksheet;
     }
 
-    if (config.column_unique_validator.columns.length < 1) {
+    if (config.columns.length < 1) {
       return csvWorksheet;
     }
 
     const keySet = new Set();
     const rows = csvWorksheet.getRowObjects();
-    const headers = csvWorksheet.getHeadersLowerCase();
+    const lowercaseHeaders = csvWorksheet.getHeadersLowerCase();
+    const headers = csvWorksheet.getHeaders()
 
-    const columnIndices = config.column_unique_validator.columns.map(column => headers.indexOf(column));
-
-    if (columnIndices.indexOf(-1) === -1) {
-      // we are missing a column
+    const columnIndices = config.columns.map(column => lowercaseHeaders.indexOf(column.toLocaleLowerCase()));
+    if (columnIndices.indexOf(-1) !== -1) {
+      // worksheet or config columns don't line up
       return csvWorksheet;
     }
 
     rows.forEach((row, rowIndex) => {
-      const rowValues = columnIndices.map(columnIndex =>row[columnIndex])
-      const key = rowValues.join(', ');
+      const key = headers.map(columnIndex =>row[columnIndex]).join(', ');
 
       // check if key exists already
       if (!keySet.has(key)) {
         keySet.add(key)
       } else {
-        // non unique key found
+        // duplicate key found
         // TODO do we want this error to show both row indices, first instance and offending row?
         csvWorksheet.csvValidation.addRowErrors([
           {
@@ -402,7 +397,6 @@ export const getUniqueColumnsValidator = (config?: ColumnUniqueValidatorConfig):
         ])
       }
     });
-    
 
     return csvWorksheet;
   };
