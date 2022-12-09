@@ -796,11 +796,17 @@ export class ProjectService extends DBService {
       fundingIds
     );
 
+    const replaceFundingConnectionSurveyIds: number[] = [];
+
     if (surveyFundingSourceDeleteStatement) {
       const surveyFundingSourceDeleteResult = await this.connection.query(
         surveyFundingSourceDeleteStatement.text,
         surveyFundingSourceDeleteStatement.values
       );
+
+      surveyFundingSourceDeleteResult.rows.forEach((item: { survey_id: number }) => {
+        replaceFundingConnectionSurveyIds.push(item.survey_id);
+      });
 
       if (!surveyFundingSourceDeleteResult) {
         throw new HTTP409('Failed to delete survey funding source');
@@ -833,6 +839,20 @@ export class ProjectService extends DBService {
 
       if (!insertResult) {
         throw new HTTP409('Failed to put (insert) project funding source with incremented revision count');
+      }
+    });
+
+    replaceFundingConnectionSurveyIds.forEach(async (surveyId) => {
+      const sqlInsertStatement = queries.survey.insertSurveyFundingSourceSQL(surveyId, projectId);
+
+      if (!sqlInsertStatement) {
+        throw new HTTP400('Failed to build SQL insert statement');
+      }
+
+      const insertResult = await this.connection.query(sqlInsertStatement.text, sqlInsertStatement.values);
+
+      if (!insertResult) {
+        throw new HTTP409('Failed to replace (insert) survey funding source');
       }
     });
   }

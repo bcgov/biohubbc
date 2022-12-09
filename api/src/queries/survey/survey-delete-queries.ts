@@ -56,13 +56,14 @@ export const deleteSurveyFundingSourceConnectionToProjectSQL = (
       from survey_funding_source sfs
     WHERE
       sfs.project_funding_source_id
-    NOT IN
+    IN
       ( ${projectFundingSourceIds[0]}`;
 
   for (let i = 1; i < projectFundingSourceIds.length; i++) {
     sqlStatement.append(`, ${projectFundingSourceIds[i]}`);
   }
-  sqlStatement.append(`);`);
+  sqlStatement.append(`)
+    RETURNING survey_id;`);
 
   return sqlStatement;
 };
