@@ -152,7 +152,7 @@ export class ValidationSchemaParser {
   }
 
   /**
-   * @todo jsdoc
+   * @TODO jsdoc
    *
    * @return {*}  {WorkBookValidator[]}
    * @memberof ValidationSchemaParser

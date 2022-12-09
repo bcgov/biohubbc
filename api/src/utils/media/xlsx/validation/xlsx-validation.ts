@@ -14,7 +14,12 @@ export type ParentChildKeyMatchValidatorConfig = {
 };
 
 /**
- * @TODO jsdoc
+ * For a specified parent sheet, child sheet, and set of parent and child columns, adds an error on each cell in the
+ * child sheet whose key in the corresponding row belonging to the parent sheet cannot be found.
+ * 
+ * Note: If the cell is empty, this check will be skipped. Use the `getRequiredFieldsValidator` validator to assert
+ * required fields.
+ *
  * @param {KeyMatchValidatorConfig} [config]
  * @return {*}  {CSVValidator}
  */
@@ -46,6 +51,9 @@ export const getParentChildKeyMatchValidator = (config?: ParentChildKeyMatchVali
     const parentRows = parentWorksheet.getRowObjects()
     const childRows = childWorksheet.getRowObjects()
 
+    /**
+     * @TODO should we zip the column names and use a .every?
+     */    
     for (let columnIndex of child_column_names.keys()) {
       const parentColumnName = parent_column_names[columnIndex]
       const childColumnName = child_column_names[columnIndex]
@@ -56,7 +64,7 @@ export const getParentChildKeyMatchValidator = (config?: ParentChildKeyMatchVali
       // Add an error for each cell containing a dangling key reference in the child worksheet
       childColumnValues
         .map((value: any, rowIndex: number) => {
-          return parentColumnValues.includes(value) ? -1 : rowIndex;
+          return !value || parentColumnValues.includes(value) ? -1 : rowIndex;
         })
         .filter((rowIndex: number) => rowIndex >= 0)
         .forEach((rowIndex: number) => {

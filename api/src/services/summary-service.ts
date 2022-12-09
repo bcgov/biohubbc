@@ -314,7 +314,11 @@ export class SummaryService extends DBService {
       throw SummarySubmissionErrorFromMessageType(SUMMARY_SUBMISSION_MESSAGE_TYPE.INVALID_MEDIA);
     }
 
-    const csvState: ICsvState[] = file.isContentValid(parser);
+    const csvState: ICsvState[] = [
+      ...file.isWorkbookValid(parser),
+      ...file.isContentValid(parser)
+    ];
+
     return {
       csv_state: csvState,
       media_state: mediaState

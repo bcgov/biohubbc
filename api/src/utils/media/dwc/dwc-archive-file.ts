@@ -1,5 +1,5 @@
 import xlsx from 'xlsx';
-import { CSVWorksheet, ICsvState } from '../csv/csv-file';
+import { CSVWorkBook, CSVWorksheet, ICsvState } from '../csv/csv-file';
 import { ArchiveFile, IMediaState, MediaValidation } from '../media-file';
 import { ValidationSchemaParser } from '../validation/validation-schema-parser';
 
@@ -87,12 +87,40 @@ export class DWCArchive {
     }
   }
 
+  /**
+   * @TODO Should we instead maintain `this.workbook`?
+   */
+  _workbookFromWorksheets() {
+    const workbook = xlsx.utils.book_new()
+
+    Object.entries(this.worksheets).forEach(([key, worksheet]) => {
+      xlsx.utils.book_append_sheet(workbook, worksheet, key)
+    })
+
+    return workbook
+  }
+
   isMediaValid(validationSchemaParser: ValidationSchemaParser): IMediaState {
     const validators = validationSchemaParser.getSubmissionValidations();
 
     const mediaValidation = this.validate(validators as DWCArchiveValidator[]);
 
     return mediaValidation.getState();
+  }
+
+  isWorkbookValid(validationSchemaParser: ValidationSchemaParser): ICsvState[] {
+    const csvStates: ICsvState[] = [];
+
+    const workbookValidators = validationSchemaParser.getWorkbookValidations();
+
+    const csvWorkbook = new CSVWorkBook(this._workbookFromWorksheets())
+    csvWorkbook.validate(workbookValidators)
+
+    Object.values(csvWorkbook.worksheets).forEach((worksheet: CSVWorksheet) => {
+      csvStates.push(worksheet.csvValidation.getState());
+    });
+
+    return csvStates;
   }
 
   isContentValid(validationSchemaParser: ValidationSchemaParser): ICsvState[] {
