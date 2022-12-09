@@ -1,5 +1,5 @@
 import jsonpath from 'jsonpath';
-import { CSVValidator } from '../csv/csv-file';
+import { CSVValidator, WorkBookValidator } from '../csv/csv-file';
 import {
   getDuplicateHeadersValidator,
   getValidHeadersValidator,
@@ -89,7 +89,7 @@ export class ValidationSchemaParser {
   }
 
   getSubmissionValidations(): (DWCArchiveValidator | XLSXCSVValidator)[] {
-    const validationSchemas = this.getSubmissionValidationSChemas();
+    const validationSchemas = this.getSubmissionValidationSchemas();
 
     const rules: (DWCArchiveValidator | XLSXCSVValidator)[] = [];
 
@@ -144,6 +144,13 @@ export class ValidationSchemaParser {
     return rules;
   }
 
+  getAllWorkbookValidations(): WorkBookValidator[] {
+    /**
+     * @TODO 
+     **/  
+    return [];
+  }
+
   getAllColumnValidations(fileName: string): CSVValidator[] {
     const columnNames = this.getColumnNames(fileName);
 
@@ -186,7 +193,7 @@ export class ValidationSchemaParser {
     return rules;
   }
 
-  getSubmissionValidationSChemas(): object[] {
+  getSubmissionValidationSchemas(): object[] {
     return jsonpath.query(this.validationSchema, this.getSubmissionValidationsJsonPath())?.[0] || [];
   }
 

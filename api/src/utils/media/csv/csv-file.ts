@@ -3,6 +3,7 @@ import { SUBMISSION_MESSAGE_TYPE } from '../../../constants/status';
 import { IMediaState, MediaValidation } from '../media-file';
 
 export type CSVWorksheets = { [name: string]: CSVWorksheet };
+export type WorkBookValidators = { [name: string]: CSVValidation };
 
 export class CSVWorkBook {
   rawWorkbook: xlsx.WorkBook;
@@ -12,13 +13,24 @@ export class CSVWorkBook {
   constructor(workbook?: xlsx.WorkBook) {
     this.rawWorkbook = workbook || xlsx.utils.book_new();
 
-    const worksheets = {};
+    const worksheets: CSVWorksheets = {};
 
     Object.entries(this.rawWorkbook.Sheets).forEach(([key, value]) => {
       worksheets[key] = new CSVWorksheet(key, value);
     });
 
     this.worksheets = worksheets;
+  }
+
+  validate(validators: WorkBookValidator[]): WorkBookValidation {
+    validators.forEach((validator) => validator(this));
+
+    const validations: WorkBookValidation = {}
+    Object.entries(this.worksheets).forEach(([key, value]) => {
+      validations[key] = value.csvValidation
+    });
+
+    return validations;
   }
 }
 
@@ -214,6 +226,7 @@ export class CSVWorksheet {
 }
 
 export type CSVValidator = (csvWorksheet: CSVWorksheet) => CSVWorksheet;
+export type WorkBookValidator = (csvWorkBook: CSVWorkBook) => CSVWorkBook;
 
 // ensure these error codes match the 'name' column in the table: submission_message_type
 
@@ -232,7 +245,8 @@ export interface IRowError {
     | SUBMISSION_MESSAGE_TYPE.MISSING_REQUIRED_FIELD
     | SUBMISSION_MESSAGE_TYPE.OUT_OF_RANGE
     | SUBMISSION_MESSAGE_TYPE.INVALID_VALUE
-    | SUBMISSION_MESSAGE_TYPE.UNEXPECTED_FORMAT;
+    | SUBMISSION_MESSAGE_TYPE.UNEXPECTED_FORMAT
+    | SUBMISSION_MESSAGE_TYPE.DANGLING_PARENT_CHILD_KEY;
   message: string;
   col: string;
   row: number;
@@ -290,3 +304,5 @@ export class CSVValidation extends MediaValidation {
     };
   }
 }
+
+export type WorkBookValidation =  { [name: string]: CSVValidation };

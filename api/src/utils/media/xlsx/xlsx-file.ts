@@ -36,6 +36,10 @@ export class XLSXCSV {
   isContentValid(validationSchemaParser: ValidationSchemaParser): ICsvState[] {
     const csvStates: ICsvState[] = [];
 
+    const workbookValidators = validationSchemaParser.getAllWorkbookValidations();
+
+    this.workbook.validate(workbookValidators)
+
     Object.keys(this.workbook.worksheets).forEach((fileName) => {
       const fileValidators = validationSchemaParser.getFileValidations(fileName);
 
