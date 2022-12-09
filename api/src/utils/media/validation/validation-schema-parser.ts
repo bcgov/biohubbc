@@ -280,7 +280,7 @@ export class ValidationSchemaParser {
   }
 
   getWorkbookValidationsJsonPath(): string {
-    return '$.';
+    return '$.workbookValidations';
   }
 
   getFileValidationsJsonPath(fileName: string): string {

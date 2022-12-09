@@ -91,7 +91,9 @@ export class DWCArchive {
     const workbook = xlsx.utils.book_new();
 
     Object.entries(this.worksheets).forEach(([key, worksheet]) => {
-      xlsx.utils.book_append_sheet(workbook, worksheet, key);
+      if (worksheet) {
+        xlsx.utils.book_append_sheet(workbook, worksheet, key);
+      }
     });
 
     return workbook;
