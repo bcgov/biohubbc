@@ -352,3 +352,58 @@ export const getValidFormatFieldsValidator = (config?: ColumnFormatValidatorConf
     return csvWorksheet;
   };
 };
+
+export type ColumnUniqueValidatorConfig = {
+  description: string;
+  column_unique_validator: {
+    description: string;
+    columns: string[];
+  }
+};
+
+export const getUniqueColumnsValidator = (config?: ColumnUniqueValidatorConfig): CSVValidator => {
+  return (csvWorksheet) => {
+    if (!config) {
+      return csvWorksheet;
+    }
+
+    if (config.column_unique_validator.columns.length < 1) {
+      return csvWorksheet;
+    }
+
+    const keySet = new Set();
+    const rows = csvWorksheet.getRowObjects();
+    const headers = csvWorksheet.getHeadersLowerCase();
+
+    const columnIndices = config.column_unique_validator.columns.map(column => headers.indexOf(column));
+
+    if (columnIndices.indexOf(-1) === -1) {
+      // we are missing a column
+      return csvWorksheet;
+    }
+
+    rows.forEach((row, rowIndex) => {
+      const rowValues = columnIndices.map(columnIndex =>row[columnIndex])
+      const key = rowValues.join(', ');
+
+      // check if key exists already
+      if (!keySet.has(key)) {
+        keySet.add(key)
+      } else {
+        // non unique key found
+        // TODO do we want this error to show both row indices, first instance and offending row?
+        csvWorksheet.csvValidation.addRowErrors([
+          {
+            errorCode: SUBMISSION_MESSAGE_TYPE.NON_UNIQUE_KEY,
+            message: `Duplicate key(s) found in column(s): ${key}. Keys must be unique for proper template transformation`,
+            col: key,
+            row: rowIndex + 2
+          }
+        ])
+      }
+    });
+    
+
+    return csvWorksheet;
+  };
+}

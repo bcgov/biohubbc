@@ -129,12 +129,6 @@ export const submissionValidationSchema = {
           $ref: '#/$defs/column_range_validator'
         },
         {
-          $ref: '#/$defs/column_unique_validator'
-        },
-        {
-          $ref: '#/$defs/column_key_validator'
-        },
-        {
           $ref: '#/$defs/column_numeric_validator'
         }
       ]
@@ -387,54 +381,24 @@ export const submissionValidationSchema = {
       additionalProperties: false
     },
     column_unique_validator: {
-      description: 'Validates that this column value is unique within this column',
+      description: 'Validates that the column(s) are unique',
       type: 'object',
       properties: {
         column_unique_validator: {
           type: 'object',
           properties: {
-            name: {
-              type: 'string'
-            },
             description: {
               type: 'string'
             },
-            is_unique: {
-              type: 'boolean'
-            }
-          },
-          additionalProperties: false
-        }
-      },
-      additionalProperties: false
-    },
-    column_key_validator: {
-      description: 'Validates that this column value has a matching counterpart in the target `file` and `column`',
-      type: 'object',
-      properties: {
-        column_key_validator: {
-          type: 'object',
-          properties: {
-            name: {
-              type: 'string'
-            },
-            description: {
-              type: 'string'
-            },
-            parent_key: {
-              type: 'object',
-              properties: {
-                file: {
-                  type: 'string'
-                },
-                column: {
-                  type: 'string'
-                }
+            columns: {
+              type: 'array',
+              items: {
+                type: 'string'
               }
             }
           },
           additionalProperties: false
-        }
+        },
       },
       additionalProperties: false
     },
