@@ -8,8 +8,7 @@ export type ParentChildKeyMatchValidatorConfig = {
     description?: string;
     child_worksheet_name: string;
     parent_worksheet_name: string;
-    child_column_names: string[];
-    parent_column_names: string[];
+    column_names: string[];
   }
 };
 
@@ -28,18 +27,12 @@ export const getParentChildKeyMatchValidator = (config?: ParentChildKeyMatchVali
     if (!config) {
       return csvWorkbook;
     }
-    
+
     const {
       child_worksheet_name,
       parent_worksheet_name,
-      child_column_names,
-      parent_column_names
+      column_names
     } = config.submission_required_files_validator
-
-    // If parent and child column name lengths don't agree, skip validation
-    if (parent_column_names.length != child_column_names.length) {
-      return csvWorkbook
-    }
 
     const parentWorksheet = csvWorkbook.worksheets[parent_worksheet_name]
     const childWorksheet = csvWorkbook.worksheets[child_worksheet_name]
@@ -48,36 +41,40 @@ export const getParentChildKeyMatchValidator = (config?: ParentChildKeyMatchVali
       return csvWorkbook
     }
 
-    const parentRows = parentWorksheet.getRowObjects()
-    const childRows = childWorksheet.getRowObjects()
-
-    /**
-     * @TODO should we zip the column names and use a .every?
-     */    
-    for (let columnIndex of child_column_names.keys()) {
-      const parentColumnName = parent_column_names[columnIndex]
-      const childColumnName = child_column_names[columnIndex]
-
-      const parentColumnValues: any[] = parentRows.map((rowObject) => rowObject[parentColumnName])
-      const childColumnValues: any[] = childRows.map((rowObject) => rowObject[childColumnName])
-
-      // Add an error for each cell containing a dangling key reference in the child worksheet
-      childColumnValues
-        .map((value: any, rowIndex: number) => {
-          return !value || parentColumnValues.includes(value) ? -1 : rowIndex;
-        })
-        .filter((rowIndex: number) => rowIndex >= 0)
-        .forEach((rowIndex: number) => {
-          childWorksheet.csvValidation.addRowErrors([
-            {
-              errorCode: SUBMISSION_MESSAGE_TYPE.DANGLING_PARENT_CHILD_KEY,
-              message: `Child worksheet references a key that is missing from the corresponding column in the parent worksheet`,
-              col: childColumnName,
-              row: rowIndex + 2
-            }
-          ]);
-        })
+    // Encodes the column values for a worksheet at a given row into a string, which is used for
+    // comparison with another worksheet
+    const serializer = (rowObject: object): string => {
+      return column_names
+        .map((columnName: string) => (rowObject[columnName] as String).trim())
+        .join('|');
     }
+
+    const parentRowObjects = parentWorksheet.getRowObjects()
+    const childRowObjects = childWorksheet.getRowObjects()
+
+    const parentSerializedRows = parentRowObjects.map(serializer)
+
+    // Add an error for each cell containing a dangling key reference in the child worksheet
+    childRowObjects
+      .map(serializer)
+      .map((serializedRow: string, rowIndex: number) => {
+        return !serializedRow || parentSerializedRows.includes(serializedRow) ? -1 : rowIndex;
+      })
+      .filter((rowIndex: number) => rowIndex >= 1)
+      .forEach((danglingRowIndex: number) => {
+        const mismatchedColumn = column_names.find((columnName: string) => {
+          return parentRowObjects[danglingRowIndex][columnName] !== childRowObjects[danglingRowIndex][columnName]
+        }) || column_names[column_names.length - 1];
+
+        childWorksheet.csvValidation.addRowErrors([
+          {
+            errorCode: SUBMISSION_MESSAGE_TYPE.DANGLING_PARENT_CHILD_KEY,
+            message: `Child worksheet references a key that is missing from the corresponding column in the parent worksheet`,
+            col: mismatchedColumn,
+            row: danglingRowIndex + 2
+          }
+        ]);
+      })
 
     return csvWorkbook;
   }

@@ -190,8 +190,7 @@ export const submissionValidationSchema = {
           required: [
             'child_worksheet_name',
             'parent_worksheet_name',
-            'child_column_names',
-            'parent_column_names'
+            'column_names'
           ],
           properties: {
             name: {
@@ -209,18 +208,12 @@ export const submissionValidationSchema = {
             parent_worksheet_name: {
               type: 'string'
             },
-            child_column_names: {
+            column_names: {
               type: 'array',
               items: {
                 type: 'string'
               }
-            },
-            parent_column_names: {
-              type: 'array',
-              items: {
-                type: 'string'
-              }
-            },
+            }
           },
           additionalProperties: false
         }
