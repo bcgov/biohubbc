@@ -130,6 +130,9 @@ export const submissionValidationSchema = {
         },
         {
           $ref: '#/$defs/column_numeric_validator'
+        },
+        {
+          $ref: '#/$defs/column_unique_validator'
         }
       ]
     },
@@ -384,12 +387,17 @@ export const submissionValidationSchema = {
       description: 'Validates that the column(s) are unique',
       type: 'object',
       properties: {
-        columns: {
-          type: 'array',
-          items: {
-            type: 'string'
-          },
-          additionalProperties: false
+        column_unique_validator: {
+          type: 'object',
+          properties: {
+            columns: {
+              type: 'array',
+              items: {
+                type: 'string'
+              }
+            },
+            additionalProperties: false
+          }
         }
       },
       additionalProperties: false

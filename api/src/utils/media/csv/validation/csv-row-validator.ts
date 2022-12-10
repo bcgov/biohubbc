@@ -354,7 +354,9 @@ export const getValidFormatFieldsValidator = (config?: ColumnFormatValidatorConf
 };
 
 export type ColumnUniqueValidatorConfig = {
-  columns: string[];
+  column_unique_validator: {
+    columns: string[];
+  };
 };
 
 export const getUniqueColumnsValidator = (config?: ColumnUniqueValidatorConfig): CSVValidator => {
@@ -363,41 +365,44 @@ export const getUniqueColumnsValidator = (config?: ColumnUniqueValidatorConfig):
       return csvWorksheet;
     }
 
-    if (config.columns.length < 1) {
+    if (config.column_unique_validator.columns.length < 1) {
       return csvWorksheet;
     }
 
     const keySet = new Set();
     const rows = csvWorksheet.getRowObjects();
     const lowercaseHeaders = csvWorksheet.getHeadersLowerCase();
-    const headers = csvWorksheet.getHeaders()
 
-    const columnIndices = config.columns.map(column => lowercaseHeaders.indexOf(column.toLocaleLowerCase()));
+    const columnIndices = config.column_unique_validator.columns.map((column) =>
+      lowercaseHeaders.indexOf(column.toLocaleLowerCase())
+    );
     if (columnIndices.indexOf(-1) !== -1) {
       // worksheet or config columns don't line up
       return csvWorksheet;
     }
 
     rows.forEach((row, rowIndex) => {
-      const key = headers.map(columnIndex =>row[columnIndex]).join(', ');
+      const key = config.column_unique_validator.columns.map((columnIndex) => row[columnIndex]).join(', ');
 
       // check if key exists already
       if (!keySet.has(key)) {
-        keySet.add(key)
+        keySet.add(key);
       } else {
         // duplicate key found
         // TODO do we want this error to show both row indices, first instance and offending row?
         csvWorksheet.csvValidation.addRowErrors([
           {
             errorCode: SUBMISSION_MESSAGE_TYPE.NON_UNIQUE_KEY,
-            message: `Duplicate key(s) found in column(s): ${key}. Keys must be unique for proper template transformation`,
+            message: `Duplicate key(s): ${key} found in column(s): ${config.column_unique_validator.columns.join(
+              ', '
+            )}. Keys must be unique for proper template transformation`,
             col: key,
             row: rowIndex + 2
           }
-        ])
+        ]);
       }
     });
 
     return csvWorksheet;
   };
-}
+};

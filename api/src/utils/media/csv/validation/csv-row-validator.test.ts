@@ -613,7 +613,7 @@ describe('getValidFormatFieldsValidator', () => {
       const validator = getUniqueColumnsValidator();
       const worksheet = xlsx.utils.aoa_to_sheet([['Header1'], ['stuff']]);
       const csvWorkSheet = new CSVWorksheet('Sheet', worksheet);
-      
+
       validator(csvWorkSheet);
 
       expect(csvWorkSheet.csvValidation.rowErrors).to.be.empty;
@@ -621,12 +621,14 @@ describe('getValidFormatFieldsValidator', () => {
 
     it('adds no errors when no columns are specified in config', () => {
       const config: ColumnUniqueValidatorConfig = {
-        columns: ['']
+        column_unique_validator: {
+          columns: ['']
+        }
       };
       const validator = getUniqueColumnsValidator(config);
       const worksheet = xlsx.utils.aoa_to_sheet([['Header1'], ['stuff']]);
       const csvWorkSheet = new CSVWorksheet('Sheet', worksheet);
-      
+
       validator(csvWorkSheet);
 
       expect(csvWorkSheet.csvValidation.rowErrors).to.be.empty;
@@ -634,7 +636,9 @@ describe('getValidFormatFieldsValidator', () => {
 
     it('adds no errors when specified key column is missing from the worksheet', () => {
       const config: ColumnUniqueValidatorConfig = {
-        columns: ['Header1', 'Header2']
+        column_unique_validator: {
+          columns: ['Header1', 'Header2']
+        }
       };
       const validator = getUniqueColumnsValidator(config);
       const worksheet = xlsx.utils.aoa_to_sheet([['Header1'], ['stuff']]);
@@ -647,17 +651,19 @@ describe('getValidFormatFieldsValidator', () => {
 
     it('adds no errors when all keys specified are unique', () => {
       const config: ColumnUniqueValidatorConfig = {
-        columns: ['Header1', 'Header2']
+        column_unique_validator: {
+          columns: ['Header1', 'Header2']
+        }
       };
       const validator = getUniqueColumnsValidator(config);
       const worksheet = xlsx.utils.aoa_to_sheet([
-        ['Header1', 'Header2', 'Header3'], 
+        ['Header1', 'Header2', 'Header3'],
         [1, 2, 3],
         [2, 2, 3],
         [3, 2, 3]
       ]);
       const csvWorkSheet = new CSVWorksheet('Sheet', worksheet);
-      
+
       validator(csvWorkSheet);
 
       expect(csvWorkSheet.csvValidation.rowErrors).to.be.empty;
@@ -665,21 +671,23 @@ describe('getValidFormatFieldsValidator', () => {
 
     it('adds errors when not all keys are unique', () => {
       const config: ColumnUniqueValidatorConfig = {
-        columns: ['Header1', 'Header2']
+        column_unique_validator: {
+          columns: ['Header1', 'Header2']
+        }
       };
       const validator = getUniqueColumnsValidator(config);
       const worksheet = xlsx.utils.aoa_to_sheet([
-        ['Header1', 'Header2', 'Header3'], 
+        ['Header1', 'Header2', 'Header3'],
         [1, 2, 3],
         [2, 2, 3],
         [2, 2, 3]
       ]);
       const csvWorkSheet = new CSVWorksheet('Sheet', worksheet);
-      
+
       validator(csvWorkSheet);
 
       expect(csvWorkSheet.csvValidation.rowErrors).to.not.be.empty;
-      expect(csvWorkSheet.csvValidation.rowErrors[0].errorCode).to.be.eql(SUBMISSION_MESSAGE_TYPE.NON_UNIQUE_KEY)
+      expect(csvWorkSheet.csvValidation.rowErrors[0].errorCode).to.be.eql(SUBMISSION_MESSAGE_TYPE.NON_UNIQUE_KEY);
     });
   });
 });

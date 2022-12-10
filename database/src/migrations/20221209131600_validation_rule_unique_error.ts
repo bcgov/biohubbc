@@ -8,7 +8,7 @@ const summaryMessageTypes = [
     description: 'Keys found in the uploaded file are not unique',
     class: 'Error'
   }
-]
+];
 
 /**
  * Add new summary submission message types.
@@ -17,7 +17,7 @@ const summaryMessageTypes = [
  * @param {Knex} knex
  * @return {*}  {Promise<void>}
  */
- export async function up(knex: Knex): Promise<void> {
+export async function up(knex: Knex): Promise<void> {
   await knex.raw(`
     SET schema '${DB_SCHEMA}';
     set search_path = ${DB_SCHEMA},public;
