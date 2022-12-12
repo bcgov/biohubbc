@@ -123,7 +123,6 @@ export class ValidationService extends DBService {
 
   async processFile(submissionId: number, surveyId: number) {
     try {
-      console.log("___PROCESS FILE___")
       // template preparation
       const submissionPrep = await this.templatePreparation(submissionId);
 
@@ -142,8 +141,8 @@ export class ValidationService extends DBService {
       // occurrence scraping
       // await this.templateScrapeAndUploadOccurrences(submissionId);
     } catch (error) {
-      console.log("_______________")
-      console.log(error)
+      console.log('_______________');
+      console.log(error);
       if (error instanceof SubmissionError) {
         await this.errorService.insertSubmissionError(submissionId, error);
       } else {
