@@ -45,11 +45,8 @@ export class DwCService extends DBService {
 
     const json_path_with_details = JSONPath({ path: '$..[taxonID]^', json: jsonObject, resultType: 'all' });
 
-    console.log('json_path_with_details', json_path_with_details);
-
     const patcharray: Operation[] = await Promise.all(
       json_path_with_details.map(async (item: any) => {
-        console.log('item is: ', item);
         const enriched_data = await taxonomyService.getEnrichedDataForSpeciesCode(item.value['taxonID']);
 
         const patch: Operation = {

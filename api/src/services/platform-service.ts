@@ -164,11 +164,7 @@ export class PlatformService extends DBService {
 
     const dwcService = new DwCService({ projectId: projectId }, this.connection);
 
-    console.log('surveyData.darwin_core_source is: ', surveyData.darwin_core_source);
-
-    const enrichedJSON = await dwcService.enrichTaxonIDs(surveyData.darwin_core_source);
-
-    console.log('enrichedJSON', enrichedJSON);
+    await dwcService.enrichTaxonIDs(surveyData.darwin_core_source);
 
     if (!surveyData.output_key) {
       throw new HTTP400('no s3Key found');
