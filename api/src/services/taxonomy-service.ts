@@ -53,7 +53,7 @@ export class TaxonomyService {
   /**
    *
    * Sanitizes species data retrieved from Elasticsearch.
-   * @param {SearchHit<ITaxonomySource>[]} data The data response fromEelasticsearch
+   * @param {SearchHit<ITaxonomySource>[]} data The data response from ElasticSearch
    * @returns {{ id: string, label: string }[]} An ID and label pair for each taxonomic code
    * @memberof TaxonomyService
    */

@@ -164,6 +164,8 @@ export class PlatformService extends DBService {
 
     const dwcService = new DwCService({ projectId: projectId }, this.connection);
 
+    console.log('surveyData.darwin_core_source is: ', surveyData.darwin_core_source);
+
     const enrichedJSON = await dwcService.enrichTaxonIDs(surveyData.darwin_core_source);
 
     console.log('enrichedJSON', enrichedJSON);
