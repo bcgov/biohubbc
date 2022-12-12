@@ -198,9 +198,6 @@ export class TaxonomyService {
       .filter(Boolean)
       .join(' ');
     const english_name = data._source.english_name;
-    console.log('english name: ', english_name);
-
-    console.log('label is: ', scientific_name);
 
     return { scientific_name, english_name };
   };
