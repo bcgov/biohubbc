@@ -353,19 +353,19 @@ export const getValidFormatFieldsValidator = (config?: ColumnFormatValidatorConf
   };
 };
 
-export type ColumnUniqueValidatorConfig = {
-  column_unique_validator: {
-    columns: string[];
+export type FileColumnUniqueValidatorConfig = {
+  file_column_unique_validator: {
+    key_columns: string[];
   };
 };
 
-export const getUniqueColumnsValidator = (config?: ColumnUniqueValidatorConfig): CSVValidator => {
+export const getUniqueColumnsValidator = (config?: FileColumnUniqueValidatorConfig): CSVValidator => {
   return (csvWorksheet) => {
     if (!config) {
       return csvWorksheet;
     }
 
-    if (config.column_unique_validator.columns.length < 1) {
+    if (config.file_column_unique_validator.key_columns.length < 1) {
       return csvWorksheet;
     }
 
@@ -373,7 +373,7 @@ export const getUniqueColumnsValidator = (config?: ColumnUniqueValidatorConfig):
     const rows = csvWorksheet.getRowObjects();
     const lowercaseHeaders = csvWorksheet.getHeadersLowerCase();
 
-    const columnIndices = config.column_unique_validator.columns.map((column) =>
+    const columnIndices = config.file_column_unique_validator.key_columns.map((column) =>
       lowercaseHeaders.indexOf(column.toLocaleLowerCase())
     );
     if (columnIndices.indexOf(-1) !== -1) {
@@ -382,8 +382,7 @@ export const getUniqueColumnsValidator = (config?: ColumnUniqueValidatorConfig):
     }
 
     rows.forEach((row, rowIndex) => {
-      const key = config.column_unique_validator.columns.map((columnIndex) => row[columnIndex]).join(', ');
-
+      const key = config.file_column_unique_validator.key_columns.map((columnIndex) => row[columnIndex]).join(', ');
       // check if key exists already
       if (!keySet.has(key)) {
         keySet.add(key);
@@ -393,7 +392,7 @@ export const getUniqueColumnsValidator = (config?: ColumnUniqueValidatorConfig):
         csvWorksheet.csvValidation.addRowErrors([
           {
             errorCode: SUBMISSION_MESSAGE_TYPE.NON_UNIQUE_KEY,
-            message: `Duplicate key(s): ${key} found in column(s): ${config.column_unique_validator.columns.join(
+            message: `Duplicate key(s): ${key} found in column(s): ${config.file_column_unique_validator.key_columns.join(
               ', '
             )}. Keys must be unique for proper template transformation`,
             col: key,
@@ -402,7 +401,6 @@ export const getUniqueColumnsValidator = (config?: ColumnUniqueValidatorConfig):
         ]);
       }
     });
-
     return csvWorksheet;
   };
 };

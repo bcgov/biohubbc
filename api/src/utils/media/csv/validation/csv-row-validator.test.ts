@@ -4,7 +4,7 @@ import xlsx from 'xlsx';
 import { SUBMISSION_MESSAGE_TYPE } from '../../../../constants/status';
 import { CSVWorksheet } from '../csv-file';
 import {
-  ColumnUniqueValidatorConfig,
+  FileColumnUniqueValidatorConfig,
   getCodeValueFieldsValidator,
   getNumericFieldsValidator,
   getRequiredFieldsValidator,
@@ -620,9 +620,9 @@ describe('getValidFormatFieldsValidator', () => {
     });
 
     it('adds no errors when no columns are specified in config', () => {
-      const config: ColumnUniqueValidatorConfig = {
-        column_unique_validator: {
-          columns: ['']
+      const config: FileColumnUniqueValidatorConfig = {
+        file_column_unique_validator: {
+          key_columns: ['']
         }
       };
       const validator = getUniqueColumnsValidator(config);
@@ -635,9 +635,9 @@ describe('getValidFormatFieldsValidator', () => {
     });
 
     it('adds no errors when specified key column is missing from the worksheet', () => {
-      const config: ColumnUniqueValidatorConfig = {
-        column_unique_validator: {
-          columns: ['Header1', 'Header2']
+      const config: FileColumnUniqueValidatorConfig = {
+        file_column_unique_validator: {
+          key_columns: ['Header1', 'Header2']
         }
       };
       const validator = getUniqueColumnsValidator(config);
@@ -650,9 +650,9 @@ describe('getValidFormatFieldsValidator', () => {
     });
 
     it('adds no errors when all keys specified are unique', () => {
-      const config: ColumnUniqueValidatorConfig = {
-        column_unique_validator: {
-          columns: ['Header1', 'Header2']
+      const config: FileColumnUniqueValidatorConfig = {
+        file_column_unique_validator: {
+          key_columns: ['Header1', 'Header2']
         }
       };
       const validator = getUniqueColumnsValidator(config);
@@ -670,9 +670,9 @@ describe('getValidFormatFieldsValidator', () => {
     });
 
     it('adds errors when not all keys are unique', () => {
-      const config: ColumnUniqueValidatorConfig = {
-        column_unique_validator: {
-          columns: ['Header1', 'Header2']
+      const config: FileColumnUniqueValidatorConfig = {
+        file_column_unique_validator: {
+          key_columns: ['Header1', 'Header2']
         }
       };
       const validator = getUniqueColumnsValidator(config);

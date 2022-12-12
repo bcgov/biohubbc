@@ -73,7 +73,7 @@ export const ValidationRulesRegistry = {
       generator: getNumericFieldsValidator
     },
     {
-      name: 'column_unique_validator',
+      name: 'file_column_unique_validator',
       generator: getUniqueColumnsValidator
     }
   ],
