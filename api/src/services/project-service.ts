@@ -30,6 +30,7 @@ import {
 import { getSurveyAttachmentS3Keys } from '../paths/project/{projectId}/survey/{surveyId}/delete';
 import { GET_ENTITIES, IUpdateProject } from '../paths/project/{projectId}/update';
 import { queries } from '../queries/queries';
+import { ProjectRepository } from '../repositories/project-repository';
 import { deleteFileFromS3 } from '../utils/file-utils';
 import { AttachmentService } from './attachment-service';
 import { DBService } from './db-service';
@@ -786,74 +787,62 @@ export class ProjectService extends DBService {
   }
 
   async updateFundingData(projectId: number, entities: IUpdateProject): Promise<void> {
+    console.log('projectId', projectId);
+    console.log('entities', entities);
+
     const putFundingData = entities?.funding && new PutFundingData(entities.funding);
+    if (!putFundingData) {
+      throw new HTTP400('Failed to create funding data object');
+    }
 
-    const fundingIds = putFundingData?.fundingSources.map((data) => {
-      return data.id;
+    console.log('putFundingData', putFundingData);
+
+    //Find all connected Ids between Survey Funding and Project Funding
+    const projectRepository = new ProjectRepository(this.connection);
+    const allProjectFundingSourceIdsResult = await projectRepository.getProjectSurveyFundingSourceIds(projectId);
+
+    console.log('allProjectFundingSourceIdsResult', allProjectFundingSourceIdsResult);
+
+    const allFundingIds = allProjectFundingSourceIdsResult.map((data) => {
+      return data.project_funding_source_id;
     });
+    console.log('allFundingIds', allFundingIds);
 
-    const surveyFundingSourceDeleteStatement = queries.survey.deleteSurveyFundingSourceConnectionToProjectSQL(
-      fundingIds
-    );
+    //delete survey funding sources connected to project
+    await projectRepository.deleteSurveyFundingSourceConnectionToProject(allFundingIds);
 
-    const replaceFundingConnectionSurveyIds: number[] = [];
+    //delete project funding sources
+    await projectRepository.deleteAllProjectFundingSource(projectId);
 
-    if (surveyFundingSourceDeleteStatement) {
-      const surveyFundingSourceDeleteResult = await this.connection.query(
-        surveyFundingSourceDeleteStatement.text,
-        surveyFundingSourceDeleteStatement.values
-      );
+    const putFundingIds: any[] = [];
+    //insert new values
 
-      surveyFundingSourceDeleteResult.rows.forEach((item: { survey_id: number }) => {
-        replaceFundingConnectionSurveyIds.push(item.survey_id);
+    for (let index = 0; index < putFundingData?.fundingSources.length; index++) {
+      const putFundingSource: PutFundingSource = putFundingData?.fundingSources[index];
+      const fundingSourceId = await projectRepository.putProjectFundingSource(putFundingSource, projectId);
+      console.log('fundingSourceId', fundingSourceId);
+      putFundingIds.push({ old: putFundingSource.id, new: fundingSourceId.project_funding_source_id });
+    }
+
+    console.log('putFundingIds', putFundingIds);
+
+    const filteredFundingSources: any[] = [];
+
+    allProjectFundingSourceIdsResult.forEach((allProjectItem) => {
+      putFundingIds.forEach((newProjectItem) => {
+        if (newProjectItem.old === allProjectItem.project_funding_source_id) {
+          filteredFundingSources.push({
+            project_funding_source_id: newProjectItem.new,
+            survey_id: allProjectItem.survey_id
+          });
+        }
       });
-
-      if (!surveyFundingSourceDeleteResult) {
-        throw new HTTP409('Failed to delete survey funding source');
-      }
-    }
-
-    const projectFundingSourceDeleteStatement = queries.project.deleteAllProjectFundingSourceSQL(projectId);
-
-    if (!projectFundingSourceDeleteStatement) {
-      throw new HTTP400('Failed to build SQL insert statement');
-    }
-
-    const projectFundingSourceDeleteResult = await this.connection.query(
-      projectFundingSourceDeleteStatement.text,
-      projectFundingSourceDeleteStatement.values
-    );
-
-    if (!projectFundingSourceDeleteResult) {
-      throw new HTTP409('Failed to delete project funding source');
-    }
-
-    putFundingData?.fundingSources.forEach(async (putFundingSource: PutFundingSource) => {
-      const sqlInsertStatement = queries.project.putProjectFundingSourceSQL(putFundingSource, projectId);
-
-      if (!sqlInsertStatement) {
-        throw new HTTP400('Failed to build SQL insert statement');
-      }
-
-      const insertResult = await this.connection.query(sqlInsertStatement.text, sqlInsertStatement.values);
-
-      if (!insertResult) {
-        throw new HTTP409('Failed to put (insert) project funding source with incremented revision count');
-      }
     });
 
-    replaceFundingConnectionSurveyIds.forEach(async (surveyId) => {
-      const sqlInsertStatement = queries.survey.insertSurveyFundingSourceSQL(surveyId, projectId);
+    console.log('filteredFundingSources', filteredFundingSources);
 
-      if (!sqlInsertStatement) {
-        throw new HTTP400('Failed to build SQL insert statement');
-      }
-
-      const insertResult = await this.connection.query(sqlInsertStatement.text, sqlInsertStatement.values);
-
-      if (!insertResult) {
-        throw new HTTP409('Failed to replace (insert) survey funding source');
-      }
+    filteredFundingSources.forEach(async (item) => {
+      await projectRepository.insertSurveyFundingSource(item.project_funding_source_id, item.survey_id);
     });
   }
 

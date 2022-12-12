@@ -23,6 +23,22 @@ export const getAllAssignablePermitsForASurveySQL = (projectId: number): SQLStat
   `;
 };
 
+export const getAllConnectedSurveyProjectFundingSourcesSQL = (projectId: number): SQLStatement => {
+  return SQL`
+    SELECT
+      sfs.project_funding_source_id,
+      sfs.survey_id
+    FROM
+      survey_funding_source sfs
+    LEFT JOIN
+      project_funding_source pfs
+    ON
+      sfs.project_funding_source_id = pfs.project_funding_source_id
+    WHERE
+      pfs.project_id = ${projectId};
+  `;
+};
+
 /**
  * SQL query to get all survey ids for a given project.
  *
