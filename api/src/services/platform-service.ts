@@ -167,7 +167,7 @@ export class PlatformService extends DBService {
     await dwcService.enrichTaxonIDs(surveyData.darwin_core_source);
 
     if (!surveyData.output_key) {
-      throw new HTTP400('no s3Key found');git 
+      throw new HTTP400('no s3Key found');
     }
     const s3File = await getFileFromS3(surveyData.output_key);
 
