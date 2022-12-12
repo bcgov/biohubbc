@@ -41,7 +41,6 @@ export class DwCService extends DBService {
   }
 
   async enrichTaxonIDs(jsonObject: Record<any, any>): Promise<Record<any, any>> {
-    console.log('jsonObject is:', jsonObject);
     const taxonomyService = new TaxonomyService();
 
     const json_path_with_details = JSONPath({ path: '$..[taxonID]^', json: jsonObject, resultType: 'all' });
@@ -66,8 +65,6 @@ export class DwCService extends DBService {
         return patch;
       })
     );
-
-    console.log('patch array: ', patcharray);
 
     jsonObject = jsonpatch.applyPatch(jsonObject, patcharray).newDocument;
 
