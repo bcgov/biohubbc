@@ -608,7 +608,7 @@ describe('getValidFormatFieldsValidator', () => {
     ]);
   });
 
-  describe.only('getValidFormatFieldsValidator', () => {
+  describe('getValidFormatFieldsValidator', () => {
     it('adds no errors when no config is supplied', () => {
       const validator = getUniqueColumnsValidator();
       const worksheet = xlsx.utils.aoa_to_sheet([['Header1'], ['stuff']]);
