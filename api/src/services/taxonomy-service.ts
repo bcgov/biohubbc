@@ -58,13 +58,7 @@ export class TaxonomyService {
    * @memberof TaxonomyService
    */
   _sanitizeSpeciesData = (data: SearchHit<ITaxonomySource>[]): { id: string; label: string }[] => {
-    const filter_data = data.filter((item: SearchHit<any>) => {
-      if (item._source.english_name !== undefined) {
-        return { item };
-      }
-    });
-
-    return filter_data.map((item: SearchHit<ITaxonomySource>) => {
+    return data.map((item: SearchHit<ITaxonomySource>) => {
       const { _id: id, _source } = item;
 
       const label = [
