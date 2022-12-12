@@ -133,16 +133,14 @@ export class ValidationService extends DBService {
       await this.submissionRepository.insertSubmissionStatus(submissionId, SUBMISSION_STATUS_TYPE.TEMPLATE_VALIDATED);
 
       // template transformation
-      // await this.templateTransformation(submissionId, submissionPrep.xlsx, submissionPrep.s3InputKey, surveyId);
+      await this.templateTransformation(submissionId, submissionPrep.xlsx, submissionPrep.s3InputKey, surveyId);
 
       // insert template transformed status
       await this.submissionRepository.insertSubmissionStatus(submissionId, SUBMISSION_STATUS_TYPE.TEMPLATE_TRANSFORMED);
 
       // occurrence scraping
-      // await this.templateScrapeAndUploadOccurrences(submissionId);
+      await this.templateScrapeAndUploadOccurrences(submissionId);
     } catch (error) {
-      console.log('_______________');
-      console.log(error);
       if (error instanceof SubmissionError) {
         await this.errorService.insertSubmissionError(submissionId, error);
       } else {
