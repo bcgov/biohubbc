@@ -40,67 +40,6 @@ export const getSurveyIdsSQL = (projectId: number): SQLStatement => {
   `;
 };
 
-export const getSurveyBasicDataForViewSQL = (surveyId: number): SQLStatement => {
-  return SQL`
-    SELECT
-      s.survey_id as id,
-      s.name,
-      s.additional_details,
-      s.field_method_id,
-      s.ecological_season_id,
-      s.intended_outcome_id,
-      s.surveyed_all_areas,
-      s.start_date,
-      s.end_date,
-      s.lead_first_name,
-      s.lead_last_name,
-      s.location_name,
-      s.geojson as geometry,
-      s.revision_count,
-      per.number,
-      per.type,
-      max(os.occurrence_submission_id) as occurrence_submission_id,
-      max(sss.survey_summary_submission_id) as survey_summary_submission_id
-    FROM
-      survey as s
-    LEFT OUTER JOIN
-      permit as per
-    ON
-      per.survey_id = s.survey_id
-    LEFT OUTER JOIN
-      field_method as fm
-    ON
-      fm.field_method_id = s.field_method_id
-    LEFT OUTER JOIN
-      occurrence_submission as os
-    ON
-      os.survey_id = s.survey_id
-    LEFT OUTER JOIN
-      survey_summary_submission sss
-    ON
-      sss.survey_id = s.survey_id
-    WHERE
-      s.survey_id = ${surveyId}
-    GROUP BY
-      s.survey_id,
-      s.name,
-      s.field_method_id,
-      s.additional_details,
-      s.intended_outcome_id,
-      s.surveyed_all_areas,
-      s.ecological_season_id,
-      s.start_date,
-      s.end_date,
-      s.lead_first_name,
-      s.lead_last_name,
-      s.location_name,
-      s.geojson,
-      s.revision_count,
-      per.number,
-      per.type;
-  `;
-};
-
 export const getSurveyFundingSourcesDataForViewSQL = (surveyId: number): SQLStatement => {
   return SQL`
     SELECT
