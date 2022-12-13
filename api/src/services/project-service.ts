@@ -785,6 +785,15 @@ export class ProjectService extends DBService {
     await Promise.all([...insertActivityPromises]);
   }
 
+  /**
+   * Compares incoming project funding data against the existing funding data, if any, and determines which need to be
+   * deleted, added, or updated.
+   *
+   * @param {number} projectId
+   * @param {IUpdateProject} entities
+   * @return {*}  {Promise<void>}
+   * @memberof ProjectService
+   */
   async updateFundingData(projectId: number, entities: IUpdateProject): Promise<void> {
     const projectRepository = new ProjectRepository(this.connection);
 

@@ -158,29 +158,4 @@ export class ProjectRepository extends BaseRepository {
 
     return result;
   }
-
-  async insertSurveyFundingSource(fundingSourceId: number, surveyId: number) {
-    const sqlStatement: SQLStatement = SQL`
-    INSERT INTO survey_funding_source (
-      survey_id,
-      project_funding_source_id
-    ) VALUES (
-      ${surveyId},
-      ${fundingSourceId}
-    );
-  `;
-
-    const response = await this.connection.sql(sqlStatement);
-
-    const result = (response && response.rows) || null;
-
-    if (!result) {
-      throw new ApiExecuteSQLError('Failed to insert survey funding source', [
-        'ProjectRepository->insertSurveyFundingSource',
-        'rows was null or undefined, expected rows != null'
-      ]);
-    }
-
-    return result;
-  }
 }
