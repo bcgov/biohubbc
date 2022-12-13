@@ -11,38 +11,31 @@ import { BaseRepository } from './base-repository';
  * @extends {BaseRepository}
  */
 export class ProjectRepository extends BaseRepository {
-  async getProjectSurveyFundingSourceIds(
+  async getProjectFundingSourceIds(
     projectId: number
   ): Promise<
     {
       project_funding_source_id: number;
-      survey_id: number;
     }[]
   > {
     const sqlStatement = SQL`
     SELECT
-      sfs.project_funding_source_id,
-      sfs.survey_id
+      pfs.project_funding_source_id
     FROM
-      survey_funding_source sfs
-    LEFT JOIN
       project_funding_source pfs
-    ON
-      sfs.project_funding_source_id = pfs.project_funding_source_id
     WHERE
       pfs.project_id = ${projectId};
   `;
 
     const response = await this.connection.sql<{
       project_funding_source_id: number;
-      survey_id: number;
     }>(sqlStatement);
 
     const result = (response && response.rows) || null;
 
     if (!result) {
-      throw new ApiExecuteSQLError('Failed to get project and survey funding sources by Id', [
-        'ProjectRepository->getProjectSurveyFundingSourceIds',
+      throw new ApiExecuteSQLError('Failed to get project  funding sources by Id', [
+        'ProjectRepository->getProjectFundingSourceIds',
         'rows was null or undefined, expected rows != null'
       ]);
     }
@@ -50,27 +43,20 @@ export class ProjectRepository extends BaseRepository {
     return result;
   }
 
-  async deleteSurveyFundingSourceConnectionToProject(projectFundingSourceIds: number[]) {
+  async deleteSurveyFundingSourceConnectionToProject(projectFundingSourceId: number) {
     const sqlStatement: SQLStatement = SQL`
     DELETE
       from survey_funding_source sfs
     WHERE
-      sfs.project_funding_source_id
-    IN
-      ( ${projectFundingSourceIds[0]}`;
-
-    for (let i = 1; i < projectFundingSourceIds.length; i++) {
-      sqlStatement.append(`, ${projectFundingSourceIds[i]}`);
-    }
-    sqlStatement.append(`)
-    RETURNING survey_id;`);
+      sfs.project_funding_source_id = ${projectFundingSourceId}
+    RETURNING survey_id;`;
 
     const response = await this.connection.sql(sqlStatement);
 
     const result = (response && response.rows) || null;
 
     if (!result) {
-      throw new ApiExecuteSQLError('Failed to delete survey funding sources by id', [
+      throw new ApiExecuteSQLError('Failed to delete survey funding source by id', [
         'ProjectRepository->deleteSurveyFundingSourceConnectionToProject',
         'rows was null or undefined, expected rows != null'
       ]);
@@ -79,12 +65,12 @@ export class ProjectRepository extends BaseRepository {
     return result;
   }
 
-  async deleteAllProjectFundingSource(projectId: number) {
+  async deleteProjectFundingSource(projectFundingSourceId: number) {
     const sqlStatement: SQLStatement = SQL`
     DELETE
       from project_funding_source
     WHERE
-      project_id = ${projectId};
+        project_funding_source_id = ${projectFundingSourceId};
   `;
 
     const response = await this.connection.sql(sqlStatement);
@@ -92,8 +78,8 @@ export class ProjectRepository extends BaseRepository {
     const result = (response && response.rows) || null;
 
     if (!result) {
-      throw new ApiExecuteSQLError('Failed to delete all project funding source', [
-        'ProjectRepository->deleteAllProjectFundingSource',
+      throw new ApiExecuteSQLError('Failed to delete project funding source', [
+        'ProjectRepository->deleteProjectFundingSource',
         'rows was null or undefined, expected rows != null'
       ]);
     }
@@ -101,7 +87,41 @@ export class ProjectRepository extends BaseRepository {
     return result;
   }
 
-  async putProjectFundingSource(
+  async updateProjectFundingSource(
+    fundingSource: PutFundingSource,
+    projectId: number
+  ): Promise<{ project_funding_source_id: number }> {
+    const sqlStatement: SQLStatement = SQL`
+    UPDATE
+        project_funding_source
+    SET
+      project_id =  ${projectId},
+      investment_action_category_id = ${fundingSource.investment_action_category},
+      funding_source_project_id = ${fundingSource.agency_project_id},
+      funding_amount = ${fundingSource.funding_amount},
+      funding_start_date = ${fundingSource.start_date},
+      funding_end_date = ${fundingSource.end_date}
+    WHERE
+      project_funding_source_id = ${fundingSource.id}
+    RETURNING
+      project_funding_source_id;
+  `;
+
+    const response = await this.connection.sql<{ project_funding_source_id: number }>(sqlStatement);
+
+    const result = (response && response.rows && response.rows[0]) || null;
+
+    if (!result) {
+      throw new ApiExecuteSQLError('Failed to update project funding source', [
+        'ProjectRepository->putProjectFundingSource',
+        'rows was null or undefined, expected rows != null'
+      ]);
+    }
+
+    return result;
+  }
+
+  async insertProjectFundingSource(
     fundingSource: PutFundingSource,
     projectId: number
   ): Promise<{ project_funding_source_id: number }> {

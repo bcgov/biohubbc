@@ -8,7 +8,6 @@ import {
   IPutIUCN,
   PutCoordinatorData,
   PutFundingData,
-  PutFundingSource,
   PutIUCNData,
   PutLocationData,
   PutObjectivesData,
@@ -787,63 +786,46 @@ export class ProjectService extends DBService {
   }
 
   async updateFundingData(projectId: number, entities: IUpdateProject): Promise<void> {
-    console.log('projectId', projectId);
-    console.log('entities', entities);
+    const projectRepository = new ProjectRepository(this.connection);
 
     const putFundingData = entities?.funding && new PutFundingData(entities.funding);
     if (!putFundingData) {
       throw new HTTP400('Failed to create funding data object');
     }
 
-    console.log('putFundingData', putFundingData);
+    const existingProjectFundingSources = await projectRepository.getProjectFundingSourceIds(projectId);
 
-    //Find all connected Ids between Survey Funding and Project Funding
-    const projectRepository = new ProjectRepository(this.connection);
-    const allProjectFundingSourceIdsResult = await projectRepository.getProjectSurveyFundingSourceIds(projectId);
-
-    console.log('allProjectFundingSourceIdsResult', allProjectFundingSourceIdsResult);
-
-    const allFundingIds = allProjectFundingSourceIdsResult.map((data) => {
-      return data.project_funding_source_id;
+    const existingFundingSourcesToDelete = existingProjectFundingSources.filter((existingFunding) => {
+      return !putFundingData.fundingSources.find(
+        (incomingFunding) => incomingFunding.id === existingFunding.project_funding_source_id
+      );
     });
-    console.log('allFundingIds', allFundingIds);
 
-    //delete survey funding sources connected to project
-    await projectRepository.deleteSurveyFundingSourceConnectionToProject(allFundingIds);
+    if (existingFundingSourcesToDelete.length) {
+      const promises: Promise<any>[] = [];
 
-    //delete project funding sources
-    await projectRepository.deleteAllProjectFundingSource(projectId);
+      existingFundingSourcesToDelete.forEach((funding) => {
+        promises.push(
+          projectRepository.deleteSurveyFundingSourceConnectionToProject(funding.project_funding_source_id)
+        );
+        promises.push(projectRepository.deleteProjectFundingSource(funding.project_funding_source_id));
+      });
 
-    const putFundingIds: any[] = [];
-    //insert new values
-
-    for (let index = 0; index < putFundingData?.fundingSources.length; index++) {
-      const putFundingSource: PutFundingSource = putFundingData?.fundingSources[index];
-      const fundingSourceId = await projectRepository.putProjectFundingSource(putFundingSource, projectId);
-      console.log('fundingSourceId', fundingSourceId);
-      putFundingIds.push({ old: putFundingSource.id, new: fundingSourceId.project_funding_source_id });
+      await Promise.all(promises);
     }
 
-    console.log('putFundingIds', putFundingIds);
+    const promises: Promise<any>[] = [];
 
-    const filteredFundingSources: any[] = [];
-
-    allProjectFundingSourceIdsResult.forEach((allProjectItem) => {
-      putFundingIds.forEach((newProjectItem) => {
-        if (newProjectItem.old === allProjectItem.project_funding_source_id) {
-          filteredFundingSources.push({
-            project_funding_source_id: newProjectItem.new,
-            survey_id: allProjectItem.survey_id
-          });
-        }
-      });
+    putFundingData.fundingSources.forEach((funding) => {
+      if (funding.id) {
+        promises.push(projectRepository.updateProjectFundingSource(funding, projectId));
+      } else {
+        promises.push(projectRepository.insertProjectFundingSource(funding, projectId));
+      }
     });
 
-    console.log('filteredFundingSources', filteredFundingSources);
-
-    filteredFundingSources.forEach(async (item) => {
-      await projectRepository.insertSurveyFundingSource(item.project_funding_source_id, item.survey_id);
-    });
+    await Promise.all(promises);
+    return;
   }
 
   async deleteProject(projectId: number): Promise<boolean | null> {
