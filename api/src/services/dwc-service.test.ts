@@ -71,7 +71,7 @@ describe('DwCService', () => {
       const jsonObject = {
         item_with_depth_1: {
           taxonID: 'M_ALAM',
-          item_with_depth_2: { taxonID: 'M-OVCA' }
+          item_with_depth_2: { taxonID: 'M-OVCA', something: 'abcd' }
         }
       };
 
@@ -82,7 +82,8 @@ describe('DwCService', () => {
         item_with_depth_2: {
           taxonID: 'M-OVCA',
           scientificName: 'some scientific name',
-          vernacularName: 'some common name'
+          vernacularName: 'some common name',
+          something: 'abcd'
         },
         scientificName: 'some scientific name',
         taxonID: 'M_ALAM',

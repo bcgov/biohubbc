@@ -45,25 +45,35 @@ export class DwCService extends DBService {
 
     const json_path_with_details = JSONPath({ path: '$..[taxonID]^', json: jsonObject, resultType: 'all' });
 
-    const patcharray: Operation[] = await Promise.all(
+    let patcharray: Operation[] = [];
+
+    patcharray = await Promise.all(
       json_path_with_details.map(async (item: any) => {
         const enriched_data = await taxonomyService.getEnrichedDataForSpeciesCode(item.value['taxonID']);
 
-        const patch: Operation = {
-          op: 'add',
-          path: item.pointer,
-          value: {
-            taxonID: item.value['taxonID'],
-            scientificName: enriched_data?.scientific_name,
-            vernacularName: enriched_data?.english_name
-          }
+        const taxonIdPatch: Operation = {
+          op: 'replace',
+          path: item.pointer + '/taxonID',
+          value: item.value['taxonID']
         };
 
-        return patch;
+        const scientificNamePatch: Operation = {
+          op: 'add',
+          path: item.pointer + '/scientificName',
+          value: enriched_data?.scientific_name
+        };
+
+        const vernacularNamePatch: Operation = {
+          op: 'add',
+          path: item.pointer + '/vernacularName',
+          value: enriched_data?.english_name
+        };
+
+        patcharray.push(taxonIdPatch, scientificNamePatch, vernacularNamePatch);
+
+        jsonObject = jsonpatch.applyPatch(jsonObject, patcharray).newDocument;
       })
     );
-
-    jsonObject = jsonpatch.applyPatch(jsonObject, patcharray).newDocument;
 
     return jsonObject;
   }
