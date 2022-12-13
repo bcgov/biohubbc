@@ -8,7 +8,6 @@ import {
   IPutIUCN,
   PutCoordinatorData,
   PutFundingData,
-  PutFundingSource,
   PutIUCNData,
   PutLocationData,
   PutObjectivesData,
@@ -30,6 +29,7 @@ import {
 import { getSurveyAttachmentS3Keys } from '../paths/project/{projectId}/survey/{surveyId}/delete';
 import { GET_ENTITIES, IUpdateProject } from '../paths/project/{projectId}/update';
 import { queries } from '../queries/queries';
+import { ProjectRepository } from '../repositories/project-repository';
 import { deleteFileFromS3 } from '../utils/file-utils';
 import { AttachmentService } from './attachment-service';
 import { DBService } from './db-service';
@@ -785,56 +785,64 @@ export class ProjectService extends DBService {
     await Promise.all([...insertActivityPromises]);
   }
 
+  /**
+   * Compares incoming project funding data against the existing funding data, if any, and determines which need to be
+   * deleted, added, or updated.
+   *
+   * @param {number} projectId
+   * @param {IUpdateProject} entities
+   * @return {*}  {Promise<void>}
+   * @memberof ProjectService
+   */
   async updateFundingData(projectId: number, entities: IUpdateProject): Promise<void> {
+    const projectRepository = new ProjectRepository(this.connection);
+
     const putFundingData = entities?.funding && new PutFundingData(entities.funding);
+    if (!putFundingData) {
+      throw new HTTP400('Failed to create funding data object');
+    }
+    // Get any existing funding for this project
+    const existingProjectFundingSources = await projectRepository.getProjectFundingSourceIds(projectId);
 
-    const fundingIds = putFundingData?.fundingSources.map((data) => {
-      return data.id;
-    });
-
-    const surveyFundingSourceDeleteStatement = queries.survey.deleteSurveyFundingSourceConnectionToProjectSQL(
-      fundingIds
-    );
-
-    if (surveyFundingSourceDeleteStatement) {
-      const surveyFundingSourceDeleteResult = await this.connection.query(
-        surveyFundingSourceDeleteStatement.text,
-        surveyFundingSourceDeleteStatement.values
+    // Compare the array of existing funding to the array of incoming funding (by project_funding_source_id) and collect any
+    // existing funding that are not in the incoming funding array.
+    const existingFundingSourcesToDelete = existingProjectFundingSources.filter((existingFunding) => {
+      // Find all existing funding (by project_funding_source_id) that have no matching incoming project_funding_source_id
+      return !putFundingData.fundingSources.find(
+        (incomingFunding) => incomingFunding.id === existingFunding.project_funding_source_id
       );
+    });
 
-      if (!surveyFundingSourceDeleteResult) {
-        throw new HTTP409('Failed to delete survey funding source');
-      }
+    // Delete from the database all existing project and survey funding that have been removed
+    if (existingFundingSourcesToDelete.length) {
+      const promises: Promise<any>[] = [];
+
+      existingFundingSourcesToDelete.forEach((funding) => {
+        // Delete funding connection to survey first
+        promises.push(
+          projectRepository.deleteSurveyFundingSourceConnectionToProject(funding.project_funding_source_id)
+        );
+        // Delete project funding after
+        promises.push(projectRepository.deleteProjectFundingSource(funding.project_funding_source_id));
+      });
+
+      await Promise.all(promises);
     }
 
-    const projectFundingSourceDeleteStatement = queries.project.deleteAllProjectFundingSourceSQL(projectId);
+    // The remaining funding are either new, and can be created, or updates to existing funding
+    const promises: Promise<any>[] = [];
 
-    if (!projectFundingSourceDeleteStatement) {
-      throw new HTTP400('Failed to build SQL insert statement');
-    }
-
-    const projectFundingSourceDeleteResult = await this.connection.query(
-      projectFundingSourceDeleteStatement.text,
-      projectFundingSourceDeleteStatement.values
-    );
-
-    if (!projectFundingSourceDeleteResult) {
-      throw new HTTP409('Failed to delete project funding source');
-    }
-
-    putFundingData?.fundingSources.forEach(async (putFundingSource: PutFundingSource) => {
-      const sqlInsertStatement = queries.project.putProjectFundingSourceSQL(putFundingSource, projectId);
-
-      if (!sqlInsertStatement) {
-        throw new HTTP400('Failed to build SQL insert statement');
-      }
-
-      const insertResult = await this.connection.query(sqlInsertStatement.text, sqlInsertStatement.values);
-
-      if (!insertResult) {
-        throw new HTTP409('Failed to put (insert) project funding source with incremented revision count');
+    putFundingData.fundingSources.forEach((funding) => {
+      if (funding.id) {
+        // Has a project_funding_source_id, indicating this is an update to an existing funding
+        promises.push(projectRepository.updateProjectFundingSource(funding, projectId));
+      } else {
+        // No project_funding_source_id, indicating this is a new funding which needs to be created
+        promises.push(projectRepository.insertProjectFundingSource(funding, projectId));
       }
     });
+
+    await Promise.all(promises);
   }
 
   async deleteProject(projectId: number): Promise<boolean | null> {
