@@ -384,7 +384,9 @@ export const getUniqueColumnsValidator = (config?: FileColumnUniqueValidatorConf
     }
 
     rows.forEach((row, rowIndex) => {
-      const key = config.file_column_unique_validator.column_names.map((columnIndex) => `${row[columnIndex]}`.trim().toLocaleLowerCase()).join(', ');
+      const key = config.file_column_unique_validator.column_names
+        .map((columnIndex) => `${row[columnIndex]}`.trim().toLocaleLowerCase())
+        .join(', ');
       // check if key exists already
       if (!keySet.has(key)) {
         keySet.add(key);
