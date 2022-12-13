@@ -90,7 +90,7 @@ export enum SUBMISSION_MESSAGE_TYPE {
   'INVALID_MEDIA' = 'Media is invalid',
   'INVALID_XLSX_CSV' = 'Media is not a valid XLSX CSV file.',
   'UNSUPPORTED_FILE_TYPE' = 'File submitted is not a supported type',
-  'NON_UNIQUE_KEY' = 'Duplicate Key found in file.'
+  'NON_UNIQUE_KEY' = 'Duplicate Key(s) found in file.'
 }
 
 export enum MESSAGE_CLASS_NAME {

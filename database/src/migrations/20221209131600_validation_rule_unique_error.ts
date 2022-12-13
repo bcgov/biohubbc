@@ -4,7 +4,7 @@ const DB_SCHEMA = process.env.DB_SCHEMA;
 
 const summaryMessageTypes = [
   {
-    name: 'Non Unique Key found',
+    name: 'Duplicate Key(s) found in file.',
     description: 'Keys found in the uploaded file are not unique',
     class: 'Error'
   }

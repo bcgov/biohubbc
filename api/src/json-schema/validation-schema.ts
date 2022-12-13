@@ -390,7 +390,7 @@ export const submissionValidationSchema = {
         file_column_unique_validator: {
           type: 'object',
           properties: {
-            key_columns: {
+            column_names: {
               type: 'array',
               items: {
                 type: 'string'

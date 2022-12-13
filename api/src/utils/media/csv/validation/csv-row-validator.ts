@@ -355,7 +355,7 @@ export const getValidFormatFieldsValidator = (config?: ColumnFormatValidatorConf
 
 export type FileColumnUniqueValidatorConfig = {
   file_column_unique_validator: {
-    key_columns: string[];
+    column_names: string[];
   };
 };
 
@@ -365,7 +365,7 @@ export const getUniqueColumnsValidator = (config?: FileColumnUniqueValidatorConf
       return csvWorksheet;
     }
 
-    if (config.file_column_unique_validator.key_columns.length < 1) {
+    if (config.file_column_unique_validator.column_names.length < 1) {
       return csvWorksheet;
     }
 
@@ -373,16 +373,18 @@ export const getUniqueColumnsValidator = (config?: FileColumnUniqueValidatorConf
     const rows = csvWorksheet.getRowObjects();
     const lowercaseHeaders = csvWorksheet.getHeadersLowerCase();
 
-    const columnIndices = config.file_column_unique_validator.key_columns.map((column) =>
+    // find the indices of all provided column names
+    const columnIndices = config.file_column_unique_validator.column_names.map((column) =>
       lowercaseHeaders.indexOf(column.toLocaleLowerCase())
     );
+
+    // validate indices of provided column names and return if any are missing
     if (columnIndices.indexOf(-1) !== -1) {
-      // worksheet or config columns don't line up
       return csvWorksheet;
     }
 
     rows.forEach((row, rowIndex) => {
-      const key = config.file_column_unique_validator.key_columns.map((columnIndex) => row[columnIndex]).join(', ');
+      const key = config.file_column_unique_validator.column_names.map((columnIndex) => `${row[columnIndex]}`.trim().toLocaleLowerCase()).join(', ');
       // check if key exists already
       if (!keySet.has(key)) {
         keySet.add(key);
@@ -392,7 +394,7 @@ export const getUniqueColumnsValidator = (config?: FileColumnUniqueValidatorConf
         csvWorksheet.csvValidation.addRowErrors([
           {
             errorCode: SUBMISSION_MESSAGE_TYPE.NON_UNIQUE_KEY,
-            message: `Duplicate key(s): ${key} found in column(s): ${config.file_column_unique_validator.key_columns.join(
+            message: `Duplicate key(s): ${key} found in column(s): ${config.file_column_unique_validator.column_names.join(
               ', '
             )}. Keys must be unique for proper template transformation`,
             col: key,

@@ -622,7 +622,7 @@ describe('getValidFormatFieldsValidator', () => {
     it('adds no errors when no columns are specified in config', () => {
       const config: FileColumnUniqueValidatorConfig = {
         file_column_unique_validator: {
-          key_columns: ['']
+          column_names: ['']
         }
       };
       const validator = getUniqueColumnsValidator(config);
@@ -637,7 +637,7 @@ describe('getValidFormatFieldsValidator', () => {
     it('adds no errors when specified key column is missing from the worksheet', () => {
       const config: FileColumnUniqueValidatorConfig = {
         file_column_unique_validator: {
-          key_columns: ['Header1', 'Header2']
+          column_names: ['Header1', 'Header2']
         }
       };
       const validator = getUniqueColumnsValidator(config);
@@ -652,7 +652,7 @@ describe('getValidFormatFieldsValidator', () => {
     it('adds no errors when all keys specified are unique', () => {
       const config: FileColumnUniqueValidatorConfig = {
         file_column_unique_validator: {
-          key_columns: ['Header1', 'Header2']
+          column_names: ['Header1', 'Header2']
         }
       };
       const validator = getUniqueColumnsValidator(config);
@@ -672,7 +672,7 @@ describe('getValidFormatFieldsValidator', () => {
     it('adds errors when not all keys are unique', () => {
       const config: FileColumnUniqueValidatorConfig = {
         file_column_unique_validator: {
-          key_columns: ['Header1', 'Header2']
+          column_names: ['Header1', 'Header2']
         }
       };
       const validator = getUniqueColumnsValidator(config);
