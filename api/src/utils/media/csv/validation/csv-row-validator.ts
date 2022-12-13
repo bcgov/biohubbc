@@ -390,7 +390,6 @@ export const getUniqueColumnsValidator = (config?: FileColumnUniqueValidatorConf
         keySet.add(key);
       } else {
         // duplicate key found
-        // TODO do we want this error to show both row indices, first instance and offending row?
         csvWorksheet.csvValidation.addRowErrors([
           {
             errorCode: SUBMISSION_MESSAGE_TYPE.NON_UNIQUE_KEY,
