@@ -34,7 +34,7 @@ export class ProjectRepository extends BaseRepository {
     const result = (response && response.rows) || null;
 
     if (!result) {
-      throw new ApiExecuteSQLError('Failed to get project  funding sources by Id', [
+      throw new ApiExecuteSQLError('Failed to get project funding sources by Id', [
         'ProjectRepository->getProjectFundingSourceIds',
         'rows was null or undefined, expected rows != null'
       ]);
@@ -150,7 +150,7 @@ export class ProjectRepository extends BaseRepository {
     const result = (response && response.rows && response.rows[0]) || null;
 
     if (!result) {
-      throw new ApiExecuteSQLError('Failed to update project funding source', [
+      throw new ApiExecuteSQLError('Failed to insert project funding source', [
         'ProjectRepository->putProjectFundingSource',
         'rows was null or undefined, expected rows != null'
       ]);
