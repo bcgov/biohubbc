@@ -801,40 +801,48 @@ export class ProjectService extends DBService {
     if (!putFundingData) {
       throw new HTTP400('Failed to create funding data object');
     }
-
+    // Get any existing funding for this project
     const existingProjectFundingSources = await projectRepository.getProjectFundingSourceIds(projectId);
 
+    // Compare the array of existing funding to the array of incoming funding (by project_funding_source_id) and collect any
+    // existing funding that are not in the incoming funding array.
     const existingFundingSourcesToDelete = existingProjectFundingSources.filter((existingFunding) => {
+      // Find all existing funding (by project_funding_source_id) that have no matching incoming project_funding_source_id
       return !putFundingData.fundingSources.find(
         (incomingFunding) => incomingFunding.id === existingFunding.project_funding_source_id
       );
     });
 
+    // Delete from the database all existing project and survey funding that have been removed
     if (existingFundingSourcesToDelete.length) {
       const promises: Promise<any>[] = [];
 
       existingFundingSourcesToDelete.forEach((funding) => {
+        // Delete funding connection to survey first
         promises.push(
           projectRepository.deleteSurveyFundingSourceConnectionToProject(funding.project_funding_source_id)
         );
+        // Delete project funding after
         promises.push(projectRepository.deleteProjectFundingSource(funding.project_funding_source_id));
       });
 
       await Promise.all(promises);
     }
 
+    // The remaining funding are either new, and can be created, or updates to existing funding
     const promises: Promise<any>[] = [];
 
     putFundingData.fundingSources.forEach((funding) => {
       if (funding.id) {
+        // Has a project_funding_source_id, indicating this is an update to an existing funding
         promises.push(projectRepository.updateProjectFundingSource(funding, projectId));
       } else {
+        // No project_funding_source_id, indicating this is a new funding which needs to be created
         promises.push(projectRepository.insertProjectFundingSource(funding, projectId));
       }
     });
 
     await Promise.all(promises);
-    return;
   }
 
   async deleteProject(projectId: number): Promise<boolean | null> {
