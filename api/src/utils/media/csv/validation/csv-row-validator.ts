@@ -373,13 +373,13 @@ export const getUniqueColumnsValidator = (config?: FileColumnUniqueValidatorConf
     const rows = csvWorksheet.getRowObjects();
     const lowercaseHeaders = csvWorksheet.getHeadersLowerCase();
 
-    // find the indices of all provided column names
+    // find the indices of all provided column names in the worksheet
     const columnIndices = config.file_column_unique_validator.column_names.map((column) =>
       lowercaseHeaders.indexOf(column.toLocaleLowerCase())
     );
 
-    // validate indices of provided column names and return if any are missing
-    if (columnIndices.indexOf(-1) !== -1) {
+    // checks list of column indices if any are missing (-1) and returns early
+    if (columnIndices.includes(-1)) {
       return csvWorksheet;
     }
 
