@@ -1,3 +1,4 @@
+import { QueryResult } from 'pg';
 import SQL from 'sql-template-strings';
 import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
@@ -1417,10 +1418,7 @@ export class AttachmentRepository extends BaseRepository {
     return response.rows[0];
   }
 
-  async getProjectAttachmentByFileName(
-    projectId: number,
-    fileName: string
-  ): Promise<{ id: number; file_name: string; update_date: string; create_date: string; file_size: string }> {
+  async getProjectAttachmentByFileName(projectId: number, fileName: string): Promise<QueryResult> {
     const sqlStatement = SQL`
     SELECT
       project_attachment_id as id,
@@ -1438,14 +1436,14 @@ export class AttachmentRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement);
 
-    if (!response || !response?.rows || !response?.rows[0]) {
+    if (!response) {
       throw new ApiExecuteSQLError('Failed to get project attachment by filename', [
         'AttachmentRepository->getProjectAttachmentByFileName',
         'rows was null or undefined, expected rows != null'
       ]);
     }
 
-    return response.rows[0];
+    return response;
   }
 
   async insertProjectReportAttachment(
@@ -1524,7 +1522,7 @@ export class AttachmentRepository extends BaseRepository {
     return response.rows[0];
   }
 
-  async deleteProjectReportAttachmentAuthors(attachmentId: number): Promise<{ id: number; revision_count: number }> {
+  async deleteProjectReportAttachmentAuthors(attachmentId: number): Promise<QueryResult> {
     const sqlStatement = SQL`
     DELETE
       FROM project_report_author
@@ -1534,14 +1532,14 @@ export class AttachmentRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement);
 
-    if (!response || !response?.rows || !response?.rows[0]) {
+    if (!response) {
       throw new ApiExecuteSQLError('Failed to delete attachment report authors records', [
         'AttachmentRepository->deleteProjectReportAttachmentAuthors',
         'rows was null or undefined, expected rows != null'
       ]);
     }
 
-    return response.rows[0];
+    return response;
   }
 
   async insertProjectReportAttachmentAuthor(
@@ -1569,10 +1567,7 @@ export class AttachmentRepository extends BaseRepository {
     }
   }
 
-  async getProjectReportAttachmentByFileName(
-    projectId: number,
-    fileName: string
-  ): Promise<{ id: number; file_name: string; update_date: string; create_date: string; file_size: string }> {
+  async getProjectReportAttachmentByFileName(projectId: number, fileName: string): Promise<QueryResult> {
     const sqlStatement = SQL`
       SELECT
         project_report_attachment_id as id,
@@ -1590,13 +1585,13 @@ export class AttachmentRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement);
 
-    if (!response || !response?.rows || !response?.rows[0]) {
+    if (!response) {
       throw new ApiExecuteSQLError('Failed to get Project Report Attachment by filename', [
         'AttachmentRepository->getProjectReportAttachmentByFileName',
         'rows was null or undefined, expected rows != null'
       ]);
     }
 
-    return response?.rows[0];
+    return response;
   }
 }

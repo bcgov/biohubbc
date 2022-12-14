@@ -1,3 +1,4 @@
+import { QueryResult } from 'pg';
 import { IDBConnection } from '../database/db';
 import { PostReportAttachmentMetadata, PutReportAttachmentMetadata } from '../models/project-survey-attachments';
 import {
@@ -543,13 +544,10 @@ export class AttachmentService extends DBService {
    *
    * @param {string} fileName
    * @param {number} projectId
-   * @return {*}  {Promise<{ id: number; file_name: string; update_date: string; create_date: string; file_size: string }>}
+   * @return {*}  {Promise<QueryResult>}
    * @memberof AttachmentService
    */
-  async getProjectAttachmentByFileName(
-    fileName: string,
-    projectId: number
-  ): Promise<{ id: number; file_name: string; update_date: string; create_date: string; file_size: string }> {
+  async getProjectAttachmentByFileName(fileName: string, projectId: number): Promise<QueryResult> {
     return this.attachmentRepository.getProjectAttachmentByFileName(projectId, fileName);
   }
 
@@ -573,7 +571,7 @@ export class AttachmentService extends DBService {
 
     let attachmentResult: { id: number; revision_count: number };
 
-    if (getResponse) {
+    if (getResponse && getResponse.rowCount > 0) {
       // Existing attachment with matching name found, update it
       attachmentResult = await this.updateProjectAttachment(file.originalname, projectId, attachmentType);
     } else {
@@ -626,10 +624,10 @@ export class AttachmentService extends DBService {
    * Delete Project Report Attachment Authors
    *
    * @param {number} attachmentId
-   * @return {*}  {Promise<{ id: number; revision_count: number }>}
+   * @return {*}  {Promise<QueryResult>}
    * @memberof AttachmentService
    */
-  async deleteProjectReportAttachmentAuthors(attachmentId: number): Promise<{ id: number; revision_count: number }> {
+  async deleteProjectReportAttachmentAuthors(attachmentId: number): Promise<QueryResult> {
     return this.attachmentRepository.deleteProjectReportAttachmentAuthors(attachmentId);
   }
 
@@ -653,13 +651,10 @@ export class AttachmentService extends DBService {
    *
    * @param {number} projectId
    * @param {string} fileName
-   * @return {*}  {Promise<{ id: number; file_name: string; update_date: string; create_date: string; file_size: string }>}
+   * @return {*}  {Promise<QueryResult>}
    * @memberof AttachmentService
    */
-  async getProjectReportAttachmentByFileName(
-    projectId: number,
-    fileName: string
-  ): Promise<{ id: number; file_name: string; update_date: string; create_date: string; file_size: string }> {
+  async getProjectReportAttachmentByFileName(projectId: number, fileName: string): Promise<QueryResult> {
     return this.attachmentRepository.getProjectReportAttachmentByFileName(projectId, fileName);
   }
 
@@ -675,7 +670,7 @@ export class AttachmentService extends DBService {
     let metadata: any;
     let attachmentResult: { id: number; revision_count: number };
 
-    if (getResponse) {
+    if (getResponse && getResponse.rowCount > 0) {
       // Existing attachment with matching name found, update it
       metadata = new PutReportAttachmentMetadata(attachmentMeta);
       attachmentResult = await this.updateProjectReportAttachment(file.originalname, projectId, metadata);
