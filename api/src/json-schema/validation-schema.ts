@@ -191,13 +191,9 @@ export const submissionValidationSchema = {
           type: 'object',
           required: ['child_worksheet_name', 'parent_worksheet_name', 'column_names'],
           properties: {
-            name: {
-              type: 'string'
-            },
             description: {
               type: 'string'
             },
-            required_files: {},
             child_worksheet_name: {
               type: 'string'
             },

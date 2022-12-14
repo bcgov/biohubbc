@@ -19,7 +19,7 @@ export type ParentChildKeyMatchValidatorConfig = {
  * required fields.
  *
  * @param {KeyMatchValidatorConfig} [config]
- * @return {*}  {CSVValidator}
+ * @return {*}  {WorkBookValidator}
  */
 export const getParentChildKeyMatchValidator = (config?: ParentChildKeyMatchValidatorConfig): WorkBookValidator => {
   return (csvWorkbook: CSVWorkBook) => {
@@ -53,7 +53,7 @@ export const getParentChildKeyMatchValidator = (config?: ParentChildKeyMatchVali
       .map((serializedRow: string, rowIndex: number) => {
         return !serializedRow || parentSerializedRows.includes(serializedRow) ? -1 : rowIndex;
       })
-      .filter((rowIndex: number) => rowIndex >= 1)
+      .filter((rowIndex: number) => rowIndex >= 0)
       .forEach((danglingRowIndex: number) => {
         const mismatchedColumn =
           column_names.find((columnName: string) => {
