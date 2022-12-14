@@ -149,6 +149,11 @@ export class ValidationSchemaParser {
     return rules;
   }
 
+  /**
+   * Retreives all validation rules for workbooks. Workbook validations differ from submission
+   * validations in that they alter the validation state of each worksheet within the workbook.
+   * @returns {*} {WorkBookValidator[]} All workbook validation rules for the given submission.
+   */
   getWorkbookValidations(): WorkBookValidator[] {
     const validationSchemas = this.getWorkbookValidationSchemas();
 

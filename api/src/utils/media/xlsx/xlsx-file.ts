@@ -26,66 +26,59 @@ export class XLSXCSV {
   }
 
   /**
-   * Determines validity of submission media.
-   * @param validationSchemaParser
-   * @returns
+   * Runs all media-related validation for this CSV file, based on given validation schema parser.
+   * @param validationSchemaParser The validation schema
+   * @returns {*} {void}
+   * @memberof XLSXCSV
    */
-  isMediaValid(validationSchemaParser: ValidationSchemaParser): IMediaState {
+  validateMedia(validationSchemaParser: ValidationSchemaParser): void {
     const validators = validationSchemaParser.getSubmissionValidations();
 
-    const mediaValidation = this.validate(validators as XLSXCSVValidator[]);
-
-    return mediaValidation.getState();
+    this.validate(validators as XLSXCSVValidator[]);
   }
 
   /**
-   * Determines the validity of a workbook belonging to a submission. Workbook validators
-   * are different in that they validate an entire submission, but return validations
-   * particular to worksheets within the workbook.
-   * @param validationSchemaParser
-   * @returns
+   * Runs all content and workbook-related validation for this CSV file, based on the given validation
+   * schema parser.
+   * 
+   * @param {ValidationSchemaParser} validationSchemaParser The validation schema
+   * @return {*}  {void}
+   * @memberof XLSXCSV
    */
-  isWorkbookValid(validationSchemaParser: ValidationSchemaParser): ICsvState[] {
-    const csvStates: ICsvState[] = [];
-
+  validateContent(validationSchemaParser: ValidationSchemaParser): void {
+    // Run workbook validators.
     const workbookValidators = validationSchemaParser.getWorkbookValidations();
-
     this.workbook.validate(workbookValidators);
 
-    Object.values(this.workbook.worksheets).forEach((worksheet: CSVWorksheet) => {
-      csvStates.push(worksheet.csvValidation.getState());
-    });
+    // Run content validators.
+    Object.entries(this.workbook.worksheets)
+      .filter(([fileName, worksheet]) => Boolean(worksheet) && fileName !== 'Picklist Values')
+      .forEach(([fileName, worksheet]) => {
+        const fileValidators = validationSchemaParser.getFileValidations(fileName);
+        const columnValidators = validationSchemaParser.getAllColumnValidations(fileName);
 
-    return csvStates;
+        worksheet.validate([...fileValidators,...columnValidators]);
+      });
   }
 
   /**
-   * Determines the validity of individual worksheets belonging to a submission
-   * @param validationSchemaParser
-   * @returns
+   * Returns the current media state belonging to the CSV file.
+   * @returns {*} {IMediaState} The state of the CSV media.
+   * @memberof XLSXCSV
    */
-  isContentValid(validationSchemaParser: ValidationSchemaParser): ICsvState[] {
-    const csvStates: ICsvState[] = [];
+  getMediaState(): IMediaState {
+    return this.mediaValidation.getState();
+  }
 
-    Object.keys(this.workbook.worksheets).forEach((fileName) => {
-      const fileValidators = validationSchemaParser.getFileValidations(fileName);
-
-      const columnValidators = validationSchemaParser.getAllColumnValidations(fileName);
-
-      const validators = [...fileValidators, ...columnValidators];
-
-      const worksheet: CSVWorksheet = this.workbook.worksheets[fileName];
-
-      if (!worksheet || fileName === 'Picklist Values') {
-        return;
-      }
-
-      const csvValidation = worksheet.validate(validators);
-
-      csvStates.push(csvValidation.getState());
-    });
-
-    return csvStates;
+  /**
+   * Returns the current CSV states belonging to all worksheets in the CSV file.
+   * @returns {*} {ICsvState[]} The state of each worksheet in the CSV file.
+   * @memberof XLSXCSV
+   */
+  getContentState(): ICsvState[] {
+    return Object.values(this.workbook.worksheets)
+      .map((worksheet: CSVWorksheet) => worksheet.csvValidation.getState())
+      .filter(Boolean);
   }
 
   worksheetToBuffer(worksheet: xlsx.WorkSheet): Buffer {

@@ -296,26 +296,25 @@ export class ValidationService extends DBService {
     return validationSchema;
   }
 
-  // validation service
   getValidationRules(schema: any): ValidationSchemaParser {
     const validationSchemaParser = new ValidationSchemaParser(schema);
     return validationSchemaParser;
   }
 
-  // validation service
   validateXLSX(file: XLSXCSV, parser: ValidationSchemaParser) {
-    const mediaState = file.isMediaValid(parser);
-
-    if (!mediaState.isValid) {
+    // Run media validations
+    file.validateMedia(parser);
+    
+    const media_state = file.getMediaState();
+    if (!media_state.isValid) {
       throw SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.INVALID_MEDIA);
     }
 
-    const csvState: ICsvState[] = [...file.isWorkbookValid(parser), ...file.isContentValid(parser)];
+    // Run CSV content validations
+    file.validateContent(parser);
+    const csv_state = file.getContentState()
 
-    return {
-      csv_state: csvState,
-      media_state: mediaState
-    } as ICsvMediaState;
+    return {csv_state, media_state};
   }
 
   /**
@@ -463,17 +462,20 @@ export class ValidationService extends DBService {
 
   validateDWCArchive(dwc: DWCArchive, parser: ValidationSchemaParser): ICsvMediaState {
     defaultLog.debug({ label: 'validateDWCArchive', message: 'dwcArchive' });
-    const mediaState = dwc.isMediaValid(parser);
-    if (!mediaState.isValid) {
+
+    // Run DwC media validations
+    dwc.validateMedia(parser);
+
+    const media_state = dwc.getMediaState();
+    if (!media_state.isValid) {
       throw SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.INVALID_MEDIA);
     }
 
-    const csvState: ICsvState[] = [...dwc.isWorkbookValid(parser), ...dwc.isContentValid(parser)];
+    // Run DwC content validations
+    dwc.validateContent(parser);
+    const csv_state = dwc.getContentState()
 
-    return {
-      csv_state: csvState,
-      media_state: mediaState
-    };
+    return {csv_state, media_state};
   }
 
   generateHeaderErrorMessage(fileName: string, headerError: IHeaderError): string {

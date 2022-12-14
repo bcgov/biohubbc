@@ -87,7 +87,14 @@ export class DWCArchive {
     }
   }
 
-  _workbookFromWorksheets() {
+  /**
+   * Makes a CSV workbook from the worksheets included in the DwC archive file, enabling us
+   * to run workbook validation on them.
+   *
+   * @return {*} {xlsx.WorkBook} The workbook made from all worksheets.
+   * @memberof DWCArchive
+   */
+  _workbookFromWorksheets(): xlsx.WorkBook {
     const workbook = xlsx.utils.book_new();
 
     Object.entries(this.worksheets).forEach(([key, worksheet]) => {
@@ -99,51 +106,58 @@ export class DWCArchive {
     return workbook;
   }
 
-  isMediaValid(validationSchemaParser: ValidationSchemaParser): IMediaState {
+  /**
+   * Runs all media-related validation for this DwC archive, based on given validation schema parser.
+   * @param validationSchemaParser The validation schema
+   * @returns {*} {void}
+   * @memberof DWCArchive
+   */
+  validateMedia(validationSchemaParser: ValidationSchemaParser): void {
     const validators = validationSchemaParser.getSubmissionValidations();
 
-    const mediaValidation = this.validate(validators as DWCArchiveValidator[]);
-
-    return mediaValidation.getState();
+    this.validate(validators as DWCArchiveValidator[]);
   }
 
-  isWorkbookValid(validationSchemaParser: ValidationSchemaParser): ICsvState[] {
-    const csvStates: ICsvState[] = [];
-
+  /**
+   * Runs all content and workbook-related validation for this DwC archive, based on the given validation
+   * schema parser.
+   * @param {ValidationSchemaParser} validationSchemaParser The validation schema
+   * @returns {*} {void}
+   * @memberof DWCArchive
+   */
+  validateContent(validationSchemaParser: ValidationSchemaParser): void {
+    // Run workbook validators
     const workbookValidators = validationSchemaParser.getWorkbookValidations();
-
     const csvWorkbook = new CSVWorkBook(this._workbookFromWorksheets());
     csvWorkbook.validate(workbookValidators);
 
-    Object.values(csvWorkbook.worksheets).forEach((worksheet: CSVWorksheet) => {
-      csvStates.push(worksheet.csvValidation.getState());
-    });
+    // Run content validators
+    Object.entries(this.worksheets)
+      .filter(([_fileName, worksheet]) => Boolean(worksheet))
+      .forEach(([fileName, worksheet]) => {
+        const fileValidators = validationSchemaParser.getFileValidations(fileName);
+        const columnValidators = validationSchemaParser.getAllColumnValidations(fileName);
 
-    return csvStates;
+        worksheet.validate([...fileValidators, ...columnValidators]);
+      });
   }
 
-  isContentValid(validationSchemaParser: ValidationSchemaParser): ICsvState[] {
-    const csvStates: ICsvState[] = [];
+  /**
+   * Returns the current media state belonging to the DwC archive file.
+   * @returns {*} {IMediaState} The state of the DwC archive media.
+   */
+  getMediaState(): IMediaState {
+    return this.mediaValidation.getState();
+  }
 
-    Object.keys(this.worksheets).forEach((fileName) => {
-      const fileValidators = validationSchemaParser.getFileValidations(fileName);
-
-      const columnValidators = validationSchemaParser.getAllColumnValidations(fileName);
-
-      const validators = [...fileValidators, ...columnValidators];
-
-      const worksheet: CSVWorksheet = this.worksheets[fileName];
-
-      if (!worksheet) {
-        return;
-      }
-
-      const csvValidation = worksheet.validate(validators);
-
-      csvStates.push(csvValidation.getState());
-    });
-
-    return csvStates;
+  /**
+   * Returns the current CSV states belonging to all worksheets in the DwC archive file.
+   * @returns {*} {ICsvState[]} The state of each worksheet in the archive file.
+   */
+  getContentState(): ICsvState[] {
+    return Object.values(this.worksheets)
+      .map((worksheet: CSVWorksheet) => worksheet.csvValidation.getState())
+      .filter(Boolean)
   }
 
   /**

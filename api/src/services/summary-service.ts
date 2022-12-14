@@ -308,18 +308,20 @@ export class SummaryService extends DBService {
    */
   validateXLSX(file: XLSXCSV, parser: ValidationSchemaParser): ICsvMediaState {
     defaultLog.debug({ label: 'validateXLSX' });
-    const mediaState = file.isMediaValid(parser);
-
-    if (!mediaState.isValid) {
+    
+    // Run media validations
+    file.validateMedia(parser);
+    
+    const media_state = file.getMediaState();
+    if (!media_state.isValid) {
       throw SummarySubmissionErrorFromMessageType(SUMMARY_SUBMISSION_MESSAGE_TYPE.INVALID_MEDIA);
     }
 
-    const csvState: ICsvState[] = [...file.isWorkbookValid(parser), ...file.isContentValid(parser)];
+    // Run CSV content validations
+    file.validateContent(parser);
+    const csv_state = file.getContentState()
 
-    return {
-      csv_state: csvState,
-      media_state: mediaState
-    } as ICsvMediaState;
+    return {csv_state, media_state};
   }
 
   /**
