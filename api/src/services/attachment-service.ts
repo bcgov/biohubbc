@@ -1,4 +1,5 @@
 import { IDBConnection } from '../database/db';
+import { PostReportAttachmentMetadata, PutReportAttachmentMetadata } from '../models/project-survey-attachments';
 import {
   AttachmentRepository,
   IProjectAttachment,
@@ -12,6 +13,7 @@ import {
   ISurveyReportSecurityReason,
   WithSecurityRuleCount
 } from '../repositories/attachment-repository';
+import { generateS3FileKey } from '../utils/file-utils';
 import { DBService } from './db-service';
 
 export interface IAttachmentType {
@@ -498,5 +500,211 @@ export class AttachmentService extends DBService {
    */
   async getSurveyAttachmentSecurityReasons(attachmentId: number): Promise<ISurveyAttachmentSecurityReason[]> {
     return this.attachmentRepository.getSurveyAttachmentSecurityReasons(attachmentId);
+  }
+
+  /**
+   *Insert Project Attachment
+   *
+   * @param {Express.Multer.File} file
+   * @param {number} projectId
+   * @param {string} attachmentType
+   * @param {string} key
+   * @return {*}  {Promise<{ id: number; revision_count: number }>}
+   * @memberof AttachmentService
+   */
+  async insertProjectAttachment(
+    file: Express.Multer.File,
+    projectId: number,
+    attachmentType: string,
+    key: string
+  ): Promise<{ id: number; revision_count: number }> {
+    return this.attachmentRepository.insertProjectAttachment(file, projectId, attachmentType, key);
+  }
+
+  /**
+   * Update Project Attachment
+   *
+   * @param {string} fileName
+   * @param {number} projectId
+   * @param {string} attachmentType
+   * @return {*}  {Promise<{ id: number; revision_count: number }>}
+   * @memberof AttachmentService
+   */
+  async updateProjectAttachment(
+    fileName: string,
+    projectId: number,
+    attachmentType: string
+  ): Promise<{ id: number; revision_count: number }> {
+    return this.attachmentRepository.updateProjectAttachment(fileName, projectId, attachmentType);
+  }
+
+  /**
+   * Get Project Attachment by filename
+   *
+   * @param {string} fileName
+   * @param {number} projectId
+   * @return {*}  {Promise<{ id: number; file_name: string; update_date: string; create_date: string; file_size: string }>}
+   * @memberof AttachmentService
+   */
+  async getProjectAttachmentByFileName(
+    fileName: string,
+    projectId: number
+  ): Promise<{ id: number; file_name: string; update_date: string; create_date: string; file_size: string }> {
+    return this.attachmentRepository.getProjectAttachmentByFileName(projectId, fileName);
+  }
+
+  /**
+   * Update or Insert Project Attachment
+   *
+   * @param {Express.Multer.File} file
+   * @param {number} projectId
+   * @param {string} attachmentType
+   * @return {*}  {Promise<{ id: number; revision_count: number; key: string }>}
+   * @memberof AttachmentService
+   */
+  async upsertProjectAttachment(
+    file: Express.Multer.File,
+    projectId: number,
+    attachmentType: string
+  ): Promise<{ id: number; revision_count: number; key: string }> {
+    const key = generateS3FileKey({ projectId: projectId, fileName: file.originalname });
+
+    const getResponse = await this.getProjectAttachmentByFileName(file.originalname, projectId);
+
+    let attachmentResult: { id: number; revision_count: number };
+
+    if (getResponse) {
+      // Existing attachment with matching name found, update it
+      attachmentResult = await this.updateProjectAttachment(file.originalname, projectId, attachmentType);
+    } else {
+      // No matching attachment found, insert new attachment
+      attachmentResult = await this.insertProjectAttachment(file, projectId, attachmentType, key);
+    }
+
+    return { ...attachmentResult, key };
+  }
+
+  /**
+   * Insert Project Report Attachment
+   *
+   * @param {string} fileName
+   * @param {string} fileSize
+   * @param {number} projectId
+   * @param {PostReportAttachmentMetadata} attachmentMeta
+   * @param {string} key
+   * @return {*}  {Promise<{ id: number; revision_count: number }>}
+   * @memberof AttachmentService
+   */
+  async insertProjectReportAttachment(
+    fileName: string,
+    fileSize: number,
+    projectId: number,
+    attachmentMeta: PostReportAttachmentMetadata,
+    key: string
+  ): Promise<{ id: number; revision_count: number }> {
+    return this.attachmentRepository.insertProjectReportAttachment(fileName, fileSize, projectId, attachmentMeta, key);
+  }
+
+  /**
+   * Update Project Report Attachment
+   *
+   * @param {string} fileName
+   * @param {number} projectId
+   * @param {PutReportAttachmentMetadata} attachmentMeta
+   * @return {*}  {Promise<{ id: number; revision_count: number }>}
+   * @memberof AttachmentService
+   */
+  async updateProjectReportAttachment(
+    fileName: string,
+    projectId: number,
+    attachmentMeta: PutReportAttachmentMetadata
+  ): Promise<{ id: number; revision_count: number }> {
+    return this.attachmentRepository.updateProjectReportAttachment(fileName, projectId, attachmentMeta);
+  }
+
+  /**
+   * Delete Project Report Attachment Authors
+   *
+   * @param {number} attachmentId
+   * @return {*}  {Promise<{ id: number; revision_count: number }>}
+   * @memberof AttachmentService
+   */
+  async deleteProjectReportAttachmentAuthors(attachmentId: number): Promise<{ id: number; revision_count: number }> {
+    return this.attachmentRepository.deleteProjectReportAttachmentAuthors(attachmentId);
+  }
+
+  /**
+   * Insert Project Report Attachment Author
+   *
+   * @param {number} attachmentId
+   * @param {IReportAttachmentAuthor} author
+   * @return {*}  {Promise<void>}
+   * @memberof AttachmentService
+   */
+  async insertProjectReportAttachmentAuthor(
+    attachmentId: number,
+    author: { first_name: string; last_name: string }
+  ): Promise<void> {
+    return this.attachmentRepository.insertProjectReportAttachmentAuthor(attachmentId, author);
+  }
+
+  /**
+   * Get Project Report Attachment by Filename
+   *
+   * @param {number} projectId
+   * @param {string} fileName
+   * @return {*}  {Promise<{ id: number; file_name: string; update_date: string; create_date: string; file_size: string }>}
+   * @memberof AttachmentService
+   */
+  async getProjectReportAttachmentByFileName(
+    projectId: number,
+    fileName: string
+  ): Promise<{ id: number; file_name: string; update_date: string; create_date: string; file_size: string }> {
+    return this.attachmentRepository.getProjectReportAttachmentByFileName(projectId, fileName);
+  }
+
+  async upsertProjectReportAttachment(
+    file: Express.Multer.File,
+    projectId: number,
+    attachmentMeta: any
+  ): Promise<{ id: number; revision_count: number; key: string }> {
+    const key = generateS3FileKey({ projectId: projectId, fileName: file.originalname, folder: 'reports' });
+
+    const getResponse = await this.getProjectReportAttachmentByFileName(projectId, file.originalname);
+
+    let metadata: any;
+    let attachmentResult: { id: number; revision_count: number };
+
+    if (getResponse) {
+      // Existing attachment with matching name found, update it
+      metadata = new PutReportAttachmentMetadata(attachmentMeta);
+      attachmentResult = await this.updateProjectReportAttachment(file.originalname, projectId, metadata);
+    } else {
+      // No matching attachment found, insert new attachment
+      metadata = new PostReportAttachmentMetadata(attachmentMeta);
+      attachmentResult = await this.insertProjectReportAttachment(
+        file.originalname,
+        file.size,
+        projectId,
+        new PostReportAttachmentMetadata(attachmentMeta),
+        key
+      );
+    }
+
+    // Delete any existing attachment author records
+    await this.deleteProjectReportAttachmentAuthors(attachmentResult.id);
+
+    const promises = [];
+
+    // Insert any new attachment author records
+    promises.push(
+      metadata.authors.map((author: IReportAttachmentAuthor) =>
+        this.insertProjectReportAttachmentAuthor(attachmentResult.id, author)
+      )
+    );
+
+    await Promise.all(promises);
+
+    return { ...attachmentResult, key };
   }
 }

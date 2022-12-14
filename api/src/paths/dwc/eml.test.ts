@@ -56,4 +56,44 @@ describe('getProjectEml', () => {
       expect((actualError as HTTPError).message).to.equal('a test error');
     }
   });
+
+  it('should succeed with valid params', async () => {
+    const dbConnectionObj = getMockDBConnection({ rollback: sinon.stub(), release: sinon.stub() });
+
+    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
+
+    const buildProjectEmlStub = sinon.stub(EmlService.prototype, 'buildProjectEml').resolves('string');
+
+    const { mockReq, mockNext } = getRequestHandlerMocks();
+
+    mockReq.query = {
+      projectId: '1',
+      surveyId: ['1']
+    };
+
+    let actualResult: any = null;
+    const sampleRes = {
+      status: () => {
+        return {
+          json: (response: any) => {
+            actualResult = response;
+          }
+        };
+      },
+      setHeader: (a: any, b: any) => {
+        return { a: a, b: b };
+      },
+      attachment: (a: any) => {
+        return { a: a };
+      },
+      contentType: (a: any) => {
+        return { a: a };
+      }
+    };
+
+    const requestHandler = getProjectEml();
+    await requestHandler(mockReq, (sampleRes as unknown) as any, mockNext);
+    expect(actualResult).to.eql({ eml: 'string' });
+    expect(buildProjectEmlStub).to.have.been.called;
+  });
 });

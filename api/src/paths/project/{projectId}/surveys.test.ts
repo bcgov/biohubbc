@@ -2,16 +2,16 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import * as db from '../../../../database/db';
-import { HTTPError } from '../../../../errors/http-error';
-import { GetAttachmentsData } from '../../../../models/project-survey-attachments';
-import { AttachmentService } from '../../../../services/attachment-service';
-import { getMockDBConnection } from '../../../../__mocks__/db';
-import * as listAttachments from './list';
+import * as db from '../../../database/db';
+import { HTTPError } from '../../../errors/http-error';
+import { SurveyObject } from '../../../models/survey-view';
+import { SurveyService } from '../../../services/survey-service';
+import { getMockDBConnection } from '../../../__mocks__/db';
+import * as surveys from './surveys';
 
 chai.use(sinonChai);
 
-describe('getAttachments', () => {
+describe('surveys', () => {
   afterEach(() => {
     sinon.restore();
   });
@@ -26,7 +26,7 @@ describe('getAttachments', () => {
         }
       } as any;
 
-      const result = listAttachments.getAttachments();
+      const result = surveys.getSurveyList();
 
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
@@ -38,15 +38,10 @@ describe('getAttachments', () => {
 
   it('should throw an error when a failure occurs', async () => {
     const dbConnectionObj = getMockDBConnection();
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      }
-    });
+    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
     const expectedError = new Error('cannot process request');
-    sinon.stub(AttachmentService.prototype, 'getProjectAttachmentsWithSecurityCounts').rejects(expectedError);
+    sinon.stub(SurveyService.prototype, 'getSurveyIdsByProjectId').rejects(expectedError);
 
     const sampleReq = {
       keycloak_token: {},
@@ -57,7 +52,7 @@ describe('getAttachments', () => {
     } as any;
 
     try {
-      const result = listAttachments.getAttachments();
+      const result = surveys.getSurveyList();
 
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
@@ -68,19 +63,15 @@ describe('getAttachments', () => {
 
   it('should succeed with valid Id', async () => {
     const dbConnectionObj = getMockDBConnection();
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      }
-    });
+    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-    const getProjectAttachmentsWithSecurityCountsStub = sinon
-      .stub(AttachmentService.prototype, 'getProjectAttachmentsWithSecurityCounts')
-      .resolves([]);
-    const getProjectReportAttachmentsWithSecurityCountsStub = sinon
-      .stub(AttachmentService.prototype, 'getProjectReportAttachmentsWithSecurityCounts')
-      .resolves([]);
+    const getSurveyIdsByProjectIdStub = sinon
+      .stub(SurveyService.prototype, 'getSurveyIdsByProjectId')
+      .resolves([{ id: 1 }]);
+
+    const getSurveysByIdsStub = sinon
+      .stub(SurveyService.prototype, 'getSurveysByIds')
+      .resolves([({ survey_details: { id: 1 } } as unknown) as SurveyObject]);
 
     const sampleReq = {
       keycloak_token: {},
@@ -90,7 +81,7 @@ describe('getAttachments', () => {
       }
     } as any;
 
-    const expectedResponse = new GetAttachmentsData([], []);
+    const expectedResponse = [{ survey_details: { id: 1 } }];
 
     let actualResult: any = null;
     const sampleRes = {
@@ -103,11 +94,12 @@ describe('getAttachments', () => {
       }
     };
 
-    const result = listAttachments.getAttachments();
+    const result = surveys.getSurveyList();
 
     await result(sampleReq, (sampleRes as unknown) as any, (null as unknown) as any);
+
     expect(actualResult).to.eql(expectedResponse);
-    expect(getProjectAttachmentsWithSecurityCountsStub).to.be.calledOnce;
-    expect(getProjectReportAttachmentsWithSecurityCountsStub).to.be.calledOnce;
+    expect(getSurveyIdsByProjectIdStub).to.be.calledOnce;
+    expect(getSurveysByIdsStub).to.be.calledOnce;
   });
 });
