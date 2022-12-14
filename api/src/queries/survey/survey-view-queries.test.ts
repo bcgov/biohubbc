@@ -6,7 +6,6 @@ import {
   getLatestOccurrenceSubmissionIdSQL,
   getLatestSummaryResultIdSQL,
   getReportAttachmentsBySurveySQL,
-  getSurveyBasicDataForViewSQL,
   getSurveyFocalSpeciesDataForViewSQL,
   getSurveyFundingSourcesDataForViewSQL,
   getSurveyIdsSQL
@@ -23,14 +22,6 @@ describe('getAllAssignablePermitsForASurveySQL', () => {
 describe('getSurveyIdsSQL', () => {
   it('returns a sql statement', () => {
     const response = getSurveyIdsSQL(1);
-
-    expect(response).to.not.be.null;
-  });
-});
-
-describe('getSurveyBasicDataForViewSQL', () => {
-  it('returns a non null response when valid params passed in', () => {
-    const response = getSurveyBasicDataForViewSQL(1);
 
     expect(response).to.not.be.null;
   });
