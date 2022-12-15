@@ -362,7 +362,14 @@ describe('ValidationService', () => {
         {
           fileName: '',
           isValid: false,
-          keyErrors: [],
+          keyErrors: [
+            {
+              errorCode: SUBMISSION_MESSAGE_TYPE.DANGLING_PARENT_CHILD_KEY,
+              message: 'Key error',
+              colNames: ['col1', 'col2'],
+              rows: [2, 3, 4]
+            }
+          ],
           headerErrors: [
             {
               errorCode: SUBMISSION_MESSAGE_TYPE.MISSING_REQUIRED_HEADER,
@@ -925,7 +932,14 @@ describe('ValidationService', () => {
       const mockState = {
         fileName: 'test',
         isValid: false,
-        keyErrors: [],
+        keyErrors: [
+          {
+            errorCode: SUBMISSION_MESSAGE_TYPE.DANGLING_PARENT_CHILD_KEY,
+            message: 'Key error',
+            colNames: ['col1', 'col2'],
+            rows: [2, 3, 4]
+          }
+        ],
         headerErrors: [
           {
             errorCode: SUBMISSION_MESSAGE_TYPE.DUPLICATE_HEADER,
@@ -947,6 +961,7 @@ describe('ValidationService', () => {
       expect(response.csv_state).is.not.empty;
       expect(response.csv_state[0].headerErrors).is.not.empty;
       expect(response.csv_state[0].rowErrors).is.not.empty;
+      expect(response.csv_state[0].keyErrors).is.not.empty;
     });
 
     it('should throw Failed to validate error', async () => {
@@ -1112,7 +1127,14 @@ describe('ValidationService', () => {
       const mockState = {
         fileName: 'test',
         isValid: false,
-        keyErrors: [],
+        keyErrors: [
+          {
+            errorCode: SUBMISSION_MESSAGE_TYPE.DANGLING_PARENT_CHILD_KEY,
+            message: 'Key error',
+            colNames: ['col1', 'col2'],
+            rows: [2, 3, 4]
+          }
+        ],
         headerErrors: [
           {
             errorCode: SUBMISSION_MESSAGE_TYPE.DUPLICATE_HEADER,
@@ -1131,12 +1153,14 @@ describe('ValidationService', () => {
       } as ICsvState;
       const xlsx = new XLSXCSV(buildFile('test file', {}));
       const parser = new ValidationSchemaParser({});
+      sinon.stub(DWCArchive.prototype, 'validateContent');
       sinon.stub(XLSXCSV.prototype, 'getContentState').returns([mockState]);
 
       const response = await service.validateXLSX(xlsx, parser);
       expect(response.csv_state).is.not.empty;
       expect(response.csv_state[0].headerErrors).is.not.empty;
       expect(response.csv_state[0].rowErrors).is.not.empty;
+      expect(response.csv_state[0].keyErrors).is.not.empty;
     });
   });
 
@@ -1148,6 +1172,8 @@ describe('ValidationService', () => {
     it('should return valid ICsvMediaState object', () => {
       const service = mockService();
 
+      sinon.stub(DWCArchive.prototype, 'validateMedia');
+      sinon.stub(DWCArchive.prototype, 'validateContent');
       const mock = sinon.stub(DWCArchive.prototype, 'getMediaState').returns({
         isValid: true,
         fileName: ''
@@ -1162,6 +1188,7 @@ describe('ValidationService', () => {
 
     it('should throw Media is invalid error', () => {
       const service = mockService();
+      sinon.stub(DWCArchive.prototype, 'validateMedia');
       const mock = sinon.stub(DWCArchive.prototype, 'getMediaState').returns({
         isValid: false,
         fileName: ''

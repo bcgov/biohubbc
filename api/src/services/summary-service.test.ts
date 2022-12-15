@@ -633,6 +633,8 @@ describe('SummaryService', () => {
       const xlsxCsv = new XLSXCSV(file);
       const validation = 'test-template-validation-schema';
       const mockSchemaParser = { validationSchema: validation };
+
+      sinon.stub(XLSXCSV.prototype, 'validateMedia');
       sinon.stub(XLSXCSV.prototype, 'getMediaState').returns({
         isValid: false,
         fileName: 'test filename'
