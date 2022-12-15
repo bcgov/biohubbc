@@ -697,7 +697,6 @@ export class AttachmentService extends DBService {
         this.insertProjectReportAttachmentAuthor(attachmentResult.id, author)
       )
     );
-
     await Promise.all(promises);
 
     return { ...attachmentResult, key };
