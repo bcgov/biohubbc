@@ -36,8 +36,11 @@ export const getParentChildKeyMatchValidator = (config?: ParentChildKeyMatchVali
       return csvWorkbook;
     }
 
-    // Encodes the column values for a worksheet at a given row into a string, which is used for
-    // comparison with another worksheet
+    /**
+     * Encodes the column values for a worksheet at a given row into a string, which is used for comparison with another worksheet
+     * @param {object} rowObject A record reflecting a row in a tbale
+     * @returns {*} {string} The row objected encoded as a string
+     */
     const serializer = (rowObject: object): string => {
       return column_names.map((columnName: string) => (rowObject[columnName] as string).trim()).join('|');
     };
@@ -49,16 +52,24 @@ export const getParentChildKeyMatchValidator = (config?: ParentChildKeyMatchVali
 
     // Add an error for each cell containing a dangling key reference in the child worksheet
     childRowObjects
+      // Serialize each row in order to match column values
       .map(serializer)
+      
+      // Maps a row index to `-1`, if and only if the given row has a matching row in the parent
       .map((serializedRow: string, rowIndex: number) => {
         return !serializedRow || parentSerializedRows.includes(serializedRow) ? -1 : rowIndex;
       })
+
+      // Filter any row indices which have a matching row in the parent
       .filter((rowIndex: number) => rowIndex >= 0)
+
+      // For each of the remining 'dangling' row indices, insert a key error
       .forEach((danglingRowIndex: number) => {
-        const mismatchedColumn =
-          column_names.find((columnName: string) => {
-            return parentRowObjects[danglingRowIndex][columnName] !== childRowObjects[danglingRowIndex][columnName];
-          }) || column_names[column_names.length - 1];
+        
+        //  
+        const mismatchedColumn = column_names.find((columnName: string) => {
+          return parentRowObjects[danglingRowIndex][columnName] !== childRowObjects[danglingRowIndex][columnName];
+        }) || column_names[column_names.length - 1];
 
         childWorksheet.csvValidation.addRowErrors([
           {

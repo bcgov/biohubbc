@@ -14,7 +14,7 @@ export enum DWC_CLASS {
 
 export const DEFAULT_XLSX_SHEET = 'Sheet1';
 
-export type DWCWorksheets = { [name in DWC_CLASS]?: CSVWorksheet };
+export type DWCWorksheets = Partial<{ [name in DWC_CLASS]: CSVWorksheet }>;
 
 /**
  * Supports Darwin Core Archive CSV files.
@@ -133,12 +133,13 @@ export class DWCArchive {
 
     // Run content validators
     Object.entries(this.worksheets)
-      .filter(([_fileName, worksheet]) => Boolean(worksheet))
       .forEach(([fileName, worksheet]) => {
         const fileValidators = validationSchemaParser.getFileValidations(fileName);
         const columnValidators = validationSchemaParser.getAllColumnValidations(fileName);
 
-        worksheet.validate([...fileValidators, ...columnValidators]);
+        if (worksheet) {
+          worksheet.validate([...fileValidators, ...columnValidators]);
+        }
       });
   }
 
@@ -156,8 +157,8 @@ export class DWCArchive {
    */
   getContentState(): ICsvState[] {
     return Object.values(this.worksheets)
-      .map((worksheet: CSVWorksheet) => worksheet.csvValidation.getState())
-      .filter(Boolean)
+      .filter((worksheet: CSVWorksheet | undefined): worksheet is CSVWorksheet => Boolean(worksheet))
+      .map((worksheet: CSVWorksheet) => worksheet.csvValidation.getState());
   }
 
   /**
