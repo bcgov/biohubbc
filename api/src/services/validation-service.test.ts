@@ -362,6 +362,7 @@ describe('ValidationService', () => {
         {
           fileName: '',
           isValid: false,
+          keyErrors: [],
           headerErrors: [
             {
               errorCode: SUBMISSION_MESSAGE_TYPE.MISSING_REQUIRED_HEADER,
@@ -924,6 +925,7 @@ describe('ValidationService', () => {
       const mockState = {
         fileName: 'test',
         isValid: false,
+        keyErrors: [],
         headerErrors: [
           {
             errorCode: SUBMISSION_MESSAGE_TYPE.DUPLICATE_HEADER,
@@ -940,7 +942,7 @@ describe('ValidationService', () => {
           }
         ]
       } as ICsvState;
-      sinon.stub(DWCArchive.prototype, 'isContentValid').returns([mockState]);
+      sinon.stub(DWCArchive.prototype, 'getContentState').returns([mockState]);
       const response = await service.validateDWC(mockDWCArchive);
       expect(response.csv_state).is.not.empty;
       expect(response.csv_state[0].headerErrors).is.not.empty;
@@ -957,7 +959,7 @@ describe('ValidationService', () => {
         fileErrors: ['some file error'],
         isValid: false
       } as IMediaState;
-      sinon.stub(DWCArchive.prototype, 'isMediaValid').returns(mockState);
+      sinon.stub(DWCArchive.prototype, 'getMediaState').returns(mockState);
       try {
         await service.validateDWC(mockDWCArchive);
         expect.fail();
@@ -1094,7 +1096,7 @@ describe('ValidationService', () => {
       const xlsx = new XLSXCSV(buildFile('test file', {}));
       const parser = new ValidationSchemaParser({});
 
-      sinon.stub(XLSXCSV.prototype, 'isMediaValid').returns(mockMediaState);
+      sinon.stub(XLSXCSV.prototype, 'getMediaState').returns(mockMediaState);
 
       try {
         await service.validateXLSX(xlsx, parser);
@@ -1110,6 +1112,7 @@ describe('ValidationService', () => {
       const mockState = {
         fileName: 'test',
         isValid: false,
+        keyErrors: [],
         headerErrors: [
           {
             errorCode: SUBMISSION_MESSAGE_TYPE.DUPLICATE_HEADER,
@@ -1128,7 +1131,7 @@ describe('ValidationService', () => {
       } as ICsvState;
       const xlsx = new XLSXCSV(buildFile('test file', {}));
       const parser = new ValidationSchemaParser({});
-      sinon.stub(XLSXCSV.prototype, 'isContentValid').returns([mockState]);
+      sinon.stub(XLSXCSV.prototype, 'getContentState').returns([mockState]);
 
       const response = await service.validateXLSX(xlsx, parser);
       expect(response.csv_state).is.not.empty;
@@ -1145,7 +1148,7 @@ describe('ValidationService', () => {
     it('should return valid ICsvMediaState object', () => {
       const service = mockService();
 
-      const mock = sinon.stub(DWCArchive.prototype, 'isMediaValid').returns({
+      const mock = sinon.stub(DWCArchive.prototype, 'getMediaState').returns({
         isValid: true,
         fileName: ''
       });
@@ -1159,7 +1162,7 @@ describe('ValidationService', () => {
 
     it('should throw Media is invalid error', () => {
       const service = mockService();
-      const mock = sinon.stub(DWCArchive.prototype, 'isMediaValid').returns({
+      const mock = sinon.stub(DWCArchive.prototype, 'getMediaState').returns({
         isValid: false,
         fileName: ''
       });

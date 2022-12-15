@@ -817,6 +817,7 @@ describe('SummaryService', () => {
         {
           fileName: '',
           isValid: false,
+          keyErrors: [],
           headerErrors: [
             {
               errorCode: SUBMISSION_MESSAGE_TYPE.MISSING_REQUIRED_HEADER,
