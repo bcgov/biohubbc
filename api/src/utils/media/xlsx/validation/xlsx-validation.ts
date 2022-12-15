@@ -3,7 +3,6 @@ import { CSVWorkBook, WorkBookValidator } from '../../csv/csv-file';
 
 export type ParentChildKeyMatchValidatorConfig = {
   submission_required_files_validator: {
-    name?: string;
     description?: string;
     child_worksheet_name: string;
     parent_worksheet_name: string;
@@ -18,10 +17,9 @@ export type ParentChildKeyMatchValidatorConfig = {
  * Note: If the cell is empty, this check will be skipped. Use the `getRequiredFieldsValidator` validator to assert
  * required fields.
  *
- * @param {KeyMatchValidatorConfig} [config]
- * @return {*}  {WorkBookValidator}
+ * @param {ParentChildKeyMatchValidatorConfig} [config] The validator config
+ * @return {*}  {WorkBookValidator} The workbook validator
  *
- * @TODO need to address `rowError` discrepancy
  */
 export const getParentChildKeyMatchValidator = (config?: ParentChildKeyMatchValidatorConfig): WorkBookValidator => {
   return (csvWorkbook: CSVWorkBook) => {
