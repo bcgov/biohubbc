@@ -1,86 +1,174 @@
 import chai, { expect } from 'chai';
 import { describe } from 'mocha';
-// import SQL from 'sql-template-strings';
-// import * as db from '../../../../../../database/db';
-// import { HTTPError } from '../../../../../../errors/http-error';
-// import project_queries from '../../../../../../queries/project';
-// import { getMockDBConnection } from '../../../../../../__mocks__/db';
-// import * as get_project_metadata from './get';
-import OpenAPIRequestValidator, { OpenAPIRequestValidatorArgs } from 'openapi-request-validator';
-//import sinon from 'sinon';
+import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-//import OpenAPIResponseValidator, { OpenAPIResponseValidatorArgs } from 'openapi-response-validator';
-import { GET } from './get';
+import * as db from '../../../../../../database/db';
+import { HTTPError } from '../../../../../../errors/http-error';
+import {
+  IProjectReportAttachment,
+  IProjectReportSecurityReason,
+  IReportAttachmentAuthor
+} from '../../../../../../repositories/attachment-repository';
+import { AttachmentService } from '../../../../../../services/attachment-service';
+import { SecuritySearchService } from '../../../../../../services/security-search-service';
+import { getMockDBConnection } from '../../../../../../__mocks__/db';
+import * as get from './get';
 
 chai.use(sinonChai);
 
-describe('project/{projectId}/attachments/{attachmentId}/metadata/get', () => {
-  describe('openApiSchema', () => {
-    describe('request validation', () => {
-      const requestValidator = new OpenAPIRequestValidator((GET.apiDoc as unknown) as OpenAPIRequestValidatorArgs);
-      describe('should throw an error when', () => {
-        describe('request body', () => {
-          it('is null', async () => {
-            const request = {
-              headers: {
-                'content-type': 'application/json'
-              },
-              body: {}
-            };
+describe('getProjectReportDetails', () => {
+  afterEach(() => {
+    sinon.restore();
+  });
 
-            const response = requestValidator.validateRequest(request);
+  it('should throw an error when projectId is missing', async () => {
+    const dbConnectionObj = getMockDBConnection();
+    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-            expect(response.status).to.equal(400);
-            expect(response.errors[0].path).to.equal('projectId');
-            expect(response.errors[1].path).to.equal('attachmentId');
-            expect(response.errors[2]).to.be.undefined;
-          });
-          it('is missing required fields', async () => {
-            const request = {
-              headers: {
-                'content-type': 'application/json'
-              },
+    const mockReq = {
+      keycloak_token: {},
+      params: {
+        projectId: null,
+        attachmentId: 2
+      },
+      body: {}
+    } as any;
 
-              body: { projectId: 1 }
-            };
+    try {
+      const result = get.getProjectReportDetails();
 
-            const response = requestValidator.validateRequest(request);
+      await result(mockReq, (null as unknown) as any, (null as unknown) as any);
+      expect.fail();
+    } catch (actualError) {
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing required path param `projectId`');
+    }
+  });
 
-            expect(response.status).to.equal(400);
-            expect(response.errors[0].message).to.equal(`must have required property 'projectId'`);
-            expect(response.errors[1].message).to.equal(`must have required property 'attachmentId'`);
-            expect(response.errors[2]).to.be.undefined;
-          });
-          it('fields are undefined', async () => {
-            const request = {
-              headers: {
-                'content-type': 'application/json'
-              },
-              body: { projectId: undefined, attachmentId: undefined }
-            };
+  it('should throw an error when attachmentId is missing', async () => {
+    const dbConnectionObj = getMockDBConnection();
+    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-            const response = requestValidator.validateRequest(request);
+    const mockReq = {
+      keycloak_token: {},
+      params: {
+        projectId: 1,
+        attachmentId: null
+      },
+      body: {}
+    } as any;
 
-            expect(response.status).to.equal(400);
-            expect(response.errors[0].message).to.equal(`must have required property 'projectId'`);
-            expect(response.errors[1].message).to.equal(`must have required property 'attachmentId'`);
-            expect(response.errors[2]).to.be.undefined;
-          });
-        });
-      });
-      //TODO: figure out why this one fails
-      // describe('should succeed when', () => {
-      //   it('required values are valid', async () => {
-      //     const request = {
-      //       headers: { 'content-type': 'application/json' },
-      //       body: { projectId: 1, attachmentId: 1 }
-      //     };
+    try {
+      const result = get.getProjectReportDetails();
 
-      //     const response = requestValidator.validateRequest(request);
+      await result(mockReq, (null as unknown) as any, (null as unknown) as any);
+      expect.fail();
+    } catch (actualError) {
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing required path param `attachmentId`');
+    }
+  });
 
-      //     expect(response.status).to.equal(undefined);
-      //   });
-      // });
-    });
+  it('should throw an error if failure occurs', async () => {
+    const dbConnectionObj = getMockDBConnection();
+    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
+
+    const mockReq = {
+      keycloak_token: {},
+      params: {
+        projectId: 1,
+        attachmentId: 2
+      },
+      body: {}
+    } as any;
+
+    const expectedError = new Error('cannot process request');
+    sinon.stub(AttachmentService.prototype, 'getProjectReportAttachmentById').rejects(expectedError);
+
+    try {
+      const result = get.getProjectReportDetails();
+
+      await result(mockReq, (null as unknown) as any, (null as unknown) as any);
+      expect.fail();
+    } catch (actualError) {
+      expect((actualError as HTTPError).message).to.equal(expectedError.message);
+    }
+  });
+
+  it('should succeed with valid params', async () => {
+    const dbConnectionObj = getMockDBConnection();
+    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
+
+    const mockReq = {
+      keycloak_token: {},
+      params: {
+        projectId: 1,
+        attachmentId: 2
+      },
+      body: {}
+    } as any;
+
+    const getProjectReportAttachmentByIdStub = sinon
+      .stub(AttachmentService.prototype, 'getProjectReportAttachmentById')
+      .resolves(({ report: 1 } as unknown) as IProjectReportAttachment);
+
+    const getProjectReportAttachmentAuthorsStub = sinon
+      .stub(AttachmentService.prototype, 'getProjectReportAttachmentAuthors')
+      .resolves([({ author: 2 } as unknown) as IReportAttachmentAuthor]);
+
+    const getProjectReportAttachmentSecurityReasonsStub = sinon
+      .stub(AttachmentService.prototype, 'getProjectReportAttachmentSecurityReasons')
+      .resolves([
+        ({
+          persecution_security_id: 1,
+          user_identifier: 'user',
+          create_date: 'date'
+        } as unknown) as IProjectReportSecurityReason
+      ]);
+
+    const getPersecutionSecurityRulesStub = sinon
+      .stub(SecuritySearchService.prototype, 'getPersecutionSecurityRules')
+      .resolves([
+        ({
+          reasonTitle: 'title',
+          reasonDescription: 'desc',
+          expirationDate: 'date'
+        } as unknown) as IProjectReportSecurityReason
+      ]);
+
+    const expectedResponse = {
+      metadata: { report: 1 },
+      authors: [{ author: 2 }],
+      security_reasons: [
+        {
+          security_reason_id: 1,
+          security_reason_title: 'title',
+          security_reason_description: 'desc',
+          date_expired: 'date',
+          user_identifier: 'user',
+          security_date_applied: 'date'
+        }
+      ]
+    };
+
+    let actualResult: any = null;
+    const sampleRes = {
+      status: () => {
+        return {
+          json: (response: any) => {
+            actualResult = response;
+          }
+        };
+      }
+    };
+
+    const result = get.getProjectReportDetails();
+    await result(mockReq, (sampleRes as unknown) as any, (null as unknown) as any);
+
+    expect(actualResult).to.eql(expectedResponse);
+    expect(getProjectReportAttachmentByIdStub).to.be.calledOnce;
+    expect(getProjectReportAttachmentAuthorsStub).to.be.calledOnce;
+    expect(getProjectReportAttachmentSecurityReasonsStub).to.be.calledOnce;
+    expect(getPersecutionSecurityRulesStub).to.be.calledOnce;
   });
 });

@@ -10,6 +10,7 @@ import {
   getCodeValueFieldsValidator,
   getNumericFieldsValidator,
   getRequiredFieldsValidator,
+  getUniqueColumnsValidator,
   getValidFormatFieldsValidator,
   getValidRangeFieldsValidator
 } from '../csv/validation/csv-row-validator';
@@ -75,6 +76,10 @@ export const ValidationRulesRegistry = {
     {
       name: 'column_numeric_validator',
       generator: getNumericFieldsValidator
+    },
+    {
+      name: 'file_column_unique_validator',
+      generator: getUniqueColumnsValidator
     }
   ],
   findMatchingRule(name: string): any {

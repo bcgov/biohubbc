@@ -90,7 +90,8 @@ export enum SUBMISSION_MESSAGE_TYPE {
   'FAILED_TO_GET_TEMPLATE_NAME_VERSION' = 'Missing name or version number.',
   'INVALID_MEDIA' = 'Media is invalid',
   'INVALID_XLSX_CSV' = 'Media is not a valid XLSX CSV file.',
-  'UNSUPPORTED_FILE_TYPE' = 'File submitted is not a supported type'
+  'UNSUPPORTED_FILE_TYPE' = 'File submitted is not a supported type',
+  'NON_UNIQUE_KEY' = 'Duplicate Key(s) found in file.'
 }
 
 export enum MESSAGE_CLASS_NAME {

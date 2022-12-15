@@ -98,7 +98,7 @@ export function scrapeAndUpload(): RequestHandler {
   return async (req, res, next) => {
     const submissionId = req.body.occurrence_submission_id;
     if (!submissionId) {
-      throw new HTTP400('Missing required paramter `occurrence field`');
+      throw new HTTP400('Missing required parameter `occurrence field`');
     }
 
     res.status(200).json({ status: 'success' });
