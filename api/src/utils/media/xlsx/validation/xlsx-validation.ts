@@ -20,6 +20,8 @@ export type ParentChildKeyMatchValidatorConfig = {
  *
  * @param {KeyMatchValidatorConfig} [config]
  * @return {*}  {WorkBookValidator}
+ *
+ * @TODO need to address `rowError` discrepancy
  */
 export const getParentChildKeyMatchValidator = (config?: ParentChildKeyMatchValidatorConfig): WorkBookValidator => {
   return (csvWorkbook: CSVWorkBook) => {
@@ -54,7 +56,7 @@ export const getParentChildKeyMatchValidator = (config?: ParentChildKeyMatchVali
     childRowObjects
       // Serialize each row in order to match column values
       .map(serializer)
-      
+
       // Maps a row index to `-1`, if and only if the given row has a matching row in the parent
       .map((serializedRow: string, rowIndex: number) => {
         return !serializedRow || parentSerializedRows.includes(serializedRow) ? -1 : rowIndex;
@@ -65,11 +67,13 @@ export const getParentChildKeyMatchValidator = (config?: ParentChildKeyMatchVali
 
       // For each of the remining 'dangling' row indices, insert a key error
       .forEach((danglingRowIndex: number) => {
-        
-        //  
-        const mismatchedColumn = column_names.find((columnName: string) => {
-          return parentRowObjects[danglingRowIndex][columnName] !== childRowObjects[danglingRowIndex][columnName];
-        }) || column_names[column_names.length - 1];
+        // This would return the first column that was incorrect, even if multiple were incorrect, or else it defaults to whatever the last
+        // column in the array is. Ideally, the error message should indicat that the key (be it 1 column or multiple) is
+        // invalid, rather than trying to target just the bad one(s).
+        const mismatchedColumn =
+          column_names.find((columnName: string) => {
+            return parentRowObjects[danglingRowIndex][columnName] !== childRowObjects[danglingRowIndex][columnName];
+          }) || column_names[column_names.length - 1];
 
         childWorksheet.csvValidation.addRowErrors([
           {

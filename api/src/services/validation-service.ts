@@ -304,7 +304,7 @@ export class ValidationService extends DBService {
   validateXLSX(file: XLSXCSV, parser: ValidationSchemaParser) {
     // Run media validations
     file.validateMedia(parser);
-    
+
     const media_state = file.getMediaState();
     if (!media_state.isValid) {
       throw SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.INVALID_MEDIA);
@@ -312,9 +312,9 @@ export class ValidationService extends DBService {
 
     // Run CSV content validations
     file.validateContent(parser);
-    const csv_state = file.getContentState()
+    const csv_state = file.getContentState();
 
-    return {csv_state, media_state};
+    return { csv_state, media_state };
   }
 
   /**
@@ -473,9 +473,9 @@ export class ValidationService extends DBService {
 
     // Run DwC content validations
     dwc.validateContent(parser);
-    const csv_state = dwc.getContentState()
+    const csv_state = dwc.getContentState();
 
-    return {csv_state, media_state};
+    return { csv_state, media_state };
   }
 
   generateHeaderErrorMessage(fileName: string, headerError: IHeaderError): string {

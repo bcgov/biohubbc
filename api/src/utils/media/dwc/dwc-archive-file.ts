@@ -132,15 +132,14 @@ export class DWCArchive {
     csvWorkbook.validate(workbookValidators);
 
     // Run content validators
-    Object.entries(this.worksheets)
-      .forEach(([fileName, worksheet]) => {
-        const fileValidators = validationSchemaParser.getFileValidations(fileName);
-        const columnValidators = validationSchemaParser.getAllColumnValidations(fileName);
+    Object.entries(this.worksheets).forEach(([fileName, worksheet]) => {
+      const fileValidators = validationSchemaParser.getFileValidations(fileName);
+      const columnValidators = validationSchemaParser.getAllColumnValidations(fileName);
 
-        if (worksheet) {
-          worksheet.validate([...fileValidators, ...columnValidators]);
-        }
-      });
+      if (worksheet) {
+        worksheet.validate([...fileValidators, ...columnValidators]);
+      }
+    });
   }
 
   /**

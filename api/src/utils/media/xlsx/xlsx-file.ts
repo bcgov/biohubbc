@@ -40,11 +40,11 @@ export class XLSXCSV {
   /**
    * Runs all content and workbook-related validation for this CSV file, based on the given validation
    * schema parser.
-   * 
+   *
    * @param {ValidationSchemaParser} validationSchemaParser The validation schema
    * @return {*}  {void}
    * @memberof XLSXCSV
-   * 
+   *
    * @TODO Evaluating `fileName !== 'Picklist Values'` might be an extraneous check.
    */
   validateContent(validationSchemaParser: ValidationSchemaParser): void {
@@ -53,15 +53,14 @@ export class XLSXCSV {
     this.workbook.validate(workbookValidators);
 
     // Run content validators.
-    Object.entries(this.workbook.worksheets)
-      .forEach(([fileName, worksheet]) => {
-        const fileValidators = validationSchemaParser.getFileValidations(fileName);
-        const columnValidators = validationSchemaParser.getAllColumnValidations(fileName);
+    Object.entries(this.workbook.worksheets).forEach(([fileName, worksheet]) => {
+      const fileValidators = validationSchemaParser.getFileValidations(fileName);
+      const columnValidators = validationSchemaParser.getAllColumnValidations(fileName);
 
-        if (worksheet && fileName !== 'Picklist Values') {
-          worksheet.validate([...fileValidators,...columnValidators]);
-        }
-      });
+      if (worksheet && fileName !== 'Picklist Values') {
+        worksheet.validate([...fileValidators, ...columnValidators]);
+      }
+    });
   }
 
   /**
