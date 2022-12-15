@@ -65,7 +65,7 @@ export enum SUBMISSION_MESSAGE_TYPE {
   'UNKNOWN_HEADER' = 'Unknown Header',
   'MISSING_REQUIRED_HEADER' = 'Missing Required Header',
   'MISSING_RECOMMENDED_HEADER' = 'Missing Recommended Header',
-  'DANGLING_PARENT_CHILD_KEY' = 'Child key missing from corresponding parent column',
+  'DANGLING_PARENT_CHILD_KEY' = 'Missing Child Key from Parent',
   'MISCELLANEOUS' = 'Miscellaneous',
   'MISSING_REQUIRED_FIELD' = 'Missing Required Field',
   'UNEXPECTED_FORMAT' = 'Unexpected Format',
