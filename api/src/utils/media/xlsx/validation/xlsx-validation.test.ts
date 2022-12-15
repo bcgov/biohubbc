@@ -27,16 +27,16 @@ const makeMockWorkbook = () => {
   );
 
   return new CSVWorkBook(mockWorkbook);
-}
+};
 
-describe.only('getParentChildKeyMatchValidator', async () => {
+describe('getParentChildKeyMatchValidator', async () => {
   it('should add no errors when config is not provided', async () => {
-      const validator = getParentChildKeyMatchValidator();
-      const mockWorkbook = makeMockWorkbook();
-      validator(mockWorkbook);
+    const validator = getParentChildKeyMatchValidator();
+    const mockWorkbook = makeMockWorkbook();
+    validator(mockWorkbook);
 
-      const { sheet1, sheet2 } = mockWorkbook.worksheets
-      expect(sheet1.csvValidation.rowErrors).to.eql([]);
-      expect(sheet2.csvValidation.rowErrors).to.eql([]);
+    const { sheet1, sheet2 } = mockWorkbook.worksheets;
+    expect(sheet1.csvValidation.rowErrors).to.eql([]);
+    expect(sheet2.csvValidation.rowErrors).to.eql([]);
   });
 });
