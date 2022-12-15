@@ -10,7 +10,7 @@ import { ErrorService } from '../../services/error-service';
 import { ValidationService } from '../../services/validation-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../__mocks__/db';
 import * as process from './process';
-import { POST } from './validate';
+import { POST } from './process';
 
 chai.use(sinonChai);
 

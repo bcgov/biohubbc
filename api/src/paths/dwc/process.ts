@@ -103,7 +103,7 @@ POST.apiDoc = {
 };
 
 export function processDWCFile(): RequestHandler {
-  return async (req, res, next) => {
+  return async (req, res) => {
     const submissionId = req.body.occurrence_submission_id;
 
     if (!submissionId) {

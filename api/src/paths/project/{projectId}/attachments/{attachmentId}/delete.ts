@@ -3,7 +3,6 @@ import { Operation } from 'express-openapi';
 import { ATTACHMENT_TYPE } from '../../../../../constants/attachments';
 import { PROJECT_ROLE } from '../../../../../constants/roles';
 import { getDBConnection } from '../../../../../database/db';
-import { HTTP400 } from '../../../../../errors/http-error';
 import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
 import { AttachmentService } from '../../../../../services/attachment-service';
 import { deleteFileFromS3 } from '../../../../../utils/file-utils';
@@ -95,18 +94,6 @@ POST.apiDoc = {
 export function deleteAttachment(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({ label: 'Delete attachment', message: 'params', req_params: req.params });
-
-    if (!req.params.projectId) {
-      throw new HTTP400('Missing required path param `projectId`');
-    }
-
-    if (!req.params.attachmentId) {
-      throw new HTTP400('Missing required path param `attachmentId`');
-    }
-
-    if (!req.body || !req.body.attachmentType) {
-      throw new HTTP400('Missing required body param `attachmentType`');
-    }
 
     const connection = getDBConnection(req['keycloak_token']);
 

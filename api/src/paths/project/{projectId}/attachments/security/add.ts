@@ -6,8 +6,7 @@ import { authorizeRequestHandler } from '../../../../../request-handlers/securit
 import { AttachmentService, IAttachmentType } from '../../../../../services/attachment-service';
 import { getLogger } from '../../../../../utils/logger';
 
-const defaultLog = getLogger('/api/project/{projectId}/attachments/list');
-
+const defaultLog = getLogger('/api/project/{projectId}/attachments/security/add');
 export const POST: Operation = [
   authorizeRequestHandler(() => {
     return {

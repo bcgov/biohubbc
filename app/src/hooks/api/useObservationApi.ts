@@ -101,37 +101,6 @@ const useObservationApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Initiate the validation process for the submitted DWC observations
-   *
-   * @param {number} projectId
-   * @param {number} submissionId
-   */
-  const initiateDwCSubmissionValidation = async (projectId: number, submissionId: number) => {
-    const { data } = await axios.post(`/api/dwc/validate`, {
-      project_id: projectId,
-      occurrence_submission_id: submissionId
-    });
-
-    return data;
-  };
-
-  /**
-   * Initiate the validation process for the submitted XLSX observations
-   *
-   * @param {number} projectId
-   * @param {number} submissionId
-   */
-  const initiateXLSXSubmissionValidation = async (projectId: number, submissionId: number, surveyId: number) => {
-    const { data } = await axios.post(`/api/xlsx/validate`, {
-      project_id: projectId,
-      occurrence_submission_id: submissionId,
-      survey_id: surveyId
-    });
-
-    return data;
-  };
-
-  /**
    * Initiate the transformation process for the submitted observation template.
    *
    * @param {number} projectId
@@ -142,21 +111,6 @@ const useObservationApi = (axios: AxiosInstance) => {
       project_id: projectId,
       occurrence_submission_id: submissionId,
       survey_id: surveyId
-    });
-
-    return data;
-  };
-
-  /**
-   * Initiate the scraping process for the submitted DWC observations
-   *
-   * @param {number} projectId
-   * @param {number} submissionId
-   */
-  const initiateScrapeOccurrences = async (projectId: number, submissionId: number) => {
-    const { data } = await axios.post(`/api/dwc/scrape-occurrences`, {
-      project_id: projectId,
-      occurrence_submission_id: submissionId
     });
 
     return data;
@@ -199,10 +153,7 @@ const useObservationApi = (axios: AxiosInstance) => {
     uploadObservationSubmission,
     getObservationSubmission,
     deleteObservationSubmission,
-    initiateDwCSubmissionValidation,
-    initiateXLSXSubmissionValidation,
     initiateXLSXSubmissionTransform,
-    initiateScrapeOccurrences,
     getOccurrencesForView,
     processOccurrences,
     processDWCFile

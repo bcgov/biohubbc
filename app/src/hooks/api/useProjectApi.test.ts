@@ -157,32 +157,9 @@ describe('useProjectApi', () => {
     const result = await useProjectApi(axios).updateProject(projectId, {
       objectives: {
         objectives: 'objectives',
-        caveats: 'caveats',
         revision_count: 1
       }
     });
-
-    expect(result).toEqual(true);
-  });
-
-  it('addFundingSource works as expected', async () => {
-    mock.onPost(`/api/project/${projectId}/funding-sources/add`).reply(200, {
-      id: 1
-    });
-
-    const result = await useProjectApi(axios).addFundingSource(projectId, {
-      funding_source_name: 'funding source name'
-    });
-
-    expect(result).toEqual({ id: 1 });
-  });
-
-  it('deleteFundingSource works as expected', async () => {
-    const pfsId = 2;
-
-    mock.onDelete(`/api/project/${projectId}/funding-sources/${pfsId}/delete`).reply(200, true);
-
-    const result = await useProjectApi(axios).deleteFundingSource(projectId, pfsId);
 
     expect(result).toEqual(true);
   });

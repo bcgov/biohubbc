@@ -21,47 +21,6 @@ describe('getProjectAttachmentDetails', () => {
     sinon.restore();
   });
 
-  it('should throw a 400 error when projectId is missing in Path', async () => {
-    try {
-      const sampleReq = {
-        keycloak_token: {},
-        body: {},
-        params: {
-          projectId: null
-        }
-      } as any;
-
-      const result = get.getProjectAttachmentDetails();
-
-      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal('Missing required path param `projectId`');
-    }
-  });
-
-  it('should throw a 400 error when attachmentId is missing in Path', async () => {
-    try {
-      const sampleReq = {
-        keycloak_token: {},
-        body: {},
-        params: {
-          projectId: 1,
-          attachmentId: null
-        }
-      } as any;
-
-      const result = get.getProjectAttachmentDetails();
-
-      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal('Missing required path param `attachmentId`');
-    }
-  });
-
   it('should throw an error when a failure occurs', async () => {
     const dbConnectionObj = getMockDBConnection();
     sinon.stub(db, 'getDBConnection').returns({

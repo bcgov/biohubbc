@@ -309,32 +309,6 @@ const useProjectApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Delete funding source based on project and funding source ID
-   *
-   * @param {number} projectId
-   * @param {number} pfsId
-   * @return {*}  {Promise<number>}
-   */
-  const deleteFundingSource = async (projectId: number, pfsId: number): Promise<number> => {
-    const { data } = await axios.delete(`/api/project/${projectId}/funding-sources/${pfsId}/delete`);
-
-    return data;
-  };
-
-  /**
-   * Add new funding source based on projectId
-   *
-   * @param {number} projectId
-   * @param {*} fundingSource
-   * @return {*}  {Promise<ICreateProjectResponse>}
-   */
-  const addFundingSource = async (projectId: number, fundingSource: any): Promise<ICreateProjectResponse> => {
-    const { data } = await axios.post(`/api/project/${projectId}/funding-sources/add`, fundingSource);
-
-    return data;
-  };
-
-  /**
    * Get project report metadata based on project ID, attachment ID, and attachmentType
    *
    * @param {number} projectId
@@ -441,8 +415,6 @@ const useProjectApi = (axios: AxiosInstance) => {
     getProjectAttachments,
     getAttachmentSignedURL,
     deleteProjectAttachment,
-    deleteFundingSource,
-    addFundingSource,
     deleteProject,
     makeAttachmentUnsecure,
     getProjectReportDetails,

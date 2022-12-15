@@ -21,54 +21,6 @@ describe('getProjectReportDetails', () => {
     sinon.restore();
   });
 
-  it('should throw an error when projectId is missing', async () => {
-    const dbConnectionObj = getMockDBConnection();
-    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
-
-    const mockReq = {
-      keycloak_token: {},
-      params: {
-        projectId: null,
-        attachmentId: 2
-      },
-      body: {}
-    } as any;
-
-    try {
-      const result = get.getProjectReportDetails();
-
-      await result(mockReq, (null as unknown) as any, (null as unknown) as any);
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal('Missing required path param `projectId`');
-    }
-  });
-
-  it('should throw an error when attachmentId is missing', async () => {
-    const dbConnectionObj = getMockDBConnection();
-    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
-
-    const mockReq = {
-      keycloak_token: {},
-      params: {
-        projectId: 1,
-        attachmentId: null
-      },
-      body: {}
-    } as any;
-
-    try {
-      const result = get.getProjectReportDetails();
-
-      await result(mockReq, (null as unknown) as any, (null as unknown) as any);
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal('Missing required path param `attachmentId`');
-    }
-  });
-
   it('should throw an error if failure occurs', async () => {
     const dbConnectionObj = getMockDBConnection();
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);

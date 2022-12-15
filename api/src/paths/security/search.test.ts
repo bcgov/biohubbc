@@ -2,16 +2,15 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import * as db from '../../../../database/db';
-import { HTTPError } from '../../../../errors/http-error';
-import { GetAttachmentsData } from '../../../../models/project-survey-attachments';
-import { AttachmentService } from '../../../../services/attachment-service';
-import { getMockDBConnection } from '../../../../__mocks__/db';
-import * as listAttachments from './list';
+import * as db from '../../database/db';
+import { HTTPError } from '../../errors/http-error';
+import { SecuritySearchService } from '../../services/security-search-service';
+import { getMockDBConnection } from '../../__mocks__/db';
+import * as search from './search';
 
 chai.use(sinonChai);
 
-describe('getAttachments', () => {
+describe('getRules', () => {
   afterEach(() => {
     sinon.restore();
   });
@@ -26,18 +25,16 @@ describe('getAttachments', () => {
     });
 
     const expectedError = new Error('cannot process request');
-    sinon.stub(AttachmentService.prototype, 'getProjectAttachmentsWithSecurityCounts').rejects(expectedError);
+    sinon.stub(SecuritySearchService.prototype, 'getPersecutionSecurityFromIds').rejects(expectedError);
 
     const sampleReq = {
       keycloak_token: {},
-      body: {},
-      params: {
-        projectId: 1
-      }
+      body: { security_ids: [1] },
+      params: {}
     } as any;
 
     try {
-      const result = listAttachments.getAttachments();
+      const result = search.searchRules();
 
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
@@ -46,7 +43,7 @@ describe('getAttachments', () => {
     }
   });
 
-  it('should succeed with valid Id', async () => {
+  it('should succeed with valid data', async () => {
     const dbConnectionObj = getMockDBConnection();
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
@@ -55,22 +52,17 @@ describe('getAttachments', () => {
       }
     });
 
-    const getProjectAttachmentsWithSecurityCountsStub = sinon
-      .stub(AttachmentService.prototype, 'getProjectAttachmentsWithSecurityCounts')
-      .resolves([]);
-    const getProjectReportAttachmentsWithSecurityCountsStub = sinon
-      .stub(AttachmentService.prototype, 'getProjectReportAttachmentsWithSecurityCounts')
-      .resolves([]);
-
     const sampleReq = {
       keycloak_token: {},
-      body: {},
-      params: {
-        projectId: 1
-      }
+      body: { security_ids: [1] },
+      params: {}
     } as any;
 
-    const expectedResponse = new GetAttachmentsData([], []);
+    const getPersecutionSecurityRulesStub = sinon
+      .stub(SecuritySearchService.prototype, 'getPersecutionSecurityFromIds')
+      .resolves([1]);
+
+    const expectedResponse = [1];
 
     let actualResult: any = null;
     const sampleRes = {
@@ -83,11 +75,10 @@ describe('getAttachments', () => {
       }
     };
 
-    const result = listAttachments.getAttachments();
+    const result = search.searchRules();
 
     await result(sampleReq, (sampleRes as unknown) as any, (null as unknown) as any);
     expect(actualResult).to.eql(expectedResponse);
-    expect(getProjectAttachmentsWithSecurityCountsStub).to.be.calledOnce;
-    expect(getProjectReportAttachmentsWithSecurityCountsStub).to.be.calledOnce;
+    expect(getPersecutionSecurityRulesStub).to.be.calledOnce;
   });
 });

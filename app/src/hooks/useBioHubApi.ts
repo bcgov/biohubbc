@@ -6,9 +6,7 @@ import useAxios from './api/useAxios';
 import useCodesApi from './api/useCodesApi';
 import useDraftApi from './api/useDraftApi';
 import useExternalApi from './api/useExternalApi';
-import useN8NApi from './api/useN8NApi';
 import useObservationApi from './api/useObservationApi';
-import usePermitApi from './api/usePermitApi';
 import useProjectApi from './api/useProjectApi';
 import useSearchApi from './api/useSearchApi';
 import useSecurityApi from './api/useSecurityApi';
@@ -24,11 +22,8 @@ import useUserApi from './api/useUserApi';
 export const useBiohubApi = () => {
   const config = useContext(ConfigContext);
   const apiAxios = useAxios(config?.API_HOST);
-  const n8nAxios = useAxios(config?.N8N_HOST);
 
   const project = useProjectApi(apiAxios);
-
-  const permit = usePermitApi(apiAxios);
 
   const search = useSearchApi(apiAxios);
 
@@ -46,15 +41,12 @@ export const useBiohubApi = () => {
 
   const observation = useObservationApi(apiAxios);
 
-  const n8n = useN8NApi(n8nAxios);
-
   const external = useExternalApi(axios);
 
   const security = useSecurityApi(apiAxios);
 
   return {
     project,
-    permit,
     search,
     taxonomy,
     survey,
@@ -63,7 +55,6 @@ export const useBiohubApi = () => {
     draft,
     user,
     admin,
-    n8n,
     external,
     security
   };

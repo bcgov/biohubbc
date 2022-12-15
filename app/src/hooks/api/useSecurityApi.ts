@@ -3,6 +3,8 @@ import { AttachmentType } from 'constants/attachments';
 import { IAttachmentType } from 'features/projects/view/ProjectAttachments';
 import { SecurityReason } from 'interfaces/useSecurityApi.interface';
 
+//TODO: Delete unused functions and endpoints
+
 /**
  * Returns a set of supported api methods for working with security related records.
  *
