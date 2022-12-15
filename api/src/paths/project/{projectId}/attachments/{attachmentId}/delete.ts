@@ -2,9 +2,8 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { ATTACHMENT_TYPE } from '../../../../../constants/attachments';
 import { PROJECT_ROLE } from '../../../../../constants/roles';
-import { getDBConnection, IDBConnection } from '../../../../../database/db';
+import { getDBConnection } from '../../../../../database/db';
 import { HTTP400 } from '../../../../../errors/http-error';
-import { queries } from '../../../../../queries/queries';
 import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
 import { AttachmentService } from '../../../../../services/attachment-service';
 import { deleteFileFromS3 } from '../../../../../utils/file-utils';
@@ -122,10 +121,10 @@ export function deleteAttachment(): RequestHandler {
 
         await attachmentService.deleteProjectReportAttachmentAuthors(Number(req.params.attachmentId));
 
-        deleteResult = await deleteProjectReportAttachment(Number(req.params.attachmentId), connection);
+        deleteResult = await attachmentService.deleteProjectReportAttachment(Number(req.params.attachmentId));
       } else {
         await attachmentService.removeAllSecurityFromProjectAttachment(Number(req.params.attachmentId));
-        deleteResult = await deleteProjectAttachment(Number(req.params.attachmentId), connection);
+        deleteResult = await attachmentService.deleteProjectAttachment(Number(req.params.attachmentId));
       }
 
       await connection.commit();
@@ -146,41 +145,3 @@ export function deleteAttachment(): RequestHandler {
     }
   };
 }
-
-export const deleteProjectAttachment = async (
-  attachmentId: number,
-  connection: IDBConnection
-): Promise<{ key: string }> => {
-  const sqlStatement = queries.project.deleteProjectAttachmentSQL(attachmentId);
-
-  if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL delete project attachment statement');
-  }
-
-  const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
-  if (!response || !response.rowCount) {
-    throw new HTTP400('Failed to delete project attachment record');
-  }
-
-  return response.rows[0];
-};
-
-export const deleteProjectReportAttachment = async (
-  attachmentId: number,
-  connection: IDBConnection
-): Promise<{ key: string }> => {
-  const sqlStatement = queries.project.deleteProjectReportAttachmentSQL(attachmentId);
-
-  if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL delete project report attachment statement');
-  }
-
-  const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
-  if (!response || !response.rowCount) {
-    throw new HTTP400('Failed to delete project attachment report record');
-  }
-
-  return response.rows[0];
-};

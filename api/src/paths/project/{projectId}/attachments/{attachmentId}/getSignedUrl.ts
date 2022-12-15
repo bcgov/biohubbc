@@ -2,10 +2,9 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { ATTACHMENT_TYPE } from '../../../../../constants/attachments';
 import { PROJECT_ROLE } from '../../../../../constants/roles';
-import { getDBConnection, IDBConnection } from '../../../../../database/db';
-import { HTTP400 } from '../../../../../errors/http-error';
-import { queries } from '../../../../../queries/queries';
+import { getDBConnection } from '../../../../../database/db';
 import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
+import { AttachmentService } from '../../../../../services/attachment-service';
 import { getS3SignedURL } from '../../../../../utils/file-utils';
 import { getLogger } from '../../../../../utils/logger';
 
@@ -100,36 +99,23 @@ export function getProjectAttachmentSignedURL(): RequestHandler {
       req_body: req.body
     });
 
-    if (!req.params.projectId) {
-      throw new HTTP400('Missing required path param `projectId`');
-    }
-
-    if (!req.params.attachmentId) {
-      throw new HTTP400('Missing required path param `attachmentId`');
-    }
-
-    if (!req.query.attachmentType) {
-      throw new HTTP400('Missing required query param `attachmentType`');
-    }
-
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
       await connection.open();
 
       let s3Key;
+      const attachmentService = new AttachmentService(connection);
 
       if (req.query.attachmentType === ATTACHMENT_TYPE.REPORT) {
-        s3Key = await getProjectReportAttachmentS3Key(
+        s3Key = await attachmentService.getProjectReportAttachmentS3Key(
           Number(req.params.projectId),
-          Number(req.params.attachmentId),
-          connection
+          Number(req.params.attachmentId)
         );
       } else {
-        s3Key = await getProjectAttachmentS3Key(
+        s3Key = await attachmentService.getProjectAttachmentS3Key(
           Number(req.params.projectId),
-          Number(req.params.attachmentId),
-          connection
+          Number(req.params.attachmentId)
         );
       }
 
@@ -151,43 +137,3 @@ export function getProjectAttachmentSignedURL(): RequestHandler {
     }
   };
 }
-
-export const getProjectAttachmentS3Key = async (
-  projectId: number,
-  attachmentId: number,
-  connection: IDBConnection
-): Promise<string> => {
-  const sqlStatement = queries.project.getProjectAttachmentS3KeySQL(projectId, attachmentId);
-
-  if (!sqlStatement) {
-    throw new HTTP400('Failed to build attachment S3 key SQLstatement');
-  }
-
-  const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
-  if (!response || !response?.rows?.[0]) {
-    throw new HTTP400('Failed to get attachment S3 key');
-  }
-
-  return response.rows[0].key;
-};
-
-export const getProjectReportAttachmentS3Key = async (
-  projectId: number,
-  attachmentId: number,
-  connection: IDBConnection
-): Promise<string> => {
-  const sqlStatement = queries.project.getProjectReportAttachmentS3KeySQL(projectId, attachmentId);
-
-  if (!sqlStatement) {
-    throw new HTTP400('Failed to build report attachment S3 key SQLstatement');
-  }
-
-  const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
-  if (!response || !response?.rows?.[0]) {
-    throw new HTTP400('Failed to get attachment S3 key');
-  }
-
-  return response.rows[0].key;
-};

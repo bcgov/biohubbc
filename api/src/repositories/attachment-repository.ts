@@ -1594,4 +1594,396 @@ export class AttachmentRepository extends BaseRepository {
 
     return response;
   }
+
+  async getProjectAttachmentS3Key(projectId: number, attachmentId: number): Promise<string> {
+    const sqlStatement = SQL`
+      SELECT
+        key
+      FROM
+        project_attachment
+      WHERE
+        project_id = ${projectId}
+      AND
+        project_attachment_id = ${attachmentId};
+    `;
+
+    const response = await this.connection.sql(sqlStatement);
+
+    if (!response || !response?.rows?.[0]) {
+      throw new ApiExecuteSQLError('Failed to get Project Attachment S3 Key', [
+        'AttachmentRepository->getProjectAttachmentS3Key',
+        'rows was null or undefined, expected rows != null'
+      ]);
+    }
+
+    return response.rows[0].key;
+  }
+
+  async updateProjectReportAttachmentMetadata(
+    projectId: number,
+    attachmentId: number,
+    metadata: PutReportAttachmentMetadata
+  ): Promise<void> {
+    const sqlStatement = SQL`
+    UPDATE
+      project_report_attachment
+    SET
+      title = ${metadata.title},
+      year = ${metadata.year_published},
+      description = ${metadata.description}
+    WHERE
+      project_id = ${projectId}
+    AND
+      project_report_attachment_id = ${attachmentId}
+    AND
+      revision_count = ${metadata.revision_count};
+  `;
+
+    const response = await this.connection.sql(sqlStatement);
+
+    if (!response || !response.rowCount) {
+      throw new ApiExecuteSQLError('Failed to update Project REport Attachment Metadata', [
+        'AttachmentRepository->updateProjectReportAttachmentMetadata',
+        'rows was null or undefined, expected rows != null'
+      ]);
+    }
+  }
+
+  async getProjectReportAttachmentS3Key(projectId: number, attachmentId: number): Promise<string> {
+    const sqlStatement = SQL`
+      SELECT
+        key
+      FROM
+        project_report_attachment
+      WHERE
+        project_id = ${projectId}
+      AND
+        project_report_attachment_id = ${attachmentId};
+    `;
+
+    const response = await this.connection.sql(sqlStatement);
+
+    if (!response || !response?.rows?.[0]) {
+      throw new ApiExecuteSQLError('Failed to get Project Report Attachment S3 Key', [
+        'AttachmentRepository->getProjectReportAttachmentS3Key',
+        'rows was null or undefined, expected rows != null'
+      ]);
+    }
+
+    return response.rows[0].key;
+  }
+
+  async deleteProjectAttachment(attachmentId: number): Promise<{ key: string }> {
+    const sqlStatement = SQL`
+      DELETE
+        from project_attachment
+      WHERE
+        project_attachment_id = ${attachmentId}
+      RETURNING
+        key;
+    `;
+
+    const response = await this.connection.sql(sqlStatement);
+
+    if (!response || !response.rowCount) {
+      throw new ApiExecuteSQLError('Failed to delete Project Attachment by id', [
+        'AttachmentRepository->deleteProjectAttachment',
+        'rows was null or undefined, expected rows != null'
+      ]);
+    }
+
+    return response.rows[0];
+  }
+
+  async deleteProjectReportAttachment(attachmentId: number): Promise<{ key: string }> {
+    const sqlStatement = SQL`
+      DELETE
+        from project_report_attachment
+      WHERE
+        project_report_attachment_id = ${attachmentId}
+      RETURNING
+        key;
+    `;
+
+    const response = await this.connection.sql(sqlStatement);
+
+    if (!response || !response.rowCount) {
+      throw new ApiExecuteSQLError('Failed to delete Project Report Attachment by id', [
+        'AttachmentRepository->deleteProjectReportAttachment',
+        'rows was null or undefined, expected rows != null'
+      ]);
+    }
+
+    return response.rows[0];
+  }
+
+  async insertSurveyReportAttachment(
+    fileName: string,
+    fileSize: number,
+    surveyId: number,
+    attachmentMeta: PostReportAttachmentMetadata,
+    key: string
+  ): Promise<{ id: number; revision_count: number }> {
+    const sqlStatement = SQL`
+      INSERT INTO survey_report_attachment (
+        survey_id,
+        file_name,
+        title,
+        year,
+        description,
+        file_size,
+        key
+      ) VALUES (
+        ${surveyId},
+        ${fileName},
+        ${attachmentMeta.title},
+        ${attachmentMeta.year_published},
+        ${attachmentMeta.description},
+        ${fileSize},
+        ${key}
+      )
+      RETURNING
+        survey_report_attachment_id as id,
+        revision_count;
+    `;
+
+    const response = await this.connection.sql(sqlStatement);
+
+    if (!response || !response?.rows?.[0]) {
+      throw new ApiExecuteSQLError('Failed to insert survey report attachment', [
+        'AttachmentRepository->insertSurveyReportAttachment',
+        'rows was null or undefined, expected rows != null'
+      ]);
+    }
+
+    return response.rows[0];
+  }
+
+  async updateSurveyReportAttachment(
+    fileName: string,
+    surveyId: number,
+    attachmentMeta: PutReportAttachmentMetadata
+  ): Promise<{ id: number; revision_count: number }> {
+    const sqlStatement = SQL`
+      UPDATE
+        survey_report_attachment
+      SET
+        file_name = ${fileName},
+        title = ${attachmentMeta.title},
+        year = ${attachmentMeta.year_published},
+        description = ${attachmentMeta.description}
+      WHERE
+        file_name = ${fileName}
+      AND
+        survey_id = ${surveyId}
+      RETURNING
+        survey_report_attachment_id as id,
+        revision_count;
+    `;
+
+    const response = await this.connection.sql(sqlStatement);
+
+    if (!response || !response?.rows?.[0]) {
+      throw new ApiExecuteSQLError('Failed to update survey report attachment', [
+        'AttachmentRepository->updateSurveyReportAttachment',
+        'rows was null or undefined, expected rows != null'
+      ]);
+    }
+
+    return response.rows[0];
+  }
+
+  async deleteSurveyReportAttachmentAuthors(attachmentId: number): Promise<void> {
+    const sqlStatement = SQL`
+      DELETE FROM
+        survey_report_author
+      WHERE
+        survey_report_attachment_id = ${attachmentId};
+    `;
+
+    const response = await this.connection.sql(sqlStatement);
+
+    if (!response) {
+      throw new ApiExecuteSQLError('Failed to delete survey report attachment', [
+        'AttachmentRepository->deleteSurveyReportAttachmentAuthors',
+        'rows was null or undefined, expected rows != null'
+      ]);
+    }
+  }
+
+  async insertSurveyReportAttachmentAuthor(
+    attachmentId: number,
+    author: { first_name: string; last_name: string }
+  ): Promise<void> {
+    const sqlStatement = SQL`
+      INSERT INTO survey_report_author (
+        survey_report_attachment_id,
+        first_name,
+        last_name
+      ) VALUES (
+        ${attachmentId},
+        ${author.first_name},
+        ${author.last_name}
+      );
+    `;
+
+    const response = await this.connection.sql(sqlStatement);
+
+    if (!response || !response.rowCount) {
+      throw new ApiExecuteSQLError('Failed to insert survey report attachment', [
+        'AttachmentRepository->insertSurveyReportAttachmentAuthor',
+        'rows was null or undefined, expected rows != null'
+      ]);
+    }
+  }
+
+  async getSurveyReportAttachmentByFileName(surveyId: number, fileName: string): Promise<QueryResult> {
+    const sqlStatement = SQL`
+      SELECT
+        survey_report_attachment_id as id,
+        file_name,
+        update_date,
+        create_date,
+        file_size
+      from
+        survey_report_attachment
+      where
+        survey_id = ${surveyId}
+      and
+        file_name = ${fileName};
+    `;
+
+    const response = await this.connection.sql(sqlStatement);
+
+    if (!response) {
+      throw new ApiExecuteSQLError('Failed to get Survey Report Attachment by filename', [
+        'AttachmentRepository->getSurveyReportAttachmentByFileName',
+        'rows was null or undefined, expected rows != null'
+      ]);
+    }
+
+    return response;
+  }
+
+  async deleteSurveyReportAttachment(attachmentId: number): Promise<{ key: string }> {
+    const sqlStatement = SQL`
+      DELETE
+        from survey_report_attachment
+      WHERE
+        survey_report_attachment_id = ${attachmentId}
+      RETURNING
+        key;
+    `;
+
+    const response = await this.connection.sql(sqlStatement);
+
+    if (!response || !response.rowCount) {
+      throw new ApiExecuteSQLError('Failed to delete Survey Report Attachment', [
+        'AttachmentRepository->deleteSurveyReportAttachment',
+        'rows was null or undefined, expected rows != null'
+      ]);
+    }
+
+    return response.rows[0];
+  }
+
+  async deleteSurveyAttachment(attachmentId: number): Promise<{ key: string }> {
+    const sqlStatement = SQL`
+      DELETE
+        from survey_attachment
+      WHERE
+        survey_attachment_id = ${attachmentId}
+      RETURNING
+        key;
+    `;
+
+    const response = await this.connection.sql(sqlStatement);
+
+    if (!response || !response.rowCount) {
+      throw new ApiExecuteSQLError('Failed to delete Survey Attachment', [
+        'AttachmentRepository->deleteSurveyAttachment',
+        'rows was null or undefined, expected rows != null'
+      ]);
+    }
+
+    return response.rows[0];
+  }
+
+  async getSurveyAttachmentS3Key(surveyId: number, attachmentId: number): Promise<string> {
+    const sqlStatement = SQL`
+      SELECT
+        key
+      FROM
+        survey_attachment
+      WHERE
+        survey_id = ${surveyId}
+      AND
+        survey_attachment_id = ${attachmentId};
+    `;
+
+    const response = await this.connection.sql(sqlStatement);
+
+    if (!response || !response?.rows?.[0]) {
+      throw new ApiExecuteSQLError('Failed to get Survey Attachment S3 key', [
+        'AttachmentRepository->getSurveyAttachmentS3Key',
+        'rows was null or undefined, expected rows != null'
+      ]);
+    }
+
+    return response.rows[0].key;
+  }
+
+  async getSurveyReportAttachmentS3Key(surveyId: number, attachmentId: number): Promise<string> {
+    const sqlStatement = SQL`
+      SELECT
+        key
+      FROM
+        survey_report_attachment
+      WHERE
+        survey_id = ${surveyId}
+      AND
+        survey_report_attachment_id = ${attachmentId};
+    `;
+
+    const response = await this.connection.sql(sqlStatement);
+
+    if (!response || !response?.rows?.[0]) {
+      throw new ApiExecuteSQLError('Failed to get Survey Report Attachment S3 key', [
+        'AttachmentRepository->getSurveyReportAttachmentS3Key',
+        'rows was null or undefined, expected rows != null'
+      ]);
+    }
+
+    return response.rows[0].key;
+  }
+
+  async updateSurveyReportAttachmentMetadata(
+    surveyId: number,
+    attachmentId: number,
+    metadata: PutReportAttachmentMetadata
+  ): Promise<void> {
+    const sqlStatement = SQL`
+      UPDATE
+        survey_report_attachment
+      SET
+        title = ${metadata.title},
+        year = ${metadata.year_published},
+        description = ${metadata.description}
+      WHERE
+        survey_id = ${surveyId}
+      AND
+        survey_report_attachment_id = ${attachmentId}
+      AND
+        revision_count = ${metadata.revision_count};
+    `;
+
+    const response = await this.connection.sql(sqlStatement);
+
+    if (!response || !response.rowCount) {
+      throw new ApiExecuteSQLError('Failed to update Survey Report Attachment metadata', [
+        'AttachmentRepository->getSurveyReportAttachmentS3Key',
+        'rows was null or undefined, expected rows != null'
+      ]);
+    }
+  }
 }

@@ -2,13 +2,11 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { ATTACHMENT_TYPE } from '../../../../../../constants/attachments';
 import { PROJECT_ROLE } from '../../../../../../constants/roles';
-import { getDBConnection, IDBConnection } from '../../../../../../database/db';
-import { HTTP400 } from '../../../../../../errors/http-error';
+import { getDBConnection } from '../../../../../../database/db';
 import {
   IReportAttachmentAuthor,
   PutReportAttachmentMetadata
 } from '../../../../../../models/project-survey-attachments';
-import { queries } from '../../../../../../queries/queries';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 import { AttachmentService } from '../../../../../../services/attachment-service';
 import { getLogger } from '../../../../../../utils/logger';
@@ -136,18 +134,6 @@ export function updateProjectAttachmentMetadata(): RequestHandler {
       req_body: req.body
     });
 
-    if (!req.params.projectId) {
-      throw new HTTP400('Missing required path param `projectId`');
-    }
-
-    if (!req.params.attachmentId) {
-      throw new HTTP400('Missing required path param `attachmentId`');
-    }
-
-    if (!Object.values(ATTACHMENT_TYPE).includes(req.body?.attachment_type)) {
-      throw new HTTP400('Invalid body param `attachment_type`');
-    }
-
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
@@ -159,15 +145,14 @@ export function updateProjectAttachmentMetadata(): RequestHandler {
           revision_count: req.body.revision_count
         });
 
+        const attachmentService = new AttachmentService(connection);
+
         // Update the metadata fields of the attachment record
-        await updateProjectReportAttachmentMetadata(
+        await attachmentService.updateProjectReportAttachmentMetadata(
           Number(req.params.projectId),
           Number(req.params.attachmentId),
-          metadata,
-          connection
+          metadata
         );
-
-        const attachmentService = new AttachmentService(connection);
 
         // Delete any existing attachment author records
         await attachmentService.deleteProjectReportAttachmentAuthors(Number(req.params.attachmentId));
@@ -196,22 +181,3 @@ export function updateProjectAttachmentMetadata(): RequestHandler {
     }
   };
 }
-
-const updateProjectReportAttachmentMetadata = async (
-  projectId: number,
-  attachmentId: number,
-  metadata: PutReportAttachmentMetadata,
-  connection: IDBConnection
-): Promise<void> => {
-  const sqlStatement = queries.project.updateProjectReportAttachmentMetadataSQL(projectId, attachmentId, metadata);
-
-  if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL update attachment report statement');
-  }
-
-  const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
-  if (!response || !response.rowCount) {
-    throw new HTTP400('Failed to update attachment report record');
-  }
-};

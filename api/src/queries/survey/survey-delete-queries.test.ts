@@ -5,7 +5,6 @@ import {
   deleteSurveyFundingSourceByProjectFundingSourceIdSQL,
   deleteSurveyFundingSourcesBySurveyIdSQL,
   deleteSurveyProprietorSQL,
-  deleteSurveySQL,
   deleteSurveyVantageCodesSQL
 } from './survey-delete-queries';
 
@@ -20,14 +19,6 @@ describe('deleteAllSurveySpeciesSQL', () => {
 describe('deleteSurveyProprietorSQL', () => {
   it('returns a sql statement', () => {
     const response = deleteSurveyProprietorSQL(1);
-
-    expect(response).to.not.be.null;
-  });
-});
-
-describe('deleteSurveySQL', () => {
-  it('returns a sql statement', () => {
-    const response = deleteSurveySQL(1);
 
     expect(response).to.not.be.null;
   });

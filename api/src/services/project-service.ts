@@ -26,7 +26,6 @@ import {
   GetReportAttachmentsData,
   IGetProject
 } from '../models/project-view';
-import { getSurveyAttachmentS3Keys } from '../paths/project/{projectId}/survey/{surveyId}/delete';
 import { GET_ENTITIES, IUpdateProject } from '../paths/project/{projectId}/update';
 import { queries } from '../queries/queries';
 import { ProjectRepository } from '../repositories/project-repository';
@@ -886,10 +885,15 @@ export class ProjectService extends DBService {
       throw new HTTP400('Failed to get survey ids associated to project');
     }
 
+    const attachmentService = new AttachmentService(this.connection);
+
     const surveyAttachmentS3Keys: string[] = Array.prototype.concat.apply(
       [],
       await Promise.all(
-        getSurveyIdsResult.rows.map((survey: any) => getSurveyAttachmentS3Keys(survey.id, this.connection))
+        getSurveyIdsResult.rows.map(async (survey: any) => {
+          const surveyAttachments = await attachmentService.getSurveyAttachments(survey.id);
+          return surveyAttachments.map((attachment) => attachment.key);
+        })
       )
     );
 
