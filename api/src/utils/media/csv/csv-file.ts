@@ -264,15 +264,26 @@ export interface IRowError {
     | SUBMISSION_MESSAGE_TYPE.OUT_OF_RANGE
     | SUBMISSION_MESSAGE_TYPE.INVALID_VALUE
     | SUBMISSION_MESSAGE_TYPE.UNEXPECTED_FORMAT
-    | SUBMISSION_MESSAGE_TYPE.NON_UNIQUE_KEY
-    | SUBMISSION_MESSAGE_TYPE.DANGLING_PARENT_CHILD_KEY;
+    | SUBMISSION_MESSAGE_TYPE.NON_UNIQUE_KEY;
   message: string;
   col: string;
   row: number;
 }
+
+export interface IKeyError {
+  errorCode: SUBMISSION_MESSAGE_TYPE.DANGLING_PARENT_CHILD_KEY;
+  message: string;
+  colNames: string[];
+  rows: number[];
+}
+
+/**
+ * @TODO need to add handling for keyErrors
+ */
 export interface ICsvState extends IMediaState {
   headerErrors: IHeaderError[];
   rowErrors: IRowError[];
+  keyErrors: IKeyError[];
 }
 
 /**
@@ -285,12 +296,14 @@ export interface ICsvState extends IMediaState {
 export class CSVValidation extends MediaValidation {
   headerErrors: IHeaderError[];
   rowErrors: IRowError[];
+  keyErrors: IKeyError[];
 
   constructor(fileName: string) {
     super(fileName);
 
     this.headerErrors = [];
     this.rowErrors = [];
+    this.keyErrors = [];
   }
 
   addHeaderErrors(errors: IHeaderError[]) {
@@ -313,12 +326,21 @@ export class CSVValidation extends MediaValidation {
     }
   }
 
+  addKeyErrors(errors: IKeyError[]) {
+    this.keyErrors = this.keyErrors.concat(errors);
+
+    if (errors?.length) {
+      this.isValid = false;
+    }
+  }
+
   getState(): ICsvState {
     return {
       fileName: this.fileName,
       fileErrors: this.fileErrors,
       headerErrors: this.headerErrors,
       rowErrors: this.rowErrors,
+      keyErrors: this.keyErrors,
       isValid: this.isValid
     };
   }

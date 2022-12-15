@@ -53,7 +53,7 @@ export const getParentChildKeyMatchValidator = (config?: ParentChildKeyMatchVali
     const parentSerializedRows = parentRowObjects.map(serializer);
 
     // Add an error for each cell containing a dangling key reference in the child worksheet
-    childRowObjects
+    const danglingRowIndices = childRowObjects
       // Serialize each row in order to match column values
       .map(serializer)
 
@@ -65,25 +65,23 @@ export const getParentChildKeyMatchValidator = (config?: ParentChildKeyMatchVali
       // Filter any row indices which have a matching row in the parent
       .filter((rowIndex: number) => rowIndex >= 0)
 
-      // For each of the remining 'dangling' row indices, insert a key error
-      .forEach((danglingRowIndex: number) => {
-        // This would return the first column that was incorrect, even if multiple were incorrect, or else it defaults to whatever the last
-        // column in the array is. Ideally, the error message should indicat that the key (be it 1 column or multiple) is
-        // invalid, rather than trying to target just the bad one(s).
-        const mismatchedColumn =
-          column_names.find((columnName: string) => {
-            return parentRowObjects[danglingRowIndex][columnName] !== childRowObjects[danglingRowIndex][columnName];
-          }) || column_names[column_names.length - 1];
+      // Add +2 to the index to reflect the actual row number in the file
+      .map((index: number) => index + 2);
 
-        childWorksheet.csvValidation.addRowErrors([
-          {
-            errorCode: SUBMISSION_MESSAGE_TYPE.DANGLING_PARENT_CHILD_KEY,
-            message: `Child worksheet references a key that is missing from the corresponding column in the parent worksheet`,
-            col: mismatchedColumn,
-            row: danglingRowIndex + 2
-          }
-        ]);
-      });
+    if (danglingRowIndices.length === 0) {
+      return csvWorkbook;
+    }
+
+    // For any and all of the remining 'dangling' row indices, insert a single key error reflecting the missing keys from the parent.
+    const columnNameIndexString = `[${column_names.join(', ')}]`;
+    childWorksheet.csvValidation.addKeyErrors([
+      {
+        errorCode: SUBMISSION_MESSAGE_TYPE.DANGLING_PARENT_CHILD_KEY,
+        message: `${child_worksheet_name}${columnNameIndexString} must have matching value in ${parent_worksheet_name}${columnNameIndexString}.`,
+        colNames: column_names,
+        rows: danglingRowIndices
+      }
+    ]);
 
     return csvWorkbook;
   };
