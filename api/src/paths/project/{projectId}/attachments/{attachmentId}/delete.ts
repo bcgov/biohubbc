@@ -6,7 +6,6 @@ import { getDBConnection, IDBConnection } from '../../../../../database/db';
 import { HTTP400 } from '../../../../../errors/http-error';
 import { queries } from '../../../../../queries/queries';
 import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
-import { AttachmentService } from '../../../../../services/attachment-service';
 import { deleteFileFromS3 } from '../../../../../utils/file-utils';
 import { getLogger } from '../../../../../utils/logger';
 import { attachmentApiDocObject } from '../../../../../utils/shared-api-docs';
@@ -115,17 +114,12 @@ export function deleteAttachment(): RequestHandler {
     try {
       await connection.open();
 
-      const attachmentService = new AttachmentService(connection);
-
       let deleteResult: { key: string };
       if (req.body.attachmentType === ATTACHMENT_TYPE.REPORT) {
-        await attachmentService.removeAllSecurityFromProjectReportAttachment(Number(req.params.attachmentId));
-
         await deleteProjectReportAttachmentAuthors(Number(req.params.attachmentId), connection);
 
         deleteResult = await deleteProjectReportAttachment(Number(req.params.attachmentId), connection);
       } else {
-        await attachmentService.removeAllSecurityFromProjectAttachment(Number(req.params.attachmentId));
         deleteResult = await deleteProjectAttachment(Number(req.params.attachmentId), connection);
       }
 

@@ -24,8 +24,6 @@ export class GetAttachmentsData {
         lastModified: moment(item.update_date || item.create_date).toISOString(),
         size: item.file_size,
         securityToken: item.security_token,
-        securityReviewTimestamp: item.security_review_timestamp,
-        securityRuleCount: item.security_rule_count && Number(item.security_rule_count),
         status: item.status
       };
     };

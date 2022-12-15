@@ -118,8 +118,7 @@ describe('project/{projectId}/survey/{surveyId}/attachments/{attachmentId}/metad
               year_published: 2022,
               revision_count: 0
             },
-            authors: [],
-            security_reasons: []
+            authors: []
           };
 
           const result = responseValidator.validateResponse(200, res);
@@ -140,8 +139,7 @@ describe('project/{projectId}/survey/{surveyId}/attachments/{attachmentId}/metad
             authors: [
               { first_name: '', last_name: '' },
               { first_name: '', last_name: '' }
-            ],
-            security_reasons: []
+            ]
           };
 
           const result = responseValidator.validateResponse(200, res);
@@ -163,17 +161,13 @@ describe('project/{projectId}/survey/{surveyId}/attachments/{attachmentId}/metad
 
           expect(result.errors[1].path).to.equal('response');
           expect(result.errors[1].message).to.equal("must have required property 'authors'");
-
-          expect(result.errors[2].path).to.equal('response');
-          expect(result.errors[2].message).to.equal("must have required property 'security_reasons'");
         });
       });
 
       it('required `metadata` properties are missing', async () => {
         const res = {
           metadata: {},
-          authors: [],
-          security_reasons: []
+          authors: []
         };
 
         const result = responseValidator.validateResponse(200, res);
@@ -209,8 +203,7 @@ describe('project/{projectId}/survey/{surveyId}/attachments/{attachmentId}/metad
             year_published: 2022,
             revision_count: 0
           },
-          authors: [{ first_name: '', last_name: '' }, {}],
-          security_reasons: []
+          authors: [{ first_name: '', last_name: '' }, {}]
         };
 
         const result = responseValidator.validateResponse(200, res);

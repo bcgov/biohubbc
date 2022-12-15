@@ -5,7 +5,6 @@ import { getDBConnection } from '../../../../../database/db';
 import { HTTP400 } from '../../../../../errors/http-error';
 import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
 import { AttachmentService } from '../../../../../services/attachment-service';
-import { SecuritySearchService } from '../../../../../services/security-search-service';
 import { getLogger } from '../../../../../utils/logger';
 
 const defaultLog = getLogger('/api/project/{projectId}/attachments/{attachmentId}/getSignedUrl');
@@ -133,28 +132,9 @@ export function getProjectAttachmentDetails(): RequestHandler {
         Number(req.params.attachmentId)
       );
 
-      const projectAttachmentSecurity = await attachmentService.getProjectAttachmentSecurityReasons(
-        Number(req.params.attachmentId)
-      );
-
-      const securitySearchService = new SecuritySearchService();
-
-      const persecutionRules = await securitySearchService.getPersecutionSecurityRules();
-
       await connection.commit();
 
-      const mappedSecurityObj = projectAttachmentSecurity.map((item) => {
-        return {
-          security_reason_id: item.persecution_security_id,
-          security_reason_title: persecutionRules[item.persecution_security_id - 1].reasonTitle,
-          security_reason_description: persecutionRules[item.persecution_security_id - 1].reasonDescription,
-          user_identifier: item.user_identifier,
-          security_date_applied: item.create_date
-        };
-      });
-
       const attachmentDetails = {
-        security_reasons: mappedSecurityObj,
         metadata: {
           last_modified: attachmentData.create_date
         }
