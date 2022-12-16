@@ -75,7 +75,7 @@ export class AttachmentRepository extends BaseRepository {
         create_date,
         file_size,
         key,
-        security_token,
+        security_token
       FROM
         project_attachment
       WHERE
@@ -115,7 +115,7 @@ export class AttachmentRepository extends BaseRepository {
         create_date,
         file_size,
         key,
-        security_token,
+        security_token
       FROM
         project_attachment
       WHERE
@@ -244,7 +244,7 @@ export class AttachmentRepository extends BaseRepository {
         create_date,
         file_size,
         key,
-        security_token,
+        security_token
       FROM
         survey_attachment
       WHERE
