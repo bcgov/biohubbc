@@ -5,7 +5,7 @@ import { SubmissionRepository } from '../repositories/submission-repository';
 import { ITemplateMethodologyData, ValidationRepository } from '../repositories/validation-repository';
 import { getFileFromS3, uploadBufferToS3 } from '../utils/file-utils';
 import { getLogger } from '../utils/logger';
-import { ICsvState, IHeaderError, IRowError } from '../utils/media/csv/csv-file';
+import { ICsvState, IHeaderError, IKeyError, IRowError } from '../utils/media/csv/csv-file';
 import { DWCArchive } from '../utils/media/dwc/dwc-archive-file';
 import { ArchiveFile, IMediaState, MediaFile } from '../utils/media/media-file';
 import { parseUnknownMedia } from '../utils/media/media-utils';
@@ -372,6 +372,18 @@ export class ValidationService extends DBService {
         );
       });
 
+      csvStateItem.keyErrors?.forEach((keyError) => {
+        errors.push(
+          new MessageError(
+            SUBMISSION_MESSAGE_TYPE.DANGLING_PARENT_CHILD_KEY,
+            this.generateKeyErrorMessage(csvStateItem.fileName, keyError),
+            keyError.errorCode
+          )
+        );
+      });
+
+      
+
       if (!mediaState.isValid || csvState?.some((item) => !item.isValid)) {
         // At least 1 error exists, skip remaining steps
         parseError = true;
@@ -478,11 +490,36 @@ export class ValidationService extends DBService {
     return { csv_state, media_state };
   }
 
+  /**
+   * Generates error messages relating to CSV headers.
+   *
+   * @param fileName
+   * @param headerError
+   * @returns {string}
+   */
   generateHeaderErrorMessage(fileName: string, headerError: IHeaderError): string {
     return `${fileName} - ${headerError.message} - Column: ${headerError.col}`;
   }
 
+  /**
+   * Generates error messages relating to CSV rows.
+   *
+   * @param fileName
+   * @param rowError
+   * @returns {string}
+   */
   generateRowErrorMessage(fileName: string, rowError: IRowError): string {
     return `${fileName} - ${rowError.message} - Column: ${rowError.col} - Row: ${rowError.row}`;
+  }
+
+  /**
+   * Generates error messages relating to CSV workbook keys.
+   *
+   * @param fileName
+   * @param keyError
+   * @returns {string}
+   */
+  generateKeyErrorMessage(fileName: string, keyError: IKeyError): string {
+    return `${fileName} - ${keyError.message} - Rows: ${keyError.rows.join(', ')}`;
   }
 }

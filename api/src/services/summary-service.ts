@@ -11,7 +11,7 @@ import {
 } from '../repositories/summary-repository';
 import { getFileFromS3 } from '../utils/file-utils';
 import { getLogger } from '../utils/logger';
-import { ICsvState, IHeaderError, IRowError } from '../utils/media/csv/csv-file';
+import { ICsvState, IHeaderError, IKeyError, IRowError } from '../utils/media/csv/csv-file';
 import { IMediaState, MediaFile } from '../utils/media/media-file';
 import { parseUnknownMedia } from '../utils/media/media-utils';
 import { ValidationSchemaParser } from '../utils/media/validation/validation-schema-parser';
@@ -361,6 +361,16 @@ export class SummaryService extends DBService {
         );
       });
 
+      csvStateItem.keyErrors?.forEach((keyError) => {
+        errors.push(
+          new MessageError(
+            SUMMARY_SUBMISSION_MESSAGE_TYPE.DANGLING_PARENT_CHILD_KEY,
+            this.generateKeyErrorMessage(csvStateItem.fileName, keyError),
+            keyError.errorCode
+          )
+        );
+      });
+
       if (!mediaState.isValid || csvState?.some((item) => !item.isValid)) {
         // At least 1 error exists, skip remaining steps
         parseError = true;
@@ -412,4 +422,15 @@ export class SummaryService extends DBService {
   generateRowErrorMessage(fileName: string, rowError: IRowError): string {
     return `${fileName} - ${rowError.message} - Column: ${rowError.col} - Row: ${rowError.row}`;
   }
+
+  /**
+   * Generates error messages relating to CSV workbook keys.
+   *
+   * @param fileName
+   * @param keyError
+   * @returns {string}
+   */
+     generateKeyErrorMessage(fileName: string, keyError: IKeyError): string {
+      return `${fileName} - ${keyError.message} - Rows: ${keyError.rows.join(', ')}`;
+    }
 }

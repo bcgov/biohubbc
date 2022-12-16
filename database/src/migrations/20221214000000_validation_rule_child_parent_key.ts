@@ -10,6 +10,14 @@ const summaryMessageTypes = [
   }
 ];
 
+const submissionMessageTypes = [
+  {
+    name: 'Missing Child Key from Parent',
+    description: 'Child sheet key missing from corresponding parent sheet column',
+    class: 'Error'
+  }
+];
+
 /**
  * Add new summary submission message types.
  *
@@ -33,6 +41,23 @@ export async function up(knex: Knex): Promise<void> {
             summary_submission_message_class_id
           FROM
             summary_submission_message_class
+          WHERE
+            name = '${message.class}'
+        )
+      );
+    `);
+  }
+
+  for (const message of submissionMessageTypes) {
+    await knex.raw(`
+      INSERT INTO
+        ${DB_SCHEMA}.submission_message_type (name, record_effective_date, description, summary_submission_message_class_id)
+      VALUES (
+        '${message.name}', now(), '${message.description}', (
+          SELECT
+            submission_message_class_id
+          FROM
+            submission_message_class
           WHERE
             name = '${message.class}'
         )
