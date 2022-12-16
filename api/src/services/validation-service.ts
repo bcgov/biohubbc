@@ -122,6 +122,7 @@ export class ValidationService extends DBService {
   }
 
   async processFile(submissionId: number, surveyId: number) {
+    console.log("______________ PROCESS FILE IS STARTING ______________")
     try {
       // template preparation
       const submissionPrep = await this.templatePreparation(submissionId);
@@ -133,13 +134,13 @@ export class ValidationService extends DBService {
       await this.submissionRepository.insertSubmissionStatus(submissionId, SUBMISSION_STATUS_TYPE.TEMPLATE_VALIDATED);
 
       // template transformation
-      await this.templateTransformation(submissionId, submissionPrep.xlsx, submissionPrep.s3InputKey, surveyId);
+      // await this.templateTransformation(submissionId, submissionPrep.xlsx, submissionPrep.s3InputKey, surveyId);
 
       // insert template transformed status
-      await this.submissionRepository.insertSubmissionStatus(submissionId, SUBMISSION_STATUS_TYPE.TEMPLATE_TRANSFORMED);
+      // await this.submissionRepository.insertSubmissionStatus(submissionId, SUBMISSION_STATUS_TYPE.TEMPLATE_TRANSFORMED);
 
       // occurrence scraping
-      await this.templateScrapeAndUploadOccurrences(submissionId);
+      // await this.templateScrapeAndUploadOccurrences(submissionId);
     } catch (error) {
       if (error instanceof SubmissionError) {
         await this.errorService.insertSubmissionError(submissionId, error);
@@ -260,6 +261,9 @@ export class ValidationService extends DBService {
 
     const templateName = xlsxCsv.workbook.rawWorkbook.Custprops?.sims_name;
     const templateVersion = xlsxCsv.workbook.rawWorkbook.Custprops?.sims_version;
+
+    console.log(`Template name: ${templateName}`);
+    console.log(`Template version: ${templateVersion}`);
 
     if (!templateName || !templateVersion) {
       throw SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_TO_GET_TRANSFORM_SCHEMA);
