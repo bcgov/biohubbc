@@ -37,6 +37,10 @@ POST.apiDoc = {
     {
       in: 'path',
       name: 'projectId',
+      schema: {
+        type: 'integer',
+        minimum: 1
+      },
       required: true
     }
   ],

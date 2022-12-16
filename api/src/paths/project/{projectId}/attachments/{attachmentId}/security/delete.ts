@@ -35,7 +35,8 @@ POST.apiDoc = {
       in: 'path',
       name: 'projectId',
       schema: {
-        type: 'number'
+        type: 'integer',
+        minimum: 1
       },
       required: true
     },
@@ -43,7 +44,8 @@ POST.apiDoc = {
       in: 'path',
       name: 'attachmentId',
       schema: {
-        type: 'number'
+        type: 'integer',
+        minimum: 1
       },
       required: true
     }

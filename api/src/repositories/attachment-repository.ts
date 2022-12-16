@@ -1981,9 +1981,107 @@ export class AttachmentRepository extends BaseRepository {
 
     if (!response || !response.rowCount) {
       throw new ApiExecuteSQLError('Failed to update Survey Report Attachment metadata', [
-        'AttachmentRepository->getSurveyReportAttachmentS3Key',
+        'AttachmentRepository->updateSurveyReportAttachmentMetadata',
         'rows was null or undefined, expected rows != null'
       ]);
     }
+  }
+
+  async updateSurveyAttachment(
+    surveyId: number,
+    fileName: string,
+    fileType: string
+  ): Promise<{ id: number; revision_count: number }> {
+    const sqlStatement = SQL`
+      UPDATE
+        survey_attachment
+      SET
+        file_name = ${fileName},
+        file_type = ${fileType}
+      WHERE
+        file_name = ${fileName}
+      AND
+        survey_id = ${surveyId}
+      RETURNING
+        survey_attachment_id as id,
+        revision_count;
+    `;
+
+    const response = await this.connection.sql(sqlStatement);
+
+    if (!response || !response?.rows?.[0]) {
+      throw new ApiExecuteSQLError('Failed to update survey attachment data', [
+        'AttachmentRepository->updateSurveyAttachment',
+        'rows was null or undefined, expected rows != null'
+      ]);
+    }
+
+    return response.rows[0];
+  }
+
+  async insertSurveyAttachment(
+    fileName: string,
+    fileSize: number,
+    fileType: string,
+    surveyId: number,
+    key: string
+  ): Promise<{ id: number; revision_count: number }> {
+    const sqlStatement = SQL`
+    INSERT INTO survey_attachment (
+      survey_id,
+      file_name,
+      file_size,
+      file_type,
+      key
+    ) VALUES (
+      ${surveyId},
+      ${fileName},
+      ${fileSize},
+      ${fileType},
+      ${key}
+    )
+    RETURNING
+      survey_attachment_id as id,
+      revision_count;
+  `;
+
+    const response = await this.connection.sql(sqlStatement);
+
+    if (!response || !response?.rows?.[0]) {
+      throw new ApiExecuteSQLError('Failed to insert survey attachment data', [
+        'AttachmentRepository->insertSurveyAttachment',
+        'rows was null or undefined, expected rows != null'
+      ]);
+    }
+
+    return response.rows[0];
+  }
+
+  async getSurveyAttachmentByFileName(fileName: string, surveyId: number): Promise<QueryResult> {
+    const sqlStatement = SQL`
+      SELECT
+        survey_attachment_id as id,
+        file_name,
+        update_date,
+        create_date,
+        file_size
+      from
+        survey_attachment
+      where
+        survey_id = ${surveyId}
+      and
+        file_name = ${fileName};
+    `;
+
+    const response = await this.connection.sql(sqlStatement);
+
+    if (!response) {
+      throw new ApiExecuteSQLError('Failed to get survey attachment by filename', [
+        'AttachmentRepository->insertSurveyAttachment',
+        'rows was null or undefined, expected rows != null'
+      ]);
+    }
+
+    return response;
   }
 }

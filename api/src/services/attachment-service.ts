@@ -831,4 +831,54 @@ export class AttachmentService extends DBService {
   ): Promise<void> {
     return this.attachmentRepository.updateSurveyReportAttachmentMetadata(surveyId, attachmentId, metadata);
   }
+
+  async updateSurveyAttachment(
+    surveyId: number,
+    fileName: string,
+    fileType: string
+  ): Promise<{ id: number; revision_count: number }> {
+    return this.attachmentRepository.updateSurveyAttachment(surveyId, fileName, fileType);
+  }
+
+  async insertSurveyAttachment(
+    fileName: string,
+    fileSize: number,
+    fileType: string,
+    surveyId: number,
+    key: string
+  ): Promise<{ id: number; revision_count: number }> {
+    return this.attachmentRepository.insertSurveyAttachment(fileName, fileSize, fileType, surveyId, key);
+  }
+
+  async getSurveyAttachmentByFileName(fileName: string, surveyId: number): Promise<QueryResult> {
+    return this.attachmentRepository.getSurveyAttachmentByFileName(fileName, surveyId);
+  }
+
+  async upsertSurveyAttachment(
+    file: Express.Multer.File,
+    projectId: number,
+    surveyId: number,
+    attachmentType: string
+  ): Promise<{ id: number; revision_count: number; key: string }> {
+    const key = generateS3FileKey({
+      projectId: projectId,
+      surveyId: surveyId,
+      fileName: file.originalname,
+      folder: 'reports'
+    });
+
+    const getResponse = await this.getSurveyReportAttachmentByFileName(surveyId, file.originalname);
+
+    let attachmentResult: { id: number; revision_count: number };
+
+    if (getResponse && getResponse.rowCount > 0) {
+      // Existing attachment with matching name found, update it
+      attachmentResult = await this.updateSurveyAttachment(surveyId, file.originalname, attachmentType);
+    } else {
+      // No matching attachment found, insert new attachment
+      attachmentResult = await this.insertSurveyAttachment(file.originalname, file.size, attachmentType, surveyId, key);
+    }
+
+    return { ...attachmentResult, key };
+  }
 }

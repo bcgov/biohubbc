@@ -1,3 +1,4 @@
+import { QueryResult } from 'pg';
 import SQL, { SQLStatement } from 'sql-template-strings';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { PutFundingSource } from '../models/project-update';
@@ -157,5 +158,69 @@ export class ProjectRepository extends BaseRepository {
     }
 
     return result;
+  }
+
+  async deleteDraft(draftId: number): Promise<QueryResult> {
+    const sqlStatement = SQL`
+      DELETE from webform_draft
+      WHERE webform_draft_id = ${draftId};
+    `;
+
+    const response = await this.connection.sql(sqlStatement);
+
+    if (!response) {
+      throw new ApiExecuteSQLError('Failed to delete draft', [
+        'ProjectRepository->deleteDraft',
+        'response was null or undefined, expected response != null'
+      ]);
+    }
+
+    return response;
+  }
+
+  async getSingleDraft(draftId: number): Promise<{ id: number; name: string; data: any }> {
+    const sqlStatement: SQLStatement = SQL`
+      SELECT
+        webform_draft_id as id,
+        name,
+        data
+      FROM
+        webform_draft
+      WHERE
+        webform_draft_id = ${draftId};
+    `;
+
+    const response = await this.connection.sql<{ id: number; name: string; data: any }>(sqlStatement);
+
+    if (!response || !response?.rows?.[0]) {
+      throw new ApiExecuteSQLError('Failed to get draft', [
+        'ProjectRepository->getSingleDraft',
+        'response was null or undefined, expected response != null'
+      ]);
+    }
+
+    return response?.rows?.[0];
+  }
+
+  async deleteProjectParticipationRecord(projectParticipationId: number): Promise<any> {
+    const sqlStatement = SQL`
+    DELETE FROM
+      project_participation
+    WHERE
+      project_participation_id = ${projectParticipationId}
+    RETURNING
+      *;
+  `;
+
+    const response = await this.connection.sql(sqlStatement);
+
+    if (!response || !response.rowCount) {
+      throw new ApiExecuteSQLError('Failed to delete project participation record', [
+        'ProjectRepository->deleteProjectParticipationRecord',
+        'rows was null or undefined, expected rows != null'
+      ]);
+    }
+
+    return response.rows[0];
   }
 }
