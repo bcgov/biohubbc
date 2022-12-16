@@ -36,17 +36,32 @@ export const getParentChildKeyMatchValidator = (config?: ParentChildKeyMatchVali
       return csvWorkbook;
     }
 
+    const parentRowObjects = parentWorksheet.getRowObjects();
+    const childRowObjects = childWorksheet.getRowObjects();
+
+    // Filter column names to only check key violation on columns included in the child sheet
+    const filteredColumnNames = column_names
+      .filter((columnName: string) => Boolean(childRowObjects[0][columnName]));
+
     /**
      * Encodes the column values for a worksheet at a given row into a string, which is used for comparison with another worksheet
      * @param {object} rowObject A record reflecting a row in a tbale
      * @returns {*} {string} The row objected encoded as a string
      */
     const serializer = (rowObject: object): string => {
-      return column_names.map((columnName: string) => (rowObject[columnName] as string).trim()).join('|');
-    };
+      return filteredColumnNames
+        // Retrieve the value from each column
+        .map((columnName: string) => (rowObject[columnName] as string))
 
-    const parentRowObjects = parentWorksheet.getRowObjects();
-    const childRowObjects = childWorksheet.getRowObjects();
+        // Remove empty column values
+        .filter(Boolean)
+
+        // Escape possible column deliminator occurences from column value string
+        .map((columnValue: string) => columnValue.replace('|', '\\|').trim())
+
+        // Deliminiate column values
+        .join('|');
+    };
 
     const parentSerializedRows = parentRowObjects.map(serializer);
 
