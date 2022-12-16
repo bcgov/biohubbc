@@ -2,60 +2,57 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import { SYSTEM_ROLE } from '../../../constants/roles';
 import * as db from '../../../database/db';
 import { HTTPError } from '../../../errors/http-error';
-import { ProjectService } from '../../../services/project-service';
+import { SurveyObject } from '../../../models/survey-view';
+import { SurveyService } from '../../../services/survey-service';
 import { getMockDBConnection } from '../../../__mocks__/db';
-import * as delete_project from './delete';
+import * as surveys from './surveys';
 
 chai.use(sinonChai);
 
-describe('deleteProject', () => {
+describe('surveys', () => {
   afterEach(() => {
     sinon.restore();
   });
 
-  it('should throw an error when projectId is missing', async () => {
-    const dbConnectionObj = getMockDBConnection();
-    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
-
-    const sampleReq = {
-      keycloak_token: {},
-      params: {
-        projectId: null
-      },
-      system_user: { role_names: [SYSTEM_ROLE.SYSTEM_ADMIN] }
-    } as any;
-
+  it('should throw a 400 error when projectId is missing in Path', async () => {
     try {
-      const result = delete_project.deleteProject();
+      const sampleReq = {
+        keycloak_token: {},
+        body: {},
+        params: {
+          projectId: null
+        }
+      } as any;
+
+      const result = surveys.getSurveyList();
 
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
       expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal('Missing required path param: `projectId`');
+      expect((actualError as HTTPError).message).to.equal('Missing required path param `projectId`');
     }
   });
 
-  it('should throw an error if failure occurs', async () => {
+  it('should throw an error when a failure occurs', async () => {
     const dbConnectionObj = getMockDBConnection();
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
     const expectedError = new Error('cannot process request');
-    sinon.stub(ProjectService.prototype, 'deleteProject').rejects(expectedError);
+    sinon.stub(SurveyService.prototype, 'getSurveyIdsByProjectId').rejects(expectedError);
 
     const sampleReq = {
       keycloak_token: {},
+      body: {},
       params: {
         projectId: 1
-      },
-      system_user: { role_names: [SYSTEM_ROLE.SYSTEM_ADMIN] }
+      }
     } as any;
 
     try {
-      const result = delete_project.deleteProject();
+      const result = surveys.getSurveyList();
 
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
@@ -68,17 +65,23 @@ describe('deleteProject', () => {
     const dbConnectionObj = getMockDBConnection();
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-    const deleteProjectStub = sinon.stub(ProjectService.prototype, 'deleteProject').resolves(true);
+    const getSurveyIdsByProjectIdStub = sinon
+      .stub(SurveyService.prototype, 'getSurveyIdsByProjectId')
+      .resolves([{ id: 1 }]);
+
+    const getSurveysByIdsStub = sinon
+      .stub(SurveyService.prototype, 'getSurveysByIds')
+      .resolves([({ survey_details: { id: 1 } } as unknown) as SurveyObject]);
 
     const sampleReq = {
       keycloak_token: {},
+      body: {},
       params: {
         projectId: 1
-      },
-      system_user: { role_names: [SYSTEM_ROLE.SYSTEM_ADMIN] }
+      }
     } as any;
 
-    const expectedResponse = true;
+    const expectedResponse = [{ survey_details: { id: 1 } }];
 
     let actualResult: any = null;
     const sampleRes = {
@@ -91,11 +94,12 @@ describe('deleteProject', () => {
       }
     };
 
-    const result = delete_project.deleteProject();
+    const result = surveys.getSurveyList();
 
     await result(sampleReq, (sampleRes as unknown) as any, (null as unknown) as any);
 
     expect(actualResult).to.eql(expectedResponse);
-    expect(deleteProjectStub).to.be.calledOnce;
+    expect(getSurveyIdsByProjectIdStub).to.be.calledOnce;
+    expect(getSurveysByIdsStub).to.be.calledOnce;
   });
 });

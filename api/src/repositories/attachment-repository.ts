@@ -1,5 +1,7 @@
+import { QueryResult } from 'pg';
 import SQL from 'sql-template-strings';
 import { ApiExecuteSQLError } from '../errors/api-error';
+import { PostReportAttachmentMetadata, PutReportAttachmentMetadata } from '../models/project-survey-attachments';
 import { getLogger } from '../utils/logger';
 import { BaseRepository } from './base-repository';
 
@@ -404,5 +406,251 @@ export class AttachmentRepository extends BaseRepository {
     }
 
     return response.rows;
+  }
+
+  async insertProjectAttachment(
+    file: Express.Multer.File,
+    projectId: number,
+    attachmentType: string,
+    key: string
+  ): Promise<{ id: number; revision_count: number }> {
+    const sqlStatement = SQL`
+    INSERT INTO project_attachment (
+      project_id,
+      file_name,
+      file_size,
+      file_type,
+      key
+    ) VALUES (
+      ${projectId},
+      ${file.originalname},
+      ${file.size},
+      ${attachmentType},
+      ${key}
+    )
+    RETURNING
+      project_attachment_id as id,
+      revision_count;
+  `;
+
+    const response = await this.connection.sql(sqlStatement);
+
+    if (!response || !response?.rows || !response?.rows[0]) {
+      throw new ApiExecuteSQLError('Failed to insert project attachment data', [
+        'AttachmentRepository->insertProjectAttachment',
+        'rows was null or undefined, expected rows != null'
+      ]);
+    }
+
+    return response.rows[0];
+  }
+
+  async updateProjectAttachment(
+    fileName: string,
+    projectId: number,
+    attachmentType: string
+  ): Promise<{ id: number; revision_count: number }> {
+    const sqlStatement = SQL`
+    UPDATE
+      project_attachment
+    SET
+      file_name = ${fileName},
+      file_type = ${attachmentType}
+    WHERE
+      file_name = ${fileName}
+    AND
+      project_id = ${projectId}
+    RETURNING
+      project_attachment_id as id,
+      revision_count;
+  `;
+
+    const response = await this.connection.sql(sqlStatement);
+
+    if (!response || !response?.rows || !response?.rows[0]) {
+      throw new ApiExecuteSQLError('Failed to insert project attachment data', [
+        'AttachmentRepository->updateProjectAttachment',
+        'rows was null or undefined, expected rows != null'
+      ]);
+    }
+
+    return response.rows[0];
+  }
+
+  async getProjectAttachmentByFileName(projectId: number, fileName: string): Promise<QueryResult> {
+    const sqlStatement = SQL`
+    SELECT
+      project_attachment_id as id,
+      file_name,
+      update_date,
+      create_date,
+      file_size
+    from
+      project_attachment
+    where
+      project_id = ${projectId}
+    and
+      file_name = ${fileName};
+  `;
+
+    const response = await this.connection.sql(sqlStatement);
+
+    if (!response) {
+      throw new ApiExecuteSQLError('Failed to get project attachment by filename', [
+        'AttachmentRepository->getProjectAttachmentByFileName',
+        'rows was null or undefined, expected rows != null'
+      ]);
+    }
+
+    return response;
+  }
+
+  async insertProjectReportAttachment(
+    fileName: string,
+    fileSize: number,
+    projectId: number,
+    attachmentMeta: PostReportAttachmentMetadata,
+    key: string
+  ): Promise<{ id: number; revision_count: number }> {
+    const sqlStatement = SQL`
+    INSERT INTO project_report_attachment (
+      project_id,
+      file_name,
+      title,
+      year,
+      description,
+      file_size,
+      key
+    ) VALUES (
+      ${projectId},
+      ${fileName},
+      ${attachmentMeta.title},
+      ${attachmentMeta.year_published},
+      ${attachmentMeta.description},
+      ${fileSize},
+      ${key}
+    )
+    RETURNING
+      project_report_attachment_id as id,
+      revision_count;
+  `;
+
+    const response = await this.connection.sql(sqlStatement);
+
+    if (!response || !response?.rows || !response?.rows[0]) {
+      throw new ApiExecuteSQLError('Failed to insert project attachment data', [
+        'AttachmentRepository->insertProjectReportAttachment',
+        'rows was null or undefined, expected rows != null'
+      ]);
+    }
+
+    return response.rows[0];
+  }
+
+  async updateProjectReportAttachment(
+    fileName: string,
+    projectId: number,
+    attachmentMeta: PutReportAttachmentMetadata
+  ): Promise<{ id: number; revision_count: number }> {
+    const sqlStatement = SQL`
+    UPDATE
+      project_report_attachment
+    SET
+      file_name = ${fileName},
+      title = ${attachmentMeta.title},
+      year = ${attachmentMeta.year_published},
+      description = ${attachmentMeta.description}
+    WHERE
+      file_name = ${fileName}
+    AND
+      project_id = ${projectId}
+    RETURNING
+      project_report_attachment_id as id,
+      revision_count;
+  `;
+
+    const response = await this.connection.sql(sqlStatement);
+
+    if (!response || !response?.rows || !response?.rows[0]) {
+      throw new ApiExecuteSQLError('Failed to update project attachment data', [
+        'AttachmentRepository->updateProjectReportAttachment',
+        'rows was null or undefined, expected rows != null'
+      ]);
+    }
+
+    return response.rows[0];
+  }
+
+  async deleteProjectReportAttachmentAuthors(attachmentId: number): Promise<QueryResult> {
+    const sqlStatement = SQL`
+    DELETE
+      FROM project_report_author
+    WHERE
+      project_report_attachment_id = ${attachmentId};
+  `;
+
+    const response = await this.connection.sql(sqlStatement);
+
+    if (!response) {
+      throw new ApiExecuteSQLError('Failed to delete attachment report authors records', [
+        'AttachmentRepository->deleteProjectReportAttachmentAuthors',
+        'rows was null or undefined, expected rows != null'
+      ]);
+    }
+
+    return response;
+  }
+
+  async insertProjectReportAttachmentAuthor(
+    attachmentId: number,
+    author: { first_name: string; last_name: string }
+  ): Promise<void> {
+    const sqlStatement = SQL`
+    INSERT INTO project_report_author (
+      project_report_attachment_id,
+      first_name,
+      last_name
+    ) VALUES (
+      ${attachmentId},
+      ${author.first_name},
+      ${author.last_name}
+    );
+  `;
+    const response = await this.connection.sql(sqlStatement);
+
+    if (!response || !response?.rows || !response?.rows[0]) {
+      throw new ApiExecuteSQLError('Failed to insert attachment report author record', [
+        'AttachmentRepository->insertProjectReportAttachmentAuthor',
+        'rows was null or undefined, expected rows != null'
+      ]);
+    }
+  }
+
+  async getProjectReportAttachmentByFileName(projectId: number, fileName: string): Promise<QueryResult> {
+    const sqlStatement = SQL`
+      SELECT
+        project_report_attachment_id as id,
+        file_name,
+        update_date,
+        create_date,
+        file_size
+      from
+        project_report_attachment
+      where
+        project_id = ${projectId}
+      and
+        file_name = ${fileName};
+    `;
+
+    const response = await this.connection.sql(sqlStatement);
+
+    if (!response) {
+      throw new ApiExecuteSQLError('Failed to get Project Report Attachment by filename', [
+        'AttachmentRepository->getProjectReportAttachmentByFileName',
+        'rows was null or undefined, expected rows != null'
+      ]);
+    }
+
+    return response;
   }
 }

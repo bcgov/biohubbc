@@ -4,11 +4,14 @@ import { ATTACHMENT_TYPE } from '../../../../../../constants/attachments';
 import { PROJECT_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../../../database/db';
 import { HTTP400 } from '../../../../../../errors/http-error';
-import { PutReportAttachmentMetadata } from '../../../../../../models/project-survey-attachments';
+import {
+  IReportAttachmentAuthor,
+  PutReportAttachmentMetadata
+} from '../../../../../../models/project-survey-attachments';
 import { queries } from '../../../../../../queries/queries';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
+import { AttachmentService } from '../../../../../../services/attachment-service';
 import { getLogger } from '../../../../../../utils/logger';
-import { deleteProjectReportAttachmentAuthors, insertProjectReportAttachmentAuthor } from '../../report/upload';
 
 const defaultLog = getLogger('/api/project/{projectId}/attachments/{attachmentId}/metadata/update');
 
@@ -164,15 +167,17 @@ export function updateProjectAttachmentMetadata(): RequestHandler {
           connection
         );
 
+        const attachmentService = new AttachmentService(connection);
+
         // Delete any existing attachment author records
-        await deleteProjectReportAttachmentAuthors(Number(req.params.attachmentId), connection);
+        await attachmentService.deleteProjectReportAttachmentAuthors(Number(req.params.attachmentId));
 
         const promises = [];
 
         // Insert any new attachment author records
         promises.push(
-          metadata.authors.map((author) =>
-            insertProjectReportAttachmentAuthor(Number(req.params.attachmentId), author, connection)
+          metadata.authors.map((author: IReportAttachmentAuthor) =>
+            attachmentService.insertProjectReportAttachmentAuthor(Number(req.params.attachmentId), author)
           )
         );
 

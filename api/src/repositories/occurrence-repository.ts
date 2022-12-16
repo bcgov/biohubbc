@@ -1,3 +1,4 @@
+import SQL from 'sql-template-strings';
 import { SUBMISSION_MESSAGE_TYPE } from '../constants/status';
 import { HTTP400 } from '../errors/http-error';
 import { PostOccurrence } from '../models/occurrence-create';
@@ -19,7 +20,16 @@ export interface IOccurrenceSubmission {
 export class OccurrenceRepository extends BaseRepository {
   async updateDWCSourceForOccurrenceSubmission(submissionId: number, jsonData: string): Promise<number> {
     try {
-      const sql = queries.dwc.updateDWCSourceForOccurrenceSubmissionSQL(submissionId, jsonData);
+      const sql = SQL`
+      UPDATE
+        occurrence_submission
+      SET
+        darwin_core_source = ${jsonData}
+      WHERE
+        occurrence_submission_id = ${submissionId}
+      RETURNING
+        occurrence_submission_id;
+    `;
       const response = await this.connection.sql<{ occurrence_submission_id: number }>(sql);
 
       if (!response.rowCount) {

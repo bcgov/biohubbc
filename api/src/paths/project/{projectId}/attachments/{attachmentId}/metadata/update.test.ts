@@ -6,6 +6,7 @@ import SQL from 'sql-template-strings';
 import * as db from '../../../../../../database/db';
 import { HTTPError } from '../../../../../../errors/http-error';
 import project_queries from '../../../../../../queries/project';
+import { AttachmentService } from '../../../../../../services/attachment-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../__mocks__/db';
 import * as update_project_metadata from './update';
 
@@ -170,6 +171,9 @@ describe('updates metadata for a project report', () => {
       ...dbConnectionObj,
       query: mockQuery
     });
+
+    sinon.stub(AttachmentService.prototype, 'deleteProjectReportAttachmentAuthors').resolves();
+    sinon.stub(AttachmentService.prototype, 'insertProjectReportAttachmentAuthor').resolves();
 
     const requestHandler = update_project_metadata.updateProjectAttachmentMetadata();
 

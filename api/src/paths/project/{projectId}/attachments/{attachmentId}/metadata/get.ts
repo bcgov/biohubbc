@@ -60,7 +60,7 @@ GET.apiDoc = {
           schema: {
             title: 'metadata get response object',
             type: 'object',
-            required: ['metadata', 'authors', 'security_reasons'],
+            required: ['metadata', 'authors'],
             properties: {
               metadata: {
                 description: 'Report metadata general information object',
@@ -108,24 +108,6 @@ GET.apiDoc = {
                     }
                   }
                 }
-              },
-              security_reasons: {
-                description: 'Report metadata security object',
-                type: 'array',
-                items: {
-                  type: 'object',
-                  properties: {
-                    project_report_author_id: {
-                      type: 'number'
-                    },
-                    project_report_attachment_id: {
-                      type: 'number'
-                    },
-                    persecution_security_id: {
-                      type: 'number'
-                    }
-                  }
-                }
               }
             }
           }
@@ -162,7 +144,6 @@ export function getProjectReportDetails(): RequestHandler {
     if (!req.params.projectId) {
       throw new HTTP400('Missing required path param `projectId`');
     }
-
     if (!req.params.attachmentId) {
       throw new HTTP400('Missing required path param `attachmentId`');
     }
