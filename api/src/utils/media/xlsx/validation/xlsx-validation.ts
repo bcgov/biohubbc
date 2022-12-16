@@ -40,8 +40,7 @@ export const getParentChildKeyMatchValidator = (config?: ParentChildKeyMatchVali
     const childRowObjects = childWorksheet.getRowObjects();
 
     // Filter column names to only check key violation on columns included in the child sheet
-    const filteredColumnNames = column_names
-      .filter((columnName: string) => Boolean(childRowObjects[0][columnName]));
+    const filteredColumnNames = column_names.filter((columnName: string) => Boolean(childRowObjects[0][columnName]));
 
     /**
      * Encodes the column values for a worksheet at a given row into a string, which is used for comparison with another worksheet
@@ -49,18 +48,20 @@ export const getParentChildKeyMatchValidator = (config?: ParentChildKeyMatchVali
      * @returns {*} {string} The row objected encoded as a string
      */
     const serializer = (rowObject: object): string => {
-      return filteredColumnNames
-        // Retrieve the value from each column
-        .map((columnName: string) => (rowObject[columnName] as string))
+      return (
+        filteredColumnNames
+          // Retrieve the value from each column
+          .map((columnName: string) => rowObject[columnName] as string)
 
-        // Remove empty column values
-        .filter(Boolean)
+          // Remove empty column values
+          .filter(Boolean)
 
-        // Escape possible column deliminator occurences from column value string
-        .map((columnValue: string) => columnValue.replace('|', '\\|').trim())
+          // Escape possible column deliminator occurences from column value string
+          .map((columnValue: string) => columnValue.replace('|', '\\|').trim())
 
-        // Deliminiate column values
-        .join('|');
+          // Deliminiate column values
+          .join('|')
+      );
     };
 
     const parentSerializedRows = parentRowObjects.map(serializer);

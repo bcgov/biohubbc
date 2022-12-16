@@ -1,7 +1,6 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
 import XLSX from 'xlsx';
-// import { SUBMISSION_MESSAGE_TYPE } from '../../../../constants/status';
 import { CSVWorkBook } from '../../csv/csv-file';
 import { getParentChildKeyMatchValidator } from './xlsx-validation';
 
@@ -14,7 +13,7 @@ const makeMockWorkbook = () => {
       { column1: 'column1-row1', column2: 'column2-row1', column4: 'A', column5: 'A' },
       { column1: 'column1-row2', column2: 'column2-row2', column4: 'B', column5: 'B' },
       { column1: 'column1-row3', column2: 'column2-row3', column4: 'C', column5: 'C' },
-      { column1: 'column1-row4', column2: 'column2-row4', column4: 'D', column5: 'D' },
+      { column1: 'column1-row4', column2: 'column2-row4', column4: 'D', column5: 'D' }
     ]),
     'parent_sheet'
   );
@@ -25,7 +24,7 @@ const makeMockWorkbook = () => {
     XLSX.utils.json_to_sheet([
       { column1: 'column1-row1', column2: 'column2-row1', column3: 'column3-row1', column4: 'A' },
       { column1: 'column1-row2', column2: 'column2-row2', column3: 'column3-row2', column4: 'D' },
-      { column1: 'column1-row3', column2: 'column2-row3', column3: 'column3-row3', column4: 'E' },
+      { column1: 'column1-row3', column2: 'column2-row3', column3: 'column3-row3', column4: 'E' }
     ]),
     'child_sheet'
   );
@@ -40,7 +39,7 @@ describe.only('getParentChildKeyMatchValidator', async () => {
     validator(mockWorkbook);
 
     const { child_sheet } = mockWorkbook.worksheets;
-    
+
     expect(child_sheet.csvValidation.keyErrors).to.eql([]);
   });
 
@@ -55,8 +54,8 @@ describe.only('getParentChildKeyMatchValidator', async () => {
     const mockWorkbook = makeMockWorkbook();
     validator(mockWorkbook);
 
-    const {  child_sheet } = mockWorkbook.worksheets;
-    
+    const { child_sheet } = mockWorkbook.worksheets;
+
     expect(child_sheet.csvValidation.keyErrors).to.eql([]);
   });
 
@@ -71,8 +70,8 @@ describe.only('getParentChildKeyMatchValidator', async () => {
     const mockWorkbook = makeMockWorkbook();
     validator(mockWorkbook);
 
-    const {  child_sheet } = mockWorkbook.worksheets;
-    
+    const { child_sheet } = mockWorkbook.worksheets;
+
     expect(child_sheet.csvValidation.keyErrors).to.eql([]);
   });
 
@@ -88,7 +87,7 @@ describe.only('getParentChildKeyMatchValidator', async () => {
     validator(mockWorkbook);
 
     const { child_sheet } = mockWorkbook.worksheets;
-    
+
     expect(child_sheet.csvValidation.keyErrors).to.eql([]);
   });
 
@@ -104,7 +103,7 @@ describe.only('getParentChildKeyMatchValidator', async () => {
     validator(mockWorkbook);
 
     const { child_sheet } = mockWorkbook.worksheets;
-    
+
     expect(child_sheet.csvValidation.keyErrors).to.eql([]);
   });
 
@@ -120,7 +119,7 @@ describe.only('getParentChildKeyMatchValidator', async () => {
     validator(mockWorkbook);
 
     const { child_sheet } = mockWorkbook.worksheets;
-    
+
     expect(child_sheet.csvValidation.keyErrors).to.eql([]);
   });
 
@@ -136,7 +135,7 @@ describe.only('getParentChildKeyMatchValidator', async () => {
     validator(mockWorkbook);
 
     const { child_sheet } = mockWorkbook.worksheets;
-    
+
     expect(child_sheet.csvValidation.keyErrors).to.eql([]);
   });
 
@@ -152,29 +151,17 @@ describe.only('getParentChildKeyMatchValidator', async () => {
     validator(mockWorkbook);
 
     const { child_sheet } = mockWorkbook.worksheets;
-    
+
     expect(child_sheet.csvValidation.keyErrors).to.eql([]);
   });
 
   it('should not add errors if parent column happens to contain serialized child column values', async () => {
     const workbook = XLSX.utils.book_new();
     // First sheet
-    XLSX.utils.book_append_sheet(
-      workbook,
-      XLSX.utils.json_to_sheet([
-        { column1: 'A|B', column2: '' }
-      ]),
-      'parent_sheet'
-    );
+    XLSX.utils.book_append_sheet(workbook, XLSX.utils.json_to_sheet([{ column1: 'A|B', column2: '' }]), 'parent_sheet');
 
     // Second sheet
-    XLSX.utils.book_append_sheet(
-      workbook,
-      XLSX.utils.json_to_sheet([
-        { column1: 'A', column2: 'B|' }
-      ]),
-      'child_sheet'
-    );
+    XLSX.utils.book_append_sheet(workbook, XLSX.utils.json_to_sheet([{ column1: 'A', column2: 'B|' }]), 'child_sheet');
 
     const mockWorkbook = new CSVWorkBook(workbook);
 
@@ -187,11 +174,11 @@ describe.only('getParentChildKeyMatchValidator', async () => {
     });
     validator(mockWorkbook);
 
-    const { child_sheet } = mockWorkbook.worksheets;    
+    const { child_sheet } = mockWorkbook.worksheets;
     expect(child_sheet.csvValidation.keyErrors).to.eql([
       {
-        errorCode: "Missing Child Key from Parent",
-        colNames: ["column1", "column2"],
+        errorCode: 'Missing Child Key from Parent',
+        colNames: ['column1', 'column2'],
         message: 'child_sheet[column1, column2] must have matching value in parent_sheet[column1, column2].',
         rows: [2]
       }
@@ -213,7 +200,7 @@ describe.only('getParentChildKeyMatchValidator', async () => {
     expect(child_sheet.csvValidation.keyErrors).to.eql([
       {
         colNames: ['column2', 'column3'],
-        errorCode: "Missing Child Key from Parent",
+        errorCode: 'Missing Child Key from Parent',
         message: 'child_sheet[column2, column3] must have matching value in parent_sheet[column2, column3].',
         rows: [2, 3, 4]
       }
@@ -251,12 +238,12 @@ describe.only('getParentChildKeyMatchValidator', async () => {
     expect(child_sheet.csvValidation.keyErrors).to.eql([
       {
         colNames: ['column3'],
-        errorCode: "Missing Child Key from Parent",
+        errorCode: 'Missing Child Key from Parent',
         message: 'child_sheet[column3] must have matching value in parent_sheet[column3].',
         rows: [2, 3, 4]
       }
     ]);
-  })
+  });
 
   it('should only include rows containing a dangling key in the child sheet in key errors', async () => {
     const validator = getParentChildKeyMatchValidator({
@@ -273,10 +260,10 @@ describe.only('getParentChildKeyMatchValidator', async () => {
     expect(child_sheet.csvValidation.keyErrors).to.eql([
       {
         colNames: ['column4'],
-        errorCode: "Missing Child Key from Parent",
+        errorCode: 'Missing Child Key from Parent',
         message: 'child_sheet[column4] must have matching value in parent_sheet[column4].',
         rows: [4]
       }
     ]);
-  })
+  });
 });
