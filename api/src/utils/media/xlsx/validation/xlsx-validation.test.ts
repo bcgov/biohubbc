@@ -32,7 +32,7 @@ const makeMockWorkbook = () => {
   return new CSVWorkBook(mockWorkbook);
 };
 
-describe.only('getParentChildKeyMatchValidator', async () => {
+describe('getParentChildKeyMatchValidator', async () => {
   it('should not add errors when config is not provided', async () => {
     const validator = getParentChildKeyMatchValidator();
     const mockWorkbook = makeMockWorkbook();
