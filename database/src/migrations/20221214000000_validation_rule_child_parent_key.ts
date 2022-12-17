@@ -51,7 +51,7 @@ export async function up(knex: Knex): Promise<void> {
   for (const message of submissionMessageTypes) {
     await knex.raw(`
       INSERT INTO
-        ${DB_SCHEMA}.submission_message_type (name, record_effective_date, description, summary_submission_message_class_id)
+        ${DB_SCHEMA}.submission_message_type (name, record_effective_date, description, submission_message_class_id)
       VALUES (
         '${message.name}', now(), '${message.description}', (
           SELECT
