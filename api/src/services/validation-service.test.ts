@@ -397,10 +397,7 @@ describe('ValidationService', () => {
       } catch (error) {
         if (error instanceof SubmissionError) {
           expect(error.status).to.be.eql(SUBMISSION_STATUS_TYPE.REJECTED);
-
-          error.submissionMessages.forEach((e) => {
-            expect(e.type).to.be.eql(SUBMISSION_MESSAGE_TYPE.INVALID_VALUE);
-          });
+          expect(error.submissionMessages.length).to.be.equal(3);
         }
       }
     });

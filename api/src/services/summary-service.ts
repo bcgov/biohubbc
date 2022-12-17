@@ -430,7 +430,7 @@ export class SummaryService extends DBService {
    * @param keyError
    * @returns {string}
    */
-     generateKeyErrorMessage(fileName: string, keyError: IKeyError): string {
-      return `${fileName} - ${keyError.message} - Rows: ${keyError.rows.join(', ')}`;
-    }
+  generateKeyErrorMessage(fileName: string, keyError: IKeyError): string {
+    return `${fileName} - ${keyError.message} - Rows: ${keyError.rows.join(', ')}`;
+  }
 }

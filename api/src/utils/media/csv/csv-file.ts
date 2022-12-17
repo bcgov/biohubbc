@@ -277,9 +277,6 @@ export interface IKeyError {
   rows: number[];
 }
 
-/**
- * @TODO need to add handling for keyErrors
- */
 export interface ICsvState extends IMediaState {
   headerErrors: IHeaderError[];
   rowErrors: IRowError[];

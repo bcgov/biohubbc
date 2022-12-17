@@ -382,8 +382,6 @@ export class ValidationService extends DBService {
         );
       });
 
-      
-
       if (!mediaState.isValid || csvState?.some((item) => !item.isValid)) {
         // At least 1 error exists, skip remaining steps
         parseError = true;
