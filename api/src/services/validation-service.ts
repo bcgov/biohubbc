@@ -122,7 +122,7 @@ export class ValidationService extends DBService {
   }
 
   async processFile(submissionId: number, surveyId: number) {
-    console.log("______________ PROCESS FILE IS STARTING ______________")
+    console.log('______________ PROCESS FILE IS STARTING ______________');
     try {
       // template preparation
       const submissionPrep = await this.templatePreparation(submissionId);

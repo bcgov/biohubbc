@@ -8,32 +8,32 @@ const basicNumericValidator = () => {
         description: ''
       }
     }
-  ]
-}
+  ];
+};
 
 const basicDateValidator = () => {
   return [
     {
       column_format_validator: {
-        reg_exp: '^\d{4}\-(0?[1-9]|1[012])\-(0?[1-9]|[12][0-9]|3[01])$',
+        reg_exp: '^d{4}-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01])$',
         reg_exp_flags: 'g',
         expected_format: 'Dates need to be formatted in YYYY-MM-DD. For example: 2020-09-15.'
       }
     }
-  ]
-}
+  ];
+};
 
 const basicRequiredValidator = () => {
   return [
     {
       column_format_validator: {
-        reg_exp: '^(?!\s*$).+',
+        reg_exp: '^(?!s*$).+',
         reg_exp_flags: 'g',
         expected_format: 'This '
       }
     }
-  ]
-}
+  ];
+};
 
 const starterObject = {
   name: '',
@@ -48,12 +48,12 @@ const starterObject = {
           name: '',
           description: '',
           validations: []
-        },
+        }
       ]
     }
   ],
   validations: []
-}
+};
 
 // Moose Aerial SRB Recruitment Composition Survey
 const mooseArialSRBRecruitmentCompositionSurvey = {
@@ -69,20 +69,12 @@ const mooseArialSRBRecruitmentCompositionSurvey = {
         },
         {
           file_required_columns_validator: {
-            required_columns: [
-              'Study Area',
-              'Block ID/SU ID',
-              'Stratum'
-            ]
+            required_columns: ['Study Area', 'Block ID/SU ID', 'Stratum']
           }
         },
         {
           file_column_unique_validator: {
-            column_names: [
-              'Study Area',
-              'Block ID/SU ID',
-              'Stratum'
-            ]
+            column_names: ['Study Area', 'Block ID/SU ID', 'Stratum']
           }
         }
       ],
@@ -101,7 +93,7 @@ const mooseArialSRBRecruitmentCompositionSurvey = {
           name: 'Stratum',
           description: '',
           validations: []
-        },
+        }
       ]
     },
     {
@@ -113,22 +105,12 @@ const mooseArialSRBRecruitmentCompositionSurvey = {
         },
         {
           file_required_columns_validator: {
-            required_columns: [
-              'Study Area',
-              'Block ID/SU ID',
-              'Stratum',
-              'Date',
-              'Species'
-            ]
+            required_columns: ['Study Area', 'Block ID/SU ID', 'Stratum', 'Date', 'Species']
           }
         },
         {
           file_column_unique_validator: {
-            column_names: [
-              'Study Area',
-              'Block ID/SU ID',
-              'Stratum'
-            ]
+            column_names: ['Study Area', 'Block ID/SU ID', 'Stratum']
           }
         }
       ],
@@ -184,7 +166,7 @@ const mooseArialSRBRecruitmentCompositionSurvey = {
           validations: [
             {
               column_format_validator: {
-                reg_exp: '^\d{4}\-(0?[1-9]|1[012])\-(0?[1-9]|[12][0-9]|3[01])$',
+                reg_exp: '^d{4}-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01])$',
                 reg_exp_flags: 'g',
                 expected_format: 'Dates need to be formatted in YYYY-MM-DD. For example: 2020-09-15.'
               }
@@ -315,7 +297,7 @@ const mooseArialSRBRecruitmentCompositionSurvey = {
           name: 'Snow Cover (%)',
           description: '',
           validations: []
-        },
+        }
       ]
     },
     {
@@ -333,7 +315,7 @@ const mooseArialSRBRecruitmentCompositionSurvey = {
           validations: [
             {
               column_format_validator: {
-                reg_exp: '^\d{4}\-(0?[1-9]|1[012])\-(0?[1-9]|[12][0-9]|3[01])$',
+                reg_exp: '^d{4}-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01])$',
                 reg_exp_flags: 'g',
                 expected_format: 'Dates need to be formatted in YYYY-MM-DD. For example: 2020-09-15.'
               }
@@ -354,7 +336,7 @@ const mooseArialSRBRecruitmentCompositionSurvey = {
           name: 'Telemetry Device ID',
           description: '',
           validations: []
-        },
+        }
       ]
     },
     {
@@ -377,7 +359,7 @@ const mooseArialSRBRecruitmentCompositionSurvey = {
           validations: [
             {
               column_format_validator: {
-                reg_exp: '^\d{4}\-(0?[1-9]|1[012])\-(0?[1-9]|[12][0-9]|3[01])$',
+                reg_exp: '^d{4}-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01])$',
                 reg_exp_flags: 'g',
                 expected_format: 'Dates need to be formatted in YYYY-MM-DD. For example: 2020-09-15.'
               }
@@ -562,86 +544,86 @@ const mooseArialGeneralRecruitmentCompositionSurvey = {
           description: '',
           validations: []
         },
-        { 
-          name: 'Pilot', 
-          description: '', 
+        {
+          name: 'Pilot',
+          description: '',
           validations: []
         },
-        { 
-          name: 'Navigator', 
-          description: '', 
+        {
+          name: 'Navigator',
+          description: '',
           validations: []
         },
-        { 
-          name: 'Rear Left Observer', 
-          description: '', 
+        {
+          name: 'Rear Left Observer',
+          description: '',
           validations: []
         },
-        { 
-          name: 'Rear Right Observer', 
-          description: '', 
+        {
+          name: 'Rear Right Observer',
+          description: '',
           validations: []
         },
-        { 
-          name: 'Temperature', 
-          description: '', 
+        {
+          name: 'Temperature',
+          description: '',
           validations: []
         },
-        { 
-          name: 'Visibility', 
-          description: '', 
+        {
+          name: 'Visibility',
+          description: '',
           validations: []
         },
-        { 
-          name: 'Cloud Cover', 
-          description: '', 
+        {
+          name: 'Cloud Cover',
+          description: '',
           validations: []
         },
-        { 
-          name: 'Wind Speed', 
-          description: '', 
+        {
+          name: 'Wind Speed',
+          description: '',
           validations: []
         },
-        { 
-          name: 'Precipitation', 
-          description: '', 
+        {
+          name: 'Precipitation',
+          description: '',
           validations: []
         },
-        { 
-          name: 'Light', 
-          description: '', 
+        {
+          name: 'Light',
+          description: '',
           validations: []
         },
-        { 
-          name: 'Snow cover', 
-          description: '', 
+        {
+          name: 'Snow cover',
+          description: '',
           validations: []
         },
-        { 
-          name: 'Snow Depth ', 
-          description: '', 
+        {
+          name: 'Snow Depth ',
+          description: '',
           validations: []
         },
-        { 
-          name: 'Days Since Snowfall', 
-          description: '', 
+        {
+          name: 'Days Since Snowfall',
+          description: '',
           validations: []
         },
-        { 
-          name: 'Weather Description', 
-          description: '', 
+        {
+          name: 'Weather Description',
+          description: '',
           validations: []
         },
-        { 
-          name: 'Habitat Description', 
-          description: '', 
+        {
+          name: 'Habitat Description',
+          description: '',
           validations: []
         },
-        { 
-          name: 'Effort & Site Comments', 
-          description: '', 
+        {
+          name: 'Effort & Site Comments',
+          description: '',
           validations: []
-      },
+        }
       ]
     },
     {
@@ -653,21 +635,12 @@ const mooseArialGeneralRecruitmentCompositionSurvey = {
         },
         {
           file_required_columns_validator: {
-            required_columns: [
-              'Study Area',
-              'Block ID/SU ID',
-              'Date',
-              'Species'
-            ]
+            required_columns: ['Study Area', 'Block ID/SU ID', 'Date', 'Species']
           }
         },
         {
           file_column_unique_validator: {
-            column_names: [
-              'Study Area',
-              'Block ID/SU ID',
-              'Stratum'
-            ]
+            column_names: ['Study Area', 'Block ID/SU ID', 'Stratum']
           }
         }
       ],
@@ -723,7 +696,7 @@ const mooseArialGeneralRecruitmentCompositionSurvey = {
           validations: [
             {
               column_format_validator: {
-                reg_exp: '^\d{4}\-(0?[1-9]|1[012])\-(0?[1-9]|[12][0-9]|3[01])$',
+                reg_exp: '^d{4}-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01])$',
                 reg_exp_flags: 'g',
                 expected_format: 'Dates need to be formatted in YYYY-MM-DD. For example: 2020-09-15.'
               }
@@ -854,7 +827,7 @@ const mooseArialGeneralRecruitmentCompositionSurvey = {
           name: 'Snow Cover (%)',
           description: '',
           validations: []
-        },
+        }
       ]
     },
     {
@@ -926,7 +899,7 @@ const mooseArialGeneralRecruitmentCompositionSurvey = {
           name: 'Marked Animals Comments',
           description: '',
           validations: []
-        },
+        }
       ]
     },
     {
@@ -1068,19 +1041,14 @@ const mooseArialGeneralRecruitmentCompositionSurvey = {
           name: 'Incidental Observation Comments',
           description: '',
           validations: []
-        },
+        }
       ]
     }
   ],
   validations: [
     {
       submission_required_files_validator: {
-        required_files: [
-          'Effort & Site Conditions',
-          'Observations',
-          'Marked Animals',
-          'Incidental Observations'
-        ]
+        required_files: ['Effort & Site Conditions', 'Observations', 'Marked Animals', 'Incidental Observations']
       }
     }
   ]
@@ -1099,7 +1067,7 @@ const mooseArialTransectDistanceSamplingSurvey = {
           name: 'Date',
           description: '',
           validations: basicDateValidator()
-        },
+        }
       ]
     },
     {
@@ -1111,21 +1079,12 @@ const mooseArialTransectDistanceSamplingSurvey = {
         },
         {
           file_required_columns_validator: {
-            required_columns: [
-              'Study Area',
-              'Block ID/SU ID',
-              'Date',
-              'Species'
-            ]
+            required_columns: ['Study Area', 'Block ID/SU ID', 'Date', 'Species']
           }
         },
         {
           file_column_unique_validator: {
-            column_names: [
-              'Study Area',
-              'Block ID/SU ID',
-              'Stratum'
-            ]
+            column_names: ['Study Area', 'Block ID/SU ID', 'Stratum']
           }
         }
       ],
@@ -1314,7 +1273,7 @@ const mooseArialTransectDistanceSamplingSurvey = {
           name: 'Snow Cover (%)',
           description: '',
           validations: []
-        },
+        }
       ]
     },
     {
@@ -1386,7 +1345,7 @@ const mooseArialTransectDistanceSamplingSurvey = {
           name: 'Marked Animals Comments',
           description: '',
           validations: []
-        },
+        }
       ]
     },
     {
@@ -1528,30 +1487,25 @@ const mooseArialTransectDistanceSamplingSurvey = {
           name: 'Incidental Observation Comments',
           description: '',
           validations: []
-        },
+        }
       ]
     }
   ],
   validations: [
     {
       submission_required_files_validator: {
-        required_files: [
-          'Effort & Site Conditions',
-          'Observations',
-          'Marked Animals',
-          'Incidental Observations'
-        ]
+        required_files: ['Effort & Site Conditions', 'Observations', 'Marked Animals', 'Incidental Observations']
       }
     }
   ]
 };
 
-fs.writeFile('./template.json', JSON.stringify(mooseArialTransectDistanceSamplingSurvey), err => {
+fs.writeFile('./template.json', JSON.stringify(mooseArialTransectDistanceSamplingSurvey), (err) => {
   if (err) {
     console.error(err);
   }
   // file written successfully
 
-  console.log('All done!')
+  console.log('All done!');
 });
 // console.log(JSON.stringify(mooseArialSRBRecruitmentCompositionSurvey));
