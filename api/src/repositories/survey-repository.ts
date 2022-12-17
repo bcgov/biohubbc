@@ -14,7 +14,5 @@ export class SurveyRepository extends BaseRepository {
         'response was null or undefined, expected response != null'
       ]);
     }
-
-    return;
   }
 }

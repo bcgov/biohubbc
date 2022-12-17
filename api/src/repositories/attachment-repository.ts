@@ -1409,7 +1409,7 @@ export class AttachmentRepository extends BaseRepository {
     const response = await this.connection.sql(sqlStatement);
 
     if (!response || !response?.rows || !response?.rows[0]) {
-      throw new ApiExecuteSQLError('Failed to insert project attachment data', [
+      throw new ApiExecuteSQLError('Failed to update project attachment data', [
         'AttachmentRepository->updateProjectAttachment',
         'rows was null or undefined, expected rows != null'
       ]);
@@ -1479,7 +1479,7 @@ export class AttachmentRepository extends BaseRepository {
     const response = await this.connection.sql(sqlStatement);
 
     if (!response || !response?.rows || !response?.rows[0]) {
-      throw new ApiExecuteSQLError('Failed to insert project attachment data', [
+      throw new ApiExecuteSQLError('Failed to insert project report attachment data', [
         'AttachmentRepository->insertProjectReportAttachment',
         'rows was null or undefined, expected rows != null'
       ]);
@@ -1642,7 +1642,7 @@ export class AttachmentRepository extends BaseRepository {
     const response = await this.connection.sql(sqlStatement);
 
     if (!response || !response.rowCount) {
-      throw new ApiExecuteSQLError('Failed to update Project REport Attachment Metadata', [
+      throw new ApiExecuteSQLError('Failed to update Project Report Attachment Metadata', [
         'AttachmentRepository->updateProjectReportAttachmentMetadata',
         'rows was null or undefined, expected rows != null'
       ]);
