@@ -7,18 +7,16 @@ import Typography from '@material-ui/core/Typography';
 import { IEditReportMetaForm } from 'components/attachments/EditReportMetaForm';
 import { AttachmentsI18N } from 'constants/i18n';
 import { defaultErrorDialogProps, DialogContext } from 'contexts/dialogContext';
-import { IAttachmentType } from 'features/projects/view/ProjectAttachments';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { IGetProjectAttachment } from 'interfaces/useProjectApi.interface';
 import { IGetSurveyAttachment } from 'interfaces/useSurveyApi.interface';
-import { default as React, useContext, useState } from 'react';
+import { default as React, useContext } from 'react';
 import { getFormattedFileSize } from 'utils/Utils';
 import { AttachmentType } from '../../../../constants/attachments';
 import { IErrorDialogProps } from '../../ErrorDialog';
 import ReportAttachmentDetails from '../project/report/ReportAttachmentDetails';
-import SecurityDialog from '../SecurityDialog';
 
 export interface ISurveyReportAttachmentDialogProps {
   projectId: number;
@@ -39,28 +37,11 @@ export interface ISurveyReportAttachmentDialogProps {
 const SurveyReportAttachmentDialog: React.FC<ISurveyReportAttachmentDialogProps> = (props) => {
   const biohubApi = useBiohubApi();
 
-  const [showAddSecurityDialog, setShowAddSecurityDialog] = useState(false);
-
   const dialogContext = useContext(DialogContext);
 
   const reportAttachmentDetailsDataLoader = useDataLoader((attachmentId: number) =>
     biohubApi.survey.getSurveyReportDetails(props.projectId, props.surveyId, attachmentId)
   );
-
-  const addSecurityReasons = async (securityReasons: number[]) => {
-    if (props.attachmentId) {
-      const attachmentData: IAttachmentType = {
-        id: props.attachmentId,
-        type: AttachmentType.REPORT
-      };
-
-      await biohubApi.security.addSurveySecurityReasons(props.projectId, props.surveyId, securityReasons, [
-        attachmentData
-      ]);
-
-      setShowAddSecurityDialog(false);
-    }
-  };
 
   const showErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
     dialogContext.setErrorDialog({ ...defaultErrorDialogProps, ...textDialogProps, open: true });
@@ -125,37 +106,12 @@ const SurveyReportAttachmentDialog: React.FC<ISurveyReportAttachmentDialogProps>
     reportAttachmentDetailsDataLoader.load(props.currentAttachment.id);
   }
 
-  const refreshAttachmentDetails = () => {
-    if (props.currentAttachment) {
-      reportAttachmentDetailsDataLoader.refresh(props.currentAttachment.id);
-    }
-  };
-
   if (!props.open) {
     return <></>;
   }
 
   return (
     <>
-      <SecurityDialog
-        open={showAddSecurityDialog}
-        selectedSecurityRules={reportAttachmentDetailsDataLoader.data?.security_reasons || []}
-        onAccept={async (securityReasons) => {
-          // formik form is retuning array of strings not numbers
-          // linter believes formik to be number[] so wrapped map in string to force values into number[]
-          if (securityReasons.security_reasons.length > 0) {
-            await addSecurityReasons(
-              securityReasons.security_reasons.map((item) => parseInt(`${item.security_reason_id}`))
-            );
-          }
-
-          refreshAttachmentDetails();
-
-          setShowAddSecurityDialog(false);
-        }}
-        onClose={() => setShowAddSecurityDialog(false)}
-      />
-
       <Dialog open={props.open} onClose={props.onClose} {...props.dialogProps} data-testid="view-meta-dialog">
         <DialogTitle data-testid="view-meta-dialog-title">
           <Typography variant="body2" color="textSecondary" style={{ fontWeight: 700 }}>

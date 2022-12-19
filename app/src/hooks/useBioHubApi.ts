@@ -11,7 +11,6 @@ import useObservationApi from './api/useObservationApi';
 import usePermitApi from './api/usePermitApi';
 import useProjectApi from './api/useProjectApi';
 import useSearchApi from './api/useSearchApi';
-import useSecurityApi from './api/useSecurityApi';
 import useSurveyApi from './api/useSurveyApi';
 import useTaxonomyApi from './api/useTaxonomyApi';
 import useUserApi from './api/useUserApi';
@@ -50,8 +49,6 @@ export const useBiohubApi = () => {
 
   const external = useExternalApi(axios);
 
-  const security = useSecurityApi(apiAxios);
-
   return {
     project,
     permit,
@@ -65,6 +62,5 @@ export const useBiohubApi = () => {
     admin,
     n8n,
     external,
-    security
   };
 };
