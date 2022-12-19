@@ -3,7 +3,7 @@ import { describe } from 'mocha';
 import sinon from 'sinon';
 import xlsx from 'xlsx';
 import { SUBMISSION_MESSAGE_TYPE } from '../../../constants/status';
-import { CSVValidation, CSVWorkBook, CSVWorksheet, IHeaderError, IRowError } from './csv-file';
+import { CSVValidation, CSVWorkBook, CSVWorksheet, IHeaderError, IKeyError, IRowError } from './csv-file';
 
 describe('CSVWorkBook', () => {
   it('constructs with no rawWorkbook param', () => {
@@ -223,9 +223,17 @@ describe('CSVValidation', () => {
         row: 1
       };
 
+      const keyError1: IKeyError = {
+        errorCode: SUBMISSION_MESSAGE_TYPE.DANGLING_PARENT_CHILD_KEY,
+        message: 'a key error',
+        colNames: ['col1', 'col2'],
+        rows: [2, 3, 4]
+      };
+
       csvValidation.addFileErrors([fileError1]);
       csvValidation.addHeaderErrors([headerError1]);
       csvValidation.addRowErrors([rowError1]);
+      csvValidation.addKeyErrors([keyError1]);
 
       const validationState = csvValidation.getState();
 
@@ -234,6 +242,7 @@ describe('CSVValidation', () => {
         fileErrors: [fileError1],
         headerErrors: [headerError1],
         rowErrors: [rowError1],
+        keyErrors: [keyError1],
         isValid: false
       });
     });
