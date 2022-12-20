@@ -170,7 +170,6 @@ export function getOccurrenceSubmission(): RequestHandler {
       }
 
       await connection.commit();
-
       const getOccurrenceSubmissionData =
         (occurrenceSubmissionData &&
           occurrenceSubmissionData.rows &&

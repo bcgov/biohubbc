@@ -115,7 +115,9 @@ export enum SUBMISSION_MESSAGE_TYPE {
   'FAILED_UPDATE_OCCURRENCE_SUBMISSION' = 'Failed to update occurrence submission',
   'FAILED_TO_GET_TRANSFORM_SCHEMA' = 'Unable to get transform schema for submission',
   'INVALID_MEDIA' = 'Media is invalid',
-  'UNSUPPORTED_FILE_TYPE' = 'File submitted is not a supported type'
+  'UNSUPPORTED_FILE_TYPE' = 'File submitted is not a supported type',
+  'DANGLING_PARENT_CHILD_KEY' = 'Missing Child Key from Parent',
+  'NON_UNIQUE_KEY' = 'Duplicate Key(s) found in file.'
 }
 
 const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
@@ -281,7 +283,11 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
       label: 'Mandatory fields have not been filled out'
     },
     recommended: {
-      type: [SUBMISSION_MESSAGE_TYPE.MISSING_RECOMMENDED_HEADER],
+      type: [
+        SUBMISSION_MESSAGE_TYPE.MISSING_RECOMMENDED_HEADER,
+        SUBMISSION_MESSAGE_TYPE.DANGLING_PARENT_CHILD_KEY,
+        SUBMISSION_MESSAGE_TYPE.NON_UNIQUE_KEY
+      ],
       label: 'Recommended fields have not been filled out'
     },
     value_not_from_list: {
