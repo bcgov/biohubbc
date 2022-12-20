@@ -1497,6 +1497,15 @@ const mooseArialTransectDistanceSamplingSurvey = {
         required_files: ['Effort & Site Conditions', 'Observations', 'Marked Animals', 'Incidental Observations']
       }
     }
+  ],
+  workbookValidations: [
+    {
+      workbook_parent_child_key_match_validator: {
+        parent_worksheet_name: 'Observations',
+        child_worksheet_name: 'Marked Animals',
+        column_names: ['Group Label']
+      }
+    }
   ]
 };
 
