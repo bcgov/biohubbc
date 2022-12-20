@@ -7,7 +7,7 @@ import {
   IProjectReportAttachment,
   IReportAttachmentAuthor,
   ISurveyAttachment,
-  ISurveyReportAttachment,
+  ISurveyReportAttachment
 } from '../repositories/attachment-repository';
 import { generateS3FileKey } from '../utils/file-utils';
 import { DBService } from './db-service';
@@ -18,8 +18,7 @@ export interface IAttachmentType {
 }
 
 /**
- * A repository class for accessing project and survey attachment data and
- * enumerating attachment security rules.
+ * A repository class for accessing project and survey attachment data.
  *
  * @export
  * @class AttachmentRepository

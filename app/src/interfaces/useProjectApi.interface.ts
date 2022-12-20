@@ -13,7 +13,6 @@ export interface IGetProjectAttachment {
   fileType: string;
   lastModified: string;
   size: number;
-  securityToken: string;
   revisionCount: number;
 }
 

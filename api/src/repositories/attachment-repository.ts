@@ -18,7 +18,7 @@ export interface IProjectAttachment {
   update_date: string;
   file_size: string;
   key: string;
-  security_token: string;
+  revision_count: number;
 }
 
 export interface IProjectReportAttachment {
@@ -32,7 +32,6 @@ export interface IProjectReportAttachment {
   create_date: string;
   key: string;
   file_size: string;
-  security_token: string;
   revision_count: number;
 }
 
@@ -74,8 +73,7 @@ export class AttachmentRepository extends BaseRepository {
         update_date,
         create_date,
         file_size,
-        key,
-        security_token
+        key
       FROM
         project_attachment
       WHERE
@@ -114,8 +112,7 @@ export class AttachmentRepository extends BaseRepository {
         update_date,
         create_date,
         file_size,
-        key,
-        security_token
+        key
       FROM
         project_attachment
       WHERE
@@ -158,7 +155,6 @@ export class AttachmentRepository extends BaseRepository {
         create_date,
         file_size,
         key,
-        security_token,
         revision_count
       FROM
         project_report_attachment
@@ -202,7 +198,6 @@ export class AttachmentRepository extends BaseRepository {
         create_date,
         file_size,
         key,
-        security_token,
         revision_count
       FROM
         project_report_attachment
@@ -243,8 +238,7 @@ export class AttachmentRepository extends BaseRepository {
         update_date,
         create_date,
         file_size,
-        key,
-        security_token
+        key
       FROM
         survey_attachment
       WHERE
@@ -285,7 +279,6 @@ export class AttachmentRepository extends BaseRepository {
         create_date,
         file_size,
         key,
-        security_token,
         revision_count
       FROM
         survey_report_attachment
@@ -326,7 +319,6 @@ export class AttachmentRepository extends BaseRepository {
         create_date,
         file_size,
         key,
-        security_token,
         revision_count
       FROM
         survey_report_attachment

@@ -57,14 +57,10 @@ POST.apiDoc = {
       'application/json': {
         schema: {
           type: 'object',
-          required: ['attachmentType', 'securityToken'],
+          required: ['attachmentType'],
           properties: {
             attachmentType: {
               type: 'string'
-            },
-            securityToken: {
-              type: 'string',
-              nullable: true
             }
           }
         }

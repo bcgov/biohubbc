@@ -187,19 +187,6 @@ describe('useProjectApi', () => {
     expect(result).toEqual(true);
   });
 
-  it('makeAttachmentUnsecure works as expected', async () => {
-    mock.onPut(`/api/project/${projectId}/attachments/${attachmentId}/makeUnsecure`).reply(200, 1);
-
-    const result = await useProjectApi(axios).makeAttachmentUnsecure(
-      projectId,
-      attachmentId,
-      'token123',
-      attachmentType
-    );
-
-    expect(result).toEqual(1);
-  });
-
   it('uploadProjectAttachments works as expected', async () => {
     const file = new File(['foo'], 'foo.txt', {
       type: 'text/plain'

@@ -36,7 +36,6 @@ describe.skip('AttachmentsList', () => {
       fileType: AttachmentType.OTHER,
       lastModified: '2021-04-09 11:53:53',
       size: 3028,
-      securityToken: null,
       revisionCount: 1
     },
     {
@@ -45,7 +44,6 @@ describe.skip('AttachmentsList', () => {
       fileType: AttachmentType.REPORT,
       lastModified: '2021-04-09 11:53:53',
       size: 30280000,
-      securityToken: null,
       revisionCount: 1
     },
     {
@@ -54,7 +52,6 @@ describe.skip('AttachmentsList', () => {
       fileType: AttachmentType.OTHER,
       lastModified: '2021-04-09 11:53:53',
       size: 30280000000,
-      securityToken: null,
       revisionCount: 1
     }
   ];
