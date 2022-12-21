@@ -16,12 +16,13 @@ describe('DwCService', () => {
 
     expect(dwcService).to.be.instanceof(DwCService);
   });
+
   describe('enrichTaxonIDs', () => {
     afterEach(() => {
       sinon.restore();
     });
 
-    it('does not enrich the jsonObject is no taxonIDs exists', async () => {
+    it('does not enrich the jsonObject if no taxonIDs exists', async () => {
       const dbConnectionObj = getMockDBConnection();
 
       const dwcService = new DwCService({ projectId: 1 }, dbConnectionObj);
@@ -41,7 +42,7 @@ describe('DwCService', () => {
 
       const getEnrichedDataForSpeciesCodeStub = sinon
         .stub(TaxonomyService.prototype, 'getEnrichedDataForSpeciesCode')
-        .resolves({ scientific_name: 'some scientific name', english_name: 'some common name' });
+        .resolves({ scientificName: 'some scientific name', englishName: 'some common name' });
 
       const jsonObject = {
         item_with_depth_1: {
@@ -53,7 +54,6 @@ describe('DwCService', () => {
 
       expect(getEnrichedDataForSpeciesCodeStub).to.have.been.called;
       expect(getEnrichedDataForSpeciesCodeStub).to.have.been.calledWith('M-OVCA');
-      expect(getEnrichedDataForSpeciesCodeStub).not.to.have.been.calledWith('M-OVCA1');
       expect(enrichedJSON.item_with_depth_1.item_with_depth_2.scientificName).to.equal('some scientific name');
       expect(enrichedJSON.item_with_depth_1.item_with_depth_2.taxonID).to.equal('M-OVCA');
       expect(enrichedJSON.item_with_depth_1.item_with_depth_2.vernacularName).to.equal('some common name');
@@ -66,7 +66,7 @@ describe('DwCService', () => {
 
       const getEnrichedDataForSpeciesCodeStub = sinon
         .stub(TaxonomyService.prototype, 'getEnrichedDataForSpeciesCode')
-        .resolves({ scientific_name: 'some scientific name', english_name: 'some common name' });
+        .resolves({ scientificName: 'some scientific name', englishName: 'some common name' });
 
       const jsonObject = {
         item_with_depth_1: {

@@ -40,16 +40,30 @@ export class DwCService extends DBService {
     this.xml2jsBuilder = new xml2js.Builder({ renderOpts: { pretty: false } });
   }
 
+  /**
+   * Find all nodes that contain `taxonID` and update them to include additional taxonomic information.
+   *
+   * @param {Record<any, any>} jsonObject
+   * @return {*}  {Promise<Record<any, any>>}
+   * @memberof DwCService
+   */
   async enrichTaxonIDs(jsonObject: Record<any, any>): Promise<Record<any, any>> {
     const taxonomyService = new TaxonomyService();
 
-    const json_path_with_details = JSONPath({ path: '$..[taxonID]^', json: jsonObject, resultType: 'all' });
+    // Find and return all nodes that contain `taxonID`
+    const pathsToPatch = JSONPath({ path: '$..[taxonID]^', json: jsonObject, resultType: 'all' });
 
-    let patcharray: Operation[] = [];
+    const patchOperations: Operation[] = [];
 
-    patcharray = await Promise.all(
-      json_path_with_details.map(async (item: any) => {
-        const enriched_data = await taxonomyService.getEnrichedDataForSpeciesCode(item.value['taxonID']);
+    // Build patch operations
+    await Promise.all(
+      pathsToPatch.map(async (item: any) => {
+        const enrichedData = await taxonomyService.getEnrichedDataForSpeciesCode(item.value['taxonID']);
+
+        if (!enrichedData) {
+          // No matching taxon information found for provided taxonID code
+          return;
+        }
 
         const taxonIdPatch: Operation = {
           op: 'replace',
@@ -60,21 +74,20 @@ export class DwCService extends DBService {
         const scientificNamePatch: Operation = {
           op: 'add',
           path: item.pointer + '/scientificName',
-          value: enriched_data?.scientific_name
+          value: enrichedData?.scientificName
         };
 
         const vernacularNamePatch: Operation = {
           op: 'add',
           path: item.pointer + '/vernacularName',
-          value: enriched_data?.english_name
+          value: enrichedData?.englishName
         };
 
-        patcharray.push(taxonIdPatch, scientificNamePatch, vernacularNamePatch);
-
-        jsonObject = jsonpatch.applyPatch(jsonObject, patcharray).newDocument;
+        patchOperations.push(taxonIdPatch, scientificNamePatch, vernacularNamePatch);
       })
     );
 
-    return jsonObject;
+    // Apply patch operations
+    return jsonpatch.applyPatch(jsonObject, patchOperations).newDocument;
   }
 }

@@ -193,23 +193,31 @@ export class TaxonomyService {
     return response ? this._sanitizeSpeciesData(response.hits.hits) : [];
   }
 
-  private formatEnrichedData = (data: SearchHit<any>) => {
-    const scientific_name = [data._source.unit_name1, data._source.unit_name2, data._source.unit_name3]
-      .filter(Boolean)
-      .join(' ');
-    const english_name = data._source.english_name;
+  _formatEnrichedData = (data: SearchHit<ITaxonomySource>): { scientificName: string; englishName: string } => {
+    const scientificName =
+      [data._source?.unit_name1, data._source?.unit_name2, data._source?.unit_name3].filter(Boolean).join(' ') || '';
+    const englishName = data._source?.english_name || '';
 
-    return { scientific_name, english_name };
+    return { scientificName, englishName };
   };
 
-  async getEnrichedDataForSpeciesCode(code: string) {
+  /**
+   * Fetch formatted taxonomy information for a specific taxon code.
+   *
+   * @param {string} taxonCode
+   * @return {*}  {(Promise<{ scientificName: string; englishName: string } | null>)}
+   * @memberof TaxonomyService
+   */
+  async getEnrichedDataForSpeciesCode(
+    taxonCode: string
+  ): Promise<{ scientificName: string; englishName: string } | null> {
     const response = await this._elasticSearch({
       query: {
         bool: {
           must: [
             {
               term: {
-                'code.keyword': code.toUpperCase()
+                'code.keyword': taxonCode.toUpperCase()
               }
             },
             {
@@ -233,6 +241,6 @@ export class TaxonomyService {
       }
     });
 
-    return response ? this.formatEnrichedData(response.hits.hits[0]) : null;
+    return response ? this._formatEnrichedData(response.hits.hits[0]) : null;
   }
 }
