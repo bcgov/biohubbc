@@ -150,7 +150,7 @@ describe('ValidationSchemaParser', () => {
     it('returns an array of validation schemas', () => {
       const validationSchemaParser = new ValidationSchemaParser(sampleValidationSchema);
 
-      const validationSchemas = validationSchemaParser.getSubmissionValidationSChemas();
+      const validationSchemas = validationSchemaParser.getSubmissionValidationSchemas();
 
       expect(validationSchemas).to.eql([
         { mimetype_validator: {} },
