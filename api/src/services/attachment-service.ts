@@ -7,7 +7,7 @@ import {
   IProjectReportAttachment,
   IReportAttachmentAuthor,
   ISurveyAttachment,
-  ISurveyReportAttachment,
+  ISurveyReportAttachment
 } from '../repositories/attachment-repository';
 import { generateS3FileKey } from '../utils/file-utils';
 import { DBService } from './db-service';

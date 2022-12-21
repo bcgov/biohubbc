@@ -61,6 +61,6 @@ export const useBiohubApi = () => {
     user,
     admin,
     n8n,
-    external,
+    external
   };
 };

@@ -168,7 +168,7 @@ export function getProjectReportDetails(): RequestHandler {
 
       const reportDetails = {
         metadata: projectReportAttachment,
-        authors: projectReportAuthors,
+        authors: projectReportAuthors
       };
 
       return res.status(200).json(reportDetails);

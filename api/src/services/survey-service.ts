@@ -48,7 +48,7 @@ export class SurveyService extends DBService {
       fundingData,
       purposeAndMethodologyData,
       proprietorData,
-      locationData,
+      locationData
     ] = await Promise.all([
       this.getSurveyData(surveyId),
       this.getSpeciesData(surveyId),
@@ -56,7 +56,7 @@ export class SurveyService extends DBService {
       this.getSurveyFundingSourcesData(surveyId),
       this.getSurveyPurposeAndMethodology(surveyId),
       this.getSurveyProprietorDataForView(surveyId),
-      this.getSurveyLocationData(surveyId),
+      this.getSurveyLocationData(surveyId)
     ]);
 
     return {
