@@ -140,46 +140,6 @@ export const updateSurveyOccurrenceSubmissionSQL = (data: {
 };
 
 /**
- * SQL query to delete occurrence records by occurrence submission id.
- *
- * @param {number} occurrenceSubmissionId
- * @return {*}  {(SQLStatement | null)}
- */
-export const deleteSurveyOccurrencesSQL = (occurrenceSubmissionId: number): SQLStatement | null => {
-  if (!occurrenceSubmissionId) {
-    return null;
-  }
-
-  return SQL`
-    DELETE FROM
-      occurrence
-    WHERE
-      occurrence_submission_id = ${occurrenceSubmissionId};
-  `;
-};
-
-/**
- * SQL query to get the record for a single occurrence submission.
- *
- * @param {number} submissionId
- * @returns {SQLStatement} sql query object
- */
-export const getSurveyOccurrenceSubmissionSQL = (occurrenceSubmissionId: number): SQLStatement | null => {
-  if (!occurrenceSubmissionId) {
-    return null;
-  }
-
-  return SQL`
-    SELECT
-      *
-    FROM
-      occurrence_submission
-    WHERE
-      occurrence_submission_id = ${occurrenceSubmissionId};
-  `;
-};
-
-/**
  * SQL query to soft delete the occurrence submission entry by ID
  *
  * @param {number} occurrenceSubmissionId
@@ -194,43 +154,6 @@ export const deleteOccurrenceSubmissionSQL = (occurrenceSubmissionId: number): S
     UPDATE occurrence_submission
     SET delete_timestamp = now()
     WHERE occurrence_submission_id = ${occurrenceSubmissionId};
-  `;
-};
-
-/**
- * SQL query to insert the occurrence submission status.
- *
- * @param {number} occurrenceSubmissionId
- * @param {string} submissionStatusType
- * @returns {SQLStatement} sql query object
- */
-export const insertOccurrenceSubmissionStatusSQL = (
-  occurrenceSubmissionId: number,
-  submissionStatusType: string
-): SQLStatement | null => {
-  if (!occurrenceSubmissionId || !submissionStatusType) {
-    return null;
-  }
-
-  return SQL`
-    INSERT INTO submission_status (
-      occurrence_submission_id,
-      submission_status_type_id,
-      event_timestamp
-    ) VALUES (
-      ${occurrenceSubmissionId},
-      (
-        SELECT
-          submission_status_type_id
-        FROM
-          submission_status_type
-        WHERE
-          name = ${submissionStatusType}
-      ),
-      now()
-    )
-    RETURNING
-      submission_status_id as id;
   `;
 };
 

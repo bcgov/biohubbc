@@ -1,7 +1,6 @@
 import administrativeActivity from './administrative-activity';
 import codes from './codes';
 import database from './database';
-import occurrence from './occurrence';
 import project from './project';
 import projectParticipation from './project-participation';
 import search from './search';
@@ -14,7 +13,6 @@ export const queries = {
   administrativeActivity,
   codes,
   database,
-  occurrence,
   project,
   projectParticipation,
   search,

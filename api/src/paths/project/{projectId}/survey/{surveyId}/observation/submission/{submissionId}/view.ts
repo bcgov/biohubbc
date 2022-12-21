@@ -3,8 +3,8 @@ import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../../database/db';
 import { HTTP400, HTTP500 } from '../../../../../../../../errors/http-error';
-import { queries } from '../../../../../../../../queries/queries';
 import { authorizeRequestHandler } from '../../../../../../../../request-handlers/security/authorization';
+import { OccurrenceService } from '../../../../../../../../services/occurrence-service';
 import { generateS3FileKey, getFileFromS3 } from '../../../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../../../utils/logger';
 import { DWCArchive } from '../../../../../../../../utils/media/dwc/dwc-archive-file';
@@ -42,7 +42,8 @@ GET.apiDoc = {
       in: 'path',
       name: 'projectId',
       schema: {
-        type: 'number'
+        type: 'integer',
+        minimum: 1
       },
       required: true
     },
@@ -50,7 +51,8 @@ GET.apiDoc = {
       in: 'path',
       name: 'surveyId',
       schema: {
-        type: 'number'
+        type: 'integer',
+        minimum: 1
       },
       required: true
     },
@@ -58,7 +60,8 @@ GET.apiDoc = {
       in: 'path',
       name: 'submissionId',
       schema: {
-        type: 'number'
+        type: 'integer',
+        minimum: 1
       },
       required: true
     }
@@ -125,38 +128,18 @@ export function getObservationSubmissionCSVForView(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({ label: 'Get observation submission csv details', message: 'params', req_params: req.params });
 
-    if (!req.params.projectId) {
-      throw new HTTP400('Missing required path param `projectId`');
-    }
-
-    if (!req.params.surveyId) {
-      throw new HTTP400('Missing required path param `surveyId`');
-    }
-
-    if (!req.params.submissionId) {
-      throw new HTTP400('Missing required path param `submissionId`');
-    }
-
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const getSubmissionSQLStatement = queries.survey.getSurveyOccurrenceSubmissionSQL(
-        Number(req.params.submissionId)
-      );
-
-      if (!getSubmissionSQLStatement) {
-        throw new HTTP400('Failed to build SQL get statement');
-      }
-
       await connection.open();
 
-      const submissionData = await connection.query(getSubmissionSQLStatement.text, getSubmissionSQLStatement.values);
+      const occurrenceService = new OccurrenceService(connection);
+
+      const result = await occurrenceService.getOccurrenceSubmission(Number(req.params.submissionId));
 
       await connection.commit();
 
-      const fileName =
-        (submissionData && submissionData.rows && submissionData.rows[0] && submissionData.rows[0].input_file_name) ||
-        null;
+      const fileName = (result && result.input_file_name) || '';
 
       const s3Key = generateS3FileKey({
         projectId: Number(req.params.projectId),

@@ -115,11 +115,13 @@ export function getOccurrenceSubmission(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
+      await connection.open();
+
       const surveyService = new SurveyService(connection);
       const response = await surveyService.getLatestSurveyOccurrenceSubmission(Number(req.params.surveyId));
 
       // Ensure we only retrieve the latest occurrence submission record if it has not been soft deleted
-      if (response.delete_timestamp) {
+      if (!response || response.delete_timestamp) {
         return res.status(200).json(null);
       }
 

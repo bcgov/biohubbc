@@ -310,7 +310,7 @@ export class SurveyRepository extends BaseRepository {
     return result;
   }
 
-  async getLatestSurveyOccurrenceSubmission(surveyId: number): Promise<IGetLatestSurveyOccurrenceSubmission> {
+  async getLatestSurveyOccurrenceSubmission(surveyId: number): Promise<IGetLatestSurveyOccurrenceSubmission | null> {
     const sqlStatement = SQL`
       SELECT
         os.occurrence_submission_id as id,
@@ -358,13 +358,6 @@ export class SurveyRepository extends BaseRepository {
     const response = await this.connection.sql<IGetLatestSurveyOccurrenceSubmission>(sqlStatement);
 
     const result = (response && response.rows && response.rows?.[0]) || null;
-
-    if (!result) {
-      throw new ApiExecuteSQLError('Failed to get survey Occurrence submission', [
-        'SurveyRepository->getLatestSurveyOccurrenceSubmission',
-        'response was null or undefined, expected response != null'
-      ]);
-    }
 
     return result;
   }

@@ -1,6 +1,5 @@
+import SQL from 'sql-template-strings';
 import { SUBMISSION_MESSAGE_TYPE } from '../constants/status';
-import { HTTP400 } from '../errors/http-error';
-import { queries } from '../queries/queries';
 import { SubmissionErrorFromMessageType } from '../utils/submission-error';
 import { BaseRepository } from './base-repository';
 
@@ -13,14 +12,26 @@ export class SubmissionRepository extends BaseRepository {
    * @return {*}  {Promise<number>}
    */
   async insertSubmissionStatus(occurrenceSubmissionId: number, submissionStatusType: string): Promise<number> {
-    const sqlStatement = queries.survey.insertOccurrenceSubmissionStatusSQL(
-      occurrenceSubmissionId,
-      submissionStatusType
-    );
-
-    if (!sqlStatement) {
-      throw new HTTP400('Failed to build SQL insert statement');
-    }
+    const sqlStatement = SQL`
+      INSERT INTO submission_status (
+        occurrence_submission_id,
+        submission_status_type_id,
+        event_timestamp
+      ) VALUES (
+        ${occurrenceSubmissionId},
+        (
+          SELECT
+            submission_status_type_id
+          FROM
+            submission_status_type
+          WHERE
+            name = ${submissionStatusType}
+        ),
+        now()
+      )
+      RETURNING
+        submission_status_id as id;
+    `;
 
     const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
 

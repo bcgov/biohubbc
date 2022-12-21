@@ -127,7 +127,7 @@ export class SurveyService extends DBService {
     return this.surveyRepository.getOccurrenceSubmissionId(surveyId);
   }
 
-  async getLatestSurveyOccurrenceSubmission(surveyId: number): Promise<IGetLatestSurveyOccurrenceSubmission> {
+  async getLatestSurveyOccurrenceSubmission(surveyId: number): Promise<IGetLatestSurveyOccurrenceSubmission | null> {
     return this.surveyRepository.getLatestSurveyOccurrenceSubmission(surveyId);
   }
 
