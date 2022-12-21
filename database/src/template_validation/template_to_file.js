@@ -58,7 +58,7 @@ const starterObject = {
 */
 const templateValidationSchema = {};
 
-fs.writeFile('./template.json', JSON.stringify(templateValidationSchema), (err) => {
+fs.writeFile('./template_output.json', JSON.stringify(templateValidationSchema), (err) => {
   if (err) {
     console.error(err);
   }
