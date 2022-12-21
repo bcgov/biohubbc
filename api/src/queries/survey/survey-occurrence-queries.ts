@@ -140,58 +140,6 @@ export const updateSurveyOccurrenceSubmissionSQL = (data: {
 };
 
 /**
- * SQL query to get latest occurrence submission for a survey.
- *
- * @param {number} surveyId
- * @returns {SQLStatement} sql query object
- */
-export const getLatestSurveyOccurrenceSubmissionSQL = (surveyId: number): SQLStatement => {
-  return SQL`
-    SELECT
-      os.occurrence_submission_id as id,
-      os.survey_id,
-      os.source,
-      os.delete_timestamp,
-      os.event_timestamp,
-      os.input_key,
-      os.input_file_name,
-      os.output_key,
-      os.output_file_name,
-      ss.submission_status_id,
-      ss.submission_status_type_id,
-      sst.name as submission_status_type_name,
-      sm.submission_message_id,
-      sm.submission_message_type_id,
-      sm.message,
-      smt.name as submission_message_type_name
-    FROM
-      occurrence_submission as os
-    LEFT OUTER JOIN
-      submission_status as ss
-    ON
-      os.occurrence_submission_id = ss.occurrence_submission_id
-    LEFT OUTER JOIN
-      submission_status_type as sst
-    ON
-      sst.submission_status_type_id = ss.submission_status_type_id
-    LEFT OUTER JOIN
-      submission_message as sm
-    ON
-      sm.submission_status_id = ss.submission_status_id
-    LEFT OUTER JOIN
-      submission_message_type as smt
-    ON
-      smt.submission_message_type_id = sm.submission_message_type_id
-    WHERE
-      os.survey_id = ${surveyId}
-    ORDER BY
-      os.event_timestamp DESC, ss.submission_status_id DESC
-    LIMIT 1
-    ;
-  `;
-};
-
-/**
  * SQL query to delete occurrence records by occurrence submission id.
  *
  * @param {number} occurrenceSubmissionId
@@ -283,49 +231,6 @@ export const insertOccurrenceSubmissionStatusSQL = (
     )
     RETURNING
       submission_status_id as id;
-  `;
-};
-
-/**
- * SQL query to insert the occurrence submission message.
- * @TODO this method duplicates ErrorRepository.insertSubmissionMessage
- *
- * @param {number} occurrenceSubmissionId
- * @param {string} submissionStatusType
- * @param {string} submissionMessage
- * @returns {SQLStatement} sql query object
- */
-export const insertOccurrenceSubmissionMessageSQL = (
-  submissionStatusId: number,
-  submissionMessageType: string,
-  submissionMessage: string,
-  errorCode: string
-): SQLStatement | null => {
-  if (!submissionStatusId || !submissionMessageType || !submissionMessage || !errorCode) {
-    return null;
-  }
-
-  return SQL`
-    INSERT INTO submission_message (
-      submission_status_id,
-      submission_message_type_id,
-      event_timestamp,
-      message
-    ) VALUES (
-      ${submissionStatusId},
-      (
-        SELECT
-          submission_message_type_id
-        FROM
-          submission_message_type
-        WHERE
-          name = ${errorCode}
-      ),
-      now(),
-      ${submissionMessage}
-    )
-    RETURNING
-      submission_message_id;
   `;
 };
 

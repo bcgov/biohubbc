@@ -3,10 +3,8 @@ import { describe } from 'mocha';
 import {
   deleteOccurrenceSubmissionSQL,
   deleteSurveyOccurrencesSQL,
-  getLatestSurveyOccurrenceSubmissionSQL,
   getOccurrenceSubmissionMessagesSQL,
   getSurveyOccurrenceSubmissionSQL,
-  insertOccurrenceSubmissionMessageSQL,
   insertOccurrenceSubmissionStatusSQL,
   insertSurveyOccurrenceSubmissionSQL,
   updateSurveyOccurrenceSubmissionSQL
@@ -68,14 +66,6 @@ describe('deleteOccurrenceSubmissionSQL', () => {
 
   it('returns non null response when valid params provided', () => {
     const response = deleteOccurrenceSubmissionSQL(1);
-
-    expect(response).to.not.be.null;
-  });
-});
-
-describe('getLatestSurveyOccurrenceSubmission', () => {
-  it('returns non null response when valid params provided', () => {
-    const response = getLatestSurveyOccurrenceSubmissionSQL(1);
 
     expect(response).to.not.be.null;
   });
@@ -192,32 +182,6 @@ describe('insertSurveySubmissionStatusSQL', () => {
 
   it('returns non null response when valid params provided', () => {
     const response = insertOccurrenceSubmissionStatusSQL(1, 'type');
-
-    expect(response).to.not.be.null;
-  });
-});
-
-describe('insertSurveySubmissionMessageSQL', () => {
-  it('returns null response when null occurrenceSubmissionId provided', () => {
-    const response = insertOccurrenceSubmissionMessageSQL((null as unknown) as number, 'type', 'message', 'errorcode');
-
-    expect(response).to.be.null;
-  });
-
-  it('returns null response when null submissionStatusType provided', () => {
-    const response = insertOccurrenceSubmissionMessageSQL(1, (null as unknown) as string, 'message', 'errorcode');
-
-    expect(response).to.be.null;
-  });
-
-  it('returns null response when null submissionMessage provided', () => {
-    const response = insertOccurrenceSubmissionMessageSQL(1, 'type', (null as unknown) as string, 'errorcode');
-
-    expect(response).to.be.null;
-  });
-
-  it('returns non null response when valid params provided', () => {
-    const response = insertOccurrenceSubmissionMessageSQL(1, 'type', 'message', 'errorcode');
 
     expect(response).to.not.be.null;
   });

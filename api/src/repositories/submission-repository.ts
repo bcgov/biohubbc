@@ -12,7 +12,7 @@ export class SubmissionRepository extends BaseRepository {
    * @param {string} submissionStatusType
    * @return {*}  {Promise<number>}
    */
-  insertSubmissionStatus = async (occurrenceSubmissionId: number, submissionStatusType: string): Promise<number> => {
+  async insertSubmissionStatus(occurrenceSubmissionId: number, submissionStatusType: string): Promise<number> {
     const sqlStatement = queries.survey.insertOccurrenceSubmissionStatusSQL(
       occurrenceSubmissionId,
       submissionStatusType
@@ -31,41 +31,5 @@ export class SubmissionRepository extends BaseRepository {
     }
 
     return result.id;
-  };
-
-  /**
-   * Insert a record into the submission_message table.
-   *
-   * @param {number} submissionStatusId
-   * @param {string} submissionMessageType
-   * @param {string} message
-   * @return {*}  {Promise<void>}
-   */
-  insertSubmissionMessage = async (
-    submissionStatusId: number,
-    submissionMessageType: string,
-    message: string,
-    errorCode: string
-  ): Promise<void> => {
-    const sqlStatement = queries.survey.insertOccurrenceSubmissionMessageSQL(
-      submissionStatusId,
-      submissionMessageType,
-      message,
-      errorCode
-    );
-
-    if (!sqlStatement) {
-      throw new HTTP400('Failed to build SQL insert statement');
-    }
-
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
-
-    const result = (response && response.rows && response.rows[0]) || null;
-
-    if (!result || !result.submission_message_id) {
-      throw new HTTP400('Failed to insert survey submission message data');
-    }
-
-    return result;
-  };
+  }
 }
