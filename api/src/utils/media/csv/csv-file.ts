@@ -3,6 +3,7 @@ import { SUBMISSION_MESSAGE_TYPE } from '../../../constants/status';
 import { IMediaState, MediaValidation } from '../media-file';
 
 export type CSVWorksheets = { [name: string]: CSVWorksheet };
+export type WorkBookValidators = { [name: string]: CSVValidation };
 
 export class CSVWorkBook {
   rawWorkbook: xlsx.WorkBook;
@@ -12,13 +13,34 @@ export class CSVWorkBook {
   constructor(workbook?: xlsx.WorkBook) {
     this.rawWorkbook = workbook || xlsx.utils.book_new();
 
-    const worksheets = {};
+    const worksheets: CSVWorksheets = {};
 
     Object.entries(this.rawWorkbook.Sheets).forEach(([key, value]) => {
       worksheets[key] = new CSVWorksheet(key, value);
     });
 
     this.worksheets = worksheets;
+  }
+
+  /**
+   * Performs all of the given workbook validators on the workbook. Results of the validation
+   * are stored in the `csvValidation` property on each of the worksheets within the workbook. This
+   * method returns the corresponding validations in an object.
+   *
+   * @param {WorkBookValidator[]} validators A series of validators to be run on the workbook
+   * @return {*}  {WorkBookValidation} A key-value pair representing all CSV validations for each worksheet,
+   * where the keys are the names of the worksheets and the values are the corresponding CSV validations.
+   * @memberof CSVWorkBook
+   */
+  validate(validators: WorkBookValidator[]): WorkBookValidation {
+    validators.forEach((validator) => validator(this));
+
+    const validations: WorkBookValidation = {};
+    Object.entries(this.worksheets).forEach(([key, value]) => {
+      validations[key] = value.csvValidation;
+    });
+
+    return validations;
   }
 }
 
@@ -206,6 +228,14 @@ export class CSVWorksheet {
     return row[headerIndex];
   }
 
+  /**
+   * Runs all of the given validators on the worksheet, whereby the results of all validations
+   * are stored in `this.csvValidation`.
+   *
+   * @param {CSVValidator[]} validators A series of CSV validators to be run on the worksheet.
+   * @return {*}  {CSVValidation} The result of all validations, namely `this.csvValidation`.
+   * @memberof CSVWorksheet
+   */
   validate(validators: CSVValidator[]): CSVValidation {
     validators.forEach((validator) => validator(this));
 
@@ -214,6 +244,7 @@ export class CSVWorksheet {
 }
 
 export type CSVValidator = (csvWorksheet: CSVWorksheet) => CSVWorksheet;
+export type WorkBookValidator = (csvWorkBook: CSVWorkBook) => CSVWorkBook;
 
 // ensure these error codes match the 'name' column in the table: submission_message_type
 
@@ -238,9 +269,18 @@ export interface IRowError {
   col: string;
   row: number;
 }
+
+export interface IKeyError {
+  errorCode: SUBMISSION_MESSAGE_TYPE.DANGLING_PARENT_CHILD_KEY;
+  message: string;
+  colNames: string[];
+  rows: number[];
+}
+
 export interface ICsvState extends IMediaState {
   headerErrors: IHeaderError[];
   rowErrors: IRowError[];
+  keyErrors: IKeyError[];
 }
 
 /**
@@ -253,12 +293,14 @@ export interface ICsvState extends IMediaState {
 export class CSVValidation extends MediaValidation {
   headerErrors: IHeaderError[];
   rowErrors: IRowError[];
+  keyErrors: IKeyError[];
 
   constructor(fileName: string) {
     super(fileName);
 
     this.headerErrors = [];
     this.rowErrors = [];
+    this.keyErrors = [];
   }
 
   addHeaderErrors(errors: IHeaderError[]) {
@@ -281,13 +323,24 @@ export class CSVValidation extends MediaValidation {
     }
   }
 
+  addKeyErrors(errors: IKeyError[]) {
+    this.keyErrors = this.keyErrors.concat(errors);
+
+    if (errors?.length) {
+      this.isValid = false;
+    }
+  }
+
   getState(): ICsvState {
     return {
       fileName: this.fileName,
       fileErrors: this.fileErrors,
       headerErrors: this.headerErrors,
       rowErrors: this.rowErrors,
+      keyErrors: this.keyErrors,
       isValid: this.isValid
     };
   }
 }
+
+export type WorkBookValidation = { [name: string]: CSVValidation };

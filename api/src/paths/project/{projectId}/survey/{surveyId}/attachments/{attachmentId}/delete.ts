@@ -4,7 +4,6 @@ import { ATTACHMENT_TYPE } from '../../../../../../../constants/attachments';
 import { PROJECT_ROLE } from '../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../database/db';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
-import { AttachmentService } from '../../../../../../../services/attachment-service';
 import { deleteFileFromS3 } from '../../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../../utils/logger';
 import { attachmentApiDocObject } from '../../../../../../../utils/shared-api-docs';
@@ -104,6 +103,7 @@ export function deleteAttachment(): RequestHandler {
     try {
       await connection.open();
 
+<<<<<<< HEAD
       const attachmentService = new AttachmentService(connection);
 
       console.log('req.body.attachmentType', req.body.attachmentType);
@@ -112,11 +112,20 @@ export function deleteAttachment(): RequestHandler {
       if (req.body.attachmentType === ATTACHMENT_TYPE.REPORT) {
         await attachmentService.removeAllSecurityFromSurveyReportAttachment(Number(req.params.attachmentId));
         await attachmentService.deleteSurveyReportAttachmentAuthors(Number(req.params.attachmentId));
+=======
+      let deleteResult: { key: string };
+      if (req.body.attachmentType === ATTACHMENT_TYPE.REPORT) {
+        await deleteSurveyReportAttachmentAuthors(Number(req.params.attachmentId), connection);
+>>>>>>> 4f6ac046158030c698b1238be519a5304210361e
 
         deleteResult = await attachmentService.deleteSurveyReportAttachment(Number(req.params.attachmentId));
       } else {
+<<<<<<< HEAD
         await attachmentService.removeAllSecurityFromSurveyAttachment(Number(req.params.attachmentId));
         deleteResult = await attachmentService.deleteSurveyAttachment(Number(req.params.attachmentId));
+=======
+        deleteResult = await deleteSurveyAttachment(Number(req.params.attachmentId), connection);
+>>>>>>> 4f6ac046158030c698b1238be519a5304210361e
       }
 
       await connection.commit();

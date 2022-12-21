@@ -2,11 +2,7 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import * as db from '../../../../database/db';
 import { HTTPError } from '../../../../errors/http-error';
-import { GetAttachmentsData } from '../../../../models/project-survey-attachments';
-import { AttachmentService } from '../../../../services/attachment-service';
-import { getMockDBConnection } from '../../../../__mocks__/db';
 import * as listAttachments from './list';
 
 chai.use(sinonChai);
@@ -16,6 +12,7 @@ describe('getAttachments', () => {
     sinon.restore();
   });
 
+<<<<<<< HEAD
   it('should throw an error when a failure occurs', async () => {
     const dbConnectionObj = getMockDBConnection();
     sinon.stub(db, 'getDBConnection').returns({
@@ -37,11 +34,24 @@ describe('getAttachments', () => {
     } as any;
 
     try {
+=======
+  it('should throw a 400 error when projectId is missing in Path', async () => {
+    try {
+      const sampleReq = {
+        keycloak_token: {},
+        body: {},
+        params: {
+          projectId: null
+        }
+      } as any;
+
+>>>>>>> 4f6ac046158030c698b1238be519a5304210361e
       const result = listAttachments.getAttachments();
 
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
+<<<<<<< HEAD
       expect((actualError as HTTPError).message).to.equal(expectedError.message);
     }
   });
@@ -90,4 +100,10 @@ describe('getAttachments', () => {
     expect(getProjectAttachmentsWithSecurityCountsStub).to.be.calledOnce;
     expect(getProjectReportAttachmentsWithSecurityCountsStub).to.be.calledOnce;
   });
+=======
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing required path param `projectId`');
+    }
+  });
+>>>>>>> 4f6ac046158030c698b1238be519a5304210361e
 });

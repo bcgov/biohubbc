@@ -6,16 +6,13 @@ import DialogContent from '@material-ui/core/DialogContent';
 import Typography from '@material-ui/core/Typography';
 import { AttachmentsI18N } from 'constants/i18n';
 import { defaultErrorDialogProps, DialogContext } from 'contexts/dialogContext';
-import { IAttachmentType } from 'features/projects/view/ProjectAttachments';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { IGetProjectAttachment } from 'interfaces/useProjectApi.interface';
-import { default as React, useContext, useState } from 'react';
+import { default as React, useContext } from 'react';
 import { getFormattedFileSize } from 'utils/Utils';
-import { AttachmentType } from '../../../../../constants/attachments';
 import { IErrorDialogProps } from '../../../ErrorDialog';
-import SecurityDialog from '../../SecurityDialog';
 import AttachmentDetails from './../attachment/AttachmentDetails';
 
 export interface IProjectAttachmentDialogProps {
@@ -37,26 +34,9 @@ const ProjectAttachmentDialog: React.FC<IProjectAttachmentDialogProps> = (props)
   const biohubApi = useBiohubApi();
   const dialogContext = useContext(DialogContext);
 
-  const [showAddSecurityDialog, setShowAddSecurityDialog] = useState(false);
-
   const attachmentDetailsDataLoader = useDataLoader((attachmentId: number) =>
     biohubApi.project.getProjectAttachmentDetails(props.projectId, attachmentId)
   );
-
-  const addSecurityReasons = async (securityReasons: number[]) => {
-    if (props.attachmentId) {
-      const attachmentData: IAttachmentType = {
-        id: props.attachmentId,
-        type: AttachmentType.OTHER
-      };
-
-      await biohubApi.security.addProjectSecurityReasons(props.projectId, securityReasons, [attachmentData]);
-
-      refreshAttachmentDetails();
-
-      setShowAddSecurityDialog(false);
-    }
-  };
 
   const showErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
     dialogContext.setErrorDialog({ ...defaultErrorDialogProps, ...textDialogProps, open: true });
@@ -98,37 +78,12 @@ const ProjectAttachmentDialog: React.FC<IProjectAttachmentDialogProps> = (props)
     attachmentDetailsDataLoader.load(props.currentAttachment.id);
   }
 
-  const refreshAttachmentDetails = () => {
-    if (props.currentAttachment) {
-      attachmentDetailsDataLoader.refresh(props.currentAttachment.id);
-    }
-  };
-
   if (!props.open) {
     return <></>;
   }
 
   return (
     <>
-      <SecurityDialog
-        open={showAddSecurityDialog}
-        selectedSecurityRules={attachmentDetailsDataLoader.data?.security_reasons || []}
-        onAccept={async (securityReasons) => {
-          // formik form is retuning array of strings not numbers
-          // linter believes formik to be number[] so wrapped map in string to force values into number[]
-          if (securityReasons.security_reasons.length > 0) {
-            await addSecurityReasons(
-              securityReasons.security_reasons.map((item) => parseInt(`${item.security_reason_id}`))
-            );
-          }
-
-          refreshAttachmentDetails();
-
-          setShowAddSecurityDialog(false);
-        }}
-        onClose={() => setShowAddSecurityDialog(false)}
-      />
-
       <Dialog open={props.open} onClose={props.onClose} {...props.dialogProps} data-testid="view-meta-dialog">
         <DialogTitle data-testid="view-meta-dialog-title">
           <Typography variant="body2" color="textSecondary" style={{ fontWeight: 700 }}>
