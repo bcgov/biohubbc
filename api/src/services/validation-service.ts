@@ -261,9 +261,6 @@ export class ValidationService extends DBService {
     const templateName = xlsxCsv.workbook.rawWorkbook.Custprops?.sims_name;
     const templateVersion = xlsxCsv.workbook.rawWorkbook.Custprops?.sims_version;
 
-    console.log(`Template name: ${templateName}`);
-    console.log(`Template version: ${templateVersion}`);
-
     if (!templateName || !templateVersion) {
       throw SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_TO_GET_TRANSFORM_SCHEMA);
     }

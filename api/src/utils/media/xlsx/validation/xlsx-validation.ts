@@ -26,7 +26,11 @@ export const getParentChildKeyMatchValidator = (config?: ParentChildKeyMatchVali
     if (!config) {
       return csvWorkbook;
     }
-    const { child_worksheet_name, parent_worksheet_name, column_names } = config.workbook_parent_child_key_match_validator;
+    const {
+      child_worksheet_name,
+      parent_worksheet_name,
+      column_names
+    } = config.workbook_parent_child_key_match_validator;
 
     const parentWorksheet = csvWorkbook.worksheets[parent_worksheet_name];
     const childWorksheet = csvWorkbook.worksheets[child_worksheet_name];
@@ -90,7 +94,7 @@ export const getParentChildKeyMatchValidator = (config?: ParentChildKeyMatchVali
     childWorksheet.csvValidation.addKeyErrors([
       {
         errorCode: SUBMISSION_MESSAGE_TYPE.DANGLING_PARENT_CHILD_KEY,
-        message: `${child_worksheet_name} ${columnNameIndexString} must have matching value in ${parent_worksheet_name} ${columnNameIndexString}.`,
+        message: `${child_worksheet_name}${columnNameIndexString} must have matching value in ${parent_worksheet_name}${columnNameIndexString}.`,
         colNames: column_names,
         rows: danglingRowIndices
       }
