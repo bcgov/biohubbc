@@ -10,7 +10,6 @@ import { AttachmentService } from '../../../../../services/attachment-service';
 import { deleteFileFromS3 } from '../../../../../utils/file-utils';
 import { getLogger } from '../../../../../utils/logger';
 import { attachmentApiDocObject } from '../../../../../utils/shared-api-docs';
-import { deleteProjectReportAttachmentAuthors } from '../report/upload';
 
 const defaultLog = getLogger('/api/project/{projectId}/attachments/{attachmentId}/delete');
 
@@ -121,7 +120,7 @@ export function deleteAttachment(): RequestHandler {
       if (req.body.attachmentType === ATTACHMENT_TYPE.REPORT) {
         await attachmentService.removeAllSecurityFromProjectReportAttachment(Number(req.params.attachmentId));
 
-        await deleteProjectReportAttachmentAuthors(Number(req.params.attachmentId), connection);
+        await attachmentService.deleteProjectReportAttachmentAuthors(Number(req.params.attachmentId));
 
         deleteResult = await deleteProjectReportAttachment(Number(req.params.attachmentId), connection);
       } else {

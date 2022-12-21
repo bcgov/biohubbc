@@ -163,7 +163,6 @@ export function getProjectReportDetails(): RequestHandler {
     if (!req.params.projectId) {
       throw new HTTP400('Missing required path param `projectId`');
     }
-
     if (!req.params.attachmentId) {
       throw new HTTP400('Missing required path param `attachmentId`');
     }
