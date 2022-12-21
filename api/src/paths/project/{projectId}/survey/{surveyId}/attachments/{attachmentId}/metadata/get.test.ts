@@ -6,11 +6,9 @@ import * as db from '../../../../../../../../database/db';
 import { HTTPError } from '../../../../../../../../errors/http-error';
 import {
   IProjectReportAttachment,
-  IReportAttachmentAuthor,
-  ISurveyReportSecurityReason
+  IReportAttachmentAuthor
 } from '../../../../../../../../repositories/attachment-repository';
 import { AttachmentService } from '../../../../../../../../services/attachment-service';
-import { SecuritySearchService } from '../../../../../../../../services/security-search-service';
 import { getMockDBConnection } from '../../../../../../../../__mocks__/db';
 import * as get from './get';
 
@@ -68,26 +66,6 @@ describe('getSurveyReportDetails', () => {
       .stub(AttachmentService.prototype, 'getSurveyAttachmentAuthors')
       .resolves([({ author: 2 } as unknown) as IReportAttachmentAuthor]);
 
-    const getSurveyReportAttachmentSecurityReasonsStub = sinon
-      .stub(AttachmentService.prototype, 'getSurveyReportAttachmentSecurityReasons')
-      .resolves([
-        ({
-          persecution_security_id: 1,
-          user_identifier: 'user',
-          create_date: 'date'
-        } as unknown) as ISurveyReportSecurityReason
-      ]);
-
-    const getPersecutionSecurityRulesStub = sinon
-      .stub(SecuritySearchService.prototype, 'getPersecutionSecurityRules')
-      .resolves([
-        {
-          reasonTitle: 'title',
-          reasonDescription: 'desc',
-          expirationDate: 'date'
-        }
-      ]);
-
     const expectedResponse = {
       metadata: { report: 1 },
       authors: [{ author: 2 }],
@@ -120,7 +98,5 @@ describe('getSurveyReportDetails', () => {
     expect(actualResult).to.eql(expectedResponse);
     expect(getSurveyReportAttachmentByIdStub).to.be.calledOnce;
     expect(getSurveyAttachmentAuthorsStub).to.be.calledOnce;
-    expect(getSurveyReportAttachmentSecurityReasonsStub).to.be.calledOnce;
-    expect(getPersecutionSecurityRulesStub).to.be.calledOnce;
   });
 });

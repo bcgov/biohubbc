@@ -132,7 +132,8 @@ begin
     , lead_last_name
     , geography
     , ecological_season_id
-    , intended_outcome_id)
+    , intended_outcome_id
+    , field_method_id)
   values (_project_id
     , 'survey name'
     , 'survey objectives'
@@ -143,7 +144,8 @@ begin
     , 'lead last'
     , _geography
     , (select ecological_season_id from ecological_season where name = 'Growing')
-    , (select intended_outcome_id from intended_outcome where name = 'Survival')    
+    , (select intended_outcome_id from intended_outcome where name = 'Survival')
+    , (select field_method_id from field_method where name = 'Stratified Random Block')
     ) returning survey_id into _survey_id;
 
   insert into survey_proprietor (survey_id, first_nations_id, proprietor_type_id, rationale,disa_required)
@@ -180,7 +182,7 @@ begin
 
   -- occurrence
   -- occurrence submission 1
-  insert into occurrence_submission (survey_id, source, event_timestamp) values (_survey_id, 'BIOHUB BATCH', now()-interval '1 day') returning occurrence_submission_id into _occurrence_submission_id;
+  insert into occurrence_submission (survey_id, source, event_timestamp, input_file_name) values (_survey_id, 'BIOHUB BATCH', now()-interval '1 day', 'occurrence_filename.zip') returning occurrence_submission_id into _occurrence_submission_id;
   select count(1) into _count from occurrence_submission;
   assert _count = 1, 'FAIL occurrence_submission';
   insert into occurrence (occurrence_submission_id, taxonid, lifestage, eventdate, sex) values (_occurrence_submission_id, 'M-ALAL', 'Adult', now()-interval '10 day', 'male');
