@@ -11,7 +11,6 @@ import Icon from '@mdi/react';
 import AttachmentsList from 'components/attachments/AttachmentsList';
 import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
 import FileUploadWithMetaDialog from 'components/dialog/attachments/FileUploadWithMetaDialog';
-import SecurityDialog from 'components/dialog/attachments/SecurityDialog';
 import { IUploadHandler } from 'components/file-upload/FileUploadItem';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import {
@@ -105,12 +104,6 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
     // eslint-disable-next-line
   }, []);
 
-  const addSecurityReasons = async (securityReasons: number[]) => {
-    await biohubApi.security.addProjectSecurityReasons(projectId, securityReasons, selectedAttachmentRows);
-  };
-
-  const [securityDialogOpen, setSecurityDialogOpen] = useState(false);
-
   // Show/Hide Project Settings Menu
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
@@ -134,23 +127,6 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
           getAttachments(true);
         }}
         uploadHandler={getUploadHandler()}
-      />
-
-      <SecurityDialog
-        open={securityDialogOpen}
-        selectedSecurityRules={[]}
-        onAccept={async (securityReasons) => {
-          if (selectedAttachmentRows.length > 0) {
-            // formik form is retuning array of strings not numbers if printed out in console
-            // linter wrongly believes formik to be number[] so wrapped map in string to force values into number[]
-            await addSecurityReasons(
-              securityReasons.security_reasons.map((item) => parseInt(`${item.security_reason_id}`))
-            );
-          }
-          await getAttachments(true);
-          setSecurityDialogOpen(false);
-        }}
-        onClose={() => setSecurityDialogOpen(false)}
       />
 
       {/* Need to use the regular toolbar in lieu of these action toolbars given it doesn't support multiple buttons */}

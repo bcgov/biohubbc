@@ -115,8 +115,8 @@ export function getSurveyAttachments(): RequestHandler {
 
       const attachmentService = new AttachmentService(connection);
 
-      const attachmentsData = await attachmentService.getSurveyAttachmentsWithSecurityCounts(surveyId);
-      const reportAttachmentsData = await attachmentService.getSurveyReportAttachmentsWithSecurityCounts(surveyId);
+      const attachmentsData = await attachmentService.getSurveyAttachments(surveyId);
+      const reportAttachmentsData = await attachmentService.getSurveyReportAttachments(surveyId);
 
       await connection.commit();
 

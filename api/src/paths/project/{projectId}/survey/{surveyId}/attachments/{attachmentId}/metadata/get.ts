@@ -5,7 +5,6 @@ import { getDBConnection } from '../../../../../../../../database/db';
 import { HTTP400 } from '../../../../../../../../errors/http-error';
 import { authorizeRequestHandler } from '../../../../../../../../request-handlers/security/authorization';
 import { AttachmentService } from '../../../../../../../../services/attachment-service';
-import { SecuritySearchService } from '../../../../../../../../services/security-search-service';
 import { getLogger } from '../../../../../../../../utils/logger';
 
 const defaultLog = getLogger('/api/project/{projectId}/attachments/{attachmentId}/getSignedUrl');
@@ -26,7 +25,7 @@ export const GET: Operation = [
 ];
 
 GET.apiDoc = {
-  description: 'Retrieves the report metadata of a project attachment if filetype is Report.',
+  description: 'Retrieves the report metadata of a survey attachment if filetype is Report.',
   tags: ['attachment'],
   security: [
     {
@@ -70,7 +69,7 @@ GET.apiDoc = {
           schema: {
             title: 'metadata get response object',
             type: 'object',
-            required: ['metadata', 'authors', 'security_reasons'],
+            required: ['metadata', 'authors'],
             properties: {
               metadata: {
                 description: 'Report metadata general information object',
@@ -115,24 +114,6 @@ GET.apiDoc = {
                     },
                     last_name: {
                       type: 'string'
-                    }
-                  }
-                }
-              },
-              security_reasons: {
-                description: 'Report metadata security object',
-                type: 'array',
-                items: {
-                  type: 'object',
-                  properties: {
-                    project_report_author_id: {
-                      type: 'number'
-                    },
-                    project_report_attachment_id: {
-                      type: 'number'
-                    },
-                    persecution_security_id: {
-                      type: 'number'
                     }
                   }
                 }
@@ -193,30 +174,11 @@ export function getSurveyReportDetails(): RequestHandler {
 
       const surveyReportAuthors = await attachmentService.getSurveyAttachmentAuthors(Number(req.params.attachmentId));
 
-      const surveyReportSecurity = await attachmentService.getSurveyReportAttachmentSecurityReasons(
-        Number(req.params.attachmentId)
-      );
-      const securitySearchService = new SecuritySearchService();
-
-      const persecutionRules = await securitySearchService.getPersecutionSecurityRules();
-
       await connection.commit();
-
-      const mappedSecurityObj = surveyReportSecurity.map((item) => {
-        return {
-          security_reason_id: item.persecution_security_id,
-          security_reason_title: persecutionRules[item.persecution_security_id - 1].reasonTitle,
-          security_reason_description: persecutionRules[item.persecution_security_id - 1].reasonDescription,
-          date_expired: persecutionRules[item.persecution_security_id - 1].expirationDate,
-          user_identifier: item.user_identifier,
-          security_date_applied: item.create_date
-        };
-      });
 
       const reportDetails = {
         metadata: surveyReportAttachment,
-        authors: surveyReportAuthors,
-        security_reasons: mappedSecurityObj
+        authors: surveyReportAuthors
       };
 
       return res.status(200).json(reportDetails);

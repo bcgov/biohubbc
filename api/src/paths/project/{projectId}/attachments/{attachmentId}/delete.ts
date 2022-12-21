@@ -118,13 +118,10 @@ export function deleteAttachment(): RequestHandler {
 
       let deleteResult: { key: string };
       if (req.body.attachmentType === ATTACHMENT_TYPE.REPORT) {
-        await attachmentService.removeAllSecurityFromProjectReportAttachment(Number(req.params.attachmentId));
-
         await attachmentService.deleteProjectReportAttachmentAuthors(Number(req.params.attachmentId));
 
         deleteResult = await deleteProjectReportAttachment(Number(req.params.attachmentId), connection);
       } else {
-        await attachmentService.removeAllSecurityFromProjectAttachment(Number(req.params.attachmentId));
         deleteResult = await deleteProjectAttachment(Number(req.params.attachmentId), connection);
       }
 

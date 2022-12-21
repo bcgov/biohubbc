@@ -172,9 +172,7 @@ export interface IGetSurveyAttachment {
   lastModified: string;
   size: number;
   securityToken: any;
-  securityReviewTimestamp: string;
   revisionCount: number;
-  securityRuleCount?: number;
 }
 
 export type IGetSurveyReportAttachment = IGetSurveyAttachment & { fileType: 'Report' };
