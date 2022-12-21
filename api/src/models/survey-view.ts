@@ -9,7 +9,6 @@ export type SurveyObject = {
   funding: GetSurveyFundingSources;
   proprietor: GetSurveyProprietorData | null;
   location: GetSurveyLocationData;
-  docs_to_be_reviewed: number;
 };
 
 export class GetSurveyData {

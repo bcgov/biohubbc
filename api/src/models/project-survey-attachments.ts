@@ -24,8 +24,6 @@ export class GetAttachmentsData {
         lastModified: moment(item.update_date || item.create_date).toISOString(),
         size: item.file_size,
         securityToken: item.security_token,
-        securityReviewTimestamp: item.security_review_timestamp,
-        securityRuleCount: item.security_rule_count && Number(item.security_rule_count),
         status: item.status
       };
     };
@@ -38,15 +36,6 @@ export class GetAttachmentsData {
 export interface IReportAttachmentAuthor {
   first_name: string;
   last_name: string;
-}
-
-export interface ISecurityReason {
-  security_reason_id: number;
-  category: string;
-  sub_category: string;
-  reason: string;
-  reason_description: string;
-  date_expired: string;
 }
 
 export class PostReportAttachmentMetadata {
@@ -82,9 +71,8 @@ export class GetReportAttachmentMetadata {
   revision_count: number;
   security_review_timestamp: string;
   authors: IReportAttachmentAuthor[];
-  security_reasons: ISecurityReason[];
 
-  constructor(metaObj?: any, authorObj?: any, securityObj?: any) {
+  constructor(metaObj?: any, authorObj?: any) {
     this.attachment_id = (metaObj && metaObj?.attachment_id) || null;
     this.title = (metaObj && metaObj?.title) || null;
     this.last_modified = (metaObj && metaObj?.update_date.toString()) || null;
@@ -98,19 +86,6 @@ export class GetReportAttachmentMetadata {
           return {
             first_name: author?.first_name,
             last_name: author?.last_name
-          };
-        })) ||
-      [];
-    this.security_reasons =
-      (securityObj &&
-        securityObj?.map((reason: any) => {
-          return {
-            security_reason_id: reason?.security_reason_id,
-            category: reason?.category,
-            sub_category: reason?.sub_category,
-            reason: reason?.reason,
-            reason_description: reason?.reason_description,
-            date_submitted: this.last_modified
           };
         })) ||
       [];

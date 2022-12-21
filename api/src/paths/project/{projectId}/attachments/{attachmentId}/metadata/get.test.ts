@@ -6,11 +6,9 @@ import * as db from '../../../../../../database/db';
 import { HTTPError } from '../../../../../../errors/http-error';
 import {
   IProjectReportAttachment,
-  IProjectReportSecurityReason,
   IReportAttachmentAuthor
 } from '../../../../../../repositories/attachment-repository';
 import { AttachmentService } from '../../../../../../services/attachment-service';
-import { SecuritySearchService } from '../../../../../../services/security-search-service';
 import { getMockDBConnection } from '../../../../../../__mocks__/db';
 import * as get from './get';
 
@@ -116,39 +114,9 @@ describe('getProjectReportDetails', () => {
       .stub(AttachmentService.prototype, 'getProjectReportAttachmentAuthors')
       .resolves([({ author: 2 } as unknown) as IReportAttachmentAuthor]);
 
-    const getProjectReportAttachmentSecurityReasonsStub = sinon
-      .stub(AttachmentService.prototype, 'getProjectReportAttachmentSecurityReasons')
-      .resolves([
-        ({
-          persecution_security_id: 1,
-          user_identifier: 'user',
-          create_date: 'date'
-        } as unknown) as IProjectReportSecurityReason
-      ]);
-
-    const getPersecutionSecurityRulesStub = sinon
-      .stub(SecuritySearchService.prototype, 'getPersecutionSecurityRules')
-      .resolves([
-        ({
-          reasonTitle: 'title',
-          reasonDescription: 'desc',
-          expirationDate: 'date'
-        } as unknown) as IProjectReportSecurityReason
-      ]);
-
     const expectedResponse = {
       metadata: { report: 1 },
-      authors: [{ author: 2 }],
-      security_reasons: [
-        {
-          security_reason_id: 1,
-          security_reason_title: 'title',
-          security_reason_description: 'desc',
-          date_expired: 'date',
-          user_identifier: 'user',
-          security_date_applied: 'date'
-        }
-      ]
+      authors: [{ author: 2 }]
     };
 
     let actualResult: any = null;
@@ -168,7 +136,5 @@ describe('getProjectReportDetails', () => {
     expect(actualResult).to.eql(expectedResponse);
     expect(getProjectReportAttachmentByIdStub).to.be.calledOnce;
     expect(getProjectReportAttachmentAuthorsStub).to.be.calledOnce;
-    expect(getProjectReportAttachmentSecurityReasonsStub).to.be.calledOnce;
-    expect(getPersecutionSecurityRulesStub).to.be.calledOnce;
   });
 });
