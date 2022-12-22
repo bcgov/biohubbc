@@ -18,8 +18,7 @@ export interface IAttachmentType {
 }
 
 /**
- * A repository class for accessing project and survey attachment data and
- * enumerating attachment security rules.
+ * A repository class for accessing project and survey attachment data.
  *
  * @export
  * @class AttachmentRepository

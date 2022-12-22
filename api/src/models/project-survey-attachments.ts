@@ -23,7 +23,6 @@ export class GetAttachmentsData {
         fileType: item.file_type || 'Report',
         lastModified: moment(item.update_date || item.create_date).toISOString(),
         size: item.file_size,
-        securityToken: item.security_token,
         status: item.status
       };
     };
@@ -69,7 +68,6 @@ export class GetReportAttachmentMetadata {
   description: string;
   year_published: number;
   revision_count: number;
-  security_review_timestamp: string;
   authors: IReportAttachmentAuthor[];
 
   constructor(metaObj?: any, authorObj?: any) {
@@ -79,7 +77,6 @@ export class GetReportAttachmentMetadata {
     this.description = (metaObj && metaObj?.description) || null;
     this.year_published = Number((metaObj && metaObj?.year_published) || null);
     this.revision_count = (metaObj && metaObj?.revision_count) || null;
-    this.security_review_timestamp = (metaObj && metaObj?.security_review_timestamp) || null;
     this.authors =
       (authorObj &&
         authorObj?.map((author: any) => {

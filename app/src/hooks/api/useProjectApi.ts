@@ -68,18 +68,15 @@ const useProjectApi = (axios: AxiosInstance) => {
    * @param {number} projectId
    * @param {number} attachmentId
    * @param {string} attachmentType
-   * @param {any} securityToken
    * @returns {*} {Promise<number>}
    */
   const deleteProjectAttachment = async (
     projectId: number,
     attachmentId: number,
-    attachmentType: string,
-    securityToken: string
+    attachmentType: string
   ): Promise<number> => {
     const { data } = await axios.post(`/api/project/${projectId}/attachments/${attachmentId}/delete`, {
-      attachmentType,
-      securityToken
+      attachmentType
     });
 
     return data;
@@ -286,29 +283,6 @@ const useProjectApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Make security status of project attachment unsecure.
-   *
-   * @param {number} projectId
-   * @param {number} attachmentId
-   * @param {any} securityToken
-   * @param {string} attachmentType
-   * @return {*}  {Promise<any>}
-   */
-  const makeAttachmentUnsecure = async (
-    projectId: number,
-    attachmentId: number,
-    securityToken: string,
-    attachmentType: string
-  ): Promise<any> => {
-    const { data } = await axios.put(`/api/project/${projectId}/attachments/${attachmentId}/makeUnsecure`, {
-      securityToken,
-      attachmentType
-    });
-
-    return data;
-  };
-
-  /**
    * Delete funding source based on project and funding source ID
    *
    * @param {number} projectId
@@ -444,7 +418,6 @@ const useProjectApi = (axios: AxiosInstance) => {
     deleteFundingSource,
     addFundingSource,
     deleteProject,
-    makeAttachmentUnsecure,
     getProjectReportDetails,
     getProjectAttachmentDetails,
     getProjectParticipants,

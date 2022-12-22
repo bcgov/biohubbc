@@ -119,7 +119,7 @@ const ProjectReportAttachmentDialog: React.FC<IProjectReportAttachmentDialogProp
             title={reportAttachmentDetailsDataLoader.data?.metadata?.title || ''}
             onFileDownload={openAttachmentFromReportMetaDialog}
             onSave={handleDialogEditSave}
-            securityDetails={reportAttachmentDetailsDataLoader.data || null}
+            reportAttachmentDetails={reportAttachmentDetailsDataLoader.data || null}
             attachmentSize={(props.currentAttachment && getFormattedFileSize(props.currentAttachment.size)) || '0 KB'}
             refresh={() =>
               props.currentAttachment?.id && reportAttachmentDetailsDataLoader.refresh(props.currentAttachment.id)

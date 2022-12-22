@@ -138,19 +138,13 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
 
     try {
       if (!props.surveyId) {
-        await biohubApi.project.deleteProjectAttachment(
-          props.projectId,
-          attachment.id,
-          attachment.fileType,
-          attachment.securityToken
-        );
+        await biohubApi.project.deleteProjectAttachment(props.projectId, attachment.id, attachment.fileType);
       } else if (props.surveyId) {
         await biohubApi.survey.deleteSurveyAttachment(
           props.projectId,
           props.surveyId,
           attachment.id,
-          attachment.fileType,
-          attachment.securityToken
+          attachment.fileType
         );
       }
 

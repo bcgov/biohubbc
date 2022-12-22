@@ -4,7 +4,6 @@ import {
   UnAuthenticatedRouteGuard
 } from 'components/security/RouteGuards';
 import { SYSTEM_ROLE } from 'constants/roles';
-import AdminDashboard from 'features/admin/AdminDashboard';
 import AdminUsersRouter from 'features/admin/AdminUsersRouter';
 import ProjectsRouter from 'features/projects/ProjectsRouter';
 import ResourcesPage from 'features/resources/ResourcesPage';
@@ -50,12 +49,6 @@ const AppRouter: React.FC = () => {
       </AppRoute>
 
       <Redirect exact from="/admin" to="/admin/projects" />
-
-      <AppRoute path="/admin/dashboard" title={getTitle('Dashboard')} layout={BaseLayout}>
-        <AuthenticatedRouteGuard>
-          <AdminDashboard />
-        </AuthenticatedRouteGuard>
-      </AppRoute>
 
       <AppRoute path="/admin/projects" title={getTitle('Projects')} layout={BaseLayout}>
         <AuthenticatedRouteGuard>
