@@ -284,7 +284,6 @@ export const getReportAttachmentsByProjectSQL = (projectId: number): SQLStatemen
       , pra.year
       , pra."key"
       , pra.file_size
-      , pra.security_token
 	    , array_remove(array_agg(pra2.first_name ||' '||pra2.last_name), null) authors
     FROM
     	project_report_attachment pra
@@ -298,8 +297,7 @@ export const getReportAttachmentsByProjectSQL = (projectId: number): SQLStatemen
       , pra.description
       , pra.year
       , pra."key"
-      , pra.file_size
-      , pra.security_token;
+      , pra.file_size;
   `;
 };
 
