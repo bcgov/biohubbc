@@ -614,4 +614,8 @@ export class SurveyService extends DBService {
       throw new ApiGeneralError('Failed to delete survey vantage codes');
     }
   }
+
+  async deleteSurvey(surveyId: number): Promise<void> {
+    return this.surveyRepository.deleteSurvey(surveyId);
+  }
 }

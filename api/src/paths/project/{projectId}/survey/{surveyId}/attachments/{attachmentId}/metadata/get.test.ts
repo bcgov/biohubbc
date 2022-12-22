@@ -68,17 +68,7 @@ describe('getSurveyReportDetails', () => {
 
     const expectedResponse = {
       metadata: { report: 1 },
-      authors: [{ author: 2 }],
-      security_reasons: [
-        {
-          security_reason_id: 1,
-          security_reason_title: 'title',
-          security_reason_description: 'desc',
-          date_expired: 'date',
-          user_identifier: 'user',
-          security_date_applied: 'date'
-        }
-      ]
+      authors: [{ author: 2 }]
     };
 
     let actualResult: any = null;
