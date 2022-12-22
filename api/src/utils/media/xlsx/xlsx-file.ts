@@ -25,36 +25,62 @@ export class XLSXCSV {
     this.workbook = new CSVWorkBook(xlsx.read(this.rawFile.buffer, { ...options }));
   }
 
-  isMediaValid(validationSchemaParser: ValidationSchemaParser): IMediaState {
+  /**
+   * Runs all media-related validation for this CSV file, based on given validation schema parser.
+   * @param validationSchemaParser The validation schema
+   * @returns {*} {void}
+   * @memberof XLSXCSV
+   */
+  validateMedia(validationSchemaParser: ValidationSchemaParser): void {
     const validators = validationSchemaParser.getSubmissionValidations();
 
-    const mediaValidation = this.validate(validators as XLSXCSVValidator[]);
-
-    return mediaValidation.getState();
+    this.validate(validators as XLSXCSVValidator[]);
   }
 
-  isContentValid(validationSchemaParser: ValidationSchemaParser): ICsvState[] {
-    const csvStates: ICsvState[] = [];
+  /**
+   * Runs all content and workbook-related validation for this CSV file, based on the given validation
+   * schema parser.
+   *
+   * @param {ValidationSchemaParser} validationSchemaParser The validation schema
+   * @return {*}  {void}
+   * @memberof XLSXCSV
+   *
+   * @TODO Evaluating `fileName !== 'Picklist Values'` might be an extraneous check.
+   */
+  validateContent(validationSchemaParser: ValidationSchemaParser): void {
+    // Run workbook validators.
+    const workbookValidators = validationSchemaParser.getWorkbookValidations();
+    this.workbook.validate(workbookValidators);
 
-    Object.keys(this.workbook.worksheets).forEach((fileName) => {
+    // Run content validators.
+    Object.entries(this.workbook.worksheets).forEach(([fileName, worksheet]) => {
       const fileValidators = validationSchemaParser.getFileValidations(fileName);
-
       const columnValidators = validationSchemaParser.getAllColumnValidations(fileName);
 
-      const validators = [...fileValidators, ...columnValidators];
-
-      const worksheet: CSVWorksheet = this.workbook.worksheets[fileName];
-
-      if (!worksheet || fileName === 'Picklist Values') {
-        return;
+      if (worksheet && fileName !== 'Picklist Values') {
+        worksheet.validate([...fileValidators, ...columnValidators]);
       }
-
-      const csvValidation = worksheet.validate(validators);
-
-      csvStates.push(csvValidation.getState());
     });
+  }
 
-    return csvStates;
+  /**
+   * Returns the current media state belonging to the CSV file.
+   * @returns {*} {IMediaState} The state of the CSV media.
+   * @memberof XLSXCSV
+   */
+  getMediaState(): IMediaState {
+    return this.mediaValidation.getState();
+  }
+
+  /**
+   * Returns the current CSV states belonging to all worksheets in the CSV file.
+   * @returns {*} {ICsvState[]} The state of each worksheet in the CSV file.
+   * @memberof XLSXCSV
+   */
+  getContentState(): ICsvState[] {
+    return Object.values(this.workbook.worksheets)
+      .map((worksheet: CSVWorksheet) => worksheet.csvValidation.getState())
+      .filter(Boolean);
   }
 
   worksheetToBuffer(worksheet: xlsx.WorkSheet): Buffer {
