@@ -2,9 +2,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { ATTACHMENT_TYPE } from '../../../../../constants/attachments';
 import { PROJECT_ROLE } from '../../../../../constants/roles';
-import { getDBConnection, IDBConnection } from '../../../../../database/db';
-import { HTTP400 } from '../../../../../errors/http-error';
-import { queries } from '../../../../../queries/queries';
+import { getDBConnection } from '../../../../../database/db';
 import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
 import { AttachmentService } from '../../../../../services/attachment-service';
 import { deleteFileFromS3 } from '../../../../../utils/file-utils';
@@ -38,7 +36,8 @@ POST.apiDoc = {
       in: 'path',
       name: 'projectId',
       schema: {
-        type: 'number'
+        type: 'integer',
+        minimum: 1
       },
       required: true
     },
@@ -46,7 +45,8 @@ POST.apiDoc = {
       in: 'path',
       name: 'attachmentId',
       schema: {
-        type: 'number'
+        type: 'integer',
+        minimum: 1
       },
       required: true
     }
@@ -93,18 +93,6 @@ export function deleteAttachment(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({ label: 'Delete attachment', message: 'params', req_params: req.params });
 
-    if (!req.params.projectId) {
-      throw new HTTP400('Missing required path param `projectId`');
-    }
-
-    if (!req.params.attachmentId) {
-      throw new HTTP400('Missing required path param `attachmentId`');
-    }
-
-    if (!req.body || !req.body.attachmentType) {
-      throw new HTTP400('Missing required body param `attachmentType`');
-    }
-
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
@@ -116,9 +104,9 @@ export function deleteAttachment(): RequestHandler {
       if (req.body.attachmentType === ATTACHMENT_TYPE.REPORT) {
         await attachmentService.deleteProjectReportAttachmentAuthors(Number(req.params.attachmentId));
 
-        deleteResult = await deleteProjectReportAttachment(Number(req.params.attachmentId), connection);
+        deleteResult = await attachmentService.deleteProjectReportAttachment(Number(req.params.attachmentId));
       } else {
-        deleteResult = await deleteProjectAttachment(Number(req.params.attachmentId), connection);
+        deleteResult = await attachmentService.deleteProjectAttachment(Number(req.params.attachmentId));
       }
 
       await connection.commit();
@@ -139,41 +127,3 @@ export function deleteAttachment(): RequestHandler {
     }
   };
 }
-
-export const deleteProjectAttachment = async (
-  attachmentId: number,
-  connection: IDBConnection
-): Promise<{ key: string }> => {
-  const sqlStatement = queries.project.deleteProjectAttachmentSQL(attachmentId);
-
-  if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL delete project attachment statement');
-  }
-
-  const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
-  if (!response || !response.rowCount) {
-    throw new HTTP400('Failed to delete project attachment record');
-  }
-
-  return response.rows[0];
-};
-
-export const deleteProjectReportAttachment = async (
-  attachmentId: number,
-  connection: IDBConnection
-): Promise<{ key: string }> => {
-  const sqlStatement = queries.project.deleteProjectReportAttachmentSQL(attachmentId);
-
-  if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL delete project report attachment statement');
-  }
-
-  const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
-  if (!response || !response.rowCount) {
-    throw new HTTP400('Failed to delete project attachment report record');
-  }
-
-  return response.rows[0];
-};

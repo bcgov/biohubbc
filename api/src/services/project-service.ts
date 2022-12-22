@@ -1,4 +1,5 @@
 import moment from 'moment';
+import { QueryResult } from 'pg';
 import { PROJECT_ROLE } from '../constants/roles';
 import { COMPLETION_STATUS } from '../constants/status';
 import { IDBConnection } from '../database/db';
@@ -26,7 +27,6 @@ import {
   GetReportAttachmentsData,
   IGetProject
 } from '../models/project-view';
-import { getSurveyAttachmentS3Keys } from '../paths/project/{projectId}/survey/{surveyId}/delete';
 import { GET_ENTITIES, IUpdateProject } from '../paths/project/{projectId}/update';
 import { queries } from '../queries/queries';
 import { ProjectRepository } from '../repositories/project-repository';
@@ -36,10 +36,12 @@ import { DBService } from './db-service';
 
 export class ProjectService extends DBService {
   attachmentService: AttachmentService;
+  projectRepository: ProjectRepository;
 
   constructor(connection: IDBConnection) {
     super(connection);
     this.attachmentService = new AttachmentService(connection);
+    this.projectRepository = new ProjectRepository(connection);
   }
 
   /**
@@ -886,10 +888,15 @@ export class ProjectService extends DBService {
       throw new HTTP400('Failed to get survey ids associated to project');
     }
 
+    const attachmentService = new AttachmentService(this.connection);
+
     const surveyAttachmentS3Keys: string[] = Array.prototype.concat.apply(
       [],
       await Promise.all(
-        getSurveyIdsResult.rows.map((survey: any) => getSurveyAttachmentS3Keys(survey.id, this.connection))
+        getSurveyIdsResult.rows.map(async (survey: any) => {
+          const surveyAttachments = await attachmentService.getSurveyAttachments(survey.id);
+          return surveyAttachments.map((attachment) => attachment.key);
+        })
       )
     );
 
@@ -923,5 +930,17 @@ export class ProjectService extends DBService {
     }
 
     return true;
+  }
+
+  async deleteDraft(draftId: number): Promise<QueryResult> {
+    return this.projectRepository.deleteDraft(draftId);
+  }
+
+  async getSingleDraft(draftId: number): Promise<{ id: number; name: string; data: any }> {
+    return this.projectRepository.getSingleDraft(draftId);
+  }
+
+  async deleteProjectParticipationRecord(projectParticipationId: number): Promise<any> {
+    return this.projectRepository.deleteProjectParticipationRecord(projectParticipationId);
   }
 }

@@ -2,7 +2,6 @@ import { expect } from 'chai';
 import { describe } from 'mocha';
 import {
   addProjectRoleByRoleNameSQL,
-  deleteProjectParticipationSQL,
   getAllProjectParticipantsSQL,
   getAllUserProjectsSQL,
   getProjectParticipationBySystemUserSQL
@@ -77,20 +76,6 @@ describe('addProjectRoleByRoleNameSQL', () => {
 
   it('returns non null response when valid parameters provided', () => {
     const response = addProjectRoleByRoleNameSQL(1, 2, 'role');
-
-    expect(response).to.not.be.null;
-  });
-});
-
-describe('deleteProjectParticipationSQL', () => {
-  it('returns null response when null projectParticipationId provided', () => {
-    const response = deleteProjectParticipationSQL((null as unknown) as number);
-
-    expect(response).to.be.null;
-  });
-
-  it('returns non null response when valid parameters provided', () => {
-    const response = deleteProjectParticipationSQL(1);
 
     expect(response).to.not.be.null;
   });

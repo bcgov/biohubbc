@@ -37,6 +37,10 @@ POST.apiDoc = {
     {
       in: 'path',
       name: 'projectId',
+      schema: {
+        type: 'integer',
+        minimum: 1
+      },
       required: true
     }
   ],
@@ -106,10 +110,6 @@ POST.apiDoc = {
 export function uploadMedia(): RequestHandler {
   return async (req, res) => {
     const rawMediaArray: Express.Multer.File[] = req.files as Express.Multer.File[];
-
-    if (!req.params.projectId) {
-      throw new HTTP400('Missing projectId');
-    }
 
     if (!rawMediaArray || !rawMediaArray.length) {
       // no media objects included, skipping media upload step

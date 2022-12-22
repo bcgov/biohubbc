@@ -8,9 +8,9 @@ import { IProjectIUCNForm } from 'features/projects/components/ProjectIUCNForm';
 import { IProjectLocationForm } from 'features/projects/components/ProjectLocationForm';
 import { IProjectObjectivesForm } from 'features/projects/components/ProjectObjectivesForm';
 import { IProjectPartnershipsForm } from 'features/projects/components/ProjectPartnershipsForm';
-import { IProjectPermitForm } from 'features/surveys/SurveyPermitForm';
-import { UPDATE_GET_ENTITIES } from 'interfaces/useProjectApi.interface';
+import { ICreateProjectRequest, UPDATE_GET_ENTITIES } from 'interfaces/useProjectApi.interface';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
+import { ISurveyPermitForm } from '../../features/surveys/SurveyPermitForm';
 import useProjectApi from './useProjectApi';
 
 describe('useProjectApi', () => {
@@ -94,7 +94,7 @@ describe('useProjectApi', () => {
   it('deleteProjectAttachment works as expected', async () => {
     mock.onPost(`/api/project/${projectId}/attachments/${attachmentId}/delete`).reply(200, 1);
 
-    const result = await useProjectApi(axios).deleteProjectAttachment(projectId, attachmentId, attachmentType, 'token');
+    const result = await useProjectApi(axios).deleteProjectAttachment(projectId, attachmentId, attachmentType);
 
     expect(result).toEqual(1);
   });
@@ -157,7 +157,6 @@ describe('useProjectApi', () => {
     const result = await useProjectApi(axios).updateProject(projectId, {
       objectives: {
         objectives: 'objectives',
-        caveats: 'caveats',
         revision_count: 1
       }
     });
@@ -200,16 +199,16 @@ describe('useProjectApi', () => {
   });
 
   it('createProject works as expected', async () => {
-    const projectData = {
+    const projectData = ({
       coordinator: (null as unknown) as IProjectCoordinatorForm,
-      permit: (null as unknown) as IProjectPermitForm,
+      permit: (null as unknown) as ISurveyPermitForm,
       project: (null as unknown) as IProjectDetailsForm,
       objectives: (null as unknown) as IProjectObjectivesForm,
       location: (null as unknown) as IProjectLocationForm,
       iucn: (null as unknown) as IProjectIUCNForm,
       funding: (null as unknown) as IProjectFundingForm,
       partnerships: (null as unknown) as IProjectPartnershipsForm
-    };
+    } as unknown) as ICreateProjectRequest;
 
     mock.onPost('/api/project/create').reply(200, {
       id: 1

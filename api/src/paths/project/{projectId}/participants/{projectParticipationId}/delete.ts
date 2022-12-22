@@ -1,9 +1,8 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../../../../constants/roles';
-import { getDBConnection, IDBConnection } from '../../../../../database/db';
+import { getDBConnection } from '../../../../../database/db';
 import { HTTP400, HTTP500 } from '../../../../../errors/http-error';
-import { queries } from '../../../../../queries/queries';
 import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
 import { ProjectService } from '../../../../../services/project-service';
 import { getLogger } from '../../../../../utils/logger';
@@ -39,7 +38,8 @@ DELETE.apiDoc = {
       in: 'path',
       name: 'projectId',
       schema: {
-        type: 'number'
+        type: 'integer',
+        minimum: 1
       },
       required: true
     },
@@ -47,7 +47,8 @@ DELETE.apiDoc = {
       in: 'path',
       name: 'projectParticipationId',
       schema: {
-        type: 'number'
+        type: 'integer',
+        minimum: 1
       },
       required: true
     }
@@ -79,14 +80,6 @@ export function deleteProjectParticipant(): RequestHandler {
     const projectId = Number(req.params.projectId);
     const projectParticipationId = Number(req.params.projectParticipationId);
 
-    if (!projectId) {
-      throw new HTTP400('Missing required path param `projectId`');
-    }
-
-    if (!projectParticipationId) {
-      throw new HTTP400('Missing required path param `projectParticipationId`');
-    }
-
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
@@ -98,7 +91,7 @@ export function deleteProjectParticipant(): RequestHandler {
       const projectParticipantsResponse1 = await projectService.getProjectParticipants(projectId);
       const projectHasLeadResponse1 = doAllProjectsHaveAProjectLead(projectParticipantsResponse1);
 
-      const result = await deleteProjectParticipationRecord(projectParticipationId, connection);
+      const result = await projectService.deleteProjectParticipationRecord(projectParticipationId);
 
       if (!result || !result.system_user_id) {
         // The delete result is missing necesary data, fail the request
@@ -128,22 +121,3 @@ export function deleteProjectParticipant(): RequestHandler {
     }
   };
 }
-
-export const deleteProjectParticipationRecord = async (
-  projectParticipationId: number,
-  connection: IDBConnection
-): Promise<any> => {
-  const sqlStatement = queries.projectParticipation.deleteProjectParticipationSQL(projectParticipationId);
-
-  if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL delete statement');
-  }
-
-  const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
-  if (!response || !response.rowCount) {
-    throw new HTTP500('Failed to delete project team member');
-  }
-
-  return response.rows[0];
-};

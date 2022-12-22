@@ -19,17 +19,20 @@ import {
 } from '../models/survey-view';
 import { queries } from '../queries/queries';
 import { AttachmentRepository } from '../repositories/attachment-repository';
+import { SurveyRepository } from '../repositories/survey-repository';
 import { DBService } from './db-service';
 import { PermitService } from './permit-service';
 import { TaxonomyService } from './taxonomy-service';
 
 export class SurveyService extends DBService {
   attachmentRepository: AttachmentRepository;
+  surveyRepository: SurveyRepository;
 
   constructor(connection: IDBConnection) {
     super(connection);
 
     this.attachmentRepository = new AttachmentRepository(connection);
+    this.surveyRepository = new SurveyRepository(connection);
   }
 
   async getSurveyIdsByProjectId(projectId: number): Promise<{ id: number }[]> {
@@ -610,5 +613,9 @@ export class SurveyService extends DBService {
     if (!response) {
       throw new ApiGeneralError('Failed to delete survey vantage codes');
     }
+  }
+
+  async deleteSurvey(surveyId: number): Promise<void> {
+    return this.surveyRepository.deleteSurvey(surveyId);
   }
 }

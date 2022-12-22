@@ -1,12 +1,11 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../../../../constants/roles';
-import { getDBConnection, IDBConnection } from '../../../../../database/db';
-import { HTTP400 } from '../../../../../errors/http-error';
-import { queries } from '../../../../../queries/queries';
+import { getDBConnection } from '../../../../../database/db';
 import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
 import { AttachmentService } from '../../../../../services/attachment-service';
 import { PlatformService } from '../../../../../services/platform-service';
+import { SurveyService } from '../../../../../services/survey-service';
 import { deleteFileFromS3 } from '../../../../../utils/file-utils';
 import { getLogger } from '../../../../../utils/logger';
 
@@ -81,10 +80,6 @@ export function deleteSurvey(): RequestHandler {
     const projectId = Number(req.params.projectId);
     const surveyId = Number(req.params.surveyId);
 
-    if (!surveyId) {
-      throw new HTTP400('Missing required path param `surveyId`');
-    }
-
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
@@ -94,15 +89,17 @@ export function deleteSurvey(): RequestHandler {
        * Get the attachment S3 keys for all attachments associated to this survey
        * Used to delete them from S3 separately later
        */
-      const surveyAttachmentS3Keys: string[] = await getSurveyAttachmentS3Keys(surveyId, connection);
+      const attachmentService = new AttachmentService(connection);
+
+      const surveyAttachments = await attachmentService.getSurveyAttachments(surveyId);
+      const surveyAttachmentS3Keys: string[] = surveyAttachments.map((attachment) => attachment.key);
 
       /**
        * PART 2
        * Delete the survey and all associated records/resources from our DB
        */
-      const deleteSurveySQLStatement = queries.survey.deleteSurveySQL(surveyId);
-
-      await connection.query(deleteSurveySQLStatement.text, deleteSurveySQLStatement.values);
+      const surveyService = new SurveyService(connection);
+      await surveyService.deleteSurvey(surveyId);
 
       /**
        * PART 3
@@ -134,10 +131,3 @@ export function deleteSurvey(): RequestHandler {
     }
   };
 }
-
-export const getSurveyAttachmentS3Keys = async (surveyId: number, connection: IDBConnection) => {
-  const attachmentService = new AttachmentService(connection);
-
-  const surveyAttachments = await attachmentService.getSurveyAttachments(surveyId);
-  return surveyAttachments.map((attachment) => attachment.key);
-};

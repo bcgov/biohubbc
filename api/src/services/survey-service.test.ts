@@ -27,6 +27,64 @@ import { TaxonomyService } from './taxonomy-service';
 chai.use(sinonChai);
 
 describe('SurveyService', () => {
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  describe('getSurveyById', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('calls all functions and returns survey object', async () => {
+      const dbConnectionObj = getMockDBConnection();
+
+      const surveyService = new SurveyService(dbConnectionObj);
+
+      const getSurveyDataStub = sinon
+        .stub(SurveyService.prototype, 'getSurveyData')
+        .resolves(({ data: 'surveyData' } as unknown) as any);
+      const getSpeciesDataStub = sinon
+        .stub(SurveyService.prototype, 'getSpeciesData')
+        .resolves(({ data: 'speciesData' } as unknown) as any);
+      const getPermitDataStub = sinon
+        .stub(SurveyService.prototype, 'getPermitData')
+        .resolves(({ data: 'permitData' } as unknown) as any);
+      const getSurveyFundingSourcesDataStub = sinon
+        .stub(SurveyService.prototype, 'getSurveyFundingSourcesData')
+        .resolves(({ data: 'fundingData' } as unknown) as any);
+      const getSurveyPurposeAndMethodologyStub = sinon
+        .stub(SurveyService.prototype, 'getSurveyPurposeAndMethodology')
+        .resolves(({ data: 'purposeAndMethodologyData' } as unknown) as any);
+      const getSurveyProprietorDataForViewStub = sinon
+        .stub(SurveyService.prototype, 'getSurveyProprietorDataForView')
+        .resolves(({ data: 'proprietorData' } as unknown) as any);
+      const getSurveyLocationDataStub = sinon
+        .stub(SurveyService.prototype, 'getSurveyLocationData')
+        .resolves(({ data: 'locationData' } as unknown) as any);
+
+      const response = await surveyService.getSurveyById(1);
+
+      expect(getSurveyDataStub).to.be.calledOnce;
+      expect(getSpeciesDataStub).to.be.calledOnce;
+      expect(getPermitDataStub).to.be.calledOnce;
+      expect(getSurveyFundingSourcesDataStub).to.be.calledOnce;
+      expect(getSurveyPurposeAndMethodologyStub).to.be.calledOnce;
+      expect(getSurveyProprietorDataForViewStub).to.be.calledOnce;
+      expect(getSurveyLocationDataStub).to.be.calledOnce;
+
+      expect(response).to.eql({
+        survey_details: { data: 'surveyData' },
+        species: { data: 'speciesData' },
+        permit: { data: 'permitData' },
+        purpose_and_methodology: { data: 'purposeAndMethodologyData' },
+        funding: { data: 'fundingData' },
+        proprietor: { data: 'proprietorData' },
+        location: { data: 'locationData' }
+      });
+    });
+  });
+
   describe('updateSurvey', () => {
     afterEach(() => {
       sinon.restore();
