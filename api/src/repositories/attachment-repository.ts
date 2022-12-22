@@ -498,13 +498,6 @@ export class AttachmentRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement);
 
-    if (!response.rowCount) {
-      throw new ApiExecuteSQLError('Failed to get project attachment by filename', [
-        'AttachmentRepository->getProjectAttachmentByFileName',
-        'rows was null or undefined, expected rows != null'
-      ]);
-    }
-
     return response;
   }
 
@@ -594,13 +587,6 @@ export class AttachmentRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement);
 
-    if (!response.rowCount) {
-      throw new ApiExecuteSQLError('Failed to delete attachment report authors records', [
-        'AttachmentRepository->deleteProjectReportAttachmentAuthors',
-        'rows was null or undefined, expected rows != null'
-      ]);
-    }
-
     return response;
   }
 
@@ -647,13 +633,6 @@ export class AttachmentRepository extends BaseRepository {
     `;
 
     const response = await this.connection.sql(sqlStatement);
-
-    if (!response.rowCount) {
-      throw new ApiExecuteSQLError('Failed to get Project Report Attachment by filename', [
-        'AttachmentRepository->getProjectReportAttachmentByFileName',
-        'rows was null or undefined, expected rows != null'
-      ]);
-    }
 
     return response;
   }
@@ -864,14 +843,7 @@ export class AttachmentRepository extends BaseRepository {
         survey_report_attachment_id = ${attachmentId};
     `;
 
-    const response = await this.connection.sql(sqlStatement);
-
-    if (!response.rowCount) {
-      throw new ApiExecuteSQLError('Failed to delete survey report attachment', [
-        'AttachmentRepository->deleteSurveyReportAttachmentAuthors',
-        'rows was null or undefined, expected rows != null'
-      ]);
-    }
+    await this.connection.sql(sqlStatement);
   }
 
   async insertSurveyReportAttachmentAuthor(
@@ -917,13 +889,6 @@ export class AttachmentRepository extends BaseRepository {
     `;
 
     const response = await this.connection.sql(sqlStatement);
-
-    if (!response.rowCount) {
-      throw new ApiExecuteSQLError('Failed to get Survey Report Attachment by filename', [
-        'AttachmentRepository->getSurveyReportAttachmentByFileName',
-        'rows was null or undefined, expected rows != null'
-      ]);
-    }
 
     return response;
   }
@@ -1137,13 +1102,6 @@ export class AttachmentRepository extends BaseRepository {
     `;
 
     const response = await this.connection.sql(sqlStatement);
-
-    if (!response.rowCount) {
-      throw new ApiExecuteSQLError('Failed to get survey attachment by filename', [
-        'AttachmentRepository->insertSurveyAttachment',
-        'rows was null or undefined, expected rows != null'
-      ]);
-    }
 
     return response;
   }
