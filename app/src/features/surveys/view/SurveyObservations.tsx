@@ -278,16 +278,14 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
       type: [
         SUBMISSION_MESSAGE_TYPE.MISSING_REQUIRED_FIELD,
         SUBMISSION_MESSAGE_TYPE.MISSING_REQUIRED_HEADER,
-        SUBMISSION_MESSAGE_TYPE.DUPLICATE_HEADER
+        SUBMISSION_MESSAGE_TYPE.DUPLICATE_HEADER,
+        SUBMISSION_MESSAGE_TYPE.DANGLING_PARENT_CHILD_KEY,
+        SUBMISSION_MESSAGE_TYPE.NON_UNIQUE_KEY
       ],
       label: 'Mandatory fields have not been filled out'
     },
     recommended: {
-      type: [
-        SUBMISSION_MESSAGE_TYPE.MISSING_RECOMMENDED_HEADER,
-        SUBMISSION_MESSAGE_TYPE.DANGLING_PARENT_CHILD_KEY,
-        SUBMISSION_MESSAGE_TYPE.NON_UNIQUE_KEY
-      ],
+      type: [SUBMISSION_MESSAGE_TYPE.MISSING_RECOMMENDED_HEADER],
       label: 'Recommended fields have not been filled out'
     },
     value_not_from_list: {
