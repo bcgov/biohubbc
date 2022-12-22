@@ -378,7 +378,7 @@ export class ValidationService extends DBService {
       csvStateItem.keyErrors?.forEach((keyError) => {
         errors.push(
           new MessageError(
-            SUBMISSION_MESSAGE_TYPE.DANGLING_PARENT_CHILD_KEY,
+            keyError.errorCode,
             this.generateKeyErrorMessage(csvStateItem.fileName, keyError),
             keyError.errorCode
           )

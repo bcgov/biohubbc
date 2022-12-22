@@ -1,4 +1,5 @@
-const fs = require('fs');
+import * as fs from 'fs';
+
 /*
 // helper functions for constructing validation schema
 const basicNumericValidator = () => {
@@ -56,7 +57,25 @@ const starterObject = {
   validations: []
 };
 */
-const templateValidationSchema = {};
+const templateValidationSchema = {
+  name: '',
+  description: '',
+  files: [
+    {
+      name: '',
+      description: '',
+      validations: [],
+      columns: [
+        {
+          name: '',
+          description: '',
+          validations: []
+        }
+      ]
+    }
+  ],
+  validations: []
+};
 
 fs.writeFile('./template_output.json', JSON.stringify(templateValidationSchema), (err) => {
   if (err) {
