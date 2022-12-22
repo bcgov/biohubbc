@@ -66,9 +66,6 @@ describe('SurveyService', () => {
       const getSurveyLocationDataStub = sinon
         .stub(SurveyService.prototype, 'getSurveyLocationData')
         .resolves(({ data: 'locationData' } as unknown) as any);
-      const getCountDocumentsPendingReviewStub = sinon
-        .stub(SurveyService.prototype, 'getCountDocumentsPendingReview')
-        .resolves(({ data: 'countDocumentsPendingReview' } as unknown) as any);
 
       const response = await surveyService.getSurveyById(1);
 
@@ -79,7 +76,6 @@ describe('SurveyService', () => {
       expect(getSurveyPurposeAndMethodologyStub).to.be.calledOnce;
       expect(getSurveyProprietorDataForViewStub).to.be.calledOnce;
       expect(getSurveyLocationDataStub).to.be.calledOnce;
-      expect(getCountDocumentsPendingReviewStub).to.be.calledOnce;
 
       expect(response).to.eql({
         survey_details: { data: 'surveyData' },
@@ -88,8 +84,7 @@ describe('SurveyService', () => {
         purpose_and_methodology: { data: 'purposeAndMethodologyData' },
         funding: { data: 'fundingData' },
         proprietor: { data: 'proprietorData' },
-        location: { data: 'locationData' },
-        docs_to_be_reviewed: { data: 'countDocumentsPendingReview' }
+        location: { data: 'locationData' }
       });
     });
   });

@@ -7,19 +7,14 @@ import { PostReportAttachmentMetadata, PutReportAttachmentMetadata } from '../mo
 import {
   AttachmentRepository,
   IProjectAttachment,
-  IProjectAttachmentSecurityReason,
   IProjectReportAttachment,
-  IProjectReportSecurityReason,
   IReportAttachmentAuthor,
   ISurveyAttachment,
-  ISurveyAttachmentSecurityReason,
-  ISurveyReportAttachment,
-  ISurveyReportSecurityReason,
-  WithSecurityRuleCount
+  ISurveyReportAttachment
 } from '../repositories/attachment-repository';
 import * as file_utils from '../utils/file-utils';
 import { getMockDBConnection } from '../__mocks__/db';
-import { AttachmentService, IAttachmentType } from './attachment-service';
+import { AttachmentService } from './attachment-service';
 chai.use(sinonChai);
 
 describe('AttachmentService', () => {
@@ -28,50 +23,6 @@ describe('AttachmentService', () => {
   });
 
   describe('Project', () => {
-    describe('addSecurityRulesToProjectAttachmentsOrProjectReports', () => {
-      it('should return call Report Attachments functions', async () => {
-        const dbConnection = getMockDBConnection();
-        const service = new AttachmentService(dbConnection);
-
-        const repoStub1 = sinon
-          .stub(AttachmentRepository.prototype, 'addSecurityRulesToProjectReportAttachment')
-          .resolves();
-
-        const repoStub2 = sinon
-          .stub(AttachmentRepository.prototype, 'addSecurityReviewTimeToProjectReportAttachment')
-          .resolves();
-
-        const response = await service.addSecurityRulesToProjectAttachmentsOrProjectReports(
-          [1],
-          [({ id: 1, type: 'Report' } as unknown) as IAttachmentType]
-        );
-
-        expect(repoStub1).to.be.calledOnce;
-        expect(repoStub2).to.be.calledOnce;
-        expect(response).to.eql(undefined);
-      });
-
-      it('should return call Attachments functions', async () => {
-        const dbConnection = getMockDBConnection();
-        const service = new AttachmentService(dbConnection);
-
-        const repoStub1 = sinon.stub(AttachmentRepository.prototype, 'addSecurityRulesToProjectAttachment').resolves();
-
-        const repoStub2 = sinon
-          .stub(AttachmentRepository.prototype, 'addSecurityReviewTimeToProjectAttachment')
-          .resolves();
-
-        const response = await service.addSecurityRulesToProjectAttachmentsOrProjectReports(
-          [1],
-          [({ id: 1, type: 'Other' } as unknown) as IAttachmentType]
-        );
-
-        expect(repoStub1).to.be.calledOnce;
-        expect(repoStub2).to.be.calledOnce;
-        expect(response).to.eql(undefined);
-      });
-    });
-
     describe('Attachment', () => {
       describe('getProjectAttachments', () => {
         it('should return IProjectAttachment[]', async () => {
@@ -102,118 +53,6 @@ describe('AttachmentService', () => {
 
           expect(repoStub).to.be.calledOnce;
           expect(response).to.eql(data);
-        });
-      });
-
-      describe('getProjectAttachmentsWithSecurityCounts', () => {
-        it('should return WithSecurityRuleCount<IProjectAttachment>[]', async () => {
-          const dbConnection = getMockDBConnection();
-          const service = new AttachmentService(dbConnection);
-
-          const data = [({ id: 1 } as unknown) as WithSecurityRuleCount<IProjectAttachment>];
-
-          const repoStub = sinon
-            .stub(AttachmentRepository.prototype, 'getProjectAttachmentsWithSecurityCounts')
-            .resolves(data);
-
-          const response = await service.getProjectAttachmentsWithSecurityCounts(1);
-
-          expect(repoStub).to.be.calledOnce;
-          expect(response).to.eql(data);
-        });
-      });
-
-      describe('addSecurityRulesToProjectAttachment', () => {
-        it('should return void', async () => {
-          const dbConnection = getMockDBConnection();
-          const service = new AttachmentService(dbConnection);
-
-          const repoStub = sinon.stub(AttachmentRepository.prototype, 'addSecurityRulesToProjectAttachment').resolves();
-
-          const response = await service.addSecurityRulesToProjectAttachment([1], 1);
-
-          expect(repoStub).to.be.calledOnce;
-          expect(response).to.eql(undefined);
-        });
-      });
-
-      describe('addSecurityRulesToProjectAttachments', () => {
-        it('should call once and return void', async () => {
-          const dbConnection = getMockDBConnection();
-          const service = new AttachmentService(dbConnection);
-
-          const serviceStub = sinon.stub(AttachmentService.prototype, 'addSecurityRulesToProjectAttachment').resolves();
-
-          const response = await service.addSecurityRulesToProjectAttachments([1], [1]);
-
-          expect(serviceStub).to.be.calledOnce;
-          expect(response).to.eql(undefined);
-        });
-      });
-
-      describe('removeSecurityRulesFromProjectAttachment', () => {
-        it('should call once and return void', async () => {
-          const dbConnection = getMockDBConnection();
-          const service = new AttachmentService(dbConnection);
-
-          const repoStub = sinon
-            .stub(AttachmentRepository.prototype, 'removeSecurityRuleFromProjectAttachment')
-            .resolves();
-
-          const response = await service.removeSecurityRulesFromProjectAttachment([1], 1);
-
-          expect(repoStub).to.be.calledOnce;
-          expect(response).to.eql(undefined);
-        });
-      });
-
-      describe('removeAllSecurityFromProjectAttachment', () => {
-        it('should return void', async () => {
-          const dbConnection = getMockDBConnection();
-          const service = new AttachmentService(dbConnection);
-
-          const repoStub = sinon
-            .stub(AttachmentRepository.prototype, 'removeAllSecurityFromProjectAttachment')
-            .resolves();
-
-          const response = await service.removeAllSecurityFromProjectAttachment(1);
-
-          expect(repoStub).to.be.calledOnce;
-          expect(response).to.eql(undefined);
-        });
-      });
-
-      describe('getProjectAttachmentSecurityReasons', () => {
-        it('should return IProjectAttachmentSecurityReason[]', async () => {
-          const dbConnection = getMockDBConnection();
-          const service = new AttachmentService(dbConnection);
-
-          const data = [({ id: 1 } as unknown) as IProjectAttachmentSecurityReason];
-
-          const repoStub = sinon
-            .stub(AttachmentRepository.prototype, 'getProjectAttachmentSecurityReasons')
-            .resolves(data);
-
-          const response = await service.getProjectAttachmentSecurityReasons(1);
-
-          expect(repoStub).to.be.calledOnce;
-          expect(response).to.eql(data);
-        });
-      });
-
-      describe('addSecurityReviewTimeToProjectAttachment', () => {
-        it('should call once and return void', async () => {
-          const dbConnection = getMockDBConnection();
-          const service = new AttachmentService(dbConnection);
-
-          const serviceStub = sinon
-            .stub(AttachmentService.prototype, 'addSecurityReviewTimeToProjectAttachment')
-            .resolves();
-
-          const response = await service.addSecurityReviewTimeToProjectAttachment(1);
-
-          expect(serviceStub).to.be.calledOnce;
-          expect(response).to.eql(undefined);
         });
       });
 
@@ -386,24 +225,6 @@ describe('AttachmentService', () => {
         });
       });
 
-      describe('getProjectReportAttachmentsWithSecurityCounts', () => {
-        it('should return WithSecurityRuleCount<IProjectReportAttachment>[]', async () => {
-          const dbConnection = getMockDBConnection();
-          const service = new AttachmentService(dbConnection);
-
-          const data = [({ id: 1 } as unknown) as WithSecurityRuleCount<IProjectReportAttachment>];
-
-          const repoStub = sinon
-            .stub(AttachmentRepository.prototype, 'getProjectReportAttachmentsWithSecurityCounts')
-            .resolves(data);
-
-          const response = await service.getProjectReportAttachmentsWithSecurityCounts(1);
-
-          expect(repoStub).to.be.calledOnce;
-          expect(response).to.eql(data);
-        });
-      });
-
       describe('getProjectReportAttachmentAuthors', () => {
         it('should return IReportAttachmentAuthor[]', async () => {
           const dbConnection = getMockDBConnection();
@@ -419,104 +240,6 @@ describe('AttachmentService', () => {
 
           expect(repoStub).to.be.calledOnce;
           expect(response).to.eql(data);
-        });
-      });
-
-      describe('getProjectReportAttachmentSecurityReasons', () => {
-        it('should return IProjectReportSecurityReason[]', async () => {
-          const dbConnection = getMockDBConnection();
-          const service = new AttachmentService(dbConnection);
-
-          const data = [({ id: 1 } as unknown) as IProjectReportSecurityReason];
-
-          const repoStub = sinon
-            .stub(AttachmentRepository.prototype, 'getProjectReportAttachmentSecurityReasons')
-            .resolves(data);
-
-          const response = await service.getProjectReportAttachmentSecurityReasons(1);
-
-          expect(repoStub).to.be.calledOnce;
-          expect(response).to.eql(data);
-        });
-      });
-
-      describe('addSecurityRulesToProjectReportAttachment', () => {
-        it('should return void', async () => {
-          const dbConnection = getMockDBConnection();
-          const service = new AttachmentService(dbConnection);
-
-          const repoStub = sinon
-            .stub(AttachmentRepository.prototype, 'addSecurityRulesToProjectReportAttachment')
-            .resolves();
-
-          const response = await service.addSecurityRulesToProjectReportAttachment([1], 1);
-
-          expect(repoStub).to.be.calledOnce;
-          expect(response).to.eql(undefined);
-        });
-      });
-
-      describe('addSecurityRulesToProjectReportAttachments', () => {
-        it('should call once and return void', async () => {
-          const dbConnection = getMockDBConnection();
-          const service = new AttachmentService(dbConnection);
-
-          const serviceStub = sinon
-            .stub(AttachmentService.prototype, 'addSecurityRulesToProjectReportAttachment')
-            .resolves();
-
-          const response = await service.addSecurityRulesToProjectReportAttachments([1], [1]);
-
-          expect(serviceStub).to.be.calledOnce;
-          expect(response).to.eql(undefined);
-        });
-      });
-
-      describe('removeSecurityRulesFromProjectReportAttachment', () => {
-        it('should call once and return void', async () => {
-          const dbConnection = getMockDBConnection();
-          const service = new AttachmentService(dbConnection);
-
-          const repoStub = sinon
-            .stub(AttachmentRepository.prototype, 'removeSecurityRuleFromProjectReportAttachment')
-            .resolves();
-
-          const response = await service.removeSecurityRulesFromProjectReportAttachment([1], 1);
-
-          expect(repoStub).to.be.calledOnce;
-          expect(response).to.eql(undefined);
-        });
-      });
-
-      describe('removeAllSecurityFromProjectReportAttachment', () => {
-        it('should return void', async () => {
-          const dbConnection = getMockDBConnection();
-          const service = new AttachmentService(dbConnection);
-
-          const repoStub = sinon
-            .stub(AttachmentRepository.prototype, 'removeAllSecurityFromProjectReportAttachment')
-            .resolves();
-
-          const response = await service.removeAllSecurityFromProjectReportAttachment(1);
-
-          expect(repoStub).to.be.calledOnce;
-          expect(response).to.eql(undefined);
-        });
-      });
-
-      describe('addSecurityReviewTimeToProjectReportAttachment', () => {
-        it('should call once and return void', async () => {
-          const dbConnection = getMockDBConnection();
-          const service = new AttachmentService(dbConnection);
-
-          const serviceStub = sinon
-            .stub(AttachmentService.prototype, 'addSecurityReviewTimeToProjectReportAttachment')
-            .resolves();
-
-          const response = await service.addSecurityReviewTimeToProjectReportAttachment(1);
-
-          expect(serviceStub).to.be.calledOnce;
-          expect(response).to.eql(undefined);
         });
       });
 
@@ -742,49 +465,6 @@ describe('AttachmentService', () => {
   });
 
   describe('Survey', () => {
-    describe('addSecurityRulesToSurveyAttachmentsOrSurveyReports', () => {
-      it('should return call Report Attachments functions', async () => {
-        const dbConnection = getMockDBConnection();
-        const service = new AttachmentService(dbConnection);
-
-        const repoStub1 = sinon
-          .stub(AttachmentRepository.prototype, 'addSecurityRulesToSurveyReportAttachment')
-          .resolves();
-
-        const repoStub2 = sinon
-          .stub(AttachmentRepository.prototype, 'addSecurityReviewTimeToSurveyReportAttachment')
-          .resolves();
-
-        const response = await service.addSecurityRulesToSurveyAttachmentsOrSurveyReports(
-          [1],
-          [({ id: 1, type: 'Report' } as unknown) as IAttachmentType]
-        );
-
-        expect(repoStub1).to.be.calledOnce;
-        expect(repoStub2).to.be.calledOnce;
-        expect(response).to.eql(undefined);
-      });
-
-      it('should return call Attachments functions', async () => {
-        const dbConnection = getMockDBConnection();
-        const service = new AttachmentService(dbConnection);
-        const repoStub1 = sinon.stub(AttachmentRepository.prototype, 'addSecurityRulesToSurveyAttachment').resolves();
-
-        const repoStub2 = sinon
-          .stub(AttachmentRepository.prototype, 'addSecurityReviewTimeToSurveyAttachment')
-          .resolves();
-
-        const response = await service.addSecurityRulesToSurveyAttachmentsOrSurveyReports(
-          [1],
-          [({ id: 1, type: 'Other' } as unknown) as IAttachmentType]
-        );
-
-        expect(repoStub1).to.be.calledOnce;
-        expect(repoStub2).to.be.calledOnce;
-        expect(response).to.eql(undefined);
-      });
-    });
-
     describe('Attachment', () => {
       describe('getSurveyAttachments', () => {
         it('should return ISurveyAttachment[]', async () => {
@@ -796,104 +476,6 @@ describe('AttachmentService', () => {
           const repoStub = sinon.stub(AttachmentRepository.prototype, 'getSurveyAttachments').resolves(data);
 
           const response = await service.getSurveyAttachments(1);
-
-          expect(repoStub).to.be.calledOnce;
-          expect(response).to.eql(data);
-        });
-      });
-
-      describe('getSurveyAttachmentsWithSecurityCounts', () => {
-        it('should return WithSecurityRuleCount<ISurveyAttachment>[]', async () => {
-          const dbConnection = getMockDBConnection();
-          const service = new AttachmentService(dbConnection);
-
-          const data = [({ id: 1 } as unknown) as WithSecurityRuleCount<ISurveyAttachment>];
-
-          const repoStub = sinon
-            .stub(AttachmentRepository.prototype, 'getSurveyAttachmentsWithSecurityCounts')
-            .resolves(data);
-
-          const response = await service.getSurveyAttachmentsWithSecurityCounts(1);
-
-          expect(repoStub).to.be.calledOnce;
-          expect(response).to.eql(data);
-        });
-      });
-
-      describe('addSecurityRulesToSurveyAttachment', () => {
-        it('should return void', async () => {
-          const dbConnection = getMockDBConnection();
-          const service = new AttachmentService(dbConnection);
-
-          const repoStub = sinon.stub(AttachmentRepository.prototype, 'addSecurityRulesToSurveyAttachment').resolves();
-
-          const response = await service.addSecurityRulesToSurveyAttachment([1], 1);
-
-          expect(repoStub).to.be.calledOnce;
-          expect(response).to.eql(undefined);
-        });
-      });
-
-      describe('removeSecurityRulesFromSurveyAttachment', () => {
-        it('should call once and return void', async () => {
-          const dbConnection = getMockDBConnection();
-          const service = new AttachmentService(dbConnection);
-
-          const repoStub = sinon
-            .stub(AttachmentRepository.prototype, 'removeSecurityRuleFromSurveyAttachment')
-            .resolves();
-
-          const response = await service.removeSecurityRulesFromSurveyAttachment([1], 1);
-
-          expect(repoStub).to.be.calledOnce;
-          expect(response).to.eql(undefined);
-        });
-      });
-
-      describe('removeAllSecurityFromSurveyAttachment', () => {
-        it('should return void', async () => {
-          const dbConnection = getMockDBConnection();
-          const service = new AttachmentService(dbConnection);
-
-          const repoStub = sinon
-            .stub(AttachmentRepository.prototype, 'removeAllSecurityFromSurveyAttachment')
-            .resolves();
-
-          const response = await service.removeAllSecurityFromSurveyAttachment(1);
-
-          expect(repoStub).to.be.calledOnce;
-          expect(response).to.eql(undefined);
-        });
-      });
-
-      describe('addSecurityReviewTimeToSurveyAttachment', () => {
-        it('should call once and return void', async () => {
-          const dbConnection = getMockDBConnection();
-          const service = new AttachmentService(dbConnection);
-
-          const serviceStub = sinon
-            .stub(AttachmentService.prototype, 'addSecurityReviewTimeToSurveyAttachment')
-            .resolves();
-
-          const response = await service.addSecurityReviewTimeToSurveyAttachment(1);
-
-          expect(serviceStub).to.be.calledOnce;
-          expect(response).to.eql(undefined);
-        });
-      });
-
-      describe('getSurveyAttachmentSecurityReasons', () => {
-        it('should return ISurveyAttachmentSecurityReason[]', async () => {
-          const dbConnection = getMockDBConnection();
-          const service = new AttachmentService(dbConnection);
-
-          const data = [({ id: 1 } as unknown) as ISurveyAttachmentSecurityReason];
-
-          const repoStub = sinon
-            .stub(AttachmentRepository.prototype, 'getSurveyAttachmentSecurityReasons')
-            .resolves(data);
-
-          const response = await service.getSurveyAttachmentSecurityReasons(1);
 
           expect(repoStub).to.be.calledOnce;
           expect(response).to.eql(data);
@@ -1064,88 +646,6 @@ describe('AttachmentService', () => {
         });
       });
 
-      describe('getSurveyReportAttachmentsWithSecurityCounts', () => {
-        it('should return WithSecurityRuleCount<ISurveyReportAttachment>[]', async () => {
-          const dbConnection = getMockDBConnection();
-          const service = new AttachmentService(dbConnection);
-
-          const data = [({ id: 1 } as unknown) as WithSecurityRuleCount<ISurveyReportAttachment>];
-
-          const repoStub = sinon
-            .stub(AttachmentRepository.prototype, 'getSurveyReportAttachmentsWithSecurityCounts')
-            .resolves(data);
-
-          const response = await service.getSurveyReportAttachmentsWithSecurityCounts(1);
-
-          expect(repoStub).to.be.calledOnce;
-          expect(response).to.eql(data);
-        });
-      });
-
-      describe('addSecurityRulesToSurveyReportAttachment', () => {
-        it('should return void', async () => {
-          const dbConnection = getMockDBConnection();
-          const service = new AttachmentService(dbConnection);
-
-          const repoStub = sinon
-            .stub(AttachmentRepository.prototype, 'addSecurityRulesToSurveyReportAttachment')
-            .resolves();
-
-          const response = await service.addSecurityRulesToSurveyReportAttachment([1], 1);
-
-          expect(repoStub).to.be.calledOnce;
-          expect(response).to.eql(undefined);
-        });
-      });
-
-      describe('removeSecurityRulesFromSurveyReportAttachment', () => {
-        it('should call once and return void', async () => {
-          const dbConnection = getMockDBConnection();
-          const service = new AttachmentService(dbConnection);
-
-          const repoStub = sinon
-            .stub(AttachmentRepository.prototype, 'removeSecurityRuleFromSurveyReportAttachment')
-            .resolves();
-
-          const response = await service.removeSecurityRulesFromSurveyReportAttachment([1], 1);
-
-          expect(repoStub).to.be.calledOnce;
-          expect(response).to.eql(undefined);
-        });
-      });
-
-      describe('removeAllSecurityFromSurveyReportAttachment', () => {
-        it('should return void', async () => {
-          const dbConnection = getMockDBConnection();
-          const service = new AttachmentService(dbConnection);
-
-          const repoStub = sinon
-            .stub(AttachmentRepository.prototype, 'removeAllSecurityFromSurveyReportAttachment')
-            .resolves();
-
-          const response = await service.removeAllSecurityFromSurveyReportAttachment(1);
-
-          expect(repoStub).to.be.calledOnce;
-          expect(response).to.eql(undefined);
-        });
-      });
-
-      describe('addSecurityReviewTimeToSurveyReportAttachment', () => {
-        it('should call once and return void', async () => {
-          const dbConnection = getMockDBConnection();
-          const service = new AttachmentService(dbConnection);
-
-          const serviceStub = sinon
-            .stub(AttachmentService.prototype, 'addSecurityReviewTimeToSurveyReportAttachment')
-            .resolves();
-
-          const response = await service.addSecurityReviewTimeToSurveyReportAttachment(1);
-
-          expect(serviceStub).to.be.calledOnce;
-          expect(response).to.eql(undefined);
-        });
-      });
-
       describe('getSurveyAttachmentAuthors', () => {
         it('should return IReportAttachmentAuthor[]', async () => {
           const dbConnection = getMockDBConnection();
@@ -1158,24 +658,6 @@ describe('AttachmentService', () => {
             .resolves(data);
 
           const response = await service.getSurveyAttachmentAuthors(1);
-
-          expect(repoStub).to.be.calledOnce;
-          expect(response).to.eql(data);
-        });
-      });
-
-      describe('getSurveyReportAttachmentSecurityReasons', () => {
-        it('should return ISurveyReportSecurityReason[]', async () => {
-          const dbConnection = getMockDBConnection();
-          const service = new AttachmentService(dbConnection);
-
-          const data = [({ id: 1 } as unknown) as ISurveyReportSecurityReason];
-
-          const repoStub = sinon
-            .stub(AttachmentRepository.prototype, 'getSurveyReportAttachmentSecurityReasons')
-            .resolves(data);
-
-          const response = await service.getSurveyReportAttachmentSecurityReasons(1);
 
           expect(repoStub).to.be.calledOnce;
           expect(response).to.eql(data);
