@@ -234,9 +234,6 @@ const Header: React.FC = () => {
                 className={classes.mainNavToolbar}
                 role="navigation"
                 aria-label="Main Navigation">
-                <Link to="/admin/dashboard" id="menu_dashboard">
-                  Dashboard
-                </Link>
                 <Link to="/admin/projects" id="menu_projects">
                   Projects
                 </Link>

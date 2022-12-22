@@ -156,7 +156,6 @@ export const getReportAttachmentsBySurveySQL = (surveyId: number): SQLStatement 
       , pra.year
       , pra."key"
       , pra.file_size
-      , pra.security_token
 	    , array_remove(array_agg(pra2.first_name ||' '||pra2.last_name), null) authors
     FROM
     survey_report_attachment pra
@@ -170,7 +169,6 @@ export const getReportAttachmentsBySurveySQL = (surveyId: number): SQLStatement 
       , pra.description
       , pra.year
       , pra."key"
-      , pra.file_size
-      , pra.security_token;
+      , pra.file_size;
   `;
 };

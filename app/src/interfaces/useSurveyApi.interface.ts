@@ -171,7 +171,6 @@ export interface IGetSurveyAttachment {
   fileType: string;
   lastModified: string;
   size: number;
-  securityToken: any;
   revisionCount: number;
 }
 

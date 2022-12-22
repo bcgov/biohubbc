@@ -523,8 +523,7 @@ describe('GetAttachmentsData', () => {
           title: undefined,
           description: undefined,
           key: undefined,
-          file_size: undefined,
-          is_secure: 'false'
+          file_size: undefined
         },
         {
           file_name: 2,
@@ -532,8 +531,7 @@ describe('GetAttachmentsData', () => {
           title: undefined,
           description: undefined,
           key: undefined,
-          file_size: undefined,
-          is_secure: 'false'
+          file_size: undefined
         }
       ]);
     });
@@ -548,7 +546,6 @@ describe('GetAttachmentsData', () => {
         file_type: 'type',
         title: 'title',
         description: 'descript',
-        security_token: 'token',
         file_size: 'file_size',
         key: 'key'
       },
@@ -557,7 +554,6 @@ describe('GetAttachmentsData', () => {
         file_type: 'type',
         title: 'title',
         description: 'descript',
-        security_token: 'token',
         file_size: 'file_size',
         key: 'key'
       }
@@ -575,8 +571,7 @@ describe('GetAttachmentsData', () => {
           title: 'title',
           description: 'descript',
           key: 'key',
-          file_size: 'file_size',
-          is_secure: 'true'
+          file_size: 'file_size'
         },
         {
           file_name: 2,
@@ -584,8 +579,7 @@ describe('GetAttachmentsData', () => {
           title: 'title',
           description: 'descript',
           key: 'key',
-          file_size: 'file_size',
-          is_secure: 'true'
+          file_size: 'file_size'
         }
       ]);
     });
@@ -621,8 +615,7 @@ describe('GetReportAttachmentsData', () => {
           year: undefined,
           description: undefined,
           key: undefined,
-          file_size: undefined,
-          is_secure: 'false'
+          file_size: undefined
         },
         {
           file_name: 2,
@@ -630,8 +623,7 @@ describe('GetReportAttachmentsData', () => {
           year: undefined,
           description: undefined,
           key: undefined,
-          file_size: undefined,
-          is_secure: 'false'
+          file_size: undefined
         }
       ]);
     });
@@ -645,7 +637,6 @@ describe('GetReportAttachmentsData', () => {
           title: 'title',
           year: '1',
           description: 'descript',
-          security_token: 'token',
           file_size: 'size',
           key: 'key',
           authors: [{ author: 'author' }]
@@ -656,7 +647,6 @@ describe('GetReportAttachmentsData', () => {
           title: 'title',
           year: '2',
           description: 'descript',
-          security_token: 'token',
           file_size: 'size',
           key: 'key',
           authors: [{ author: 'author' }]
@@ -672,7 +662,6 @@ describe('GetReportAttachmentsData', () => {
           description: 'descript',
           key: 'key',
           file_size: 'size',
-          is_secure: 'true',
           authors: [{ author: 'author' }]
         },
         {
@@ -682,7 +671,6 @@ describe('GetReportAttachmentsData', () => {
           description: 'descript',
           key: 'key',
           file_size: 'size',
-          is_secure: 'true',
           authors: [{ author: 'author' }]
         }
       ]);

@@ -18,7 +18,7 @@ export interface IProjectAttachment {
   update_date: string;
   file_size: string;
   key: string;
-  security_token: string;
+  revision_count: number;
 }
 
 export interface IProjectReportAttachment {
@@ -29,10 +29,8 @@ export interface IProjectReportAttachment {
   description: string;
   year_published: number;
   last_modified: string;
-  create_date: string;
   key: string;
   file_size: string;
-  security_token: string;
   revision_count: number;
 }
 
@@ -74,8 +72,7 @@ export class AttachmentRepository extends BaseRepository {
         update_date,
         create_date,
         file_size,
-        key,
-        security_token
+        key
       FROM
         project_attachment
       WHERE
@@ -114,8 +111,7 @@ export class AttachmentRepository extends BaseRepository {
         update_date,
         create_date,
         file_size,
-        key,
-        security_token
+        key
       FROM
         project_attachment
       WHERE
@@ -154,11 +150,12 @@ export class AttachmentRepository extends BaseRepository {
         title,
         description,
         year::int as year_published,
-        update_date::text as last_modified,
-        create_date,
+        CASE
+          WHEN update_date::text IS NULL 
+          THEN create_date::text 
+        END AS last_modified,
         file_size,
         key,
-        security_token,
         revision_count
       FROM
         project_report_attachment
@@ -198,11 +195,12 @@ export class AttachmentRepository extends BaseRepository {
         title,
         description,
         year::int as year_published,
-        update_date::text as last_modified,
-        create_date,
+        CASE
+          WHEN update_date::text IS NULL 
+          THEN create_date::text 
+        END AS last_modified,
         file_size,
         key,
-        security_token,
         revision_count
       FROM
         project_report_attachment
@@ -243,8 +241,7 @@ export class AttachmentRepository extends BaseRepository {
         update_date,
         create_date,
         file_size,
-        key,
-        security_token
+        key
       FROM
         survey_attachment
       WHERE
@@ -281,11 +278,12 @@ export class AttachmentRepository extends BaseRepository {
         title,
         description,
         year::int as year_published,
-        update_date::text as last_modified,
-        create_date,
+        CASE
+          WHEN update_date::text IS NULL 
+          THEN create_date::text 
+        END AS last_modified,
         file_size,
         key,
-        security_token,
         revision_count
       FROM
         survey_report_attachment
@@ -322,11 +320,12 @@ export class AttachmentRepository extends BaseRepository {
         title,
         description,
         year::int as year_published,
-        update_date::text as last_modified,
-        create_date,
+        CASE
+          WHEN update_date::text IS NULL 
+          THEN create_date::text 
+        END AS last_modified,
         file_size,
         key,
-        security_token,
         revision_count
       FROM
         survey_report_attachment
