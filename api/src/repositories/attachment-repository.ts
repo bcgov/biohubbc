@@ -151,8 +151,9 @@ export class AttachmentRepository extends BaseRepository {
         description,
         year::int as year_published,
         CASE
-          WHEN update_date::text IS NULL 
-          THEN create_date::text 
+          WHEN update_date IS NULL
+          THEN create_date::text
+          ELSE update_date::text
         END AS last_modified,
         file_size,
         key,
@@ -196,8 +197,9 @@ export class AttachmentRepository extends BaseRepository {
         description,
         year::int as year_published,
         CASE
-          WHEN update_date::text IS NULL 
-          THEN create_date::text 
+          WHEN update_date IS NULL
+          THEN create_date::text
+          ELSE update_date::text
         END AS last_modified,
         file_size,
         key,
@@ -212,7 +214,7 @@ export class AttachmentRepository extends BaseRepository {
 
     const response = await this.connection.sql<IProjectReportAttachment>(sqlStatement);
 
-    if (!response || !response.rows) {
+    if (!response.rows) {
       throw new ApiExecuteSQLError('Failed to get project report attachments by reportAttachmentId', [
         'AttachmentRepository->getProjectReportAttachmentById',
         'rows was null or undefined, expected rows != null'
@@ -250,7 +252,7 @@ export class AttachmentRepository extends BaseRepository {
 
     const response = await this.connection.sql<ISurveyAttachment>(sqlStatement);
 
-    if (!response || !response.rows) {
+    if (!response.rows) {
       throw new ApiExecuteSQLError('Failed to get survey attachments by surveyId', [
         'AttachmentRepository->getSurveyAttachments',
         'rows was null or undefined, expected rows != null'
@@ -279,8 +281,9 @@ export class AttachmentRepository extends BaseRepository {
         description,
         year::int as year_published,
         CASE
-          WHEN update_date::text IS NULL 
-          THEN create_date::text 
+          WHEN update_date IS NULL
+          THEN create_date::text
+          ELSE update_date::text
         END AS last_modified,
         file_size,
         key,
@@ -293,7 +296,7 @@ export class AttachmentRepository extends BaseRepository {
 
     const response = await this.connection.sql<ISurveyReportAttachment>(sqlStatement);
 
-    if (!response || !response.rows) {
+    if (!response.rows) {
       throw new ApiExecuteSQLError('Failed to get survey report attachments by surveyId', [
         'AttachmentRepository->getSurveyReportAttachments',
         'rows was null or undefined, expected rows != null'
@@ -321,8 +324,9 @@ export class AttachmentRepository extends BaseRepository {
         description,
         year::int as year_published,
         CASE
-          WHEN update_date::text IS NULL 
-          THEN create_date::text 
+          WHEN update_date IS NULL
+          THEN create_date::text
+          ELSE update_date::text
         END AS last_modified,
         file_size,
         key,
@@ -337,7 +341,7 @@ export class AttachmentRepository extends BaseRepository {
 
     const response = await this.connection.sql<ISurveyReportAttachment>(sqlStatement);
 
-    if (!response || !response.rows) {
+    if (!response.rows) {
       throw new ApiExecuteSQLError('Failed to get survey report attachments by reportAttachmentId', [
         'AttachmentRepository->getSurveyReportAttachmentById',
         'rows was null or undefined, expected rows != null'
@@ -367,7 +371,7 @@ export class AttachmentRepository extends BaseRepository {
 
     const response = await this.connection.sql<IReportAttachmentAuthor>(sqlStatement);
 
-    if (!response || !response.rows) {
+    if (!response.rows) {
       throw new ApiExecuteSQLError('Failed to get project report attachment authors by reportAttachmentId', [
         'AttachmentRepository->getProjectAttachmentAuthors',
         'rows was null or undefined, expected rows != null'
@@ -397,7 +401,7 @@ export class AttachmentRepository extends BaseRepository {
 
     const response = await this.connection.sql<IReportAttachmentAuthor>(sqlStatement);
 
-    if (!response || !response.rows) {
+    if (!response.rows) {
       throw new ApiExecuteSQLError('Failed to get survey report attachment authors by reportAttachmentId', [
         'AttachmentRepository->getSurveyAttachmentAuthors',
         'rows was null or undefined, expected rows != null'
@@ -434,7 +438,7 @@ export class AttachmentRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement);
 
-    if (!response || !response?.rows || !response?.rows[0]) {
+    if (!response?.rows || !response?.rows[0]) {
       throw new ApiExecuteSQLError('Failed to insert project attachment data', [
         'AttachmentRepository->insertProjectAttachment',
         'rows was null or undefined, expected rows != null'
@@ -466,7 +470,7 @@ export class AttachmentRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement);
 
-    if (!response || !response?.rows || !response?.rows[0]) {
+    if (!response?.rows || !response?.rows[0]) {
       throw new ApiExecuteSQLError('Failed to insert project attachment data', [
         'AttachmentRepository->updateProjectAttachment',
         'rows was null or undefined, expected rows != null'
@@ -494,7 +498,7 @@ export class AttachmentRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement);
 
-    if (!response) {
+    if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to get project attachment by filename', [
         'AttachmentRepository->getProjectAttachmentByFileName',
         'rows was null or undefined, expected rows != null'
@@ -536,7 +540,7 @@ export class AttachmentRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement);
 
-    if (!response || !response?.rows || !response?.rows[0]) {
+    if (!response?.rows || !response?.rows[0]) {
       throw new ApiExecuteSQLError('Failed to insert project attachment data', [
         'AttachmentRepository->insertProjectReportAttachment',
         'rows was null or undefined, expected rows != null'
@@ -570,7 +574,7 @@ export class AttachmentRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement);
 
-    if (!response || !response?.rows || !response?.rows[0]) {
+    if (!response?.rows || !response?.rows[0]) {
       throw new ApiExecuteSQLError('Failed to update project attachment data', [
         'AttachmentRepository->updateProjectReportAttachment',
         'rows was null or undefined, expected rows != null'
@@ -582,15 +586,15 @@ export class AttachmentRepository extends BaseRepository {
 
   async deleteProjectReportAttachmentAuthors(attachmentId: number): Promise<QueryResult> {
     const sqlStatement = SQL`
-    DELETE
-      FROM project_report_author
-    WHERE
-      project_report_attachment_id = ${attachmentId};
-  `;
+      DELETE
+        FROM project_report_author
+      WHERE
+        project_report_attachment_id = ${attachmentId};
+    `;
 
     const response = await this.connection.sql(sqlStatement);
 
-    if (!response) {
+    if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to delete attachment report authors records', [
         'AttachmentRepository->deleteProjectReportAttachmentAuthors',
         'rows was null or undefined, expected rows != null'
@@ -605,19 +609,20 @@ export class AttachmentRepository extends BaseRepository {
     author: { first_name: string; last_name: string }
   ): Promise<void> {
     const sqlStatement = SQL`
-    INSERT INTO project_report_author (
-      project_report_attachment_id,
-      first_name,
-      last_name
-    ) VALUES (
-      ${attachmentId},
-      ${author.first_name},
-      ${author.last_name}
-    );
-  `;
+      INSERT INTO project_report_author (
+        project_report_attachment_id,
+        first_name,
+        last_name
+      ) VALUES (
+        ${attachmentId},
+        ${author.first_name},
+        ${author.last_name}
+      );
+    `;
+
     const response = await this.connection.sql(sqlStatement);
 
-    if (!response || !response?.rows || !response?.rows[0]) {
+    if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to insert attachment report author record', [
         'AttachmentRepository->insertProjectReportAttachmentAuthor',
         'rows was null or undefined, expected rows != null'
@@ -643,7 +648,7 @@ export class AttachmentRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement);
 
-    if (!response) {
+    if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to get Project Report Attachment by filename', [
         'AttachmentRepository->getProjectReportAttachmentByFileName',
         'rows was null or undefined, expected rows != null'
@@ -667,7 +672,7 @@ export class AttachmentRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement);
 
-    if (!response || !response?.rows?.[0]) {
+    if (!response?.rows?.[0]) {
       throw new ApiExecuteSQLError('Failed to get Project Attachment S3 Key', [
         'AttachmentRepository->getProjectAttachmentS3Key',
         'rows was null or undefined, expected rows != null'
@@ -683,24 +688,24 @@ export class AttachmentRepository extends BaseRepository {
     metadata: PutReportAttachmentMetadata
   ): Promise<void> {
     const sqlStatement = SQL`
-    UPDATE
-      project_report_attachment
-    SET
-      title = ${metadata.title},
-      year = ${metadata.year_published},
-      description = ${metadata.description}
-    WHERE
-      project_id = ${projectId}
-    AND
-      project_report_attachment_id = ${attachmentId}
-    AND
-      revision_count = ${metadata.revision_count};
-  `;
+      UPDATE
+        project_report_attachment
+      SET
+        title = ${metadata.title},
+        year = ${metadata.year_published},
+        description = ${metadata.description}
+      WHERE
+        project_id = ${projectId}
+      AND
+        project_report_attachment_id = ${attachmentId}
+      AND
+        revision_count = ${metadata.revision_count};
+    `;
 
     const response = await this.connection.sql(sqlStatement);
 
-    if (!response || !response.rowCount) {
-      throw new ApiExecuteSQLError('Failed to update Project REport Attachment Metadata', [
+    if (!response.rowCount) {
+      throw new ApiExecuteSQLError('Failed to update Project Report Attachment Metadata', [
         'AttachmentRepository->updateProjectReportAttachmentMetadata',
         'rows was null or undefined, expected rows != null'
       ]);
@@ -721,7 +726,7 @@ export class AttachmentRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement);
 
-    if (!response || !response?.rows?.[0]) {
+    if (!response?.rows?.[0]) {
       throw new ApiExecuteSQLError('Failed to get Project Report Attachment S3 Key', [
         'AttachmentRepository->getProjectReportAttachmentS3Key',
         'rows was null or undefined, expected rows != null'
@@ -743,7 +748,7 @@ export class AttachmentRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement);
 
-    if (!response || !response.rowCount) {
+    if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to delete Project Attachment by id', [
         'AttachmentRepository->deleteProjectAttachment',
         'rows was null or undefined, expected rows != null'
@@ -765,7 +770,7 @@ export class AttachmentRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement);
 
-    if (!response || !response.rowCount) {
+    if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to delete Project Report Attachment by id', [
         'AttachmentRepository->deleteProjectReportAttachment',
         'rows was null or undefined, expected rows != null'
@@ -807,7 +812,7 @@ export class AttachmentRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement);
 
-    if (!response || !response?.rows?.[0]) {
+    if (!response?.rows?.[0]) {
       throw new ApiExecuteSQLError('Failed to insert survey report attachment', [
         'AttachmentRepository->insertSurveyReportAttachment',
         'rows was null or undefined, expected rows != null'
@@ -841,7 +846,7 @@ export class AttachmentRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement);
 
-    if (!response || !response?.rows?.[0]) {
+    if (!response?.rows?.[0]) {
       throw new ApiExecuteSQLError('Failed to update survey report attachment', [
         'AttachmentRepository->updateSurveyReportAttachment',
         'rows was null or undefined, expected rows != null'
@@ -861,7 +866,7 @@ export class AttachmentRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement);
 
-    if (!response) {
+    if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to delete survey report attachment', [
         'AttachmentRepository->deleteSurveyReportAttachmentAuthors',
         'rows was null or undefined, expected rows != null'
@@ -887,7 +892,7 @@ export class AttachmentRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement);
 
-    if (!response || !response.rowCount) {
+    if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to insert survey report attachment', [
         'AttachmentRepository->insertSurveyReportAttachmentAuthor',
         'rows was null or undefined, expected rows != null'
@@ -913,7 +918,7 @@ export class AttachmentRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement);
 
-    if (!response) {
+    if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to get Survey Report Attachment by filename', [
         'AttachmentRepository->getSurveyReportAttachmentByFileName',
         'rows was null or undefined, expected rows != null'
@@ -935,7 +940,7 @@ export class AttachmentRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement);
 
-    if (!response || !response.rowCount) {
+    if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to delete Survey Report Attachment', [
         'AttachmentRepository->deleteSurveyReportAttachment',
         'rows was null or undefined, expected rows != null'
@@ -957,7 +962,7 @@ export class AttachmentRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement);
 
-    if (!response || !response.rowCount) {
+    if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to delete Survey Attachment', [
         'AttachmentRepository->deleteSurveyAttachment',
         'rows was null or undefined, expected rows != null'
@@ -981,7 +986,7 @@ export class AttachmentRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement);
 
-    if (!response || !response?.rows?.[0]) {
+    if (!response?.rows?.[0]) {
       throw new ApiExecuteSQLError('Failed to get Survey Attachment S3 key', [
         'AttachmentRepository->getSurveyAttachmentS3Key',
         'rows was null or undefined, expected rows != null'
@@ -1005,7 +1010,7 @@ export class AttachmentRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement);
 
-    if (!response || !response?.rows?.[0]) {
+    if (!response?.rows?.[0]) {
       throw new ApiExecuteSQLError('Failed to get Survey Report Attachment S3 key', [
         'AttachmentRepository->getSurveyReportAttachmentS3Key',
         'rows was null or undefined, expected rows != null'
@@ -1037,7 +1042,7 @@ export class AttachmentRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement);
 
-    if (!response || !response.rowCount) {
+    if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to update Survey Report Attachment metadata', [
         'AttachmentRepository->updateSurveyReportAttachmentMetadata',
         'rows was null or undefined, expected rows != null'
@@ -1067,7 +1072,7 @@ export class AttachmentRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement);
 
-    if (!response || !response?.rows?.[0]) {
+    if (!response?.rows?.[0]) {
       throw new ApiExecuteSQLError('Failed to update survey attachment data', [
         'AttachmentRepository->updateSurveyAttachment',
         'rows was null or undefined, expected rows != null'
@@ -1105,7 +1110,7 @@ export class AttachmentRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement);
 
-    if (!response || !response?.rows?.[0]) {
+    if (!response?.rows?.[0]) {
       throw new ApiExecuteSQLError('Failed to insert survey attachment data', [
         'AttachmentRepository->insertSurveyAttachment',
         'rows was null or undefined, expected rows != null'
@@ -1133,7 +1138,7 @@ export class AttachmentRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement);
 
-    if (!response) {
+    if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to get survey attachment by filename', [
         'AttachmentRepository->insertSurveyAttachment',
         'rows was null or undefined, expected rows != null'
