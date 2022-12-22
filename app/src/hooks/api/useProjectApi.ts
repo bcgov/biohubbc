@@ -421,7 +421,9 @@ const useProjectApi = (axios: AxiosInstance) => {
     getProjectParticipants,
     addProjectParticipants,
     removeProjectParticipant,
-    updateProjectParticipantRole
+    updateProjectParticipantRole,
+    deleteFundingSource,
+    addFundingSource
   };
 };
 
