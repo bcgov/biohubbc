@@ -160,6 +160,7 @@ export class PlatformService extends DBService {
     if (!surveyData || !surveyData.output_key) {
       throw new HTTP400('no s3Key found');
     }
+
     const s3File = await getFileFromS3(surveyData.output_key);
 
     if (!s3File) {

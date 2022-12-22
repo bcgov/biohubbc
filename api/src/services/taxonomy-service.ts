@@ -53,7 +53,7 @@ export class TaxonomyService {
   /**
    *
    * Sanitizes species data retrieved from Elasticsearch.
-   * @param {SearchHit<ITaxonomySource>[]} data The data response fromEelasticsearch
+   * @param {SearchHit<ITaxonomySource>[]} data The data response from ElasticSearch
    * @returns {{ id: string, label: string }[]} An ID and label pair for each taxonomic code
    * @memberof TaxonomyService
    */
@@ -191,5 +191,56 @@ export class TaxonomyService {
     });
 
     return response ? this._sanitizeSpeciesData(response.hits.hits) : [];
+  }
+
+  _formatEnrichedData = (data: SearchHit<ITaxonomySource>): { scientificName: string; englishName: string } => {
+    const scientificName =
+      [data._source?.unit_name1, data._source?.unit_name2, data._source?.unit_name3].filter(Boolean).join(' ') || '';
+    const englishName = data._source?.english_name || '';
+
+    return { scientificName, englishName };
+  };
+
+  /**
+   * Fetch formatted taxonomy information for a specific taxon code.
+   *
+   * @param {string} taxonCode
+   * @return {*}  {(Promise<{ scientificName: string; englishName: string } | null>)}
+   * @memberof TaxonomyService
+   */
+  async getEnrichedDataForSpeciesCode(
+    taxonCode: string
+  ): Promise<{ scientificName: string; englishName: string } | null> {
+    const response = await this._elasticSearch({
+      query: {
+        bool: {
+          must: [
+            {
+              term: {
+                'code.keyword': taxonCode.toUpperCase()
+              }
+            },
+            {
+              bool: {
+                minimum_should_match: 1,
+                should: [
+                  {
+                    bool: {
+                      must_not: {
+                        exists: {
+                          field: 'end_date'
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        } as QueryDslBoolQuery
+      }
+    });
+
+    return response ? this._formatEnrichedData(response.hits.hits[0]) : null;
   }
 }

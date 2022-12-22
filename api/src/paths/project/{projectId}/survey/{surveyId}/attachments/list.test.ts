@@ -20,7 +20,9 @@ describe('getSurveyAttachments', () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
     const expectedError = new Error('cannot process request');
-    sinon.stub(AttachmentService.prototype, 'getSurveyAttachmentsWithSecurityCounts').rejects(expectedError);
+    const getSurveyAttachmentsStub = sinon
+      .stub(AttachmentService.prototype, 'getSurveyAttachments')
+      .rejects(expectedError);
 
     const sampleReq = {
       keycloak_token: {},
@@ -37,6 +39,7 @@ describe('getSurveyAttachments', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
+      expect(getSurveyAttachmentsStub).to.be.calledOnce;
       expect((actualError as HTTPError).message).to.equal(expectedError.message);
     }
   });
@@ -54,12 +57,10 @@ describe('getSurveyAttachments', () => {
       }
     } as any;
 
-    const getSurveyAttachmentsWithSecurityCountsStub = sinon
-      .stub(AttachmentService.prototype, 'getSurveyAttachmentsWithSecurityCounts')
-      .resolves([]);
+    const getSurveyAttachmentsStub = sinon.stub(AttachmentService.prototype, 'getSurveyAttachments').resolves([]);
 
-    const getSurveyReportAttachmentsWithSecurityCountsStub = sinon
-      .stub(AttachmentService.prototype, 'getSurveyReportAttachmentsWithSecurityCounts')
+    const getSurveyReportAttachmentsStub = sinon
+      .stub(AttachmentService.prototype, 'getSurveyReportAttachments')
       .resolves([]);
 
     const expectedResult = { attachmentsList: [], reportAttachmentsList: [] };
@@ -79,7 +80,7 @@ describe('getSurveyAttachments', () => {
 
     await result(sampleReq, (sampleRes as unknown) as any, (null as unknown) as any);
     expect(actualResult).to.eql(expectedResult);
-    expect(getSurveyAttachmentsWithSecurityCountsStub).to.be.calledOnce;
-    expect(getSurveyReportAttachmentsWithSecurityCountsStub).to.be.calledOnce;
+    expect(getSurveyAttachmentsStub).to.be.calledOnce;
+    expect(getSurveyReportAttachmentsStub).to.be.calledOnce;
   });
 });

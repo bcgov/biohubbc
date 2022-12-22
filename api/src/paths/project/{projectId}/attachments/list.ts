@@ -55,7 +55,7 @@ GET.apiDoc = {
                 type: 'array',
                 items: {
                   type: 'object',
-                  required: ['id', 'fileName', 'fileType', 'lastModified', 'securityToken', 'size'],
+                  required: ['id', 'fileName', 'fileType', 'lastModified', 'size'],
                   properties: {
                     id: {
                       type: 'number'
@@ -68,11 +68,6 @@ GET.apiDoc = {
                     },
                     lastModified: {
                       type: 'string'
-                    },
-                    securityToken: {
-                      description: 'The security token of the attachment',
-                      type: 'string',
-                      nullable: true
                     },
                     size: {
                       type: 'number'
@@ -106,8 +101,8 @@ export function getAttachments(): RequestHandler {
 
       const attachmentService = new AttachmentService(connection);
 
-      const attachmentsData = await attachmentService.getProjectAttachmentsWithSecurityCounts(projectId);
-      const reportAttachmentsData = await attachmentService.getProjectReportAttachmentsWithSecurityCounts(projectId);
+      const attachmentsData = await attachmentService.getProjectAttachments(projectId);
+      const reportAttachmentsData = await attachmentService.getProjectReportAttachments(projectId);
 
       await connection.commit();
 

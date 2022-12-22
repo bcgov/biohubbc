@@ -89,8 +89,8 @@ begin
   insert into project_funding_source (project_id, investment_action_category_id, funding_amount, funding_start_date, funding_end_date, funding_source_project_id) values (_project_id, (select investment_action_category_id from investment_action_category where name = 'Action 1'), '$1,000.00', now(), now(), 'test') returning project_funding_source_id into _project_funding_source_id;
   --insert into project_funding_source (project_id, investment_action_category_id, funding_amount, funding_start_date, funding_end_date) values (_project_id, 43, '$1,000.00', now(), now());
   insert into project_iucn_action_classification (project_id, iucn_conservation_action_level_3_subclassification_id) values (_project_id, (select iucn_conservation_action_level_3_subclassification_id from iucn_conservation_action_level_3_subclassification where name = 'Primary Education'));
-  insert into project_attachment (project_id, file_name, title, key, file_size, file_type, security_review_timestamp) values (_project_id, 'test_filename.txt', 'test filename', 'projects/'||_project_id::text, 10000, 'video', now());
-  insert into project_report_attachment (project_id, file_name, title, key, file_size, year, description, security_review_timestamp) values (_project_id, 'test_filename.txt', 'test filename', 'projects/'||_project_id::text, 10000, '2021', 'example abstract', now()) returning project_report_attachment_id into _project_report_attachment_id;
+  insert into project_attachment (project_id, file_name, title, key, file_size, file_type) values (_project_id, 'test_filename.txt', 'test filename', 'projects/'||_project_id::text, 10000, 'video');
+  insert into project_report_attachment (project_id, file_name, title, key, file_size, year, description) values (_project_id, 'test_filename.txt', 'test filename', 'projects/'||_project_id::text, 10000, '2021', 'example abstract') returning project_report_attachment_id into _project_report_attachment_id;
   insert into project_report_author (project_report_attachment_id, first_name, last_name) values (_project_report_attachment_id, 'john', 'doe');
   insert into project_report_author (project_report_attachment_id, first_name, last_name) values (_project_report_attachment_id, 'bob', 'dole');
   insert into project_first_nation (project_id, first_nations_id) values (_project_id, (select first_nations_id from first_nations where name = 'Kitselas Nation'));
@@ -132,7 +132,8 @@ begin
     , lead_last_name
     , geography
     , ecological_season_id
-    , intended_outcome_id)
+    , intended_outcome_id
+    , field_method_id)
   values (_project_id
     , 'survey name'
     , 'survey objectives'
@@ -143,13 +144,14 @@ begin
     , 'lead last'
     , _geography
     , (select ecological_season_id from ecological_season where name = 'Growing')
-    , (select intended_outcome_id from intended_outcome where name = 'Survival')    
+    , (select intended_outcome_id from intended_outcome where name = 'Survival')
+    , (select field_method_id from field_method where name = 'Stratified Random Block')
     ) returning survey_id into _survey_id;
 
   insert into survey_proprietor (survey_id, first_nations_id, proprietor_type_id, rationale,disa_required)
     values (_survey_id, (select first_nations_id from first_nations where name = 'Squamish Nation'), (select proprietor_type_id from proprietor_type where name = 'First Nations Land'), 'proprietor rationale', true);  
-  insert into survey_attachment (survey_id, file_name, title, key, file_size, file_type, security_review_timestamp) values (_survey_id, 'test_filename.txt', 'test filename', 'projects/'||_project_id::text||'/surveys/'||_survey_id::text, 10000, 'video', now());
-  insert into survey_report_attachment (survey_id, file_name, title, key, file_size, year, description, security_review_timestamp) values (_survey_id, 'test_filename.txt', 'test filename', 'projects/'||_survey_id::text, 10000, '2021', 'example abstract', now()) returning survey_report_attachment_id into _survey_report_attachment_id;
+  insert into survey_attachment (survey_id, file_name, title, key, file_size, file_type) values (_survey_id, 'test_filename.txt', 'test filename', 'projects/'||_project_id::text||'/surveys/'||_survey_id::text, 10000, 'video');
+  insert into survey_report_attachment (survey_id, file_name, title, key, file_size, year, description) values (_survey_id, 'test_filename.txt', 'test filename', 'projects/'||_survey_id::text, 10000, '2021', 'example abstract') returning survey_report_attachment_id into _survey_report_attachment_id;
   insert into survey_report_author (survey_report_attachment_id, first_name, last_name) values (_survey_report_attachment_id, 'john', 'doe');
   insert into survey_report_author (survey_report_attachment_id, first_name, last_name) values (_survey_report_attachment_id, 'bob', 'dole');
   insert into study_species (survey_id, wldtaxonomic_units_id, is_focal) values (_survey_id, (select wldtaxonomic_units_id from wldtaxonomic_units where CODE = 'AMARALB'), true);
@@ -180,7 +182,7 @@ begin
 
   -- occurrence
   -- occurrence submission 1
-  insert into occurrence_submission (survey_id, source, event_timestamp) values (_survey_id, 'BIOHUB BATCH', now()-interval '1 day') returning occurrence_submission_id into _occurrence_submission_id;
+  insert into occurrence_submission (survey_id, source, event_timestamp, input_file_name) values (_survey_id, 'BIOHUB BATCH', now()-interval '1 day', 'occurrence_filename.zip') returning occurrence_submission_id into _occurrence_submission_id;
   select count(1) into _count from occurrence_submission;
   assert _count = 1, 'FAIL occurrence_submission';
   insert into occurrence (occurrence_submission_id, taxonid, lifestage, eventdate, sex) values (_occurrence_submission_id, 'M-ALAL', 'Adult', now()-interval '10 day', 'male');

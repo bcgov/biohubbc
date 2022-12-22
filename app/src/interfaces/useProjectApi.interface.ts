@@ -13,10 +13,7 @@ export interface IGetProjectAttachment {
   fileType: string;
   lastModified: string;
   size: number;
-  securityToken: string;
-  securityReviewTimestamp: string;
   revisionCount: number;
-  securityRuleCount?: number;
 }
 
 export type IGetProjectReportAttachment = IGetProjectAttachment & { fileType: 'Report' };
@@ -295,13 +292,11 @@ export interface IUploadAttachmentResponse {
 export interface IGetReportDetails {
   metadata: IGetReportMetadata | null;
   authors: IGetReportAuthors[];
-  security_reasons: IGetSecurityReasons[];
 }
 
 export interface IGetAttachmentDetails {
   metadata: { last_modified: string };
   authors: IGetReportAuthors[];
-  security_reasons: IGetSecurityReasons[];
 }
 
 export interface IGetReportMetadata {
@@ -316,15 +311,6 @@ export interface IGetReportMetadata {
 export interface IGetReportAuthors {
   first_name: string;
   last_name: string;
-}
-
-export interface IGetSecurityReasons {
-  security_reason_id: number;
-  security_reason_title: string;
-  security_reason_description: string;
-  date_expired: string;
-  user_identifier: string;
-  security_date_applied: string;
 }
 
 export interface IGetProjectParticipantsResponseArrayItem {

@@ -27,7 +27,9 @@ describe('deleteAttachment', () => {
     });
 
     const expectedError = new Error('cannot process request');
-    sinon.stub(AttachmentService.prototype, 'removeAllSecurityFromSurveyReportAttachment').rejects(expectedError);
+    const deleteSurveyReportAttachmentAuthorsStub = sinon
+      .stub(AttachmentService.prototype, 'deleteSurveyReportAttachmentAuthors')
+      .rejects(expectedError);
 
     const sampleReq = {
       keycloak_token: {},
@@ -44,6 +46,7 @@ describe('deleteAttachment', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
+      expect(deleteSurveyReportAttachmentAuthorsStub).to.be.calledOnce;
       expect((actualError as HTTPError).message).to.equal(expectedError.message);
     }
   });
@@ -65,10 +68,6 @@ describe('deleteAttachment', () => {
         attachmentId: 2
       }
     } as any;
-
-    const removeAllSecurityFromSurveyReportAttachmentStub = sinon
-      .stub(AttachmentService.prototype, 'removeAllSecurityFromSurveyReportAttachment')
-      .resolves();
 
     const deleteSurveyReportAttachmentAuthorsStub = sinon
       .stub(AttachmentService.prototype, 'deleteSurveyReportAttachmentAuthors')
@@ -97,7 +96,6 @@ describe('deleteAttachment', () => {
 
     await result(sampleReq, (sampleRes as unknown) as any, (null as unknown) as any);
     expect(actualResult).to.eql(undefined);
-    expect(removeAllSecurityFromSurveyReportAttachmentStub).to.be.calledOnce;
     expect(deleteSurveyReportAttachmentAuthorsStub).to.be.calledOnce;
     expect(deleteSurveyReportAttachmentStub).to.be.calledOnce;
     expect(fileUtilsStub).to.be.calledOnce;
@@ -121,10 +119,6 @@ describe('deleteAttachment', () => {
       }
     } as any;
 
-    const removeAllSecurityFromSurveyAttachmentStub = sinon
-      .stub(AttachmentService.prototype, 'removeAllSecurityFromSurveyAttachment')
-      .resolves();
-
     const deleteSurveyAttachmentStub = sinon
       .stub(AttachmentService.prototype, 'deleteSurveyAttachment')
       .resolves({ key: 'string' });
@@ -146,7 +140,6 @@ describe('deleteAttachment', () => {
 
     await result(sampleReq, (sampleRes as unknown) as any, (null as unknown) as any);
     expect(actualResult).to.eql(null);
-    expect(removeAllSecurityFromSurveyAttachmentStub).to.be.calledOnce;
     expect(deleteSurveyAttachmentStub).to.be.calledOnce;
     expect(fileUtilsStub).to.be.calledOnce;
   });

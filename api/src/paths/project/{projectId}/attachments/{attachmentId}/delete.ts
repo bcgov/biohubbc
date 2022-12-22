@@ -57,14 +57,10 @@ POST.apiDoc = {
       'application/json': {
         schema: {
           type: 'object',
-          required: ['attachmentType', 'securityToken'],
+          required: ['attachmentType'],
           properties: {
             attachmentType: {
               type: 'string'
-            },
-            securityToken: {
-              type: 'string',
-              nullable: true
             }
           }
         }
@@ -106,13 +102,10 @@ export function deleteAttachment(): RequestHandler {
 
       let deleteResult: { key: string };
       if (req.body.attachmentType === ATTACHMENT_TYPE.REPORT) {
-        await attachmentService.removeAllSecurityFromProjectReportAttachment(Number(req.params.attachmentId));
-
         await attachmentService.deleteProjectReportAttachmentAuthors(Number(req.params.attachmentId));
 
         deleteResult = await attachmentService.deleteProjectReportAttachment(Number(req.params.attachmentId));
       } else {
-        await attachmentService.removeAllSecurityFromProjectAttachment(Number(req.params.attachmentId));
         deleteResult = await attachmentService.deleteProjectAttachment(Number(req.params.attachmentId));
       }
 

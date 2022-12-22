@@ -207,4 +207,44 @@ describe('TaxonomyService', () => {
       expect(elasticSearchStub).to.be.calledOnce;
     });
   });
+
+  describe('getEnrichedDataForSpeciesCode', async () => {
+    it('should query elasticsearch', async () => {
+      process.env.ELASTICSEARCH_TAXONOMY_INDEX = 'taxonomy_test_2.0.0';
+
+      const taxonomyService = new TaxonomyService();
+
+      const taxonDetails: Omit<ITaxonomySource, 'end_date'> = {
+        unit_name1: 'A',
+        unit_name2: 'B',
+        unit_name3: 'C',
+        taxon_authority: 'taxon_authority',
+        code: 'D',
+        tty_kingdom: 'kingdom',
+        tty_name: 'name',
+        english_name: 'animal',
+        note: null
+      };
+
+      const elasticSearchStub = sinon.stub(taxonomyService, '_elasticSearch').resolves({
+        ...mockElasticResponse,
+        hits: {
+          hits: [
+            {
+              _index: process.env.ELASTICSEARCH_TAXONOMY_INDEX,
+              _id: '1',
+              _source: {
+                ...taxonDetails,
+                end_date: null
+              }
+            }
+          ]
+        }
+      });
+
+      taxonomyService.getEnrichedDataForSpeciesCode('code');
+
+      expect(elasticSearchStub).to.be.calledOnce;
+    });
+  });
 });

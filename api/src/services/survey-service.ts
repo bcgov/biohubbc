@@ -44,8 +44,7 @@ export class SurveyService extends DBService {
       fundingData,
       purposeAndMethodologyData,
       proprietorData,
-      locationData,
-      countDocumentsPendingReview
+      locationData
     ] = await Promise.all([
       this.getSurveyData(surveyId),
       this.getSpeciesData(surveyId),
@@ -53,8 +52,7 @@ export class SurveyService extends DBService {
       this.getSurveyFundingSourcesData(surveyId),
       this.getSurveyPurposeAndMethodology(surveyId),
       this.getSurveyProprietorDataForView(surveyId),
-      this.getSurveyLocationData(surveyId),
-      this.getCountDocumentsPendingReview(surveyId)
+      this.getSurveyLocationData(surveyId)
     ]);
 
     return {
@@ -64,8 +62,7 @@ export class SurveyService extends DBService {
       purpose_and_methodology: purposeAndMethodologyData,
       funding: fundingData,
       proprietor: proprietorData,
-      location: locationData,
-      docs_to_be_reviewed: countDocumentsPendingReview
+      location: locationData
     };
   }
 
@@ -401,16 +398,6 @@ export class SurveyService extends DBService {
 
   async deleteSurveyVantageCodes(surveyId: number): Promise<void> {
     return this.surveyRepository.deleteSurveyVantageCodes(surveyId);
-  }
-
-  async getCountDocumentsPendingReview(surveyId: number): Promise<number> {
-    const attachmentsCount = await this.attachmentRepository.getSurveyAttachmentCountToReview(surveyId);
-
-    const reportsCount = await this.attachmentRepository.getSurveyReportCountToReview(surveyId);
-
-    const documentCount = Number(attachmentsCount[0]) + Number(reportsCount[0]);
-
-    return documentCount;
   }
 
   async deleteSurvey(surveyId: number): Promise<void> {

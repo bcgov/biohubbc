@@ -6,9 +6,8 @@ import * as db from '../../../../database/db';
 import { HTTPError } from '../../../../errors/http-error';
 import { GetAttachmentsData } from '../../../../models/project-survey-attachments';
 import { AttachmentService } from '../../../../services/attachment-service';
-import { getMockDBConnection } from '../../../../__mocks__/db';
-import * as listAttachments from './list';
-
+import { getMockDBConnection, getRequestHandlerMocks } from '../../../../__mocks__/db';
+import * as list from './list';
 chai.use(sinonChai);
 
 describe('getAttachments', () => {
@@ -25,28 +24,23 @@ describe('getAttachments', () => {
       }
     });
 
-    const expectedError = new Error('cannot process request');
-    sinon.stub(AttachmentService.prototype, 'getProjectAttachmentsWithSecurityCounts').rejects(expectedError);
+    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
-    const sampleReq = {
-      keycloak_token: {},
-      body: {},
-      params: {
-        projectId: 1
-      }
-    } as any;
+    const expectedError = new Error('cannot process request');
+
+    sinon.stub(AttachmentService.prototype, 'getProjectAttachments').rejects(expectedError);
 
     try {
-      const result = listAttachments.getAttachments();
+      const result = list.getAttachments();
 
-      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
+      await result(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
       expect((actualError as HTTPError).message).to.equal(expectedError.message);
     }
   });
 
-  it('should succeed with valid Id', async () => {
+  it('should succeed with valid params', async () => {
     const dbConnectionObj = getMockDBConnection();
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
@@ -55,22 +49,19 @@ describe('getAttachments', () => {
       }
     });
 
-    const getProjectAttachmentsWithSecurityCountsStub = sinon
-      .stub(AttachmentService.prototype, 'getProjectAttachmentsWithSecurityCounts')
-      .resolves([]);
-    const getProjectReportAttachmentsWithSecurityCountsStub = sinon
-      .stub(AttachmentService.prototype, 'getProjectReportAttachmentsWithSecurityCounts')
-      .resolves([]);
-
-    const sampleReq = {
-      keycloak_token: {},
-      body: {},
-      params: {
-        projectId: 1
-      }
-    } as any;
+    const getProjectAttachmentsStub = sinon.stub(AttachmentService.prototype, 'getProjectAttachments').resolves([]);
+    sinon.stub(AttachmentService.prototype, 'getProjectReportAttachments').resolves([]);
 
     const expectedResponse = new GetAttachmentsData([], []);
+
+    const mockReq = {
+      keycloak_token: {},
+      params: {
+        projectId: 1,
+        attachmentId: 2
+      },
+      body: {}
+    };
 
     let actualResult: any = null;
     const sampleRes = {
@@ -83,11 +74,10 @@ describe('getAttachments', () => {
       }
     };
 
-    const result = listAttachments.getAttachments();
+    const result = list.getAttachments();
 
-    await result(sampleReq, (sampleRes as unknown) as any, (null as unknown) as any);
+    await result((mockReq as unknown) as any, (sampleRes as unknown) as any, (null as unknown) as any);
     expect(actualResult).to.eql(expectedResponse);
-    expect(getProjectAttachmentsWithSecurityCountsStub).to.be.calledOnce;
-    expect(getProjectReportAttachmentsWithSecurityCountsStub).to.be.calledOnce;
+    expect(getProjectAttachmentsStub).to.be.calledOnce;
   });
 });

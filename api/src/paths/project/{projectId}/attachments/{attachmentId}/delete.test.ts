@@ -27,7 +27,9 @@ describe('deleteAttachment', () => {
     });
 
     const expectedError = new Error('cannot process request');
-    sinon.stub(AttachmentService.prototype, 'removeAllSecurityFromProjectReportAttachment').rejects(expectedError);
+    const deleteProjectReportAttachmentAuthorsStub = sinon
+      .stub(AttachmentService.prototype, 'deleteProjectReportAttachmentAuthors')
+      .rejects(expectedError);
 
     const sampleReq = {
       keycloak_token: {},
@@ -44,6 +46,7 @@ describe('deleteAttachment', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
+      expect(deleteProjectReportAttachmentAuthorsStub).to.be.calledOnce;
       expect((actualError as HTTPError).message).to.equal(expectedError.message);
     }
   });
@@ -65,10 +68,6 @@ describe('deleteAttachment', () => {
         attachmentId: 2
       }
     } as any;
-
-    const removeAllSecurityFromProjectReportAttachmentStub = sinon
-      .stub(AttachmentService.prototype, 'removeAllSecurityFromProjectReportAttachment')
-      .resolves();
 
     const deleteProjectReportAttachmentAuthorsStub = sinon
       .stub(AttachmentService.prototype, 'deleteProjectReportAttachmentAuthors')
@@ -97,7 +96,6 @@ describe('deleteAttachment', () => {
 
     await result(sampleReq, (sampleRes as unknown) as any, (null as unknown) as any);
     expect(actualResult).to.eql(undefined);
-    expect(removeAllSecurityFromProjectReportAttachmentStub).to.be.calledOnce;
     expect(deleteProjectReportAttachmentAuthorsStub).to.be.calledOnce;
     expect(deleteProjectReportAttachmentStub).to.be.calledOnce;
     expect(fileUtilsStub).to.be.calledOnce;
@@ -121,10 +119,6 @@ describe('deleteAttachment', () => {
       }
     } as any;
 
-    const removeAllSecurityFromProjectAttachmentStub = sinon
-      .stub(AttachmentService.prototype, 'removeAllSecurityFromProjectAttachment')
-      .resolves();
-
     const deleteProjectAttachmentStub = sinon
       .stub(AttachmentService.prototype, 'deleteProjectAttachment')
       .resolves({ key: 'string' });
@@ -146,7 +140,6 @@ describe('deleteAttachment', () => {
 
     await result(sampleReq, (sampleRes as unknown) as any, (null as unknown) as any);
     expect(actualResult).to.eql(null);
-    expect(removeAllSecurityFromProjectAttachmentStub).to.be.calledOnce;
     expect(deleteProjectAttachmentStub).to.be.calledOnce;
     expect(fileUtilsStub).to.be.calledOnce;
   });

@@ -38,7 +38,7 @@ export interface IReportAttachmentDetailsProps {
   title: string;
   onFileDownload: () => void;
   onSave: (fileMeta: IEditReportMetaForm) => Promise<void>;
-  securityDetails: IGetReportDetails | null;
+  reportAttachmentDetails: IGetReportDetails | null;
   attachmentSize: string;
   refresh: () => void;
 }
@@ -58,7 +58,7 @@ const ReportAttachmentDetails: React.FC<IReportAttachmentDetailsProps> = (props)
       <EditFileWithMetaDialog
         open={showEditFileWithMetaDialog}
         dialogTitle={'Edit Upload Report'}
-        reportMetaData={props.securityDetails}
+        reportMetaData={props.reportAttachmentDetails}
         onClose={() => {
           setShowEditFileWithMetaDialog(false);
         }}
@@ -94,7 +94,7 @@ const ReportAttachmentDetails: React.FC<IReportAttachmentDetailsProps> = (props)
         </Box>
       </Box>
       <Box mt={5}>
-        <ReportMeta reportDetails={props.securityDetails} />
+        <ReportMeta reportDetails={props.reportAttachmentDetails} />
       </Box>
     </>
   );

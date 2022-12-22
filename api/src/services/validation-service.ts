@@ -5,7 +5,7 @@ import { SubmissionRepository } from '../repositories/submission-repository';
 import { ITemplateMethodologyData, ValidationRepository } from '../repositories/validation-repository';
 import { getFileFromS3, uploadBufferToS3 } from '../utils/file-utils';
 import { getLogger } from '../utils/logger';
-import { ICsvState, IHeaderError, IRowError } from '../utils/media/csv/csv-file';
+import { ICsvState, IHeaderError, IKeyError, IRowError } from '../utils/media/csv/csv-file';
 import { DWCArchive } from '../utils/media/dwc/dwc-archive-file';
 import { ArchiveFile, IMediaState, MediaFile } from '../utils/media/media-file';
 import { parseUnknownMedia } from '../utils/media/media-utils';
@@ -231,8 +231,11 @@ export class ValidationService extends DBService {
   async templateTransformation(submissionId: number, xlsx: XLSXCSV, s3InputKey: string, surveyId: number) {
     try {
       const xlsxSchema = await this.getTransformationSchema(xlsx, surveyId);
+
       const xlsxParser = this.getTransformationRules(xlsxSchema);
+
       const fileBuffer = await this.transformXLSX(xlsx, xlsxParser);
+
       await this.persistTransformationResults(submissionId, fileBuffer, s3InputKey, xlsx);
     } catch (error) {
       if (error instanceof SubmissionError) {
@@ -296,25 +299,25 @@ export class ValidationService extends DBService {
     return validationSchema;
   }
 
-  // validation service
   getValidationRules(schema: any): ValidationSchemaParser {
     const validationSchemaParser = new ValidationSchemaParser(schema);
     return validationSchemaParser;
   }
 
-  // validation service
   validateXLSX(file: XLSXCSV, parser: ValidationSchemaParser) {
-    const mediaState = file.isMediaValid(parser);
+    // Run media validations
+    file.validateMedia(parser);
 
-    if (!mediaState.isValid) {
+    const media_state = file.getMediaState();
+    if (!media_state.isValid) {
       throw SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.INVALID_MEDIA);
     }
 
-    const csvState: ICsvState[] = file.isContentValid(parser);
-    return {
-      csv_state: csvState,
-      media_state: mediaState
-    } as ICsvMediaState;
+    // Run CSV content validations
+    file.validateContent(parser);
+    const csv_state = file.getContentState();
+
+    return { csv_state, media_state };
   }
 
   /**
@@ -368,6 +371,16 @@ export class ValidationService extends DBService {
             SUBMISSION_MESSAGE_TYPE.INVALID_VALUE,
             this.generateRowErrorMessage(csvStateItem.fileName, rowError),
             rowError.errorCode
+          )
+        );
+      });
+
+      csvStateItem.keyErrors?.forEach((keyError) => {
+        errors.push(
+          new MessageError(
+            SUBMISSION_MESSAGE_TYPE.DANGLING_PARENT_CHILD_KEY,
+            this.generateKeyErrorMessage(csvStateItem.fileName, keyError),
+            keyError.errorCode
           )
         );
       });
@@ -462,24 +475,52 @@ export class ValidationService extends DBService {
 
   validateDWCArchive(dwc: DWCArchive, parser: ValidationSchemaParser): ICsvMediaState {
     defaultLog.debug({ label: 'validateDWCArchive', message: 'dwcArchive' });
-    const mediaState = dwc.isMediaValid(parser);
-    if (!mediaState.isValid) {
+
+    // Run DwC media validations
+    dwc.validateMedia(parser);
+
+    const media_state = dwc.getMediaState();
+    if (!media_state.isValid) {
       throw SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.INVALID_MEDIA);
     }
 
-    const csvState: ICsvState[] = dwc.isContentValid(parser);
+    // Run DwC content validations
+    dwc.validateContent(parser);
+    const csv_state = dwc.getContentState();
 
-    return {
-      csv_state: csvState,
-      media_state: mediaState
-    };
+    return { csv_state, media_state };
   }
 
+  /**
+   * Generates error messages relating to CSV headers.
+   *
+   * @param fileName
+   * @param headerError
+   * @returns {string}
+   */
   generateHeaderErrorMessage(fileName: string, headerError: IHeaderError): string {
     return `${fileName} - ${headerError.message} - Column: ${headerError.col}`;
   }
 
+  /**
+   * Generates error messages relating to CSV rows.
+   *
+   * @param fileName
+   * @param rowError
+   * @returns {string}
+   */
   generateRowErrorMessage(fileName: string, rowError: IRowError): string {
     return `${fileName} - ${rowError.message} - Column: ${rowError.col} - Row: ${rowError.row}`;
+  }
+
+  /**
+   * Generates error messages relating to CSV workbook keys.
+   *
+   * @param fileName
+   * @param keyError
+   * @returns {string}
+   */
+  generateKeyErrorMessage(fileName: string, keyError: IKeyError): string {
+    return `${fileName} - ${keyError.message} - Rows: ${keyError.rows.join(', ')}`;
   }
 }
