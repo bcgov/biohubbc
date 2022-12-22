@@ -29,7 +29,6 @@ export interface IProjectReportAttachment {
   description: string;
   year_published: number;
   last_modified: string;
-  create_date: string;
   key: string;
   file_size: string;
   revision_count: number;
@@ -151,8 +150,10 @@ export class AttachmentRepository extends BaseRepository {
         title,
         description,
         year::int as year_published,
-        update_date::text as last_modified,
-        create_date,
+        CASE
+          WHEN update_date::text IS NULL 
+          THEN create_date::text 
+        END AS last_modified,
         file_size,
         key,
         revision_count
@@ -194,8 +195,10 @@ export class AttachmentRepository extends BaseRepository {
         title,
         description,
         year::int as year_published,
-        update_date::text as last_modified,
-        create_date,
+        CASE
+          WHEN update_date::text IS NULL 
+          THEN create_date::text 
+        END AS last_modified,
         file_size,
         key,
         revision_count
@@ -275,8 +278,10 @@ export class AttachmentRepository extends BaseRepository {
         title,
         description,
         year::int as year_published,
-        update_date::text as last_modified,
-        create_date,
+        CASE
+          WHEN update_date::text IS NULL 
+          THEN create_date::text 
+        END AS last_modified,
         file_size,
         key,
         revision_count
@@ -315,8 +320,10 @@ export class AttachmentRepository extends BaseRepository {
         title,
         description,
         year::int as year_published,
-        update_date::text as last_modified,
-        create_date,
+        CASE
+          WHEN update_date::text IS NULL 
+          THEN create_date::text 
+        END AS last_modified,
         file_size,
         key,
         revision_count
