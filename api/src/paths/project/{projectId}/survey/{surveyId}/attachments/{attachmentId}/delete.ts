@@ -106,8 +106,6 @@ export function deleteAttachment(): RequestHandler {
 
       const attachmentService = new AttachmentService(connection);
 
-      console.log('req.body.attachmentType', req.body.attachmentType);
-
       let deleteResult: { key: string };
       if (req.body.attachmentType === ATTACHMENT_TYPE.REPORT) {
         await attachmentService.deleteSurveyReportAttachmentAuthors(Number(req.params.attachmentId));

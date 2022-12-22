@@ -15,7 +15,7 @@ describe('getAttachments', () => {
     sinon.restore();
   });
 
-  it('should throw an error if failure occurs', async () => {
+  it('should throw an error when a failure occurs', async () => {
     const dbConnectionObj = getMockDBConnection();
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
