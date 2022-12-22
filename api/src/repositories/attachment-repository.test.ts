@@ -150,20 +150,6 @@ describe('AttachmentRepository', () => {
           expect(response).to.not.be.null;
           expect(response).to.eql({ rows: [{ id: 1 }], rowCount: 1 });
         });
-
-        it('should throw an error', async () => {
-          const mockResponse = ({ rowCount: null } as any) as Promise<QueryResult<any>>;
-          const dbConnection = getMockDBConnection({ sql: () => mockResponse });
-
-          const repository = new AttachmentRepository(dbConnection);
-
-          try {
-            await repository.getProjectAttachmentByFileName(1, 'string');
-            expect.fail();
-          } catch (error) {
-            expect((error as Error).message).to.equal('Failed to get project attachment by filename');
-          }
-        });
       });
 
       describe('getProjectAttachmentS3Key', () => {
@@ -394,20 +380,6 @@ describe('AttachmentRepository', () => {
           expect(response).to.not.be.null;
           expect(response).to.eql({ rows: [{ id: 1 }], rowCount: 1 });
         });
-
-        it('should throw an error', async () => {
-          const mockResponse = ({ rowCount: null } as any) as Promise<QueryResult<any>>;
-          const dbConnection = getMockDBConnection({ sql: () => mockResponse });
-
-          const repository = new AttachmentRepository(dbConnection);
-
-          try {
-            await repository.getProjectReportAttachmentByFileName(1, 'string');
-            expect.fail();
-          } catch (error) {
-            expect((error as Error).message).to.equal('Failed to get Project Report Attachment by filename');
-          }
-        });
       });
 
       describe('deleteProjectReportAttachmentAuthors', () => {
@@ -421,20 +393,6 @@ describe('AttachmentRepository', () => {
 
           expect(response).to.not.be.null;
           expect(response).to.eql({ rows: [{ id: 1 }], rowCount: 1 });
-        });
-
-        it('should throw an error', async () => {
-          const mockResponse = ({ rowCount: null } as any) as Promise<QueryResult<any>>;
-          const dbConnection = getMockDBConnection({ sql: () => mockResponse });
-
-          const repository = new AttachmentRepository(dbConnection);
-
-          try {
-            await repository.deleteProjectReportAttachmentAuthors(1);
-            expect.fail();
-          } catch (error) {
-            expect((error as Error).message).to.equal('Failed to delete attachment report authors records');
-          }
         });
       });
 
@@ -714,20 +672,6 @@ describe('AttachmentRepository', () => {
           expect(response).to.not.be.null;
           expect(response).to.eql({ rows: [{ id: 1 }], rowCount: 1 });
         });
-
-        it('should throw an error', async () => {
-          const mockResponse = ({ rowCount: null } as any) as Promise<QueryResult<any>>;
-          const dbConnection = getMockDBConnection({ sql: () => mockResponse });
-
-          const repository = new AttachmentRepository(dbConnection);
-
-          try {
-            await repository.getSurveyAttachmentByFileName('string', 1);
-            expect.fail();
-          } catch (error) {
-            expect((error as Error).message).to.equal('Failed to get survey attachment by filename');
-          }
-        });
       });
     });
 
@@ -902,20 +846,6 @@ describe('AttachmentRepository', () => {
           expect(response).to.not.be.null;
           expect(response).to.eql({ rows: [{ id: 1 }], rowCount: 1 });
         });
-
-        it('should throw an error', async () => {
-          const mockResponse = ({ rowCount: null } as any) as Promise<QueryResult<any>>;
-          const dbConnection = getMockDBConnection({ sql: () => mockResponse });
-
-          const repository = new AttachmentRepository(dbConnection);
-
-          try {
-            await repository.getSurveyReportAttachmentByFileName(1, 'string');
-            expect.fail();
-          } catch (error) {
-            expect((error as Error).message).to.equal('Failed to get Survey Report Attachment by filename');
-          }
-        });
       });
 
       describe('deleteSurveyReportAttachmentAuthors', () => {
@@ -928,20 +858,6 @@ describe('AttachmentRepository', () => {
           const response = await repository.deleteSurveyReportAttachmentAuthors(1);
 
           expect(response).to.eql(undefined);
-        });
-
-        it('should throw an error', async () => {
-          const mockResponse = ({ rowCount: null } as any) as Promise<QueryResult<any>>;
-          const dbConnection = getMockDBConnection({ sql: () => mockResponse });
-
-          const repository = new AttachmentRepository(dbConnection);
-
-          try {
-            await repository.deleteSurveyReportAttachmentAuthors(1);
-            expect.fail();
-          } catch (error) {
-            expect((error as Error).message).to.equal('Failed to delete survey report attachment');
-          }
         });
       });
 
