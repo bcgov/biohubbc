@@ -38,27 +38,6 @@ describe('getOccurrencesForView', () => {
     sinon.restore();
   });
 
-  it('should throw a 400 error when no occurrence submission id in request body', async () => {
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      }
-    });
-
-    try {
-      const result = view_occurrences.getOccurrencesForView();
-
-      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal(
-        'Missing required request body param `occurrence_submission_id`'
-      );
-    }
-  });
-
   it('should throw an error when failed to build SQL get occurrences for view statement', async () => {
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,

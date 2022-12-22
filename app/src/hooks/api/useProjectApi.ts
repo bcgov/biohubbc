@@ -415,15 +415,15 @@ const useProjectApi = (axios: AxiosInstance) => {
     getProjectAttachments,
     getAttachmentSignedURL,
     deleteProjectAttachment,
-    deleteFundingSource,
-    addFundingSource,
     deleteProject,
     getProjectReportDetails,
     getProjectAttachmentDetails,
     getProjectParticipants,
     addProjectParticipants,
     removeProjectParticipant,
-    updateProjectParticipantRole
+    updateProjectParticipantRole,
+    deleteFundingSource,
+    addFundingSource
   };
 };
 
