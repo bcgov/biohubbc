@@ -156,7 +156,6 @@ export function getOccurrenceSubmission(): RequestHandler {
       }
 
       await connection.commit();
-
       const getOccurrenceSubmissionData =
         (response && {
           id: response.id,
