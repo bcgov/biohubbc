@@ -45,7 +45,7 @@ describe('getParentChildKeyMatchValidator', async () => {
 
   it('should not add errors if no column names provided', async () => {
     const validator = getParentChildKeyMatchValidator({
-      submission_required_files_validator: {
+      workbook_parent_child_key_match_validator: {
         child_worksheet_name: 'child_sheet',
         parent_worksheet_name: 'parent_sheet',
         column_names: []
@@ -61,7 +61,7 @@ describe('getParentChildKeyMatchValidator', async () => {
 
   it('should not add errors if empty child sheet string is provided', async () => {
     const validator = getParentChildKeyMatchValidator({
-      submission_required_files_validator: {
+      workbook_parent_child_key_match_validator: {
         child_worksheet_name: '',
         parent_worksheet_name: 'parent_sheet',
         column_names: ['column1']
@@ -77,7 +77,7 @@ describe('getParentChildKeyMatchValidator', async () => {
 
   it('should not add errors if empty parent sheet string is provided', async () => {
     const validator = getParentChildKeyMatchValidator({
-      submission_required_files_validator: {
+      workbook_parent_child_key_match_validator: {
         child_worksheet_name: 'child_sheet',
         parent_worksheet_name: '',
         column_names: ['column1']
@@ -93,7 +93,7 @@ describe('getParentChildKeyMatchValidator', async () => {
 
   it('should not add errors if the provided parent sheet name is not found in the workbook', async () => {
     const validator = getParentChildKeyMatchValidator({
-      submission_required_files_validator: {
+      workbook_parent_child_key_match_validator: {
         child_worksheet_name: 'child_sheet',
         parent_worksheet_name: 'unknown_sheet_name',
         column_names: ['column1']
@@ -109,7 +109,7 @@ describe('getParentChildKeyMatchValidator', async () => {
 
   it('should not add errors if the provided child sheet name is not found in the workbook', async () => {
     const validator = getParentChildKeyMatchValidator({
-      submission_required_files_validator: {
+      workbook_parent_child_key_match_validator: {
         child_worksheet_name: 'unknown_sheet_name',
         parent_worksheet_name: 'parent_sheet',
         column_names: ['column1']
@@ -125,7 +125,7 @@ describe('getParentChildKeyMatchValidator', async () => {
 
   it('should not add errors if no dangling indices are found for a single column', async () => {
     const validator = getParentChildKeyMatchValidator({
-      submission_required_files_validator: {
+      workbook_parent_child_key_match_validator: {
         child_worksheet_name: 'child_sheet',
         parent_worksheet_name: 'parent_sheet',
         column_names: ['column2']
@@ -141,7 +141,7 @@ describe('getParentChildKeyMatchValidator', async () => {
 
   it('should not add errors if no dangling indices are found for multiple columns', async () => {
     const validator = getParentChildKeyMatchValidator({
-      submission_required_files_validator: {
+      workbook_parent_child_key_match_validator: {
         child_worksheet_name: 'child_sheet',
         parent_worksheet_name: 'parent_sheet',
         column_names: ['column1', 'column2']
@@ -166,7 +166,7 @@ describe('getParentChildKeyMatchValidator', async () => {
     const mockWorkbook = new CSVWorkBook(workbook);
 
     const validator = getParentChildKeyMatchValidator({
-      submission_required_files_validator: {
+      workbook_parent_child_key_match_validator: {
         child_worksheet_name: 'child_sheet',
         parent_worksheet_name: 'parent_sheet',
         column_names: ['column1', 'column2']
@@ -187,7 +187,7 @@ describe('getParentChildKeyMatchValidator', async () => {
 
   it('should add errors if a column name is absent from the parent sheet but present in the child sheet', async () => {
     const validator = getParentChildKeyMatchValidator({
-      submission_required_files_validator: {
+      workbook_parent_child_key_match_validator: {
         child_worksheet_name: 'child_sheet',
         parent_worksheet_name: 'parent_sheet',
         column_names: ['column2', 'column3']
@@ -209,7 +209,7 @@ describe('getParentChildKeyMatchValidator', async () => {
 
   it('should not add errors if a column name is absent from the child sheet but present in the parent sheet', async () => {
     const validator = getParentChildKeyMatchValidator({
-      submission_required_files_validator: {
+      workbook_parent_child_key_match_validator: {
         child_worksheet_name: 'child_sheet',
         parent_worksheet_name: 'parent_sheet',
         column_names: ['column2', 'column5']
@@ -224,7 +224,7 @@ describe('getParentChildKeyMatchValidator', async () => {
 
   it('should only add a given error to the child sheet and not the parent', async () => {
     const validator = getParentChildKeyMatchValidator({
-      submission_required_files_validator: {
+      workbook_parent_child_key_match_validator: {
         child_worksheet_name: 'child_sheet',
         parent_worksheet_name: 'parent_sheet',
         column_names: ['column3']
@@ -247,7 +247,7 @@ describe('getParentChildKeyMatchValidator', async () => {
 
   it('should only include rows containing a dangling key in the child sheet in key errors', async () => {
     const validator = getParentChildKeyMatchValidator({
-      submission_required_files_validator: {
+      workbook_parent_child_key_match_validator: {
         child_worksheet_name: 'child_sheet',
         parent_worksheet_name: 'parent_sheet',
         column_names: ['column4']

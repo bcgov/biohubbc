@@ -359,7 +359,7 @@ export class ValidationService extends DBService {
       csvStateItem.headerErrors?.forEach((headerError) => {
         errors.push(
           new MessageError(
-            SUBMISSION_MESSAGE_TYPE.INVALID_VALUE,
+            headerError.errorCode,
             this.generateHeaderErrorMessage(csvStateItem.fileName, headerError),
             headerError.errorCode
           )
@@ -369,7 +369,7 @@ export class ValidationService extends DBService {
       csvStateItem.rowErrors?.forEach((rowError) => {
         errors.push(
           new MessageError(
-            SUBMISSION_MESSAGE_TYPE.INVALID_VALUE,
+            rowError.errorCode,
             this.generateRowErrorMessage(csvStateItem.fileName, rowError),
             rowError.errorCode
           )
@@ -379,7 +379,7 @@ export class ValidationService extends DBService {
       csvStateItem.keyErrors?.forEach((keyError) => {
         errors.push(
           new MessageError(
-            SUBMISSION_MESSAGE_TYPE.DANGLING_PARENT_CHILD_KEY,
+            keyError.errorCode,
             this.generateKeyErrorMessage(csvStateItem.fileName, keyError),
             keyError.errorCode
           )
