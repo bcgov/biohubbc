@@ -10,8 +10,7 @@ import { DWCArchive } from '../utils/media/dwc/dwc-archive-file';
 import { ArchiveFile, IMediaState, MediaFile } from '../utils/media/media-file';
 import { parseUnknownMedia } from '../utils/media/media-utils';
 import { ValidationSchemaParser } from '../utils/media/validation/validation-schema-parser';
-import { TransformationSchemaParser } from '../utils/media/xlsx/transformation/transformation-schema-parser';
-import { XLSXTransformation } from '../utils/media/xlsx/transformation/xlsx-transformation';
+import { TransformSchema } from '../utils/media/xlsx/transformation/xlsx-transform-schema-parser';
 import { XLSXCSV } from '../utils/media/xlsx/xlsx-file';
 import { MessageError, SubmissionError, SubmissionErrorFromMessageType } from '../utils/submission-error';
 import { DBService } from './db-service';
@@ -410,12 +409,12 @@ export class ValidationService extends DBService {
   }
 
   // does this need a new error? could be an issue if we aren't maintaining things here
-  getTransformationRules(schema: any): TransformationSchemaParser {
-    const validationSchemaParser = new TransformationSchemaParser(schema);
-    return validationSchemaParser;
+  getTransformationRules(schema: any) {
+    // const validationSchemaParser = new TransformationSchemaParser(schema);
+    // return validationSchemaParser;
   }
 
-  async transformXLSX(file: XLSXCSV, parser: TransformationSchemaParser): Promise<IFileBuffer[]> {
+  async transformXLSX(file: XLSXCSV, validationSchema: TransformSchema): Promise<IFileBuffer[]> {
     const xlsxTransformation = new XLSXTransformation(parser, file);
     const transformedData = await xlsxTransformation.transform();
     const worksheets = xlsxTransformation.dataToSheet(transformedData);
