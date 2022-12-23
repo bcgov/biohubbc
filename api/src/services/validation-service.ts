@@ -9,14 +9,18 @@ import { ICsvState, IHeaderError, IKeyError, IRowError } from '../utils/media/cs
 import { DWCArchive } from '../utils/media/dwc/dwc-archive-file';
 import { ArchiveFile, IMediaState, MediaFile } from '../utils/media/media-file';
 import { parseUnknownMedia } from '../utils/media/media-utils';
+import { XLSXTransform } from '../utils/media/transformation/xlsx-transform';
 import { ValidationSchemaParser } from '../utils/media/validation/validation-schema-parser';
-import { TransformSchema } from '../utils/media/xlsx/transformation/xlsx-transform-schema-parser';
 import { XLSXCSV } from '../utils/media/xlsx/xlsx-file';
+import xlsx from "xlsx";
 import { MessageError, SubmissionError, SubmissionErrorFromMessageType } from '../utils/submission-error';
 import { DBService } from './db-service';
 import { ErrorService } from './error-service';
 import { OccurrenceService } from './occurrence-service';
 import { SurveyService } from './survey-service';
+import Ajv from 'ajv';
+import { transformationConfigJSONSchema } from '../utils/media/transformation/xlsx-transform-schema';
+import { TransformSchema } from '../utils/media/transformation/xlsx-transform-schema-parser';
 
 const defaultLog = getLogger('services/validation-service');
 
@@ -230,12 +234,10 @@ export class ValidationService extends DBService {
   async templateTransformation(submissionId: number, xlsx: XLSXCSV, s3InputKey: string, surveyId: number) {
     try {
       const xlsxSchema = await this.getTransformationSchema(xlsx, surveyId);
+      // const fileBuffer = await this.transformXLSX(xlsx, xlsxParser);
+      await this.newTransformXLSX(xlsx.workbook.rawWorkbook, xlsxSchema);
 
-      const xlsxParser = this.getTransformationRules(xlsxSchema);
-
-      const fileBuffer = await this.transformXLSX(xlsx, xlsxParser);
-
-      await this.persistTransformationResults(submissionId, fileBuffer, s3InputKey, xlsx);
+      // await this.persistTransformationResults(submissionId, fileBuffer, s3InputKey, xlsx);
     } catch (error) {
       if (error instanceof SubmissionError) {
         error.setStatus(SUBMISSION_STATUS_TYPE.FAILED_TRANSFORMED);
@@ -397,7 +399,7 @@ export class ValidationService extends DBService {
     return parseError;
   }
 
-  async getTransformationSchema(file: XLSXCSV, surveyId: number): Promise<any> {
+  async getTransformationSchema(file: XLSXCSV, surveyId: number): Promise<TransformSchema> {
     const templateMethodologySpeciesRecord = await this.getTemplateMethodologySpeciesRecord(file, surveyId);
 
     const transformationSchema = templateMethodologySpeciesRecord?.transform;
@@ -405,28 +407,40 @@ export class ValidationService extends DBService {
       throw SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_GET_TRANSFORMATION_RULES);
     }
 
-    return transformationSchema;
+    const avj = new Ajv();
+    avj.validate(transformationConfigJSONSchema, transformationSchema)
+    if (avj.errors) {
+      // this probably makes more sense as for input schema rather than pulling it out
+      throw SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_GET_TRANSFORMATION_RULES); 
+    }
+
+    // TODO is there a less hacky way of getting a string into the TransformSchema type?
+    return JSON.stringify(transformationSchema) as unknown as TransformSchema;
   }
 
-  // does this need a new error? could be an issue if we aren't maintaining things here
-  getTransformationRules(schema: any) {
-    // const validationSchemaParser = new TransformationSchemaParser(schema);
-    // return validationSchemaParser;
-  }
+  // TODO needs to turn into a file buffer for the rest of the process?
+  newTransformXLSX(workbook: xlsx.WorkBook, validationSchema: TransformSchema): IFileBuffer[] {
+    const xlsxTransform = new XLSXTransform(workbook, validationSchema);
+    const preparedRowObjectsForJSONToSheet = xlsxTransform.start();
 
-  async transformXLSX(file: XLSXCSV, validationSchema: TransformSchema): Promise<IFileBuffer[]> {
-    const xlsxTransformation = new XLSXTransformation(parser, file);
-    const transformedData = await xlsxTransformation.transform();
-    const worksheets = xlsxTransformation.dataToSheet(transformedData);
+    // Process the result
+    const dwcWorkbook = xlsx.utils.book_new();
+    return Object.entries(preparedRowObjectsForJSONToSheet).map(([key, value]) => {
+      const worksheet = xlsx.utils.json_to_sheet(value);
 
-    const fileBuffers: IFileBuffer[] = Object.entries(worksheets).map(([fileName, worksheet]) => {
+      const newWorkbook = xlsx.utils.book_new();
+
+      // TODO should this be called sheet 1? does it matter
+      xlsx.utils.book_append_sheet(newWorkbook, worksheet, 'Sheet1');
+      xlsx.utils.book_append_sheet(dwcWorkbook, worksheet, key);
+
+      const buffer = xlsx.write(newWorkbook, { type: 'buffer', bookType: 'csv' });
+      console.log(`Got a buffer: ${buffer.length}`)
       return {
-        name: fileName,
-        buffer: file.worksheetToBuffer(worksheet)
-      };
+        name: key,
+        buffer
+      } as IFileBuffer
     });
-
-    return fileBuffers;
   }
 
   async persistTransformationResults(
