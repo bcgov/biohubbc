@@ -112,7 +112,7 @@ export class SurveyService extends DBService {
     return this.surveyRepository.getSurveyFundingSourcesData(surveyId);
   }
 
-  async getSurveyProprietorDataForView(surveyId: number): Promise<GetSurveyProprietorData> {
+  async getSurveyProprietorDataForView(surveyId: number): Promise<GetSurveyProprietorData | null> {
     return this.surveyRepository.getSurveyProprietorDataForView(surveyId);
   }
 

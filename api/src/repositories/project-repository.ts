@@ -277,13 +277,6 @@ export class ProjectRepository extends BaseRepository {
 
     const result = (response && response.rows && response.rows[0]) || null;
 
-    if (!result) {
-      throw new ApiExecuteSQLError('Failed to get project team member', [
-        'ProjectRepository->getProjectParticipant',
-        'rows was null or undefined, expected rows != null'
-      ]);
-    }
-
     return result;
   }
 
@@ -542,6 +535,9 @@ export class ProjectRepository extends BaseRepository {
     const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
     const result = (response && response.rows && response.rows[0]) || null;
 
+    console.log('response', response);
+    console.log('result', result);
+
     if (!result) {
       throw new ApiExecuteSQLError('Failed to get project objectives data', [
         'ProjectRepository->getObjectivesData',
@@ -794,7 +790,6 @@ export class ProjectRepository extends BaseRepository {
         , pra.year
         , pra."key"
         , pra.file_size
-        , pra.security_token
         , array_remove(array_agg(pra2.first_name ||' '||pra2.last_name), null) authors
       FROM
         project_report_attachment pra
@@ -808,20 +803,12 @@ export class ProjectRepository extends BaseRepository {
         , pra.description
         , pra.year
         , pra."key"
-        , pra.file_size
-        , pra.security_token;
+        , pra.file_size;
     `;
 
     const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
 
     const result = (response && response.rows) || null;
-
-    if (!result) {
-      throw new ApiExecuteSQLError('Failed to get project report attachments data', [
-        'ProjectRepository->getAttachmentsData',
-        'rows was null or undefined, expected rows != null'
-      ]);
-    }
 
     return new GetReportAttachmentsData(result);
   }
@@ -847,7 +834,7 @@ export class ProjectRepository extends BaseRepository {
       ) VALUES (
         ${postProjectData.project.type},
         ${postProjectData.project.name},
-        ${postProjectData.objectives},
+        ${postProjectData.objectives.objectives},
         ${postProjectData.location.location_description},
         ${postProjectData.project.start_date},
         ${postProjectData.project.end_date},
@@ -1247,13 +1234,6 @@ export class ProjectRepository extends BaseRepository {
   async deleteProject(projectId: number): Promise<void> {
     const sqlStatement = SQL`call api_delete_project(${projectId})`;
 
-    const response = await this.connection.sql(sqlStatement);
-
-    if (!response.rowCount) {
-      throw new ApiExecuteSQLError('Failed to delete project', [
-        'ProjectRepository->deleteProject',
-        'rows was null or undefined, expected rows != null'
-      ]);
-    }
+    await this.connection.sql(sqlStatement);
   }
 }

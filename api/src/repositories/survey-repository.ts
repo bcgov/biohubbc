@@ -224,7 +224,7 @@ export class SurveyRepository extends BaseRepository {
     return new GetSurveyFundingSources(result);
   }
 
-  async getSurveyProprietorDataForView(surveyId: number): Promise<GetSurveyProprietorData> {
+  async getSurveyProprietorDataForView(surveyId: number): Promise<GetSurveyProprietorData | null> {
     const sqlStatement = SQL`
       SELECT
         prt.name as proprietor_type_name,
@@ -254,10 +254,7 @@ export class SurveyRepository extends BaseRepository {
     const result = (response && response.rows && response.rows?.[0]) || null;
 
     if (!result) {
-      throw new ApiExecuteSQLError('Failed to get Proprietor Data', [
-        'SurveyRepository->getSurveyProprietorDataForView',
-        'response was null or undefined, expected response != null'
-      ]);
+      return result;
     }
 
     return new GetSurveyProprietorData(result);
@@ -276,13 +273,6 @@ export class SurveyRepository extends BaseRepository {
     const response = await this.connection.sql(sqlStatement);
 
     const result = (response && response.rows && response.rows?.[0]) || null;
-
-    if (!result) {
-      throw new ApiExecuteSQLError('Failed to get project survey location data', [
-        'SurveyRepository->getSurveyLocationData',
-        'response was null or undefined, expected response != null'
-      ]);
-    }
 
     return new GetSurveyLocationData(result);
   }
@@ -399,13 +389,6 @@ export class SurveyRepository extends BaseRepository {
 
     const result = (response && response.rows) || null;
 
-    if (!result) {
-      throw new ApiExecuteSQLError('Failed to get attachments data', [
-        'SurveyRepository->getAttachmentsData',
-        'response was null or undefined, expected response != null'
-      ]);
-    }
-
     return new GetAttachmentsData(result);
   }
 
@@ -420,7 +403,6 @@ export class SurveyRepository extends BaseRepository {
         , pra.year
         , pra."key"
         , pra.file_size
-        , pra.security_token
         , array_remove(array_agg(pra2.first_name ||' '||pra2.last_name), null) authors
       FROM
       survey_report_attachment pra
@@ -434,8 +416,7 @@ export class SurveyRepository extends BaseRepository {
         , pra.description
         , pra.year
         , pra."key"
-        , pra.file_size
-        , pra.security_token;
+        , pra.file_size;
     `;
 
     const response = await this.connection.sql(sqlStatement);
@@ -800,14 +781,7 @@ export class SurveyRepository extends BaseRepository {
         survey_id = ${surveyId};
     `;
 
-    const response = await this.connection.sql(sqlStatement);
-
-    if (!response.rowCount) {
-      throw new ApiExecuteSQLError('Failed to delete Survey Species Data', [
-        'SurveyRepository->deleteSurveySpeciesData',
-        'response was null or undefined, expected response != null'
-      ]);
-    }
+    await this.connection.sql(sqlStatement);
   }
 
   async unassociatePermitFromSurvey(surveyId: number) {
@@ -820,14 +794,7 @@ export class SurveyRepository extends BaseRepository {
         survey_id = ${surveyId};
     `;
 
-    const response = await this.connection.sql(sqlStatement);
-
-    if (!response.rowCount) {
-      throw new ApiExecuteSQLError('Failed to unassociate Permit From Survey', [
-        'SurveyRepository->unassociatePermitFromSurvey',
-        'response was null or undefined, expected response != null'
-      ]);
-    }
+    await this.connection.sql(sqlStatement);
   }
 
   async deleteSurveyFundingSourcesData(surveyId: number) {
@@ -838,14 +805,7 @@ export class SurveyRepository extends BaseRepository {
         survey_id = ${surveyId};
     `;
 
-    const response = await this.connection.sql(sqlStatement);
-
-    if (!response.rowCount) {
-      throw new ApiExecuteSQLError('Failed to delete Survey Funding Sources Data', [
-        'SurveyRepository->deleteSurveyFundingSourcesData',
-        'response was null or undefined, expected response != null'
-      ]);
-    }
+    await this.connection.sql(sqlStatement);
   }
 
   async deleteSurveyProprietorData(surveyId: number) {
@@ -856,14 +816,7 @@ export class SurveyRepository extends BaseRepository {
         survey_id = ${surveyId};
     `;
 
-    const response = await this.connection.sql(sqlStatement);
-
-    if (!response.rowCount) {
-      throw new ApiExecuteSQLError('Failed to delete Survey Proprietor Data', [
-        'SurveyRepository->deleteSurveyProprietorData',
-        'response was null or undefined, expected response != null'
-      ]);
-    }
+    await this.connection.sql(sqlStatement);
   }
 
   async deleteSurveyVantageCodes(surveyId: number) {
@@ -874,13 +827,6 @@ export class SurveyRepository extends BaseRepository {
         survey_id = ${surveyId};
     `;
 
-    const response = await this.connection.sql(sqlStatement);
-
-    if (!response.rowCount) {
-      throw new ApiExecuteSQLError('Failed to delete Survey Vantage Codes', [
-        'SurveyRepository->deleteSurveyVantageCodes',
-        'response was null or undefined, expected response != null'
-      ]);
-    }
+    await this.connection.sql(sqlStatement);
   }
 }
