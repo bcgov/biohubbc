@@ -2,7 +2,6 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../../../constants/roles';
 import { getDBConnection } from '../../../../database/db';
-import { HTTP400 } from '../../../../errors/http-error';
 import { GetAttachmentsData } from '../../../../models/project-survey-attachments';
 import { authorizeRequestHandler } from '../../../../request-handlers/security/authorization';
 import { AttachmentService } from '../../../../services/attachment-service';
@@ -38,7 +37,8 @@ GET.apiDoc = {
       in: 'path',
       name: 'projectId',
       schema: {
-        type: 'number'
+        type: 'integer',
+        minimum: 1
       },
       required: true
     }
@@ -92,10 +92,6 @@ GET.apiDoc = {
 export function getAttachments(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({ label: 'Get attachments list', message: 'params', req_params: req.params });
-
-    if (!req.params.projectId) {
-      throw new HTTP400('Missing required path param `projectId`');
-    }
 
     const connection = getDBConnection(req['keycloak_token']);
     const projectId = Number(req.params.projectId);

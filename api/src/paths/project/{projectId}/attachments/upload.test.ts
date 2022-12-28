@@ -36,24 +36,6 @@ describe('uploadMedia', () => {
     body: {}
   } as any;
 
-  it('should throw an error when projectId is missing', async () => {
-    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
-
-    try {
-      const result = upload.uploadMedia();
-
-      await result(
-        { ...mockReq, params: { ...mockReq.params, projectId: null } },
-        (null as unknown) as any,
-        (null as unknown) as any
-      );
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal('Missing projectId');
-    }
-  });
-
   it('should throw an error when files are missing', async () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 

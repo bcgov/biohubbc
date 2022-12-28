@@ -102,19 +102,6 @@ const useAdminApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Grant one or more system roles to a user.
-   *
-   * @param {number} userId
-   * @param {number[]} roleIds
-   * @return {*}  {Promise<number>}
-   */
-  const addSystemUserRoles = async (userId: number, roleIds: number[]): Promise<number> => {
-    const { data } = await axios.post(`/api/user/${userId}/system-roles/create`, { roles: roleIds });
-
-    return data;
-  };
-
-  /**
    * Adds a new system user with role.
    *
    * Note: Will fail if the system user already exists.
@@ -141,7 +128,6 @@ const useAdminApi = (axios: AxiosInstance) => {
     denyAccessRequest,
     createAdministrativeActivity,
     hasPendingAdministrativeActivities,
-    addSystemUserRoles,
     addSystemUser
   };
 };

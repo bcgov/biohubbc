@@ -69,16 +69,6 @@ export const deleteSurveyProprietorSQL = (surveyId: number): SQLStatement => {
 };
 
 /**
- * SQL query to delete a survey row (and associated data) based on survey ID.
- *
- * @param {number} surveyId
- * @returns {SQLStatement} sql query object
- */
-export const deleteSurveySQL = (surveyId: number): SQLStatement => {
-  return SQL`call api_delete_survey(${surveyId})`;
-};
-
-/**
  * SQL query to delete survey proprietor rows.
  *
  * @param {number} surveyId

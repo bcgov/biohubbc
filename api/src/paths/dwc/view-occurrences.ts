@@ -3,7 +3,6 @@ import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../constants/roles';
 import { SUBMISSION_STATUS_TYPE } from '../../constants/status';
 import { getDBConnection } from '../../database/db';
-import { HTTP400 } from '../../errors/http-error';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
 import { ErrorService } from '../../services/error-service';
 import { OccurrenceService } from '../../services/occurrence-service';
@@ -42,13 +41,10 @@ POST.apiDoc = {
           type: 'object',
           required: ['occurrence_submission_id'],
           properties: {
-            project_id: {
-              type: 'number'
-            },
             occurrence_submission_id: {
               description: 'A survey occurrence submission ID',
-              type: 'number',
-              example: 1
+              type: 'integer',
+              minimum: 1
             }
           }
         }
@@ -95,9 +91,6 @@ export function getOccurrencesForView(): RequestHandler {
   return async (req, res) => {
     const connection = getDBConnection(req['keycloak_token']);
     const submissionId = req.body.occurrence_submission_id;
-    if (!req.body || !req.body.occurrence_submission_id) {
-      throw new HTTP400('Missing required request body param `occurrence_submission_id`');
-    }
 
     try {
       await connection.open();

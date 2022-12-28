@@ -2,7 +2,7 @@ import { SUBMISSION_MESSAGE_TYPE } from '../../../../constants/status';
 import { CSVWorkBook, WorkBookValidator } from '../../csv/csv-file';
 
 export type ParentChildKeyMatchValidatorConfig = {
-  submission_required_files_validator: {
+  workbook_parent_child_key_match_validator: {
     description?: string;
     child_worksheet_name: string;
     parent_worksheet_name: string;
@@ -26,8 +26,11 @@ export const getParentChildKeyMatchValidator = (config?: ParentChildKeyMatchVali
     if (!config) {
       return csvWorkbook;
     }
-
-    const { child_worksheet_name, parent_worksheet_name, column_names } = config.submission_required_files_validator;
+    const {
+      child_worksheet_name,
+      parent_worksheet_name,
+      column_names
+    } = config.workbook_parent_child_key_match_validator;
 
     const parentWorksheet = csvWorkbook.worksheets[parent_worksheet_name];
     const childWorksheet = csvWorkbook.worksheets[child_worksheet_name];
@@ -56,10 +59,10 @@ export const getParentChildKeyMatchValidator = (config?: ParentChildKeyMatchVali
           // Remove empty column values
           .filter(Boolean)
 
-          // Escape possible column deliminator occurences from column value string
+          // Escape possible column deliminator occurrences from column value string
           .map((columnValue: string) => columnValue.replace('|', '\\|').trim())
 
-          // Deliminiate column values
+          // Deliminate column values
           .join('|')
       );
     };
@@ -86,7 +89,7 @@ export const getParentChildKeyMatchValidator = (config?: ParentChildKeyMatchVali
       return csvWorkbook;
     }
 
-    // For any and all of the remining 'dangling' row indices, insert a single key error reflecting the missing keys from the parent.
+    // For any and all of the remaining 'dangling' row indices, insert a single key error reflecting the missing keys from the parent.
     const columnNameIndexString = `[${column_names.join(', ')}]`;
     childWorksheet.csvValidation.addKeyErrors([
       {

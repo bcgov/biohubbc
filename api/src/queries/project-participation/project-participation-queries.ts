@@ -223,24 +223,3 @@ export const addProjectRoleByRoleIdSQL = (
       *;
   `;
 };
-
-/**
- * SQL query to delete a single project participation record.
- *
- * @param {number} projectParticipationId
- * @return {*}  {(SQLStatement | null)}
- */
-export const deleteProjectParticipationSQL = (projectParticipationId: number): SQLStatement | null => {
-  if (!projectParticipationId) {
-    return null;
-  }
-
-  return SQL`
-    DELETE FROM
-      project_participation
-    WHERE
-      project_participation_id = ${projectParticipationId}
-    RETURNING
-      *;
-  `;
-};

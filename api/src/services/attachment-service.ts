@@ -323,8 +323,187 @@ export class AttachmentService extends DBService {
         this.insertProjectReportAttachmentAuthor(attachmentResult.id, author)
       )
     );
+    await Promise.all(promises);
+
+    return { ...attachmentResult, key };
+  }
+
+  async getProjectAttachmentS3Key(projectId: number, attachmentId: number): Promise<string> {
+    return this.attachmentRepository.getProjectAttachmentS3Key(projectId, attachmentId);
+  }
+
+  async getProjectReportAttachmentS3Key(projectId: number, attachmentId: number): Promise<string> {
+    return this.attachmentRepository.getProjectReportAttachmentS3Key(projectId, attachmentId);
+  }
+
+  async updateProjectReportAttachmentMetadata(
+    projectId: number,
+    attachmentId: number,
+    metadata: PutReportAttachmentMetadata
+  ): Promise<void> {
+    return this.attachmentRepository.updateProjectReportAttachmentMetadata(projectId, attachmentId, metadata);
+  }
+
+  async deleteProjectAttachment(attachmentId: number): Promise<{ key: string }> {
+    return this.attachmentRepository.deleteProjectAttachment(attachmentId);
+  }
+
+  async deleteProjectReportAttachment(attachmentId: number): Promise<{ key: string }> {
+    return this.attachmentRepository.deleteProjectReportAttachment(attachmentId);
+  }
+
+  async insertSurveyReportAttachment(
+    fileName: string,
+    fileSize: number,
+    surveyId: number,
+    attachmentMeta: PostReportAttachmentMetadata,
+    key: string
+  ): Promise<{ id: number; revision_count: number }> {
+    return this.attachmentRepository.insertSurveyReportAttachment(fileName, fileSize, surveyId, attachmentMeta, key);
+  }
+
+  async updateSurveyReportAttachment(
+    fileName: string,
+    surveyId: number,
+    attachmentMeta: PutReportAttachmentMetadata
+  ): Promise<{ id: number; revision_count: number }> {
+    return this.attachmentRepository.updateSurveyReportAttachment(fileName, surveyId, attachmentMeta);
+  }
+
+  async deleteSurveyReportAttachmentAuthors(attachmentId: number): Promise<void> {
+    return this.attachmentRepository.deleteSurveyReportAttachmentAuthors(attachmentId);
+  }
+
+  async insertSurveyReportAttachmentAuthor(
+    attachmentId: number,
+    author: { first_name: string; last_name: string }
+  ): Promise<void> {
+    return this.attachmentRepository.insertSurveyReportAttachmentAuthor(attachmentId, author);
+  }
+
+  async getSurveyReportAttachmentByFileName(surveyId: number, fileName: string): Promise<QueryResult> {
+    return this.attachmentRepository.getSurveyReportAttachmentByFileName(surveyId, fileName);
+  }
+
+  async upsertSurveyReportAttachment(
+    file: Express.Multer.File,
+    projectId: number,
+    surveyId: number,
+    attachmentMeta: any
+  ): Promise<{ id: number; revision_count: number; key: string }> {
+    const key = generateS3FileKey({
+      projectId: projectId,
+      surveyId: surveyId,
+      fileName: file.originalname,
+      folder: 'reports'
+    });
+
+    const getResponse = await this.getSurveyReportAttachmentByFileName(surveyId, file.originalname);
+
+    let metadata;
+    let attachmentResult: { id: number; revision_count: number };
+
+    if (getResponse && getResponse.rowCount > 0) {
+      // Existing attachment with matching name found, update it
+      metadata = new PutReportAttachmentMetadata(attachmentMeta);
+      attachmentResult = await this.updateSurveyReportAttachment(file.originalname, surveyId, metadata);
+    } else {
+      // No matching attachment found, insert new attachment
+      metadata = new PostReportAttachmentMetadata(attachmentMeta);
+      attachmentResult = await this.insertSurveyReportAttachment(
+        file.originalname,
+        file.size,
+        surveyId,
+        new PostReportAttachmentMetadata(attachmentMeta),
+        key
+      );
+    }
+
+    // Delete any existing attachment author records
+    await this.deleteSurveyReportAttachmentAuthors(attachmentResult.id);
+
+    const promises = [];
+
+    // Insert any new attachment author records
+    promises.push(
+      metadata.authors.map((author) => this.insertSurveyReportAttachmentAuthor(attachmentResult.id, author))
+    );
 
     await Promise.all(promises);
+
+    return { ...attachmentResult, key };
+  }
+
+  async deleteSurveyReportAttachment(attachmentId: number): Promise<{ key: string }> {
+    return this.attachmentRepository.deleteSurveyReportAttachment(attachmentId);
+  }
+
+  async deleteSurveyAttachment(attachmentId: number): Promise<{ key: string }> {
+    return this.attachmentRepository.deleteSurveyAttachment(attachmentId);
+  }
+
+  async getSurveyAttachmentS3Key(surveyId: number, attachmentId: number): Promise<string> {
+    return this.attachmentRepository.getSurveyAttachmentS3Key(surveyId, attachmentId);
+  }
+
+  async getSurveyReportAttachmentS3Key(surveyId: number, attachmentId: number): Promise<string> {
+    return this.attachmentRepository.getSurveyReportAttachmentS3Key(surveyId, attachmentId);
+  }
+
+  async updateSurveyReportAttachmentMetadata(
+    surveyId: number,
+    attachmentId: number,
+    metadata: PutReportAttachmentMetadata
+  ): Promise<void> {
+    return this.attachmentRepository.updateSurveyReportAttachmentMetadata(surveyId, attachmentId, metadata);
+  }
+
+  async updateSurveyAttachment(
+    surveyId: number,
+    fileName: string,
+    fileType: string
+  ): Promise<{ id: number; revision_count: number }> {
+    return this.attachmentRepository.updateSurveyAttachment(surveyId, fileName, fileType);
+  }
+
+  async insertSurveyAttachment(
+    fileName: string,
+    fileSize: number,
+    fileType: string,
+    surveyId: number,
+    key: string
+  ): Promise<{ id: number; revision_count: number }> {
+    return this.attachmentRepository.insertSurveyAttachment(fileName, fileSize, fileType, surveyId, key);
+  }
+
+  async getSurveyAttachmentByFileName(fileName: string, surveyId: number): Promise<QueryResult> {
+    return this.attachmentRepository.getSurveyAttachmentByFileName(fileName, surveyId);
+  }
+
+  async upsertSurveyAttachment(
+    file: Express.Multer.File,
+    projectId: number,
+    surveyId: number,
+    attachmentType: string
+  ): Promise<{ id: number; revision_count: number; key: string }> {
+    const key = generateS3FileKey({
+      projectId: projectId,
+      surveyId: surveyId,
+      fileName: file.originalname,
+      folder: 'reports'
+    });
+
+    const getResponse = await this.getSurveyReportAttachmentByFileName(surveyId, file.originalname);
+
+    let attachmentResult: { id: number; revision_count: number };
+
+    if (getResponse && getResponse.rowCount > 0) {
+      // Existing attachment with matching name found, update it
+      attachmentResult = await this.updateSurveyAttachment(surveyId, file.originalname, attachmentType);
+    } else {
+      // No matching attachment found, insert new attachment
+      attachmentResult = await this.insertSurveyAttachment(file.originalname, file.size, attachmentType, surveyId, key);
+    }
 
     return { ...attachmentResult, key };
   }

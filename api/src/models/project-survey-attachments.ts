@@ -57,7 +57,7 @@ export class PutReportAttachmentMetadata extends PostReportAttachmentMetadata {
   constructor(obj?: any) {
     super(obj);
 
-    this.revision_count = (obj && obj?.revision_count) || null;
+    this.revision_count = (obj && obj?.revision_count) || 0;
   }
 }
 

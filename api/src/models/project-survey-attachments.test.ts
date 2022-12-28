@@ -101,7 +101,7 @@ describe('PutReportAttachmentMetaData', () => {
       expect(putReportAttachmentData.year_published).to.equal(0);
       expect(putReportAttachmentData.authors).to.eql([]);
       expect(putReportAttachmentData.description).to.equal(null);
-      expect(putReportAttachmentData.revision_count).to.equal(null);
+      expect(putReportAttachmentData.revision_count).to.equal(0);
     });
   });
 

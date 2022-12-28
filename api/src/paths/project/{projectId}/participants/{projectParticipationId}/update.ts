@@ -7,7 +7,6 @@ import { authorizeRequestHandler } from '../../../../../request-handlers/securit
 import { ProjectService } from '../../../../../services/project-service';
 import { getLogger } from '../../../../../utils/logger';
 import { doAllProjectsHaveAProjectLead } from '../../../../user/{userId}/delete';
-import { deleteProjectParticipationRecord } from './delete';
 
 const defaultLog = getLogger('/api/project/{projectId}/participants/{projectParticipationId}/update');
 
@@ -39,7 +38,8 @@ PUT.apiDoc = {
       in: 'path',
       name: 'projectId',
       schema: {
-        type: 'number'
+        type: 'integer',
+        minimum: 1
       },
       required: true
     },
@@ -47,7 +47,8 @@ PUT.apiDoc = {
       in: 'path',
       name: 'projectParticipationId',
       schema: {
-        type: 'number'
+        type: 'integer',
+        minimum: 1
       },
       required: true
     }
@@ -60,7 +61,8 @@ PUT.apiDoc = {
           required: ['roleId'],
           properties: {
             roleId: {
-              type: 'number'
+              type: 'integer',
+              minimum: 1
             }
           }
         }
@@ -95,18 +97,6 @@ export function updateProjectParticipantRole(): RequestHandler {
     const projectParticipationId = Number(req.params.projectParticipationId);
     const roleId = Number(req.body.roleId);
 
-    if (!projectId) {
-      throw new HTTP400('Missing required path param `projectId`');
-    }
-
-    if (!projectParticipationId) {
-      throw new HTTP400('Missing required path param `projectParticipationId`');
-    }
-
-    if (!roleId) {
-      throw new HTTP400('Missing required body param `roleId`');
-    }
-
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
@@ -119,7 +109,7 @@ export function updateProjectParticipantRole(): RequestHandler {
       const projectHasLeadResponse1 = doAllProjectsHaveAProjectLead(projectParticipantsResponse1);
 
       // Delete the user's old participation record, returning the old record
-      const result = await deleteProjectParticipationRecord(projectParticipationId, connection);
+      const result = await projectService.deleteProjectParticipationRecord(projectParticipationId);
 
       if (!result || !result.system_user_id) {
         // The delete result is missing necessary data, fail the request
