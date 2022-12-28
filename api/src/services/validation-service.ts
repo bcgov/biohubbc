@@ -1,4 +1,6 @@
 import AdmZip from 'adm-zip';
+import Ajv from 'ajv';
+import xlsx from 'xlsx';
 import { SUBMISSION_MESSAGE_TYPE, SUBMISSION_STATUS_TYPE } from '../constants/status';
 import { IDBConnection } from '../database/db';
 import { SubmissionRepository } from '../repositories/submission-repository';
@@ -10,17 +12,15 @@ import { DWCArchive } from '../utils/media/dwc/dwc-archive-file';
 import { ArchiveFile, IMediaState, MediaFile } from '../utils/media/media-file';
 import { parseUnknownMedia } from '../utils/media/media-utils';
 import { XLSXTransform } from '../utils/media/transformation/xlsx-transform';
+import { transformationConfigJSONSchema } from '../utils/media/transformation/xlsx-transform-schema';
+import { TransformSchema } from '../utils/media/transformation/xlsx-transform-schema-parser';
 import { ValidationSchemaParser } from '../utils/media/validation/validation-schema-parser';
 import { XLSXCSV } from '../utils/media/xlsx/xlsx-file';
-import xlsx from "xlsx";
 import { MessageError, SubmissionError, SubmissionErrorFromMessageType } from '../utils/submission-error';
 import { DBService } from './db-service';
 import { ErrorService } from './error-service';
 import { OccurrenceService } from './occurrence-service';
 import { SurveyService } from './survey-service';
-import Ajv from 'ajv';
-import { transformationConfigJSONSchema } from '../utils/media/transformation/xlsx-transform-schema';
-import { TransformSchema } from '../utils/media/transformation/xlsx-transform-schema-parser';
 
 const defaultLog = getLogger('services/validation-service');
 
@@ -135,7 +135,7 @@ export class ValidationService extends DBService {
       // insert template validated status
       await this.submissionRepository.insertSubmissionStatus(submissionId, SUBMISSION_STATUS_TYPE.TEMPLATE_VALIDATED);
 
-      console.log("___ GOT PASSED VALIDATION ___")
+      console.log('___ GOT PASSED VALIDATION ___');
       // template transformation
       await this.templateTransformation(submissionId, submissionPrep.xlsx, submissionPrep.s3InputKey, surveyId);
 
@@ -409,19 +409,18 @@ export class ValidationService extends DBService {
     }
 
     const avj = new Ajv();
-    avj.validate(transformationConfigJSONSchema, transformationSchema)
+    avj.validate(transformationConfigJSONSchema, transformationSchema);
     if (avj.errors) {
       // this probably makes more sense as for input schema rather than pulling it out
-      throw SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_GET_TRANSFORMATION_RULES); 
+      throw SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_GET_TRANSFORMATION_RULES);
     }
 
-    // TODO is there a less hacky way of getting a string into the TransformSchema type?
-    return JSON.stringify(transformationSchema) as unknown as TransformSchema;
+    return transformationSchema;
   }
 
   // TODO needs to turn into a file buffer for the rest of the process?
-  newTransformXLSX(workbook: xlsx.WorkBook, validationSchema: TransformSchema): IFileBuffer[] {
-    const xlsxTransform = new XLSXTransform(workbook, validationSchema);
+  newTransformXLSX(workbook: xlsx.WorkBook, transformSchema: TransformSchema): IFileBuffer[] {
+    const xlsxTransform = new XLSXTransform(workbook, transformSchema);
     const preparedRowObjectsForJSONToSheet = xlsxTransform.start();
 
     // Process the result
@@ -436,11 +435,11 @@ export class ValidationService extends DBService {
       xlsx.utils.book_append_sheet(dwcWorkbook, worksheet, key);
 
       const buffer = xlsx.write(newWorkbook, { type: 'buffer', bookType: 'csv' });
-      console.log(`Got a buffer: ${buffer.length}`)
+
       return {
         name: key,
         buffer
-      } as IFileBuffer
+      } as IFileBuffer;
     });
   }
 

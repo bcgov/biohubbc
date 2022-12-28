@@ -1,12 +1,13 @@
 import SQL from 'sql-template-strings';
 import { getKnex } from '../database/db';
 import { HTTP400 } from '../errors/http-error';
+import { TransformSchema } from '../utils/media/transformation/xlsx-transform-schema-parser';
 import { BaseRepository } from './base-repository';
 
 export interface ITemplateMethodologyData {
   template_methodology_species_id: number;
   validation: string;
-  transform: string;
+  transform: TransformSchema;
 }
 
 export class ValidationRepository extends BaseRepository {
@@ -27,7 +28,7 @@ export class ValidationRepository extends BaseRepository {
     surveySpecies: number[]
   ): Promise<ITemplateMethodologyData> {
     const templateRow = await this.getTemplateNameVersionId(templateName, templateVersion);
-
+    // TODO throw proper error if `templateRow` or `templateRow.template_id` are empty
     const queryBuilder = getKnex()
       .select(
         'template_methodology_species.template_methodology_species_id',
