@@ -235,10 +235,9 @@ export class ValidationService extends DBService {
   async templateTransformation(submissionId: number, xlsx: XLSXCSV, s3InputKey: string, surveyId: number) {
     try {
       const xlsxSchema = await this.getTransformationSchema(xlsx, surveyId);
-      // const fileBuffer = await this.transformXLSX(xlsx, xlsxParser);
-      await this.newTransformXLSX(xlsx.workbook.rawWorkbook, xlsxSchema);
-
-      // await this.persistTransformationResults(submissionId, fileBuffer, s3InputKey, xlsx);
+      const fileBuffer = await this.newTransformXLSX(xlsx.workbook.rawWorkbook, xlsxSchema);
+      console.log("___ GOT HERE ___")
+      await this.persistTransformationResults(submissionId, fileBuffer, s3InputKey, xlsx);
     } catch (error) {
       if (error instanceof SubmissionError) {
         error.setStatus(SUBMISSION_STATUS_TYPE.FAILED_TRANSFORMED);
@@ -461,6 +460,7 @@ export class ValidationService extends DBService {
     const outputS3Key = `${outputS3KeyPrefix}/${outputFileName}`;
 
     // Upload transformed archive to s3
+    console.log(`Output key: ${outputS3Key}`)
     await uploadBufferToS3(dwcArchiveZip.toBuffer(), 'application/zip', outputS3Key);
 
     // update occurrence submission
