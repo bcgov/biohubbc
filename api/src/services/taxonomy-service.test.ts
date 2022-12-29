@@ -8,6 +8,10 @@ import { ITaxonomySource, TaxonomyService } from './taxonomy-service';
 chai.use(sinonChai);
 
 describe('TaxonomyService', () => {
+  afterEach(() => {
+    sinon.restore();
+  });
+
   const mockElasticResponse: SearchResponse<ITaxonomySource, Record<string, AggregationsAggregate>> | undefined = {
     took: 0,
     timed_out: false,
@@ -24,6 +28,128 @@ describe('TaxonomyService', () => {
   it('constructs', () => {
     const taxonomyService = new TaxonomyService();
     expect(taxonomyService).to.be.instanceof(TaxonomyService);
+  });
+
+  describe('getTaxonomyFromIds', async () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('should query elasticsearch and return []', async () => {
+      process.env.ELASTICSEARCH_TAXONOMY_INDEX = 'taxonomy_test_2.0.0';
+
+      const taxonomyService = new TaxonomyService();
+
+      const elasticSearchStub = sinon.stub(taxonomyService, '_elasticSearch').resolves(undefined);
+
+      const response = await taxonomyService.getTaxonomyFromIds(['1']);
+
+      expect(elasticSearchStub).to.be.calledOnce;
+      expect(response).to.eql([]);
+    });
+
+    it('should query elasticsearch and return taxonomy', async () => {
+      process.env.ELASTICSEARCH_TAXONOMY_INDEX = 'taxonomy_test_2.0.0';
+
+      const taxonomyService = new TaxonomyService();
+
+      const taxonDetails: Omit<ITaxonomySource, 'end_date'> = {
+        unit_name1: 'A',
+        unit_name2: 'B',
+        unit_name3: 'C',
+        taxon_authority: 'taxon_authority',
+        code: 'D',
+        tty_kingdom: 'kingdom',
+        tty_name: 'name',
+        english_name: 'animal',
+        note: null
+      };
+
+      const elasticSearchStub = sinon.stub(taxonomyService, '_elasticSearch').resolves({
+        ...mockElasticResponse,
+        hits: {
+          hits: [
+            {
+              _index: process.env.ELASTICSEARCH_TAXONOMY_INDEX,
+              _id: '1',
+              _source: {
+                ...taxonDetails,
+                end_date: null
+              }
+            }
+          ]
+        }
+      });
+
+      const response = await taxonomyService.getTaxonomyFromIds([1]);
+
+      expect(elasticSearchStub).to.be.calledOnce;
+
+      expect(response).to.eql([{ ...taxonDetails, end_date: null }]);
+    });
+  });
+
+  describe('getSpeciesFromIds', async () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('should query elasticsearch and return []', async () => {
+      process.env.ELASTICSEARCH_TAXONOMY_INDEX = 'taxonomy_test_2.0.0';
+
+      const taxonomyService = new TaxonomyService();
+
+      const elasticSearchStub = sinon.stub(taxonomyService, '_elasticSearch').resolves(undefined);
+
+      const response = await taxonomyService.getSpeciesFromIds(['1']);
+
+      expect(elasticSearchStub).to.be.calledOnce;
+      expect(response).to.eql([]);
+    });
+
+    it('should query elasticsearch and return sanitized data', async () => {
+      process.env.ELASTICSEARCH_TAXONOMY_INDEX = 'taxonomy_test_2.0.0';
+
+      const taxonomyService = new TaxonomyService();
+
+      const taxonDetails: Omit<ITaxonomySource, 'end_date'> = {
+        unit_name1: 'A',
+        unit_name2: 'B',
+        unit_name3: 'C',
+        taxon_authority: 'taxon_authority',
+        code: 'D',
+        tty_kingdom: 'kingdom',
+        tty_name: 'name',
+        english_name: 'animal',
+        note: null
+      };
+
+      const elasticSearchStub = sinon.stub(taxonomyService, '_elasticSearch').resolves({
+        ...mockElasticResponse,
+        hits: {
+          hits: [
+            {
+              _index: process.env.ELASTICSEARCH_TAXONOMY_INDEX,
+              _id: '1',
+              _source: {
+                ...taxonDetails,
+                end_date: null
+              }
+            }
+          ]
+        }
+      });
+
+      const sanitizeSpeciesDataStub = sinon
+        .stub(taxonomyService, '_sanitizeSpeciesData')
+        .returns([{ id: '1', label: 'string' }]);
+
+      const response = await taxonomyService.getSpeciesFromIds([1]);
+
+      expect(elasticSearchStub).to.be.calledOnce;
+      expect(sanitizeSpeciesDataStub).to.be.calledOnce;
+      expect(response).to.eql([{ id: '1', label: 'string' }]);
+    });
   });
 
   describe('searchSpecies', async () => {

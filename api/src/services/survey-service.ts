@@ -1,6 +1,4 @@
-import SQL from 'sql-template-strings';
 import { IDBConnection } from '../database/db';
-import { ApiGeneralError } from '../errors/api-error';
 import { PostProprietorData, PostSurveyObject } from '../models/survey-create';
 import { PutSurveyObject } from '../models/survey-update';
 import {
@@ -17,9 +15,8 @@ import {
   SurveyObject,
   SurveySupplementaryData
 } from '../models/survey-view';
-import { queries } from '../queries/queries';
 import { AttachmentRepository } from '../repositories/attachment-repository';
-import { SurveyRepository } from '../repositories/survey-repository';
+import { IGetLatestSurveyOccurrenceSubmission, SurveyRepository } from '../repositories/survey-repository';
 import { DBService } from './db-service';
 import { PermitService } from './permit-service';
 import { TaxonomyService } from './taxonomy-service';
@@ -36,11 +33,7 @@ export class SurveyService extends DBService {
   }
 
   async getSurveyIdsByProjectId(projectId: number): Promise<{ id: number }[]> {
-    const sqlStatement = queries.survey.getSurveyIdsSQL(projectId);
-
-    const response = await this.connection.sql<{ id: number }>(sqlStatement);
-
-    return response.rows;
+    return this.surveyRepository.getSurveyIdsByProjectId(projectId);
   }
 
   async getSurveyById(surveyId: number): Promise<SurveyObject> {
@@ -86,52 +79,14 @@ export class SurveyService extends DBService {
   }
 
   async getSurveyData(surveyId: number): Promise<GetSurveyData> {
-    const sqlStatement = SQL`
-      SELECT
-        *
-      FROM
-        survey
-      WHERE
-        survey_id = ${surveyId};
-    `;
-
-    const response = await this.connection.sql(sqlStatement);
-
-    const result = response.rows?.[0] || null;
-
-    if (!result) {
-      throw new ApiGeneralError('Failed to get project survey details data');
-    }
-
-    return new GetSurveyData(result);
+    return this.surveyRepository.getSurveyData(surveyId);
   }
 
   async getSpeciesData(surveyId: number): Promise<GetFocalSpeciesData & GetAncillarySpeciesData> {
-    const sqlStatement = SQL`
-      SELECT
-        wldtaxonomic_units_id,
-        is_focal
-      FROM
-        study_species
-      WHERE
-        survey_id = ${surveyId};
-    `;
+    const response = await this.surveyRepository.getSpeciesData(surveyId);
 
-    const response = await this.connection.query<{ wldtaxonomic_units_id: string; is_focal: boolean }>(
-      sqlStatement.text,
-      sqlStatement.values
-    );
-
-    const result = (response && response.rows) || null;
-
-    if (!result) {
-      throw new ApiGeneralError('Failed to get survey species data');
-    }
-
-    const focalSpeciesIds = response.rows.filter((item) => item.is_focal).map((item) => item.wldtaxonomic_units_id);
-    const ancillarySpeciesIds = response.rows
-      .filter((item) => !item.is_focal)
-      .map((item) => item.wldtaxonomic_units_id);
+    const focalSpeciesIds = response.filter((item) => item.is_focal).map((item) => item.wldtaxonomic_units_id);
+    const ancillarySpeciesIds = response.filter((item) => !item.is_focal).map((item) => item.wldtaxonomic_units_id);
 
     const taxonomyService = new TaxonomyService();
 
@@ -150,108 +105,31 @@ export class SurveyService extends DBService {
   }
 
   async getSurveyPurposeAndMethodology(surveyId: number): Promise<GetSurveyPurposeAndMethodologyData> {
-    const sqlStatement = queries.survey.getSurveyPurposeAndMethodologyForUpdateSQL(surveyId);
-
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
-
-    const result = (response && response.rows[0]) || null;
-
-    if (!result) {
-      throw new ApiGeneralError('Failed to get survey purpose and methodology data');
-    }
-
-    return new GetSurveyPurposeAndMethodologyData(result);
+    return this.surveyRepository.getSurveyPurposeAndMethodology(surveyId);
   }
 
   async getSurveyFundingSourcesData(surveyId: number): Promise<GetSurveyFundingSources> {
-    const sqlStatement = queries.survey.getSurveyFundingSourcesDataForViewSQL(surveyId);
-    if (!sqlStatement) {
-      throw new ApiGeneralError('Failed to build SQL get statement');
-    }
-
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
-
-    const result = (response && response.rows) || null;
-
-    if (!result) {
-      throw new ApiGeneralError('Failed to get survey funding sources data');
-    }
-
-    return new GetSurveyFundingSources(result);
+    return this.surveyRepository.getSurveyFundingSourcesData(surveyId);
   }
 
   async getSurveyProprietorDataForView(surveyId: number): Promise<GetSurveyProprietorData | null> {
-    const sqlStatement = queries.survey.getSurveyProprietorForUpdateSQL(surveyId);
-
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
-
-    if (!response.rows?.[0]) {
-      return null;
-    }
-
-    return new GetSurveyProprietorData(response.rows?.[0]);
+    return this.surveyRepository.getSurveyProprietorDataForView(surveyId);
   }
 
   async getSurveyLocationData(surveyId: number): Promise<GetSurveyLocationData> {
-    const sqlStatement = SQL`
-      SELECT
-        *
-      FROM
-        survey
-      WHERE
-        survey_id = ${surveyId};
-    `;
-
-    const response = await this.connection.sql(sqlStatement);
-
-    const result = response.rows?.[0] || null;
-
-    if (!result) {
-      throw new ApiGeneralError('Failed to get project survey details data');
-    }
-
-    return new GetSurveyLocationData(result);
+    return this.surveyRepository.getSurveyLocationData(surveyId);
   }
 
-  async getOccurrenceSubmissionId(surveyId: number) {
-    const sqlStatement = queries.survey.getLatestOccurrenceSubmissionIdSQL(surveyId);
-    if (!sqlStatement) {
-      throw new ApiGeneralError('Failed to build SQL get statement');
-    }
-
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
-
-    return (response && response.rows?.[0]) || null;
+  async getOccurrenceSubmissionId(surveyId: number): Promise<number> {
+    return this.surveyRepository.getOccurrenceSubmissionId(surveyId);
   }
 
-  /**
-   * Get latest survey data submission from id
-   *
-   * @param {number} surveyId
-   * @return {*}
-   * @memberof SurveyService
-   */
-  async getLatestSurveyOccurrenceSubmission(surveyId: number) {
-    const sqlStatement = queries.survey.getLatestSurveyOccurrenceSubmissionSQL(surveyId);
-    if (!sqlStatement) {
-      throw new ApiGeneralError('Failed to build SQL get statement');
-    }
-
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
-
-    return (response && response.rows?.[0]) || null;
+  async getLatestSurveyOccurrenceSubmission(surveyId: number): Promise<IGetLatestSurveyOccurrenceSubmission | null> {
+    return this.surveyRepository.getLatestSurveyOccurrenceSubmission(surveyId);
   }
 
-  async getSummaryResultId(surveyId: number) {
-    const sqlStatement = queries.survey.getLatestSummaryResultIdSQL(surveyId);
-
-    if (!sqlStatement) {
-      throw new ApiGeneralError('Failed to build SQL get statement');
-    }
-
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
-
-    return (response && response.rows?.[0]) || null;
+  async getSummaryResultId(surveyId: number): Promise<number> {
+    return this.surveyRepository.getSummaryResultId(surveyId);
   }
 
   /**
@@ -321,90 +199,31 @@ export class SurveyService extends DBService {
   }
 
   async getAttachmentsData(surveyId: number): Promise<GetAttachmentsData> {
-    const sqlStatement = queries.survey.getAttachmentsBySurveySQL(surveyId);
-
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
-    const result = (response && response.rows) || null;
-
-    return new GetAttachmentsData(result);
+    return this.surveyRepository.getAttachmentsData(surveyId);
   }
 
   async getReportAttachmentsData(surveyId: number): Promise<GetReportAttachmentsData> {
-    const sqlStatement = queries.survey.getReportAttachmentsBySurveySQL(surveyId);
-
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
-    const result = (response && response.rows) || null;
-
-    return new GetReportAttachmentsData(result);
+    return this.surveyRepository.getReportAttachmentsData(surveyId);
   }
 
   async insertSurveyData(projectId: number, surveyData: PostSurveyObject): Promise<number> {
-    const sqlStatement = queries.survey.postSurveySQL(projectId, surveyData);
-
-    const response = await this.connection.sql(sqlStatement);
-    const result = (response && response.rows && response.rows[0]) || null;
-
-    if (!result) {
-      throw new ApiGeneralError('Failed to insert survey data');
-    }
-
-    return result.id;
+    return this.surveyRepository.insertSurveyData(projectId, surveyData);
   }
 
   async insertFocalSpecies(focal_species_id: number, surveyId: number): Promise<number> {
-    const sqlStatement = queries.survey.postFocalSpeciesSQL(focal_species_id, surveyId);
-
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
-    const result = (response && response.rows && response.rows[0]) || null;
-
-    if (!result || !result.id) {
-      throw new ApiGeneralError('Failed to insert focal species data');
-    }
-
-    return result.id;
+    return this.surveyRepository.insertFocalSpecies(focal_species_id, surveyId);
   }
 
   async insertAncillarySpecies(ancillary_species_id: number, surveyId: number): Promise<number> {
-    const sqlStatement = queries.survey.postAncillarySpeciesSQL(ancillary_species_id, surveyId);
-
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
-    const result = (response && response.rows && response.rows[0]) || null;
-
-    if (!result || !result.id) {
-      throw new ApiGeneralError('Failed to insert ancillary species data');
-    }
-
-    return result.id;
+    return this.surveyRepository.insertAncillarySpecies(ancillary_species_id, surveyId);
   }
 
   async insertVantageCodes(vantage_code_id: number, surveyId: number): Promise<number> {
-    const sqlStatement = queries.survey.postVantageCodesSQL(vantage_code_id, surveyId);
-
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
-    const result = (response && response.rows && response.rows[0]) || null;
-
-    if (!result || !result.id) {
-      throw new ApiGeneralError('Failed to insert ancillary species data');
-    }
-
-    return result.id;
+    return this.surveyRepository.insertVantageCodes(vantage_code_id, surveyId);
   }
 
   async insertSurveyProprietor(survey_proprietor: PostProprietorData, surveyId: number): Promise<number | undefined> {
-    if (!survey_proprietor.survey_data_proprietary) {
-      return;
-    }
-
-    const sqlStatement = queries.survey.postSurveyProprietorSQL(surveyId, survey_proprietor);
-
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
-    const result = (response && response.rows && response.rows[0]) || null;
-
-    if (!result || !result.id) {
-      throw new ApiGeneralError('Failed to insert survey proprietor data');
-    }
-
-    return result.id;
+    return this.surveyRepository.insertSurveyProprietor(survey_proprietor, surveyId);
   }
 
   async insertOrAssociatePermitToSurvey(
@@ -414,29 +233,15 @@ export class SurveyService extends DBService {
     permitNumber: string,
     permitType: string
   ) {
-    let sqlStatement;
-
     if (!permitType) {
-      sqlStatement = queries.survey.associateSurveyToPermitSQL(projectId, surveyId, permitNumber);
+      return this.surveyRepository.associateSurveyToPermit(projectId, surveyId, permitNumber);
     } else {
-      sqlStatement = queries.survey.insertSurveyPermitSQL(systemUserId, projectId, surveyId, permitNumber, permitType);
-    }
-
-    const response = await this.connection.sql(sqlStatement);
-
-    if (!response.rowCount) {
-      throw new ApiGeneralError('Failed to upsert survey permit record');
+      return this.surveyRepository.insertSurveyPermit(systemUserId, projectId, surveyId, permitNumber, permitType);
     }
   }
 
   async insertSurveyFundingSource(funding_source_id: number, surveyId: number) {
-    const sqlStatement = queries.survey.insertSurveyFundingSourceSQL(surveyId, funding_source_id);
-
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
-
-    if (!response) {
-      throw new ApiGeneralError('Failed to insert survey funding source data');
-    }
+    return this.surveyRepository.insertSurveyFundingSource(funding_source_id, surveyId);
   }
 
   async updateSurvey(surveyId: number, putSurveyData: PutSurveyObject): Promise<void> {
@@ -470,13 +275,7 @@ export class SurveyService extends DBService {
   }
 
   async updateSurveyDetailsData(surveyId: number, surveyData: PutSurveyObject) {
-    const updateSurveyQueryBuilder = queries.survey.putSurveyDetailsSQL(surveyId, surveyData);
-
-    const result = await this.connection.knex(updateSurveyQueryBuilder);
-
-    if (!result || !result.rowCount) {
-      throw new ApiGeneralError('Failed to update survey data');
-    }
+    return this.surveyRepository.updateSurveyDetailsData(surveyId, surveyData);
   }
 
   async updateSurveySpeciesData(surveyId: number, surveyData: PutSurveyObject) {
@@ -496,9 +295,7 @@ export class SurveyService extends DBService {
   }
 
   async deleteSurveySpeciesData(surveyId: number) {
-    const sqlStatement = queries.survey.deleteAllSurveySpeciesSQL(surveyId);
-
-    return this.connection.sql(sqlStatement);
+    return this.surveyRepository.deleteSurveySpeciesData(surveyId);
   }
 
   /**
@@ -551,10 +348,8 @@ export class SurveyService extends DBService {
     return Promise.all(promises);
   }
 
-  async unassociatePermitFromSurvey(surveyId: number) {
-    const sqlStatement = queries.survey.unassociatePermitFromSurveySQL(surveyId);
-
-    return this.connection.sql(sqlStatement);
+  async unassociatePermitFromSurvey(surveyId: number): Promise<void> {
+    return this.surveyRepository.unassociatePermitFromSurvey(surveyId);
   }
 
   async updateSurveyFundingData(surveyId: number, surveyData: PutSurveyObject) {
@@ -569,10 +364,8 @@ export class SurveyService extends DBService {
     return Promise.all(promises);
   }
 
-  async deleteSurveyFundingSourcesData(surveyId: number) {
-    const sqlStatement = queries.survey.deleteSurveyFundingSourcesBySurveyIdSQL(surveyId);
-
-    return this.connection.sql(sqlStatement);
+  async deleteSurveyFundingSourcesData(surveyId: number): Promise<void> {
+    return this.surveyRepository.deleteSurveyFundingSourcesData(surveyId);
   }
 
   async updateSurveyProprietorData(surveyId: number, surveyData: PutSurveyObject) {
@@ -585,10 +378,8 @@ export class SurveyService extends DBService {
     return this.insertSurveyProprietor(surveyData.proprietor, surveyId);
   }
 
-  async deleteSurveyProprietorData(surveyId: number) {
-    const sqlStatement = queries.survey.deleteSurveyProprietorSQL(surveyId);
-
-    return this.connection.sql(sqlStatement);
+  async deleteSurveyProprietorData(surveyId: number): Promise<void> {
+    return this.surveyRepository.deleteSurveyProprietorData(surveyId);
   }
 
   async updateSurveyVantageCodesData(surveyId: number, surveyData: PutSurveyObject) {
@@ -605,14 +396,8 @@ export class SurveyService extends DBService {
     return Promise.all(promises);
   }
 
-  async deleteSurveyVantageCodes(surveyId: number) {
-    const sqlStatement = queries.survey.deleteSurveyVantageCodesSQL(surveyId);
-
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
-
-    if (!response) {
-      throw new ApiGeneralError('Failed to delete survey vantage codes');
-    }
+  async deleteSurveyVantageCodes(surveyId: number): Promise<void> {
+    return this.surveyRepository.deleteSurveyVantageCodes(surveyId);
   }
 
   async deleteSurvey(surveyId: number): Promise<void> {

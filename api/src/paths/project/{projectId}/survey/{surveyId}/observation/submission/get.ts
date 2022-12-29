@@ -6,6 +6,7 @@ import { getDBConnection } from '../../../../../../../database/db';
 import { HTTP400 } from '../../../../../../../errors/http-error';
 import { queries } from '../../../../../../../queries/queries';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
+import { SurveyService } from '../../../../../../../services/survey-service';
 import { getLogger } from '../../../../../../../utils/logger';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/observation/submission/get');
@@ -114,34 +115,19 @@ export function getOccurrenceSubmission(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const getOccurrenceSubmissionSQLStatement = queries.survey.getLatestSurveyOccurrenceSubmissionSQL(
-        Number(req.params.surveyId)
-      );
-
-      if (!getOccurrenceSubmissionSQLStatement) {
-        throw new HTTP400('Failed to build SQL getLatestSurveyOccurrenceSubmissionSQL statement');
-      }
-
       await connection.open();
 
-      const occurrenceSubmissionData = await connection.query(
-        getOccurrenceSubmissionSQLStatement.text,
-        getOccurrenceSubmissionSQLStatement.values
-      );
+      const surveyService = new SurveyService(connection);
+      const response = await surveyService.getLatestSurveyOccurrenceSubmission(Number(req.params.surveyId));
 
       // Ensure we only retrieve the latest occurrence submission record if it has not been soft deleted
-      if (
-        !occurrenceSubmissionData ||
-        !occurrenceSubmissionData.rows ||
-        !occurrenceSubmissionData.rows[0] ||
-        occurrenceSubmissionData.rows[0].delete_timestamp
-      ) {
+      if (!response || response.delete_timestamp) {
         return res.status(200).json(null);
       }
 
       let messageList: any[] = [];
 
-      const errorStatus = occurrenceSubmissionData.rows[0].submission_status_type_name;
+      const errorStatus = response.submission_status_type_name;
 
       if (
         errorStatus === SUBMISSION_STATUS_TYPE.REJECTED ||
@@ -151,7 +137,7 @@ export function getOccurrenceSubmission(): RequestHandler {
         errorStatus === SUBMISSION_STATUS_TYPE.FAILED_TRANSFORMED ||
         errorStatus === SUBMISSION_STATUS_TYPE.FAILED_PROCESSING_OCCURRENCE_DATA
       ) {
-        const occurrence_submission_id = occurrenceSubmissionData.rows[0].id;
+        const occurrence_submission_id = response.id;
 
         const getSubmissionErrorListSQLStatement = queries.survey.getOccurrenceSubmissionMessagesSQL(
           Number(occurrence_submission_id)
@@ -171,14 +157,12 @@ export function getOccurrenceSubmission(): RequestHandler {
 
       await connection.commit();
       const getOccurrenceSubmissionData =
-        (occurrenceSubmissionData &&
-          occurrenceSubmissionData.rows &&
-          occurrenceSubmissionData.rows[0] && {
-            id: occurrenceSubmissionData.rows[0].id,
-            inputFileName: occurrenceSubmissionData.rows[0].input_file_name,
-            status: occurrenceSubmissionData.rows[0].submission_status_type_name,
-            messages: messageList
-          }) ||
+        (response && {
+          id: response.id,
+          inputFileName: response.input_file_name,
+          status: response.submission_status_type_name,
+          messages: messageList
+        }) ||
         null;
 
       return res.status(200).json(getOccurrenceSubmissionData);

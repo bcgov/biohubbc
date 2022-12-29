@@ -270,4 +270,88 @@ describe('ProjectRepository', () => {
       }
     });
   });
+
+  describe('deleteDraft', () => {
+    it('should return result', async () => {
+      const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
+      const dbConnection = getMockDBConnection({ sql: () => mockResponse });
+
+      const repository = new ProjectRepository(dbConnection);
+
+      const response = await repository.deleteDraft(1);
+
+      expect(response).to.not.be.null;
+      expect(response).to.eql({ rows: [{ id: 1 }], rowCount: 1 });
+    });
+
+    it('should throw an error', async () => {
+      const mockResponse = (undefined as any) as Promise<QueryResult<any>>;
+      const dbConnection = getMockDBConnection({ sql: () => mockResponse });
+
+      const repository = new ProjectRepository(dbConnection);
+
+      try {
+        await repository.deleteDraft(1);
+        expect.fail();
+      } catch (error) {
+        expect((error as Error).message).to.equal('Failed to delete draft');
+      }
+    });
+  });
+
+  describe('getSingleDraft', () => {
+    it('should return result', async () => {
+      const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
+      const dbConnection = getMockDBConnection({ sql: () => mockResponse });
+
+      const repository = new ProjectRepository(dbConnection);
+
+      const response = await repository.getSingleDraft(1);
+
+      expect(response).to.not.be.null;
+      expect(response).to.eql({ id: 1 });
+    });
+
+    it('should throw an error', async () => {
+      const mockResponse = (undefined as any) as Promise<QueryResult<any>>;
+      const dbConnection = getMockDBConnection({ sql: () => mockResponse });
+
+      const repository = new ProjectRepository(dbConnection);
+
+      try {
+        await repository.getSingleDraft(1);
+        expect.fail();
+      } catch (error) {
+        expect((error as Error).message).to.equal('Failed to get draft');
+      }
+    });
+  });
+
+  describe('deleteProjectParticipationRecord', () => {
+    it('should return result', async () => {
+      const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
+      const dbConnection = getMockDBConnection({ sql: () => mockResponse });
+
+      const repository = new ProjectRepository(dbConnection);
+
+      const response = await repository.deleteProjectParticipationRecord(1);
+
+      expect(response).to.not.be.null;
+      expect(response).to.eql({ id: 1 });
+    });
+
+    it('should throw an error', async () => {
+      const mockResponse = (undefined as any) as Promise<QueryResult<any>>;
+      const dbConnection = getMockDBConnection({ sql: () => mockResponse });
+
+      const repository = new ProjectRepository(dbConnection);
+
+      try {
+        await repository.deleteProjectParticipationRecord(1);
+        expect.fail();
+      } catch (error) {
+        expect((error as Error).message).to.equal('Failed to delete project participation record');
+      }
+    });
+  });
 });

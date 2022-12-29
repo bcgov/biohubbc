@@ -6,6 +6,7 @@ import { SUBMISSION_MESSAGE_TYPE } from '../constants/status';
 import { HTTP400 } from '../errors/http-error';
 import { PostOccurrence } from '../models/occurrence-create';
 import { OccurrenceRepository } from '../repositories/occurrence-repository';
+import { CSVWorksheet } from '../utils/media/csv/csv-file';
 import { DWCArchive } from '../utils/media/dwc/dwc-archive-file';
 import { ArchiveFile } from '../utils/media/media-file';
 import { SubmissionError } from '../utils/submission-error';
@@ -153,6 +154,176 @@ describe('OccurrenceService', () => {
 
       const id = await service.updateDWCSourceForOccurrenceSubmission(1, '{}');
       expect(id).to.be.eql(1);
+    });
+  });
+
+  describe('getHeadersAndRowsFromDWCArchive', () => {
+    it('should run without issue', async () => {
+      const service = mockService();
+
+      const data: DWCArchive = ({
+        worksheets: {
+          event: ({
+            name: 'name',
+            getHeaders: () => {
+              return ['id', 'eventDate', 'verbatimCoordinates'];
+            },
+            getRows: () => {
+              return [
+                ['row11', 'row12'],
+                ['row21', 'row22']
+              ];
+            }
+          } as unknown) as CSVWorksheet,
+          occurrence: ({
+            getHeaders: () => {
+              return [
+                'id',
+                'associatedTaxa',
+                'lifeStage',
+                'sex',
+                'individualCount',
+                'organismQuantity',
+                'organismQuantityType'
+              ];
+            },
+            getRows: () => {
+              return [
+                ['row11', 'row12'],
+                ['row21', 'row22']
+              ];
+            }
+          } as unknown) as CSVWorksheet,
+          taxon: ({
+            getHeaders: () => {
+              return ['id', 'vernacularName'];
+            },
+            getRows: () => {
+              return [
+                ['row11', 'row12'],
+                ['row21', 'row22']
+              ];
+            }
+          } as unknown) as CSVWorksheet
+        }
+      } as unknown) as DWCArchive;
+
+      const expectedResponse = {
+        occurrenceRows: [
+          ['row11', 'row12'],
+          ['row21', 'row22']
+        ],
+        occurrenceIdHeader: 0,
+        associatedTaxaHeader: 1,
+        eventRows: [
+          ['row11', 'row12'],
+          ['row21', 'row22']
+        ],
+        lifeStageHeader: 2,
+        sexHeader: 3,
+        individualCountHeader: 4,
+        organismQuantityHeader: 5,
+        organismQuantityTypeHeader: 6,
+        occurrenceHeaders: [
+          'id',
+          'associatedTaxa',
+          'lifeStage',
+          'sex',
+          'individualCount',
+          'organismQuantity',
+          'organismQuantityType'
+        ],
+        eventIdHeader: 0,
+        eventDateHeader: 1,
+        eventVerbatimCoordinatesHeader: 2,
+        taxonRows: [
+          ['row11', 'row12'],
+          ['row21', 'row22']
+        ],
+        taxonIdHeader: 0,
+        vernacularNameHeader: 1
+      };
+
+      const response = await service.getHeadersAndRowsFromDWCArchive(data);
+
+      expect(response).to.eql(expectedResponse);
+    });
+  });
+
+  describe('scrapeArchiveForOccurrences', () => {
+    it('should run with no data', async () => {
+      const service = mockService();
+
+      const data = {
+        occurrenceRows: []
+      };
+
+      sinon.stub(OccurrenceService.prototype, 'getHeadersAndRowsFromDWCArchive').returns(data);
+
+      const response = await service.scrapeArchiveForOccurrences(({ id: 1 } as unknown) as DWCArchive);
+
+      expect(response).to.eql([]);
+    });
+
+    it('should run with data', async () => {
+      const service = mockService();
+
+      const data = {
+        occurrenceRows: [['row1', 'row2', 'row3', 'row4', 'row5', 'row6', 'row7']],
+        occurrenceIdHeader: 0,
+        associatedTaxaHeader: 1,
+        eventRows: [['row1', 'row2', 'row3']],
+        lifeStageHeader: 2,
+        sexHeader: 3,
+        individualCountHeader: 4,
+        organismQuantityHeader: 5,
+        organismQuantityTypeHeader: 6,
+        occurrenceHeaders: [
+          'id',
+          'associatedTaxa',
+          'lifeStage',
+          'sex',
+          'individualCount',
+          'organismQuantity',
+          'organismQuantityType'
+        ],
+        eventIdHeader: 0,
+        eventDateHeader: 1,
+        eventVerbatimCoordinatesHeader: 2,
+        taxonRows: [['row1', 'row2', 'row3']],
+        taxonIdHeader: 0,
+        vernacularNameHeader: 1
+      };
+
+      sinon.stub(OccurrenceService.prototype, 'getHeadersAndRowsFromDWCArchive').returns(data);
+
+      const expectedResponse = new PostOccurrence({
+        associatedTaxa: 'row2',
+        lifeStage: 'row3',
+        sex: 'row4',
+        individualCount: 'row5',
+        vernacularName: 'row2',
+        data: {
+          headers: [
+            'id',
+            'associatedTaxa',
+            'lifeStage',
+            'sex',
+            'individualCount',
+            'organismQuantity',
+            'organismQuantityType'
+          ],
+          rows: ['row1', 'row2', 'row3', 'row4', 'row5', 'row6', 'row7']
+        },
+        verbatimCoordinates: 'row3',
+        organismQuantity: 'row6',
+        organismQuantityType: 'row7',
+        eventDate: 'row2'
+      });
+
+      const response = await service.scrapeArchiveForOccurrences(({ id: 1 } as unknown) as DWCArchive);
+
+      expect(response).to.eql([expectedResponse]);
     });
   });
 });
