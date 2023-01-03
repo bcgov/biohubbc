@@ -32,7 +32,7 @@ export class OccurrenceService extends DBService {
     const occurrenceRows = dwcArchive.worksheets.occurrence?.getRows();
 
     const occurrenceIdHeader = occurrenceHeaders?.indexOf('id') as number;
-    const associatedTaxaHeader = occurrenceHeaders?.indexOf('associatedTaxa') as number;
+    const associatedTaxaHeader = occurrenceHeaders?.indexOf('taxonID') as number;
     const lifeStageHeader = occurrenceHeaders?.indexOf('lifeStage') as number;
     const sexHeader = occurrenceHeaders?.indexOf('sex') as number;
     const individualCountHeader = occurrenceHeaders?.indexOf('individualCount') as number;
@@ -41,7 +41,7 @@ export class OccurrenceService extends DBService {
 
     const taxonHeaders = dwcArchive.worksheets.taxon?.getHeaders();
     const taxonRows = dwcArchive.worksheets.taxon?.getRows();
-    const taxonIdHeader = taxonHeaders?.indexOf('id') as number;
+    const taxonIdHeader = taxonHeaders?.indexOf('taxonID') as number;
     const vernacularNameHeader = taxonHeaders?.indexOf('vernacularName') as number;
 
     return {
@@ -89,7 +89,7 @@ export class OccurrenceService extends DBService {
       taxonIdHeader,
       vernacularNameHeader
     } = this.getHeadersAndRowsFromDWCArchive(archive);
-
+    console.log("__ SCRAPING ARCHIVE FOR OCCURRENCES __")
     return (
       occurrenceRows?.map((row: any) => {
         const occurrenceId = row[occurrenceIdHeader];
@@ -103,11 +103,14 @@ export class OccurrenceService extends DBService {
         const data = { headers: occurrenceHeaders, rows: row };
 
         let verbatimCoordinates;
+        // TODO event date is not formatted properly...
+        // ok so what are we going to be doing with this thing...
         let eventDate;
         let vernacularName;
 
         eventRows?.forEach((eventRow: any) => {
           if (eventRow[eventIdHeader] === occurrenceId) {
+            // console.log(eventRow)
             eventDate = eventRow[eventDateHeader];
             verbatimCoordinates = eventRow[eventVerbatimCoordinatesHeader];
           }
@@ -118,7 +121,9 @@ export class OccurrenceService extends DBService {
             vernacularName = taxonRow[vernacularNameHeader];
           }
         });
-
+        // console.log("__--__")
+        console.log(`Date: ${eventDate}`)
+        // console.log(row)
         return new PostOccurrence({
           associatedTaxa: associatedTaxa,
           lifeStage: lifeStage,
@@ -129,7 +134,7 @@ export class OccurrenceService extends DBService {
           verbatimCoordinates: verbatimCoordinates,
           organismQuantity: organismQuantity,
           organismQuantityType: organismQuantityType,
-          eventDate: eventDate
+          eventDate: new Date()
         });
       }) || []
     );
@@ -145,6 +150,8 @@ export class OccurrenceService extends DBService {
   async scrapeAndUploadOccurrences(submissionId: number, archive: DWCArchive) {
     try {
       const scrapedOccurrences = this.scrapeArchiveForOccurrences(archive);
+      console.log("_____________________")
+      // console.log(scrapedOccurrences)
       this.insertPostOccurrences(submissionId, scrapedOccurrences);
     } catch (error) {
       throw SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_UPDATE_OCCURRENCE_SUBMISSION);

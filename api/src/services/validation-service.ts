@@ -135,7 +135,6 @@ export class ValidationService extends DBService {
       // insert template validated status
       await this.submissionRepository.insertSubmissionStatus(submissionId, SUBMISSION_STATUS_TYPE.TEMPLATE_VALIDATED);
 
-      console.log('___ GOT PASSED VALIDATION ___');
       // template transformation
       await this.templateTransformation(submissionId, submissionPrep.xlsx, submissionPrep.s3InputKey, surveyId);
 
@@ -209,6 +208,9 @@ export class ValidationService extends DBService {
       const s3OutputKey = occurrenceSubmission.output_key;
       const s3File = await getFileFromS3(s3OutputKey);
       const archive = this.prepDWCArchive(s3File);
+      console.log("PREPPED ARCHIVE")
+      console.log(archive.worksheets.event)
+      console.log("SCRAPE AND UPLOAD OCCURRENCES");
       await this.occurrenceService.scrapeAndUploadOccurrences(submissionId, archive);
     } catch (error) {
       if (error instanceof SubmissionError) {
@@ -235,8 +237,7 @@ export class ValidationService extends DBService {
   async templateTransformation(submissionId: number, xlsx: XLSXCSV, s3InputKey: string, surveyId: number) {
     try {
       const xlsxSchema = await this.getTransformationSchema(xlsx, surveyId);
-      const fileBuffer = await this.newTransformXLSX(xlsx.workbook.rawWorkbook, xlsxSchema);
-      console.log("___ GOT HERE ___")
+      const fileBuffer = await this.transformXLSX(xlsx.workbook.rawWorkbook, xlsxSchema);
       await this.persistTransformationResults(submissionId, fileBuffer, s3InputKey, xlsx);
     } catch (error) {
       if (error instanceof SubmissionError) {
@@ -417,11 +418,14 @@ export class ValidationService extends DBService {
     return transformationSchema;
   }
 
-  // TODO needs to turn into a file buffer for the rest of the process?
-  newTransformXLSX(workbook: xlsx.WorkBook, transformSchema: TransformSchema): IFileBuffer[] {
+  transformXLSX(workbook: xlsx.WorkBook, transformSchema: TransformSchema): IFileBuffer[] {
     const xlsxTransform = new XLSXTransform(workbook, transformSchema);
     const preparedRowObjectsForJSONToSheet = xlsxTransform.start();
 
+    console.log(workbook.SheetNames)
+    console.log(workbook.Sheets["Observations"])
+
+    console.log(preparedRowObjectsForJSONToSheet.event)
     // Process the result
     const dwcWorkbook = xlsx.utils.book_new();
     return Object.entries(preparedRowObjectsForJSONToSheet).map(([key, value]) => {
@@ -460,7 +464,6 @@ export class ValidationService extends DBService {
     const outputS3Key = `${outputS3KeyPrefix}/${outputFileName}`;
 
     // Upload transformed archive to s3
-    console.log(`Output key: ${outputS3Key}`)
     await uploadBufferToS3(dwcArchiveZip.toBuffer(), 'application/zip', outputS3Key);
 
     // update occurrence submission

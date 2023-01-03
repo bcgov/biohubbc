@@ -97,6 +97,7 @@ export async function uploadBufferToS3(
  * @return {*}  {Promise<GetObjectOutput>}
  */
 export async function getFileFromS3(key: string, versionId?: string): Promise<GetObjectOutput> {
+  console.log(`S3 Key: ${key}`)
   return S3.getObject({
     Bucket: OBJECT_STORE_BUCKET_NAME,
     Key: key,
