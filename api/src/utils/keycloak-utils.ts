@@ -7,7 +7,7 @@ import { EXTERNAL_BCEID_IDENTITY_SOURCES, EXTERNAL_IDIR_IDENTITY_SOURCES } from 
  * @param {object} keycloakToken
  * @return {*} {(string | null)}
  */
-export const getUserIdentifier = (keycloakToken: object): string | null => {
+export const ___getUserIdentifier = (keycloakToken: object): string | null => {
   const userIdentifier = keycloakToken?.['preferred_username']?.split('@')?.[0];
 
   if (!userIdentifier) {
