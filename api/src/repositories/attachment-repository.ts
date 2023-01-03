@@ -310,7 +310,7 @@ export class AttachmentRepository extends BaseRepository {
    * Query to return the report attachment having the given ID and belonging to the given survey.
    * @param {number} surveyId the ID of the survey
    * @param {number} reportAttachmentId the ID of the report attachment
-   * @return {Promise<IProjectReportAttachment>} Promise resolving the report attachment
+   * @return {Promise<ISurveyReportAttachment>} Promise resolving the report attachment
    * @memberof AttachmentRepository
    */
   async getSurveyReportAttachmentById(surveyId: number, reportAttachmentId: number): Promise<ISurveyReportAttachment> {
@@ -471,7 +471,7 @@ export class AttachmentRepository extends BaseRepository {
     const response = await this.connection.sql(sqlStatement);
 
     if (!response?.rows || !response?.rows[0]) {
-      throw new ApiExecuteSQLError('Failed to insert project attachment data', [
+      throw new ApiExecuteSQLError('Failed to update project attachment data', [
         'AttachmentRepository->updateProjectAttachment',
         'rows was null or undefined, expected rows != null'
       ]);
@@ -534,7 +534,7 @@ export class AttachmentRepository extends BaseRepository {
     const response = await this.connection.sql(sqlStatement);
 
     if (!response?.rows || !response?.rows[0]) {
-      throw new ApiExecuteSQLError('Failed to insert project attachment data', [
+      throw new ApiExecuteSQLError('Failed to insert project report attachment data', [
         'AttachmentRepository->insertProjectReportAttachment',
         'rows was null or undefined, expected rows != null'
       ]);

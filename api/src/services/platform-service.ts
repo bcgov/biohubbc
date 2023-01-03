@@ -5,7 +5,6 @@ import { URL } from 'url';
 import { HTTP400 } from '../errors/http-error';
 import { getFileFromS3 } from '../utils/file-utils';
 import { DBService } from './db-service';
-import { DwCService } from './dwc-service';
 import { EmlService } from './eml-service';
 import { KeycloakService } from './keycloak-service';
 import { SurveyService } from './survey-service';
@@ -158,22 +157,16 @@ export class PlatformService extends DBService {
     const surveyService = new SurveyService(this.connection);
     const surveyData = await surveyService.getLatestSurveyOccurrenceSubmission(surveyId);
 
-    if (!surveyData.darwin_core_source) {
-      throw new HTTP400('no transformation result found');
-    }
-
-    const dwcService = new DwCService({ projectId: projectId }, this.connection);
-
-    await dwcService.enrichTaxonIDs(surveyData.darwin_core_source);
-
-    if (!surveyData.output_key) {
+    if (!surveyData || !surveyData.output_key) {
       throw new HTTP400('no s3Key found');
     }
+
     const s3File = await getFileFromS3(surveyData.output_key);
 
     if (!s3File) {
       throw new HTTP400('no s3File found');
     }
+
     const dwcArchiveZip = new AdmZip(s3File.Body as Buffer);
 
     const emlService = new EmlService({ projectId: projectId }, this.connection);

@@ -7,6 +7,8 @@ import { SUBMISSION_MESSAGE_TYPE } from '../../../../../../../constants/status';
 import * as db from '../../../../../../../database/db';
 import { HTTPError } from '../../../../../../../errors/http-error';
 import survey_queries from '../../../../../../../queries/survey';
+import { IGetLatestSurveyOccurrenceSubmission } from '../../../../../../../repositories/survey-repository';
+import { SurveyService } from '../../../../../../../services/survey-service';
 import { getMockDBConnection } from '../../../../../../../__mocks__/db';
 import * as observationSubmission from './get';
 
@@ -58,28 +60,19 @@ describe('getObservationSubmission', () => {
   });
 
   it('should return an observation submission, on success with no rejected files', async () => {
-    const mockQuery = sinon.stub();
-
-    mockQuery.resolves({
-      rows: [
-        {
-          id: 13,
-          input_file_name: 'dwca_moose.zip',
-          submission_status_type_name: 'Darwin Core Validated',
-          messages: [{}]
-        }
-      ]
-    });
-
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
       systemUserId: () => {
         return 20;
-      },
-      query: mockQuery
+      }
     });
 
-    sinon.stub(survey_queries, 'getLatestSurveyOccurrenceSubmissionSQL').returns(SQL`something`);
+    sinon.stub(SurveyService.prototype, 'getLatestSurveyOccurrenceSubmission').resolves(({
+      id: 13,
+      input_file_name: 'dwca_moose.zip',
+      submission_status_type_name: 'Darwin Core Validated',
+      message: 'string'
+    } as unknown) as IGetLatestSurveyOccurrenceSubmission);
 
     const result = observationSubmission.getOccurrenceSubmission();
 
@@ -93,16 +86,24 @@ describe('getObservationSubmission', () => {
     });
   });
 
-  it('should throw a 400 error with rejected files when failed to getOccurrenceSubmissionMessagesSQL', async () => {
+  it('should return an observation submission on success, with rejected files', async () => {
     const mockQuery = sinon.stub();
 
     mockQuery.resolves({
       rows: [
         {
-          id: 13,
-          input_file_name: 'dwca_moose.zip',
-          message: 'some message',
-          submission_status_type_name: 'Rejected'
+          errorCode: SUBMISSION_MESSAGE_TYPE.MISSING_REQUIRED_HEADER,
+          id: 1,
+          message: 'occurrence.txt - Missing Required Header - associatedTaxa - Missing required header',
+          status: 'Rejected',
+          type: 'Error'
+        },
+        {
+          errorCode: SUBMISSION_MESSAGE_TYPE.MISSING_REQUIRED_HEADER,
+          id: 2,
+          message: 'occurrence.txt - Missing Required Header - associatedTaxa - Missing required header',
+          status: 'Rejected',
+          type: 'Error'
         }
       ]
     });
@@ -115,66 +116,12 @@ describe('getObservationSubmission', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_queries, 'getLatestSurveyOccurrenceSubmissionSQL').returns(SQL`something`);
-    sinon.stub(survey_queries, 'getOccurrenceSubmissionMessagesSQL').returns(null);
+    sinon.stub(SurveyService.prototype, 'getLatestSurveyOccurrenceSubmission').resolves(({
+      id: 13,
+      input_file_name: 'dwca_moose.zip',
+      submission_status_type_name: 'Rejected'
+    } as unknown) as IGetLatestSurveyOccurrenceSubmission);
 
-    try {
-      const result = observationSubmission.getOccurrenceSubmission();
-
-      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal(
-        'Failed to build SQL getOccurrenceSubmissionMessagesSQL statement'
-      );
-    }
-  });
-
-  it('should return an observation submission on success, with rejected files', async () => {
-    const mockQuery = sinon.stub();
-
-    mockQuery
-      .onFirstCall()
-      .resolves({
-        rows: [
-          {
-            id: 13,
-            input_file_name: 'dwca_moose.zip',
-            messages: [],
-            submission_status_type_name: 'Rejected'
-          }
-        ]
-      })
-      .onSecondCall()
-      .resolves({
-        rows: [
-          {
-            errorCode: SUBMISSION_MESSAGE_TYPE.MISSING_REQUIRED_HEADER,
-            id: 1,
-            message: 'occurrence.txt - Missing Required Header - associatedTaxa - Missing required header',
-            status: 'Rejected',
-            type: 'Error'
-          },
-          {
-            errorCode: SUBMISSION_MESSAGE_TYPE.MISSING_REQUIRED_HEADER,
-            id: 2,
-            message: 'occurrence.txt - Missing Required Header - associatedTaxa - Missing required header',
-            status: 'Rejected',
-            type: 'Error'
-          }
-        ]
-      });
-
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      },
-      query: mockQuery
-    });
-
-    sinon.stub(survey_queries, 'getLatestSurveyOccurrenceSubmissionSQL').returns(SQL`something`);
     sinon.stub(survey_queries, 'getOccurrenceSubmissionMessagesSQL').returns(SQL`something`);
 
     const result = observationSubmission.getOccurrenceSubmission();
@@ -205,19 +152,16 @@ describe('getObservationSubmission', () => {
   });
 
   it('should return null if the survey has no observation submission, on success', async () => {
-    const mockQuery = sinon.stub();
-
-    mockQuery.resolves({ rows: undefined });
-
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
       systemUserId: () => {
         return 20;
-      },
-      query: mockQuery
+      }
     });
 
-    sinon.stub(survey_queries, 'getLatestSurveyOccurrenceSubmissionSQL').returns(SQL`something`);
+    sinon
+      .stub(SurveyService.prototype, 'getLatestSurveyOccurrenceSubmission')
+      .resolves(({ delete_timestamp: true } as unknown) as IGetLatestSurveyOccurrenceSubmission);
 
     const result = observationSubmission.getOccurrenceSubmission();
 
