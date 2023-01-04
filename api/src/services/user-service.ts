@@ -1,6 +1,9 @@
+import { IDBConnection } from '../database/db';
 import { ApiBuildSQLError, ApiExecuteSQLError } from '../errors/api-error';
 import { UserObject } from '../models/user';
 import { queries } from '../queries/queries';
+import { UserRepository } from '../repositories/user-repository';
+import { getLogger } from '../utils/logger';
 import { DBService } from './db-service';
 
 export type ListSystemUsers = {
@@ -11,7 +14,17 @@ export type ListSystemUsers = {
   role_names: string[];
 };
 
+const defaultLog = getLogger('services/user-service');
+
 export class UserService extends DBService {
+  userRepository: UserRepository;
+
+  constructor(connection: IDBConnection) {
+    super(connection);
+
+    this.userRepository = new UserRepository(connection);
+  }
+
   /**
    * Fetch a single system user by their ID.
    *
@@ -32,22 +45,23 @@ export class UserService extends DBService {
   }
 
   /**
-   * Get an existing system user.
+   * Get an existing system user by their GUID.
    *
-   * @param {string} userIdentifier
+   * @param {string} userGuid The user's GUID
    * @return {*}  {(Promise<UserObject | null>)}
    * @memberof UserService
    */
-  async getUserByIdentifier(userIdentifier: string): Promise<UserObject | null> {
-    const sqlStatement = queries.users.getUserByUserIdentifierSQL(userIdentifier);
+  async getUserByGuid(userGuid: string): Promise<UserObject | null> {
 
-    if (!sqlStatement) {
-      throw new ApiBuildSQLError('Failed to build SQL select statement');
+    defaultLog.debug({ label: 'getUserByGuid', userGuid });
+
+    const response = await this.userRepository.getUserByGuid(userGuid);
+
+    if (response.length !== 1) {
+      return null;
     }
 
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
-
-    return (response?.rows?.[0] && new UserObject(response.rows[0])) || null;
+    return new UserObject(response[0]);
   }
 
   /**
@@ -55,27 +69,20 @@ export class UserService extends DBService {
    *
    * Note: Will fail if the system user already exists.
    *
+   * @param {string} userGuid
    * @param {string} userIdentifier
    * @param {string} identitySource
-   * @return {*}  {Promise<UserObject>}
+   * @return {*}  {Promise<Models.user.UserObject>}
    * @memberof UserService
    */
-  async addSystemUser(userIdentifier: string, identitySource: string): Promise<UserObject> {
-    const addSystemUserSQLStatement = queries.users.addSystemUserSQL(userIdentifier, identitySource);
+  async addSystemUser(
+    userGuid: string,
+    userIdentifier: string,
+    identitySource: string
+  ): Promise<UserObject> {
+    const response = await this.userRepository.addSystemUser(userGuid, userIdentifier, identitySource);
 
-    if (!addSystemUserSQLStatement) {
-      throw new ApiBuildSQLError('Failed to build SQL insert statement');
-    }
-
-    const response = await this.connection.query(addSystemUserSQLStatement.text, addSystemUserSQLStatement.values);
-
-    const userObject = (response?.rows?.[0] && new UserObject(response.rows[0])) || null;
-
-    if (!userObject) {
-      throw new ApiExecuteSQLError('Failed to insert system user');
-    }
-
-    return userObject;
+    return new UserObject(response);
   }
 
   /**
@@ -103,15 +110,15 @@ export class UserService extends DBService {
    * Gets a system user, adding them if they do not already exist, or activating them if they had been deactivated (soft
    * deleted).
    *
+   * @param {string} userGuid
    * @param {string} userIdentifier
    * @param {string} identitySource
-   * @param {IDBConnection} connection
-   * @return {*}  {Promise<UserObject>}
+   * @return {*}  {Promise<Models.user.UserObject>}
    * @memberof UserService
    */
-  async ensureSystemUser(userIdentifier: string, identitySource: string): Promise<UserObject> {
+  async ensureSystemUser(userGuid: string, userIdentifier: string, identitySource: string): Promise<UserObject> {
     // Check if the user exists in SIMS
-    let userObject = await this.getUserByIdentifier(userIdentifier);
+    let userObject = await this.getUserByGuid(userGuid);
 
     if (!userObject) {
       // Id of the current authenticated user
@@ -122,7 +129,7 @@ export class UserService extends DBService {
       }
 
       // Found no existing user, add them
-      userObject = await this.addSystemUser(userIdentifier, identitySource);
+      userObject = await this.addSystemUser(userGuid, userIdentifier, identitySource);
     }
 
     if (!userObject.record_end_date) {

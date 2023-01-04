@@ -3,7 +3,7 @@ import * as pg from 'pg';
 import { SQLStatement } from 'sql-template-strings';
 import { ApiExecuteSQLError, ApiGeneralError } from '../errors/api-error';
 import { queries } from '../queries/queries';
-import { getUserIdentifier, getUserIdentitySource } from '../utils/keycloak-utils';
+import { getUserGuid, getUserIdentitySource } from '../utils/keycloak-utils';
 import { getLogger } from '../utils/logger';
 
 const defaultLog = getLogger('database/db');
