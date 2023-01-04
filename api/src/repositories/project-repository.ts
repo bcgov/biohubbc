@@ -446,13 +446,6 @@ export class ProjectRepository extends BaseRepository {
 
     const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
 
-    if (!response) {
-      throw new ApiExecuteSQLError('Failed to get project list', [
-        'ProjectRepository->getProjectList',
-        'rows was null or undefined, expected rows != null'
-      ]);
-    }
-
     if (!response.rows) {
       return [];
     }
@@ -534,9 +527,6 @@ export class ProjectRepository extends BaseRepository {
 
     const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
     const result = (response && response.rows && response.rows[0]) || null;
-
-    console.log('response', response);
-    console.log('result', result);
 
     if (!result) {
       throw new ApiExecuteSQLError('Failed to get project objectives data', [
@@ -1076,14 +1066,7 @@ export class ProjectRepository extends BaseRepository {
         project_id = ${projectId};
     `;
 
-    const response = await this.connection.query(sqlDeleteStatement.text, sqlDeleteStatement.values);
-
-    if (!response) {
-      throw new ApiExecuteSQLError('Failed to delete project IUCN data', [
-        'ProjectRepository->deleteIUCNData',
-        'rows was null or undefined, expected rows != null'
-      ]);
-    }
+    await this.connection.query(sqlDeleteStatement.text, sqlDeleteStatement.values);
   }
 
   async deleteIndigenousPartnershipsData(projectId: number): Promise<void> {
@@ -1094,14 +1077,7 @@ export class ProjectRepository extends BaseRepository {
         project_id = ${projectId};
     `;
 
-    const response = await this.connection.query(sqlDeleteStatement.text, sqlDeleteStatement.values);
-
-    if (!response) {
-      throw new ApiExecuteSQLError('Failed to delete project Indigenous Partnerships data', [
-        'ProjectRepository->deleteIndigenousPartnershipsData',
-        'rows was null or undefined, expected rows != null'
-      ]);
-    }
+    await this.connection.query(sqlDeleteStatement.text, sqlDeleteStatement.values);
   }
 
   async deleteStakeholderPartnershipsData(projectId: number): Promise<void> {
@@ -1112,14 +1088,7 @@ export class ProjectRepository extends BaseRepository {
         project_id = ${projectId};
     `;
 
-    const response = await this.connection.query(sqlDeleteStatement.text, sqlDeleteStatement.values);
-
-    if (!response) {
-      throw new ApiExecuteSQLError('Failed to delete project Stakeholder Partnerships data', [
-        'ProjectRepository->deleteStakeholderPartnershipsData',
-        'rows was null or undefined, expected rows != null'
-      ]);
-    }
+    await this.connection.query(sqlDeleteStatement.text, sqlDeleteStatement.values);
   }
 
   async updateProjectData(
@@ -1221,14 +1190,7 @@ export class ProjectRepository extends BaseRepository {
         project_id = ${projectId};
     `;
 
-    const response = await this.connection.query(sqlDeleteStatement.text, sqlDeleteStatement.values);
-
-    if (!response) {
-      throw new ApiExecuteSQLError('Failed to delete project activity data', [
-        'ProjectRepository->deleteActivityData',
-        'rows was null or undefined, expected rows != null'
-      ]);
-    }
+    await this.connection.query(sqlDeleteStatement.text, sqlDeleteStatement.values);
   }
 
   async deleteProject(projectId: number): Promise<void> {
