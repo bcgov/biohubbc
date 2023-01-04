@@ -43,14 +43,7 @@ export class SurveyRepository extends BaseRepository {
   async deleteSurvey(surveyId: number): Promise<void> {
     const sqlStatement = SQL`call api_delete_survey(${surveyId})`;
 
-    const response = await this.connection.sql(sqlStatement);
-
-    if (!response) {
-      throw new ApiExecuteSQLError('Failed to delete Survey', [
-        'SurveyRepository->deleteSurvey',
-        'response was null or undefined, expected response != null'
-      ]);
-    }
+    await this.connection.sql(sqlStatement);
   }
 
   async getSurveyIdsByProjectId(projectId: number): Promise<{ id: number }[]> {
@@ -67,7 +60,7 @@ export class SurveyRepository extends BaseRepository {
     const result = (response && response.rows) || null;
 
     if (!result) {
-      throw new ApiExecuteSQLError('Failed to get project survey details data', [
+      throw new ApiExecuteSQLError('Failed to get project survey ids', [
         'SurveyRepository->getSurveyIdsByProjectId',
         'response was null or undefined, expected response != null'
       ]);
@@ -292,7 +285,7 @@ export class SurveyRepository extends BaseRepository {
     const result = (response && response.rows && response.rows?.[0]) || null;
 
     if (!result) {
-      throw new ApiExecuteSQLError('Failed to get survey Occurrence submission Id ', [
+      throw new ApiExecuteSQLError('Failed to get survey Occurrence submission Id', [
         'SurveyRepository->getOccurrenceSubmissionId',
         'response was null or undefined, expected response != null'
       ]);
@@ -573,7 +566,7 @@ export class SurveyRepository extends BaseRepository {
     const result = (response && response.rows && response.rows[0]) || null;
 
     if (!result || !result.id) {
-      throw new ApiExecuteSQLError('Failed to insert ancillary species data', [
+      throw new ApiExecuteSQLError('Failed to insert vantage codes', [
         'SurveyRepository->insertVantageCodes',
         'response was null or undefined, expected response != null'
       ]);
@@ -691,14 +684,7 @@ export class SurveyRepository extends BaseRepository {
         ${funding_source_id}
       );
     `;
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
-
-    if (!response) {
-      throw new ApiExecuteSQLError('Failed to insert survey funding source data', [
-        'SurveyRepository->insertSurveyFundingSource',
-        'response was null or undefined, expected response != null'
-      ]);
-    }
+    await this.connection.query(sqlStatement.text, sqlStatement.values);
   }
 
   async updateSurveyDetailsData(surveyId: number, surveyData: PutSurveyObject) {
