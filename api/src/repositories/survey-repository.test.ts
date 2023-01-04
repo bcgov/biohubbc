@@ -5,6 +5,7 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { GetReportAttachmentsData } from '../models/project-view';
 import { PostProprietorData, PostSurveyObject } from '../models/survey-create';
+import { PutSurveyObject } from '../models/survey-update';
 import {
   GetAttachmentsData,
   GetSurveyData,
@@ -698,6 +699,104 @@ describe('SurveyRepository', () => {
       const response = await repository.deleteSurveyVantageCodes(1);
 
       expect(response).to.eql(undefined);
+    });
+  });
+
+  describe('updateSurveyDetailsData', () => {
+    it('should return undefined and ue all inputs', async () => {
+      const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
+      const dbConnection = getMockDBConnection({ knex: () => mockResponse });
+
+      const repository = new SurveyRepository(dbConnection);
+
+      const input = ({
+        survey_details: {
+          name: 'name',
+          start_date: 'start',
+          end_date: 'end',
+          lead_first_name: 'first',
+          lead_last_name: 'last',
+          revision_count: 1
+        },
+        purpose_and_methodology: {
+          field_method_id: 1,
+          additional_details: '',
+          ecological_season_id: 1,
+          intended_outcome_id: 1,
+          surveyed_all_areas: 'Y',
+          revision_count: 1
+        },
+        location: { geometry: [{ id: 1 }] }
+      } as unknown) as PutSurveyObject;
+
+      const response = await repository.updateSurveyDetailsData(1, input);
+
+      expect(response).to.eql(undefined);
+    });
+
+    it('should return undefined and ue all inputs', async () => {
+      const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
+      const dbConnection = getMockDBConnection({ knex: () => mockResponse });
+
+      const repository = new SurveyRepository(dbConnection);
+
+      const input = ({
+        survey_details: {
+          name: 'name',
+          start_date: 'start',
+          end_date: 'end',
+          lead_first_name: 'first',
+          lead_last_name: 'last',
+          revision_count: 1
+        },
+        purpose_and_methodology: {
+          field_method_id: 1,
+          additional_details: '',
+          ecological_season_id: 1,
+          intended_outcome_id: 1,
+          surveyed_all_areas: 'Y',
+          revision_count: 1
+        },
+        location: { geometry: [] }
+      } as unknown) as PutSurveyObject;
+
+      const response = await repository.updateSurveyDetailsData(1, input);
+
+      expect(response).to.eql(undefined);
+    });
+
+    it('should throw an error', async () => {
+      const mockResponse = ({ rowCount: 0 } as any) as Promise<QueryResult<any>>;
+      const dbConnection = getMockDBConnection({ sql: () => mockResponse });
+
+      const repository = new SurveyRepository(dbConnection);
+
+      const input = ({
+        survey_details: {
+          name: 'name',
+          start_date: 'start',
+          end_date: 'end',
+          lead_first_name: 'first',
+          lead_last_name: 'last',
+          revision_count: 1
+        },
+        purpose_and_methodology: {
+          field_method_id: 1,
+          additional_details: '',
+          ecological_season_id: 1,
+          intended_outcome_id: 1,
+          surveyed_all_areas: 'Y',
+          revision_count: 1
+        },
+        location: { geometry: [] }
+      } as unknown) as PutSurveyObject;
+
+      try {
+        await repository.updateSurveyDetailsData(1, input);
+        expect.fail();
+      } catch (error) {
+        expect((error as Error).message).to.equal('Failed to update survey data');
+      }
     });
   });
 });
