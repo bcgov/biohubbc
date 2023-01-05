@@ -26,6 +26,9 @@ export interface IGetRoles {
   name: string;
 }
 
+/**
+ * @TODO Replace all implementations of `queries/users/user-queries` with appropriate UserRepository methods.
+ */
 export class UserRepository extends BaseRepository {
   /**
    * Get all system roles in db
