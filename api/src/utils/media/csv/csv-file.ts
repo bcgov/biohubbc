@@ -1,12 +1,7 @@
 import xlsx from 'xlsx';
 import { SUBMISSION_MESSAGE_TYPE } from '../../../constants/status';
 import { IMediaState, MediaValidation } from '../media-file';
-import {
-  getCellValue,
-  getWorksheetRange,
-  replaceCellDates,
-  trimCellWhitespace
-} from '../xlsx/xlsx-utils';
+import { getCellValue, getWorksheetRange, replaceCellDates, trimCellWhitespace } from '../xlsx/xlsx-utils';
 
 export type CSVWorksheets = { [name: string]: CSVWorksheet };
 export type WorkBookValidators = { [name: string]: CSVValidation };
