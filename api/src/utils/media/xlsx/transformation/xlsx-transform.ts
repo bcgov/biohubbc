@@ -1,6 +1,7 @@
 import jsonpatch, { Operation } from 'fast-json-patch';
 import { JSONPath, JSONPathOptions } from 'jsonpath-plus';
 import xlsx from 'xlsx';
+import { getWorksheetByName, getWorksheetRange, prepareWorksheetCells } from '../xlsx-utils';
 import XLSXTransformSchemaParser, {
   ConditionSchema,
   DWCColumnName,
@@ -13,7 +14,6 @@ import XLSXTransformSchemaParser, {
   TransformSchema
 } from './xlsx-transform-schema-parser';
 import { filterDuplicateKeys, getCombinations } from './xlsx-transform-utils';
-import { getWorksheetByName, getWorksheetRange, prepareWorksheetCells } from '../xlsx-utils';
 
 /**
  * Defines a type that indicates a `Partial` value, but with some exceptions.
@@ -591,7 +591,7 @@ export class XLSXTransform {
       uniqueGroupedByDWCSheetName[sheetName] = [];
     });
 
-    processedHierarchicalRowObjects.map((item) => {
+    processedHierarchicalRowObjects.forEach((item) => {
       const entries = Object.entries(item);
 
       for (const [key, value] of entries) {
