@@ -23,8 +23,8 @@ import React, { ReactElement, useContext, useState } from 'react';
 import { Redirect, useHistory } from 'react-router';
 import BCeIDRequestForm, {
   BCeIDBasicRequestFormInitialValues,
-  BCeIDBusinessRequestFormInitialValues,
   BCeIDBasicRequestFormYupSchema,
+  BCeIDBusinessRequestFormInitialValues,
   BCeIDBusinessRequestFormYupSchema
 } from './BCeIDRequestForm';
 import IDIRRequestForm, { IDIRRequestFormInitialValues, IDIRRequestFormYupSchema } from './IDIRRequestForm';
@@ -142,24 +142,23 @@ export const AccessRequestPage: React.FC = () => {
   let requestForm: ReactElement;
 
   switch (keycloakWrapper?.getIdentitySource()) {
+    case SYSTEM_IDENTITY_SOURCE.BCEID_BUSINESS:
+      initialValues = BCeIDBusinessRequestFormInitialValues;
+      validationSchema = BCeIDBusinessRequestFormYupSchema;
+      requestForm = <BCeIDRequestForm />;
+      break;
 
-  case SYSTEM_IDENTITY_SOURCE.BCEID_BUSINESS:
-    initialValues = BCeIDBusinessRequestFormInitialValues;
-    validationSchema = BCeIDBusinessRequestFormYupSchema;
-    requestForm = <BCeIDRequestForm />;
-    break;
-  
-  case SYSTEM_IDENTITY_SOURCE.BCEID_BASIC:
+    case SYSTEM_IDENTITY_SOURCE.BCEID_BASIC:
       initialValues = BCeIDBasicRequestFormInitialValues;
       validationSchema = BCeIDBasicRequestFormYupSchema;
       requestForm = <BCeIDRequestForm />;
       break;
-  
-  case SYSTEM_IDENTITY_SOURCE.IDIR:
-  default:
-    initialValues = IDIRRequestFormInitialValues;
-    validationSchema = IDIRRequestFormYupSchema;
-    requestForm = <IDIRRequestForm codes={codesDataLoader.data} />;
+
+    case SYSTEM_IDENTITY_SOURCE.IDIR:
+    default:
+      initialValues = IDIRRequestFormInitialValues;
+      validationSchema = IDIRRequestFormYupSchema;
+      requestForm = <IDIRRequestForm codes={codesDataLoader.data} />;
   }
 
   return (

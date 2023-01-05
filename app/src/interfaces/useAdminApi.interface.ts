@@ -5,7 +5,7 @@ export type IIDIRAccessRequestDataObject = {
 
 export type IBCeIDBasicAccessRequestDataObject = {
   reason: string;
-}
+};
 
 export type IBCeIDBusinessAccessRequestDataObject = {
   company: string;

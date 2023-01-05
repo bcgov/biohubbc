@@ -11,7 +11,6 @@ const DB_SCHEMA_DAPI_V1 = process.env.DB_SCHEMA_DAPI_V1;
  * @return {*}  {Promise<void>}
  */
 export async function up(knex: Knex): Promise<void> {
-
   await knex.raw(`
     SET SCHEMA '${DB_SCHEMA}';
     SET SEARCH_PATH = ${DB_SCHEMA_DAPI_V1};

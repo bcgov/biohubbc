@@ -52,7 +52,6 @@ export class UserService extends DBService {
    * @memberof UserService
    */
   async getUserByGuid(userGuid: string): Promise<UserObject | null> {
-
     defaultLog.debug({ label: 'getUserByGuid', userGuid });
 
     const response = await this.userRepository.getUserByGuid(userGuid);
@@ -75,11 +74,7 @@ export class UserService extends DBService {
    * @return {*}  {Promise<Models.user.UserObject>}
    * @memberof UserService
    */
-  async addSystemUser(
-    userGuid: string,
-    userIdentifier: string,
-    identitySource: string
-  ): Promise<UserObject> {
+  async addSystemUser(userGuid: string, userIdentifier: string, identitySource: string): Promise<UserObject> {
     const response = await this.userRepository.addSystemUser(userGuid, userIdentifier, identitySource);
 
     return new UserObject(response);

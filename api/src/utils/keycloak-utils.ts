@@ -60,8 +60,8 @@ export const getUserIdentitySource = (keycloakToken: object): SYSTEM_IDENTITY_SO
 /**
  * @TODO jsdoc
  * Coerce the raw keycloak token identity provider value into an system identity source enum value
- * @param userIdentitySource 
- * @returns 
+ * @param userIdentitySource
+ * @returns
  */
 export const coerceUserIdentitySource = (userIdentitySource: string): SYSTEM_IDENTITY_SOURCE => {
   switch (userIdentitySource) {
@@ -84,7 +84,7 @@ export const coerceUserIdentitySource = (userIdentitySource: string): SYSTEM_IDE
       // Covers a user created directly in keycloak which wouldn't have an identity source
       return SYSTEM_IDENTITY_SOURCE.DATABASE;
   }
-}
+};
 
 /**
  * Converts an identity source string to a matching one supported by the database.

@@ -123,7 +123,8 @@ export function createProjectParticipants(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const participants: { userGuid: string; userIdentifier: string; identitySource: string; roleId: number }[] = req.body.participants;
+      const participants: { userGuid: string; userIdentifier: string; identitySource: string; roleId: number }[] =
+        req.body.participants;
 
       await connection.open();
 
@@ -149,13 +150,17 @@ export function createProjectParticipants(): RequestHandler {
 
 export const ensureSystemUserAndProjectParticipantUser = async (
   projectId: number,
-  participant: { userGuid: string, userIdentifier: string; identitySource: string; roleId: number },
+  participant: { userGuid: string; userIdentifier: string; identitySource: string; roleId: number },
   connection: IDBConnection
 ) => {
   const userService = new UserService(connection);
 
   // Add a system user, unless they already have one
-  const systemUserObject = await userService.ensureSystemUser(participant.userGuid, participant.userIdentifier, participant.identitySource);
+  const systemUserObject = await userService.ensureSystemUser(
+    participant.userGuid,
+    participant.userIdentifier,
+    participant.identitySource
+  );
 
   const projectService = new ProjectService(connection);
 

@@ -101,10 +101,14 @@ const AddProjectParticipantsForm: React.FC<AddProjectParticipantsFormProps> = (p
                               <MenuItem key={SYSTEM_IDENTITY_SOURCE.IDIR} value={SYSTEM_IDENTITY_SOURCE.IDIR}>
                                 IDIR
                               </MenuItem>
-                              <MenuItem key={SYSTEM_IDENTITY_SOURCE.BCEID_BASIC} value={SYSTEM_IDENTITY_SOURCE.BCEID_BASIC}>
+                              <MenuItem
+                                key={SYSTEM_IDENTITY_SOURCE.BCEID_BASIC}
+                                value={SYSTEM_IDENTITY_SOURCE.BCEID_BASIC}>
                                 BCeID Basic
                               </MenuItem>
-                              <MenuItem key={SYSTEM_IDENTITY_SOURCE.BCEID_BUSINESS} value={SYSTEM_IDENTITY_SOURCE.BCEID_BUSINESS}>
+                              <MenuItem
+                                key={SYSTEM_IDENTITY_SOURCE.BCEID_BUSINESS}
+                                value={SYSTEM_IDENTITY_SOURCE.BCEID_BUSINESS}>
                                 BCeID Business
                               </MenuItem>
                             </Select>

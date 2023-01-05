@@ -29,11 +29,7 @@ export const PUT: Operation = [
 ];
 
 const UniqueUserIdentitySources = Array.from(
-  new Set([
-    SYSTEM_IDENTITY_SOURCE.IDIR,
-    SYSTEM_IDENTITY_SOURCE.BCEID_BASIC,
-    SYSTEM_IDENTITY_SOURCE.BCEID_BUSINESS
-  ])
+  new Set([SYSTEM_IDENTITY_SOURCE.IDIR, SYSTEM_IDENTITY_SOURCE.BCEID_BASIC, SYSTEM_IDENTITY_SOURCE.BCEID_BUSINESS])
 );
 
 // Contains both uppercase and lowercase versions of the identity sources
@@ -123,7 +119,7 @@ export function approveAccessRequest(): RequestHandler {
     const userIdentifier = req.body.userIdentifier;
 
     // Convert identity sources that have multiple variations (ie: BCEID) into a single value supported by this app
-    const identitySource = req.body.identitySource && coerceUserIdentitySource(req.body.identitySource)
+    const identitySource = req.body.identitySource && coerceUserIdentitySource(req.body.identitySource);
 
     if (!identitySource) {
       throw new HTTP400('Invalid user identity source', [

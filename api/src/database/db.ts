@@ -323,10 +323,7 @@ export const getDBConnection = function (keycloakToken: object): IDBConnection {
     }
 
     // Set the user context for all queries made using this connection
-    const setSystemUserContextSQLStatement = queries.database.setSystemUserContextSQL(
-      userGuid,
-      userIdentitySource
-    );
+    const setSystemUserContextSQLStatement = queries.database.setSystemUserContextSQL(userGuid, userIdentitySource);
 
     if (!setSystemUserContextSQLStatement) {
       throw new ApiExecuteSQLError('Failed to build SQL user context statement');
