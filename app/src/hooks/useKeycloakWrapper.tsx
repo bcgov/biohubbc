@@ -52,7 +52,7 @@ export interface IKeycloakWrapper {
    */
   keycloak: Keycloak | undefined;
   /**
-   * Returns `true` if the user's information has been loaded, false otherwise.
+   * Returns `true` if the user's information has finished being loaded, false otherwise.
    *
    * @type {boolean}
    * @memberof IKeycloakWrapper
@@ -130,9 +130,9 @@ function useKeycloakWrapper(): IKeycloakWrapper {
 
   const userDataLoader = useDataLoader(() => biohubApi.user.getUser());
 
-  // const hasPendingAdministrativeActivitiesDataLoader = useDataLoader(() =>
-  //   biohubApi.admin.hasPendingAdministrativeActivities()
-  // );
+  const hasPendingAdministrativeActivitiesDataLoader = useDataLoader(() =>
+    biohubApi.admin.hasPendingAdministrativeActivities()
+  );
 
   if (keycloak) {
     // keycloak is ready, load keycloak user info
@@ -146,8 +146,7 @@ function useKeycloakWrapper(): IKeycloakWrapper {
     if (userDataLoader.data && (!userDataLoader.data.role_names.length || userDataLoader.data?.user_record_end_date)) {
       // Authenticated user either has has no roles or has been deactivated
       // Check if the user has a pending access request
-      // TODO removed while access requests are broken
-      // hasPendingAdministrativeActivitiesDataLoader.load();
+      hasPendingAdministrativeActivitiesDataLoader.load();
     }
   }
 
@@ -250,16 +249,16 @@ function useKeycloakWrapper(): IKeycloakWrapper {
 
   const refresh = () => {
     userDataLoader.refresh();
-    // hasPendingAdministrativeActivitiesDataLoader.refresh();
+    hasPendingAdministrativeActivitiesDataLoader.refresh();
   };
 
   return {
     keycloak: keycloak,
-    hasLoadedAllUserInfo: !!userDataLoader.data, // !!(userDataLoader.data || hasPendingAdministrativeActivitiesDataLoader.data),
+    hasLoadedAllUserInfo: (userDataLoader.isReady || !!hasPendingAdministrativeActivitiesDataLoader.data),
     systemRoles: getSystemRoles(),
     hasSystemRole,
     isSystemUser,
-    hasAccessRequest: false, // !!hasPendingAdministrativeActivitiesDataLoader.data,
+    hasAccessRequest: !!hasPendingAdministrativeActivitiesDataLoader.data,
     getUserIdentifier,
     getIdentitySource,
     username: username(),
