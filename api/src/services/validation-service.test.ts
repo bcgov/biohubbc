@@ -1170,12 +1170,10 @@ describe('ValidationService', () => {
 
       const s3 = sinon.stub(FileUtils, 'uploadBufferToS3').resolves();
       const occurrence = sinon.stub(OccurrenceService.prototype, 'updateSurveyOccurrenceSubmission').resolves();
-      const submission = sinon.stub(service.submissionRepository, 'insertSubmissionStatus').resolves(1);
 
       await service.persistTransformationResults(1, [], 'outputKey', xlsx);
       expect(s3).to.be.calledOnce;
       expect(occurrence).to.be.calledOnce;
-      expect(submission).to.be.calledOnce;
     });
 
     it('should throw Failed to upload file to S3 error', async () => {
@@ -1186,7 +1184,6 @@ describe('ValidationService', () => {
         .stub(FileUtils, 'uploadBufferToS3')
         .throws(SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_UPLOAD_FILE_TO_S3));
       const occurrence = sinon.stub(OccurrenceService.prototype, 'updateSurveyOccurrenceSubmission').resolves();
-      const submission = sinon.stub(service.submissionRepository, 'insertSubmissionStatus').resolves(1);
 
       try {
         await service.persistTransformationResults(1, [], 'outputKey', xlsx);
@@ -1198,7 +1195,6 @@ describe('ValidationService', () => {
         );
       }
       expect(occurrence).to.not.be.called;
-      expect(submission).to.not.be.called;
     });
 
     it('should throw Failed to update occurrence submission error', async () => {
@@ -1209,36 +1205,11 @@ describe('ValidationService', () => {
       const occurrence = sinon
         .stub(OccurrenceService.prototype, 'updateSurveyOccurrenceSubmission')
         .throws(SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_UPDATE_OCCURRENCE_SUBMISSION));
-      const submission = sinon.stub(service.submissionRepository, 'insertSubmissionStatus').resolves(1);
 
       try {
         await service.persistTransformationResults(1, [], 'outputKey', xlsx);
         expect(s3).to.be.calledOnce;
         expect(occurrence).to.be.calledOnce;
-        expect.fail();
-      } catch (error) {
-        expect((error as SubmissionError).submissionMessages[0].type).to.be.eql(
-          SUBMISSION_MESSAGE_TYPE.FAILED_UPDATE_OCCURRENCE_SUBMISSION
-        );
-      }
-      expect(submission).to.not.be.called;
-    });
-
-    it('should throw Failed to update occurrence submission error', async () => {
-      const service = mockService();
-      const xlsx = new XLSXCSV(buildFile('', { template_id: 1, csm_id: 1 }));
-
-      const s3 = sinon.stub(FileUtils, 'uploadBufferToS3').resolves();
-      const occurrence = sinon.stub(OccurrenceService.prototype, 'updateSurveyOccurrenceSubmission').resolves();
-      const submission = sinon
-        .stub(service.submissionRepository, 'insertSubmissionStatus')
-        .throws(SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_UPDATE_OCCURRENCE_SUBMISSION));
-
-      try {
-        await service.persistTransformationResults(1, [], 'outputKey', xlsx);
-        expect(s3).to.be.calledOnce;
-        expect(occurrence).to.be.calledOnce;
-        expect(submission).to.be.calledOnce;
         expect.fail();
       } catch (error) {
         expect((error as SubmissionError).submissionMessages[0].type).to.be.eql(

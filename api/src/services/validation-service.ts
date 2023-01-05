@@ -52,7 +52,7 @@ export class ValidationService extends DBService {
       const submissionPrep = await this.templatePreparation(submissionId);
       await this.templateTransformation(submissionId, submissionPrep.xlsx, submissionPrep.s3InputKey, surveyId);
 
-      // insert template validated status
+      // insert template transformed status
       await this.submissionRepository.insertSubmissionStatus(submissionId, SUBMISSION_STATUS_TYPE.TEMPLATE_TRANSFORMED);
     } catch (error) {
       if (error instanceof SubmissionError) {
@@ -431,7 +431,7 @@ export class ValidationService extends DBService {
     fileBuffers.forEach((file) => dwcArchiveZip.addFile(`${file.name}.csv`, file.buffer));
 
     // Remove the filename from original s3Key
-    // project/1/survey/1/submission/file_name.txt -> project/1/survey/1/submission
+    // Example: project/1/survey/1/submission/file_name.txt -> project/1/survey/1/submission
     const outputS3KeyPrefix = s3OutputKey.split('/').slice(0, -1).join('/');
 
     const outputFileName = `${xlsxCsv.rawFile.name}.zip`;
@@ -442,9 +442,6 @@ export class ValidationService extends DBService {
 
     // update occurrence submission
     await this.occurrenceService.updateSurveyOccurrenceSubmission(submissionId, outputFileName, outputS3Key);
-
-    // insert template validated status
-    await this.submissionRepository.insertSubmissionStatus(submissionId, SUBMISSION_STATUS_TYPE.TEMPLATE_TRANSFORMED);
   }
 
   prepDWCArchive(s3File: any): DWCArchive {

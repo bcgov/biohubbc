@@ -230,12 +230,12 @@ export class SummaryService extends DBService {
     defaultLog.debug({ label: 'prepXLSX', message: 's3File' });
     const parsedMedia = parseUnknownMedia(file);
 
-    // @TODO not sure how to trigger these through testing
+    // TODO not sure how to trigger these through testing
     if (!parsedMedia) {
       throw SummarySubmissionErrorFromMessageType(SUMMARY_SUBMISSION_MESSAGE_TYPE.UNSUPPORTED_FILE_TYPE);
     }
 
-    // @TODO not sure how to trigger these through testing
+    // TODO not sure how to trigger these through testing
     if (!(parsedMedia instanceof MediaFile)) {
       throw SummarySubmissionErrorFromMessageType(SUMMARY_SUBMISSION_MESSAGE_TYPE.INVALID_XLSX_CSV);
     }
