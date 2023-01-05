@@ -32,7 +32,7 @@ export class OccurrenceService extends DBService {
     const occurrenceRows = dwcArchive.worksheets.occurrence?.getRows();
 
     const occurrenceIdHeader = occurrenceHeaders?.indexOf('id') as number;
-    const associatedTaxaHeader = occurrenceHeaders?.indexOf('taxonID') as number;
+    const associatedTaxaHeader = occurrenceHeaders?.indexOf('associatedTaxa') as number;
     const lifeStageHeader = occurrenceHeaders?.indexOf('lifeStage') as number;
     const sexHeader = occurrenceHeaders?.indexOf('sex') as number;
     const individualCountHeader = occurrenceHeaders?.indexOf('individualCount') as number;
@@ -41,7 +41,7 @@ export class OccurrenceService extends DBService {
 
     const taxonHeaders = dwcArchive.worksheets.taxon?.getHeaders();
     const taxonRows = dwcArchive.worksheets.taxon?.getRows();
-    const taxonIdHeader = taxonHeaders?.indexOf('taxonID') as number;
+    const taxonIdHeader = taxonHeaders?.indexOf('id') as number;
     const vernacularNameHeader = taxonHeaders?.indexOf('vernacularName') as number;
 
     return {
@@ -131,7 +131,7 @@ export class OccurrenceService extends DBService {
           verbatimCoordinates: verbatimCoordinates,
           organismQuantity: organismQuantity,
           organismQuantityType: organismQuantityType,
-          eventDate: new Date() || eventDate
+          eventDate: eventDate
         });
       }) || []
     );
