@@ -58,7 +58,8 @@ export const surveyObject: SurveyViewObject = {
         funding_amount: 100,
         funding_start_date: '2000-04-09 11:53:53',
         funding_end_date: '2000-05-10 11:53:53',
-        agency_name: 'Funding Agency Blah'
+        agency_name: 'agency name',
+        funding_source_project_id: 'ABC123'
       }
     ]
   },
@@ -76,7 +77,8 @@ export const surveyObject: SurveyViewObject = {
     focal_species_names: ['focal species 1'],
     ancillary_species: [2],
     ancillary_species_names: ['ancillary species 2']
-  }
+  },
+  docs_to_be_reviewed: 0
 };
 
 export const surveySupplementaryData: SurveySupplementaryData = {

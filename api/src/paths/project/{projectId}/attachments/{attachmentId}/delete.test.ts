@@ -1,16 +1,14 @@
-import { DeleteObjectOutput } from 'aws-sdk/clients/s3';
+import { S3 } from 'aws-sdk';
 import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import SQL from 'sql-template-strings';
 import * as db from '../../../../../database/db';
 import { HTTPError } from '../../../../../errors/http-error';
-import project_queries from '../../../../../queries/project';
-import security_queries from '../../../../../queries/security';
+import { AttachmentService } from '../../../../../services/attachment-service';
 import * as file_utils from '../../../../../utils/file-utils';
 import { getMockDBConnection } from '../../../../../__mocks__/db';
-import * as delete_attachment from './delete';
+import * as deleteAttachment from './delete';
 
 chai.use(sinonChai);
 
@@ -19,90 +17,8 @@ describe('deleteAttachment', () => {
     sinon.restore();
   });
 
-  const dbConnectionObj = getMockDBConnection();
-
-  const sampleReq = {
-    keycloak_token: {},
-    params: {
-      projectId: 1,
-      attachmentId: 2
-    },
-    body: {
-      attachmentType: 'Image',
-      securityToken: 'token'
-    }
-  } as any;
-
-  let actualResult: any = null;
-
-  const sampleRes = {
-    status: () => {
-      return {
-        json: (result: any) => {
-          actualResult = result;
-        },
-        send: () => {
-          // do nothing
-        }
-      };
-    }
-  };
-
-  it('should throw an error when projectId is missing', async () => {
-    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
-
-    try {
-      const result = delete_attachment.deleteAttachment();
-
-      await result(
-        { ...sampleReq, params: { ...sampleReq.params, projectId: null } },
-        (null as unknown) as any,
-        (null as unknown) as any
-      );
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal('Missing required path param `projectId`');
-    }
-  });
-
-  it('should throw an error when attachmentId is missing', async () => {
-    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
-
-    try {
-      const result = delete_attachment.deleteAttachment();
-
-      await result(
-        { ...sampleReq, params: { ...sampleReq.params, attachmentId: null } },
-        (null as unknown) as any,
-        (null as unknown) as any
-      );
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal('Missing required path param `attachmentId`');
-    }
-  });
-
-  it('should throw an error when attachmentType is missing', async () => {
-    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
-
-    try {
-      const result = delete_attachment.deleteAttachment();
-
-      await result(
-        { ...sampleReq, body: { ...sampleReq.body, attachmentType: null } },
-        (null as unknown) as any,
-        (null as unknown) as any
-      );
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal('Missing required body param `attachmentType`');
-    }
-  });
-
-  it('should throw a 400 error when no sql statement returned for unsecureAttachmentRecordSQL', async () => {
+  it('should throw an error when a failure occurs', async () => {
+    const dbConnectionObj = getMockDBConnection();
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
       systemUserId: () => {
@@ -110,159 +26,121 @@ describe('deleteAttachment', () => {
       }
     });
 
-    sinon.stub(security_queries, 'unsecureAttachmentRecordSQL').returns(null);
+    const expectedError = new Error('cannot process request');
+    const deleteProjectReportAttachmentAuthorsStub = sinon
+      .stub(AttachmentService.prototype, 'deleteProjectReportAttachmentAuthors')
+      .rejects(expectedError);
+
+    const sampleReq = {
+      keycloak_token: {},
+      body: { attachmentType: 'Report' },
+      params: {
+        projectId: 1,
+        attachmentId: 2
+      }
+    } as any;
 
     try {
-      const result = delete_attachment.deleteAttachment();
+      const result = deleteAttachment.deleteAttachment();
 
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal('Failed to build SQL unsecure record statement');
+      expect(deleteProjectReportAttachmentAuthorsStub).to.be.calledOnce;
+      expect((actualError as HTTPError).message).to.equal(expectedError.message);
     }
   });
 
-  it('should throw a 400 error when fails to unsecure attachment record', async () => {
-    const mockQuery = sinon.stub();
-
-    mockQuery.onFirstCall().resolves({ rowCount: null });
-
+  it('should delete Project `Report` Attachment', async () => {
+    const dbConnectionObj = getMockDBConnection();
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
       systemUserId: () => {
         return 20;
-      },
-      query: mockQuery
+      }
     });
 
-    sinon.stub(security_queries, 'unsecureAttachmentRecordSQL').returns(SQL`something`);
+    const sampleReq = {
+      keycloak_token: {},
+      body: { attachmentType: 'Report' },
+      params: {
+        projectId: 1,
+        attachmentId: 2
+      }
+    } as any;
 
-    try {
-      const result = delete_attachment.deleteAttachment();
+    const deleteProjectReportAttachmentAuthorsStub = sinon
+      .stub(AttachmentService.prototype, 'deleteProjectReportAttachmentAuthors')
+      .resolves();
 
-      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal('Failed to unsecure record');
-    }
+    const deleteProjectReportAttachmentStub = sinon
+      .stub(AttachmentService.prototype, 'deleteProjectReportAttachment')
+      .resolves({ key: 'string' });
+
+    const fileUtilsStub = sinon
+      .stub(file_utils, 'deleteFileFromS3')
+      .resolves((true as unknown) as S3.DeleteObjectOutput);
+
+    let actualResult: any = null;
+    const sampleRes = {
+      status: () => {
+        return {
+          send: (response: any) => {
+            actualResult = response;
+          }
+        };
+      }
+    };
+
+    const result = deleteAttachment.deleteAttachment();
+
+    await result(sampleReq, (sampleRes as unknown) as any, (null as unknown) as any);
+    expect(actualResult).to.eql(undefined);
+    expect(deleteProjectReportAttachmentAuthorsStub).to.be.calledOnce;
+    expect(deleteProjectReportAttachmentStub).to.be.calledOnce;
+    expect(fileUtilsStub).to.be.calledOnce;
   });
 
-  it('should throw a 400 error when no sql statement returned for deleteProjectAttachmentSQL', async () => {
-    const mockQuery = sinon.stub();
-
-    mockQuery.onFirstCall().resolves({ rowCount: 1 });
-
+  it('should delete Project Attachment', async () => {
+    const dbConnectionObj = getMockDBConnection();
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
       systemUserId: () => {
         return 20;
-      },
-      query: mockQuery
+      }
     });
 
-    sinon.stub(security_queries, 'unsecureAttachmentRecordSQL').returns(SQL`something`);
-    sinon.stub(project_queries, 'deleteProjectAttachmentSQL').returns(null);
+    const sampleReq = {
+      keycloak_token: {},
+      body: { attachmentType: 'Attachment' },
+      params: {
+        projectId: 1,
+        attachmentId: 2
+      }
+    } as any;
 
-    try {
-      const result = delete_attachment.deleteAttachment();
+    const deleteProjectAttachmentStub = sinon
+      .stub(AttachmentService.prototype, 'deleteProjectAttachment')
+      .resolves({ key: 'string' });
 
-      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal('Failed to build SQL delete project attachment statement');
-    }
-  });
+    const fileUtilsStub = sinon.stub(file_utils, 'deleteFileFromS3').resolves();
 
-  it('should return null when deleting file from S3 fails', async () => {
-    const mockQuery = sinon.stub();
+    let actualResult: any = null;
+    const sampleRes = {
+      status: () => {
+        return {
+          json: (response: any) => {
+            actualResult = response;
+          }
+        };
+      }
+    };
 
-    mockQuery
-      .onFirstCall()
-      .resolves({ rowCount: 1 })
-      .onSecondCall()
-      .resolves({ rowCount: 1, rows: [{ key: 's3Key' }] });
+    const result = deleteAttachment.deleteAttachment();
 
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      },
-      query: mockQuery
-    });
-
-    sinon.stub(security_queries, 'unsecureAttachmentRecordSQL').returns(SQL`something`);
-    sinon.stub(project_queries, 'deleteProjectAttachmentSQL').returns(SQL`some query`);
-    sinon.stub(file_utils, 'deleteFileFromS3').resolves(null);
-
-    const result = delete_attachment.deleteAttachment();
-
-    await result(sampleReq, sampleRes as any, (null as unknown) as any);
-
-    expect(actualResult).to.equal(null);
-  });
-
-  it('should return null response on success when type is not Report', async () => {
-    const mockQuery = sinon.stub();
-
-    mockQuery
-      .onFirstCall()
-      .resolves({ rowCount: 1 })
-      .onSecondCall()
-      .resolves({ rows: [{ key: 's3Key' }], rowCount: 1 });
-
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      },
-      query: mockQuery
-    });
-
-    sinon.stub(security_queries, 'unsecureAttachmentRecordSQL').returns(SQL`something`);
-    sinon.stub(project_queries, 'deleteProjectAttachmentSQL').returns(SQL`some query`);
-    sinon.stub(file_utils, 'deleteFileFromS3').resolves('non null response' as DeleteObjectOutput);
-
-    const result = delete_attachment.deleteAttachment();
-
-    await result(sampleReq, sampleRes as any, (null as unknown) as any);
-
-    expect(actualResult).to.equal(null);
-  });
-
-  it('should return null response on success when type is Report', async () => {
-    const mockQuery = sinon.stub();
-
-    mockQuery
-      .onFirstCall()
-      .resolves({ rowCount: 1 })
-      .onSecondCall()
-      .resolves({ rowCount: 1 })
-      .onThirdCall()
-      .resolves({ rows: [{ key: 's3Key' }], rowCount: 1 });
-
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      },
-      query: mockQuery
-    });
-
-    sinon.stub(security_queries, 'unsecureAttachmentRecordSQL').returns(SQL`something`);
-    sinon.stub(project_queries, 'deleteProjectReportAttachmentSQL').returns(SQL`some query`);
-    sinon.stub(file_utils, 'deleteFileFromS3').resolves('non null response' as DeleteObjectOutput);
-
-    const result = delete_attachment.deleteAttachment();
-
-    await result(
-      { ...sampleReq, body: { ...sampleReq.body, attachmentType: 'Report' } },
-      sampleRes as any,
-      (null as unknown) as any
-    );
-
-    expect(actualResult).to.equal(null);
+    await result(sampleReq, (sampleRes as unknown) as any, (null as unknown) as any);
+    expect(actualResult).to.eql(null);
+    expect(deleteProjectAttachmentStub).to.be.calledOnce;
+    expect(fileUtilsStub).to.be.calledOnce;
   });
 });

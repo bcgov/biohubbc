@@ -70,7 +70,7 @@ describe('ProjectFundingForm', () => {
   it('renders correctly with existing funding values', async () => {
     const existingFormValues: IProjectFundingForm = {
       funding: {
-        funding_sources: [
+        fundingSources: [
           {
             id: 11,
             agency_id: 1,
@@ -106,7 +106,7 @@ describe('ProjectFundingForm', () => {
   it('shows add funding source dialog on add click', async () => {
     const existingFormValues: IProjectFundingForm = {
       funding: {
-        funding_sources: [
+        fundingSources: [
           {
             id: 11,
             agency_id: 1,
@@ -159,7 +159,7 @@ describe('ProjectFundingForm', () => {
     await act(async () => {
       const existingFormValues: IProjectFundingForm = {
         funding: {
-          funding_sources: [
+          fundingSources: [
             {
               id: 11,
               agency_id: 1,
@@ -209,7 +209,7 @@ describe('ProjectFundingForm', () => {
     await act(async () => {
       const existingFormValues: IProjectFundingForm = {
         funding: {
-          funding_sources: [
+          fundingSources: [
             {
               id: 11,
               agency_id: 1,

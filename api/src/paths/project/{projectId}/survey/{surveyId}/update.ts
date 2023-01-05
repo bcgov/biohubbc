@@ -82,7 +82,8 @@ PUT.apiDoc = {
                 },
                 end_date: {
                   type: 'string',
-                  description: 'ISO 8601 date string'
+                  description: 'ISO 8601 date string',
+                  nullable: true
                 },
                 biologist_first_name: {
                   type: 'string'
@@ -159,7 +160,6 @@ PUT.apiDoc = {
                 'proprietary_data_category',
                 'proprietor_name',
                 'category_rationale',
-                'first_nations_id',
                 'disa_required'
               ],
               properties: {
@@ -174,9 +174,6 @@ PUT.apiDoc = {
                 },
                 category_rationale: {
                   type: 'string'
-                },
-                first_nations_id: {
-                  type: 'number'
                 },
                 disa_required: {
                   type: 'string'
@@ -224,7 +221,7 @@ PUT.apiDoc = {
             },
             location: {
               type: 'object',
-              required: ['survey_area_name', 'geometry', 'revision_count'],
+              required: ['survey_area_name', 'geometry'],
               properties: {
                 survey_area_name: {
                   type: 'string'

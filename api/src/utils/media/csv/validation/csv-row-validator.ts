@@ -352,3 +352,58 @@ export const getValidFormatFieldsValidator = (config?: ColumnFormatValidatorConf
     return csvWorksheet;
   };
 };
+
+export type FileColumnUniqueValidatorConfig = {
+  file_column_unique_validator: {
+    column_names: string[];
+  };
+};
+
+export const getUniqueColumnsValidator = (config?: FileColumnUniqueValidatorConfig): CSVValidator => {
+  return (csvWorksheet) => {
+    if (!config) {
+      return csvWorksheet;
+    }
+
+    if (config.file_column_unique_validator.column_names.length < 1) {
+      return csvWorksheet;
+    }
+
+    const keySet = new Set();
+    const rows = csvWorksheet.getRowObjects();
+    const lowercaseHeaders = csvWorksheet.getHeadersLowerCase();
+
+    // find the indices of all provided column names in the worksheet
+    const columnIndices = config.file_column_unique_validator.column_names.map((column) =>
+      lowercaseHeaders.indexOf(column.toLocaleLowerCase())
+    );
+
+    // checks list of column indices if any are missing (-1) and returns early
+    if (columnIndices.includes(-1)) {
+      return csvWorksheet;
+    }
+
+    rows.forEach((row, rowIndex) => {
+      const key = config.file_column_unique_validator.column_names
+        .map((columnIndex) => `${row[columnIndex] || ''}`.trim().toLocaleLowerCase())
+        .join(', ');
+      // check if key exists already
+      if (!keySet.has(key)) {
+        keySet.add(key);
+      } else {
+        // duplicate key found
+        csvWorksheet.csvValidation.addRowErrors([
+          {
+            errorCode: SUBMISSION_MESSAGE_TYPE.NON_UNIQUE_KEY,
+            message: `Duplicate key(s): ${key} found in column(s): ${config.file_column_unique_validator.column_names.join(
+              ', '
+            )}. Keys must be unique for proper template transformation`,
+            col: key,
+            row: rowIndex + 2
+          }
+        ]);
+      }
+    });
+    return csvWorksheet;
+  };
+};

@@ -19,7 +19,8 @@
     "lint": "eslint src/ --ext .js,.ts",
     "lint:fix": "npm run lint -- --fix",
     "format": "prettier --check \"./src/**/*.{js,jsx,ts,tsx,css,scss}\"",
-    "format:fix": "prettier --write \"./src/**/*.{js,jsx,ts,tsx,json,css,scss}\""
+    "format:fix": "prettier --write \"./src/**/*.{js,jsx,ts,tsx,json,css,scss}\"",
+    "template-to-file": "ts-node ./src/template_validation/template_to_file.ts"
   },
   "dependencies": {
     "@types/csv-parse": "^1.2.2",

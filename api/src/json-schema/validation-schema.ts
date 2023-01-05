@@ -29,6 +29,14 @@ export const submissionValidationSchema = {
       items: {
         $ref: '#/$defs/submission_validation'
       }
+    },
+    workbookValidations: {
+      description:
+        'An array of validations to apply across multiple worksheets within the given workbook submission file',
+      type: 'array',
+      items: {
+        $ref: '#/$defs/workbook_validation'
+      }
     }
   },
   $defs: {
@@ -63,7 +71,7 @@ export const submissionValidationSchema = {
       additionalProperties: false
     },
     column: {
-      description: 'An single column within a file/sheet',
+      description: 'A single column within a file/sheet',
       type: 'object',
       required: ['name'],
       properties: {
@@ -97,6 +105,15 @@ export const submissionValidationSchema = {
         }
       ]
     },
+    workbook_validation: {
+      title: 'Workbook Validation',
+      description: 'The validators that can be applied against a workbook submission file.',
+      anyOf: [
+        {
+          $ref: '#/$defs/workbook_parent_child_key_match_validator'
+        }
+      ]
+    },
     file_validation: {
       title: 'File/Sheet Validation',
       description: 'The validators that can be applied against a file/sheet within a submission file.',
@@ -112,6 +129,9 @@ export const submissionValidationSchema = {
         },
         {
           $ref: '#/$defs/file_valid_columns_validator'
+        },
+        {
+          $ref: '#/$defs/file_column_unique_validator'
         }
       ]
     },
@@ -127,12 +147,6 @@ export const submissionValidationSchema = {
         },
         {
           $ref: '#/$defs/column_range_validator'
-        },
-        {
-          $ref: '#/$defs/column_unique_validator'
-        },
-        {
-          $ref: '#/$defs/column_key_validator'
         },
         {
           $ref: '#/$defs/column_numeric_validator'
@@ -154,6 +168,36 @@ export const submissionValidationSchema = {
               type: 'string'
             },
             required_files: {
+              type: 'array',
+              items: {
+                type: 'string'
+              }
+            }
+          },
+          additionalProperties: false
+        }
+      },
+      additionalProperties: false
+    },
+    workbook_parent_child_key_match_validator: {
+      description:
+        'Validates that this workbook submission file does not contain keys belonging to a child sheet that are missing in its parent sheet',
+      type: 'object',
+      properties: {
+        workbook_parent_child_key_match_validator: {
+          type: 'object',
+          required: ['child_worksheet_name', 'parent_worksheet_name', 'column_names'],
+          properties: {
+            description: {
+              type: 'string'
+            },
+            child_worksheet_name: {
+              type: 'string'
+            },
+            parent_worksheet_name: {
+              type: 'string'
+            },
+            column_names: {
               type: 'array',
               items: {
                 type: 'string'
@@ -316,7 +360,6 @@ export const submissionValidationSchema = {
       },
       additionalProperties: false
     },
-
     column_numeric_validator: {
       description: 'Validates that this column is a number',
       type: 'object',
@@ -386,54 +429,21 @@ export const submissionValidationSchema = {
       },
       additionalProperties: false
     },
-    column_unique_validator: {
-      description: 'Validates that this column value is unique within this column',
+    file_column_unique_validator: {
+      description: 'Validates that the column(s) are unique',
       type: 'object',
       properties: {
-        column_unique_validator: {
+        file_column_unique_validator: {
           type: 'object',
           properties: {
-            name: {
-              type: 'string'
-            },
-            description: {
-              type: 'string'
-            },
-            is_unique: {
-              type: 'boolean'
-            }
-          },
-          additionalProperties: false
-        }
-      },
-      additionalProperties: false
-    },
-    column_key_validator: {
-      description: 'Validates that this column value has a matching counterpart in the target `file` and `column`',
-      type: 'object',
-      properties: {
-        column_key_validator: {
-          type: 'object',
-          properties: {
-            name: {
-              type: 'string'
-            },
-            description: {
-              type: 'string'
-            },
-            parent_key: {
-              type: 'object',
-              properties: {
-                file: {
-                  type: 'string'
-                },
-                column: {
-                  type: 'string'
-                }
+            column_names: {
+              type: 'array',
+              items: {
+                type: 'string'
               }
-            }
-          },
-          additionalProperties: false
+            },
+            additionalProperties: false
+          }
         }
       },
       additionalProperties: false

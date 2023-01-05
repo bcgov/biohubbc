@@ -2,15 +2,13 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { ATTACHMENT_TYPE } from '../../../../../../../../constants/attachments';
 import { PROJECT_ROLE } from '../../../../../../../../constants/roles';
-import { getDBConnection, IDBConnection } from '../../../../../../../../database/db';
-import { HTTP400 } from '../../../../../../../../errors/http-error';
+import { getDBConnection } from '../../../../../../../../database/db';
 import { PutReportAttachmentMetadata } from '../../../../../../../../models/project-survey-attachments';
-import { queries } from '../../../../../../../../queries/queries';
 import { authorizeRequestHandler } from '../../../../../../../../request-handlers/security/authorization';
+import { AttachmentService } from '../../../../../../../../services/attachment-service';
 import { getLogger } from '../../../../../../../../utils/logger';
-import { deleteSurveyReportAttachmentAuthors, insertSurveyReportAttachmentAuthor } from '../../report/upload';
 
-const defaultLog = getLogger('/api/project/{projectId}/attachments/{attachmentId}/metadata/update');
+const defaultLog = getLogger('`/api/project/{projectId}/survey/{surveyId}/attachments/${attachmentId}/metadata/update');
 
 export const PUT: Operation = [
   authorizeRequestHandler((req) => {
@@ -40,7 +38,8 @@ PUT.apiDoc = {
       in: 'path',
       name: 'projectId',
       schema: {
-        type: 'number'
+        type: 'integer',
+        minimum: 1
       },
       required: true
     },
@@ -48,7 +47,8 @@ PUT.apiDoc = {
       in: 'path',
       name: 'surveyId',
       schema: {
-        type: 'number'
+        type: 'integer',
+        minimum: 1
       },
       required: true
     },
@@ -56,7 +56,8 @@ PUT.apiDoc = {
       in: 'path',
       name: 'attachmentId',
       schema: {
-        type: 'number'
+        type: 'integer',
+        minimum: 1
       },
       required: true
     }
@@ -141,22 +142,6 @@ export function updateSurveyReportMetadata(): RequestHandler {
       req_body: req.body
     });
 
-    if (!req.params.projectId) {
-      throw new HTTP400('Missing required path param `projectId`');
-    }
-
-    if (!req.params.surveyId) {
-      throw new HTTP400('Missing required path param `surveyId`');
-    }
-
-    if (!req.params.attachmentId) {
-      throw new HTTP400('Missing required path param `attachmentId`');
-    }
-
-    if (!Object.values(ATTACHMENT_TYPE).includes(req.body?.attachment_type)) {
-      throw new HTTP400('Invalid body param `attachment_type`');
-    }
-
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
@@ -168,23 +153,24 @@ export function updateSurveyReportMetadata(): RequestHandler {
           revision_count: req.body.revision_count
         });
 
+        const attachmentService = new AttachmentService(connection);
+
         // Update the metadata fields of the attachment record
-        await updateSurveyReportAttachmentMetadata(
+        await attachmentService.updateSurveyReportAttachmentMetadata(
           Number(req.params.surveyId),
           Number(req.params.attachmentId),
-          metadata,
-          connection
+          metadata
         );
 
         // Delete any existing attachment author records
-        await deleteSurveyReportAttachmentAuthors(Number(req.params.attachmentId), connection);
+        await attachmentService.deleteSurveyReportAttachmentAuthors(Number(req.params.attachmentId));
 
         const promises = [];
 
         // Insert any new attachment author records
         promises.push(
           metadata.authors.map((author) =>
-            insertSurveyReportAttachmentAuthor(Number(req.params.attachmentId), author, connection)
+            attachmentService.insertSurveyReportAttachmentAuthor(Number(req.params.attachmentId), author)
           )
         );
 
@@ -203,22 +189,3 @@ export function updateSurveyReportMetadata(): RequestHandler {
     }
   };
 }
-
-const updateSurveyReportAttachmentMetadata = async (
-  surveyId: number,
-  attachmentId: number,
-  metadata: PutReportAttachmentMetadata,
-  connection: IDBConnection
-): Promise<void> => {
-  const sqlStatement = queries.survey.updateSurveyReportAttachmentMetadataSQL(surveyId, attachmentId, metadata);
-
-  if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL update attachment report statement');
-  }
-
-  const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
-  if (!response || !response.rowCount) {
-    throw new HTTP400('Failed to update attachment report record');
-  }
-};

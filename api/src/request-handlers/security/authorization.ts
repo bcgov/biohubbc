@@ -1,9 +1,9 @@
 import { Request, RequestHandler } from 'express';
+import SQL from 'sql-template-strings';
 import { PROJECT_ROLE, SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../database/db';
 import { HTTP403, HTTP500 } from '../../errors/http-error';
 import { ProjectUserObject, UserObject } from '../../models/user';
-import { queries } from '../../queries/queries';
 import { UserService } from '../../services/user-service';
 import { getLogger } from '../../utils/logger';
 
@@ -148,13 +148,13 @@ export const executeAuthorizeConfig = async (
   for (const authorizeRule of authorizeRules) {
     switch (authorizeRule.discriminator) {
       case 'SystemRole':
-        authorizeResults.push(await authorizeBySystemRole(req, authorizeRule, connection));
+        authorizeResults.push(await authorizeBySystemRole(req, authorizeRule, connection).catch(() => false));
         break;
       case 'ProjectRole':
-        authorizeResults.push(await authorizeByProjectRole(req, authorizeRule, connection));
+        authorizeResults.push(await authorizeByProjectRole(req, authorizeRule, connection).catch(() => false));
         break;
       case 'SystemUser':
-        authorizeResults.push(await authorizeBySystemUser(req, connection));
+        authorizeResults.push(await authorizeBySystemUser(req, connection).catch(() => false));
         break;
     }
   }
@@ -377,7 +377,34 @@ export const getProjectUserWithRoles = async function (projectId: number, connec
     return null;
   }
 
-  const sqlStatement = queries.projectParticipation.getProjectParticipationBySystemUserSQL(projectId, systemUserId);
+  const sqlStatement = SQL`
+    SELECT
+      pp.project_id,
+      pp.system_user_id,
+      su.record_end_date,
+      array_remove(array_agg(pr.project_role_id), NULL) AS project_role_ids,
+      array_remove(array_agg(pr.name), NULL) AS project_role_names
+    FROM
+      project_participation pp
+    LEFT JOIN
+      project_role pr
+    ON
+      pp.project_role_id = pr.project_role_id
+    LEFT JOIN
+      system_user su
+    ON
+      pp.system_user_id = su.system_user_id
+    WHERE
+      pp.project_id = ${projectId}
+    AND
+      pp.system_user_id = ${systemUserId}
+    AND
+      su.record_end_date is NULL
+    GROUP BY
+      pp.project_id,
+      pp.system_user_id,
+      su.record_end_date ;
+    `;
 
   if (!sqlStatement) {
     return null;

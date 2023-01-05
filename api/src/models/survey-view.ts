@@ -96,7 +96,7 @@ export class GetSurveyPurposeAndMethodologyData {
 
   constructor(obj?: any) {
     this.intended_outcome_id = obj?.intended_outcome_id || null;
-    this.additional_details = obj?.additional_details || null;
+    this.additional_details = obj?.additional_details || '';
     this.field_method_id = obj?.field_method_id || null;
     this.ecological_season_id = obj?.ecological_season_id || null;
     this.vantage_code_ids = (obj?.vantage_ids?.length && obj.vantage_ids) || [];
@@ -182,7 +182,6 @@ interface IGetAttachmentsSource {
   description: string;
   key: string;
   file_size: string;
-  is_secure: string;
 }
 
 /**
@@ -204,8 +203,7 @@ export class GetAttachmentsData {
             title: item.title,
             description: item.description,
             key: item.key,
-            file_size: item.file_size,
-            is_secure: item.security_token ? 'true' : 'false'
+            file_size: item.file_size
           };
         })) ||
       [];
@@ -219,7 +217,6 @@ interface IGetReportAttachmentsSource {
   description: string;
   key: string;
   file_size: string;
-  is_secure: string;
   authors?: { author: string }[];
 }
 
@@ -242,8 +239,7 @@ export class GetReportAttachmentsData {
             year: item.year,
             description: item.description,
             key: item.key,
-            file_size: item.file_size,
-            is_secure: item.security_token ? 'true' : 'false'
+            file_size: item.file_size
           };
 
           if (item.authors?.length) {

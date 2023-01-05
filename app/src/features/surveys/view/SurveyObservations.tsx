@@ -13,16 +13,15 @@ import {
   mdiClockOutline,
   mdiDownload,
   mdiFileOutline,
-  mdiImport,
   mdiInformationOutline,
+  mdiPlus,
   mdiTrashCanOutline
 } from '@mdi/js';
 import Icon from '@mdi/react';
-import FileUpload from 'components/attachments/FileUpload';
-import { IUploadHandler } from 'components/attachments/FileUploadItem';
 import ComponentDialog from 'components/dialog/ComponentDialog';
+import FileUpload from 'components/file-upload/FileUpload';
+import { IUploadHandler } from 'components/file-upload/FileUploadItem';
 import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
-// import { ConfigContext } from 'contexts/configContext';
 import { DialogContext } from 'contexts/dialogContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useInterval } from 'hooks/useInterval';
@@ -35,9 +34,6 @@ interface ISurveyObservationsProps {
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
-  browseLink: {
-    cursor: 'pointer'
-  },
   alertLink: {
     color: 'inherit'
   },
@@ -110,7 +106,7 @@ export enum SUBMISSION_MESSAGE_TYPE {
   'FAILED_PREP_DWC_ARCHIVE' = 'Failed to prep DarwinCore Archive',
   'FAILED_PREP_XLSX' = 'Failed to prep XLSX',
   'FAILED_PERSIST_PARSE_ERRORS' = 'Failed to persist parse errors',
-  'FAILED_GET_VALIDATION_RULES' = 'Failed to get validation rules',
+  'FAILED_GET_VALIDATION_RULES' = 'Failed to get validation rules.',
   'FAILED_GET_TRANSFORMATION_RULES' = 'Failed to get transformation rules',
   'FAILED_PERSIST_TRANSFORMATION_RESULTS' = 'Failed to persist transformation results',
   'FAILED_TRANSFORM_XLSX' = 'Failed to transform XLSX',
@@ -119,7 +115,9 @@ export enum SUBMISSION_MESSAGE_TYPE {
   'FAILED_UPDATE_OCCURRENCE_SUBMISSION' = 'Failed to update occurrence submission',
   'FAILED_TO_GET_TRANSFORM_SCHEMA' = 'Unable to get transform schema for submission',
   'INVALID_MEDIA' = 'Media is invalid',
-  'UNSUPPORTED_FILE_TYPE' = 'File submitted is not a supported type'
+  'UNSUPPORTED_FILE_TYPE' = 'File submitted is not a supported type',
+  'DANGLING_PARENT_CHILD_KEY' = 'Missing Child Key from Parent',
+  'NON_UNIQUE_KEY' = 'Duplicate Key(s) found in file.'
 }
 
 const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
@@ -280,7 +278,9 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
       type: [
         SUBMISSION_MESSAGE_TYPE.MISSING_REQUIRED_FIELD,
         SUBMISSION_MESSAGE_TYPE.MISSING_REQUIRED_HEADER,
-        SUBMISSION_MESSAGE_TYPE.DUPLICATE_HEADER
+        SUBMISSION_MESSAGE_TYPE.DUPLICATE_HEADER,
+        SUBMISSION_MESSAGE_TYPE.DANGLING_PARENT_CHILD_KEY,
+        SUBMISSION_MESSAGE_TYPE.NON_UNIQUE_KEY
       ],
       label: 'Mandatory fields have not been filled out'
     },
@@ -425,32 +425,32 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
 
   return (
     <>
-      <Paper>
+      <Paper elevation={0}>
         <H2ButtonToolbar
           label="Observations"
-          buttonLabel="Import"
-          buttonTitle="Import"
-          buttonStartIcon={<Icon path={mdiImport} size={1} />}
+          buttonLabel="Import Observations"
+          buttonTitle="Import Observations"
+          buttonProps={{ variant: 'contained', color: 'primary' }}
+          buttonStartIcon={<Icon path={mdiPlus} size={0.8} />}
           buttonOnClick={() => showUploadDialog()}
         />
 
-        <Box pb={3}>
+        <Divider></Divider>
+
+        <Box p={3}>
           {!submissionStatus && (
             <>
-              <Box component={Divider} m={0} />
-              <Box p={3} textAlign="center">
-                <Typography data-testid="observations-nodata" variant="body2">
+              <Box textAlign="center">
+                <Typography data-testid="observations-nodata" variant="body2" color="textSecondary">
                   No Observation Data. &nbsp;
-                  <Link onClick={() => setOpenImportObservations(true)} className={classes.browseLink}>
-                    Click Here to Import
-                  </Link>
+                  <Link onClick={() => setOpenImportObservations(true)}>Click Here to Import</Link>
                 </Typography>
               </Box>
             </>
           )}
 
           {!isValidating && submissionStatus?.status === SUBMISSION_STATUS_TYPE.SYSTEM_ERROR && (
-            <Box px={3} pb={3}>
+            <Box>
               {displayAlertBox(
                 'error',
                 mdiAlertCircleOutline,
@@ -476,7 +476,7 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
               submissionStatus?.status === SUBMISSION_STATUS_TYPE.FAILED_VALIDATION ||
               submissionStatus?.status === SUBMISSION_STATUS_TYPE.FAILED_TRANSFORMED ||
               submissionStatus?.status === SUBMISSION_STATUS_TYPE.FAILED_PROCESSING_OCCURRENCE_DATA) && (
-              <Box px={3} pb={3}>
+              <Box>
                 {displayAlertBox(
                   'error',
                   mdiAlertCircleOutline,
@@ -494,17 +494,17 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
                 </Box>
               </Box>
             )}
+
           {!isValidating &&
             submissionStatus &&
             (submissionStatus.status === SUBMISSION_STATUS_TYPE.DARWIN_CORE_VALIDATED ||
               submissionStatus.status === SUBMISSION_STATUS_TYPE.TEMPLATE_VALIDATED ||
               submissionStatus.status === SUBMISSION_STATUS_TYPE.TEMPLATE_TRANSFORMED) && (
-              <>
-                <Box px={3}>{displayAlertBox('info', mdiFileOutline, submissionStatus.inputFileName, '')}</Box>
-              </>
+              <Box>{displayAlertBox('info', mdiFileOutline, submissionStatus.inputFileName, '')}</Box>
             )}
+
           {isValidating && submissionStatus && (
-            <Box px={3} pb={3}>
+            <Box>
               {displayAlertBox(
                 'info',
                 mdiClockOutline,

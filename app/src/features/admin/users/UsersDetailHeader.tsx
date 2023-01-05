@@ -4,10 +4,10 @@ import Button from '@material-ui/core/Button';
 import Container from '@material-ui/core/Container';
 import Link from '@material-ui/core/Link';
 import Paper from '@material-ui/core/Paper';
+import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
-import { mdiTrashCanOutline } from '@mdi/js';
+import { mdiChevronRight, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import React, { useCallback, useContext } from 'react';
 import { useHistory } from 'react-router';
@@ -19,23 +19,23 @@ import { APIError } from '../../../hooks/api/useAxios';
 import { useBiohubApi } from '../../../hooks/useBioHubApi';
 import { IGetUserResponse } from '../../../interfaces/useUserApi.interface';
 
-const useStyles = makeStyles(() => ({
-  breadCrumbLink: {
-    display: 'flex',
-    alignItems: 'center',
-    cursor: 'pointer'
-  },
-  spacingRight: {
-    paddingRight: '1rem'
-  },
-  actionButton: {
-    minWidth: '6rem',
-    '& + button': {
-      marginLeft: '0.5rem'
-    }
+const useStyles = makeStyles((theme: Theme) => ({
+  projectTitleContainer: {
+    maxWidth: '170ch',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis'
   },
   projectTitle: {
-    fontWeight: 400
+    display: '-webkit-box',
+    '-webkit-line-clamp': 2,
+    '-webkit-box-orient': 'vertical',
+    paddingTop: theme.spacing(0.5),
+    paddingBottom: theme.spacing(0.5),
+    overflow: 'hidden'
+  },
+  titleActions: {
+    paddingTop: theme.spacing(0.75),
+    paddingBottom: theme.spacing(0.75)
   }
 }));
 
@@ -108,68 +108,65 @@ const UsersDetailHeader: React.FC<IUsersHeaderProps> = (props) => {
   };
 
   return (
-    <Paper square={true}>
+    <Paper square={true} elevation={0}>
       <Container maxWidth="xl">
-        <Box pt={3} pb={2}>
-          <Breadcrumbs>
-            <Link
-              color="primary"
-              onClick={() => history.push('/admin/users')}
-              aria-current="page"
-              className={classes.breadCrumbLink}>
-              <Typography variant="body2">Manage Users</Typography>
-            </Link>
-            <Typography variant="body2">{userDetails.user_identifier}</Typography>
-          </Breadcrumbs>
-        </Box>
-        <Box display="flex" justifyContent="space-between" alignItems="flex-start">
-          <Box pb={3}>
-            <Box mb={1.5} display="flex">
-              <Typography data-testid="user-detail-title" className={classes.spacingRight} variant="h1">
-                User - <span className={classes.projectTitle}>{userDetails.user_identifier}</span>
+        <Box py={4}>
+          <Box mb={2}>
+            <Breadcrumbs separator={<Icon path={mdiChevronRight} size={0.8} />}>
+              <Link color="primary" onClick={() => history.push('/admin/users')} aria-current="page">
+                Manage Users
+              </Link>
+              <Typography data-testid="user-detail-title" variant="body1" component="span">
+                {userDetails.user_identifier}
               </Typography>
-            </Box>
-            <Box mb={0.75} display="flex" alignItems="center">
-              <Typography component="span" variant="subtitle1" color="textSecondary">
-                {userDetails.role_names[0]}
-              </Typography>
-            </Box>
+            </Breadcrumbs>
           </Box>
-          <Box ml={4} mb={4}>
-            <Tooltip arrow color="secondary" title={'delete'}>
-              <>
-                <Button
-                  title="Remove User"
-                  color="primary"
-                  variant="outlined"
-                  className={classes.actionButton}
-                  startIcon={<Icon path={mdiTrashCanOutline} size={0.875} />}
-                  data-testid={'remove-user-button'}
-                  onClick={() =>
-                    openYesNoDialog({
-                      dialogTitle: SystemUserI18N.removeSystemUserTitle,
-                      dialogContent: (
-                        <>
-                          <Typography variant="body1" color="textPrimary">
-                            Removing user <strong>{userDetails.user_identifier}</strong> will revoke their access to all
-                            projects.
-                          </Typography>
-                          <Typography variant="body1" color="textPrimary">
-                            Are you sure you want to proceed?
-                          </Typography>
-                        </>
-                      ),
-                      yesButtonProps: { color: 'secondary' },
-                      onYes: () => {
-                        deActivateSystemUser(userDetails);
-                        dialogContext.setYesNoDialog({ open: false });
-                      }
-                    })
-                  }>
-                  <strong>Remove User</strong>
-                </Button>
-              </>
-            </Tooltip>
+
+          <Box display="flex" justifyContent="space-between">
+            <Box flex="1 1 auto" className={classes.projectTitleContainer}>
+              <Typography variant="h1" className={classes.projectTitle}>
+                User: <span>{userDetails.user_identifier}</span>
+              </Typography>
+              <Box mt={0.75} mb={0.5} display="flex" alignItems="center">
+                <Typography
+                  component="span"
+                  variant="subtitle1"
+                  color="textSecondary"
+                  style={{ display: 'flex', alignItems: 'center' }}>
+                  {userDetails.role_names[0]}
+                </Typography>
+              </Box>
+            </Box>
+            <Box flex="0 0 auto" className={classes.titleActions}>
+              <Button
+                title="Remove User"
+                variant="outlined"
+                startIcon={<Icon path={mdiTrashCanOutline} size={0.8} />}
+                data-testid={'remove-user-button'}
+                onClick={() =>
+                  openYesNoDialog({
+                    dialogTitle: SystemUserI18N.removeSystemUserTitle,
+                    dialogContent: (
+                      <>
+                        <Typography variant="body1" color="textPrimary">
+                          Removing this user <strong>{userDetails.user_identifier}</strong> will revoke their access to
+                          all projects.
+                        </Typography>
+                        <Typography variant="body1" color="textPrimary">
+                          Are you sure you want to proceed?
+                        </Typography>
+                      </>
+                    ),
+                    yesButtonProps: { color: 'secondary' },
+                    onYes: () => {
+                      deActivateSystemUser(userDetails);
+                      dialogContext.setYesNoDialog({ open: false });
+                    }
+                  })
+                }>
+                Remove User
+              </Button>
+            </Box>
           </Box>
         </Box>
       </Container>

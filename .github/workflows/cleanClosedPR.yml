@@ -1,16 +1,21 @@
 # Clean out the deployment artifacts when a PR is closed, without a merge.
 # This clean out gets rid of the PR artifacts in Dev and in Tools.
 name: Clean out Dev from closed PR Artifacts
+
 on:
   pull_request:
-    branches: [dev]
+    branches:
+      - '*'
+      - '!test'
+      - '!prod'
     types: [closed]
+
 jobs:
   clean:
     name: Clean Deployment Artifacts for API and App in Dev and Tools environment
     runs-on: ubuntu-latest
     # Only do this when the PR was not merged and only for dev
-    if: ${{ github.event.pull_request.merged != true && github.base_ref == 'dev' && github.event.pull_request.draft == false }}
+    if: ${{ github.event.pull_request.merged != true }}
     env:
       BUILD_ID: ${{ github.event.number }}
     steps:

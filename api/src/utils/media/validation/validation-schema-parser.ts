@@ -1,5 +1,5 @@
 import jsonpath from 'jsonpath';
-import { CSVValidator } from '../csv/csv-file';
+import { CSVValidator, WorkBookValidator } from '../csv/csv-file';
 import {
   getDuplicateHeadersValidator,
   getValidHeadersValidator,
@@ -10,10 +10,12 @@ import {
   getCodeValueFieldsValidator,
   getNumericFieldsValidator,
   getRequiredFieldsValidator,
+  getUniqueColumnsValidator,
   getValidFormatFieldsValidator,
   getValidRangeFieldsValidator
 } from '../csv/validation/csv-row-validator';
 import { DWCArchiveValidator } from '../dwc/dwc-archive-file';
+import { getParentChildKeyMatchValidator } from '../xlsx/validation/xlsx-validation';
 import { XLSXCSVValidator } from '../xlsx/xlsx-file';
 import {
   getFileEmptyValidator,
@@ -34,6 +36,10 @@ export const ValidationRulesRegistry = {
     {
       name: 'submission_required_files_validator',
       generator: getRequiredFilesValidator
+    },
+    {
+      name: 'workbook_parent_child_key_match_validator',
+      generator: getParentChildKeyMatchValidator
     },
     {
       name: 'file_duplicate_columns_validator',
@@ -70,6 +76,10 @@ export const ValidationRulesRegistry = {
     {
       name: 'column_numeric_validator',
       generator: getNumericFieldsValidator
+    },
+    {
+      name: 'file_column_unique_validator',
+      generator: getUniqueColumnsValidator
     }
   ],
   findMatchingRule(name: string): any {
@@ -89,7 +99,7 @@ export class ValidationSchemaParser {
   }
 
   getSubmissionValidations(): (DWCArchiveValidator | XLSXCSVValidator)[] {
-    const validationSchemas = this.getSubmissionValidationSChemas();
+    const validationSchemas = this.getSubmissionValidationSchemas();
 
     const rules: (DWCArchiveValidator | XLSXCSVValidator)[] = [];
 
@@ -120,6 +130,39 @@ export class ValidationSchemaParser {
     const validationSchemas = this.getFileValidationSchemas(fileName);
 
     const rules: CSVValidator[] = [];
+
+    validationSchemas.forEach((validationSchema) => {
+      const keys = Object.keys(validationSchema);
+
+      if (keys.length !== 1) {
+        return;
+      }
+
+      const key = keys[0];
+
+      const generatorFunction = ValidationRulesRegistry.findMatchingRule(key);
+
+      if (!generatorFunction) {
+        return;
+      }
+
+      const rule = generatorFunction(validationSchema);
+
+      rules.push(rule);
+    });
+
+    return rules;
+  }
+
+  /**
+   * Retreives all validation rules for workbooks. Workbook validations differ from submission
+   * validations in that they alter the validation state of each worksheet within the workbook.
+   * @returns {*} {WorkBookValidator[]} All workbook validation rules for the given submission.
+   */
+  getWorkbookValidations(): WorkBookValidator[] {
+    const validationSchemas = this.getWorkbookValidationSchemas();
+
+    const rules: WorkBookValidator[] = [];
 
     validationSchemas.forEach((validationSchema) => {
       const keys = Object.keys(validationSchema);
@@ -186,8 +229,12 @@ export class ValidationSchemaParser {
     return rules;
   }
 
-  getSubmissionValidationSChemas(): object[] {
+  getSubmissionValidationSchemas(): object[] {
     return jsonpath.query(this.validationSchema, this.getSubmissionValidationsJsonPath())?.[0] || [];
+  }
+
+  getWorkbookValidationSchemas(): object[] {
+    return jsonpath.query(this.validationSchema, this.getWorkbookValidationsJsonPath())?.[0] || [];
   }
 
   getFileValidationSchemas(fileName: string): object[] {
@@ -240,6 +287,10 @@ export class ValidationSchemaParser {
 
   getSubmissionValidationsJsonPath(): string {
     return '$.validations';
+  }
+
+  getWorkbookValidationsJsonPath(): string {
+    return '$.workbookValidations';
   }
 
   getFileValidationsJsonPath(fileName: string): string {

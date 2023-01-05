@@ -1,7 +1,9 @@
+import SQL from 'sql-template-strings';
 import { SUBMISSION_MESSAGE_TYPE } from '../constants/status';
-import { HTTP400 } from '../errors/http-error';
+import { ApiExecuteSQLError } from '../errors/api-error';
 import { PostOccurrence } from '../models/occurrence-create';
-import { queries } from '../queries/queries';
+import { parseLatLongString, parseUTMString } from '../utils/spatial-utils';
+import { appendSQLColumnsEqualValues, AppendSQLColumnsEqualValues } from '../utils/sql-utils';
 import { SubmissionErrorFromMessageType } from '../utils/submission-error';
 import { BaseRepository } from './base-repository';
 
@@ -19,7 +21,16 @@ export interface IOccurrenceSubmission {
 export class OccurrenceRepository extends BaseRepository {
   async updateDWCSourceForOccurrenceSubmission(submissionId: number, jsonData: string): Promise<number> {
     try {
-      const sql = queries.dwc.updateDWCSourceForOccurrenceSubmissionSQL(submissionId, jsonData);
+      const sql = SQL`
+      UPDATE
+        occurrence_submission
+      SET
+        darwin_core_source = ${jsonData}
+      WHERE
+        occurrence_submission_id = ${submissionId}
+      RETURNING
+        occurrence_submission_id;
+    `;
       const response = await this.connection.sql<{ occurrence_submission_id: number }>(sql);
 
       if (!response.rowCount) {
@@ -38,17 +49,23 @@ export class OccurrenceRepository extends BaseRepository {
    * @return {*}  {Promise<IOccurrenceSubmission | null>}
    */
   async getOccurrenceSubmission(submissionId: number): Promise<IOccurrenceSubmission> {
-    let response: IOccurrenceSubmission | null = null;
-    const sql = queries.survey.getSurveyOccurrenceSubmissionSQL(submissionId);
+    const sql = SQL`
+      SELECT
+        *
+      FROM
+        occurrence_submission
+      WHERE
+        occurrence_submission_id = ${submissionId};
+    `;
 
-    if (sql) {
-      response = (await this.connection.query<IOccurrenceSubmission>(sql.text, sql.values)).rows[0];
-    }
+    const response = await this.connection.query<IOccurrenceSubmission>(sql.text, sql.values);
 
-    if (!response) {
+    const result = (response && response.rows && response.rows[0]) || null;
+
+    if (!result) {
       throw SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_GET_OCCURRENCE);
     }
-    return response;
+    return result;
   }
 
   /**
@@ -58,19 +75,78 @@ export class OccurrenceRepository extends BaseRepository {
    * @param {any} scrapedOccurrence
    */
   async insertPostOccurrences(occurrenceSubmissionId: number, scrapedOccurrence: PostOccurrence): Promise<any> {
-    const sqlStatement = queries.occurrence.postOccurrenceSQL(occurrenceSubmissionId, scrapedOccurrence);
+    const sqlStatement = SQL`
+    INSERT INTO occurrence (
+      occurrence_submission_id,
+      taxonid,
+      lifestage,
+      sex,
+      data,
+      vernacularname,
+      eventdate,
+      individualcount,
+      organismquantity,
+      organismquantitytype,
+      geography
+    ) VALUES (
+      ${occurrenceSubmissionId},
+      ${scrapedOccurrence.associatedTaxa},
+      ${scrapedOccurrence.lifeStage},
+      ${scrapedOccurrence.sex},
+      ${scrapedOccurrence.data},
+      ${scrapedOccurrence.vernacularName},
+      ${scrapedOccurrence.eventDate},
+      ${scrapedOccurrence.individualCount},
+      ${scrapedOccurrence.organismQuantity},
+      ${scrapedOccurrence.organismQuantityType}
+  `;
 
-    if (!sqlStatement) {
-      throw new HTTP400('Failed to build SQL post statement');
+    const utm = parseUTMString(scrapedOccurrence.verbatimCoordinates);
+    const latLong = parseLatLongString(scrapedOccurrence.verbatimCoordinates);
+
+    if (utm) {
+      // transform utm string into point, if it is not null
+      sqlStatement.append(SQL`
+      ,public.ST_Transform(
+        public.ST_SetSRID(
+          public.ST_MakePoint(${utm.easting}, ${utm.northing}),
+          ${utm.zone_srid}
+        ),
+        4326
+      )
+    `);
+    } else if (latLong) {
+      // transform latLong string into point, if it is not null
+      sqlStatement.append(SQL`
+      ,public.ST_Transform(
+        public.ST_SetSRID(
+          public.ST_MakePoint(${latLong.long}, ${latLong.lat}),
+          4326
+        ),
+        4326
+      )
+    `);
+    } else {
+      // insert null geography
+      sqlStatement.append(SQL`
+        ,null
+      `);
     }
+
+    sqlStatement.append(');');
 
     const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
 
-    if (!response || !response.rowCount) {
-      throw new HTTP400('Failed to insert occurrence data');
+    const result = (response && response.rows && response.rows[0]) || null;
+
+    if (!result) {
+      throw new ApiExecuteSQLError('Failed to insert occurrence data', [
+        'OccurrenceRepository->insertPostOccurrences',
+        'rows was null or undefined, expected rows != null'
+      ]);
     }
 
-    return response.rows[0];
+    return result;
   }
 
   /**
@@ -80,17 +156,42 @@ export class OccurrenceRepository extends BaseRepository {
    * @return {*}  {Promise<any[]>}
    */
   async getOccurrencesForView(submissionId: number): Promise<any[]> {
-    const sqlStatement = queries.occurrence.getOccurrencesForViewSQL(submissionId);
-    if (!sqlStatement) {
-      throw new HTTP400('Failed to build SQL get occurrences for view statement');
-    }
+    const sqlStatement = SQL`
+      SELECT
+        public.ST_asGeoJSON(o.geography) as geometry,
+        o.taxonid,
+        o.occurrence_id,
+        o.lifestage,
+        o.sex,
+        o.vernacularname,
+        o.individualcount,
+        o.organismquantity,
+        o.organismquantitytype,
+        o.eventdate
+      FROM
+        occurrence as o
+      LEFT OUTER JOIN
+        occurrence_submission as os
+      ON
+        o.occurrence_submission_id = os.occurrence_submission_id
+      WHERE
+        o.occurrence_submission_id = ${submissionId}
+      AND
+        os.delete_timestamp is null;
+    `;
 
     const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
 
-    if (!response || !response.rows) {
-      throw new HTTP400('Failed to get occurrences view data');
+    const result = (response && response.rows) || null;
+
+    if (!result) {
+      throw new ApiExecuteSQLError('Failed to get occurrences view data', [
+        'OccurrenceRepository->getOccurrencesForView',
+        'rows was null or undefined, expected rows != null'
+      ]);
     }
-    return response.rows;
+
+    return result;
   }
 
   /**
@@ -106,17 +207,26 @@ export class OccurrenceRepository extends BaseRepository {
     outputFileName: string,
     outputKey: string
   ): Promise<any> {
-    const updateSqlStatement = queries.survey.updateSurveyOccurrenceSubmissionSQL({
-      submissionId,
-      outputFileName,
-      outputKey
-    });
+    const items: AppendSQLColumnsEqualValues[] = [];
 
-    if (!updateSqlStatement) {
-      throw new HTTP400('Failed to build SQL update statement');
-    }
+    items.push({ columnName: 'output_file_name', columnValue: outputFileName });
 
-    const updateResponse = await await this.connection.query(updateSqlStatement.text, updateSqlStatement.values);
+    items.push({ columnName: 'output_key', columnValue: outputKey });
+
+    const sqlStatement = SQL`
+      UPDATE occurrence_submission
+      SET
+    `;
+
+    appendSQLColumnsEqualValues(sqlStatement, items);
+
+    sqlStatement.append(SQL`
+      WHERE
+        occurrence_submission_id = ${submissionId}
+      RETURNING occurrence_submission_id as id;
+    `);
+
+    const updateResponse = await await this.connection.query(sqlStatement.text, sqlStatement.values);
 
     if (!updateResponse || !updateResponse.rowCount) {
       throw SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_UPDATE_OCCURRENCE_SUBMISSION);

@@ -27,17 +27,6 @@ describe('useObservationApi', () => {
     expect(result.inputFileName).toEqual('file.txt');
   });
 
-  it('initiateScrapeOccurrences works as expected', async () => {
-    const projectId = 1;
-    const submissionId = 1;
-
-    mock.onPost(`/api/dwc/scrape-occurrences`).reply(200, true);
-
-    const result = await useObservationApi(axios).initiateScrapeOccurrences(projectId, submissionId);
-
-    expect(result).toEqual(true);
-  });
-
   it('deleteObservationSubmission works as expected', async () => {
     const submissionId = 1;
 
@@ -99,28 +88,6 @@ describe('useObservationApi', () => {
     mock.onPost(`/api/xlsx/transform`).reply(200, true);
 
     const result = await useObservationApi(axios).initiateXLSXSubmissionTransform(projectId, submissionId, surveyId);
-
-    expect(result).toEqual(true);
-  });
-
-  it('initiateXLSXSubmissionValidation works as expected', async () => {
-    const projectId = 1;
-    const submissionId = 2;
-    const surveyId = 3;
-
-    mock.onPost(`/api/xlsx/validate`).reply(200, true);
-
-    const result = await useObservationApi(axios).initiateXLSXSubmissionValidation(projectId, submissionId, surveyId);
-
-    expect(result).toEqual(true);
-  });
-
-  it('initiateDwCSubmissionValidation works as expected', async () => {
-    const projectId = 1;
-    const submissionId = 2;
-    mock.onPost(`/api/dwc/validate`).reply(200, true);
-
-    const result = await useObservationApi(axios).initiateDwCSubmissionValidation(projectId, submissionId);
 
     expect(result).toEqual(true);
   });

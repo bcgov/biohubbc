@@ -151,7 +151,7 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
                     reach each of the project's objectives.
                   </Typography>
 
-                  <Box mt={4}>
+                  <Box mt={3}>
                     <ProjectIUCNForm
                       classifications={
                         codes?.iucn_conservation_action_level_1_classification?.map((item) => {
@@ -204,7 +204,7 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
                     Specify funding sources for the project. <strong>Note:</strong> Dollar amounts are not intended to
                     be exact, please round to the nearest 100.
                   </Typography>
-                  <Box mt={3.5}>
+                  <Box mt={3}>
                     <ProjectFundingForm
                       funding_sources={
                         codes?.funding_source?.map((item) => {
@@ -259,26 +259,20 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
         <Button
           type="submit"
           color="primary"
-          size="large"
           variant="contained"
           onClick={() => formikRef.current?.submitForm()}
           className={classes.actionButton}>
           Submit Project
         </Button>
-        <Button color="primary" size="large" variant="outlined" onClick={handleDraft} className={classes.actionButton}>
+        <Button color="primary" variant="contained" onClick={handleDraft} className={classes.actionButton}>
           Save Draft
         </Button>
         {queryParams.draftId && (
-          <Button
-            color="primary"
-            size="large"
-            variant="outlined"
-            onClick={handleDeleteDraft}
-            className={classes.actionButton}>
+          <Button color="secondary" variant="outlined" onClick={handleDeleteDraft} className={classes.actionButton}>
             Delete Draft
           </Button>
         )}
-        <Button color="primary" size="large" variant="outlined" onClick={handleCancel} className={classes.actionButton}>
+        <Button color="primary" variant="outlined" onClick={handleCancel} className={classes.actionButton}>
           Cancel
         </Button>
       </Box>

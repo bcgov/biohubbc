@@ -43,6 +43,7 @@ export enum SUMMARY_SUBMISSION_MESSAGE_TYPE {
   'UNKNOWN_HEADER' = 'Unknown Header',
   'MISSING_REQUIRED_HEADER' = 'Missing Required Header',
   'MISSING_RECOMMENDED_HEADER' = 'Missing Recommended Header',
+  'DANGLING_PARENT_CHILD_KEY' = 'Missing Child Key from Parent',
   'MISCELLANEOUS' = 'Miscellaneous',
   'MISSING_REQUIRED_FIELD' = 'Missing Required Field',
   'UNEXPECTED_FORMAT' = 'Unexpected Format',
@@ -65,6 +66,7 @@ export enum SUBMISSION_MESSAGE_TYPE {
   'UNKNOWN_HEADER' = 'Unknown Header',
   'MISSING_REQUIRED_HEADER' = 'Missing Required Header',
   'MISSING_RECOMMENDED_HEADER' = 'Missing Recommended Header',
+  'DANGLING_PARENT_CHILD_KEY' = 'Missing Child Key from Parent',
   'MISCELLANEOUS' = 'Miscellaneous',
   'MISSING_REQUIRED_FIELD' = 'Missing Required Field',
   'UNEXPECTED_FORMAT' = 'Unexpected Format',
@@ -89,7 +91,8 @@ export enum SUBMISSION_MESSAGE_TYPE {
   'FAILED_TO_GET_TEMPLATE_NAME_VERSION' = 'Missing name or version number.',
   'INVALID_MEDIA' = 'Media is invalid',
   'INVALID_XLSX_CSV' = 'Media is not a valid XLSX CSV file.',
-  'UNSUPPORTED_FILE_TYPE' = 'File submitted is not a supported type'
+  'UNSUPPORTED_FILE_TYPE' = 'File submitted is not a supported type',
+  'NON_UNIQUE_KEY' = 'Duplicate Key(s) found in file.'
 }
 
 export enum MESSAGE_CLASS_NAME {

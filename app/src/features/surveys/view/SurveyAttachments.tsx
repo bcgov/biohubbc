@@ -1,15 +1,20 @@
 import Box from '@material-ui/core/Box';
+import Divider from '@material-ui/core/Divider';
 import Paper from '@material-ui/core/Paper';
-import { mdiMenuDown, mdiTrayArrowUp } from '@mdi/js';
+import { mdiMenuDown, mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
 import AttachmentsList from 'components/attachments/AttachmentsList';
-import { IUploadHandler } from 'components/attachments/FileUploadItem';
 import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
-import FileUploadWithMetaDialog from 'components/dialog/FileUploadWithMetaDialog';
+import FileUploadWithMetaDialog from 'components/dialog/attachments/FileUploadWithMetaDialog';
+import { IUploadHandler } from 'components/file-upload/FileUploadItem';
 import { H2MenuToolbar } from 'components/toolbar/ActionToolbars';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetProjectForViewResponse, IUploadAttachmentResponse } from 'interfaces/useProjectApi.interface';
-import { IGetSurveyAttachment, IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
+import {
+  IGetSurveyAttachment,
+  IGetSurveyForViewResponse,
+  IGetSurveyReportAttachment
+} from 'interfaces/useSurveyApi.interface';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import { AttachmentType } from '../../../constants/attachments';
@@ -35,6 +40,9 @@ const SurveyAttachments: React.FC<ISurveyAttachmentsProps> = () => {
     AttachmentType.OTHER
   );
   const [attachmentsList, setAttachmentsList] = useState<IGetSurveyAttachment[]>([]);
+  const [reportAttachmentsList, setReportAttachmentsList] = useState<IGetSurveyReportAttachment[]>([]);
+
+  // Tracks which attachment rows have been selected, via the table checkboxes.
 
   const handleUploadReportClick = () => {
     setAttachmentType(AttachmentType.REPORT);
@@ -46,7 +54,7 @@ const SurveyAttachments: React.FC<ISurveyAttachmentsProps> = () => {
   };
 
   const getAttachments = useCallback(
-    async (forceFetch: boolean) => {
+    async (forceFetch: boolean): Promise<IGetSurveyAttachment[] | undefined> => {
       if (attachmentsList.length && !forceFetch) {
         return;
       }
@@ -58,9 +66,11 @@ const SurveyAttachments: React.FC<ISurveyAttachmentsProps> = () => {
           return;
         }
 
+        setReportAttachmentsList([...response.reportAttachmentsList]);
         setAttachmentsList([...response.attachmentsList]);
+        return [...response.reportAttachmentsList, ...response.attachmentsList];
       } catch (error) {
-        return error;
+        return;
       }
     },
     [biohubApi.survey, projectId, surveyId, attachmentsList.length]
@@ -100,23 +110,26 @@ const SurveyAttachments: React.FC<ISurveyAttachmentsProps> = () => {
         }}
         uploadHandler={getUploadHandler()}
       />
-      <Paper>
+      <Paper elevation={0}>
         <H2MenuToolbar
           label="Documents"
-          buttonLabel="Upload"
-          buttonTitle="Upload Document"
-          buttonStartIcon={<Icon path={mdiTrayArrowUp} size={1} />}
-          buttonEndIcon={<Icon path={mdiMenuDown} size={1} />}
+          buttonLabel="Add Documents"
+          buttonTitle="Add Documents"
+          buttonProps={{ variant: 'contained' }}
+          buttonStartIcon={<Icon path={mdiPlus} size={0.8} />}
+          buttonEndIcon={<Icon path={mdiMenuDown} size={0.8} />}
           menuItems={[
-            { menuLabel: 'Upload Report', menuOnClick: handleUploadReportClick },
-            { menuLabel: 'Upload Attachments', menuOnClick: handleUploadAttachmentClick }
+            { menuLabel: 'Add Report', menuOnClick: handleUploadReportClick },
+            { menuLabel: 'Add Attachments', menuOnClick: handleUploadAttachmentClick }
           ]}
         />
-        <Box px={3} pb={2}>
+        <Divider></Divider>
+        <Box px={1}>
           <AttachmentsList
             projectId={projectId}
             surveyId={surveyId}
-            attachmentsList={attachmentsList}
+            attachmentsList={[...attachmentsList, ...reportAttachmentsList]}
+            selectedAttachments={[]}
             getAttachments={getAttachments}
           />
         </Box>

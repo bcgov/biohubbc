@@ -30,8 +30,7 @@ describe('GetAttachmentsData', () => {
         file_name: 'filename',
         create_date: '2020/04/04',
         file_size: 24,
-        file_type: 'Video',
-        security_token: 'token123'
+        file_type: 'Video'
       }
     ];
 
@@ -51,7 +50,6 @@ describe('GetAttachmentsData', () => {
       expect(getAttachmentsData.attachmentsList[0].id).to.equal(1);
       expect(getAttachmentsData.attachmentsList[0].lastModified).to.match(new RegExp('2020-04-04T.*'));
       expect(getAttachmentsData.attachmentsList[0].size).to.equal(24);
-      expect(getAttachmentsData.attachmentsList[0].securityToken).to.equal('token123');
     });
   });
 });
@@ -103,7 +101,7 @@ describe('PutReportAttachmentMetaData', () => {
       expect(putReportAttachmentData.year_published).to.equal(0);
       expect(putReportAttachmentData.authors).to.eql([]);
       expect(putReportAttachmentData.description).to.equal(null);
-      expect(putReportAttachmentData.revision_count).to.equal(null);
+      expect(putReportAttachmentData.revision_count).to.equal(0);
     });
   });
 

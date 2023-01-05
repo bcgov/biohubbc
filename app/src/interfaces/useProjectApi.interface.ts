@@ -13,9 +13,10 @@ export interface IGetProjectAttachment {
   fileType: string;
   lastModified: string;
   size: number;
-  securityToken: string;
   revisionCount: number;
 }
+
+export type IGetProjectReportAttachment = IGetProjectAttachment & { fileType: 'Report' };
 
 /**
  * An interface for an instance of filter fields for project advanced filter search
@@ -40,6 +41,7 @@ export interface IProjectAdvancedFilterRequest {
  */
 export interface IGetProjectAttachmentsResponse {
   attachmentsList: IGetProjectAttachment[];
+  reportAttachmentsList: IGetProjectReportAttachment[];
 }
 
 /**
@@ -174,7 +176,7 @@ export interface IGetProjectForUpdateResponseFundingSource {
 }
 
 export interface IGetProjectForUpdateResponseFundingData {
-  fundingSources: IGetProjectForUpdateResponseFundingSource[];
+  funding_sources: IGetProjectForUpdateResponseFundingSource[];
 }
 
 export interface IGetProjectForUpdateResponsePartnerships {
@@ -287,14 +289,23 @@ export interface IUploadAttachmentResponse {
   revision_count: number;
 }
 
-export interface IGetReportMetaData {
-  attachment_id: number;
+export interface IGetReportDetails {
+  metadata: IGetReportMetadata | null;
+  authors: IGetReportAuthors[];
+}
+
+export interface IGetAttachmentDetails {
+  metadata: { last_modified: string };
+  authors: IGetReportAuthors[];
+}
+
+export interface IGetReportMetadata {
+  id: number;
   title: string;
   year_published: number;
   description: string;
   last_modified: string;
   revision_count: number;
-  authors: IGetReportAuthors[];
 }
 
 export interface IGetReportAuthors {
