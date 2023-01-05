@@ -41,6 +41,7 @@ export const AddSystemUsersFormYupSchema = yup.object().shape({
   systemUsers: yup.array().of(
     yup.object().shape({
       userIdentifier: yup.string().required('Username is required'),
+      userGuid: yup.string().required('GUID is required'),
       identitySource: yup.string().required('Login Method is required'),
       systemRole: yup.number().required('Role is required')
     })
@@ -70,7 +71,7 @@ const AddSystemUsersForm: React.FC<AddSystemUsersFormProps> = (props) => {
                 return (
                   <Grid item xs={12} key={index}>
                     <Box display="flex">
-                      <Box flexBasis="35%">
+                      <Box flexBasis="25%">
                         <CustomTextField
                           name={`systemUsers.[${index}].userIdentifier`}
                           label="Username"
@@ -82,7 +83,7 @@ const AddSystemUsersForm: React.FC<AddSystemUsersFormProps> = (props) => {
                           }}
                         />
                       </Box>
-                      <Box width="300px" py={1} px={0.5}>
+                      <Box flexBasis="25%" pl={1}>
                         <CustomTextField
                           name={`systemUsers.[${index}].userGuid`}
                           label="User GUID"
@@ -127,7 +128,7 @@ const AddSystemUsersForm: React.FC<AddSystemUsersFormProps> = (props) => {
                           <FormHelperText>{identitySourceMeta.touched && identitySourceMeta.error}</FormHelperText>
                         </FormControl>
                       </Box>
-                      <Box flexBasis="35%" pl={1}>
+                      <Box flexBasis="25%" pl={1}>
                         <FormControl fullWidth variant="outlined" required={true} style={{ width: '100%' }}>
                           <InputLabel id="Id" required={false}>
                             System Role

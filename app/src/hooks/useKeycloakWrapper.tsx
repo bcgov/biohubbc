@@ -99,7 +99,6 @@ export interface IKeycloakWrapper {
   username: string | undefined;
   displayName: string | undefined;
   email: string | undefined;
-  systemUserId: number;
   /**
    * Force this keycloak wrapper to refresh its data.
    *
@@ -212,10 +211,6 @@ function useKeycloakWrapper(): IKeycloakWrapper {
     return _inferIdentitySource(userIdentitySource);
   }, [keycloakUserDataLoader.data, userDataLoader.data]);
 
-  const systemUserId = (): number => {
-    return userDataLoader.data?.id || 0;
-  };
-
   const isSystemUser = (): boolean => {
     return Boolean(userDataLoader.data?.id);
   };
@@ -270,7 +265,6 @@ function useKeycloakWrapper(): IKeycloakWrapper {
     username: username(),
     email: email(),
     displayName: displayName(),
-    systemUserId: systemUserId(),
     refresh
   };
 }
