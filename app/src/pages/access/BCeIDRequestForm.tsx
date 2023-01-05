@@ -1,16 +1,27 @@
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import CustomTextField from 'components/fields/CustomTextField';
-import { IBCeIDAccessRequestDataObject } from 'interfaces/useAdminApi.interface';
+import {
+  IBCeIDBasicAccessRequestDataObject,
+  IBCeIDBusinessAccessRequestDataObject
+} from 'interfaces/useAdminApi.interface';
 import React from 'react';
 import yup from 'utils/YupSchema';
 
-export const BCeIDRequestFormInitialValues: IBCeIDAccessRequestDataObject = {
+export const BCeIDBasicRequestFormInitialValues: IBCeIDBasicAccessRequestDataObject = {
+  reason: ''
+};
+
+export const BCeIDBusinessRequestFormInitialValues: IBCeIDBusinessAccessRequestDataObject = {
   company: '',
   reason: ''
 };
 
-export const BCeIDRequestFormYupSchema = yup.object().shape({
+export const BCeIDBasicRequestFormYupSchema = yup.object().shape({
+  reason: yup.string().max(300, 'Maximum 300 characters')
+});
+
+export const BCeIDBusinessRequestFormYupSchema = yup.object().shape({
   company: yup.string().required('Required'),
   reason: yup.string().max(300, 'Maximum 300 characters')
 });

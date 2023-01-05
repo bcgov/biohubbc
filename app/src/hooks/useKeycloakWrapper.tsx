@@ -66,6 +66,12 @@ export interface IKeycloakWrapper {
    */
   systemRoles: string[];
   /**
+   * Returns `true` if the keycloak user is a registered system user, `false` otherwise.
+   *
+   * @memberof IKeycloakWrapper
+   */
+  isSystemUser: () => boolean;
+  /**
    * Returns `true` if the user's `systemRoles` contain at least 1 of the specified `validSystemRoles`, `false` otherwise.
    *
    * @memberof IKeycloakWrapper
@@ -210,6 +216,10 @@ function useKeycloakWrapper(): IKeycloakWrapper {
     return userDataLoader.data?.id || 0;
   };
 
+  const isSystemUser = (): boolean => {
+    return Boolean(userDataLoader.data?.id);
+  };
+
   const getSystemRoles = (): string[] => {
     return userDataLoader.data?.role_names || [];
   };
@@ -253,6 +263,7 @@ function useKeycloakWrapper(): IKeycloakWrapper {
     hasLoadedAllUserInfo: !!userDataLoader.data, // !!(userDataLoader.data || hasPendingAdministrativeActivitiesDataLoader.data),
     systemRoles: getSystemRoles(),
     hasSystemRole,
+    isSystemUser,
     hasAccessRequest: false, // !!hasPendingAdministrativeActivitiesDataLoader.data,
     getUserIdentifier,
     getIdentitySource,

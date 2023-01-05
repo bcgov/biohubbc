@@ -1,6 +1,6 @@
 import { fireEvent, render, waitFor } from '@testing-library/react';
 import { SYSTEM_ROLE } from 'constants/roles';
-import { AuthStateContext } from 'contexts/authStateContext';
+import { AuthStateContext, IAuthState } from 'contexts/authStateContext';
 import { createMemoryHistory } from 'history';
 import { SYSTEM_IDENTITY_SOURCE } from 'hooks/useKeycloakWrapper';
 import React from 'react';
@@ -18,7 +18,7 @@ describe('Header', () => {
       .mockReturnValueOnce(true) // Return true when the `Manage Users` secure link is parsed
       .mockReturnValueOnce(true); // Return true when the `Map` secure link is parsed
 
-    const authState = {
+    const authState: IAuthState = {
       keycloakWrapper: {
         keycloak: {
           authenticated: true
@@ -27,14 +27,11 @@ describe('Header', () => {
         systemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN],
         getUserIdentifier: () => 'testuser',
         hasAccessRequest: false,
-        isSystemUser: true,
         hasSystemRole: mockHasSystemRole,
         getIdentitySource: () => SYSTEM_IDENTITY_SOURCE.IDIR,
         username: 'testusername',
         displayName: 'IDID / testusername',
         email: 'test@email',
-        firstName: 'testfirst',
-        lastName: 'testlast',
         refresh: () => {}
       }
     };
@@ -72,7 +69,7 @@ describe('Header', () => {
         hasAccessRequest: false,
         isSystemUser: true,
         hasSystemRole: mockHasSystemRole,
-        getIdentitySource: () => SYSTEM_IDENTITY_SOURCE.BCEID,
+        getIdentitySource: () => SYSTEM_IDENTITY_SOURCE.BCEID_BASIC,
         username: 'testusername',
         displayName: 'testdisplayname',
         email: 'test@email.com',

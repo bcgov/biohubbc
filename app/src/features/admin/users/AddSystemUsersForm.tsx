@@ -16,9 +16,10 @@ import React from 'react';
 import yup from 'utils/YupSchema';
 
 export interface IAddSystemUsersFormArrayItem {
+  userGuid: string;
   userIdentifier: string;
   identitySource: string;
-  system_role: number;
+  systemRole: number;
 }
 
 export interface IAddSystemUsersForm {
@@ -26,9 +27,10 @@ export interface IAddSystemUsersForm {
 }
 
 export const AddSystemUsersFormArrayItemInitialValues: IAddSystemUsersFormArrayItem = {
+  userGuid: '',
   userIdentifier: '',
   identitySource: '',
-  system_role: ('' as unknown) as number
+  systemRole: ('' as unknown) as number
 };
 
 export const AddSystemUsersFormInitialValues: IAddSystemUsersForm = {
@@ -40,13 +42,13 @@ export const AddSystemUsersFormYupSchema = yup.object().shape({
     yup.object().shape({
       userIdentifier: yup.string().required('Username is required'),
       identitySource: yup.string().required('Login Method is required'),
-      system_role: yup.number().required('Role is required')
+      systemRole: yup.number().required('Role is required')
     })
   )
 });
 
 export interface AddSystemUsersFormProps {
-  system_roles: any[];
+  systemRoles: any[];
 }
 
 const AddSystemUsersForm: React.FC<AddSystemUsersFormProps> = (props) => {
@@ -59,7 +61,8 @@ const AddSystemUsersForm: React.FC<AddSystemUsersFormProps> = (props) => {
         render={(arrayHelpers) => (
           <Box>
             <Grid container direction="row" spacing={2}>
-              {values.systemUsers?.map((systemUser, index) => {
+              {values.systemUsers?.map((systemUser: IAddSystemUsersFormArrayItem, index: number) => {
+                const userGuidMeta = getFieldMeta(`systemUsers.[${index}].userGuid`);
                 const userIdentifierMeta = getFieldMeta(`systemUsers.[${index}].userIdentifier`);
                 const identitySourceMeta = getFieldMeta(`systemUsers.[${index}].identitySource`);
                 const systemRoleMeta = getFieldMeta(`systemUsers.[${index}].roleId`);
@@ -76,6 +79,18 @@ const AddSystemUsersForm: React.FC<AddSystemUsersFormProps> = (props) => {
                             value: systemUser.userIdentifier,
                             error: userIdentifierMeta.touched && Boolean(userIdentifierMeta.error),
                             helperText: userIdentifierMeta.touched && userIdentifierMeta.error
+                          }}
+                        />
+                      </Box>
+                      <Box width="300px" py={1} px={0.5}>
+                        <CustomTextField
+                          name={`systemUsers.[${index}].userGuid`}
+                          label="User GUID"
+                          other={{
+                            required: true,
+                            value: systemUser.userGuid,
+                            error: userGuidMeta.touched && Boolean(userGuidMeta.error),
+                            helperText: userGuidMeta.touched && userGuidMeta.error
                           }}
                         />
                       </Box>
@@ -98,8 +113,11 @@ const AddSystemUsersForm: React.FC<AddSystemUsersFormProps> = (props) => {
                             <MenuItem key={SYSTEM_IDENTITY_SOURCE.IDIR} value={SYSTEM_IDENTITY_SOURCE.IDIR}>
                               IDIR
                             </MenuItem>
-                            <MenuItem key={SYSTEM_IDENTITY_SOURCE.BCEID} value={SYSTEM_IDENTITY_SOURCE.BCEID}>
-                              BCEID
+                            <MenuItem key={SYSTEM_IDENTITY_SOURCE.BCEID_BASIC} value={SYSTEM_IDENTITY_SOURCE.BCEID_BASIC}>
+                              BCeID Basic
+                            </MenuItem>
+                            <MenuItem key={SYSTEM_IDENTITY_SOURCE.BCEID_BUSINESS} value={SYSTEM_IDENTITY_SOURCE.BCEID_BUSINESS}>
+                              BCeID Business
                             </MenuItem>
                           </Select>
                           <FormHelperText>{identitySourceMeta.touched && identitySourceMeta.error}</FormHelperText>
@@ -111,17 +129,17 @@ const AddSystemUsersForm: React.FC<AddSystemUsersFormProps> = (props) => {
                             System Role
                           </InputLabel>
                           <Select
-                            id={`systemUsers.[${index}].system_role`}
-                            name={`systemUsers.[${index}].system_role`}
-                            labelId="system_role"
+                            id={`systemUsers.[${index}].systemRole`}
+                            name={`systemUsers.[${index}].systemRole`}
+                            labelId="systemRole"
                             label="System Role"
-                            value={systemUser.system_role}
+                            value={systemUser.systemRole}
                             labelWidth={300}
                             onChange={handleChange}
                             error={systemRoleMeta.touched && Boolean(systemRoleMeta.error)}
                             displayEmpty
                             inputProps={{ 'aria-label': 'System Role' }}>
-                            {props?.system_roles?.map((item) => (
+                            {props?.systemRoles?.map((item) => (
                               <MenuItem key={item.value} value={item.value}>
                                 {item.label}
                               </MenuItem>

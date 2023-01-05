@@ -210,9 +210,10 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
     try {
       for (const systemUser of values.systemUsers) {
         await biohubApi.admin.addSystemUser(
+          systemUser.userGuid,
           systemUser.userIdentifier,
           systemUser.identitySource,
-          systemUser.system_role
+          systemUser.systemRole
         );
       }
 
@@ -365,7 +366,7 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
         component={{
           element: (
             <AddSystemUsersForm
-              system_roles={
+              systemRoles={
                 props.codes?.system_roles?.map((item) => {
                   return { value: item.id, label: item.name };
                 }) || []

@@ -111,10 +111,6 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }));
 
-function getDisplayName(userName: string, identitySource: string) {
-  return identitySource === SYSTEM_IDENTITY_SOURCE.BCEID ? `BCEID / ${userName}` : `IDIR / ${userName}`;
-}
-
 const Header: React.FC = () => {
   const classes = useStyles();
   // const config = useContext(ConfigContext);
@@ -124,10 +120,24 @@ const Header: React.FC = () => {
   // Authenticated view
   const LoggedInUser = () => {
     const identitySource = keycloakWrapper?.getIdentitySource() || '';
-
     const userIdentifier = keycloakWrapper?.getUserIdentifier() || '';
+    let accountTypeDisplayName = '';
 
-    const loggedInUserDisplayName = getDisplayName(userIdentifier, identitySource);
+    switch (identitySource) {
+      case SYSTEM_IDENTITY_SOURCE.BCEID_BASIC:
+        accountTypeDisplayName = 'BCeID';
+        break;
+      case SYSTEM_IDENTITY_SOURCE.BCEID_BUSINESS:
+        accountTypeDisplayName = 'BCeID';
+        break;
+      case SYSTEM_IDENTITY_SOURCE.IDIR:
+        accountTypeDisplayName = 'IDIR';
+        break;
+    }
+
+    const loggedInUserDisplayName = accountTypeDisplayName
+      ? `${accountTypeDisplayName} / ${userIdentifier}`
+      : userIdentifier;
 
     return (
       <Box display="flex" className={classes.userProfile} my="auto" alignItems="center">

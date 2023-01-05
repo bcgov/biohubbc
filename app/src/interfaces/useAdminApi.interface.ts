@@ -3,7 +3,11 @@ export type IIDIRAccessRequestDataObject = {
   reason: string;
 };
 
-export type IBCeIDAccessRequestDataObject = {
+export type IBCeIDBasicAccessRequestDataObject = {
+  reason: string;
+}
+
+export type IBCeIDBusinessAccessRequestDataObject = {
   company: string;
   reason: string;
 };
@@ -13,7 +17,7 @@ export type IAccessRequestDataObject = {
   username: string;
   email: string;
   identitySource: string;
-} & (IIDIRAccessRequestDataObject | IBCeIDAccessRequestDataObject);
+} & (IIDIRAccessRequestDataObject | IBCeIDBasicAccessRequestDataObject | IBCeIDBusinessAccessRequestDataObject);
 
 export interface IGetAccessRequestsListResponse {
   id: number;

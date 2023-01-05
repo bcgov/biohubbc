@@ -1,11 +1,11 @@
 import { IAuthState } from 'contexts/authStateContext';
-import { KeycloakInstance } from 'keycloak-js';
+import Keycloak from 'keycloak-js';
 
 const SystemUserAuthState: IAuthState = {
   keycloakWrapper: {
     keycloak: ({
       authenticated: true
-    } as unknown) as KeycloakInstance,
+    } as unknown) as Keycloak,
     hasLoadedAllUserInfo: true,
     systemRoles: [],
     isSystemUser: () => false,
@@ -14,7 +14,7 @@ const SystemUserAuthState: IAuthState = {
     getUserIdentifier: () => 'testusername',
     getIdentitySource: () => 'idir',
     username: 'testusername',
-    display_name: 'testdisplayname',
+    displayName: 'testdisplayname',
     email: 'test@email.com',
     refresh: () => {
       // do nothing

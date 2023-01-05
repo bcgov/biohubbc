@@ -106,6 +106,7 @@ const useAdminApi = (axios: AxiosInstance) => {
    *
    * Note: Will fail if the system user already exists.
    *
+   * @param {string} userGuid
    * @param {string} userIdentifier
    * @param {string} identitySource
    * @param {number} roleId
