@@ -32,11 +32,13 @@ describe('SummaryRepository', () => {
     });
 
     it('should throw a HTTP400 error when the query fails', async () => {
-      const dbConnection = getMockDBConnection();
+      const mockResponse = (undefined as any) as Promise<QueryResult<any>>;
+      const dbConnection = getMockDBConnection({ query: () => mockResponse });
+
       const repo = new SummaryRepository(dbConnection);
 
       try {
-        await repo.getLatestSurveySummarySubmission(1);
+        await repo.findSummarySubmissionById(1);
 
         expect.fail();
       } catch (error) {
@@ -225,19 +227,16 @@ describe('SummaryRepository', () => {
       expect(response).to.be.eql([{ id: 1 }]);
     });
     it('should throw a HTTP400 error when the query fails', async () => {
-      const mockQuery = sinon
-        .stub(SummaryRepository.prototype, 'getSummarySubmissionMessages')
-        .rejects(new Error('a test error'));
+      const mockResponse = (undefined as any) as Promise<QueryResult<any>>;
+      const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
-      const dbConnection = getMockDBConnection();
       const repo = new SummaryRepository(dbConnection);
 
       try {
         await repo.getSummarySubmissionMessages(1);
-        expect(mockQuery).to.be.calledOnce;
         expect.fail();
       } catch (error) {
-        expect((error as HTTP400).message).to.be.eql('a test error');
+        expect((error as HTTP400).message).to.be.eql('Failed to query survey summary submission table');
       }
     });
   });
@@ -330,19 +329,20 @@ describe('SummaryRepository', () => {
       expect(response).to.be.eql((await mockResponse).rows);
     });
     it('should throw a HTTP400 error when the query fails', async () => {
-      const mockQuery = sinon
-        .stub(SummaryRepository.prototype, 'getSummaryTemplateSpeciesRecords')
-        .rejects(new Error('test error'));
-      const dbConnection = getMockDBConnection();
+      const mockResponse = (undefined as any) as Promise<QueryResult<any>>;
+      const dbConnection = getMockDBConnection({ knex: () => mockResponse });
+
+      sinon
+        .stub(SummaryRepository.prototype, 'getSummaryTemplateIdFromNameVersion')
+        .resolves({ summary_template_id: 1 });
+
       const repo = new SummaryRepository(dbConnection);
 
       try {
         await repo.getSummaryTemplateSpeciesRecords('templateName', 'templateVersion', [1, 2]);
-        expect(mockQuery).to.be.calledOnce;
-
         expect.fail();
       } catch (error) {
-        expect((error as HTTP400).message).to.be.eql('test error');
+        expect((error as HTTP400).message).to.be.eql('Failed to query summary template species table');
       }
     });
   });

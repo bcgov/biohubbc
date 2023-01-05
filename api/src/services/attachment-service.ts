@@ -112,7 +112,7 @@ export class AttachmentService extends DBService {
    * Finds a survey report attachment having the given survey ID and attachment ID
    * @param {number} surveyId the ID of the survey
    * @param {number} reportAttachmentId the ID of the survey report attachment
-   * @return {Promise<ISurveyAttachment>} Promise resolving the given survey attachment
+   * @return {Promise<ISurveyReportAttachment>} Promise resolving the given survey attachment
    * @memberof AttachmentService
    */
   async getSurveyReportAttachmentById(surveyId: number, reportAttachmentId: number): Promise<ISurveyReportAttachment> {
@@ -307,7 +307,7 @@ export class AttachmentService extends DBService {
         file.originalname,
         file.size,
         projectId,
-        new PostReportAttachmentMetadata(attachmentMeta),
+        metadata,
         key
       );
     }

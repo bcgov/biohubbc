@@ -3,7 +3,7 @@ import { QueryResult } from 'pg';
 import { PROJECT_ROLE } from '../constants/roles';
 import { COMPLETION_STATUS } from '../constants/status';
 import { IDBConnection } from '../database/db';
-import { HTTP400, HTTP409 } from '../errors/http-error';
+import { HTTP400 } from '../errors/http-error';
 import { IPostIUCN, PostFundingSource, PostProjectObject } from '../models/project-create';
 import {
   IPutIUCN,
@@ -28,11 +28,11 @@ import {
   IGetProject
 } from '../models/project-view';
 import { GET_ENTITIES, IUpdateProject } from '../paths/project/{projectId}/update';
-import { queries } from '../queries/queries';
 import { ProjectRepository } from '../repositories/project-repository';
 import { deleteFileFromS3 } from '../utils/file-utils';
 import { AttachmentService } from './attachment-service';
 import { DBService } from './db-service';
+import { SurveyService } from './survey-service';
 
 export class ProjectService extends DBService {
   attachmentService: AttachmentService;
@@ -77,19 +77,7 @@ export class ProjectService extends DBService {
    * @memberof ProjectService
    */
   async getProjectParticipant(projectId: number, systemUserId: number): Promise<any> {
-    const sqlStatement = queries.projectParticipation.getProjectParticipationBySystemUserSQL(projectId, systemUserId);
-
-    if (!sqlStatement) {
-      throw new HTTP400('Failed to build SQL select statement');
-    }
-
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
-
-    if (!response) {
-      throw new HTTP400('Failed to get project team members');
-    }
-
-    return response?.rows?.[0] || null;
+    return this.projectRepository.getProjectParticipant(projectId, systemUserId);
   }
 
   /**
@@ -100,19 +88,7 @@ export class ProjectService extends DBService {
    * @memberof ProjectService
    */
   async getProjectParticipants(projectId: number): Promise<object[]> {
-    const sqlStatement = queries.projectParticipation.getAllProjectParticipantsSQL(projectId);
-
-    if (!sqlStatement) {
-      throw new HTTP400('Failed to build SQL select statement');
-    }
-
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
-
-    if (!response || !response.rows) {
-      throw new HTTP400('Failed to get project team members');
-    }
-
-    return (response && response.rows) || [];
+    return this.projectRepository.getProjectParticipants(projectId);
   }
 
   /**
@@ -131,37 +107,13 @@ export class ProjectService extends DBService {
     systemUserId: number,
     projectParticipantRoleId: number
   ): Promise<void> {
-    const sqlStatement = queries.projectParticipation.addProjectRoleByRoleIdSQL(
-      projectId,
-      systemUserId,
-      projectParticipantRoleId
-    );
-
-    if (!sqlStatement) {
-      throw new HTTP400('Failed to build SQL insert statement');
-    }
-
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
-
-    if (!response || !response.rowCount) {
-      throw new HTTP400('Failed to insert project team member');
-    }
+    return this.projectRepository.addProjectParticipant(projectId, systemUserId, projectParticipantRoleId);
   }
 
   async getProjectList(isUserAdmin: boolean, systemUserId: number | null, filterFields: any): Promise<any> {
-    const sqlStatement = queries.project.getProjectListSQL(isUserAdmin, systemUserId, filterFields);
+    const response = await this.projectRepository.getProjectList(isUserAdmin, systemUserId, filterFields);
 
-    if (!sqlStatement) {
-      throw new HTTP400('Failed to build SQL select statement');
-    }
-
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
-
-    if (!response.rows) {
-      return [];
-    }
-
-    return response.rows.map((row) => ({
+    return response.map((row) => ({
       id: row.id,
       name: row.name,
       start_date: row.start_date,
@@ -283,159 +235,52 @@ export class ProjectService extends DBService {
   }
 
   async getProjectData(projectId: number): Promise<GetProjectData> {
-    const getProjectSqlStatement = queries.project.getProjectSQL(projectId);
-    const getProjectActivitiesSQLStatement = queries.project.getActivitiesByProjectSQL(projectId);
-
-    const [project, activity] = await Promise.all([
-      this.connection.query(getProjectSqlStatement.text, getProjectSqlStatement.values),
-      this.connection.query(getProjectActivitiesSQLStatement.text, getProjectActivitiesSQLStatement.values)
-    ]);
-
-    const projectResult = (project && project.rows && project.rows[0]) || null;
-    const activityResult = (activity && activity.rows) || null;
-
-    if (!projectResult || !activityResult) {
-      throw new HTTP400('Failed to get project data');
-    }
-
-    return new GetProjectData(projectResult, activityResult);
+    return this.projectRepository.getProjectData(projectId);
   }
 
   async getObjectivesData(projectId: number): Promise<GetObjectivesData> {
-    const sqlStatement = queries.project.getObjectivesByProjectSQL(projectId);
-
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
-    const result = (response && response.rows && response.rows[0]) || null;
-
-    if (!result) {
-      throw new HTTP400('Failed to get project objectives data');
-    }
-
-    return new GetObjectivesData(result);
+    return this.projectRepository.getObjectivesData(projectId);
   }
 
   async getCoordinatorData(projectId: number): Promise<GetCoordinatorData> {
-    const sqlStatement = queries.project.getCoordinatorByProjectSQL(projectId);
-
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
-    const result = (response && response.rows && response.rows[0]) || null;
-
-    if (!result) {
-      throw new HTTP400('Failed to get project contact data');
-    }
-
-    return new GetCoordinatorData(result);
+    return this.projectRepository.getCoordinatorData(projectId);
   }
 
   async getLocationData(projectId: number): Promise<GetLocationData> {
-    const sqlStatement = queries.project.getLocationByProjectSQL(projectId);
-
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
-
-    const result = (response && response.rows) || null;
-
-    if (!result) {
-      throw new HTTP400('Failed to get project data');
-    }
-
-    return new GetLocationData(result);
+    return this.projectRepository.getLocationData(projectId);
   }
 
   async getIUCNClassificationData(projectId: number): Promise<GetIUCNClassificationData> {
-    const sqlStatement = queries.project.getIUCNActionClassificationByProjectSQL(projectId);
-
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
-
-    const result = (response && response.rows) || null;
-
-    if (!result) {
-      throw new HTTP400('Failed to get project data');
-    }
-
-    return new GetIUCNClassificationData(result);
+    return this.projectRepository.getIUCNClassificationData(projectId);
   }
 
   async getFundingData(projectId: number): Promise<GetFundingData> {
-    const sqlStatement = queries.project.getFundingSourceByProjectSQL(projectId);
-
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
-
-    const result = (response && response.rows) || null;
-
-    if (!result) {
-      throw new HTTP400('Failed to get project data');
-    }
-
-    return new GetFundingData(result);
+    return this.projectRepository.getFundingData(projectId);
   }
 
   async getPartnershipsData(projectId: number): Promise<GetPartnershipsData> {
     const [indigenousPartnershipsRows, stakegholderPartnershipsRows] = await Promise.all([
-      this.getIndigenousPartnershipsRows(projectId),
-      this.getStakeholderPartnershipsRows(projectId)
+      this.projectRepository.getIndigenousPartnershipsRows(projectId),
+      this.projectRepository.getStakeholderPartnershipsRows(projectId)
     ]);
-
-    if (!indigenousPartnershipsRows) {
-      throw new HTTP400('Failed to get indigenous partnership data');
-    }
-
-    if (!stakegholderPartnershipsRows) {
-      throw new HTTP400('Failed to get stakeholder partnership data');
-    }
 
     return new GetPartnershipsData(indigenousPartnershipsRows, stakegholderPartnershipsRows);
   }
 
   async getIndigenousPartnershipsRows(projectId: number): Promise<any[]> {
-    const sqlStatement = queries.project.getIndigenousPartnershipsByProjectSQL(projectId);
-
-    if (!sqlStatement) {
-      throw new HTTP400('Failed to build SQL get statement');
-    }
-
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
-
-    return (response && response.rows) || null;
+    return this.projectRepository.getIndigenousPartnershipsRows(projectId);
   }
 
   async getStakeholderPartnershipsRows(projectId: number): Promise<any[]> {
-    const sqlStatement = queries.project.getStakeholderPartnershipsByProjectSQL(projectId);
-
-    if (!sqlStatement) {
-      throw new HTTP400('Failed to build SQL get statement');
-    }
-
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
-
-    return (response && response.rows) || null;
+    return this.projectRepository.getStakeholderPartnershipsRows(projectId);
   }
 
   async getAttachmentsData(projectId: number): Promise<GetAttachmentsData> {
-    const sqlStatement = queries.project.getAttachmentsByProjectSQL(projectId);
-
-    if (!sqlStatement) {
-      throw new HTTP400('Failed to build SQL get statement');
-    }
-
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
-
-    const result = (response && response.rows) || null;
-
-    return new GetAttachmentsData(result);
+    return this.projectRepository.getAttachmentsData(projectId);
   }
 
   async getReportAttachmentsData(projectId: number): Promise<GetReportAttachmentsData> {
-    const sqlStatement = queries.project.getReportAttachmentsByProjectSQL(projectId);
-
-    if (!sqlStatement) {
-      throw new HTTP400('Failed to build SQL get statement');
-    }
-
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
-
-    const result = (response && response.rows) || null;
-
-    return new GetReportAttachmentsData(result);
+    return this.projectRepository.getReportAttachmentsData(projectId);
   }
 
   async createProject(postProjectData: PostProjectObject): Promise<number> {
@@ -497,140 +342,31 @@ export class ProjectService extends DBService {
   }
 
   async insertProject(postProjectData: PostProjectObject): Promise<number> {
-    const sqlStatement = queries.project.postProjectSQL({
-      ...postProjectData.project,
-      ...postProjectData.location,
-      ...postProjectData.objectives,
-      ...postProjectData.coordinator
-    });
-
-    if (!sqlStatement) {
-      throw new HTTP400('Failed to build SQL insert statement');
-    }
-
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
-
-    const result = (response && response.rows && response.rows[0]) || null;
-
-    if (!result || !result.id) {
-      throw new HTTP400('Failed to insert project boundary data');
-    }
-
-    return result.id;
+    return this.projectRepository.insertProject(postProjectData);
   }
 
   async insertFundingSource(fundingSource: PostFundingSource, project_id: number): Promise<number> {
-    const sqlStatement = queries.project.postProjectFundingSourceSQL(fundingSource, project_id);
-
-    if (!sqlStatement) {
-      throw new HTTP400('Failed to build SQL insert statement');
-    }
-
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
-
-    const result = (response && response.rows && response.rows[0]) || null;
-
-    if (!result || !result.id) {
-      throw new HTTP400('Failed to insert project funding data');
-    }
-
-    return result.id;
+    return this.projectRepository.insertFundingSource(fundingSource, project_id);
   }
 
   async insertIndigenousNation(indigenousNationsId: number, project_id: number): Promise<number> {
-    const sqlStatement = queries.project.postProjectIndigenousNationSQL(indigenousNationsId, project_id);
-
-    if (!sqlStatement) {
-      throw new HTTP400('Failed to build SQL insert statement');
-    }
-
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
-
-    const result = (response && response.rows && response.rows[0]) || null;
-
-    if (!result || !result.id) {
-      throw new HTTP400('Failed to insert project first nations partnership data');
-    }
-
-    return result.id;
+    return this.projectRepository.insertIndigenousNation(indigenousNationsId, project_id);
   }
 
   async insertStakeholderPartnership(stakeholderPartner: string, project_id: number): Promise<number> {
-    const sqlStatement = queries.project.postProjectStakeholderPartnershipSQL(stakeholderPartner, project_id);
-
-    if (!sqlStatement) {
-      throw new HTTP400('Failed to build SQL insert statement');
-    }
-
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
-
-    const result = (response && response.rows && response.rows[0]) || null;
-
-    if (!result || !result.id) {
-      throw new HTTP400('Failed to insert project stakeholder partnership data');
-    }
-
-    return result.id;
+    return this.projectRepository.insertStakeholderPartnership(stakeholderPartner, project_id);
   }
 
   async insertClassificationDetail(iucn3_id: number, project_id: number): Promise<number> {
-    const sqlStatement = queries.project.postProjectIUCNSQL(iucn3_id, project_id);
-
-    if (!sqlStatement) {
-      throw new HTTP400('Failed to build SQL insert statement');
-    }
-
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
-
-    const result = (response && response.rows && response.rows[0]) || null;
-
-    if (!result || !result.id) {
-      throw new HTTP400('Failed to insert project IUCN data');
-    }
-
-    return result.id;
+    return this.projectRepository.insertClassificationDetail(iucn3_id, project_id);
   }
 
   async insertActivity(activityId: number, projectId: number): Promise<number> {
-    const sqlStatement = queries.project.postProjectActivitySQL(activityId, projectId);
-
-    if (!sqlStatement) {
-      throw new HTTP400('Failed to build SQL insert statement');
-    }
-
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
-
-    const result = (response && response.rows && response.rows[0]) || null;
-
-    if (!result || !result.id) {
-      throw new HTTP400('Failed to insert project activity data');
-    }
-
-    return result.id;
+    return this.projectRepository.insertActivity(activityId, projectId);
   }
 
   async insertParticipantRole(projectId: number, projectParticipantRole: string): Promise<void> {
-    const systemUserId = this.connection.systemUserId();
-
-    if (!systemUserId) {
-      throw new HTTP400('Failed to identify system user ID');
-    }
-
-    const sqlStatement = queries.projectParticipation.addProjectRoleByRoleNameSQL(
-      projectId,
-      systemUserId,
-      projectParticipantRole
-    );
-
-    if (!sqlStatement) {
-      throw new HTTP400('Failed to build SQL insert statement');
-    }
-
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
-
-    if (!response || !response.rowCount) {
-      throw new HTTP400('Failed to insert project team member');
-    }
+    return this.projectRepository.insertParticipantRole(projectId, projectParticipantRole);
   }
 
   async updateProject(projectId: number, entities: IUpdateProject) {
@@ -658,17 +394,7 @@ export class ProjectService extends DBService {
   async updateIUCNData(projectId: number, entities: IUpdateProject): Promise<void> {
     const putIUCNData = (entities?.iucn && new PutIUCNData(entities.iucn)) || null;
 
-    const sqlDeleteStatement = queries.project.deleteIUCNSQL(projectId);
-
-    if (!sqlDeleteStatement) {
-      throw new HTTP400('Failed to build SQL delete statement');
-    }
-
-    const deleteResult = await this.connection.query(sqlDeleteStatement.text, sqlDeleteStatement.values);
-
-    if (!deleteResult) {
-      throw new HTTP409('Failed to delete project IUCN data');
-    }
+    await this.projectRepository.deleteIUCNData(projectId);
 
     const insertIUCNPromises =
       putIUCNData?.classificationDetails?.map((iucnClassification: IPutIUCN) =>
@@ -681,35 +407,8 @@ export class ProjectService extends DBService {
   async updatePartnershipsData(projectId: number, entities: IUpdateProject): Promise<void> {
     const putPartnershipsData = (entities?.partnerships && new PutPartnershipsData(entities.partnerships)) || null;
 
-    const sqlDeleteIndigenousPartnershipsStatement = queries.project.deleteIndigenousPartnershipsSQL(projectId);
-    const sqlDeleteStakeholderPartnershipsStatement = queries.project.deleteStakeholderPartnershipsSQL(projectId);
-
-    if (!sqlDeleteIndigenousPartnershipsStatement || !sqlDeleteStakeholderPartnershipsStatement) {
-      throw new HTTP400('Failed to build SQL delete statement');
-    }
-
-    const deleteIndigenousPartnershipsPromises = this.connection.query(
-      sqlDeleteIndigenousPartnershipsStatement.text,
-      sqlDeleteIndigenousPartnershipsStatement.values
-    );
-
-    const deleteStakeholderPartnershipsPromises = this.connection.query(
-      sqlDeleteStakeholderPartnershipsStatement.text,
-      sqlDeleteStakeholderPartnershipsStatement.values
-    );
-
-    const [deleteIndigenousPartnershipsResult, deleteStakeholderPartnershipsResult] = await Promise.all([
-      deleteIndigenousPartnershipsPromises,
-      deleteStakeholderPartnershipsPromises
-    ]);
-
-    if (!deleteIndigenousPartnershipsResult) {
-      throw new HTTP409('Failed to delete project indigenous partnerships data');
-    }
-
-    if (!deleteStakeholderPartnershipsResult) {
-      throw new HTTP409('Failed to delete project stakeholder partnerships data');
-    }
+    await this.projectRepository.deleteIndigenousPartnershipsData(projectId);
+    await this.projectRepository.deleteStakeholderPartnershipsData(projectId);
 
     const insertIndigenousPartnershipsPromises =
       putPartnershipsData?.indigenous_partnerships?.map((indigenousPartnership: number) =>
@@ -742,7 +441,7 @@ export class ProjectService extends DBService {
       throw new HTTP400('Failed to parse request body');
     }
 
-    const sqlUpdateProject = queries.project.putProjectSQL(
+    await this.projectRepository.updateProjectData(
       projectId,
       putProjectData,
       putLocationData,
@@ -751,35 +450,13 @@ export class ProjectService extends DBService {
       revision_count
     );
 
-    if (!sqlUpdateProject) {
-      throw new HTTP400('Failed to build SQL update statement');
-    }
-
-    const result = await this.connection.query(sqlUpdateProject.text, sqlUpdateProject.values);
-
-    if (!result || !result.rowCount) {
-      // TODO if revision count is bad, it is supposed to raise an exception?
-      // It currently does skip the update as expected, but it just returns 0 rows updated, and doesn't result in any errors
-      throw new HTTP409('Failed to update stale project data');
-    }
-
     if (putProjectData?.project_activities.length) {
       await this.updateActivityData(projectId, putProjectData);
     }
   }
 
   async updateActivityData(projectId: number, projectData: PutProjectData) {
-    const sqlDeleteActivities = queries.project.deleteActivitiesSQL(projectId);
-
-    if (!sqlDeleteActivities) {
-      throw new HTTP400('Failed to build SQL delete statement');
-    }
-
-    const deleteActivitiesResult = await this.connection.query(sqlDeleteActivities.text, sqlDeleteActivities.values);
-
-    if (!deleteActivitiesResult) {
-      throw new HTTP409('Failed to update project activity data');
-    }
+    await this.projectRepository.deleteActivityData(projectId);
 
     const insertActivityPromises =
       projectData?.project_activities?.map((activityId: number) => this.insertActivity(activityId, projectId)) || [];
@@ -853,17 +530,10 @@ export class ProjectService extends DBService {
      * Check that user is a system administrator - can delete a project
      *
      */
-    const getProjectSQLStatement = queries.project.getProjectSQL(projectId);
 
-    if (!getProjectSQLStatement) {
-      throw new HTTP400('Failed to build SQL get statement');
-    }
+    const projectResult = await this.getProjectData(projectId);
 
-    const projectData = await this.connection.query(getProjectSQLStatement.text, getProjectSQLStatement.values);
-
-    const projectResult = (projectData && projectData.rows && projectData.rows[0]) || null;
-
-    if (!projectResult || !projectResult.id) {
+    if (!projectResult || !projectResult.uuid) {
       throw new HTTP400('Failed to get the project');
     }
 
@@ -872,33 +542,22 @@ export class ProjectService extends DBService {
      * Get the attachment S3 keys for all attachments associated to this project and surveys under this project
      * Used to delete them from S3 separately later
      */
-    const getProjectAttachments = await this.attachmentService.getProjectAttachments(projectId);
-    const getSurveyIdsSQLStatement = queries.survey.getSurveyIdsSQL(projectId);
 
-    if (!getSurveyIdsSQLStatement) {
-      throw new HTTP400('Failed to build SQL get statement');
-    }
+    const surveyService = new SurveyService(this.connection);
 
-    const getSurveyIdsResult = await this.connection.query(
-      getSurveyIdsSQLStatement.text,
-      getSurveyIdsSQLStatement.values
-    );
-
-    if (!getSurveyIdsResult || !getSurveyIdsResult.rows) {
-      throw new HTTP400('Failed to get survey ids associated to project');
-    }
-
-    const attachmentService = new AttachmentService(this.connection);
+    const getSurveyIdsResult = await surveyService.getSurveyIdsByProjectId(projectId);
 
     const surveyAttachmentS3Keys: string[] = Array.prototype.concat.apply(
       [],
       await Promise.all(
-        getSurveyIdsResult.rows.map(async (survey: any) => {
-          const surveyAttachments = await attachmentService.getSurveyAttachments(survey.id);
+        getSurveyIdsResult.map(async (survey: any) => {
+          const surveyAttachments = await this.attachmentService.getSurveyAttachments(survey.id);
           return surveyAttachments.map((attachment) => attachment.key);
         })
       )
     );
+
+    const getProjectAttachments = await this.attachmentService.getProjectAttachments(projectId);
 
     const projectAttachmentS3Keys: string[] = getProjectAttachments.map((attachment: any) => {
       return attachment.key;
@@ -908,13 +567,8 @@ export class ProjectService extends DBService {
      * PART 3
      * Delete the project and all associated records/resources from our DB
      */
-    const deleteProjectSQLStatement = queries.project.deleteProjectSQL(projectId);
 
-    if (!deleteProjectSQLStatement) {
-      throw new HTTP400('Failed to build SQL delete statement');
-    }
-
-    await this.connection.query(deleteProjectSQLStatement.text, deleteProjectSQLStatement.values);
+    await this.projectRepository.deleteProject(projectId);
 
     /**
      * PART 4
