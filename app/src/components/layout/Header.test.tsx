@@ -1,4 +1,5 @@
 import { fireEvent, render, waitFor } from '@testing-library/react';
+import Keycloak from 'keycloak-js'
 import { SYSTEM_ROLE } from 'constants/roles';
 import { AuthStateContext, IAuthState } from 'contexts/authStateContext';
 import { createMemoryHistory } from 'history';
@@ -22,7 +23,8 @@ describe('Header', () => {
       keycloakWrapper: {
         keycloak: {
           authenticated: true
-        },
+        } as Keycloak,
+        isSystemUser: () => true,
         hasLoadedAllUserInfo: true,
         systemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN],
         getUserIdentifier: () => 'testuser',
@@ -62,12 +64,12 @@ describe('Header', () => {
       keycloakWrapper: {
         keycloak: {
           authenticated: true
-        },
+        } as Keycloak,
+        isSystemUser: () => true,
         hasLoadedAllUserInfo: true,
         systemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN],
         getUserIdentifier: () => 'testuser',
         hasAccessRequest: false,
-        isSystemUser: true,
         hasSystemRole: mockHasSystemRole,
         getIdentitySource: () => SYSTEM_IDENTITY_SOURCE.BCEID_BASIC,
         username: 'testusername',
@@ -98,14 +100,14 @@ describe('Header', () => {
       keycloakWrapper: {
         keycloak: {
           authenticated: true
-        },
+        } as Keycloak,
+        isSystemUser: () => true,
         hasLoadedAllUserInfo: true,
         systemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN],
-        isSystemUser: true,
         getUserIdentifier: () => 'testuser',
         hasAccessRequest: false,
         hasSystemRole: jest.fn(),
-        getIdentitySource: () => SYSTEM_IDENTITY_SOURCE.BCEID,
+        getIdentitySource: () => SYSTEM_IDENTITY_SOURCE.BCEID_BASIC,
         username: 'testusername',
         displayName: 'testdisplayname',
         email: 'test@email.com',
@@ -134,11 +136,11 @@ describe('Header', () => {
         keycloakWrapper: {
           keycloak: {
             authenticated: true
-          },
+          } as Keycloak,
+          isSystemUser: () => true,
           hasLoadedAllUserInfo: true,
           hasAccessRequest: false,
           systemRoles: [],
-          isSystemUser: true,
           getUserIdentifier: jest.fn(),
           hasSystemRole: jest.fn(),
           getIdentitySource: jest.fn(),

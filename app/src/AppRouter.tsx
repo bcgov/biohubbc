@@ -77,9 +77,12 @@ const AppRouter: React.FC = () => {
       </AppRoute>
 
       <AppRoute path="/logout" title={getTitle('Logout')} layout={BaseLayout}>
-        <AuthenticatedRouteGuard>
+        <>
+        {/**
+         * @TODO for testing purposes only. Revert this file before merging.
+         */}
           <LogOutPage />
-        </AuthenticatedRouteGuard>
+        </>
       </AppRoute>
 
       <AppRoute title="*" path="*">

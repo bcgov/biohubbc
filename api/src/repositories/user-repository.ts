@@ -173,7 +173,7 @@ export class UserRepository extends BaseRepository {
       record_effective_date
     )
     VALUES (
-      ${userGuid},
+      ${userGuid.toLowerCase()},
       (
         SELECT
           user_identity_source_id
