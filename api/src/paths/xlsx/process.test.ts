@@ -166,7 +166,7 @@ describe('xlsx/process', () => {
       };
       mockReq['keycloak_token'] = 'token';
 
-      const processFileStub = sinon.stub(ValidationService.prototype, 'processFile').resolves();
+      const processFileStub = sinon.stub(ValidationService.prototype, 'processXLSXFile').resolves();
 
       const requestHandler = process.processFile();
       await requestHandler(mockReq, mockRes, mockNext);
@@ -180,7 +180,7 @@ describe('xlsx/process', () => {
       sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
       const processFileStub = sinon
-        .stub(ValidationService.prototype, 'processFile')
+        .stub(ValidationService.prototype, 'processXLSXFile')
         .throws(new Error('test processDWCFile error'));
       const errorServiceStub = sinon.stub(ErrorService.prototype, 'insertSubmissionStatus').resolves();
 
@@ -210,7 +210,7 @@ describe('xlsx/process', () => {
       sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
       const processFileStub = sinon
-        .stub(ValidationService.prototype, 'processFile')
+        .stub(ValidationService.prototype, 'processXLSXFile')
         .throws(new Error('test processDWCFile error'));
       const errorServiceStub = sinon
         .stub(ErrorService.prototype, 'insertSubmissionStatus')

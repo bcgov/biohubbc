@@ -8,12 +8,10 @@ import { ITemplateMethodologyData } from '../repositories/validation-repository'
 import * as FileUtils from '../utils/file-utils';
 import { ICsvState } from '../utils/media/csv/csv-file';
 import { DWCArchive } from '../utils/media/dwc/dwc-archive-file';
-// import { DWCArchive } from '../utils/media/dwc/dwc-archive-file';
 import { ArchiveFile, IMediaState, MediaFile } from '../utils/media/media-file';
 import * as MediaUtils from '../utils/media/media-utils';
 import { ValidationSchemaParser } from '../utils/media/validation/validation-schema-parser';
-import { TransformationSchemaParser } from '../utils/media/xlsx/transformation/transformation-schema-parser';
-import { XLSXTransformation } from '../utils/media/xlsx/transformation/xlsx-transformation';
+import { TransformSchema } from '../utils/media/xlsx/transformation/xlsx-transform-schema-parser';
 import { XLSXCSV } from '../utils/media/xlsx/xlsx-file';
 import { SubmissionError, SubmissionErrorFromMessageType } from '../utils/submission-error';
 import { getMockDBConnection } from '../__mocks__/db';
@@ -21,22 +19,6 @@ import { OccurrenceService } from './occurrence-service';
 import { ValidationService } from './validation-service';
 
 chai.use(sinonChai);
-
-// const mockS3File = {
-//   fieldname: 'media',
-//   originalname: 'test.csv',
-//   encoding: '7bit',
-//   mimetype: 'text/csv',
-//   size: 340
-// };
-
-// const s3Archive = {
-//   fieldname: 'media',
-//   originalname: 'test.zip',
-//   encoding: '7bit',
-//   mimetype: 'application/zip',
-//   size: 340
-// };
 
 const mockService = () => {
   const dbConnection = getMockDBConnection();
@@ -95,7 +77,7 @@ describe('ValidationService', () => {
       sinon.stub(ValidationService.prototype, 'getTemplateMethodologySpeciesRecord').resolves({
         template_methodology_species_id: 1,
         validation: '{}',
-        transform: '{}'
+        transform: ('{}' as unknown) as TransformSchema
       });
 
       const file = new XLSXCSV(buildFile('testFile', { template_id: 1, csm_id: 1 }));
@@ -132,7 +114,7 @@ describe('ValidationService', () => {
       sinon.stub(ValidationService.prototype, 'getTemplateMethodologySpeciesRecord').resolves({
         template_methodology_species_id: 1,
         validation: '{}',
-        transform: '{}'
+        transform: ('{}' as unknown) as TransformSchema
       });
 
       const file = new XLSXCSV(buildFile('testFile', { template_id: 1, csm_id: 1 }));
@@ -441,78 +423,6 @@ describe('ValidationService', () => {
     });
   });
 
-  describe('getTransformationRules', () => {
-    afterEach(() => {
-      sinon.restore();
-    });
-
-    it('should return validation schema parser', () => {
-      const service = mockService();
-
-      const parser = service.getTransformationRules({});
-      expect(parser).to.be.instanceOf(TransformationSchemaParser);
-    });
-
-    it('should fail with invalid json', () => {
-      const service = mockService();
-      sinon
-        .stub(service, 'getTransformationRules')
-        .throws(new Error('TransformationSchemaParser - provided validationSchema was not valid JSON'));
-      try {
-        service.getTransformationRules('---');
-        expect.fail();
-      } catch (error) {
-        expect((error as Error).message).to.be.eql(
-          'TransformationSchemaParser - provided validationSchema was not valid JSON'
-        );
-      }
-    });
-  });
-
-  describe('scrapeOccurrences', () => {
-    afterEach(() => {
-      sinon.restore();
-    });
-
-    it('should run without issue', async () => {
-      const service = mockService();
-      const scrapeUpload = sinon.stub(service, 'templateScrapeAndUploadOccurrences').resolves();
-
-      await service.scrapeOccurrences(1);
-      expect(scrapeUpload).to.be.calledOnce;
-    });
-
-    it('should insert submission error', async () => {
-      const service = mockService();
-      const scrapeUpload = sinon
-        .stub(service, 'templateScrapeAndUploadOccurrences')
-        .throws(SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_UPDATE_OCCURRENCE_SUBMISSION));
-      const insertError = sinon.stub(service.errorService, 'insertSubmissionError').resolves();
-      try {
-        await service.scrapeOccurrences(1);
-        expect(scrapeUpload).to.be.calledOnce;
-      } catch (error) {
-        expect(error).to.be.instanceOf(SubmissionError);
-        expect(insertError).to.be.calledOnce;
-      }
-    });
-
-    it('should throw error', async () => {
-      const service = mockService();
-      const scrapeUpload = sinon.stub(service, 'templateScrapeAndUploadOccurrences').throws(new Error());
-      const insertError = sinon.stub(service.errorService, 'insertSubmissionError').resolves();
-
-      try {
-        await service.scrapeOccurrences(1);
-        expect(scrapeUpload).to.be.calledOnce;
-        expect.fail();
-      } catch (error) {
-        expect(error).not.to.be.instanceOf(SubmissionError);
-        expect(insertError).not.be.calledOnce;
-      }
-    });
-  });
-
   describe('transformFile', () => {
     afterEach(() => {
       sinon.restore();
@@ -748,7 +658,7 @@ describe('ValidationService', () => {
     });
   });
 
-  describe('processFile', () => {
+  describe('processXLSXFile', () => {
     afterEach(() => {
       sinon.restore();
     });
@@ -766,11 +676,11 @@ describe('ValidationService', () => {
       const upload = sinon.stub(service, 'templateScrapeAndUploadOccurrences').resolves();
       const status = sinon.stub(service.submissionRepository, 'insertSubmissionStatus').resolves();
 
-      await service.processFile(1, 1);
+      await service.processXLSXFile(1, 1);
       expect(prep).to.be.calledOnce;
       expect(validate).to.be.calledOnce;
       expect(transform).to.be.calledOnce;
-      expect(upload).to.be.calledOnce;
+      expect(upload).not.to.be.calledOnce;
       expect(status).to.be.calledTwice;
     });
 
@@ -790,7 +700,7 @@ describe('ValidationService', () => {
       sinon.stub(service, 'templateScrapeAndUploadOccurrences').resolves();
       sinon.stub(service.submissionRepository, 'insertSubmissionStatus').resolves();
 
-      await service.processFile(1, 1);
+      await service.processXLSXFile(1, 1);
       expect(prep).to.be.calledOnce;
       expect(validate).to.be.calledOnce;
       expect(transform).to.be.calledOnce;
@@ -1032,7 +942,6 @@ describe('ValidationService', () => {
     it('should run without issue', async () => {
       const file = buildFile('test file', { csm_id: 1, template_id: 1 });
       const xlsxCsv = new XLSXCSV(file);
-      const parser = new TransformationSchemaParser({});
       const fileBuffer = {
         name: '',
         buffer: Buffer.from([])
@@ -1042,15 +951,15 @@ describe('ValidationService', () => {
 
       sinon.stub(FileUtils, 'getFileFromS3').resolves('file from s3' as any);
 
-      const getTransformation = sinon.stub(service, 'getTransformationSchema').resolves({});
-      const getRules = sinon.stub(service, 'getTransformationRules').resolves(parser);
+      const getTransformation = sinon
+        .stub(service, 'getTransformationSchema')
+        .resolves(({} as unknown) as TransformSchema);
       const transform = sinon.stub(service, 'transformXLSX').resolves([fileBuffer]);
       const persistResults = sinon.stub(service, 'persistTransformationResults').resolves();
 
       await service.templateTransformation(1, xlsxCsv, '', 1);
 
       expect(getTransformation).to.be.calledOnce;
-      expect(getRules).to.be.calledOnce;
       expect(transform).to.be.calledOnce;
       expect(persistResults).to.be.calledOnce;
     });
@@ -1058,7 +967,6 @@ describe('ValidationService', () => {
     it('should Submission Error', async () => {
       const file = buildFile('test file', { csm_id: 1, template_id: 1 });
       const xlsxCsv = new XLSXCSV(file);
-      const parser = new TransformationSchemaParser({});
       const fileBuffer = {
         name: '',
         buffer: Buffer.from([])
@@ -1068,8 +976,9 @@ describe('ValidationService', () => {
 
       sinon.stub(FileUtils, 'getFileFromS3').resolves('file from s3' as any);
 
-      const getTransformation = sinon.stub(service, 'getTransformationSchema').resolves({});
-      const getRules = sinon.stub(service, 'getTransformationRules').resolves(parser);
+      const getTransformation = sinon
+        .stub(service, 'getTransformationSchema')
+        .resolves(({} as unknown) as TransformSchema);
       const transform = sinon.stub(service, 'transformXLSX').resolves([fileBuffer]);
       const persistResults = sinon
         .stub(service, 'persistTransformationResults')
@@ -1078,7 +987,6 @@ describe('ValidationService', () => {
       try {
         await service.templateTransformation(1, xlsxCsv, '', 1);
         expect(getTransformation).to.be.calledOnce;
-        expect(getRules).to.be.calledOnce;
         expect(transform).to.be.calledOnce;
         expect(persistResults).to.be.calledOnce;
         expect.fail();
@@ -1248,25 +1156,6 @@ describe('ValidationService', () => {
           SUBMISSION_MESSAGE_TYPE.UNSUPPORTED_FILE_TYPE
         );
       }
-    });
-  });
-
-  describe('transformXLSX', () => {
-    afterEach(() => {
-      sinon.restore();
-    });
-
-    it('should return buffer of worksheets', async () => {
-      const service = mockService();
-      const xlsx = new XLSXCSV(buildFile('', { template_id: 1, csm_id: 1 }));
-
-      const transformation = sinon.stub(XLSXTransformation.prototype, 'transform').resolves({});
-      const dataToSheet = sinon.stub(XLSXTransformation.prototype, 'dataToSheet').returns({});
-
-      const fileBuffer = await service.transformXLSX(xlsx, new TransformationSchemaParser({}));
-      expect(transformation).to.be.calledOnce;
-      expect(dataToSheet).to.be.calledOnce;
-      expect(fileBuffer).to.be.eql([]);
     });
   });
 

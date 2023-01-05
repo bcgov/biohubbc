@@ -13,7 +13,7 @@ import XLSXTransformSchemaParser, {
   TransformSchema
 } from './xlsx-transform-schema-parser';
 import { filterDuplicateKeys, getCombinations } from './xlsx-transform-utils';
-import { getWorksheetByName, getWorksheetRange, trimWorksheetCells } from './xlsx-utils';
+import { getWorksheetByName, getWorksheetRange, prepareWorksheetCells } from '../xlsx-utils';
 
 /**
  * Defines a type that indicates a `Partial` value, but with some exceptions.
@@ -80,9 +80,7 @@ export class XLSXTransform {
     const processedHierarchicalRowObjects = this.processHierarchicalRowObjects(hierarchicalRowObjects);
 
     // Iterate over the Darwin Core records, group them by DWC sheet name, and remove duplicate records in each sheet
-    const preparedRowObjectsForJSONToSheet = this.prepareRowObjectsForJSONToSheet(processedHierarchicalRowObjects);
-
-    return preparedRowObjectsForJSONToSheet;
+    return this.prepareRowObjectsForJSONToSheet(processedHierarchicalRowObjects);
   }
 
   /**
@@ -106,7 +104,7 @@ export class XLSXTransform {
       const worksheet = getWorksheetByName(this.workbook, sheetName);
 
       // Trim all whitespace on string values
-      trimWorksheetCells(worksheet);
+      prepareWorksheetCells(worksheet);
 
       const range = getWorksheetRange(worksheet);
 

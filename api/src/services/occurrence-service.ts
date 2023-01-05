@@ -89,7 +89,7 @@ export class OccurrenceService extends DBService {
       taxonIdHeader,
       vernacularNameHeader
     } = this.getHeadersAndRowsFromDWCArchive(archive);
-    console.log("__ SCRAPING ARCHIVE FOR OCCURRENCES __")
+
     return (
       occurrenceRows?.map((row: any) => {
         const occurrenceId = row[occurrenceIdHeader];
@@ -110,7 +110,6 @@ export class OccurrenceService extends DBService {
 
         eventRows?.forEach((eventRow: any) => {
           if (eventRow[eventIdHeader] === occurrenceId) {
-            // console.log(eventRow)
             eventDate = eventRow[eventDateHeader];
             verbatimCoordinates = eventRow[eventVerbatimCoordinatesHeader];
           }
@@ -121,9 +120,7 @@ export class OccurrenceService extends DBService {
             vernacularName = taxonRow[vernacularNameHeader];
           }
         });
-        // console.log("__--__")
-        console.log(`Date: ${eventDate}`)
-        // console.log(row)
+
         return new PostOccurrence({
           associatedTaxa: associatedTaxa,
           lifeStage: lifeStage,
@@ -134,7 +131,7 @@ export class OccurrenceService extends DBService {
           verbatimCoordinates: verbatimCoordinates,
           organismQuantity: organismQuantity,
           organismQuantityType: organismQuantityType,
-          eventDate: new Date()
+          eventDate: new Date() || eventDate
         });
       }) || []
     );
@@ -150,8 +147,7 @@ export class OccurrenceService extends DBService {
   async scrapeAndUploadOccurrences(submissionId: number, archive: DWCArchive) {
     try {
       const scrapedOccurrences = this.scrapeArchiveForOccurrences(archive);
-      console.log("_____________________")
-      // console.log(scrapedOccurrences)
+
       this.insertPostOccurrences(submissionId, scrapedOccurrences);
     } catch (error) {
       throw SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_UPDATE_OCCURRENCE_SUBMISSION);

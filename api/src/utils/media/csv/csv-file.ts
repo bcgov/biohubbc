@@ -1,6 +1,12 @@
 import xlsx from 'xlsx';
 import { SUBMISSION_MESSAGE_TYPE } from '../../../constants/status';
 import { IMediaState, MediaValidation } from '../media-file';
+import {
+  getCellValue,
+  getWorksheetRange,
+  replaceCellDates,
+  trimCellWhitespace
+} from '../xlsx/xlsx-utils';
 
 export type CSVWorksheets = { [name: string]: CSVWorksheet };
 export type WorkBookValidators = { [name: string]: CSVValidation };
@@ -82,15 +88,13 @@ export class CSVWorksheet {
       return [];
     }
 
-    const ref = this.worksheet['!ref'];
+    const originalRange = getWorksheetRange(this.worksheet);
 
-    if (!ref) {
+    if (!originalRange) {
       return [];
     }
 
     if (!this._headers.length) {
-      const originalRange = xlsx.utils.decode_range(ref);
-
       // Specify range to only include the 0th row (header row)
       const customRange: xlsx.Range = { ...originalRange, e: { ...originalRange.e, r: 0 } };
 
@@ -134,16 +138,14 @@ export class CSVWorksheet {
       return [];
     }
 
-    const ref = this.worksheet['!ref'];
+    const originalRange = getWorksheetRange(this.worksheet);
 
-    if (!ref) {
+    if (!originalRange) {
       return [];
     }
 
     if (!this._rows.length) {
       const rowsToReturn: string[][] = [];
-
-      const originalRange = xlsx.utils.decode_range(ref);
 
       for (let i = 1; i <= originalRange.e.r; i++) {
         const row = new Array(this.getHeaders().length);
@@ -152,17 +154,13 @@ export class CSVWorksheet {
         for (let j = 0; j <= originalRange.e.c; j++) {
           const cellAddress = { c: j, r: i };
           const cellRef = xlsx.utils.encode_cell(cellAddress);
-          const cellValue = this.worksheet[cellRef];
+          const cell = this.worksheet[cellRef];
 
-          if (!cellValue) {
+          if (!cell) {
             continue;
           }
 
-          // Some cell types (like dates) store different interpretations of the raw value in different properties of
-          // the `cellValue`. In these cases, always try and return the string version `w`, before returning the
-          // raw version `v`.
-          // See https://www.npmjs.com/package/xlsx -> Cell Object
-          row[j] = cellValue.w || cellValue.v;
+          row[j] = getCellValue(trimCellWhitespace(replaceCellDates(cell)));
 
           rowHasValues = true;
         }

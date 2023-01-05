@@ -16,7 +16,6 @@ export const parseUnknownMedia = (rawMedia: Express.Multer.File | GetObjectOutpu
   if ((rawMedia as Express.Multer.File).originalname) {
     return parseUnknownMulterFile(rawMedia as Express.Multer.File);
   } else {
-    console.log("PARSE UNKNOWN S3 FILE")
     return parseUnknownS3File(rawMedia as GetObjectOutput);
   }
 };
@@ -43,7 +42,6 @@ export const parseUnknownS3File = (rawMedia: GetObjectOutput): null | MediaFile 
     }
 
     const archiveFile = parseS3File(rawMedia);
-    console.log(archiveFile);
     const mediaFiles = parseUnknownZipFile(rawMedia.Body as Buffer);
 
     return new ArchiveFile(archiveFile.fileName, archiveFile.mimetype, archiveFile.buffer, mediaFiles);

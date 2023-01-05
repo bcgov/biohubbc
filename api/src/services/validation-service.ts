@@ -1,5 +1,4 @@
 import AdmZip from 'adm-zip';
-import Ajv from 'ajv';
 import xlsx from 'xlsx';
 import { SUBMISSION_MESSAGE_TYPE, SUBMISSION_STATUS_TYPE } from '../constants/status';
 import { IDBConnection } from '../database/db';
@@ -11,10 +10,9 @@ import { ICsvState, IHeaderError, IKeyError, IRowError } from '../utils/media/cs
 import { DWCArchive } from '../utils/media/dwc/dwc-archive-file';
 import { ArchiveFile, IMediaState, MediaFile } from '../utils/media/media-file';
 import { parseUnknownMedia } from '../utils/media/media-utils';
-import { XLSXTransform } from '../utils/media/transformation/xlsx-transform';
-import { transformationConfigJSONSchema } from '../utils/media/transformation/xlsx-transform-schema';
-import { TransformSchema } from '../utils/media/transformation/xlsx-transform-schema-parser';
 import { ValidationSchemaParser } from '../utils/media/validation/validation-schema-parser';
+import { XLSXTransform } from '../utils/media/xlsx/transformation/xlsx-transform';
+import { TransformSchema } from '../utils/media/xlsx/transformation/xlsx-transform-schema-parser';
 import { XLSXCSV } from '../utils/media/xlsx/xlsx-file';
 import { MessageError, SubmissionError, SubmissionErrorFromMessageType } from '../utils/submission-error';
 import { DBService } from './db-service';
@@ -47,18 +45,6 @@ export class ValidationService extends DBService {
     this.surveyService = new SurveyService(connection);
     this.occurrenceService = new OccurrenceService(connection);
     this.errorService = new ErrorService(connection);
-  }
-
-  async scrapeOccurrences(submissionId: number) {
-    try {
-      await this.templateScrapeAndUploadOccurrences(submissionId);
-    } catch (error) {
-      if (error instanceof SubmissionError) {
-        await this.errorService.insertSubmissionError(submissionId, error);
-      } else {
-        throw error;
-      }
-    }
   }
 
   async transformFile(submissionId: number, surveyId: number) {
@@ -114,8 +100,10 @@ export class ValidationService extends DBService {
       // Parse Archive into JSON file for custom validation
       await this.parseDWCToJSON(submissionId, dwcPrep.archive);
 
-      await this.templateScrapeAndUploadOccurrences(submissionId);
+      // TODO: scraping refactor https://quartech.atlassian.net/browse/BHBC-2098
+      //   await this.templateScrapeAndUploadOccurrences(submissionId);
     } catch (error) {
+      defaultLog.debug({ label: 'processDWCFile', message: 'error', error });
       if (error instanceof SubmissionError) {
         await this.errorService.insertSubmissionError(submissionId, error);
       } else {
@@ -124,7 +112,7 @@ export class ValidationService extends DBService {
     }
   }
 
-  async processFile(submissionId: number, surveyId: number) {
+  async processXLSXFile(submissionId: number, surveyId: number) {
     try {
       // template preparation
       const submissionPrep = await this.templatePreparation(submissionId);
@@ -141,9 +129,10 @@ export class ValidationService extends DBService {
       // insert template transformed status
       await this.submissionRepository.insertSubmissionStatus(submissionId, SUBMISSION_STATUS_TYPE.TEMPLATE_TRANSFORMED);
 
-      // occurrence scraping
-      await this.templateScrapeAndUploadOccurrences(submissionId);
+      // TODO: scraping refactor https://quartech.atlassian.net/browse/BHBC-2098
+      //   await this.templateScrapeAndUploadOccurrences(submissionId);
     } catch (error) {
+      defaultLog.debug({ label: 'processXLSXFile', message: 'error', error });
       if (error instanceof SubmissionError) {
         await this.errorService.insertSubmissionError(submissionId, error);
       } else {
@@ -208,9 +197,6 @@ export class ValidationService extends DBService {
       const s3OutputKey = occurrenceSubmission.output_key;
       const s3File = await getFileFromS3(s3OutputKey);
       const archive = this.prepDWCArchive(s3File);
-      console.log("PREPPED ARCHIVE")
-      console.log(archive.worksheets.event)
-      console.log("SCRAPE AND UPLOAD OCCURRENCES");
       await this.occurrenceService.scrapeAndUploadOccurrences(submissionId, archive);
     } catch (error) {
       if (error instanceof SubmissionError) {
@@ -263,8 +249,8 @@ export class ValidationService extends DBService {
 
     const xlsxCsv = new XLSXCSV(parsedMedia);
 
-    const templateName = xlsxCsv.workbook.rawWorkbook.Custprops?.sims_name;
-    const templateVersion = xlsxCsv.workbook.rawWorkbook.Custprops?.sims_version;
+    const templateName = xlsxCsv.workbook.rawWorkbook.Custprops?.['sims_name'];
+    const templateVersion = xlsxCsv.workbook.rawWorkbook.Custprops?.['sims_version'];
 
     if (!templateName || !templateVersion) {
       throw SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_TO_GET_TRANSFORM_SCHEMA);
@@ -274,8 +260,8 @@ export class ValidationService extends DBService {
   }
 
   async getTemplateMethodologySpeciesRecord(file: XLSXCSV, surveyId: number): Promise<ITemplateMethodologyData> {
-    const templateName = file.workbook.rawWorkbook.Custprops.sims_name;
-    const templateVersion = file.workbook.rawWorkbook.Custprops.sims_version;
+    const templateName = file.workbook.rawWorkbook.Custprops?.['sims_name'];
+    const templateVersion = file.workbook.rawWorkbook.Custprops?.['sims_version'];
 
     const surveyData = await this.surveyService.getSurveyById(surveyId);
 
@@ -404,14 +390,8 @@ export class ValidationService extends DBService {
     const templateMethodologySpeciesRecord = await this.getTemplateMethodologySpeciesRecord(file, surveyId);
 
     const transformationSchema = templateMethodologySpeciesRecord?.transform;
-    if (!transformationSchema) {
-      throw SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_GET_TRANSFORMATION_RULES);
-    }
 
-    const avj = new Ajv();
-    avj.validate(transformationConfigJSONSchema, transformationSchema);
-    if (avj.errors) {
-      // this probably makes more sense as for input schema rather than pulling it out
+    if (!transformationSchema) {
       throw SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_GET_TRANSFORMATION_RULES);
     }
 
@@ -422,18 +402,12 @@ export class ValidationService extends DBService {
     const xlsxTransform = new XLSXTransform(workbook, transformSchema);
     const preparedRowObjectsForJSONToSheet = xlsxTransform.start();
 
-    console.log(workbook.SheetNames)
-    console.log(workbook.Sheets["Observations"])
-
-    console.log(preparedRowObjectsForJSONToSheet.event)
     // Process the result
     const dwcWorkbook = xlsx.utils.book_new();
     return Object.entries(preparedRowObjectsForJSONToSheet).map(([key, value]) => {
       const worksheet = xlsx.utils.json_to_sheet(value);
 
       const newWorkbook = xlsx.utils.book_new();
-
-      // TODO should this be called sheet 1? does it matter
       xlsx.utils.book_append_sheet(newWorkbook, worksheet, 'Sheet1');
       xlsx.utils.book_append_sheet(dwcWorkbook, worksheet, key);
 

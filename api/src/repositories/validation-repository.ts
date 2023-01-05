@@ -1,7 +1,7 @@
 import SQL from 'sql-template-strings';
 import { getKnex } from '../database/db';
 import { HTTP400 } from '../errors/http-error';
-import { TransformSchema } from '../utils/media/transformation/xlsx-transform-schema-parser';
+import { TransformSchema } from '../utils/media/xlsx/transformation/xlsx-transform-schema-parser';
 import { BaseRepository } from './base-repository';
 
 export interface ITemplateMethodologyData {

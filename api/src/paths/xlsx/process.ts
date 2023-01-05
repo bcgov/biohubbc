@@ -111,7 +111,7 @@ export function processFile(): RequestHandler {
       await connection.open();
 
       const validationService = new ValidationService(connection);
-      await validationService.processFile(submissionId, surveyId);
+      await validationService.processXLSXFile(submissionId, surveyId);
 
       await connection.commit();
     } catch (error) {
