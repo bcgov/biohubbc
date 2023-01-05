@@ -103,8 +103,6 @@ export class OccurrenceService extends DBService {
         const data = { headers: occurrenceHeaders, rows: row };
 
         let verbatimCoordinates;
-        // TODO event date is not formatted properly...
-        // ok so what are we going to be doing with this thing...
         let eventDate;
         let vernacularName;
 
@@ -147,7 +145,6 @@ export class OccurrenceService extends DBService {
   async scrapeAndUploadOccurrences(submissionId: number, archive: DWCArchive) {
     try {
       const scrapedOccurrences = this.scrapeArchiveForOccurrences(archive);
-
       this.insertPostOccurrences(submissionId, scrapedOccurrences);
     } catch (error) {
       throw SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_UPDATE_OCCURRENCE_SUBMISSION);
