@@ -14,10 +14,8 @@ const SystemUserAuthState: IAuthState = {
     getUserIdentifier: () => 'testusername',
     getIdentitySource: () => 'idir',
     username: 'testusername',
-    displayName: 'testdisplayname',
+    display_name: 'testdisplayname',
     email: 'test@email.com',
-    firstName: 'testfirst',
-    lastName: 'testlast',
     refresh: () => {
       // do nothing
     }

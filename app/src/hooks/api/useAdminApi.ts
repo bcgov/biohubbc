@@ -109,14 +109,15 @@ const useAdminApi = (axios: AxiosInstance) => {
    * @param {string} userIdentifier
    * @param {string} identitySource
    * @param {number} roleId
-   * @return {*}
+   * @return {*} {boolean} True if the user is successfully added, false otherwise.
    */
-  const addSystemUser = async (userIdentifier: string, identitySource: string, roleId: number): Promise<boolean> => {
-    const { status } = await axios.post(`/api/user/add`, {
-      identitySource: identitySource,
-      userIdentifier: userIdentifier,
-      roleId: roleId
-    });
+  const addSystemUser = async (
+    userGuid: string,
+    userIdentifier: string,
+    identitySource: string,
+    roleId: number
+  ): Promise<boolean> => {
+    const { status } = await axios.post(`/api/user/add`, { userGuid, identitySource, userIdentifier, roleId });
 
     return status === 200;
   };
