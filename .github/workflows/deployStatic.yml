@@ -4,7 +4,7 @@ name: Static Deploy on OpenShift
 
 on:
   pull_request:
-    types: [opened, reopened, synchronize, closed]
+    types: [closed]
     branches:
       - dev
       - test
@@ -51,7 +51,7 @@ jobs:
   buildDatabase:
     name: Build Database Image
     runs-on: ubuntu-latest
-    if: ${{ github.event.pull_request.merged == true && github.event.pull_request.draft == false }}
+    if: ${{ github.event.pull_request.merged == true }}
     env:
       BUILD_ID: ${{ github.event.number }}
       BRANCH: ${{ github.base_ref }}
@@ -99,7 +99,7 @@ jobs:
   buildDatabaseSetup:
     name: Build Database Setup Image
     runs-on: ubuntu-latest
-    if: ${{ github.event.pull_request.merged == true && github.event.pull_request.draft == false }}
+    if: ${{ github.event.pull_request.merged != true }}
     env:
       BUILD_ID: ${{ github.event.number }}
       BRANCH: ${{ github.base_ref }}
@@ -148,7 +148,7 @@ jobs:
   buildAPI:
     name: Build API Image
     runs-on: ubuntu-latest
-    if: ${{ github.event.pull_request.merged == true && github.event.pull_request.draft == false }}
+    if: ${{ github.event.pull_request.merged != true }}
     env:
       BUILD_ID: ${{ github.event.number }}
       BRANCH: ${{ github.base_ref }}
@@ -195,7 +195,7 @@ jobs:
   buildAPP:
     name: Build App Image
     runs-on: ubuntu-latest
-    if: ${{ github.event.pull_request.merged == true && github.event.pull_request.draft == false }}
+    if: ${{ github.event.pull_request.merged != true }}
     env:
       BUILD_ID: ${{ github.event.number }}
       BRANCH: ${{ github.base_ref }}
@@ -244,7 +244,7 @@ jobs:
   deployDatabase:
     name: Deploy Database Image
     runs-on: ubuntu-latest
-    if: ${{ github.event.pull_request.merged == true && github.event.pull_request.draft == false }}
+    if: ${{ github.event.pull_request.merged != true }}
     env:
       BUILD_ID: ${{ github.event.number }}
       BRANCH: ${{ github.base_ref }}
@@ -293,7 +293,7 @@ jobs:
   deployDatabaseSetup:
     name: Deploy Database Setup Image
     runs-on: ubuntu-latest
-    if: ${{ github.event.pull_request.merged == true && github.event.pull_request.draft == false }}
+    if: ${{ github.event.pull_request.merged != true }}
     env:
       BUILD_ID: ${{ github.event.number }}
       BRANCH: ${{ github.base_ref }}
@@ -343,7 +343,7 @@ jobs:
   deployAPI:
     name: Deploy API Image
     runs-on: ubuntu-latest
-    if: ${{ github.event.pull_request.merged == true && github.event.pull_request.draft == false }}
+    if: ${{ github.event.pull_request.merged != true }}
     env:
       BUILD_ID: ${{ github.event.number }}
       BRANCH: ${{ github.base_ref }}
@@ -393,7 +393,7 @@ jobs:
   deployAPP:
     name: Deploy App Image
     runs-on: ubuntu-latest
-    if: ${{ github.event.pull_request.merged == true && github.event.pull_request.draft == false }}
+    if: ${{ github.event.pull_request.merged != true }}
     env:
       BUILD_ID: ${{ github.event.number }}
       BRANCH: ${{ github.base_ref }}
@@ -442,7 +442,7 @@ jobs:
   clean:
     name: Clean Build/Deployment Artifacts
     runs-on: ubuntu-latest
-    if: ${{ github.event.pull_request.merged == true && github.event.pull_request.draft == false }}
+    if: ${{ github.event.pull_request.merged != true }}
     needs:
       - deployAPP
       - deployAPI
@@ -608,7 +608,7 @@ jobs:
   notify:
     name: Discord Notification
     runs-on: ubuntu-latest
-    if: ${{ github.event.pull_request.merged == true && github.event.pull_request.draft == false }} && always()
+    if: ${{ github.event.pull_request.merged != true }} && always()
     needs: # make sure the notification is sent AFTER the jobs you want included have completed
       - deployAPP
       - deployAPI
