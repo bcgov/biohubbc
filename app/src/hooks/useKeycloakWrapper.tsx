@@ -143,7 +143,7 @@ function useKeycloakWrapper(): IKeycloakWrapper {
     // keycloak user is authenticated, load system user info
     userDataLoader.load();
 
-    if (userDataLoader.data && (!userDataLoader.data.role_names.length || userDataLoader.data?.user_record_end_date)) {
+    if (userDataLoader.isReady && (!userDataLoader.data?.role_names.length || userDataLoader.data?.user_record_end_date)) {
       // Authenticated user either has has no roles or has been deactivated
       // Check if the user has a pending access request
       hasPendingAdministrativeActivitiesDataLoader.load();
@@ -153,7 +153,7 @@ function useKeycloakWrapper(): IKeycloakWrapper {
   /**
    * Coerces a string into a user identity source, e.g. BCEID, IDIR, etc.
    *
-   * @example _inferIdentitySource('idir') => SYSTEM_IDENTITY_SOURCE.IDIR
+   * @example _inferIdentitySource('idir'); // => SYSTEM_IDENTITY_SOURCE.IDIR
    *
    * @param userIdentitySource The user identity source string
    * @returns {*} {SYSTEM_IDENTITY_SOURCE | null}

@@ -145,13 +145,13 @@ export const AccessRequestPage: React.FC = () => {
     case SYSTEM_IDENTITY_SOURCE.BCEID_BUSINESS:
       initialValues = BCeIDBusinessRequestFormInitialValues;
       validationSchema = BCeIDBusinessRequestFormYupSchema;
-      requestForm = <BCeIDRequestForm />;
+      requestForm = <BCeIDRequestForm accountType={SYSTEM_IDENTITY_SOURCE.BCEID_BUSINESS} />;
       break;
 
     case SYSTEM_IDENTITY_SOURCE.BCEID_BASIC:
       initialValues = BCeIDBasicRequestFormInitialValues;
       validationSchema = BCeIDBasicRequestFormYupSchema;
-      requestForm = <BCeIDRequestForm />;
+      requestForm = <BCeIDRequestForm accountType={SYSTEM_IDENTITY_SOURCE.BCEID_BASIC} />;
       break;
 
     case SYSTEM_IDENTITY_SOURCE.IDIR:

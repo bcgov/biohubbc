@@ -4,9 +4,10 @@ import Typography from '@material-ui/core/Typography';
 import AutocompleteField, { IAutocompleteFieldOption } from 'components/fields/AutocompleteField';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { useFormikContext } from 'formik';
+import { SYSTEM_IDENTITY_SOURCE } from 'hooks/useKeycloakWrapper';
 import { IGetAccessRequestsListResponse } from 'interfaces/useAdminApi.interface';
 import React from 'react';
-import { getFormattedDate } from 'utils/Utils';
+import { getFormattedDate, getFormattedIdentitySource } from 'utils/Utils';
 import yup from 'utils/YupSchema';
 
 export interface IReviewAccessRequestForm {
@@ -33,6 +34,11 @@ export interface IReviewAccessRequestFormProps {
  */
 const ReviewAccessRequestForm: React.FC<IReviewAccessRequestFormProps> = (props) => {
   const { handleSubmit } = useFormikContext<IReviewAccessRequestForm>();
+
+  const formattedUsername = [
+    getFormattedIdentitySource(props.request.data.identitySource as SYSTEM_IDENTITY_SOURCE),
+    props.request.data.username
+  ].filter(Boolean).join('/')
 
   return (
     <Box>
@@ -64,7 +70,7 @@ const ReviewAccessRequestForm: React.FC<IReviewAccessRequestFormProps> = (props)
                 Username
               </Typography>
               <Typography component="dd" variant="body1">
-                {props.request.data.identitySource.toUpperCase()}/{props.request.data.username}
+                {formattedUsername}
               </Typography>
             </Grid>
 
