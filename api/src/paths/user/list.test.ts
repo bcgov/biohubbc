@@ -26,6 +26,8 @@ describe('users', () => {
         {
           id: 1,
           user_identifier: 'identifier',
+          user_guid: 'aaaa',
+          identity_source: 'idir',
           record_end_date: '',
           role_ids: [1, 2],
           role_names: ['System Admin', 'Project Lead']

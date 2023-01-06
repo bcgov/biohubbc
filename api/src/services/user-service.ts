@@ -16,6 +16,9 @@ export type ListSystemUsers = {
 
 const defaultLog = getLogger('services/user-service');
 
+/**
+ * @TODO Replace all implementations of `queries/users/user-queries` with appropriate UserRepository methods.
+ */
 export class UserService extends DBService {
   userRepository: UserRepository;
 
@@ -26,22 +29,16 @@ export class UserService extends DBService {
   }
 
   /**
-   * Fetch a single system user by their ID.
+   * Fetch a single system user by their system user ID.
    *
    * @param {number} systemUserId
-   * @return {*}  {(Promise<UserObject | null>)}
+   * @return {*}  {(Promise<UserObject>)}
    * @memberof UserService
    */
-  async getUserById(systemUserId: number): Promise<UserObject | null> {
-    const sqlStatement = queries.users.getUserByIdSQL(systemUserId);
+  async getUserById(systemUserId: number): Promise<UserObject> {
+    const response = await this.userRepository.getUserById(systemUserId);
 
-    if (!sqlStatement) {
-      throw new ApiBuildSQLError('Failed to build SQL select statement');
-    }
-
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
-
-    return (response?.rows?.[0] && new UserObject(response.rows[0])) || null;
+    return new UserObject(response);
   }
 
   /**
@@ -71,7 +68,7 @@ export class UserService extends DBService {
    * @param {string} userGuid
    * @param {string} userIdentifier
    * @param {string} identitySource
-   * @return {*}  {Promise<Models.user.UserObject>}
+   * @return {*}  {Promise<UserObject>}
    * @memberof UserService
    */
   async addSystemUser(userGuid: string, userIdentifier: string, identitySource: string): Promise<UserObject> {
@@ -87,18 +84,9 @@ export class UserService extends DBService {
    * @memberof UserService
    */
   async listSystemUsers(): Promise<UserObject[]> {
-    const getUserListSQLStatement = queries.users.getUserListSQL();
+    const response = await this.userRepository.listSystemUsers();
 
-    if (!getUserListSQLStatement) {
-      throw new ApiBuildSQLError('Failed to build SQL select statement');
-    }
-
-    const getUserListResponse = await this.connection.query(
-      getUserListSQLStatement.text,
-      getUserListSQLStatement.values
-    );
-
-    return getUserListResponse.rows.map((row) => new UserObject(row));
+    return response.map((row) => new UserObject(row));
   }
 
   /**
@@ -108,7 +96,7 @@ export class UserService extends DBService {
    * @param {string} userGuid
    * @param {string} userIdentifier
    * @param {string} identitySource
-   * @return {*}  {Promise<Models.user.UserObject>}
+   * @return {*}  {Promise<UserObject>}
    * @memberof UserService
    */
   async ensureSystemUser(userGuid: string, userIdentifier: string, identitySource: string): Promise<UserObject> {
