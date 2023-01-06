@@ -291,7 +291,7 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
                     <TableRow data-testid={`active-user-row-${index}`} key={row.id}>
                       <TableCell>
                         <Link className={classes.linkButton} underline="always" href={`/admin/users/${row.id}`}>
-                          {row.user_identifier || 'Not Applicable'}
+                          {row.user_identifier || 'No identifier'}
                         </Link>
                       </TableCell>
                       <TableCell>

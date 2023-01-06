@@ -34,6 +34,7 @@ describe('ActiveUsersList', () => {
         {
           id: 1,
           user_identifier: 'username',
+          user_guid: 'user-guid',
           user_record_end_date: '2020-10-10',
           role_names: ['role 1', 'role 2']
         }
@@ -54,6 +55,7 @@ describe('ActiveUsersList', () => {
         {
           id: 1,
           user_identifier: 'username',
+          user_guid: 'user-guid',
           user_record_end_date: '2020-10-10',
           role_names: []
         }

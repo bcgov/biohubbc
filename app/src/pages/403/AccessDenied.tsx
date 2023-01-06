@@ -13,6 +13,7 @@ const AccessDenied = () => {
 
   const { keycloakWrapper } = useContext(AuthStateContext);
 
+  // TODO remove this commented out code?
   // if (!keycloakWrapper?.hasLoadedAllUserInfo) {
   // User data has not been loaded, can not yet determine if they have a role
   // Soft lock, no real way to recover if user is not logged in

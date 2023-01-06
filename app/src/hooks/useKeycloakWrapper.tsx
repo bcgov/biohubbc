@@ -265,7 +265,7 @@ function useKeycloakWrapper(): IKeycloakWrapper {
   };
 
   return {
-    keycloak: keycloak,
+    keycloak,
     hasLoadedAllUserInfo: (userDataLoader.isReady || !!hasPendingAdministrativeActivitiesDataLoader.data),
     systemRoles: getSystemRoles(),
     hasSystemRole,

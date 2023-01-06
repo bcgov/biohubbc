@@ -1,5 +1,4 @@
 import { SYSTEM_IDENTITY_SOURCE } from '../constants/database';
-import { EXTERNAL_BCEID_IDENTITY_SOURCES, EXTERNAL_IDIR_IDENTITY_SOURCES } from '../constants/keycloak';
 
 /**
  * Parses out the user's GUID from a keycloak token, which is extracted from the
@@ -12,24 +11,6 @@ import { EXTERNAL_BCEID_IDENTITY_SOURCES, EXTERNAL_IDIR_IDENTITY_SOURCES } from 
  */
 export const getUserGuid = (keycloakToken: object): string | null => {
   const userIdentifier = keycloakToken?.['preferred_username']?.split('@')?.[0];
-
-  if (!userIdentifier) {
-    return null;
-  }
-
-  return userIdentifier;
-};
-
-/**
- * Parses out the user's identifier from a keycloak token.
- *
- * @example getUserIdentifier({ ....token, bceid_username: 'jsmith@idir' }) => 'jsmith'
- *
- * @param {object} keycloakToken
- * @return {*} {(string | null)}
- */
-export const getUserIdentifier = (keycloakToken: object): string | null => {
-  const userIdentifier = keycloakToken?.['idir_username'] || keycloakToken?.['bceid_username'];
 
   if (!userIdentifier) {
     return null;
@@ -52,19 +33,23 @@ export const getUserIdentifier = (keycloakToken: object): string | null => {
 export const getUserIdentitySource = (keycloakToken: object): SYSTEM_IDENTITY_SOURCE => {
   const userIdentitySource: string = (
     keycloakToken?.['identity_provider'] || keycloakToken?.['preferred_username']?.split('@')?.[1]
-  )?.toUpperCase();
+  )
 
   return coerceUserIdentitySource(userIdentitySource);
 };
 
 /**
- * @TODO jsdoc
- * Coerce the raw keycloak token identity provider value into an system identity source enum value
- * @param userIdentitySource
- * @returns
+ * Coerce the raw keycloak token identity provider value into an system identity source enum value.
+ * If the given user identity source string does not satisfy one of `SYSTEM_IDENTITY_SOURCE`, the return
+ * value defaults to `SYSTEM_IDENTITY_SOURCE.DATABASE`.
+ * 
+ * @example coerceUserIdentitySource('idir') => 'idir' satisfies SYSTEM_IDENTITY_SOURCE.IDIR
+ * 
+ * @param userIdentitySource the identity source string
+ * @returns {*} {SYSTEM_IDENTITY_SOURCE} the identity source belonging to type SYSTEM_IDENTITY_SOURCE
  */
-export const coerceUserIdentitySource = (userIdentitySource: string): SYSTEM_IDENTITY_SOURCE => {
-  switch (userIdentitySource) {
+export const coerceUserIdentitySource = (userIdentitySource: string | null): SYSTEM_IDENTITY_SOURCE => {
+  switch (userIdentitySource?.toUpperCase()) {
     case SYSTEM_IDENTITY_SOURCE.BCEID_BASIC:
       return SYSTEM_IDENTITY_SOURCE.BCEID_BASIC;
 
@@ -87,29 +72,19 @@ export const coerceUserIdentitySource = (userIdentitySource: string): SYSTEM_IDE
 };
 
 /**
- * Converts an identity source string to a matching one supported by the database.
+ * Parses out the user's identifier from a keycloak token.
  *
- * Why? Some identity sources ave multiple variations of their source string, which the get translated to a single
- * variation so that the SIMS application doesn't have to account for every variation in its logic.
+ * @example getUserIdentifier({ ....token, bceid_username: 'jsmith@idir' }) => 'jsmith'
  *
  * @param {object} keycloakToken
- * @deprecated Replaced by coerceUserIdentitySource
- * @return {*}  {(SYSTEM_IDENTITY_SOURCE | null)}
+ * @return {*} {(string | null)}
  */
-export const _convertUserIdentitySource = (identitySource: string): SYSTEM_IDENTITY_SOURCE | null => {
-  const uppercaseIdentitySource = identitySource?.toUpperCase();
+export const getUserIdentifier = (keycloakToken: object): string | null => {
+  const userIdentifier = keycloakToken?.['idir_username'] || keycloakToken?.['bceid_username'];
 
-  if (EXTERNAL_BCEID_IDENTITY_SOURCES.includes(uppercaseIdentitySource)) {
-    return SYSTEM_IDENTITY_SOURCE.BCEID_BASIC;
+  if (!userIdentifier) {
+    return null;
   }
 
-  if (EXTERNAL_IDIR_IDENTITY_SOURCES.includes(uppercaseIdentitySource)) {
-    return SYSTEM_IDENTITY_SOURCE.IDIR;
-  }
-
-  if (uppercaseIdentitySource === SYSTEM_IDENTITY_SOURCE.DATABASE) {
-    return SYSTEM_IDENTITY_SOURCE.DATABASE;
-  }
-
-  return null;
+  return userIdentifier;
 };
