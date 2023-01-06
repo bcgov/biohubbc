@@ -195,10 +195,8 @@ export class XLSXTransform {
   buildRowObjectsHierarchy(preparedRowObjects: Record<TemplateSheetName, RowObject[]>): { _children: RowObject[] } {
     const hierarchicalRowObjects: { _children: RowObject[] } = { _children: [] };
 
-    for (let queueIndex = 0; queueIndex < this.schemaParser.preparedTransformSchema.templateMeta.length; queueIndex++) {
-      const transformQueueItem = this.schemaParser.preparedTransformSchema.templateMeta[queueIndex];
-
-      const sheetName = transformQueueItem.sheetName;
+    for (const templateMetaItem of this.schemaParser.preparedTransformSchema.templateMeta) {
+      const sheetName = templateMetaItem.sheetName;
 
       const rowObjects = preparedRowObjects[sheetName];
 
@@ -207,8 +205,7 @@ export class XLSXTransform {
         continue;
       }
 
-      const distanceToRoot = transformQueueItem.distanceToRoot;
-
+      const distanceToRoot = templateMetaItem.distanceToRoot;
       if (distanceToRoot === 0) {
         // These are root row objects, and can be added to the `hierarchicalRowObjects` array directly as they have no
         // parent to be nested under
@@ -218,9 +215,7 @@ export class XLSXTransform {
       }
 
       // Add non-root row objects
-      for (let rowIndex = 0; rowIndex < rowObjects.length; rowIndex++) {
-        const rowObjectsItem = rowObjects[rowIndex];
-
+      for (const rowObjectsItem of rowObjects) {
         const pathsToPatch: string[] = JSONPath({
           json: hierarchicalRowObjects,
           path: `$${'._children[*]'.repeat(distanceToRoot - 1)}._children[?(@._childKeys.indexOf("${
@@ -262,15 +257,11 @@ export class XLSXTransform {
     const mapRowObjects: Record<DWCSheetName, Record<DWCColumnName, string>[]>[] = [];
 
     // For each hierarchicalRowObjects
-    for (let rowIndex = 0; rowIndex < hierarchicalRowObjects._children.length; rowIndex++) {
-      const hierarchicalRowObject = hierarchicalRowObjects._children[rowIndex];
+    for (const hierarchicalRowObjectsItem of hierarchicalRowObjects._children) {
+      const flattenedRowObjects = this._flattenHierarchicalRowObject(hierarchicalRowObjectsItem);
 
-      const flattenedRowObjects = this._flattenHierarchicalRowObject(hierarchicalRowObject);
-
-      for (let flatIndex = 0; flatIndex < flattenedRowObjects.length; flatIndex++) {
-        const flattenedRowObject = flattenedRowObjects[flatIndex] as RowObject[];
-
-        const result = this._mapFlattenedRowObject(flattenedRowObject);
+      for (const flattenedRowObjectsItem of flattenedRowObjects) {
+        const result = this._mapFlattenedRowObject(flattenedRowObjectsItem as RowObject[]);
 
         mapRowObjects.push(result);
       }
@@ -290,29 +281,27 @@ export class XLSXTransform {
     const prepGetCombinations = (source: AtLeast<RowObject, '_children'>[]): Record<TemplateSheetName, RowObject[]> => {
       const prepGetCombinations: Record<TemplateSheetName, RowObject[]> = {};
 
-      for (let sourceIndex = 0; sourceIndex < source.length; sourceIndex++) {
-        if (source[sourceIndex]._type === 'leaf') {
+      for (const sourceItem of source) {
+        if (sourceItem._type === 'leaf') {
           // This node is marked as a leaf, so do not descend into its children.
           continue;
         }
 
-        const children = source[sourceIndex]._children;
+        const children = sourceItem._children;
 
-        for (let childrenIndex = 0; childrenIndex < children.length; childrenIndex++) {
-          const child = children[childrenIndex];
-
-          if (!prepGetCombinations[child._name]) {
-            prepGetCombinations[child._name] = [];
+        for (const childrenItem of children) {
+          if (!prepGetCombinations[childrenItem._name]) {
+            prepGetCombinations[childrenItem._name] = [];
           }
 
-          prepGetCombinations[child._name].push(child);
+          prepGetCombinations[childrenItem._name].push(childrenItem);
         }
       }
 
       return prepGetCombinations;
     };
 
-    const loop = (flatIndex: number, source: AtLeast<RowObject, '_children'>[]) => {
+    const loop = (index: number, source: AtLeast<RowObject, '_children'>[]) => {
       // Grab all of the children of the current `source` and build an object in the format needed by the `getCombinations`
       // function.
       const preppedForGetCombinations = prepGetCombinations(source);
@@ -330,40 +319,40 @@ export class XLSXTransform {
       if (combinations.length > 1) {
         // This for loop is intentionally looping backwards, and stopping 1 element short of the 0'th element.
         // This is because we only want to process the additional elements, pushing them onto the array, and leaving
-        // the code further below to handle the 0'th element, which will be set at the current `flatIndex`
+        // the code further below to handle the 0'th element, which will be set at the current `index`
         for (let getCombinationsIndex = combinations.length - 1; getCombinationsIndex > 0; getCombinationsIndex--) {
           let newSource: AtLeast<RowObject, '_children'>[] = [];
-          for (let sourceIndex = 0; sourceIndex < source.length; sourceIndex++) {
-            if (Object.keys(source[sourceIndex]).length <= 1) {
+          for (const sourceItem of source) {
+            if (Object.keys(sourceItem).length <= 1) {
               continue;
             }
-            newSource.push({ ...source[sourceIndex], _children: [] });
+            newSource.push({ ...sourceItem, _children: [] });
           }
           newSource = newSource.concat(Object.values(combinations[getCombinationsIndex]));
           flattenedRowObjects.push(newSource);
         }
       }
 
-      // Handle the 0'th element of `combinations`, setting the `newSource` at whatever the current `flatIndex` is
+      // Handle the 0'th element of `combinations`, setting the `newSource` at whatever the current `index` is
       let newSource: AtLeast<RowObject, '_children'>[] = [];
-      for (let sourceIndex = 0; sourceIndex < source.length; sourceIndex++) {
-        if (Object.keys(source[sourceIndex]).length <= 1) {
+      for (const sourceItem of source) {
+        if (Object.keys(sourceItem).length <= 1) {
           continue;
         }
-        newSource.push({ ...source[sourceIndex], _children: [] });
+        newSource.push({ ...sourceItem, _children: [] });
       }
       newSource = newSource.concat(Object.values(combinations[0]));
-      flattenedRowObjects[flatIndex] = newSource;
+      flattenedRowObjects[index] = newSource;
 
       // Recurse into the newSource
-      loop(flatIndex, newSource);
+      loop(index, newSource);
     };
 
     // For each element in `flattenedRowObjects`, recursively descend through its children, flattening them as we
     // go. If 2 children are of the same type, then push a copy of the current `flattenedRowObjects` element onto
     // the `flattenedRowObjects` array, which will be processed on the next iteration of the for loop.
-    for (let index = 0; index < flattenedRowObjects.length; index++) {
-      loop(index, flattenedRowObjects[index]);
+    for (const [flatIndex, flattenedRowObjectsItem] of flattenedRowObjects.entries()) {
+      loop(flatIndex, flattenedRowObjectsItem);
     }
 
     return flattenedRowObjects;
@@ -377,9 +366,9 @@ export class XLSXTransform {
     const mapSchema = [...this.schemaParser.preparedTransformSchema.map];
 
     // For each sheet
-    for (let mapIndex = 0; mapIndex < mapSchema.length; mapIndex++) {
+    for (const mapSchemaItem of mapSchema) {
       // Check conditions, if any
-      const sheetCondition = mapSchema[mapIndex].condition;
+      const sheetCondition = mapSchemaItem.condition;
       if (sheetCondition) {
         if (!this._processCondition(sheetCondition, flattenedRow)) {
           // Conditions not met, skip processing this item
@@ -387,7 +376,7 @@ export class XLSXTransform {
         }
       }
 
-      const sheetName = mapSchema[mapIndex].sheetName;
+      const sheetName = mapSchemaItem.sheetName;
 
       if (!output[sheetName]) {
         output[sheetName] = [];
@@ -396,21 +385,19 @@ export class XLSXTransform {
         indexBySheetName[sheetName] = indexBySheetName[sheetName] + 1;
       }
 
-      const fields = mapSchema[mapIndex].fields;
+      const fields = mapSchemaItem.fields;
 
       if (fields && fields.length) {
         // For each item in the `fields` array
-        for (let fieldIndex = 0; fieldIndex < fields.length; fieldIndex++) {
+        for (const fieldsItem of fields) {
           // The final computed cell value for this particular schema field element
           let cellValue = '';
 
-          const columnName = fields[fieldIndex].columnName;
-          const columnValue = fields[fieldIndex].columnValue;
+          const columnName = fieldsItem.columnName;
+          const columnValue = fieldsItem.columnValue;
 
           // For each item in the `columnValue` array
-          for (let columnValueIndex = 0; columnValueIndex < columnValue.length; columnValueIndex++) {
-            const columnValueItem = columnValue[columnValueIndex];
-
+          for (const columnValueItem of columnValue) {
             // Check conditions, if any
             const columnValueItemCondition = columnValueItem.condition;
             if (columnValueItemCondition) {
@@ -476,8 +463,8 @@ export class XLSXTransform {
             // Check for `add` additions at the field level
             const columnValueItemAdd = columnValueItem.add;
             if (columnValueItemAdd && columnValueItemAdd.length) {
-              for (let addIndex = 0; addIndex < columnValueItemAdd.length; addIndex++) {
-                mapSchema.push(columnValueItemAdd[addIndex]);
+              for (const columnValueItemAddItem of columnValueItemAdd) {
+                mapSchema.push(columnValueItemAddItem);
               }
             }
 
@@ -496,10 +483,10 @@ export class XLSXTransform {
       }
 
       // Check for additions at the sheet level
-      const sheetAdds = mapSchema[mapIndex].add;
+      const sheetAdds = mapSchemaItem.add;
       if (sheetAdds && sheetAdds.length) {
-        for (let addIndex = 0; addIndex < sheetAdds.length; addIndex++) {
-          mapSchema.push(sheetAdds[addIndex]);
+        for (const sheetAddsItem of sheetAdds) {
+          mapSchema.push(sheetAddsItem);
         }
       }
     }
@@ -523,11 +510,9 @@ export class XLSXTransform {
 
     const conditionsMet = new Set<boolean>();
 
-    for (let checksIndex = 0; checksIndex < condition.checks.length; checksIndex++) {
-      const check = condition.checks[checksIndex];
-
-      if (check.ifNotEmpty) {
-        conditionsMet.add(this._processIfNotEmptyCondition(check, rowObjects));
+    for (const checksItem of condition.checks) {
+      if (checksItem.ifNotEmpty) {
+        conditionsMet.add(this._processIfNotEmptyCondition(checksItem, rowObjects));
       }
     }
 
@@ -560,8 +545,8 @@ export class XLSXTransform {
 
     const values = [];
 
-    for (let pathsIndex = 0; pathsIndex < paths.length; pathsIndex++) {
-      const value = JSONPath({ path: paths[pathsIndex], json: json }) || '';
+    for (const pathsItem of paths) {
+      const value = JSONPath({ path: pathsItem, json: json }) || '';
 
       if (value) {
         values.push(value);
@@ -593,7 +578,6 @@ export class XLSXTransform {
 
     processedHierarchicalRowObjects.forEach((item) => {
       const entries = Object.entries(item);
-
       for (const [key, value] of entries) {
         groupedByDWCSheetName[key] = groupedByDWCSheetName[key].concat(value);
       }

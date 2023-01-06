@@ -850,7 +850,7 @@ describe('ValidationService', () => {
         headerErrors: [
           {
             errorCode: SUBMISSION_MESSAGE_TYPE.DUPLICATE_HEADER,
-            message: 'Duplicate header found',
+            message: 'Duplicate Header found',
             col: 1
           }
         ],

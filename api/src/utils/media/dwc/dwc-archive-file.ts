@@ -5,6 +5,7 @@ import { ValidationSchemaParser } from '../validation/validation-schema-parser';
 
 export enum DWC_CLASS {
   EVENT = 'event',
+  LOCATION = 'location',
   OCCURRENCE = 'occurrence',
   MEASUREMENTORFACT = 'measurementorfact',
   RESOURCERELATIONSHIP = 'resourcerelationship',
@@ -52,6 +53,12 @@ export class DWCArchive {
       switch (rawFile.name) {
         case DWC_CLASS.EVENT:
           this.worksheets[DWC_CLASS.EVENT] = new CSVWorksheet(
+            rawFile.name,
+            xlsx.read(rawFile.buffer).Sheets[DEFAULT_XLSX_SHEET]
+          );
+          break;
+        case DWC_CLASS.LOCATION:
+          this.worksheets[DWC_CLASS.LOCATION] = new CSVWorksheet(
             rawFile.name,
             xlsx.read(rawFile.buffer).Sheets[DEFAULT_XLSX_SHEET]
           );

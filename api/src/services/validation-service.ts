@@ -128,9 +128,6 @@ export class ValidationService extends DBService {
 
       // insert template transformed status
       await this.submissionRepository.insertSubmissionStatus(submissionId, SUBMISSION_STATUS_TYPE.TEMPLATE_TRANSFORMED);
-
-      // TODO: scraping refactor https://quartech.atlassian.net/browse/BHBC-2098
-      //   await this.templateScrapeAndUploadOccurrences(submissionId);
     } catch (error) {
       defaultLog.debug({ label: 'processXLSXFile', message: 'error', error });
       if (error instanceof SubmissionError) {
@@ -159,7 +156,7 @@ export class ValidationService extends DBService {
   async dwcPreparation(submissionId: number): Promise<{ archive: DWCArchive; s3InputKey: string }> {
     try {
       const occurrenceSubmission = await this.occurrenceService.getOccurrenceSubmission(submissionId);
-      const s3InputKey = occurrenceSubmission.input_key;
+      const s3InputKey = occurrenceSubmission.output_key;
       const s3File = await getFileFromS3(s3InputKey);
       const archive = this.prepDWCArchive(s3File);
 
@@ -175,11 +172,8 @@ export class ValidationService extends DBService {
   async templatePreparation(submissionId: number): Promise<{ s3InputKey: string; xlsx: XLSXCSV }> {
     try {
       const occurrenceSubmission = await this.occurrenceService.getOccurrenceSubmission(submissionId);
-
       const s3InputKey = occurrenceSubmission.input_key;
-
       const s3File = await getFileFromS3(s3InputKey);
-
       const xlsx = this.prepXLSX(s3File);
 
       return { s3InputKey: s3InputKey, xlsx: xlsx };
@@ -251,6 +245,13 @@ export class ValidationService extends DBService {
 
     const templateName = xlsxCsv.workbook.rawWorkbook.Custprops?.['sims_name'];
     const templateVersion = xlsxCsv.workbook.rawWorkbook.Custprops?.['sims_version'];
+
+    defaultLog.debug({
+      label: 'prepXLSX',
+      message: 'template properties',
+      sims_name: templateName,
+      sims_version: templateVersion
+    });
 
     if (!templateName || !templateVersion) {
       throw SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_TO_GET_TRANSFORM_SCHEMA);

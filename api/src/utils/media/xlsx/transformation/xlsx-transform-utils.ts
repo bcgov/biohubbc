@@ -37,9 +37,9 @@ export function getCombinations<O extends Record<string | number, any[]>>(obj: O
   for (const key in obj) {
     const values = obj[key];
     const all: typeof combos = [];
-    for (let i = 0; i < values.length; i++) {
+    for (const value of values) {
       for (let j = 0; j < (combos.length || 1); j++) {
-        const newCombo = { ...combos[j], [key]: values[i] };
+        const newCombo = { ...combos[j], [key]: value };
         all.push(newCombo);
       }
     }
