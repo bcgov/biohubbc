@@ -20,8 +20,6 @@ const DB_IDLE_TIMEOUT: number = Number(process.env.DB_IDLE_TIMEOUT) || 10000;
 
 const DB_CLIENT = 'pg';
 
-const DB_USER_API = 'biohub_api';
-
 export const defaultPoolConfig: pg.PoolConfig = {
   user: DB_USERNAME,
   password: DB_PASSWORD,
@@ -363,7 +361,7 @@ export const getDBConnection = function (keycloakToken: object): IDBConnection {
  */
 export const getAPIUserDBConnection = (): IDBConnection => {
   return getDBConnection({
-    preferred_username: `${DB_USER_API}@database`,
+    preferred_username: `${DB_DATABASE}@database`,
     identity_provider: 'database'
   });
 };
