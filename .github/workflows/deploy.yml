@@ -4,7 +4,7 @@ name: PR-Based Deploy on OpenShift
 
 on:
   pull_request:
-    types: [opened, reopened, synchronize]
+    types: [opened, reopened, synchronize, ready_for_review]
 
 jobs:
   # Print variables for logging and debugging purposes
