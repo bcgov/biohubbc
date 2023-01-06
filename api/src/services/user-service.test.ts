@@ -22,7 +22,7 @@ describe('UserService', () => {
 
       const mockResponseRow = { system_user_id: 123 };
       const mockUserRepository = sinon.stub(UserRepository.prototype, 'getUserById');
-      mockUserRepository.resolves(mockResponseRow as unknown as IGetUser);
+      mockUserRepository.resolves((mockResponseRow as unknown) as IGetUser);
 
       const userService = new UserService(mockDBConnection);
 
@@ -56,7 +56,7 @@ describe('UserService', () => {
 
       const mockResponseRow = [{ system_user_id: 123 }];
       const mockUserRepository = sinon.stub(UserRepository.prototype, 'getUserByGuid');
-      mockUserRepository.resolves(mockResponseRow as unknown as IGetUser[]);
+      mockUserRepository.resolves((mockResponseRow as unknown) as IGetUser[]);
 
       const userService = new UserService(mockDBConnection);
 
@@ -77,7 +77,7 @@ describe('UserService', () => {
 
       const mockRowObj = { system_user_id: 123 };
       const mockUserRepository = sinon.stub(UserRepository.prototype, 'addSystemUser');
-      mockUserRepository.resolves(mockRowObj as unknown as IInsertUser);
+      mockUserRepository.resolves((mockRowObj as unknown) as IInsertUser);
 
       const userService = new UserService(mockDBConnection);
 
@@ -134,7 +134,7 @@ describe('UserService', () => {
     });
 
     it('throws an error if it fails to get the current system user id', async () => {
-      const mockDBConnection = getMockDBConnection({ systemUserId: () => null as unknown as number });
+      const mockDBConnection = getMockDBConnection({ systemUserId: () => (null as unknown) as number });
 
       const existingSystemUser = null;
       const getUserByGuidStub = sinon.stub(UserService.prototype, 'getUserByGuid').resolves(existingSystemUser);

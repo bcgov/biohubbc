@@ -1,8 +1,8 @@
 import { fireEvent, render, waitFor } from '@testing-library/react';
-import Keycloak from 'keycloak-js';
 import { SYSTEM_ROLE } from 'constants/roles';
 import { AuthStateContext, IAuthState } from 'contexts/authStateContext';
 import { createMemoryHistory } from 'history';
+import Keycloak from 'keycloak-js';
 import React from 'react';
 import { Router } from 'react-router';
 import RequestSubmitted from './RequestSubmitted';
@@ -23,7 +23,7 @@ describe('RequestSubmitted', () => {
         username: 'testusername',
         displayName: 'testdisplayname',
         email: 'test@email.com',
-        
+
         refresh: () => {}
       }
     };

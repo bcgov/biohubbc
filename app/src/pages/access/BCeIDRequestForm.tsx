@@ -10,7 +10,7 @@ import React from 'react';
 import yup from 'utils/YupSchema';
 
 interface IBCeIDRequestFormProps {
-  accountType: SYSTEM_IDENTITY_SOURCE.BCEID_BASIC | SYSTEM_IDENTITY_SOURCE.BCEID_BUSINESS
+  accountType: SYSTEM_IDENTITY_SOURCE.BCEID_BASIC | SYSTEM_IDENTITY_SOURCE.BCEID_BUSINESS;
 }
 
 export const BCeIDBasicRequestFormInitialValues: IBCeIDBasicAccessRequestDataObject = {

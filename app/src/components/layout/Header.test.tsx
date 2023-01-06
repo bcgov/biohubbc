@@ -1,9 +1,9 @@
 import { fireEvent, render, waitFor } from '@testing-library/react';
-import Keycloak from 'keycloak-js'
 import { SYSTEM_ROLE } from 'constants/roles';
 import { AuthStateContext, IAuthState } from 'contexts/authStateContext';
 import { createMemoryHistory } from 'history';
 import { SYSTEM_IDENTITY_SOURCE } from 'hooks/useKeycloakWrapper';
+import Keycloak from 'keycloak-js';
 import React from 'react';
 import { Router } from 'react-router-dom';
 import Header from './Header';

@@ -198,9 +198,9 @@ export const getFormattedIdentitySource = (identitySource: SYSTEM_IDENTITY_SOURC
       return 'BCeID Business';
 
     case SYSTEM_IDENTITY_SOURCE.IDIR:
-      return 'IDIR'
+      return 'IDIR';
 
     default:
       return null;
   }
-}
+};

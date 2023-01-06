@@ -38,7 +38,9 @@ const ReviewAccessRequestForm: React.FC<IReviewAccessRequestFormProps> = (props)
   const formattedUsername = [
     getFormattedIdentitySource(props.request.data.identitySource as SYSTEM_IDENTITY_SOURCE),
     props.request.data.username
-  ].filter(Boolean).join('/')
+  ]
+    .filter(Boolean)
+    .join('/');
 
   return (
     <Box>

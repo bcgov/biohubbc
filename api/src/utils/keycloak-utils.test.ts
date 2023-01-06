@@ -6,7 +6,7 @@ import { coerceUserIdentitySource, getUserGuid, getUserIdentifier, getUserIdenti
 describe.only('keycloakUtils', () => {
   describe('getUserGuid', () => {
     it('returns null response when null keycloakToken provided', () => {
-      const response = getUserGuid(null as unknown as object);
+      const response = getUserGuid((null as unknown) as object);
 
       expect(response).to.be.null;
     });
@@ -26,7 +26,7 @@ describe.only('keycloakUtils', () => {
 
   describe('getUserIdentifier', () => {
     it('returns null response when null keycloakToken provided', () => {
-      const response = getUserIdentifier(null as unknown as object);
+      const response = getUserIdentifier((null as unknown) as object);
 
       expect(response).to.be.null;
     });
@@ -52,7 +52,7 @@ describe.only('keycloakUtils', () => {
 
   describe('getUserIdentitySource', () => {
     it('returns non null response when null keycloakToken provided', () => {
-      const response = getUserIdentitySource(null as unknown as object);
+      const response = getUserIdentitySource((null as unknown) as object);
 
       expect(response).to.equal(SYSTEM_IDENTITY_SOURCE.DATABASE);
     });
@@ -109,37 +109,37 @@ describe.only('keycloakUtils', () => {
   describe('coerceUserIdentitySource', () => {
     it('should coerce empty string user identity to DATABASE', () => {
       const response = coerceUserIdentitySource('');
-      expect (response).to.equal(SYSTEM_IDENTITY_SOURCE.DATABASE);
+      expect(response).to.equal(SYSTEM_IDENTITY_SOURCE.DATABASE);
     });
 
     it('should coerce null string user identity to DATABASE', () => {
-      const response = coerceUserIdentitySource(null as unknown as string);
-      expect (response).to.equal(SYSTEM_IDENTITY_SOURCE.DATABASE);
+      const response = coerceUserIdentitySource((null as unknown) as string);
+      expect(response).to.equal(SYSTEM_IDENTITY_SOURCE.DATABASE);
     });
 
     it('should coerce bceid basic user identity to BCEIDBASIC', () => {
       const response = coerceUserIdentitySource('bceidbasic');
-      expect (response).to.equal(SYSTEM_IDENTITY_SOURCE.BCEID_BASIC);
+      expect(response).to.equal(SYSTEM_IDENTITY_SOURCE.BCEID_BASIC);
     });
 
     it('should coerce bceid business user identity to BCEIDBUSINESS', () => {
       const response = coerceUserIdentitySource('bceidbusiness');
-      expect (response).to.equal(SYSTEM_IDENTITY_SOURCE.BCEID_BUSINESS);
+      expect(response).to.equal(SYSTEM_IDENTITY_SOURCE.BCEID_BUSINESS);
     });
 
     it('should coerce idir user identity to IDIR', () => {
       const response = coerceUserIdentitySource('idir');
-      expect (response).to.equal(SYSTEM_IDENTITY_SOURCE.IDIR);
+      expect(response).to.equal(SYSTEM_IDENTITY_SOURCE.IDIR);
     });
 
     it('should coerce database user identity to DATABASE', () => {
       const response = coerceUserIdentitySource('database');
-      expect (response).to.equal(SYSTEM_IDENTITY_SOURCE.DATABASE);
+      expect(response).to.equal(SYSTEM_IDENTITY_SOURCE.DATABASE);
     });
 
     it('should coerce system user identity to SYSTEM', () => {
       const response = coerceUserIdentitySource('system');
-      expect (response).to.equal(SYSTEM_IDENTITY_SOURCE.SYSTEM);
+      expect(response).to.equal(SYSTEM_IDENTITY_SOURCE.SYSTEM);
     });
   });
 });

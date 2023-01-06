@@ -98,7 +98,7 @@ export interface IKeycloakWrapper {
   getIdentitySource: () => string | null;
   /**
    * @TODO jsdoc
-   * @returns 
+   * @returns
    */
   getUserGuid: () => string | null;
   username: string | undefined;
@@ -148,7 +148,10 @@ function useKeycloakWrapper(): IKeycloakWrapper {
     // keycloak user is authenticated, load system user info
     userDataLoader.load();
 
-    if (userDataLoader.isReady && (!userDataLoader.data?.role_names.length || userDataLoader.data?.user_record_end_date)) {
+    if (
+      userDataLoader.isReady &&
+      (!userDataLoader.data?.role_names.length || userDataLoader.data?.user_record_end_date)
+    ) {
       // Authenticated user either has has no roles or has been deactivated
       // Check if the user has a pending access request
       hasPendingAdministrativeActivitiesDataLoader.load();
@@ -266,7 +269,7 @@ function useKeycloakWrapper(): IKeycloakWrapper {
 
   return {
     keycloak,
-    hasLoadedAllUserInfo: (userDataLoader.isReady || !!hasPendingAdministrativeActivitiesDataLoader.data),
+    hasLoadedAllUserInfo: userDataLoader.isReady || !!hasPendingAdministrativeActivitiesDataLoader.data,
     systemRoles: getSystemRoles(),
     hasSystemRole,
     isSystemUser,

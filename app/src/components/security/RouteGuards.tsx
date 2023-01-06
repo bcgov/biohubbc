@@ -158,9 +158,9 @@ const WaitForKeycloakToLoadUserInfo: React.FC = ({ children }) => {
  * @return {*}
  */
 const CheckIfAuthenticatedUser: React.FC = ({ children }) => {
-  console.log('CheckIfAuthenticatedUser()')
+  console.log('CheckIfAuthenticatedUser()');
   const { keycloakWrapper } = useContext(AuthStateContext);
-  console.log({ keycloakWrapper })
+  console.log({ keycloakWrapper });
   const location = useLocation();
 
   if (!keycloakWrapper?.isSystemUser()) {

@@ -31,9 +31,8 @@ export const getUserGuid = (keycloakToken: object): string | null => {
  * @return {*} {SYSTEM_IDENTITY_SOURCE}
  */
 export const getUserIdentitySource = (keycloakToken: object): SYSTEM_IDENTITY_SOURCE => {
-  const userIdentitySource: string = (
-    keycloakToken?.['identity_provider'] || keycloakToken?.['preferred_username']?.split('@')?.[1]
-  )
+  const userIdentitySource: string =
+    keycloakToken?.['identity_provider'] || keycloakToken?.['preferred_username']?.split('@')?.[1];
 
   return coerceUserIdentitySource(userIdentitySource);
 };
@@ -42,9 +41,9 @@ export const getUserIdentitySource = (keycloakToken: object): SYSTEM_IDENTITY_SO
  * Coerce the raw keycloak token identity provider value into an system identity source enum value.
  * If the given user identity source string does not satisfy one of `SYSTEM_IDENTITY_SOURCE`, the return
  * value defaults to `SYSTEM_IDENTITY_SOURCE.DATABASE`.
- * 
+ *
  * @example coerceUserIdentitySource('idir') => 'idir' satisfies SYSTEM_IDENTITY_SOURCE.IDIR
- * 
+ *
  * @param userIdentitySource the identity source string
  * @returns {*} {SYSTEM_IDENTITY_SOURCE} the identity source belonging to type SYSTEM_IDENTITY_SOURCE
  */

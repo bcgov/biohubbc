@@ -234,17 +234,15 @@ describe('updateSystemRolesHandler', () => {
       query: mockQuery
     });
 
-    sinon
-      .stub(UserService.prototype, 'getUserById')
-      .resolves({
-        id: 1,
-        user_identifier: 'test name',
-        user_guid: 'aaaa',
-        identity_source: 'idir',
-        record_end_date: '',
-        role_ids: [],
-        role_names: []
-      });
+    sinon.stub(UserService.prototype, 'getUserById').resolves({
+      id: 1,
+      user_identifier: 'test name',
+      user_guid: 'aaaa',
+      identity_source: 'idir',
+      record_end_date: '',
+      role_ids: [],
+      role_names: []
+    });
 
     const deleteUserSystemRolesStub = sinon.stub(UserService.prototype, 'deleteUserSystemRoles').resolves();
     sinon.stub(UserService.prototype, 'addUserSystemRoles').resolves();
