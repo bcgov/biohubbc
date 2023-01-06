@@ -3,7 +3,7 @@ import { describe } from 'mocha';
 import { SYSTEM_IDENTITY_SOURCE } from '../constants/database';
 import { coerceUserIdentitySource, getUserGuid, getUserIdentifier, getUserIdentitySource } from './keycloak-utils';
 
-describe.only('keycloakUtils', () => {
+describe('keycloakUtils', () => {
   describe('getUserGuid', () => {
     it('returns null response when null keycloakToken provided', () => {
       const response = getUserGuid((null as unknown) as object);

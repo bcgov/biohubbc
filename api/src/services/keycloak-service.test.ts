@@ -7,7 +7,7 @@ import { KeycloakService } from './keycloak-service';
 
 chai.use(sinonChai);
 
-describe.only('KeycloakService', () => {
+describe('KeycloakService', () => {
   beforeEach(() => {
     process.env.KEYCLOAK_ADMIN_HOST = 'host';
     process.env.KEYCLOAK_REALM = 'realm';
