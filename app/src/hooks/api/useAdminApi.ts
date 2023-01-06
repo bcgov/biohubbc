@@ -57,11 +57,13 @@ const useAdminApi = (axios: AxiosInstance) => {
 
   const approveAccessRequest = async (
     administrativeActivityId: number,
+    userGuid: string,
     userIdentifier: string,
     identitySource: string,
     roleIds: number[] = []
   ): Promise<void> => {
     const { data } = await axios.put(`/api/administrative-activity/system-access/${administrativeActivityId}/approve`, {
+      userGuid,
       userIdentifier,
       identitySource,
       roleIds: roleIds

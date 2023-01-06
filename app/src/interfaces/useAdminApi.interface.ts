@@ -14,6 +14,7 @@ export type IBCeIDBusinessAccessRequestDataObject = {
 
 export type IAccessRequestDataObject = {
   name: string;
+  userGuid: string;
   username: string;
   email: string;
   identitySource: string;

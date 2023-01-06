@@ -85,6 +85,7 @@ export const AccessRequestPage: React.FC = () => {
     try {
       const response = await biohubApi.admin.createAdministrativeActivity({
         ...values,
+        userGuid: keycloakWrapper?.getUserGuid() as string,
         name: keycloakWrapper?.displayName as string,
         username: keycloakWrapper?.getUserIdentifier() as string,
         email: keycloakWrapper?.email as string,

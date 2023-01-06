@@ -96,6 +96,11 @@ export interface IKeycloakWrapper {
    * @memberof IKeycloakWrapper
    */
   getIdentitySource: () => string | null;
+  /**
+   * @TODO jsdoc
+   * @returns 
+   */
+  getUserGuid: () => string | null;
   username: string | undefined;
   displayName: string | undefined;
   email: string | undefined;
@@ -193,6 +198,13 @@ function useKeycloakWrapper(): IKeycloakWrapper {
   }, [keycloakUserDataLoader.data]);
 
   /**
+   * @TODO jsdoc
+   */
+  const getUserGuid = useCallback((): string | null => {
+    return keycloakUserDataLoader.data?.['preferred_username']?.split('@')?.[0].toLowerCase() || null;
+  }, [keycloakUserDataLoader.data]);
+
+  /**
    * Parses out the identity source portion of the preferred_username from the token.
    *
    * @param {object} keycloakToken
@@ -260,6 +272,7 @@ function useKeycloakWrapper(): IKeycloakWrapper {
     isSystemUser,
     hasAccessRequest: !!hasPendingAdministrativeActivitiesDataLoader.data,
     getUserIdentifier,
+    getUserGuid,
     getIdentitySource,
     username: username(),
     email: email(),

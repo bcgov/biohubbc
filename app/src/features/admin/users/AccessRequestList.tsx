@@ -14,7 +14,7 @@ import Typography from '@material-ui/core/Typography';
 import { AccessStatusChip } from 'components/chips/RequestChips';
 import RequestDialog from 'components/dialog/RequestDialog';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
-import { ReviewAccessRequestI18N } from 'constants/i18n';
+import { AccessApprovalDispatchI18N, AccessDenialDispatchI18N, ReviewAccessRequestI18N } from 'constants/i18n';
 import { AdministrativeActivityStatusType } from 'constants/misc';
 import { DialogContext } from 'contexts/dialogContext';
 import { APIError } from 'hooks/api/useAxios';
@@ -81,43 +81,68 @@ const AccessRequestList: React.FC<IAccessRequestListProps> = (props) => {
     }
   };
 
+  const dispatchApprovalErrorDialogProps = {
+    dialogTitle: AccessApprovalDispatchI18N.reviewErrorTitle,
+    dialogText: AccessApprovalDispatchI18N.reviewErrorText,
+    open: false,
+    onClose: () => {
+      dialogContext.setErrorDialog({ open: false });
+    },
+    onOk: () => {
+      dialogContext.setErrorDialog({ open: false });
+    }
+  };
+
+  const dispatchDenialErrorDialogProps = {
+    dialogTitle: AccessDenialDispatchI18N.reviewErrorTitle,
+    dialogText: AccessDenialDispatchI18N.reviewErrorText,
+    open: false,
+    onClose: () => {
+      dialogContext.setErrorDialog({ open: false });
+    },
+    onOk: () => {
+      dialogContext.setErrorDialog({ open: false });
+    }
+  };
+
   const handleReviewDialogApprove = async (values: IReviewAccessRequestForm) => {
     const updatedRequest = activeReviewDialog.request as IGetAccessRequestsListResponse;
 
     setActiveReviewDialog({ open: false, request: null });
 
     try {
-      await biohubApi.admin.sendGCNotification(
-        {
-          emailAddress: updatedRequest.data.email,
-          phoneNumber: '',
-          userId: updatedRequest.id
-        },
-        {
-          subject: 'SIMS: Your request for access has been approved.',
-          header: 'Your request for access to the Species Inventory Management System has been approved.',
-          body1: 'This is an automated message from the BioHub Species Inventory Management System',
-          body2: '',
-          footer: ''
-        }
-      );
-    } catch (error) {
-      dialogContext.setErrorDialog({
-        ...defaultErrorDialogProps,
-        open: true,
-        dialogErrorDetails: (error as APIError).errors
-      });
-    }
-
-    try {
       await biohubApi.admin.approveAccessRequest(
         updatedRequest.id,
+        updatedRequest.data.userGuid,
         updatedRequest.data.username,
         updatedRequest.data.identitySource,
         (values.system_role && [values.system_role]) || []
       );
 
-      refresh();
+      try {
+        await biohubApi.admin.sendGCNotification(
+          {
+            emailAddress: updatedRequest.data.email,
+            phoneNumber: '',
+            userId: updatedRequest.id
+          },
+          {
+            subject: 'SIMS: Your request for access has been approved.',
+            header: 'Your request for access to the Species Inventory Management System has been approved.',
+            body1: 'This is an automated message from the BioHub Species Inventory Management System',
+            body2: '',
+            footer: ''
+          }
+        );
+      } catch (error) {
+        dialogContext.setErrorDialog({
+          ...dispatchApprovalErrorDialogProps,
+          open: true,
+          dialogErrorDetails: (error as APIError).errors
+        });
+      } finally {
+        refresh();
+      }
     } catch (error) {
       dialogContext.setErrorDialog({
         ...defaultErrorDialogProps,
@@ -133,32 +158,32 @@ const AccessRequestList: React.FC<IAccessRequestListProps> = (props) => {
     setActiveReviewDialog({ open: false, request: null });
 
     try {
-      await biohubApi.admin.sendGCNotification(
-        {
-          emailAddress: updatedRequest.data.email,
-          phoneNumber: '',
-          userId: updatedRequest.id
-        },
-        {
-          subject: 'SIMS: Your request for access has been denied.',
-          header: 'Your request for access to the Species Inventory Management System has been denied.',
-          body1: 'This is an automated message from the BioHub Species Inventory Management System',
-          body2: '',
-          footer: ''
-        }
-      );
-    } catch (error) {
-      dialogContext.setErrorDialog({
-        ...defaultErrorDialogProps,
-        open: true,
-        dialogErrorDetails: (error as APIError).errors
-      });
-    }
-
-    try {
       await biohubApi.admin.denyAccessRequest(updatedRequest.id);
 
-      refresh();
+      try {
+        await biohubApi.admin.sendGCNotification(
+          {
+            emailAddress: updatedRequest.data.email,
+            phoneNumber: '',
+            userId: updatedRequest.id
+          },
+          {
+            subject: 'SIMS: Your request for access has been denied.',
+            header: 'Your request for access to the Species Inventory Management System has been denied.',
+            body1: 'This is an automated message from the BioHub Species Inventory Management System',
+            body2: '',
+            footer: ''
+          }
+        );
+      } catch (error) {
+        dialogContext.setErrorDialog({
+          ...dispatchDenialErrorDialogProps,
+          open: true,
+          dialogErrorDetails: (error as APIError).errors
+        });
+      } finally {
+        refresh();
+      }
     } catch (error) {
       dialogContext.setErrorDialog({
         ...defaultErrorDialogProps,

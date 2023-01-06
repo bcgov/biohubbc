@@ -13,6 +13,7 @@ const SystemUserAuthState: IAuthState = {
     hasAccessRequest: false,
     getUserIdentifier: () => 'testusername',
     getIdentitySource: () => 'idir',
+    getUserGuid: () => 'aaaa',
     username: 'testusername',
     displayName: 'testdisplayname',
     email: 'test@email.com',
