@@ -361,7 +361,7 @@ export const getDBConnection = function (keycloakToken: object): IDBConnection {
  */
 export const getAPIUserDBConnection = (): IDBConnection => {
   return getDBConnection({
-    preferred_username: `${DB_DATABASE}@database`,
+    preferred_username: `${DB_USERNAME}@database`,
     identity_provider: 'database'
   });
 };
