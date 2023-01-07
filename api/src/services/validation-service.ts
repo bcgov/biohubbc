@@ -217,7 +217,7 @@ export class ValidationService extends DBService {
   async templateTransformation(submissionId: number, xlsx: XLSXCSV, s3InputKey: string, surveyId: number) {
     try {
       const xlsxSchema = await this.getTransformationSchema(xlsx, surveyId);
-      const fileBuffer = await this.transformXLSX(xlsx.workbook.rawWorkbook, xlsxSchema);
+      const fileBuffer = this.transformXLSX(xlsx.workbook.rawWorkbook, xlsxSchema);
       await this.persistTransformationResults(submissionId, fileBuffer, s3InputKey, xlsx);
     } catch (error) {
       if (error instanceof SubmissionError) {

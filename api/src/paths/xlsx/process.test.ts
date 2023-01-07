@@ -166,21 +166,56 @@ describe('xlsx/process', () => {
       };
       mockReq['keycloak_token'] = 'token';
 
-      const processFileStub = sinon.stub(ValidationService.prototype, 'processXLSXFile').resolves();
+      const processXLSXFileStub = sinon.stub(ValidationService.prototype, 'processXLSXFile').resolves();
+      const processDWCFileStub = sinon.stub(ValidationService.prototype, 'processDWCFile').resolves();
 
       const requestHandler = process.processFile();
       await requestHandler(mockReq, mockRes, mockNext);
       expect(mockRes.statusValue).to.equal(200);
-      expect(processFileStub).to.have.been.calledOnceWith(mockReq.body.occurrence_submission_id);
+      expect(processXLSXFileStub).to.have.been.calledOnceWith(mockReq.body.occurrence_submission_id);
+      expect(processDWCFileStub).to.have.been.calledOnceWith(mockReq.body.occurrence_submission_id);
       expect(mockRes.jsonValue).to.eql({ status: 'success' });
+    });
+
+    it('catches an error on processXLSXFile', async () => {
+      const dbConnectionObj = getMockDBConnection({ rollback: sinon.stub(), release: sinon.stub() });
+      sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
+
+      const processXLSXFileStub = sinon
+        .stub(ValidationService.prototype, 'processXLSXFile')
+        .throws(new Error('test processXLSXFile error'));
+      const errorServiceStub = sinon.stub(ErrorService.prototype, 'insertSubmissionStatus').resolves();
+      const processDWCFileStub = sinon.stub(ValidationService.prototype, 'processDWCFile').resolves();
+
+      const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+      mockReq['keycloak_token'] = 'token';
+
+      mockReq.body = {
+        occurrence_submission_id: '123-456-789'
+      };
+
+      const requestHandler = process.processFile();
+
+      try {
+        await requestHandler(mockReq, mockRes, mockNext);
+        expect.fail();
+      } catch (actualError) {
+        expect(processXLSXFileStub).to.have.been.calledOnceWith(mockReq.body.occurrence_submission_id);
+        expect(processDWCFileStub).not.to.have.been.calledOnce;
+        expect(errorServiceStub).to.have.been.calledOnce;
+        expect(dbConnectionObj.rollback).to.have.been.calledOnce;
+        expect(dbConnectionObj.release).to.have.been.calledOnce;
+        expect((actualError as Error).message).to.equal('test processXLSXFile error');
+      }
     });
 
     it('catches an error on processDWCFile', async () => {
       const dbConnectionObj = getMockDBConnection({ rollback: sinon.stub(), release: sinon.stub() });
       sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-      const processFileStub = sinon
-        .stub(ValidationService.prototype, 'processXLSXFile')
+      const processXLSXFileStub = sinon.stub(ValidationService.prototype, 'processXLSXFile').resolves();
+      const processDWCFileStub = sinon
+        .stub(ValidationService.prototype, 'processDWCFile')
         .throws(new Error('test processDWCFile error'));
       const errorServiceStub = sinon.stub(ErrorService.prototype, 'insertSubmissionStatus').resolves();
 
@@ -197,7 +232,8 @@ describe('xlsx/process', () => {
         await requestHandler(mockReq, mockRes, mockNext);
         expect.fail();
       } catch (actualError) {
-        expect(processFileStub).to.have.been.calledOnce;
+        expect(processXLSXFileStub).to.have.been.calledOnceWith(mockReq.body.occurrence_submission_id);
+        expect(processDWCFileStub).to.have.been.calledOnceWith(mockReq.body.occurrence_submission_id);
         expect(errorServiceStub).to.have.been.calledOnce;
         expect(dbConnectionObj.rollback).to.have.been.calledOnce;
         expect(dbConnectionObj.release).to.have.been.calledOnce;
@@ -209,9 +245,11 @@ describe('xlsx/process', () => {
       const dbConnectionObj = getMockDBConnection({ rollback: sinon.stub(), release: sinon.stub() });
       sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-      const processFileStub = sinon
+      const processXLSXFileStub = sinon
         .stub(ValidationService.prototype, 'processXLSXFile')
         .throws(new Error('test processDWCFile error'));
+      const processDWCFileStub = sinon.stub(ValidationService.prototype, 'processDWCFile').resolves();
+
       const errorServiceStub = sinon
         .stub(ErrorService.prototype, 'insertSubmissionStatus')
         .throws(new Error('test insertSubmissionStatus error'));
@@ -229,7 +267,8 @@ describe('xlsx/process', () => {
         await requestHandler(mockReq, mockRes, mockNext);
         expect.fail();
       } catch (actualError) {
-        expect(processFileStub).to.have.been.calledOnce;
+        expect(processXLSXFileStub).to.have.been.calledOnceWith(mockReq.body.occurrence_submission_id);
+        expect(processDWCFileStub).not.to.have.been.calledOnce;
         expect(errorServiceStub).to.have.been.calledOnce;
         expect(dbConnectionObj.rollback).to.have.been.calledOnce;
         expect(dbConnectionObj.release).to.have.been.calledOnce;

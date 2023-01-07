@@ -69,7 +69,6 @@ export class XLSXTransform {
    * @memberof XLSXTransform
    */
   start() {
-    // TODO we don't need these do we...
     // Prepare the raw data, by adding keys and other dwcMeta to the raw row objects
     const preparedRowObjects = this.prepareRowObjects();
 
