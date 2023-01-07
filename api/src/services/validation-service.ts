@@ -17,6 +17,7 @@ import { MessageError, SubmissionError, SubmissionErrorFromMessageType } from '.
 import { DBService } from './db-service';
 import { ErrorService } from './error-service';
 import { OccurrenceService } from './occurrence-service';
+import { SpatialService } from './spatial-service';
 import { SurveyService } from './survey-service';
 
 const defaultLog = getLogger('services/validation-service');
@@ -35,6 +36,7 @@ export class ValidationService extends DBService {
   submissionRepository: SubmissionRepository;
   surveyService: SurveyService;
   occurrenceService: OccurrenceService;
+  spatialService: SpatialService;
   errorService: ErrorService;
 
   constructor(connection: IDBConnection) {
@@ -43,6 +45,7 @@ export class ValidationService extends DBService {
     this.submissionRepository = new SubmissionRepository(connection);
     this.surveyService = new SurveyService(connection);
     this.occurrenceService = new OccurrenceService(connection);
+    this.spatialService = new SpatialService(connection);
     this.errorService = new ErrorService(connection);
   }
 
@@ -201,11 +204,7 @@ export class ValidationService extends DBService {
 
   async templateScrapeAndUploadOccurrences(submissionId: number) {
     try {
-      const occurrenceSubmission = await this.occurrenceService.getOccurrenceSubmission(submissionId);
-      const s3OutputKey = occurrenceSubmission.output_key;
-      const s3File = await getFileFromS3(s3OutputKey);
-      const archive = this.prepDWCArchive(s3File);
-      await this.occurrenceService.scrapeAndUploadOccurrences(submissionId, archive);
+      await this.spatialService.runSpatialTransforms(submissionId);
     } catch (error) {
       if (error instanceof SubmissionError) {
         error.setStatus(SUBMISSION_STATUS_TYPE.FAILED_PROCESSING_OCCURRENCE_DATA);

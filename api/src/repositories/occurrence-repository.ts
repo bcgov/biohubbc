@@ -1,8 +1,6 @@
 import SQL from 'sql-template-strings';
 import { SUBMISSION_MESSAGE_TYPE } from '../constants/status';
 import { ApiExecuteSQLError } from '../errors/api-error';
-import { PostOccurrence } from '../models/occurrence-create';
-import { parseLatLongString, parseUTMString } from '../utils/spatial-utils';
 import { appendSQLColumnsEqualValues, AppendSQLColumnsEqualValues } from '../utils/sql-utils';
 import { SubmissionErrorFromMessageType } from '../utils/submission-error';
 import { BaseRepository } from './base-repository';
@@ -69,87 +67,6 @@ export class OccurrenceRepository extends BaseRepository {
   }
 
   /**
-   * Upload scraped occurrence data.
-   *
-   * @param {number} occurrenceSubmissionId
-   * @param {any} scrapedOccurrence
-   */
-  async insertPostOccurrences(occurrenceSubmissionId: number, scrapedOccurrence: PostOccurrence): Promise<any> {
-    const sqlStatement = SQL`
-    INSERT INTO occurrence (
-      occurrence_submission_id,
-      taxonid,
-      lifestage,
-      sex,
-      data,
-      vernacularname,
-      eventdate,
-      individualcount,
-      organismquantity,
-      organismquantitytype,
-      geography
-    ) VALUES (
-      ${occurrenceSubmissionId},
-      ${scrapedOccurrence.associatedTaxa},
-      ${scrapedOccurrence.lifeStage},
-      ${scrapedOccurrence.sex},
-      ${scrapedOccurrence.data},
-      ${scrapedOccurrence.vernacularName},
-      ${scrapedOccurrence.eventDate},
-      ${scrapedOccurrence.individualCount},
-      ${scrapedOccurrence.organismQuantity},
-      ${scrapedOccurrence.organismQuantityType}
-  `;
-
-    const utm = parseUTMString(scrapedOccurrence.verbatimCoordinates);
-    const latLong = parseLatLongString(scrapedOccurrence.verbatimCoordinates);
-
-    if (utm) {
-      // transform utm string into point, if it is not null
-      sqlStatement.append(SQL`
-      ,public.ST_Transform(
-        public.ST_SetSRID(
-          public.ST_MakePoint(${utm.easting}, ${utm.northing}),
-          ${utm.zone_srid}
-        ),
-        4326
-      )
-    `);
-    } else if (latLong) {
-      // transform latLong string into point, if it is not null
-      sqlStatement.append(SQL`
-      ,public.ST_Transform(
-        public.ST_SetSRID(
-          public.ST_MakePoint(${latLong.long}, ${latLong.lat}),
-          4326
-        ),
-        4326
-      )
-    `);
-    } else {
-      // insert null geography
-      sqlStatement.append(SQL`
-        ,null
-      `);
-    }
-
-    sqlStatement.append(');');
-
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
-
-    const result = (response && response.rows && response.rows[0]) || null;
-
-    if (!result) {
-      throw new ApiExecuteSQLError('Failed to insert occurrence data', [
-        'OccurrenceRepository->insertPostOccurrences',
-        'rows was null or undefined, expected rows != null'
-      ]);
-    }
-
-    return result;
-  }
-
-  /**
    * Gets a list of `occurrence` for a `occurrence_submission` id.
    *
    * @param {number} submissionId
@@ -158,18 +75,9 @@ export class OccurrenceRepository extends BaseRepository {
   async getOccurrencesForView(submissionId: number): Promise<any[]> {
     const sqlStatement = SQL`
       SELECT
-        public.ST_asGeoJSON(o.geography) as geometry,
-        o.taxonid,
-        o.occurrence_id,
-        o.lifestage,
-        o.sex,
-        o.vernacularname,
-        o.individualcount,
-        o.organismquantity,
-        o.organismquantitytype,
-        o.eventdate
+        *
       FROM
-        occurrence as o
+        submission_spatial_component
       LEFT OUTER JOIN
         occurrence_submission as os
       ON
