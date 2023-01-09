@@ -123,8 +123,10 @@ export function getUserById(): RequestHandler {
       await connection.open();
 
       const userService = new UserService(connection);
+      console.log('userService', userService);
 
       const userObject = await userService.getUserById(userId);
+      console.log('userObject', userObject);
 
       if (!userObject) {
         throw new HTTP400('Failed to get system user');

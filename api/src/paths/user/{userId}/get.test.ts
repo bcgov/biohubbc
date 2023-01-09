@@ -49,7 +49,7 @@ describe('user', () => {
         userId: '1'
       };
 
-      sinon.stub(UserService.prototype, 'getUserById').throws();
+      sinon.stub(UserService.prototype, 'getUserById').resolves(undefined);
 
       try {
         const requestHandler = user.getUserById();

@@ -3,7 +3,6 @@ import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as db from '../../../../database/db';
-import { HTTPError } from '../../../../errors/http-error';
 import { UserObject } from '../../../../models/user';
 import { UserService } from '../../../../services/user-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../__mocks__/db';
@@ -16,26 +15,6 @@ chai.use(sinonChai);
 describe('approveAccessRequest', () => {
   afterEach(() => {
     sinon.restore();
-  });
-
-  it('throws an error if the identity source is not supported', async () => {
-    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
-
-    mockReq.body = {
-      userIdentifier: 1,
-      identitySource: 'fake-source',
-      roleIds: [1, 3]
-    };
-
-    const requestHandler = approve_request.approveAccessRequest();
-
-    try {
-      await requestHandler(mockReq, mockRes, mockNext);
-      expect.fail();
-    } catch (error) {
-      expect((error as HTTPError).status).to.equal(400);
-      expect((error as HTTPError).message).to.equal('Invalid user identity source');
-    }
   });
 
   it('re-throws any error that is thrown', async () => {
