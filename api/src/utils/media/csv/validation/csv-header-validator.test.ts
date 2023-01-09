@@ -48,12 +48,12 @@ describe('getDuplicateHeadersValidator', () => {
       {
         errorCode: SUBMISSION_MESSAGE_TYPE.DUPLICATE_HEADER,
         col: 'Header1',
-        message: 'Duplicate header'
+        message: 'Duplicate Header'
       },
       {
         errorCode: SUBMISSION_MESSAGE_TYPE.DUPLICATE_HEADER,
         col: 'Header2',
-        message: 'Duplicate header'
+        message: 'Duplicate Header'
       }
     ]);
   });
