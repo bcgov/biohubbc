@@ -31,6 +31,7 @@ describe('Header', () => {
         hasAccessRequest: false,
         hasSystemRole: mockHasSystemRole,
         getIdentitySource: () => SYSTEM_IDENTITY_SOURCE.IDIR,
+        getUserGuid: () => 'abcd',
         username: 'testusername',
         displayName: 'IDID / testusername',
         email: 'test@email',
@@ -72,6 +73,7 @@ describe('Header', () => {
         hasAccessRequest: false,
         hasSystemRole: mockHasSystemRole,
         getIdentitySource: () => SYSTEM_IDENTITY_SOURCE.BCEID_BASIC,
+        getUserGuid: () => 'abcd',
         username: 'testusername',
         displayName: 'testdisplayname',
         email: 'test@email.com',
@@ -105,6 +107,7 @@ describe('Header', () => {
         hasLoadedAllUserInfo: true,
         systemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN],
         getUserIdentifier: () => 'testuser',
+        getUserGuid: () => 'abcd',
         hasAccessRequest: false,
         hasSystemRole: jest.fn(),
         getIdentitySource: () => SYSTEM_IDENTITY_SOURCE.BCEID_BASIC,
@@ -127,7 +130,7 @@ describe('Header', () => {
 
     expect(getByTestId('menu_log_out')).toBeVisible();
 
-    expect(getByText('BCEID / testuser')).toBeVisible();
+    expect(getByText('BCeID Basic/testuser')).toBeVisible();
   });
 
   describe('Log Out', () => {
@@ -146,6 +149,7 @@ describe('Header', () => {
           getIdentitySource: jest.fn(),
           username: 'testusername',
           displayName: 'testdisplayname',
+          getUserGuid: () => 'abcd',
           email: 'test@email.com',
           firstName: 'testfirst',
           lastName: 'testlast',
