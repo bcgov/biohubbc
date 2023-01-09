@@ -15,6 +15,8 @@ import Typography from '@material-ui/core/Typography';
 import { mdiTrayArrowDown } from '@mdi/js';
 import Icon from '@mdi/react';
 import { ConfigContext } from 'contexts/configContext';
+import { useBiohubApi } from 'hooks/useBioHubApi';
+import useDataLoader from 'hooks/useDataLoader';
 import React, { useContext } from 'react';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -41,6 +43,15 @@ const useStyles = makeStyles((theme: Theme) => ({
 const ResourcesPage: React.FC = () => {
   const classes = useStyles();
   const config = useContext(ConfigContext);
+  
+  const biohubApi = useBiohubApi();
+  const resourcesDataLoader = useDataLoader(() => biohubApi.resources.listResources());
+
+  resourcesDataLoader.load();
+  
+  /**
+   * @deprecated
+   */
   const s3PublicHostURL = config?.S3_PUBLIC_HOST_URL;
 
   const resources = [
