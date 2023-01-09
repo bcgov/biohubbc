@@ -1,0 +1,26 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+node_modules
+
+**/.npm
+**/.config
+**.bash_history
+
+# Build artifacts
+dist
+
+# Testing
+coverage
+
+# SonarQube
+.sonarqube
+
+# env file used by local and docker builds/runs
+.env
+
+# misc
+.DS_Store
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
