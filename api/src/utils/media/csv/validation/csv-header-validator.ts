@@ -21,7 +21,7 @@ export const getDuplicateHeadersValidator = (): CSVValidator => {
         csvWorksheet.csvValidation.addHeaderErrors([
           {
             errorCode: SUBMISSION_MESSAGE_TYPE.DUPLICATE_HEADER,
-            message: 'Duplicate header',
+            message: 'Duplicate Header',
             col: header
           }
         ]);

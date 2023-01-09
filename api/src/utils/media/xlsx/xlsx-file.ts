@@ -22,7 +22,10 @@ export class XLSXCSV {
 
     this.mediaValidation = new MediaValidation(this.rawFile.fileName);
 
-    this.workbook = new CSVWorkBook(xlsx.read(this.rawFile.buffer, { ...options }));
+    this.workbook = new CSVWorkBook(
+      // See https://www.npmjs.com/package/xlsx#parsing-options for details on parsing options
+      xlsx.read(this.rawFile.buffer, { cellDates: true, cellNF: true, cellHTML: false, ...options })
+    );
   }
 
   /**
@@ -44,8 +47,6 @@ export class XLSXCSV {
    * @param {ValidationSchemaParser} validationSchemaParser The validation schema
    * @return {*}  {void}
    * @memberof XLSXCSV
-   *
-   * @TODO Evaluating `fileName !== 'Picklist Values'` might be an extraneous check.
    */
   validateContent(validationSchemaParser: ValidationSchemaParser): void {
     // Run workbook validators.
@@ -57,8 +58,10 @@ export class XLSXCSV {
       const fileValidators = validationSchemaParser.getFileValidations(fileName);
       const columnValidators = validationSchemaParser.getAllColumnValidations(fileName);
 
-      if (worksheet && fileName !== 'Picklist Values') {
-        worksheet.validate([...fileValidators, ...columnValidators]);
+      const validationRules = [...fileValidators, ...columnValidators];
+
+      if (validationRules.length) {
+        worksheet.validate(validationRules);
       }
     });
   }
