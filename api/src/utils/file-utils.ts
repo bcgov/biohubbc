@@ -1,5 +1,11 @@
 import AWS from 'aws-sdk';
-import { DeleteObjectOutput, GetObjectOutput, ManagedUpload, Metadata } from 'aws-sdk/clients/s3';
+import {
+  DeleteObjectOutput,
+  GetObjectOutput,
+  ListObjectsOutput,
+  ManagedUpload,
+  Metadata
+} from 'aws-sdk/clients/s3';
 import clamd from 'clamdjs';
 import { S3_ROLE } from '../constants/roles';
 import { SUBMISSION_MESSAGE_TYPE } from '../constants/status';
@@ -106,6 +112,18 @@ export async function getFileFromS3(key: string, versionId?: string): Promise<Ge
     .catch(() => {
       throw SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_GET_FILE_FROM_S3);
     });
+}
+
+/**
+ * Fetchs a list of files in S3 at the given path.
+ *
+ * @export
+ * @param {string} path the path in S3
+ * @return {*}  {Promise<ListObjectsOutput>}
+ */
+export async function listFilesFromS3(path: string): Promise<ListObjectsOutput> {
+  return S3.listObjects({ Bucket: OBJECT_STORE_BUCKET_NAME, Prefix: path })
+    .promise();
 }
 
 /**
