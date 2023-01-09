@@ -12,12 +12,12 @@
     "npm": ">= 6.0.0"
   },
   "scripts": {
-    "build:validation": "ts-node ./src/utils/templates/validation-config-builder.ts",
-    "build:transformation": "ts-node ./src/utils/templates/transformation-config-builder.ts",
-    "lint": "eslint src/ --ext .js,.ts",
-    "lint:fix": "npm run lint -- --fix",
-    "format": "prettier --check \"./src/**/*.{js,jsx,ts,tsx,css,scss}\"",
-    "format:fix": "prettier --write \"./src/**/*.{js,jsx,ts,tsx,json,css,scss}\""
+    "build-validation": "ts-node ./utils/templates/validation-config-builder.ts",
+    "build-transformation": "ts-node ./utils/templates/transformation-config-builder.ts",
+    "lint": "eslint . --ext .js,.ts",
+    "lint-fix": "npm run lint -- --fix",
+    "format": "prettier --check \"./**/*.{js,jsx,ts,tsx,css,scss}\"",
+    "format-fix": "prettier --write \"./**/*.{js,jsx,ts,tsx,json,css,scss}\""
   },
   "devDependencies": {
     "@types/node": "~14.14.31",
