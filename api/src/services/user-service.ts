@@ -126,6 +126,8 @@ export class UserService extends DBService {
     // get the newly activated user
     userObject = await this.getUserById(userObject.id);
 
+    console.log('user object is: ', userObject);
+
     if (!userObject) {
       throw new ApiExecuteSQLError('Failed to ensure system user');
     }
