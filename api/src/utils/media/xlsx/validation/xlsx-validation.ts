@@ -42,6 +42,11 @@ export const getParentChildKeyMatchValidator = (config?: ParentChildKeyMatchVali
     const parentRowObjects = parentWorksheet.getRowObjects();
     const childRowObjects = childWorksheet.getRowObjects();
 
+    // If there are no children rows found, leave early
+    if (!childRowObjects.length) {
+      return csvWorkbook;
+    }
+
     // Filter column names to only check key violation on columns included in the child sheet
     const filteredColumnNames = column_names.filter((columnName: string) => Boolean(childRowObjects[0][columnName]));
 

@@ -3,9 +3,6 @@ name: Test Checks
 on:
   pull_request:
     types: [opened, reopened, synchronize, ready_for_review]
-  push:
-    branches:
-      - dev
 
 jobs:
   test:

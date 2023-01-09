@@ -4,12 +4,15 @@ import { ArchiveFile, IMediaState, MediaValidation } from '../media-file';
 import { ValidationSchemaParser } from '../validation/validation-schema-parser';
 
 export enum DWC_CLASS {
+  RECORD = 'record',
   EVENT = 'event',
+  LOCATION = 'location',
   OCCURRENCE = 'occurrence',
   MEASUREMENTORFACT = 'measurementorfact',
   RESOURCERELATIONSHIP = 'resourcerelationship',
   TAXON = 'taxon',
-  META = 'meta'
+  META = 'meta',
+  EML = 'eml'
 }
 
 export const DEFAULT_XLSX_SHEET = 'Sheet1';
@@ -50,8 +53,20 @@ export class DWCArchive {
   _initArchiveFiles() {
     for (const rawFile of this.rawFile.mediaFiles) {
       switch (rawFile.name) {
+        case DWC_CLASS.RECORD:
+          this.worksheets[DWC_CLASS.RECORD] = new CSVWorksheet(
+            rawFile.name,
+            xlsx.read(rawFile.buffer).Sheets[DEFAULT_XLSX_SHEET]
+          );
+          break;
         case DWC_CLASS.EVENT:
           this.worksheets[DWC_CLASS.EVENT] = new CSVWorksheet(
+            rawFile.name,
+            xlsx.read(rawFile.buffer).Sheets[DEFAULT_XLSX_SHEET]
+          );
+          break;
+        case DWC_CLASS.LOCATION:
+          this.worksheets[DWC_CLASS.LOCATION] = new CSVWorksheet(
             rawFile.name,
             xlsx.read(rawFile.buffer).Sheets[DEFAULT_XLSX_SHEET]
           );
@@ -82,6 +97,9 @@ export class DWCArchive {
           break;
         case DWC_CLASS.META:
           this.extra[DWC_CLASS.META] = rawFile;
+          break;
+        case DWC_CLASS.EML:
+          this.extra[DWC_CLASS.EML] = rawFile;
           break;
       }
     }

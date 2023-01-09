@@ -62,7 +62,7 @@ export enum SUMMARY_SUBMISSION_MESSAGE_TYPE {
 
 // Message types that match the submission_message_type table
 export enum SUBMISSION_MESSAGE_TYPE {
-  'DUPLICATE_HEADER' = 'Duplicate header',
+  'DUPLICATE_HEADER' = 'Duplicate Header',
   'UNKNOWN_HEADER' = 'Unknown Header',
   'MISSING_REQUIRED_HEADER' = 'Missing Required Header',
   'MISSING_RECOMMENDED_HEADER' = 'Missing Recommended Header',
