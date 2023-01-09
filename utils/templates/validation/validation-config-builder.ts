@@ -1,41 +1,8 @@
 import * as fs from 'fs';
 
-// Helper functions for constructing validation configs
-const basicNumericValidator = () => {
-  return [
-    {
-      column_numeric_validator: {
-        name: '',
-        description: ''
-      }
-    }
-  ];
-};
-
-const basicDateValidator = () => {
-  return [
-    {
-      column_format_validator: {
-        reg_exp: '^d{4}-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01])$',
-        reg_exp_flags: 'g',
-        expected_format: 'Dates need to be formatted in YYYY-MM-DD. For example: 2020-09-15.'
-      }
-    }
-  ];
-};
-
-const basicRequiredValidator = () => {
-  return [
-    {
-      column_format_validator: {
-        reg_exp: '^(?!s*$).+',
-        reg_exp_flags: 'g'
-      }
-    }
-  ];
-};
-
-const starterObject = {
+// Build your validation config here, using any helper typescript functions or variables to reduce the manual effort
+// needed to make the config.
+const VALIDATION_SCHEMA = {
   name: '',
   description: '',
   files: [
@@ -55,32 +22,7 @@ const starterObject = {
   validations: []
 };
 
-const templateValidationSchema = {
-  name: '',
-  description: '',
-  files: [
-    {
-      name: '',
-      description: '',
-      validations: [],
-      columns: [
-        {
-          name: '',
-          description: '',
-          validations: []
-        }
-      ]
-    }
-  ],
-  validations: []
-};
-
-fs.writeFile('./template_output.json', JSON.stringify(templateValidationSchema), (err) => {
-  if (err) {
-    console.error(err);
-  }
-  // file written successfully
-
-  console.log('All done!');
+// Write the raw validation JSON config.
+fs.writeFile('./validation_config.json', JSON.stringify(VALIDATION_SCHEMA), (error) => {
+  throw new Error(JSON.stringify(error));
 });
-// console.log(JSON.stringify(mooseArialSRBRecruitmentCompositionSurvey));

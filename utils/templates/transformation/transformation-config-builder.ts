@@ -5,16 +5,16 @@ import { TransformSchema } from '../../../api/src/utils/media/xlsx/transformatio
 
 // Build your transform config here, using any helper typescript functions or variables to reduce the manual effort
 // needed to make the config.
-const TEMPLATE_SCHEMA: TransformSchema = { dwcMeta: [], map: [], templateMeta: [] };
+const TRANSFORMATION_SCHEMA: TransformSchema = { dwcMeta: [], map: [], templateMeta: [] };
 
 // Validates the config against the json-schema definition to catch errors early
 const ajv = new Ajv();
-ajv.validate(transformationConfigJSONSchema, TEMPLATE_SCHEMA);
+ajv.validate(transformationConfigJSONSchema, TRANSFORMATION_SCHEMA);
 if (ajv.errors) {
   throw new Error(JSON.stringify(ajv.errors));
 }
 
 // Write the raw transform JSON config.
-fs.writeFile('./transformation_config.json', TEMPLATE_SCHEMA, (error) => {
+fs.writeFile('./transformation_config.json', TRANSFORMATION_SCHEMA, (error) => {
   throw new Error(JSON.stringify(error));
 });
