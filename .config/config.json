@@ -44,7 +44,7 @@
       "realm": "standard",
       "integrationId": "4461",
       "adminHost": "https://loginproxy.gov.bc.ca/auth",
-      "adminUserName": "biohub-svc-4466",
+      "adminUserName": "sims-svc-4466",
       "apiHost": "https://api.loginproxy.gov.bc.ca/api/v1",
       "keycloakSecret": "keycloak-admin-password",
       "keycloakSecretAdminPassword": "keycloak_admin_password"
@@ -55,7 +55,7 @@
       "realm": "standard",
       "integrationId": "4461",
       "adminHost": "https://loginproxy.gov.bc.ca/auth",
-      "adminUserName": "biohub-svc-4466",
+      "adminUserName": "sims-svc-4466",
       "apiHost": "https://api.loginproxy.gov.bc.ca/api/v1",
       "keycloakSecret": "keycloak-admin-password",
       "keycloakSecretAdminPassword": "keycloak_admin_password"
@@ -66,7 +66,7 @@
       "realm": "standard",
       "integrationId": "4461",
       "adminHost": "https://loginproxy.gov.bc.ca/auth",
-      "adminUserName": "biohub-svc-4466",
+      "adminUserName": "sims-svc-4466",
       "apiHost": "https://api.loginproxy.gov.bc.ca/api/v1",
       "keycloakSecret": "keycloak-admin-password",
       "keycloakSecretAdminPassword": "keycloak_admin_password"

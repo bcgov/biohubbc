@@ -7,7 +7,6 @@ import { HTTP400 } from '../../../../errors/http-error';
 import { authorizeRequestHandler } from '../../../../request-handlers/security/authorization';
 import { UserService } from '../../../../services/user-service';
 import { coerceUserIdentitySource } from '../../../../utils/keycloak-utils';
-// import { convertUserIdentitySource } from '../../../../utils/keycloak-utils';
 import { getLogger } from '../../../../utils/logger';
 import { ADMINISTRATIVE_ACTIVITY_STATUS_TYPE } from '../../../administrative-activities';
 import { updateAdministrativeActivity } from '../../../administrative-activity';

@@ -1,5 +1,5 @@
 import { useKeycloak } from '@react-keycloak/web';
-import Keycloak from 'keycloak-js';
+import { KeycloakInstance } from 'keycloak-js';
 import { useCallback } from 'react';
 import { useBiohubApi } from './useBioHubApi';
 import useDataLoader from './useDataLoader';
@@ -50,7 +50,7 @@ export interface IKeycloakWrapper {
    * @type {(Keycloak | undefined)}
    * @memberof IKeycloakWrapper
    */
-  keycloak: Keycloak | undefined;
+  keycloak: KeycloakInstance | undefined;
   /**
    * Returns `true` if the user's information has finished being loaded, false otherwise.
    *
@@ -96,9 +96,11 @@ export interface IKeycloakWrapper {
    * @memberof IKeycloakWrapper
    */
   getIdentitySource: () => string | null;
+
   /**
-   * @TODO jsdoc
-   * @returns
+   * Get the user guid
+   *
+   * @memberof IKeycloakWrapper
    */
   getUserGuid: () => string | null;
   username: string | undefined;
@@ -201,9 +203,10 @@ function useKeycloakWrapper(): IKeycloakWrapper {
   }, [keycloakUserDataLoader.data]);
 
   /**
-   * @TODO jsdoc
-   */
-  const getUserGuid = useCallback((): string | null => {
+   * Parses out the user global user id portion of the preferred_username from the token.
+   *
+   * @return {*} {(string | null)}
+   */ const getUserGuid = useCallback((): string | null => {
     return keycloakUserDataLoader.data?.['preferred_username']?.split('@')?.[0].toLowerCase() || null;
   }, [keycloakUserDataLoader.data]);
 
