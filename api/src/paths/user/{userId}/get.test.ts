@@ -75,12 +75,12 @@ describe('user', () => {
 
       sinon.stub(UserService.prototype, 'getUserById').resolves({
         id: 1,
-        user_identifier: 'user_identifier',
-        user_guid: 'aaaa',
         identity_source: 'idir',
         record_end_date: '',
         role_ids: [],
-        role_names: []
+        role_names: [],
+        user_guid: 'aaaa',
+        user_identifier: 'user_identifier'
       });
 
       const requestHandler = user.getUserById();
@@ -89,10 +89,12 @@ describe('user', () => {
 
       expect(mockRes.jsonValue).to.eql({
         id: 1,
-        user_identifier: 'user_identifier',
+        identity_source: 'idir',
         record_end_date: '',
         role_ids: [],
-        role_names: []
+        role_names: [],
+        user_guid: 'aaaa',
+        user_identifier: 'user_identifier'
       });
     });
   });

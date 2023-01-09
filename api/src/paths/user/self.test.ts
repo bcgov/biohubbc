@@ -40,7 +40,7 @@ describe('getUser', () => {
 
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-    sinon.stub(UserService.prototype, 'getUserById').throws();
+    sinon.stub(UserService.prototype, 'getUserById').resolves(undefined);
 
     try {
       const requestHandler = self.getUser();

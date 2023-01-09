@@ -262,42 +262,6 @@ describe('UserService', () => {
     });
   });
 
-  describe('activateSystemUser', function () {
-    afterEach(() => {
-      sinon.restore();
-    });
-
-    it('returns nothing on success', async function () {
-      const mockDBConnection = getMockDBConnection();
-      const mockUserRepository = sinon.stub(UserRepository.prototype, 'activateSystemUser');
-      mockUserRepository.resolves();
-
-      const userService = new UserService(mockDBConnection);
-
-      const result = await userService.activateSystemUser(1);
-
-      expect(result).to.be.undefined;
-    });
-  });
-
-  describe('deactivateSystemUser', function () {
-    afterEach(() => {
-      sinon.restore();
-    });
-
-    it('returns nothing on success', async function () {
-      const mockDBConnection = getMockDBConnection();
-      const mockUserRepository = sinon.stub(UserRepository.prototype, 'deactivateSystemUser');
-      mockUserRepository.resolves();
-
-      const userService = new UserService(mockDBConnection);
-
-      const result = await userService.deactivateSystemUser(1);
-
-      expect(result).to.be.undefined;
-    });
-  });
-
   describe('deleteUserSystemRoles', function () {
     afterEach(() => {
       sinon.restore();
@@ -311,24 +275,6 @@ describe('UserService', () => {
       const userService = new UserService(mockDBConnection);
 
       const result = await userService.deleteUserSystemRoles(1);
-
-      expect(result).to.be.undefined;
-    });
-  });
-
-  describe('addUserSystemRoles', function () {
-    afterEach(() => {
-      sinon.restore();
-    });
-
-    it('returns nothing on success', async function () {
-      const mockDBConnection = getMockDBConnection();
-      const mockUserRepository = sinon.stub(UserRepository.prototype, 'addUserSystemRoles');
-      mockUserRepository.resolves();
-
-      const userService = new UserService(mockDBConnection);
-
-      const result = await userService.addUserSystemRoles(1, [1]);
 
       expect(result).to.be.undefined;
     });
