@@ -39,14 +39,23 @@ POST.apiDoc = {
         schema: {
           title: 'User Response Object',
           type: 'object',
-          required: ['userIdentifier', 'identitySource', 'roleId'],
+          required: ['userGuid', 'userIdentifier', 'identitySource', 'roleId'],
           properties: {
+            userGuid: {
+              type: 'string',
+              description: 'The GUID for the user.'
+            },
             userIdentifier: {
-              type: 'string'
+              type: 'string',
+              description: 'The identifier for the user.'
             },
             identitySource: {
               type: 'string',
-              enum: [SYSTEM_IDENTITY_SOURCE.IDIR, SYSTEM_IDENTITY_SOURCE.BCEID]
+              enum: [
+                SYSTEM_IDENTITY_SOURCE.IDIR,
+                SYSTEM_IDENTITY_SOURCE.BCEID_BASIC,
+                SYSTEM_IDENTITY_SOURCE.BCEID_BUSINESS
+              ]
             },
             roleId: {
               type: 'number',
@@ -88,10 +97,15 @@ export function addSystemRoleUser(): RequestHandler {
   return async (req, res) => {
     const connection = getDBConnection(req['keycloak_token']);
 
+    const userGuid = req.body?.userGuid || null;
     const userIdentifier = req.body?.userIdentifier || null;
     const identitySource = req.body?.identitySource || null;
 
     const roleId = req.body?.roleId || null;
+
+    if (!userGuid) {
+      throw new HTTP400('Missing required body param: userGuid');
+    }
 
     if (!userIdentifier) {
       throw new HTTP400('Missing required body param: userIdentifier');
@@ -110,7 +124,7 @@ export function addSystemRoleUser(): RequestHandler {
 
       const userService = new UserService(connection);
 
-      const userObject = await userService.ensureSystemUser(userIdentifier, identitySource);
+      const userObject = await userService.ensureSystemUser(userGuid, userIdentifier, identitySource);
 
       if (userObject) {
         await userService.addUserSystemRoles(userObject.id, [roleId]);

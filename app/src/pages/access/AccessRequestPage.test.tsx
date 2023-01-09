@@ -40,8 +40,6 @@ const renderContainer = () => {
       username: 'testusername',
       displayName: 'testdisplayname',
       email: 'test@email.com',
-      firstName: 'testfirst',
-      lastName: 'testlast',
       refresh: () => {}
     }
   });
@@ -103,8 +101,6 @@ describe('AccessRequestPage', () => {
           username: 'testusername',
           displayName: 'testdisplayname',
           email: 'test@email.com',
-          firstName: 'testfirst',
-          lastName: 'testlast',
           refresh: () => {}
         }
       });
@@ -173,8 +169,6 @@ describe('AccessRequestPage', () => {
         username: '',
         displayName: '',
         email: '',
-        firstName: '',
-        lastName: '',
         refresh: () => {}
       }
     });

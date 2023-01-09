@@ -47,6 +47,10 @@ GET.apiDoc = {
                 description: 'The unique user identifier',
                 type: 'string'
               },
+              user_guid: {
+                type: 'string',
+                description: 'The GUID for the user.'
+              },
               record_end_date: {
                 oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
                 description: 'Determines if the user record has expired',

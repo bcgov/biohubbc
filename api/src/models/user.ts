@@ -1,6 +1,8 @@
 export class UserObject {
   id: number;
   user_identifier: string;
+  user_guid: string;
+  identity_source: string;
   record_end_date: string;
   role_ids: number[];
   role_names: string[];
@@ -8,6 +10,8 @@ export class UserObject {
   constructor(obj?: any) {
     this.id = obj?.system_user_id || null;
     this.user_identifier = obj?.user_identifier || null;
+    this.user_guid = obj?.user_guid || null;
+    this.identity_source = obj?.identity_source || null;
     this.record_end_date = obj?.record_end_date || null;
     this.role_ids = (obj?.role_ids?.length && obj.role_ids) || [];
     this.role_names = (obj?.role_names?.length && obj.role_names) || [];

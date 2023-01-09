@@ -24,6 +24,7 @@ describe('ReviewAccessRequestForm', () => {
         data: {
           name: 'test data name',
           username: 'test data username',
+          userGuid: 'aaaa',
           email: 'test data email',
           identitySource: SYSTEM_IDENTITY_SOURCE.IDIR,
           role: 2,
@@ -73,8 +74,9 @@ describe('ReviewAccessRequestForm', () => {
         data: {
           name: 'test data name',
           username: 'test data username',
+          userGuid: 'aaaa',
           email: 'test data email',
-          identitySource: SYSTEM_IDENTITY_SOURCE.BCEID,
+          identitySource: SYSTEM_IDENTITY_SOURCE.BCEID_BASIC,
           company: 'test company',
           reason: 'reason for request'
         }
@@ -101,7 +103,7 @@ describe('ReviewAccessRequestForm', () => {
 
       await waitFor(() => {
         expect(getByText('test data name')).toBeVisible();
-        expect(getByText('BCEID/test data username')).toBeVisible();
+        expect(getByText('BCeID Basic/test data username')).toBeVisible();
         expect(getByText('test data email')).toBeVisible();
         expect(getByText('04/18/2021')).toBeVisible();
         expect(getByText('test company')).toBeVisible();
