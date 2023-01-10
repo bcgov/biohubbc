@@ -75,7 +75,7 @@ COMMENT ON TABLE spatial_transform_submission IS 'A associative entity that join
 CREATE TABLE submission_spatial_component(
   submission_spatial_component_id    integer                     GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
   occurrence_submission_id           integer                     NOT NULL,
-  spatial_component                  character(10)               NOT NULL,
+  spatial_component                  jsonb                       NOT NULL,
   geometry                           geometry(geometry, 3005),
   geography                          geography(geometry),
   create_date                        timestamptz(6)              DEFAULT now() NOT NULL,
@@ -104,10 +104,10 @@ CREATE INDEX "Ref229222" ON spatial_transform_submission(spatial_transform_id);
 CREATE INDEX "Ref228223" ON spatial_transform_submission(submission_spatial_component_id);
 CREATE INDEX "Ref165224" ON submission_spatial_component(occurrence_submission_id);
 
-ALTER TABLE spatial_transform_submission ADD CONSTRAINT "Refspatial_transform222" 
+ALTER TABLE spatial_transform_submission ADD CONSTRAINT "Refspatial_transform222"
     FOREIGN KEY (spatial_transform_id)
     REFERENCES spatial_transform(spatial_transform_id);
-ALTER TABLE spatial_transform_submission ADD CONSTRAINT "Refsubmission_spatial_component223" 
+ALTER TABLE spatial_transform_submission ADD CONSTRAINT "Refsubmission_spatial_component223"
     FOREIGN KEY (submission_spatial_component_id)
     REFERENCES submission_spatial_component(submission_spatial_component_id);
 
@@ -119,8 +119,8 @@ create trigger journal_submission_spatial_component after insert or update or de
 create trigger journal_spatial_transform after insert or update or delete on spatial_transform for each row execute procedure tr_journal_trigger();
 create trigger journal_spatial_transform_submission after insert or update or delete on spatial_transform_submission for each row execute procedure tr_journal_trigger();
 
-  set search_path=${API_SCHEMA};  
-  
+  set search_path=${API_SCHEMA};
+
   create or replace view spatial_transform as select * from ${DB_SCHEMA}.spatial_transform;
   create or replace view spatial_transform_submission as select * from ${DB_SCHEMA}.spatial_transform_submission;
   create or replace view submission_spatial_component as select * from ${DB_SCHEMA}.submission_spatial_component;
