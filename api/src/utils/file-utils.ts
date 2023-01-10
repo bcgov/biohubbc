@@ -32,6 +32,16 @@ const S3 = new AWS.S3({
 });
 
 /**
+ * Returns the S3 public host URL.
+ * 
+ * @export
+ * @returns {*} {string}
+ */
+export const getS3PublicHostUrl = () => {
+  return `${OBJECT_STORE_URL}/${OBJECT_STORE_BUCKET_NAME}`
+}
+
+/**
  * Delete a file from S3, based on its key.
  *
  * For potential future reference, for deleting the delete marker of a file in S3:

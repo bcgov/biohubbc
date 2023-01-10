@@ -6,6 +6,12 @@
  */
 export interface IResourceFile {
   /**
+   * The name of the file
+   *
+   * @memberof IResourceFile
+   */
+  fileName: string;
+  /**
    * The URL (key) of the file
    *
    * @memberof IResourceFile
