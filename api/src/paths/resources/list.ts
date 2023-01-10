@@ -34,7 +34,7 @@ GET.apiDoc = {
                       type: 'string'
                     },
                     lastModified: {
-                      type: 'string'
+                      oneOf: [{ type: 'string', format: 'date' }, { type: 'object' }]
                     },
                     fileSize: {
                       type: 'number'
