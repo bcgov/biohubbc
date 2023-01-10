@@ -1,6 +1,8 @@
+import { FeatureCollection, GeoJsonProperties } from 'geojson';
+import { Knex } from 'knex';
 import SQL from 'sql-template-strings';
 import { SUBMISSION_MESSAGE_TYPE } from '../constants/status';
-import { ApiExecuteSQLError } from '../errors/api-error';
+import { getKnex } from '../database/db';
 import { appendSQLColumnsEqualValues, AppendSQLColumnsEqualValues } from '../utils/sql-utils';
 import { SubmissionErrorFromMessageType } from '../utils/submission-error';
 import { BaseRepository } from './base-repository';
@@ -14,6 +16,24 @@ export interface IOccurrenceSubmission {
   input_file_name: string;
   output_key: string;
   output_file_name: string;
+}
+
+export type EmptyObject = Record<string, never>;
+export interface ITaxaData {
+  associated_taxa?: string;
+  vernacular_name?: string;
+  submission_spatial_component_id: number;
+}
+
+export interface ISubmissionSpatialSearchResponseRow {
+  taxa_data: ITaxaData[];
+  spatial_component: {
+    spatial_data: FeatureCollection | EmptyObject;
+  };
+}
+
+export interface ISpatialComponentFeaturePropertiesRow {
+  spatial_component_properties: GeoJsonProperties;
 }
 
 export class OccurrenceRepository extends BaseRepository {
@@ -67,39 +87,86 @@ export class OccurrenceRepository extends BaseRepository {
   }
 
   /**
-   * Gets a list of `occurrence` for a `occurrence_submission` id.
+   * Gets a list of `occurrence` for a `occurrence_submission_id` id.
    *
    * @param {number} submissionId
    * @return {*}  {Promise<any[]>}
    */
-  async getOccurrencesForView(submissionId: number): Promise<any[]> {
-    const sqlStatement = SQL`
-      SELECT
-        *
-      FROM
-        submission_spatial_component
-      LEFT OUTER JOIN
-        occurrence_submission as os
-      ON
-        o.occurrence_submission_id = os.occurrence_submission_id
-      WHERE
-        o.occurrence_submission_id = ${submissionId}
-      AND
-        os.delete_timestamp is null;
-    `;
+  async getOccurrencesForView(submissionId: number): Promise<ISubmissionSpatialSearchResponseRow[]> {
+    const knex = getKnex();
 
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
+    const queryBuilder = knex
+      .queryBuilder()
+      .with('distinct_geographic_points', this._withDistinctGeographicPoints)
+      .with('with_filtered_spatial_component', (qb1) => {
+        // Get the spatial components that match the search filters
+        qb1
+          .select(
+            knex.raw(
+              "jsonb_array_elements(ssc.spatial_component -> 'features') #> '{properties, dwc, datasetID}' as dataset_id"
+            ),
+            knex.raw(
+              "jsonb_array_elements(ssc.spatial_component -> 'features') #> '{properties, dwc, associatedTaxa}' as associated_taxa"
+            ),
+            knex.raw(
+              "jsonb_array_elements(ssc.spatial_component -> 'features') #> '{properties, dwc, vernacularName}' as vernacular_name"
+            ),
+            'ssc.submission_spatial_component_id',
+            'ssc.occurrence_submission_id',
+            'ssc.spatial_component',
+            'ssc.geography'
+          )
+          .from('submission_spatial_component as ssc')
+          .leftJoin('distinct_geographic_points as p', 'p.geography', 'ssc.geography')
+          .groupBy('ssc.submission_spatial_component_id')
+          .groupBy('ssc.occurrence_submission_id')
+          .groupBy('ssc.spatial_component')
+          .groupBy('ssc.geography');
 
-    const result = (response && response.rows) || null;
+        qb1.where((qb2) => {
+          qb2.whereRaw(
+            `occurrence_submission_id in (select occurrence_submission_id from submission_spatial_component where occurrence_submission_id in (${submissionId}))`
+          );
+        });
+      })
+      .with('with_coalesced_spatial_components', (qb3) => {
+        qb3
+          .select(
+            // Select the non-secure spatial component from the search results
+            'submission_spatial_component_id',
+            'occurrence_submission_id',
+            'geography',
+            knex.raw(
+              `jsonb_build_object( 'submission_spatial_component_id', wfsc.submission_spatial_component_id, 'associated_taxa', wfsc.associated_taxa, 'vernacular_name', wfsc.vernacular_name) taxa_data_object`
+            ),
+            knex.raw(`jsonb_build_object( 'spatial_data', wfsc.spatial_component) spatial_component`)
+          )
+          .from(knex.raw('with_filtered_spatial_component as wfsc'));
+      })
+      .select(
+        knex.raw('array_agg(submission_spatial_component_id) as submission_spatial_component_ids'),
+        knex.raw('array_agg(taxa_data_object) as taxa_data'),
+        knex.raw('(array_agg(spatial_component))[1] as spatial_component'),
+        'geography'
+      )
+      .from('with_coalesced_spatial_components')
+      // Filter out secure spatial components that have no spatial representation
+      // The user is not allowed to see any aspect of these particular spatial components
+      .whereRaw("spatial_component->'spatial_data' != '{}'")
+      .groupBy('geography');
 
-    if (!result) {
-      throw new ApiExecuteSQLError('Failed to get occurrences view data', [
-        'OccurrenceRepository->getOccurrencesForView',
-        'rows was null or undefined, expected rows != null'
-      ]);
-    }
+    const response = await this.connection.knex<ISubmissionSpatialSearchResponseRow>(queryBuilder);
 
-    return result;
+    return response.rows;
+  }
+
+  _withDistinctGeographicPoints(qb1: Knex.QueryBuilder) {
+    qb1
+      .distinct()
+      .select('geography')
+      .from('submission_spatial_component')
+      .whereRaw(`geometrytype(geography) = 'POINT'`)
+      .whereRaw(`jsonb_path_exists(spatial_component,'$.features[*] \\? (@.properties.type == "Occurrence")')`);
   }
 
   /**
@@ -141,5 +208,38 @@ export class OccurrenceRepository extends BaseRepository {
     }
 
     return updateResponse.rows[0];
+  }
+
+  /**
+   * Query builder to find spatial component from a given submission id
+   *
+   * @param {number} submission_spatial_component_id
+   * @return {*}  {Promise<ISubmissionSpatialComponent>}
+   * @memberof SpatialRepository
+   */
+  async findSpatialMetadataBySubmissionSpatialComponentIds(
+    submission_spatial_component_ids: number[]
+  ): Promise<ISpatialComponentFeaturePropertiesRow[]> {
+    const knex = getKnex();
+    const queryBuilder = knex
+      .queryBuilder()
+      .with('with_filtered_spatial_component', (qb1) => {
+        // Get the spatial components that match the search filters
+        qb1
+          .select()
+          .from('submission_spatial_component as ssc')
+          .whereIn('submission_spatial_component_id', submission_spatial_component_ids);
+      })
+      .select(
+        // Select the non-secure spatial component from the search results
+        knex.raw(
+          `jsonb_array_elements(wfsc.spatial_component -> 'features') #> '{properties}' as spatial_component_properties`
+        )
+      )
+      .from(knex.raw('with_filtered_spatial_component as wfsc'));
+
+    const response = await this.connection.knex<ISpatialComponentFeaturePropertiesRow>(queryBuilder);
+
+    return response.rows;
   }
 }

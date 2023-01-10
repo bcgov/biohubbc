@@ -1,7 +1,8 @@
 import { AxiosInstance, CancelTokenSource } from 'axios';
+import { GeoJsonProperties } from 'geojson';
 import {
   IGetObservationSubmissionResponse,
-  IGetOccurrencesForViewResponseDetails,
+  ISpatialData,
   IUploadObservationSubmissionResponse
 } from 'interfaces/useObservationApi.interface';
 
@@ -64,17 +65,20 @@ const useObservationApi = (axios: AxiosInstance) => {
   /**
    * Get occurrence information for view-only purposes based on occurrence submission id
    *
-   * @param {number} projectId
    * @param {number} occurrenceSubmissionId
-   * @returns {*} {Promise<IGetOccurrencesForViewResponseDetails[]>}
+   * @returns {*} {Promise<ISpatialData[]>}
    */
-  const getOccurrencesForView = async (
-    projectId: number,
-    occurrenceSubmissionId: number
-  ): Promise<IGetOccurrencesForViewResponseDetails[]> => {
+  const getOccurrencesForView = async (occurrenceSubmissionId: number): Promise<ISpatialData[]> => {
     const { data } = await axios.post(`/api/dwc/view-occurrences`, {
-      project_id: projectId,
       occurrence_submission_id: occurrenceSubmissionId
+    });
+
+    return data;
+  };
+
+  const getSpatialMetadata = async <T = GeoJsonProperties>(submissionSpatialComponentIds: number[]): Promise<T[]> => {
+    const { data } = await axios.get<T[]>(`/api/dwc/metadata`, {
+      params: { submissionSpatialComponentIds }
     });
 
     return data;
@@ -156,7 +160,8 @@ const useObservationApi = (axios: AxiosInstance) => {
     initiateXLSXSubmissionTransform,
     getOccurrencesForView,
     processOccurrences,
-    processDWCFile
+    processDWCFile,
+    getSpatialMetadata
   };
 };
 

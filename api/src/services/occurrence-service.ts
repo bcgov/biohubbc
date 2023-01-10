@@ -1,3 +1,4 @@
+import { GeoJsonProperties } from 'geojson';
 import { IDBConnection } from '../database/db';
 import { IOccurrenceSubmission, OccurrenceRepository } from '../repositories/occurrence-repository';
 import { DBService } from './db-service';
@@ -27,24 +28,25 @@ export class OccurrenceService extends DBService {
    * @return {*} {Promise<any[]>}
    */
   async getOccurrences(submissionId: number): Promise<any[]> {
-    const occurrenceData = await this.occurrenceRepository.getOccurrencesForView(submissionId);
-    return occurrenceData.map((occurrence) => {
-      const feature =
-        (occurrence.geometry && { type: 'Feature', geometry: JSON.parse(occurrence.geometry), properties: {} }) || null;
+    const response = await this.occurrenceRepository.getOccurrencesForView(submissionId);
 
+    const occurrenceData = response.map((row) => {
+      const { spatial_component, taxa_data } = row;
+      const { spatial_data, ...rest } = spatial_component;
       return {
-        geometry: feature,
-        taxonId: occurrence.taxonid,
-        occurrenceId: occurrence.occurrence_id,
-        individualCount: Number(occurrence.individualcount),
-        lifeStage: occurrence.lifestage,
-        sex: occurrence.sex,
-        organismQuantity: Number(occurrence.organismquantity),
-        organismQuantityType: occurrence.organismquantitytype,
-        vernacularName: occurrence.vernacularname,
-        eventDate: occurrence.eventdate
+        taxa_data,
+        ...rest,
+        spatial_data: {
+          ...spatial_data,
+          features: spatial_data.features.map((feature) => {
+            delete feature?.properties?.dwc;
+            return feature;
+          })
+        }
       };
     });
+
+    return occurrenceData;
   }
 
   /**
@@ -68,5 +70,22 @@ export class OccurrenceService extends DBService {
    */
   async updateDWCSourceForOccurrenceSubmission(submissionId: number, jsonData: string): Promise<number> {
     return await this.occurrenceRepository.updateDWCSourceForOccurrenceSubmission(submissionId, jsonData);
+  }
+
+  /**
+   * Query builder to find spatial component by given criteria
+   *
+   * @param {ISpatialComponentsSearchCriteria} criteria
+   * @return {*}  {Promise<ISubmissionSpatialComponent[]>}
+   * @memberof SpatialService
+   */
+  async findSpatialMetadataBySubmissionSpatialComponentIds(
+    submissionSpatialComponentIds: number[]
+  ): Promise<GeoJsonProperties[]> {
+    const response = this.occurrenceRepository.findSpatialMetadataBySubmissionSpatialComponentIds(
+      submissionSpatialComponentIds
+    );
+
+    return (await response).map((row) => row.spatial_component_properties);
   }
 }
