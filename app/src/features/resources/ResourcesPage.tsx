@@ -1,3 +1,4 @@
+import { CircularProgress } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
 import Container from '@material-ui/core/Container';
 import IconButton from '@material-ui/core/IconButton';
@@ -49,6 +50,10 @@ const ResourcesPage: React.FC = () => {
   resourcesDataLoader.load();
 
   const resources: IResourceFile[] = resourcesDataLoader.data?.files || []; 
+
+  if (!resourcesDataLoader.isReady || resourcesDataLoader.isLoading) {
+    return <CircularProgress className="pageProgress" size={40} />;
+  }
 
   const getResourcesList = () => {
     return (
