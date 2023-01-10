@@ -2,6 +2,7 @@ import AWS from 'aws-sdk';
 import {
   DeleteObjectOutput,
   GetObjectOutput,
+  HeadObjectOutput,
   ListObjectsOutput,
   ManagedUpload,
   Metadata
@@ -115,14 +116,27 @@ export async function getFileFromS3(key: string, versionId?: string): Promise<Ge
 }
 
 /**
- * Fetchs a list of files in S3 at the given path.
+ * Fetchs a list of files in S3 at the given path
  *
  * @export
- * @param {string} path the path in S3
- * @return {*}  {Promise<ListObjectsOutput>}
+ * @param {string} path the path (Prefix) of the directory in S3
+ * @return {*}  {Promise<ListObjectsOutput>} All objects at the given path, also including
+ * the directory itself.
  */
-export async function listFilesFromS3(path: string): Promise<ListObjectsOutput> {
+export const listFilesFromS3 = async (path: string): Promise<ListObjectsOutput> => {
   return S3.listObjects({ Bucket: OBJECT_STORE_BUCKET_NAME, Prefix: path })
+    .promise();
+}
+
+/**
+ * Retrieves all metadata for the given S3 object, including custom HTTP headers.
+ *
+ * @export
+ * @param {string} key the key of the object
+ * @returns {*} {Promise<HeadObjectOutput}
+ */
+export async function getObjectMeta(key: string): Promise<HeadObjectOutput> {
+  return S3.headObject({ Bucket: OBJECT_STORE_BUCKET_NAME, Key: key })
     .promise();
 }
 
