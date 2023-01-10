@@ -1,7 +1,7 @@
 import { Object } from 'aws-sdk/clients/s3';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { getObjectMeta, listFilesFromS3 } from '../../utils/file-utils';
+import { getObjectMeta, getS3PublicHostUrl, listFilesFromS3 } from '../../utils/file-utils';
 import { getLogger } from '../../utils/logger';
 
 const defaultLog = getLogger('paths/resources/list');
@@ -25,8 +25,11 @@ GET.apiDoc = {
                 type: 'array', 
                 items: {
                   type: 'object',
-                  required: ['url', 'lastModified', 'fileSize', 'metadata'],
+                  required: ['fileName', 'url', 'lastModified', 'fileSize', 'metadata'],
                   properties: {
+                    fileName: {
+                      type: 'string'
+                    },
                     url: {
                       type: 'string'
                     },
@@ -38,7 +41,6 @@ GET.apiDoc = {
                     },
                     metadata: {
                       type: 'object',
-                      required: ['templateName', 'templateType'],
                       properties: {
                         species: {
                           type: 'string'
@@ -91,9 +93,15 @@ export function listResources(): RequestHandler {
         .filter((file: Object) => !file.Key?.endsWith('/'))
         .map(async (file: Object) => {
           let metadata = {};
+          let fileName = '';
 
           if (file.Key) {
             const metaResponse = await getObjectMeta(file.Key);
+
+            // Trim path name and leading '/' character(s)
+            fileName = file.Key
+              .replace(new RegExp(`^${CURRENT_TEMPLATES_PATH}`), '')
+              .replace(/^\/|\/$/g, '');
 
             metadata = {
               species: metaResponse?.Metadata?.['species'],
@@ -103,7 +111,8 @@ export function listResources(): RequestHandler {
           }
 
           return {
-            url: file.Key,
+            fileName,
+            url: `${getS3PublicHostUrl()}/${file.Key}`,
             lastModified: file.LastModified,
             fileSize: file.Size,
             metadata
