@@ -12,8 +12,8 @@
     "npm": ">= 6.0.0"
   },
   "scripts": {
-    "build-validation": "ts-node ./utils/templates/validation-config-builder.ts",
-    "build-transformation": "ts-node ./utils/templates/transformation-config-builder.ts",
+    "build-validation": "ts-node ./validation/validation-config-builder.ts",
+    "build-transformation": "ts-node ./transformation/transformation-config-builder.ts",
     "lint": "eslint . --ext .js,.ts",
     "lint-fix": "npm run lint -- --fix",
     "format": "prettier --check \"./**/*.{js,jsx,ts,tsx,css,scss}\"",
@@ -27,9 +27,14 @@
     "eslint": "~7.32.0",
     "eslint-config-prettier": "~6.15.0",
     "eslint-plugin-prettier": "~3.3.1",
+    "fs": "^0.0.1-security",
     "prettier": "^2.3.2",
     "prettier-plugin-organize-imports": "~2.3.4",
     "ts-node": "~10.4.0",
     "typescript": "~4.1.6"
+  },
+  "dependencies": {
+    "fs": "^0.0.1-security",
+    "ts-node": "~10.4.0"
   }
 }
