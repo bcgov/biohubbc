@@ -1,28 +1,22 @@
 import * as fs from 'fs';
-
-// helper functions for constructing validation schema
-const basicNumericValidator = () => {
-  return [
-    {
-      column_numeric_validator: {
-        name: '',
-        description: ''
-      }
-    }
-  ];
-};
-
-const basicDateValidator = () => {
-  return [
-    {
-      column_format_validator: {
-        reg_exp: '^d{4}-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01])$',
-        reg_exp_flags: 'g',
-        expected_format: 'Dates need to be formatted in YYYY-MM-DD. For example: 2020-09-15.'
-      }
-    }
-  ];
-};
+import {
+  activityNonTargettedPickListValidator,
+  ageOfSignPickListValidator,
+  aircraftPickListValidator,
+  basicNumericValidator,
+  datumPickListValidator,
+  featureTypePickListValidator,
+  frequencyPickListValidator,
+  habitatPickListValidator,
+  observationActivityPickListValidator,
+  presentAbsentPickListValidator,
+  signTypePickListValidator,
+  speciesPickListValidator,
+  surveyOrTelemetryPickListValidator,
+  targetPickListValidator,
+  utmZonePickListValidator,
+  yesNoPickListValidator
+} from './validation-config-helpers';
 
 // const templateValidationSchema = {
 //   name: '',
@@ -61,7 +55,13 @@ const templateValidationSchema = {
           }
         }
       ],
-      columns: []
+      columns: [
+        {
+          name: 'Aircraft Type',
+          description: '',
+          validations: aircraftPickListValidator()
+        }
+      ]
     },
     {
       name: 'Observations',
@@ -78,19 +78,9 @@ const templateValidationSchema = {
       ],
       columns: [
         {
-          name: 'Study Area',
-          description: '',
-          validations: []
-        },
-        {
-          name: 'Block ID/SU ID',
-          description: '',
-          validations: []
-        },
-        {
           name: 'UTM Zone',
           description: '',
-          validations: []
+          validations: utmZonePickListValidator()
         },
         {
           name: 'Easting',
@@ -105,7 +95,7 @@ const templateValidationSchema = {
         {
           name: 'Datum',
           description: '',
-          validations: []
+          validations: utmZonePickListValidator()
         },
         {
           name: 'Lat (DD)',
@@ -118,47 +108,32 @@ const templateValidationSchema = {
           validations: basicNumericValidator()
         },
         {
-          name: 'Group Label',
-          description: '',
-          validations: []
-        },
-        {
-          name: 'Date',
-          description: '',
-          validations: []
-        },
-        {
-          name: 'Time',
-          description: '',
-          validations: []
-        },
-        {
           name: 'Species',
           description: '',
-          validations: [] //TODO What is valid here?
+          validations: speciesPickListValidator()
         },
         {
-          name: 'Spike/ Fork Bulls',
+          name: 'BC RISC Class I Rams',
           description: '',
           validations: basicNumericValidator()
         },
         {
-          name: 'Sub-Prime Bulls',
+          name: 'BC RISC Class II Rams',
           description: '',
           validations: basicNumericValidator()
         },
         {
-          name: 'Prime Bulls',
+          name: 'BC RISC Class III Rams',
           description: '',
           validations: basicNumericValidator()
         },
         {
-          name: 'Senior Bulls',
+          name: 'BC RISC Class IV Rams',
           description: '',
           validations: basicNumericValidator()
         },
         {
-          name: '3 Brow/10 Point Bulls',
+          name: 'Ram - Unclassified',
           description: '',
           validations: basicNumericValidator()
         },
@@ -168,47 +143,27 @@ const templateValidationSchema = {
           validations: basicNumericValidator()
         },
         {
-          name: 'BC RISC Class I Bulls',
+          name: 'Ewes',
           description: '',
           validations: basicNumericValidator()
         },
         {
-          name: 'BC RISC Class II Bulls',
+          name: 'Yearlings',
           description: '',
           validations: basicNumericValidator()
         },
         {
-          name: 'BC RISC Class III Bulls',
+          name: 'Lambs',
           description: '',
           validations: basicNumericValidator()
         },
         {
-          name: 'Oswald (1997) Class I Bulls',
+          name: 'Ewe-Like Sheep',
           description: '',
           validations: basicNumericValidator()
         },
         {
-          name: 'Oswald (1997) Class II Bulls',
-          description: '',
-          validations: basicNumericValidator()
-        },
-        {
-          name: 'Oswald (1997) Class III Bulls',
-          description: '',
-          validations: basicNumericValidator()
-        },
-        {
-          name: 'Cow',
-          description: '',
-          validations: basicNumericValidator()
-        },
-        {
-          name: 'Calves',
-          description: '',
-          validations: basicNumericValidator()
-        },
-        {
-          name: 'Adult Unclassified Sex',
+          name: 'Adults Unclassified Sex',
           description: '',
           validations: basicNumericValidator()
         },
@@ -218,29 +173,14 @@ const templateValidationSchema = {
           validations: basicNumericValidator()
         },
         {
-          name: 'Cow W/1 calf',
+          name: 'Total Count',
           description: '',
           validations: basicNumericValidator()
-        },
-        {
-          name: 'Cow W/2 calves',
-          description: '',
-          validations: basicNumericValidator()
-        },
-        {
-          name: 'Sign Type',
-          description: '',
-          validations: []
         },
         {
           name: 'Sign Count',
           description: '',
           validations: basicNumericValidator()
-        },
-        {
-          name: 'Age of Sign',
-          description: '',
-          validations: []
         },
         {
           name: 'Veg Cover (%)',
@@ -253,9 +193,9 @@ const templateValidationSchema = {
           validations: basicNumericValidator()
         },
         {
-          name: 'Activity',
+          name: 'Elevation (m) of Observation',
           description: '',
-          validations: []
+          validations: basicNumericValidator()
         },
         {
           name: 'Number of Marked Animals Observed',
@@ -265,17 +205,32 @@ const templateValidationSchema = {
         {
           name: 'Survey or Telemetry Search',
           description: '',
-          validations: []
+          validations: surveyOrTelemetryPickListValidator()
         },
         {
-          name: 'Photos',
+          name: 'Sign Type',
           description: '',
-          validations: []
+          validations: signTypePickListValidator()
         },
         {
-          name: 'Observation Comments',
+          name: 'Sign Age',
           description: '',
-          validations: []
+          validations: ageOfSignPickListValidator()
+        },
+        {
+          name: 'Activity',
+          description: '',
+          validations: observationActivityPickListValidator()
+        },
+        {
+          name: 'Habitat',
+          description: '',
+          validations: habitatPickListValidator()
+        },
+        {
+          name: 'Terrain Obstruction',
+          description: '',
+          validations: yesNoPickListValidator()
         }
       ]
     },
@@ -285,11 +240,6 @@ const templateValidationSchema = {
       validations: [],
       columns: [
         {
-          name: 'Group Label',
-          description: '',
-          validations: []
-        },
-        {
           name: 'Date',
           description: '',
           validations: []
@@ -297,57 +247,12 @@ const templateValidationSchema = {
         {
           name: 'Targeted or Non-Targeted',
           description: '',
-          validations: []
-        },
-        {
-          name: 'Wildlife Health ID',
-          description: '',
-          validations: []
-        },
-        {
-          name: 'Animal ID',
-          description: '',
-          validations: []
-        },
-        {
-          name: 'Telemetry Device ID',
-          description: '',
-          validations: []
-        },
-        {
-          name: 'Collar/Tag Frequency',
-          description: '',
-          validations: []
+          validations: targetPickListValidator()
         },
         {
           name: 'Frequency Unit',
           description: '',
-          validations: []
-        },
-        {
-          name: 'Right Ear Tag ID',
-          description: '',
-          validations: []
-        },
-        {
-          name: 'Right Ear Tag Colour',
-          description: '',
-          validations: []
-        },
-        {
-          name: 'Left Ear Tag ID',
-          description: '',
-          validations: []
-        },
-        {
-          name: 'Left Ear Tag Colour',
-          description: '',
-          validations: []
-        },
-        {
-          name: 'Marked Animals Comments',
-          description: '',
-          validations: []
+          validations: frequencyPickListValidator()
         }
       ]
     },
@@ -369,7 +274,7 @@ const templateValidationSchema = {
         {
           name: 'UTM Zone',
           description: '',
-          validations: []
+          validations: utmZonePickListValidator()
         },
         {
           name: 'Easting',
@@ -384,7 +289,7 @@ const templateValidationSchema = {
         {
           name: 'Datum',
           description: '',
-          validations: []
+          validations: datumPickListValidator()
         },
         {
           name: 'Lat (DD)',
@@ -395,11 +300,6 @@ const templateValidationSchema = {
           name: 'Long (DD)',
           description: '',
           validations: basicNumericValidator()
-        },
-        {
-          name: 'Date',
-          description: '',
-          validations: basicDateValidator()
         },
         {
           name: 'Time',
@@ -449,12 +349,12 @@ const templateValidationSchema = {
         {
           name: 'Species Occurrence Status',
           description: '',
-          validations: []
+          validations: presentAbsentPickListValidator()
         },
         {
           name: 'Activity',
           description: '',
-          validations: []
+          validations: activityNonTargettedPickListValidator()
         },
         {
           name: 'Activity Count',
@@ -464,7 +364,7 @@ const templateValidationSchema = {
         {
           name: 'Feature Type',
           description: '',
-          validations: []
+          validations: featureTypePickListValidator()
         },
         {
           name: 'FEature Type Count',
@@ -474,7 +374,7 @@ const templateValidationSchema = {
         {
           name: 'Sign Type',
           description: '',
-          validations: []
+          validations: signTypePickListValidator()
         },
         {
           name: 'Sign Count',
