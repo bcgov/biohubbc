@@ -179,3 +179,26 @@ export function getFeatureObjectFromLatLngBounds(bounds: LatLngBounds): Feature<
     }
   };
 }
+
+/**
+ * Takes an array of objects and produces an object URL pointing to a Blob which contains
+ * the array. Supports large arrays thanks to use of Blob datatype.
+ * @param entries Array containing objects
+ * @returns A data URL, which downloads the given array as a CSV when clicked on in a browser.
+ */
+export const makeCsvObjectUrl = (entries: Array<Record<string, any>>) => {
+  const keys = [...new Set(entries.reduce((acc: string[], entry) => acc.concat(Object.keys(entry)), []))];
+
+  const rows = entries.map((entry: Record<string, any>) => {
+    return keys.map((key) => String(entry[key]));
+  });
+
+  // Prepend the column names (object keys) to the CSV.
+  rows.unshift(keys);
+
+  const csvContent = rows.map((row) => row.join(',')).join('\n');
+
+  const blob = new Blob([csvContent], { type: 'text/csv' });
+
+  return window.URL.createObjectURL(blob);
+};

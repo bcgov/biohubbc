@@ -10,11 +10,9 @@ import Typography from '@material-ui/core/Typography';
 import { mdiChevronRight, mdiPencilOutline, mdiRefresh } from '@mdi/js';
 import Icon from '@mdi/react';
 import FullScreenViewMapDialog from 'components/boundary/FullScreenViewMapDialog';
-import InferredLocationDetails, { IInferredLayers } from 'components/boundary/InferredLocationDetails';
 import EditDialog from 'components/dialog/EditDialog';
 import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import MapContainer from 'components/map/MapContainer';
-import OccurrenceFeatureGroup from 'components/map/OccurrenceFeatureGroup';
 import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
 import { EditSurveyStudyAreaI18N } from 'constants/i18n';
 import StudyAreaForm, {
@@ -22,7 +20,6 @@ import StudyAreaForm, {
   StudyAreaInitialValues,
   StudyAreaYupSchema
 } from 'features/surveys/components/StudyAreaForm';
-import { Feature } from 'geojson';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
@@ -84,14 +81,8 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
 
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [studyAreaFormData, setStudyAreaFormData] = useState<IStudyAreaForm>(StudyAreaInitialValues);
-  const [inferredLayersInfo, setInferredLayersInfo] = useState<IInferredLayers>({
-    parks: [],
-    nrm: [],
-    env: [],
-    wmu: []
-  });
+
   const [bounds, setBounds] = useState<LatLngBoundsExpression | undefined>(undefined);
-  const [nonEditableGeometries, setNonEditableGeometries] = useState<any[]>([]);
   const [showFullScreenViewMapDialog, setShowFullScreenViewMapDialog] = useState<boolean>(false);
 
   const zoomToBoundaryExtent = useCallback(() => {
@@ -99,13 +90,7 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
   }, [surveyGeometry]);
 
   useEffect(() => {
-    const nonEditableGeometriesResult = surveyGeometry.map((geom: Feature) => {
-      return { feature: geom };
-    });
-
     zoomToBoundaryExtent();
-
-    setNonEditableGeometries(nonEditableGeometriesResult);
   }, [surveyGeometry, occurrence_submission.id, zoomToBoundaryExtent]);
 
   const [errorDialogProps, setErrorDialogProps] = useState<IErrorDialogProps>({
@@ -199,27 +184,9 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
       <FullScreenViewMapDialog
         open={showFullScreenViewMapDialog}
         onClose={handleClose}
-        map={
-          <MapContainer
-            mapId="project_location_form_map"
-            scrollWheelZoom={true}
-            nonEditableGeometries={nonEditableGeometries}
-            bounds={bounds}
-            setInferredLayersInfo={setInferredLayersInfo}
-            additionalLayers={
-              occurrence_submission.id
-                ? [
-                    <OccurrenceFeatureGroup
-                      projectId={projectForViewData.id}
-                      occurrenceSubmissionId={occurrence_submission.id}
-                    />
-                  ]
-                : undefined
-            }
-          />
-        }
+        map={<MapContainer mapId="project_location_form_map" scrollWheelZoom={true} bounds={bounds} />}
         description={survey_details.survey_area_name}
-        layers={<InferredLocationDetails layers={inferredLayersInfo} />}
+        layers={() => {}}
         backButtonTitle={'Back To Survey'}
         mapTitle={'Study Area'}
       />
@@ -236,22 +203,7 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
 
         <Box px={3} pb={3}>
           <Box height={500} position="relative">
-            <MapContainer
-              mapId="survey_study_area_map"
-              nonEditableGeometries={nonEditableGeometries}
-              bounds={bounds}
-              setInferredLayersInfo={setInferredLayersInfo}
-              additionalLayers={
-                occurrence_submission.id
-                  ? [
-                      <OccurrenceFeatureGroup
-                        projectId={projectForViewData.id}
-                        occurrenceSubmissionId={occurrence_submission.id}
-                      />
-                    ]
-                  : undefined
-              }
-            />
+            <MapContainer mapId="survey_study_area_map" bounds={bounds} />
             {surveyGeometry.length > 0 && (
               <Box position="absolute" top="126px" left="10px" zIndex="999">
                 <IconButton
@@ -270,9 +222,6 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
             </Typography>
             <Divider></Divider>
             <Typography variant="body1">{survey_details.survey_area_name}</Typography>
-            <Box mt={3}>
-              <InferredLocationDetails layers={inferredLayersInfo} />
-            </Box>
           </Box>
         </Box>
 
