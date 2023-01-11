@@ -98,8 +98,8 @@ export function listResources(): RequestHandler {
           if (file.Key) {
             const metaResponse = await getObjectMeta(file.Key);
 
-            // Trim path name and leading '/' character(s)
-            fileName = file.Key.replace(new RegExp(`^${CURRENT_TEMPLATES_PATH}`), '').replace(/^\/|\/$/g, '');
+            // Trim path name and/or leading '/' character(s)
+            fileName = file.Key.replace(new RegExp(`^${CURRENT_TEMPLATES_PATH}\/*`), '');
 
             metadata = {
               species: metaResponse?.Metadata?.['species'],

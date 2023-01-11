@@ -69,12 +69,12 @@ const ResourcesPage: React.FC = () => {
             </TableRow>
           </TableHead>
           <TableBody data-testid="resources-table">
-            {resources?.map((row: IResourceFile, index: number) => {
+            {resources.map((row: IResourceFile) => {
               const { templateType } = row.metadata
               const templateName = row.metadata.templateName || row.fileName;
 
               return (
-                <TableRow key={`${templateName}-${index}`}>
+                <TableRow key={row.url}>
                   <TableCell>
                     <Link href={ensureProtocol(row.url, 'https://')} underline="always" style={{ fontWeight: 700 }} >
                       {templateName}
