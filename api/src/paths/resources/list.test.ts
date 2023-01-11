@@ -1,9 +1,8 @@
 import chai, { expect } from 'chai';
 import { describe } from 'mocha';
+import OpenAPIResponseValidator, { OpenAPIResponseValidatorArgs } from 'openapi-response-validator';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import OpenAPIResponseValidator, { OpenAPIResponseValidatorArgs } from 'openapi-response-validator';
-
 import { HTTPError } from '../../errors/http-error';
 import * as fileUtils from '../../utils/file-utils';
 import { getRequestHandlerMocks } from '../../__mocks__/db';
@@ -36,17 +35,17 @@ describe('listResources', () => {
       ['key1']: {
         'template-name': 'name1',
         'template-type': 'type1',
-        'species': 'species1',
+        species: 'species1'
       },
       ['key2']: {
         'template-name': 'name2',
         'template-type': 'type2',
-        'species': 'species2',
+        species: 'species2'
       },
       ['key3']: {
         'template-name': 'name3',
         'template-type': 'type3',
-        'species': 'species3',
+        species: 'species3'
       }
     };
 
@@ -143,7 +142,7 @@ describe('listResources', () => {
     expect(listFilesStub).to.have.been.calledWith('templates/Current');
     expect(mockRes.jsonValue).to.eql({ files: [] });
     expect(mockRes.statusValue).to.equal(200);
-  })
+  });
 
   it('catches error, and re-throws error', async () => {
     sinon.stub(fileUtils, 'listFilesFromS3').rejects(new Error('an error occurred'));
@@ -312,7 +311,7 @@ describe('listResources', () => {
           const response = responseValidator.validateResponse(200, apiResponse);
           expect(response.message).to.equal('The response was not valid.');
           expect(response.errors.length).to.equal(1);
-          expect(response.errors[0].message).to.equal("must be number");
+          expect(response.errors[0].message).to.equal('must be number');
           expect(response.errors[0].path).to.equal('files/0/fileSize');
         });
 

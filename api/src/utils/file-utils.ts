@@ -33,13 +33,13 @@ const S3 = new AWS.S3({
 
 /**
  * Returns the S3 public host URL.
- * 
+ *
  * @export
  * @returns {*} {string}
  */
 export const getS3PublicHostUrl = () => {
-  return `${OBJECT_STORE_URL}/${OBJECT_STORE_BUCKET_NAME}`
-}
+  return `${OBJECT_STORE_URL}/${OBJECT_STORE_BUCKET_NAME}`;
+};
 
 /**
  * Delete a file from S3, based on its key.
@@ -134,9 +134,8 @@ export async function getFileFromS3(key: string, versionId?: string): Promise<Ge
  * the directory itself.
  */
 export const listFilesFromS3 = async (path: string): Promise<ListObjectsOutput> => {
-  return S3.listObjects({ Bucket: OBJECT_STORE_BUCKET_NAME, Prefix: path })
-    .promise();
-}
+  return S3.listObjects({ Bucket: OBJECT_STORE_BUCKET_NAME, Prefix: path }).promise();
+};
 
 /**
  * Retrieves all metadata for the given S3 object, including custom HTTP headers.
@@ -146,8 +145,7 @@ export const listFilesFromS3 = async (path: string): Promise<ListObjectsOutput> 
  * @returns {*} {Promise<HeadObjectOutput}
  */
 export async function getObjectMeta(key: string): Promise<HeadObjectOutput> {
-  return S3.headObject({ Bucket: OBJECT_STORE_BUCKET_NAME, Key: key })
-    .promise();
+  return S3.headObject({ Bucket: OBJECT_STORE_BUCKET_NAME, Key: key }).promise();
 }
 
 /**

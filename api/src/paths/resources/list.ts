@@ -22,7 +22,7 @@ GET.apiDoc = {
             type: 'object',
             properties: {
               files: {
-                type: 'array', 
+                type: 'array',
                 items: {
                   type: 'object',
                   required: ['fileName', 'url', 'lastModified', 'fileSize', 'metadata'],
@@ -99,15 +99,13 @@ export function listResources(): RequestHandler {
             const metaResponse = await getObjectMeta(file.Key);
 
             // Trim path name and leading '/' character(s)
-            fileName = file.Key
-              .replace(new RegExp(`^${CURRENT_TEMPLATES_PATH}`), '')
-              .replace(/^\/|\/$/g, '');
+            fileName = file.Key.replace(new RegExp(`^${CURRENT_TEMPLATES_PATH}`), '').replace(/^\/|\/$/g, '');
 
             metadata = {
               species: metaResponse?.Metadata?.['species'],
               templateName: metaResponse?.Metadata?.['template-name'],
               templateType: metaResponse?.Metadata?.['template-type']
-            }
+            };
           }
 
           return {
@@ -116,7 +114,7 @@ export function listResources(): RequestHandler {
             lastModified: file.LastModified?.toString() || null,
             fileSize: file.Size,
             metadata
-          }
+          };
         });
 
       // Resolve all promises before returning the result
