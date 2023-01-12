@@ -69,25 +69,34 @@ const ResourcesPage: React.FC = () => {
             </TableRow>
           </TableHead>
           <TableBody data-testid="resources-table">
-            {resources.map((row: IResourceFile) => {
-              const { templateType } = row.metadata
-              const templateName = row.metadata.templateName || row.fileName;
+            {resources.length === 0 ? (
+              <TableRow data-testid={'resources-row-0'}>
+                <TableCell colSpan={3} style={{ textAlign: 'center' }}>
+                  No Resources Available
+                </TableCell>
+              </TableRow>
+            ) : (
+              resources.map((row: IResourceFile) => {
+                const { templateType } = row.metadata
+                const templateName = row.metadata.templateName || row.fileName;
 
-              return (
-                <TableRow key={row.url}>
-                  <TableCell>
-                    <Link href={ensureProtocol(row.url, 'https://')} underline="always" style={{ fontWeight: 700 }} >
-                      {templateName}
-                    </Link>
-                  </TableCell>
-                  <TableCell>{templateType || 'Other'}</TableCell>
-                  <TableCell align="center">
-                    <IconButton href={row.url} aria-label={`Download ${templateName}`}>
-                      <Icon path={mdiTrayArrowDown} size={0.8} />
-                    </IconButton>
-                  </TableCell>
-                </TableRow>
-              )})}
+                return (
+                  <TableRow key={row.url}>
+                    <TableCell>
+                      <Link href={ensureProtocol(row.url, 'https://')} underline="always" style={{ fontWeight: 700 }} >
+                        {templateName}
+                      </Link>
+                    </TableCell>
+                    <TableCell>{templateType || 'Other'}</TableCell>
+                    <TableCell align="center">
+                      <IconButton href={row.url} aria-label={`Download ${templateName}`}>
+                        <Icon path={mdiTrayArrowDown} size={0.8} />
+                      </IconButton>
+                    </TableCell>
+                  </TableRow>
+                );
+              })
+            )}
           </TableBody>
         </Table>
       </TableContainer>
