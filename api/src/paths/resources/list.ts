@@ -1,7 +1,7 @@
 import { Object } from 'aws-sdk/clients/s3';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { getObjectMeta, getS3PublicHostUrl, listFilesFromS3 } from '../../utils/file-utils';
+import { getObjectMeta, getS3HostUrl, listFilesFromS3 } from '../../utils/file-utils';
 import { getLogger } from '../../utils/logger';
 
 const defaultLog = getLogger('paths/resources/list');
@@ -110,8 +110,8 @@ export function listResources(): RequestHandler {
 
           return {
             fileName,
-            url: `${getS3PublicHostUrl()}/${file.Key}`,
-            lastModified: file.LastModified?.toString() || null,
+            url: `${getS3HostUrl(file.Key)}`,
+            lastModified: file.LastModified?.toISOString() || null,
             fileSize: file.Size,
             metadata
           };

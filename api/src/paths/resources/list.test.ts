@@ -49,7 +49,7 @@ describe('listResources', () => {
       }
     };
 
-    sinon.stub(fileUtils, 'getS3PublicHostUrl').returns('s3.host.example.com');
+    sinon.stub(fileUtils, 'getS3HostUrl').returns('s3.host.example.com/test-bucket');
     sinon.stub(fileUtils, 'getObjectMeta').callsFake((key: string) => {
       return Promise.resolve({
         Metadata: mockMetadata[key]
@@ -86,8 +86,8 @@ describe('listResources', () => {
       files: [
         {
           fileName: 'key1',
-          url: 's3.host.example.com/key1',
-          lastModified: new Date('2023-01-01').toString(),
+          url: 's3.host.example.com/test-bucket/key1',
+          lastModified: new Date('2023-01-01').toISOString(),
           fileSize: 5,
           metadata: {
             templateName: 'name1',
@@ -97,8 +97,8 @@ describe('listResources', () => {
         },
         {
           fileName: 'key2',
-          url: 's3.host.example.com/key2',
-          lastModified: new Date('2023-01-02').toString(),
+          url: 's3.host.example.com/test-bucket/key2',
+          lastModified: new Date('2023-01-02').toISOString(),
           fileSize: 10,
           metadata: {
             templateName: 'name2',
@@ -108,8 +108,8 @@ describe('listResources', () => {
         },
         {
           fileName: 'key3',
-          url: 's3.host.example.com/key3',
-          lastModified: new Date('2023-01-03').toString(),
+          url: 's3.host.example.com/test-bucket/key3',
+          lastModified: new Date('2023-01-03').toISOString(),
           fileSize: 15,
           metadata: {
             templateName: 'name3',
@@ -123,7 +123,7 @@ describe('listResources', () => {
   });
 
   it('should filter out directories from the s3 list respones', async () => {
-    sinon.stub(fileUtils, 'getS3PublicHostUrl').returns('s3.host.example.com');
+    sinon.stub(fileUtils, 'getS3HostUrl').returns('s3.host.example.com');
     sinon.stub(fileUtils, 'getObjectMeta').resolves({});
 
     const listFilesStub = sinon.stub(fileUtils, 'listFilesFromS3').resolves({
