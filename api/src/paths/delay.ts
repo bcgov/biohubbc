@@ -42,37 +42,38 @@ GET.apiDoc = {
 
 export function delay(): RequestHandler {
   return async (req, res) => {
-    defaultLog.error({ label: 'delay', message: 'start' });
+    defaultLog.debug({ label: 'delay', message: 'start' });
 
-    const delay = (req.params.delay && Number(req.params.delay)) || 0;
+    const delay = (req.query.delay && Number(req.query.delay)) || 0;
 
     const connection = getAPIUserDBConnection();
 
     try {
       await connection.open();
 
-      defaultLog.error({ label: 'delay', message: `start waiting for ${delay} milliseconds` });
+      defaultLog.debug({ label: 'delay', message: `start waiting for ${delay} milliseconds` });
       await waitForDelay(delay);
+      defaultLog.debug({ label: 'delay', message: `waiting finished` });
 
       await connection.commit();
 
-      res.status(200).send();
+      res.status(200).send('finish');
     } catch (error) {
       defaultLog.error({ label: 'delay', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {
       connection.release();
-      defaultLog.error({ label: 'delay', message: 'finish' });
+      defaultLog.debug({ label: 'delay', message: 'finish' });
     }
   };
 }
 
 function waitForDelay(delay: number) {
-  const currentTime = new Date().getMilliseconds();
-
   return new Promise((resolve) => {
-    while (currentTime + delay > new Date().getMilliseconds()) {
+    const initialTime = new Date().valueOf();
+
+    while (initialTime + delay > new Date().valueOf()) {
       // do nothing
     }
 
