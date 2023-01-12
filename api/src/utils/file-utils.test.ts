@@ -76,7 +76,7 @@ describe('getS3HostUrl', () => {
 
     const result = getS3HostUrl();
 
-    expect(result).to.equal('nrs.objectstore.gov.bc.ca/');
+    expect(result).to.equal('nrs.objectstore.gov.bc.ca');
   });
 
   it('should successfully produce an S3 host url', () => {
