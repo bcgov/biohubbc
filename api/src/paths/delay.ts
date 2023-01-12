@@ -5,7 +5,7 @@ import { getLogger } from '../utils/logger';
 
 const defaultLog = getLogger('paths/drafts');
 
-export const GET: Operation = [test()];
+export const GET: Operation = [delay()];
 
 GET.apiDoc = {
   parameters: [
@@ -40,9 +40,9 @@ GET.apiDoc = {
   }
 };
 
-export function test(): RequestHandler {
+export function delay(): RequestHandler {
   return async (req, res) => {
-    defaultLog.error({ label: 'test', message: 'start' });
+    defaultLog.error({ label: 'delay', message: 'start' });
 
     const delay = (req.params.delay && Number(req.params.delay)) || 0;
 
@@ -51,19 +51,19 @@ export function test(): RequestHandler {
     try {
       await connection.open();
 
-      defaultLog.error({ label: 'test', message: `start waiting for ${delay} milliseconds` });
+      defaultLog.error({ label: 'delay', message: `start waiting for ${delay} milliseconds` });
       await waitForDelay(delay);
 
       await connection.commit();
 
       res.status(200).send();
     } catch (error) {
-      defaultLog.error({ label: 'test', message: 'error', error });
+      defaultLog.error({ label: 'delay', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {
       connection.release();
-      defaultLog.error({ label: 'test', message: 'finish' });
+      defaultLog.error({ label: 'delay', message: 'finish' });
     }
   };
 }
