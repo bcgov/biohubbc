@@ -15,10 +15,10 @@ import { SubmissionErrorFromMessageType } from './submission-error';
 /**
  * Local getter for retrieving the ClamAV client.
  *
- * @returns {*} The ClamAV Scanner if `process.env.ENABLE_FILE_VIRUS_SCAN` is set to
+ * @returns {*} {clamd.ClamScanner | null} The ClamAV Scanner if `process.env.ENABLE_FILE_VIRUS_SCAN` is set to
  * 'true' and other appropriate environment variables are set; `null` otherwise.
  */
-const getClamAvScanner = () => {
+const getClamAvScanner = (): clamd.ClamScanner | null => {
   if (process.env.ENABLE_FILE_VIRUS_SCAN === 'true' && process.env.CLAMAV_HOST && process.env.CLAMAV_PORT) {
     return clamd.createScanner(process.env.CLAMAV_HOST, Number(process.env.CLAMAV_PORT));
   }
@@ -29,9 +29,9 @@ const getClamAvScanner = () => {
 /**
  * Local getter for retrieving the S3 client.
  *
- * @returns {*} The S3 client
+ * @returns {*} {AWS.S3} The S3 client
  */
-const getS3Client = () => {
+const getS3Client = (): AWS.S3 => {
   const awsEndpoint = new AWS.Endpoint(getObjectStoreUrl());
 
   return new AWS.S3({
@@ -47,18 +47,18 @@ const getS3Client = () => {
 /**
  * Local getter for retrieving the S3 object store URL.
  *
- * @returns {*} The object store URL
+ * @returns {*} {string} The object store URL
  */
-const getObjectStoreUrl = () => {
+const getObjectStoreUrl = (): string => {
   return process.env.OBJECT_STORE_URL || 'nrs.objectstore.gov.bc.ca';
 };
 
 /**
  * Local getter for retrieving the S3 object store bucket name.
  *
- * @returns {*} The object store bucket name
+ * @returns {*} {string} The object store bucket name
  */
-const getObjectStoreBucketName = () => {
+const getObjectStoreBucketName = (): string => {
   return process.env.OBJECT_STORE_BUCKET_NAME || '';
 };
 
@@ -68,9 +68,9 @@ const getObjectStoreBucketName = () => {
  *
  * @export
  * @param {string} [key] The key to an object in S3
- * @returns {*} {string}
+ * @returns {*} {string} The s3 host URL
  */
-export const getS3HostUrl = (key?: string) => {
+export const getS3HostUrl = (key?: string): string => {
   // Appends the given S3 object key, trimming any trailing '/' characters
   return `${getObjectStoreUrl()}/${getObjectStoreBucketName()}/${key || ''}`.replace(/\/*$/, '');
 };

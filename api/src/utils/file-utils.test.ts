@@ -64,7 +64,7 @@ describe('generateS3FileKey', () => {
   });
 });
 
-describe('getS3PublicHostUrl', () => {
+describe('getS3HostUrl', () => {
   beforeEach(() => {
     process.env.OBJECT_STORE_URL = 's3.host.example.com';
     process.env.OBJECT_STORE_BUCKET_NAME = 'test-bucket-name';

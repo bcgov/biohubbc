@@ -110,7 +110,7 @@ export function listResources(): RequestHandler {
 
           return {
             fileName,
-            url: `${getS3HostUrl(file.Key)}`,
+            url: getS3HostUrl(file.Key),
             lastModified: file.LastModified?.toISOString() || null,
             fileSize: file.Size,
             metadata
