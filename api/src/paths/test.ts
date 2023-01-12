@@ -69,7 +69,13 @@ export function test(): RequestHandler {
 }
 
 function waitForDelay(delay: number) {
+  const currentTime = new Date().getMilliseconds();
+
   return new Promise((resolve) => {
-    setTimeout(() => resolve(undefined), delay);
+    while (currentTime + delay > new Date().getMilliseconds()) {
+      // do nothing
+    }
+
+    resolve(undefined);
   });
 }
