@@ -72,8 +72,8 @@ const getObjectStoreBucketName = (): string => {
  */
 export const getS3HostUrl = (key?: string): string => {
   // Appends the given S3 object key, trimming any trailing '/' characters
-  return `${getObjectStoreUrl()}/${getObjectStoreBucketName()}/${key || ''}`.replace(/\/+?$/, '');
-};
+  return `${getObjectStoreUrl()}/${getObjectStoreBucketName()}/${key || ''}`.replace(/\/+$/, '');
+};3
 
 /**
  * Delete a file from S3, based on its key.
