@@ -49,7 +49,7 @@ const ResourcesPage: React.FC = () => {
 
   resourcesDataLoader.load();
 
-  const resources: IResourceFile[] = resourcesDataLoader.data?.files || []; 
+  const resources: IResourceFile[] = resourcesDataLoader.data?.files || [];
 
   if (!resourcesDataLoader.isReady || resourcesDataLoader.isLoading) {
     return <CircularProgress className="pageProgress" size={40} />;
@@ -77,13 +77,13 @@ const ResourcesPage: React.FC = () => {
               </TableRow>
             ) : (
               resources.map((row: IResourceFile) => {
-                const { templateType } = row.metadata
+                const { templateType } = row.metadata;
                 const templateName = row.metadata.templateName || row.fileName;
 
                 return (
                   <TableRow key={row.url}>
                     <TableCell>
-                      <Link href={ensureProtocol(row.url, 'https://')} underline="always" style={{ fontWeight: 700 }} >
+                      <Link href={ensureProtocol(row.url, 'https://')} underline="always" style={{ fontWeight: 700 }}>
                         {templateName}
                       </Link>
                     </TableCell>

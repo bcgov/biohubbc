@@ -71,7 +71,8 @@ const getObjectStoreBucketName = () => {
  * @returns {*} {string}
  */
 export const getS3HostUrl = (key?: string) => {
-  return `${getObjectStoreUrl()}/${getObjectStoreBucketName()}${key ? `/${key}` : ''}`;
+  // Appends the given S3 object key, trimming any trailing '/' characters
+  return `${getObjectStoreUrl()}/${getObjectStoreBucketName()}/${key || ''}`.replace(/\/*$/, '');
 };
 
 /**

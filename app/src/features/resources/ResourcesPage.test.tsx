@@ -16,12 +16,10 @@ const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBioh
 );
 
 const renderContainer = () => {
-  return render(
-    <ResourcesPage />
-  );
+  return render(<ResourcesPage />);
 };
 
-describe('ResourcesPage', () => {  
+describe('ResourcesPage', () => {
   beforeEach(() => {
     // clear mocks before each test
     mockBiohubApi().resources.listResources.mockClear();

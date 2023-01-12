@@ -11,6 +11,11 @@ import { GET, listResources } from './list';
 chai.use(sinonChai);
 
 describe('listResources', () => {
+  beforeEach(() => {
+    process.env.OBJECT_STORE_URL = 's3.host.example.com';
+    process.env.OBJECT_STORE_BUCKET_NAME = 'test-bucket';
+  });
+
   afterEach(() => {
     sinon.restore();
   });
@@ -49,7 +54,6 @@ describe('listResources', () => {
       }
     };
 
-    sinon.stub(fileUtils, 'getS3HostUrl').returns('s3.host.example.com/test-bucket');
     sinon.stub(fileUtils, 'getObjectMeta').callsFake((key: string) => {
       return Promise.resolve({
         Metadata: mockMetadata[key]
@@ -123,7 +127,6 @@ describe('listResources', () => {
   });
 
   it('should filter out directories from the s3 list respones', async () => {
-    sinon.stub(fileUtils, 'getS3HostUrl').returns('s3.host.example.com');
     sinon.stub(fileUtils, 'getObjectMeta').resolves({});
 
     const listFilesStub = sinon.stub(fileUtils, 'listFilesFromS3').resolves({
