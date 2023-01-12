@@ -16,7 +16,6 @@ export interface IMarker {
 }
 
 export interface IMarkerLayer {
-  visible: boolean;
   layerName: string;
   markers: IMarker[];
 }
@@ -107,7 +106,7 @@ const MarkerCluster: React.FC<React.PropsWithChildren<IMarkerLayersProps>> = (pr
     }
 
     layerControls.push(
-      <LayersControl.Overlay checked={layer.visible} name={layer.layerName} key={`marker-layer-${layer.layerName}}`}>
+      <LayersControl.Overlay checked={true} name={layer.layerName} key={`marker-layer-${layer.layerName}}`}>
         <FeatureGroup>
           {layer.markers.map((item) => {
             const id = item.key;

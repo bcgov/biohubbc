@@ -9,7 +9,7 @@ import { LatLngTuple } from 'leaflet';
 import { isObject } from 'lodash-es';
 import React from 'react';
 
-export interface ISearchResult {
+export interface IDataResult {
   key: string;
   name: string;
   count: number;
@@ -20,8 +20,8 @@ export interface ISpatialDataGroupedBySpecies {
 }
 
 export const parseSpatialDataByType = (spatialDataRecords: ISpatialData[]) => {
-  const occurrencesMarkerLayer: IMarkerLayer = { layerName: LAYER_NAME.OCCURRENCES, markers: [], visible: true };
-  const boundaryStaticLayer: IStaticLayer = { layerName: LAYER_NAME.BOUNDARIES, features: [], visible: true };
+  const occurrencesMarkerLayer: IMarkerLayer = { layerName: LAYER_NAME.OCCURRENCES, markers: [] };
+  const boundaryStaticLayer: IStaticLayer = { layerName: LAYER_NAME.BOUNDARIES, features: [] };
 
   for (const spatialRecord of spatialDataRecords) {
     for (const feature of spatialRecord.spatial_data.features) {
@@ -114,14 +114,14 @@ const occurrenceMarkerSetup = (latLng: LatLngTuple, taxaData: ITaxaData[]): IMar
 };
 
 /**
- * Takes an array of ISpatialData and maps it to an ISearchResult array denoting visibility based
+ * Takes an array of ISpatialData and maps it to an IDataResult array denoting visibility based
  * on the given datasetVisibility Record.
  * @param data The array of spatial data
  * @param datasetVisibility a Record denoting dataset visiblity
- * @returns an array of type ISearchResult
+ * @returns an array of type IDataResult
  */
-export const parseBoundaryCentroidResults = (data: ISpatialData[]): ISearchResult[] => {
-  const results: ISearchResult[] = [];
+export const parseBoundaryCentroidResults = (data: ISpatialData[]): IDataResult[] => {
+  const results: IDataResult[] = [];
   data.forEach((spatialData: ISpatialData) => {
     if (isBoundaryCentroidFeature(spatialData.spatial_data.features[0])) {
       const key = makeKeyFromIds(getSubmissionSpatialComponentIds(spatialData));
@@ -137,14 +137,14 @@ export const parseBoundaryCentroidResults = (data: ISpatialData[]): ISearchResul
 };
 
 /**
- * Takes an array of ISpatialData and maps it to an ISearchResult array denoting visibility based
+ * Takes an array of ISpatialData and maps it to an IDataResult array denoting visibility based
  * on the given datasetVisibility Record, while numerating the count of each species.
  * @param data The array of spatial data
  * @param datasetVisibility a Record denoting dataset visiblity
- * @returns an array of type ISearchResult
+ * @returns an array of type IDataResult
  */
-export const parseOccurrenceResults = (data: ISpatialData[]): ISearchResult[] => {
-  const taxaMap: Record<string, ISearchResult> = {};
+export const parseOccurrenceResults = (data: ISpatialData[]): IDataResult[] => {
+  const taxaMap: Record<string, IDataResult> = {};
   data.forEach((spatialData) => {
     spatialData.taxa_data.forEach((item: any) => {
       // need to check if it is an occurrence or not

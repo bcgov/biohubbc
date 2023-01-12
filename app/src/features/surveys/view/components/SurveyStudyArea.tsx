@@ -12,6 +12,8 @@ import Icon from '@mdi/react';
 import FullScreenViewMapDialog from 'components/boundary/FullScreenViewMapDialog';
 import EditDialog from 'components/dialog/EditDialog';
 import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
+import { IMarkerLayer } from 'components/map/components/MarkerCluster';
+import { IStaticLayer } from 'components/map/components/StaticLayers';
 import MapContainer from 'components/map/MapContainer';
 import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
 import { EditSurveyStudyAreaI18N } from 'constants/i18n';
@@ -22,11 +24,14 @@ import StudyAreaForm, {
 } from 'features/surveys/components/StudyAreaForm';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import useDataLoader from 'hooks/useDataLoader';
+import useDataLoaderError from 'hooks/useDataLoaderError';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
 import { LatLngBoundsExpression } from 'leaflet';
 import React, { useCallback, useEffect, useState } from 'react';
 import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
+import { parseSpatialDataByType } from 'utils/spatial-utils';
 
 export interface ISurveyStudyAreaProps {
   surveyForViewData: IGetSurveyForViewResponse;
@@ -77,6 +82,9 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
     refresh
   } = props;
 
+  const [markerLayers, setMarkerLayers] = useState<IMarkerLayer[]>([]);
+  const [staticLayers, setStaticLayers] = useState<IStaticLayer[]>([]);
+
   const surveyGeometry = survey_details?.geometry || [];
 
   const [openEditDialog, setOpenEditDialog] = useState(false);
@@ -92,6 +100,33 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
   useEffect(() => {
     zoomToBoundaryExtent();
   }, [surveyGeometry, occurrence_submission.id, zoomToBoundaryExtent]);
+
+  const mapDataLoader = useDataLoader((datasetID: number) => biohubApi.observation.getOccurrencesForView(datasetID));
+
+  useDataLoaderError(mapDataLoader, () => {
+    return {
+      dialogTitle: 'Error Loading Map Data',
+      dialogText:
+        'An error has occurred while attempting to load map data, please try again. If the error persists, please contact your system administrator.'
+    };
+  });
+
+  if (occurrence_submission.id) {
+    mapDataLoader.load(occurrence_submission.id);
+  }
+
+  useEffect(() => {
+    if (!mapDataLoader.data) {
+      return;
+    }
+
+    const result = parseSpatialDataByType(mapDataLoader.data);
+
+    setMarkerLayers(result.markerLayers);
+    setStaticLayers(result.staticLayers);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mapDataLoader.data]);
 
   const [errorDialogProps, setErrorDialogProps] = useState<IErrorDialogProps>({
     dialogTitle: EditSurveyStudyAreaI18N.editErrorTitle,
@@ -203,7 +238,12 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
 
         <Box px={3} pb={3}>
           <Box height={500} position="relative">
-            <MapContainer mapId="survey_study_area_map" bounds={bounds} />
+            <MapContainer
+              mapId="survey_study_area_map"
+              bounds={bounds}
+              markerLayers={markerLayers}
+              staticLayers={[...staticLayers]}
+            />
             {surveyGeometry.length > 0 && (
               <Box position="absolute" top="126px" left="10px" zIndex="999">
                 <IconButton

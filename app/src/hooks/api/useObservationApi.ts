@@ -78,7 +78,7 @@ const useObservationApi = (axios: AxiosInstance) => {
 
   const getSpatialMetadata = async <T = GeoJsonProperties>(submissionSpatialComponentIds: number[]): Promise<T[]> => {
     const { data } = await axios.get<T[]>(`/api/dwc/metadata`, {
-      params: { submissionSpatialComponentIds }
+      params: { submissionSpatialComponentIds: submissionSpatialComponentIds }
     });
 
     return data;

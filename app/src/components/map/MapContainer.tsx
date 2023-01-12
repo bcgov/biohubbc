@@ -26,7 +26,7 @@ import { GetMapBounds, IMapBoundsOnChange, SetMapBounds } from './components/Bou
 import DrawControls, { IDrawControlsOnChange, IDrawControlsProps } from './components/DrawControls';
 import EventHandler from './components/EventHandler';
 import FullScreenScrollingEventHandler from './components/FullScreenScrollingEventHandler';
-import { IMarkerLayer } from './components/MarkerCluster';
+import MarkerCluster, { IMarkerLayer } from './components/MarkerCluster';
 import StaticLayers, { IStaticLayer } from './components/StaticLayers';
 import WFSFeatureGroup, { IWFSParams } from './WFSFeatureGroup';
 
@@ -206,7 +206,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       <LayersControl position="bottomright">
         <StaticLayers layers={staticLayers} />
 
-        <MarkerClusterGroup layers={markerLayers} />
+        <MarkerCluster layers={markerLayers} />
 
         <BaseLayerControls />
       </LayersControl>

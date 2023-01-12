@@ -1,27 +1,12 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { PROJECT_ROLE } from '../../constants/roles';
 import { getDBConnection } from '../../database/db';
-import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
 import { OccurrenceService } from '../../services/occurrence-service';
 import { getLogger } from '../../utils/logger';
 
 const defaultLog = getLogger('paths/dwc/metadata');
 
-export const GET: Operation = [
-  authorizeRequestHandler((req) => {
-    return {
-      and: [
-        {
-          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR, PROJECT_ROLE.PROJECT_VIEWER],
-          projectId: Number(req.body.project_id),
-          discriminator: 'ProjectRole'
-        }
-      ]
-    };
-  }),
-  getSpatialMetadataBySubmissionSpatialComponentIds()
-];
+export const GET: Operation = [getSpatialMetadataBySubmissionSpatialComponentIds()];
 
 GET.apiDoc = {
   description: 'Retrieves spatial component metadata based on submission spatial component id',
@@ -100,8 +85,6 @@ export function getSpatialMetadataBySubmissionSpatialComponentIds(): RequestHand
       const response = await occurrenceService.findSpatialMetadataBySubmissionSpatialComponentIds(
         submissionSpatialComponentIds
       );
-
-      console.log('response', response);
 
       await connection.commit();
 
