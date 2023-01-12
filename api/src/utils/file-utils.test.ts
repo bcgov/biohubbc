@@ -1,6 +1,5 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
-
 import { deleteFileFromS3, generateS3FileKey, getS3HostUrl, getS3SignedURL } from './file-utils';
 
 describe('deleteFileFromS3', () => {
@@ -65,7 +64,7 @@ describe('generateS3FileKey', () => {
   });
 });
 
-describe.only('getS3PublicHostUrl', () => {
+describe('getS3PublicHostUrl', () => {
   beforeEach(() => {
     process.env.OBJECT_STORE_URL = 's3.host.example.com';
     process.env.OBJECT_STORE_BUCKET_NAME = 'test-bucket-name';
@@ -77,28 +76,18 @@ describe.only('getS3PublicHostUrl', () => {
 
     const result = getS3HostUrl();
 
-    expect(result).to.equal('nrs.objectstore.gov.bc.ca/')
+    expect(result).to.equal('nrs.objectstore.gov.bc.ca/');
   });
 
   it('should successfully produce an S3 host url', () => {
     const result = getS3HostUrl();
 
-    expect(result).to.equal('s3.host.example.com/test-bucket-name')
+    expect(result).to.equal('s3.host.example.com/test-bucket-name');
   });
 
   it('should successfully append a key to an S3 host url', () => {
     const result = getS3HostUrl('my-test-file.txt');
 
-    expect(result).to.equal('s3.host.example.com/test-bucket-name/my-test-file.txt')
-  })
-});
-
-
-
-describe('listFilesFromS3', () => {
-  //const result = listFilesFromS3('path/to/files');
-});
-
-describe('getObjectMeta', () => {
-  //const result = getObjectMeta('test-key');
+    expect(result).to.equal('s3.host.example.com/test-bucket-name/my-test-file.txt');
+  });
 });

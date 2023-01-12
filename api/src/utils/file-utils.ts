@@ -12,14 +12,25 @@ import { S3_ROLE } from '../constants/roles';
 import { SUBMISSION_MESSAGE_TYPE } from '../constants/status';
 import { SubmissionErrorFromMessageType } from './submission-error';
 
+/**
+ * Local getter for retrieving the ClamAV client.
+ *
+ * @returns {*} The ClamAV Scanner if `process.env.ENABLE_FILE_VIRUS_SCAN` is set to
+ * 'true' and other appropriate environment variables are set; `null` otherwise.
+ */
 const getClamAvScanner = () => {
   if (process.env.ENABLE_FILE_VIRUS_SCAN === 'true' && process.env.CLAMAV_HOST && process.env.CLAMAV_PORT) {
-    return clamd.createScanner(process.env.CLAMAV_HOST, Number(process.env.CLAMAV_PORT))
+    return clamd.createScanner(process.env.CLAMAV_HOST, Number(process.env.CLAMAV_PORT));
   }
 
   return null;
-}
+};
 
+/**
+ * Local getter for retrieving the S3 client.
+ *
+ * @returns {*} The S3 client
+ */
 const getS3Client = () => {
   const awsEndpoint = new AWS.Endpoint(getObjectStoreUrl());
 
@@ -31,15 +42,25 @@ const getS3Client = () => {
     s3ForcePathStyle: true,
     region: 'ca-central-1'
   });
-}
+};
 
+/**
+ * Local getter for retrieving the S3 object store URL.
+ *
+ * @returns {*} The object store URL
+ */
 const getObjectStoreUrl = () => {
   return process.env.OBJECT_STORE_URL || 'nrs.objectstore.gov.bc.ca';
-}
+};
 
+/**
+ * Local getter for retrieving the S3 object store bucket name.
+ *
+ * @returns {*} The object store bucket name
+ */
 const getObjectStoreBucketName = () => {
   return process.env.OBJECT_STORE_BUCKET_NAME || '';
-}
+};
 
 /**
  * Returns the S3 host URL. It optionally takes an S3 key as a parameter, which produces
@@ -90,14 +111,16 @@ export async function uploadFileToS3(
 ): Promise<ManagedUpload.SendData> {
   const s3Client = getS3Client();
 
-  return s3Client.upload({
-    Bucket: getObjectStoreBucketName(),
-    Body: file.buffer,
-    ContentType: file.mimetype,
-    Key: key,
-    ACL: S3_ROLE.AUTH_READ,
-    Metadata: metadata
-  }).promise();
+  return s3Client
+    .upload({
+      Bucket: getObjectStoreBucketName(),
+      Body: file.buffer,
+      ContentType: file.mimetype,
+      Key: key,
+      ACL: S3_ROLE.AUTH_READ,
+      Metadata: metadata
+    })
+    .promise();
 }
 
 export async function uploadBufferToS3(
@@ -108,14 +131,15 @@ export async function uploadBufferToS3(
 ): Promise<ManagedUpload.SendData> {
   const s3Client = getS3Client();
 
-  return s3Client.upload({
-    Bucket: getObjectStoreBucketName(),
-    Body: buffer,
-    ContentType: mimetype,
-    Key: key,
-    ACL: S3_ROLE.AUTH_READ,
-    Metadata: metadata
-  })
+  return s3Client
+    .upload({
+      Bucket: getObjectStoreBucketName(),
+      Body: buffer,
+      ContentType: mimetype,
+      Key: key,
+      ACL: S3_ROLE.AUTH_READ,
+      Metadata: metadata
+    })
     .promise()
     .catch(() => {
       throw SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_UPLOAD_FILE_TO_S3);
@@ -133,11 +157,12 @@ export async function uploadBufferToS3(
 export async function getFileFromS3(key: string, versionId?: string): Promise<GetObjectOutput> {
   const s3Client = getS3Client();
 
-  return s3Client.getObject({
-    Bucket: getObjectStoreBucketName(),
-    Key: key,
-    VersionId: versionId
-  })
+  return s3Client
+    .getObject({
+      Bucket: getObjectStoreBucketName(),
+      Key: key,
+      VersionId: versionId
+    })
     .promise()
     .catch(() => {
       throw SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_GET_FILE_FROM_S3);
