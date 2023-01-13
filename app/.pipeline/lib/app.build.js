@@ -24,9 +24,7 @@ module.exports = (settings) => {
         CPU_REQUEST: phases[phase].cpuRequest,
         CPU_LIMIT: phases[phase].cpuLimit,
         MEMORY_REQUEST: phases[phase].memoryRequest,
-        MEMORY_LIMIT: phases[phase].memoryLimit,
-        REPLICAS: phases[phase].replicas,
-        REPLICAS_MAX: phases[phase].replicasMax
+        MEMORY_LIMIT: phases[phase].memoryLimit
       }
     })
   );

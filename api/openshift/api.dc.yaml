@@ -47,7 +47,7 @@ parameters:
   - name: ELASTICSEARCH_URL
     description: Platform Elasticsearch URL
     required: true
-    value: 'https://elasticsearch-af2668-dev.apps.silver.devops.gov.bc.ca'
+    value: 'http://es01:9200'
   - name: ELASTICSEARCH_TAXONOMY_INDEX
     description: Platform Elasticsearch Taxonomy Index
     required: true
