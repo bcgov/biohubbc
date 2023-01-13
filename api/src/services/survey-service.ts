@@ -16,7 +16,7 @@ import {
   SurveySupplementaryData
 } from '../models/survey-view';
 import { AttachmentRepository } from '../repositories/attachment-repository';
-import { IGetLatestSurveyOccurrenceSubmission, SurveyRepository } from '../repositories/survey-repository';
+import { IGetLatestSurveyOccurrenceSubmission, IOccurrenceSubmissionMessagesResponse, SurveyRepository } from '../repositories/survey-repository';
 import { DBService } from './db-service';
 import { PermitService } from './permit-service';
 import { TaxonomyService } from './taxonomy-service';
@@ -126,6 +126,10 @@ export class SurveyService extends DBService {
 
   async getLatestSurveyOccurrenceSubmission(surveyId: number): Promise<IGetLatestSurveyOccurrenceSubmission | null> {
     return this.surveyRepository.getLatestSurveyOccurrenceSubmission(surveyId);
+  }
+
+  async getOccurrenceSubmissionMessages(occurrenceSubmissionId: number): Promise<IOccurrenceSubmissionMessagesResponse[]> {
+    return this.surveyRepository.getOccurrenceSubmissionMessages(occurrenceSubmissionId);
   }
 
   async getSummaryResultId(surveyId: number): Promise<number> {

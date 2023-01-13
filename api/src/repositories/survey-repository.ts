@@ -1,4 +1,5 @@
 import SQL from 'sql-template-strings';
+import { SUBMISSION_STATUS_TYPE } from '../constants/status';
 import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { PostProprietorData, PostSurveyObject } from '../models/survey-create';
@@ -32,12 +33,20 @@ export interface IGetLatestSurveyOccurrenceSubmission {
   output_file_name: string;
   submission_status_id: number;
   submission_status_type_id: number;
-  submission_status_type_name: string;
+  submission_status_type_name: SUBMISSION_STATUS_TYPE;
   submission_message_id: number;
   submission_message_type_id: number;
   message: string;
   submission_message_type_name: string;
 }
+
+export interface IOccurrenceSubmissionMessagesResponse {
+  id: number;
+  class: string;
+  type: string;
+  status: string;
+  message: string;
+};
 
 export class SurveyRepository extends BaseRepository {
   async deleteSurvey(surveyId: number): Promise<void> {
@@ -344,6 +353,60 @@ export class SurveyRepository extends BaseRepository {
 
     return result;
   }
+
+  
+  /**
+   * SQL query to get the list of messages for an occurrence submission.
+   *
+   * @param {number} occurrenceSubmissionId
+   * @returns {SQLStatement} sql query object
+   */
+  async getOccurrenceSubmissionMessages(occurrenceSubmissionId: number): Promise<IOccurrenceSubmissionMessagesResponse[]> {
+    const sqlStatement = SQL`
+      SELECT
+        sm.submission_message_id as id,
+        smt.name as type,
+        sst.name as status,
+        smc.name as class,
+        sm.message
+      FROM
+        occurrence_submission as os
+      LEFT OUTER JOIN
+        submission_status as ss
+      ON
+        os.occurrence_submission_id = ss.occurrence_submission_id
+      LEFT OUTER JOIN
+        submission_status_type as sst
+      ON
+        sst.submission_status_type_id = ss.submission_status_type_id
+      LEFT OUTER JOIN
+        submission_message as sm
+      ON
+        sm.submission_status_id = ss.submission_status_id
+      LEFT OUTER JOIN
+        submission_message_type as smt
+      ON
+        smt.submission_message_type_id = sm.submission_message_type_id
+      LEFT OUTER JOIN
+        submission_message_class smc
+      ON
+        smc.submission_message_class_id = smt.submission_message_class_id
+      WHERE
+        os.occurrence_submission_id = ${occurrenceSubmissionId}
+      ORDER BY sm.submission_message_id;
+    `;
+
+    const response = await this.connection.sql<IOccurrenceSubmissionMessagesResponse>(sqlStatement);
+    
+    if (!response?.rows) {
+      throw new ApiExecuteSQLError('Failed to get occurrence submission messages', [
+        'SurveyRepository->getOccurrenceSubmissionMessages',
+        'response was null or undefined, expected response != null'
+      ]);
+    }
+    
+    return response.rows;
+  };
 
   async getSummaryResultId(surveyId: number): Promise<number> {
     const sqlStatement = SQL`

@@ -3,8 +3,7 @@ import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../../../../../../constants/roles';
 import { SUBMISSION_STATUS_TYPE } from '../../../../../../../constants/status';
 import { getDBConnection } from '../../../../../../../database/db';
-import { HTTP400 } from '../../../../../../../errors/http-error';
-import { queries } from '../../../../../../../queries/queries';
+import { IOccurrenceSubmissionMessagesResponse } from '../../../../../../../repositories/survey-repository';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
 import { SurveyService } from '../../../../../../../services/survey-service';
 import { getLogger } from '../../../../../../../utils/logger';
@@ -39,7 +38,8 @@ GET.apiDoc = {
       in: 'path',
       name: 'projectId',
       schema: {
-        type: 'number'
+        type: 'number',
+        minimum: 1
       },
       required: true
     },
@@ -47,7 +47,8 @@ GET.apiDoc = {
       in: 'path',
       name: 'surveyId',
       schema: {
-        type: 'number'
+        type: 'number',
+        minimum: 1
       },
       required: true
     }
@@ -78,7 +79,29 @@ GET.apiDoc = {
                 type: 'array',
                 items: {
                   type: 'object',
-                  description: 'A validation status message of the observation submission'
+                  description: 'A validation status message of the observation submission',
+                  properties: {
+                    id: {
+                      type: 'number',
+                      description: 'The ID of the error message for this submission'
+                    },
+                    class: {
+                      type: 'string',
+                      description: 'The class of the error message, such as Error, Warning, etc.'
+                    },
+                    message: {
+                      type: 'string',
+                      description: 'The message which describes the error in detail'
+                    },
+                    status: {
+                      type: 'string',
+                      description: 'The resulting status of the submission as a consequence of the error'
+                    },
+                    type: {
+                      type: 'string',
+                      description: 'The type of error pertaining to this submission'
+                    }
+                  }
                 }
               }
             }
@@ -106,11 +129,7 @@ GET.apiDoc = {
 
 export function getOccurrenceSubmission(): RequestHandler {
   return async (req, res) => {
-    defaultLog.debug({ label: 'Get an occurrence submission', message: 'params', req_params: req.params });
-
-    if (!req.params.surveyId) {
-      throw new HTTP400('Missing required path param `surveyId`');
-    }
+    defaultLog.debug({ label: 'getOccurrenceSubmission', description: 'Gets an occurrence submission', req_params: req.params });
 
     const connection = getDBConnection(req['keycloak_token']);
 
@@ -118,54 +137,32 @@ export function getOccurrenceSubmission(): RequestHandler {
       await connection.open();
 
       const surveyService = new SurveyService(connection);
-      const response = await surveyService.getLatestSurveyOccurrenceSubmission(Number(req.params.surveyId));
+      const occurrenceSubmission = await surveyService.getLatestSurveyOccurrenceSubmission(Number(req.params.surveyId));
 
-      // Ensure we only retrieve the latest occurrence submission record if it has not been soft deleted
-      if (!response || response.delete_timestamp) {
+      if (!occurrenceSubmission || occurrenceSubmission.delete_timestamp) {
+        // Ensure we only retrieve the latest occurrence submission record if it has not been soft deleted
         return res.status(200).json(null);
       }
 
-      let messageList: any[] = [];
+      const hasAdditionalOccurrenceSubmissionMessages = [
+        SUBMISSION_STATUS_TYPE.REJECTED,
+        SUBMISSION_STATUS_TYPE.SYSTEM_ERROR,
+        SUBMISSION_STATUS_TYPE.FAILED_OCCURRENCE_PREPARATION,
+        SUBMISSION_STATUS_TYPE.FAILED_VALIDATION,
+        SUBMISSION_STATUS_TYPE.FAILED_TRANSFORMED,
+        SUBMISSION_STATUS_TYPE.FAILED_PROCESSING_OCCURRENCE_DATA
+      ].includes(occurrenceSubmission.submission_status_type_name)
+     
+      const messages: IOccurrenceSubmissionMessagesResponse[] = hasAdditionalOccurrenceSubmissionMessages
+        ? await surveyService.getOccurrenceSubmissionMessages(Number(occurrenceSubmission.id))
+        : [];
 
-      const errorStatus = response.submission_status_type_name;
-
-      if (
-        errorStatus === SUBMISSION_STATUS_TYPE.REJECTED ||
-        errorStatus === SUBMISSION_STATUS_TYPE.SYSTEM_ERROR ||
-        errorStatus === SUBMISSION_STATUS_TYPE.FAILED_OCCURRENCE_PREPARATION ||
-        errorStatus === SUBMISSION_STATUS_TYPE.FAILED_VALIDATION ||
-        errorStatus === SUBMISSION_STATUS_TYPE.FAILED_TRANSFORMED ||
-        errorStatus === SUBMISSION_STATUS_TYPE.FAILED_PROCESSING_OCCURRENCE_DATA
-      ) {
-        const occurrence_submission_id = response.id;
-
-        const getSubmissionErrorListSQLStatement = queries.survey.getOccurrenceSubmissionMessagesSQL(
-          Number(occurrence_submission_id)
-        );
-
-        if (!getSubmissionErrorListSQLStatement) {
-          throw new HTTP400('Failed to build SQL getOccurrenceSubmissionMessagesSQL statement');
-        }
-
-        const submissionErrorListData = await connection.query(
-          getSubmissionErrorListSQLStatement.text,
-          getSubmissionErrorListSQLStatement.values
-        );
-
-        messageList = (submissionErrorListData && submissionErrorListData.rows) || [];
-      }
-
-      await connection.commit();
-      const getOccurrenceSubmissionData =
-        (response && {
-          id: response.id,
-          inputFileName: response.input_file_name,
-          status: response.submission_status_type_name,
-          messages: messageList
-        }) ||
-        null;
-
-      return res.status(200).json(getOccurrenceSubmissionData);
+      return res.status(200).json({
+        id: occurrenceSubmission.id,
+        inputFileName: occurrenceSubmission.input_file_name,
+        status: occurrenceSubmission.submission_status_type_name,
+        messages
+      });
     } catch (error) {
       defaultLog.error({ label: 'getOccurrenceSubmission', message: 'error', error });
       await connection.rollback();

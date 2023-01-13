@@ -2,7 +2,6 @@ import { expect } from 'chai';
 import { describe } from 'mocha';
 import {
   deleteOccurrenceSubmissionSQL,
-  getOccurrenceSubmissionMessagesSQL,
   insertSurveyOccurrenceSubmissionSQL,
   updateSurveyOccurrenceSubmissionSQL
 } from './survey-occurrence-queries';
@@ -131,20 +130,6 @@ describe('updateSurveyOccurrenceSubmissionSQL', () => {
       submissionId: 1,
       outputKey: 'outputKey'
     });
-
-    expect(response).to.not.be.null;
-  });
-});
-
-describe('getOccurrenceSubmissionMessagesSQL', () => {
-  it('returns null response when null occurrenceSubmissionId provided', () => {
-    const response = getOccurrenceSubmissionMessagesSQL((null as unknown) as number);
-
-    expect(response).to.be.null;
-  });
-
-  it('returns non null response when valid params provided', () => {
-    const response = getOccurrenceSubmissionMessagesSQL(1);
 
     expect(response).to.not.be.null;
   });
