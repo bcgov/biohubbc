@@ -357,7 +357,7 @@ objects:
               kind: ImageStreamTag
               namespace: ${IMAGE_NAMESPACE}
               name: ${SOURCE_IMAGE_NAME}:${TAG_NAME}
-      replicas: ${REPLICAS}
+      replicas: ${{REPLICAS}}
       selector:
         name: ${NAME}
       template:

@@ -148,7 +148,7 @@ objects:
         role: api
       name: ${NAME}${SUFFIX}
     spec:
-      replicas: '${REPLICAS}'
+      replicas: ${{REPLICAS}}
       revisionHistoryLimit: 10
       selector:
         deploymentConfig: ${NAME}${SUFFIX}
@@ -177,7 +177,7 @@ objects:
                 - name: API_HOST
                   value: ${HOST}
                 - name: API_PORT
-                  value: ${API_PORT_DEFAULT}
+                  value: ${{API_PORT_DEFAULT}}
                 - name: APP_HOST
                   value: ${APP_HOST}
                 - name: BACKBONE_API_HOST
@@ -283,7 +283,7 @@ objects:
               imagePullPolicy: Always
               name: api
               ports:
-                - containerPort: ${API_PORT_DEFAULT}
+                - containerPort: ${{API_PORT_DEFAULT}}
                   protocol: TCP
               resources:
                 requests:
@@ -295,7 +295,7 @@ objects:
               readinessProbe:
                 httpGet:
                   path: /api/version
-                  port: ${API_PORT_DEFAULT}
+                  port: ${{API_PORT_DEFAULT}}
                   scheme: HTTP
                 initialDelaySeconds: 10
                 periodSeconds: 15
@@ -305,7 +305,7 @@ objects:
               livenessProbe:
                 httpGet:
                   path: /api/version
-                  port: ${API_PORT_DEFAULT}
+                  port: ${{API_PORT_DEFAULT}}
                   scheme: HTTP
                 initialDelaySeconds: 10
                 periodSeconds: 15
@@ -367,9 +367,9 @@ objects:
     spec:
       ports:
         - name: ${NAME}-${API_PORT_DEFAULT_NAME}
-          port: ${API_PORT_DEFAULT}
+          port: ${{API_PORT_DEFAULT}}
           protocol: TCP
-          targetPort: ${API_PORT_DEFAULT}
+          targetPort: ${{API_PORT_DEFAULT}}
       selector:
         deploymentconfig: ${NAME}${SUFFIX}
       sessionAffinity: None
@@ -411,8 +411,8 @@ objects:
       labels: {}
       name: ${NAME}${SUFFIX}
     spec:
-      minReplicas: ${REPLICAS}
-      maxReplicas: ${REPLICAS_MAX}
+      minReplicas: ${{REPLICAS}}
+      maxReplicas: ${{REPLICAS_MAX}}
       scaleTargetRef:
         apiVersion: apps.openshift.io/v1
         kind: DeploymentConfig

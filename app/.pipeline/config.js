@@ -80,6 +80,8 @@ const phases = {
     apiHost:
       (isStaticDeployment && staticUrlsAPI.dev) || `${apiName}-${changeId}-af2668-dev.apps.silver.devops.gov.bc.ca`,
     siteminderLogoutURL: config.siteminderLogoutURL.dev,
+    maxUploadNumFiles,
+    maxUploadFileSize,
     env: 'dev',
     sso: config.sso.dev,
     cpuRequest: '50m',
@@ -125,6 +127,8 @@ const phases = {
     host: staticUrls.prod,
     apiHost: staticUrlsAPI.prod,
     siteminderLogoutURL: config.siteminderLogoutURL.prod,
+    maxUploadNumFiles,
+    maxUploadFileSize,
     env: 'prod',
     sso: config.sso.prod,
     cpuRequest: '100m',

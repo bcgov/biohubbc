@@ -59,7 +59,7 @@ objects:
               namespace: "${NAME_SPACE}"
               name: "clamav:latest"
         - type: ConfigChange
-      replicas: ${REPLICAS}
+      replicas: ${{REPLICAS}}
       test: false
       selector:
         app: clamav

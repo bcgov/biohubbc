@@ -150,7 +150,7 @@ objects:
         template.alpha.openshift.io/wait-for-ready: 'true'
       name: '${DATABASE_SERVICE_NAME}'
     spec:
-      replicas: ${REPLICAS}
+      replicas: ${{REPLICAS}}
       selector:
         name: '${DATABASE_SERVICE_NAME}'
       strategy:

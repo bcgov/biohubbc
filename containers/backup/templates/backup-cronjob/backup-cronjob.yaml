@@ -155,15 +155,15 @@ objects:
     spec:
       schedule: "${SCHEDULE}"
       concurrencyPolicy: "Forbid"
-      successfulJobsHistoryLimit: ${SUCCESS_JOBS_HISTORY_LIMIT}
-      failedJobsHistoryLimit: ${FAILED_JOBS_HISTORY_LIMIT}
+      successfulJobsHistoryLimit: ${{SUCCESS_JOBS_HISTORY_LIMIT}}
+      failedJobsHistoryLimit: ${{FAILED_JOBS_HISTORY_LIMIT}}
       jobTemplate:
         metadata:
           labels:
             template: "${JOB_NAME}-job"
             cronjob: "${JOB_NAME}"
         spec:
-          backoffLimit: JOB_BACKOFF_LIMIT}
+          backoffLimit: ${{JOB_BACKOFF_LIMIT}}
           template:
             metadata:
               labels:

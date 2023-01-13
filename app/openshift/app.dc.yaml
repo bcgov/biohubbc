@@ -99,7 +99,7 @@ objects:
         role: app
       name: ${NAME}${SUFFIX}
     spec:
-      replicas: ${REPLICAS}
+      replicas: ${{REPLICAS}}
       revisionHistoryLimit: 10
       selector:
         deploymentConfig: ${NAME}${SUFFIX}
@@ -165,7 +165,7 @@ objects:
               imagePullPolicy: Always
               name: app
               ports:
-                - containerPort: ${APP_PORT_DEFAULT}
+                - containerPort: ${{APP_PORT_DEFAULT}}
                   protocol: TCP
               resources:
                 requests:
@@ -178,7 +178,7 @@ objects:
                 failureThreshold: 10
                 httpGet:
                   path: /
-                  port: ${APP_PORT_DEFAULT}
+                  port: ${{APP_PORT_DEFAULT}}
                   scheme: HTTP
                 initialDelaySeconds: 10
                 periodSeconds: 15
@@ -188,7 +188,7 @@ objects:
                 failureThreshold: 20
                 httpGet:
                   path: /
-                  port: ${APP_PORT_DEFAULT}
+                  port: ${{APP_PORT_DEFAULT}}
                   scheme: HTTP
                 initialDelaySeconds: 10
                 periodSeconds: 15
@@ -233,9 +233,9 @@ objects:
     spec:
       ports:
         - name: ${NAME}-${APP_PORT_DEFAULT_NAME}
-          port: ${APP_PORT_DEFAULT}
+          port: ${{APP_PORT_DEFAULT}}
           protocol: TCP
-          targetPort: ${APP_PORT_DEFAULT}
+          targetPort: ${{APP_PORT_DEFAULT}}
       selector:
         deploymentconfig: ${NAME}${SUFFIX}
       sessionAffinity: None
@@ -273,8 +273,8 @@ objects:
       labels: {}
       name: ${NAME}${SUFFIX}
     spec:
-      minReplicas: ${REPLICAS}
-      maxReplicas: ${REPLICAS_MAX}
+      minReplicas: ${{REPLICAS}}
+      maxReplicas: ${{REPLICAS_MAX}}
       scaleTargetRef:
         apiVersion: v1
         kind: DeploymentConfig
