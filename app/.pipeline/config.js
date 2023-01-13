@@ -1,5 +1,7 @@
 'use strict';
+
 let process = require('process');
+
 let options = require('pipeline-cli').Util.parseArguments();
 
 // The root config for common values

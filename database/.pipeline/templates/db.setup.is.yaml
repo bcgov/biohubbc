@@ -2,13 +2,13 @@ apiVersion: template.openshift.io/v1
 kind: Template
 parameters:
   - name: NAME
-    value: biohubbc-db-setup
+    value: biohub-platform-db-setup
 objects:
   - apiVersion: image.openshift.io/v1
     kind: ImageStream
     metadata:
       annotations:
-        description: Database image stream
+        description: Database setup image stream
       labels:
         shared: 'true'
       creationTimestamp: null
@@ -17,5 +17,3 @@ objects:
     spec:
       lookupPolicy:
         local: false
-    status:
-      dockerImageRepository: null

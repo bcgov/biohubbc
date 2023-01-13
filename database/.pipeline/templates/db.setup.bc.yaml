@@ -1,10 +1,9 @@
 apiVersion: template.openshift.io/v1
 kind: Template
 metadata:
-  creationTimestamp: null
+  name: biohubbc-db-setup-bc
   labels:
     build: biohubbc-db-setup
-  name: biohubbc-db-setup
 parameters:
   - name: NAME
     displayName: Name

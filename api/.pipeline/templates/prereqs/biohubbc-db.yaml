@@ -1,7 +1,7 @@
 kind: Secret
 apiVersion: v1
 metadata:
-  name: biohubbc-db
+  name: biohubbc-db-secret
 data:
   database-admin-password: <fill in values>
   database-admin-user: <fill in values>

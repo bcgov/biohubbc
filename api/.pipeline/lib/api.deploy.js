@@ -16,7 +16,7 @@ const apiDeploy = async (settings) => {
 
   const oc = new OpenShiftClientX(Object.assign({ namespace: phases[phase].namespace }, options));
 
-  const templatesLocalBaseUrl = oc.toFileUrl(path.resolve(__dirname, '../../openshift'));
+  const templatesLocalBaseUrl = oc.toFileUrl(path.resolve(__dirname, '../templates'));
 
   const changeId = phases[phase].changeId;
 
