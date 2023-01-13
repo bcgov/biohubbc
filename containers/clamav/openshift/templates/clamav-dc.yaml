@@ -76,11 +76,11 @@ objects:
           containers:
             - resources:
                 requests:
-                  cpu: "${CPU_REQUEST}"
-                  memory: "${MEMORY_REQUEST}"
+                  cpu: ${CPU_REQUEST}
+                  memory: ${MEMORY_REQUEST}
                 limits:
-                  cpu: "${CPU_LIMIT}"
-                  memory: "${MEMORY_LIMIT}"
+                  cpu: ${CPU_LIMIT}
+                  memory: ${MEMORY_LIMIT}
               readinessProbe:
                 tcpSocket:
                   port: 3310

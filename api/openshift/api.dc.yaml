@@ -177,7 +177,7 @@ objects:
                 - name: API_HOST
                   value: ${HOST}
                 - name: API_PORT
-                  value: ${{API_PORT_DEFAULT}}
+                  value: ${API_PORT_DEFAULT}
                 - name: APP_HOST
                   value: ${APP_HOST}
                 - name: BACKBONE_API_HOST

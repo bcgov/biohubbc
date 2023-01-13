@@ -53,11 +53,11 @@ objects:
           image: '${IMAGE}'
           resources:
             requests:
-              cpu: '${CPU_REQUEST}'
-              memory: '${MEMORY_REQUEST}'
+              cpu: ${CPU_REQUEST}
+              memory: ${MEMORY_REQUEST}
             limits:
-              cpu: '${CPU_LIMIT}'
-              memory: '${MEMORY_LIMIT}'
+              cpu: ${CPU_LIMIT}
+              memory: ${MEMORY_LIMIT}
           env:
             - name: DB_HOST
               value: ${DB_SERVICE_NAME}
