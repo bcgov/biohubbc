@@ -2,244 +2,6 @@ kind: Template
 apiVersion: template.openshift.io/v1
 metadata:
   name: backup-deployment-template
-objects:
-  - kind: NetworkPolicy
-    apiVersion: networking.k8s.io/v1
-    metadata:
-      name: ${NAME}
-      labels:
-        name: ${NAME}
-        app: ${APP_NAME}
-        env: ${TAG_NAME}
-    spec:
-      description: |
-        Allow the ${NAME} to access databases in this namespace.
-      ingress:
-        - from:
-            - podSelector:
-                matchLabels:
-                  name: ${NAME}
-                  app: ${APP_NAME}
-                  role: ${ROLE}
-                  env: ${TAG_NAME}
-              namespaceSelector:
-                matchLabels:
-                  name: ${NAMESPACE_NAME}
-                  environment: ${TAG_NAME}
-      podSelector:
-        matchLabels:
-          backup: "true"
-          env: ${TAG_NAME}
-
-  - kind: PersistentVolumeClaim
-    apiVersion: v1
-    metadata:
-      name: ${BACKUP_VOLUME_NAME}
-      labels:
-        name: ${NAME}
-        app: ${APP_NAME}
-        role: ${ROLE}
-        env: ${TAG_NAME}
-    spec:
-      storageClassName: ${BACKUP_VOLUME_CLASS}
-      accessModes:
-        - ReadWriteOnce
-      resources:
-        requests:
-          storage: ${BACKUP_VOLUME_SIZE}
-
-  - kind: PersistentVolumeClaim
-    apiVersion: v1
-    metadata:
-      name: ${VERIFICATION_VOLUME_NAME}
-      labels:
-        name: ${NAME}
-        app: ${APP_NAME}
-        role: ${ROLE}
-        env: ${TAG_NAME}
-    spec:
-      storageClassName: ${VERIFICATION_VOLUME_CLASS}
-      accessModes:
-        - ReadWriteOnce
-      resources:
-        requests:
-          storage: ${VERIFICATION_VOLUME_SIZE}
-
-  - kind: Secret
-    apiVersion: v1
-    metadata:
-      name: ${NAME}
-      labels:
-        name: ${NAME}
-        app: ${APP_NAME}
-        role: ${ROLE}
-        env: ${TAG_NAME}
-    type: Opaque
-    stringData:
-      webhook-url: ${WEBHOOK_URL}
-      webhook-url-host: ${WEBHOOK_URL_HOST}
-
-  - kind: Secret
-    apiVersion: v1
-    metadata:
-      name: ${FTP_SECRET_KEY}
-      labels:
-        name: ${NAME}
-        app: ${APP_NAME}
-        role: ${ROLE}
-        env: ${TAG_NAME}
-    type: Opaque
-    stringData:
-      ftp-url: ${FTP_URL}
-      ftp-user: ${FTP_USER}
-      ftp-password: ${FTP_PASSWORD}
-      ftp-url-host: ${FTP_URL_HOST}
-
-  - kind: DeploymentConfig
-    apiVersion: v1
-    metadata:
-      name: ${NAME}
-      labels:
-        name: ${NAME}
-        app: ${APP_NAME}
-        role: ${ROLE}
-        env: ${TAG_NAME}
-    spec:
-      strategy:
-        type: Recreate
-      triggers:
-        - type: ConfigChange
-        - type: ImageChange
-          imageChangeParams:
-            automatic: true
-            containerNames:
-              - ${NAME}
-            from:
-              kind: ImageStreamTag
-              namespace: ${IMAGE_NAMESPACE}
-              name: ${SOURCE_IMAGE_NAME}:${TAG_NAME}
-      replicas: 1
-      selector:
-        name: ${NAME}
-      template:
-        metadata:
-          name: ${NAME}
-          labels:
-            name: ${NAME}
-            app: ${APP_NAME}
-            role: ${ROLE}
-            env: ${TAG_NAME}
-        spec:
-          volumes:
-            - name: ${BACKUP_VOLUME_NAME}
-              persistentVolumeClaim:
-                claimName: ${BACKUP_VOLUME_NAME}
-            - name: ${VERIFICATION_VOLUME_NAME}
-              persistentVolumeClaim:
-                claimName: ${VERIFICATION_VOLUME_NAME}
-            - name: ${NAME}-config-volume
-              configMap:
-                name: ${CONFIG_MAP_NAME}
-                items:
-                  - key: ${CONFIG_FILE_NAME}
-                    path: ${CONFIG_FILE_NAME}
-          containers:
-            - name: ${NAME}
-              image: ""
-              ports: []
-              env:
-                - name: BACKUP_STRATEGY
-                  value: ${BACKUP_STRATEGY}
-                - name: BACKUP_DIR
-                  value: ${BACKUP_DIR}
-                - name: NUM_BACKUPS
-                  value: ${NUM_BACKUPS}
-                - name: DAILY_BACKUPS
-                  value: ${DAILY_BACKUPS}
-                - name: WEEKLY_BACKUPS
-                  value: ${WEEKLY_BACKUPS}
-                - name: MONTHLY_BACKUPS
-                  value: ${MONTHLY_BACKUPS}
-                - name: BACKUP_PERIOD
-                  value: ${BACKUP_PERIOD}
-                - name: DATABASE_SERVICE_NAME
-                  value: ${DATABASE_SERVICE_NAME}
-                - name: DATABASE_NAME
-                  value: ${DATABASE_NAME}
-                - name: MONGODB_AUTHENTICATION_DATABASE
-                  value: ${MONGODB_AUTHENTICATION_DATABASE}
-                - name: TABLE_SCHEMA
-                  value: ${TABLE_SCHEMA}
-                - name: DATABASE_USER
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${DATABASE_DEPLOYMENT_NAME}
-                      key: ${DATABASE_USER_KEY_NAME}
-                - name: DATABASE_PASSWORD
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${DATABASE_DEPLOYMENT_NAME}
-                      key: ${DATABASE_PASSWORD_KEY_NAME}
-                - name: FTP_URL
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${FTP_SECRET_KEY}
-                      key: ftp-url
-                - name: FTP_USER
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${FTP_SECRET_KEY}
-                      key: ftp-user
-                - name: FTP_PASSWORD
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${FTP_SECRET_KEY}
-                      key: ftp-password
-                - name: WEBHOOK_URL
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}
-                      key: webhook-url
-                - name: ENVIRONMENT_FRIENDLY_NAME
-                  value: ${ENVIRONMENT_FRIENDLY_NAME}
-                - name: ENVIRONMENT_NAME
-                  value: ${ENVIRONMENT_NAME}
-                - name: OBJECT_STORE_URL
-                  valueFrom:
-                    secretKeyRef:
-                      name: biohubbc-object-store
-                      key: object_store_url
-                - name: OBJECT_STORE_ACCESS_KEY_ID
-                  valueFrom:
-                    secretKeyRef:
-                      name: biohubbc-object-store
-                      key: object_store_access_key_id
-                - name: OBJECT_STORE_SECRET_KEY_ID
-                  valueFrom:
-                    secretKeyRef:
-                      name: biohubbc-object-store
-                      key: object_store_secret_key_id
-                - name: OBJECT_STORE_BUCKET_NAME
-                  valueFrom:
-                    secretKeyRef:
-                      name: biohubbc-object-store
-                      key: object_store_bucket_name
-              resources:
-                requests:
-                  cpu: ${CPU_REQUEST}
-                  memory: ${MEMORY_REQUEST}
-                limits:
-                  cpu: ${CPU_LIMIT}
-                  memory: ${MEMORY_LIMIT}
-              volumeMounts:
-                - name: ${BACKUP_VOLUME_NAME}
-                  mountPath: ${BACKUP_DIR}
-                - name: ${VERIFICATION_VOLUME_NAME}
-                  mountPath: ${VERIFICATION_VOLUME_MOUNT_PATH}
-                - name: ${NAME}-config-volume
-                  mountPath: ${CONFIG_MOUNT_PATH}${CONFIG_FILE_NAME}
-                  subPath: ${CONFIG_FILE_NAME}
-
 parameters:
   - name: NAME
     displayName: Name
@@ -445,6 +207,18 @@ parameters:
     description: The path on which to mount the verification volume.  This is used by the database server to contain the database configuration and data files. For Mongo, please use /var/lib/mongodb/data . For MSSQL, please use /var/opt/mssql/data. For MariaDB, please use /var/lib/mysql/data
     required: true
     value: /var/lib/pgsql/data
+  - name: OBJECT_STORE_URL
+    displayName: Object Store URL
+    description: URL for the object store
+  - name: OBJECT_STORE_ACCESS_KEY_ID
+    displayName: Access Key
+    description: Access Key for the object store
+  - name: OBJECT_STORE_SECRET_KEY_ID
+    displayName: Secret Key
+    description: Object Store Secret key
+  - name: OBJECT_STORE_BUCKET_NAME
+    displayName: Bucket name
+    description: Object Store Bucket Name
   - name: CPU_REQUEST
     displayName: Resources CPU Request
     description: The resources CPU request (in cores) for this build.
@@ -465,15 +239,242 @@ parameters:
     description: The resources Memory limit (in Mi, Gi, etc) for this build.
     required: true
     value: 0Mi
-  - name: OBJECT_STORE_URL
-    displayName: Object Store URL
-    description: URL for the object store
-  - name: OBJECT_STORE_ACCESS_KEY_ID
-    displayName: Access Key
-    description: Access Key for the object store
-  - name: OBJECT_STORE_SECRET_KEY_ID
-    displayName: Secret Key
-    description: Object Store Secret key
-  - name: OBJECT_STORE_BUCKET_NAME
-    displayName: Bucket name
-    description: Object Store Bucket Name
+  - name: REPLICAS
+    value: "1"
+objects:
+  - kind: NetworkPolicy
+    apiVersion: networking.k8s.io/v1
+    metadata:
+      name: ${NAME}
+      labels:
+        name: ${NAME}
+        app: ${APP_NAME}
+        env: ${TAG_NAME}
+    spec:
+      description: |
+        Allow the ${NAME} to access databases in this namespace.
+      ingress:
+        - from:
+            - podSelector:
+                matchLabels:
+                  name: ${NAME}
+                  app: ${APP_NAME}
+                  role: ${ROLE}
+                  env: ${TAG_NAME}
+              namespaceSelector:
+                matchLabels:
+                  name: ${NAMESPACE_NAME}
+                  environment: ${TAG_NAME}
+      podSelector:
+        matchLabels:
+          backup: "true"
+          env: ${TAG_NAME}
+
+  - kind: PersistentVolumeClaim
+    apiVersion: v1
+    metadata:
+      name: ${BACKUP_VOLUME_NAME}
+      labels:
+        name: ${NAME}
+        app: ${APP_NAME}
+        role: ${ROLE}
+        env: ${TAG_NAME}
+    spec:
+      storageClassName: ${BACKUP_VOLUME_CLASS}
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: ${BACKUP_VOLUME_SIZE}
+
+  - kind: PersistentVolumeClaim
+    apiVersion: v1
+    metadata:
+      name: ${VERIFICATION_VOLUME_NAME}
+      labels:
+        name: ${NAME}
+        app: ${APP_NAME}
+        role: ${ROLE}
+        env: ${TAG_NAME}
+    spec:
+      storageClassName: ${VERIFICATION_VOLUME_CLASS}
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: ${VERIFICATION_VOLUME_SIZE}
+
+  - kind: Secret
+    apiVersion: v1
+    metadata:
+      name: ${NAME}
+      labels:
+        name: ${NAME}
+        app: ${APP_NAME}
+        role: ${ROLE}
+        env: ${TAG_NAME}
+    type: Opaque
+    stringData:
+      webhook-url: ${WEBHOOK_URL}
+      webhook-url-host: ${WEBHOOK_URL_HOST}
+
+  - kind: Secret
+    apiVersion: v1
+    metadata:
+      name: ${FTP_SECRET_KEY}
+      labels:
+        name: ${NAME}
+        app: ${APP_NAME}
+        role: ${ROLE}
+        env: ${TAG_NAME}
+    type: Opaque
+    stringData:
+      ftp-url: ${FTP_URL}
+      ftp-user: ${FTP_USER}
+      ftp-password: ${FTP_PASSWORD}
+      ftp-url-host: ${FTP_URL_HOST}
+
+  - kind: DeploymentConfig
+    apiVersion: v1
+    metadata:
+      name: ${NAME}
+      labels:
+        name: ${NAME}
+        app: ${APP_NAME}
+        role: ${ROLE}
+        env: ${TAG_NAME}
+    spec:
+      strategy:
+        type: Recreate
+      triggers:
+        - type: ConfigChange
+        - type: ImageChange
+          imageChangeParams:
+            automatic: true
+            containerNames:
+              - ${NAME}
+            from:
+              kind: ImageStreamTag
+              namespace: ${IMAGE_NAMESPACE}
+              name: ${SOURCE_IMAGE_NAME}:${TAG_NAME}
+      replicas: ${REPLICAS}
+      selector:
+        name: ${NAME}
+      template:
+        metadata:
+          name: ${NAME}
+          labels:
+            name: ${NAME}
+            app: ${APP_NAME}
+            role: ${ROLE}
+            env: ${TAG_NAME}
+        spec:
+          volumes:
+            - name: ${BACKUP_VOLUME_NAME}
+              persistentVolumeClaim:
+                claimName: ${BACKUP_VOLUME_NAME}
+            - name: ${VERIFICATION_VOLUME_NAME}
+              persistentVolumeClaim:
+                claimName: ${VERIFICATION_VOLUME_NAME}
+            - name: ${NAME}-config-volume
+              configMap:
+                name: ${CONFIG_MAP_NAME}
+                items:
+                  - key: ${CONFIG_FILE_NAME}
+                    path: ${CONFIG_FILE_NAME}
+          containers:
+            - name: ${NAME}
+              image: ""
+              ports: []
+              env:
+                - name: BACKUP_STRATEGY
+                  value: ${BACKUP_STRATEGY}
+                - name: BACKUP_DIR
+                  value: ${BACKUP_DIR}
+                - name: NUM_BACKUPS
+                  value: ${NUM_BACKUPS}
+                - name: DAILY_BACKUPS
+                  value: ${DAILY_BACKUPS}
+                - name: WEEKLY_BACKUPS
+                  value: ${WEEKLY_BACKUPS}
+                - name: MONTHLY_BACKUPS
+                  value: ${MONTHLY_BACKUPS}
+                - name: BACKUP_PERIOD
+                  value: ${BACKUP_PERIOD}
+                - name: DATABASE_SERVICE_NAME
+                  value: ${DATABASE_SERVICE_NAME}
+                - name: DATABASE_NAME
+                  value: ${DATABASE_NAME}
+                - name: MONGODB_AUTHENTICATION_DATABASE
+                  value: ${MONGODB_AUTHENTICATION_DATABASE}
+                - name: TABLE_SCHEMA
+                  value: ${TABLE_SCHEMA}
+                - name: DATABASE_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${DATABASE_DEPLOYMENT_NAME}
+                      key: ${DATABASE_USER_KEY_NAME}
+                - name: DATABASE_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${DATABASE_DEPLOYMENT_NAME}
+                      key: ${DATABASE_PASSWORD_KEY_NAME}
+                - name: FTP_URL
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${FTP_SECRET_KEY}
+                      key: ftp-url
+                - name: FTP_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${FTP_SECRET_KEY}
+                      key: ftp-user
+                - name: FTP_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${FTP_SECRET_KEY}
+                      key: ftp-password
+                - name: WEBHOOK_URL
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}
+                      key: webhook-url
+                - name: ENVIRONMENT_FRIENDLY_NAME
+                  value: ${ENVIRONMENT_FRIENDLY_NAME}
+                - name: ENVIRONMENT_NAME
+                  value: ${ENVIRONMENT_NAME}
+                - name: OBJECT_STORE_URL
+                  valueFrom:
+                    secretKeyRef:
+                      name: biohubbc-object-store
+                      key: object_store_url
+                - name: OBJECT_STORE_ACCESS_KEY_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: biohubbc-object-store
+                      key: object_store_access_key_id
+                - name: OBJECT_STORE_SECRET_KEY_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: biohubbc-object-store
+                      key: object_store_secret_key_id
+                - name: OBJECT_STORE_BUCKET_NAME
+                  valueFrom:
+                    secretKeyRef:
+                      name: biohubbc-object-store
+                      key: object_store_bucket_name
+              resources:
+                requests:
+                  cpu: ${CPU_REQUEST}
+                  memory: ${MEMORY_REQUEST}
+                limits:
+                  cpu: ${CPU_LIMIT}
+                  memory: ${MEMORY_LIMIT}
+              volumeMounts:
+                - name: ${BACKUP_VOLUME_NAME}
+                  mountPath: ${BACKUP_DIR}
+                - name: ${VERIFICATION_VOLUME_NAME}
+                  mountPath: ${VERIFICATION_VOLUME_MOUNT_PATH}
+                - name: ${NAME}-config-volume
+                  mountPath: ${CONFIG_MOUNT_PATH}${CONFIG_FILE_NAME}
+                  subPath: ${CONFIG_FILE_NAME}

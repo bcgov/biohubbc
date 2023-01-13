@@ -1,9 +1,9 @@
 apiVersion: template.openshift.io/v1
 kind: Template
 metadata:
-  resourceVersion: ''
-  selfLink: ''
   name: biohubbc-app-dc
+  labels:
+    build: biohubbc-app
 parameters:
   - name: NAME
     value: biohubbc-app
@@ -60,7 +60,7 @@ parameters:
   - name: REACT_APP_KEYCLOAK_API_HOST
     description: api host
   - name: CPU_REQUEST
-    value: '10m'
+    value: '50m'
   - name: CPU_LIMIT
     value: '200m'
   - name: MEMORY_REQUEST
@@ -69,12 +69,11 @@ parameters:
     value: '200Mi'
   - name: REPLICAS
     value: '1'
-  - name: REPLICA_MAX
-    required: true
+  - name: REPLICAS_MAX
     value: '1'
 objects:
-  - apiVersion: image.openshift.io/v1
-    kind: ImageStream
+  - kind: ImageStream
+    apiVersion: image.openshift.io/v1
     metadata:
       annotations:
         description: Nodejs Runtime Image
@@ -87,9 +86,10 @@ objects:
       lookupPolicy:
         local: false
       status:
-      dockerImageRepository: null
-  - apiVersion: apps.openshift.io/v1
-    kind: DeploymentConfig
+        dockerImageRepository: null
+
+  - kind: DeploymentConfig
+    apiVersion: apps.openshift.io/v1
     metadata:
       annotations:
         openshift.io/generated-by: OpenShiftWebConsole
@@ -99,7 +99,7 @@ objects:
         role: app
       name: ${NAME}${SUFFIX}
     spec:
-      replicas: '${{REPLICAS}}'
+      replicas: ${REPLICAS}
       revisionHistoryLimit: 10
       selector:
         deploymentConfig: ${NAME}${SUFFIX}
@@ -108,12 +108,12 @@ objects:
         recreateParams:
           timeoutSeconds: 600
         resources:
-          limits:
-            cpu: ${CPU_LIMIT}
-            memory: ${MEMORY_LIMIT}
           requests:
             cpu: ${CPU_REQUEST}
             memory: ${MEMORY_REQUEST}
+          limits:
+            cpu: ${CPU_LIMIT}
+            memory: ${MEMORY_LIMIT}
         type: Rolling
       template:
         metadata:
@@ -165,20 +165,20 @@ objects:
               imagePullPolicy: Always
               name: app
               ports:
-                - containerPort: ${{APP_PORT_DEFAULT}}
+                - containerPort: ${APP_PORT_DEFAULT}
                   protocol: TCP
               resources:
-                limits:
-                  cpu: ${CPU_LIMIT}
-                  memory: ${MEMORY_LIMIT}
                 requests:
                   cpu: ${CPU_REQUEST}
                   memory: ${MEMORY_REQUEST}
+                limits:
+                  cpu: ${CPU_LIMIT}
+                  memory: ${MEMORY_LIMIT}
               readinessProbe:
                 failureThreshold: 10
                 httpGet:
                   path: /
-                  port: ${{APP_PORT_DEFAULT}}
+                  port: ${APP_PORT_DEFAULT}
                   scheme: HTTP
                 initialDelaySeconds: 10
                 periodSeconds: 15
@@ -188,7 +188,7 @@ objects:
                 failureThreshold: 20
                 httpGet:
                   path: /
-                  port: ${{APP_PORT_DEFAULT}}
+                  port: ${APP_PORT_DEFAULT}
                   scheme: HTTP
                 initialDelaySeconds: 10
                 periodSeconds: 15
@@ -222,8 +222,9 @@ objects:
       replicas: 0
       unavailableReplicas: 0
       updatedReplicas: 0
-  - apiVersion: v1
-    kind: Service
+
+  - kind: Service
+    apiVersion: v1
     metadata:
       annotations: null
       creationTimestamp: null
@@ -232,17 +233,18 @@ objects:
     spec:
       ports:
         - name: ${NAME}-${APP_PORT_DEFAULT_NAME}
-          port: ${{APP_PORT_DEFAULT}}
+          port: ${APP_PORT_DEFAULT}
           protocol: TCP
-          targetPort: ${{APP_PORT_DEFAULT}}
+          targetPort: ${APP_PORT_DEFAULT}
       selector:
         deploymentconfig: ${NAME}${SUFFIX}
       sessionAffinity: None
       type: ClusterIP
     status:
       loadBalancer: {}
-  - apiVersion: route.openshift.io/v1
-    kind: Route
+
+  - kind: Route
+    apiVersion: route.openshift.io/v1
     metadata:
       annotations: {}
       creationTimestamp: null
@@ -262,16 +264,17 @@ objects:
       wildcardPolicy: None
     status:
       ingress: null
-  - apiVersion: autoscaling/v1
-    kind: HorizontalPodAutoscaler
+
+  - kind: HorizontalPodAutoscaler
+    apiVersion: autoscaling/v1
     metadata:
       annotations: {}
       creationTimestamp: null
       labels: {}
       name: ${NAME}${SUFFIX}
     spec:
-      maxReplicas: '${{REPLICA_MAX}}'
-      minReplicas: '${{REPLICAS}}'
+      minReplicas: ${REPLICAS}
+      maxReplicas: ${REPLICAS_MAX}
       scaleTargetRef:
         apiVersion: v1
         kind: DeploymentConfig

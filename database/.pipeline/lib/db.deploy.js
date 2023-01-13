@@ -33,7 +33,12 @@ module.exports = (settings) => {
         POSTGRESQL_DATABASE: 'biohubbc',
         TZ: phases[phase].tz,
         IMAGE_STREAM_NAMESPACE: phases.build.namespace,
-        VOLUME_CAPACITY: '3Gi'
+        VOLUME_CAPACITY: phases[phase].volumeCapacity,
+        CPU_REQUEST: phases[phase].cpuRequest,
+        CPU_LIMIT: phases[phase].cpuLimit,
+        MEMORY_REQUEST: phases[phase].memoryRequest,
+        MEMORY_LIMIT: phases[phase].memoryLimit,
+        REPLICAS: phases[phase].replicas
       }
     })
   );

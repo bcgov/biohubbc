@@ -3,8 +3,9 @@ kind: Template
 labels:
   template: postgresql-persistent-template
 metadata:
-  creationTimestamp: null
   name: biohubbc-db-dc
+  labels:
+    build: biohubbc-db
 parameters:
   - description: The name of the OpenShift Service exposed for the database.
     displayName: Database Service Name
@@ -59,7 +60,7 @@ parameters:
     displayName: Volume Capacity
     name: VOLUME_CAPACITY
     required: true
-    value: '3Gi'
+    value: '500Mi'
   - description: Version of PostgreSQL image to be used (9.2, 9.4, 9.5 or latest).
     displayName: Version of PostgreSQL Image
     name: IMAGE_STREAM_VERSION
@@ -74,7 +75,7 @@ parameters:
     name: POSTGIS_EXTENSION
     value: 'Y'
   - name: CPU_REQUEST
-    value: '10m'
+    value: '50m'
   - name: CPU_LIMIT
     value: '200m'
   - name: MEMORY_REQUEST
@@ -84,8 +85,8 @@ parameters:
   - name: REPLICAS
     value: '1'
 objects:
-  - apiVersion: v1
-    kind: Secret
+  - kind: Secret
+    apiVersion: v1
     metadata:
       annotations:
         template.openshift.io/expose-database_name: "{.data['database-name']}"
@@ -99,8 +100,9 @@ objects:
       database-user-password: '${POSTGRESQL_PASSWORD}'
       database-admin-password: '${POSTGRESQL_ADMIN_PASSWORD}'
       database-user: '${POSTGRESQL_USER}'
-  - apiVersion: v1
-    kind: Service
+
+  - kind: Service
+    apiVersion: v1
     metadata:
       annotations:
         template.openshift.io/expose-uri: postgres://{.spec.clusterIP}:{.spec.ports[?(.name=="postgresql")].port}
@@ -118,8 +120,9 @@ objects:
       type: ClusterIP
     status:
       loadBalancer: {}
-  - apiVersion: v1
-    kind: PersistentVolumeClaim
+
+  - kind: PersistentVolumeClaim
+    apiVersion: v1
     metadata:
       name: '${DATABASE_SERVICE_NAME}'
     spec:
@@ -139,6 +142,7 @@ objects:
     spec:
       lookupPolicy:
         local: false
+
   - kind: DeploymentConfig
     apiVersion: v1
     metadata:
@@ -146,7 +150,7 @@ objects:
         template.alpha.openshift.io/wait-for-ready: 'true'
       name: '${DATABASE_SERVICE_NAME}'
     spec:
-      replicas: '${{REPLICAS}}'
+      replicas: ${REPLICAS}
       selector:
         name: '${DATABASE_SERVICE_NAME}'
       strategy:
@@ -246,4 +250,3 @@ objects:
             lastTriggeredImage: ''
           type: ImageChange
         - type: ConfigChange
-    status: {}

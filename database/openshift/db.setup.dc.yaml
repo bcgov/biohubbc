@@ -32,13 +32,13 @@ parameters:
     required: true
     value: 'dev'
   - name: CPU_REQUEST
-    value: '10m'
+    value: '100m'
   - name: CPU_LIMIT
-    value: '200m'
+    value: '1000m'
   - name: MEMORY_REQUEST
     value: '512Mi'
   - name: MEMORY_LIMIT
-    value: '2Gi'
+    value: '1.5Gi'
 objects:
   - kind: Pod
     apiVersion: v1
@@ -52,12 +52,12 @@ objects:
         - name: test
           image: '${IMAGE}'
           resources:
-            limits:
-              cpu: '1'
-              memory: 1.5Gi
             requests:
-              cpu: 100m
-              memory: 512Mi
+              cpu: '${CPU_REQUEST}'
+              memory: '${MEMORY_REQUEST}'
+            limits:
+              cpu: '${CPU_LIMIT}'
+              memory: '${MEMORY_LIMIT}'
           env:
             - name: DB_HOST
               value: ${DB_SERVICE_NAME}
@@ -102,4 +102,3 @@ objects:
       restartPolicy: Never
       activeDeadlineSeconds: 900
       dnsPolicy: ClusterFirst
-    status: {}

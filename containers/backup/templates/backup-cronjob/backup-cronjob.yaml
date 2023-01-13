@@ -128,124 +128,124 @@ parameters:
     value: "0"
     required: false
 objects:
-- kind: ConfigMap
-  apiVersion: v1
-  metadata:
-    name: "${JOB_NAME}-config"
-    labels:
-      template: "${JOB_NAME}-config-template"
-      cronjob: "${JOB_NAME}"
-  data:
-    DATABASE_SERVICE_NAME: "${DATABASE_SERVICE_NAME}"
-    DEFAULT_PORT: "${DATABASE_DEFAULT_PORT}"
-    POSTGRESQL_DATABASE: "${DATABASE_NAME}"
-    # BACKUP_STRATEGY: "daily"
-    BACKUP_STRATEGY: "rolling"
-    RETENTION.NUM_BACKUPS: "${NUM_BACKUPS}"
-    RETENTION.DAILY_BACKUPS: "${DAILY_BACKUPS}"
-    RETENTION.WEEKLY_BACKUPS: "${WEEKLY_BACKUPS}"
-    RETENTION.MONTHLY_BACKUPS: "${MONTHLY_BACKUPS}"
-- kind: "CronJob"
-  apiVersion: "batch/v1"
-  metadata:
-    name: "${JOB_NAME}"
-    labels:
-      template: "${JOB_NAME}-cronjob"
-      cronjob: "${JOB_NAME}"
-  spec:
-    schedule: "${SCHEDULE}"
-    concurrencyPolicy: "Forbid"
-    successfulJobsHistoryLimit: "${{SUCCESS_JOBS_HISTORY_LIMIT}}"
-    failedJobsHistoryLimit: "${{FAILED_JOBS_HISTORY_LIMIT}}"
-    jobTemplate:
-      metadata:
-        labels:
-          template: "${JOB_NAME}-job"
-          cronjob: "${JOB_NAME}"
-      spec:
-        backoffLimit: ${{JOB_BACKOFF_LIMIT}}
-        template:
-          metadata:
-            labels:
-              template: "${JOB_NAME}-job"
-              cronjob: "${JOB_NAME}"
-          spec:
-            containers:
-              - name: "${JOB_NAME}-cronjob"
-                image: "${IMAGE_REGISTRY}/${IMAGE_NAMESPACE}/${SOURCE_IMAGE_NAME}:${TAG_NAME}"
-                # image: backup
-                command:
-                  - "/bin/bash"
-                  - "-c"
-                  - "/backup.sh -1"
-                volumeMounts:
-                  - mountPath: "${BACKUP_DIR}"
-                    name: "backup"
-                env:
-                  - name: BACKUP_DIR
-                    value: "${BACKUP_DIR}"
-                  - name: BACKUP_STRATEGY
-                    valueFrom:
-                      configMapKeyRef:
-                        name: "${JOB_NAME}-config"
-                        key: BACKUP_STRATEGY
-                  - name: NUM_BACKUPS
-                    valueFrom:
-                      configMapKeyRef:
-                        name: "${JOB_NAME}-config"
-                        key: RETENTION.NUM_BACKUPS
-                        optional: true
-                  - name: DAILY_BACKUPS
-                    valueFrom:
-                      configMapKeyRef:
-                        name: "${JOB_NAME}-config"
-                        key: RETENTION.DAILY_BACKUPS
-                        optional: true
-                  - name: WEEKLY_BACKUPS
-                    valueFrom:
-                      configMapKeyRef:
-                        name: "${JOB_NAME}-config"
-                        key: RETENTION.WEEKLY_BACKUPS
-                        optional: true
-                  - name: MONTHLY_BACKUPS
-                    valueFrom:
-                      configMapKeyRef:
-                        name: "${JOB_NAME}-config"
-                        key: RETENTION.MONTHLY_BACKUPS
-                        optional: true
-                  - name: DATABASE_SERVICE_NAME
-                    valueFrom:
-                      configMapKeyRef:
-                        name: "${JOB_NAME}-config"
-                        key: DATABASE_SERVICE_NAME
-                  - name: DEFAULT_PORT
-                    valueFrom:
-                      configMapKeyRef:
-                        name: "${JOB_NAME}-config"
-                        key: DEFAULT_PORT
-                        optional: true
-                  - name: POSTGRESQL_DATABASE
-                    valueFrom:
-                      configMapKeyRef:
-                        name: "${JOB_NAME}-config"
-                        key: POSTGRESQL_DATABASE
-                  - name: DATABASE_USER
-                    valueFrom:
-                      secretKeyRef:
-                        name: "${DATABASE_DEPLOYMENT_NAME}"
-                        key: "${DATABASE_USER_KEY_NAME}"
-                  - name: DATABASE_PASSWORD
-                    valueFrom:
-                      secretKeyRef:
-                        name: "${DATABASE_DEPLOYMENT_NAME}"
-                        key: "${DATABASE_PASSWORD_KEY_NAME}"
-            volumes:
-              - name: backup
-                persistentVolumeClaim:
-                  claimName: "${JOB_PERSISTENT_STORAGE_NAME}"
-            restartPolicy: "Never"
-            terminationGracePeriodSeconds: 30
-            activeDeadlineSeconds: 1600
-            dnsPolicy: "ClusterFirst"
-            serviceAccountName: "${JOB_SERVICE_ACCOUNT}"
-            serviceAccount: "${JOB_SERVICE_ACCOUNT}"
+  - kind: ConfigMap
+    apiVersion: v1
+    metadata:
+      name: "${JOB_NAME}-config"
+      labels:
+        template: "${JOB_NAME}-config-template"
+        cronjob: "${JOB_NAME}"
+    data:
+      DATABASE_SERVICE_NAME: "${DATABASE_SERVICE_NAME}"
+      DEFAULT_PORT: "${DATABASE_DEFAULT_PORT}"
+      POSTGRESQL_DATABASE: "${DATABASE_NAME}"
+      # BACKUP_STRATEGY: "daily"
+      BACKUP_STRATEGY: "rolling"
+      RETENTION.NUM_BACKUPS: "${NUM_BACKUPS}"
+      RETENTION.DAILY_BACKUPS: "${DAILY_BACKUPS}"
+      RETENTION.WEEKLY_BACKUPS: "${WEEKLY_BACKUPS}"
+      RETENTION.MONTHLY_BACKUPS: "${MONTHLY_BACKUPS}"
+  - kind: "CronJob"
+    apiVersion: "batch/v1"
+    metadata:
+      name: "${JOB_NAME}"
+      labels:
+        template: "${JOB_NAME}-cronjob"
+        cronjob: "${JOB_NAME}"
+    spec:
+      schedule: "${SCHEDULE}"
+      concurrencyPolicy: "Forbid"
+      successfulJobsHistoryLimit: ${SUCCESS_JOBS_HISTORY_LIMIT}
+      failedJobsHistoryLimit: ${FAILED_JOBS_HISTORY_LIMIT}
+      jobTemplate:
+        metadata:
+          labels:
+            template: "${JOB_NAME}-job"
+            cronjob: "${JOB_NAME}"
+        spec:
+          backoffLimit: JOB_BACKOFF_LIMIT}
+          template:
+            metadata:
+              labels:
+                template: "${JOB_NAME}-job"
+                cronjob: "${JOB_NAME}"
+            spec:
+              containers:
+                - name: "${JOB_NAME}-cronjob"
+                  image: "${IMAGE_REGISTRY}/${IMAGE_NAMESPACE}/${SOURCE_IMAGE_NAME}:${TAG_NAME}"
+                  # image: backup
+                  command:
+                    - "/bin/bash"
+                    - "-c"
+                    - "/backup.sh -1"
+                  volumeMounts:
+                    - mountPath: "${BACKUP_DIR}"
+                      name: "backup"
+                  env:
+                    - name: BACKUP_DIR
+                      value: "${BACKUP_DIR}"
+                    - name: BACKUP_STRATEGY
+                      valueFrom:
+                        configMapKeyRef:
+                          name: "${JOB_NAME}-config"
+                          key: BACKUP_STRATEGY
+                    - name: NUM_BACKUPS
+                      valueFrom:
+                        configMapKeyRef:
+                          name: "${JOB_NAME}-config"
+                          key: RETENTION.NUM_BACKUPS
+                          optional: true
+                    - name: DAILY_BACKUPS
+                      valueFrom:
+                        configMapKeyRef:
+                          name: "${JOB_NAME}-config"
+                          key: RETENTION.DAILY_BACKUPS
+                          optional: true
+                    - name: WEEKLY_BACKUPS
+                      valueFrom:
+                        configMapKeyRef:
+                          name: "${JOB_NAME}-config"
+                          key: RETENTION.WEEKLY_BACKUPS
+                          optional: true
+                    - name: MONTHLY_BACKUPS
+                      valueFrom:
+                        configMapKeyRef:
+                          name: "${JOB_NAME}-config"
+                          key: RETENTION.MONTHLY_BACKUPS
+                          optional: true
+                    - name: DATABASE_SERVICE_NAME
+                      valueFrom:
+                        configMapKeyRef:
+                          name: "${JOB_NAME}-config"
+                          key: DATABASE_SERVICE_NAME
+                    - name: DEFAULT_PORT
+                      valueFrom:
+                        configMapKeyRef:
+                          name: "${JOB_NAME}-config"
+                          key: DEFAULT_PORT
+                          optional: true
+                    - name: POSTGRESQL_DATABASE
+                      valueFrom:
+                        configMapKeyRef:
+                          name: "${JOB_NAME}-config"
+                          key: POSTGRESQL_DATABASE
+                    - name: DATABASE_USER
+                      valueFrom:
+                        secretKeyRef:
+                          name: "${DATABASE_DEPLOYMENT_NAME}"
+                          key: "${DATABASE_USER_KEY_NAME}"
+                    - name: DATABASE_PASSWORD
+                      valueFrom:
+                        secretKeyRef:
+                          name: "${DATABASE_DEPLOYMENT_NAME}"
+                          key: "${DATABASE_PASSWORD_KEY_NAME}"
+              volumes:
+                - name: backup
+                  persistentVolumeClaim:
+                    claimName: "${JOB_PERSISTENT_STORAGE_NAME}"
+              restartPolicy: "Never"
+              terminationGracePeriodSeconds: 30
+              activeDeadlineSeconds: 1600
+              dnsPolicy: "ClusterFirst"
+              serviceAccountName: "${JOB_SERVICE_ACCOUNT}"
+              serviceAccount: "${JOB_SERVICE_ACCOUNT}"

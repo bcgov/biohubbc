@@ -73,7 +73,13 @@ const phases = {
     tag: `dev-${version}-${deployChangeId}`,
     env: 'dev',
     tz: config.timezone.db,
-    dbSetupDockerfilePath: dbSetupDockerfilePath
+    dbSetupDockerfilePath: dbSetupDockerfilePath,
+    volumeCapacity: (isStaticDeployment && '3G') || '500Mi',
+    cpuRequest: '50m',
+    cpuLimit: '200m',
+    memoryRequest: '512Mi',
+    memoryLimit: '2Gi',
+    replicas: '1'
   },
   test: {
     namespace: 'af2668-test',
@@ -86,7 +92,13 @@ const phases = {
     tag: `test-${version}`,
     env: 'test',
     tz: config.timezone.db,
-    dbSetupDockerfilePath: dbSetupDockerfilePath
+    dbSetupDockerfilePath: dbSetupDockerfilePath,
+    volumeCapacity: '3G',
+    cpuRequest: '100m',
+    cpuLimit: '500m',
+    memoryRequest: '512Mi',
+    memoryLimit: '3Gi',
+    replicas: '1'
   },
   prod: {
     namespace: 'af2668-prod',
@@ -99,7 +111,13 @@ const phases = {
     tag: `prod-${version}`,
     env: 'prod',
     tz: config.timezone.db,
-    dbSetupDockerfilePath: dbSetupDockerfilePath
+    dbSetupDockerfilePath: dbSetupDockerfilePath,
+    volumeCapacity: '5G',
+    cpuRequest: '100m',
+    cpuLimit: '500m',
+    memoryRequest: '512Mi',
+    memoryLimit: '3Gi',
+    replicas: '1'
   }
 };
 

@@ -62,7 +62,10 @@ const phases = {
     tag: tag,
     env: 'build',
     branch: branch,
-    logLevel: (isStaticDeployment && 'info') || 'debug'
+    cpuRequest: '100m',
+    cpuLimit: '1000m',
+    memoryRequest: '512Mi',
+    memoryLimit: '5Gi'
   },
   dev: {
     namespace: 'af2668-dev',
@@ -79,8 +82,12 @@ const phases = {
     siteminderLogoutURL: config.siteminderLogoutURL.dev,
     env: 'dev',
     sso: config.sso.dev,
-    replicas: 1,
-    maxReplicas: 2
+    cpuRequest: '50m',
+    cpuLimit: '200m',
+    memoryRequest: '50Mi',
+    memoryLimit: '200Mi',
+    replicas: (isStaticDeployment && '2') || '1',
+    replicasMax: (isStaticDeployment && '3') || '1'
   },
   test: {
     namespace: 'af2668-test',
@@ -99,9 +106,12 @@ const phases = {
     maxUploadFileSize,
     env: 'test',
     sso: config.sso.test,
-    replicas: 3,
-    maxReplicas: 5,
-    logLevel: 'info'
+    cpuRequest: '100m',
+    cpuLimit: '300m',
+    memoryRequest: '100Mi',
+    memoryLimit: '400Mi',
+    replicas: '2',
+    replicasMax: '3'
   },
   prod: {
     namespace: 'af2668-prod',
@@ -115,12 +125,14 @@ const phases = {
     host: staticUrls.prod,
     apiHost: staticUrlsAPI.prod,
     siteminderLogoutURL: config.siteminderLogoutURL.prod,
-
     env: 'prod',
     sso: config.sso.prod,
-    replicas: 3,
-    maxReplicas: 6,
-    logLevel: 'info'
+    cpuRequest: '100m',
+    cpuLimit: '300m',
+    memoryRequest: '100Mi',
+    memoryLimit: '400Mi',
+    replicas: '2',
+    replicasMax: '4'
   }
 };
 

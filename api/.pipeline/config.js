@@ -60,11 +60,12 @@ const phases = {
     version: `${version}-${changeId}`,
     tag: tag,
     env: 'build',
-    elasticsearchURL: 'https://elasticsearch-af2668-dev.apps.silver.devops.gov.bc.ca',
-    elasticsearchTaxonomyIndex: 'taxonomy_2.0.0',
     tz: config.timezone.api,
     branch: branch,
-    logLevel: (isStaticDeployment && 'info') || 'debug'
+    cpuRequest: '100m',
+    cpuLimit: '1250m',
+    memoryRequest: '512Mi',
+    memoryLimit: '3Gi'
   },
   dev: {
     namespace: 'af2668-dev',
@@ -86,9 +87,13 @@ const phases = {
     elasticsearchTaxonomyIndex: 'taxonomy_2.0.0',
     tz: config.timezone.api,
     sso: config.sso.dev,
-    replicas: 1,
-    maxReplicas: 1,
-    logLevel: (isStaticDeployment && 'info') || 'debug'
+    logLevel: 'debug',
+    cpuRequest: '100m',
+    cpuLimit: '500m',
+    memoryRequest: '512Mi',
+    memoryLimit: '2Gi',
+    replicas: (isStaticDeployment && '2') || '1',
+    replicasMax: (isStaticDeployment && '3') || '1'
   },
   test: {
     namespace: 'af2668-test',
@@ -110,9 +115,13 @@ const phases = {
     elasticsearchTaxonomyIndex: 'taxonomy_2.0.0',
     tz: config.timezone.api,
     sso: config.sso.test,
-    replicas: 3,
-    maxReplicas: 5,
-    logLevel: 'info'
+    logLevel: 'info',
+    cpuRequest: '200m',
+    cpuLimit: '1000m',
+    memoryRequest: '512Mi',
+    memoryLimit: '3Gi',
+    replicas: '3',
+    replicasMax: '5'
   },
   prod: {
     namespace: 'af2668-prod',
@@ -134,9 +143,13 @@ const phases = {
     elasticsearchTaxonomyIndex: 'taxonomy_2.0.0',
     tz: config.timezone.api,
     sso: config.sso.prod,
-    replicas: 3,
-    maxReplicas: 6,
-    logLevel: 'info'
+    logLevel: 'info',
+    cpuRequest: '200m',
+    cpuLimit: '1000m',
+    memoryRequest: '512Mi',
+    memoryLimit: '3Gi',
+    replicas: '5',
+    replicasMax: '8'
   }
 };
 
