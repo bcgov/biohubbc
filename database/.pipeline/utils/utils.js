@@ -10,7 +10,7 @@
  */
 const getResourceByName = (resourceName, oc) => {
   console.log(`1 - getResourceByName - Fetching resource: ${resourceName}`);
-  const matches = oc.get(resourceName); // oc --namespace=a0ec71-dev get pod/biohub-platform-db-setup-dev-108 --output=json
+  const matches = oc.get(resourceName);
 
   if (!matches || !matches.length) {
     return null;
