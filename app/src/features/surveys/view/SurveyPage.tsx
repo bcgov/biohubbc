@@ -3,13 +3,18 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
+import { IMarkerLayer } from 'components/map/components/MarkerCluster';
+import { IStaticLayer } from 'components/map/components/StaticLayers';
 import SurveyDetails from 'features/surveys/view/SurveyDetails';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import useDataLoader from 'hooks/useDataLoader';
+import useDataLoaderError from 'hooks/useDataLoaderError';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
+import { parseSpatialDataByType } from 'utils/spatial-utils';
 import SurveyStudyArea from './components/SurveyStudyArea';
 import SurveyAttachments from './SurveyAttachments';
 import SurveyHeader from './SurveyHeader';
@@ -34,6 +39,18 @@ const SurveyPage: React.FC = () => {
 
   const [isLoadingCodes, setIsLoadingCodes] = useState(true);
   const [codes, setCodes] = useState<IGetAllCodeSetsResponse>();
+
+  const [markerLayers, setMarkerLayers] = useState<IMarkerLayer[]>([]);
+  const [staticLayers, setStaticLayers] = useState<IStaticLayer[]>([]);
+
+  const mapDataLoader = useDataLoader((datasetID: number) => biohubApi.observation.getOccurrencesForView(datasetID));
+  useDataLoaderError(mapDataLoader, () => {
+    return {
+      dialogTitle: 'Error Loading Map Data',
+      dialogText:
+        'An error has occurred while attempting to load map data, please try again. If the error persists, please contact your system administrator.'
+    };
+  });
 
   useEffect(() => {
     const getCodes = async () => {
@@ -69,7 +86,24 @@ const SurveyPage: React.FC = () => {
       return;
     }
     setSurveyWithDetails(surveyWithDetailsResponse);
-  }, [biohubApi.survey, urlParams]);
+
+    const getOccurrences = async (occurrenceSubmissionId: number) => {
+      await mapDataLoader.refresh(occurrenceSubmissionId);
+    };
+
+    if (surveyWithDetailsResponse.surveySupplementaryData.occurrence_submission.id) {
+      getOccurrences(surveyWithDetailsResponse.surveySupplementaryData.occurrence_submission.id);
+    }
+  }, [biohubApi.survey, urlParams, mapDataLoader]);
+
+  useEffect(() => {
+    if (mapDataLoader.data) {
+      const result = parseSpatialDataByType(mapDataLoader.data);
+
+      setMarkerLayers(result.markerLayers);
+      setStaticLayers(result.staticLayers);
+    }
+  }, [mapDataLoader.data]);
 
   useEffect(() => {
     if (isLoadingProject && !projectWithDetails) {
@@ -126,6 +160,7 @@ const SurveyPage: React.FC = () => {
                   <SurveyStudyArea
                     surveyForViewData={surveyWithDetails}
                     projectForViewData={projectWithDetails}
+                    mapLayersForView={{ markerLayers: markerLayers, staticLayers: staticLayers }}
                     refresh={getSurvey}
                   />
                 </Paper>

@@ -88,4 +88,25 @@ export class OccurrenceService extends DBService {
 
     return (await response).map((row) => row.spatial_component_properties);
   }
+
+  /**
+   * Soft delete Occurrence Submission
+   *
+   * @param {number} occurrenceSubmissionId
+   * @return {*}
+   * @memberof OccurrenceService
+   */
+  async deleteOccurrenceSubmission(
+    occurrenceSubmissionId: number
+  ): Promise<
+    {
+      submission_spatial_component_id: number;
+    }[]
+  > {
+    await this.occurrenceRepository.softDeleteOccurrenceSubmission(occurrenceSubmissionId);
+
+    await this.occurrenceRepository.deleteSpatialTransformSubmission(occurrenceSubmissionId);
+
+    return this.occurrenceRepository.deleteSubmissionSpatialComponent(occurrenceSubmissionId);
+  }
 }

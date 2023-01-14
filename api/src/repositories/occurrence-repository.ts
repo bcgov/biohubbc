@@ -242,4 +242,48 @@ export class OccurrenceRepository extends BaseRepository {
 
     return response.rows;
   }
+
+  /**
+   * Soft delete Occurrence Submission, setting a delete Timestamp
+   *
+   * @param {number} occurrenceSubmissionId
+   * @memberof OccurrenceRepository
+   */
+  async softDeleteOccurrenceSubmission(occurrenceSubmissionId: number) {
+    const sqlStatement = SQL`
+      UPDATE occurrence_submission
+      SET delete_timestamp = now()
+      WHERE occurrence_submission_id = ${occurrenceSubmissionId};
+    `;
+
+    await this.connection.sql(sqlStatement);
+  }
+
+  async deleteSubmissionSpatialComponent(
+    occurrenceSubmissionId: number
+  ): Promise<{ submission_spatial_component_id: number }[]> {
+    const sqlDeleteStatement = SQL`
+      DELETE FROM
+        submission_spatial_component
+      WHERE
+        occurrence_submission_id = ${occurrenceSubmissionId}
+      RETURNING
+        submission_spatial_component_id;
+    `;
+
+    return (await this.connection.sql<{ submission_spatial_component_id: number }>(sqlDeleteStatement)).rows;
+  }
+
+  async deleteSpatialTransformSubmission(occurrenceSubmissionId: number): Promise<void> {
+    const sqlDeleteStatement = SQL`
+      DELETE FROM spatial_transform_submission
+      USING spatial_transform_submission as sts
+      LEFT OUTER JOIN submission_spatial_component as ssc ON
+        sts.submission_spatial_component_id = ssc.submission_spatial_component_id
+      WHERE
+        ssc.occurrence_submission_id = ${occurrenceSubmissionId};
+    `;
+
+    await this.connection.sql(sqlDeleteStatement);
+  }
 }

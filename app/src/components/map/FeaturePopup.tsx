@@ -38,7 +38,7 @@ export type BoundaryCentroidFeatureProperties = {
 };
 
 export enum COMMON_METADATA_PROPERTIES {
-  'vernacularName' = 'Species',
+  'taxonID' = 'Species',
   'individualCount' = 'Count',
   'eventDate' = 'Date',
   'lifeStage' = 'Life Stage',

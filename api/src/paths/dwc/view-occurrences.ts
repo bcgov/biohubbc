@@ -96,7 +96,6 @@ export function getOccurrencesForView(): RequestHandler {
       await connection.open();
       const service = new OccurrenceService(connection);
       const occurrenceData = await service.getOccurrences(req.body.occurrence_submission_id);
-
       await connection.commit();
 
       return res.status(200).json(occurrenceData);
