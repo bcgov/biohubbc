@@ -79,17 +79,18 @@ const ResourcesPage: React.FC = () => {
               resources.map((row: IResourceFile) => {
                 const { templateType } = row.metadata;
                 const templateName = row.metadata.templateName || row.fileName;
+                const downloadUrl = ensureProtocol(row.url, 'https://')
 
                 return (
                   <TableRow key={row.url}>
                     <TableCell>
-                      <Link href={ensureProtocol(row.url, 'https://')} underline="always" style={{ fontWeight: 700 }}>
+                      <Link href={downloadUrl} underline="always" style={{ fontWeight: 700 }}>
                         {templateName}
                       </Link>
                     </TableCell>
                     <TableCell>{templateType || 'Other'}</TableCell>
                     <TableCell align="center">
-                      <IconButton href={row.url} aria-label={`Download ${templateName}`}>
+                      <IconButton href={downloadUrl} aria-label={`Download ${templateName}`}>
                         <Icon path={mdiTrayArrowDown} size={0.8} />
                       </IconButton>
                     </TableCell>
