@@ -73,13 +73,13 @@ export class SurveyService extends DBService {
   }
 
   async getSurveySupplementaryDataById(surveyId: number): Promise<SurveySupplementaryData> {
-    const [occurrenceSubmissionId, summaryResultId] = await Promise.all([
-      this.getOccurrenceSubmissionId(surveyId),
+    const [submissionId, summaryResultId] = await Promise.all([
+      this.getsubmissionId(surveyId),
       this.getSummaryResultId(surveyId)
     ]);
 
     return {
-      occurrence_submission: occurrenceSubmissionId,
+      occurrence_submission: submissionId,
       summary_result: summaryResultId
     };
   }
@@ -126,16 +126,16 @@ export class SurveyService extends DBService {
     return this.surveyRepository.getSurveyLocationData(surveyId);
   }
 
-  async getOccurrenceSubmissionId(surveyId: number): Promise<number> {
-    return this.surveyRepository.getOccurrenceSubmissionId(surveyId);
+  async getsubmissionId(surveyId: number): Promise<number> {
+    return this.surveyRepository.getsubmissionId(surveyId);
   }
 
   async getLatestSurveyOccurrenceSubmission(surveyId: number): Promise<IGetLatestSurveyOccurrenceSubmission | null> {
     return this.surveyRepository.getLatestSurveyOccurrenceSubmission(surveyId);
   }
 
-  async getOccurrenceSubmissionMessages(occurrenceSubmissionId: number): Promise<IOccurrenceSubmissionMessagesResponse[]> {
-    return this.surveyRepository.getOccurrenceSubmissionMessages(occurrenceSubmissionId);
+  async getOccurrenceSubmissionMessages(submissionId: number): Promise<IOccurrenceSubmissionMessagesResponse[]> {
+    return this.surveyRepository.getOccurrenceSubmissionMessages(submissionId);
   }
 
   async getSummaryResultId(surveyId: number): Promise<number> {
@@ -423,7 +423,7 @@ export class SurveyService extends DBService {
    * @param {(number | null)} templateMethodologyId
    * @return {*}  {(SQLStatement | null)}
    */
-  async insertSurveyOccurrenceSubmission (submission: IObservationSubmissionInsertDetails): Promise<{ occurrenceSubmissionId: number }> {
+  async insertSurveyOccurrenceSubmission (submission: IObservationSubmissionInsertDetails): Promise<{ submissionId: number }> {
     return this.surveyRepository.insertSurveyOccurrenceSubmission(submission);
   };
 
@@ -439,7 +439,7 @@ export class SurveyService extends DBService {
    * @return {*}  {(SQLStatement | null)}
    */
 
-  async updateSurveyOccurrenceSubmission(submission: IObservationSubmissionUpdateDetails): Promise<{ occurrenceSubmissionId: number }> {
+  async updateSurveyOccurrenceSubmission(submission: IObservationSubmissionUpdateDetails): Promise<{ submissionId: number }> {
     return this.surveyRepository.updateSurveyOccurrenceSubmission(submission);
   };
 
@@ -447,11 +447,11 @@ export class SurveyService extends DBService {
    * @TODO jsdoc
    * SQL query to soft delete the occurrence submission entry by ID
    * @TODO jsdoc
-   * @param {number} occurrenceSubmissionId
+   * @param {number} submissionId
    * @returns {SQLStatement} sql query object
    */
 
-  async deleteOccurrenceSubmission(occurrenceSubmissionId: number): Promise<{ occurrenceSubmissionId: number }> {
-    return this.surveyRepository.deleteOccurrenceSubmission(occurrenceSubmissionId);
+  async deleteOccurrenceSubmission(submissionId: number): Promise<number> {
+  return this.surveyRepository.deleteOccurrenceSubmission(submissionId);
   };
 }

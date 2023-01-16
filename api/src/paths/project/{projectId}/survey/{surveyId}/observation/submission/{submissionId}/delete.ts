@@ -3,8 +3,8 @@ import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../../database/db';
 import { HTTP400 } from '../../../../../../../../errors/http-error';
-import { queries } from '../../../../../../../../queries/queries';
 import { authorizeRequestHandler } from '../../../../../../../../request-handlers/security/authorization';
+import { SurveyService } from '../../../../../../../../services/survey-service';
 import { getLogger } from '../../../../../../../../utils/logger';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/observation/submission/{submissionId}/delete');
@@ -111,26 +111,15 @@ export function deleteOccurrenceSubmission(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const deleteSubmissionSQLStatement = queries.survey.deleteOccurrenceSubmissionSQL(
-        Number(req.params.submissionId)
-      );
-
-      if (!deleteSubmissionSQLStatement) {
-        throw new HTTP400('Failed to build SQL delete statement');
-      }
-
       await connection.open();
 
-      const deleteResult = await connection.query(
-        deleteSubmissionSQLStatement.text,
-        deleteSubmissionSQLStatement.values
-      );
+      const surveyService = new SurveyService(connection);
+
+      const response = await surveyService.deleteOccurrenceSubmission(Number(req.params.submissionId));
 
       await connection.commit();
 
-      const deleteResponse = (deleteResult && deleteResult.rowCount) || null;
-
-      return res.status(200).json(deleteResponse);
+      return res.status(200).json(response);
     } catch (error) {
       defaultLog.error({ label: 'deleteOccurrenceSubmission', message: 'error', error });
       await connection.rollback();
