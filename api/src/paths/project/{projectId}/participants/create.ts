@@ -56,15 +56,23 @@ POST.apiDoc = {
               type: 'array',
               items: {
                 type: 'object',
-                required: ['userIdentifier', 'identitySource', 'roleId'],
+                required: ['userGuid', 'userIdentifier', 'identitySource', 'roleId'],
                 properties: {
+                  userGuid: {
+                    type: 'string',
+                    description: 'The GUID for the user.'
+                  },
                   userIdentifier: {
                     description: 'A IDIR or BCEID username.',
                     type: 'string'
                   },
                   identitySource: {
                     type: 'string',
-                    enum: [SYSTEM_IDENTITY_SOURCE.IDIR, SYSTEM_IDENTITY_SOURCE.BCEID]
+                    enum: [
+                      SYSTEM_IDENTITY_SOURCE.IDIR,
+                      SYSTEM_IDENTITY_SOURCE.BCEID_BASIC,
+                      SYSTEM_IDENTITY_SOURCE.BCEID_BUSINESS
+                    ]
                   },
                   roleId: {
                     description: 'The id of the project role to assign to the participant.',
@@ -115,7 +123,8 @@ export function createProjectParticipants(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const participants: { userIdentifier: string; identitySource: string; roleId: number }[] = req.body.participants;
+      const participants: { userGuid: string; userIdentifier: string; identitySource: string; roleId: number }[] =
+        req.body.participants;
 
       await connection.open();
 
@@ -141,13 +150,17 @@ export function createProjectParticipants(): RequestHandler {
 
 export const ensureSystemUserAndProjectParticipantUser = async (
   projectId: number,
-  participant: { userIdentifier: string; identitySource: string; roleId: number },
+  participant: { userGuid: string; userIdentifier: string; identitySource: string; roleId: number },
   connection: IDBConnection
 ) => {
   const userService = new UserService(connection);
 
   // Add a system user, unless they already have one
-  const systemUserObject = await userService.ensureSystemUser(participant.userIdentifier, participant.identitySource);
+  const systemUserObject = await userService.ensureSystemUser(
+    participant.userGuid,
+    participant.userIdentifier,
+    participant.identitySource
+  );
 
   const projectService = new ProjectService(connection);
 

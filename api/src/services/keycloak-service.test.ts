@@ -8,15 +8,18 @@ import { KeycloakService } from './keycloak-service';
 chai.use(sinonChai);
 
 describe('KeycloakService', () => {
-  afterEach(() => {
-    sinon.restore();
-  });
-
-  before(() => {
-    process.env.KEYCLOAK_HOST = 'host/auth';
+  beforeEach(() => {
+    process.env.KEYCLOAK_ADMIN_HOST = 'host';
     process.env.KEYCLOAK_REALM = 'realm';
+    process.env.KEYCLOAK_API_HOST = 'api-host';
     process.env.KEYCLOAK_ADMIN_USERNAME = 'admin';
     process.env.KEYCLOAK_ADMIN_PASSWORD = 'password';
+    process.env.KEYCLOAK_INTEGRATION_ID = '1234';
+    process.env.KEYCLOAK_ENVIRONMENT = 'test-env';
+  });
+
+  afterEach(() => {
+    sinon.restore();
   });
 
   describe('getKeycloakToken', async () => {
@@ -32,11 +35,10 @@ describe('KeycloakService', () => {
       expect(response).to.eql('token');
 
       expect(axiosStub).to.have.been.calledWith(
-        'host/auth/realms/realm/protocol/openid-connect/token',
-        'grant_type=client_credentials',
+        `${'host'}/realms/${'realm'}/protocol/openid-connect/token`,
+        `${'grant_type=client_credentials'}&${'client_id=admin'}&${'client_secret=password'}`,
         {
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          auth: { username: 'admin', password: 'password' }
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
         }
       );
     });
@@ -62,22 +64,23 @@ describe('KeycloakService', () => {
       sinon.stub(KeycloakService.prototype, 'getKeycloakToken').resolves('token');
 
       const mockAxiosResponse = {
-        data: [
-          {
-            id: 123,
-            firstName: 'firstName',
-            lastName: 'lastName',
-            email: 'email',
-            enabled: true,
-            username: 'username',
-            attributes: {
-              idir_user_guid: ['string1'],
-              idir_userid: ['string2'],
-              idir_guid: ['string3'],
-              displayName: ['string4']
+        data: {
+          users: [
+            {
+              username: 'username',
+              email: 'email',
+              firstName: 'firstName',
+              lastName: 'lastName',
+              attributes: {
+                idir_user_guid: ['string1'],
+                idir_userid: ['string2'],
+                idir_guid: ['string3'],
+                displayName: ['string4']
+              }
             }
-          }
-        ]
+          ],
+          roles: []
+        }
       };
 
       const axiosStub = sinon.stub(axios, 'get').resolves(mockAxiosResponse);
@@ -87,12 +90,10 @@ describe('KeycloakService', () => {
       const response = await keycloakService.getUserByUsername('test@idir');
 
       expect(response).to.eql({
-        id: 123,
+        username: 'username',
+        email: 'email',
         firstName: 'firstName',
         lastName: 'lastName',
-        email: 'email',
-        enabled: true,
-        username: 'username',
         attributes: {
           idir_user_guid: ['string1'],
           idir_userid: ['string2'],
@@ -101,15 +102,18 @@ describe('KeycloakService', () => {
         }
       });
 
-      expect(axiosStub).to.have.been.calledWith('host/auth/admin/realms/realm/users/?username=test%40idir', {
-        headers: { authorization: 'Bearer token' }
-      });
+      expect(axiosStub).to.have.been.calledWith(
+        `${'api-host'}/integrations/${'1234'}/test-env/user-role-mappings?${'username=test%40idir'}`,
+        {
+          headers: { authorization: 'Bearer token' }
+        }
+      );
     });
 
     it('throws an error if no users are found', async () => {
       sinon.stub(KeycloakService.prototype, 'getKeycloakToken').resolves('token');
 
-      sinon.stub(axios, 'get').resolves({ data: [] });
+      sinon.stub(axios, 'get').resolves({ data: { users: [], roles: [] } });
 
       const keycloakService = new KeycloakService();
 
@@ -126,7 +130,19 @@ describe('KeycloakService', () => {
     it('throws an error if more than 1 user is  found', async () => {
       sinon.stub(KeycloakService.prototype, 'getKeycloakToken').resolves('token');
 
-      sinon.stub(axios, 'get').resolves({ data: [{}, {}, {}] });
+      sinon.stub(axios, 'get').resolves({
+        data: {
+          users: [
+            {
+              username: 'user1'
+            },
+            {
+              username: 'user2'
+            }
+          ],
+          roles: []
+        }
+      });
 
       const keycloakService = new KeycloakService();
 

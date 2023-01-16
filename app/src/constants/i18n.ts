@@ -185,6 +185,18 @@ export const AccessRequestI18N = {
     'An error has occurred while attempting to make an access request, please try again. If the error persists, please contact your system administrator.'
 };
 
+export const AccessApprovalDispatchI18N = {
+  reviewErrorTitle: 'Error dispatching granted access notification',
+  reviewErrorText:
+    'The access request was approved successfully, but an error occurred while attempting to notify the user. Please contact your system administrator.'
+};
+
+export const AccessDenialDispatchI18N = {
+  reviewErrorTitle: 'Error dispatching denied access notification',
+  reviewErrorText:
+    'The access request was denied successfully, but an error occurred while attempting to notify the user. Please contact your system administrator.'
+};
+
 export const ReviewAccessRequestI18N = {
   reviewErrorTitle: 'Error reviewing access request',
   reviewErrorText:
