@@ -197,7 +197,7 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
           />
         }
         description={survey_details.survey_area_name}
-        layers={() => {}}
+        layers={null}
         backButtonTitle={'Back To Survey'}
         mapTitle={'Study Area'}
       />

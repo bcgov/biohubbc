@@ -87,8 +87,8 @@ const SurveyPage: React.FC = () => {
     }
     setSurveyWithDetails(surveyWithDetailsResponse);
 
-    const getOccurrences = async (occurrenceSubmissionId: number) => {
-      await mapDataLoader.refresh(occurrenceSubmissionId);
+    const getOccurrences = (occurrenceSubmissionId: number) => {
+      mapDataLoader.refresh(occurrenceSubmissionId);
     };
 
     if (surveyWithDetailsResponse.surveySupplementaryData.occurrence_submission.id) {

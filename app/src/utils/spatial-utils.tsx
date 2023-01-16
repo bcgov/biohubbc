@@ -25,7 +25,7 @@ export const parseSpatialDataByType = (spatialDataRecords: ISpatialData[]) => {
 
   for (const spatialRecord of spatialDataRecords) {
     for (const feature of spatialRecord.spatial_data.features) {
-      let visible = true;
+      const visible = true;
 
       if (feature.geometry.type === 'GeometryCollection') {
         // Not expecting or supporting geometry collections
