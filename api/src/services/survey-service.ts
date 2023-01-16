@@ -16,7 +16,13 @@ import {
   SurveySupplementaryData
 } from '../models/survey-view';
 import { AttachmentRepository } from '../repositories/attachment-repository';
-import { IGetLatestSurveyOccurrenceSubmission, IOccurrenceSubmissionMessagesResponse, SurveyRepository } from '../repositories/survey-repository';
+import {
+  IGetLatestSurveyOccurrenceSubmission,
+  IObservationSubmissionInsertDetails,
+  IObservationSubmissionUpdateDetails,
+  IOccurrenceSubmissionMessagesResponse,
+  SurveyRepository
+} from '../repositories/survey-repository';
 import { DBService } from './db-service';
 import { PermitService } from './permit-service';
 import { TaxonomyService } from './taxonomy-service';
@@ -407,4 +413,45 @@ export class SurveyService extends DBService {
   async deleteSurvey(surveyId: number): Promise<void> {
     return this.surveyRepository.deleteSurvey(surveyId);
   }
+
+  /**
+   * Inserts a survey occurrence submission row.
+   * @TODO jsdoc
+   * @param {number} surveyId
+   * @param {string} source
+   * @param {string} inputFileName
+   * @param {(number | null)} templateMethodologyId
+   * @return {*}  {(SQLStatement | null)}
+   */
+  async insertSurveyOccurrenceSubmission (submission: IObservationSubmissionInsertDetails): Promise<{ occurrenceSubmissionId: number }> {
+    return this.surveyRepository.insertSurveyOccurrenceSubmission(submission);
+  };
+
+  /**
+   * SQL query to update a survey occurrence submission row.
+   * @TODO jsdoc
+   * @param {{
+   *   submissionId: number;
+   *   inputKey?: string;
+   *   outputFileName?: string;
+   *   outputKey?: string;
+   * }} data
+   * @return {*}  {(SQLStatement | null)}
+   */
+
+  async updateSurveyOccurrenceSubmission(submission: IObservationSubmissionUpdateDetails): Promise<{ occurrenceSubmissionId: number }> {
+    return this.surveyRepository.updateSurveyOccurrenceSubmission(submission);
+  };
+
+  /**
+   * @TODO jsdoc
+   * SQL query to soft delete the occurrence submission entry by ID
+   * @TODO jsdoc
+   * @param {number} occurrenceSubmissionId
+   * @returns {SQLStatement} sql query object
+   */
+
+  async deleteOccurrenceSubmission(occurrenceSubmissionId: number): Promise<{ occurrenceSubmissionId: number }> {
+    return this.surveyRepository.deleteOccurrenceSubmission(occurrenceSubmissionId);
+  };
 }

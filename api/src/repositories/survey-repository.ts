@@ -14,6 +14,7 @@ import {
   GetSurveyPurposeAndMethodologyData
 } from '../models/survey-view';
 import { queries } from '../queries/queries';
+import { getLogger } from '../utils/logger';
 import { BaseRepository } from './base-repository';
 
 export interface IGetSpeciesData {
@@ -47,6 +48,25 @@ export interface IOccurrenceSubmissionMessagesResponse {
   status: string;
   message: string;
 };
+
+export interface IObservationSubmissionInsertDetails {
+  surveyId: number;
+  source: string;
+  inputFileName?: string;
+  inputKey?: string;
+  outputFileName?: string;
+  outputKey?: string;
+}
+
+export interface IObservationSubmissionUpdateDetails {
+  submissionId: number;
+  inputFileName?: string;
+  inputKey?: string;
+  outputFileName?: string;
+  outputKey?: string;
+}
+
+const defaultLog = getLogger('repositories/survey-repository');
 
 export class SurveyRepository extends BaseRepository {
   async deleteSurvey(surveyId: number): Promise<void> {
@@ -878,4 +898,100 @@ export class SurveyRepository extends BaseRepository {
 
     await this.connection.sql(sqlStatement);
   }
+
+  /**
+   * Inserts a survey occurrence submission row.
+   * @TODO jsdoc
+   * @param {number} surveyId
+   * @param {string} source
+   * @param {string} inputFileName
+   * @param {(number | null)} templateMethodologyId
+   * @return {*}  {(SQLStatement | null)}
+   */
+  async insertSurveyOccurrenceSubmission(submission: IObservationSubmissionInsertDetails): Promise<{ occurrenceSubmissionId: number }> {
+    defaultLog.debug({ label: 'insertSurveyOccurrenceSubmission', submission });
+    const queryBuilder = getKnex()
+      .table('occurrence_submission')
+      .insert({
+        ['input_file_name']: submission.inputFileName,
+        ['input_key']: submission.inputKey,
+        ['output_file_name']: submission.outputFileName,
+        ['output_key']: submission.outputKey,
+        ['survey_id']: submission.surveyId,
+        ['source']: submission.source,
+        ['event_timestamp']: `now()`
+      })
+      .returning('occurrence_submission_id')
+      .as('id');
+
+    const response = await this.connection.knex<{ occurrenceSubmissionId: number }>(queryBuilder);
+
+    if (!response || response.rowCount !== 1) {
+      throw new ApiExecuteSQLError('Failed to insert survey occurrence submission', [
+        'ErrorRepository->insertSurveyOccurrenceSubmission',
+        'rowCount was null or undefined, expected rowCount = 1'
+      ]);
+    }
+
+    return response.rows[0];
+  };
+
+  /**
+   * @TODO jsdoc
+   * @param submission 
+   * @returns 
+   */
+  async updateSurveyOccurrenceSubmission(submission: IObservationSubmissionUpdateDetails): Promise<{ occurrenceSubmissionId: number }> {
+    defaultLog.debug({ label: 'updateSurveyOccurrenceSubmission', submission });
+    const queryBuilder = getKnex()
+      .table('occurrence_submission')
+      .update({
+        ['input_file_name']: submission.inputFileName,
+        ['input_key']: submission.inputKey,
+        ['output_file_name']: submission.outputFileName,
+        ['output_key']: submission.outputKey
+      })
+      .where('occurrence_submission_id', submission.submissionId)
+      .returning('occurrence_submission_id')
+      .as('id');
+
+    const response = await this.connection.knex<{ occurrenceSubmissionId: number }>(queryBuilder);
+
+    if (!response || response.rowCount !== 1) {
+      throw new ApiExecuteSQLError('Failed to update survey occurrence submission', [
+        'ErrorRepository->updateSurveyOccurrenceSubmission',
+        'rowCount was null or undefined, expected rowCount = 1'
+      ]);
+    }
+
+    return response.rows[0];
+  };
+
+  /**
+   * @TODO jsdoc
+   * @param occurrenceSubmissionId 
+   * @returns 
+   */
+  async deleteOccurrenceSubmission(occurrenceSubmissionId: number): Promise<{ occurrenceSubmissionId: number }> {
+    defaultLog.debug({ label: 'deleteOccurrenceSubmission', occurrenceSubmissionId });
+    const queryBuilder = getKnex()
+      .table('occurrence_submission')
+      .update({
+        ['delete_timestamp']: `now()`
+      })
+      .where('occurrence_submission_id', occurrenceSubmissionId)
+      .returning('occurrence_submission_id')
+      .as('id');
+
+    const response = await this.connection.knex<{ occurrenceSubmissionId: number }>(queryBuilder);
+
+    if (!response || response.rowCount !== 1) {
+      throw new ApiExecuteSQLError('Failed to delete survey occurrence submission', [
+        'ErrorRepository->deleteOccurrenceSubmission',
+        'rowCount was null or undefined, expected rowCount = 1'
+      ]);
+    }
+
+    return response.rows[0];
+  };
 }
