@@ -79,7 +79,7 @@ const ResourcesPage: React.FC = () => {
               resources.map((row: IResourceFile) => {
                 const { templateType } = row.metadata;
                 const templateName = row.metadata.templateName || row.fileName;
-                const downloadUrl = ensureProtocol(row.url, 'https://')
+                const downloadUrl = ensureProtocol(row.url, 'https://');
 
                 return (
                   <TableRow key={row.url}>
