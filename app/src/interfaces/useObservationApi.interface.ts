@@ -28,6 +28,7 @@ export interface IGetObservationSubmissionResponse {
   id: number;
   inputFileName: string;
   status: string;
+  isValidating: boolean;
   messages: IGetObservationSubmissionResponseMessages[];
 }
 

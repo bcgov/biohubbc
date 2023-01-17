@@ -24,6 +24,7 @@ import { IUploadHandler } from 'components/file-upload/FileUploadItem';
 import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
 import { DialogContext } from 'contexts/dialogContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import useDataLoader from 'hooks/useDataLoader';
 import { useInterval } from 'hooks/useInterval';
 import { IGetObservationSubmissionResponse, IUploadObservationSubmissionResponse } from 'interfaces/useObservationApi.interface';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
@@ -50,7 +51,7 @@ export enum ClassGrouping {
   WARNING = 'Warning'
 }
 
-const finalStatus = [
+const FINAL_STATUSES = [
   'Rejected',
   'Darwin Core Validated',
   'Template Validated',
@@ -131,11 +132,10 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
   
   const [occurrenceSubmissionId, setOccurrenceSubmissionId] = useState<number | null>(null);
   const [openImportObservations, setOpenImportObservations] = useState(false);
-  const [submissionStatus, setSubmissionStatus] = useState<IGetObservationSubmissionResponse | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isValidating, setIsValidating] = useState(false);
-  const [isPolling, setIsPolling] = useState(false);
-  const [pollingTime, setPollingTime] = useState<number | null>(0);
+  const [submissionState, setSubmissionState] = useState<IGetObservationSubmissionResponse | null>(null);
+  // const [isValidating, setIsValidating] = useState(false);
+  // const [isPolling, setIsPolling] = useState(false);
+  // const [pollingTime, setPollingTime] = useState<number | null>(0);
 
   
 
@@ -159,30 +159,18 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
     };
   };
 
-  
+  const submissionDataLoader = useDataLoader(() => {
+    return biohubApi.observation.getObservationSubmission(projectId, surveyId)
+      .then((submission: IGetObservationSubmissionResponse) => {
+        setSubmissionState((_prevState) => {
+          if (submission) {
+            setOccurrenceSubmissionId(submission.id);
+          }
 
-  const fetchObservationSubmission = useCallback(async () => {
-    const submission = await biohubApi.observation.getObservationSubmission(projectId, surveyId);
-
-    setSubmissionStatus(() => {
-      setIsLoading(false);
-      if (submission) {
-        if (finalStatus.includes(submission.status)) {
-          setIsValidating(false);
-          setIsPolling(false);
-
-          setPollingTime(null);
-        } else {
-          setIsValidating(true);
-          setIsPolling(true);
-        }
-
-        setOccurrenceSubmissionId(submission.id);
-      }
-
-      return submission;
-    });
-  }, [biohubApi.observation, projectId, surveyId]);
+          return submission;
+        });
+      })
+  });
 
   const softDeleteSubmission = async () => {
     if (!occurrenceSubmissionId) {
@@ -191,30 +179,10 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
 
     await biohubApi.observation.deleteObservationSubmission(projectId, surveyId, occurrenceSubmissionId);
 
-    fetchObservationSubmission();
+    submissionDataLoader.refresh();
   };
 
-  useInterval(fetchObservationSubmission, pollingTime, 60000);
-
-  useEffect(() => {
-    if (isLoading) {
-      fetchObservationSubmission();
-    }
-
-    if (isPolling && !pollingTime) {
-      setPollingTime(5000);
-    }
-  }, [
-    biohubApi,
-    isLoading,
-    fetchObservationSubmission,
-    isPolling,
-    pollingTime,
-    isValidating,
-    submissionStatus,
-    projectId,
-    surveyId
-  ]);
+  // useInterval(fetchObservationSubmission, pollingTime, 60000);
 
   const defaultUploadYesNoDialogProps = {
     dialogTitle: 'Upload Observation Data',
@@ -234,7 +202,7 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
   };
 
   const showUploadDialog = () => {
-    if (submissionStatus) {
+    if (submissionState) {
       // already have observation data, prompt user to confirm override
       dialogContext.setYesNoDialog({
         ...defaultUploadYesNoDialogProps,
@@ -339,7 +307,7 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
   const submissionErrors: SubmissionErrors = {};
   const submissionWarnings: SubmissionWarnings = {};
 
-  const messageList = submissionStatus?.messages;
+  const messageList = submissionState?.messages;
 
   if (messageList) {
     Object.entries(messageGrouping).forEach(([key, value]) => {
@@ -384,7 +352,7 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
     window.open(response);
   };
 
-  if (isLoading) {
+  if (submissionDataLoader.isLoading) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
@@ -439,7 +407,7 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
         <Divider />
 
         <Box p={3}>
-          {!submissionStatus && (
+          {!submissionState && (
             <>
               <Box textAlign="center">
                 <Typography data-testid="observations-nodata" variant="body2" color="textSecondary">
@@ -450,7 +418,7 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
             </>
           )}
 
-          {!isValidating && submissionStatus?.status === SUBMISSION_STATUS_TYPE.SYSTEM_ERROR && (
+          {!submissionState?.isValidating && submissionState?.status === SUBMISSION_STATUS_TYPE.SYSTEM_ERROR && (
             <Box>
               {displayAlertBox(
                 'error',
@@ -522,8 +490,6 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
         dialogTitle="Import Observation Data"
         onClose={() => {
           setOpenImportObservations(false);
-          setIsPolling(true);
-          setIsLoading(true);
         }}>
         <FileUpload
           dropZoneProps={{ maxNumFiles: 1, acceptedFileExtensions: '.csv, .xls, .txt, .zip, .xlsm, .xlsx' }}

@@ -61,6 +61,7 @@ GET.apiDoc = {
           schema: {
             type: 'object',
             nullable: true,
+            required: ['id', 'inputFileName', 'status', 'isValidating', 'messages'],
             properties: {
               id: {
                 type: 'number'
@@ -73,6 +74,10 @@ GET.apiDoc = {
                 description: 'The validation status of the submission',
                 nullable: true,
                 type: 'string'
+              },
+              isValidating: {
+                description: 'True if the submission has not yet been validated, false otherwise',
+                type: 'boolean'
               },
               messages: {
                 description: 'The validation status messages of the observation submission',
@@ -127,6 +132,81 @@ GET.apiDoc = {
   }
 };
 
+interface IMessageGroup {
+  severityLabel: string
+  messages: IMessage[]
+}
+
+const getErrors = () => {
+  type MessageGrouping = { [key: string]: { type: string[]; label: string } };
+
+  const messageGrouping: MessageGrouping = {
+    mandatory: {
+      type: [
+        SUBMISSION_MESSAGE_TYPE.MISSING_REQUIRED_FIELD,
+        SUBMISSION_MESSAGE_TYPE.MISSING_REQUIRED_HEADER,
+        SUBMISSION_MESSAGE_TYPE.DUPLICATE_HEADER,
+        SUBMISSION_MESSAGE_TYPE.DANGLING_PARENT_CHILD_KEY,
+        SUBMISSION_MESSAGE_TYPE.NON_UNIQUE_KEY
+      ],
+      label: 'Mandatory fields have not been filled out'
+    },
+    recommended: {
+      type: [SUBMISSION_MESSAGE_TYPE.MISSING_RECOMMENDED_HEADER],
+      label: 'Recommended fields have not been filled out'
+    },
+    value_not_from_list: {
+      type: [SUBMISSION_MESSAGE_TYPE.INVALID_VALUE],
+      label: "Values have not been selected from the field's dropdown list"
+    },
+    unsupported_header: {
+      type: [SUBMISSION_MESSAGE_TYPE.UNKNOWN_HEADER],
+      label: 'Column headers are not supported'
+    },
+    out_of_range: {
+      type: [SUBMISSION_MESSAGE_TYPE.OUT_OF_RANGE],
+      label: 'Values are out of range'
+    },
+    formatting_errors: {
+      type: [SUBMISSION_MESSAGE_TYPE.UNEXPECTED_FORMAT],
+      label: 'Unexpected formats in the values provided'
+    },
+    miscellaneous: { type: [SUBMISSION_MESSAGE_TYPE.MISCELLANEOUS], label: 'Miscellaneous errors exist in your file' },
+    system_error: {
+      type: [
+        SUBMISSION_MESSAGE_TYPE.FAILED_GET_FILE_FROM_S3,
+        SUBMISSION_MESSAGE_TYPE.ERROR,
+        SUBMISSION_MESSAGE_TYPE.PARSE_ERROR,
+        SUBMISSION_MESSAGE_TYPE.FAILED_GET_OCCURRENCE,
+        SUBMISSION_MESSAGE_TYPE.FAILED_UPLOAD_FILE_TO_S3,
+        SUBMISSION_MESSAGE_TYPE.FAILED_PARSE_SUBMISSION,
+        SUBMISSION_MESSAGE_TYPE.FAILED_PREP_DWC_ARCHIVE,
+        SUBMISSION_MESSAGE_TYPE.FAILED_PREP_XLSX,
+        SUBMISSION_MESSAGE_TYPE.FAILED_PERSIST_PARSE_ERRORS,
+        SUBMISSION_MESSAGE_TYPE.FAILED_GET_VALIDATION_RULES,
+        SUBMISSION_MESSAGE_TYPE.FAILED_GET_TRANSFORMATION_RULES,
+        SUBMISSION_MESSAGE_TYPE.FAILED_PERSIST_TRANSFORMATION_RESULTS,
+        SUBMISSION_MESSAGE_TYPE.FAILED_TRANSFORM_XLSX,
+        SUBMISSION_MESSAGE_TYPE.FAILED_VALIDATE_DWC_ARCHIVE,
+        SUBMISSION_MESSAGE_TYPE.FAILED_PERSIST_VALIDATION_RESULTS,
+        SUBMISSION_MESSAGE_TYPE.FAILED_UPDATE_OCCURRENCE_SUBMISSION,
+        SUBMISSION_MESSAGE_TYPE.FAILED_TO_GET_TRANSFORM_SCHEMA,
+        SUBMISSION_MESSAGE_TYPE.UNSUPPORTED_FILE_TYPE,
+        SUBMISSION_MESSAGE_TYPE.INVALID_MEDIA,
+        SUBMISSION_MESSAGE_TYPE.MISSING_VALIDATION_SCHEMA
+      ],
+      label: 'Contact your system administrator'
+    }
+  };
+
+  type SubmissionErrors = { [key: string]: string[] };
+  type SubmissionWarnings = { [key: string]: string[] };
+
+  const submissionErrors: SubmissionErrors = {};
+  const submissionWarnings: SubmissionWarnings = {};
+}
+
+
 export function getOccurrenceSubmission(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({ label: 'getOccurrenceSubmission', description: 'Gets an occurrence submission', req_params: req.params });
@@ -161,6 +241,7 @@ export function getOccurrenceSubmission(): RequestHandler {
         id: occurrenceSubmission.id,
         inputFileName: occurrenceSubmission.input_file_name,
         status: occurrenceSubmission.submission_status_type_name,
+        isValidating: !hasAdditionalOccurrenceSubmissionMessages,
         messages
       });
     } catch (error) {
