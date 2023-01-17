@@ -10,6 +10,7 @@ import Typography from '@material-ui/core/Typography';
 import { mdiChevronRight, mdiPencilOutline, mdiRefresh } from '@mdi/js';
 import Icon from '@mdi/react';
 import FullScreenViewMapDialog from 'components/boundary/FullScreenViewMapDialog';
+import InferredLocationDetails, { IInferredLayers } from 'components/boundary/InferredLocationDetails';
 import EditDialog from 'components/dialog/EditDialog';
 import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { IMarkerLayer } from 'components/map/components/MarkerCluster';
@@ -22,6 +23,7 @@ import StudyAreaForm, {
   StudyAreaInitialValues,
   StudyAreaYupSchema
 } from 'features/surveys/components/StudyAreaForm';
+import { Feature } from 'geojson';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
@@ -87,13 +89,24 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
 
   const [bounds, setBounds] = useState<LatLngBoundsExpression | undefined>(undefined);
   const [showFullScreenViewMapDialog, setShowFullScreenViewMapDialog] = useState<boolean>(false);
+  const [nonEditableGeometries, setNonEditableGeometries] = useState<any[]>([]);
+  const [inferredLayersInfo, setInferredLayersInfo] = useState<IInferredLayers>({
+    parks: [],
+    nrm: [],
+    env: [],
+    wmu: []
+  });
 
   const zoomToBoundaryExtent = useCallback(() => {
     setBounds(calculateUpdatedMapBounds(surveyGeometry));
   }, [surveyGeometry]);
 
   useEffect(() => {
+    const nonEditableGeometriesResult = surveyGeometry.map((geom: Feature) => {
+      return { feature: geom };
+    });
     zoomToBoundaryExtent();
+    setNonEditableGeometries(nonEditableGeometriesResult);
   }, [surveyGeometry, occurrence_submission.id, zoomToBoundaryExtent]);
 
   const [errorDialogProps, setErrorDialogProps] = useState<IErrorDialogProps>({
@@ -192,12 +205,14 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
             mapId="project_location_form_map"
             scrollWheelZoom={true}
             bounds={bounds}
+            nonEditableGeometries={nonEditableGeometries}
+            setInferredLayersInfo={setInferredLayersInfo}
             markerLayers={props.mapLayersForView.markerLayers}
             staticLayers={props.mapLayersForView.staticLayers}
           />
         }
         description={survey_details.survey_area_name}
-        layers={null}
+        layers={<InferredLocationDetails layers={inferredLayersInfo} />}
         backButtonTitle={'Back To Survey'}
         mapTitle={'Study Area'}
       />
@@ -217,6 +232,8 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
             <MapContainer
               mapId="survey_study_area_map"
               bounds={bounds}
+              nonEditableGeometries={nonEditableGeometries}
+              setInferredLayersInfo={setInferredLayersInfo}
               markerLayers={props.mapLayersForView.markerLayers}
               staticLayers={props.mapLayersForView.staticLayers}
             />
@@ -238,6 +255,9 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
             </Typography>
             <Divider></Divider>
             <Typography variant="body1">{survey_details.survey_area_name}</Typography>
+            <Box mt={3}>
+              <InferredLocationDetails layers={inferredLayersInfo} />
+            </Box>
           </Box>
         </Box>
 
