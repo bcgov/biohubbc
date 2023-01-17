@@ -10,22 +10,11 @@ import { createPathField, createValueField, getValuesByName } from './xlsx-trans
 const TRANSFORMATION_SCHEMA: TransformSchema = {
   templateMeta: [
     {
-      sheetName: 'Block Summary',
-      primaryKey: ['Study Area', 'Block ID/SU ID', 'Stratum'],
+      sheetName: 'Observations',
+      primaryKey: ['Study Area', 'Block ID/SU ID'],
       parentKey: [],
       type: 'root',
-      foreignKeys: [
-        {
-          sheetName: 'Observations',
-          primaryKey: ['Study Area', 'Block ID/SU ID', 'Stratum']
-        }
-      ]
-    },
-    {
-      sheetName: 'Observations',
-      primaryKey: ['Study Area', 'Block ID/SU ID', 'Stratum'],
-      parentKey: ['Study Area', 'Block ID/SU ID', 'Stratum'],
-      type: '',
+
       foreignKeys: [
         {
           sheetName: 'Marked Animals',
@@ -49,7 +38,7 @@ const TRANSFORMATION_SCHEMA: TransformSchema = {
           columnName: 'eventID',
           columnValue: [
             {
-              paths: [getValuesByName('Block Summary', ['_key']), getValuesByName('Observations', ['_row'])]
+              paths: [getValuesByName('Observations', ['_key']), getValuesByName('Observations', ['_row'])]
             }
           ]
         },
@@ -70,7 +59,7 @@ const TRANSFORMATION_SCHEMA: TransformSchema = {
           columnName: 'eventID',
           columnValue: [
             {
-              paths: [getValuesByName('Block Summary', ['_key']), getValuesByName('Observations', ['_row'])]
+              paths: [getValuesByName('Observations', ['_key']), getValuesByName('Observations', ['_row'])]
             }
           ]
         },
@@ -78,7 +67,7 @@ const TRANSFORMATION_SCHEMA: TransformSchema = {
           columnName: 'eventDate',
           columnValue: [
             {
-              paths: [getValuesByName('Observations', ['Date'])]
+              paths: [getValuesByName('Marked Animals', ['Date'])]
             }
           ]
         },
@@ -86,7 +75,7 @@ const TRANSFORMATION_SCHEMA: TransformSchema = {
           columnName: 'eventRemarks',
           columnValue: [
             {
-              paths: [getValuesByName('Block Summary', ['Block Summary Comments'])]
+              paths: [getValuesByName('Observations', ['Observation Comments'])]
             }
           ]
         }
@@ -100,7 +89,7 @@ const TRANSFORMATION_SCHEMA: TransformSchema = {
           columnName: 'eventID',
           columnValue: [
             {
-              paths: [getValuesByName('Block Summary', ['_key']), getValuesByName('Observations', ['_row'])]
+              paths: [getValuesByName('Observations', ['_key']), getValuesByName('Marked Animals', ['_row'])]
             }
           ]
         },
@@ -145,13 +134,13 @@ const TRANSFORMATION_SCHEMA: TransformSchema = {
     },
     {
       sheetName: 'occurrence',
-      condition: { type: 'and', checks: [{ ifNotEmpty: getValuesByName('Observations', ['Spike/Fork Bulls']) }] },
+      condition: { type: 'and', checks: [{ ifNotEmpty: getValuesByName('Observations', ['BC RISC Class I Rams']) }] },
       fields: [
         {
           columnName: 'eventID',
           columnValue: [
             {
-              paths: [getValuesByName('Block Summary', ['_key']), getValuesByName('Observations', ['_row'])]
+              paths: [getValuesByName('Observations', ['_key']), getValuesByName('Observations', ['_row'])]
             }
           ]
         },
@@ -166,9 +155,9 @@ const TRANSFORMATION_SCHEMA: TransformSchema = {
             }
           ]
         },
-        createPathField('individualCount', 'Observations', ['Spike/Fork Bulls']),
+        createPathField('individualCount', 'Observations', ['BC RISC Class I Rams']),
         createValueField('sex', 'male'),
-        createValueField('lifeStage', 'unknown'),
+        createValueField('lifeStage', 'adult'),
         createPathField('taxonID', 'Observations', ['Species']),
         createPathField('occurrenceRemarks', 'Observations', ['Observation Comments'])
       ],
@@ -180,7 +169,7 @@ const TRANSFORMATION_SCHEMA: TransformSchema = {
               columnName: 'eventID',
               columnValue: [
                 {
-                  paths: [getValuesByName('Block Summary', ['_key']), getValuesByName('Observations', ['_row'])]
+                  paths: [getValuesByName('Observations', ['_row'])]
                 }
               ]
             },
@@ -188,7 +177,7 @@ const TRANSFORMATION_SCHEMA: TransformSchema = {
               columnName: 'measurementID',
               columnValue: [
                 {
-                  paths: [getValuesByName('Block Summary', ['_key']), getValuesByName('Observations', ['_row'])],
+                  paths: [getValuesByName('Observations', ['_row'])],
                   postfix: {
                     static: 'antler-configuration'
                   }
@@ -208,7 +197,7 @@ const TRANSFORMATION_SCHEMA: TransformSchema = {
             },
             createValueField('measurementType', 'Antler Configuration'),
             createValueField('measurementUnit', ''),
-            createValueField('measurementValue', 'Spike/Fork')
+            createValueField('measurementValue', 'BC RISC Class I Rams')
           ]
         }
       ]

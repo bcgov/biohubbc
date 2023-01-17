@@ -95,12 +95,16 @@ export const getCodeValueFieldsValidator = (config?: ColumnCodeValidatorConfig):
     rows.forEach((row, rowIndex) => {
       const columnIndex = headersLowerCase.indexOf(config.columnName.toLowerCase());
 
+      console.log('column name is: ', config.columnName.toLowerCase());
+
       // if column does not exist, return
       if (columnIndex < 0) {
         return csvWorksheet;
       }
 
       const rowValueForColumn = row[columnIndex];
+
+      console.log('rowValueForColumn is: ', rowValueForColumn);
 
       if (rowValueForColumn === undefined || rowValueForColumn === null || rowValueForColumn === '') {
         // cell is empty, use the getRequiredFieldsValidator to assert required fields

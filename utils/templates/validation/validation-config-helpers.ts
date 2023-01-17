@@ -32,7 +32,7 @@ export const basicRequiredValidator = () => {
   ];
 };
 
-export const speciesPickListValidator = () => {
+export const sheepSpeciesPickListValidator = () => {
   return [
     {
       column_code_validator: {
@@ -44,20 +44,41 @@ export const speciesPickListValidator = () => {
         },
         allowed_code_values: [
           {
-            name: 'M_OVCA',
-            description: 'M_OVCA'
+            name: 'M-OVCA',
+            description: 'M-OVCA'
           },
           {
-            name: 'M_OVDA',
-            description: 'M_OVDA'
+            name: 'M-OVDA',
+            description: 'M-OVDA'
           },
           {
-            name: 'M_OVDA_DA',
-            description: 'M_OVDA_DA'
+            name: 'M-OVDA-DA',
+            description: 'M-OVDA-DA'
           },
           {
-            name: 'M_OVDA_ST',
-            description: 'M_OVDA_ST'
+            name: 'M-OVDA-ST',
+            description: 'M-OVDAST'
+          }
+        ]
+      }
+    }
+  ];
+};
+
+export const goatSpeciesPickListValidator = () => {
+  return [
+    {
+      column_code_validator: {
+        name: {
+          type: 'string'
+        },
+        description: {
+          type: 'string'
+        },
+        allowed_code_values: [
+          {
+            name: 'M-ORAM',
+            description: 'M-ORAM'
           }
         ]
       }
@@ -1117,11 +1138,11 @@ export const yesNoPickListValidator = () => {
         },
         allowed_code_values: [
           {
-            name: 'Yes',
+            name: 'Y',
             description: 'Yes'
           },
           {
-            name: 'No',
+            name: 'N',
             description: 'No'
           }
         ]
