@@ -5,7 +5,6 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { SUBMISSION_MESSAGE_TYPE } from '../constants/status';
 import { HTTP400 } from '../errors/http-error';
-import { PostOccurrence } from '../models/occurrence-create';
 import { OccurrenceRepository } from '../repositories/occurrence-repository';
 import { SubmissionError } from '../utils/submission-error';
 import { getMockDBConnection } from '../__mocks__/db';
@@ -37,7 +36,7 @@ describe('OccurrenceRepository', () => {
     it('should return list of occurrences', async () => {
       const mockResponse = ({ rows: [{ occurrence_id: 1 }] } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({
-        query: async () => {
+        knex: async () => {
           return mockResponse;
         }
       });
@@ -45,65 +44,6 @@ describe('OccurrenceRepository', () => {
       const response = await repo.getOccurrencesForView(1);
 
       expect(response).to.have.length.greaterThan(0);
-    });
-
-    it('should throw `Failed to get occurrences` error', async () => {
-      const mockResponse = ({} as any) as Promise<QueryResult<any>>;
-      const dbConnection = getMockDBConnection({
-        query: async () => {
-          return mockResponse;
-        }
-      });
-      const repo = new OccurrenceRepository(dbConnection);
-      try {
-        await repo.getOccurrencesForView(1);
-        expect.fail();
-      } catch (error) {
-        expect((error as HTTP400).message).to.equal('Failed to get occurrences view data');
-      }
-    });
-  });
-
-  describe('insertPostOccurrences', () => {
-    it('should succeed with valid data', async () => {
-      const mockResponse = ({ rowCount: 1, rows: [{ occurrence_submission_id: 1 }] } as any) as Promise<
-        QueryResult<any>
-      >;
-      const postOccurrence = new PostOccurrence({
-        associatedTaxa: '',
-        lifeStage: '',
-        sex: '',
-        data: {},
-        verbatimCoordinates: '',
-        individualCount: 1,
-        vernacularName: '',
-        organismQuantity: '',
-        organismQuantityType: '',
-        eventDate: ''
-      });
-      const dbConnection = getMockDBConnection({
-        query: () => mockResponse
-      });
-      const repo = new OccurrenceRepository(dbConnection);
-      const response = await repo.insertPostOccurrences(1, postOccurrence);
-      expect(response).to.be.eql({ occurrence_submission_id: 1 });
-    });
-
-    it('should throw `Failed to insert` error', async () => {
-      const postOccurrence = new PostOccurrence({});
-      const mockResponse = ({} as any) as Promise<QueryResult<any>>;
-      const dbConnection = getMockDBConnection({
-        query: async () => {
-          return mockResponse;
-        }
-      });
-      const repo = new OccurrenceRepository(dbConnection);
-      try {
-        await repo.insertPostOccurrences(1, postOccurrence);
-        expect.fail();
-      } catch (error) {
-        expect((error as HTTP400).message).to.equal('Failed to insert occurrence data');
-      }
     });
   });
 
@@ -169,6 +109,54 @@ describe('OccurrenceRepository', () => {
           SUBMISSION_MESSAGE_TYPE.FAILED_UPDATE_OCCURRENCE_SUBMISSION
         );
       }
+    });
+  });
+
+  describe('findSpatialMetadataBySubmissionSpatialComponentIds', () => {
+    it('should succeed with valid data', async () => {
+      const mockResponse = ({ rowCount: 1, rows: [{ id: 1 }] } as any) as Promise<QueryResult<any>>;
+      const dbConnection = getMockDBConnection({
+        knex: () => mockResponse
+      });
+      const repo = new OccurrenceRepository(dbConnection);
+      const response = await repo.findSpatialMetadataBySubmissionSpatialComponentIds([1]);
+      expect(response).to.be.eql([{ id: 1 }]);
+    });
+  });
+
+  describe('softDeleteOccurrenceSubmission', () => {
+    it('should succeed with valid data', async () => {
+      const mockResponse = ({ rowCount: 1, rows: [{ id: 1 }] } as any) as Promise<QueryResult<any>>;
+      const dbConnection = getMockDBConnection({
+        sql: () => mockResponse
+      });
+      const repo = new OccurrenceRepository(dbConnection);
+      const response = await repo.softDeleteOccurrenceSubmission(1);
+      expect(response).to.be.eql(undefined);
+    });
+  });
+
+  describe('deleteSubmissionSpatialComponent', () => {
+    it('should succeed with valid data', async () => {
+      const mockResponse = ({ rowCount: 1, rows: [{ id: 1 }] } as any) as Promise<QueryResult<any>>;
+      const dbConnection = getMockDBConnection({
+        sql: () => mockResponse
+      });
+      const repo = new OccurrenceRepository(dbConnection);
+      const response = await repo.deleteSubmissionSpatialComponent(1);
+      expect(response).to.be.eql([{ id: 1 }]);
+    });
+  });
+
+  describe('deleteSpatialTransformSubmission', () => {
+    it('should succeed with valid data', async () => {
+      const mockResponse = ({ rowCount: 1, rows: [{ id: 1 }] } as any) as Promise<QueryResult<any>>;
+      const dbConnection = getMockDBConnection({
+        sql: () => mockResponse
+      });
+      const repo = new OccurrenceRepository(dbConnection);
+      const response = await repo.deleteSpatialTransformSubmission(1);
+      expect(response).to.be.eql(undefined);
     });
   });
 });

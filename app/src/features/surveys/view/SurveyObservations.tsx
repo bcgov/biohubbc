@@ -212,6 +212,7 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
 
     await biohubApi.observation.deleteObservationSubmission(projectId, surveyId, occurrenceSubmissionId);
 
+    await props.refresh();
     fetchObservationSubmission();
   };
 
