@@ -87,11 +87,11 @@ const phases = {
     env: 'dev',
     sso: config.sso.dev,
     cpuRequest: '50m',
-    cpuLimit: '200m',
+    cpuLimit: (isStaticDeployment && '300m') || '200m',
     memoryRequest: '50Mi',
-    memoryLimit: '200Mi',
-    replicas: (isStaticDeployment && '2') || '1',
-    replicasMax: (isStaticDeployment && '3') || '1'
+    memoryLimit: (isStaticDeployment && '300Mi') || '200Mi',
+    replicas: '1',
+    replicasMax: (isStaticDeployment && '2') || '1'
   },
   test: {
     namespace: 'af2668-test',
@@ -111,7 +111,7 @@ const phases = {
     env: 'test',
     sso: config.sso.test,
     cpuRequest: '100m',
-    cpuLimit: '300m',
+    cpuLimit: '400m',
     memoryRequest: '100Mi',
     memoryLimit: '400Mi',
     replicas: '2',
@@ -134,7 +134,7 @@ const phases = {
     env: 'prod',
     sso: config.sso.prod,
     cpuRequest: '100m',
-    cpuLimit: '300m',
+    cpuLimit: '400m',
     memoryRequest: '100Mi',
     memoryLimit: '400Mi',
     replicas: '2',

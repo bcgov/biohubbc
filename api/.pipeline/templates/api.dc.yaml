@@ -417,8 +417,6 @@ objects:
         apiVersion: apps.openshift.io/v1
         kind: DeploymentConfig
         name: ${NAME}${SUFFIX}
-      cpuUtilization:
-        targetPercentage: 95
       metrics:
         - type: Resource
           resource:
