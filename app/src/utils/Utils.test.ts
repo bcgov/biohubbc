@@ -1,11 +1,13 @@
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { IConfig } from 'contexts/configContext';
+import { SYSTEM_IDENTITY_SOURCE } from 'hooks/useKeycloakWrapper';
 import {
   ensureProtocol,
   getFormattedAmount,
   getFormattedDate,
   getFormattedDateRangeString,
   getFormattedFileSize,
+  getFormattedIdentitySource,
   getLogOutUrl
 } from './Utils';
 
@@ -128,7 +130,7 @@ describe('getLogOutUrl', () => {
         clientId: ''
       },
       SITEMINDER_LOGOUT_URL: 'https://www.siteminderlogout.com'
-    };
+    } as IConfig;
 
     expect(getLogOutUrl(config)).toBeUndefined();
   });
@@ -145,7 +147,7 @@ describe('getLogOutUrl', () => {
         clientId: ''
       },
       SITEMINDER_LOGOUT_URL: 'https://www.siteminderlogout.com'
-    };
+    } as IConfig;
 
     expect(getLogOutUrl(config)).toBeUndefined();
   });
@@ -162,7 +164,7 @@ describe('getLogOutUrl', () => {
         clientId: ''
       },
       SITEMINDER_LOGOUT_URL: ''
-    };
+    } as IConfig;
 
     expect(getLogOutUrl(config)).toBeUndefined();
   });
@@ -187,7 +189,7 @@ describe('getLogOutUrl', () => {
         clientId: ''
       },
       SITEMINDER_LOGOUT_URL: 'https://www.siteminderlogout.com'
-    };
+    } as IConfig;
 
     expect(getLogOutUrl(config)).toEqual(
       'https://www.siteminderlogout.com?returl=https://www.keycloaklogout.com/auth/realms/myrealm/protocol/openid-connect/logout?redirect_uri=https://biohub.com/&retnow=1'
@@ -197,7 +199,7 @@ describe('getLogOutUrl', () => {
 
 describe('getFormattedFileSize', () => {
   it('returns `0 KB` if no file size exists', async () => {
-    const formattedFileSize = getFormattedFileSize(null as unknown);
+    const formattedFileSize = getFormattedFileSize((null as unknown) as number);
     expect(formattedFileSize).toEqual('0 KB');
   });
 
@@ -214,5 +216,37 @@ describe('getFormattedFileSize', () => {
   it('returns answer in GB if fileSize >= 1000000000', async () => {
     const formattedFileSize = getFormattedFileSize(1000000000);
     expect(formattedFileSize).toEqual('1.0 GB');
+  });
+});
+
+describe('getFormattedIdentitySource', () => {
+  it('returns BCeID Basic', () => {
+    const result = getFormattedIdentitySource(SYSTEM_IDENTITY_SOURCE.BCEID_BASIC);
+
+    expect(result).toEqual('BCeID Basic');
+  });
+
+  it('returns BCeID Business', () => {
+    const result = getFormattedIdentitySource(SYSTEM_IDENTITY_SOURCE.BCEID_BUSINESS);
+
+    expect(result).toEqual('BCeID Business');
+  });
+
+  it('returns IDIR', () => {
+    const result = getFormattedIdentitySource(SYSTEM_IDENTITY_SOURCE.IDIR);
+
+    expect(result).toEqual('IDIR');
+  });
+
+  it('returns null for unknown identity source', () => {
+    const result = getFormattedIdentitySource('__default_test_string' as SYSTEM_IDENTITY_SOURCE);
+
+    expect(result).toEqual(null);
+  });
+
+  it('returns null for null identity source', () => {
+    const result = getFormattedIdentitySource((null as unknown) as SYSTEM_IDENTITY_SOURCE);
+
+    expect(result).toEqual(null);
   });
 });

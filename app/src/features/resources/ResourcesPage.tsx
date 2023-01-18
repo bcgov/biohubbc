@@ -1,3 +1,4 @@
+import { CircularProgress } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
 import Container from '@material-ui/core/Container';
 import IconButton from '@material-ui/core/IconButton';
@@ -14,8 +15,11 @@ import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
 import { mdiTrayArrowDown } from '@mdi/js';
 import Icon from '@mdi/react';
-import { ConfigContext } from 'contexts/configContext';
-import React, { useContext } from 'react';
+import { useBiohubApi } from 'hooks/useBioHubApi';
+import useDataLoader from 'hooks/useDataLoader';
+import { IResourceFile } from 'interfaces/useResourcesApi.interface';
+import React from 'react';
+import { ensureProtocol } from 'utils/Utils';
 
 const useStyles = makeStyles((theme: Theme) => ({
   pageTitleContainer: {
@@ -40,123 +44,16 @@ const useStyles = makeStyles((theme: Theme) => ({
  */
 const ResourcesPage: React.FC = () => {
   const classes = useStyles();
-  const config = useContext(ConfigContext);
-  const s3PublicHostURL = config?.S3_PUBLIC_HOST_URL;
+  const biohubApi = useBiohubApi();
+  const resourcesDataLoader = useDataLoader(() => biohubApi.resources.listResources());
 
-  const resources = [
-    {
-      id: '13',
-      name: 'Deer Aerial Non Stratified Random Block Recruit Composition Survey 1.0',
-      url: `${s3PublicHostURL}/templates/Deer_Aerial_NonStratifiedRandomBlock_Recruit_Comp_Survey_1.0.xlsx`,
-      type: 'Field Data Template',
-      species: 'Deer',
-      fileSize: '108 KB'
-    },
-    {
-      id: '14',
-      name: 'Deer Ground Transect Recruit Composition Survey 1.0',
-      url: `${s3PublicHostURL}/templates/Deer_Ground_Transect_Recruit_Comp_Survey_1.0.xlsx`,
-      type: 'Field Data Template',
-      species: 'Deer',
-      fileSize: '114 KB'
-    },
-    {
-      id: '10',
-      name: 'Elk Aerial Stratified Random Block Recruit Composition Survey 1.0',
-      url: `${s3PublicHostURL}/templates/Elk_Aerial_StratifiedRandomBlock_Recruit_Comp_Survey_1.0.xlsx`,
-      type: 'Field Data Template',
-      species: 'Elk',
-      fileSize: '122 KB'
-    },
-    {
-      id: '11',
-      name: 'Elk Aerial Non Stratified Random Block Recruit Composition Survey 1.0',
-      url: `${s3PublicHostURL}/templates/Elk_Aerial_NonStratifiedRandomBlock_Recruit_Comp_Survey_1.0.xlsx`,
-      type: 'Field Data Template',
-      species: 'Elk',
-      fileSize: '120 KB'
-    },
-    {
-      id: '12',
-      name: 'Elk Aerial Transect Distance Sampling Recruit Composition Survey 1.0',
-      url: `${s3PublicHostURL}/templates/Elk_Aerial_Transect_DistanceSampling_Recruit_Comp_Survey_1.0.xlsx`,
-      type: 'Field Data Template',
-      species: 'Elk',
-      fileSize: '114 KB'
-    },
-    {
-      id: '9',
-      name: 'Elk Summary Results Template 1.0',
-      url: `${s3PublicHostURL}/templates/Elk_Summary_Results_1.0.xlsx`,
-      type: 'Summary Results Template',
-      species: 'Elk',
-      fileSize: '24 KB'
-    },
-    {
-      id: '8',
-      name: 'Goat Summary Results Template 1.0',
-      url: `${s3PublicHostURL}/templates/Goat_Summary_Results_1.0.xlsx`,
-      type: 'Summary Results Template',
-      species: 'Mountain Goat',
-      fileSize: '27 KB'
-    },
-    {
-      id: '1',
-      name: 'Moose Aerial Non-SRB Recruitment Composition Survey 1.0',
-      url: `${s3PublicHostURL}/templates/Moose_Aerial_NonStratifiedRandomBlock_Recruit_Comp_Survey_1.0.xlsx`,
-      type: 'Field Data Template',
-      species: 'Alces americanus, Moose',
-      fileSize: '145 KB'
-    },
-    {
-      id: '2',
-      name: 'Moose Aerial Stratified Random Block Recruitment Composition Survey 1.0',
-      url: `${s3PublicHostURL}/templates/Moose_Aerial_StratifiedRandomBlock_Recruit_Comp_Survey_1.0.xlsx`,
-      type: 'Field Data Template',
-      species: 'Alces americanus, Moose',
-      fileSize: '143 KB'
-    },
-    {
-      id: '3',
-      name: 'Moose Aerial Transect Distance Sampling Survey 1.0',
-      url: `${s3PublicHostURL}/templates/Moose_Aerial_Transect_Distance_Sampling_Survey_1.0.xlsx`,
-      type: 'Field Data Template',
-      species: 'Alces americanus, Moose',
-      fileSize: '143 KB'
-    },
-    {
-      id: '6',
-      name: 'Moose Summary Results Template 1.0',
-      url: `${s3PublicHostURL}/templates/Moose_Summary_Results_1.0.xlsx`,
-      type: 'Summary Results Template',
-      species: 'Alces americanus, Moose',
-      fileSize: '27 KB'
-    },
-    {
-      id: '5',
-      name: 'Mountain Goat Aerial Total Count Recruitment Composition Survey 1.0',
-      url: `${s3PublicHostURL}/templates/Goat_Aerial_Population_Total_Count_Recuit_Comp_Survey_1.0.xlsx`,
-      type: 'Field Data Template',
-      species: 'Mountain Goat',
-      fileSize: '100 KB'
-    },
-    {
-      id: '4',
-      name: 'Sheep Aerial Total Count Recruitment Composition Survey 1.0',
-      url: `${s3PublicHostURL}/templates/Sheep_Aerial_Population_Total_Count_Recuit_Comp_Survey_1.0.xlsx`,
-      type: 'Field Data Template',
-      species: 'Sheep',
-      fileSize: '131 KB'
-    },
-    {
-      id: '7',
-      name: 'Sheep Summary Results Template 1.0',
-      url: `${s3PublicHostURL}/templates/Sheep_Summary_Results_1.0.xlsx`,
-      type: 'Summary Results Template',
-      species: 'Sheep',
-      fileSize: '24 KB'
-    }
-  ];
+  resourcesDataLoader.load();
+
+  const resources: IResourceFile[] = resourcesDataLoader.data?.files || [];
+
+  if (!resourcesDataLoader.isReady || resourcesDataLoader.isLoading) {
+    return <CircularProgress className="pageProgress" size={40} />;
+  }
 
   const getResourcesList = () => {
     return (
@@ -172,21 +69,35 @@ const ResourcesPage: React.FC = () => {
             </TableRow>
           </TableHead>
           <TableBody data-testid="resources-table">
-            {resources?.map((row) => (
-              <TableRow key={row.id}>
-                <TableCell>
-                  <Link href={row.url} underline="always" style={{ fontWeight: 700 }}>
-                    {row.name}
-                  </Link>
-                </TableCell>
-                <TableCell>{row.type}</TableCell>
-                <TableCell align="center">
-                  <IconButton href={row.url} aria-label={'Download ' + row.name}>
-                    <Icon path={mdiTrayArrowDown} size={0.8} />
-                  </IconButton>
+            {resources.length === 0 ? (
+              <TableRow data-testid={'resources-row-0'}>
+                <TableCell colSpan={3} style={{ textAlign: 'center' }}>
+                  No Resources Available
                 </TableCell>
               </TableRow>
-            ))}
+            ) : (
+              resources.map((row: IResourceFile) => {
+                const { templateType } = row.metadata;
+                const templateName = row.metadata.templateName || row.fileName;
+                const downloadUrl = ensureProtocol(row.url, 'https://');
+
+                return (
+                  <TableRow key={row.url}>
+                    <TableCell>
+                      <Link href={downloadUrl} underline="always" style={{ fontWeight: 700 }}>
+                        {templateName}
+                      </Link>
+                    </TableCell>
+                    <TableCell>{templateType || 'Other'}</TableCell>
+                    <TableCell align="center">
+                      <IconButton href={downloadUrl} aria-label={`Download ${templateName}`}>
+                        <Icon path={mdiTrayArrowDown} size={0.8} />
+                      </IconButton>
+                    </TableCell>
+                  </TableRow>
+                );
+              })
+            )}
           </TableBody>
         </Table>
       </TableContainer>
