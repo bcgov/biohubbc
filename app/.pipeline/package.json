@@ -12,17 +12,18 @@
     "url": "git+https://github.com/bcgov/ocp-sso.git"
   },
   "scripts": {
-    "build": "node app.build.js",
-    "deploy": "node app.deploy.js",
-    "clean": "node clean.js",
-    "version": "echo \"node@$(node --version) ($(which node))\" && echo \"npm@$(npm --version) ($(which npm))\" && npm ls"
+    "build": "node scripts/app.build.js",
+    "deploy": "node scripts/app.deploy.js",
+    "clean": "node scripts/clean.js",
+    "lint": "eslint . --ignore-pattern 'node_modules' --ext .js,.ts",
+    "lint-fix": "eslint . --fix --ignore-pattern 'node_modules' --ext .js,.ts",
+    "format": "prettier --check \"./**/*.{js,jsx,ts,tsx,css,scss}\"",
+    "format-fix": "prettier --write \"./**/*.{js,jsx,ts,tsx,json,css,scss}\""
   },
   "dependencies": {
-    "pipeline-cli": "git+https://github.com/BCDevOps/pipeline-cli.git",
-    "debug": "^4.2.0",
-    "lodash.isempty": "^4.0.1",
-    "lodash.isfunction": "^3.0.9",
-    "lodash.isplainobject": "^4.0.6",
-    "lodash.isstring": "^4.0.1"
+    "pipeline-cli": "git+https://github.com/NickPhura/pipeline-cli.git"
+  },
+  "devDependencies": {
+    "prettier": "~2.3.2"
   }
 }

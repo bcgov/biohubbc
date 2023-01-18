@@ -10,10 +10,12 @@ const config = require('../../.config/config.json');
 const name = config.module.app;
 const apiName = config.module.api;
 
-const changeId = options.pr || `${Math.floor(Date.now() * 1000) / 60.0}`; // aka pull-request or branch
-const version = config.version || '1.0.0';
+const version = config.version;
+
+const changeId = options.pr; // pull-request number or branch name
 
 // A static deployment is when the deployment is updating dev, test, or prod (rather than a temporary PR)
+// See `--type=static` in the `deployStatic.yml` git workflow
 const isStaticDeployment = options.type === 'static';
 
 const deployChangeId = (isStaticDeployment && 'deploy') || changeId;
@@ -62,7 +64,10 @@ const phases = {
     tag: tag,
     env: 'build',
     branch: branch,
-    logLevel: (isStaticDeployment && 'info') || 'debug'
+    cpuRequest: '100m',
+    cpuLimit: '1000m',
+    memoryRequest: '512Mi',
+    memoryLimit: '5Gi'
   },
   dev: {
     namespace: 'af2668-dev',
@@ -77,10 +82,16 @@ const phases = {
     apiHost:
       (isStaticDeployment && staticUrlsAPI.dev) || `${apiName}-${changeId}-af2668-dev.apps.silver.devops.gov.bc.ca`,
     siteminderLogoutURL: config.siteminderLogoutURL.dev,
+    maxUploadNumFiles,
+    maxUploadFileSize,
     env: 'dev',
     sso: config.sso.dev,
-    replicas: 1,
-    maxReplicas: 2
+    cpuRequest: '50m',
+    cpuLimit: (isStaticDeployment && '300m') || '200m',
+    memoryRequest: '50Mi',
+    memoryLimit: (isStaticDeployment && '300Mi') || '200Mi',
+    replicas: '1',
+    replicasMax: (isStaticDeployment && '2') || '1'
   },
   test: {
     namespace: 'af2668-test',
@@ -99,9 +110,12 @@ const phases = {
     maxUploadFileSize,
     env: 'test',
     sso: config.sso.test,
-    replicas: 3,
-    maxReplicas: 5,
-    logLevel: 'info'
+    cpuRequest: '100m',
+    cpuLimit: '400m',
+    memoryRequest: '100Mi',
+    memoryLimit: '400Mi',
+    replicas: '2',
+    replicasMax: '3'
   },
   prod: {
     namespace: 'af2668-prod',
@@ -115,12 +129,16 @@ const phases = {
     host: staticUrls.prod,
     apiHost: staticUrlsAPI.prod,
     siteminderLogoutURL: config.siteminderLogoutURL.prod,
-
+    maxUploadNumFiles,
+    maxUploadFileSize,
     env: 'prod',
     sso: config.sso.prod,
-    replicas: 3,
-    maxReplicas: 6,
-    logLevel: 'info'
+    cpuRequest: '100m',
+    cpuLimit: '400m',
+    memoryRequest: '100Mi',
+    memoryLimit: '400Mi',
+    replicas: '2',
+    replicasMax: '4'
   }
 };
 
