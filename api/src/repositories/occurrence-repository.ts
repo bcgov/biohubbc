@@ -87,7 +87,7 @@ export class OccurrenceRepository extends BaseRepository {
   }
 
   /**
-   * Gets a list of `occurrence` for a `occurrence_submission_id` id.
+   * Gets a list of `occurrence` for a `occurrence_submission_id`.
    *
    * @param {number} submissionId
    * @return {*}  {Promise<any[]>}
@@ -259,6 +259,13 @@ export class OccurrenceRepository extends BaseRepository {
     await this.connection.sql(sqlStatement);
   }
 
+  /**
+   * Delete all spatial components by occurrence Id
+   *
+   * @param {number} occurrenceSubmissionId
+   * @return {*}  {Promise<{ submission_spatial_component_id: number }[]>}
+   * @memberof OccurrenceRepository
+   */
   async deleteSubmissionSpatialComponent(
     occurrenceSubmissionId: number
   ): Promise<{ submission_spatial_component_id: number }[]> {
@@ -274,6 +281,13 @@ export class OccurrenceRepository extends BaseRepository {
     return (await this.connection.sql<{ submission_spatial_component_id: number }>(sqlDeleteStatement)).rows;
   }
 
+  /**
+   * Delete all spatial transform history by occurrence Id
+   *
+   * @param {number} occurrenceSubmissionId
+   * @return {*}  {Promise<void>}
+   * @memberof OccurrenceRepository
+   */
   async deleteSpatialTransformSubmission(occurrenceSubmissionId: number): Promise<void> {
     const sqlDeleteStatement = SQL`
       DELETE FROM spatial_transform_submission

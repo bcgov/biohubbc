@@ -12,10 +12,9 @@ export class SpatialService extends DBService {
   }
 
   /**
-   * get spatial transform record from name
+   * get spatial transform records
    *
-   * @param {string} spatialTransformName
-   * @return {*}  {Promise<IGetSpatialTransformRecord>}
+   * @return {*}  {Promise<IGetSpatialTransformRecord[]>}
    * @memberof SpatialService
    */
   async getSpatialTransformRecords(): Promise<IGetSpatialTransformRecord[]> {
@@ -50,13 +49,13 @@ export class SpatialService extends DBService {
   async runSpatialTransforms(submissionId: number): Promise<void> {
     const spatialTransformRecords = await this.getSpatialTransformRecords();
 
-    const promises1 = spatialTransformRecords.map(async (transformRecord) => {
+    const transformRecordPromises = spatialTransformRecords.map(async (transformRecord) => {
       const transformed = await this.spatialRepository.runSpatialTransformOnSubmissionId(
         submissionId,
         transformRecord.transform
       );
 
-      const promises2 = transformed.map(async (dataPoint) => {
+      const insertSpatialTransformSubmissionRecordPromises = transformed.map(async (dataPoint) => {
         const submissionSpatialComponentId = await this.spatialRepository.insertSubmissionSpatialComponent(
           submissionId,
           dataPoint.result_data
@@ -68,10 +67,10 @@ export class SpatialService extends DBService {
         );
       });
 
-      await Promise.all(promises2);
+      await Promise.all(insertSpatialTransformSubmissionRecordPromises);
     });
 
-    await Promise.all(promises1);
+    await Promise.all(transformRecordPromises);
   }
 
   /**

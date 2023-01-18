@@ -94,7 +94,7 @@ const DatasetPopup: React.FC<React.PropsWithChildren<{ submissionSpatialComponen
     );
   }
 
-  if (!data) {
+  if (!data.length) {
     return (
       <ModalContentWrapper>
         <NoMetadataAvailable />

@@ -82,11 +82,11 @@ export class OccurrenceService extends DBService {
   async findSpatialMetadataBySubmissionSpatialComponentIds(
     submissionSpatialComponentIds: number[]
   ): Promise<GeoJsonProperties[]> {
-    const response = this.occurrenceRepository.findSpatialMetadataBySubmissionSpatialComponentIds(
+    const response = await this.occurrenceRepository.findSpatialMetadataBySubmissionSpatialComponentIds(
       submissionSpatialComponentIds
     );
 
-    return (await response).map((row) => row.spatial_component_properties);
+    return response.map((row) => row.spatial_component_properties);
   }
 
   /**

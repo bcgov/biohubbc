@@ -25,8 +25,6 @@ export const parseSpatialDataByType = (spatialDataRecords: ISpatialData[]) => {
 
   for (const spatialRecord of spatialDataRecords) {
     for (const feature of spatialRecord.spatial_data.features) {
-      const visible = true;
-
       if (feature.geometry.type === 'GeometryCollection') {
         // Not expecting or supporting geometry collections
         continue;
@@ -44,26 +42,22 @@ export const parseSpatialDataByType = (spatialDataRecords: ISpatialData[]) => {
         // check if dataset has been toggled
         const ids = getSubmissionSpatialComponentIds(spatialRecord);
 
-        if (visible) {
-          boundaryStaticLayer.features.push({
-            geoJSON: feature,
-            key: feature.id || feature.properties.id,
-            popup: <FeaturePopup submissionSpatialComponentIds={ids} />
-          });
-        }
+        boundaryStaticLayer.features.push({
+          geoJSON: feature,
+          key: feature.id || feature.properties.id,
+          popup: <FeaturePopup submissionSpatialComponentIds={ids} />
+        });
       }
 
       if (isBoundaryCentroidFeature(feature)) {
         // check if dataset has been toggled
         const ids = getSubmissionSpatialComponentIds(spatialRecord);
 
-        if (visible) {
-          boundaryStaticLayer.features.push({
-            geoJSON: feature,
-            key: feature.id || feature.properties.id,
-            popup: <DatasetPopup submissionSpatialComponentIds={ids} />
-          });
-        }
+        boundaryStaticLayer.features.push({
+          geoJSON: feature,
+          key: feature.id || feature.properties.id,
+          popup: <DatasetPopup submissionSpatialComponentIds={ids} />
+        });
       }
     }
   }

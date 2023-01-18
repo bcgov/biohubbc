@@ -103,7 +103,7 @@ export class ValidationService extends DBService {
       // Parse Archive into JSON file for custom validation
       await this.parseDWCToJSON(submissionId, dwcPrep.archive);
 
-      // TODO: scraping refactor https://quartech.atlassian.net/browse/BHBC-2098
+      // Run transforms to scrape and upload
       await this.templateScrapeAndUploadOccurrences(submissionId);
     } catch (error) {
       defaultLog.debug({ label: 'processDWCFile', message: 'error', error });

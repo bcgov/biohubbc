@@ -213,16 +213,18 @@ const FeaturePopup: React.FC<React.PropsWithChildren<{ submissionSpatialComponen
             <Button
               size="small"
               variant="text"
+              style={{ textTransform: 'uppercase' }}
               startIcon={<Icon path={mdiChevronLeft} size={1} />}
               onClick={() => handlePrev()}>
-              PREV
+              Prev
             </Button>
             <Button
               size="small"
               variant="text"
+              style={{ textTransform: 'uppercase' }}
               endIcon={<Icon path={mdiChevronRight} size={1} />}
               onClick={() => handleNext()}>
-              NEXT
+              Next
             </Button>
           </Box>
         )}

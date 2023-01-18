@@ -111,4 +111,52 @@ describe('OccurrenceRepository', () => {
       }
     });
   });
+
+  describe('findSpatialMetadataBySubmissionSpatialComponentIds', () => {
+    it('should succeed with valid data', async () => {
+      const mockResponse = ({ rowCount: 1, rows: [{ id: 1 }] } as any) as Promise<QueryResult<any>>;
+      const dbConnection = getMockDBConnection({
+        knex: () => mockResponse
+      });
+      const repo = new OccurrenceRepository(dbConnection);
+      const response = await repo.findSpatialMetadataBySubmissionSpatialComponentIds([1]);
+      expect(response).to.be.eql([{ id: 1 }]);
+    });
+  });
+
+  describe('softDeleteOccurrenceSubmission', () => {
+    it('should succeed with valid data', async () => {
+      const mockResponse = ({ rowCount: 1, rows: [{ id: 1 }] } as any) as Promise<QueryResult<any>>;
+      const dbConnection = getMockDBConnection({
+        sql: () => mockResponse
+      });
+      const repo = new OccurrenceRepository(dbConnection);
+      const response = await repo.softDeleteOccurrenceSubmission(1);
+      expect(response).to.be.eql(undefined);
+    });
+  });
+
+  describe('deleteSubmissionSpatialComponent', () => {
+    it('should succeed with valid data', async () => {
+      const mockResponse = ({ rowCount: 1, rows: [{ id: 1 }] } as any) as Promise<QueryResult<any>>;
+      const dbConnection = getMockDBConnection({
+        sql: () => mockResponse
+      });
+      const repo = new OccurrenceRepository(dbConnection);
+      const response = await repo.deleteSubmissionSpatialComponent(1);
+      expect(response).to.be.eql([{ id: 1 }]);
+    });
+  });
+
+  describe('deleteSpatialTransformSubmission', () => {
+    it('should succeed with valid data', async () => {
+      const mockResponse = ({ rowCount: 1, rows: [{ id: 1 }] } as any) as Promise<QueryResult<any>>;
+      const dbConnection = getMockDBConnection({
+        sql: () => mockResponse
+      });
+      const repo = new OccurrenceRepository(dbConnection);
+      const response = await repo.deleteSpatialTransformSubmission(1);
+      expect(response).to.be.eql(undefined);
+    });
+  });
 });
