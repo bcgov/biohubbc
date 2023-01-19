@@ -1,8 +1,9 @@
 import jsonpatch, { Operation } from 'fast-json-patch';
 import { JSONPath } from 'jsonpath-plus';
-import xml2js from 'xml2js';
 import { IDBConnection } from '../database/db';
+import { parseUTMString, utmToLatLng } from '../utils/spatial-utils';
 import { DBService } from './db-service';
+import { OccurrenceService } from './occurrence-service';
 import { TaxonomyService } from './taxonomy-service';
 
 /**
@@ -15,29 +16,8 @@ import { TaxonomyService } from './taxonomy-service';
  * @extends {DBService}
  */
 export class DwCService extends DBService {
-  data: Record<string, unknown> = {};
-
-  _packageId: string | undefined;
-
-  projectId: number;
-  surveyIds: number[] | undefined = undefined;
-
-  taxonomyService: TaxonomyService;
-
-  xml2jsBuilder: xml2js.Builder;
-
-  includeSensitiveData = false;
-
-  constructor(options: { projectId: number; packageId?: string }, connection: IDBConnection) {
+  constructor(connection: IDBConnection) {
     super(connection);
-
-    this._packageId = options.packageId;
-
-    this.projectId = options.projectId;
-
-    this.taxonomyService = new TaxonomyService();
-
-    this.xml2jsBuilder = new xml2js.Builder({ renderOpts: { pretty: false } });
   }
 
   /**
@@ -89,5 +69,61 @@ export class DwCService extends DBService {
 
     // Apply patch operations
     return jsonpatch.applyPatch(jsonObject, patchOperations).newDocument;
+  }
+
+  async decorateDWCASourceData(occurrenceSubmissionId: number): Promise<boolean> {
+    const occurrenceService = new OccurrenceService(this.connection);
+
+    const submission = await occurrenceService.getOccurrenceSubmission(occurrenceSubmissionId);
+    const jsonObject = submission.darwin_core_source;
+
+    const pathsToPatch = JSONPath({
+      path: '$..[verbatimCoordinates]^',
+      json: jsonObject,
+      resultType: 'all'
+    });
+
+    const patchOperations: Operation[] = [];
+
+    await Promise.all(
+      pathsToPatch.map(async (item: any) => {
+        // eslint-disable-next-line no-prototype-builtins
+        if (item.value.hasOwnProperty('decimalLatitude') && item.value.hasOwnProperty('decimalLongitude')) {
+          return;
+        }
+
+        const verbatimCoordinates = parseUTMString(item.value['verbatimCoordinates']);
+
+        if (!verbatimCoordinates?.zone_number) {
+          return;
+        }
+
+        const latLongValues = utmToLatLng(
+          verbatimCoordinates?.zone_number,
+          verbatimCoordinates?.easting,
+          verbatimCoordinates?.northing
+        );
+
+        const decimalLatitudePatch: Operation = {
+          op: 'add',
+          path: item.pointer + '/decimalLatitude',
+          value: latLongValues.lat
+        };
+
+        const decimalLongitudePatch: Operation = {
+          op: 'add',
+          path: item.pointer + '/decimalLongitude',
+          value: latLongValues.long
+        };
+
+        patchOperations.push(decimalLatitudePatch, decimalLongitudePatch);
+      })
+    );
+
+    const newJson = jsonpatch.applyPatch(jsonObject, patchOperations).newDocument;
+
+    const response = await occurrenceService.updateDWCSourceForOccurrenceSubmission(occurrenceSubmissionId, newJson);
+
+    return !!response;
   }
 }

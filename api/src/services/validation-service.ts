@@ -16,6 +16,7 @@ import { TransformSchema } from '../utils/media/xlsx/transformation/xlsx-transfo
 import { XLSXCSV } from '../utils/media/xlsx/xlsx-file';
 import { MessageError, SubmissionError, SubmissionErrorFromMessageType } from '../utils/submission-error';
 import { DBService } from './db-service';
+import { DwCService } from './dwc-service';
 import { ErrorService } from './error-service';
 import { OccurrenceService } from './occurrence-service';
 import { SpatialService } from './spatial-service';
@@ -38,6 +39,7 @@ export class ValidationService extends DBService {
   surveyService: SurveyService;
   occurrenceService: OccurrenceService;
   spatialService: SpatialService;
+  dwCService: DwCService;
   errorService: ErrorService;
 
   constructor(connection: IDBConnection) {
@@ -47,6 +49,7 @@ export class ValidationService extends DBService {
     this.surveyService = new SurveyService(connection);
     this.occurrenceService = new OccurrenceService(connection);
     this.spatialService = new SpatialService(connection);
+    this.dwCService = new DwCService(connection);
     this.errorService = new ErrorService(connection);
   }
 
@@ -102,6 +105,9 @@ export class ValidationService extends DBService {
 
       // Parse Archive into JSON file for custom validation
       await this.parseDWCToJSON(submissionId, dwcPrep.archive);
+
+      // Run Decoration to ensure lat long values
+      await this.dwCService.decorateDWCASourceData(submissionId);
 
       // Run transforms to scrape and upload
       await this.templateScrapeAndUploadOccurrences(submissionId);
