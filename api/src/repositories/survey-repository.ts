@@ -41,12 +41,9 @@ export interface IGetLatestSurveyOccurrenceSubmission {
   submission_message_type_name: string;
 }
 
-/**
- * @TODO assure that these typedefs are accurate
- */
 export interface IOccurrenceSubmissionMessagesResponse {
   id: number;
-  class: keyof typeof MESSAGE_CLASS_NAME;
+  class: MESSAGE_CLASS_NAME;
   type: SUBMISSION_MESSAGE_TYPE;
   status: SUBMISSION_STATUS_TYPE;
   message: string;

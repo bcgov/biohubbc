@@ -1,11 +1,10 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../../../../../../constants/roles';
-import { MESSAGE_CLASS_NAME, SUBMISSION_MESSAGE_TYPE, SUBMISSION_STATUS_TYPE } from '../../../../../../../constants/status';
+import { SUBMISSION_STATUS_TYPE } from '../../../../../../../constants/status';
 import { getDBConnection } from '../../../../../../../database/db';
-import { IOccurrenceSubmissionMessagesResponse } from '../../../../../../../repositories/survey-repository';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
-import { SurveyService } from '../../../../../../../services/survey-service';
+import { IMessageTypeGroup, SurveyService } from '../../../../../../../services/survey-service';
 import { getLogger } from '../../../../../../../utils/logger';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/observation/submission/get');
@@ -24,66 +23,6 @@ export const GET: Operation = [
   }),
   getOccurrenceSubmission()
 ];
-
-const messageClassGroupValidation = {
-  type: 'object',
-  properties: {
-    severityLabel: {
-      type: 'string',
-      description: 'The label for the message class, e.g. "Error", "Warning"'
-    },
-    messageGroups: {
-      type: 'array',
-      description: 'An array of the groups of messages belonging to this class',
-      items: {
-        type: 'object',
-        description: 'A submission message group object. The severity of all messages belonging to this group is inherited by its parent message class.',
-        properties: {
-          groupLabel: {
-            type: 'string',
-            description: 'The label belonging to this submission message group'
-          },
-          messages: {
-            type: 'array',
-            description: 'The array of submission messages belonging to this group',
-            items: {
-              type: 'object',
-              description: '', // TODO
-              properties: {
-                id: {
-                  type: 'number',
-                  description: 'The ID of this submission message'
-                },
-                message: {
-                  type: 'string',
-                  description: 'The actual message which describes the concern in detail'
-                },
-
-                /**
-                 * @TODO might need to reconsile these two properties.
-                 */
-                status: {
-                  type: 'string',
-                  description: 'The resulting status of the submission as a consequence of the error'
-                },
-                type: {
-                  type: 'string',
-                  description: 'The type of error pertaining to this submission'
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-}
-
-const messageClassGroups: Record<keyof typeof MESSAGE_CLASS_NAME, any> = {
-  'ERROR': { ...messageClassGroupValidation },
-  'NOTICE': { ...messageClassGroupValidation },
-  'WARNING': { ...messageClassGroupValidation }
-}
 
 GET.apiDoc = {
   description: 'Fetches an observation occurrence submission for a survey.',
@@ -121,7 +60,7 @@ GET.apiDoc = {
           schema: {
             type: 'object',
             nullable: true,
-            required: ['id', 'inputFileName', 'status', 'isValidating', 'messageClasses'],
+            required: ['id', 'inputFileName', 'status', 'isValidating', 'messageTypes'],
             properties: {
               id: {
                 type: 'number'
@@ -139,14 +78,42 @@ GET.apiDoc = {
                 description: 'True if the submission has not yet been validated, false otherwise',
                 type: 'boolean'
               },
-              messageClasses: {
+              messageTypes: {
                 description: '', // TODO
-                type: 'object',
+                type: 'array',
                 items: {
                   type: 'object',
-                  description: '', // TODO
                   properties: {
-                    ...messageClassGroups
+                    severityLabel: {
+                      type: 'string',
+                      description: 'The label of the "class" or severity of this type of message, e.g. "Error", "Warning", "Notice", etc.'
+                    },
+                    messageTypeLabel: {
+                      type: 'string',
+                      description: 'The name of the type of error pertaining to this submission'
+                    },
+                    messageStatus: {
+                      type: 'string',
+                      description: 'The resulting status of the submission as a consequence of the error'
+                    },
+                    messages: {
+                      type: 'array',
+                      description: 'The array of submission messages belonging to this type of message',
+                      items: {
+                        type: 'object',
+                        description: '', // TODO
+                        properties: {
+                          id: {
+                            type: 'number',
+                            description: 'The ID of this submission message'
+                          },
+                          message: {
+                            type: 'string',
+                            description: 'The actual message which describes the concern in detail'
+                          }
+                        }
+                      }
+                    }
                   }
                 }
               }
@@ -172,129 +139,6 @@ GET.apiDoc = {
     }
   }
 };
-
-enum MESSAGE_GROUP_LABEL {
-  MANDATORY = 'Mandatory fields have not been filled out',
-  RECOMMENDED = 'Recommended fields have not been filled out',
-  VALUE_NOT_FROM_LIST = "Values have not been selected from the field's dropdown list",
-  UNSUPPORTED_HEADER = 'Column headers are not supported',
-  OUT_OF_RANGE = 'Values are out of range',
-  FORMATTING_ERRORS = 'Unexpected formats in the values provided',
-  MISCELLANEOUS = 'Miscellaneous errors exist in your file',
-  SYSTEM_ERROR = 'Contact your system administrator'
-}
-
-/**
- * @TODO jsdoc
- */
-const submissionMessageGroupClasses: Record<
-  keyof typeof MESSAGE_GROUP_LABEL,
-  keyof typeof MESSAGE_CLASS_NAME
-> = {
-  'MANDATORY':            'ERROR',
-  'VALUE_NOT_FROM_LIST':  'ERROR',
-  'UNSUPPORTED_HEADER':   'ERROR',
-  'OUT_OF_RANGE':         'ERROR',
-  'FORMATTING_ERRORS':    'ERROR',
-  'MISCELLANEOUS':        'ERROR',
-  'SYSTEM_ERROR':         'ERROR',
-  'RECOMMENDED':          'WARNING'
-}
-
-/**
- * @TODO jsdoc
- * @TODO Double check Partial<> usage
- */
-const submissionMessageTypeGroups: Partial<Record<
-  keyof typeof SUBMISSION_MESSAGE_TYPE,
-  keyof typeof MESSAGE_GROUP_LABEL
->> = {
-  // Mandatory fields have not been filled out
-  'MISSING_REQUIRED_FIELD':    'MANDATORY',
-  'MISSING_REQUIRED_HEADER':   'MANDATORY',
-  'DUPLICATE_HEADER':          'MANDATORY',
-  'DANGLING_PARENT_CHILD_KEY': 'MANDATORY',
-  'NON_UNIQUE_KEY':            'MANDATORY',
-
-  // Recommended fields have not been filled out
-  'MISSING_RECOMMENDED_HEADER': 'RECOMMENDED',
-
-  // Values have not been selected from the field's dropdown list
-  'INVALID_VALUE': 'VALUE_NOT_FROM_LIST',
-
-  // Column headers are not supported
-  'UNKNOWN_HEADER': 'UNSUPPORTED_HEADER',
-
-  // Values are out of range
-  'OUT_OF_RANGE': 'OUT_OF_RANGE',
-
-  // Unexpected formats in the values provided
-  'UNEXPECTED_FORMAT': 'FORMATTING_ERRORS',
-
-  // Miscellaneous errors exist in your file
-  'MISCELLANEOUS': 'MISCELLANEOUS',
-
-  // Contact your system administrator
-  'FAILED_GET_FILE_FROM_S3':                'SYSTEM_ERROR',
-  'FAILED_GET_OCCURRENCE':                  'SYSTEM_ERROR',
-  'FAILED_UPLOAD_FILE_TO_S3':               'SYSTEM_ERROR',
-  'FAILED_PARSE_SUBMISSION':                'SYSTEM_ERROR',
-  'FAILED_PREP_DWC_ARCHIVE':                'SYSTEM_ERROR',
-  'FAILED_PREP_XLSX':                       'SYSTEM_ERROR',
-  'FAILED_PERSIST_PARSE_ERRORS':            'SYSTEM_ERROR',
-  'FAILED_GET_VALIDATION_RULES':            'SYSTEM_ERROR',
-  'FAILED_GET_TRANSFORMATION_RULES':        'SYSTEM_ERROR',
-  'FAILED_PERSIST_TRANSFORMATION_RESULTS':  'SYSTEM_ERROR',
-  'FAILED_TRANSFORM_XLSX':                  'SYSTEM_ERROR',
-  'FAILED_VALIDATE_DWC_ARCHIVE':            'SYSTEM_ERROR',
-  'FAILED_PERSIST_VALIDATION_RESULTS':      'SYSTEM_ERROR',
-  'FAILED_UPDATE_OCCURRENCE_SUBMISSION':    'SYSTEM_ERROR',
-  'FAILED_TO_GET_TRANSFORM_SCHEMA':         'SYSTEM_ERROR',
-  'UNSUPPORTED_FILE_TYPE':                  'SYSTEM_ERROR',
-  'INVALID_MEDIA':                          'SYSTEM_ERROR',
-  // 'ERROR': 'SYSTEM_ERROR',
-  // 'PARSE_ERROR': 'SYSTEM_ERROR',
-  // 'MISSING_VALIDATION_SCHEMA': 'SYSTEM_ERROR'
-}
-
-const collectMessagesIntoClasses = (messages: IOccurrenceSubmissionMessagesResponse[]) => {
-  console.log('messages:', messages);
-
-  const classes: Partial<Record<keyof typeof MESSAGE_CLASS_NAME, any>> = {};
-
-  Object.entries(submissionMessageGroupClasses).forEach(([groupKey, classKey]) => {
-    if (!classes[classKey]) {
-      classes[classKey] = {
-        severityLabel: MESSAGE_CLASS_NAME[classKey],
-        messageGroups: []
-      };
-    }
-
-    const groupMessagesTypes = Object.entries(submissionMessageTypeGroups)
-      .filter(([_messageTypeKey, messageGroupKey]) => messageGroupKey === groupKey)
-      .map(([messageTypeKey, _messageGroupKey]) => messageTypeKey);
-
-    //console.log('groupMessagesType:', groupMessagesTypes);
-
-    const groupMessages = messages.filter((message) => {
-      
-      const typeLabel = message.type
-      const messageTypeKeyValue = Object.entries(SUBMISSION_MESSAGE_TYPE)
-        .find(([_messageTypeKey, messageTypeLabel]) => messageTypeLabel === typeLabel)
-
-      return messageTypeKeyValue && groupMessagesTypes.includes(messageTypeKeyValue[1])
-    });
-
-    if (groupMessages.length > 0) {
-      classes[classKey].messageGroups.push({
-        groupLabel: MESSAGE_GROUP_LABEL[groupKey],
-        messages: groupMessages
-      });
-    }
-  });
-
-  return classes;
-}
 
 export function getOccurrenceSubmission(): RequestHandler {
   return async (req, res) => {
@@ -322,7 +166,7 @@ export function getOccurrenceSubmission(): RequestHandler {
         SUBMISSION_STATUS_TYPE.FAILED_PROCESSING_OCCURRENCE_DATA
       ].includes(occurrenceSubmission.submission_status_type_name)
      
-      const messages: IOccurrenceSubmissionMessagesResponse[] = hasAdditionalOccurrenceSubmissionMessages
+      const messageTypes: IMessageTypeGroup[] = hasAdditionalOccurrenceSubmissionMessages
         ? await surveyService.getOccurrenceSubmissionMessages(Number(occurrenceSubmission.id))
         : [];
 
@@ -331,7 +175,7 @@ export function getOccurrenceSubmission(): RequestHandler {
         inputFileName: occurrenceSubmission.input_file_name,
         status: occurrenceSubmission.submission_status_type_name,
         isValidating: !hasAdditionalOccurrenceSubmissionMessages,
-        messageClasses: collectMessagesIntoClasses(messages)
+        messageTypes
       });
     } catch (error) {
       defaultLog.error({ label: 'getOccurrenceSubmission', message: 'error', error });

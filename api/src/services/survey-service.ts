@@ -1,3 +1,4 @@
+import { MESSAGE_CLASS_NAME, SUBMISSION_MESSAGE_TYPE, SUBMISSION_STATUS_TYPE } from '../constants/status';
 import { IDBConnection } from '../database/db';
 import { PostProprietorData, PostSurveyObject } from '../models/survey-create';
 import { PutSurveyObject } from '../models/survey-update';
@@ -26,6 +27,13 @@ import {
 import { DBService } from './db-service';
 import { PermitService } from './permit-service';
 import { TaxonomyService } from './taxonomy-service';
+
+export interface IMessageTypeGroup {
+  severityLabel: MESSAGE_CLASS_NAME;
+  messageTypeLabel: SUBMISSION_MESSAGE_TYPE;
+  messageStatus: SUBMISSION_STATUS_TYPE;
+  messages: { id: number; message: string; }[];
+}
 
 export class SurveyService extends DBService {
   attachmentRepository: AttachmentRepository;
@@ -134,8 +142,36 @@ export class SurveyService extends DBService {
     return this.surveyRepository.getLatestSurveyOccurrenceSubmission(surveyId);
   }
 
-  async getOccurrenceSubmissionMessages(submissionId: number): Promise<IOccurrenceSubmissionMessagesResponse[]> {
-    return this.surveyRepository.getOccurrenceSubmissionMessages(submissionId);
+  /**
+   * @TODO jsdoc
+   * @param submissionId 
+   */
+  async getOccurrenceSubmissionMessages(submissionId: number): Promise<IMessageTypeGroup[]> {
+    const messages = await this.surveyRepository.getOccurrenceSubmissionMessages(submissionId);
+
+    return messages.reduce((typeGroups: IMessageTypeGroup[], message: IOccurrenceSubmissionMessagesResponse) => {
+      const groupIndex = typeGroups.findIndex((group) => {
+        return group.messageTypeLabel === message.type
+      });
+
+      const messageObject = {
+        id: message.id,
+        message: message.message
+      }
+
+      if (groupIndex < 0) {
+        typeGroups.push({
+          severityLabel: message.class,
+          messageTypeLabel: message.type,
+          messageStatus: message.status,
+          messages: [messageObject]
+        });
+      } else {
+        typeGroups[groupIndex].messages.push(messageObject)
+      }
+
+      return typeGroups;
+    }, []);
   }
 
   async getSummaryResultId(surveyId: number): Promise<number> {
