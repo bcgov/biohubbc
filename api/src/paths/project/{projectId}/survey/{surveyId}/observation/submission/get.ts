@@ -28,7 +28,7 @@ export const GET: Operation = [
 const messageClassGroupValidation = {
   type: 'object',
   properties: {
-    classLabel: {
+    severityLabel: {
       type: 'string',
       description: 'The label for the message class, e.g. "Error", "Warning"'
     },
@@ -60,7 +60,7 @@ const messageClassGroupValidation = {
                 },
 
                 /**
-                 * @TODO need to reconsile these two
+                 * @TODO might need to reconsile these two properties.
                  */
                 status: {
                   type: 'string',
@@ -185,26 +185,27 @@ enum MESSAGE_GROUP_LABEL {
 }
 
 /**
- * 
+ * @TODO jsdoc
  */
-const submissionMessageClassMappings: Record<
+const submissionMessageGroupClasses: Record<
   keyof typeof MESSAGE_GROUP_LABEL,
   keyof typeof MESSAGE_CLASS_NAME
 > = {
-  'MANDATORY': 'ERROR'
-  'RECOMMENDED': 'Recommended fields have not been filled out',
-  'VALUE_NOT_FROM_LIST': "Values have not been selected from the field's dropdown list",
-  UNSUPPORTED_HEADER: 'Column headers are not supported',
-  OUT_OF_RANGE: 'Values are out of range',
-  FORMATTING_ERRORS: 'Unexpected formats in the values provided',
-  MISCELLANEOUS: 'Miscellaneous errors exist in your file',
-  SYSTEM_ERROR: 'Contact your system administrator'
+  'MANDATORY':            'ERROR',
+  'VALUE_NOT_FROM_LIST':  'ERROR',
+  'UNSUPPORTED_HEADER':   'ERROR',
+  'OUT_OF_RANGE':         'ERROR',
+  'FORMATTING_ERRORS':    'ERROR',
+  'MISCELLANEOUS':        'ERROR',
+  'SYSTEM_ERROR':         'ERROR',
+  'RECOMMENDED':          'WARNING'
 }
 
 /**
- * 
+ * @TODO jsdoc
+ * @TODO Double check Partial<> usage
  */
-const submissionMessageGroupMappings: Partial<Record<
+const submissionMessageTypeGroups: Partial<Record<
   keyof typeof SUBMISSION_MESSAGE_TYPE,
   keyof typeof MESSAGE_GROUP_LABEL
 >> = {
@@ -253,29 +254,47 @@ const submissionMessageGroupMappings: Partial<Record<
   'INVALID_MEDIA':                          'SYSTEM_ERROR',
   // 'ERROR': 'SYSTEM_ERROR',
   // 'PARSE_ERROR': 'SYSTEM_ERROR',
-  // 'MISSING_VALIDATION_SCHEM': 'SYSTEM_ERROR'A
-
+  // 'MISSING_VALIDATION_SCHEMA': 'SYSTEM_ERROR'
 }
-const getErrors = () => {
-  type MessageGrouping = { [key: string]: { type: string[]; label: string } };
 
-  const messageGrouping: MessageGrouping = {
+const collectMessagesIntoClasses = (messages: IOccurrenceSubmissionMessagesResponse[]) => {
+  console.log('messages:', messages);
 
-    system_error: {
-      type: [
-        
-      ],
-      label: ''
+  const classes: Partial<Record<keyof typeof MESSAGE_CLASS_NAME, any>> = {};
+
+  Object.entries(submissionMessageGroupClasses).forEach(([groupKey, classKey]) => {
+    if (!classes[classKey]) {
+      classes[classKey] = {
+        severityLabel: MESSAGE_CLASS_NAME[classKey],
+        messageGroups: []
+      };
     }
-  };
 
-  type SubmissionErrors = { [key: string]: string[] };
-  type SubmissionWarnings = { [key: string]: string[] };
+    const groupMessagesTypes = Object.entries(submissionMessageTypeGroups)
+      .filter(([_messageTypeKey, messageGroupKey]) => messageGroupKey === groupKey)
+      .map(([messageTypeKey, _messageGroupKey]) => messageTypeKey);
 
-  const submissionErrors: SubmissionErrors = {};
-  const submissionWarnings: SubmissionWarnings = {};
+    //console.log('groupMessagesType:', groupMessagesTypes);
+
+    const groupMessages = messages.filter((message) => {
+      
+      const typeLabel = message.type
+      const messageTypeKeyValue = Object.entries(SUBMISSION_MESSAGE_TYPE)
+        .find(([_messageTypeKey, messageTypeLabel]) => messageTypeLabel === typeLabel)
+
+      return messageTypeKeyValue && groupMessagesTypes.includes(messageTypeKeyValue[1])
+    });
+
+    if (groupMessages.length > 0) {
+      classes[classKey].messageGroups.push({
+        groupLabel: MESSAGE_GROUP_LABEL[groupKey],
+        messages: groupMessages
+      });
+    }
+  });
+
+  return classes;
 }
-
 
 export function getOccurrenceSubmission(): RequestHandler {
   return async (req, res) => {
@@ -312,7 +331,7 @@ export function getOccurrenceSubmission(): RequestHandler {
         inputFileName: occurrenceSubmission.input_file_name,
         status: occurrenceSubmission.submission_status_type_name,
         isValidating: !hasAdditionalOccurrenceSubmissionMessages,
-        messages
+        messageClasses: collectMessagesIntoClasses(messages)
       });
     } catch (error) {
       defaultLog.error({ label: 'getOccurrenceSubmission', message: 'error', error });

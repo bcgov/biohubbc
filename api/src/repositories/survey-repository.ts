@@ -1,5 +1,5 @@
 import SQL from 'sql-template-strings';
-import { SUBMISSION_STATUS_TYPE } from '../constants/status';
+import { MESSAGE_CLASS_NAME, SUBMISSION_MESSAGE_TYPE, SUBMISSION_STATUS_TYPE } from '../constants/status';
 import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { PostProprietorData, PostSurveyObject } from '../models/survey-create';
@@ -41,11 +41,14 @@ export interface IGetLatestSurveyOccurrenceSubmission {
   submission_message_type_name: string;
 }
 
+/**
+ * @TODO assure that these typedefs are accurate
+ */
 export interface IOccurrenceSubmissionMessagesResponse {
   id: number;
-  class: string;
-  type: string;
-  status: string;
+  class: keyof typeof MESSAGE_CLASS_NAME;
+  type: SUBMISSION_MESSAGE_TYPE;
+  status: SUBMISSION_STATUS_TYPE;
   message: string;
 };
 
