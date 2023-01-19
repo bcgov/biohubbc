@@ -297,9 +297,9 @@ objects:
                   path: /api/version
                   port: ${{API_PORT_DEFAULT}}
                   scheme: HTTP
-                initialDelaySeconds: 10
-                periodSeconds: 15
-                timeoutSeconds: 10
+                initialDelaySeconds: 60
+                periodSeconds: 30
+                timeoutSeconds: 15
                 successThreshold: 1
                 failureThreshold: 20
               livenessProbe:
@@ -307,9 +307,9 @@ objects:
                   path: /api/version
                   port: ${{API_PORT_DEFAULT}}
                   scheme: HTTP
-                initialDelaySeconds: 10
-                periodSeconds: 15
-                timeoutSeconds: 10
+                initialDelaySeconds: 60
+                periodSeconds: 30
+                timeoutSeconds: 15
                 successThreshold: 1
                 failureThreshold: 20
               terminationMessagePath: /dev/termination-log

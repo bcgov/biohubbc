@@ -137,7 +137,7 @@ jobs:
       - name: Build Database Image
         working-directory: "./database/.pipeline/"
         run: |
-          npm install --only=production
+          npm ci --only=production
           DEBUG=* npm run db:build -- --pr=$PR_NUMBER
 
   # Build the Database Setup image
@@ -195,7 +195,7 @@ jobs:
       - name: Build Database Setup Image
         working-directory: "./database/.pipeline/"
         run: |
-          npm install --only=production
+          npm ci --only=production
           DEBUG=* npm run db-setup:build -- --pr=$PR_NUMBER
 
   # Build the API image
@@ -253,7 +253,7 @@ jobs:
       - name: Build API Image
         working-directory: "./api/.pipeline/"
         run: |
-          npm install --only=production
+          npm ci --only=production
           DEBUG=* npm run build -- --pr=$PR_NUMBER
 
   # Build the web frontend app image
@@ -311,7 +311,7 @@ jobs:
       - name: Build APP Image
         working-directory: "./app/.pipeline/"
         run: |
-          npm install --only=production
+          npm ci --only=production
           DEBUG=* npm run build -- --pr=$PR_NUMBER
 
   # Deploy Database image
@@ -370,7 +370,7 @@ jobs:
       - name: Deploy Database Image
         working-directory: "./database/.pipeline/"
         run: |
-          npm install --only=production
+          npm ci --only=production
           DEBUG=* npm run db:deploy -- --pr=$PR_NUMBER --env=dev
 
   # Deploy Database image
@@ -430,7 +430,7 @@ jobs:
       - name: Deploy Database Setup Image
         working-directory: "./database/.pipeline/"
         run: |
-          npm install --only=production
+          npm ci --only=production
           DEBUG=* npm run db-setup:deploy -- --pr=$PR_NUMBER --env=dev
 
   # Deploy API image
@@ -490,7 +490,7 @@ jobs:
       - name: Deploy API Image
         working-directory: "./api/.pipeline/"
         run: |
-          npm install --only=production
+          npm ci --only=production
           DEBUG=* npm run deploy -- --pr=$PR_NUMBER --env=dev
 
   # Deploy APP image
@@ -549,7 +549,7 @@ jobs:
       - name: Deploy APP Image
         working-directory: "./app/.pipeline"
         run: |
-          npm install --only=production
+          npm ci --only=production
           DEBUG=* npm run deploy -- --pr=$PR_NUMBER --env=dev
 
   cypress-run:

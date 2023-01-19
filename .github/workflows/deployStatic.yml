@@ -138,7 +138,7 @@ jobs:
       - name: Build Database Image
         working-directory: "./database/.pipeline/"
         run: |
-          npm install --only=production
+          npm ci --only=production
           DEBUG=* npm run db:build -- --pr=$PR_NUMBER --branch=$BRANCH --type=static
 
   # Build the Database Setup image
@@ -197,7 +197,7 @@ jobs:
       - name: Build Database Setup Image
         working-directory: "./database/.pipeline/"
         run: |
-          npm install --only=production
+          npm ci --only=production
           DEBUG=* npm run db-setup:build -- --pr=$PR_NUMBER --branch=$BRANCH --type=static
 
   # Build the API image
@@ -256,7 +256,7 @@ jobs:
       - name: Build API Image
         working-directory: "./api/.pipeline/"
         run: |
-          npm install --only=production
+          npm ci --only=production
           DEBUG=* npm run build -- --pr=$PR_NUMBER --branch=$BRANCH --type=static
 
   # Build the web frontend app
@@ -315,7 +315,7 @@ jobs:
       - name: Build APP Image
         working-directory: "./app/.pipeline/"
         run: |
-          npm install --only=production
+          npm ci --only=production
           DEBUG=* npm run build -- --pr=$PR_NUMBER --branch=$BRANCH --type=static
 
   # Deploy Database image
@@ -375,7 +375,7 @@ jobs:
       - name: Deploy Database Image
         working-directory: "./database/.pipeline/"
         run: |
-          npm install --only=production
+          npm ci --only=production
           DEBUG=* npm run db:deploy -- --pr=$PR_NUMBER --env=$BRANCH --branch=$BRANCH --type=static
 
   # Deploy Database setup image
@@ -436,7 +436,7 @@ jobs:
       - name: Deploy Database Setup Image
         working-directory: "./database/.pipeline/"
         run: |
-          npm install --only=production
+          npm ci --only=production
           DEBUG=* npm run db-setup:deploy -- --pr=$PR_NUMBER --env=$BRANCH --branch=$BRANCH --type=static
 
   # Deploy API image
@@ -497,7 +497,7 @@ jobs:
       - name: Deploy API Image
         working-directory: "./api/.pipeline/"
         run: |
-          npm install --only=production
+          npm ci --only=production
           DEBUG=* npm run deploy -- --pr=$PR_NUMBER --env=$BRANCH --branch=$BRANCH --type=static
 
   # Deploy APP image
@@ -557,7 +557,7 @@ jobs:
       - name: Deploy APP Image
         working-directory: "./app/.pipeline"
         run: |
-          npm install --only=production
+          npm ci --only=production
           DEBUG=* npm run deploy -- --pr=$PR_NUMBER --env=$BRANCH --branch=$BRANCH --type=static
 
   cycleschemaspy:
@@ -640,7 +640,7 @@ jobs:
       - name: Clean Database Artifacts
         working-directory: "./database/.pipeline/"
         run: |
-          npm install --only=production
+          npm ci --only=production
           DEBUG=* npm run clean -- --pr=$PR_NUMBER --env=build
           DEBUG=* npm run clean -- --pr=$PR_NUMBER --env=dev
 
@@ -648,7 +648,7 @@ jobs:
       - name: Clean API Artifacts
         working-directory: "./api/.pipeline/"
         run: |
-          npm install --only=production
+          npm ci --only=production
           DEBUG=* npm run clean -- --pr=$PR_NUMBER --env=build
           DEBUG=* npm run clean -- --pr=$PR_NUMBER --env=dev
 
@@ -656,7 +656,7 @@ jobs:
       - name: Clean APP Artifacts
         working-directory: "./app/.pipeline/"
         run: |
-          npm install --only=production
+          npm ci --only=production
           DEBUG=* npm run clean -- --pr=$PR_NUMBER --env=build
           DEBUG=* npm run clean -- --pr=$PR_NUMBER --env=dev
 
