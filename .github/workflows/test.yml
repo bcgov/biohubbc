@@ -22,18 +22,18 @@ jobs:
       # Install Node - for `node` and `npm` commands
       # Note: This already uses actions/cache internally, so repeat calls in subsequent jobs are not a performance hit
       - name: Setup Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: 14
 
       - name: Checkout Target Branch
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           persist-credentials: false
 
       # Cache the repo
       - name: Cache repo
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         id: cache-repo
         env:
           cache-name: cache-repo
@@ -51,13 +51,13 @@ jobs:
       - checkoutRepo
     steps:
       - name: Setup node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: 14
 
       # Load repo from cache
       - name: Cache repo
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         id: cache-repo
         env:
           cache-name: cache-repo
@@ -70,10 +70,10 @@ jobs:
       # Checkout the branch if not restored via cache
       - name: Checkout Target Branch
         if: steps.cache-repo.outputs.cache-hit != 'true'
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Cache api node modules
-        uses: actions/cache@v2.1.6
+        uses: actions/cache@v3
         env:
           cache-name: cache-api-node-modules
         with:
@@ -104,13 +104,13 @@ jobs:
       - checkoutRepo
     steps:
       - name: Setup node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: 14
 
       # Load repo from cache
       - name: Cache repo
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         id: cache-repo
         env:
           cache-name: cache-repo
@@ -123,10 +123,10 @@ jobs:
       # Checkout the branch if not restored via cache
       - name: Checkout Target Branch
         if: steps.cache-repo.outputs.cache-hit != 'true'
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Cache app node modules
-        uses: actions/cache@v2.1.6
+        uses: actions/cache@v3
         env:
           cache-name: cache-app-node-modules
         with:
