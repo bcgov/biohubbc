@@ -71,6 +71,12 @@ const systemUsers = [
     type: SYSTEM_IDENTITY_SOURCE.IDIR,
     roleId: SYSTEM_USER_ROLE_ID.SYSTEM_ADMINISTRATOR,
     user_guid: '349F20767A834FB582A18E8D378973E7'
+  },
+  {
+    identifier: 'achirico',
+    type: SYSTEM_IDENTITY_SOURCE.IDIR,
+    roleId: SYSTEM_USER_ROLE_ID.SYSTEM_ADMINISTRATOR,
+    user_guid: 'E3A279530D164485BF43C6FE7A49E175'
   }
 ];
 

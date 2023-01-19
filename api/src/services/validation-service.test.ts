@@ -895,42 +895,25 @@ describe('ValidationService', () => {
   describe('templateScrapeAndUploadOccurrences', () => {
     it('should run without issue', async () => {
       const service = mockService();
-      const mockDWCArchive = new DWCArchive(new ArchiveFile('', '', Buffer.from([]), []));
 
-      const occurrence = sinon
-        .stub(service.occurrenceService, 'getOccurrenceSubmission')
-        .resolves(mockOccurrenceSubmission);
-      const file = sinon.stub(FileUtils, 'getFileFromS3').resolves('file from s3' as any);
-      const archive = sinon.stub(service, 'prepDWCArchive').resolves(mockDWCArchive);
-      const scrape = sinon.stub(service.occurrenceService, 'scrapeAndUploadOccurrences').resolves();
+      const scrape = sinon.stub(service.spatialService, 'runSpatialTransforms').resolves();
 
       await service.templateScrapeAndUploadOccurrences(1);
 
-      expect(occurrence).to.be.calledOnce;
-      expect(file).to.be.calledOnce;
-      expect(archive).to.be.calledOnce;
       expect(scrape).to.be.calledOnce;
     });
 
     it('should throw Submission Error', async () => {
       const service = mockService();
 
-      const occurrence = sinon
-        .stub(service.occurrenceService, 'getOccurrenceSubmission')
-        .resolves(mockOccurrenceSubmission);
-      const file = sinon.stub(FileUtils, 'getFileFromS3').resolves('file from s3' as any);
-      const archive = sinon
-        .stub(service, 'prepDWCArchive')
+      const scrape = sinon
+        .stub(service.spatialService, 'runSpatialTransforms')
         .throws(SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.INVALID_MEDIA));
-      const scrape = sinon.stub(service.occurrenceService, 'scrapeAndUploadOccurrences').resolves();
 
       try {
         await service.templateScrapeAndUploadOccurrences(1);
 
-        expect(occurrence).to.be.calledOnce;
-        expect(file).to.be.calledOnce;
-        expect(archive).to.be.calledOnce;
-        expect(scrape).not.to.be.calledOnce;
+        expect(scrape).to.be.calledOnce;
         expect.fail();
       } catch (error) {
         expect(error).to.be.instanceOf(SubmissionError);

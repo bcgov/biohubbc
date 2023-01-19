@@ -13,8 +13,9 @@ import FullScreenViewMapDialog from 'components/boundary/FullScreenViewMapDialog
 import InferredLocationDetails, { IInferredLayers } from 'components/boundary/InferredLocationDetails';
 import EditDialog from 'components/dialog/EditDialog';
 import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
+import { IMarkerLayer } from 'components/map/components/MarkerCluster';
+import { IStaticLayer } from 'components/map/components/StaticLayers';
 import MapContainer from 'components/map/MapContainer';
-import OccurrenceFeatureGroup from 'components/map/OccurrenceFeatureGroup';
 import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
 import { EditSurveyStudyAreaI18N } from 'constants/i18n';
 import StudyAreaForm, {
@@ -34,6 +35,7 @@ import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
 export interface ISurveyStudyAreaProps {
   surveyForViewData: IGetSurveyForViewResponse;
   projectForViewData: IGetProjectForViewResponse;
+  mapLayersForView: { markerLayers: IMarkerLayer[]; staticLayers: IStaticLayer[] };
   refresh: () => void;
 }
 
@@ -84,15 +86,16 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
 
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [studyAreaFormData, setStudyAreaFormData] = useState<IStudyAreaForm>(StudyAreaInitialValues);
+
+  const [bounds, setBounds] = useState<LatLngBoundsExpression | undefined>(undefined);
+  const [showFullScreenViewMapDialog, setShowFullScreenViewMapDialog] = useState<boolean>(false);
+  const [nonEditableGeometries, setNonEditableGeometries] = useState<any[]>([]);
   const [inferredLayersInfo, setInferredLayersInfo] = useState<IInferredLayers>({
     parks: [],
     nrm: [],
     env: [],
     wmu: []
   });
-  const [bounds, setBounds] = useState<LatLngBoundsExpression | undefined>(undefined);
-  const [nonEditableGeometries, setNonEditableGeometries] = useState<any[]>([]);
-  const [showFullScreenViewMapDialog, setShowFullScreenViewMapDialog] = useState<boolean>(false);
 
   const zoomToBoundaryExtent = useCallback(() => {
     setBounds(calculateUpdatedMapBounds(surveyGeometry));
@@ -102,9 +105,7 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
     const nonEditableGeometriesResult = surveyGeometry.map((geom: Feature) => {
       return { feature: geom };
     });
-
     zoomToBoundaryExtent();
-
     setNonEditableGeometries(nonEditableGeometriesResult);
   }, [surveyGeometry, occurrence_submission.id, zoomToBoundaryExtent]);
 
@@ -203,19 +204,11 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
           <MapContainer
             mapId="project_location_form_map"
             scrollWheelZoom={true}
-            nonEditableGeometries={nonEditableGeometries}
             bounds={bounds}
+            nonEditableGeometries={nonEditableGeometries}
             setInferredLayersInfo={setInferredLayersInfo}
-            additionalLayers={
-              occurrence_submission.id
-                ? [
-                    <OccurrenceFeatureGroup
-                      projectId={projectForViewData.id}
-                      occurrenceSubmissionId={occurrence_submission.id}
-                    />
-                  ]
-                : undefined
-            }
+            markerLayers={props.mapLayersForView.markerLayers}
+            staticLayers={props.mapLayersForView.staticLayers}
           />
         }
         description={survey_details.survey_area_name}
@@ -238,19 +231,11 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
           <Box height={500} position="relative">
             <MapContainer
               mapId="survey_study_area_map"
-              nonEditableGeometries={nonEditableGeometries}
               bounds={bounds}
+              nonEditableGeometries={nonEditableGeometries}
               setInferredLayersInfo={setInferredLayersInfo}
-              additionalLayers={
-                occurrence_submission.id
-                  ? [
-                      <OccurrenceFeatureGroup
-                        projectId={projectForViewData.id}
-                        occurrenceSubmissionId={occurrence_submission.id}
-                      />
-                    ]
-                  : undefined
-              }
+              markerLayers={props.mapLayersForView.markerLayers}
+              staticLayers={props.mapLayersForView.staticLayers}
             />
             {surveyGeometry.length > 0 && (
               <Box position="absolute" top="126px" left="10px" zIndex="999">
