@@ -6,7 +6,7 @@ interface IUsePollingConfig {
     maxDelayMs: number;
     lockoutDurationMs: number;
     lockoutPolls: number;
-    growthRate: (prevDelay: number) => number
+    decayRate: (prevDelay: number) => number
 }
 
 const defaultConfig: IUsePollingConfig = {
@@ -15,17 +15,17 @@ const defaultConfig: IUsePollingConfig = {
     maxDelayMs: 60000,
     lockoutDurationMs: 120000,
     lockoutPolls: 0,
-    growthRate: (prevDelay: number) => 2 * prevDelay
+    decayRate: (prevDelay: number) => 2 * prevDelay
 }
 
 export const usePolling = (callback: () => void, config: IUsePollingConfig) => {
     const pollingConfig: IUsePollingConfig = { ...defaultConfig, ...config }
     const [isPolling, setIsPolling] = useState<boolean>();
 
-    const { initialDelayMs, maxDelayMs, lockoutDurationMs, lockoutPolls, growthRate } = pollingConfig
+    const { initialDelayMs, maxDelayMs, lockoutDurationMs, lockoutPolls, decayRate } = pollingConfig
 
     const nextDelay = (delayMs: number) => {
-        return Math.min(growthRate(delayMs), maxDelayMs);
+        return Math.min(decayRate(delayMs), maxDelayMs);
     }
 
     if (lockoutDurationMs > 0 || lockoutPolls > 0) {

@@ -25,9 +25,8 @@ import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
 import { DialogContext } from 'contexts/dialogContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
-import { useInterval } from 'hooks/useInterval';
 import { IGetObservationSubmissionResponse, IUploadObservationSubmissionResponse } from 'interfaces/useObservationApi.interface';
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { useParams } from 'react-router';
 
 interface ISurveyObservationsProps {
@@ -50,7 +49,7 @@ export enum ClassGrouping {
   ERROR = 'Error',
   WARNING = 'Warning'
 }
-
+/*
 const FINAL_STATUSES = [
   'Rejected',
   'Darwin Core Validated',
@@ -63,6 +62,7 @@ const FINAL_STATUSES = [
   'Failed to transform',
   'Failed to process occurrence data'
 ];
+*/
 
 export enum SUBMISSION_STATUS_TYPE {
   'SUBMITTED' = 'Submitted',
@@ -171,6 +171,8 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
         });
       })
   });
+
+  submissionDataLoader.load();
 
   const softDeleteSubmission = async () => {
     if (!occurrenceSubmissionId) {
@@ -423,7 +425,7 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
               {displayAlertBox(
                 'error',
                 mdiAlertCircleOutline,
-                submissionStatus.inputFileName,
+                submissionState.inputFileName,
                 SUBMISSION_STATUS_TYPE.SYSTEM_ERROR
               )}
               <Box my={3}>
@@ -438,19 +440,19 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
             </Box>
           )}
 
-          {!isValidating &&
-            (submissionStatus?.status === SUBMISSION_STATUS_TYPE.REJECTED ||
-              submissionStatus?.status === SUBMISSION_STATUS_TYPE.FAILED_OCCURRENCE_PREPARATION ||
-              submissionStatus?.status === SUBMISSION_STATUS_TYPE.INVALID_MEDIA ||
-              submissionStatus?.status === SUBMISSION_STATUS_TYPE.FAILED_VALIDATION ||
-              submissionStatus?.status === SUBMISSION_STATUS_TYPE.FAILED_TRANSFORMED ||
-              submissionStatus?.status === SUBMISSION_STATUS_TYPE.FAILED_PROCESSING_OCCURRENCE_DATA) && (
+          {!submissionState?.isValidating &&
+            (submissionState?.status === SUBMISSION_STATUS_TYPE.REJECTED ||
+              submissionState?.status === SUBMISSION_STATUS_TYPE.FAILED_OCCURRENCE_PREPARATION ||
+              submissionState?.status === SUBMISSION_STATUS_TYPE.INVALID_MEDIA ||
+              submissionState?.status === SUBMISSION_STATUS_TYPE.FAILED_VALIDATION ||
+              submissionState?.status === SUBMISSION_STATUS_TYPE.FAILED_TRANSFORMED ||
+              submissionState?.status === SUBMISSION_STATUS_TYPE.FAILED_PROCESSING_OCCURRENCE_DATA) && (
               <Box>
                 {displayAlertBox(
                   'error',
                   mdiAlertCircleOutline,
-                  submissionStatus.inputFileName,
-                  `Validation error: ${submissionStatus?.status}`
+                  submissionState.inputFileName,
+                  `Validation error: ${submissionState?.status}`
                 )}
                 <Box my={3}>
                   <Typography data-testid="observations-error-details" variant="body1">
@@ -464,20 +466,20 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
               </Box>
             )}
 
-          {!isValidating &&
-            submissionStatus &&
-            (submissionStatus.status === SUBMISSION_STATUS_TYPE.DARWIN_CORE_VALIDATED ||
-              submissionStatus.status === SUBMISSION_STATUS_TYPE.TEMPLATE_VALIDATED ||
-              submissionStatus.status === SUBMISSION_STATUS_TYPE.TEMPLATE_TRANSFORMED) && (
-              <Box>{displayAlertBox('info', mdiFileOutline, submissionStatus.inputFileName, '')}</Box>
+          {!submissionState?.isValidating &&
+            submissionState &&
+            (submissionState.status === SUBMISSION_STATUS_TYPE.DARWIN_CORE_VALIDATED ||
+              submissionState.status === SUBMISSION_STATUS_TYPE.TEMPLATE_VALIDATED ||
+              submissionState.status === SUBMISSION_STATUS_TYPE.TEMPLATE_TRANSFORMED) && (
+              <Box>{displayAlertBox('info', mdiFileOutline, submissionState.inputFileName, '')}</Box>
             )}
 
-          {isValidating && submissionStatus && (
+          {submissionState?.isValidating && submissionState && (
             <Box>
               {displayAlertBox(
                 'info',
                 mdiClockOutline,
-                submissionStatus?.inputFileName,
+                submissionState?.inputFileName,
                 'Validating observation data. Please wait ...'
               )}
             </Box>
