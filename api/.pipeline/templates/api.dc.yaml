@@ -381,10 +381,8 @@ objects:
     apiVersion: route.openshift.io/v1
     metadata:
       annotations:
-        # These 2 annotations (haproxy.router.openshift.io/balance and haproxy.router.openshift.io/disable_cookies) are set in order to prevent 'sticky sessions'
-        # 'sticky sessions': If an API pod is busy fullfilling a request, subsequent requests will go to other API pods rather than wait for the same pod (when pod replicas is > 1)
-        haproxy.router.openshift.io/balance: leastconn
-        haproxy.router.openshift.io/disable_cookies: true
+        haproxy.router.openshift.io/balance: 'leastconn'
+        haproxy.router.openshift.io/disable_cookies: 'true'
       creationTimestamp: null
       labels: {}
       name: ${NAME}${SUFFIX}
