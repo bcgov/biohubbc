@@ -8,6 +8,7 @@ import { authorizeRequestHandler } from '../../request-handlers/security/authori
 import { ErrorService } from '../../services/error-service';
 import { ValidationService } from '../../services/validation-service';
 import { getLogger } from '../../utils/logger';
+import { SubmissionError } from '../../utils/submission-error';
 
 const defaultLog = getLogger('paths/xlsx/process');
 
@@ -111,10 +112,17 @@ export function processFile(): RequestHandler {
       await connection.open();
 
       const validationService = new ValidationService(connection);
-      // process the raw template data
-      await validationService.processXLSXFile(submissionId, surveyId);
-      // process the resulting transformed dwc data
-      await validationService.processDWCFile(submissionId);
+
+      try {
+        // process the raw template data
+        await validationService.processXLSXFile(submissionId, surveyId);
+        // process the resulting transformed dwc data
+        await validationService.processDWCFile(submissionId);
+      } catch (error: any) {
+        if (!(error instanceof SubmissionError)) {
+          throw error;
+        }
+      }
 
       await connection.commit();
     } catch (error) {
