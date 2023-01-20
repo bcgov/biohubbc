@@ -60,18 +60,18 @@ jobs:
       # Install Node - for `node` and `npm` commands
       # Note: already uses actions/cache internally, so repeat calls are not a performance hit
       - name: Setup Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: 14
 
       - name: Checkout Target Branch
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           persist-credentials: false
 
       # Cache the repo
       - name: Cache repo
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         id: cache-repo
         env:
           cache-name: cache-repo
@@ -95,13 +95,13 @@ jobs:
     steps:
       # Install Node - for `node` and `npm` commands
       - name: Setup Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: 14
 
       # Load repo from cache
       - name: Cache repo
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         id: cache-repo
         env:
           cache-name: cache-repo
@@ -114,11 +114,11 @@ jobs:
       # Checkout the branch if not restored via cache
       - name: Checkout Target Branch
         if: steps.cache-repo.outputs.cache-hit != 'true'
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       # Cache Node modules
       - name: Cache node modules
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         env:
           cache-name: cache-node-modules
         with:
@@ -138,7 +138,7 @@ jobs:
       - name: Build Database Image
         working-directory: "./database/.pipeline/"
         run: |
-          npm install --only=production
+          npm ci --only=production
           DEBUG=* npm run db:build -- --pr=$PR_NUMBER --branch=$BRANCH --type=static
 
   # Build the Database Setup image
@@ -154,13 +154,13 @@ jobs:
     steps:
       # Install Node - for `node` and `npm` commands
       - name: Setup Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: 14
 
       # Load repo from cache
       - name: Cache repo
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         id: cache-repo
         env:
           cache-name: cache-repo
@@ -173,11 +173,11 @@ jobs:
       # Checkout the branch if not restored via cache
       - name: Checkout Target Branch
         if: steps.cache-repo.outputs.cache-hit != 'true'
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       # Cache Node modules
       - name: Cache node modules
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         env:
           cache-name: cache-node-modules
         with:
@@ -197,7 +197,7 @@ jobs:
       - name: Build Database Setup Image
         working-directory: "./database/.pipeline/"
         run: |
-          npm install --only=production
+          npm ci --only=production
           DEBUG=* npm run db-setup:build -- --pr=$PR_NUMBER --branch=$BRANCH --type=static
 
   # Build the API image
@@ -213,13 +213,13 @@ jobs:
     steps:
       # Install Node - for `node` and `npm` commands
       - name: Setup Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: 14
 
       # Load repo from cache
       - name: Cache repo
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         id: cache-repo
         env:
           cache-name: cache-repo
@@ -232,11 +232,11 @@ jobs:
       # Checkout the branch if not restored via cache
       - name: Checkout Target Branch
         if: steps.cache-repo.outputs.cache-hit != 'true'
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       # Cache Node modules
       - name: Cache node modules
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         env:
           cache-name: cache-node-modules
         with:
@@ -256,7 +256,7 @@ jobs:
       - name: Build API Image
         working-directory: "./api/.pipeline/"
         run: |
-          npm install --only=production
+          npm ci --only=production
           DEBUG=* npm run build -- --pr=$PR_NUMBER --branch=$BRANCH --type=static
 
   # Build the web frontend app
@@ -272,13 +272,13 @@ jobs:
     steps:
       # Install Node - for `node` and `npm` commands
       - name: Setup Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: 14
 
       # Load repo from cache
       - name: Cache repo
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         id: cache-repo
         env:
           cache-name: cache-repo
@@ -291,11 +291,11 @@ jobs:
       # Checkout the branch if not restored via cache
       - name: Checkout Target Branch
         if: steps.cache-repo.outputs.cache-hit != 'true'
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       # Cache Node modules
       - name: Cache node modules
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         env:
           cache-name: cache-node-modules
         with:
@@ -315,7 +315,7 @@ jobs:
       - name: Build APP Image
         working-directory: "./app/.pipeline/"
         run: |
-          npm install --only=production
+          npm ci --only=production
           DEBUG=* npm run build -- --pr=$PR_NUMBER --branch=$BRANCH --type=static
 
   # Deploy Database image
@@ -332,13 +332,13 @@ jobs:
     steps:
       # Install Node - for `node` and `npm` commands
       - name: Setup Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: 14
 
       # Load repo from cache
       - name: Cache repo
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         id: cache-repo
         env:
           cache-name: cache-repo
@@ -351,11 +351,11 @@ jobs:
       # Checkout the branch if not restored via cache
       - name: Checkout Target Branch
         if: steps.cache-repo.outputs.cache-hit != 'true'
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       # Cache Node modules
       - name: Cache node modules
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         env:
           cache-name: cache-node-modules
         with:
@@ -375,7 +375,7 @@ jobs:
       - name: Deploy Database Image
         working-directory: "./database/.pipeline/"
         run: |
-          npm install --only=production
+          npm ci --only=production
           DEBUG=* npm run db:deploy -- --pr=$PR_NUMBER --env=$BRANCH --branch=$BRANCH --type=static
 
   # Deploy Database setup image
@@ -393,13 +393,13 @@ jobs:
     steps:
       # Install Node - for `node` and `npm` commands
       - name: Setup Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: 14
 
       # Load repo from cache
       - name: Cache repo
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         id: cache-repo
         env:
           cache-name: cache-repo
@@ -412,11 +412,11 @@ jobs:
       # Checkout the branch if not restored via cache
       - name: Checkout Target Branch
         if: steps.cache-repo.outputs.cache-hit != 'true'
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       # Cache Node modules
       - name: Cache node modules
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         env:
           cache-name: cache-node-modules
         with:
@@ -436,7 +436,7 @@ jobs:
       - name: Deploy Database Setup Image
         working-directory: "./database/.pipeline/"
         run: |
-          npm install --only=production
+          npm ci --only=production
           DEBUG=* npm run db-setup:deploy -- --pr=$PR_NUMBER --env=$BRANCH --branch=$BRANCH --type=static
 
   # Deploy API image
@@ -454,13 +454,13 @@ jobs:
     steps:
       # Install Node - for `node` and `npm` commands
       - name: Setup Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: 14
 
       # Load repo from cache
       - name: Cache repo
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         id: cache-repo
         env:
           cache-name: cache-repo
@@ -473,11 +473,11 @@ jobs:
       # Checkout the branch if not restored via cache
       - name: Checkout Target Branch
         if: steps.cache-repo.outputs.cache-hit != 'true'
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       # Cache Node modules
       - name: Cache node modules
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         env:
           cache-name: cache-node-modules
         with:
@@ -497,7 +497,7 @@ jobs:
       - name: Deploy API Image
         working-directory: "./api/.pipeline/"
         run: |
-          npm install --only=production
+          npm ci --only=production
           DEBUG=* npm run deploy -- --pr=$PR_NUMBER --env=$BRANCH --branch=$BRANCH --type=static
 
   # Deploy APP image
@@ -514,13 +514,13 @@ jobs:
     steps:
       # Install Node - for `node` and `npm` commands
       - name: Setup Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: 14
 
       # Load repo from cache
       - name: Cache repo
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         id: cache-repo
         env:
           cache-name: cache-repo
@@ -533,11 +533,11 @@ jobs:
       # Checkout the branch if not restored via cache
       - name: Checkout Target Branch
         if: steps.cache-repo.outputs.cache-hit != 'true'
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       # Cache Node modules
       - name: Cache node modules
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         env:
           cache-name: cache-node-modules
         with:
@@ -557,7 +557,7 @@ jobs:
       - name: Deploy APP Image
         working-directory: "./app/.pipeline"
         run: |
-          npm install --only=production
+          npm ci --only=production
           DEBUG=* npm run deploy -- --pr=$PR_NUMBER --env=$BRANCH --branch=$BRANCH --type=static
 
   cycleschemaspy:
@@ -597,13 +597,13 @@ jobs:
     steps:
       # Install Node - for `node` and `npm` commands
       - name: Setup Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: 14
 
       # Load repo from cache
       - name: Cache repo
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         id: cache-repo
         env:
           cache-name: cache-repo
@@ -616,11 +616,11 @@ jobs:
       # Checkout the branch if not restored via cache
       - name: Checkout Target Branch
         if: steps.cache-repo.outputs.cache-hit != 'true'
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       # Cache Node modules
       - name: Cache node modules
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         env:
           cache-name: cache-node-modules
         with:
@@ -640,7 +640,7 @@ jobs:
       - name: Clean Database Artifacts
         working-directory: "./database/.pipeline/"
         run: |
-          npm install --only=production
+          npm ci --only=production
           DEBUG=* npm run clean -- --pr=$PR_NUMBER --env=build
           DEBUG=* npm run clean -- --pr=$PR_NUMBER --env=dev
 
@@ -648,7 +648,7 @@ jobs:
       - name: Clean API Artifacts
         working-directory: "./api/.pipeline/"
         run: |
-          npm install --only=production
+          npm ci --only=production
           DEBUG=* npm run clean -- --pr=$PR_NUMBER --env=build
           DEBUG=* npm run clean -- --pr=$PR_NUMBER --env=dev
 
@@ -656,7 +656,7 @@ jobs:
       - name: Clean APP Artifacts
         working-directory: "./app/.pipeline/"
         run: |
-          npm install --only=production
+          npm ci --only=production
           DEBUG=* npm run clean -- --pr=$PR_NUMBER --env=build
           DEBUG=* npm run clean -- --pr=$PR_NUMBER --env=dev
 

@@ -21,19 +21,19 @@ jobs:
     steps:
       # Checkout the PR branch
       - name: Checkout Dev Branch - Contains the Pipeline Code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           ref: "dev"
 
       # Install Node - for `node` and `npm` commands
       - name: Setup Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: 14
 
       # Cache Node modules
       - name: Cache node modules
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         env:
           cache-name: cache-node-modules
         with:
