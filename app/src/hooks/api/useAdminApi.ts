@@ -57,11 +57,13 @@ const useAdminApi = (axios: AxiosInstance) => {
 
   const approveAccessRequest = async (
     administrativeActivityId: number,
+    userGuid: string,
     userIdentifier: string,
     identitySource: string,
     roleIds: number[] = []
   ): Promise<void> => {
     const { data } = await axios.put(`/api/administrative-activity/system-access/${administrativeActivityId}/approve`, {
+      userGuid,
       userIdentifier,
       identitySource,
       roleIds: roleIds
@@ -106,17 +108,19 @@ const useAdminApi = (axios: AxiosInstance) => {
    *
    * Note: Will fail if the system user already exists.
    *
+   * @param {string} userGuid
    * @param {string} userIdentifier
    * @param {string} identitySource
    * @param {number} roleId
-   * @return {*}
+   * @return {*} {boolean} True if the user is successfully added, false otherwise.
    */
-  const addSystemUser = async (userIdentifier: string, identitySource: string, roleId: number): Promise<boolean> => {
-    const { status } = await axios.post(`/api/user/add`, {
-      identitySource: identitySource,
-      userIdentifier: userIdentifier,
-      roleId: roleId
-    });
+  const addSystemUser = async (
+    userGuid: string,
+    userIdentifier: string,
+    identitySource: string,
+    roleId: number
+  ): Promise<boolean> => {
+    const { status } = await axios.post(`/api/user/add`, { userGuid, identitySource, userIdentifier, roleId });
 
     return status === 200;
   };

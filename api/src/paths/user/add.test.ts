@@ -34,7 +34,7 @@ describe('user', () => {
         expect.fail();
       } catch (actualError) {
         expect((actualError as HTTPError).status).to.equal(400);
-        expect((actualError as HTTPError).message).to.equal('Missing required body param: userIdentifier');
+        expect((actualError as HTTPError).message).to.equal('Missing required body param: userGuid');
       }
     });
 
@@ -46,6 +46,7 @@ describe('user', () => {
       const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
       mockReq.body = {
+        userGuid: 'aaaa',
         identitySource: SYSTEM_IDENTITY_SOURCE.IDIR,
         roleId: 1
       };
@@ -61,6 +62,30 @@ describe('user', () => {
       }
     });
 
+    it('should throw a 400 error when no userGuid', async () => {
+      const dbConnectionObj = getMockDBConnection();
+
+      sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
+
+      const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+
+      mockReq.body = {
+        identitySource: SYSTEM_IDENTITY_SOURCE.IDIR,
+        userIdentifier: 'username',
+        roleId: 1
+      };
+
+      try {
+        const requestHandler = user.addSystemRoleUser();
+
+        await requestHandler(mockReq, mockRes, mockNext);
+        expect.fail();
+      } catch (actualError) {
+        expect((actualError as HTTPError).status).to.equal(400);
+        expect((actualError as HTTPError).message).to.equal('Missing required body param: userGuid');
+      }
+    });
+
     it('should throw a 400 error when no identitySource', async () => {
       const dbConnectionObj = getMockDBConnection();
 
@@ -69,6 +94,7 @@ describe('user', () => {
       const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
       mockReq.body = {
+        userGuid: 'aaaa',
         userIdentifier: 'username',
         roleId: 1
       };
@@ -92,6 +118,7 @@ describe('user', () => {
       const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
       mockReq.body = {
+        userGuid: 'aaaa',
         userIdentifier: 'username',
         identitySource: SYSTEM_IDENTITY_SOURCE.IDIR
       };
@@ -115,6 +142,7 @@ describe('user', () => {
       const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
       mockReq.body = {
+        userGuid: 'aaaa',
         userIdentifier: 'username',
         identitySource: SYSTEM_IDENTITY_SOURCE.IDIR,
         roleId: 1
@@ -123,6 +151,8 @@ describe('user', () => {
       const mockUserObject: UserObject = {
         id: 1,
         user_identifier: '',
+        user_guid: '',
+        identity_source: '',
         record_end_date: '',
         role_ids: [1],
         role_names: []

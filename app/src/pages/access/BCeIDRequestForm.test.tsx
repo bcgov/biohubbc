@@ -1,16 +1,20 @@
 import { render } from '@testing-library/react';
 import { Formik } from 'formik';
+import { SYSTEM_IDENTITY_SOURCE } from 'hooks/useKeycloakWrapper';
 import React from 'react';
-import BCeIDRequestForm, { BCeIDRequestFormInitialValues, BCeIDRequestFormYupSchema } from './BCeIDRequestForm';
+import BCeIDRequestForm, {
+  BCeIDBasicRequestFormInitialValues,
+  BCeIDBasicRequestFormYupSchema
+} from './BCeIDRequestForm';
 
 describe('BCeIDRequestForm', () => {
   it('matches the snapshot', () => {
     const { getByTestId } = render(
       <Formik
-        initialValues={BCeIDRequestFormInitialValues}
-        validationSchema={BCeIDRequestFormYupSchema}
+        initialValues={BCeIDBasicRequestFormInitialValues}
+        validationSchema={BCeIDBasicRequestFormYupSchema}
         onSubmit={async () => {}}>
-        {() => <BCeIDRequestForm />}
+        {() => <BCeIDRequestForm accountType={SYSTEM_IDENTITY_SOURCE.BCEID_BUSINESS} />}
       </Formik>
     );
 

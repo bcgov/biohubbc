@@ -1,51 +1,41 @@
 import axios from 'axios';
 import qs from 'qs';
 import { ApiGeneralError } from '../errors/api-error';
-
-type KeycloakUserData = {
-  id: string;
-  createdTimestamp: number;
-  username: string;
-  enabled: boolean;
-  totp: boolean;
-  emailVerified: boolean;
-  firstName: string;
-  lastName: string;
-  email: string;
-  attributes: IDIRAttributes | BCEIDAttributes;
-  disableableCredentialTypes: [];
-  requiredActions: [];
-  notBefore: number;
-  access: {
-    manageGroupMembership: boolean;
-    view: boolean;
-    mapRoles: boolean;
-    impersonate: boolean;
-    manage: boolean;
-  };
-};
+import { getLogger } from '../utils/logger';
 
 type IDIRAttributes = {
   idir_user_guid: [string];
-  idir_userid: [string];
-  idir_guid: [string];
-  displayName: [string];
+  idir_username: [string];
+  display_name: [string];
+  given_name: [string];
+  family_name: [string];
 };
 
-type BCEIDAttributes = {
-  bceid_userid: [string];
-  displayName: [string];
+interface BCEIDBasicAttributes {
+  bceid_user_guid: [string];
+  bceid_username: [string];
+}
+
+type BCEIDBusinessAttributes = BCEIDBasicAttributes & {
+  bceid_business_guid: [string];
+  bceid_business_name: [string];
+  display_name: [string];
 };
+
+interface KeycloakGetUserResponse {
+  users: KeycloakUser[];
+  roles: Record<string, string>[];
+}
 
 export type KeycloakUser = {
-  id: string;
   username: string;
+  email: string;
   firstName: string;
   lastName: string;
-  email: string;
-  enabled: boolean;
-  attributes: IDIRAttributes | BCEIDAttributes;
+  attributes: IDIRAttributes | BCEIDBusinessAttributes;
 };
+
+const defaultLog = getLogger('services/keycloak-service');
 
 /**
  * Service for calling the keycloak admin API.
@@ -57,12 +47,16 @@ export type KeycloakUser = {
  * @class KeycloakService
  */
 export class KeycloakService {
-  keycloakRealmUrl: string;
-  keycloakAdminUrl: string;
+  keycloakTokenHost: string;
+  keycloakApiHost: string;
+  keycloakIntegrationId: string;
+  keycloakEnvironment: string;
 
   constructor() {
-    this.keycloakRealmUrl = `${process.env.KEYCLOAK_HOST}/realms/${process.env.KEYCLOAK_REALM}`;
-    this.keycloakAdminUrl = `${process.env.KEYCLOAK_HOST}/admin/realms/${process.env.KEYCLOAK_REALM}`;
+    this.keycloakTokenHost = `${process.env.KEYCLOAK_ADMIN_HOST}/realms/${process.env.KEYCLOAK_REALM}/protocol/openid-connect/token`;
+    this.keycloakApiHost = `${process.env.KEYCLOAK_API_HOST}`;
+    this.keycloakIntegrationId = `${process.env.KEYCLOAK_INTEGRATION_ID}`;
+    this.keycloakEnvironment = `${process.env.KEYCLOAK_ENVIRONMENT}`;
   }
 
   /**
@@ -72,17 +66,19 @@ export class KeycloakService {
    * @memberof KeycloakService
    */
   async getKeycloakToken(): Promise<string> {
+    defaultLog.debug({ label: 'getKeycloakToken', keycloakTokenHost: this.keycloakTokenHost });
+
     try {
       const { data } = await axios.post(
-        `${this.keycloakRealmUrl}/protocol/openid-connect/token`,
-        qs.stringify({ grant_type: 'client_credentials' }),
+        this.keycloakTokenHost,
+        qs.stringify({
+          grant_type: 'client_credentials',
+          client_id: process.env.KEYCLOAK_ADMIN_USERNAME,
+          client_secret: process.env.KEYCLOAK_ADMIN_PASSWORD
+        }),
         {
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded'
-          },
-          auth: {
-            username: process.env.KEYCLOAK_ADMIN_USERNAME as string,
-            password: process.env.KEYCLOAK_ADMIN_PASSWORD as string
           }
         }
       );
@@ -107,31 +103,29 @@ export class KeycloakService {
     const token = await this.getKeycloakToken();
 
     try {
-      const { data } = await axios.get<KeycloakUserData[]>(
-        `${this.keycloakAdminUrl}/users/?${qs.stringify({ username: username })}`,
+      const { data } = await axios.get<KeycloakGetUserResponse>(
+        `${this.keycloakApiHost}/integrations/${this.keycloakIntegrationId}/${
+          this.keycloakEnvironment
+        }/user-role-mappings?${qs.stringify({ username })}`,
         {
-          headers: {
-            authorization: `Bearer ${token}`
-          }
+          headers: { authorization: `Bearer ${token}` }
         }
       );
 
-      if (!data.length) {
+      if (!data.users.length) {
         throw new ApiGeneralError('Found no matching keycloak users');
       }
 
-      if (data.length !== 1) {
+      if (data.users.length !== 1) {
         throw new ApiGeneralError('Found too many matching keycloak users');
       }
 
       return {
-        id: data[0].id,
-        firstName: data[0].firstName,
-        lastName: data[0].lastName,
-        email: data[0].email,
-        enabled: data[0].enabled,
-        username: data[0].username,
-        attributes: data[0].attributes
+        username: data.users[0].username,
+        email: data.users[0].email,
+        firstName: data.users[0].firstName,
+        lastName: data.users[0].lastName,
+        attributes: data.users[0].attributes
       };
     } catch (error) {
       throw new ApiGeneralError('Failed to get user info from keycloak', [(error as Error).message]);

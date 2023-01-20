@@ -127,7 +127,7 @@ describe('removeSystemUser', () => {
 
     sinon.stub(delete_endpoint, 'checkIfUserIsOnlyProjectLeadOnAnyProject').resolves();
 
-    sinon.stub(UserService.prototype, 'getUserById').resolves(null);
+    sinon.stub(UserService.prototype, 'getUserById').throws;
 
     try {
       const requestHandler = delete_endpoint.removeSystemUser();
@@ -155,6 +155,8 @@ describe('removeSystemUser', () => {
     sinon.stub(UserService.prototype, 'getUserById').resolves({
       id: 1,
       user_identifier: 'testname',
+      user_guid: 'aaaa',
+      identity_source: 'idir',
       record_end_date: '2010-10-10',
       role_ids: [1, 2],
       role_names: ['role 1', 'role 2']
@@ -187,6 +189,8 @@ describe('removeSystemUser', () => {
     sinon.stub(UserService.prototype, 'getUserById').resolves({
       id: 1,
       user_identifier: 'testname',
+      user_guid: 'aaaa',
+      identity_source: 'idir',
       record_end_date: '',
       role_ids: [1, 2],
       role_names: ['role 1', 'role 2']
@@ -222,6 +226,8 @@ describe('removeSystemUser', () => {
     sinon.stub(UserService.prototype, 'getUserById').resolves({
       id: 1,
       user_identifier: 'testname',
+      user_guid: 'aaaa',
+      identity_source: 'idir',
       record_end_date: '',
       role_ids: [1, 2],
       role_names: ['role 1', 'role 2']
@@ -255,6 +261,8 @@ describe('removeSystemUser', () => {
     sinon.stub(UserService.prototype, 'getUserById').resolves({
       id: 1,
       user_identifier: 'testname',
+      user_guid: 'aaaa',
+      identity_source: 'idir',
       record_end_date: '',
       role_ids: [1, 2],
       role_names: ['role 1', 'role 2']
@@ -290,6 +298,8 @@ describe('removeSystemUser', () => {
     sinon.stub(UserService.prototype, 'getUserById').resolves({
       id: 1,
       user_identifier: 'testname',
+      user_guid: 'aaaa',
+      identity_source: 'idir',
       record_end_date: '',
       role_ids: [1, 2],
       role_names: ['role 1', 'role 2']
@@ -326,6 +336,8 @@ describe('removeSystemUser', () => {
     sinon.stub(UserService.prototype, 'getUserById').resolves({
       id: 1,
       user_identifier: 'testname',
+      user_guid: 'aaaa',
+      identity_source: 'idir',
       record_end_date: '',
       role_ids: [1, 2],
       role_names: ['role 1', 'role 2']

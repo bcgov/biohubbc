@@ -75,7 +75,7 @@ export class ErrorRepository extends BaseRepository {
     const sqlStatement = SQL`
         INSERT INTO submission_message (
           submission_status_id,
-          submission_message_type_id,         
+          submission_message_type_id,
           event_timestamp,
           message
         ) VALUES (

@@ -43,6 +43,8 @@ describe('PermitService', () => {
       const mockUserObject: UserObject = {
         id: 1,
         user_identifier: 'test_user',
+        user_guid: 'aaaa',
+        identity_source: 'idir',
         record_end_date: '',
         role_ids: [],
         role_names: [SYSTEM_ROLE.SYSTEM_ADMIN]
@@ -80,6 +82,8 @@ describe('PermitService', () => {
       const mockUserObject: UserObject = {
         id: 1,
         user_identifier: 'test_user',
+        user_guid: 'aaaa',
+        identity_source: 'idir',
         record_end_date: '',
         role_ids: [],
         role_names: [SYSTEM_ROLE.DATA_ADMINISTRATOR]
@@ -117,6 +121,8 @@ describe('PermitService', () => {
       const mockUserObject: UserObject = {
         id: 1,
         user_identifier: 'test_user',
+        user_guid: 'aaaa',
+        identity_source: 'idir',
         record_end_date: '',
         role_ids: [],
         role_names: []

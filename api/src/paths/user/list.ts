@@ -44,6 +44,10 @@ GET.apiDoc = {
                 id: {
                   type: 'number'
                 },
+                user_guid: {
+                  type: 'string',
+                  description: 'The GUID for the user.'
+                },
                 user_identifier: {
                   type: 'string'
                 },

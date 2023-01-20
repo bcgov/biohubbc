@@ -111,7 +111,10 @@ export function processFile(): RequestHandler {
       await connection.open();
 
       const validationService = new ValidationService(connection);
-      await validationService.processFile(submissionId, surveyId);
+      // process the raw template data
+      await validationService.processXLSXFile(submissionId, surveyId);
+      // process the resulting transformed dwc data
+      await validationService.processDWCFile(submissionId);
 
       await connection.commit();
     } catch (error) {

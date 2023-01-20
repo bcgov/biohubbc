@@ -1,7 +1,6 @@
 import { SUBMISSION_STATUS_TYPE, SUMMARY_SUBMISSION_MESSAGE_TYPE } from '../constants/status';
 import { IDBConnection } from '../database/db';
 import { PostSummaryDetails } from '../models/summaryresults-create';
-import { SubmissionRepository } from '../repositories/submission-repository';
 import {
   ISummarySubmissionMessagesResponse,
   ISummarySubmissionResponse,
@@ -23,8 +22,6 @@ import {
   SummarySubmissionErrorFromMessageType
 } from '../utils/submission-error';
 import { DBService } from './db-service';
-import { ErrorService } from './error-service';
-import { OccurrenceService } from './occurrence-service';
 import { SurveyService } from './survey-service';
 
 const defaultLog = getLogger('services/summary-service');
@@ -36,18 +33,12 @@ interface ICsvMediaState {
 
 export class SummaryService extends DBService {
   summaryRepository: SummaryRepository;
-  submissionRepository: SubmissionRepository;
   surveyService: SurveyService;
-  occurrenceService: OccurrenceService;
-  errorService: ErrorService;
 
   constructor(connection: IDBConnection) {
     super(connection);
     this.summaryRepository = new SummaryRepository(connection);
-    this.submissionRepository = new SubmissionRepository(connection);
-    this.occurrenceService = new OccurrenceService(connection);
     this.surveyService = new SurveyService(connection);
-    this.errorService = new ErrorService(connection);
   }
 
   /**
@@ -118,6 +109,9 @@ export class SummaryService extends DBService {
 
   /**
    * Upload scraped summary submission data.
+   *
+   * TODO: Remove this and all related "scraping" code for summary submissions? I don't think we plan to scrape
+   * summary report submissions anymore. I don't think the "survey_summary_detail" table exists anymore.
    *
    * @param {number} summarySubmissionId
    * @param {any} scrapedSummaryDetail
@@ -236,20 +230,20 @@ export class SummaryService extends DBService {
     defaultLog.debug({ label: 'prepXLSX', message: 's3File' });
     const parsedMedia = parseUnknownMedia(file);
 
-    // @TODO not sure how to trigger these through testing
+    // TODO not sure how to trigger these through testing
     if (!parsedMedia) {
       throw SummarySubmissionErrorFromMessageType(SUMMARY_SUBMISSION_MESSAGE_TYPE.UNSUPPORTED_FILE_TYPE);
     }
 
-    // @TODO not sure how to trigger these through testing
+    // TODO not sure how to trigger these through testing
     if (!(parsedMedia instanceof MediaFile)) {
       throw SummarySubmissionErrorFromMessageType(SUMMARY_SUBMISSION_MESSAGE_TYPE.INVALID_XLSX_CSV);
     }
 
     const xlsxCsv = new XLSXCSV(parsedMedia);
 
-    const sims_name = xlsxCsv.workbook.rawWorkbook.Custprops?.sims_name;
-    const sims_version = xlsxCsv.workbook.rawWorkbook.Custprops?.sims_version;
+    const sims_name = xlsxCsv.workbook.rawWorkbook.Custprops?.['sims_name'];
+    const sims_version = xlsxCsv.workbook.rawWorkbook.Custprops?.['sims_version'];
 
     if (!sims_name || !sims_version) {
       throw SummarySubmissionErrorFromMessageType(SUMMARY_SUBMISSION_MESSAGE_TYPE.FAILED_TO_GET_TEMPLATE_NAME_VERSION);
@@ -269,8 +263,8 @@ export class SummaryService extends DBService {
     const speciesData = await this.surveyService.getSpeciesData(surveyId);
 
     // Summary template name and version
-    const sims_name: string = file.workbook.rawWorkbook.Custprops.sims_name;
-    const sims_version: string = file.workbook.rawWorkbook.Custprops.sims_version;
+    const sims_name: string = file.workbook.rawWorkbook.Custprops?.['sims_name'];
+    const sims_version: string = file.workbook.rawWorkbook.Custprops?.['sims_version'];
     defaultLog.debug({
       label: 'getSummaryTemplateSpeciesRecord',
       data: {

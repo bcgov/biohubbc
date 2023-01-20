@@ -3,7 +3,7 @@ import * as pg from 'pg';
 import { SQLStatement } from 'sql-template-strings';
 import { ApiExecuteSQLError, ApiGeneralError } from '../errors/api-error';
 import { queries } from '../queries/queries';
-import { getUserIdentifier, getUserIdentitySource } from '../utils/keycloak-utils';
+import { getUserGuid, getUserIdentitySource } from '../utils/keycloak-utils';
 import { getLogger } from '../utils/logger';
 
 const defaultLog = getLogger('database/db');
@@ -33,7 +33,7 @@ export const defaultPoolConfig: pg.PoolConfig = {
 
 // Custom type handler for psq `DATE` type to prevent local time/zone information from being added.
 // Why? By default, node-postgres assumes local time/zone for any psql `DATE` or `TIME` types that don't have timezone information.
-// This Can lead to unexpected behaviour when the original psql `DATE` value was intentionally omitting time/zone information.
+// This Can lead to unexpected behavior when the original psql `DATE` value was intentionally omitting time/zone information.
 // PSQL date types: https://www.postgresql.org/docs/12/datatype-datetime.html
 // node-postgres type handling (see bottom of page): https://node-postgres.com/features/types
 pg.types.setTypeParser(pg.types.builtins.DATE, (stringValue: string) => {
@@ -313,18 +313,15 @@ export const getDBConnection = function (keycloakToken: object): IDBConnection {
    * Sets the _systemUserId if successful.
    */
   const _setUserContext = async () => {
-    const userIdentifier = getUserIdentifier(_token);
+    const userGuid = getUserGuid(_token);
     const userIdentitySource = getUserIdentitySource(_token);
 
-    if (!userIdentifier || !userIdentitySource) {
+    if (!userGuid || !userIdentitySource) {
       throw new ApiGeneralError('Failed to identify authenticated user');
     }
 
     // Set the user context for all queries made using this connection
-    const setSystemUserContextSQLStatement = queries.database.setSystemUserContextSQL(
-      userIdentifier,
-      userIdentitySource
-    );
+    const setSystemUserContextSQLStatement = queries.database.setSystemUserContextSQL(userGuid, userIdentitySource);
 
     if (!setSystemUserContextSQLStatement) {
       throw new ApiExecuteSQLError('Failed to build SQL user context statement');
@@ -363,7 +360,10 @@ export const getDBConnection = function (keycloakToken: object): IDBConnection {
  * @return {*}  {IDBConnection}
  */
 export const getAPIUserDBConnection = (): IDBConnection => {
-  return getDBConnection({ preferred_username: 'biohub_api@database' });
+  return getDBConnection({
+    preferred_username: `${DB_USERNAME}@database`,
+    identity_provider: 'database'
+  });
 };
 
 /**

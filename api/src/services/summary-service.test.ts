@@ -24,6 +24,10 @@ import * as MediaUtils from '../utils/media/media-utils';
 import { ValidationSchemaParser } from '../utils/media/validation/validation-schema-parser';
 import { TransformationSchemaParser } from '../utils/media/xlsx/transformation/transformation-schema-parser';
 import { XLSXTransformation } from '../utils/media/xlsx/transformation/xlsx-transformation';
+
+
+
+
 */
 import { XLSXCSV } from '../utils/media/xlsx/xlsx-file';
 import {
@@ -150,8 +154,6 @@ describe('SummaryService', () => {
       };
       const prep = sinon.stub(service, 'summaryTemplatePreparation').resolves(mockPrep);
       const validation = sinon.stub(service, 'summaryTemplateValidation').throws(new Error());
-      const submissionStatus = sinon.stub(service.submissionRepository, 'insertSubmissionStatus').resolves();
-      const insertError = sinon.stub(service.errorService, 'insertSubmissionError').resolves();
 
       try {
         await service.validateFile(1, 1);
@@ -159,8 +161,6 @@ describe('SummaryService', () => {
         expect(validation).to.be.calledOnce;
       } catch (error) {
         expect(error).not.to.be.instanceOf(SubmissionError);
-        expect(insertError).not.to.be.calledOnce;
-        expect(submissionStatus).not.to.be.calledOnce;
       }
     });
   });

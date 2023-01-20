@@ -1,13 +1,12 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_IDENTITY_SOURCE } from '../../../../constants/database';
-import { EXTERNAL_BCEID_IDENTITY_SOURCES, EXTERNAL_IDIR_IDENTITY_SOURCES } from '../../../../constants/keycloak';
 import { SYSTEM_ROLE } from '../../../../constants/roles';
 import { getDBConnection } from '../../../../database/db';
 import { HTTP400 } from '../../../../errors/http-error';
 import { authorizeRequestHandler } from '../../../../request-handlers/security/authorization';
 import { UserService } from '../../../../services/user-service';
-import { convertUserIdentitySource } from '../../../../utils/keycloak-utils';
+import { coerceUserIdentitySource } from '../../../../utils/keycloak-utils';
 import { getLogger } from '../../../../utils/logger';
 import { ADMINISTRATIVE_ACTIVITY_STATUS_TYPE } from '../../../administrative-activities';
 import { updateAdministrativeActivity } from '../../../administrative-activity';
@@ -29,12 +28,7 @@ export const PUT: Operation = [
 ];
 
 const UniqueUserIdentitySources = Array.from(
-  new Set([
-    SYSTEM_IDENTITY_SOURCE.IDIR,
-    SYSTEM_IDENTITY_SOURCE.BCEID,
-    ...EXTERNAL_IDIR_IDENTITY_SOURCES,
-    ...EXTERNAL_BCEID_IDENTITY_SOURCES
-  ])
+  new Set([SYSTEM_IDENTITY_SOURCE.IDIR, SYSTEM_IDENTITY_SOURCE.BCEID_BASIC, SYSTEM_IDENTITY_SOURCE.BCEID_BUSINESS])
 );
 
 // Contains both uppercase and lowercase versions of the identity sources
@@ -67,8 +61,12 @@ PUT.apiDoc = {
       'application/json': {
         schema: {
           type: 'object',
-          required: ['userIdentifier', 'identitySource'],
+          required: ['userGuid', 'userIdentifier', 'identitySource'],
           properties: {
+            userGuid: {
+              type: 'string',
+              description: 'The GUID for the user.'
+            },
             userIdentifier: {
               type: 'string',
               description: 'The user identifier for the user.'
@@ -116,10 +114,11 @@ export function approveAccessRequest(): RequestHandler {
   return async (req, res) => {
     const administrativeActivityId = Number(req.params.administrativeActivityId);
 
+    const userGuid = req.body.userGuid;
     const userIdentifier = req.body.userIdentifier;
 
     // Convert identity sources that have multiple variations (ie: BCEID) into a single value supported by this app
-    const identitySource = convertUserIdentitySource(req.body.identitySource);
+    const identitySource = req.body.identitySource && coerceUserIdentitySource(req.body.identitySource);
 
     if (!identitySource) {
       throw new HTTP400('Invalid user identity source', [
@@ -137,7 +136,7 @@ export function approveAccessRequest(): RequestHandler {
       const userService = new UserService(connection);
 
       // Get the system user (adding or activating them if they already existed).
-      const systemUserObject = await userService.ensureSystemUser(userIdentifier, identitySource);
+      const systemUserObject = await userService.ensureSystemUser(userGuid, userIdentifier, identitySource);
 
       // Filter out any system roles that have already been added to the user
       const rolesIdsToAdd = roleIds.filter((roleId) => !systemUserObject.role_ids.includes(roleId));

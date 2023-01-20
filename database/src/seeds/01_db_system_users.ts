@@ -6,7 +6,8 @@ const DB_ADMIN = process.env.DB_ADMIN;
 export enum SYSTEM_IDENTITY_SOURCE {
   DATABASE = 'DATABASE',
   IDIR = 'IDIR',
-  BCEID = 'BCEID'
+  BCEID_BASIC = 'BCEIDBASIC',
+  BCEID_BUSINESS = 'BCEIDBUSINESS'
 }
 
 export enum SYSTEM_USER_ROLE_ID {
@@ -16,25 +17,67 @@ export enum SYSTEM_USER_ROLE_ID {
 }
 
 const systemUsers = [
-  { identifier: 'aagahche', type: SYSTEM_IDENTITY_SOURCE.IDIR, roleId: SYSTEM_USER_ROLE_ID.SYSTEM_ADMINISTRATOR },
-  { identifier: 'cgarrett', type: SYSTEM_IDENTITY_SOURCE.IDIR, roleId: SYSTEM_USER_ROLE_ID.SYSTEM_ADMINISTRATOR },
-  { identifier: 'cupshall', type: SYSTEM_IDENTITY_SOURCE.IDIR, roleId: SYSTEM_USER_ROLE_ID.SYSTEM_ADMINISTRATOR },
-  { identifier: 'jxdunsdo', type: SYSTEM_IDENTITY_SOURCE.IDIR, roleId: SYSTEM_USER_ROLE_ID.SYSTEM_ADMINISTRATOR },
-  { identifier: 'keinarss', type: SYSTEM_IDENTITY_SOURCE.IDIR, roleId: SYSTEM_USER_ROLE_ID.SYSTEM_ADMINISTRATOR },
-  { identifier: 'mbaerg', type: SYSTEM_IDENTITY_SOURCE.IDIR, roleId: SYSTEM_USER_ROLE_ID.SYSTEM_ADMINISTRATOR },
-  { identifier: 'nphura', type: SYSTEM_IDENTITY_SOURCE.IDIR, roleId: SYSTEM_USER_ROLE_ID.SYSTEM_ADMINISTRATOR },
-  { identifier: 'robmunro', type: SYSTEM_IDENTITY_SOURCE.IDIR, roleId: SYSTEM_USER_ROLE_ID.SYSTEM_ADMINISTRATOR },
-  { identifier: 'rstens', type: SYSTEM_IDENTITY_SOURCE.IDIR, roleId: SYSTEM_USER_ROLE_ID.SYSTEM_ADMINISTRATOR },
-  { identifier: 'zochampi', type: SYSTEM_IDENTITY_SOURCE.IDIR, roleId: SYSTEM_USER_ROLE_ID.SYSTEM_ADMINISTRATOR },
-  { identifier: 'arosenthal', type: SYSTEM_IDENTITY_SOURCE.IDIR, roleId: SYSTEM_USER_ROLE_ID.SYSTEM_ADMINISTRATOR },
-  { identifier: 'test1', type: SYSTEM_IDENTITY_SOURCE.BCEID, roleId: SYSTEM_USER_ROLE_ID.SYSTEM_ADMINISTRATOR },
-  { identifier: 'test2', type: SYSTEM_IDENTITY_SOURCE.BCEID, roleId: SYSTEM_USER_ROLE_ID.CREATOR },
-  { identifier: 'test3', type: SYSTEM_IDENTITY_SOURCE.IDIR, roleId: SYSTEM_USER_ROLE_ID.SYSTEM_ADMINISTRATOR },
-  { identifier: 'test4', type: SYSTEM_IDENTITY_SOURCE.IDIR, roleId: SYSTEM_USER_ROLE_ID.SYSTEM_ADMINISTRATOR },
-  { identifier: 'test5', type: SYSTEM_IDENTITY_SOURCE.IDIR, roleId: SYSTEM_USER_ROLE_ID.DATA_ADMINISTRATOR },
-  { identifier: 'test6', type: SYSTEM_IDENTITY_SOURCE.IDIR, roleId: SYSTEM_USER_ROLE_ID.CREATOR },
-  { identifier: 'test7', type: SYSTEM_IDENTITY_SOURCE.IDIR, roleId: SYSTEM_USER_ROLE_ID.CREATOR },
-  { identifier: 'cypress', type: SYSTEM_IDENTITY_SOURCE.IDIR, roleId: SYSTEM_USER_ROLE_ID.SYSTEM_ADMINISTRATOR }
+  {
+    identifier: 'arosenth',
+    type: SYSTEM_IDENTITY_SOURCE.IDIR,
+    roleId: SYSTEM_USER_ROLE_ID.SYSTEM_ADMINISTRATOR,
+    user_guid: 'DFE2CC5E345E4B1E813EC1DC10852064'
+  },
+  {
+    identifier: 'aagahche',
+    type: SYSTEM_IDENTITY_SOURCE.IDIR,
+    roleId: SYSTEM_USER_ROLE_ID.SYSTEM_ADMINISTRATOR,
+    user_guid: 'DF86C48FAD244498B0881AF8DBB7645F'
+  },
+
+  {
+    identifier: 'cgarrett',
+    type: SYSTEM_IDENTITY_SOURCE.IDIR,
+    roleId: SYSTEM_USER_ROLE_ID.SYSTEM_ADMINISTRATOR,
+    user_guid: '067361FFF3514B5E80AAAAD795E6741D'
+  },
+  {
+    identifier: 'cupshall',
+    type: SYSTEM_IDENTITY_SOURCE.IDIR,
+    roleId: SYSTEM_USER_ROLE_ID.SYSTEM_ADMINISTRATOR,
+    user_guid: 'C42DFA74A976490A819BC85FF5E254E4'
+  },
+  {
+    identifier: 'jxdunsdo',
+    type: SYSTEM_IDENTITY_SOURCE.IDIR,
+    roleId: SYSTEM_USER_ROLE_ID.SYSTEM_ADMINISTRATOR,
+    user_guid: '82E8D3B4BAD045E8AD3980D426EA781C'
+  },
+  {
+    identifier: 'keinarss',
+    type: SYSTEM_IDENTITY_SOURCE.IDIR,
+    roleId: SYSTEM_USER_ROLE_ID.SYSTEM_ADMINISTRATOR,
+    user_guid: 'F4663727DE89489C8B7CFA81E4FA99B3'
+  },
+  {
+    identifier: 'nphura',
+    type: SYSTEM_IDENTITY_SOURCE.IDIR,
+    roleId: SYSTEM_USER_ROLE_ID.SYSTEM_ADMINISTRATOR,
+    user_guid: '813B096BC1BC4AAAB2E39DDE58F432E2'
+  },
+  {
+    identifier: 'robmunro',
+    type: SYSTEM_IDENTITY_SOURCE.IDIR,
+    roleId: SYSTEM_USER_ROLE_ID.SYSTEM_ADMINISTRATOR,
+    user_guid: '72013F74B95A4FBEB53BDB4B494E5550'
+  },
+  {
+    identifier: 'zochampi',
+    type: SYSTEM_IDENTITY_SOURCE.IDIR,
+    roleId: SYSTEM_USER_ROLE_ID.SYSTEM_ADMINISTRATOR,
+    user_guid: '349F20767A834FB582A18E8D378973E7'
+  },
+  {
+    identifier: 'achirico',
+    type: SYSTEM_IDENTITY_SOURCE.IDIR,
+    roleId: SYSTEM_USER_ROLE_ID.SYSTEM_ADMINISTRATOR,
+    user_guid: 'E3A279530D164485BF43C6FE7A49E175'
+  }
 ];
 
 /**
@@ -58,7 +101,7 @@ export async function seed(knex: Knex): Promise<void> {
     if (!response?.rows?.[0]) {
       // Add system user
       await knex.raw(`
-        ${insertSystemUserSQL(systemUser.identifier, systemUser.type)}
+        ${insertSystemUserSQL(systemUser.identifier, systemUser.type, systemUser.user_guid.toLowerCase())}
       `);
 
       // Add system administrator role
@@ -89,10 +132,11 @@ const getSystemUserSQL = (userIdentifier: string) => `
  * @param {string} userIdentifier
  * @param {string} userType
  */
-const insertSystemUserSQL = (userIdentifier: string, userType: string) => `
+const insertSystemUserSQL = (userIdentifier: string, userType: string, userGuid: string) => `
   INSERT INTO system_user (
     user_identity_source_id,
     user_identifier,
+    user_guid,
     record_effective_date,
     create_date,
     create_user
@@ -100,6 +144,7 @@ const insertSystemUserSQL = (userIdentifier: string, userType: string) => `
   SELECT
     user_identity_source_id,
     '${userIdentifier}',
+    '${userGuid}',
     now(),
     now(),
     (SELECT system_user_id from system_user where user_identifier = '${DB_ADMIN}')

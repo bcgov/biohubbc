@@ -86,7 +86,7 @@ export enum SUBMISSION_STATUS_TYPE {
 export enum SUBMISSION_MESSAGE_TYPE {
   //message types that match the submission_message_type table, and API
 
-  'DUPLICATE_HEADER' = 'Duplicate header',
+  'DUPLICATE_HEADER' = 'Duplicate Header',
   'UNKNOWN_HEADER' = 'Unknown Header',
   'MISSING_REQUIRED_HEADER' = 'Missing Required Header',
   'MISSING_RECOMMENDED_HEADER' = 'Missing Recommended Header',
@@ -212,6 +212,7 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
 
     await biohubApi.observation.deleteObservationSubmission(projectId, surveyId, occurrenceSubmissionId);
 
+    await props.refresh();
     fetchObservationSubmission();
   };
 

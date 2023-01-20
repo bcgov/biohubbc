@@ -26,6 +26,8 @@ import { GetMapBounds, IMapBoundsOnChange, SetMapBounds } from './components/Bou
 import DrawControls, { IDrawControlsOnChange, IDrawControlsProps } from './components/DrawControls';
 import EventHandler from './components/EventHandler';
 import FullScreenScrollingEventHandler from './components/FullScreenScrollingEventHandler';
+import MarkerCluster, { IMarkerLayer } from './components/MarkerCluster';
+import StaticLayers, { IStaticLayer } from './components/StaticLayers';
 import WFSFeatureGroup, { IWFSParams } from './WFSFeatureGroup';
 
 /*
@@ -52,6 +54,8 @@ export interface IClusteredPointGeometries {
 
 export interface IMapContainerProps {
   mapId: string;
+  staticLayers?: IStaticLayer[];
+  markerLayers?: IMarkerLayer[];
   drawControls?: IDrawControlsProps;
   scrollWheelZoom?: boolean;
   classes?: Record<string, any>;
@@ -72,6 +76,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
   const {
     classes,
     mapId,
+    staticLayers,
+    markerLayers,
     drawControls,
     onDrawChange,
     nonEditableGeometries,
@@ -198,6 +204,10 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       {additionalLayers && <AdditionalLayers layers={additionalLayers} />}
 
       <LayersControl position="bottomright">
+        <StaticLayers layers={staticLayers} />
+
+        <MarkerCluster layers={markerLayers} />
+
         <BaseLayerControls />
       </LayersControl>
     </LeafletMapContainer>
