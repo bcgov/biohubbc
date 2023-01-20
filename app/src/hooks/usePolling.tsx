@@ -1,45 +1,24 @@
-import { useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
+import { useInterval } from './useInterval';
 
 interface IUsePollingConfig {
-    startEnabled: boolean;
-    initialDelayMs: number;
-    maxDelayMs: number;
+    pollRateMs: number;
     lockoutDurationMs: number;
     lockoutPolls: number;
-    decayRate: (prevDelay: number) => number
 }
 
 const defaultConfig: IUsePollingConfig = {
-    startEnabled: true,
-    initialDelayMs: 5000,
-    maxDelayMs: 60000,
-    lockoutDurationMs: 120000,
-    lockoutPolls: 0,
-    decayRate: (prevDelay: number) => 2 * prevDelay
+    pollRateMs: 5000,
+    lockoutDurationMs: 60000,
+    lockoutPolls: 0
 }
 
-export const usePolling = (callback: () => void, config: IUsePollingConfig) => {
+export const usePolling = (pollFunction: () => void, config?: IUsePollingConfig) => {
+    const [isPolling, setIsPolling] = useState<boolean>(true);
+    const callback = useCallback(pollFunction, [pollFunction]);
+
     const pollingConfig: IUsePollingConfig = { ...defaultConfig, ...config }
-    const [isPolling, setIsPolling] = useState<boolean>();
-
-    const { initialDelayMs, maxDelayMs, lockoutDurationMs, lockoutPolls, decayRate } = pollingConfig
-
-    const nextDelay = (delayMs: number) => {
-        return Math.min(decayRate(delayMs), maxDelayMs);
-    }
-
-    if (lockoutDurationMs > 0 || lockoutPolls > 0) {
-        let lockoutPollDurationMs = initialDelayMs;
-        let currentDelay = initialDelayMs;
-        for (let i = 0; i < lockoutPolls - 1; i ++) {
-            currentDelay = nextDelay(currentDelay);
-            lockoutPollDurationMs += currentDelay;
-        }
-
-        setTimeout(() => {
-            disable();
-        }, Math.min(lockoutDurationMs, lockoutPollDurationMs));
-    }
+    const { pollRateMs, lockoutDurationMs, lockoutPolls } = pollingConfig
 
     const enable = () => {
         setIsPolling(true);
@@ -48,6 +27,18 @@ export const usePolling = (callback: () => void, config: IUsePollingConfig) => {
     const disable = () => {
         setIsPolling(false);
     }
+
+    if (lockoutDurationMs > 0 || lockoutPolls > 0) {
+        setTimeout(disable, Math.min(lockoutDurationMs, pollRateMs * lockoutPolls));
+    }
+
+    useInterval(callback, pollRateMs, 60000);
+
+    useEffect(() => {
+        if (isPolling) {
+            //
+        }
+    }, [isPolling])
 
     return {
         isPolling,

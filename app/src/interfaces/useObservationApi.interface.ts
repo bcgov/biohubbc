@@ -10,12 +10,16 @@ export interface IGetSubmissionCSVForViewResponse {
   data: IGetSubmissionCSVForViewItem[];
 }
 
+export type ObservationSubmissionMessageSeverityLabel = 
+  | 'Notice'
+  | 'Error'
+  | 'Warning'
+
 interface IGetObservationSubmissionResponseMessages {
-  id: number;
-  status: string;
-  class: string;
-  type: string;
-  message: string;
+  severityLabel: ObservationSubmissionMessageSeverityLabel;
+  messageTypeLabel: string;
+  messageStatus: string;
+  messages: { id: number; message: string; }[];
 }
 
 /**
@@ -29,7 +33,7 @@ export interface IGetObservationSubmissionResponse {
   inputFileName: string;
   status: string;
   isValidating: boolean;
-  messages: IGetObservationSubmissionResponseMessages[];
+  messageTypes: IGetObservationSubmissionResponseMessages[];
 }
 
 export interface IGetObservationSubmissionErrorListResponse {
