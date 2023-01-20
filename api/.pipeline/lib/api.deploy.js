@@ -62,6 +62,8 @@ const apiDeploy = (settings) => {
     })
   );
 
+  console.log('apiDeploy - processed template: ', JSON.stringify(objects, null, 2));
+
   oc.applyRecommendedLabels(objects, phases[phase].name, phase, `${changeId}`, phases[phase].instance);
   oc.importImageStreams(objects, phases[phase].tag, phases.build.namespace, phases.build.tag);
 
