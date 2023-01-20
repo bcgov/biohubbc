@@ -749,10 +749,71 @@ const frequencyPickListValidator = () => {
   ];
 };
 
-const mooseTransectTemplateValidationSchema = {
+const yesNoPickListValidator = () => {
+  return [
+    {
+      column_code_validator: {
+        name: {
+          type: 'string'
+        },
+        description: {
+          type: 'string'
+        },
+        allowed_code_values: [
+          {
+            name: 'Y',
+            description: 'Yes'
+          },
+          {
+            name: 'N',
+            description: 'No'
+          }
+        ]
+      }
+    }
+  ];
+};
+
+const mooseSRBtemplateValidationSchema = {
   name: '',
   description: '',
   files: [
+    {
+      name: 'Block Summary',
+      description: '',
+      validations: [
+        {
+          file_duplicate_columns_validator: {}
+        },
+        {
+          file_required_columns_validator: {
+            required_columns: ['Study Area', 'Block ID/SU ID', 'Stratum', 'Sampled (Y/N)']
+          }
+        },
+        {
+          file_column_unique_validator: {
+            column_names: ['Study Area', 'Block ID/SU ID', 'Stratum']
+          }
+        }
+      ],
+      columns: [
+        {
+          name: 'Sampled (Y/N)',
+          description: '',
+          validations: yesNoPickListValidator()
+        },
+        {
+          name: 'Block ID/SU ID',
+          description: '',
+          validations: []
+        },
+        {
+          name: 'Stratum',
+          description: '',
+          validations: []
+        }
+      ]
+    },
     {
       name: 'Effort & Site Conditions',
       description: '',
@@ -774,6 +835,7 @@ const mooseTransectTemplateValidationSchema = {
         }
       ]
     },
+
     {
       name: 'Observations',
       description: '',
@@ -783,7 +845,7 @@ const mooseTransectTemplateValidationSchema = {
         },
         {
           file_required_columns_validator: {
-            required_columns: ['Study Area', 'Date', 'Species']
+            required_columns: ['Study Area', 'Block ID/SU ID', 'Stratum', 'Date', 'Species']
           }
         }
       ],
@@ -814,12 +876,27 @@ const mooseTransectTemplateValidationSchema = {
           validations: basicNumericValidator()
         },
         {
+          name: 'Group Label',
+          description: '',
+          validations: []
+        },
+        {
+          name: 'Date',
+          description: '',
+          validations: []
+        },
+        {
+          name: 'Time',
+          description: '',
+          validations: []
+        },
+        {
           name: 'Species',
           description: '',
           validations: mooseSpeciesPickListValidator()
         },
         {
-          name: 'Spike/ Fork Bulls',
+          name: 'Spike/Fork Bulls',
           description: '',
           validations: basicNumericValidator()
         },
@@ -963,12 +1040,24 @@ const mooseTransectTemplateValidationSchema = {
     {
       name: 'Marked Animals',
       description: '',
-      validations: [],
       columns: [
+        {
+          name: 'Group Label',
+          description: '',
+          validations: []
+        },
         {
           name: 'Date',
           description: '',
-          validations: []
+          validations: [
+            {
+              column_format_validator: {
+                reg_exp: '^d{4}-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01])$',
+                reg_exp_flags: 'g',
+                expected_format: 'Dates need to be formatted in YYYY-MM-DD. For example: 2020-09-15.'
+              }
+            }
+          ]
         },
         {
           name: 'Targeted or Non-Targeted',
@@ -985,7 +1074,6 @@ const mooseTransectTemplateValidationSchema = {
     {
       name: 'Incidental Observations',
       description: '',
-      validations: [],
       columns: [
         {
           name: 'Study Area',
@@ -996,6 +1084,19 @@ const mooseTransectTemplateValidationSchema = {
           name: 'Block ID/SU ID',
           description: '',
           validations: []
+        },
+        {
+          name: 'Date',
+          description: '',
+          validations: [
+            {
+              column_format_validator: {
+                reg_exp: '^d{4}-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01])$',
+                reg_exp_flags: 'g',
+                expected_format: 'Dates need to be formatted in YYYY-MM-DD. For example: 2020-09-15.'
+              }
+            }
+          ]
         },
         {
           name: 'Easting',
@@ -1021,16 +1122,6 @@ const mooseTransectTemplateValidationSchema = {
           name: 'Long (DD)',
           description: '',
           validations: basicNumericValidator()
-        },
-        {
-          name: 'Time',
-          description: '',
-          validations: []
-        },
-        {
-          name: 'Species',
-          description: '',
-          validations: []
         },
         {
           name: 'Adult Males',
@@ -1112,21 +1203,28 @@ const mooseTransectTemplateValidationSchema = {
           description: '',
           validations: []
         }
-      ]
+      ],
+      validations: []
     }
   ],
   validations: [
     {
       submission_required_files_validator: {
-        required_files: ['Effort & Site Conditions', 'Observations', 'Marked Animals', 'Incidental Observations']
+        required_files: [
+          'Block Summary',
+          'Effort & Site Conditions',
+          'Observations',
+          'Marked Animals',
+          'Incidental Observations'
+        ]
       }
     }
   ],
   workbookValidations: [
     {
       workbook_parent_child_key_match_validator: {
-        child_worksheet_name: 'Marked Animals',
         parent_worksheet_name: 'Observations',
+        child_worksheet_name: 'Marked Animals',
         column_names: ['Group Label']
       }
     }
@@ -1134,8 +1232,8 @@ const mooseTransectTemplateValidationSchema = {
 };
 
 fs.writeFile(
-  './output/moose_transect_validation_config_output.json',
-  JSON.stringify(mooseTransectTemplateValidationSchema),
+  './output/moose_SRB_validation_config_output.json',
+  JSON.stringify(mooseSRBtemplateValidationSchema),
   (err) => {
     // file written successfully
 
