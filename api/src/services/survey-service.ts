@@ -32,7 +32,7 @@ export interface IMessageTypeGroup {
   severityLabel: MESSAGE_CLASS_NAME;
   messageTypeLabel: SUBMISSION_MESSAGE_TYPE;
   messageStatus: SUBMISSION_STATUS_TYPE;
-  messages: { id: number; message: string; }[];
+  messages: { id: number; message: string }[];
 }
 
 export class SurveyService extends DBService {
@@ -144,20 +144,20 @@ export class SurveyService extends DBService {
 
   /**
    * @TODO jsdoc
-   * @param submissionId 
+   * @param submissionId
    */
   async getOccurrenceSubmissionMessages(submissionId: number): Promise<IMessageTypeGroup[]> {
     const messages = await this.surveyRepository.getOccurrenceSubmissionMessages(submissionId);
 
     return messages.reduce((typeGroups: IMessageTypeGroup[], message: IOccurrenceSubmissionMessagesResponse) => {
       const groupIndex = typeGroups.findIndex((group) => {
-        return group.messageTypeLabel === message.type
+        return group.messageTypeLabel === message.type;
       });
 
       const messageObject = {
         id: message.id,
         message: message.message
-      }
+      };
 
       if (groupIndex < 0) {
         typeGroups.push({
@@ -167,7 +167,7 @@ export class SurveyService extends DBService {
           messages: [messageObject]
         });
       } else {
-        typeGroups[groupIndex].messages.push(messageObject)
+        typeGroups[groupIndex].messages.push(messageObject);
       }
 
       return typeGroups;
@@ -459,9 +459,11 @@ export class SurveyService extends DBService {
    * @param {(number | null)} templateMethodologyId
    * @return {*}  {(SQLStatement | null)}
    */
-  async insertSurveyOccurrenceSubmission (submission: IObservationSubmissionInsertDetails): Promise<{ submissionId: number }> {
+  async insertSurveyOccurrenceSubmission(
+    submission: IObservationSubmissionInsertDetails
+  ): Promise<{ submissionId: number }> {
     return this.surveyRepository.insertSurveyOccurrenceSubmission(submission);
-  };
+  }
 
   /**
    * SQL query to update a survey occurrence submission row.
@@ -475,9 +477,11 @@ export class SurveyService extends DBService {
    * @return {*}  {(SQLStatement | null)}
    */
 
-  async updateSurveyOccurrenceSubmission(submission: IObservationSubmissionUpdateDetails): Promise<{ submissionId: number }> {
+  async updateSurveyOccurrenceSubmission(
+    submission: IObservationSubmissionUpdateDetails
+  ): Promise<{ submissionId: number }> {
     return this.surveyRepository.updateSurveyOccurrenceSubmission(submission);
-  };
+  }
 
   /**
    * @TODO jsdoc
@@ -488,6 +492,6 @@ export class SurveyService extends DBService {
    */
 
   async deleteOccurrenceSubmission(submissionId: number): Promise<number> {
-  return this.surveyRepository.deleteOccurrenceSubmission(submissionId);
-  };
+    return this.surveyRepository.deleteOccurrenceSubmission(submissionId);
+  }
 }

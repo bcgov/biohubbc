@@ -1,5 +1,4 @@
 import Box from '@material-ui/core/Box';
-
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
@@ -27,7 +26,10 @@ import { DialogContext } from 'contexts/dialogContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useInterval } from 'hooks/useInterval';
-import { IUploadObservationSubmissionResponse, ObservationSubmissionMessageSeverityLabel } from 'interfaces/useObservationApi.interface';
+import {
+  IUploadObservationSubmissionResponse,
+  ObservationSubmissionMessageSeverityLabel
+} from 'interfaces/useObservationApi.interface';
 import React, { useContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 
@@ -131,9 +133,10 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
       return;
     }
 
-    biohubApi.observation.deleteObservationSubmission(projectId, surveyId, occurrenceSubmissionId)
+    biohubApi.observation
+      .deleteObservationSubmission(projectId, surveyId, occurrenceSubmissionId)
       .then(refreshSubmission);
-  };  
+  };
 
   const showUploadDialog = () => {
     if (submissionExists) {
@@ -176,8 +179,9 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
     if (!occurrenceSubmissionId) {
       return;
     }
-    
-    biohubApi.survey.getObservationSubmissionSignedURL(projectId, surveyId, occurrenceSubmissionId)
+
+    biohubApi.survey
+      .getObservationSubmissionSignedURL(projectId, surveyId, occurrenceSubmissionId)
       .then((objectUrl: string) => {
         window.open(objectUrl);
       })
@@ -190,28 +194,28 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
-  type AlertSeverityLevel = 'error' | 'info' | 'success' | 'warning'
+  type AlertSeverityLevel = 'error' | 'info' | 'success' | 'warning';
 
   const alertSeverityFromSeverityLabel = (severity: ObservationSubmissionMessageSeverityLabel): AlertSeverityLevel => {
     switch (severity) {
       case 'Warning':
-        return 'warning'
+        return 'warning';
 
       case 'Error':
-        return 'error'
+        return 'error';
 
       case 'Notice':
       default:
-        return 'info'
+        return 'info';
     }
-  }
+  };
 
   let submissionStatusIcon = occurrenceSubmission?.isValidating ? mdiClockOutline : mdiFileOutline;
   let submissionStatusSeverity: AlertSeverityLevel = 'info';
 
   if (submissionMessageTypes.some((messageType) => messageType.severityLabel === 'Error')) {
     submissionStatusIcon = mdiAlertCircleOutline;
-    submissionStatusSeverity = 'error'
+    submissionStatusSeverity = 'error';
   } else if (submissionMessageTypes.some((messageType) => messageType.severityLabel === 'Warning')) {
     submissionStatusIcon = mdiAlertCircleOutline;
     submissionStatusSeverity = 'warning';
@@ -245,17 +249,23 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
             </>
           ) : (
             <>
-              <Alert icon={<Icon path={submissionStatusIcon} size={1} />} severity={submissionStatusSeverity} action={submissionAlertAction()}>
+              <Alert
+                icon={<Icon path={submissionStatusIcon} size={1} />}
+                severity={submissionStatusSeverity}
+                action={submissionAlertAction()}>
                 <Box display="flex" alignItems="center" m={0}>
-                  <Link className={classes.alertLink} component="button" variant="body2" onClick={() => viewFileContents()}>
+                  <Link
+                    className={classes.alertLink}
+                    component="button"
+                    variant="body2"
+                    onClick={() => viewFileContents()}>
                     <strong>{occurrenceSubmission?.inputFileName}</strong>
                   </Link>
                 </Box>
                 <Typography variant="body2">
                   {occurrenceSubmission?.isValidating
                     ? 'Validating observation data. Please wait...'
-                    : occurrenceSubmission?.status
-                  }
+                    : occurrenceSubmission?.status}
                 </Typography>
               </Alert>
 
@@ -278,7 +288,7 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
                               {messageType.messageTypeLabel}
                             </Alert>
                             <Box component="ul" my={3}>
-                              {messageType.messages.map((messageObject: { id: number, message: string }) => {
+                              {messageType.messages.map((messageObject: { id: number; message: string }) => {
                                 return (
                                   <li key={messageObject.id}>
                                     <Typography variant="body2">{messageObject.message}</Typography>
@@ -287,7 +297,7 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
                               })}
                             </Box>
                           </Box>
-                        )
+                        );
                       })}
                     </Box>
                   )}

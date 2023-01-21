@@ -47,7 +47,7 @@ export interface IOccurrenceSubmissionMessagesResponse {
   type: SUBMISSION_MESSAGE_TYPE;
   status: SUBMISSION_STATUS_TYPE;
   message: string;
-};
+}
 
 export interface IObservationSubmissionInsertDetails {
   surveyId: number;
@@ -374,7 +374,6 @@ export class SurveyRepository extends BaseRepository {
     return result;
   }
 
-  
   /**
    * SQL query to get the list of messages for an occurrence submission.
    *
@@ -417,16 +416,16 @@ export class SurveyRepository extends BaseRepository {
     `;
 
     const response = await this.connection.sql<IOccurrenceSubmissionMessagesResponse>(sqlStatement);
-    
+
     if (!response?.rows) {
       throw new ApiExecuteSQLError('Failed to get occurrence submission messages', [
         'SurveyRepository->getOccurrenceSubmissionMessages',
         'response was null or undefined, expected response != null'
       ]);
     }
-    
+
     return response.rows;
-  };
+  }
 
   async getSummaryResultId(surveyId: number): Promise<number> {
     const sqlStatement = SQL`
@@ -908,7 +907,9 @@ export class SurveyRepository extends BaseRepository {
    * @param {(number | null)} templateMethodologyId
    * @return {*}  {(SQLStatement | null)}
    */
-  async insertSurveyOccurrenceSubmission(submission: IObservationSubmissionInsertDetails): Promise<{ submissionId: number }> {
+  async insertSurveyOccurrenceSubmission(
+    submission: IObservationSubmissionInsertDetails
+  ): Promise<{ submissionId: number }> {
     defaultLog.debug({ label: 'insertSurveyOccurrenceSubmission', submission });
     const queryBuilder = getKnex()
       .table('occurrence_submission')
@@ -933,14 +934,16 @@ export class SurveyRepository extends BaseRepository {
     }
 
     return response.rows[0];
-  };
+  }
 
   /**
    * @TODO jsdoc
-   * @param submission 
-   * @returns 
+   * @param submission
+   * @returns
    */
-  async updateSurveyOccurrenceSubmission(submission: IObservationSubmissionUpdateDetails): Promise<{ submissionId: number }> {
+  async updateSurveyOccurrenceSubmission(
+    submission: IObservationSubmissionUpdateDetails
+  ): Promise<{ submissionId: number }> {
     defaultLog.debug({ label: 'updateSurveyOccurrenceSubmission', submission });
     const queryBuilder = getKnex()
       .table('occurrence_submission')
@@ -963,12 +966,12 @@ export class SurveyRepository extends BaseRepository {
     }
 
     return response.rows[0];
-  };
+  }
 
   /**
    * @TODO jsdoc
-   * @param submissionId 
-   * @returns 
+   * @param submissionId
+   * @returns
    */
   async deleteOccurrenceSubmission(submissionId: number): Promise<number> {
     defaultLog.debug({ label: 'deleteOccurrenceSubmission', submissionId });
@@ -990,5 +993,5 @@ export class SurveyRepository extends BaseRepository {
     }
 
     return response.rowCount;
-  };
+  }
 }

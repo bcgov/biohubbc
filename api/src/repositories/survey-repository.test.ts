@@ -803,6 +803,6 @@ describe('SurveyRepository', () => {
   describe('getOccurrenceSubmissionMessages', () => {
     it('todo', async () => {
       throw new Error('TODO');
-    })
+    });
   });
 });

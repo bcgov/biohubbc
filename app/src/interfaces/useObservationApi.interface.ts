@@ -10,16 +10,13 @@ export interface IGetSubmissionCSVForViewResponse {
   data: IGetSubmissionCSVForViewItem[];
 }
 
-export type ObservationSubmissionMessageSeverityLabel = 
-  | 'Notice'
-  | 'Error'
-  | 'Warning'
+export type ObservationSubmissionMessageSeverityLabel = 'Notice' | 'Error' | 'Warning';
 
 interface IGetObservationSubmissionResponseMessages {
   severityLabel: ObservationSubmissionMessageSeverityLabel;
   messageTypeLabel: string;
   messageStatus: string;
-  messages: { id: number; message: string; }[];
+  messages: { id: number; message: string }[];
 }
 
 /**

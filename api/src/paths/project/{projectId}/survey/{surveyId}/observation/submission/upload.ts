@@ -152,7 +152,7 @@ export function uploadMedia(): RequestHandler {
         connection
       );
 
-      const { submissionId } = response
+      const { submissionId } = response;
 
       const inputKey = generateS3FileKey({
         projectId: Number(req.params.projectId),
@@ -201,15 +201,15 @@ export const insertSurveyOccurrenceSubmission = async (
   connection: IDBConnection
 ): Promise<{ submissionId: number }> => {
   const surveyService = new SurveyService(connection);
-  
+
   const response = await surveyService.insertSurveyOccurrenceSubmission({
     surveyId,
     source,
     inputFileName
   });
-  
+
   if (!response.submissionId) {
-    console.log('RESP:', response)
+    console.log('RESP:', response);
     throw new HTTP400('Failed to insert survey occurrence submission record');
   }
 

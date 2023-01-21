@@ -86,7 +86,8 @@ GET.apiDoc = {
                   properties: {
                     severityLabel: {
                       type: 'string',
-                      description: 'The label of the "class" or severity of this type of message, e.g. "Error", "Warning", "Notice", etc.'
+                      description:
+                        'The label of the "class" or severity of this type of message, e.g. "Error", "Warning", "Notice", etc.'
                     },
                     messageTypeLabel: {
                       type: 'string',
@@ -142,7 +143,11 @@ GET.apiDoc = {
 
 export function getOccurrenceSubmission(): RequestHandler {
   return async (req, res) => {
-    defaultLog.debug({ label: 'getOccurrenceSubmission', description: 'Gets an occurrence submission', req_params: req.params });
+    defaultLog.debug({
+      label: 'getOccurrenceSubmission',
+      description: 'Gets an occurrence submission',
+      req_params: req.params
+    });
 
     const connection = getDBConnection(req['keycloak_token']);
 
@@ -164,8 +169,8 @@ export function getOccurrenceSubmission(): RequestHandler {
         SUBMISSION_STATUS_TYPE.FAILED_VALIDATION,
         SUBMISSION_STATUS_TYPE.FAILED_TRANSFORMED,
         SUBMISSION_STATUS_TYPE.FAILED_PROCESSING_OCCURRENCE_DATA
-      ].includes(occurrenceSubmission.submission_status_type_name)
-     
+      ].includes(occurrenceSubmission.submission_status_type_name);
+
       const messageTypes: IMessageTypeGroup[] = hasAdditionalOccurrenceSubmissionMessages
         ? await surveyService.getOccurrenceSubmissionMessages(Number(occurrenceSubmission.id))
         : [];
