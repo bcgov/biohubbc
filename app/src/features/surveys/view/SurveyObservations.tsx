@@ -1,4 +1,5 @@
 import Box from '@material-ui/core/Box';
+
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
@@ -25,8 +26,9 @@ import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
 import { DialogContext } from 'contexts/dialogContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
+import { useInterval } from 'hooks/useInterval';
 import { IUploadObservationSubmissionResponse, ObservationSubmissionMessageSeverityLabel } from 'interfaces/useObservationApi.interface';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 
 interface ISurveyObservationsProps {
@@ -56,15 +58,38 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
 
   const submissionDataLoader = useDataLoader(() => biohubApi.observation.getObservationSubmission(projectId, surveyId));
 
-  const refreshSubmission = submissionDataLoader.refresh;
   submissionDataLoader.load();
 
+  const refreshSubmission = submissionDataLoader.refresh;
   const occurrenceSubmission = submissionDataLoader.data;
   const occurrenceSubmissionId = occurrenceSubmission?.id;
   const submissionMessageTypes = occurrenceSubmission?.messageTypes || [];
   const submissionExists = Boolean(occurrenceSubmission);
 
-  console.log({ occurrenceSubmission })
+  const submissionPollingInterval = useInterval(refreshSubmission, 5000, 60000);
+
+  useEffect(() => {
+    if (submissionExists) {
+      submissionPollingInterval.enable();
+    } else {
+      submissionPollingInterval.disable();
+    }
+  }, [submissionExists, submissionPollingInterval]);
+
+  useEffect(() => {
+    if (occurrenceSubmission?.isValidating === false) {
+      submissionPollingInterval.disable();
+    }
+  }, [occurrenceSubmission, submissionPollingInterval]);
+
+  // TODO
+  /*
+  useEffect(() => {
+    if (!openImportObservations && (submissionDataLoader.isReady || submissionDataLoader.isLoading)) {
+      refreshSubmission();
+    }
+  }, [openImportObservations, submissionDataLoader])
+  */
 
   const defaultUploadYesNoDialogProps = {
     dialogTitle: 'Upload Observation Data',
@@ -165,9 +190,6 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
-  
- 
-
   type AlertSeverityLevel = 'error' | 'info' | 'success' | 'warning'
 
   const alertSeverityFromSeverityLabel = (severity: ObservationSubmissionMessageSeverityLabel): AlertSeverityLevel => {
@@ -187,31 +209,14 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
   let submissionStatusIcon = occurrenceSubmission?.isValidating ? mdiClockOutline : mdiFileOutline;
   let submissionStatusSeverity: AlertSeverityLevel = 'info';
 
-  const sortedSubmissionMessages = submissionMessageTypes.sort((a, b) => {
-    const severityHierarchy = ['Info', 'Warning', 'Error']
-    return severityHierarchy.indexOf(b.severityLabel) - severityHierarchy.indexOf(a.severityLabel)
-  })
-
-  console.log({ sortedSubmissionMessages })
-  const highestSeverityLabel = sortedSubmissionMessages[0]?.severityLabel;
-
-  console.log({ highestSeverityLabel })
-
-  switch (highestSeverityLabel) {
-    case 'Warning':
-      submissionStatusIcon = mdiAlertCircleOutline;
-      submissionStatusSeverity = 'warning';
-      break;
-
-    case 'Error':
-      submissionStatusIcon = mdiAlertCircleOutline;
-      submissionStatusSeverity = 'error'
-      break;
-
-    case 'Notice':
-    default:
-      submissionStatusIcon = mdiInformationOutline;
-      break;
+  if (submissionMessageTypes.some((messageType) => messageType.severityLabel === 'Error')) {
+    submissionStatusIcon = mdiAlertCircleOutline;
+    submissionStatusSeverity = 'error'
+  } else if (submissionMessageTypes.some((messageType) => messageType.severityLabel === 'Warning')) {
+    submissionStatusIcon = mdiAlertCircleOutline;
+    submissionStatusSeverity = 'warning';
+  } else if (submissionMessageTypes.some((messageType) => messageType.severityLabel === 'Notice')) {
+    submissionStatusIcon = mdiInformationOutline;
   }
 
   return (
@@ -229,7 +234,7 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
         <Divider />
 
         <Box p={3}>
-          {!submissionExists && (
+          {!submissionExists ? (
             <>
               <Box textAlign="center">
                 <Typography data-testid="observations-nodata" variant="body2" color="textSecondary">
@@ -238,58 +243,58 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
                 </Typography>
               </Box>
             </>
-          )}
-
-          <Alert icon={<Icon path={submissionStatusIcon} size={1} />} severity={submissionStatusSeverity} action={submissionAlertAction()}>
-            <Box display="flex" alignItems="center" m={0}>
-              <Link className={classes.alertLink} component="button" variant="body2" onClick={() => viewFileContents()}>
-                <strong>{occurrenceSubmission?.inputFileName}</strong>
-              </Link>
-            </Box>
-            <Typography variant="body2">
-              {occurrenceSubmission?.isValidating
-                ? 'Validating observation data. Please wait...'
-                : occurrenceSubmission?.status
-              }
-            </Typography>
-          </Alert>
-
-          {!occurrenceSubmission?.isValidating && (
+          ) : (
             <>
-                {submissionStatusSeverity === 'error' && (
-                <Box mb={2} mt={3}>
-                  <Typography data-testid="observations-error-details" variant="body1">
-                    Resolve the following errors in your local file and re-import.
-                  </Typography>
+              <Alert icon={<Icon path={submissionStatusIcon} size={1} />} severity={submissionStatusSeverity} action={submissionAlertAction()}>
+                <Box display="flex" alignItems="center" m={0}>
+                  <Link className={classes.alertLink} component="button" variant="body2" onClick={() => viewFileContents()}>
+                    <strong>{occurrenceSubmission?.inputFileName}</strong>
+                  </Link>
                 </Box>
-              )}
+                <Typography variant="body2">
+                  {occurrenceSubmission?.isValidating
+                    ? 'Validating observation data. Please wait...'
+                    : occurrenceSubmission?.status
+                  }
+                </Typography>
+              </Alert>
 
-              {submissionMessageTypes.length > 0 && (
-                <Box mt={1}>
-                  {submissionMessageTypes.map((messageType) => {
-                    return (
-                      <Box key={messageType.messageTypeLabel}>
-                        <Alert severity={alertSeverityFromSeverityLabel(messageType.severityLabel)}>
-                          {messageType.messageTypeLabel}
-                        </Alert>
-                        <Box component="ul" my={3}>
-                          {messageType.messages.map((messageObject: { id: number, message: string }) => {
-                            return (
-                              <li key={messageObject.id}>
-                                <Typography variant="body2">{messageObject.message}</Typography>
-                              </li>
-                            );
-                          })}
-                        </Box>
-                      </Box>
-                    )
-                  })}
-                </Box>
+              {!occurrenceSubmission?.isValidating && (
+                <>
+                  {submissionStatusSeverity === 'error' && (
+                    <Box mb={2} mt={3}>
+                      <Typography data-testid="observations-error-details" variant="body1">
+                        Resolve the following errors in your local file and re-import.
+                      </Typography>
+                    </Box>
+                  )}
+
+                  {submissionMessageTypes.length > 0 && (
+                    <Box mt={1}>
+                      {submissionMessageTypes.map((messageType) => {
+                        return (
+                          <Box key={messageType.messageTypeLabel}>
+                            <Alert severity={alertSeverityFromSeverityLabel(messageType.severityLabel)}>
+                              {messageType.messageTypeLabel}
+                            </Alert>
+                            <Box component="ul" my={3}>
+                              {messageType.messages.map((messageObject: { id: number, message: string }) => {
+                                return (
+                                  <li key={messageObject.id}>
+                                    <Typography variant="body2">{messageObject.message}</Typography>
+                                  </li>
+                                );
+                              })}
+                            </Box>
+                          </Box>
+                        )
+                      })}
+                    </Box>
+                  )}
+                </>
               )}
             </>
           )}
-
-          
         </Box>
       </Paper>
 
