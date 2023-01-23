@@ -20,16 +20,16 @@ export const useInterval = (
   callback: (() => any) | null | undefined,
   period: number | null | undefined,
   timeout?: number
-): { enable: () => void, disable: () => void } => {
+): { enable: () => void; disable: () => void } => {
   const savedCallback = useRef(callback);
   const interval = useRef<NodeJS.Timeout | undefined>(undefined);
   const intervalTimeout = useRef<NodeJS.Timeout | undefined>(undefined);
 
-  const enable = () => {
+  const enable = useCallback(() => {
     if (!period || !savedCallback?.current) {
       return;
     }
-    
+
     disable();
 
     interval.current = setInterval(() => savedCallback?.current?.(), period);
@@ -37,7 +37,7 @@ export const useInterval = (
     if (timeout && interval.current) {
       intervalTimeout.current = setTimeout(() => clearInterval(Number(interval.current)), timeout);
     }
-  }
+  });
 
   const disable = () => {
     if (interval) {
@@ -47,7 +47,7 @@ export const useInterval = (
     if (intervalTimeout) {
       clearTimeout(Number(intervalTimeout.current));
     }
-  }
+  };
 
   useEffect(() => {
     savedCallback.current = callback;
@@ -59,7 +59,7 @@ export const useInterval = (
     return () => {
       disable();
     };
-  }, [period, timeout]);
+  }, [enable, period, timeout]);
 
-  return { enable, disable }
+  return { enable, disable };
 };

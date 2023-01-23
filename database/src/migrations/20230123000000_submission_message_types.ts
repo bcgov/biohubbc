@@ -5,7 +5,8 @@ const DB_SCHEMA = process.env.DB_SCHEMA;
 const submissionMessageTypes = [
   {
     name: 'Mismatched template with survey focal species',
-    description: 'The species associated with the template does not match the focal species associated with this survey.',
+    description:
+      'The species associated with the template does not match the focal species associated with this survey.',
     class: 'Error'
   }
 ];
