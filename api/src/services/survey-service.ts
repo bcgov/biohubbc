@@ -143,8 +143,9 @@ export class SurveyService extends DBService {
   }
 
   /**
-   * @TODO jsdoc
-   * @param submissionId
+   * Retrieves all submission messages by the given submission ID, then groups them based on the message type.
+   * @param {number} submissionId The ID of the submission
+   * @returns {*} {Promise<IMessageTypeGroup[]>} Promise resolving the array of message groups containing the submission messages
    */
   async getOccurrenceSubmissionMessages(submissionId: number): Promise<IMessageTypeGroup[]> {
     const messages = await this.surveyRepository.getOccurrenceSubmissionMessages(submissionId);
@@ -452,12 +453,9 @@ export class SurveyService extends DBService {
 
   /**
    * Inserts a survey occurrence submission row.
-   * @TODO jsdoc
-   * @param {number} surveyId
-   * @param {string} source
-   * @param {string} inputFileName
-   * @param {(number | null)} templateMethodologyId
-   * @return {*}  {(SQLStatement | null)}
+   *
+   * @param {IObservationSubmissionInsertDetails} submission The details of the submission
+   * @return {*} {Promise<{ submissionId: number }>} Promise resolving the ID of the submission upon successful insertion
    */
   async insertSurveyOccurrenceSubmission(
     submission: IObservationSubmissionInsertDetails
@@ -466,17 +464,11 @@ export class SurveyService extends DBService {
   }
 
   /**
-   * SQL query to update a survey occurrence submission row.
-   * @TODO jsdoc
-   * @param {{
-   *   submissionId: number;
-   *   inputKey?: string;
-   *   outputFileName?: string;
-   *   outputKey?: string;
-   * }} data
-   * @return {*}  {(SQLStatement | null)}
+   * Updates a survey occurrence submission with the given details.
+   *
+   * @param {IObservationSubmissionUpdateDetails} submission The details of the submission to be updated
+   * @return {*} {Promise<{ submissionId: number }>} Promise resolving the ID of the submission upon successfully updating it
    */
-
   async updateSurveyOccurrenceSubmission(
     submission: IObservationSubmissionUpdateDetails
   ): Promise<{ submissionId: number }> {
@@ -484,13 +476,11 @@ export class SurveyService extends DBService {
   }
 
   /**
-   * @TODO jsdoc
-   * SQL query to soft delete the occurrence submission entry by ID
-   * @TODO jsdoc
-   * @param {number} submissionId
-   * @returns {SQLStatement} sql query object
+   * Soft-deletes an occurrence submission.
+   *
+   * @param {number} submissionId The ID of the submission to soft delete
+   * @returns {*} {number} The row count of the affected records, namely `1` if the delete succeeds, `0` if it does not
    */
-
   async deleteOccurrenceSubmission(submissionId: number): Promise<number> {
     return this.surveyRepository.deleteOccurrenceSubmission(submissionId);
   }

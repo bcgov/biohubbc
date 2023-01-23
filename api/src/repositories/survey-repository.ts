@@ -900,12 +900,9 @@ export class SurveyRepository extends BaseRepository {
 
   /**
    * Inserts a survey occurrence submission row.
-   * @TODO jsdoc
-   * @param {number} surveyId
-   * @param {string} source
-   * @param {string} inputFileName
-   * @param {(number | null)} templateMethodologyId
-   * @return {*}  {(SQLStatement | null)}
+   *
+   * @param {IObservationSubmissionInsertDetails} submission The details of the submission
+   * @return {*} {Promise<{ submissionId: number }>} Promise resolving the ID of the submission upon successful insertion
    */
   async insertSurveyOccurrenceSubmission(
     submission: IObservationSubmissionInsertDetails
@@ -937,9 +934,10 @@ export class SurveyRepository extends BaseRepository {
   }
 
   /**
-   * @TODO jsdoc
-   * @param submission
-   * @returns
+   * Updates a survey occurrence submission with the given details.
+   *
+   * @param {IObservationSubmissionUpdateDetails} submission The details of the submission to be updated
+   * @return {*} {Promise<{ submissionId: number }>} Promise resolving the ID of the submission upon successfully updating it
    */
   async updateSurveyOccurrenceSubmission(
     submission: IObservationSubmissionUpdateDetails
@@ -969,9 +967,10 @@ export class SurveyRepository extends BaseRepository {
   }
 
   /**
-   * @TODO jsdoc
-   * @param submissionId
-   * @returns
+   * Soft-deletes an occurrence submission.
+   *
+   * @param {number} submissionId The ID of the submission to soft delete
+   * @returns {*} {number} The row count of the affected records, namely `1` if the delete succeeds, `0` if it does not
    */
   async deleteOccurrenceSubmission(submissionId: number): Promise<number> {
     defaultLog.debug({ label: 'deleteOccurrenceSubmission', submissionId });

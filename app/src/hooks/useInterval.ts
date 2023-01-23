@@ -25,21 +25,21 @@ export const useInterval = (
   const interval = useRef<NodeJS.Timeout | undefined>(undefined);
   const intervalTimeout = useRef<NodeJS.Timeout | undefined>(undefined);
 
-  const enable = useCallback(() => {
+  const enable = () => {
     if (!period || !savedCallback?.current) {
       return;
     }
 
-    disable();
+    clearIntervals();
 
     interval.current = setInterval(() => savedCallback?.current?.(), period);
 
     if (timeout && interval.current) {
       intervalTimeout.current = setTimeout(() => clearInterval(Number(interval.current)), timeout);
     }
-  });
+  };
 
-  const disable = () => {
+  const clearIntervals = () => {
     if (interval) {
       clearInterval(Number(interval.current));
     }
@@ -57,9 +57,9 @@ export const useInterval = (
     enable();
 
     return () => {
-      disable();
+      clearIntervals();
     };
   }, [enable, period, timeout]);
 
-  return { enable, disable };
+  return { enable, disable: clearIntervals };
 };
