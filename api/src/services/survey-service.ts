@@ -85,7 +85,7 @@ export class SurveyService extends DBService {
 
   async getSurveySupplementaryDataById(surveyId: number): Promise<SurveySupplementaryData> {
     const [submissionId, summaryResultId] = await Promise.all([
-      this.getsubmissionId(surveyId),
+      this.getOccurrenceSubmissionId(surveyId),
       this.getSummaryResultId(surveyId)
     ]);
 
@@ -137,8 +137,8 @@ export class SurveyService extends DBService {
     return this.surveyRepository.getSurveyLocationData(surveyId);
   }
 
-  async getsubmissionId(surveyId: number): Promise<number> {
-    return this.surveyRepository.getsubmissionId(surveyId);
+  async getOccurrenceSubmissionId(surveyId: number): Promise<number> {
+    return this.surveyRepository.getOccurrenceSubmissionId(surveyId);
   }
 
   async getLatestSurveyOccurrenceSubmission(surveyId: number): Promise<IGetLatestSurveyOccurrenceSubmission | null> {

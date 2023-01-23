@@ -209,7 +209,6 @@ export const insertSurveyOccurrenceSubmission = async (
   });
 
   if (!response.submissionId) {
-    console.log('RESP:', response);
     throw new HTTP400('Failed to insert survey occurrence submission record');
   }
 

@@ -76,6 +76,7 @@ describe('ValidationService', () => {
       const service = mockService();
       sinon.stub(ValidationService.prototype, 'getTemplateMethodologySpeciesRecord').resolves({
         template_methodology_species_id: 1,
+        wldtaxonomic_units_id: '1',
         validation: '{}',
         transform: ('{}' as unknown) as TransformSchema
       });
@@ -113,6 +114,7 @@ describe('ValidationService', () => {
       const service = mockService();
       sinon.stub(ValidationService.prototype, 'getTemplateMethodologySpeciesRecord').resolves({
         template_methodology_species_id: 1,
+        wldtaxonomic_units_id: '1',
         validation: '{}',
         transform: ('{}' as unknown) as TransformSchema
       });
@@ -564,7 +566,7 @@ describe('ValidationService', () => {
     it('should run without issue', async () => {
       const service = mockService();
       const mockPrep = {
-        s3InputKey: '',
+        s3OutputKey: '',
         archive: new DWCArchive(new ArchiveFile('test', 'application/zip', Buffer.from([]), [buildFile('test', {})]))
       };
       const mockState = {
@@ -595,7 +597,7 @@ describe('ValidationService', () => {
     it('should insert submission error from prep failure', async () => {
       const service = mockService();
       const mockPrep = {
-        s3InputKey: '',
+        s3OutputKey: '',
         archive: new DWCArchive(new ArchiveFile('test', 'application/zip', Buffer.from([]), [buildFile('test', {})]))
       };
       const mockState = {
@@ -627,7 +629,7 @@ describe('ValidationService', () => {
     it('should throw unrecognized error', async () => {
       const service = mockService();
       const mockPrep = {
-        s3InputKey: '',
+        s3OutputKey: '',
         archive: new DWCArchive(new ArchiveFile('test', 'application/zip', Buffer.from([]), [buildFile('test', {})]))
       };
       const mockState = {
@@ -748,7 +750,7 @@ describe('ValidationService', () => {
       const prep = sinon.stub(service, 'prepDWCArchive').returns(archive);
 
       const results = await service.dwcPreparation(1);
-      expect(results.s3InputKey).to.not.be.empty;
+      expect(results.s3OutputKey).to.not.be.empty;
       expect(occurrence).to.be.calledOnce;
       expect(s3).to.be.calledOnce;
       expect(prep).to.be.calledOnce;

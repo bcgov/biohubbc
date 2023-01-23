@@ -2,11 +2,9 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import SQL from 'sql-template-strings';
 import { SUBMISSION_MESSAGE_TYPE } from '../../../../../../../constants/status';
 import * as db from '../../../../../../../database/db';
 import { HTTPError } from '../../../../../../../errors/http-error';
-import survey_queries from '../../../../../../../queries/survey';
 import { IGetLatestSurveyOccurrenceSubmission } from '../../../../../../../repositories/survey-repository';
 import { SurveyService } from '../../../../../../../services/survey-service';
 import { getMockDBConnection } from '../../../../../../../__mocks__/db';
@@ -121,8 +119,6 @@ describe('getObservationSubmission', () => {
       input_file_name: 'dwca_moose.zip',
       submission_status_type_name: 'Rejected'
     } as unknown) as IGetLatestSurveyOccurrenceSubmission);
-
-    sinon.stub(survey_queries, 'getOccurrenceSubmissionMessagesSQL').returns(SQL`something`);
 
     const result = observationSubmission.getOccurrenceSubmission();
 

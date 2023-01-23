@@ -801,6 +801,58 @@ describe('SurveyRepository', () => {
   });
 
   describe('getOccurrenceSubmissionMessages', () => {
+    it('should return result', async () => {
+      const mockResponse = ({
+        rows: [{
+          id: 1,
+          type: 'type',
+          status: 'status',
+          class: 'class',
+          message: 'message'
+        }],
+        rowCount: 1
+      } as any) as Promise<QueryResult<any>>;
+
+      const dbConnection = getMockDBConnection({ sql: () => mockResponse });
+
+      const repository = new SurveyRepository(dbConnection);
+
+      const response = await repository.getOccurrenceSubmissionMessages(1);
+
+      expect(response).to.eql([{
+        id: 1,
+        type: 'type',
+        status: 'status',
+        class: 'class',
+        message: 'message'
+      }]);
+    });
+
+    it('should return empty array', async () => {
+      const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
+      const dbConnection = getMockDBConnection({ sql: () => mockResponse });
+
+      const repository = new SurveyRepository(dbConnection);
+
+      const response = await repository.getOccurrenceSubmissionMessages(1);
+
+      expect(response).to.eql([]);
+    });
+  });
+
+  describe('insertSurveyOccurrenceSubmission', () => {
+    it('todo', async () => {
+      throw new Error('TODO');
+    });
+  });
+
+  describe('updateSurveyOccurrenceSubmission', () => {
+    it('todo', async () => {
+      throw new Error('TODO');
+    });
+  });
+
+  describe('deleteOccurrenceSubmission', () => {
     it('todo', async () => {
       throw new Error('TODO');
     });

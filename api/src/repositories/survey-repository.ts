@@ -299,7 +299,7 @@ export class SurveyRepository extends BaseRepository {
     return new GetSurveyLocationData(result);
   }
 
-  async getsubmissionId(surveyId: number): Promise<number> {
+  async getOccurrenceSubmissionId(surveyId: number): Promise<number> {
     const sqlStatement = SQL`
       SELECT
         max(occurrence_submission_id) as id
@@ -315,7 +315,7 @@ export class SurveyRepository extends BaseRepository {
 
     if (!result) {
       throw new ApiExecuteSQLError('Failed to get survey Occurrence submission Id', [
-        'SurveyRepository->getsubmissionId',
+        'SurveyRepository->getOccurrenceSubmissionId',
         'response was null or undefined, expected response != null'
       ]);
     }
