@@ -253,6 +253,35 @@ const ageOfSignPickListValidator = () => {
   ];
 };
 
+const lightPickListValidator = () => {
+  return [
+    {
+      column_code_validator: {
+        name: {
+          type: 'string'
+        },
+        description: {
+          type: 'string'
+        },
+        allowed_code_values: [
+          {
+            name: 'Bright',
+            description: 'Bright'
+          },
+          {
+            name: 'Light',
+            description: 'Light'
+          },
+          {
+            name: 'Shady',
+            description: 'Shady'
+          }
+        ]
+      }
+    }
+  ];
+};
+
 const aircraftPickListValidator = () => {
   return [
     {
@@ -774,46 +803,10 @@ const yesNoPickListValidator = () => {
   ];
 };
 
-const mooseSRBtemplateValidationSchema = {
+const mooseTransectTemplateValidationSchema = {
   name: '',
   description: '',
   files: [
-    {
-      name: 'Block Summary',
-      description: '',
-      validations: [
-        {
-          file_duplicate_columns_validator: {}
-        },
-        {
-          file_required_columns_validator: {
-            required_columns: ['Study Area', 'Block ID/SU ID', 'Stratum', 'Sampled (Y/N)']
-          }
-        },
-        {
-          file_column_unique_validator: {
-            column_names: ['Study Area', 'Block ID/SU ID', 'Stratum']
-          }
-        }
-      ],
-      columns: [
-        {
-          name: 'Sampled (Y/N)',
-          description: '',
-          validations: yesNoPickListValidator()
-        },
-        {
-          name: 'Block ID/SU ID',
-          description: '',
-          validations: []
-        },
-        {
-          name: 'Stratum',
-          description: '',
-          validations: []
-        }
-      ]
-    },
     {
       name: 'Effort & Site Conditions',
       description: '',
@@ -828,6 +821,11 @@ const mooseSRBtemplateValidationSchema = {
         }
       ],
       columns: [
+        {
+          name: 'Light',
+          description: '',
+          validations: lightPickListValidator()
+        },
         {
           name: 'Aircraft Type',
           description: '',
@@ -845,7 +843,7 @@ const mooseSRBtemplateValidationSchema = {
         },
         {
           file_required_columns_validator: {
-            required_columns: ['Study Area', 'Block ID/SU ID', 'Stratum', 'Date', 'Species']
+            required_columns: ['Study Area', 'Block ID/SU ID', 'Date', 'Species']
           }
         }
       ],
@@ -876,27 +874,12 @@ const mooseSRBtemplateValidationSchema = {
           validations: basicNumericValidator()
         },
         {
-          name: 'Group Label',
-          description: '',
-          validations: []
-        },
-        {
-          name: 'Date',
-          description: '',
-          validations: []
-        },
-        {
-          name: 'Time',
-          description: '',
-          validations: []
-        },
-        {
           name: 'Species',
           description: '',
           validations: mooseSpeciesPickListValidator()
         },
         {
-          name: 'Spike/Fork Bulls',
+          name: 'Spike/ Fork Bulls',
           description: '',
           validations: basicNumericValidator()
         },
@@ -967,6 +950,11 @@ const mooseSRBtemplateValidationSchema = {
         },
         {
           name: 'Adult Unclassified Sex',
+          description: '',
+          validations: basicNumericValidator()
+        },
+        {
+          name: 'Bulls - Unclassified',
           description: '',
           validations: basicNumericValidator()
         },
@@ -1210,13 +1198,7 @@ const mooseSRBtemplateValidationSchema = {
   validations: [
     {
       submission_required_files_validator: {
-        required_files: [
-          'Block Summary',
-          'Effort & Site Conditions',
-          'Observations',
-          'Marked Animals',
-          'Incidental Observations'
-        ]
+        required_files: ['Effort & Site Conditions', 'Observations', 'Marked Animals', 'Incidental Observations']
       }
     }
   ],
@@ -1232,8 +1214,8 @@ const mooseSRBtemplateValidationSchema = {
 };
 
 fs.writeFile(
-  './output/moose_SRB_validation_config_output.json',
-  JSON.stringify(mooseSRBtemplateValidationSchema),
+  './output/moose_Transect_validation_config_output.json',
+  JSON.stringify(mooseTransectTemplateValidationSchema),
   (err) => {
     // file written successfully
 

@@ -1175,3 +1175,32 @@ export const presentAbsentPickListValidator = () => {
     }
   ];
 };
+
+export const lightPickListValidator = () => {
+  return [
+    {
+      column_code_validator: {
+        name: {
+          type: 'string'
+        },
+        description: {
+          type: 'string'
+        },
+        allowed_code_values: [
+          {
+            name: 'Bright',
+            description: 'Bright'
+          },
+          {
+            name: 'Light',
+            description: 'Light'
+          },
+          {
+            name: 'Shady',
+            description: 'Shady'
+          }
+        ]
+      }
+    }
+  ];
+};

@@ -12,19 +12,30 @@ const basicNumericValidator = () => {
   ];
 };
 
-const basicDateValidator = () => {
+const yesNoPickListValidator = () => {
   return [
     {
-      column_format_validator: {
-        reg_exp: '^d{4}-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01])$',
-        reg_exp_flags: 'g',
-        expected_format: 'Dates need to be formatted in YYYY-MM-DD. For example: 2020-09-15.'
+      column_code_validator: {
+        name: {
+          type: 'string'
+        },
+        description: {
+          type: 'string'
+        },
+        allowed_code_values: [
+          {
+            name: 'Y',
+            description: 'Yes'
+          },
+          {
+            name: 'N',
+            description: 'No'
+          }
+        ]
       }
     }
   ];
 };
-
-
 
 const templateValidationSchema = {
   name: '',
@@ -49,7 +60,7 @@ const templateValidationSchema = {
         },
         {
           file_required_columns_validator: {
-            required_columns: ['Study Area', 'Block ID/SU ID', 'Stratum']
+            required_columns: ['Study Area', 'Block ID/SU ID', 'Stratum', 'Sampled (Y/N)']
           }
         },
         {
@@ -73,6 +84,11 @@ const templateValidationSchema = {
           name: 'Stratum',
           description: '',
           validations: []
+        },
+        {
+          name: 'Sampled (Y/N)',
+          description: '',
+          validations: yesNoPickListValidator()
         }
       ]
     },
@@ -423,8 +439,8 @@ const templateValidationSchema = {
   workbookValidations: [
     {
       workbook_parent_child_key_match_validator: {
-        parent_worksheet_name: "Observations",
-        child_worksheet_name: "Marked Animals",
+        parent_worksheet_name: 'Observations',
+        child_worksheet_name: 'Marked Animals',
         column_names: ['Group Label']
       }
     }
