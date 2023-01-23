@@ -135,7 +135,10 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
 
     biohubApi.observation
       .deleteObservationSubmission(projectId, surveyId, occurrenceSubmissionId)
-      .then(refreshSubmission);
+      .then(() => {
+        props.refresh();
+        refreshSubmission();
+      });
   };
 
   const showUploadDialog = () => {

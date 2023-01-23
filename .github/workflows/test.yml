@@ -3,21 +3,77 @@ name: Test Checks
 on:
   pull_request:
     types: [opened, reopened, synchronize, ready_for_review]
+  push:
+    branches:
+      - dev
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.number }}
+  cancel-in-progress: true
 
 jobs:
-  test:
-    name: Running Tests
+  # Checkout the repo once and cache it for use in subsequent jobs
+  checkoutRepo:
+    name: Checkout and cache target branch
     runs-on: ubuntu-latest
+    env:
+      PR_NUMBER: ${{ github.event.number }}
     steps:
-      - uses: actions/checkout@v2
-
-      - name: Setup node
-        uses: actions/setup-node@v2
+      # Install Node - for `node` and `npm` commands
+      # Note: This already uses actions/cache internally, so repeat calls in subsequent jobs are not a performance hit
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
         with:
           node-version: 14
 
+      - name: Checkout Target Branch
+        uses: actions/checkout@v3
+        with:
+          persist-credentials: false
+
+      # Cache the repo
+      - name: Cache repo
+        uses: actions/cache@v3
+        id: cache-repo
+        env:
+          cache-name: cache-repo
+        with:
+          # Cache repo based on the commit sha that triggered the workflow
+          path: ${{ github.workspace }}/*
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
+
+  testAPI:
+    name: Running API Tests
+    runs-on: ubuntu-latest
+    needs:
+      - checkoutRepo
+    steps:
+      - name: Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 14
+
+      # Load repo from cache
+      - name: Cache repo
+        uses: actions/cache@v3
+        id: cache-repo
+        env:
+          cache-name: cache-repo
+        with:
+          path: ${{ github.workspace }}/*
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
+
+      # Checkout the branch if not restored via cache
+      - name: Checkout Target Branch
+        if: steps.cache-repo.outputs.cache-hit != 'true'
+        uses: actions/checkout@v3
+
       - name: Cache api node modules
-        uses: actions/cache@v2.1.6
+        uses: actions/cache@v3
         env:
           cache-name: cache-api-node-modules
         with:
@@ -33,17 +89,44 @@ jobs:
 
       - name: Run api tests with coverage
         working-directory: api
-        run: CI=true
-             npm run coverage
+        run: CI=true npm run coverage
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v2.1.0
+        uses: codecov/codecov-action@v3
         with:
           token: ${{secrets.CODECOV_TOKEN}}
           fail_ci_if_error: false
 
+  testAPP:
+    name: Running APP Tests
+    runs-on: ubuntu-latest
+    needs:
+      - checkoutRepo
+    steps:
+      - name: Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 14
+
+      # Load repo from cache
+      - name: Cache repo
+        uses: actions/cache@v3
+        id: cache-repo
+        env:
+          cache-name: cache-repo
+        with:
+          path: ${{ github.workspace }}/*
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
+
+      # Checkout the branch if not restored via cache
+      - name: Checkout Target Branch
+        if: steps.cache-repo.outputs.cache-hit != 'true'
+        uses: actions/checkout@v3
+
       - name: Cache app node modules
-        uses: actions/cache@v2.1.6
+        uses: actions/cache@v3
         env:
           cache-name: cache-app-node-modules
         with:
@@ -59,11 +142,10 @@ jobs:
 
       - name: Run app tests with coverage
         working-directory: app
-        run: CI=true
-             npm run coverage
+        run: CI=true npm run coverage
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v2.1.0
+        uses: codecov/codecov-action@v3
         with:
           token: ${{secrets.CODECOV_TOKEN}}
           fail_ci_if_error: false

@@ -11,10 +11,12 @@ const appName = config.module.app;
 const name = config.module.api;
 const dbName = config.module.db;
 
-const changeId = options.pr || `${Math.floor(Date.now() * 1000) / 60.0}`; // aka pull-request or branch
-const version = config.version || '1.0.0';
+const version = config.version;
+
+const changeId = options.pr; // pull-request number or branch name
 
 // A static deployment is when the deployment is updating dev, test, or prod (rather than a temporary PR)
+// See `--type=static` in the `deployStatic.yml` git workflow
 const isStaticDeployment = options.type === 'static';
 
 const deployChangeId = (isStaticDeployment && 'deploy') || changeId;
@@ -60,11 +62,12 @@ const phases = {
     version: `${version}-${changeId}`,
     tag: tag,
     env: 'build',
-    elasticsearchURL: 'https://elasticsearch-af2668-dev.apps.silver.devops.gov.bc.ca',
-    elasticsearchTaxonomyIndex: 'taxonomy_2.0.0',
     tz: config.timezone.api,
     branch: branch,
-    logLevel: (isStaticDeployment && 'info') || 'debug'
+    cpuRequest: '100m',
+    cpuLimit: '1250m',
+    memoryRequest: '512Mi',
+    memoryLimit: '3Gi'
   },
   dev: {
     namespace: 'af2668-dev',
@@ -82,13 +85,17 @@ const phases = {
     backboneIntakePath: '/api/dwc/submission/intake',
     backboneIntakeEnabled: true,
     env: 'dev',
-    elasticsearchURL: 'https://elasticsearch-af2668-dev.apps.silver.devops.gov.bc.ca',
+    elasticsearchURL: 'http://es01:9200',
     elasticsearchTaxonomyIndex: 'taxonomy_2.0.0',
     tz: config.timezone.api,
     sso: config.sso.dev,
-    replicas: 1,
-    maxReplicas: 1,
-    logLevel: (isStaticDeployment && 'info') || 'debug'
+    logLevel: 'debug',
+    cpuRequest: '100m',
+    cpuLimit: '500m',
+    memoryRequest: '512Mi',
+    memoryLimit: '2Gi',
+    replicas: (isStaticDeployment && '2') || '1',
+    replicasMax: (isStaticDeployment && '3') || '1'
   },
   test: {
     namespace: 'af2668-test',
@@ -110,9 +117,13 @@ const phases = {
     elasticsearchTaxonomyIndex: 'taxonomy_2.0.0',
     tz: config.timezone.api,
     sso: config.sso.test,
-    replicas: 3,
-    maxReplicas: 5,
-    logLevel: 'info'
+    logLevel: 'info',
+    cpuRequest: '200m',
+    cpuLimit: '1000m',
+    memoryRequest: '512Mi',
+    memoryLimit: '3Gi',
+    replicas: '3',
+    replicasMax: '5'
   },
   prod: {
     namespace: 'af2668-prod',
@@ -134,9 +145,13 @@ const phases = {
     elasticsearchTaxonomyIndex: 'taxonomy_2.0.0',
     tz: config.timezone.api,
     sso: config.sso.prod,
-    replicas: 3,
-    maxReplicas: 6,
-    logLevel: 'info'
+    logLevel: 'info',
+    cpuRequest: '200m',
+    cpuLimit: '1000m',
+    memoryRequest: '512Mi',
+    memoryLimit: '3Gi',
+    replicas: '5',
+    replicasMax: '8'
   }
 };
 

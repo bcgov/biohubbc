@@ -1,4 +1,4 @@
-import { Feature } from 'geojson';
+import { Feature, FeatureCollection } from 'geojson';
 
 export interface IGetSubmissionCSVForViewItem {
   name: string;
@@ -54,4 +54,17 @@ export interface IGetOccurrencesForViewResponseDetails {
   organismQuantityType: string;
   occurrenceId: number;
   eventDate: string;
+}
+
+export type EmptyObject = Record<string, never>;
+
+export interface ITaxaData {
+  associated_taxa?: string;
+  vernacular_name?: string;
+  submission_spatial_component_id: number;
+}
+
+export interface ISpatialData {
+  taxa_data: ITaxaData[];
+  spatial_data: FeatureCollection | EmptyObject;
 }

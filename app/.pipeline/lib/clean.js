@@ -1,4 +1,5 @@
 'use strict';
+
 const { OpenShiftClientX } = require('pipeline-cli');
 
 /**
@@ -6,7 +7,7 @@ const { OpenShiftClientX } = require('pipeline-cli');
  *
  * @param {*} settings
  */
-module.exports = (settings) => {
+const clean = (settings) => {
   const phases = settings.phases;
   const options = settings.options;
   const target_phase = options.env;
@@ -14,7 +15,7 @@ module.exports = (settings) => {
   const oc = new OpenShiftClientX(Object.assign({ namespace: phases.build.namespace }, options));
 
   for (let phaseKey in phases) {
-    if (!phases.hasOwnProperty(phaseKey)) {
+    if (!Object.prototype.hasOwnProperty.call(phases, phaseKey)) {
       continue;
     }
 
@@ -73,3 +74,5 @@ module.exports = (settings) => {
     });
   }
 };
+
+module.exports = { clean };

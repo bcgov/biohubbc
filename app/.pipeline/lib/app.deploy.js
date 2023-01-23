@@ -10,7 +10,7 @@ const appDeploy = (settings) => {
 
   const oc = new OpenShiftClientX(Object.assign({ namespace: phases[phase].namespace }, options));
 
-  const templatesLocalBaseUrl = oc.toFileUrl(path.resolve(__dirname, '../../openshift'));
+  const templatesLocalBaseUrl = oc.toFileUrl(path.resolve(__dirname, '../templates'));
 
   const changeId = phases[phase].changeId;
 
@@ -34,8 +34,12 @@ const appDeploy = (settings) => {
         REACT_APP_KEYCLOAK_HOST: phases[phase].sso.url,
         REACT_APP_KEYCLOAK_REALM: phases[phase].sso.realm,
         REACT_APP_KEYCLOAK_CLIENT_ID: phases[phase].sso.clientId,
-        REPLICAS: phases[phase].replicas || 1,
-        REPLICA_MAX: phases[phase].maxReplicas || 1
+        CPU_REQUEST: phases[phase].cpuRequest,
+        CPU_LIMIT: phases[phase].cpuLimit,
+        MEMORY_REQUEST: phases[phase].memoryRequest,
+        MEMORY_LIMIT: phases[phase].memoryLimit,
+        REPLICAS: phases[phase].replicas,
+        REPLICAS_MAX: phases[phase].replicasMax
       }
     })
   );
@@ -47,4 +51,3 @@ const appDeploy = (settings) => {
 };
 
 module.exports = { appDeploy };
-
