@@ -30,7 +30,7 @@ import {
   IUploadObservationSubmissionResponse,
   ObservationSubmissionMessageSeverityLabel
 } from 'interfaces/useObservationApi.interface';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 
 interface ISurveyObservationsProps {
@@ -54,6 +54,7 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
   const dialogContext = useContext(DialogContext);
   const classes = useStyles();
   const [openImportObservations, setOpenImportObservations] = useState(false);
+  const [willRefreshOnClose, setWillRefreshOnClose] = useState(false);
 
   const projectId = Number(urlParams['id']);
   const surveyId = Number(urlParams['survey_id']);
@@ -83,15 +84,6 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
       submissionPollingInterval.disable();
     }
   }, [occurrenceSubmission, submissionPollingInterval]);
-
-  // TODO
-  /*
-  useEffect(() => {
-    if (!openImportObservations && (submissionDataLoader.isReady || submissionDataLoader.isLoading)) {
-      refreshSubmission();
-    }
-  }, [openImportObservations, submissionDataLoader])
-  */
 
   const defaultUploadYesNoDialogProps = {
     dialogTitle: 'Upload Observation Data',
@@ -124,9 +116,25 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
           } else {
             biohubApi.observation.processOccurrences(projectId, result.submissionId, surveyId);
           }
+        })
+        .finally(() => {
+          setWillRefreshOnClose(true);
         });
     };
   };
+
+  const handleOpenImportObservations = () => {
+    setOpenImportObservations(true);
+    setWillRefreshOnClose(false);
+  }
+
+  const handleCloseImportObservations = () => {
+    if (willRefreshOnClose) {
+      refreshSubmission();
+    }
+
+    setOpenImportObservations(false);
+  }
 
   const softDeleteSubmission = () => {
     if (!occurrenceSubmissionId) {
@@ -145,12 +153,12 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
         ...defaultUploadYesNoDialogProps,
         open: true,
         onYes: () => {
-          setOpenImportObservations(true);
+          handleOpenImportObservations();
           dialogContext.setYesNoDialog({ open: false });
         }
       });
     } else {
-      setOpenImportObservations(true);
+      handleOpenImportObservations();
     }
   };
 
@@ -167,16 +175,16 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
 
   const submissionAlertAction = () => (
     <Box>
-      <IconButton aria-label="open" color="inherit" onClick={() => viewFileContents()}>
+      <IconButton aria-label="open" color="inherit" onClick={openFileContents}>
         <Icon path={mdiDownload} size={1} />
       </IconButton>
-      <IconButton aria-label="delete" color="inherit" onClick={() => showDeleteDialog()}>
+      <IconButton aria-label="delete" color="inherit" onClick={showDeleteDialog}>
         <Icon path={mdiTrashCanOutline} size={1} />
       </IconButton>
     </Box>
   );
 
-  const viewFileContents = () => {
+  const openFileContents = useCallback(() => {
     if (!occurrenceSubmissionId) {
       return;
     }
@@ -189,9 +197,9 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
       .catch((_err: any) => {
         return;
       });
-  };
+  }, []);
 
-  if (submissionDataLoader.isLoading) {
+  if (!submissionExists && submissionDataLoader.isLoading) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
@@ -244,7 +252,7 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
               <Box textAlign="center">
                 <Typography data-testid="observations-nodata" variant="body2" color="textSecondary">
                   No Observation Data. &nbsp;
-                  <Link onClick={() => setOpenImportObservations(true)}>Click Here to Import</Link>
+                  <Link onClick={handleOpenImportObservations}>Click Here to Import</Link>
                 </Typography>
               </Box>
             </>
@@ -259,7 +267,7 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
                     className={classes.alertLink}
                     component="button"
                     variant="body2"
-                    onClick={() => viewFileContents()}>
+                    onClick={openFileContents}>
                     <strong>{occurrenceSubmission?.inputFileName}</strong>
                   </Link>
                 </Box>
@@ -312,9 +320,7 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
       <ComponentDialog
         open={openImportObservations}
         dialogTitle="Import Observation Data"
-        onClose={() => {
-          setOpenImportObservations(false);
-        }}>
+        onClose={handleCloseImportObservations}>
         <FileUpload
           dropZoneProps={{ maxNumFiles: 1, acceptedFileExtensions: '.csv, .xls, .txt, .zip, .xlsm, .xlsx' }}
           uploadHandler={importObservations()}
