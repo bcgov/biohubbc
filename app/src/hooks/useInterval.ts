@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 
 /**
  * Runs a `callback` function on a timer, once every `period` milliseconds.
@@ -25,7 +25,7 @@ export const useInterval = (
   const interval = useRef<NodeJS.Timeout | undefined>(undefined);
   const intervalTimeout = useRef<NodeJS.Timeout | undefined>(undefined);
 
-  const enable = () => {
+  const enable = useCallback(() => {
     if (!period || !savedCallback?.current) {
       return;
     }
@@ -37,7 +37,7 @@ export const useInterval = (
     if (timeout && interval.current) {
       intervalTimeout.current = setTimeout(() => clearInterval(Number(interval.current)), timeout);
     }
-  };
+  }, [period, timeout]);
 
   const clearIntervals = () => {
     if (interval) {

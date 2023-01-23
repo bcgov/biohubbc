@@ -126,7 +126,7 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
   const handleOpenImportObservations = () => {
     setOpenImportObservations(true);
     setWillRefreshOnClose(false);
-  }
+  };
 
   const handleCloseImportObservations = () => {
     if (willRefreshOnClose) {
@@ -134,7 +134,7 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
     }
 
     setOpenImportObservations(false);
-  }
+  };
 
   const softDeleteSubmission = () => {
     if (!occurrenceSubmissionId) {
@@ -197,7 +197,7 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
       .catch((_err: any) => {
         return;
       });
-  }, []);
+  }, [biohubApi.survey, occurrenceSubmissionId, projectId, surveyId]);
 
   if (!submissionExists && submissionDataLoader.isLoading) {
     return <CircularProgress className="pageProgress" size={40} />;
@@ -263,11 +263,7 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
                 severity={submissionStatusSeverity}
                 action={submissionAlertAction()}>
                 <Box display="flex" alignItems="center" m={0}>
-                  <Link
-                    className={classes.alertLink}
-                    component="button"
-                    variant="body2"
-                    onClick={openFileContents}>
+                  <Link className={classes.alertLink} component="button" variant="body2" onClick={openFileContents}>
                     <strong>{occurrenceSubmission?.inputFileName}</strong>
                   </Link>
                 </Box>

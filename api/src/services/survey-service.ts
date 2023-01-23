@@ -24,9 +24,12 @@ import {
   IOccurrenceSubmissionMessagesResponse,
   SurveyRepository
 } from '../repositories/survey-repository';
+import { getLogger } from '../utils/logger';
 import { DBService } from './db-service';
 import { PermitService } from './permit-service';
 import { TaxonomyService } from './taxonomy-service';
+
+const defaultLog = getLogger('services/survey-service');
 
 export interface IMessageTypeGroup {
   severityLabel: MESSAGE_CLASS_NAME;
@@ -149,6 +152,7 @@ export class SurveyService extends DBService {
    */
   async getOccurrenceSubmissionMessages(submissionId: number): Promise<IMessageTypeGroup[]> {
     const messages = await this.surveyRepository.getOccurrenceSubmissionMessages(submissionId);
+    defaultLog.debug({ label: 'getOccurrenceSubmissionMessages', submissionId, messages });
 
     return messages.reduce((typeGroups: IMessageTypeGroup[], message: IOccurrenceSubmissionMessagesResponse) => {
       const groupIndex = typeGroups.findIndex((group) => {
