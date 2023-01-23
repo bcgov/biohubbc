@@ -475,15 +475,6 @@ export class EmlService extends DBService {
       }
     });
 
-    this.surveyData.forEach((item) => {
-      data.push({
-        describes: item.survey_details.uuid,
-        metadata: {
-          surveyedAllAreas: item.purpose_and_methodology.surveyed_all_areas === 'true' || false
-        }
-      });
-    });
-
     if (this.projectAttachmentData?.attachmentDetails.length) {
       data.push({
         describes: this.projectData.project.uuid,

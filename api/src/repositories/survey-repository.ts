@@ -125,7 +125,6 @@ export class SurveyRepository extends BaseRepository {
         s.additional_details,
         s.ecological_season_id,
         s.intended_outcome_id,
-        s.surveyed_all_areas,
         array_remove(array_agg(sv.vantage_id), NULL) as vantage_ids
       FROM
         survey s
@@ -139,8 +138,7 @@ export class SurveyRepository extends BaseRepository {
         s.field_method_id,
         s.additional_details,
         s.ecological_season_id,
-        s.intended_outcome_id,
-        s.surveyed_all_areas;
+        s.intended_outcome_id;
       `;
 
     const response = await this.connection.sql(sqlStatement);

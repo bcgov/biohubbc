@@ -100,15 +100,6 @@ const SurveyPurposeAndMethodologyData: React.FC<ISurveyPurposeAndMethodologyData
                   );
                 })}
               </Grid>
-              <Grid item xs={12} sm={6}>
-                <Typography component="dt" variant="subtitle2" color="textSecondary">
-                  Areas Surveyed
-                </Typography>
-                <Typography component="dd" variant="body1">
-                  {(purpose_and_methodology.surveyed_all_areas === 'true' && 'Yes - all areas were surveyed') ||
-                    (purpose_and_methodology.surveyed_all_areas === 'false' && 'No - only some areas were surveyed')}
-                </Typography>
-              </Grid>
               <Grid item xs={12}>
                 <Typography component="dt" variant="subtitle2" color="textSecondary">
                   Additional Details
