@@ -9,7 +9,7 @@ const path = require('path');
  * @param {*} settings
  * @returns
  */
-const apiDeploy = async (settings) => {
+const apiDeploy = (settings) => {
   const phases = settings.phases;
   const options = settings.options;
   const phase = options.env;

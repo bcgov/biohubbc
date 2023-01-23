@@ -23,7 +23,12 @@
     "format-fix": "prettier --write \"./**/*.{js,jsx,ts,tsx,json,css,scss}\""
   },
   "dependencies": {
-    "pipeline-cli": "git+https://github.com/NickPhura/pipeline-cli.git"
+    "debug": "^4.2.0",
+    "lodash.isempty": "^4.0.1",
+    "lodash.isfunction": "^3.0.9",
+    "lodash.isplainobject": "^4.0.6",
+    "lodash.isstring": "^4.0.1",
+    "pipeline-cli": "NickPhura/pipeline-cli#master"
   },
   "devDependencies": {
     "prettier": "~2.3.2"
