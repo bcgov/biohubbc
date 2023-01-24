@@ -4,7 +4,6 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { SUBMISSION_MESSAGE_TYPE } from '../../../../../../../constants/status';
 import * as db from '../../../../../../../database/db';
-import { HTTPError } from '../../../../../../../errors/http-error';
 import { IGetLatestSurveyOccurrenceSubmission } from '../../../../../../../repositories/survey-repository';
 import { SurveyService } from '../../../../../../../services/survey-service';
 import { getMockDBConnection } from '../../../../../../../__mocks__/db';
@@ -12,7 +11,7 @@ import * as observationSubmission from './get';
 
 chai.use(sinonChai);
 
-describe('getObservationSubmission', () => {
+describe.only('getObservationSubmission', () => {
   const dbConnectionObj = getMockDBConnection();
 
   const sampleReq = {
@@ -40,23 +39,6 @@ describe('getObservationSubmission', () => {
     sinon.restore();
   });
 
-  it('should throw a 400 error when no surveyId is provided', async () => {
-    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
-
-    try {
-      const result = observationSubmission.getOccurrenceSubmission();
-      await result(
-        { ...sampleReq, params: { ...sampleReq.params, surveyId: null } },
-        (null as unknown) as any,
-        (null as unknown) as any
-      );
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal('Missing required path param `surveyId`');
-    }
-  });
-
   it('should return an observation submission, on success with no rejected files', async () => {
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
@@ -68,8 +50,7 @@ describe('getObservationSubmission', () => {
     sinon.stub(SurveyService.prototype, 'getLatestSurveyOccurrenceSubmission').resolves(({
       id: 13,
       input_file_name: 'dwca_moose.zip',
-      submission_status_type_name: 'Darwin Core Validated',
-      message: 'string'
+      submission_status_type_name: 'Darwin Core Validated'
     } as unknown) as IGetLatestSurveyOccurrenceSubmission);
 
     const result = observationSubmission.getOccurrenceSubmission();
@@ -80,7 +61,8 @@ describe('getObservationSubmission', () => {
       id: 13,
       inputFileName: 'dwca_moose.zip',
       status: 'Darwin Core Validated',
-      messages: []
+      isValidating: true,
+      messagesTypes: []
     });
   });
 

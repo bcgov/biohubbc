@@ -119,6 +119,8 @@ export function processFile(): RequestHandler {
         // process the resulting transformed dwc data
         await validationService.processDWCFile(submissionId);
       } catch (error: any) {
+        // Since submission errors are caught by the validation service and persisted in the database, anything
+        // outside of a submission message should be thrown here.
         if (!(error instanceof SubmissionError)) {
           throw error;
         }

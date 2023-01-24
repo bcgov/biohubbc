@@ -123,12 +123,12 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
     };
   };
 
-  const handleOpenImportObservations = () => {
+  function handleOpenImportObservations() {
     setOpenImportObservations(true);
     setWillRefreshOnClose(false);
   };
 
-  const handleCloseImportObservations = () => {
+  function handleCloseImportObservations() {
     if (willRefreshOnClose) {
       refreshSubmission();
     }
@@ -136,7 +136,7 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
     setOpenImportObservations(false);
   };
 
-  const softDeleteSubmission = () => {
+  function softDeleteSubmission() {
     if (!occurrenceSubmissionId) {
       return;
     }
@@ -147,7 +147,7 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
     });
   };
 
-  const showUploadDialog = () => {
+  function showUploadDialog() {
     if (submissionExists) {
       dialogContext.setYesNoDialog({
         ...defaultUploadYesNoDialogProps,
@@ -162,7 +162,7 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
     }
   };
 
-  const showDeleteDialog = () => {
+  function showDeleteDialog() {
     dialogContext.setYesNoDialog({
       ...defaultDeleteYesNoDialogProps,
       open: true,

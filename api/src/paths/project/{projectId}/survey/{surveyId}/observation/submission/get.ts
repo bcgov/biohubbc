@@ -79,7 +79,7 @@ GET.apiDoc = {
                 type: 'boolean'
               },
               messageTypes: {
-                description: '', // TODO
+                description: 'An array containing all submission messages grouped by message type',
                 type: 'array',
                 items: {
                   type: 'object',
@@ -102,7 +102,7 @@ GET.apiDoc = {
                       description: 'The array of submission messages belonging to this type of message',
                       items: {
                         type: 'object',
-                        description: '', // TODO
+                        description: 'A submission message object belonging to a particular message type group',
                         properties: {
                           id: {
                             type: 'number',
