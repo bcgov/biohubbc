@@ -3,7 +3,8 @@ import { describe } from 'mocha';
 import { QueryResult } from 'pg';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import { ApiGeneralError } from '../errors/api-error';
+import { MESSAGE_CLASS_NAME, SUBMISSION_MESSAGE_TYPE, SUBMISSION_STATUS_TYPE } from '../constants/status';
+import { ApiExecuteSQLError, ApiGeneralError } from '../errors/api-error';
 import { GetReportAttachmentsData } from '../models/project-view';
 import { PostProprietorData, PostSurveyObject } from '../models/survey-create';
 import { PutSurveyObject, PutSurveyPermitData } from '../models/survey-update';
@@ -30,7 +31,7 @@ import { TaxonomyService } from './taxonomy-service';
 
 chai.use(sinonChai);
 
-describe('SurveyService', () => {
+describe.only('SurveyService', () => {
   afterEach(() => {
     sinon.restore();
   });
@@ -883,6 +884,180 @@ describe('SurveyService', () => {
 
       expect(repoStub).to.be.calledOnce;
       expect(response).to.eql(undefined);
+    });
+  });
+
+  describe('getOccurrenceSubmissionMessages', () => {
+    it('should return empty array if no messages are found', async () => {
+      const dbConnection = getMockDBConnection();
+      const service = new SurveyService(dbConnection);
+
+      const repoStub = sinon.stub(SurveyRepository.prototype, 'getOccurrenceSubmissionMessages').resolves([]);
+
+      const response = await service.getOccurrenceSubmissionMessages(1);
+
+      expect(repoStub).to.be.calledOnce;
+      expect(response).to.eql([]);
+    });
+
+    it('should successfully group messages by message type', async () => {
+      const dbConnection = getMockDBConnection();
+      const service = new SurveyService(dbConnection);
+
+      const repoStub = sinon.stub(SurveyRepository.prototype, 'getOccurrenceSubmissionMessages').resolves([
+        {
+          id: 1,
+          type: SUBMISSION_MESSAGE_TYPE.DUPLICATE_HEADER,
+          status: SUBMISSION_STATUS_TYPE.FAILED_VALIDATION,
+          class: MESSAGE_CLASS_NAME.ERROR,
+          message: 'message 1'
+        },
+        {
+          id: 2,
+          type: SUBMISSION_MESSAGE_TYPE.DUPLICATE_HEADER,
+          status: SUBMISSION_STATUS_TYPE.FAILED_VALIDATION,
+          class: MESSAGE_CLASS_NAME.ERROR,
+          message: 'message 2'
+        },
+        {
+          id: 3,
+          type: SUBMISSION_MESSAGE_TYPE.MISSING_RECOMMENDED_HEADER,
+          status: SUBMISSION_STATUS_TYPE.SUBMITTED,
+          class: MESSAGE_CLASS_NAME.WARNING,
+          message: 'message 3'
+        },
+        {
+          id: 4,
+          type: SUBMISSION_MESSAGE_TYPE.MISCELLANEOUS,
+          status: SUBMISSION_STATUS_TYPE.SUBMITTED,
+          class: MESSAGE_CLASS_NAME.NOTICE,
+          message: 'message 4'
+        }
+      ]);
+
+      const response = await service.getOccurrenceSubmissionMessages(1);
+
+      expect(repoStub).to.be.calledOnce;
+      expect(response).to.eql([
+        {
+          severityLabel: 'Error',
+          messageTypeLabel: 'Duplicate Header',
+          messageStatus: 'Failed to validate',
+          messages: [
+            { id: 1, message: 'message 1' },
+            { id: 2, message: 'message 2' }
+          ]
+        },
+        {
+          severityLabel: 'Warning',
+          messageTypeLabel: 'Missing Recommended Header',
+          messageStatus: 'Submitted',
+          messages: [
+            { id: 3, message: 'message 3' }
+          ]
+        },
+        {
+          severityLabel: 'Notice',
+          messageTypeLabel: 'Miscellaneous',
+          messageStatus: 'Submitted',
+          messages: [
+            { id: 4, message: 'message 4' }
+          ]
+        },
+      ]);
+    });
+  });
+
+  describe('insertSurveyOccurrenceSubmission', () => {
+    it('should return submissionId upon success', async () => {
+      const dbConnection = getMockDBConnection();
+      const service = new SurveyService(dbConnection);
+
+      const repoStub = sinon.stub(SurveyRepository.prototype, 'insertSurveyOccurrenceSubmission').resolves({ submissionId: 1 });
+
+      const response = await service.insertSurveyOccurrenceSubmission({
+        surveyId: 1,
+        source: 'Test'
+      });
+
+      expect(repoStub).to.be.calledOnce;
+      expect(response).to.eql({ submissionId: 1 });
+    });
+
+    it('should throw an error', async () => {
+      const dbConnection = getMockDBConnection();
+      const service = new SurveyService(dbConnection);
+
+      sinon.stub(SurveyRepository.prototype, 'insertSurveyOccurrenceSubmission')
+        .throws(new ApiExecuteSQLError('Failed to insert survey occurrence submission'));
+
+      try {
+        await service.insertSurveyOccurrenceSubmission({
+          surveyId: 1,
+          source: 'Test'
+        });
+        expect.fail();
+      } catch (actualError) {
+        expect((actualError as ApiGeneralError).message).to.equal('Failed to insert survey occurrence submission');
+      }
+    });
+  });
+
+  describe('updateSurveyOccurrenceSubmission', () => {
+    it('should return submissionId upon success', async () => {
+      const dbConnection = getMockDBConnection();
+      const service = new SurveyService(dbConnection);
+
+      const repoStub = sinon.stub(SurveyRepository.prototype, 'updateSurveyOccurrenceSubmission').resolves({ submissionId: 1 });
+
+      const response = await service.updateSurveyOccurrenceSubmission({ submissionId: 1 });
+
+      expect(repoStub).to.be.calledOnce;
+      expect(response).to.eql({ submissionId: 1 });
+    });
+
+    it('should throw an error', async () => {
+      const dbConnection = getMockDBConnection();
+      const service = new SurveyService(dbConnection);
+
+      sinon.stub(SurveyRepository.prototype, 'updateSurveyOccurrenceSubmission')
+        .throws(new ApiExecuteSQLError('Failed to update survey occurrence submission'));
+
+      try {
+        await service.updateSurveyOccurrenceSubmission({ submissionId: 1 });
+        expect.fail();
+      } catch (actualError) {
+        expect((actualError as ApiGeneralError).message).to.equal('Failed to update survey occurrence submission');
+      }
+    });
+  });
+
+  describe('deleteOccurrenceSubmission', () => {
+    it('should return 1 upon success', async () => {
+      const dbConnection = getMockDBConnection();
+      const service = new SurveyService(dbConnection);
+
+      const repoStub = sinon.stub(SurveyRepository.prototype, 'deleteOccurrenceSubmission').resolves(1);
+
+      const response = await service.deleteOccurrenceSubmission(2);
+
+      expect(repoStub).to.be.calledOnce;
+      expect(response).to.eql(1);
+    });
+
+    it('should throw an error upon failure', async () => {
+      const dbConnection = getMockDBConnection();
+      const service = new SurveyService(dbConnection);
+
+      sinon.stub(SurveyRepository.prototype, 'deleteOccurrenceSubmission')
+        .throws(new ApiExecuteSQLError('Failed to delete survey occurrence submission'));
+
+      try {
+        await service.deleteOccurrenceSubmission(2);
+        expect.fail();
+      } catch (actualError) {
+        expect((actualError as ApiGeneralError).message).to.equal('Failed to delete survey occurrence submission');
+      }
     });
   });
 });
