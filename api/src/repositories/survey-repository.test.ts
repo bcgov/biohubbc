@@ -15,7 +15,11 @@ import {
   GetSurveyPurposeAndMethodologyData
 } from '../models/survey-view';
 import { getMockDBConnection } from '../__mocks__/db';
-import { IObservationSubmissionInsertDetails, IObservationSubmissionUpdateDetails, SurveyRepository } from './survey-repository';
+import {
+  IObservationSubmissionInsertDetails,
+  IObservationSubmissionUpdateDetails,
+  SurveyRepository
+} from './survey-repository';
 
 chai.use(sinonChai);
 
@@ -803,13 +807,15 @@ describe('SurveyRepository', () => {
   describe('getOccurrenceSubmissionMessages', () => {
     it('should return result', async () => {
       const mockResponse = ({
-        rows: [{
-          id: 1,
-          type: 'type',
-          status: 'status',
-          class: 'class',
-          message: 'message'
-        }],
+        rows: [
+          {
+            id: 1,
+            type: 'type',
+            status: 'status',
+            class: 'class',
+            message: 'message'
+          }
+        ],
         rowCount: 1
       } as any) as Promise<QueryResult<any>>;
 
@@ -819,13 +825,15 @@ describe('SurveyRepository', () => {
 
       const response = await repository.getOccurrenceSubmissionMessages(1);
 
-      expect(response).to.eql([{
-        id: 1,
-        type: 'type',
-        status: 'status',
-        class: 'class',
-        message: 'message'
-      }]);
+      expect(response).to.eql([
+        {
+          id: 1,
+          type: 'type',
+          status: 'status',
+          class: 'class',
+          message: 'message'
+        }
+      ]);
     });
 
     it('should return empty array', async () => {
@@ -847,7 +855,9 @@ describe('SurveyRepository', () => {
 
       const repository = new SurveyRepository(dbConnection);
 
-      const response = await repository.insertSurveyOccurrenceSubmission({ surveyId: 1 } as IObservationSubmissionInsertDetails);
+      const response = await repository.insertSurveyOccurrenceSubmission({
+        surveyId: 1
+      } as IObservationSubmissionInsertDetails);
 
       expect(response).to.eql({ submissionId: 1 });
     });
@@ -874,7 +884,9 @@ describe('SurveyRepository', () => {
 
       const repository = new SurveyRepository(dbConnection);
 
-      const response = await repository.updateSurveyOccurrenceSubmission({ submissionId: 1 } as IObservationSubmissionUpdateDetails);
+      const response = await repository.updateSurveyOccurrenceSubmission({
+        submissionId: 1
+      } as IObservationSubmissionUpdateDetails);
 
       expect(response).to.eql({ submissionId: 1 });
     });

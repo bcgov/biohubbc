@@ -206,8 +206,9 @@ describe('uploadObservationSubmission', () => {
     });
 
     sinon.stub(file_utils, 'scanFileForVirus').resolves(true);
-    sinon.stub(SurveyService.prototype, 'insertSurveyOccurrenceSubmission')
-      .resolves({ submissionId: undefined as unknown as number });
+    sinon
+      .stub(SurveyService.prototype, 'insertSurveyOccurrenceSubmission')
+      .resolves({ submissionId: (undefined as unknown) as number });
 
     const requestHandler = upload.uploadMedia();
 

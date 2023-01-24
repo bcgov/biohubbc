@@ -911,13 +911,13 @@ export class SurveyRepository extends BaseRepository {
     const queryBuilder = getKnex()
       .table('occurrence_submission')
       .insert({
-        ['input_file_name']: submission.inputFileName,
-        ['input_key']: submission.inputKey,
-        ['output_file_name']: submission.outputFileName,
-        ['output_key']: submission.outputKey,
-        ['survey_id']: submission.surveyId,
-        ['source']: submission.source,
-        ['event_timestamp']: `now()`
+        input_file_name: submission.inputFileName,
+        input_key: submission.inputKey,
+        output_file_name: submission.outputFileName,
+        output_key: submission.outputKey,
+        survey_id: submission.surveyId,
+        source: submission.source,
+        event_timestamp: `now()`
       })
       .returning('occurrence_submission_id as submissionId');
 
@@ -946,10 +946,10 @@ export class SurveyRepository extends BaseRepository {
     const queryBuilder = getKnex()
       .table('occurrence_submission')
       .update({
-        ['input_file_name']: submission.inputFileName,
-        ['input_key']: submission.inputKey,
-        ['output_file_name']: submission.outputFileName,
-        ['output_key']: submission.outputKey
+        input_file_name: submission.inputFileName,
+        input_key: submission.inputKey,
+        output_file_name: submission.outputFileName,
+        output_key: submission.outputKey
       })
       .where('occurrence_submission_id', submission.submissionId)
       .returning('occurrence_submission_id as submissionId');
@@ -977,7 +977,7 @@ export class SurveyRepository extends BaseRepository {
     const queryBuilder = getKnex()
       .table('occurrence_submission')
       .update({
-        ['delete_timestamp']: `now()`
+        delete_timestamp: `now()`
       })
       .where('occurrence_submission_id', submissionId)
       .returning('occurrence_submission_id as submissionId');

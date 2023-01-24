@@ -31,7 +31,7 @@ import { TaxonomyService } from './taxonomy-service';
 
 chai.use(sinonChai);
 
-describe.only('SurveyService', () => {
+describe('SurveyService', () => {
   afterEach(() => {
     sinon.restore();
   });
@@ -952,18 +952,14 @@ describe.only('SurveyService', () => {
           severityLabel: 'Warning',
           messageTypeLabel: 'Missing Recommended Header',
           messageStatus: 'Submitted',
-          messages: [
-            { id: 3, message: 'message 3' }
-          ]
+          messages: [{ id: 3, message: 'message 3' }]
         },
         {
           severityLabel: 'Notice',
           messageTypeLabel: 'Miscellaneous',
           messageStatus: 'Submitted',
-          messages: [
-            { id: 4, message: 'message 4' }
-          ]
-        },
+          messages: [{ id: 4, message: 'message 4' }]
+        }
       ]);
     });
   });
@@ -973,7 +969,9 @@ describe.only('SurveyService', () => {
       const dbConnection = getMockDBConnection();
       const service = new SurveyService(dbConnection);
 
-      const repoStub = sinon.stub(SurveyRepository.prototype, 'insertSurveyOccurrenceSubmission').resolves({ submissionId: 1 });
+      const repoStub = sinon
+        .stub(SurveyRepository.prototype, 'insertSurveyOccurrenceSubmission')
+        .resolves({ submissionId: 1 });
 
       const response = await service.insertSurveyOccurrenceSubmission({
         surveyId: 1,
@@ -988,7 +986,8 @@ describe.only('SurveyService', () => {
       const dbConnection = getMockDBConnection();
       const service = new SurveyService(dbConnection);
 
-      sinon.stub(SurveyRepository.prototype, 'insertSurveyOccurrenceSubmission')
+      sinon
+        .stub(SurveyRepository.prototype, 'insertSurveyOccurrenceSubmission')
         .throws(new ApiExecuteSQLError('Failed to insert survey occurrence submission'));
 
       try {
@@ -1008,7 +1007,9 @@ describe.only('SurveyService', () => {
       const dbConnection = getMockDBConnection();
       const service = new SurveyService(dbConnection);
 
-      const repoStub = sinon.stub(SurveyRepository.prototype, 'updateSurveyOccurrenceSubmission').resolves({ submissionId: 1 });
+      const repoStub = sinon
+        .stub(SurveyRepository.prototype, 'updateSurveyOccurrenceSubmission')
+        .resolves({ submissionId: 1 });
 
       const response = await service.updateSurveyOccurrenceSubmission({ submissionId: 1 });
 
@@ -1020,7 +1021,8 @@ describe.only('SurveyService', () => {
       const dbConnection = getMockDBConnection();
       const service = new SurveyService(dbConnection);
 
-      sinon.stub(SurveyRepository.prototype, 'updateSurveyOccurrenceSubmission')
+      sinon
+        .stub(SurveyRepository.prototype, 'updateSurveyOccurrenceSubmission')
         .throws(new ApiExecuteSQLError('Failed to update survey occurrence submission'));
 
       try {
@@ -1049,7 +1051,8 @@ describe.only('SurveyService', () => {
       const dbConnection = getMockDBConnection();
       const service = new SurveyService(dbConnection);
 
-      sinon.stub(SurveyRepository.prototype, 'deleteOccurrenceSubmission')
+      sinon
+        .stub(SurveyRepository.prototype, 'deleteOccurrenceSubmission')
         .throws(new ApiExecuteSQLError('Failed to delete survey occurrence submission'));
 
       try {
