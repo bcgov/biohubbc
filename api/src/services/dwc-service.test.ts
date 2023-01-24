@@ -12,12 +12,12 @@ describe('DwCService', () => {
   it('constructs', () => {
     const dbConnectionObj = getMockDBConnection();
 
-    const dwcService = new DwCService({ projectId: 1 }, dbConnectionObj);
+    const dwcService = new DwCService(dbConnectionObj);
 
     expect(dwcService).to.be.instanceof(DwCService);
   });
 
-  describe('enrichTaxonIDs', () => {
+  describe('decorateTaxonIDs', () => {
     afterEach(() => {
       sinon.restore();
     });
@@ -25,11 +25,11 @@ describe('DwCService', () => {
     it('does not enrich the jsonObject if no taxonIDs exists', async () => {
       const dbConnectionObj = getMockDBConnection();
 
-      const dwcService = new DwCService({ projectId: 1 }, dbConnectionObj);
+      const dwcService = new DwCService(dbConnectionObj);
 
       const jsonObject = { id: 1, some_text: 'abcd' };
 
-      const enrichedJSON = await dwcService.enrichTaxonIDs(jsonObject);
+      const enrichedJSON = await dwcService.decorateTaxonIDs(jsonObject);
 
       expect(enrichedJSON).to.be.eql(jsonObject);
       expect(enrichedJSON).not.to.be.eql({ id: 1 });
@@ -38,7 +38,7 @@ describe('DwCService', () => {
     it('enriches the jsonObject when it has one taxonID', async () => {
       const dbConnectionObj = getMockDBConnection();
 
-      const dwcService = new DwCService({ projectId: 1 }, dbConnectionObj);
+      const dwcService = new DwCService(dbConnectionObj);
 
       const getEnrichedDataForSpeciesCodeStub = sinon
         .stub(TaxonomyService.prototype, 'getEnrichedDataForSpeciesCode')
@@ -50,7 +50,7 @@ describe('DwCService', () => {
         }
       };
 
-      const enrichedJSON = await dwcService.enrichTaxonIDs(jsonObject);
+      const enrichedJSON = await dwcService.decorateTaxonIDs(jsonObject);
 
       expect(getEnrichedDataForSpeciesCodeStub).to.have.been.called;
       expect(getEnrichedDataForSpeciesCodeStub).to.have.been.calledWith('M-OVCA');
@@ -62,7 +62,7 @@ describe('DwCService', () => {
     it('enriches the jsonObject when it has multiple taxonIDs at different depths', async () => {
       const dbConnectionObj = getMockDBConnection();
 
-      const dwcService = new DwCService({ projectId: 1 }, dbConnectionObj);
+      const dwcService = new DwCService(dbConnectionObj);
 
       const getEnrichedDataForSpeciesCodeStub = sinon
         .stub(TaxonomyService.prototype, 'getEnrichedDataForSpeciesCode')
@@ -75,7 +75,7 @@ describe('DwCService', () => {
         }
       };
 
-      const enrichedJSON = await dwcService.enrichTaxonIDs(jsonObject);
+      const enrichedJSON = await dwcService.decorateTaxonIDs(jsonObject);
 
       expect(getEnrichedDataForSpeciesCodeStub).to.have.been.calledTwice;
       expect(enrichedJSON.item_with_depth_1).to.eql({

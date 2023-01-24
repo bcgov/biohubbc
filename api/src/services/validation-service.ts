@@ -106,7 +106,7 @@ export class ValidationService extends DBService {
       // Parse Archive into JSON file for custom validation
       await this.parseDWCToJSON(submissionId, dwcPrep.archive);
 
-      // Run Decoration to ensure lat long values
+      // Run Decoration for details of source data
       await this.dwCService.decorateDWCASourceData(submissionId);
 
       // Run transforms to scrape and upload

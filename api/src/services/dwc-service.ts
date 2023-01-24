@@ -5,7 +5,6 @@ import { parseUTMString, utmToLatLng } from '../utils/spatial-utils';
 import { DBService } from './db-service';
 import { OccurrenceService } from './occurrence-service';
 import { TaxonomyService } from './taxonomy-service';
-
 /**
  * Service to produce DWC data for a project.
  *
@@ -23,11 +22,11 @@ export class DwCService extends DBService {
   /**
    * Find all nodes that contain `taxonID` and update them to include additional taxonomic information.
    *
-   * @param {Record<any, any>} jsonObject
-   * @return {*}  {Promise<Record<any, any>>}
+   * @param {string} jsonObject
+   * @return {*}  {Promise<string>}
    * @memberof DwCService
    */
-  async enrichTaxonIDs(jsonObject: Record<any, any>): Promise<Record<any, any>> {
+  async decorateTaxonIDs(jsonObject: Record<any, any>): Promise<Record<any, any>> {
     const taxonomyService = new TaxonomyService();
 
     // Find and return all nodes that contain `taxonID`
@@ -71,12 +70,38 @@ export class DwCService extends DBService {
     return jsonpatch.applyPatch(jsonObject, patchOperations).newDocument;
   }
 
+  /**
+   * Run all Decoration functions on DWCA Source Data
+   *
+   * @param {number} occurrenceSubmissionId
+   * @return {*}  {Promise<boolean>}
+   * @memberof DwCService
+   */
   async decorateDWCASourceData(occurrenceSubmissionId: number): Promise<boolean> {
     const occurrenceService = new OccurrenceService(this.connection);
 
     const submission = await occurrenceService.getOccurrenceSubmission(occurrenceSubmissionId);
     const jsonObject = submission.darwin_core_source;
 
+    let newJson = await this.decorateLatLong(jsonObject);
+    newJson = await this.decorateTaxonIDs(newJson);
+
+    const response = await occurrenceService.updateDWCSourceForOccurrenceSubmission(
+      occurrenceSubmissionId,
+      JSON.stringify(newJson)
+    );
+
+    return !!response;
+  }
+
+  /**
+   * Decorate Lat Long details for Location data
+   *
+   * @param {string} jsonObject
+   * @return {*}  {Promise<string>}
+   * @memberof DwCService
+   */
+  async decorateLatLong(jsonObject: Record<any, any>): Promise<Record<any, any>> {
     const pathsToPatch = JSONPath({
       path: '$..[verbatimCoordinates]^',
       json: jsonObject,
@@ -85,45 +110,39 @@ export class DwCService extends DBService {
 
     const patchOperations: Operation[] = [];
 
-    await Promise.all(
-      pathsToPatch.map(async (item: any) => {
-        // eslint-disable-next-line no-prototype-builtins
-        if (item.value.hasOwnProperty('decimalLatitude') && item.value.hasOwnProperty('decimalLongitude')) {
+    pathsToPatch.forEach(async (item: any) => {
+      if (
+        Object.prototype.hasOwnProperty.call(item.value, 'decimalLatitude') &&
+        Object.prototype.hasOwnProperty.call(item.value, 'decimalLongitude')
+      ) {
+        if (!!item.value['decimalLatitude'] && !!item.value['decimalLongitude']) {
           return;
         }
+      }
 
-        const verbatimCoordinates = parseUTMString(item.value['verbatimCoordinates']);
+      const verbatimCoordinates = parseUTMString(item.value['verbatimCoordinates']);
 
-        if (!verbatimCoordinates?.zone_number) {
-          return;
-        }
+      if (!verbatimCoordinates) {
+        return;
+      }
 
-        const latLongValues = utmToLatLng(
-          verbatimCoordinates?.zone_number,
-          verbatimCoordinates?.easting,
-          verbatimCoordinates?.northing
-        );
+      const latLongValues = utmToLatLng(verbatimCoordinates);
 
-        const decimalLatitudePatch: Operation = {
-          op: 'add',
-          path: item.pointer + '/decimalLatitude',
-          value: latLongValues.lat
-        };
+      const decimalLatitudePatch: Operation = {
+        op: 'add',
+        path: item.pointer + '/decimalLatitude',
+        value: latLongValues.latitude
+      };
 
-        const decimalLongitudePatch: Operation = {
-          op: 'add',
-          path: item.pointer + '/decimalLongitude',
-          value: latLongValues.long
-        };
+      const decimalLongitudePatch: Operation = {
+        op: 'add',
+        path: item.pointer + '/decimalLongitude',
+        value: latLongValues.longitude
+      };
 
-        patchOperations.push(decimalLatitudePatch, decimalLongitudePatch);
-      })
-    );
+      patchOperations.push(decimalLatitudePatch, decimalLongitudePatch);
+    });
 
-    const newJson = jsonpatch.applyPatch(jsonObject, patchOperations).newDocument;
-
-    const response = await occurrenceService.updateDWCSourceForOccurrenceSubmission(occurrenceSubmissionId, newJson);
-
-    return !!response;
+    return jsonpatch.applyPatch(jsonObject, patchOperations).newDocument;
   }
 }
