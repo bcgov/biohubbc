@@ -84,12 +84,12 @@ export class DwCService extends DBService {
     const submission = await occurrenceService.getOccurrenceSubmission(occurrenceSubmissionId);
     const jsonObject = submission.darwin_core_source;
 
-    let newJson = await this.decorateLatLong(jsonObject);
-    newJson = await this.decorateTaxonIDs(newJson);
+    const latlongDec = await this.decorateLatLong(jsonObject);
+    const taxonAndLatLongDec = await this.decorateTaxonIDs(latlongDec);
 
     const response = await occurrenceService.updateDWCSourceForOccurrenceSubmission(
       occurrenceSubmissionId,
-      JSON.stringify(newJson)
+      JSON.stringify(taxonAndLatLongDec)
     );
 
     return !!response;
