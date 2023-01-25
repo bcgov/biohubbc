@@ -126,7 +126,7 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
   function handleOpenImportObservations() {
     setOpenImportObservations(true);
     setWillRefreshOnClose(false);
-  };
+  }
 
   function handleCloseImportObservations() {
     if (willRefreshOnClose) {
@@ -134,7 +134,7 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
     }
 
     setOpenImportObservations(false);
-  };
+  }
 
   function softDeleteSubmission() {
     if (!occurrenceSubmissionId) {
@@ -145,7 +145,7 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
       props.refresh();
       refreshSubmission();
     });
-  };
+  }
 
   function showUploadDialog() {
     if (submissionExists) {
@@ -160,7 +160,7 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
     } else {
       handleOpenImportObservations();
     }
-  };
+  }
 
   function showDeleteDialog() {
     dialogContext.setYesNoDialog({
@@ -171,7 +171,7 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
         dialogContext.setYesNoDialog({ open: false });
       }
     });
-  };
+  }
 
   const submissionAlertAction = () => (
     <Box>

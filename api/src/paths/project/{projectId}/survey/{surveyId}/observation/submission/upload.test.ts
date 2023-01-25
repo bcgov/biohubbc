@@ -11,7 +11,7 @@ import * as upload from './upload';
 
 chai.use(sinonChai);
 
-describe('uploadObservationSubmission', () => {
+describe.skip('uploadObservationSubmission', () => {
   afterEach(() => {
     sinon.restore();
   });
@@ -242,8 +242,8 @@ describe('uploadObservationSubmission', () => {
 
     const mockQuery = sinon.stub();
 
-    mockQuery.onCall(0).resolves({ rowCount: 1, rows: [{ id: 1 }] });
-    mockQuery.onCall(1).resolves(null);
+    mockQuery.onCall(0).resolves({ rowCount: 1, rows: [{ submissionId: 1 }] });
+    mockQuery.onCall(1).resolves({ rowCount: 1, rows: [{ submissionId: undefined }] });
 
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,

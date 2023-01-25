@@ -2,16 +2,23 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import { SUBMISSION_MESSAGE_TYPE } from '../../../../../../../constants/status';
+import {
+  MESSAGE_CLASS_NAME,
+  SUBMISSION_MESSAGE_TYPE,
+  SUBMISSION_STATUS_TYPE
+} from '../../../../../../../constants/status';
 import * as db from '../../../../../../../database/db';
-import { IGetLatestSurveyOccurrenceSubmission } from '../../../../../../../repositories/survey-repository';
+import {
+  IGetLatestSurveyOccurrenceSubmission,
+  SurveyRepository
+} from '../../../../../../../repositories/survey-repository';
 import { SurveyService } from '../../../../../../../services/survey-service';
 import { getMockDBConnection } from '../../../../../../../__mocks__/db';
 import * as observationSubmission from './get';
 
 chai.use(sinonChai);
 
-describe.only('getObservationSubmission', () => {
+describe('getObservationSubmission', () => {
   const dbConnectionObj = getMockDBConnection();
 
   const sampleReq = {
@@ -62,38 +69,16 @@ describe.only('getObservationSubmission', () => {
       inputFileName: 'dwca_moose.zip',
       status: 'Darwin Core Validated',
       isValidating: true,
-      messagesTypes: []
+      messageTypes: []
     });
   });
 
   it('should return an observation submission on success, with rejected files', async () => {
-    const mockQuery = sinon.stub();
-
-    mockQuery.resolves({
-      rows: [
-        {
-          errorCode: SUBMISSION_MESSAGE_TYPE.MISSING_REQUIRED_HEADER,
-          id: 1,
-          message: 'occurrence.txt - Missing Required Header - associatedTaxa - Missing required header',
-          status: 'Rejected',
-          type: 'Error'
-        },
-        {
-          errorCode: SUBMISSION_MESSAGE_TYPE.MISSING_REQUIRED_HEADER,
-          id: 2,
-          message: 'occurrence.txt - Missing Required Header - associatedTaxa - Missing required header',
-          status: 'Rejected',
-          type: 'Error'
-        }
-      ]
-    });
-
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
       systemUserId: () => {
         return 20;
-      },
-      query: mockQuery
+      }
     });
 
     sinon.stub(SurveyService.prototype, 'getLatestSurveyOccurrenceSubmission').resolves(({
@@ -101,6 +86,23 @@ describe.only('getObservationSubmission', () => {
       input_file_name: 'dwca_moose.zip',
       submission_status_type_name: 'Rejected'
     } as unknown) as IGetLatestSurveyOccurrenceSubmission);
+
+    sinon.stub(SurveyRepository.prototype, 'getOccurrenceSubmissionMessages').resolves([
+      {
+        id: 1,
+        message: 'occurrence.txt - Missing Required Header - associatedTaxa - Missing required header',
+        status: SUBMISSION_STATUS_TYPE.REJECTED,
+        type: SUBMISSION_MESSAGE_TYPE.MISSING_REQUIRED_HEADER,
+        class: MESSAGE_CLASS_NAME.ERROR
+      },
+      {
+        id: 2,
+        message: 'occurrence.txt - Missing Required Header - associatedTaxa - Missing required header',
+        status: SUBMISSION_STATUS_TYPE.REJECTED,
+        type: SUBMISSION_MESSAGE_TYPE.MISSING_REQUIRED_HEADER,
+        class: MESSAGE_CLASS_NAME.ERROR
+      }
+    ]);
 
     const result = observationSubmission.getOccurrenceSubmission();
 
@@ -110,20 +112,22 @@ describe.only('getObservationSubmission', () => {
       id: 13,
       inputFileName: 'dwca_moose.zip',
       status: 'Rejected',
-      messages: [
+      isValidating: false,
+      messageTypes: [
         {
-          errorCode: SUBMISSION_MESSAGE_TYPE.MISSING_REQUIRED_HEADER,
-          id: 1,
-          message: 'occurrence.txt - Missing Required Header - associatedTaxa - Missing required header',
-          status: 'Rejected',
-          type: 'Error'
-        },
-        {
-          errorCode: SUBMISSION_MESSAGE_TYPE.MISSING_REQUIRED_HEADER,
-          id: 2,
-          message: 'occurrence.txt - Missing Required Header - associatedTaxa - Missing required header',
-          status: 'Rejected',
-          type: 'Error'
+          severityLabel: 'Error',
+          messageTypeLabel: 'Missing Required Header',
+          messageStatus: 'Rejected',
+          messages: [
+            {
+              id: 1,
+              message: 'occurrence.txt - Missing Required Header - associatedTaxa - Missing required header'
+            },
+            {
+              id: 2,
+              message: 'occurrence.txt - Missing Required Header - associatedTaxa - Missing required header'
+            }
+          ]
         }
       ]
     });

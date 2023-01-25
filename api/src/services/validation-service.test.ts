@@ -617,13 +617,17 @@ describe('ValidationService', () => {
         .throws(SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_UPDATE_OCCURRENCE_SUBMISSION));
       const insertError = sinon.stub(service.errorService, 'insertSubmissionError').resolves();
 
-      await service.processDWCFile(1);
-      expect(prep).to.be.calledOnce;
-      expect(state).to.be.calledOnce;
-      expect(persistResults).to.be.calledOnce;
-      expect(update).to.be.calledOnce;
-
-      expect(insertError).to.be.calledOnce;
+      try {
+        await service.processDWCFile(1);
+        expect.fail();
+      } catch (error) {
+        expect(prep).to.be.calledOnce;
+        expect(state).to.be.calledOnce;
+        expect(persistResults).to.be.calledOnce;
+        expect(update).to.be.calledOnce;
+  
+        expect(insertError).to.be.calledOnce;
+      }
     });
 
     it('should throw unrecognized error', async () => {
@@ -702,11 +706,15 @@ describe('ValidationService', () => {
       sinon.stub(service, 'templateScrapeAndUploadOccurrences').resolves();
       sinon.stub(service.submissionRepository, 'insertSubmissionStatus').resolves();
 
-      await service.processXLSXFile(1, 1);
-      expect(prep).to.be.calledOnce;
-      expect(validate).to.be.calledOnce;
-      expect(transform).to.be.calledOnce;
-      expect(insertError).to.be.calledOnce;
+      try {
+        await service.processXLSXFile(1, 1);
+        expect.fail();
+      } catch {
+        expect(prep).to.be.calledOnce;
+        expect(validate).to.be.calledOnce;
+        expect(transform).to.be.calledOnce;
+        expect(insertError).to.be.calledOnce;
+      }
     });
 
     it('should throw unrecognized error', async () => {
