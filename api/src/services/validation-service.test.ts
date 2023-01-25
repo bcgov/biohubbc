@@ -34,7 +34,7 @@ const mockOccurrenceSubmission = {
   input_file_name: '',
   output_key: 'output key',
   output_file_name: '',
-  darwin_core_source: ''
+  darwin_core_source: {}
 };
 
 const buildFile = (fileName: string, customProps: { template_id?: number; csm_id?: number }) => {
@@ -210,7 +210,7 @@ describe('ValidationService', () => {
         input_file_name: '',
         output_key: '',
         output_file_name: '',
-        darwin_core_source: ''
+        darwin_core_source: {}
       });
 
       const service = mockService();
@@ -235,7 +235,7 @@ describe('ValidationService', () => {
         input_file_name: '',
         output_key: '',
         output_file_name: '',
-        darwin_core_source: ''
+        darwin_core_source: {}
       });
 
       try {

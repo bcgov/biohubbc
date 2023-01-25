@@ -16,7 +16,7 @@ export interface IOccurrenceSubmission {
   input_file_name: string;
   output_key: string;
   output_file_name: string;
-  darwin_core_source: any;
+  darwin_core_source: Record<any, any>;
 }
 
 export type EmptyObject = Record<string, never>;
