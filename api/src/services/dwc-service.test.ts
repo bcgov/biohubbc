@@ -114,7 +114,7 @@ describe('DwCService', () => {
 
       const newJson = await dwcService.decorateLatLong(jsonObject);
 
-      expect(newJson).to.eql(newJson);
+      expect(newJson).to.eql(jsonObject);
     });
 
     it('throws an error if veratimCoordinates cannot be parsed ', async () => {
