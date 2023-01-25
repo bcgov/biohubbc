@@ -34,7 +34,7 @@ export interface IGetLatestSurveyOccurrenceSubmission {
   output_file_name: string;
   submission_status_id: number;
   submission_status_type_id: number;
-  submission_status_type_name: SUBMISSION_STATUS_TYPE;
+  submission_status_type_name?: SUBMISSION_STATUS_TYPE;
   submission_message_id: number;
   submission_message_type_id: number;
   message: string;

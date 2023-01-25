@@ -63,7 +63,8 @@ GET.apiDoc = {
             required: ['id', 'inputFileName', 'status', 'isValidating', 'messageTypes'],
             properties: {
               id: {
-                type: 'number'
+                type: 'number',
+                minimum: 1
               },
               inputFileName: {
                 description: 'The file name of the submission',
@@ -83,6 +84,7 @@ GET.apiDoc = {
                 type: 'array',
                 items: {
                   type: 'object',
+                  required: ['severityLabel', 'messageTypeLabel', 'messageStatus', 'messages'],
                   properties: {
                     severityLabel: {
                       type: 'string',
@@ -103,6 +105,7 @@ GET.apiDoc = {
                       items: {
                         type: 'object',
                         description: 'A submission message object belonging to a particular message type group',
+                        required: ['id', 'message'],
                         properties: {
                           id: {
                             type: 'number',
@@ -162,14 +165,15 @@ export function getOccurrenceSubmission(): RequestHandler {
         return res.status(200).json(null);
       }
 
-      const hasAdditionalOccurrenceSubmissionMessages = [
-        SUBMISSION_STATUS_TYPE.REJECTED,
-        SUBMISSION_STATUS_TYPE.SYSTEM_ERROR,
-        SUBMISSION_STATUS_TYPE.FAILED_OCCURRENCE_PREPARATION,
-        SUBMISSION_STATUS_TYPE.FAILED_VALIDATION,
-        SUBMISSION_STATUS_TYPE.FAILED_TRANSFORMED,
-        SUBMISSION_STATUS_TYPE.FAILED_PROCESSING_OCCURRENCE_DATA
-      ].includes(occurrenceSubmission.submission_status_type_name);
+      const hasAdditionalOccurrenceSubmissionMessages =
+        occurrenceSubmission.submission_status_type_name && [
+          SUBMISSION_STATUS_TYPE.REJECTED,
+          SUBMISSION_STATUS_TYPE.SYSTEM_ERROR,
+          SUBMISSION_STATUS_TYPE.FAILED_OCCURRENCE_PREPARATION,
+          SUBMISSION_STATUS_TYPE.FAILED_VALIDATION,
+          SUBMISSION_STATUS_TYPE.FAILED_TRANSFORMED,
+          SUBMISSION_STATUS_TYPE.FAILED_PROCESSING_OCCURRENCE_DATA
+        ].includes(occurrenceSubmission.submission_status_type_name);
 
       const messageTypes: IMessageTypeGroup[] = hasAdditionalOccurrenceSubmissionMessages
         ? await surveyService.getOccurrenceSubmissionMessages(Number(occurrenceSubmission.id))
@@ -178,7 +182,7 @@ export function getOccurrenceSubmission(): RequestHandler {
       return res.status(200).json({
         id: occurrenceSubmission.id,
         inputFileName: occurrenceSubmission.input_file_name,
-        status: occurrenceSubmission.submission_status_type_name,
+        status: occurrenceSubmission.submission_status_type_name || null,
         isValidating: !hasAdditionalOccurrenceSubmissionMessages,
         messageTypes
       });

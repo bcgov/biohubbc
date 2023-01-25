@@ -48,72 +48,779 @@ describe('getObservationSubmission', () => {
     sinon.restore();
   });
 
-  describe('openApiScheme', () => {
+  describe.only('openApiScheme', () => {
+    const requestSchema = observationSubmission.GET.apiDoc as unknown as OpenAPIRequestValidatorArgs;
+    const responseSchema = observationSubmission.GET.apiDoc as unknown as OpenAPIResponseValidatorArgs;
+
     describe('request validation', () => {
-      const requestValidator = new OpenAPIRequestValidator(observationSubmission.GET.apiDoc as unknown as OpenAPIRequestValidatorArgs);
+      const requestValidator = new OpenAPIRequestValidator(requestSchema);
 
       describe('should throw an error when', () => {
-        describe('boundry', () => {
-          it('is null', async () => {
+        describe('projectId', () => {
+          it('is missing', () => {
             const request = {
-              headers: {
-                'content-type': 'application/json'
-              },
-              query: {
-                boundary: null,
-                datasetID: []
+              headers: { 'content-type': 'application/json' },
+              params: {
+                surveyId: 5
               }
             };
 
             const response = requestValidator.validateRequest(request);
-
             expect(response.status).to.equal(400);
-            expect(response.errors[0].path).to.equal('boundary');
-            expect(response.errors[0].message).to.equal('must be array');
+            expect(response.errors.length).to.equal(1);
+            expect(response.errors[0].path).to.equal('projectId');
+            expect(response.errors[0].message).to.equal("must have required property 'projectId'");
           });
 
-          it('is not a array', async () => {
+          it('is null', () => {
             const request = {
-              headers: {
-                'content-type': 'application/json'
-              },
-              query: {
-                boundary: 123,
-                datasetID: []
+              headers: { 'content-type': 'application/json' },
+              params: {
+                projectId: null,
+                surveyId: 5
               }
             };
 
             const response = requestValidator.validateRequest(request);
-
             expect(response.status).to.equal(400);
-            expect(response.errors[0].path).to.equal('boundary');
-            expect(response.errors[0].message).to.equal('must be array');
+            expect(response.errors.length).to.equal(1);
+            expect(response.errors[0].path).to.equal('projectId');
+            expect(response.errors[0].message).to.equal('must be number');
+          });
+
+          it('is not a number', () => {
+            const request = {
+              headers: { 'content-type': 'application/json' },
+              params: {
+                projectId: '12',
+                surveyId: 5
+              }
+            };
+
+            const response = requestValidator.validateRequest(request);
+            console.log(JSON.stringify(response))
+            expect(response.status).to.equal(400);
+            expect(response.errors.length).to.equal(1);
+            expect(response.errors[0].path).to.equal('projectId');
+            expect(response.errors[0].message).to.equal('must be number');
+          });
+
+          it('is less than 1', () => {
+            const request = {
+              headers: { 'content-type': 'application/json' },
+              params: {
+                projectId: 0,
+                surveyId: 5
+              }
+            };
+
+            const response = requestValidator.validateRequest(request);
+            expect(response.status).to.equal(400);
+            expect(response.errors.length).to.equal(1);
+            expect(response.errors[0].path).to.equal('projectId');
+            expect(response.errors[0].message).to.equal('must be >= 1');
           });
         });
 
+        describe('surveyId', () => {
+          it('is missing', () => {
+            const request = {
+              headers: { 'content-type': 'application/json' },
+              params: {
+                projectId: 2
+              }
+            };
 
-        describe('response validation', () => {
-          const responseValidator = new OpenAPIResponseValidator(GET.apiDoc as unknown as OpenAPIResponseValidatorArgs);
-          describe('should throw an error when', () => {
-            it('returns a null response', async () => {
-              const apiResponse = null;
+            const response = requestValidator.validateRequest(request);
+            expect(response.status).to.equal(400);
+            expect(response.errors.length).to.equal(1);
+            expect(response.errors[0].path).to.equal('surveyId');
+            expect(response.errors[0].message).to.equal("must have required property 'surveyId'");
+          });
+
+          it('is null', () => {
+            const request = {
+              headers: { 'content-type': 'application/json' },
+              params: {
+                projectId: 2,
+                surveyId: null
+              }
+            };
+
+            const response = requestValidator.validateRequest(request);
+            expect(response.status).to.equal(400);
+            expect(response.errors.length).to.equal(1);
+            expect(response.errors[0].path).to.equal('surveyId');
+            expect(response.errors[0].message).to.equal('must be number');
+          });
+
+          it('is not a number', () => {
+            const request = {
+              headers: { 'content-type': 'application/json' },
+              params: {
+                projectId: 2,
+                surveyId: '15'
+              }
+            };
+
+            const response = requestValidator.validateRequest(request);
+            expect(response.status).to.equal(400);
+            expect(response.errors.length).to.equal(1);
+            expect(response.errors[0].path).to.equal('surveyId');
+            expect(response.errors[0].message).to.equal('must be number');
+          });
+
+          it('is less than 1', () => {
+            const request = {
+              headers: { 'content-type': 'application/json' },
+              params: {
+                projectId: 2,
+                surveyId: 0
+              }
+            };
+
+            const response = requestValidator.validateRequest(request);
+
+            expect(response.status).to.equal(400);
+            expect(response.errors.length).to.equal(1);
+            expect(response.errors[0].path).to.equal('surveyId');
+            expect(response.errors[0].message).to.equal('must be >= 1');
+          });
+        });
+      });
+
+      describe('should succeed when', () => {
+        it('is provided with valid params', () => {
+          const request = {
+            headers: { 'content-type': 'application/json' },
+            params: {
+              projectId: 2,
+              surveyId: 5
+            }
+          };
+
+          const response = requestValidator.validateRequest(request);
+
+          expect(response).to.equal(undefined);
+        })
+      });
+    });
+
+    describe('response validation', () => {
+      const responseValidator = new OpenAPIResponseValidator(responseSchema);
+
+      describe('should throw an error when', () => {
+        it('returns a non-object response', () => {
+          const apiResponse = 'test-response';
+          const response = responseValidator.validateResponse(200, apiResponse);
+
+          expect(response.message).to.equal('The response was not valid.');
+          expect(response.errors.length).to.equal(1);
+          expect(response.errors[0].path).to.equal('response');
+          expect(response.errors[0].message).to.equal('must be object,null');
+        });
+
+        describe('id', () => {
+          it('is missing', () => {
+            const apiResponse = {
+              inputFileName: 'filename.xlsx',
+              status: 'validation-status',
+              isValidating: false,
+              messageTypes: []
+            };
+
+            const response = responseValidator.validateResponse(200, apiResponse);
+            expect(response.message).to.equal('The response was not valid.');
+            expect(response.errors.length).to.equal(1);
+            expect(response.errors[0].path).to.equal('response');
+            expect(response.errors[0].message).to.equal("must have required property 'id'");
+          });
+
+          it('is null', () => {
+            const apiResponse = {
+              id: null,
+              inputFileName: 'filename.xlsx',
+              status: 'validation-status',
+              isValidating: false,
+              messageTypes: []
+            };
+
+            const response = responseValidator.validateResponse(200, apiResponse);
+            expect(response.message).to.equal('The response was not valid.');
+            expect(response.errors[0].path).to.equal('id');
+            expect(response.errors[0].message).to.equal('must be number');
+          });
+
+          it('is not a number', () => {
+            const apiResponse = {
+              id: '12',
+              inputFileName: 'filename.xlsx',
+              status: 'validation-status',
+              isValidating: false,
+              messageTypes: []
+            };
+
+            const response = responseValidator.validateResponse(200, apiResponse);
+            expect(response.message).to.equal('The response was not valid.');
+            expect(response.errors[0].path).to.equal('id');
+            expect(response.errors[0].message).to.equal('must be number');
+          });
+
+          it('is less than 1', () => {
+            const apiResponse = {
+              id: 0,
+              inputFileName: 'filename.xlsx',
+              status: 'validation-status',
+              isValidating: false,
+              messageTypes: []
+            };
+
+            const response = responseValidator.validateResponse(200, apiResponse);
+            expect(response.message).to.equal('The response was not valid.');
+            expect(response.errors[0].path).to.equal('id');
+            expect(response.errors[0].message).to.equal('must be >= 1');
+          });
+        });
+
+        describe('inputFileName', () => {
+          it('is missing', () => {
+            const apiResponse = {
+              id: 1,
+              status: 'validation-status',
+              isValidating: false,
+              messageTypes: []
+            };
+
+            const response = responseValidator.validateResponse(200, apiResponse);
+            expect(response.message).to.equal('The response was not valid.');
+            expect(response.errors.length).to.equal(1);
+            expect(response.errors[0].path).to.equal('response');
+            expect(response.errors[0].message).to.equal("must have required property 'inputFileName'");
+          });
+
+          it('is null', () => {
+            const apiResponse = {
+              id: 1,
+              inputFileName: null,
+              status: 'validation-status',
+              isValidating: false,
+              messageTypes: []
+            };
+
+            const response = responseValidator.validateResponse(200, apiResponse);
+            expect(response.message).to.equal('The response was not valid.');
+            expect(response.errors.length).to.equal(1);
+            expect(response.errors[0].path).to.equal('inputFileName');
+            expect(response.errors[0].message).to.equal('must be string');
+          });
+
+          it('is not a string', () => {
+            const apiResponse = {
+              id: 1,
+              inputFileName: { filename: 'filename' },
+              status: 'validation-status',
+              isValidating: false,
+              messageTypes: []
+            };
+
+            const response = responseValidator.validateResponse(200, apiResponse);
+            expect(response.message).to.equal('The response was not valid.');
+            expect(response.errors.length).to.equal(1);
+            expect(response.errors[0].path).to.equal('inputFileName');
+            expect(response.errors[0].message).to.equal('must be string');
+          });
+        });
+
+        describe('status', () => {
+          it('is missing', () => {
+            const apiResponse = {
+              id: 1,
+              inputFileName: 'filename.xlsx',
+              isValidating: false,
+              messageTypes: []
+            };
+
+            const response = responseValidator.validateResponse(200, apiResponse);
+            expect(response.message).to.equal('The response was not valid.');
+            expect(response.errors.length).to.equal(1);
+            expect(response.errors[0].path).to.equal('response');
+            expect(response.errors[0].message).to.equal("must have required property 'status'");
+          });
+
+          it('is not a string', () => {
+            const apiResponse = {
+              id: 1,
+              inputFileName: 'filename.xlsx',
+              status: { status: 'status' },
+              isValidating: false,
+              messageTypes: []
+            };
+
+            const response = responseValidator.validateResponse(200, apiResponse);
+            expect(response.message).to.equal('The response was not valid.');
+            expect(response.errors.length).to.equal(1);
+            expect(response.errors[0].path).to.equal('status');
+            expect(response.errors[0].message).to.equal('must be string,null');
+          });
+        });
+
+        describe('isValidating', () => {
+          it('is missing', () => {
+            const apiResponse = {
+              id: 1,
+              inputFileName: 'filename.xlsx',
+              status: 'validation-status',
+              messageTypes: []
+            };
+
+            const response = responseValidator.validateResponse(200, apiResponse);
+            expect(response.message).to.equal('The response was not valid.');
+            expect(response.errors.length).to.equal(1);
+            expect(response.errors[0].path).to.equal('response');
+            expect(response.errors[0].message).to.equal("must have required property 'isValidating'");
+          });
+
+          it('is not a bool', () => {
+            const apiResponse = {
+              id: 1,
+              inputFileName: 'filename.xlsx',
+              status: 'validation-status',
+              isValidating: 'true',
+              messageTypes: []
+            };
+
+            const response = responseValidator.validateResponse(200, apiResponse);
+            expect(response.message).to.equal('The response was not valid.');
+            expect(response.errors.length).to.equal(1);
+            expect(response.errors[0].path).to.equal('isValidating');
+            expect(response.errors[0].message).to.equal('must be boolean');
+          });
+        });
+
+        describe('messageTypes', () => {
+          it('is missing', () => {
+            const apiResponse = {
+              id: 1,
+              inputFileName: 'filename.xlsx',
+              isValidating: false,
+              status: 'validation-status'
+            };
+
+            const response = responseValidator.validateResponse(200, apiResponse);
+            expect(response.message).to.equal('The response was not valid.');
+            expect(response.errors.length).to.equal(1);
+            expect(response.errors[0].path).to.equal('response');
+            expect(response.errors[0].message).to.equal("must have required property 'messageTypes'");
+          });
+
+          it('is not an array', () => {
+            const apiResponse = {
+              id: 1,
+              inputFileName: 'filename.xlsx',
+              status: 'validation-status',
+              isValidating: false,
+              messageTypes: 'message-types'
+            };
+
+            const response = responseValidator.validateResponse(200, apiResponse);
+            expect(response.message).to.equal('The response was not valid.');
+            expect(response.errors.length).to.equal(1);
+            expect(response.errors[0].path).to.equal('messageTypes');
+            expect(response.errors[0].message).to.equal('must be array');
+          });
+
+          describe('messageType', () => {
+            it('is not an object', () => {
+              const apiResponse = {
+                id: 1,
+                inputFileName: 'filename.xlsx',
+                status: 'validation-status',
+                isValidating: false,
+                messageTypes: ['message-type']
+              };
+  
               const response = responseValidator.validateResponse(200, apiResponse);
-    
               expect(response.message).to.equal('The response was not valid.');
-              expect(response.errors[0].path).to.equal('response');
-              expect(response.errors[0].message).to.equal('must be string');
+              expect(response.errors.length).to.equal(1);
+              expect(response.errors[0].path).to.equal('messageTypes/0');
+              expect(response.errors[0].message).to.equal('must be object');
             });
+
+            describe('severityLabel', () => {
+              it('is missing', () => {
+                const apiResponse = {
+                  id: 1,
+                  inputFileName: 'filename.xlsx',
+                  status: 'validation-status',
+                  isValidating: false,
+                  messageTypes: [
+                    {
+                      messageTypeLabel: 'type-label',
+                      messageStatus: 'message-status',
+                      messages: []
+                    }
+                  ]
+                };
     
-            it('returns invalide response', () => {
-              const apiResponse = [{}];
-              const response = responseValidator.validateResponse(200, apiResponse);
+                const response = responseValidator.validateResponse(200, apiResponse);
+                expect(response.message).to.equal('The response was not valid.');
+                expect(response.errors.length).to.equal(1);
+                expect(response.errors[0].path).to.equal('messageTypes/0');
+                expect(response.errors[0].message).to.equal("must have required property 'severityLabel'");
+              });
+
+              it('is not a string', () => {
+                const apiResponse = {
+                  id: 1,
+                  inputFileName: 'filename.xlsx',
+                  status: 'validation-status',
+                  isValidating: false,
+                  messageTypes: [
+                    {
+                      severityLabel: { label: 'label '},
+                      messageTypeLabel: 'type-label',
+                      messageStatus: 'message-status',
+                      messages: []
+                    }
+                  ]
+                };
     
-              expect(response.message).to.equal('The response was not valid.');
-              expect(response.errors[0].message).to.equal('must be string');
+                const response = responseValidator.validateResponse(200, apiResponse);
+                expect(response.message).to.equal('The response was not valid.');
+                expect(response.errors.length).to.equal(1);
+                expect(response.errors[0].path).to.equal('messageTypes/0/severityLabel');
+                expect(response.errors[0].message).to.equal('must be string');
+              });
+            });
+
+            describe('messageStatus', () => {
+              it('is missing', () => {
+                const apiResponse = {
+                  id: 1,
+                  inputFileName: 'filename.xlsx',
+                  status: 'validation-status',
+                  isValidating: false,
+                  messageTypes: [
+                    {
+                      severityLabel: 'severity-label',
+                      messageStatus: 'message-status',
+                      messages: []
+                    }
+                  ]
+                };
+    
+                const response = responseValidator.validateResponse(200, apiResponse);
+                expect(response.message).to.equal('The response was not valid.');
+                expect(response.errors.length).to.equal(1);
+                expect(response.errors[0].path).to.equal('messageTypes/0');
+                expect(response.errors[0].message).to.equal("must have required property 'messageTypeLabel'");
+              });
+    
+              it('is not a string', () => {
+                const apiResponse = {
+                  id: 1,
+                  inputFileName: 'filename.xlsx',
+                  status: 'validation-status',
+                  isValidating: false,
+                  messageTypes: [
+                    {
+                      severityLabel: 'severity-label',
+                      messageTypeLabel: { label: 'label '},
+                      messageStatus: 'message-status',
+                      messages: []
+                    }
+                  ]
+                };
+    
+                const response = responseValidator.validateResponse(200, apiResponse);
+                expect(response.message).to.equal('The response was not valid.');
+                expect(response.errors.length).to.equal(1);
+                expect(response.errors[0].path).to.equal('messageTypes/0/messageTypeLabel');
+                expect(response.errors[0].message).to.equal('must be string');
+              });
+            });
+
+            describe('messageStatus', () => {
+              it('is missing', () => {
+                const apiResponse = {
+                  id: 1,
+                  inputFileName: 'filename.xlsx',
+                  status: 'validation-status',
+                  isValidating: false,
+                  messageTypes: [
+                    {
+                      severityLabel: 'severity-label',
+                      messageTypeLabel: 'type-label',
+                      messages: []
+                    }
+                  ]
+                };
+    
+                const response = responseValidator.validateResponse(200, apiResponse);
+                expect(response.message).to.equal('The response was not valid.');
+                expect(response.errors.length).to.equal(1);
+                expect(response.errors[0].path).to.equal('messageTypes/0');
+                expect(response.errors[0].message).to.equal("must have required property 'messageStatus'");
+              });
+    
+              it('is not a string', () => {
+                const apiResponse = {
+                  id: 1,
+                  inputFileName: 'filename.xlsx',
+                  status: 'validation-status',
+                  isValidating: false,
+                  messageTypes: [
+                    {
+                      severityLabel: 'severity-label',
+                      messageTypeLabel: 'type-label',
+                      messageStatus: { status: 'status' },
+                      messages: []
+                    }
+                  ]
+                };
+    
+                const response = responseValidator.validateResponse(200, apiResponse);
+                expect(response.message).to.equal('The response was not valid.');
+                expect(response.errors.length).to.equal(1);
+                expect(response.errors[0].path).to.equal('messageTypes/0/messageStatus');
+                expect(response.errors[0].message).to.equal('must be string');
+              });
+            });
+
+            describe('messages', () => {
+              it('is missing', () => {
+                const apiResponse = {
+                  id: 1,
+                  inputFileName: 'filename.xlsx',
+                  status: 'validation-status',
+                  isValidating: false,
+                  messageTypes: [
+                    {
+                      severityLabel: 'severity-label',
+                      messageTypeLabel: 'type-label',
+                      messageStatus: 'message-status'
+                    }
+                  ]
+                };
+    
+                const response = responseValidator.validateResponse(200, apiResponse);
+                expect(response.message).to.equal('The response was not valid.');
+                expect(response.errors.length).to.equal(1);
+                expect(response.errors[0].path).to.equal('messageTypes/0');
+                expect(response.errors[0].message).to.equal("must have required property 'messages'");
+              });
+    
+              it('is not an array', () => {
+                const apiResponse = {
+                  id: 1,
+                  inputFileName: 'filename.xlsx',
+                  status: 'validation-status',
+                  isValidating: false,
+                  messageTypes: [
+                    {
+                      severityLabel: 'severity-label',
+                      messageTypeLabel: 'type-label',
+                      messageStatus: 'message-status',
+                      messages: 'messages'
+                    }
+                  ]
+                };
+    
+                const response = responseValidator.validateResponse(200, apiResponse);
+                expect(response.message).to.equal('The response was not valid.');
+                expect(response.errors.length).to.equal(1);
+                expect(response.errors[0].path).to.equal('messageTypes/0/messages');
+                expect(response.errors[0].message).to.equal('must be array');
+              });
+
+              describe('message', () => {
+                it('is not an object', () => {
+                  const apiResponse = {
+                    id: 1,
+                    inputFileName: 'filename.xlsx',
+                    status: 'validation-status',
+                    isValidating: false,
+                    messageTypes: [
+                      {
+                        severityLabel: 'severity-label',
+                        messageTypeLabel: 'type-label',
+                        messageStatus: 'message-status',
+                        messages: ['messages']
+                      }
+                    ]
+                  };
+      
+                  const response = responseValidator.validateResponse(200, apiResponse);
+                  expect(response.message).to.equal('The response was not valid.');
+                  expect(response.errors.length).to.equal(1);
+                  expect(response.errors[0].path).to.equal('messageTypes/0/messages/0');
+                  expect(response.errors[0].message).to.equal('must be object');
+                });
+
+                it('id is missing', () => {
+                  const apiResponse = {
+                    id: 1,
+                    inputFileName: 'filename.xlsx',
+                    status: 'validation-status',
+                    isValidating: false,
+                    messageTypes: [
+                      {
+                        severityLabel: 'severity-label',
+                        messageTypeLabel: 'type-label',
+                        messageStatus: 'message-status',
+                        messages: [
+                          {
+                            message: 'test-message'
+                          }
+                        ]
+                      }
+                    ]
+                  };
+      
+                  const response = responseValidator.validateResponse(200, apiResponse);
+                  expect(response.message).to.equal('The response was not valid.');
+                  expect(response.errors.length).to.equal(1);
+                  expect(response.errors[0].path).to.equal('messageTypes/0/messages/0');
+                  expect(response.errors[0].message).to.equal("must have required property 'id'");
+                });
+
+                it('id is not number', () => {
+                  const apiResponse = {
+                    id: 1,
+                    inputFileName: 'filename.xlsx',
+                    status: 'validation-status',
+                    isValidating: false,
+                    messageTypes: [
+                      {
+                        severityLabel: 'severity-label',
+                        messageTypeLabel: 'type-label',
+                        messageStatus: 'message-status',
+                        messages: [
+                          {
+                            id: '12',
+                            message: 'test-message'
+                          }
+                        ]
+                      }
+                    ]
+                  };
+      
+                  const response = responseValidator.validateResponse(200, apiResponse);
+                  expect(response.message).to.equal('The response was not valid.');
+                  expect(response.errors.length).to.equal(1);
+                  expect(response.errors[0].path).to.equal('messageTypes/0/messages/0/id');
+                  expect(response.errors[0].message).to.equal('must be number');
+                });
+
+                it('message is missing', () => {
+                  const apiResponse = {
+                    id: 1,
+                    inputFileName: 'filename.xlsx',
+                    status: 'validation-status',
+                    isValidating: false,
+                    messageTypes: [
+                      {
+                        severityLabel: 'severity-label',
+                        messageTypeLabel: 'type-label',
+                        messageStatus: 'message-status',
+                        messages: [
+                          {
+                            id: 1
+                          }
+                        ]
+                      }
+                    ]
+                  };
+      
+                  const response = responseValidator.validateResponse(200, apiResponse);
+                  expect(response.message).to.equal('The response was not valid.');
+                  expect(response.errors.length).to.equal(1);
+                  expect(response.errors[0].path).to.equal('messageTypes/0/messages/0');
+                  expect(response.errors[0].message).to.equal("must have required property 'message'");
+                });
+
+                it('message is not string', () => {
+                  const apiResponse = {
+                    id: 1,
+                    inputFileName: 'filename.xlsx',
+                    status: 'validation-status',
+                    isValidating: false,
+                    messageTypes: [
+                      {
+                        severityLabel: 'severity-label',
+                        messageTypeLabel: 'type-label',
+                        messageStatus: 'message-status',
+                        messages: [
+                          {
+                            id: 1,
+                            message: { test: 'test-message' }
+                          }
+                        ]
+                      }
+                    ]
+                  };
+      
+                  const response = responseValidator.validateResponse(200, apiResponse);
+                  expect(response.message).to.equal('The response was not valid.');
+                  expect(response.errors.length).to.equal(1);
+                  expect(response.errors[0].path).to.equal('messageTypes/0/messages/0/message');
+                  expect(response.errors[0].message).to.equal('must be string');
+                });
+              });
             });
           });
-    
-          describe('should succeed when', () => {
+        });
+      });
+
+      describe('should succeed when', () => {
+        it('returns a null response', () => {
+          const apiResponse = null;
+
+          const response = responseValidator.validateResponse(200, apiResponse);
+          expect(response).to.equal(undefined);
+        });
+
+        it('status is null', () => {
+          const apiResponse = {
+            id: 1,
+            status: null,
+            inputFileName: 'filename.xlsx',
+            isValidating: false,
+            messageTypes: []
+          };
+
+          const response = responseValidator.validateResponse(200, apiResponse);
+          expect(response).to.equal(undefined);
+        });
+
+        it('has valid response values', () => {
+          const apiResponse = {
+            id: 1,
+            inputFileName: 'filename.xlsx',
+            status: 'validation-status',
+            isValidating: false,
+            messageTypes: [
+              {
+                severityLabel: 'severity-label',
+                messageTypeLabel: 'type-label',
+                messageStatus: 'message-status',
+                messages: [
+                  {
+                    id: 1,
+                    message: 'test-message'
+                  }
+                ]
+              }
+            ]
+          }
+
+          const response = responseValidator.validateResponse(200, apiResponse);
+          expect(response).to.equal(undefined);          
+        })
+      });
+    });
+
+  });
 
   it('should return an observation submission, on success with no rejected files', async () => {
     sinon.stub(db, 'getDBConnection').returns({
