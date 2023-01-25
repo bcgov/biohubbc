@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
-import { parseLatLongString, parseUTMString } from './spatial-utils';
+import { parseLatLongString, parseUTMString, utmToLatLng } from './spatial-utils';
 
 describe('parseUTMString', () => {
   it('returns null when no UTM string provided', async () => {
@@ -139,5 +139,32 @@ describe('parseLatLongString', () => {
     const result = parseLatLongString('49.123 -120.123');
 
     expect(result).to.eql({ lat: 49.123, long: -120.123 });
+  });
+});
+
+describe('utmToLatLng', () => {
+  it('returns lat, long when zone_letter is provided', async () => {
+    const verbatimCoordinates = {
+      easting: 638449,
+      northing: 5460230,
+      zone_number: 11,
+      zone_letter: 'U',
+      zone_srid: 1
+    };
+
+    expect(utmToLatLng(verbatimCoordinates)).to.eql({ latitude: 49.2791347287819, longitude: -115.09642191895463 });
+  });
+
+  it('returns lat, long when zone_letter is NOT provided', async () => {
+    const verbatimCoordinates = {
+      easting: 638449,
+      northing: 5460230,
+      zone_number: 11,
+      zone_letter: undefined,
+      zone_srid: 1,
+      northern: true
+    };
+
+    expect(utmToLatLng(verbatimCoordinates)).to.eql({ latitude: 49.2791347287819, longitude: -115.09642191895463 });
   });
 });
