@@ -37,7 +37,7 @@ const yesNoPickListValidator = () => {
   ];
 };
 
-const templateValidationSchema = {
+const mooseSRBTemplateValidationSchema = {
   name: '',
   description: '',
   files: [
@@ -447,7 +447,7 @@ const templateValidationSchema = {
   ]
 };
 
-fs.writeFile('./template_output.json', JSON.stringify(templateValidationSchema), (err) => {
+fs.writeFile('./moose_SRB_template_output.json', JSON.stringify(mooseSRBTemplateValidationSchema), (err) => {
   if (err) {
     console.error(err);
   }
@@ -455,4 +455,3 @@ fs.writeFile('./template_output.json', JSON.stringify(templateValidationSchema),
 
   console.log('All done!');
 });
-// console.log(JSON.stringify(mooseArialSRBRecruitmentCompositionSurvey));

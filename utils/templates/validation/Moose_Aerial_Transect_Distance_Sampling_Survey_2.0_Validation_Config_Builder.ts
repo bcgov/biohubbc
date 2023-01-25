@@ -253,34 +253,6 @@ const ageOfSignPickListValidator = () => {
   ];
 };
 
-const lightPickListValidator = () => {
-  return [
-    {
-      column_code_validator: {
-        name: {
-          type: 'string'
-        },
-        description: {
-          type: 'string'
-        },
-        allowed_code_values: [
-          {
-            name: 'Bright',
-            description: 'Bright'
-          },
-          {
-            name: 'Light',
-            description: 'Light'
-          },
-          {
-            name: 'Shady',
-            description: 'Shady'
-          }
-        ]
-      }
-    }
-  ];
-};
 
 const aircraftPickListValidator = () => {
   return [
@@ -822,11 +794,6 @@ const mooseTransectTemplateValidationSchema = {
       ],
       columns: [
         {
-          name: 'Light',
-          description: '',
-          validations: lightPickListValidator()
-        },
-        {
           name: 'Aircraft Type',
           description: '',
           validations: aircraftPickListValidator()
@@ -1214,7 +1181,7 @@ const mooseTransectTemplateValidationSchema = {
 };
 
 fs.writeFile(
-  './output/moose_Transect_validation_config_output.json',
+  './output/moose_transect_validation_config_output.json',
   JSON.stringify(mooseTransectTemplateValidationSchema),
   (err) => {
     // file written successfully

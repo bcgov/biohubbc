@@ -11,6 +11,42 @@ const basicNumericValidator = () => {
   ];
 };
 
+const eastingValidator = () => {
+  return [
+    {
+      column_format_validator: {
+        reg_exp: '^[0-9]{6,6}$',
+        reg_exp_flags: 'g',
+        expected_format: 'Easting needs to be a 6 digit number. For example: 123456.'
+      }
+    }
+  ];
+};
+
+const northingValidator = () => {
+  return [
+    {
+      column_format_validator: {
+        reg_exp: '^[0-9]{7,7}$',
+        reg_exp_flags: 'g',
+        expected_format: 'Northing needs to be a 7 digit number. For example: 1234567.'
+      }
+    }
+  ];
+};
+
+const utmZoneValidator = () => {
+  return [
+    {
+      column_format_validator: {
+        reg_exp: '^([7-9]|1[01])$',
+        reg_exp_flags: 'g',
+        expected_format: 'UTM needs to be 7, 8, 9, 10 or 11.'
+      }
+    }
+  ];
+};
+
 const mooseSpeciesPickListValidator = () => {
   return [
     {
@@ -252,6 +288,43 @@ const ageOfSignPickListValidator = () => {
     }
   ];
 };
+
+// export const utmZonePickListValidator = () => {
+//   return [
+//     {
+//       column_code_validator: {
+//         name: {
+//           type: 'string'
+//         },
+//         description: {
+//           type: 'string'
+//         },
+//         allowed_code_values: [
+//           {
+//             name: '7',
+//             description: '7'
+//           },
+//           {
+//             name: '8',
+//             description: '8'
+//           },
+//           {
+//             name: '9',
+//             description: '9'
+//           },
+//           {
+//             name: '10',
+//             description: '10'
+//           },
+//           {
+//             name: '11',
+//             description: '11'
+//           }
+//         ]
+//       }
+//     }
+//   ];
+// };
 
 const aircraftPickListValidator = () => {
   return [
@@ -749,7 +822,7 @@ const frequencyPickListValidator = () => {
   ];
 };
 
-const mooseTransectTemplateValidationSchema = {
+const mooseGeneralTemplateValidationSchema = {
   name: '',
   description: '',
   files: [
@@ -789,14 +862,19 @@ const mooseTransectTemplateValidationSchema = {
       ],
       columns: [
         {
+          name: 'UTM Zone',
+          description: '',
+          validations: utmZoneValidator()
+        },
+        {
           name: 'Easting',
           description: '',
-          validations: basicNumericValidator()
+          validations: eastingValidator()
         },
         {
           name: 'Northing',
           description: '',
-          validations: basicNumericValidator()
+          validations: northingValidator()
         },
         {
           name: 'Datum',
@@ -947,16 +1025,6 @@ const mooseTransectTemplateValidationSchema = {
           name: 'Survey or Telemetry Search',
           description: '',
           validations: surveyOrTelemetryPickListValidator()
-        },
-        {
-          name: 'Photos',
-          description: '',
-          validations: []
-        },
-        {
-          name: 'Observation Comments',
-          description: '',
-          validations: []
         }
       ]
     },
@@ -965,11 +1033,6 @@ const mooseTransectTemplateValidationSchema = {
       description: '',
       validations: [],
       columns: [
-        {
-          name: 'Date',
-          description: '',
-          validations: []
-        },
         {
           name: 'Targeted or Non-Targeted',
           description: '',
@@ -987,16 +1050,6 @@ const mooseTransectTemplateValidationSchema = {
       description: '',
       validations: [],
       columns: [
-        {
-          name: 'Study Area',
-          description: '',
-          validations: []
-        },
-        {
-          name: 'Block ID/SU ID',
-          description: '',
-          validations: []
-        },
         {
           name: 'Easting',
           description: '',
@@ -1021,16 +1074,6 @@ const mooseTransectTemplateValidationSchema = {
           name: 'Long (DD)',
           description: '',
           validations: basicNumericValidator()
-        },
-        {
-          name: 'Time',
-          description: '',
-          validations: []
-        },
-        {
-          name: 'Species',
-          description: '',
-          validations: []
         },
         {
           name: 'Adult Males',
@@ -1101,16 +1144,6 @@ const mooseTransectTemplateValidationSchema = {
           name: 'Sign Count',
           description: '',
           validations: basicNumericValidator()
-        },
-        {
-          name: 'Photos',
-          description: '',
-          validations: []
-        },
-        {
-          name: 'Incidental Observation Comments',
-          description: '',
-          validations: []
         }
       ]
     }
@@ -1134,8 +1167,8 @@ const mooseTransectTemplateValidationSchema = {
 };
 
 fs.writeFile(
-  './output/moose_transect_validation_config_output.json',
-  JSON.stringify(mooseTransectTemplateValidationSchema),
+  './output/moose_general_validation_config_output.json',
+  JSON.stringify(mooseGeneralTemplateValidationSchema),
   (err) => {
     // file written successfully
 

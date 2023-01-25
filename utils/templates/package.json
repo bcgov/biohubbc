@@ -12,7 +12,10 @@
     "npm": ">= 6.0.0"
   },
   "scripts": {
-    "build-validation": "ts-node ./validation/validation-config-builder.ts",
+    "build-validation-moose-general": "ts-node ./validation/Moose_Aerial_General_Recruit_comp_Survey_2.0_Validation_Config_Builder.ts",
+    "build-validation-moose-srb": "ts-node ./validation/Moose_Aerial_StratifiedRandomBlock_Recruit_Comp_Survey_2.0_Validation_Config_Builder.ts",
+    "build-validation-moose-transect": "ts-node ./validation/Moose_Aerial_Transect_Distance_Sampling_Survey_2.0_Validation_Config_Builder.ts",
+    "build-validation-sheep-goat": "ts-node ./validation/Sheep_And_Goat_2.0_Validation_Config_Builder.ts",
     "build-transformation": "ts-node ./transformation/transformation-config-builder.ts",
     "lint": "eslint . --ext .js,.ts",
     "lint-fix": "npm run lint -- --fix",
