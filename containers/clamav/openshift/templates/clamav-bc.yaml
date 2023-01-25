@@ -79,14 +79,14 @@ objects:
         contextDir: "${SOURCE_CONTEXT_DIR}"
         secrets:
           - secret:
-              name: etc-pki-entitlement
+              name: platform-services-controlled-etc-pki-entitlement
             destinationDir: etc-pki-entitlement
         configMaps:
           - configMap:
-              name: rhsm-conf
+              name: platform-services-controlled-rhsm-conf
             destinationDir: rhsm-conf
           - configMap:
-              name: rhsm-ca
+              name: platform-services-controlled-rhsm-ca
             destinationDir: rhsm-ca
       strategy:
         type: Docker
