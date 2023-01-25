@@ -625,7 +625,7 @@ describe('ValidationService', () => {
         expect(state).to.be.calledOnce;
         expect(persistResults).to.be.calledOnce;
         expect(update).to.be.calledOnce;
-  
+
         expect(insertError).to.be.calledOnce;
       }
     });

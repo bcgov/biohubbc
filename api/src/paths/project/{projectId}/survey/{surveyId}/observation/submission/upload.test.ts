@@ -11,7 +11,7 @@ import * as upload from './upload';
 
 chai.use(sinonChai);
 
-describe.skip('uploadObservationSubmission', () => {
+describe.only('uploadObservationSubmission', () => {
   afterEach(() => {
     sinon.restore();
   });

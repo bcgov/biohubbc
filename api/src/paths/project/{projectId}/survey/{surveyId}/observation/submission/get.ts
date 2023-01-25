@@ -166,7 +166,8 @@ export function getOccurrenceSubmission(): RequestHandler {
       }
 
       const hasAdditionalOccurrenceSubmissionMessages =
-        occurrenceSubmission.submission_status_type_name && [
+        occurrenceSubmission.submission_status_type_name &&
+        [
           SUBMISSION_STATUS_TYPE.REJECTED,
           SUBMISSION_STATUS_TYPE.SYSTEM_ERROR,
           SUBMISSION_STATUS_TYPE.FAILED_OCCURRENCE_PREPARATION,

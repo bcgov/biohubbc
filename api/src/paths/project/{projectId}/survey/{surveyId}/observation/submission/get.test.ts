@@ -1,7 +1,7 @@
 import chai, { expect } from 'chai';
 import { describe } from 'mocha';
-import OpenAPIResponseValidator, { OpenAPIResponseValidatorArgs } from 'openapi-response-validator';
 import OpenAPIRequestValidator, { OpenAPIRequestValidatorArgs } from 'openapi-request-validator';
+import OpenAPIResponseValidator, { OpenAPIResponseValidatorArgs } from 'openapi-response-validator';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import {
@@ -49,8 +49,8 @@ describe('getObservationSubmission', () => {
   });
 
   describe.only('openApiScheme', () => {
-    const requestSchema = observationSubmission.GET.apiDoc as unknown as OpenAPIRequestValidatorArgs;
-    const responseSchema = observationSubmission.GET.apiDoc as unknown as OpenAPIResponseValidatorArgs;
+    const requestSchema = (observationSubmission.GET.apiDoc as unknown) as OpenAPIRequestValidatorArgs;
+    const responseSchema = (observationSubmission.GET.apiDoc as unknown) as OpenAPIResponseValidatorArgs;
 
     describe('request validation', () => {
       const requestValidator = new OpenAPIRequestValidator(requestSchema);
@@ -98,7 +98,7 @@ describe('getObservationSubmission', () => {
             };
 
             const response = requestValidator.validateRequest(request);
-            console.log(JSON.stringify(response))
+            console.log(JSON.stringify(response));
             expect(response.status).to.equal(400);
             expect(response.errors.length).to.equal(1);
             expect(response.errors[0].path).to.equal('projectId');
@@ -202,7 +202,7 @@ describe('getObservationSubmission', () => {
           const response = requestValidator.validateRequest(request);
 
           expect(response).to.equal(undefined);
-        })
+        });
       });
     });
 
@@ -438,7 +438,7 @@ describe('getObservationSubmission', () => {
                 isValidating: false,
                 messageTypes: ['message-type']
               };
-  
+
               const response = responseValidator.validateResponse(200, apiResponse);
               expect(response.message).to.equal('The response was not valid.');
               expect(response.errors.length).to.equal(1);
@@ -461,7 +461,7 @@ describe('getObservationSubmission', () => {
                     }
                   ]
                 };
-    
+
                 const response = responseValidator.validateResponse(200, apiResponse);
                 expect(response.message).to.equal('The response was not valid.');
                 expect(response.errors.length).to.equal(1);
@@ -477,14 +477,14 @@ describe('getObservationSubmission', () => {
                   isValidating: false,
                   messageTypes: [
                     {
-                      severityLabel: { label: 'label '},
+                      severityLabel: { label: 'label ' },
                       messageTypeLabel: 'type-label',
                       messageStatus: 'message-status',
                       messages: []
                     }
                   ]
                 };
-    
+
                 const response = responseValidator.validateResponse(200, apiResponse);
                 expect(response.message).to.equal('The response was not valid.');
                 expect(response.errors.length).to.equal(1);
@@ -508,14 +508,14 @@ describe('getObservationSubmission', () => {
                     }
                   ]
                 };
-    
+
                 const response = responseValidator.validateResponse(200, apiResponse);
                 expect(response.message).to.equal('The response was not valid.');
                 expect(response.errors.length).to.equal(1);
                 expect(response.errors[0].path).to.equal('messageTypes/0');
                 expect(response.errors[0].message).to.equal("must have required property 'messageTypeLabel'");
               });
-    
+
               it('is not a string', () => {
                 const apiResponse = {
                   id: 1,
@@ -525,13 +525,13 @@ describe('getObservationSubmission', () => {
                   messageTypes: [
                     {
                       severityLabel: 'severity-label',
-                      messageTypeLabel: { label: 'label '},
+                      messageTypeLabel: { label: 'label ' },
                       messageStatus: 'message-status',
                       messages: []
                     }
                   ]
                 };
-    
+
                 const response = responseValidator.validateResponse(200, apiResponse);
                 expect(response.message).to.equal('The response was not valid.');
                 expect(response.errors.length).to.equal(1);
@@ -555,14 +555,14 @@ describe('getObservationSubmission', () => {
                     }
                   ]
                 };
-    
+
                 const response = responseValidator.validateResponse(200, apiResponse);
                 expect(response.message).to.equal('The response was not valid.');
                 expect(response.errors.length).to.equal(1);
                 expect(response.errors[0].path).to.equal('messageTypes/0');
                 expect(response.errors[0].message).to.equal("must have required property 'messageStatus'");
               });
-    
+
               it('is not a string', () => {
                 const apiResponse = {
                   id: 1,
@@ -578,7 +578,7 @@ describe('getObservationSubmission', () => {
                     }
                   ]
                 };
-    
+
                 const response = responseValidator.validateResponse(200, apiResponse);
                 expect(response.message).to.equal('The response was not valid.');
                 expect(response.errors.length).to.equal(1);
@@ -602,14 +602,14 @@ describe('getObservationSubmission', () => {
                     }
                   ]
                 };
-    
+
                 const response = responseValidator.validateResponse(200, apiResponse);
                 expect(response.message).to.equal('The response was not valid.');
                 expect(response.errors.length).to.equal(1);
                 expect(response.errors[0].path).to.equal('messageTypes/0');
                 expect(response.errors[0].message).to.equal("must have required property 'messages'");
               });
-    
+
               it('is not an array', () => {
                 const apiResponse = {
                   id: 1,
@@ -625,7 +625,7 @@ describe('getObservationSubmission', () => {
                     }
                   ]
                 };
-    
+
                 const response = responseValidator.validateResponse(200, apiResponse);
                 expect(response.message).to.equal('The response was not valid.');
                 expect(response.errors.length).to.equal(1);
@@ -649,7 +649,7 @@ describe('getObservationSubmission', () => {
                       }
                     ]
                   };
-      
+
                   const response = responseValidator.validateResponse(200, apiResponse);
                   expect(response.message).to.equal('The response was not valid.');
                   expect(response.errors.length).to.equal(1);
@@ -676,7 +676,7 @@ describe('getObservationSubmission', () => {
                       }
                     ]
                   };
-      
+
                   const response = responseValidator.validateResponse(200, apiResponse);
                   expect(response.message).to.equal('The response was not valid.');
                   expect(response.errors.length).to.equal(1);
@@ -704,7 +704,7 @@ describe('getObservationSubmission', () => {
                       }
                     ]
                   };
-      
+
                   const response = responseValidator.validateResponse(200, apiResponse);
                   expect(response.message).to.equal('The response was not valid.');
                   expect(response.errors.length).to.equal(1);
@@ -731,7 +731,7 @@ describe('getObservationSubmission', () => {
                       }
                     ]
                   };
-      
+
                   const response = responseValidator.validateResponse(200, apiResponse);
                   expect(response.message).to.equal('The response was not valid.');
                   expect(response.errors.length).to.equal(1);
@@ -759,7 +759,7 @@ describe('getObservationSubmission', () => {
                       }
                     ]
                   };
-      
+
                   const response = responseValidator.validateResponse(200, apiResponse);
                   expect(response.message).to.equal('The response was not valid.');
                   expect(response.errors.length).to.equal(1);
@@ -812,14 +812,13 @@ describe('getObservationSubmission', () => {
                 ]
               }
             ]
-          }
+          };
 
           const response = responseValidator.validateResponse(200, apiResponse);
-          expect(response).to.equal(undefined);          
-        })
+          expect(response).to.equal(undefined);
+        });
       });
     });
-
   });
 
   it('should return an observation submission, on success with no rejected files', async () => {
