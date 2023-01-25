@@ -1,5 +1,7 @@
 import chai, { expect } from 'chai';
 import { describe } from 'mocha';
+import OpenAPIResponseValidator, { OpenAPIResponseValidatorArgs } from 'openapi-response-validator';
+import OpenAPIRequestValidator, { OpenAPIRequestValidatorArgs } from 'openapi-request-validator';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import {
@@ -45,6 +47,73 @@ describe('getObservationSubmission', () => {
   afterEach(() => {
     sinon.restore();
   });
+
+  describe('openApiScheme', () => {
+    describe('request validation', () => {
+      const requestValidator = new OpenAPIRequestValidator(observationSubmission.GET.apiDoc as unknown as OpenAPIRequestValidatorArgs);
+
+      describe('should throw an error when', () => {
+        describe('boundry', () => {
+          it('is null', async () => {
+            const request = {
+              headers: {
+                'content-type': 'application/json'
+              },
+              query: {
+                boundary: null,
+                datasetID: []
+              }
+            };
+
+            const response = requestValidator.validateRequest(request);
+
+            expect(response.status).to.equal(400);
+            expect(response.errors[0].path).to.equal('boundary');
+            expect(response.errors[0].message).to.equal('must be array');
+          });
+
+          it('is not a array', async () => {
+            const request = {
+              headers: {
+                'content-type': 'application/json'
+              },
+              query: {
+                boundary: 123,
+                datasetID: []
+              }
+            };
+
+            const response = requestValidator.validateRequest(request);
+
+            expect(response.status).to.equal(400);
+            expect(response.errors[0].path).to.equal('boundary');
+            expect(response.errors[0].message).to.equal('must be array');
+          });
+        });
+
+
+        describe('response validation', () => {
+          const responseValidator = new OpenAPIResponseValidator(GET.apiDoc as unknown as OpenAPIResponseValidatorArgs);
+          describe('should throw an error when', () => {
+            it('returns a null response', async () => {
+              const apiResponse = null;
+              const response = responseValidator.validateResponse(200, apiResponse);
+    
+              expect(response.message).to.equal('The response was not valid.');
+              expect(response.errors[0].path).to.equal('response');
+              expect(response.errors[0].message).to.equal('must be string');
+            });
+    
+            it('returns invalide response', () => {
+              const apiResponse = [{}];
+              const response = responseValidator.validateResponse(200, apiResponse);
+    
+              expect(response.message).to.equal('The response was not valid.');
+              expect(response.errors[0].message).to.equal('must be string');
+            });
+          });
+    
+          describe('should succeed when', () => {
 
   it('should return an observation submission, on success with no rejected files', async () => {
     sinon.stub(db, 'getDBConnection').returns({
