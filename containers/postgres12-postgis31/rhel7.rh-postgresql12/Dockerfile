@@ -64,8 +64,6 @@ COPY ./rhsm-ca /etc/rhsm/ca
 # See https://access.redhat.com/solutions/1443553
 RUN rm /etc/rhsm-host
 
-USER 26
-
 RUN yum repolist > /dev/null
 RUN yum install -y yum-utils gettext && \
     yum-config-manager --disable \* &> /dev/null && \
