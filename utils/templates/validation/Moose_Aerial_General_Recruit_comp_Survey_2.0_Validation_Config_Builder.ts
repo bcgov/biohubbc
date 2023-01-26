@@ -289,43 +289,6 @@ const ageOfSignPickListValidator = () => {
   ];
 };
 
-// export const utmZonePickListValidator = () => {
-//   return [
-//     {
-//       column_code_validator: {
-//         name: {
-//           type: 'string'
-//         },
-//         description: {
-//           type: 'string'
-//         },
-//         allowed_code_values: [
-//           {
-//             name: '7',
-//             description: '7'
-//           },
-//           {
-//             name: '8',
-//             description: '8'
-//           },
-//           {
-//             name: '9',
-//             description: '9'
-//           },
-//           {
-//             name: '10',
-//             description: '10'
-//           },
-//           {
-//             name: '11',
-//             description: '11'
-//           }
-//         ]
-//       }
-//     }
-//   ];
-// };
-
 const aircraftPickListValidator = () => {
   return [
     {
@@ -1031,7 +994,16 @@ const mooseGeneralTemplateValidationSchema = {
     {
       name: 'Marked Animals',
       description: '',
-      validations: [],
+      validations: [
+        {
+          file_duplicate_columns_validator: {}
+        },
+        {
+          file_required_columns_validator: {
+            required_columns: []
+          }
+        }
+      ],
       columns: [
         {
           name: 'Targeted or Non-Targeted',
@@ -1048,17 +1020,26 @@ const mooseGeneralTemplateValidationSchema = {
     {
       name: 'Incidental Observations',
       description: '',
-      validations: [],
+      validations: [
+        {
+          file_duplicate_columns_validator: {}
+        },
+        {
+          file_required_columns_validator: {
+            required_columns: []
+          }
+        }
+      ],
       columns: [
         {
           name: 'Easting',
           description: '',
-          validations: basicNumericValidator()
+          validations: eastingValidator()
         },
         {
           name: 'Northing',
           description: '',
-          validations: basicNumericValidator()
+          validations: northingValidator()
         },
         {
           name: 'Datum',
