@@ -51,6 +51,7 @@ export class ValidationService extends DBService {
   }
 
   async transformFile(submissionId: number, surveyId: number) {
+    defaultLog.debug({ label: 'transformFile', submissionId, surveyId });
     try {
       const submissionPrep = await this.templatePreparation(submissionId);
       await this.templateTransformation(submissionId, submissionPrep.xlsx, submissionPrep.s3InputKey, surveyId);
@@ -67,6 +68,7 @@ export class ValidationService extends DBService {
   }
 
   async validateFile(submissionId: number, surveyId: number) {
+    defaultLog.debug({ label: 'validateFile', submissionId, surveyId });
     try {
       const submissionPrep = await this.templatePreparation(submissionId);
       await this.templateValidation(submissionPrep.xlsx, surveyId);
@@ -83,6 +85,7 @@ export class ValidationService extends DBService {
   }
 
   async processDWCFile(submissionId: number) {
+    defaultLog.debug({ label: 'processDWCFile', submissionId });
     try {
       // prep dwc
       const dwcPrep = await this.dwcPreparation(submissionId);
@@ -94,7 +97,7 @@ export class ValidationService extends DBService {
       await this.occurrenceService.updateSurveyOccurrenceSubmission(
         submissionId,
         dwcPrep.archive.rawFile.fileName,
-        dwcPrep.s3InputKey
+        dwcPrep.s3OutputKey
       );
 
       // insert validated status
@@ -109,13 +112,14 @@ export class ValidationService extends DBService {
       defaultLog.debug({ label: 'processDWCFile', message: 'error', error });
       if (error instanceof SubmissionError) {
         await this.errorService.insertSubmissionError(submissionId, error);
-      } else {
-        throw error;
       }
+
+      throw error;
     }
   }
 
   async processXLSXFile(submissionId: number, surveyId: number) {
+    defaultLog.debug({ label: 'processXLSXFile', submissionId, surveyId });
     try {
       // template preparation
       const submissionPrep = await this.templatePreparation(submissionId);
@@ -135,13 +139,14 @@ export class ValidationService extends DBService {
       defaultLog.debug({ label: 'processXLSXFile', message: 'error', error });
       if (error instanceof SubmissionError) {
         await this.errorService.insertSubmissionError(submissionId, error);
-      } else {
-        throw error;
       }
+
+      throw error;
     }
   }
 
   validateDWC(archive: DWCArchive): ICsvMediaState {
+    defaultLog.debug({ label: 'validateDWC' });
     try {
       const validationSchema = {};
       const rules = this.getValidationRules(validationSchema);
@@ -156,14 +161,15 @@ export class ValidationService extends DBService {
     }
   }
 
-  async dwcPreparation(submissionId: number): Promise<{ archive: DWCArchive; s3InputKey: string }> {
+  async dwcPreparation(submissionId: number): Promise<{ archive: DWCArchive; s3OutputKey: string }> {
+    defaultLog.debug({ label: 'dwcPreparation', submissionId });
     try {
       const occurrenceSubmission = await this.occurrenceService.getOccurrenceSubmission(submissionId);
-      const s3InputKey = occurrenceSubmission.output_key;
-      const s3File = await getFileFromS3(s3InputKey);
+      const s3OutputKey = occurrenceSubmission.output_key;
+      const s3File = await getFileFromS3(s3OutputKey);
       const archive = this.prepDWCArchive(s3File);
 
-      return { archive, s3InputKey };
+      return { archive, s3OutputKey };
     } catch (error) {
       if (error instanceof SubmissionError) {
         error.setStatus(SUBMISSION_STATUS_TYPE.FAILED_PROCESSING_OCCURRENCE_DATA);
@@ -173,6 +179,7 @@ export class ValidationService extends DBService {
   }
 
   async templatePreparation(submissionId: number): Promise<{ s3InputKey: string; xlsx: XLSXCSV }> {
+    defaultLog.debug({ label: 'templatePreparation', submissionId });
     try {
       const occurrenceSubmission = await this.occurrenceService.getOccurrenceSubmission(submissionId);
       const s3InputKey = occurrenceSubmission.input_key;
@@ -189,6 +196,7 @@ export class ValidationService extends DBService {
   }
 
   async templateScrapeAndUploadOccurrences(submissionId: number) {
+    defaultLog.debug({ label: 'templateScrapeAndUploadOccurrences', submissionId });
     try {
       await this.spatialService.runSpatialTransforms(submissionId);
     } catch (error) {
@@ -200,6 +208,7 @@ export class ValidationService extends DBService {
   }
 
   async templateValidation(xlsx: XLSXCSV, surveyId: number) {
+    defaultLog.debug({ label: 'templateValidation' });
     try {
       const schema = await this.getValidationSchema(xlsx, surveyId);
       const schemaParser = this.getValidationRules(schema);
@@ -214,6 +223,7 @@ export class ValidationService extends DBService {
   }
 
   async templateTransformation(submissionId: number, xlsx: XLSXCSV, s3InputKey: string, surveyId: number) {
+    defaultLog.debug({ label: 'templateTransformation' });
     try {
       const xlsxSchema = await this.getTransformationSchema(xlsx, surveyId);
       const fileBuffer = this.transformXLSX(xlsx.workbook.rawWorkbook, xlsxSchema);
@@ -426,6 +436,13 @@ export class ValidationService extends DBService {
     s3OutputKey: string,
     xlsxCsv: XLSXCSV
   ) {
+    defaultLog.debug({
+      label: 'persistTransformationResults',
+      submissionId,
+      fileBuffers,
+      s3OutputKey
+    });
+
     // Build the archive zip file
     const dwcArchiveZip = new AdmZip();
     fileBuffers.forEach((file) => dwcArchiveZip.addFile(`${file.name}.csv`, file.buffer));
