@@ -174,7 +174,7 @@ export const getValidRangeFieldsValidator = (config?: ColumnRangeValidatorConfig
         return csvWorksheet;
       }
 
-      if (isNaN(rowValueForColumn)) {
+      if (isNaN(rowValueForColumn) && typeof row[columnIndex] === 'string') {
         csvWorksheet.csvValidation.addRowErrors([
           {
             errorCode: SUBMISSION_MESSAGE_TYPE.INVALID_VALUE,
