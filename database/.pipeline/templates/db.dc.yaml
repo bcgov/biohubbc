@@ -15,7 +15,7 @@ parameters:
   - description: The OpenShift ImageStream name.
     displayName: IMAGE_STREAM_NAME
     name: IMAGE_STREAM_NAME
-    value: 'postgres-postgis'
+    value: 'postgis-postgres'
   - description: The OpenShift Namespace where the ImageStream resides.
     displayName: Namespace
     name: IMAGE_STREAM_NAMESPACE
@@ -65,7 +65,7 @@ parameters:
     displayName: Version of PostgreSQL Image
     name: IMAGE_STREAM_VERSION
     required: true
-    value: '13.1'
+    value: '12-31'
   - description: Indicator to enable pgcrypto extension (provided out-of-the-box with PostgreSQL).
     displayName: Flag to enable pgcrypto PostgreSQL extension.
     name: PGCRYPTO_EXTENSION
