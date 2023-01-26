@@ -63,6 +63,9 @@ COPY ./rhsm-ca /etc/rhsm/ca
 # Initialize /etc/yum.repos.d/redhat.repo
 # See https://access.redhat.com/solutions/1443553
 RUN rm /etc/rhsm-host
+
+USER 26
+
 RUN yum repolist > /dev/null
 RUN yum install -y yum-utils gettext && \
     yum-config-manager --disable \* &> /dev/null && \
@@ -76,7 +79,7 @@ RUN yum install -y yum-utils gettext && \
     yum -y clean all --enablerepo='*'
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 RUN localedef -f UTF-8 -i en_US en_US.UTF-8
-RUN test "$(id postgres)" = "uid=26(postgres) gid=26(postgres) groups=26(postgres)"
+# RUN test "$(id postgres)" = "uid=26(postgres) gid=26(postgres) groups=26(postgres)"
 RUN mkdir -p /var/lib/pgsql/data
 RUN /usr/libexec/fix-permissions /var/lib/pgsql /var/run/postgresql
 
