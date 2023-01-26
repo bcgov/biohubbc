@@ -377,8 +377,8 @@ export class SurveyRepository extends BaseRepository {
   /**
    * SQL query to get the list of messages for an occurrence submission.
    *
-   * @param {number} submissionId
-   * @returns {SQLStatement} sql query object
+   * @param {number} submissionId The ID of the submission
+   * @returns {*} Promise<IOccurrenceSubmissionMessagesResponse[]> Promsie resolving the array of submission messages
    */
   async getOccurrenceSubmissionMessages(submissionId: number): Promise<IOccurrenceSubmissionMessagesResponse[]> {
     const sqlStatement = SQL`
