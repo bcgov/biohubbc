@@ -143,7 +143,9 @@ const insertSurveyData = () => `
       lead_last_name,
       location_name,
       geography,
-      geojson
+      geojson,
+      ecological_season_id,
+      intended_outcome_id
     )
   VALUES (
     1,
@@ -188,7 +190,9 @@ const insertSurveyData = () => `
         },
         "properties": {}
       }
-    ]'
+    ]',
+    1,
+    1
   );
 `;
 
