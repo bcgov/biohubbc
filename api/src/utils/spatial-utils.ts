@@ -1,5 +1,6 @@
 import { Feature } from 'geojson';
 import SQL, { SQLStatement } from 'sql-template-strings';
+import { toLatLon } from 'utm';
 
 export interface IUTM {
   easting: number;
@@ -15,7 +16,7 @@ const SOPUTH_UTM_BASE_ZONE_NUMBER = 32700;
 const NORTH_UTM_ZONE_LETTERS = ['N', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X'];
 const SOUTH_UTM_ZONE_LETTERS = ['C', 'D', 'E', 'F', 'G', 'H', 'J', 'K', 'L', 'M'];
 
-const UTM_STRING_FORMAT = RegExp(/^[1-9]\d?[NPQRSTUVWXCDEFGHJKLM]? \d+ \d+$/i);
+const UTM_STRING_FORMAT = RegExp(/^[1-9]\d?[NPQRSTUVWXCDEFGHJKLM]? \d{0,8}\.?\d{0,12} \d{0,8}\.?\d{0,12}$/i);
 const UTM_ZONE_WITH_LETTER_FORMAT = RegExp(/^[1-9]\d?[NPQRSTUVWXCDEFGHJKLM]$/i);
 
 /**
@@ -157,4 +158,23 @@ export function generateGeometryCollectionSQL(geometry: Feature | Feature[]): SQ
   });
 
   return sqlStatement;
+}
+
+export function utmToLatLng(verbatimCoordinates: IUTM): { latitude: number; longitude: number } {
+  if (verbatimCoordinates.zone_letter) {
+    return toLatLon(
+      verbatimCoordinates?.easting,
+      verbatimCoordinates?.northing,
+      verbatimCoordinates?.zone_number,
+      verbatimCoordinates?.zone_letter
+    );
+  } else {
+    return toLatLon(
+      verbatimCoordinates?.easting,
+      verbatimCoordinates?.northing,
+      verbatimCoordinates?.zone_number,
+      undefined,
+      true
+    );
+  }
 }

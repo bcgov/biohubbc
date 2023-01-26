@@ -33,7 +33,8 @@ const mockOccurrenceSubmission = {
   input_key: 'input key',
   input_file_name: '',
   output_key: 'output key',
-  output_file_name: ''
+  output_file_name: '',
+  darwin_core_source: {}
 };
 
 const buildFile = (fileName: string, customProps: { template_id?: number; csm_id?: number }) => {
@@ -210,7 +211,8 @@ describe('ValidationService', () => {
         input_key: s3Key,
         input_file_name: '',
         output_key: '',
-        output_file_name: ''
+        output_file_name: '',
+        darwin_core_source: {}
       });
 
       const service = mockService();
@@ -234,7 +236,8 @@ describe('ValidationService', () => {
         input_key: s3Key,
         input_file_name: '',
         output_key: '',
-        output_file_name: ''
+        output_file_name: '',
+        darwin_core_source: {}
       });
 
       try {
@@ -583,6 +586,7 @@ describe('ValidationService', () => {
       const persistResults = sinon.stub(service, 'persistValidationResults').resolves();
       const update = sinon.stub(service.occurrenceService, 'updateSurveyOccurrenceSubmission').resolves();
       const submissionStatus = sinon.stub(service.submissionRepository, 'insertSubmissionStatus').resolves();
+      const decorate = sinon.stub(service.dwCService, 'decorateDWCASourceData').resolves();
       sinon.stub(service, 'templateScrapeAndUploadOccurrences').resolves();
       sinon.stub(service, 'parseDWCToJSON').resolves();
 
@@ -590,6 +594,7 @@ describe('ValidationService', () => {
       expect(prep).to.be.calledOnce;
       expect(state).to.be.calledOnce;
       expect(persistResults).to.be.calledOnce;
+      expect(decorate).to.be.calledOnce;
       expect(update).to.be.calledOnce;
       expect(submissionStatus).to.be.called;
     });
