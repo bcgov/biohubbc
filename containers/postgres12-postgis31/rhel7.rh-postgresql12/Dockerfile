@@ -110,8 +110,10 @@ RUN cd /tmp && \
     rpm -ivh https://download.postgresql.org/pub/repos/yum/reporpms/EL-6-x86_64/pgdg-redhat-repo-latest.noarch.rpm && \
     yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 
-# RUN yum -y remove rh-postgresql12-postgresql-server-syspaths rh-postgresql12-postgresql-contrib-syspaths rh-postgresql12-postgresql-syspaths
-RUN yum install -y postgis31_12 postgis31_12-client pgrouting_12
+RUN yum -y remove rh-postgresql12-postgresql-server-syspaths rh-postgresql12-postgresql-contrib-syspaths rh-postgresql12-postgresql-syspaths
+RUN yum install -y postgis31_12
+RUN yum install -y postgis31_12-client
+RUN yum install -y pgrouting_12
 
 RUN /usr/bin/install -c -m 755  /usr/pgsql-12/lib/postgis* '/opt/rh/rh-postgresql12/root/usr/lib64/pgsql/' && \
     /usr/bin/install -c -m 755  /usr/pgsql-12/lib/libpgrouting* '/opt/rh/rh-postgresql12/root/usr/lib64/pgsql/' && \
