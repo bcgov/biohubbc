@@ -96,7 +96,7 @@ parameters:
     value: 0Mi
 objects:
   - kind: ImageStream
-    apiVersion: v1
+    apiVersion: image.openshift.io/v1
     metadata:
       name: ${NAME}
       labels:
@@ -105,7 +105,7 @@ objects:
         app-group: ${APP_GROUP}
 
   - kind: BuildConfig
-    apiVersion: v1
+    apiVersion: build.openshift.io/v1
     metadata:
       name: ${NAME}
       labels:

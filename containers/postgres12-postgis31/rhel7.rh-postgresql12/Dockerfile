@@ -1,4 +1,5 @@
 FROM registry.redhat.io/rhscl/postgresql-12-rhel7
+# FROM registry.redhat.io/rhscl/postgresql-13-rhel7
 
 # PostgreSQL image for OpenShift with PostGIS extension.
 # Volumes:
