@@ -48,7 +48,7 @@ describe('getObservationSubmission', () => {
     sinon.restore();
   });
 
-  describe.only('openApiScheme', () => {
+  describe('openApiScheme', () => {
     const requestSchema = (observationSubmission.GET.apiDoc as unknown) as OpenAPIRequestValidatorArgs;
     const responseSchema = (observationSubmission.GET.apiDoc as unknown) as OpenAPIResponseValidatorArgs;
 

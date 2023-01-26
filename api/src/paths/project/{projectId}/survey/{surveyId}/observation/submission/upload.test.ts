@@ -11,7 +11,7 @@ import * as upload from './upload';
 
 chai.use(sinonChai);
 
-describe.only('uploadObservationSubmission', () => {
+describe('uploadObservationSubmission', () => {
   afterEach(() => {
     sinon.restore();
   });
@@ -202,7 +202,7 @@ describe.only('uploadObservationSubmission', () => {
       systemUserId: () => {
         return 20;
       },
-      query: mockQuery
+      knex: mockQuery
     });
 
     sinon.stub(file_utils, 'scanFileForVirus').resolves(true);
@@ -250,7 +250,7 @@ describe.only('uploadObservationSubmission', () => {
       systemUserId: () => {
         return 20;
       },
-      query: mockQuery
+      knex: mockQuery
     });
 
     sinon.stub(file_utils, 'scanFileForVirus').resolves(true);
@@ -287,15 +287,15 @@ describe.only('uploadObservationSubmission', () => {
 
     const mockQuery = sinon.stub();
 
-    mockQuery.onCall(0).resolves({ rowCount: 1, rows: [{ id: 1 }] });
-    mockQuery.onCall(1).resolves({ rowCount: 1, rows: [{ id: 1 }] });
+    mockQuery.onCall(0).resolves({ rowCount: 1, rows: [{ submissionId: 1 }] });
+    mockQuery.onCall(1).resolves({ rowCount: 1, rows: [{ submissionId: 1 }] });
 
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
       systemUserId: () => {
         return 20;
       },
-      query: mockQuery
+      knex: mockQuery
     });
 
     sinon.stub(file_utils, 'scanFileForVirus').resolves(true);
@@ -336,16 +336,16 @@ describe.only('uploadObservationSubmission', () => {
 
     const mockQuery = sinon.stub();
 
-    mockQuery.onCall(0).resolves({ rowCount: 1, rows: [{ id: 1 }] });
-    mockQuery.onCall(1).resolves({ rowCount: 1, rows: [{ id: 1 }] });
-    mockQuery.onCall(2).resolves({ rowCount: 1, rows: [{ id: 1 }] });
+    mockQuery.onCall(0).resolves({ rowCount: 1, rows: [{ submissionId: 1 }] });
+    mockQuery.onCall(1).resolves({ rowCount: 1, rows: [{ submissionId: 1 }] });
+    mockQuery.onCall(2).resolves({ rowCount: 1, rows: [{ submissionId: 1 }] });
 
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
       systemUserId: () => {
         return 20;
       },
-      query: mockQuery
+      knex: mockQuery
     });
 
     sinon.stub(file_utils, 'scanFileForVirus').resolves(true);
