@@ -392,6 +392,33 @@ describe('getValidRangeFieldsValidator', () => {
       }
     ]);
   });
+
+  it('adds an invalid value error when value provided is not a number', () => {
+    const codeValuesRangeByHeader = {
+      columnName: 'Header1',
+      column_range_validator: {
+        min_value: 5,
+        max_vlaue: 10
+      }
+    };
+
+    const validator = getValidRangeFieldsValidator(codeValuesRangeByHeader);
+
+    const xlsxWorkSheet = xlsx.utils.aoa_to_sheet([['Header1'], ['a']]);
+
+    const csvWorkSheet = new CSVWorksheet('Sheet1', xlsxWorkSheet);
+
+    validator(csvWorkSheet);
+
+    expect(csvWorkSheet.csvValidation.rowErrors).to.eql([
+      {
+        col: 'Header1',
+        errorCode: SUBMISSION_MESSAGE_TYPE.INVALID_VALUE,
+        message: 'Invalid value: a. Value must be a number ',
+        row: 2
+      }
+    ]);
+  });
 });
 
 describe('getNumericFieldsValidator', () => {
