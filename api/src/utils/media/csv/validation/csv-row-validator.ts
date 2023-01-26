@@ -1,4 +1,3 @@
-import { isString } from 'lodash';
 import { SUBMISSION_MESSAGE_TYPE } from '../../../../constants/status';
 import { CSVValidator } from '../csv-file';
 
@@ -179,7 +178,7 @@ export const getValidRangeFieldsValidator = (config?: ColumnRangeValidatorConfig
         return csvWorksheet;
       }
 
-      if (isNaN(rowValueForColumn) && isString(row[columnIndex])) {
+      if (isNaN(rowValueForColumn) && typeof row[columnIndex] === 'string') {
         csvWorksheet.csvValidation.addRowErrors([
           {
             errorCode: SUBMISSION_MESSAGE_TYPE.INVALID_VALUE,
