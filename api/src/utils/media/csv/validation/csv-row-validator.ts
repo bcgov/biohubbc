@@ -173,16 +173,21 @@ export const getValidRangeFieldsValidator = (config?: ColumnRangeValidatorConfig
 
       const rowValueForColumn = Number(row[columnIndex]);
 
-      if (isNaN(rowValueForColumn)) {
-        csvWorksheet.csvValidation.addRowErrors([
-          {
-            errorCode: SUBMISSION_MESSAGE_TYPE.INVALID_VALUE,
-            message: `Invalid value: ${row[columnIndex]}. Value must be a number `,
-            col: config.columnName,
-            row: rowIndex + 2
-          }
-        ]);
+      if (rowValueForColumn === undefined || rowValueForColumn === null) {
+        // cell is empty, use the getRequiredFieldsValidator to assert required fields
+        return csvWorksheet;
       }
+
+      // if (isNaN(rowValueForColumn)) {
+      //   csvWorksheet.csvValidation.addRowErrors([
+      //     {
+      //       errorCode: SUBMISSION_MESSAGE_TYPE.INVALID_VALUE,
+      //       message: `Invalid value: ${row[columnIndex]}. Value must be a number `,
+      //       col: config.columnName,
+      //       row: rowIndex + 2
+      //     }
+      //   ]);
+      // }
 
       if (config.column_range_validator.min_value && config.column_range_validator.max_value) {
         // Value must be between min value and max value

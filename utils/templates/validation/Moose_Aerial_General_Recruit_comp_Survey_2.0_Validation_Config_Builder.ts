@@ -38,14 +38,25 @@ const northingValidator = () => {
 const utmZoneValidator = () => {
   return [
     {
-      column_format_validator: {
-        reg_exp: '^([7-9]|1[01])$',
-        reg_exp_flags: 'g',
-        expected_format: 'UTM needs to be 7, 8, 9, 10 or 11.'
+      column_range_validator: {
+        min_value: 7,
+        max_value: 11
       }
     }
   ];
 };
+
+// const utmZoneValidator = () => {
+//   return [
+//     {
+//       column_format_validator: {
+//         reg_exp: '^([7-9]|1[01])$',
+//         reg_exp_flags: 'g',
+//         expected_format: 'UTM needs to be 7, 8, 9, 10 or 11.'
+//       }
+//     }
+//   ];
+// };
 
 const mooseSpeciesPickListValidator = () => {
   return [
@@ -1031,6 +1042,11 @@ const mooseGeneralTemplateValidationSchema = {
         }
       ],
       columns: [
+        {
+          name: 'UTM Zone',
+          description: '',
+          validations: utmZoneValidator()
+        },
         {
           name: 'Easting',
           description: '',
