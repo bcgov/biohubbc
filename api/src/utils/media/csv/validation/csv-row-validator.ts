@@ -174,6 +174,17 @@ export const getValidRangeFieldsValidator = (config?: ColumnRangeValidatorConfig
         return csvWorksheet;
       }
 
+      if (isNaN(rowValueForColumn)) {
+        csvWorksheet.csvValidation.addRowErrors([
+          {
+            errorCode: SUBMISSION_MESSAGE_TYPE.INVALID_VALUE,
+            message: `Invalid value: ${row[columnIndex]}. Value must be a number `,
+            col: config.columnName,
+            row: rowIndex + 2
+          }
+        ]);
+      }
+
       if (config.column_range_validator.min_value && config.column_range_validator.max_value) {
         // Value must be between min value and max value
         if (
