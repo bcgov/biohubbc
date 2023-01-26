@@ -174,20 +174,30 @@ export const getValidRangeFieldsValidator = (config?: ColumnRangeValidatorConfig
       const rowValueForColumn = Number(row[columnIndex]);
 
       if (rowValueForColumn === undefined || rowValueForColumn === null) {
+        console.log('we should be returning the csvWorksheet');
         // cell is empty, use the getRequiredFieldsValidator to assert required fields
         return csvWorksheet;
       }
+      console.log('rowValueForColumn: ');
+      console.log(rowValueForColumn);
 
-      // if (isNaN(rowValueForColumn)) {
-      //   csvWorksheet.csvValidation.addRowErrors([
-      //     {
-      //       errorCode: SUBMISSION_MESSAGE_TYPE.INVALID_VALUE,
-      //       message: `Invalid value: ${row[columnIndex]}. Value must be a number `,
-      //       col: config.columnName,
-      //       row: rowIndex + 2
-      //     }
-      //   ]);
-      // }
+      console.log('type of rowValueForColumn: ');
+      console.log(typeof rowValueForColumn);
+
+      //const rowValueForColumn_num = Number(rowValueForColumn);
+
+      if (isNaN(rowValueForColumn)) {
+        csvWorksheet.csvValidation.addRowErrors([
+          {
+            errorCode: SUBMISSION_MESSAGE_TYPE.INVALID_VALUE,
+            message: `Invalid value: ${row[columnIndex]}. Value must be a number `,
+            col: config.columnName,
+            row: rowIndex + 2
+          }
+        ]);
+      }
+
+      //rowValueForColumn = Number(row[columnIndex]);
 
       if (config.column_range_validator.min_value && config.column_range_validator.max_value) {
         // Value must be between min value and max value
@@ -272,11 +282,11 @@ export const getNumericFieldsValidator = (config?: ColumnNumericValidatorConfig)
         return csvWorksheet;
       }
 
+      const rowValueForColumn = Number(row[columnIndex]);
+
       if (row[columnIndex] === undefined || row[columnIndex] === null) {
         return csvWorksheet;
       }
-
-      const rowValueForColumn = Number(row[columnIndex]);
 
       if (isNaN(rowValueForColumn)) {
         csvWorksheet.csvValidation.addRowErrors([
