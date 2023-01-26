@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import { describe } from 'mocha';
 import { parseLatLongString, parseUTMString, utmToLatLng } from './spatial-utils';
 
-describe('parseUTMString', () => {
+describe.only('parseUTMString', () => {
   it('returns null when no UTM string provided', async () => {
     expect(parseUTMString((null as unknown) as string)).to.be.null;
     expect(parseUTMString('')).to.be.null;
