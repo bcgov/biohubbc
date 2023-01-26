@@ -107,7 +107,7 @@ ENV PATH /opt/rh/rh-postgresql12/root/usr/bin/:/usr/bin/:${PATH}
 
 # Aquire and build PostGIS 3.1, for PostgreSQL 12.x
 RUN cd /tmp && \
-    rpm -ivh https://download.postgresql.org/pub/repos/yum/reporpms/EL-6-x86_64/pgdg-redhat-repo-latest.noarch.rpm && \
+    rpm -ivh https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm && \
     yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 
 RUN yum -y remove rh-postgresql12-postgresql-server-syspaths rh-postgresql12-postgresql-contrib-syspaths rh-postgresql12-postgresql-syspaths
