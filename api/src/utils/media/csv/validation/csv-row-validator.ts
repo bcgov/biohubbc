@@ -1,3 +1,4 @@
+import { isString } from 'lodash';
 import { SUBMISSION_MESSAGE_TYPE } from '../../../../constants/status';
 import { CSVValidator } from '../csv-file';
 
@@ -174,19 +175,11 @@ export const getValidRangeFieldsValidator = (config?: ColumnRangeValidatorConfig
       const rowValueForColumn = Number(row[columnIndex]);
 
       if (rowValueForColumn === undefined || rowValueForColumn === null) {
-        console.log('we should be returning the csvWorksheet');
         // cell is empty, use the getRequiredFieldsValidator to assert required fields
         return csvWorksheet;
       }
-      console.log('rowValueForColumn: ');
-      console.log(rowValueForColumn);
 
-      console.log('type of rowValueForColumn: ');
-      console.log(typeof rowValueForColumn);
-
-      //const rowValueForColumn_num = Number(rowValueForColumn);
-
-      if (isNaN(rowValueForColumn)) {
+      if (isNaN(rowValueForColumn) && isString(row[columnIndex])) {
         csvWorksheet.csvValidation.addRowErrors([
           {
             errorCode: SUBMISSION_MESSAGE_TYPE.INVALID_VALUE,
@@ -196,8 +189,6 @@ export const getValidRangeFieldsValidator = (config?: ColumnRangeValidatorConfig
           }
         ]);
       }
-
-      //rowValueForColumn = Number(row[columnIndex]);
 
       if (config.column_range_validator.min_value && config.column_range_validator.max_value) {
         // Value must be between min value and max value
