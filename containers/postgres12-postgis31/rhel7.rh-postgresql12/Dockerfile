@@ -74,9 +74,9 @@ RUN yum install -y yum-utils gettext && \
     yum -y --setopt=tsflags=nodocs install $INSTALL_PKGS && \
     rpm -V $INSTALL_PKGS && \
     yum -y clean all --enablerepo='*'
-RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone && \
-    localedef -f UTF-8 -i en_US en_US.UTF-8 && \
-    test "$(id postgres)" = "uid=26(postgres) gid=26(postgres) groups=26(postgres)"
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+RUN localedef -f UTF-8 -i en_US en_US.UTF-8
+RUN test "$(id postgres)" = "uid=26(postgres) gid=26(postgres) groups=26(postgres)"
 RUN mkdir -p /var/lib/pgsql/data
 RUN /usr/libexec/fix-permissions /var/lib/pgsql /var/run/postgresql
 
