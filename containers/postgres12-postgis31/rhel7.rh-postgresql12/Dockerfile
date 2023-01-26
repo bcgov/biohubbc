@@ -42,8 +42,6 @@ LABEL summary=$SUMMARY \
       usage="podman run -d --name postgresql_database -e POSTGRESQL_USER=user -e POSTGRESQL_PASSWORD=pass -e POSTGRESQL_DATABASE=db -p 5432:5432 rhscl/postgresql-$POSTGRESQL_VERSION-rhel7" \
       maintainer="SoftwareCollections.org <sclorg@redhat.com>"
 
-USER root
-
 COPY root/usr/libexec/fix-permissions /usr/libexec/fix-permissions
 
 # Copy entitlements and subscription manager configurations

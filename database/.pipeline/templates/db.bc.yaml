@@ -1,9 +1,8 @@
 kind: Template
 apiVersion: template.openshift.io/v1
 metadata:
-  name: postgresql-bc
-  labels:
-    build: postgresql
+  name: postgresql
+  creationTimestamp: null
 parameters:
   - name: NAME
     displayName: Name
