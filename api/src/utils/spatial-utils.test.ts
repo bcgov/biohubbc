@@ -17,7 +17,7 @@ describe('parseUTMString', () => {
   });
 
   it('returns null when UTM easting is too small', async () => {
-    const result = parseUTMString('9N 0 6114170');
+    const result = parseUTMString('9N -1 6114170');
 
     expect(result).to.be.null;
   });
