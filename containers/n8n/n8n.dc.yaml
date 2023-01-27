@@ -112,7 +112,7 @@ objects:
       sessionAffinity: None
       type: ClusterIP
   - kind: Route
-    apiVersion: v1
+    apiVersion: route.openshift.io/v1
     metadata:
       name: "${NAME}"
       labels:

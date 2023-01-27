@@ -37,7 +37,7 @@ objects:
       loadBalancer: {}
 
   - kind: DeploymentConfig
-    apiVersion: v1
+    apiVersion: apps.openshift.io/v1
     metadata:
       name: clamav
       generation: 1
