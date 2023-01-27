@@ -169,7 +169,12 @@ export const getValidRangeFieldsValidator = (config?: ColumnRangeValidatorConfig
 
       const rowValueForColumn = Number(row[columnIndex]);
 
-      if (isNaN(rowValueForColumn)) {
+      if (rowValueForColumn === undefined || rowValueForColumn === null) {
+        // cell is empty, use the getRequiredFieldsValidator to assert required fields
+        return csvWorksheet;
+      }
+
+      if (isNaN(rowValueForColumn) && typeof row[columnIndex] === 'string') {
         csvWorksheet.csvValidation.addRowErrors([
           {
             errorCode: SUBMISSION_MESSAGE_TYPE.INVALID_VALUE,
