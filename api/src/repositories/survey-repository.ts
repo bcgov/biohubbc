@@ -154,7 +154,6 @@ export class SurveyRepository extends BaseRepository {
         s.additional_details,
         s.ecological_season_id,
         s.intended_outcome_id,
-        s.surveyed_all_areas,
         array_remove(array_agg(sv.vantage_id), NULL) as vantage_ids
       FROM
         survey s
@@ -168,8 +167,7 @@ export class SurveyRepository extends BaseRepository {
         s.field_method_id,
         s.additional_details,
         s.ecological_season_id,
-        s.intended_outcome_id,
-        s.surveyed_all_areas;
+        s.intended_outcome_id;
       `;
 
     const response = await this.connection.sql(sqlStatement);
@@ -521,7 +519,6 @@ export class SurveyRepository extends BaseRepository {
         additional_details,
         ecological_season_id,
         intended_outcome_id,
-        surveyed_all_areas,
         location_name,
         geojson,
         geography
@@ -536,7 +533,6 @@ export class SurveyRepository extends BaseRepository {
         ${surveyData.purpose_and_methodology.additional_details},
         ${surveyData.purpose_and_methodology.ecological_season_id},
         ${surveyData.purpose_and_methodology.intended_outcome_id},
-        ${surveyData.purpose_and_methodology.surveyed_all_areas},
         ${surveyData.location.survey_area_name},
         ${JSON.stringify(surveyData.location.geometry)}
     `;
@@ -793,7 +789,6 @@ export class SurveyRepository extends BaseRepository {
         additional_details: surveyData.purpose_and_methodology.additional_details,
         ecological_season_id: surveyData.purpose_and_methodology.ecological_season_id,
         intended_outcome_id: surveyData.purpose_and_methodology.intended_outcome_id,
-        surveyed_all_areas: surveyData.purpose_and_methodology.surveyed_all_areas,
         revision_count: surveyData.purpose_and_methodology.revision_count
       };
     }

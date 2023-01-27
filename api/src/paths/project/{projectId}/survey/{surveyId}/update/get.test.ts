@@ -88,8 +88,8 @@ describe('getSurveyForUpdate', () => {
           funding_sources: []
         },
         agreements: {
-          sedis_procedures_accepted: 'false',
-          foippa_requirements_accepted: 'false'
+          sedis_procedures_accepted: 'true',
+          foippa_requirements_accepted: 'true'
         }
       }
     };
@@ -150,8 +150,8 @@ describe('getSurveyForUpdate', () => {
           funding_sources: [1]
         },
         agreements: {
-          sedis_procedures_accepted: 'false',
-          foippa_requirements_accepted: 'false'
+          sedis_procedures_accepted: 'true',
+          foippa_requirements_accepted: 'true'
         }
       }
     };

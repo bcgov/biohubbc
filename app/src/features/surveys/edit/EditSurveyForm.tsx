@@ -68,8 +68,7 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
         additional_details: '',
         field_method_id: ('' as unknown) as number,
         ecological_season_id: ('' as unknown) as number,
-        vantage_code_ids: [],
-        surveyed_all_areas: ('' as unknown) as StringBoolean
+        vantage_code_ids: []
       }
     },
     ...StudyAreaInitialValues,
@@ -85,8 +84,8 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
     },
     ...{
       agreements: {
-        sedis_procedures_accepted: ('' as unknown) as StringBoolean,
-        foippa_requirements_accepted: ('' as unknown) as StringBoolean
+        sedis_procedures_accepted: ('true' as unknown) as StringBoolean,
+        foippa_requirements_accepted: ('true' as unknown) as StringBoolean
       }
     }
   });
