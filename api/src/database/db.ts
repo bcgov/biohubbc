@@ -364,6 +364,7 @@ export const getDBConnection = function (keycloakToken: object): IDBConnection {
 export const getAPIUserDBConnection = (): IDBConnection => {
   return getDBConnection({
     preferred_username: `${DB_USERNAME}@database`,
+    sims_system_username: DB_USERNAME,
     identity_provider: 'database'
   });
 };

@@ -22,15 +22,18 @@ export const setSystemUserContextSQL = (
   }
 
   return SQL`
-    UPDATE
-      system_user
-    SET
-      user_guid = ${userGuid}
-    WHERE
-      user_guid IS NULL
-    AND
-      user_identifier = ${userIdentifier}
-    ;
+    WITH patch_user_guid AS (
+      UPDATE
+        system_user
+      SET
+        user_guid = ${userGuid}
+      WHERE
+        user_guid IS NULL
+      AND
+        user_identifier = ${userIdentifier}
+      RETURNING
+        *
+    )
     SELECT api_set_context(${userGuid}, ${systemUserType});
   `;
 };
