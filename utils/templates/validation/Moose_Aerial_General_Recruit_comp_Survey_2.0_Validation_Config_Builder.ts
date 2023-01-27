@@ -46,18 +46,6 @@ const utmZoneValidator = () => {
   ];
 };
 
-// const utmZoneValidator = () => {
-//   return [
-//     {
-//       column_format_validator: {
-//         reg_exp: '^([7-9]|1[01])$',
-//         reg_exp_flags: 'g',
-//         expected_format: 'UTM needs to be 7, 8, 9, 10 or 11.'
-//       }
-//     }
-//   ];
-// };
-
 const mooseSpeciesPickListValidator = () => {
   return [
     {

@@ -1,5 +1,4 @@
 import * as fs from 'fs';
-
 const basicNumericValidator = () => {
   return [
     {
@@ -35,18 +34,7 @@ const northingValidator = () => {
   ];
 };
 
-const utmZoneValidator = () => {
-  return [
-    {
-      column_range_validator: {
-        min_value: 7,
-        max_value: 11
-      }
-    }
-  ];
-};
-
-const mooseSpeciesPickListValidator = () => {
+const sheepSpeciesPickListValidator = () => {
   return [
     {
       column_code_validator: {
@@ -58,8 +46,333 @@ const mooseSpeciesPickListValidator = () => {
         },
         allowed_code_values: [
           {
-            name: 'M-ALAM',
-            description: 'M-ALAM'
+            name: 'M-OVCA',
+            description: 'M-OVCA'
+          },
+          {
+            name: 'M-OVDA',
+            description: 'M-OVDA'
+          },
+          {
+            name: 'M-OVDA-DA',
+            description: 'M-OVDA-DA'
+          },
+          {
+            name: 'M-OVDA-ST',
+            description: 'M-OVDA-ST'
+          }
+        ]
+      }
+    }
+  ];
+};
+
+const habitatPickListValidator = () => {
+  return [
+    {
+      column_code_validator: {
+        name: {
+          type: 'string'
+        },
+        description: {
+          type: 'string'
+        },
+        allowed_code_values: [
+          {
+            name: 'Alpine',
+            description: 'Alpine'
+          },
+          {
+            name: 'Alpine Barren',
+            description: 'Alpine Barren'
+          },
+          {
+            name: 'Alpine Heath Meadows',
+            description: 'Alpine Heath Meadows'
+          },
+          {
+            name: 'Avalanche Path',
+            description: 'Avalanche Path'
+          },
+          {
+            name: 'Avalanche path, herbaceous',
+            description: 'Avalanche path, herbaceous'
+          },
+          {
+            name: 'Avalanche path, shrubby',
+            description: 'Avalanche path, shrubby'
+          },
+          {
+            name: 'Burn',
+            description: 'Burn'
+          },
+          {
+            name: 'Bush or Scrub land',
+            description: 'Bush or Scrub land'
+          },
+          {
+            name: 'Caves',
+            description: 'Caves'
+          },
+          {
+            name: 'Cutblock',
+            description: 'Cutblock'
+          },
+          {
+            name: 'Cutblock, herbaceous',
+            description: 'Cutblock, herbaceous'
+          },
+          {
+            name: 'Cutblock, shrubby',
+            description: 'Cutblock, shrubby'
+          },
+          {
+            name: 'Cutblock, unvegetated',
+            description: 'Cutblock, unvegetated'
+          },
+          {
+            name: 'Cutblock - free to grow',
+            description: 'Cutblock - free to grow'
+          },
+          {
+            name: 'Cutblock - mature',
+            description: 'Cutblock - mature'
+          },
+          {
+            name: 'Cutblock - not sufficiently restored',
+            description: 'Cutblock - not sufficiently restored'
+          },
+          {
+            name: 'Agricultural',
+            description: 'Agricultural'
+          },
+          {
+            name: 'Cultivated field',
+            description: 'Cultivated field'
+          },
+          {
+            name: 'Cultivated or Agricultural',
+            description: 'Cultivated or Agricultural'
+          },
+          {
+            name: 'Cultivated orchard',
+            description: 'Cultivated orchard'
+          },
+          {
+            name: 'Cultivated vineyard',
+            description: 'Cultivated vineyard'
+          },
+          {
+            name: 'Cutbank',
+            description: 'Cutbank'
+          },
+          {
+            name: 'Cliff',
+            description: 'Cliff'
+          },
+          {
+            name: 'Cliff, broken',
+            description: 'Cliff, broken'
+          },
+          {
+            name: 'Cliff, dissected',
+            description: 'Cliff, dissected'
+          },
+          {
+            name: 'Cliff, in forest',
+            description: 'Cliff, in forest'
+          },
+          {
+            name: 'Cliff, open',
+            description: 'Cliff, open'
+          },
+          {
+            name: 'Electrical transmission line',
+            description: 'Electrical transmission line'
+          },
+          {
+            name: 'Estuary',
+            description: 'Estuary'
+          },
+          {
+            name: 'Flat or Open Slopes',
+            description: 'Flat or Open Slopes'
+          },
+          {
+            name: 'Forest',
+            description: 'Forest'
+          },
+          {
+            name: 'Forest, coniferous',
+            description: 'Forest, coniferous'
+          },
+          {
+            name: 'Forest, deciduous',
+            description: 'Forest, deciduous'
+          },
+          {
+            name: 'Forest, commercially thinned',
+            description: 'Forest, commercially thinned'
+          },
+          {
+            name: 'Forest, mature',
+            description: 'Forest, mature'
+          },
+          {
+            name: 'Forest, mixed',
+            description: 'Forest, mixed'
+          },
+          {
+            name: 'Forest, old',
+            description: 'Forest, old'
+          },
+          {
+            name: 'Forest, young',
+            description: 'Forest, young'
+          },
+          {
+            name: 'Forest, riparian',
+            description: 'Forest, riparian'
+          },
+          {
+            name: 'Glacier',
+            description: 'Glacier'
+          },
+          {
+            name: 'Golf course',
+            description: 'Golf course'
+          },
+          {
+            name: 'Grassland',
+            description: 'Grassland'
+          },
+          {
+            name: 'Gravel bar',
+            description: 'Gravel bar'
+          },
+          {
+            name: 'Gravel pit',
+            description: 'Gravel pit'
+          },
+          {
+            name: 'Krummholtz',
+            description: 'Krummholtz'
+          },
+          {
+            name: 'Lake',
+            description: 'Lake'
+          },
+          {
+            name: 'Low-elevation',
+            description: 'Low-elevation'
+          },
+          {
+            name: 'Mid-elevation',
+            description: 'Mid-elevation'
+          },
+          {
+            name: 'Moraine',
+            description: 'Moraine'
+          },
+          {
+            name: 'Parkland',
+            description: 'Parkland'
+          },
+
+          {
+            name: 'Pasture',
+            description: 'Pasture'
+          },
+          {
+            name: 'Pipeline right-of-way',
+            description: 'Pipeline right-of-way'
+          },
+          {
+            name: 'Railway surface',
+            description: 'Railway surface'
+          },
+          {
+            name: 'Reservoir',
+            description: 'Reservoir'
+          },
+          {
+            name: 'Ridge',
+            description: 'Ridge'
+          },
+
+          {
+            name: 'Riparian',
+            description: 'Riparian'
+          },
+          {
+            name: 'River',
+            description: 'River'
+          },
+          {
+            name: 'Rock/Talus',
+            description: 'Rock/Talus'
+          },
+          {
+            name: 'Rubble',
+            description: 'Rubble'
+          },
+          {
+            name: 'Rock outcrop',
+            description: 'Rock outcrop'
+          },
+          {
+            name: 'Scree',
+            description: 'Scree'
+          },
+          {
+            name: 'Shrub',
+            description: 'Shrub'
+          },
+          {
+            name: 'Shore',
+            description: 'Shore'
+          },
+          {
+            name: 'Snow',
+            description: 'Snow'
+          },
+          {
+            name: 'Sub-Alpine',
+            description: 'Sub-Alpine'
+          },
+          {
+            name: 'Talus/Slope',
+            description: 'Talus/Slope'
+          },
+          {
+            name: 'Terraces',
+            description: 'Terraces'
+          },
+
+          {
+            name: 'Timber',
+            description: 'Timber'
+          },
+
+          {
+            name: 'Transportation or Transmission Corridor',
+            description: 'Transportation or Transmission Corridor'
+          },
+          {
+            name: 'Urban or Residential',
+            description: 'Urban or Residential'
+          },
+          {
+            name: 'Wetland/Meadow',
+            description: 'Wetland/Meadow'
+          },
+          {
+            name: 'Willow/Shrub',
+            description: 'Willow/Shrub'
+          },
+          {
+            name: 'Described in Comments',
+            description: 'Described in Comments'
           }
         ]
       }
@@ -92,6 +405,30 @@ const targetPickListValidator = () => {
   ];
 };
 
+export const yesNoPickListValidator = () => {
+  return [
+    {
+      column_code_validator: {
+        name: {
+          type: 'string'
+        },
+        description: {
+          type: 'string'
+        },
+        allowed_code_values: [
+          {
+            name: 'Y',
+            description: 'Yes'
+          },
+          {
+            name: 'N',
+            description: 'No'
+          }
+        ]
+      }
+    }
+  ];
+};
 const surveyOrTelemetryPickListValidator = () => {
   return [
     {
@@ -784,7 +1121,18 @@ const frequencyPickListValidator = () => {
   ];
 };
 
-const mooseTransectTemplateValidationSchema = {
+const utmZoneValidator = () => {
+  return [
+    {
+      column_range_validator: {
+        min_value: 7,
+        max_value: 11
+      }
+    }
+  ];
+};
+
+const sheepTemplateValidationSchema = {
   name: '',
   description: '',
   files: [
@@ -803,7 +1151,7 @@ const mooseTransectTemplateValidationSchema = {
       ],
       columns: [
         {
-          name: 'Total Distance Flown (km)',
+          name: 'Population Unit/Block Area (km2)',
           description: '',
           validations: basicNumericValidator()
         },
@@ -823,7 +1171,7 @@ const mooseTransectTemplateValidationSchema = {
         },
         {
           file_required_columns_validator: {
-            required_columns: ['Study Area', 'Block ID/SU ID', 'Date', 'Species']
+            required_columns: ['Study Area', 'Date', 'Species']
           }
         }
       ],
@@ -836,12 +1184,12 @@ const mooseTransectTemplateValidationSchema = {
         {
           name: 'Easting',
           description: '',
-          validations: eastingValidator()
+          validations: basicNumericValidator()
         },
         {
           name: 'Northing',
           description: '',
-          validations: northingValidator()
+          validations: basicNumericValidator()
         },
         {
           name: 'Datum',
@@ -861,30 +1209,30 @@ const mooseTransectTemplateValidationSchema = {
         {
           name: 'Species',
           description: '',
-          validations: mooseSpeciesPickListValidator()
+          validations: sheepSpeciesPickListValidator()
         },
         {
-          name: 'Spike/ Fork Bulls',
+          name: 'BC RISC Class I Rams',
           description: '',
           validations: basicNumericValidator()
         },
         {
-          name: 'Sub-Prime Bulls',
+          name: 'BC RISC Class II Rams',
           description: '',
           validations: basicNumericValidator()
         },
         {
-          name: 'Prime Bulls',
+          name: 'BC RISC Class III Rams',
           description: '',
           validations: basicNumericValidator()
         },
         {
-          name: 'Senior Bulls',
+          name: 'BC RISC Class IV Rams',
           description: '',
           validations: basicNumericValidator()
         },
         {
-          name: '3 Brow/10 Point Bulls',
+          name: 'Ram - Unclassified',
           description: '',
           validations: basicNumericValidator()
         },
@@ -894,52 +1242,27 @@ const mooseTransectTemplateValidationSchema = {
           validations: basicNumericValidator()
         },
         {
-          name: 'BC RISC Class I Bulls',
+          name: 'Ewes',
           description: '',
           validations: basicNumericValidator()
         },
         {
-          name: 'BC RISC Class II Bulls',
+          name: 'Yearlings',
           description: '',
           validations: basicNumericValidator()
         },
         {
-          name: 'BC RISC Class III Bulls',
+          name: 'Lambs',
           description: '',
           validations: basicNumericValidator()
         },
         {
-          name: 'Oswald (1997) Class I Bulls',
+          name: 'Ewe-Like Sheep',
           description: '',
           validations: basicNumericValidator()
         },
         {
-          name: 'Oswald (1997) Class II Bulls',
-          description: '',
-          validations: basicNumericValidator()
-        },
-        {
-          name: 'Oswald (1997) Class III Bulls',
-          description: '',
-          validations: basicNumericValidator()
-        },
-        {
-          name: 'Cow',
-          description: '',
-          validations: basicNumericValidator()
-        },
-        {
-          name: 'Calves',
-          description: '',
-          validations: basicNumericValidator()
-        },
-        {
-          name: 'Adult Unclassified Sex',
-          description: '',
-          validations: basicNumericValidator()
-        },
-        {
-          name: 'Bulls - Unclassified',
+          name: 'Adults Unclassified Sex',
           description: '',
           validations: basicNumericValidator()
         },
@@ -949,29 +1272,14 @@ const mooseTransectTemplateValidationSchema = {
           validations: basicNumericValidator()
         },
         {
-          name: 'Cow W/1 calf',
+          name: 'Total Count',
           description: '',
           validations: basicNumericValidator()
-        },
-        {
-          name: 'Cow W/2 calves',
-          description: '',
-          validations: basicNumericValidator()
-        },
-        {
-          name: 'Sign Type',
-          description: '',
-          validations: signTypePickListValidator()
         },
         {
           name: 'Sign Count',
           description: '',
           validations: basicNumericValidator()
-        },
-        {
-          name: 'Age of Sign',
-          description: '',
-          validations: ageOfSignPickListValidator()
         },
         {
           name: 'Veg Cover (%)',
@@ -984,9 +1292,9 @@ const mooseTransectTemplateValidationSchema = {
           validations: basicNumericValidator()
         },
         {
-          name: 'Activity',
+          name: 'Elevation (m) of Observation',
           description: '',
-          validations: observationActivityPickListValidator()
+          validations: basicNumericValidator()
         },
         {
           name: 'Number of Marked Animals Observed',
@@ -997,6 +1305,31 @@ const mooseTransectTemplateValidationSchema = {
           name: 'Survey or Telemetry Search',
           description: '',
           validations: surveyOrTelemetryPickListValidator()
+        },
+        {
+          name: 'Sign Type',
+          description: '',
+          validations: signTypePickListValidator()
+        },
+        {
+          name: 'Sign Age',
+          description: '',
+          validations: ageOfSignPickListValidator()
+        },
+        {
+          name: 'Activity',
+          description: '',
+          validations: observationActivityPickListValidator()
+        },
+        {
+          name: 'Habitat',
+          description: '',
+          validations: habitatPickListValidator()
+        },
+        {
+          name: 'Terrain Obstruction',
+          description: '',
+          validations: yesNoPickListValidator()
         }
       ]
     },
@@ -1153,20 +1486,16 @@ const mooseTransectTemplateValidationSchema = {
   workbookValidations: [
     {
       workbook_parent_child_key_match_validator: {
-        parent_worksheet_name: 'Observations',
         child_worksheet_name: 'Marked Animals',
+        parent_worksheet_name: 'Observations',
         column_names: ['Group Label']
       }
     }
   ]
 };
 
-fs.writeFile(
-  './output/moose_transect_validation_config_output.json',
-  JSON.stringify(mooseTransectTemplateValidationSchema),
-  (err) => {
-    // file written successfully
+fs.writeFile('./output/sheep_validation_config_output.json', JSON.stringify(sheepTemplateValidationSchema), (err) => {
+  // file written successfully
 
-    console.log('All done!');
-  }
-);
+  console.log('All done!');
+});
