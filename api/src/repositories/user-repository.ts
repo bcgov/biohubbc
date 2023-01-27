@@ -153,13 +153,13 @@ export class UserRepository extends BaseRepository {
    *
    * Note: Will fail if the system user already exists.
    *
-   * @param {string} userGuid
+   * @param {string | null} userGuid
    * @param {string} userIdentifier
    * @param {string} identitySource
    * @return {*}  {Promise<IInsertUser>}
    * @memberof UserRepository
    */
-  async addSystemUser(userGuid: string, userIdentifier: string, identitySource: string): Promise<IInsertUser> {
+  async addSystemUser(userGuid: string | null, userIdentifier: string, identitySource: string): Promise<IInsertUser> {
     const sqlStatement = SQL`
     INSERT INTO
       system_user
@@ -170,7 +170,7 @@ export class UserRepository extends BaseRepository {
       record_effective_date
     )
     VALUES (
-      ${userGuid.toLowerCase()},
+      ${userGuid ? userGuid.toLowerCase() : null},
       (
         SELECT
           user_identity_source_id

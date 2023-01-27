@@ -57,7 +57,7 @@ const useAdminApi = (axios: AxiosInstance) => {
 
   const approveAccessRequest = async (
     administrativeActivityId: number,
-    userGuid: string,
+    userGuid: string | null,
     userIdentifier: string,
     identitySource: string,
     roleIds: number[] = []
@@ -108,14 +108,15 @@ const useAdminApi = (axios: AxiosInstance) => {
    *
    * Note: Will fail if the system user already exists.
    *
-   * @param {string} userGuid
+   * @param {string | null} userGuid The user's GUID. If `null` is given, we expect it to be updated upon the user's
+   * next login.
    * @param {string} userIdentifier
    * @param {string} identitySource
    * @param {number} roleId
    * @return {*} {boolean} True if the user is successfully added, false otherwise.
    */
   const addSystemUser = async (
-    userGuid: string,
+    userGuid: string | null,
     userIdentifier: string,
     identitySource: string,
     roleId: number

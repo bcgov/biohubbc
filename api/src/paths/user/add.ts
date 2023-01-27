@@ -39,7 +39,7 @@ POST.apiDoc = {
         schema: {
           title: 'User Response Object',
           type: 'object',
-          required: ['userGuid', 'userIdentifier', 'identitySource', 'roleId'],
+          required: ['userIdentifier', 'identitySource', 'roleId'],
           properties: {
             userGuid: {
               type: 'string',
@@ -97,15 +97,11 @@ export function addSystemRoleUser(): RequestHandler {
   return async (req, res) => {
     const connection = getDBConnection(req['keycloak_token']);
 
-    const userGuid = req.body?.userGuid || null;
-    const userIdentifier = req.body?.userIdentifier || null;
-    const identitySource = req.body?.identitySource || null;
+    const userGuid: string | null = req.body?.userGuid || null;
+    const userIdentifier: string | null  = req.body?.userIdentifier || null;
+    const identitySource: string | null  = req.body?.identitySource || null;
 
     const roleId = req.body?.roleId || null;
-
-    if (!userGuid) {
-      throw new HTTP400('Missing required body param: userGuid');
-    }
 
     if (!userIdentifier) {
       throw new HTTP400('Missing required body param: userIdentifier');

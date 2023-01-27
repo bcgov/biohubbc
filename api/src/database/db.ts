@@ -3,7 +3,7 @@ import * as pg from 'pg';
 import { SQLStatement } from 'sql-template-strings';
 import { ApiExecuteSQLError, ApiGeneralError } from '../errors/api-error';
 import { queries } from '../queries/queries';
-import { getUserGuid, getUserIdentitySource } from '../utils/keycloak-utils';
+import { getUserGuid, getUserIdentifier, getUserIdentitySource } from '../utils/keycloak-utils';
 import { getLogger } from '../utils/logger';
 
 const defaultLog = getLogger('database/db');
@@ -314,14 +314,16 @@ export const getDBConnection = function (keycloakToken: object): IDBConnection {
    */
   const _setUserContext = async () => {
     const userGuid = getUserGuid(_token);
+    const userIdentifier = getUserIdentifier(_token);
     const userIdentitySource = getUserIdentitySource(_token);
+    defaultLog.debug({ label: '_setUserContext', userGuid, userIdentifier, userIdentitySource });
 
-    if (!userGuid || !userIdentitySource) {
+    if (!userGuid || !userIdentifier || !userIdentitySource) {
       throw new ApiGeneralError('Failed to identify authenticated user');
     }
 
     // Set the user context for all queries made using this connection
-    const setSystemUserContextSQLStatement = queries.database.setSystemUserContextSQL(userGuid, userIdentitySource);
+    const setSystemUserContextSQLStatement = queries.database.setSystemUserContextSQL(userGuid, userIdentifier, userIdentitySource);
 
     if (!setSystemUserContextSQLStatement) {
       throw new ApiExecuteSQLError('Failed to build SQL user context statement');

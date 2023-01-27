@@ -16,7 +16,7 @@ import React from 'react';
 import yup from 'utils/YupSchema';
 
 export interface IAddSystemUsersFormArrayItem {
-  userGuid: string;
+  userGuid: string | null;
   userIdentifier: string;
   identitySource: string;
   systemRole: number;
@@ -41,7 +41,7 @@ export const AddSystemUsersFormYupSchema = yup.object().shape({
   systemUsers: yup.array().of(
     yup.object().shape({
       userIdentifier: yup.string().required('Username is required'),
-      userGuid: yup.string().required('GUID is required'),
+      userGuid: yup.string(), // .required('GUID is required'),
       identitySource: yup.string().required('Login Method is required'),
       systemRole: yup.number().required('Role is required')
     })
