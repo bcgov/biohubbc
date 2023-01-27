@@ -439,10 +439,6 @@ describe('GetSurveyPurposeAndMethodologyData', () => {
     it('sets vantage_code_ids', () => {
       expect(data.vantage_code_ids).to.eql([]);
     });
-
-    it('sets surveyed_all_areas', () => {
-      expect(data.surveyed_all_areas).to.equal('false');
-    });
   });
 
   describe('All values provided with first nations id', () => {
@@ -454,7 +450,6 @@ describe('GetSurveyPurposeAndMethodologyData', () => {
       field_method_id: 2,
       ecological_season_id: 3,
       vantage_ids: [4, 5],
-      surveyed_all_areas: true,
       revision_count: 'count'
     };
 
@@ -480,10 +475,6 @@ describe('GetSurveyPurposeAndMethodologyData', () => {
 
     it('sets vantage_code_ids', () => {
       expect(data.vantage_code_ids).to.eql(obj.vantage_ids);
-    });
-
-    it('sets surveyed_all_areas', () => {
-      expect(data.surveyed_all_areas).to.eql('true');
     });
 
     it('sets revision_count', function () {

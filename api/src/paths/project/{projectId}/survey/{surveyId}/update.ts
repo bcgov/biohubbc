@@ -188,7 +188,6 @@ PUT.apiDoc = {
                 'field_method_id',
                 'vantage_code_ids',
                 'ecological_season_id',
-                'surveyed_all_areas',
                 'revision_count'
               ],
               properties: {
@@ -209,10 +208,6 @@ PUT.apiDoc = {
                 },
                 ecological_season_id: {
                   type: 'number'
-                },
-                surveyed_all_areas: {
-                  type: 'string',
-                  enum: ['true', 'false']
                 },
                 revision_count: {
                   type: 'number'

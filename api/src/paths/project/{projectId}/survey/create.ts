@@ -178,10 +178,6 @@ POST.apiDoc = {
                 },
                 ecological_season_id: {
                   type: 'number'
-                },
-                surveyed_all_areas: {
-                  type: 'string',
-                  enum: ['true', 'false']
                 }
               }
             },

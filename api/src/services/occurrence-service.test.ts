@@ -30,7 +30,8 @@ describe('OccurrenceService', () => {
         input_key: '',
         input_file_name: '',
         output_key: '',
-        output_file_name: ''
+        output_file_name: '',
+        darwin_core_source: {}
       });
       const dbConnection = getMockDBConnection();
       const service = new OccurrenceService(dbConnection);
