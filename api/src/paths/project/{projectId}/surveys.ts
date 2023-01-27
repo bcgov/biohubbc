@@ -208,8 +208,7 @@ GET.apiDoc = {
                     'additional_details',
                     'intended_outcome_id',
                     'ecological_season_id',
-                    'vantage_code_ids',
-                    'surveyed_all_areas'
+                    'vantage_code_ids'
                   ],
                   properties: {
                     field_method_id: {
@@ -232,10 +231,6 @@ GET.apiDoc = {
                       items: {
                         type: 'number'
                       }
-                    },
-                    surveyed_all_areas: {
-                      type: 'string',
-                      enum: ['true', 'false']
                     }
                   }
                 },

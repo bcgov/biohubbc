@@ -289,7 +289,7 @@ export class ProjectRepository extends BaseRepository {
         pp.project_role_id,
         pr.name project_role_name,
         su.user_identifier,
-        ss.user_guid,
+        su.user_guid,
         su.user_identity_source_id
       FROM
         project_participation pp
