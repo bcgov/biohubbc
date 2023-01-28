@@ -84,7 +84,7 @@ describe('db', () => {
             expect(getDBPoolStub).to.have.been.calledOnce;
             expect(connectStub).to.have.been.calledOnce;
 
-            const expectedSystemUserContextSQL = setSystemUserContextSQL('testguid', 'testidentifier', SYSTEM_IDENTITY_SOURCE.IDIR);
+            const expectedSystemUserContextSQL = setSystemUserContextSQL('testguid', SYSTEM_IDENTITY_SOURCE.IDIR);
             expect(queryStub).to.have.been.calledWith(
               expectedSystemUserContextSQL?.text,
               expectedSystemUserContextSQL?.values

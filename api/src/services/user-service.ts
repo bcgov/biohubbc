@@ -101,7 +101,9 @@ export class UserService extends DBService {
    */
   async ensureSystemUser(userGuid: string | null, userIdentifier: string, identitySource: string): Promise<UserObject> {
     // Check if the user exists in SIMS
-    let userObject = userGuid && await this.getUserByGuid(userGuid);
+    let userObject = userGuid
+      ? await this.getUserByGuid(userGuid)
+      : await this.getUserByIdentifier();
 
     if (!userObject) {
       // Id of the current authenticated user

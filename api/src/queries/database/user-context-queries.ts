@@ -8,32 +8,46 @@ import { SYSTEM_IDENTITY_SOURCE } from '../../constants/database';
  * 
  * @param {string} userGuid the GUID of the user
  * @param {string} userIdentifier the user's identifier
- * @param {string} systemUserType The user type
+ * @param {string} userIdentitySource The user's identity source
  * @returns {*} {SQLStatement | null} The SQL statement for setting the user's context, or `null` if
  * userGuid or userIdentifier are undefinedd.
  */
 export const setSystemUserContextSQL = (
   userGuid: string,
+  userIdentitySource: SYSTEM_IDENTITY_SOURCE
+): SQLStatement | null => {
+  if (!userGuid) {
+    return null;
+  }
+
+  return SQL`
+    SELECT api_set_context(${userGuid}, ${userIdentitySource});
+  `;
+};
+
+/**
+ * 
+ * @param userGuid 
+ * @param userIdentifier 
+ * @returns 
+ */
+export const patchUserGuidSQL = (
+  userGuid: string,
   userIdentifier: string,
-  systemUserType: SYSTEM_IDENTITY_SOURCE
 ): SQLStatement | null => {
   if (!userGuid || !userIdentifier) {
     return null;
   }
 
   return SQL`
-    WITH patch_user_guid AS (
-      UPDATE
-        system_user
-      SET
-        user_guid = ${userGuid}
-      WHERE
-        user_guid IS NULL
-      AND
-        user_identifier = ${userIdentifier}
-      RETURNING
-        *
-    )
-    SELECT api_set_context(${userGuid}, ${systemUserType});
-  `;
-};
+    UPDATE
+      system_user
+    SET
+      user_guid = ${userGuid.toLowerCase()}
+    WHERE
+      user_guid IS NULL
+    AND
+      user_identifier = ${userIdentifier.toLowerCase()}
+    ;
+  `
+}
