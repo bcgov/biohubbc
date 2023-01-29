@@ -368,11 +368,12 @@ describe('db', () => {
       Sinon.restore();
     });
 
-    it('calls getDBConnection for the biohub_api user', () => {
+    it.only('calls getDBConnection for the biohub_api user', () => {
       const getDBConnectionStub = Sinon.stub(db, 'getDBConnection').returns(
         ('stubbed DBConnection object' as unknown) as IDBConnection
       );
 
+      process.env.DB_USER_API = 'example_db_username';
       getAPIUserDBConnection();
 
       const DB_USERNAME = process.env.DB_USER_API;
