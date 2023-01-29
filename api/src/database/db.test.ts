@@ -360,6 +360,10 @@ describe('db', () => {
   });
 
   describe('getAPIUserDBConnection', () => {
+    beforeEach(() => {
+      process.env.DB_USER_API = 'example_db_username';
+    });
+
     afterEach(() => {
       Sinon.restore();
     });
@@ -375,6 +379,7 @@ describe('db', () => {
 
       expect(getDBConnectionStub).to.have.been.calledWith({
         preferred_username: `${DB_USERNAME}@database`,
+        sims_system_username: DB_USERNAME,
         identity_provider: 'database'
       });
     });

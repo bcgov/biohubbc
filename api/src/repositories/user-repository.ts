@@ -148,10 +148,15 @@ export class UserRepository extends BaseRepository {
     return response.rows;
   }
 
+
   /**
-   * @TODO jsdoc
-   * @param userIdentifier
-   * @param identitySource
+   * Get an existing system user by their user identifier and identity source.
+   *
+   * @param userIdentifier the user's identifier
+   * @param identitySource the user's identity source, e.g. `'IDIR'`
+   * @return {*} {(Promise<IGetUser[]>)} Promise resolving an array containing the user, if they match the
+   * search criteria.
+   * @memberof UserService
    */
   async getUserByIdentifier(userIdentifier: string, identitySource: string): Promise<IGetUser[]> {
     const sqlStatement = SQL`

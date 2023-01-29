@@ -61,9 +61,12 @@ export class UserService extends DBService {
   }
 
   /**
-   * @TODO jsdoc
-   * @param userIdentifier
-   * @param identitySource
+   * Get an existing system user by their user identifier and identity source.
+   *
+   * @param userIdentifier the user's identifier
+   * @param identitySource the user's identity source, e.g. `'IDIR'`
+   * @return {*}  {(Promise<UserObject | null>)} Promise resolving the UserObject, or `null` if the user wasn't found.
+   * @memberof UserService
    */
   async getUserByIdentifier(userIdentifier: string, identitySource: string): Promise<UserObject | null> {
     defaultLog.debug({ label: 'getUserByIdentifier', userIdentifier, identitySource });
