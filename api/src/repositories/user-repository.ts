@@ -149,6 +149,52 @@ export class UserRepository extends BaseRepository {
   }
 
   /**
+   * @TODO jsdoc
+   * @param userIdentifier 
+   * @param identitySource 
+   */
+  async getUserByIdentifier(userIdentifier: string, identitySource: string): Promise<IGetUser[]> {
+    const sqlStatement = SQL`
+      SELECT
+        su.system_user_id,
+        su.user_identifier,
+        su.user_guid,
+        su.record_end_date,
+        uis.name AS identity_source,
+        array_remove(array_agg(sr.system_role_id), NULL) AS role_ids,
+        array_remove(array_agg(sr.name), NULL) AS role_names
+      FROM
+        system_user su
+      LEFT JOIN
+        system_user_role sur
+      ON
+        su.system_user_id = sur.system_user_id
+      LEFT JOIN
+        system_role sr
+      ON
+        sur.system_role_id = sr.system_role_id
+      LEFT JOIN
+        user_identity_source uis
+      ON
+        uis.user_identity_source_id = su.user_identity_source_id
+      WHERE
+        su.user_identifier = ${userIdentifier}
+      AND
+        uis.name = ${identitySource}
+      GROUP BY
+        su.system_user_id,
+        su.record_end_date,
+        su.user_identifier,
+        su.user_guid,
+        uis.name;
+    `;
+
+    const response = await this.connection.sql<IGetUser>(sqlStatement);
+
+    return response.rows;
+  }
+
+  /**
    * Adds a new system user.
    *
    * Note: Will fail if the system user already exists.

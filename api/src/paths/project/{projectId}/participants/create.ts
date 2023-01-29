@@ -154,7 +154,7 @@ export const ensureSystemUserAndProjectParticipantUser = async (
 ) => {
   const userService = new UserService(connection);
 
-  // Add a system user, unless they already have one
+  // Create or activate the system user
   const systemUserObject = await userService.ensureSystemUser(
     participant.userGuid,
     participant.userIdentifier,

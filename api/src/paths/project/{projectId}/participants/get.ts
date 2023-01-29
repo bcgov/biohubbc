@@ -73,7 +73,8 @@ GET.apiDoc = {
                     },
                     user_guid: {
                       type: 'string',
-                      description: 'The GUID for the user.'
+                      description: 'The GUID for the user.',
+                      nullable: true
                     },
                     user_identifier: {
                       type: 'string'
