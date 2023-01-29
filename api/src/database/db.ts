@@ -337,10 +337,7 @@ export const getDBConnection = function (keycloakToken: object): IDBConnection {
     }
 
     try {
-      await _client.query(
-        patchUserGuidSqlStatement.text,
-        patchUserGuidSqlStatement.values
-      );
+      await _client.query(patchUserGuidSqlStatement.text, patchUserGuidSqlStatement.values);
 
       const response = await _client.query(
         setSystemUserContextSQLStatement.text,

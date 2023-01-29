@@ -104,7 +104,7 @@ POST.apiDoc = {
   }
 };
 
-type Participant = { userIdentifier: string; identitySource: string; roleId: number }
+type Participant = { userIdentifier: string; identitySource: string; roleId: number };
 
 export function createProjectParticipants(): RequestHandler {
   return async (req, res) => {
@@ -126,11 +126,7 @@ export function createProjectParticipants(): RequestHandler {
       await connection.open();
 
       const promises: Promise<any>[] = participants.map((participant) => {
-        return ensureSystemUserAndProjectParticipantUser(
-          projectId,
-          { ...participant, userGuid: null },
-          connection
-        );
+        return ensureSystemUserAndProjectParticipantUser(projectId, { ...participant, userGuid: null }, connection);
       });
 
       await Promise.all(promises);

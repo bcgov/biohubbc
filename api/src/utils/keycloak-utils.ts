@@ -80,9 +80,7 @@ export const coerceUserIdentitySource = (userIdentitySource: string | null): SYS
  */
 export const getUserIdentifier = (keycloakToken: object): string | null => {
   const userIdentifier =
-    keycloakToken?.['idir_username'] ||
-    keycloakToken?.['bceid_username'] ||
-    keycloakToken?.['sims_system_username'];
+    keycloakToken?.['idir_username'] || keycloakToken?.['bceid_username'] || keycloakToken?.['sims_system_username'];
 
   if (!userIdentifier) {
     return null;

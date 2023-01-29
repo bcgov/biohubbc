@@ -5,7 +5,7 @@ import { SYSTEM_IDENTITY_SOURCE } from '../../constants/database';
  * Returns an SQL query for setting the user's context. As a side-effect, it first updates the user's
  * `user_guid` to reflect the given `userGuid` value, but only if it is currently `null` (which happens
  * when new system users are created and a GUID is not provided).
- * 
+ *
  * @param {string} userGuid the GUID of the user
  * @param {string} userIdentifier the user's identifier
  * @param {string} userIdentitySource The user's identity source
@@ -26,15 +26,12 @@ export const setSystemUserContextSQL = (
 };
 
 /**
- * 
- * @param userGuid 
- * @param userIdentifier 
- * @returns 
+ *
+ * @param userGuid
+ * @param userIdentifier
+ * @returns
  */
-export const patchUserGuidSQL = (
-  userGuid: string,
-  userIdentifier: string,
-): SQLStatement | null => {
+export const patchUserGuidSQL = (userGuid: string, userIdentifier: string): SQLStatement | null => {
   if (!userGuid || !userIdentifier) {
     return null;
   }
@@ -49,5 +46,5 @@ export const patchUserGuidSQL = (
     AND
       user_identifier = ${userIdentifier.toLowerCase()}
     ;
-  `
-}
+  `;
+};

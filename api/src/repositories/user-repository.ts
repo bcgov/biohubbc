@@ -150,8 +150,8 @@ export class UserRepository extends BaseRepository {
 
   /**
    * @TODO jsdoc
-   * @param userIdentifier 
-   * @param identitySource 
+   * @param userIdentifier
+   * @param identitySource
    */
   async getUserByIdentifier(userIdentifier: string, identitySource: string): Promise<IGetUser[]> {
     const sqlStatement = SQL`

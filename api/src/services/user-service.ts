@@ -62,8 +62,8 @@ export class UserService extends DBService {
 
   /**
    * @TODO jsdoc
-   * @param userIdentifier 
-   * @param identitySource 
+   * @param userIdentifier
+   * @param identitySource
    */
   async getUserByIdentifier(userIdentifier: string, identitySource: string): Promise<UserObject | null> {
     defaultLog.debug({ label: 'getUserByIdentifier', userIdentifier, identitySource });
