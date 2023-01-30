@@ -5,7 +5,6 @@ import project from './project';
 import projectParticipation from './project-participation';
 import search from './search';
 import spatial from './spatial';
-import survey from './survey';
 import users from './users';
 
 export const queries = {
@@ -16,6 +15,5 @@ export const queries = {
   projectParticipation,
   search,
   spatial,
-  survey,
   users
 };

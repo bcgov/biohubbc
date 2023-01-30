@@ -187,7 +187,6 @@ GET.apiDoc = {
                       'intended_outcome_id',
                       'ecological_season_id',
                       'vantage_code_ids',
-                      'surveyed_all_areas',
                       'revision_count'
                     ],
                     properties: {
@@ -211,10 +210,6 @@ GET.apiDoc = {
                         items: {
                           type: 'number'
                         }
-                      },
-                      surveyed_all_areas: {
-                        type: 'string',
-                        enum: ['true', 'false']
                       }
                     }
                   },
@@ -340,8 +335,8 @@ export function getSurveyForUpdate(): RequestHandler {
           funding_sources: funding
         },
         agreements: {
-          sedis_procedures_accepted: 'false',
-          foippa_requirements_accepted: 'false'
+          sedis_procedures_accepted: 'true',
+          foippa_requirements_accepted: 'true'
         }
       };
 

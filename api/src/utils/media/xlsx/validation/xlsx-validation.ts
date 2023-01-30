@@ -59,13 +59,13 @@ export const getParentChildKeyMatchValidator = (config?: ParentChildKeyMatchVali
       return (
         filteredColumnNames
           // Retrieve the value from each column
-          .map((columnName: string) => rowObject[columnName] as string)
+          .map((columnName: string) => String(rowObject[columnName]))
 
           // Remove empty column values
           .filter(Boolean)
 
-          // Escape possible column deliminator occurrences from column value string
-          .map((columnValue: string) => columnValue.replace('|', '\\|').trim())
+          // Trim whitespace
+          .map((columnValue: string) => columnValue.trim())
 
           // Deliminate column values
           .join('|')

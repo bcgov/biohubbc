@@ -31,6 +31,7 @@ describe('ValidationRepository', () => {
         rows: [
           {
             template_methodology_species_id: 1,
+            wldtaxonomic_units_id: '10',
             validation: '{}',
             transform: '{}'
           }

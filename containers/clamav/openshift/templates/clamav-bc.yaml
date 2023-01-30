@@ -2,21 +2,6 @@ kind: Template
 apiVersion: template.openshift.io/v1
 metadata:
   name: clamav-build
-  namespace: af2668-tools
-  selfLink: >-
-    /apis/template.openshift.io/v1/namespaces/af2668-tools/templates/clamav-build
-  uid: 4f945b52-0a11-490f-8859-689a21d0ecd4
-  resourceVersion: "1643081480"
-  creationTimestamp: "2021-09-08T18:47:11Z"
-  managedFields:
-    - manager: Mozilla
-      operation: Update
-      apiVersion: template.openshift.io/v1
-      time: "2021-09-08T18:52:17Z"
-      fieldsType: FieldsV1
-      fieldsV1:
-        "f:objects": {}
-        "f:parameters": {}
 parameters:
   - name: NAME
     displayName: Name
@@ -51,12 +36,12 @@ parameters:
     value: "4G"
 objects:
   - kind: ImageStream
-    apiVersion: v1
+    apiVersion: image.openshift.io/v1
     metadata:
       name: "${NAME}"
 
   - kind: BuildConfig
-    apiVersion: v1
+    apiVersion: build.openshift.io/v1
     metadata:
       name: "${NAME}-build"
       creationTimestamp: null
@@ -65,12 +50,6 @@ objects:
     spec:
       runPolicy: Serial
       completionDeadlineSeconds: 1800
-      triggers:
-        - type: ImageChange
-          imageChange:
-            from:
-              kind: ImageStreamTag
-              name: "${NAME}:latest"
       source:
         type: Git
         git:
@@ -79,14 +58,14 @@ objects:
         contextDir: "${SOURCE_CONTEXT_DIR}"
         secrets:
           - secret:
-              name: etc-pki-entitlement
+              name: platform-services-controlled-etc-pki-entitlement
             destinationDir: etc-pki-entitlement
         configMaps:
           - configMap:
-              name: rhsm-conf
+              name: platform-services-controlled-rhsm-conf
             destinationDir: rhsm-conf
           - configMap:
-              name: rhsm-ca
+              name: platform-services-controlled-rhsm-ca
             destinationDir: rhsm-ca
       strategy:
         type: Docker

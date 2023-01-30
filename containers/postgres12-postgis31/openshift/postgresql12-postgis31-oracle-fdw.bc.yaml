@@ -96,7 +96,7 @@ parameters:
     value: 0Mi
 objects:
   - kind: ImageStream
-    apiVersion: v1
+    apiVersion: image.openshift.io/v1
     metadata:
       name: ${NAME}
       labels:
@@ -105,7 +105,7 @@ objects:
         app-group: ${APP_GROUP}
 
   - kind: BuildConfig
-    apiVersion: v1
+    apiVersion: build.openshift.io/v1
     metadata:
       name: ${NAME}
       labels:
@@ -122,14 +122,14 @@ objects:
         contextDir: ${SOURCE_CONTEXT_DIR}
         secrets:
           - secret:
-              name: etc-pki-entitlement
+              name: platform-services-controlled-etc-pki-entitlement
             destinationDir: etc-pki-entitlement
         configMaps:
           - configMap:
-              name: rhsm-conf
+              name: platform-services-controlled-rhsm-conf
             destinationDir: rhsm-conf
           - configMap:
-              name: rhsm-ca
+              name: platform-services-controlled-rhsm-ca
             destinationDir: rhsm-ca
       strategy:
         type: Docker
