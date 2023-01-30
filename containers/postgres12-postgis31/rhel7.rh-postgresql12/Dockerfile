@@ -1,4 +1,5 @@
 FROM registry.redhat.io/rhscl/postgresql-12-rhel7
+# FROM registry.redhat.io/rhscl/postgresql-13-rhel7
 
 # PostgreSQL image for OpenShift with PostGIS extension.
 # Volumes:
@@ -42,7 +43,9 @@ LABEL summary=$SUMMARY \
       usage="podman run -d --name postgresql_database -e POSTGRESQL_USER=user -e POSTGRESQL_PASSWORD=pass -e POSTGRESQL_DATABASE=db -p 5432:5432 rhscl/postgresql-$POSTGRESQL_VERSION-rhel7" \
       maintainer="SoftwareCollections.org <sclorg@redhat.com>"
 
-COPY root/usr/libexec/fix-permissions /usr/libexec/fix-permissions
+USER 0
+
+# COPY root/usr/libexec/fix-permissions /usr/libexec/fix-permissions
 
 # Copy entitlements and subscription manager configurations
 # https://github.com/BCDevOps/OpenShift4-Migration/issues/15
@@ -70,13 +73,16 @@ RUN rm /etc/rhsm-host && \
     INSTALL_PKGS="rsync tar gettext bind-utils nss_wrapper" && \
     INSTALL_PKGS="$INSTALL_PKGS rh-postgresql$POSTGRESQL_VERSION-pgaudit" && \
     yum -y --setopt=tsflags=nodocs install $INSTALL_PKGS && \
-    rpm -V $INSTALL_PKGS && \
-    yum -y clean all --enablerepo='*' && \
-    ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone && \
-    localedef -f UTF-8 -i en_US en_US.UTF-8 && \
-    test "$(id postgres)" = "uid=26(postgres) gid=26(postgres) groups=26(postgres)" && \
-    mkdir -p /var/lib/pgsql/data && \
-    /usr/libexec/fix-permissions /var/lib/pgsql /var/run/postgresql
+    rpm -V $INSTALL_PKGS
+
+RUN yum -y clean all --enablerepo='*'
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+RUN localedef -f UTF-8 -i en_US en_US.UTF-8
+
+RUN usermod -G "" postgres
+RUN test "$(id postgres)" = "uid=26(postgres) gid=26(postgres) groups=26(postgres)"
+RUN mkdir -p /var/lib/pgsql/data
+RUN /usr/libexec/fix-permissions /var/lib/pgsql /var/run/postgresql
 
 RUN touch /etc/yum/pluginconf.d/rhnplugin.conf && \
     echo  exclude=postgresql* >> /etc/yum/pluginconf.d/rhnplugin.conf    
@@ -96,16 +102,19 @@ ENV BASH_ENV=${CONTAINER_SCRIPTS_PATH}/scl_enable \
 
 VOLUME ["/var/lib/pgsql/data", "/var/run/postgresql"]
 
-COPY root /
+# COPY root /
 ENV PGCONFIG /opt/rh/rh-postgresql12/root/usr/bin
 ENV PATH /opt/rh/rh-postgresql12/root/usr/bin/:/usr/bin/:${PATH}
 
 # Aquire and build PostGIS 3.1, for PostgreSQL 12.x
 RUN cd /tmp && \
-    rpm -ivh https://download.postgresql.org/pub/repos/yum/reporpms/EL-6-x86_64/pgdg-redhat-repo-latest.noarch.rpm && \
+    rpm -ivh https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm && \
     yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 
-RUN yum install -y postgis31_12 postgis31_12-client pgrouting_12
+RUN yum -y remove rh-postgresql12-postgresql-server-syspaths rh-postgresql12-postgresql-contrib-syspaths rh-postgresql12-postgresql-syspaths
+RUN yum install -y postgis31_12
+RUN yum install -y postgis31_12-client
+RUN yum install -y pgrouting_12
 
 RUN /usr/bin/install -c -m 755  /usr/pgsql-12/lib/postgis* '/opt/rh/rh-postgresql12/root/usr/lib64/pgsql/' && \
     /usr/bin/install -c -m 755  /usr/pgsql-12/lib/libpgrouting* '/opt/rh/rh-postgresql12/root/usr/lib64/pgsql/' && \
@@ -121,7 +130,7 @@ RUN rm -rf /tmp/pgdg-redhat-repo-latest.noarch.rpm /var/cache/yum
 
 # Remove entitlements and Subscription Manager configs
 RUN rm -rf /etc/pki/entitlement && \
-    rm -rf /etc/rhsm
+    rm -rf /etc/rhsm/rhsm-conf && rm -fr /etc/rhsm/ca
 
 RUN bash /usr/libexec/fix-permissions /var/lib/pgsql
 
