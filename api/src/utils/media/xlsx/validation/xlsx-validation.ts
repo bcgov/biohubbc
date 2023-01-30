@@ -65,6 +65,7 @@ export const getParentChildKeyMatchValidator = (config?: ParentChildKeyMatchVali
           .filter(Boolean)
 
           // Escape possible column deliminator occurrences from column value string
+          // Trim whitespace
           .map((columnValue: string) => columnValue.trim())
 
           // Deliminate column values

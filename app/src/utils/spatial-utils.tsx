@@ -31,10 +31,12 @@ export const parseSpatialDataByType = (spatialDataRecords: ISpatialData[]) => {
       }
 
       if (isOccurrenceFeature(feature)) {
-        // check if species has been toggled on/ off
-        const marker = occurrenceMarkerSetup(feature.geometry.coordinates as LatLngTuple, spatialRecord.taxa_data);
-        if (marker) {
-          occurrencesMarkerLayer.markers.push(marker);
+        if (!!feature?.geometry.coordinates[0] && !!feature?.geometry.coordinates[1]) {
+          // check if species has been toggled on/ off
+          const marker = occurrenceMarkerSetup(feature.geometry.coordinates as LatLngTuple, spatialRecord.taxa_data);
+          if (marker) {
+            occurrencesMarkerLayer.markers.push(marker);
+          }
         }
       }
 
