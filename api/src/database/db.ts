@@ -323,7 +323,7 @@ export const getDBConnection = function (keycloakToken: object): IDBConnection {
     }
 
     // Patch user GUID
-    const patchUserGuidSqlStatement = queries.database.patchUserGuidSQL(userGuid, userIdentifier);
+    const patchUserGuidSqlStatement = queries.database.patchUserGuidSQL(userGuid, userIdentifier, userIdentitySource);
 
     if (!patchUserGuidSqlStatement) {
       throw new ApiExecuteSQLError('Failed to build SQL patch user GUID statement');

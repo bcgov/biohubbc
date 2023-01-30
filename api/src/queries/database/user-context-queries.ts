@@ -26,13 +26,15 @@ export const setSystemUserContextSQL = (
 };
 
 /**
- *
+ * @TODO jsdoc
+ * 
  * @param userGuid
  * @param userIdentifier
+ * @param {SYSTEM_IDENTITY_SOURCE} userIdentitySource
  * @returns
  */
-export const patchUserGuidSQL = (userGuid: string, userIdentifier: string): SQLStatement | null => {
-  if (!userGuid || !userIdentifier) {
+export const patchUserGuidSQL = (userGuid: string, userIdentifier: string, userIdentitySource: SYSTEM_IDENTITY_SOURCE): SQLStatement | null => {
+  if (!userGuid || !userIdentifier || !userIdentitySource) {
     return null;
   }
 
@@ -42,9 +44,22 @@ export const patchUserGuidSQL = (userGuid: string, userIdentifier: string): SQLS
     SET
       user_guid = ${userGuid.toLowerCase()}
     WHERE
-      user_guid IS NULL
-    AND
-      user_identifier = ${userIdentifier.toLowerCase()}
-    ;
+      system_user_id
+    IN (
+      SELECT
+        su.system_user_id
+      FROM
+        system_user su
+      LEFT JOIN
+        user_identity_source uis
+      ON
+        uis.user_identity_source_id = su.user_identity_source_id
+      WHERE
+        suuser_identifier = ${userIdentifier.toLowerCase()}
+      AND
+        uis.name = ${userIdentitySource}
+      AND
+        user_guid IS NULL
+    );
   `;
 };

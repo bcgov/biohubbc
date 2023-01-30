@@ -368,7 +368,7 @@ describe('db', () => {
       Sinon.restore();
     });
 
-    it.only('calls getDBConnection for the biohub_api user', () => {
+    it('calls getDBConnection for the biohub_api user', () => {
       const getDBConnectionStub = Sinon.stub(db, 'getDBConnection').returns(
         ('stubbed DBConnection object' as unknown) as IDBConnection
       );
