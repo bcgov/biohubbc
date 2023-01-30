@@ -55,9 +55,9 @@ export const patchUserGuidSQL = (userGuid: string, userIdentifier: string, userI
       ON
         uis.user_identity_source_id = su.user_identity_source_id
       WHERE
-        suuser_identifier = ${userIdentifier.toLowerCase()}
+        su.user_identifier ILIKE ${userIdentifier.toLowerCase()}
       AND
-        uis.name = ${userIdentitySource}
+        uis.name ILIKE ${userIdentitySource}
       AND
         user_guid IS NULL
     );
