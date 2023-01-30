@@ -8,11 +8,11 @@ import { getLogger } from '../utils/logger';
 
 const defaultLog = getLogger('database/db');
 
-const DB_HOST = process.env.DB_HOST;
-const DB_PORT = Number(process.env.DB_PORT);
-const DB_USERNAME = process.env.DB_USER_API;
-const DB_PASSWORD = process.env.DB_USER_API_PASS;
-const DB_DATABASE = process.env.DB_DATABASE;
+const getDbHost = () => process.env.DB_HOST;
+const getDbPort = () => Number(process.env.DB_PORT);
+const getDbUsername = () => process.env.DB_USER_API;
+const getDbPassword = () => process.env.DB_USER_API_PASS;
+const getDbDatabase = () => process.env.DB_DATABASE;
 
 const DB_POOL_SIZE: number = Number(process.env.DB_POOL_SIZE) || 20;
 const DB_CONNECTION_TIMEOUT: number = Number(process.env.DB_CONNECTION_TIMEOUT) || 0;
@@ -21,11 +21,11 @@ const DB_IDLE_TIMEOUT: number = Number(process.env.DB_IDLE_TIMEOUT) || 10000;
 const DB_CLIENT = 'pg';
 
 export const defaultPoolConfig: pg.PoolConfig = {
-  user: DB_USERNAME,
-  password: DB_PASSWORD,
-  database: DB_DATABASE,
-  port: DB_PORT,
-  host: DB_HOST,
+  user: getDbUsername(),
+  password: getDbPassword(),
+  database: getDbDatabase(),
+  port: getDbPort(),
+  host: getDbHost(),
   max: DB_POOL_SIZE,
   connectionTimeoutMillis: DB_CONNECTION_TIMEOUT,
   idleTimeoutMillis: DB_IDLE_TIMEOUT
@@ -372,8 +372,8 @@ export const getDBConnection = function (keycloakToken: object): IDBConnection {
  */
 export const getAPIUserDBConnection = (): IDBConnection => {
   return getDBConnection({
-    preferred_username: `${DB_USERNAME}@database`,
-    sims_system_username: DB_USERNAME,
+    preferred_username: `${getDbUsername()}@database`,
+    sims_system_username: getDbUsername(),
     identity_provider: 'database'
   });
 };

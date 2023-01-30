@@ -373,7 +373,6 @@ describe('db', () => {
         ('stubbed DBConnection object' as unknown) as IDBConnection
       );
 
-      process.env.DB_USER_API = 'example_db_username';
       getAPIUserDBConnection();
 
       const DB_USERNAME = process.env.DB_USER_API;
