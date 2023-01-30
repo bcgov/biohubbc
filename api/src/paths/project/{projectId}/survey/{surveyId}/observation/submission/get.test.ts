@@ -843,7 +843,7 @@ describe('getObservationSubmission', () => {
       id: 13,
       inputFileName: 'dwca_moose.zip',
       status: 'Darwin Core Validated',
-      isValidating: true,
+      isValidating: false,
       messageTypes: []
     });
   });
