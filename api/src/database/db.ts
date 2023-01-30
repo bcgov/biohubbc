@@ -1,8 +1,7 @@
 import knex, { Knex } from 'knex';
 import * as pg from 'pg';
-import { SQLStatement } from 'sql-template-strings';
+import SQL, { SQLStatement } from 'sql-template-strings';
 import { ApiExecuteSQLError, ApiGeneralError } from '../errors/api-error';
-import { queries } from '../queries/queries';
 import { getUserGuid, getUserIdentifier, getUserIdentitySource } from '../utils/keycloak-utils';
 import { getLogger } from '../utils/logger';
 
@@ -323,18 +322,35 @@ export const getDBConnection = function (keycloakToken: object): IDBConnection {
     }
 
     // Patch user GUID
-    const patchUserGuidSqlStatement = queries.database.patchUserGuidSQL(userGuid, userIdentifier, userIdentitySource);
-
-    if (!patchUserGuidSqlStatement) {
-      throw new ApiExecuteSQLError('Failed to build SQL patch user GUID statement');
-    }
+    const patchUserGuidSqlStatement = SQL`
+      UPDATE
+        system_user
+      SET
+        user_guid = ${userGuid.toLowerCase()}
+      WHERE
+        system_user_id
+      IN (
+        SELECT
+          su.system_user_id
+        FROM
+          system_user su
+        LEFT JOIN
+          user_identity_source uis
+        ON
+          uis.user_identity_source_id = su.user_identity_source_id
+        WHERE
+          su.user_identifier ILIKE ${userIdentifier}
+        AND
+          uis.name ILIKE ${userIdentitySource}
+        AND
+          user_guid IS NULL
+      );
+    `;
 
     // Set the user context for all queries made using this connection
-    const setSystemUserContextSQLStatement = queries.database.setSystemUserContextSQL(userGuid, userIdentitySource);
-
-    if (!setSystemUserContextSQLStatement) {
-      throw new ApiExecuteSQLError('Failed to build SQL user context statement');
-    }
+    const setSystemUserContextSQLStatement = SQL`
+      SELECT api_set_context(${userGuid}, ${userIdentitySource});
+    `;
 
     try {
       await _client.query(patchUserGuidSqlStatement.text, patchUserGuidSqlStatement.values);

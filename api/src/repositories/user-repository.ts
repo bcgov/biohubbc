@@ -148,7 +148,6 @@ export class UserRepository extends BaseRepository {
     return response.rows;
   }
 
-
   /**
    * Get an existing system user by their user identifier and identity source.
    *

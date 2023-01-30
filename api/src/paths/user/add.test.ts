@@ -172,7 +172,7 @@ describe('user', () => {
       const ensureSystemUserStub = sinon.stub(UserService.prototype, 'ensureSystemUser').resolves(mockUserObject);
 
       const adduserSystemRolesStub = sinon.stub(UserService.prototype, 'addUserSystemRoles');
-    
+
       const requestHandler = user.addSystemRoleUser();
 
       await requestHandler(mockReq, mockRes, mockNext);
