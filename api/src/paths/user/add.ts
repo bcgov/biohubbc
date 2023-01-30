@@ -98,8 +98,8 @@ export function addSystemRoleUser(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     const userGuid: string | null = req.body?.userGuid || null;
-    const userIdentifier: string | null  = req.body?.userIdentifier || null;
-    const identitySource: string | null  = req.body?.identitySource || null;
+    const userIdentifier: string | null = req.body?.userIdentifier || null;
+    const identitySource: string | null = req.body?.identitySource || null;
 
     const roleId = req.body?.roleId || null;
 

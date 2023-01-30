@@ -84,7 +84,7 @@ describe('db', () => {
             expect(getDBPoolStub).to.have.been.calledOnce;
             expect(connectStub).to.have.been.calledOnce;
 
-            const expectedSystemUserContextSQL = setSystemUserContextSQL('testguid', 'testidentifier', SYSTEM_IDENTITY_SOURCE.IDIR);
+            const expectedSystemUserContextSQL = setSystemUserContextSQL('testguid', SYSTEM_IDENTITY_SOURCE.IDIR);
             expect(queryStub).to.have.been.calledWith(
               expectedSystemUserContextSQL?.text,
               expectedSystemUserContextSQL?.values
@@ -360,6 +360,10 @@ describe('db', () => {
   });
 
   describe('getAPIUserDBConnection', () => {
+    beforeEach(() => {
+      process.env.DB_USER_API = 'example_db_username';
+    });
+
     afterEach(() => {
       Sinon.restore();
     });
@@ -375,6 +379,7 @@ describe('db', () => {
 
       expect(getDBConnectionStub).to.have.been.calledWith({
         preferred_username: `${DB_USERNAME}@database`,
+        sims_system_username: DB_USERNAME,
         identity_provider: 'database'
       });
     });

@@ -61,6 +61,26 @@ export class UserService extends DBService {
   }
 
   /**
+   * Get an existing system user by their user identifier and identity source.
+   *
+   * @param userIdentifier the user's identifier
+   * @param identitySource the user's identity source, e.g. `'IDIR'`
+   * @return {*}  {(Promise<UserObject | null>)} Promise resolving the UserObject, or `null` if the user wasn't found.
+   * @memberof UserService
+   */
+  async getUserByIdentifier(userIdentifier: string, identitySource: string): Promise<UserObject | null> {
+    defaultLog.debug({ label: 'getUserByIdentifier', userIdentifier, identitySource });
+
+    const response = await this.userRepository.getUserByIdentifier(userIdentifier, identitySource);
+
+    if (response.length !== 1) {
+      return null;
+    }
+
+    return new UserObject(response[0]);
+  }
+
+  /**
    * Adds a new system user.
    *
    * Note: Will fail if the system user already exists.
@@ -101,7 +121,9 @@ export class UserService extends DBService {
    */
   async ensureSystemUser(userGuid: string | null, userIdentifier: string, identitySource: string): Promise<UserObject> {
     // Check if the user exists in SIMS
-    let userObject = userGuid && await this.getUserByGuid(userGuid);
+    let userObject = userGuid
+      ? await this.getUserByGuid(userGuid)
+      : await this.getUserByIdentifier(userIdentifier, identitySource);
 
     if (!userObject) {
       // Id of the current authenticated user

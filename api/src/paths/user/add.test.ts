@@ -34,7 +34,7 @@ describe('user', () => {
         expect.fail();
       } catch (actualError) {
         expect((actualError as HTTPError).status).to.equal(400);
-        expect((actualError as HTTPError).message).to.equal('Missing required body param: userGuid');
+        expect((actualError as HTTPError).message).to.equal('Missing required body param: userIdentifier');
       }
     });
 
@@ -59,30 +59,6 @@ describe('user', () => {
       } catch (actualError) {
         expect((actualError as HTTPError).status).to.equal(400);
         expect((actualError as HTTPError).message).to.equal('Missing required body param: userIdentifier');
-      }
-    });
-
-    it('should throw a 400 error when no userGuid', async () => {
-      const dbConnectionObj = getMockDBConnection();
-
-      sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
-
-      const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
-
-      mockReq.body = {
-        identitySource: SYSTEM_IDENTITY_SOURCE.IDIR,
-        userIdentifier: 'username',
-        roleId: 1
-      };
-
-      try {
-        const requestHandler = user.addSystemRoleUser();
-
-        await requestHandler(mockReq, mockRes, mockNext);
-        expect.fail();
-      } catch (actualError) {
-        expect((actualError as HTTPError).status).to.equal(400);
-        expect((actualError as HTTPError).message).to.equal('Missing required body param: userGuid');
       }
     });
 
@@ -166,6 +142,40 @@ describe('user', () => {
 
       await requestHandler(mockReq, mockRes, mockNext);
 
+      expect(ensureSystemUserStub).to.have.been.calledOnce;
+      expect(adduserSystemRolesStub).to.have.been.calledOnce;
+    });
+
+    it('should success when no userGuid', async () => {
+      const dbConnectionObj = getMockDBConnection();
+
+      sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
+
+      const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+
+      mockReq.body = {
+        identitySource: SYSTEM_IDENTITY_SOURCE.IDIR,
+        userIdentifier: 'username',
+        roleId: 1
+      };
+
+      const mockUserObject: UserObject = {
+        id: 1,
+        user_identifier: '',
+        user_guid: null,
+        identity_source: '',
+        record_end_date: '',
+        role_ids: [1],
+        role_names: []
+      };
+
+      const ensureSystemUserStub = sinon.stub(UserService.prototype, 'ensureSystemUser').resolves(mockUserObject);
+
+      const adduserSystemRolesStub = sinon.stub(UserService.prototype, 'addUserSystemRoles');
+    
+      const requestHandler = user.addSystemRoleUser();
+
+      await requestHandler(mockReq, mockRes, mockNext);
       expect(ensureSystemUserStub).to.have.been.calledOnce;
       expect(adduserSystemRolesStub).to.have.been.calledOnce;
     });

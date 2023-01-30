@@ -1,7 +1,7 @@
 export class UserObject {
   id: number;
   user_identifier: string;
-  user_guid: string;
+  user_guid: string | null;
   identity_source: string;
   record_end_date: string;
   role_ids: number[];
