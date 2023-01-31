@@ -1,12 +1,10 @@
-import { Breadcrumbs, Button, Link, Paper } from '@material-ui/core';
+import { Button, Paper } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Container from '@material-ui/core/Container';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
-import { mdiChevronRight } from '@mdi/js';
-import Icon from '@mdi/react';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { EditSurveyI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
@@ -173,11 +171,6 @@ const EditSurveyPage = () => {
     }
   };
 
-  const handleCancelToProject = () => {
-    dialogContext.setYesNoDialog(defaultCancelDialogProps);
-    history.push(`/admin/projects/${getProjectForViewDL.data?.id}`);
-  };
-
   /**
    * Intercepts all navigation attempts (when used with a `Prompt`).
    *
@@ -214,33 +207,10 @@ const EditSurveyPage = () => {
       <Paper square={true} elevation={0}>
         <Container maxWidth="xl">
           <Box py={4}>
-            <Box mb={2}>
-              <Breadcrumbs separator={<Icon path={mdiChevronRight} size={0.8} />}>
-                <Link color="primary" onClick={() => history.push('/admin/projects')} aria-current="page">
-                  <Typography variant="body1" component="span">
-                    Projects
-                  </Typography>
-                </Link>
-                <Link color="primary" onClick={handleCancelToProject} aria-current="page">
-                  <Typography variant="body1" component="span">
-                    {getProjectForViewDL.data.project.project_name}
-                  </Typography>
-                </Link>
-                <Link color="primary" onClick={handleCancel} aria-current="page">
-                  <Typography variant="body1" component="span">
-                    {editSurveyDL.data?.surveyData.survey_details?.survey_name}
-                  </Typography>
-                </Link>
-                <Typography variant="body1" component="span">
-                  Edit Survey
-                </Typography>
-              </Breadcrumbs>
-            </Box>
-
             <Box display="flex" justifyContent="space-between">
               <Box className={classes.pageTitleContainer}>
                 <Typography variant="h1" className={classes.pageTitle}>
-                  Edit Survey
+                  Edit Survey Details
                 </Typography>
               </Box>
               <Box flex="0 0 auto" className={classes.pageTitleActions}>

@@ -10,14 +10,14 @@ const useStyles = makeStyles((theme: Theme) => ({
   projectPartners: {
     position: 'relative',
     display: 'inline-block',
-    '& + dd': {
-      paddingLeft: theme.spacing(1.25)
-    },
-    '& + dd::before': {
+    marginRight: theme.spacing(1.25),
+    '&::after': {
       content: `','`,
       position: 'absolute',
-      left: 0,
       top: 0
+    },
+    '&:last-child::after': {
+      display: 'none'
     }
   }
 }));

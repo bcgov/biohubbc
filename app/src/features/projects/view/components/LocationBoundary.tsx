@@ -251,7 +251,7 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
             Location Description
           </Typography>
           <Divider></Divider>
-          <Typography variant="body1" color="textSecondary">
+          <Typography variant="body1">
             {location.location_description ? <>{location.location_description}</> : 'No description provided'}
           </Typography>
           <Box mt={3}>
