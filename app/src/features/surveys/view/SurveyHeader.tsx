@@ -1,8 +1,6 @@
 import { Button } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
-import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Container from '@material-ui/core/Container';
-import Link from '@material-ui/core/Link';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -11,9 +9,9 @@ import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
 import {
+  mdiArrowLeft,
   mdiCalendarRangeOutline,
   mdiChevronDown,
-  mdiChevronRight,
   mdiCogOutline,
   mdiPencilOutline,
   mdiTrashCanOutline
@@ -240,25 +238,13 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
       <Paper square={true} elevation={0}>
         <Container maxWidth="xl">
           <Box py={4}>
-            <Box mb={2}>
-              <Breadcrumbs separator={<Icon path={mdiChevronRight} size={0.8} />}>
-                <Link color="primary" onClick={() => history.push('/admin/projects')} aria-current="page">
-                  <Typography variant="body1" component="span">
-                    Projects
-                  </Typography>
-                </Link>
-                <Link
-                  color="primary"
-                  onClick={() => history.push(`/admin/projects/${projectWithDetails.id}/surveys`)}
-                  aria-current="page">
-                  <Typography variant="body1" component="span">
-                    {projectWithDetails.project.project_name}
-                  </Typography>
-                </Link>
-                <Typography variant="body1" component="span">
-                  {surveyWithDetails.surveyData.survey_details.survey_name}
-                </Typography>
-              </Breadcrumbs>
+            <Box mt={-1} ml={-0.5} mb={1}>
+              <Button
+                color="primary"
+                startIcon={<Icon path={mdiArrowLeft} size={0.9} />}
+                onClick={() => history.push(`/admin/projects/${projectWithDetails.id}/surveys`)}>
+                <strong>Back to Project</strong>
+              </Button>
             </Box>
             <Box display="flex" justifyContent="space-between">
               <Box className={classes.pageTitleContainer}>
@@ -271,8 +257,8 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
                     variant="subtitle1"
                     color="textSecondary"
                     style={{ display: 'flex', alignItems: 'center' }}>
-                    <Icon path={mdiCalendarRangeOutline} size={0.8} style={{ marginRight: '0.5rem' }} />
-                    <strong>Survey Timeline:&nbsp;&nbsp;</strong>
+                    <Icon path={mdiCalendarRangeOutline} size={0.9} style={{ marginRight: '0.5rem' }} />
+                    Survey Timeline:&nbsp;&nbsp;
                     {getFormattedDateRangeString(
                       DATE_FORMAT.ShortMediumDateFormat,
                       surveyWithDetails.surveyData.survey_details.start_date,

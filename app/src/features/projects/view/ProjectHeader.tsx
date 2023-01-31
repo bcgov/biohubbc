@@ -1,9 +1,7 @@
 import { CircularProgress } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
-import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Button from '@material-ui/core/Button';
 import Container from '@material-ui/core/Container';
-import Link from '@material-ui/core/Link';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -14,8 +12,8 @@ import Typography from '@material-ui/core/Typography';
 import {
   mdiAccountMultipleOutline,
   mdiCalendarRangeOutline,
+  mdiCalendarTodayOutline,
   mdiChevronDown,
-  mdiChevronRight,
   mdiCogOutline,
   mdiPencilOutline,
   mdiTrashCanOutline
@@ -206,26 +204,12 @@ const ProjectHeader: React.FC<IProjectHeaderProps> = (props) => {
     <Paper square={true} elevation={0}>
       <Container maxWidth="xl">
         <Box py={4}>
-          <Box mb={2}>
-            <Breadcrumbs separator={<Icon path={mdiChevronRight} size={0.8} />}>
-              <Link color="primary" onClick={() => history.push('/admin/projects')} aria-current="page">
-                <Typography variant="body1" component="span">
-                  Projects
-                </Typography>
-              </Link>
-              <Typography variant="body1" component="span">
-                {projectWithDetails.project.project_name}
-              </Typography>
-            </Breadcrumbs>
-          </Box>
-
           <Box display="flex" justifyContent="space-between">
             <Box className={classes.projectTitleContainer}>
               <Typography variant="h1" className={classes.projectTitle}>
                 Project: <span>{projectWithDetails.project.project_name}</span>
               </Typography>
               <Box mt={0.75} display="flex" alignItems="center">
-                {/* {getChipIcon(projectWithDetails.project.completion_status)} */}
                 <Typography
                   component="span"
                   variant="subtitle1"
@@ -233,8 +217,8 @@ const ProjectHeader: React.FC<IProjectHeaderProps> = (props) => {
                   style={{ display: 'flex', alignItems: 'center' }}>
                   {projectWithDetails.project.end_date ? (
                     <>
-                      <Icon path={mdiCalendarRangeOutline} size={0.8} style={{ marginRight: '0.5rem' }} />
-                      <strong>Project Timeline:&nbsp;&nbsp;</strong>
+                      <Icon path={mdiCalendarRangeOutline} size={0.9} style={{ marginRight: '0.5rem' }} />
+                      Project Timeline:&nbsp;&nbsp;
                       {getFormattedDateRangeString(
                         DATE_FORMAT.ShortMediumDateFormat,
                         projectWithDetails.project.start_date,
@@ -243,7 +227,8 @@ const ProjectHeader: React.FC<IProjectHeaderProps> = (props) => {
                     </>
                   ) : (
                     <>
-                      <span>Start Date:</span>{' '}
+                      <Icon path={mdiCalendarTodayOutline} size={0.9} style={{ marginRight: '0.5rem' }} />
+                      Start Date:&nbsp;&nbsp;
                       {getFormattedDateRangeString(
                         DATE_FORMAT.ShortMediumDateFormat,
                         projectWithDetails.project.start_date
