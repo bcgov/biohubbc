@@ -445,6 +445,7 @@ export class ValidationService extends DBService {
     defaultLog.debug({
       label: 'persistTransformationResults',
       submissionId,
+      fileBuffers,
       s3OutputKey
     });
 

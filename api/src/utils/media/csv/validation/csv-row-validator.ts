@@ -1,12 +1,19 @@
 import { SUBMISSION_MESSAGE_TYPE } from '../../../../constants/status';
 import { CSVValidator } from '../csv-file';
 
-/**
- * TODO needs updating to use new config style, etc.
+export type RequiredFieldsValidatorConfig {
+
+}
+
+export /**
+ *
+ *
+ * @param {RequiredFieldsValidatorConfig} [config]
+ * @return {*}  {CSVValidator}
  */
-export const getRequiredFieldsValidator = (requiredFieldsByHeader?: string[]): CSVValidator => {
+const getRequiredFieldsValidator = (config?: RequiredFieldsValidatorConfig): CSVValidator => {
   return (csvWorksheet) => {
-    if (!requiredFieldsByHeader?.length) {
+    if (!config) {
       return csvWorksheet;
     }
 
