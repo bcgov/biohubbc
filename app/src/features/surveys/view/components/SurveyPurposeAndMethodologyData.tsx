@@ -1,12 +1,30 @@
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
+import { Theme } from '@material-ui/core/styles/createMuiTheme';
+import makeStyles from '@material-ui/core/styles/makeStyles';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { EditSurveyPurposeAndMethodologyI18N } from 'constants/i18n';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
 import React, { useState } from 'react';
+
+const useStyles = makeStyles((theme: Theme) => ({
+  vantageCodes: {
+    position: 'relative',
+    display: 'inline-block',
+    marginRight: theme.spacing(1.25),
+    '&::after': {
+      content: `','`,
+      position: 'absolute',
+      top: 0
+    },
+    '&:last-child::after': {
+      display: 'none'
+    }
+  }
+}));
 
 export interface ISurveyPurposeAndMethodologyDataProps {
   surveyForViewData: IGetSurveyForViewResponse;
@@ -21,6 +39,7 @@ export interface ISurveyPurposeAndMethodologyDataProps {
  * @return {*}
  */
 const SurveyPurposeAndMethodologyData: React.FC<ISurveyPurposeAndMethodologyDataProps> = (props) => {
+  const classes = useStyles();
   const {
     surveyForViewData: {
       surveyData: { purpose_and_methodology }
@@ -94,7 +113,7 @@ const SurveyPurposeAndMethodologyData: React.FC<ISurveyPurposeAndMethodologyData
                 </Typography>
                 {purpose_and_methodology.vantage_code_ids?.map((vc_id: number, index: number) => {
                   return (
-                    <Typography component="dd" variant="body1" key={index}>
+                    <Typography component="dd" variant="body1" key={index} className={classes.vantageCodes}>
                       {codes?.vantage_codes?.find((item: any) => item.id === vc_id)?.name}
                     </Typography>
                   );

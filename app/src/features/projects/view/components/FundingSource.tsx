@@ -78,7 +78,7 @@ const FundingSource: React.FC<IProjectFundingProps> = (props) => {
           ))}
 
         {!hasFundingSources && (
-          <ListItem>
+          <ListItem disableGutters>
             <Typography>No Funding Sources</Typography>
           </ListItem>
         )}

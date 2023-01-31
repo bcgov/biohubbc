@@ -64,7 +64,7 @@ const InferredLocationDetails: React.FC<IInferredLocationDetailsProps> = (props)
           <Divider></Divider>
           <Box component="ul" className={classes.boundaryList}>
             {data.map((item: string, index: number) => (
-              <Typography key={index} variant="body1" component="li" color="textSecondary">
+              <Typography key={index} variant="body1" component="li">
                 {item}
                 {index < data.length - 1 && ', '}
               </Typography>

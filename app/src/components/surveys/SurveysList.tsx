@@ -9,6 +9,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import { SurveyViewObject } from 'interfaces/useSurveyApi.interface';
 import React, { useState } from 'react';
+import Typography from '@material-ui/core/Typography';
 
 const useStyles = makeStyles((theme: Theme) => ({
   surveyTable: {
@@ -58,8 +59,8 @@ const SurveysList: React.FC<ISurveysListProps> = (props) => {
               ))}
             {!props.surveysList.length && (
               <TableRow>
-                <TableCell colSpan={4} align="center">
-                  <strong>No Surveys</strong>
+                <TableCell colSpan={3} align="center">
+                  <Typography component="strong" color="textSecondary" variant="body2">No Surveys</Typography>
                 </TableCell>
               </TableRow>
             )}
