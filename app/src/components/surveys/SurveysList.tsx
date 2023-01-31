@@ -7,6 +7,7 @@ import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+import Typography from '@material-ui/core/Typography';
 import { SurveyViewObject } from 'interfaces/useSurveyApi.interface';
 import React, { useState } from 'react';
 
@@ -58,8 +59,10 @@ const SurveysList: React.FC<ISurveysListProps> = (props) => {
               ))}
             {!props.surveysList.length && (
               <TableRow>
-                <TableCell colSpan={4} align="center">
-                  <strong>No Surveys</strong>
+                <TableCell colSpan={3} align="center">
+                  <Typography component="strong" color="textSecondary" variant="body2">
+                    No Surveys
+                  </Typography>
                 </TableCell>
               </TableRow>
             )}

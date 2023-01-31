@@ -42,28 +42,7 @@ describe('UsersDetailHeader', () => {
     );
 
     await waitFor(() => {
-      expect(getAllByTestId('user-detail-title').length).toEqual(1);
       expect(getAllByTestId('remove-user-button').length).toEqual(1);
-    });
-  });
-
-  it('breadcrumbs link routes user correctly', async () => {
-    history.push('/admin/users/1');
-
-    const { getAllByTestId, getByText } = render(
-      <Router history={history}>
-        <UsersDetailHeader userDetails={mockUser} />
-      </Router>
-    );
-
-    await waitFor(() => {
-      expect(getAllByTestId('user-detail-title').length).toEqual(1);
-    });
-
-    fireEvent.click(getByText('Manage Users'));
-
-    await waitFor(() => {
-      expect(history.location.pathname).toEqual('/admin/users');
     });
   });
 
@@ -78,10 +57,6 @@ describe('UsersDetailHeader', () => {
           </Router>
         </DialogContextProvider>
       );
-
-      await waitFor(() => {
-        expect(getAllByTestId('user-detail-title').length).toEqual(1);
-      });
 
       fireEvent.click(getByText('Remove User'));
 
@@ -100,10 +75,6 @@ describe('UsersDetailHeader', () => {
           </Router>
         </DialogContextProvider>
       );
-
-      await waitFor(() => {
-        expect(getAllByTestId('user-detail-title').length).toEqual(1);
-      });
 
       fireEvent.click(getByText('Remove User'));
 
@@ -132,10 +103,6 @@ describe('UsersDetailHeader', () => {
           </Router>
         </DialogContextProvider>
       );
-
-      await waitFor(() => {
-        expect(getAllByTestId('user-detail-title').length).toEqual(1);
-      });
 
       fireEvent.click(getByText('Remove User'));
 

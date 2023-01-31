@@ -13,6 +13,7 @@ import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+import Typography from '@material-ui/core/Typography';
 import { mdiDotsVertical, mdiInformationOutline, mdiTrashCanOutline, mdiTrayArrowDown } from '@mdi/js';
 import Icon from '@mdi/react';
 import AttachmentTypeSelector from 'components/dialog/attachments/AttachmentTypeSelector';
@@ -240,8 +241,10 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
                 })}
               {!props.attachmentsList.length && (
                 <TableRow>
-                  <TableCell colSpan={5} align="center">
-                    <strong>No Documents</strong>
+                  <TableCell colSpan={3} align="center">
+                    <Typography component="strong" color="textSecondary" variant="body2">
+                      No Documents
+                    </Typography>
                   </TableCell>
                 </TableRow>
               )}

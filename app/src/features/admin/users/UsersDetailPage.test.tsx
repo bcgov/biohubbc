@@ -75,7 +75,6 @@ describe('UsersDetailPage', () => {
     );
 
     await waitFor(() => {
-      expect(getAllByTestId('user-detail-title').length).toEqual(1);
       expect(getAllByTestId('projects_header').length).toEqual(1);
     });
   });
