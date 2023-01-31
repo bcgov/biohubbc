@@ -67,6 +67,40 @@ describe('UserService', () => {
     });
   });
 
+  describe('getUserByIdentifier', function () {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('returns null if the query response has no rows', async function () {
+      const mockDBConnection = getMockDBConnection();
+      const mockUserRepository = sinon.stub(UserRepository.prototype, 'getUserByIdentifier');
+      mockUserRepository.resolves([]);
+
+      const userService = new UserService(mockDBConnection);
+
+      const result = await userService.getUserByIdentifier('aaaa', 'bbbb');
+
+      expect(result).to.be.null;
+      expect(mockUserRepository).to.have.been.calledOnce;
+    });
+
+    it('returns a UserObject for the first row of the response', async function () {
+      const mockDBConnection = getMockDBConnection();
+
+      const mockResponseRow = [{ system_user_id: 123 }];
+      const mockUserRepository = sinon.stub(UserRepository.prototype, 'getUserByIdentifier');
+      mockUserRepository.resolves((mockResponseRow as unknown) as IGetUser[]);
+
+      const userService = new UserService(mockDBConnection);
+
+      const result = await userService.getUserByIdentifier('aaaa', 'bbbb');
+
+      expect(result).to.eql(new UserObject(mockResponseRow[0]));
+      expect(mockUserRepository).to.have.been.calledOnce;
+    });
+  });
+
   describe('addSystemUser', () => {
     afterEach(() => {
       sinon.restore();

@@ -6,7 +6,6 @@ import SQL from 'sql-template-strings';
 import { SYSTEM_IDENTITY_SOURCE } from '../constants/database';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { HTTPError } from '../errors/http-error';
-import { setSystemUserContextSQL } from '../queries/database/user-context-queries';
 import * as db from './db';
 import { getAPIUserDBConnection, getDBConnection, getDBPool, getKnex, IDBConnection, initDBPool } from './db';
 
@@ -83,12 +82,6 @@ describe('db', () => {
 
             expect(getDBPoolStub).to.have.been.calledOnce;
             expect(connectStub).to.have.been.calledOnce;
-
-            const expectedSystemUserContextSQL = setSystemUserContextSQL('testguid', SYSTEM_IDENTITY_SOURCE.IDIR);
-            expect(queryStub).to.have.been.calledWith(
-              expectedSystemUserContextSQL?.text,
-              expectedSystemUserContextSQL?.values
-            );
 
             expect(queryStub).to.have.been.calledWith('BEGIN');
           });
@@ -360,6 +353,10 @@ describe('db', () => {
   });
 
   describe('getAPIUserDBConnection', () => {
+    beforeEach(() => {
+      process.env.DB_USER_API = 'example_db_username';
+    });
+
     afterEach(() => {
       Sinon.restore();
     });
@@ -375,6 +372,7 @@ describe('db', () => {
 
       expect(getDBConnectionStub).to.have.been.calledWith({
         preferred_username: `${DB_USERNAME}@database`,
+        sims_system_username: DB_USERNAME,
         identity_provider: 'database'
       });
     });

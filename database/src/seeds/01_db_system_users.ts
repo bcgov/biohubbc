@@ -144,7 +144,7 @@ const insertSystemUserSQL = (userIdentifier: string, userType: string, userGuid:
   SELECT
     user_identity_source_id,
     '${userIdentifier}',
-    '${userGuid}',
+    '${userGuid.toLowerCase()}',
     now(),
     now(),
     (SELECT system_user_id from system_user where user_identifier = '${DB_ADMIN}')

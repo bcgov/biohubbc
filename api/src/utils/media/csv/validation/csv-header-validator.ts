@@ -61,20 +61,6 @@ export const hasRequiredHeadersValidator = (config?: FileRequiredHeaderValidator
 
     const headersLowerCase = csvWorksheet.getHeadersLowerCase();
 
-    if (!headersLowerCase?.length) {
-      csvWorksheet.csvValidation.addHeaderErrors(
-        config.file_required_columns_validator.required_columns.map((requiredHeader) => {
-          return {
-            errorCode: SUBMISSION_MESSAGE_TYPE.MISSING_REQUIRED_HEADER,
-            message: 'Missing required header',
-            col: requiredHeader
-          };
-        })
-      );
-
-      return csvWorksheet;
-    }
-
     for (const requiredHeader of config.file_required_columns_validator.required_columns) {
       if (!headersLowerCase.includes(requiredHeader.toLowerCase())) {
         csvWorksheet.csvValidation.addHeaderErrors([

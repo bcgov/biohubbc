@@ -124,6 +124,54 @@ describe('UserRepository', () => {
     });
   });
 
+  describe('getUserByIdentifier', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+    it('should return empty array when no user found', async () => {
+      const mockQueryResponse = ({ rowCount: 1, rows: [] } as any) as Promise<QueryResult<any>>;
+
+      const mockDBConnection = getMockDBConnection({
+        sql: async () => {
+          return mockQueryResponse;
+        }
+      });
+
+      const userRepository = new UserRepository(mockDBConnection);
+
+      const response = await userRepository.getUserByIdentifier('user', 'source');
+
+      expect(response).to.eql([]);
+    });
+
+    it('should get user by identifier', async () => {
+      const mockResponse = [
+        {
+          system_user_id: 1,
+          user_identifier: 'username',
+          user_guid: 'aaaa',
+          identity_source: 'idir',
+          record_end_date: 'data',
+          role_ids: [1],
+          role_names: ['admin']
+        }
+      ];
+      const mockQueryResponse = ({ rowCount: 1, rows: mockResponse } as any) as Promise<QueryResult<any>>;
+
+      const mockDBConnection = getMockDBConnection({
+        sql: async () => {
+          return mockQueryResponse;
+        }
+      });
+
+      const userRepository = new UserRepository(mockDBConnection);
+
+      const response = await userRepository.getUserByIdentifier('username', 'idir');
+
+      expect(response).to.equal(mockResponse);
+    });
+  });
+
   describe('addSystemUser', () => {
     afterEach(() => {
       sinon.restore();
