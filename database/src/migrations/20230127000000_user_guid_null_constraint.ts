@@ -19,8 +19,10 @@ export async function up(knex: Knex): Promise<void> {
     SET search_path = ${DB_SCHEMA};
 
     ALTER TABLE system_user ALTER COLUMN user_guid DROP NOT NULL;
+
+    UPDATE system_user set user_guid = null where user_guid = 'default_guid';
     
-    CREATE UNIQUE INDEX user_guid_uk1 ON system_user (user_guid);
+    CREATE UNIQUE INDEX system_user_uk1 ON system_user (user_guid);
 
     SET search_path = ${DB_SCHEMA_DAPI_V1};
 
