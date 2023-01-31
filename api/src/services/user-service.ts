@@ -61,17 +61,37 @@ export class UserService extends DBService {
   }
 
   /**
+   * Get an existing system user by their user identifier and identity source.
+   *
+   * @param userIdentifier the user's identifier
+   * @param identitySource the user's identity source, e.g. `'IDIR'`
+   * @return {*}  {(Promise<UserObject | null>)} Promise resolving the UserObject, or `null` if the user wasn't found.
+   * @memberof UserService
+   */
+  async getUserByIdentifier(userIdentifier: string, identitySource: string): Promise<UserObject | null> {
+    defaultLog.debug({ label: 'getUserByIdentifier', userIdentifier, identitySource });
+
+    const response = await this.userRepository.getUserByIdentifier(userIdentifier, identitySource);
+
+    if (response.length !== 1) {
+      return null;
+    }
+
+    return new UserObject(response[0]);
+  }
+
+  /**
    * Adds a new system user.
    *
    * Note: Will fail if the system user already exists.
    *
-   * @param {string} userGuid
+   * @param {string | null} userGuid
    * @param {string} userIdentifier
    * @param {string} identitySource
    * @return {*}  {Promise<UserObject>}
    * @memberof UserService
    */
-  async addSystemUser(userGuid: string, userIdentifier: string, identitySource: string): Promise<UserObject> {
+  async addSystemUser(userGuid: string | null, userIdentifier: string, identitySource: string): Promise<UserObject> {
     const response = await this.userRepository.addSystemUser(userGuid, userIdentifier, identitySource);
 
     return new UserObject(response);
@@ -93,15 +113,17 @@ export class UserService extends DBService {
    * Gets a system user, adding them if they do not already exist, or activating them if they had been deactivated (soft
    * deleted).
    *
-   * @param {string} userGuid
+   * @param {string | null} userGuid
    * @param {string} userIdentifier
    * @param {string} identitySource
    * @return {*}  {Promise<UserObject>}
    * @memberof UserService
    */
-  async ensureSystemUser(userGuid: string, userIdentifier: string, identitySource: string): Promise<UserObject> {
+  async ensureSystemUser(userGuid: string | null, userIdentifier: string, identitySource: string): Promise<UserObject> {
     // Check if the user exists in SIMS
-    let userObject = await this.getUserByGuid(userGuid);
+    let userObject = userGuid
+      ? await this.getUserByGuid(userGuid)
+      : await this.getUserByIdentifier(userIdentifier, identitySource);
 
     if (!userObject) {
       // Id of the current authenticated user

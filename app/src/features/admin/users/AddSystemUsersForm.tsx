@@ -16,7 +16,6 @@ import React from 'react';
 import yup from 'utils/YupSchema';
 
 export interface IAddSystemUsersFormArrayItem {
-  userGuid: string;
   userIdentifier: string;
   identitySource: string;
   systemRole: number;
@@ -27,7 +26,6 @@ export interface IAddSystemUsersForm {
 }
 
 export const AddSystemUsersFormArrayItemInitialValues: IAddSystemUsersFormArrayItem = {
-  userGuid: '',
   userIdentifier: '',
   identitySource: '',
   systemRole: ('' as unknown) as number
@@ -41,7 +39,6 @@ export const AddSystemUsersFormYupSchema = yup.object().shape({
   systemUsers: yup.array().of(
     yup.object().shape({
       userIdentifier: yup.string().required('Username is required'),
-      userGuid: yup.string().required('GUID is required'),
       identitySource: yup.string().required('Login Method is required'),
       systemRole: yup.number().required('Role is required')
     })
@@ -63,7 +60,6 @@ const AddSystemUsersForm: React.FC<AddSystemUsersFormProps> = (props) => {
           <Box>
             <Grid container direction="row" spacing={2}>
               {values.systemUsers?.map((systemUser: IAddSystemUsersFormArrayItem, index: number) => {
-                const userGuidMeta = getFieldMeta(`systemUsers.[${index}].userGuid`);
                 const userIdentifierMeta = getFieldMeta(`systemUsers.[${index}].userIdentifier`);
                 const identitySourceMeta = getFieldMeta(`systemUsers.[${index}].identitySource`);
                 const systemRoleMeta = getFieldMeta(`systemUsers.[${index}].roleId`);
@@ -71,7 +67,7 @@ const AddSystemUsersForm: React.FC<AddSystemUsersFormProps> = (props) => {
                 return (
                   <Grid item xs={12} key={index}>
                     <Box display="flex">
-                      <Box flexBasis="25%">
+                      <Box flexBasis="35%">
                         <CustomTextField
                           name={`systemUsers.[${index}].userIdentifier`}
                           label="Username"
@@ -80,18 +76,6 @@ const AddSystemUsersForm: React.FC<AddSystemUsersFormProps> = (props) => {
                             value: systemUser.userIdentifier,
                             error: userIdentifierMeta.touched && Boolean(userIdentifierMeta.error),
                             helperText: userIdentifierMeta.touched && userIdentifierMeta.error
-                          }}
-                        />
-                      </Box>
-                      <Box flexBasis="25%" pl={1}>
-                        <CustomTextField
-                          name={`systemUsers.[${index}].userGuid`}
-                          label="User GUID"
-                          other={{
-                            required: true,
-                            value: systemUser.userGuid,
-                            error: userGuidMeta.touched && Boolean(userGuidMeta.error),
-                            helperText: userGuidMeta.touched && userGuidMeta.error
                           }}
                         />
                       </Box>
@@ -128,7 +112,7 @@ const AddSystemUsersForm: React.FC<AddSystemUsersFormProps> = (props) => {
                           <FormHelperText>{identitySourceMeta.touched && identitySourceMeta.error}</FormHelperText>
                         </FormControl>
                       </Box>
-                      <Box flexBasis="25%" pl={1}>
+                      <Box flexBasis="35%" pl={1}>
                         <FormControl fullWidth variant="outlined" required={true} style={{ width: '100%' }}>
                           <InputLabel id="Id" required={false}>
                             System Role

@@ -410,6 +410,8 @@ export class SurveyRepository extends BaseRepository {
         smc.submission_message_class_id = smt.submission_message_class_id
       WHERE
         os.occurrence_submission_id = ${submissionId}
+      AND
+        sm.submission_message_id IS NOT NULL
       ORDER BY sm.submission_message_id;
     `;
 

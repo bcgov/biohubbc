@@ -165,18 +165,30 @@ export function getOccurrenceSubmission(): RequestHandler {
         return res.status(200).json(null);
       }
 
-      const hasAdditionalOccurrenceSubmissionMessages =
+      const willFetchAdditionalMessages =
         occurrenceSubmission.submission_status_type_name &&
         [
-          SUBMISSION_STATUS_TYPE.REJECTED,
+          // Submission statuses for validation/transformation failure
           SUBMISSION_STATUS_TYPE.SYSTEM_ERROR,
           SUBMISSION_STATUS_TYPE.FAILED_OCCURRENCE_PREPARATION,
           SUBMISSION_STATUS_TYPE.FAILED_VALIDATION,
           SUBMISSION_STATUS_TYPE.FAILED_TRANSFORMED,
-          SUBMISSION_STATUS_TYPE.FAILED_PROCESSING_OCCURRENCE_DATA
+          SUBMISSION_STATUS_TYPE.FAILED_PROCESSING_OCCURRENCE_DATA,
+          SUBMISSION_STATUS_TYPE['AWAITING CURRATION'],
+          SUBMISSION_STATUS_TYPE.REJECTED,
+          SUBMISSION_STATUS_TYPE['ON HOLD']
         ].includes(occurrenceSubmission.submission_status_type_name);
 
-      const messageTypes: IMessageTypeGroup[] = hasAdditionalOccurrenceSubmissionMessages
+      const isDoneValidating =
+        willFetchAdditionalMessages ||
+        (occurrenceSubmission.submission_status_type_name &&
+          [
+            // Submission statuses for validation completion
+            SUBMISSION_STATUS_TYPE.TEMPLATE_VALIDATED,
+            SUBMISSION_STATUS_TYPE.DARWIN_CORE_VALIDATED
+          ].includes(occurrenceSubmission.submission_status_type_name));
+
+      const messageTypes: IMessageTypeGroup[] = willFetchAdditionalMessages
         ? await surveyService.getOccurrenceSubmissionMessages(Number(occurrenceSubmission.id))
         : [];
 
@@ -184,7 +196,7 @@ export function getOccurrenceSubmission(): RequestHandler {
         id: occurrenceSubmission.id,
         inputFileName: occurrenceSubmission.input_file_name,
         status: occurrenceSubmission.submission_status_type_name || null,
-        isValidating: !hasAdditionalOccurrenceSubmissionMessages,
+        isValidating: !isDoneValidating,
         messageTypes
       });
     } catch (error) {
