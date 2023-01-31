@@ -1184,12 +1184,12 @@ const sheepTemplateValidationSchema = {
         {
           name: 'Easting',
           description: '',
-          validations: basicNumericValidator()
+          validations: eastingValidator()
         },
         {
           name: 'Northing',
           description: '',
-          validations: basicNumericValidator()
+          validations: northingValidator()
         },
         {
           name: 'Datum',
