@@ -243,7 +243,7 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
                 color="primary"
                 startIcon={<Icon path={mdiArrowLeft} size={0.9} />}
                 onClick={() => history.push(`/admin/projects/${projectWithDetails.id}/surveys`)}>
-                  <strong>Back to Project</strong>
+                <strong>Back to Project</strong>
               </Button>
             </Box>
             <Box display="flex" justifyContent="space-between">

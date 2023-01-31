@@ -242,7 +242,9 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
               {!props.attachmentsList.length && (
                 <TableRow>
                   <TableCell colSpan={3} align="center">
-                    <Typography component="strong" color="textSecondary" variant="body2">No Documents</Typography>
+                    <Typography component="strong" color="textSecondary" variant="body2">
+                      No Documents
+                    </Typography>
                   </TableCell>
                 </TableRow>
               )}

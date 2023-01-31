@@ -272,7 +272,6 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
           Show More
         </Button>
       </Box>
-
     </>
   );
 };

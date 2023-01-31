@@ -1,8 +1,8 @@
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
+import Typography from '@material-ui/core/Typography';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { EditSurveyPurposeAndMethodologyI18N } from 'constants/i18n';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
