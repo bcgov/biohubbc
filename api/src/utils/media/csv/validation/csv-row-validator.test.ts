@@ -85,7 +85,7 @@ describe('getRequiredFieldsValidator', () => {
       {
         col: 'Header1',
         errorCode: SUBMISSION_MESSAGE_TYPE.MISSING_REQUIRED_FIELD,
-        message: 'Value is required and can not be empty',
+        message: 'Value is required and cannot be empty',
         row: 2
       }
     ]);

@@ -35,7 +35,7 @@ export const getRequiredFieldsValidator = (config?: RequiredFieldsValidatorConfi
         csvWorksheet.csvValidation.addRowErrors([
           {
             errorCode: SUBMISSION_MESSAGE_TYPE.MISSING_REQUIRED_FIELD,
-            message: `Value is required and can not be empty`,
+            message: `Value is required and cannot be empty`,
             col: config.columnName,
             row: rowIndex + 2
           }
