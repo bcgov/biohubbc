@@ -1315,7 +1315,16 @@ const goatTemplateValidationSchema = {
     {
       name: 'Incidental Observations',
       description: '',
-      validations: [],
+      validations: [
+        {
+          file_duplicate_columns_validator: {}
+        },
+        {
+          file_required_columns_validator: {
+            required_columns: []
+          }
+        }
+      ],
       columns: [
         {
           name: 'UTM Zone',
