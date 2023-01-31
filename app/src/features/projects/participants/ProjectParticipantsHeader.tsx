@@ -1,13 +1,11 @@
 import Box from '@material-ui/core/Box';
-import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Button from '@material-ui/core/Button';
 import Container from '@material-ui/core/Container';
-import Link from '@material-ui/core/Link';
 import Paper from '@material-ui/core/Paper';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
-import { mdiChevronRight, mdiPlus } from '@mdi/js';
+import { mdiArrowLeft, mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
 import EditDialog from 'components/dialog/EditDialog';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
@@ -107,22 +105,15 @@ const ProjectParticipantsHeader: React.FC<IProjectParticipantsHeaderProps> = (pr
     <Paper square elevation={0}>
       <Container maxWidth="xl">
         <Box py={4}>
-          <Box mb={2}>
-            <Breadcrumbs separator={<Icon path={mdiChevronRight} size={0.8} />}>
-              <Link color="primary" onClick={() => history.push('/admin/projects')} aria-current="page">
-                Projects
-              </Link>
-              <Link
+
+          <Box mt={-1} ml={-0.5} mb={1}>
+              <Button
                 color="primary"
-                onClick={() => history.push(`/admin/projects/${props.projectWithDetails.id}`)}
-                aria-current="page">
-                {props.projectWithDetails.project.project_name}
-              </Link>
-              <Typography variant="body1" component="span">
-                Manage Project Team
-              </Typography>
-            </Breadcrumbs>
-          </Box>
+                startIcon={<Icon path={mdiArrowLeft} size={0.9} />}
+                onClick={() => history.push(`/admin/projects/${props.projectWithDetails.id}`)}>
+                <strong>Back to Project</strong>
+              </Button>
+            </Box>
 
           <Box display="flex" justifyContent="space-between">
             <Box flex="1 1 auto" className={classes.projectTitleContainer}>
