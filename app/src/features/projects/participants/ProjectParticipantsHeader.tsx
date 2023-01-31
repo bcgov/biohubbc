@@ -105,15 +105,14 @@ const ProjectParticipantsHeader: React.FC<IProjectParticipantsHeaderProps> = (pr
     <Paper square elevation={0}>
       <Container maxWidth="xl">
         <Box py={4}>
-
           <Box mt={-1} ml={-0.5} mb={1}>
-              <Button
-                color="primary"
-                startIcon={<Icon path={mdiArrowLeft} size={0.9} />}
-                onClick={() => history.push(`/admin/projects/${props.projectWithDetails.id}`)}>
-                <strong>Back to Project</strong>
-              </Button>
-            </Box>
+            <Button
+              color="primary"
+              startIcon={<Icon path={mdiArrowLeft} size={0.9} />}
+              onClick={() => history.push(`/admin/projects/${props.projectWithDetails.id}`)}>
+              <strong>Back to Project</strong>
+            </Button>
+          </Box>
 
           <Box display="flex" justifyContent="space-between">
             <Box flex="1 1 auto" className={classes.projectTitleContainer}>
