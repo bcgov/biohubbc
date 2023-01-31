@@ -109,7 +109,6 @@ const UsersDetailHeader: React.FC<IUsersHeaderProps> = (props) => {
     <Paper square={true} elevation={0}>
       <Container maxWidth="xl">
         <Box py={4}>
-
           <Box mt={-1} ml={-0.5} mb={1}>
             <Button
               color="primary"
