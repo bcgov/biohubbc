@@ -35,7 +35,6 @@ import WFSFeatureGroup, { IWFSParams } from './WFSFeatureGroup';
 */
 //@ts-ignore
 delete L.Icon.Default.prototype._getIconUrl;
-
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: iconRetina,
   iconUrl: icon,
