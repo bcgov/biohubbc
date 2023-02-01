@@ -87,6 +87,8 @@ export class ValidationService extends DBService {
     }
   }
 
+  //TODO: update the function to create a new DwCArchive for S3 that includes the decorated items
+  // See processXLSXFile
   async processDWCFile(submissionId: number) {
     defaultLog.debug({ label: 'processDWCFile', submissionId });
     try {
