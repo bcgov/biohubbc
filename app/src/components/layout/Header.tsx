@@ -1,6 +1,6 @@
 import AppBar from '@material-ui/core/AppBar';
-import Box from '@material-ui/core/Box';
 import Badge from '@material-ui/core/Badge';
+import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Container from '@material-ui/core/Container';
 import Dialog from '@material-ui/core/Dialog';
@@ -18,7 +18,7 @@ import { mdiAccountCircle, mdiBellOutline, mdiHelpCircleOutline, mdiLoginVariant
 import Icon from '@mdi/react';
 import headerImageLarge from 'assets/images/gov-bc-logo-horiz.png';
 import headerImageSmall from 'assets/images/gov-bc-logo-vert.png';
-import { ReShowSplashDialog, ShowSplashDialog } from 'components/dialog/SplashDialog';
+import { OpenSplashDialog, SplashDialog } from 'components/dialog/SplashDialog';
 import { AuthGuard, SystemRoleGuard, UnAuthGuard } from 'components/security/Guards';
 import { SYSTEM_ROLE } from 'constants/roles';
 import { AuthStateContext } from 'contexts/authStateContext';
@@ -124,8 +124,6 @@ const Header: React.FC = () => {
 
   const { keycloakWrapper } = useContext(AuthStateContext);
 
-  ShowSplashDialog();
-
   // Authenticated view
   const LoggedInUser = () => {
     const identitySource = keycloakWrapper?.getIdentitySource() || '';
@@ -138,15 +136,15 @@ const Header: React.FC = () => {
       <Box display="flex" className={classes.userProfile} my="auto" alignItems="center">
         <IconButton
           className={classes.govHeaderIconButton}
-          onClick={() => ReShowSplashDialog()}
+          onClick={() => OpenSplashDialog()}
           aria-label="Notifications">
-          <Badge 
+          <Badge
             className={classes.notificationBadge}
-            variant="dot" 
+            variant="dot"
             overlap="rectangle"
             anchorOrigin={{
               vertical: 'top',
-              horizontal: 'right',
+              horizontal: 'right'
             }}>
             <Icon path={mdiBellOutline} size={1.12} />
           </Badge>
@@ -205,6 +203,7 @@ const Header: React.FC = () => {
 
   return (
     <>
+      <SplashDialog />
       <AppBar position="sticky" elevation={0}>
         <Toolbar disableGutters className={classes.govHeaderToolbar}>
           <Container maxWidth="xl">
