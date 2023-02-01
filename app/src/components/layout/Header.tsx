@@ -17,6 +17,7 @@ import { mdiAccountCircle, mdiHelpCircle, mdiLoginVariant } from '@mdi/js';
 import Icon from '@mdi/react';
 import headerImageLarge from 'assets/images/gov-bc-logo-horiz.png';
 import headerImageSmall from 'assets/images/gov-bc-logo-vert.png';
+import { ReShowSplashDialog, ShowSplashDialog } from 'components/dialog/SplashDialog';
 import { AuthGuard, SystemRoleGuard, UnAuthGuard } from 'components/security/Guards';
 import { SYSTEM_ROLE } from 'constants/roles';
 import { AuthStateContext } from 'contexts/authStateContext';
@@ -117,6 +118,8 @@ const Header: React.FC = () => {
 
   const { keycloakWrapper } = useContext(AuthStateContext);
 
+  ShowSplashDialog();
+
   // Authenticated view
   const LoggedInUser = () => {
     const identitySource = keycloakWrapper?.getIdentitySource() || '';
@@ -127,6 +130,9 @@ const Header: React.FC = () => {
 
     return (
       <Box display="flex" className={classes.userProfile} my="auto" alignItems="center">
+        <IconButton className={classes.govHeaderIconButton} onClick={() => ReShowSplashDialog()}>
+          <Icon path={mdiHelpCircle} size={1.12} />
+        </IconButton>
         <Icon path={mdiAccountCircle} size={1.12} />
         <Box ml={1}>{formattedUsername}</Box>
         <Box px={2}>
