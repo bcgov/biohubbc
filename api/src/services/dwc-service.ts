@@ -93,20 +93,18 @@ export class DwCService extends DBService {
 
     return !!response;
   }
+
   /**
-   *
+   * Decorates the DwC json object
    *
    * @param {Record<any, any>} jsonObject
    * @return {*}  {Promise<Record<any, any>>}
    * @memberof DwCService
    */
   async decorateDwCJSON(jsonObject: Record<any, any>): Promise<Record<any, any>> {
-    console.log('inside decorateDwCJSON - jsonObject', jsonObject);
     const latlongDec = await this.decorateLatLong(jsonObject);
-    console.log('inside decorateDwCJSON - latlongDec', latlongDec);
 
     const taxonDec = await this.decorateTaxonIDs(latlongDec);
-    console.log('inside decorateDwCJSON - taxonDec', taxonDec);
 
     return taxonDec;
   }

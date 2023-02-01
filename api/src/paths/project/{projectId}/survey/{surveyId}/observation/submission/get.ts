@@ -185,7 +185,8 @@ export function getOccurrenceSubmission(): RequestHandler {
           [
             // Submission statuses for validation completion
             SUBMISSION_STATUS_TYPE.TEMPLATE_VALIDATED,
-            SUBMISSION_STATUS_TYPE.DARWIN_CORE_VALIDATED
+            SUBMISSION_STATUS_TYPE.DARWIN_CORE_VALIDATED,
+            SUBMISSION_STATUS_TYPE.TEMPLATE_TRANSFORMED
           ].includes(occurrenceSubmission.submission_status_type_name));
 
       const messageTypes: IMessageTypeGroup[] = willFetchAdditionalMessages

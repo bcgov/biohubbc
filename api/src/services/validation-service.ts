@@ -128,25 +128,15 @@ export class ValidationService extends DBService {
     defaultLog.debug({ label: 'processXLSXFile', submissionId, surveyId });
     try {
       // template preparation
-
-      console.log('1.1 - submissionPrep is started');
       const submissionPrep = await this.templatePreparation(submissionId);
 
-      console.log('1.1 - submissionPrep is complete');
-
       // template validation
-
-      console.log('1.2 - template validation is started');
       await this.templateValidation(submissionPrep.xlsx, surveyId);
-      console.log('1.2 - template validation is done');
 
       // insert template validated status
       await this.submissionRepository.insertSubmissionStatus(submissionId, SUBMISSION_STATUS_TYPE.TEMPLATE_VALIDATED);
 
-      console.log('1.3 - inserted submission status type that template is validated');
-
       // template transformation
-      console.log('1.4 - transform the template started');
       const transformedObject = await this.templateTransformation(
         submissionId,
         submissionPrep.xlsx,
@@ -155,31 +145,16 @@ export class ValidationService extends DBService {
       );
       await this.submissionRepository.insertSubmissionStatus(submissionId, SUBMISSION_STATUS_TYPE.TEMPLATE_TRANSFORMED);
 
-      console.log('1.4 - transform the template finished');
-
-      console.log('1.4 - decorate dwc started');
-
       const decoratedDWC = await this.dwCService.decorateDwCJSON(transformedObject);
-
-      console.log('decoratedDWC is: ', decoratedDWC);
-
-      console.log('1.4 - decorate dwc finished');
-
-      console.log('1.5 - update dwc source column - start');
 
       await this.occurrenceService.updateDWCSourceForOccurrenceSubmission(submissionId, JSON.stringify(decoratedDWC));
 
-      console.log('1.5 - update dwc source column - finished');
-
-      console.log('1.6 - scrape and uploadOccurrences-started');
-
       //Run transforms to scrape and upload
       await this.templateScrapeAndUploadOccurrences(submissionId);
-      console.log('1.6 - scrape and uploadOccurrences-finished');
 
-      console.log('1.7 - build the workbook to upload to S3');
+      const buffer = this.createWorkbookFromJSON(decoratedDWC);
 
-
+      await this.uploadDwCWorkbooktoS3(submissionId, buffer, submissionPrep.s3InputKey, submissionPrep.xlsx);
     } catch (error) {
       defaultLog.debug({ label: 'processXLSXFile', message: 'error', error });
       if (error instanceof SubmissionError) {
@@ -213,8 +188,6 @@ export class ValidationService extends DBService {
       const s3OutputKey = occurrenceSubmission.output_key;
       const s3File = await getFileFromS3(s3OutputKey);
       const archive = this.prepDWCArchive(s3File);
-
-      console.log('2.0 - Has fetched the s3 file');
 
       return { archive, s3OutputKey };
     } catch (error) {
@@ -274,11 +247,7 @@ export class ValidationService extends DBService {
     try {
       const xlsxSchema = await this.getTransformationSchema(xlsx, surveyId);
 
-      console.log('1.4.1 - got the transformation schema');
-
       const transformedXLSX = this.transformXLSX(xlsx.workbook.rawWorkbook, xlsxSchema);
-
-      console.log('1.4.2 - transformedXLSX: ', transformedXLSX);
 
       return transformedXLSX;
     } catch (error) {
@@ -393,7 +362,6 @@ export class ValidationService extends DBService {
   async parseDWCToJSON(submissionId: number, archive: DWCArchive) {
     const json = this.normalizeDWCArchive(archive);
 
-    console.log('parsedDWCArchive: ', json);
     await this.occurrenceService.updateDWCSourceForOccurrenceSubmission(submissionId, json);
   }
 
@@ -467,17 +435,10 @@ export class ValidationService extends DBService {
     const xlsxTransform = new XLSXTransform(workbook, transformSchema);
     const preparedRowObjectsForJSONToSheet = xlsxTransform.start();
 
-    console.log(
-      '****** preparedRowObjectsForJSONToSheet: this is the object that needs to be stored in the dwc_source column *******'
-    );
-    console.log(preparedRowObjectsForJSONToSheet);
-
-    console.log('1.4.1.1 - we have the transformed object - ready to convert to sheet');
-
     return preparedRowObjectsForJSONToSheet;
   }
 
-  createWorkbookFromJSon(preparedRowObjectsForJSONToSheet: JSON): IFileBuffer[] {
+  createWorkbookFromJSON(preparedRowObjectsForJSONToSheet: Record<string, Record<string, string>[]>): IFileBuffer[] {
     const dwcWorkbook = xlsx.utils.book_new();
     return Object.entries(preparedRowObjectsForJSONToSheet).map(([key, value]) => {
       const worksheet = xlsx.utils.json_to_sheet(value);
@@ -502,8 +463,6 @@ export class ValidationService extends DBService {
       s3OutputKey
     });
 
-    //const fileBuffer = buildWorkbookForS3()
-
     // Build the archive zip file
     const dwcArchiveZip = new AdmZip();
     fileBuffers.forEach((file) => dwcArchiveZip.addFile(`${file.name}.csv`, file.buffer));
@@ -517,11 +476,9 @@ export class ValidationService extends DBService {
 
     // Upload transformed archive to s3
     await uploadBufferToS3(dwcArchiveZip.toBuffer(), 'application/zip', outputS3Key);
-    console.log('1.4.3.1 - dwcA zip uploaded to S3');
 
     // update occurrence submission
     await this.occurrenceService.updateSurveyOccurrenceSubmission(submissionId, outputFileName, outputS3Key);
-    console.log('1.4.3.2 - occurrence submission table updated with output filename and outputs3key');
   }
 
   prepDWCArchive(s3File: any): DWCArchive {
