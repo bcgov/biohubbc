@@ -58,7 +58,7 @@ export const ValidationRulesRegistry = {
       generator: getValidHeadersValidator
     },
     {
-      name: '',
+      name: 'column_required_validator',
       generator: getRequiredFieldsValidator
     },
     {

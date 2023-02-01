@@ -1,58 +1,45 @@
 import { SUBMISSION_MESSAGE_TYPE } from '../../../../constants/status';
 import { CSVValidator } from '../csv-file';
 
+export type RequiredFieldsValidatorConfig = {
+  columnName: string;
+};
+
 /**
- * TODO needs updating to use new config style, etc.
+ * For a specified column, adds an error for each row whose column value is null, undefined or empty.
+ *
+ * @param {RequiredFieldsValidatorConfig} [config]
+ * @return {*}  {CSVValidator}
  */
-export const getRequiredFieldsValidator = (requiredFieldsByHeader?: string[]): CSVValidator => {
+export const getRequiredFieldsValidator = (config?: RequiredFieldsValidatorConfig): CSVValidator => {
   return (csvWorksheet) => {
-    if (!requiredFieldsByHeader?.length) {
+    if (!config) {
       return csvWorksheet;
     }
 
     const rows = csvWorksheet.getRows();
-
-    // If there are no rows, then add errors for all cells in the first data row based on the array of required headers
-    if (!rows?.length) {
-      csvWorksheet.csvValidation.addRowErrors(
-        requiredFieldsByHeader.map((requiredFieldByHeader) => {
-          return {
-            errorCode: SUBMISSION_MESSAGE_TYPE.MISSING_REQUIRED_FIELD,
-            message: `Missing required value for column`,
-            col: requiredFieldByHeader,
-            row: 2
-          };
-        })
-      );
-
-      return csvWorksheet;
-    }
-
     const headersLowerCase = csvWorksheet.getHeadersLowerCase();
 
-    // If there are rows, then check each cell in each row against the list of required headers, adding errors as needed
     rows.forEach((row, rowIndex) => {
-      for (const requiredFieldByHeader of requiredFieldsByHeader) {
-        const columnIndex = headersLowerCase.indexOf(requiredFieldByHeader.toLowerCase());
+      const columnIndex = headersLowerCase.indexOf(config.columnName.toLowerCase());
 
-        //if column does not exist, return csvWorksheet
-        if (columnIndex < 0) {
-          return csvWorksheet;
-        }
+      // if column does not exist, return
+      if (columnIndex < 0) {
+        return csvWorksheet;
+      }
 
-        const rowValueForColumn = row[columnIndex];
+      const rowValueForColumn = row[columnIndex];
 
-        // Add an error if the cell value is empty
-        if (rowValueForColumn === undefined || rowValueForColumn === null || rowValueForColumn === '') {
-          csvWorksheet.csvValidation.addRowErrors([
-            {
-              errorCode: SUBMISSION_MESSAGE_TYPE.MISSING_REQUIRED_FIELD,
-              message: `Missing required value for column`,
-              col: requiredFieldByHeader,
-              row: rowIndex + 2
-            }
-          ]);
-        }
+      if (rowValueForColumn == undefined || rowValueForColumn === null || rowValueForColumn === '') {
+        // cell is empty when it is required, add an error for this cell
+        csvWorksheet.csvValidation.addRowErrors([
+          {
+            errorCode: SUBMISSION_MESSAGE_TYPE.MISSING_REQUIRED_FIELD,
+            message: `Value is required and cannot be empty`,
+            col: config.columnName,
+            row: rowIndex + 2
+          }
+        ]);
       }
     });
 
