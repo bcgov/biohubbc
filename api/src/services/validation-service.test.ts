@@ -1169,7 +1169,7 @@ describe('ValidationService', () => {
       const s3 = sinon.stub(FileUtils, 'uploadBufferToS3').resolves();
       const occurrence = sinon.stub(OccurrenceService.prototype, 'updateSurveyOccurrenceSubmission').resolves();
 
-      await service.persistTransformationResults(1, [], 'outputKey', xlsx);
+      await service.uploadDwCWorkbooktoS3(1, [], 'outputKey', xlsx);
       expect(s3).to.be.calledOnce;
       expect(occurrence).to.be.calledOnce;
     });
@@ -1184,7 +1184,7 @@ describe('ValidationService', () => {
       const occurrence = sinon.stub(OccurrenceService.prototype, 'updateSurveyOccurrenceSubmission').resolves();
 
       try {
-        await service.persistTransformationResults(1, [], 'outputKey', xlsx);
+        await service.uploadDwCWorkbooktoS3(1, [], 'outputKey', xlsx);
         expect(s3).to.be.calledOnce;
         expect.fail();
       } catch (error) {
@@ -1205,7 +1205,7 @@ describe('ValidationService', () => {
         .throws(SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_UPDATE_OCCURRENCE_SUBMISSION));
 
       try {
-        await service.persistTransformationResults(1, [], 'outputKey', xlsx);
+        await service.uploadDwCWorkbooktoS3(1, [], 'outputKey', xlsx);
         expect(s3).to.be.calledOnce;
         expect(occurrence).to.be.calledOnce;
         expect.fail();

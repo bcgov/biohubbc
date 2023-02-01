@@ -116,8 +116,6 @@ export function processFile(): RequestHandler {
       try {
         // process the raw template data
         await validationService.processXLSXFile(submissionId, surveyId);
-        // process the resulting transformed dwc data
-        await validationService.processDWCFile(submissionId);
       } catch (error: any) {
         // Since submission errors are caught by the validation service and persisted in the database, anything
         // outside of a submission message should be thrown here.

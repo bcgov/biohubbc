@@ -84,8 +84,7 @@ export class DwCService extends DBService {
     const submission = await occurrenceService.getOccurrenceSubmission(occurrenceSubmissionId);
     const jsonObject = submission.darwin_core_source;
 
-    const latlongDec = await this.decorateLatLong(jsonObject);
-    const taxonAndLatLongDec = await this.decorateTaxonIDs(latlongDec);
+    const taxonAndLatLongDec = this.decorateDwCJSON(jsonObject);
 
     const response = await occurrenceService.updateDWCSourceForOccurrenceSubmission(
       occurrenceSubmissionId,
@@ -93,6 +92,23 @@ export class DwCService extends DBService {
     );
 
     return !!response;
+  }
+  /**
+   *
+   *
+   * @param {Record<any, any>} jsonObject
+   * @return {*}  {Promise<Record<any, any>>}
+   * @memberof DwCService
+   */
+  async decorateDwCJSON(jsonObject: Record<any, any>): Promise<Record<any, any>> {
+    console.log('inside decorateDwCJSON - jsonObject', jsonObject);
+    const latlongDec = await this.decorateLatLong(jsonObject);
+    console.log('inside decorateDwCJSON - latlongDec', latlongDec);
+
+    const taxonDec = await this.decorateTaxonIDs(latlongDec);
+    console.log('inside decorateDwCJSON - taxonDec', taxonDec);
+
+    return taxonDec;
   }
 
   /**
