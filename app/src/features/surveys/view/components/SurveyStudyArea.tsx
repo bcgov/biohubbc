@@ -3,7 +3,6 @@ import Button from '@material-ui/core/Button';
 import { grey } from '@material-ui/core/colors';
 import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
-import Paper from '@material-ui/core/Paper';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import Typography from '@material-ui/core/Typography';
@@ -217,63 +216,62 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
         mapTitle={'Study Area'}
       />
       <ErrorDialog {...errorDialogProps} />
-      <Paper>
-        <H2ButtonToolbar
-          label="Study Area"
-          buttonLabel="Edit Study Area"
-          buttonTitle="Edit Study Area"
-          buttonStartIcon={<Icon path={mdiPencilOutline} size={0.8} />}
-          buttonOnClick={() => handleDialogEditOpen()}
-          buttonProps={{ variant: 'text' }}
-        />
 
-        <Box px={3} pb={3}>
-          <Box height={500} position="relative">
-            <MapContainer
-              mapId="survey_study_area_map"
-              bounds={bounds}
-              nonEditableGeometries={nonEditableGeometries}
-              setInferredLayersInfo={setInferredLayersInfo}
-              markerLayers={props.mapLayersForView.markerLayers}
-              staticLayers={props.mapLayersForView.staticLayers}
-            />
-            {surveyGeometry.length > 0 && (
-              <Box position="absolute" top="126px" left="10px" zIndex="999">
-                <IconButton
-                  aria-label="zoom to initial extent"
-                  title="Zoom to initial extent"
-                  className={classes.zoomToBoundaryExtentBtn}
-                  onClick={() => zoomToBoundaryExtent()}>
-                  <Icon size={1} path={mdiRefresh} />
-                </IconButton>
-              </Box>
-            )}
-          </Box>
-          <Box mt={3}>
-            <Typography variant="body2" component="h3" className={classes.metaSectionHeader}>
-              Study Area Name
-            </Typography>
-            <Divider></Divider>
-            <Typography variant="body1">{survey_details.survey_area_name}</Typography>
-            <Box mt={3}>
-              <InferredLocationDetails layers={inferredLayersInfo} />
+      <H2ButtonToolbar
+        label="Study Area"
+        buttonLabel="Edit Study Area"
+        buttonTitle="Edit Study Area"
+        buttonStartIcon={<Icon path={mdiPencilOutline} size={0.8} />}
+        buttonOnClick={() => handleDialogEditOpen()}
+        buttonProps={{ variant: 'text' }}
+      />
+
+      <Box px={3} pb={3}>
+        <Box height={500} position="relative">
+          <MapContainer
+            mapId="survey_study_area_map"
+            bounds={bounds}
+            nonEditableGeometries={nonEditableGeometries}
+            setInferredLayersInfo={setInferredLayersInfo}
+            markerLayers={props.mapLayersForView.markerLayers}
+            staticLayers={props.mapLayersForView.staticLayers}
+          />
+          {surveyGeometry.length > 0 && (
+            <Box position="absolute" top="126px" left="10px" zIndex="999">
+              <IconButton
+                aria-label="zoom to initial extent"
+                title="Zoom to initial extent"
+                className={classes.zoomToBoundaryExtentBtn}
+                onClick={() => zoomToBoundaryExtent()}>
+                <Icon size={1} path={mdiRefresh} />
+              </IconButton>
             </Box>
+          )}
+        </Box>
+        <Box mt={3}>
+          <Typography variant="body2" component="h3" className={classes.metaSectionHeader}>
+            Study Area Name
+          </Typography>
+          <Divider></Divider>
+          <Typography variant="body1">{survey_details.survey_area_name}</Typography>
+          <Box mt={3}>
+            <InferredLocationDetails layers={inferredLayersInfo} />
           </Box>
         </Box>
+      </Box>
 
-        <Box mt={3} style={{ display: 'none' }}>
-          <Button
-            variant="text"
-            color="primary"
-            className="sectionHeaderButton"
-            onClick={() => handleDialogViewOpen()}
-            title="Expand Location"
-            aria-label="Show Expanded Location"
-            endIcon={<Icon path={mdiChevronRight} size={0.875} />}>
-            Show More
-          </Button>
-        </Box>
-      </Paper>
+      <Box mt={3} style={{ display: 'none' }}>
+        <Button
+          variant="text"
+          color="primary"
+          className="sectionHeaderButton"
+          onClick={() => handleDialogViewOpen()}
+          title="Expand Location"
+          aria-label="Show Expanded Location"
+          endIcon={<Icon path={mdiChevronRight} size={0.875} />}>
+          Show More
+        </Button>
+      </Box>
     </>
   );
 };

@@ -38,7 +38,7 @@ export type BoundaryCentroidFeatureProperties = {
 };
 
 export enum COMMON_METADATA_PROPERTIES {
-  'taxonID' = 'Species',
+  'vernacularName' = 'Species',
   'individualCount' = 'Count',
   'eventDate' = 'Date',
   'lifeStage' = 'Life Stage',
@@ -93,6 +93,28 @@ const useStyles = makeStyles(() => ({
   date: {
     margin: 0,
     lineHeight: 'unset'
+  },
+  divider: {
+    marginTop: 1
+  },
+  table: {
+    '& td': {
+      paddingTop: '8px',
+      paddingBottom: '8px',
+      paddingLeft: 0,
+      paddingRight: 0,
+      fontSize: '13px'
+    }
+  },
+  box: { gap: 1 },
+  nextPrevButton: {
+    fontWeight: 700,
+    '& .MuiButton-startIcon': {
+      mr: 0.2
+    }
+  },
+  downloadButton: {
+    color: '#ffffff !important'
   }
 }));
 
@@ -192,9 +214,9 @@ const FeaturePopup: React.FC<React.PropsWithChildren<{ submissionSpatialComponen
   return (
     <ModalContentWrapper>
       <MetadataHeader type={type} index={currentIndex} length={data.length} />
-      <Divider></Divider>
+      <Divider className={classes.divider}></Divider>
       <Collapse in={metadataLoader.isReady}>
-        <Table>
+        <Table className={classes.table}>
           <TableBody>
             {filteredMetadata.map(([key, propertyName]) => {
               return (
@@ -207,15 +229,16 @@ const FeaturePopup: React.FC<React.PropsWithChildren<{ submissionSpatialComponen
           </TableBody>
         </Table>
       </Collapse>
-      <Box display="flex" justifyContent="space-between" mt={1.5}>
+      <Box display="flex" justifyContent="space-between" mt={1.5} className={classes.box}>
         {!isEmpty && data.length > 1 && (
-          <Box display="flex">
+          <Box display="flex" className={classes.box}>
             <Button
               size="small"
               variant="text"
               style={{ textTransform: 'uppercase' }}
               startIcon={<Icon path={mdiChevronLeft} size={1} />}
-              onClick={() => handlePrev()}>
+              onClick={() => handlePrev()}
+              className={classes.nextPrevButton}>
               Prev
             </Button>
             <Button
@@ -223,14 +246,20 @@ const FeaturePopup: React.FC<React.PropsWithChildren<{ submissionSpatialComponen
               variant="text"
               style={{ textTransform: 'uppercase' }}
               endIcon={<Icon path={mdiChevronRight} size={1} />}
-              onClick={() => handleNext()}>
+              onClick={() => handleNext()}
+              className={classes.nextPrevButton}>
               Next
             </Button>
           </Box>
         )}
         {metadataObjectUrl && (
           <Box>
-            <Button href={metadataObjectUrl} size="small" variant="contained" color="primary">
+            <Button
+              href={metadataObjectUrl}
+              size="small"
+              variant="contained"
+              color="primary"
+              className={classes.downloadButton}>
               Download Records
             </Button>
           </Box>

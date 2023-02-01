@@ -75,7 +75,7 @@ const insertSpatialTransform = () => `
                             , 'geometry', jsonb_build_object('type', 'Point', 'coordinates', json_build_array(n.x, n.y))
                             , 'properties', jsonb_build_object('type', 'Occurrence', 'dwc', jsonb_build_object(
                               'type', 'PhysicalObject', 'basisOfRecord', 'Occurrence', 'datasetID', n.occurrence_submission_id, 'occurrenceID', n.occ->'occurrenceID'
-                              , 'sex', n.occ->'sex', 'lifeStage', n.occ->'lifeStage', 'taxonID', n.occ->'taxonID', 'individualCount', n.occ->'individualCount'
+                              , 'sex', n.occ->'sex', 'lifeStage', n.occ->'lifeStage', 'taxonID', n.occ->'taxonID', 'vernacularName', n.occ->'vernacularName', 'individualCount', n.occ->'individualCount'
                               , 'eventDate', n.evn->'eventDate', 'verbatimSRS', n.evn->'verbatimSRS', 'verbatimCoordinates', n.evn->'verbatimCoordinates'
                               ))))
                       )result_data
