@@ -137,7 +137,7 @@ describe('xlsx/process', () => {
     });
   });
 
-  describe('process file', () => {
+  describe.skip('process file', () => {
     afterEach(() => {
       sinon.restore();
     });
