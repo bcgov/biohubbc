@@ -1,9 +1,7 @@
 import { SUBMISSION_MESSAGE_TYPE, SUBMISSION_STATUS_TYPE, SUMMARY_SUBMISSION_MESSAGE_TYPE } from '../constants/status';
 
 export const SubmissionErrorFromMessageType = (type: SUBMISSION_MESSAGE_TYPE): SubmissionError => {
-  console.log('error type is: ', type);
   const message = new MessageError(type);
-  console.log('error message is: ', message);
   return new SubmissionError({ messages: [message] });
 };
 
@@ -48,7 +46,6 @@ export class SubmissionError extends Error {
   }
 
   setStatus(status: SUBMISSION_STATUS_TYPE) {
-    console.log('status is:', status);
     this.status = status;
   }
 }

@@ -113,8 +113,6 @@ export function processDWCFile(): RequestHandler {
 
       const service = new ValidationService(connection);
 
-      console.log('hit the endpoint');
-
       await service.processDWCFile(submissionId);
 
       await connection.commit();

@@ -105,6 +105,7 @@ export function processFile(): RequestHandler {
       throw new HTTP400('Missing required parameter `occurrence field`');
     }
 
+
     res.status(200).json({ status: 'success' });
 
     const connection = getDBConnection(req['keycloak_token']);

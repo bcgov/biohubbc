@@ -157,7 +157,7 @@ export async function uploadBufferToS3(
  */
 export async function getFileFromS3(key: string, versionId?: string): Promise<GetObjectOutput> {
   const s3Client = _getS3Client();
-  console.log('In the function getFilefromS3');
+
   return s3Client
     .getObject({
       Bucket: _getObjectStoreBucketName(),
@@ -166,7 +166,6 @@ export async function getFileFromS3(key: string, versionId?: string): Promise<Ge
     })
     .promise()
     .catch(() => {
-      console.log('trying to throw a submission error');
       throw SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_GET_FILE_FROM_S3);
     });
 }
