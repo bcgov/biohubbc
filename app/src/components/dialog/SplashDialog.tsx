@@ -71,11 +71,12 @@ export const SplashDialog = () => {
           </Box>
           <p>
             Moose data formatted using the Moose Aerial Stratified Random Block Composition Survey 2.5 template,{' '}
-            <strong>must be submitted before February 6th, 2023</strong>. This template will not be supported this date.
+            <strong>must be submitted before February 6th, 2023</strong>. This template will not be supported after this
+            date.
           </p>
           <p>
-            Future submissions must use one of the v2.0 templates provided in the resources section of this application.
-            New templates will be available on February 14th, 2023.
+            Future moose data submissions must use one of the new 2.0 templates provided in the resources section of
+            this application. The new templates will be available on February 14th, 2023.
           </p>
           <p>
             Questions or comments? Contact us at <a href="mailto:biohub@gov.bc.ca">biohub@gov.bc.ca</a>.
