@@ -4,7 +4,6 @@ import { IDBConnection } from '../database/db';
 import { ApiError, ApiErrorType } from '../errors/api-error';
 import { parseUTMString, utmToLatLng } from '../utils/spatial-utils';
 import { DBService } from './db-service';
-import { OccurrenceService } from './occurrence-service';
 import { TaxonomyService } from './taxonomy-service';
 /**
  * Service to produce DWC data for a project.
@@ -69,29 +68,6 @@ export class DwCService extends DBService {
 
     // Apply patch operations
     return jsonpatch.applyPatch(jsonObject, patchOperations).newDocument;
-  }
-
-  /**
-   * Run all Decoration functions on DWCA Source Data
-   *
-   * @param {number} occurrenceSubmissionId
-   * @return {*}  {Promise<boolean>}
-   * @memberof DwCService
-   */
-  async decorateDWCASourceData(occurrenceSubmissionId: number): Promise<boolean> {
-    const occurrenceService = new OccurrenceService(this.connection);
-
-    const submission = await occurrenceService.getOccurrenceSubmission(occurrenceSubmissionId);
-    const jsonObject = submission.darwin_core_source;
-
-    const taxonAndLatLongDec = this.decorateDwCJSON(jsonObject);
-
-    const response = await occurrenceService.updateDWCSourceForOccurrenceSubmission(
-      occurrenceSubmissionId,
-      JSON.stringify(taxonAndLatLongDec)
-    );
-
-    return !!response;
   }
 
   /**
