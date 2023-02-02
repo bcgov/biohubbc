@@ -137,7 +137,7 @@ describe('xlsx/process', () => {
     });
   });
 
-  describe.skip('process file', () => {
+  describe('process file', () => {
     afterEach(() => {
       sinon.restore();
     });
@@ -157,7 +157,7 @@ describe('xlsx/process', () => {
       }
     });
 
-    it('returns a 200 if req.body.occurrence_submission_id exists', async () => {
+    it.skip('returns a 200 if req.body.occurrence_submission_id exists', async () => {
       const dbConnectionObj = getMockDBConnection();
       sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
       const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
@@ -177,7 +177,7 @@ describe('xlsx/process', () => {
       expect(mockRes.jsonValue).to.eql({ status: 'success' });
     });
 
-    it('catches an error on processXLSXFile', async () => {
+    it.skip('catches an error on processXLSXFile', async () => {
       const dbConnectionObj = getMockDBConnection({ rollback: sinon.stub(), release: sinon.stub() });
       sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 

@@ -226,6 +226,7 @@ export class ValidationService extends DBService {
   async dwcPreparation(submissionId: number): Promise<{ archive: DWCArchive; s3InputKey: string }> {
     defaultLog.debug({ label: 'dwcPreparation', submissionId });
     try {
+      console.log('step 1.1 - ');
       const occurrenceSubmission = await this.occurrenceService.getOccurrenceSubmission(submissionId);
       const s3InputKey = occurrenceSubmission.input_key;
       const s3File = await getFileFromS3(s3InputKey);
@@ -234,6 +235,7 @@ export class ValidationService extends DBService {
       return { archive, s3InputKey };
     } catch (error) {
       if (error instanceof SubmissionError) {
+        console.log('need to set an error status');
         error.setStatus(SUBMISSION_STATUS_TYPE.FAILED_PROCESSING_OCCURRENCE_DATA);
       }
       throw error;
@@ -451,6 +453,8 @@ export class ValidationService extends DBService {
     if (parseError) {
       throw new SubmissionError({ messages: errors });
     }
+
+    console.log('parseError: ', parseError);
 
     return parseError;
   }

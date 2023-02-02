@@ -185,6 +185,9 @@ export class OccurrenceRepository extends BaseRepository {
   ): Promise<any> {
     const items: AppendSQLColumnsEqualValues[] = [];
 
+    console.log('outputfilename is:', outputFileName);
+    console.log('outputKey: ', outputKey);
+
     items.push({ columnName: 'output_file_name', columnValue: outputFileName });
 
     items.push({ columnName: 'output_key', columnValue: outputKey });

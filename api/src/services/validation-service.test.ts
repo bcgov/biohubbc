@@ -63,7 +63,7 @@ const buildFile = (fileName: string, customProps: { template_id?: number; csm_id
   return new MediaFile(fileName, 'text/csv', buffer);
 };
 
-describe.skip('ValidationService', () => {
+describe('ValidationService', () => {
   afterEach(() => {
     sinon.restore();
   });
@@ -935,7 +935,7 @@ describe.skip('ValidationService', () => {
     });
   });
 
-  describe.skip('templateTransformation', () => {
+  describe('templateTransformation', () => {
     it('should run without issue', async () => {
       const file = buildFile('test file', { csm_id: 1, template_id: 1 });
       const xlsxCsv = new XLSXCSV(file);
