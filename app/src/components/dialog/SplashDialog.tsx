@@ -4,12 +4,12 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import Typography from '@material-ui/core/Typography';
-import React, { useEffect, useState } from 'react';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
+import Typography from '@material-ui/core/Typography';
 import { mdiBellAlertOutline } from '@mdi/js';
 import Icon from '@mdi/react';
+import React, { useEffect, useState } from 'react';
 
 const useStyles = makeStyles((theme: Theme) => ({
   dialogIconContainer: {
@@ -63,15 +63,23 @@ export const SplashDialog = () => {
       <Box className={classes.dialogIconContainer} display="flex" alignItems="center" justifyContent="center">
         <Icon className={classes.dialogIcon} path={mdiBellAlertOutline} size={2}></Icon>
       </Box>
-      <DialogTitle id="alert-dialog-title">
-        Important Notice for Data Submissions  
-      </DialogTitle>
+      <DialogTitle id="alert-dialog-title">Important Notice for Data Submissions</DialogTitle>
       <DialogContent id="alert-dialog-description">
         <Typography component="div" color="textSecondary">
-          <Box component="p" mt={0}>This application will be unavailable from February 6th - 13th, 2023 to support an upcoming release.</Box>
-          <p>Moose data formatted using the Moose Aerial Stratified Random Block Composition Survey 2.5 template, <strong>must be submitted before February 6th, 2023</strong>. This template will not be supported this date.</p>
-          <p>Future submissions must use one of the v2.0 templates provided in the resources section of this application. New templates will be available on February 14th, 2023.</p>
-          <p>Questions or comments? Contact us at <a href="mailto:biohub@gov.bc.ca">biohub@gov.bc.ca</a>.</p>
+          <Box component="p" mt={0}>
+            This application will be unavailable from February 6th - 13th, 2023 to support an upcoming release.
+          </Box>
+          <p>
+            Moose data formatted using the Moose Aerial Stratified Random Block Composition Survey 2.5 template,{' '}
+            <strong>must be submitted before February 6th, 2023</strong>. This template will not be supported this date.
+          </p>
+          <p>
+            Future submissions must use one of the v2.0 templates provided in the resources section of this application.
+            New templates will be available on February 14th, 2023.
+          </p>
+          <p>
+            Questions or comments? Contact us at <a href="mailto:biohub@gov.bc.ca">biohub@gov.bc.ca</a>.
+          </p>
         </Typography>
       </DialogContent>
       <DialogActions>
