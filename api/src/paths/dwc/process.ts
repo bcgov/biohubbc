@@ -98,9 +98,6 @@ POST.apiDoc = {
   )
 };
 
-//TODO: This endpoint breaks down due to the way s3InputKeys and OutputKeys are used
-// which is currently designed to work for the XLSX workkflow
-//  Need to look at the the flow to make it work for an DwcArchive flow
 export function processDWCFile(): RequestHandler {
   return async (req, res) => {
     const submissionId = req.body.occurrence_submission_id;
