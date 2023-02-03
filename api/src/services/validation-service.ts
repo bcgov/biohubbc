@@ -98,42 +98,28 @@ export class ValidationService extends DBService {
     try {
       // Prepare DwC
       const dwcPrep = await this.dwcPreparation(submissionId);
-      console.log('dwcPrep', dwcPrep);
 
       // Run DwC validations
       const csvState = this.validateDWC(dwcPrep.archive);
-      console.log('csvState', csvState);
 
       // Insert results of validation
-      const validationResults = await this.persistValidationResults(csvState.csv_state, csvState.media_state);
-      console.log('validationResults', validationResults);
+      await this.persistValidationResults(csvState.csv_state, csvState.media_state);
+
       // Insert validation complete status
-      const statusInsert = await this.submissionRepository.insertSubmissionStatus(
-        submissionId,
-        SUBMISSION_STATUS_TYPE.TEMPLATE_VALIDATED
-      );
-      console.log('statusInsert', statusInsert);
+      await this.submissionRepository.insertSubmissionStatus(submissionId, SUBMISSION_STATUS_TYPE.TEMPLATE_VALIDATED);
+
       // Normalize DwC source
       const normalizedDWC = this.normalizeDWCArchive(dwcPrep.archive);
-
-      console.log('normalizedDWC', normalizedDWC);
 
       // Apply decorations to DwC
       const decoratedDWC = await this.dwCService.decorateDwCJSON(normalizedDWC);
 
-      console.log('decoratedDWC', decoratedDWC);
+      await this.occurrenceService.updateDWCSourceForOccurrenceSubmission(submissionId, JSON.stringify(decoratedDWC));
 
-      const update = await this.occurrenceService.updateDWCSourceForOccurrenceSubmission(
-        submissionId,
-        JSON.stringify(decoratedDWC)
-      );
-      console.log('update', update);
       // Run transforms to create and insert spatial components
-      const scrape = await this.scrapeDwCAndUploadOccurrences(submissionId);
-      console.log('scrape: ', scrape);
+      await this.scrapeDwCAndUploadOccurrences(submissionId);
 
       const workbookBuffer = this.createWorkbookFromJSON(decoratedDWC);
-      console.log('workbookBuffer: ', workbookBuffer);
 
       const { outputFileName, s3OutputKey } = await this.uploadDwCWorkbookToS3(
         submissionId,
@@ -142,17 +128,12 @@ export class ValidationService extends DBService {
         dwcPrep.archive
       );
 
-      console.log('outputFileName', outputFileName);
-      console.log('s3OutputKey', s3OutputKey);
-
       // Update occurrence submission with output filename and key
       await this.occurrenceService.updateSurveyOccurrenceSubmissionWithOutputKey(
         submissionId,
         outputFileName,
         s3OutputKey
       );
-
-      console.log('result: ', submissionId, outputFileName, s3OutputKey);
     } catch (error) {
       defaultLog.debug({ label: 'processDWCFile', message: 'error', error });
       if (error instanceof SubmissionError) {
@@ -176,17 +157,12 @@ export class ValidationService extends DBService {
       // Prepare template
       const submissionPrep = await this.templatePreparation(submissionId);
 
-      console.log('submissionPrep', submissionPrep);
-
       // Run template validations
-      const templatePreparetion = await this.templateValidation(submissionPrep.xlsx, surveyId);
-      console.log('templatePreparetion', templatePreparetion);
+      await this.templateValidation(submissionPrep.xlsx, surveyId);
+
       // Insert validation complete status
-      const insertStatus = await this.submissionRepository.insertSubmissionStatus(
-        submissionId,
-        SUBMISSION_STATUS_TYPE.TEMPLATE_VALIDATED
-      );
-      console.log('insertStatus', insertStatus);
+      await this.submissionRepository.insertSubmissionStatus(submissionId, SUBMISSION_STATUS_TYPE.TEMPLATE_VALIDATED);
+
       // Run template transformations
       const transformedObject = await this.templateTransformation(
         submissionId,
@@ -194,8 +170,6 @@ export class ValidationService extends DBService {
         submissionPrep.s3InputKey,
         surveyId
       );
-
-      console.log('transformedObject', transformedObject);
 
       // Insert transformation complete status
       await this.submissionRepository.insertSubmissionStatus(submissionId, SUBMISSION_STATUS_TYPE.TEMPLATE_TRANSFORMED);
@@ -226,11 +200,8 @@ export class ValidationService extends DBService {
     } catch (error) {
       defaultLog.debug({ label: 'processXLSXFile', message: 'error', error });
       if (error instanceof SubmissionError) {
-        console.log('error is:', error);
         await this.errorService.insertSubmissionError(submissionId, error);
       }
-
-      console.log('unrecognized error: ', error);
 
       throw error;
     }
@@ -318,9 +289,7 @@ export class ValidationService extends DBService {
     try {
       const xlsxSchema = await this.getTransformationSchema(xlsx, surveyId);
 
-      const transformedXLSX = this.transformXLSX(xlsx.workbook.rawWorkbook, xlsxSchema);
-
-      return transformedXLSX;
+      return this.transformXLSX(xlsx.workbook.rawWorkbook, xlsxSchema);
     } catch (error) {
       if (error instanceof SubmissionError) {
         error.setStatus(SUBMISSION_STATUS_TYPE.FAILED_TRANSFORMED);
@@ -498,9 +467,8 @@ export class ValidationService extends DBService {
 
   transformXLSX(workbook: xlsx.WorkBook, transformSchema: TransformSchema): Record<string, Record<string, string>[]> {
     const xlsxTransform = new XLSXTransform(workbook, transformSchema);
-    const preparedRowObjectsForJSONToSheet = xlsxTransform.start();
 
-    return preparedRowObjectsForJSONToSheet;
+    return xlsxTransform.start();
   }
 
   createWorkbookFromJSON(preparedRowObjectsForJSONToSheet: Record<string, Record<string, string>[]>): IFileBuffer[] {

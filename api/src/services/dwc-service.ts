@@ -1,7 +1,6 @@
 import jsonpatch, { Operation } from 'fast-json-patch';
 import { JSONPath } from 'jsonpath-plus';
 import { IDBConnection } from '../database/db';
-import { ApiError, ApiErrorType } from '../errors/api-error';
 import { parseUTMString, utmToLatLng } from '../utils/spatial-utils';
 import { DBService } from './db-service';
 import { TaxonomyService } from './taxonomy-service';
@@ -100,7 +99,6 @@ export class DwCService extends DBService {
     });
 
     const patchOperations: Operation[] = [];
-    const errors: string[] = [];
 
     pathsToPatch.forEach(async (item: any) => {
       if (
@@ -115,7 +113,6 @@ export class DwCService extends DBService {
       const verbatimCoordinates = parseUTMString(item.value['verbatimCoordinates']);
 
       if (!verbatimCoordinates) {
-        errors.push('Failed to parse UTM String');
         return;
       }
 
@@ -135,10 +132,6 @@ export class DwCService extends DBService {
 
       patchOperations.push(decimalLatitudePatch, decimalLongitudePatch);
     });
-
-    if (errors.length) {
-      throw new ApiError(ApiErrorType.UNKNOWN, errors.join());
-    }
 
     return jsonpatch.applyPatch(jsonObject, patchOperations).newDocument;
   }
