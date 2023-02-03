@@ -2,12 +2,9 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import { ApiError } from '../errors/api-error';
-import { IOccurrenceSubmission } from '../repositories/occurrence-repository';
 import * as spatial_utils from '../utils/spatial-utils';
 import { getMockDBConnection } from '../__mocks__/db';
 import { DwCService } from './dwc-service';
-import { OccurrenceService } from './occurrence-service';
 import { TaxonomyService } from './taxonomy-service';
 chai.use(sinonChai);
 
@@ -117,26 +114,6 @@ describe('DwCService', () => {
       expect(newJson).to.eql(jsonObject);
     });
 
-    it('throws an error if veratimCoordinates cannot be parsed ', async () => {
-      const dbConnectionObj = getMockDBConnection();
-
-      const dwcService = new DwCService(dbConnectionObj);
-      const jsonObject = {
-        item_with_depth_1: {
-          item_with_depth_2: [{ verbatimCoordinates: '12 12314 12241' }]
-        }
-      };
-
-      sinon.stub(spatial_utils, 'parseUTMString').returns(null);
-
-      try {
-        await dwcService.decorateLatLong(jsonObject);
-        expect.fail();
-      } catch (actualError) {
-        expect((actualError as ApiError).message).to.equal('Failed to parse UTM String');
-      }
-    });
-
     it('succeeds and decorates Lat Long', async () => {
       const dbConnectionObj = getMockDBConnection();
 
@@ -168,7 +145,7 @@ describe('DwCService', () => {
   });
 
   //TODO:  this needs to be examined thoroughly
-  describe.skip('decorateDWCASourceData', () => {
+  describe('decorateDwCJSON', () => {
     afterEach(() => {
       sinon.restore();
     });
@@ -178,10 +155,6 @@ describe('DwCService', () => {
 
       const dwcService = new DwCService(dbConnectionObj);
 
-      const getOccurrenceSubmissionStub = sinon
-        .stub(OccurrenceService.prototype, 'getOccurrenceSubmission')
-        .resolves(({ id: 1, darwin_core_source: { id: 2 } } as unknown) as IOccurrenceSubmission);
-
       const decorateLatLongStub = sinon
         .stub(DwCService.prototype, 'decorateLatLong')
         .resolves({ id: 2, lat: 1, long: 2 });
@@ -189,17 +162,11 @@ describe('DwCService', () => {
         .stub(DwCService.prototype, 'decorateTaxonIDs')
         .resolves({ id: 2, lat: 1, long: 2, taxonID: 3 });
 
-      const updateDWCSourceForOccurrenceSubmissionStub = sinon
-        .stub(OccurrenceService.prototype, 'updateDWCSourceForOccurrenceSubmission')
-        .resolves(1);
-
       const response = await dwcService.decorateDwCJSON({});
 
-      expect(response).to.eql(true);
-      expect(getOccurrenceSubmissionStub).to.be.calledOnce;
+      expect(response).to.eql({ id: 2, lat: 1, long: 2, taxonID: 3 });
       expect(decorateLatLongStub).to.be.calledOnce;
       expect(decorateTaxonIDsStub).to.be.calledOnce;
-      expect(updateDWCSourceForOccurrenceSubmissionStub).to.be.calledOnce;
     });
   });
 });

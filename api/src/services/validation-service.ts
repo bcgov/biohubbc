@@ -57,7 +57,7 @@ export class ValidationService extends DBService {
     defaultLog.debug({ label: 'transformFile', submissionId, surveyId });
     try {
       const submissionPrep = await this.templatePreparation(submissionId);
-      await this.templateTransformation(submissionId, submissionPrep.xlsx, submissionPrep.s3InputKey, surveyId);
+      await this.templateTransformation(submissionPrep.xlsx, surveyId);
 
       // insert template transformed status
       await this.submissionRepository.insertSubmissionStatus(submissionId, SUBMISSION_STATUS_TYPE.TEMPLATE_TRANSFORMED);
@@ -164,12 +164,7 @@ export class ValidationService extends DBService {
       await this.submissionRepository.insertSubmissionStatus(submissionId, SUBMISSION_STATUS_TYPE.TEMPLATE_VALIDATED);
 
       // Run template transformations
-      const transformedObject = await this.templateTransformation(
-        submissionId,
-        submissionPrep.xlsx,
-        submissionPrep.s3InputKey,
-        surveyId
-      );
+      const transformedObject = await this.templateTransformation(submissionPrep.xlsx, surveyId);
 
       // Insert transformation complete status
       await this.submissionRepository.insertSubmissionStatus(submissionId, SUBMISSION_STATUS_TYPE.TEMPLATE_TRANSFORMED);
@@ -284,7 +279,7 @@ export class ValidationService extends DBService {
     }
   }
 
-  async templateTransformation(submissionId: number, xlsx: XLSXCSV, s3InputKey: string, surveyId: number) {
+  async templateTransformation(xlsx: XLSXCSV, surveyId: number) {
     defaultLog.debug({ label: 'templateTransformation' });
     try {
       const xlsxSchema = await this.getTransformationSchema(xlsx, surveyId);
@@ -496,7 +491,7 @@ export class ValidationService extends DBService {
     data: XLSXCSV | DWCArchive
   ) {
     defaultLog.debug({
-      label: 'persistTransformationResults',
+      label: 'uploadDwCWorkbookToS3',
       submissionId,
       s3InputKey
     });
