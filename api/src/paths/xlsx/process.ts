@@ -8,7 +8,6 @@ import { authorizeRequestHandler } from '../../request-handlers/security/authori
 import { ErrorService } from '../../services/error-service';
 import { ValidationService } from '../../services/validation-service';
 import { getLogger } from '../../utils/logger';
-import { SubmissionError } from '../../utils/submission-error';
 
 const defaultLog = getLogger('paths/xlsx/process');
 
@@ -113,16 +112,8 @@ export function processFile(): RequestHandler {
 
       const validationService = new ValidationService(connection);
 
-      try {
-        // process the raw template data
-        await validationService.processXLSXFile(submissionId, surveyId);
-      } catch (error: any) {
-        // Since submission errors are caught by the validation service and persisted in the database, anything
-        // outside of a submission message should be thrown here.
-        if (!(error instanceof SubmissionError)) {
-          throw error;
-        }
-      }
+      // process the raw template data
+      await validationService.processXLSXFile(submissionId, surveyId);
 
       await connection.commit();
     } catch (error) {

@@ -138,9 +138,9 @@ export class ValidationService extends DBService {
       defaultLog.debug({ label: 'processDWCFile', message: 'error', error });
       if (error instanceof SubmissionError) {
         await this.errorService.insertSubmissionError(submissionId, error);
+      } else {
+        throw error;
       }
-
-      throw error;
     }
   }
 
@@ -196,9 +196,9 @@ export class ValidationService extends DBService {
       defaultLog.debug({ label: 'processXLSXFile', message: 'error', error });
       if (error instanceof SubmissionError) {
         await this.errorService.insertSubmissionError(submissionId, error);
+      } else {
+        throw error;
       }
-
-      throw error;
     }
   }
 
