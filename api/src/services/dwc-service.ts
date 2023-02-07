@@ -1,10 +1,8 @@
 import jsonpatch, { Operation } from 'fast-json-patch';
 import { JSONPath } from 'jsonpath-plus';
 import { IDBConnection } from '../database/db';
-import { ApiError, ApiErrorType } from '../errors/api-error';
 import { parseUTMString, utmToLatLng } from '../utils/spatial-utils';
 import { DBService } from './db-service';
-import { OccurrenceService } from './occurrence-service';
 import { TaxonomyService } from './taxonomy-service';
 /**
  * Service to produce DWC data for a project.
@@ -72,27 +70,18 @@ export class DwCService extends DBService {
   }
 
   /**
-   * Run all Decoration functions on DWCA Source Data
+   * Decorates the DwC json object
    *
-   * @param {number} occurrenceSubmissionId
-   * @return {*}  {Promise<boolean>}
+   * @param {Record<any, any>} jsonObject
+   * @return {*}  {Promise<Record<any, any>>}
    * @memberof DwCService
    */
-  async decorateDWCASourceData(occurrenceSubmissionId: number): Promise<boolean> {
-    const occurrenceService = new OccurrenceService(this.connection);
-
-    const submission = await occurrenceService.getOccurrenceSubmission(occurrenceSubmissionId);
-    const jsonObject = submission.darwin_core_source;
-
+  async decorateDwCJSON(jsonObject: Record<any, any>): Promise<Record<any, any>> {
     const latlongDec = await this.decorateLatLong(jsonObject);
-    const taxonAndLatLongDec = await this.decorateTaxonIDs(latlongDec);
 
-    const response = await occurrenceService.updateDWCSourceForOccurrenceSubmission(
-      occurrenceSubmissionId,
-      JSON.stringify(taxonAndLatLongDec)
-    );
+    const taxonDec = await this.decorateTaxonIDs(latlongDec);
 
-    return !!response;
+    return taxonDec;
   }
 
   /**
@@ -110,7 +99,6 @@ export class DwCService extends DBService {
     });
 
     const patchOperations: Operation[] = [];
-    const errors: string[] = [];
 
     pathsToPatch.forEach(async (item: any) => {
       if (
@@ -125,7 +113,6 @@ export class DwCService extends DBService {
       const verbatimCoordinates = parseUTMString(item.value['verbatimCoordinates']);
 
       if (!verbatimCoordinates) {
-        errors.push('Failed to parse UTM String');
         return;
       }
 
@@ -145,10 +132,6 @@ export class DwCService extends DBService {
 
       patchOperations.push(decimalLatitudePatch, decimalLongitudePatch);
     });
-
-    if (errors.length) {
-      throw new ApiError(ApiErrorType.UNKNOWN, errors.join());
-    }
 
     return jsonpatch.applyPatch(jsonObject, patchOperations).newDocument;
   }

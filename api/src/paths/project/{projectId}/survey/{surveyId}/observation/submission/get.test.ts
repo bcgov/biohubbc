@@ -98,7 +98,6 @@ describe('getObservationSubmission', () => {
             };
 
             const response = requestValidator.validateRequest(request);
-            console.log(JSON.stringify(response));
             expect(response.status).to.equal(400);
             expect(response.errors.length).to.equal(1);
             expect(response.errors[0].path).to.equal('projectId');

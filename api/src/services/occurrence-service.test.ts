@@ -68,12 +68,12 @@ describe('OccurrenceService', () => {
     });
   });
 
-  describe('updateSurveyOccurrenceSubmission', () => {
+  describe('updateSurveyOccurrenceSubmissionWithOutputKey', () => {
     it('should return a submission id', async () => {
       const service = mockService();
       sinon.stub(OccurrenceRepository.prototype, 'updateSurveyOccurrenceSubmissionWithOutputKey').resolves({});
 
-      const result = await service.updateSurveyOccurrenceSubmission(1, 'file name', 'key');
+      const result = await service.updateSurveyOccurrenceSubmissionWithOutputKey(1, 'file name', 'key');
       expect(result).to.be.eql({});
     });
   });
