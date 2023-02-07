@@ -140,6 +140,9 @@ export const submissionValidationSchema = {
       description: 'The validators that can be applied against a column within a file/sheet.',
       anyOf: [
         {
+          $ref: '#/$defs/column_required_validator'
+        },
+        {
           $ref: '#/$defs/column_format_validator'
         },
         {
@@ -324,6 +327,25 @@ export const submissionValidationSchema = {
               items: {
                 type: 'string'
               }
+            }
+          },
+          additionalProperties: false
+        }
+      },
+      additionalProperties: false
+    },
+    column_required_validator: {
+      description: 'Validates that this column value is not empty',
+      type: 'object',
+      properties: {
+        column_required_validator: {
+          type: 'object',
+          properties: {
+            name: {
+              type: 'string'
+            },
+            description: {
+              type: 'string'
             }
           },
           additionalProperties: false

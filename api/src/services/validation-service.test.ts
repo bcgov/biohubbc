@@ -568,8 +568,9 @@ describe('ValidationService', () => {
 
     it('should run without issue', async () => {
       const service = mockService();
+
       const mockPrep = {
-        s3OutputKey: '',
+        s3InputKey: 'input_key',
         archive: new DWCArchive(new ArchiveFile('test', 'application/zip', Buffer.from([]), [buildFile('test', {})]))
       };
       const mockState = {
@@ -584,11 +585,18 @@ describe('ValidationService', () => {
       const prep = sinon.stub(service, 'dwcPreparation').resolves(mockPrep);
       const state = sinon.stub(service, 'validateDWC').returns(mockState);
       const persistResults = sinon.stub(service, 'persistValidationResults').resolves();
-      const update = sinon.stub(service.occurrenceService, 'updateSurveyOccurrenceSubmission').resolves();
       const submissionStatus = sinon.stub(service.submissionRepository, 'insertSubmissionStatus').resolves();
-      const decorate = sinon.stub(service.dwCService, 'decorateDWCASourceData').resolves();
-      sinon.stub(service, 'templateScrapeAndUploadOccurrences').resolves();
-      sinon.stub(service, 'parseDWCToJSON').resolves();
+      const normalize = sinon.stub(service, 'normalizeDWCArchive').resolves();
+      const decorate = sinon.stub(service.dwCService, 'decorateDwCJSON').resolves();
+      const update = sinon.stub(service.occurrenceService, 'updateDWCSourceForOccurrenceSubmission').resolves();
+      const scrape = sinon.stub(service, 'scrapeDwCAndUploadOccurrences').resolves();
+
+      const workbookBuffer = sinon.stub(service, 'createWorkbookFromJSON').resolves('buffer');
+      const upload = sinon
+        .stub(service, 'uploadDwCWorkbookToS3')
+        .resolves({ outputFileName: 'outputfilename', s3OutputKey: 's3outputkey' });
+
+      const update2 = sinon.stub(service.occurrenceService, 'updateSurveyOccurrenceSubmissionWithOutputKey').resolves();
 
       await service.processDWCFile(1);
       expect(prep).to.be.calledOnce;
@@ -597,12 +605,17 @@ describe('ValidationService', () => {
       expect(decorate).to.be.calledOnce;
       expect(update).to.be.calledOnce;
       expect(submissionStatus).to.be.called;
+      expect(normalize).to.be.called;
+      expect(scrape).to.be.called;
+      expect(workbookBuffer).to.be.called;
+      expect(upload).to.be.called;
+      expect(update2).to.be.calledWith(1, 'outputfilename', 's3outputkey');
     });
 
     it('should insert submission error from prep failure', async () => {
       const service = mockService();
       const mockPrep = {
-        s3OutputKey: '',
+        s3InputKey: '',
         archive: new DWCArchive(new ArchiveFile('test', 'application/zip', Buffer.from([]), [buildFile('test', {})]))
       };
       const mockState = {
@@ -617,8 +630,11 @@ describe('ValidationService', () => {
       const prep = sinon.stub(service, 'dwcPreparation').resolves(mockPrep);
       const state = sinon.stub(service, 'validateDWC').returns(mockState);
       const persistResults = sinon.stub(service, 'persistValidationResults').resolves();
+      const submissionStatus = sinon.stub(service.submissionRepository, 'insertSubmissionStatus').resolves();
+      const normalize = sinon.stub(service, 'normalizeDWCArchive').resolves();
+      const decorate = sinon.stub(service.dwCService, 'decorateDwCJSON').resolves();
       const update = sinon
-        .stub(service.occurrenceService, 'updateSurveyOccurrenceSubmission')
+        .stub(service.occurrenceService, 'updateDWCSourceForOccurrenceSubmission')
         .throws(SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_UPDATE_OCCURRENCE_SUBMISSION));
       const insertError = sinon.stub(service.errorService, 'insertSubmissionError').resolves();
 
@@ -629,6 +645,9 @@ describe('ValidationService', () => {
         expect(prep).to.be.calledOnce;
         expect(state).to.be.calledOnce;
         expect(persistResults).to.be.calledOnce;
+        expect(submissionStatus).to.be.calledOnce;
+        expect(normalize).to.be.calledOnce;
+        expect(decorate).to.be.calledOnce;
         expect(update).to.be.calledOnce;
 
         expect(insertError).to.be.calledOnce;
@@ -638,7 +657,7 @@ describe('ValidationService', () => {
     it('should throw unrecognized error', async () => {
       const service = mockService();
       const mockPrep = {
-        s3OutputKey: '',
+        s3InputKey: '',
         archive: new DWCArchive(new ArchiveFile('test', 'application/zip', Buffer.from([]), [buildFile('test', {})]))
       };
       const mockState = {
@@ -653,7 +672,10 @@ describe('ValidationService', () => {
       const prep = sinon.stub(service, 'dwcPreparation').resolves(mockPrep);
       const state = sinon.stub(service, 'validateDWC').returns(mockState);
       const persistResults = sinon.stub(service, 'persistValidationResults').resolves();
-      const update = sinon.stub(service.occurrenceService, 'updateSurveyOccurrenceSubmission').throws();
+      const submissionStatus = sinon.stub(service.submissionRepository, 'insertSubmissionStatus').resolves();
+      const normalize = sinon.stub(service, 'normalizeDWCArchive').resolves();
+      const decorate = sinon.stub(service.dwCService, 'decorateDwCJSON').resolves();
+      const update = sinon.stub(service.occurrenceService, 'updateDWCSourceForOccurrenceSubmission').throws();
       const insertError = sinon.stub(service.errorService, 'insertSubmissionError').resolves();
 
       try {
@@ -662,6 +684,9 @@ describe('ValidationService', () => {
         expect(state).to.be.calledOnce;
         expect(persistResults).to.be.calledOnce;
         expect(update).to.be.calledOnce;
+        expect(submissionStatus).to.be.calledOnce;
+        expect(normalize).to.be.calledOnce;
+        expect(decorate).to.be.calledOnce;
       } catch (error) {
         expect(error).not.to.be.instanceOf(SubmissionError);
         expect(insertError).not.to.be.calledOnce;
@@ -674,28 +699,7 @@ describe('ValidationService', () => {
       sinon.restore();
     });
 
-    it('should run without error', async () => {
-      const service = mockService();
-      const mockPrep = {
-        s3InputKey: 'input key',
-        xlsx: new XLSXCSV(buildFile('test file', {}))
-      };
-
-      const prep = sinon.stub(service, 'templatePreparation').resolves(mockPrep);
-      const validate = sinon.stub(service, 'templateValidation').resolves();
-      const transform = sinon.stub(service, 'templateTransformation').resolves();
-      const upload = sinon.stub(service, 'templateScrapeAndUploadOccurrences').resolves();
-      const status = sinon.stub(service.submissionRepository, 'insertSubmissionStatus').resolves();
-
-      await service.processXLSXFile(1, 1);
-      expect(prep).to.be.calledOnce;
-      expect(validate).to.be.calledOnce;
-      expect(transform).to.be.calledOnce;
-      expect(upload).not.to.be.calledOnce;
-      expect(status).to.be.calledTwice;
-    });
-
-    it('should insert submission error', async () => {
+    it('should insert submission error - for failing to transform', async () => {
       const service = mockService();
       const mockPrep = {
         s3InputKey: 'input key',
@@ -708,7 +712,7 @@ describe('ValidationService', () => {
         .stub(service, 'templateTransformation')
         .throws(SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_TRANSFORM_XLSX));
       const insertError = sinon.stub(service.errorService, 'insertSubmissionError').resolves();
-      sinon.stub(service, 'templateScrapeAndUploadOccurrences').resolves();
+      sinon.stub(service, 'scrapeDwCAndUploadOccurrences').resolves();
       sinon.stub(service.submissionRepository, 'insertSubmissionStatus').resolves();
 
       try {
@@ -733,11 +737,11 @@ describe('ValidationService', () => {
       const validate = sinon.stub(service, 'templateValidation').resolves();
       const transform = sinon.stub(service, 'templateTransformation').throws();
       const insertError = sinon.stub(service.errorService, 'insertSubmissionError').resolves();
-      sinon.stub(service, 'templateScrapeAndUploadOccurrences').resolves();
+      sinon.stub(service, 'scrapeDwCAndUploadOccurrences').resolves();
       sinon.stub(service.submissionRepository, 'insertSubmissionStatus').resolves();
 
       try {
-        await service.validateFile(1, 1);
+        await service.processXLSXFile(1, 1);
         expect(prep).to.be.calledOnce;
         expect(validate).to.be.calledOnce;
         expect(transform).to.be.calledOnce;
@@ -745,6 +749,41 @@ describe('ValidationService', () => {
         expect(error).not.to.be.instanceOf(SubmissionError);
         expect(insertError).not.to.be.calledOnce;
       }
+    });
+
+    it('should run without error', async () => {
+      const service = mockService();
+      const mockPrep = {
+        s3InputKey: 'input key',
+        xlsx: new XLSXCSV(buildFile('test file', {}))
+      };
+
+      const prep = sinon.stub(service, 'templatePreparation').resolves(mockPrep);
+      const validate = sinon.stub(service, 'templateValidation').resolves();
+      const status = sinon.stub(service.submissionRepository, 'insertSubmissionStatus').resolves();
+      const transform = sinon.stub(service, 'templateTransformation').resolves();
+      const decorate = sinon.stub(service.dwCService, 'decorateDwCJSON').resolves();
+      const update = sinon.stub(service.occurrenceService, 'updateDWCSourceForOccurrenceSubmission').resolves();
+      const upload = sinon.stub(service, 'scrapeDwCAndUploadOccurrences').resolves();
+      const workbook = sinon.stub(service, 'createWorkbookFromJSON').returns([]);
+      const uploadWorkbook = sinon
+        .stub(service, 'uploadDwCWorkbookToS3')
+        .resolves({ outputFileName: '', s3OutputKey: '' });
+      const updatedOutput = sinon
+        .stub(service.occurrenceService, 'updateSurveyOccurrenceSubmissionWithOutputKey')
+        .resolves();
+
+      await service.processXLSXFile(1, 1);
+      expect(prep).to.be.calledOnce;
+      expect(validate).to.be.calledOnce;
+      expect(transform).to.be.calledOnce;
+      expect(upload).to.be.calledOnce;
+      expect(status).to.be.calledTwice;
+      expect(decorate).to.be.calledOnce;
+      expect(update).to.be.calledOnce;
+      expect(workbook).to.be.calledOnce;
+      expect(uploadWorkbook).to.be.calledOnce;
+      expect(updatedOutput).to.be.calledOnce;
     });
   });
 
@@ -763,7 +802,7 @@ describe('ValidationService', () => {
       const prep = sinon.stub(service, 'prepDWCArchive').returns(archive);
 
       const results = await service.dwcPreparation(1);
-      expect(results.s3OutputKey).to.not.be.empty;
+      expect(results.s3InputKey).to.not.be.empty;
       expect(occurrence).to.be.calledOnce;
       expect(s3).to.be.calledOnce;
       expect(prep).to.be.calledOnce;
@@ -907,13 +946,13 @@ describe('ValidationService', () => {
     });
   });
 
-  describe('templateScrapeAndUploadOccurrences', () => {
+  describe('scrapeDwCAndUploadOccurrences', () => {
     it('should run without issue', async () => {
       const service = mockService();
 
       const scrape = sinon.stub(service.spatialService, 'runSpatialTransforms').resolves();
 
-      await service.templateScrapeAndUploadOccurrences(1);
+      await service.scrapeDwCAndUploadOccurrences(1);
 
       expect(scrape).to.be.calledOnce;
     });
@@ -926,7 +965,7 @@ describe('ValidationService', () => {
         .throws(SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.INVALID_MEDIA));
 
       try {
-        await service.templateScrapeAndUploadOccurrences(1);
+        await service.scrapeDwCAndUploadOccurrences(1);
 
         expect(scrape).to.be.calledOnce;
         expect.fail();
@@ -947,46 +986,34 @@ describe('ValidationService', () => {
 
       const service = mockService();
 
-      sinon.stub(FileUtils, 'getFileFromS3').resolves('file from s3' as any);
-
       const getTransformation = sinon
         .stub(service, 'getTransformationSchema')
         .resolves(({} as unknown) as TransformSchema);
       const transform = sinon.stub(service, 'transformXLSX').resolves([fileBuffer]);
-      const persistResults = sinon.stub(service, 'persistTransformationResults').resolves();
 
-      await service.templateTransformation(1, xlsxCsv, '', 1);
+      await service.templateTransformation(xlsxCsv, 1);
 
       expect(getTransformation).to.be.calledOnce;
       expect(transform).to.be.calledOnce;
-      expect(persistResults).to.be.calledOnce;
     });
 
     it('should Submission Error', async () => {
       const file = buildFile('test file', { csm_id: 1, template_id: 1 });
       const xlsxCsv = new XLSXCSV(file);
-      const fileBuffer = {
-        name: '',
-        buffer: Buffer.from([])
-      } as any;
 
       const service = mockService();
-
-      sinon.stub(FileUtils, 'getFileFromS3').resolves('file from s3' as any);
 
       const getTransformation = sinon
         .stub(service, 'getTransformationSchema')
         .resolves(({} as unknown) as TransformSchema);
-      const transform = sinon.stub(service, 'transformXLSX').resolves([fileBuffer]);
-      const persistResults = sinon
-        .stub(service, 'persistTransformationResults')
+      const transform = sinon
+        .stub(service, 'transformXLSX')
         .throws(SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_UPLOAD_FILE_TO_S3));
 
       try {
-        await service.templateTransformation(1, xlsxCsv, '', 1);
+        await service.templateTransformation(xlsxCsv, 1);
         expect(getTransformation).to.be.calledOnce;
         expect(transform).to.be.calledOnce;
-        expect(persistResults).to.be.calledOnce;
         expect.fail();
       } catch (error) {
         expect(error).to.be.instanceOf(SubmissionError);
@@ -1157,7 +1184,7 @@ describe('ValidationService', () => {
     });
   });
 
-  describe('persistTransformationResults', () => {
+  describe('uploadDwCWorkbookToS3', () => {
     afterEach(() => {
       sinon.restore();
     });
@@ -1167,11 +1194,9 @@ describe('ValidationService', () => {
       const xlsx = new XLSXCSV(buildFile('', { template_id: 1, csm_id: 1 }));
 
       const s3 = sinon.stub(FileUtils, 'uploadBufferToS3').resolves();
-      const occurrence = sinon.stub(OccurrenceService.prototype, 'updateSurveyOccurrenceSubmission').resolves();
 
-      await service.persistTransformationResults(1, [], 'outputKey', xlsx);
+      await service.uploadDwCWorkbookToS3(1, [], 'outputKey', xlsx);
       expect(s3).to.be.calledOnce;
-      expect(occurrence).to.be.calledOnce;
     });
 
     it('should throw Failed to upload file to S3 error', async () => {
@@ -1181,10 +1206,9 @@ describe('ValidationService', () => {
       const s3 = sinon
         .stub(FileUtils, 'uploadBufferToS3')
         .throws(SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_UPLOAD_FILE_TO_S3));
-      const occurrence = sinon.stub(OccurrenceService.prototype, 'updateSurveyOccurrenceSubmission').resolves();
 
       try {
-        await service.persistTransformationResults(1, [], 'outputKey', xlsx);
+        await service.uploadDwCWorkbookToS3(1, [], 'outputKey', xlsx);
         expect(s3).to.be.calledOnce;
         expect.fail();
       } catch (error) {
@@ -1192,54 +1216,6 @@ describe('ValidationService', () => {
           SUBMISSION_MESSAGE_TYPE.FAILED_UPLOAD_FILE_TO_S3
         );
       }
-      expect(occurrence).to.not.be.called;
-    });
-
-    it('should throw Failed to update occurrence submission error', async () => {
-      const service = mockService();
-      const xlsx = new XLSXCSV(buildFile('', { template_id: 1, csm_id: 1 }));
-
-      const s3 = sinon.stub(FileUtils, 'uploadBufferToS3').resolves();
-      const occurrence = sinon
-        .stub(OccurrenceService.prototype, 'updateSurveyOccurrenceSubmission')
-        .throws(SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_UPDATE_OCCURRENCE_SUBMISSION));
-
-      try {
-        await service.persistTransformationResults(1, [], 'outputKey', xlsx);
-        expect(s3).to.be.calledOnce;
-        expect(occurrence).to.be.calledOnce;
-        expect.fail();
-      } catch (error) {
-        expect((error as SubmissionError).submissionMessages[0].type).to.be.eql(
-          SUBMISSION_MESSAGE_TYPE.FAILED_UPDATE_OCCURRENCE_SUBMISSION
-        );
-      }
-    });
-  });
-
-  describe('ParseDWCToJSON', () => {
-    afterEach(() => {
-      sinon.restore();
-    });
-
-    it('should run without error', async () => {
-      const service = mockService();
-      const occurrence = sinon.stub(OccurrenceService.prototype, 'updateDWCSourceForOccurrenceSubmission');
-
-      await service.parseDWCToJSON(
-        1,
-        new DWCArchive(new ArchiveFile('test', 'application/zip', Buffer.from([]), [buildFile('test', {})]))
-      );
-      expect(occurrence).to.be.called;
-    });
-
-    it('should return a valid JSON object', async () => {
-      const service = mockService();
-      const result = service.normalizeDWCArchive(
-        new DWCArchive(new ArchiveFile('test', 'application/zip', Buffer.from([]), [buildFile('test', {})]))
-      );
-      const obj = JSON.parse(result);
-      expect(typeof obj === 'object').to.be.true;
     });
   });
 });

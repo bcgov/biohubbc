@@ -57,7 +57,11 @@ export class OccurrenceService extends DBService {
    * @param {string} key
    * @return {*} {Promise<any>}
    */
-  async updateSurveyOccurrenceSubmission(submissionId: number, fileName: string, key: string): Promise<any> {
+  async updateSurveyOccurrenceSubmissionWithOutputKey(
+    submissionId: number,
+    fileName: string,
+    key: string
+  ): Promise<any> {
     return this.occurrenceRepository.updateSurveyOccurrenceSubmissionWithOutputKey(submissionId, fileName, key);
   }
 
