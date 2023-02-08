@@ -1,4 +1,5 @@
 import xlsx, { CellObject } from 'xlsx';
+import { safeTrim } from '../../utils';
 
 /**
  * Get a worksheet by name.
@@ -63,12 +64,12 @@ export function prepareWorksheetCells(worksheet: xlsx.WorkSheet) {
 export function trimCellWhitespace(cell: CellObject) {
   // check and clean raw strings
   if (cell.t === 's') {
-    cell.v = (cell.v as string).trim();
+    cell.v = safeTrim(cell.v);
   }
 
   // check and clean formatted strings
   if (cell.w) {
-    cell.w = cell.w.trim();
+    cell.w = safeTrim(cell.w);
   }
 
   return cell;

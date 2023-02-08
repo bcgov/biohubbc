@@ -1,4 +1,5 @@
 import { SUBMISSION_MESSAGE_TYPE } from '../../../../constants/status';
+import { safeToLowerCase } from '../../../utils';
 import { CSVValidator } from '../csv-file';
 
 export type RequiredFieldsValidatorConfig = {
@@ -21,7 +22,7 @@ export const getRequiredFieldsValidator = (config?: RequiredFieldsValidatorConfi
     const headersLowerCase = csvWorksheet.getHeadersLowerCase();
 
     rows.forEach((row, rowIndex) => {
-      const columnIndex = headersLowerCase.indexOf(config.columnName.toLowerCase());
+      const columnIndex = headersLowerCase.indexOf(safeToLowerCase(config.columnName));
 
       // if column does not exist, return
       if (columnIndex < 0) {
@@ -80,7 +81,7 @@ export const getCodeValueFieldsValidator = (config?: ColumnCodeValidatorConfig):
     const headersLowerCase = csvWorksheet.getHeadersLowerCase();
 
     rows.forEach((row, rowIndex) => {
-      const columnIndex = headersLowerCase.indexOf(config.columnName.toLowerCase());
+      const columnIndex = headersLowerCase.indexOf(safeToLowerCase(config.columnName));
 
       // if column does not exist, return
       if (columnIndex < 0) {
@@ -95,14 +96,14 @@ export const getCodeValueFieldsValidator = (config?: ColumnCodeValidatorConfig):
       }
 
       // compare allowed code values as lowercase strings
-      const allowedCodeValuesLowerCase: string[] = [];
+      const allowedCodeValuesLowerCase: (string | number)[] = [];
       const allowedCodeValues = config.column_code_validator.allowed_code_values.map((allowedCode) => {
-        allowedCodeValuesLowerCase.push(allowedCode.name?.toString().toLowerCase());
+        allowedCodeValuesLowerCase.push(safeToLowerCase(allowedCode.name));
         return allowedCode.name;
       });
 
       // Add an error if the cell value is not one of the elements in the codeValues array
-      if (!allowedCodeValuesLowerCase.includes(rowValueForColumn?.toLowerCase())) {
+      if (!allowedCodeValuesLowerCase.includes(safeToLowerCase(rowValueForColumn))) {
         csvWorksheet.csvValidation.addRowErrors([
           {
             errorCode: SUBMISSION_MESSAGE_TYPE.INVALID_VALUE,
@@ -147,7 +148,7 @@ export const getValidRangeFieldsValidator = (config?: ColumnRangeValidatorConfig
     const headersLowerCase = csvWorksheet.getHeadersLowerCase();
 
     rows.forEach((row, rowIndex) => {
-      const columnIndex = headersLowerCase.indexOf(config.columnName.toLowerCase());
+      const columnIndex = headersLowerCase.indexOf(safeToLowerCase(config.columnName));
 
       // if column does not exist, return
       if (columnIndex < 0) {
@@ -248,7 +249,7 @@ export const getNumericFieldsValidator = (config?: ColumnNumericValidatorConfig)
     const headersLowerCase = csvWorksheet.getHeadersLowerCase();
 
     rows.forEach((row, rowIndex) => {
-      const columnIndex = headersLowerCase.indexOf(config.columnName.toLowerCase());
+      const columnIndex = headersLowerCase.indexOf(safeToLowerCase(config.columnName));
 
       // if column does not exist, return
       if (columnIndex < 0) {
@@ -311,7 +312,7 @@ export const getValidFormatFieldsValidator = (config?: ColumnFormatValidatorConf
     const headersLowerCase = csvWorksheet.getHeadersLowerCase();
 
     rows.forEach((row, rowIndex) => {
-      const columnIndex = headersLowerCase.indexOf(config.columnName.toLowerCase());
+      const columnIndex = headersLowerCase.indexOf(safeToLowerCase(config.columnName));
 
       // if column does not exist, return
       if (columnIndex < 0) {
@@ -367,7 +368,7 @@ export const getUniqueColumnsValidator = (config?: FileColumnUniqueValidatorConf
 
     // find the indices of all provided column names in the worksheet
     const columnIndices = config.file_column_unique_validator.column_names.map((column) =>
-      lowercaseHeaders.indexOf(column.toLocaleLowerCase())
+      lowercaseHeaders.indexOf(safeToLowerCase(column))
     );
 
     // checks list of column indices if any are missing (-1) and returns early
@@ -377,7 +378,7 @@ export const getUniqueColumnsValidator = (config?: FileColumnUniqueValidatorConf
 
     rows.forEach((row, rowIndex) => {
       const key = config.file_column_unique_validator.column_names
-        .map((columnIndex) => `${row[columnIndex] || ''}`.trim().toLocaleLowerCase())
+        .map((columnIndex) => `${row[columnIndex] || ''}`.trim().toLowerCase())
         .join(', ');
       // check if key exists already
       if (!keySet.has(key)) {

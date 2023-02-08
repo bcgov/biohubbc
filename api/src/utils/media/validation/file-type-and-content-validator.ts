@@ -1,3 +1,4 @@
+import { safeToLowerCase } from '../../utils';
 import { DWCArchive, DWCArchiveValidator } from '../dwc/dwc-archive-file';
 import { MediaValidator } from '../media-file';
 import { XLSXCSV, XLSXCSVValidator } from '../xlsx/xlsx-file';
@@ -93,7 +94,7 @@ const checkRequiredFieldsInDWCArchive = (dwcArchive: DWCArchive, config: Submiss
   const fileNames = dwcArchive.rawFile.mediaFiles.map((mediaFile) => mediaFile.name);
 
   config.submission_required_files_validator.required_files.forEach((requiredFile) => {
-    if (!fileNames.includes(requiredFile.toLowerCase())) {
+    if (!fileNames.includes(safeToLowerCase(requiredFile))) {
       dwcArchive.mediaValidation.addFileErrors([`Missing required file: ${requiredFile}`]);
     }
   });
@@ -112,10 +113,10 @@ const checkRequiredFieldsInXLSXCSV = (xlsxCsv: XLSXCSV, config: SubmissionRequir
     return xlsxCsv;
   }
 
-  const worksheetNames = Object.keys(xlsxCsv.workbook.worksheets).map((item) => item.toLowerCase());
+  const worksheetNames = Object.keys(xlsxCsv.workbook.worksheets).map(safeToLowerCase);
 
   config.submission_required_files_validator.required_files.forEach((requiredFile) => {
-    if (!worksheetNames.includes(requiredFile.toLowerCase())) {
+    if (!worksheetNames.includes(safeToLowerCase(requiredFile))) {
       xlsxCsv.mediaValidation.addFileErrors([`Missing required sheet: ${requiredFile}`]);
     }
   });
