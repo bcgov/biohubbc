@@ -1,5 +1,5 @@
 import { SUBMISSION_MESSAGE_TYPE } from '../../../../constants/status';
-import { safeTrim } from '../../../utils';
+import { safeTrim } from '../../../string-utils';
 import { CSVWorkBook, WorkBookValidator } from '../../csv/csv-file';
 
 export type ParentChildKeyMatchValidatorConfig = {

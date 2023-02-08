@@ -1,6 +1,6 @@
 import xlsx from 'xlsx';
 import { SUBMISSION_MESSAGE_TYPE } from '../../../constants/status';
-import { safeToLowerCase, safeTrim } from '../../utils';
+import { safeToLowerCase, safeTrim } from '../../string-utils';
 import { IMediaState, MediaValidation } from '../media-file';
 import { getCellValue, getWorksheetRange, replaceCellDates, trimCellWhitespace } from '../xlsx/xlsx-utils';
 
@@ -102,7 +102,7 @@ export class CSVWorksheet {
 
       if (aoaHeaders.length > 0) {
         // Parse the headers array from the array of arrays produced by calling `xlsx.utils.sheet_to_json`
-        this._headers = aoaHeaders[0].map((item) => safeTrim(item));
+        this._headers = aoaHeaders[0].map(safeTrim);
       }
     }
 
@@ -111,7 +111,7 @@ export class CSVWorksheet {
 
   getHeadersLowerCase(): string[] {
     if (!this._headersLowerCase.length) {
-      this._headersLowerCase = this.getHeaders().map((item) => safeToLowerCase(item));
+      this._headersLowerCase = this.getHeaders().map(safeToLowerCase);
     }
 
     return this._headersLowerCase;

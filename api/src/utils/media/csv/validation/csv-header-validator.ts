@@ -1,5 +1,5 @@
 import { SUBMISSION_MESSAGE_TYPE } from '../../../../constants/status';
-import { safeToLowerCase, safeTrim } from '../../../utils';
+import { safeToLowerCase, safeTrim } from '../../../string-utils';
 import { CSVValidator } from '../csv-file';
 
 /**
@@ -163,7 +163,7 @@ export const getValidHeadersValidator = (config?: FileValidHeadersValidatorConfi
     for (const header of headers) {
       if (
         !config.file_valid_columns_validator.valid_columns
-          .map((item) => safeToLowerCase(item))
+          .map(safeToLowerCase)
           .includes(safeToLowerCase(safeTrim(header)))
       ) {
         csvWorksheet.csvValidation.addHeaderWarnings([

@@ -1,5 +1,5 @@
 import { SUBMISSION_MESSAGE_TYPE } from '../../../../constants/status';
-import { safeToLowerCase } from '../../../utils';
+import { safeToLowerCase } from '../../../string-utils';
 import { CSVValidator } from '../csv-file';
 
 export type RequiredFieldsValidatorConfig = {

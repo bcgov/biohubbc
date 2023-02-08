@@ -1,4 +1,4 @@
-import { safeToLowerCase } from '../../utils';
+import { safeToLowerCase } from '../../string-utils';
 import { DWCArchive, DWCArchiveValidator } from '../dwc/dwc-archive-file';
 import { MediaValidator } from '../media-file';
 import { XLSXCSV, XLSXCSVValidator } from '../xlsx/xlsx-file';

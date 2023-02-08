@@ -1,5 +1,5 @@
 import xlsx, { CellObject } from 'xlsx';
-import { safeTrim } from '../../utils';
+import { safeTrim } from '../../string-utils';
 
 /**
  * Get a worksheet by name.
