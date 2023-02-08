@@ -23,6 +23,7 @@ const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBioh
 const mockUser = {
   id: 1,
   user_record_end_date: 'ending',
+  user_guid: '123',
   user_identifier: 'testUser',
   role_names: ['system']
 };
@@ -50,7 +51,7 @@ describe('UsersDetailHeader', () => {
     it('Remove User button opens dialog', async () => {
       history.push('/admin/users/1');
 
-      const { getAllByTestId, getAllByText, getByText } = render(
+      const { getAllByText, getByText } = render(
         <DialogContextProvider>
           <Router history={history}>
             <UsersDetailHeader userDetails={mockUser} />
@@ -68,7 +69,7 @@ describe('UsersDetailHeader', () => {
     it('does nothing if the user clicks `No` or away from the dialog', async () => {
       history.push('/admin/users/1');
 
-      const { getAllByTestId, getAllByText, getByText } = render(
+      const { getAllByText, getByText } = render(
         <DialogContextProvider>
           <Router history={history}>
             <UsersDetailHeader userDetails={mockUser} />
@@ -96,7 +97,7 @@ describe('UsersDetailHeader', () => {
 
       history.push('/admin/users/1');
 
-      const { getAllByTestId, getAllByText, getByText } = render(
+      const { getAllByText, getByText } = render(
         <DialogContextProvider>
           <Router history={history}>
             <UsersDetailHeader userDetails={mockUser} />

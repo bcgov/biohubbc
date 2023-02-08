@@ -13,7 +13,7 @@ import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
-import { mdiAccountCircle, mdiHelpCircle, mdiLoginVariant } from '@mdi/js';
+import { mdiAccountCircle, mdiHelpCircleOutline, mdiLoginVariant } from '@mdi/js';
 import Icon from '@mdi/react';
 import headerImageLarge from 'assets/images/gov-bc-logo-horiz.png';
 import headerImageSmall from 'assets/images/gov-bc-logo-vert.png';
@@ -70,10 +70,10 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   userProfile: {
     color: theme.palette.primary.contrastText,
-    fontSize: '0.9375rem',
+    fontSize: '1rem',
     '& hr': {
-      backgroundColor: '#4b5e7e',
-      height: '1rem'
+      backgroundColor: '#ffffff',
+      height: '1.25rem'
     },
     '& a': {
       color: 'inherit',
@@ -127,20 +127,19 @@ const Header: React.FC = () => {
 
     return (
       <Box display="flex" className={classes.userProfile} my="auto" alignItems="center">
-        <Icon path={mdiAccountCircle} size={1.12} />
-        <Box ml={1}>{formattedUsername}</Box>
+        <IconButton aria-label="need help" className={classes.govHeaderIconButton} onClick={showSupportDialog}>
+          <Icon path={mdiHelpCircleOutline} size={1.12} />
+        </IconButton>
+        <Box className={classes.userProfile} display="flex" alignItems="center" ml={2}>
+          <Icon path={mdiAccountCircle} size={1.12} />
+          <Box ml={1}>{formattedUsername}</Box>
+        </Box>
         <Box px={2}>
           <Divider orientation="vertical" />
         </Box>
         <Link to="/logout" data-testid="menu_log_out">
           Log Out
         </Link>
-        <Box pl={2}>
-          <Divider orientation="vertical" />
-        </Box>
-        <IconButton aria-label="need help" className={classes.govHeaderIconButton} onClick={showSupportDialog}>
-          <Icon path={mdiHelpCircle} size={1.12} />
-        </IconButton>
       </Box>
     );
   };
@@ -149,6 +148,9 @@ const Header: React.FC = () => {
   const PublicViewUser = () => {
     return (
       <Box display="flex" className={classes.userProfile} alignItems="center" my="auto">
+        <IconButton className={classes.govHeaderIconButton} onClick={showSupportDialog}>
+          <Icon path={mdiHelpCircleOutline} size={1.12} />
+        </IconButton>
         <Button
           onClick={() => keycloakWrapper?.keycloak?.login()}
           type="submit"
@@ -159,9 +161,6 @@ const Header: React.FC = () => {
           data-testid="login">
           Log In
         </Button>
-        <IconButton className={classes.govHeaderIconButton} onClick={showSupportDialog}>
-          <Icon path={mdiHelpCircle} size={1.12} />
-        </IconButton>
       </Box>
     );
   };
@@ -179,18 +178,6 @@ const Header: React.FC = () => {
   const BetaLabel = () => {
     return <span aria-label="This application is currently in beta phase of development">Beta</span>;
   };
-
-  // const EnvironmentLabel = () => {
-  //   if (config?.REACT_APP_NODE_ENV === 'prod') {
-  //     return <></>;
-  //   }
-
-  //   return (
-  //     <span aria-label={`This application is currently being run in the ${config?.REACT_APP_NODE_ENV} environment`}>
-  //       & {config?.REACT_APP_NODE_ENV}
-  //     </span>
-  //   );
-  // };
 
   return (
     <>

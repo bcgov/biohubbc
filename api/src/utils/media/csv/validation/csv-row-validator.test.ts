@@ -14,10 +14,12 @@ import {
 } from './csv-row-validator';
 
 describe('getRequiredFieldsValidator', () => {
-  it('adds no errors when required fields are not provided', () => {
-    const requiredFieldsByHeader: string[] = [];
+  it('adds no errors when required fields are populated', () => {
+    const requiredColumnsConfig = {
+      columnName: 'Header1'
+    };
 
-    const validator = getRequiredFieldsValidator(requiredFieldsByHeader);
+    const validator = getRequiredFieldsValidator(requiredColumnsConfig);
 
     const xlsxWorkSheet = xlsx.utils.aoa_to_sheet([
       ['Header1', 'Header2'],
@@ -32,8 +34,11 @@ describe('getRequiredFieldsValidator', () => {
   });
 
   it('adds no errors when header does not exist', () => {
-    const requiredFieldsByHeader: string[] = ['Header1', 'Header2']; // fields for these headers are required
-    const validator = getRequiredFieldsValidator(requiredFieldsByHeader);
+    const requiredColumnsConfig = {
+      columnName: 'Header1'
+    };
+
+    const validator = getRequiredFieldsValidator(requiredColumnsConfig);
 
     const xlsxWorkSheet = xlsx.utils.aoa_to_sheet([[], [5]]);
 
@@ -44,10 +49,12 @@ describe('getRequiredFieldsValidator', () => {
     expect(csvWorkSheet.csvValidation.rowErrors).to.eql([]);
   });
 
-  it('adds errors for every field if required fields are provided and there are zero data rows in the worksheet', () => {
-    const requiredFieldsByHeader: string[] = ['Header1', 'Header2']; // fields for these headers are required
+  it('adds no errors if there are zero rows in the worksheet', () => {
+    const requiredColumnsConfig = {
+      columnName: 'Header1'
+    };
 
-    const validator = getRequiredFieldsValidator(requiredFieldsByHeader);
+    const validator = getRequiredFieldsValidator(requiredColumnsConfig);
 
     const xlsxWorkSheet = xlsx.utils.aoa_to_sheet([['Header1', 'Header2']]); // no data rows
 
@@ -55,26 +62,15 @@ describe('getRequiredFieldsValidator', () => {
 
     validator(csvWorkSheet);
 
-    expect(csvWorkSheet.csvValidation.rowErrors).to.eql([
-      {
-        col: 'Header1',
-        errorCode: SUBMISSION_MESSAGE_TYPE.MISSING_REQUIRED_FIELD,
-        message: 'Missing required value for column',
-        row: 2
-      },
-      {
-        col: 'Header2',
-        errorCode: SUBMISSION_MESSAGE_TYPE.MISSING_REQUIRED_FIELD,
-        message: 'Missing required value for column',
-        row: 2
-      }
-    ]);
+    expect(csvWorkSheet.csvValidation.rowErrors).to.eql([]);
   });
 
   it('adds errors for required fields that are empty', () => {
-    const requiredFieldsByHeader: string[] = ['Header1', 'Header2']; // fields for these headers are required
+    const requiredColumnsConfig = {
+      columnName: 'Header1'
+    };
 
-    const validator = getRequiredFieldsValidator(requiredFieldsByHeader);
+    const validator = getRequiredFieldsValidator(requiredColumnsConfig);
 
     const xlsxWorkSheet = xlsx.utils.aoa_to_sheet([
       ['Header1', 'Header2', 'Header3'],
@@ -89,20 +85,22 @@ describe('getRequiredFieldsValidator', () => {
       {
         col: 'Header1',
         errorCode: SUBMISSION_MESSAGE_TYPE.MISSING_REQUIRED_FIELD,
-        message: 'Missing required value for column',
+        message: 'Value is required and cannot be empty',
         row: 2
       }
     ]);
   });
 
-  it('adds no errors if there are no invalid required fields', () => {
-    const requiredFieldsByHeader: string[] = ['Header1', 'Header2']; // fields for these headers are required
+  it('adds no errors if there are no empty required fields', () => {
+    const requiredColumnsConfig = {
+      columnName: 'Header1'
+    };
 
-    const validator = getRequiredFieldsValidator(requiredFieldsByHeader);
+    const validator = getRequiredFieldsValidator(requiredColumnsConfig);
 
     const xlsxWorkSheet = xlsx.utils.aoa_to_sheet([
       ['Header1', 'Header2', 'Header3'],
-      ['header2Data', 'Header2Data', ''] // valid fields
+      ['header1Data', 'Header2Data', ''] // valid fields
     ]);
 
     const csvWorkSheet = new CSVWorksheet('Sheet1', xlsxWorkSheet);

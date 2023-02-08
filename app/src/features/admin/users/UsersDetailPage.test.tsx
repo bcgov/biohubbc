@@ -57,7 +57,8 @@ describe('UsersDetailPage', () => {
       id: 1,
       user_identifier: 'LongerUserName',
       user_record_end_date: 'end',
-      role_names: ['role1', 'role2']
+      role_names: ['role1', 'role2'],
+      user_guid: ''
     });
 
     mockBiohubApi().project.getAllUserProjectsForView.mockResolvedValue({
