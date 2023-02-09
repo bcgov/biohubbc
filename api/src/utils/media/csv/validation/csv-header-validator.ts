@@ -1,4 +1,5 @@
 import { SUBMISSION_MESSAGE_TYPE } from '../../../../constants/status';
+import { safeToLowerCase, safeTrim } from '../../../string-utils';
 import { CSVValidator } from '../csv-file';
 
 /**
@@ -62,7 +63,7 @@ export const hasRequiredHeadersValidator = (config?: FileRequiredHeaderValidator
     const headersLowerCase = csvWorksheet.getHeadersLowerCase();
 
     for (const requiredHeader of config.file_required_columns_validator.required_columns) {
-      if (!headersLowerCase.includes(requiredHeader.toLowerCase())) {
+      if (!headersLowerCase.includes(safeToLowerCase(requiredHeader))) {
         csvWorksheet.csvValidation.addHeaderErrors([
           {
             errorCode: SUBMISSION_MESSAGE_TYPE.MISSING_REQUIRED_HEADER,
@@ -118,7 +119,7 @@ export const hasRecommendedHeadersValidator = (config?: FileRecommendedHeaderVal
     }
 
     for (const recommendedHeader of config.file_recommended_columns_validator.recommended_columns) {
-      if (!headersLowerCase.includes(recommendedHeader.toLowerCase())) {
+      if (!headersLowerCase.includes(safeToLowerCase(recommendedHeader))) {
         csvWorksheet.csvValidation.addHeaderWarnings([
           {
             errorCode: SUBMISSION_MESSAGE_TYPE.MISSING_RECOMMENDED_HEADER,
@@ -162,8 +163,8 @@ export const getValidHeadersValidator = (config?: FileValidHeadersValidatorConfi
     for (const header of headers) {
       if (
         !config.file_valid_columns_validator.valid_columns
-          .map((item) => item.toLowerCase())
-          .includes(header.trim().toLowerCase())
+          .map(safeToLowerCase)
+          .includes(safeToLowerCase(safeTrim(header)))
       ) {
         csvWorksheet.csvValidation.addHeaderWarnings([
           {
