@@ -17,7 +17,7 @@ import ProjectParticipantsPage from './participants/ProjectParticipantsPage';
  * @return {*}
  */
 const ProjectsRouter: React.FC = () => {
-  return (
+return (
     <Switch>
       <AppRoute exact path="/admin/projects" layout={ProjectsLayout}>
         <ProjectsLayout>

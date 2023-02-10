@@ -242,6 +242,7 @@ function useKeycloakWrapper(): IKeycloakWrapper {
     }
 
     const userSystemRoles = getSystemRoles();
+    console.log({ userSystemRoles })
 
     if (userSystemRoles.some((item) => validSystemRoles.includes(item))) {
       return true;

@@ -1,9 +1,11 @@
 import Box from '@material-ui/core/Box';
 import Divider from '@material-ui/core/Divider';
-import { mdiPlus } from '@mdi/js';
+import { mdiPlus, mdiClock } from '@mdi/js';
 import Icon from '@mdi/react';
+import { ProjectRoleGuard } from 'components/security/Guards';
 import SurveysList from 'components/surveys/SurveysList';
 import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
+import { PROJECT_ROLE } from 'constants/roles';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import { SurveyViewObject } from 'interfaces/useSurveyApi.interface';
@@ -49,14 +51,16 @@ const SurveysListPage: React.FC<ISurveysListPageProps> = (props) => {
 
   return (
     <>
-      <H2ButtonToolbar
-        label="Surveys"
-        buttonLabel="Create Survey"
-        buttonTitle="Create Survey"
-        buttonStartIcon={<Icon path={mdiPlus} size={0.8} />}
-        buttonProps={{ variant: 'contained' }}
-        buttonOnClick={() => navigateToCreateSurveyPage(projectForViewData.id)}
-      />
+      <ProjectRoleGuard validProjectRoles={[PROJECT_ROLE.PROJECT_VIEWER, PROJECT_ROLE.PROJECT_EDITOR]} fallback={<Icon path={mdiClock} size={0.8} />}>
+        <H2ButtonToolbar
+          label="Surveys"
+          buttonLabel="Create Survey"
+          buttonTitle="Create Survey"
+          buttonStartIcon={<Icon path={mdiPlus} size={0.8} />}
+          buttonProps={{ variant: 'contained' }}
+          buttonOnClick={() => navigateToCreateSurveyPage(projectForViewData.id)}
+        />
+      </ProjectRoleGuard>
       <Divider></Divider>
       <Box px={1}>
         <SurveysList projectId={projectForViewData.id} surveysList={surveys} />

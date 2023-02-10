@@ -1,5 +1,6 @@
-import { SYSTEM_ROLE } from 'constants/roles';
+import { PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
 import { AuthStateContext } from 'contexts/authStateContext';
+import { ProjectParticipantGuardContext } from 'contexts/projectParticipantGuardContext';
 import React, { ReactElement, useContext } from 'react';
 import { isAuthenticated } from 'utils/authUtils';
 
@@ -23,6 +24,17 @@ export interface ISystemRoleGuardProps {
   validSystemRoles: SYSTEM_ROLE[];
 }
 
+export interface IProjectParticipantGuardProps {
+  /**
+   * An array of valid project roles. The user must have 1 or more matching project roles to pass the guard.
+   *
+   * @type {PROJECT_ROLE[]}
+   * @memberof IProjectParticipantGuardProps
+   */
+  validProjectRoles: PROJECT_ROLE[];
+}
+
+
 /**
  * Renders `props.children` only if the user is authenticated and has at least 1 of the specified valid system roles.
  *
@@ -31,10 +43,38 @@ export interface ISystemRoleGuardProps {
  */
 export const SystemRoleGuard: React.FC<ISystemRoleGuardProps & IGuardProps> = (props) => {
   const { keycloakWrapper } = useContext(AuthStateContext);
-
-  const hasSystemRole = keycloakWrapper?.hasSystemRole(props.validSystemRoles);
+  const { validSystemRoles } = props;
+  const hasSystemRole = keycloakWrapper?.hasSystemRole(validSystemRoles);
 
   if (!hasSystemRole) {
+    if (props.fallback) {
+      return <>{props.fallback}</>;
+    } else {
+      return <></>;
+    }
+  }
+
+  return <>{props.children}</>;
+};
+
+/**
+ * Renders `props.children` only if the user has the necessary roles as a project participant.
+ *
+ * @param {*} props
+ * @return {*}
+ */
+export const ProjectRoleGuard: React.FC<IProjectParticipantGuardProps & IGuardProps> = (props) => {
+  const { validProjectRoles } = props
+  const { participant, projectId } = useContext(ProjectParticipantGuardContext);
+  
+  const hasProjectRole = participant
+    && participant.project_id === projectId
+    && participant.project_role_names.some((roleName) => validProjectRoles.includes(roleName));
+
+  if (!hasProjectRole) {
+    console.log('User does not have role:', validProjectRoles);
+    console.log({ participant });
+
     if (props.fallback) {
       return <>{props.fallback}</>;
     } else {

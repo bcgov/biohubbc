@@ -3,13 +3,14 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
+import { ProjectParticipantGuardContext } from 'contexts/projectParticipantGuardContext';
 import LocationBoundary from 'features/projects/view/components/LocationBoundary';
 import ProjectAttachments from 'features/projects/view/ProjectAttachments';
 import SurveysListPage from 'features/surveys/list/SurveysListPage';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import ProjectDetails from './ProjectDetails';
 import ProjectHeader from './ProjectHeader';
@@ -23,6 +24,7 @@ const ProjectPage: React.FC = () => {
   const urlParams = useParams();
 
   const biohubApi = useBiohubApi();
+  const participantGuardContext = useContext(ProjectParticipantGuardContext);
 
   const [isLoadingProject, setIsLoadingProject] = useState(false);
   const [projectWithDetails, setProjectWithDetails] = useState<IGetProjectForViewResponse | null>(null);
@@ -66,7 +68,7 @@ const ProjectPage: React.FC = () => {
     }
   }, [isLoadingProject, projectWithDetails, getProject]);
 
-  if (!codes || !projectWithDetails) {
+  if (!codes || !projectWithDetails || participantGuardContext.isLoading) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 

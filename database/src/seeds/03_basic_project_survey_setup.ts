@@ -291,7 +291,7 @@ const insertProjectData = () => `
     )
   VALUES (
     3,
-    'Project Name',
+    'Default Project',
     'Objectives',
     'Location Description',
     '2023-01-01',
