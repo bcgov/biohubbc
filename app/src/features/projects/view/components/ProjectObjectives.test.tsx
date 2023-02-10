@@ -122,18 +122,18 @@ describe('ProjectObjectives', () => {
 
     // for finding 'project objectives'
     //@ts-ignore
-    expect(getAllByText(container, 'READ MORE...')[0]).toBeInTheDocument();
+    expect(getAllByText(container, 'Read More')[0]).toBeInTheDocument();
 
     //@ts-ignore
-    fireEvent.click(getAllByText(container, 'READ MORE...')[0]);
+    fireEvent.click(getAllByText(container, 'Read More')[0]);
 
     //@ts-ignore
-    expect(getAllByText(container, 'READ LESS')[0]).toBeInTheDocument();
+    expect(getAllByText(container, 'Read Less')[0]).toBeInTheDocument();
 
     //@ts-ignore
-    fireEvent.click(getAllByText(container, 'READ LESS')[0]);
+    fireEvent.click(getAllByText(container, 'Read Less')[0]);
 
     //@ts-ignore
-    expect(getAllByText(container, 'READ MORE...')[0]).toBeInTheDocument();
+    expect(getAllByText(container, 'Read More')[0]).toBeInTheDocument();
   });
 });

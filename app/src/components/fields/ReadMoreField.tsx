@@ -1,6 +1,6 @@
-import { Typography, TypographyProps } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
+import { Typography, TypographyProps } from '@material-ui/core';
 import { mdiChevronDown, mdiChevronUp } from '@mdi/js';
 import Icon from '@mdi/react';
 import React, { useState } from 'react';
@@ -8,7 +8,7 @@ import React, { useState } from 'react';
 export interface IReadMoreFieldProps {
   text: string;
   maxCharLength: number;
-  TypographyProps?: Partial<TypographyProps>;
+  TypographyProps?: Partial<TypographyProps>
 }
 
 /**
@@ -28,19 +28,19 @@ export const ReadMoreField: React.FC<IReadMoreFieldProps> = (props) => {
   const willTruncateText = sanitizedText.length > maxCharLength;
 
   if (!willTruncateText) {
-    return <span>{sanitizedText}</span>;
+    return <span>{sanitizedText}</span>
   }
 
   let truncationIndex = sanitizedText.slice(0, maxCharLength).lastIndexOf(' ');
   if (truncationIndex < 0) {
-    truncationIndex = maxCharLength;
+    truncationIndex = maxCharLength
   }
 
   const persistentTextPortion = sanitizedText.slice(0, truncationIndex);
 
   return (
     <Box>
-      <Typography {...TypographyProps}>
+      <Typography {...TypographyProps}>      
         {showTruncated ? (
           <span>{sanitizedText}</span>
         ) : (
@@ -55,11 +55,12 @@ export const ReadMoreField: React.FC<IReadMoreFieldProps> = (props) => {
           size="small"
           variant="text"
           onClick={() => setShowTruncated(!showTruncated)}
-          style={{ color: '#757575', fontWeight: 600, textTransform: 'uppercase' }}>
+          style={{ color: '#757575', fontWeight: 600, textTransform: 'uppercase' }}
+        >
           <>
             <Icon path={showTruncated ? mdiChevronUp : mdiChevronDown} size={1} />
             <span>{showTruncated ? 'Read Less' : 'Read More'}</span>
-          </>
+         </>
         </Button>
       </Box>
     </Box>
