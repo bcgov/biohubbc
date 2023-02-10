@@ -15,14 +15,12 @@ export interface IProjectObjectivesProps {
  * @return {*}
  */
 const ProjectObjectives: React.FC<IProjectObjectivesProps> = (props) => {
-  const { projectForViewData: { objectives } } = props;
+  const {
+    projectForViewData: { objectives }
+  } = props;
 
   return (
-    <ReadMoreField
-      text={objectives.objectives}
-      maxCharLength={200}
-      TypographyProps={{ color: 'textSecondary' }}
-    />
+    <ReadMoreField text={objectives.objectives} maxCharLength={200} TypographyProps={{ color: 'textSecondary' }} />
   );
 };
 
