@@ -1,6 +1,7 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
 import xlsx from 'xlsx';
+import { SUBMISSION_MESSAGE_TYPE } from '../../../../constants/status';
 import { CSVWorksheet } from '../csv-file';
 import {
   getDuplicateHeadersValidator,
@@ -45,14 +46,14 @@ describe('getDuplicateHeadersValidator', () => {
 
     expect(csvWorkSheet.csvValidation.headerErrors).to.eql([
       {
-        errorCode: 'Duplicate Header',
+        errorCode: SUBMISSION_MESSAGE_TYPE.DUPLICATE_HEADER,
         col: 'Header1',
-        message: 'Duplicate header'
+        message: 'Duplicate Header'
       },
       {
-        errorCode: 'Duplicate Header',
+        errorCode: SUBMISSION_MESSAGE_TYPE.DUPLICATE_HEADER,
         col: 'Header2',
-        message: 'Duplicate header'
+        message: 'Duplicate Header'
       }
     ]);
   });
@@ -102,17 +103,17 @@ describe('hasRequiredHeadersValidator', () => {
 
     expect(csvWorkSheet.csvValidation.headerErrors).to.eql([
       {
-        errorCode: 'Missing Required Header',
+        errorCode: SUBMISSION_MESSAGE_TYPE.MISSING_REQUIRED_HEADER,
         col: 'Header1',
         message: 'Missing required header'
       },
       {
-        errorCode: 'Missing Required Header',
+        errorCode: SUBMISSION_MESSAGE_TYPE.MISSING_REQUIRED_HEADER,
         col: 'Header2',
         message: 'Missing required header'
       },
       {
-        errorCode: 'Missing Required Header',
+        errorCode: SUBMISSION_MESSAGE_TYPE.MISSING_REQUIRED_HEADER,
         col: 'Header3',
         message: 'Missing required header'
       }
@@ -134,12 +135,12 @@ describe('hasRequiredHeadersValidator', () => {
 
     expect(csvWorkSheet.csvValidation.headerErrors).to.eql([
       {
-        errorCode: 'Missing Required Header',
+        errorCode: SUBMISSION_MESSAGE_TYPE.MISSING_REQUIRED_HEADER,
         col: 'Header3',
         message: 'Missing required header'
       },
       {
-        errorCode: 'Missing Required Header',
+        errorCode: SUBMISSION_MESSAGE_TYPE.MISSING_REQUIRED_HEADER,
         col: 'Header5',
         message: 'Missing required header'
       }
@@ -203,12 +204,12 @@ describe('getValidHeadersValidator', () => {
 
     expect(csvWorkSheet.csvValidation.headerErrors).to.eql([
       {
-        errorCode: 'Unknown Header',
+        errorCode: SUBMISSION_MESSAGE_TYPE.UNKNOWN_HEADER,
         col: 'UnknownHeader2',
         message: 'Unsupported header'
       },
       {
-        errorCode: 'Unknown Header',
+        errorCode: SUBMISSION_MESSAGE_TYPE.UNKNOWN_HEADER,
         col: 'UnknownHeader4',
         message: 'Unsupported header'
       }
@@ -262,12 +263,12 @@ describe('hasRecommendedHeadersValidator', () => {
 
     expect(csvWorkSheet.csvValidation.headerErrors).to.eql([
       {
-        errorCode: 'Missing Recommended Header',
+        errorCode: SUBMISSION_MESSAGE_TYPE.MISSING_RECOMMENDED_HEADER,
         col: 'Header3',
         message: 'Missing recommended header'
       },
       {
-        errorCode: 'Missing Recommended Header',
+        errorCode: SUBMISSION_MESSAGE_TYPE.MISSING_RECOMMENDED_HEADER,
         col: 'Header5',
         message: 'Missing recommended header'
       }
@@ -289,17 +290,17 @@ describe('hasRecommendedHeadersValidator', () => {
 
     expect(csvWorkSheet.csvValidation.headerErrors).to.eql([
       {
-        errorCode: 'Missing Recommended Header',
+        errorCode: SUBMISSION_MESSAGE_TYPE.MISSING_RECOMMENDED_HEADER,
         col: 'Header1',
         message: 'Missing recommended header'
       },
       {
-        errorCode: 'Missing Recommended Header',
+        errorCode: SUBMISSION_MESSAGE_TYPE.MISSING_RECOMMENDED_HEADER,
         col: 'Header2',
         message: 'Missing recommended header'
       },
       {
-        errorCode: 'Missing Recommended Header',
+        errorCode: SUBMISSION_MESSAGE_TYPE.MISSING_RECOMMENDED_HEADER,
         col: 'Header3',
         message: 'Missing recommended header'
       }

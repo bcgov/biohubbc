@@ -1,4 +1,5 @@
 import { Feature } from 'geojson';
+import { IPermitModel } from '../repositories/permit-repository';
 
 export type SurveyObject = {
   survey_details: GetSurveyData;
@@ -18,7 +19,6 @@ export class GetSurveyData {
   end_date: string;
   biologist_first_name: string;
   biologist_last_name: string;
-  publish_date: string;
   survey_area_name: string;
   geometry: Feature[];
   revision_count: number;
@@ -29,7 +29,6 @@ export class GetSurveyData {
     this.survey_name = obj?.name || '';
     this.start_date = obj?.start_date || null;
     this.end_date = obj?.end_date || null;
-    this.publish_date = String(obj?.publish_date || '');
     this.geometry = (obj?.geojson?.length && obj.geojson) || [];
     this.biologist_first_name = obj?.lead_first_name || '';
     this.biologist_last_name = obj?.lead_last_name || '';
@@ -70,12 +69,19 @@ export class GetAncillarySpeciesData {
   }
 }
 export class GetPermitData {
-  permit_number: number;
-  permit_type: string;
+  permits: {
+    permit_id: IPermitModel['permit_id'];
+    permit_number: IPermitModel['number'];
+    permit_type: IPermitModel['type'];
+  }[];
 
-  constructor(obj?: any) {
-    this.permit_number = obj?.number || '';
-    this.permit_type = obj?.type || '';
+  constructor(obj?: IPermitModel[]) {
+    this.permits =
+      obj?.map((item) => ({
+        permit_id: item.permit_id,
+        permit_number: item.number,
+        permit_type: item.type
+      })) || [];
   }
 }
 
@@ -86,15 +92,13 @@ export class GetSurveyPurposeAndMethodologyData {
   ecological_season_id: number;
   revision_count: number;
   vantage_code_ids: number[];
-  surveyed_all_areas: string;
 
   constructor(obj?: any) {
     this.intended_outcome_id = obj?.intended_outcome_id || null;
-    this.additional_details = obj?.additional_details || null;
+    this.additional_details = obj?.additional_details || '';
     this.field_method_id = obj?.field_method_id || null;
     this.ecological_season_id = obj?.ecological_season_id || null;
     this.vantage_code_ids = (obj?.vantage_ids?.length && obj.vantage_ids) || [];
-    this.surveyed_all_areas = (obj?.surveyed_all_areas && 'true') || 'false';
     this.revision_count = obj?.revision_count ?? 0;
   }
 }
@@ -166,5 +170,82 @@ export class GetSurveyLocationData {
   constructor(obj?: any) {
     this.survey_area_name = obj?.location_name || '';
     this.geometry = (obj?.geojson?.length && obj.geojson) || [];
+  }
+}
+
+interface IGetAttachmentsSource {
+  file_name: string;
+  file_type: string;
+  title: string;
+  description: string;
+  key: string;
+  file_size: string;
+}
+
+/**
+ * Pre-processes GET /surveys/{id} attachments data
+ *
+ * @export
+ * @class GetAttachmentsData
+ */
+export class GetAttachmentsData {
+  attachmentDetails: IGetAttachmentsSource[];
+
+  constructor(attachments?: any[]) {
+    this.attachmentDetails =
+      (attachments?.length &&
+        attachments.map((item: any) => {
+          return {
+            file_name: item.file_name,
+            file_type: item.file_type,
+            title: item.title,
+            description: item.description,
+            key: item.key,
+            file_size: item.file_size
+          };
+        })) ||
+      [];
+  }
+}
+
+interface IGetReportAttachmentsSource {
+  file_name: string;
+  title: string;
+  year: string;
+  description: string;
+  key: string;
+  file_size: string;
+  authors?: { author: string }[];
+}
+
+/**
+ * Pre-processes GET /surveys/{id} report attachments data
+ *
+ * @export
+ * @class GetReportAttachmentsData
+ */
+export class GetReportAttachmentsData {
+  attachmentDetails: IGetReportAttachmentsSource[];
+
+  constructor(attachments?: any[]) {
+    this.attachmentDetails =
+      (attachments?.length &&
+        attachments.map((item: any) => {
+          const attachmentItem = {
+            file_name: item.file_name,
+            title: item.title,
+            year: item.year,
+            description: item.description,
+            key: item.key,
+            file_size: item.file_size
+          };
+
+          if (item.authors?.length) {
+            attachmentItem['authors'] = item.authors;
+          }
+
+          return attachmentItem;
+        })) ||
+      [];
   }
 }

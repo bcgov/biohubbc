@@ -4,12 +4,16 @@ name: PR-Based Deploy on OpenShift
 
 on:
   pull_request:
-    types: [opened, reopened, synchronize]
+    types: [opened, reopened, synchronize, ready_for_review]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.number }}
+  cancel-in-progress: true
 
 jobs:
   # Print variables for logging and debugging purposes
   checkEnv:
-    name: Check Env variables
+    name: Print Env variables
     runs-on: ubuntu-latest
     if: ${{ github.event.pull_request.merged == false }}
     steps:
@@ -24,13 +28,15 @@ jobs:
           echo Git Labels: "$LABELS"
           echo PR in Draft: ${{ github.event.pull_request.draft }}
 
+  # Scale down any existing OpenShift pods for this PR deployment
+  # Why? The new pods will be deployed before the existing pods are terminated, and twice the resources will be needed
+  # in that moment. If not enough resources are available to spin up the new pods, then they may fail to deploy.
   scaleDownPods:
     name: Scale down the pods for this PR
     runs-on: ubuntu-latest
+    if: ${{ github.event.pull_request.merged == false }}
     env:
-      BUILD_ID: ${{ github.event.number }}
-    needs:
-      - checkEnv
+      PR_NUMBER: ${{ github.event.number }}
     steps:
       # Log in to OpenShift.
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
@@ -41,7 +47,40 @@ jobs:
       - name: Scale down
         run: |
           oc project af2668-dev
-          oc get deploymentconfig --selector env-id=$BUILD_ID -o name | awk '{print "oc scale --replicas=0  " $1}' | bash
+          oc get deploymentconfig --selector env-id=$PR_NUMBER -o name | awk '{print "oc scale --replicas=0  " $1}' | bash
+
+  # Checkout the repo once and cache it for use in subsequent jobs
+  checkoutRepo:
+    name: Checkout and cache target branch
+    runs-on: ubuntu-latest
+    if: ${{ github.event.pull_request.merged == false }}
+    env:
+      PR_NUMBER: ${{ github.event.number }}
+    steps:
+      # Install Node - for `node` and `npm` commands
+      # Note: This already uses actions/cache internally, so repeat calls in subsequent jobs are not a performance hit
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 14
+
+      - name: Checkout Target Branch
+        uses: actions/checkout@v3
+        with:
+          persist-credentials: false
+
+      # Cache the repo
+      - name: Cache repo
+        uses: actions/cache@v3
+        id: cache-repo
+        env:
+          cache-name: cache-repo
+        with:
+          # Cache repo based on the commit sha that triggered the workflow
+          path: ${{ github.workspace }}/*
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
 
   # Build the Database image
   buildDatabase:
@@ -49,33 +88,44 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.event.pull_request.merged == false && github.event.pull_request.draft == false }}
     env:
-      BUILD_ID: ${{ github.event.number }}
+      PR_NUMBER: ${{ github.event.number }}
     needs:
-      - scaleDownPods
+      - checkoutRepo
     steps:
-      # Checkout the PR branch
-      - name: Checkout Target Branch
-        uses: actions/checkout@v2
-
       # Install Node - for `node` and `npm` commands
       - name: Setup Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: 14
 
+      # Load repo from cache
+      - name: Cache repo
+        uses: actions/cache@v3
+        id: cache-repo
+        env:
+          cache-name: cache-repo
+        with:
+          path: ${{ github.workspace }}/*
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
+
+      # Checkout the branch if not restored via cache
+      - name: Checkout Target Branch
+        if: steps.cache-repo.outputs.cache-hit != 'true'
+        uses: actions/checkout@v3
+
       # Cache Node modules
       - name: Cache node modules
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         env:
           cache-name: cache-node-modules
         with:
           # npm cache files are stored in `~/.npm` on Linux/macOS
           path: ~/.npm
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('*/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
 
       # Log in to OpenShift.
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
@@ -87,9 +137,8 @@ jobs:
       - name: Build Database Image
         working-directory: "./database/.pipeline/"
         run: |
-          npm install
-          # npm ci
-          DEBUG=* npm run db:build -- --pr=$BUILD_ID
+          npm ci --only=production
+          DEBUG=* npm run db:build -- --pr=$PR_NUMBER
 
   # Build the Database Setup image
   buildDatabaseSetup:
@@ -97,33 +146,44 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.event.pull_request.merged == false && github.event.pull_request.draft == false }}
     env:
-      BUILD_ID: ${{ github.event.number }}
+      PR_NUMBER: ${{ github.event.number }}
     needs:
-      - scaleDownPods
+      - checkoutRepo
     steps:
-      # Checkout the PR branch
-      - name: Checkout Target Branch
-        uses: actions/checkout@v2
-
       # Install Node - for `node` and `npm` commands
       - name: Setup Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: 14
 
+      # Load repo from cache
+      - name: Cache repo
+        uses: actions/cache@v3
+        id: cache-repo
+        env:
+          cache-name: cache-repo
+        with:
+          path: ${{ github.workspace }}/*
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
+
+      # Checkout the branch if not restored via cache
+      - name: Checkout Target Branch
+        if: steps.cache-repo.outputs.cache-hit != 'true'
+        uses: actions/checkout@v3
+
       # Cache Node modules
       - name: Cache node modules
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         env:
           cache-name: cache-node-modules
         with:
           # npm cache files are stored in `~/.npm` on Linux/macOS
           path: ~/.npm
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('*/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
 
       # Log in to OpenShift.
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
@@ -135,9 +195,8 @@ jobs:
       - name: Build Database Setup Image
         working-directory: "./database/.pipeline/"
         run: |
-          npm install
-          # npm ci
-          DEBUG=* npm run db-setup:build -- --pr=$BUILD_ID
+          npm ci --only=production
+          DEBUG=* npm run db-setup:build -- --pr=$PR_NUMBER
 
   # Build the API image
   buildAPI:
@@ -145,33 +204,44 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.event.pull_request.merged == false && github.event.pull_request.draft == false }}
     env:
-      BUILD_ID: ${{ github.event.number }}
+      PR_NUMBER: ${{ github.event.number }}
     needs:
-      - scaleDownPods
+      - checkoutRepo
     steps:
-      # Checkout the PR branch
-      - name: Checkout Target Branch
-        uses: actions/checkout@v2
-
       # Install Node - for `node` and `npm` commands
       - name: Setup Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: 14
 
+      # Load repo from cache
+      - name: Cache repo
+        uses: actions/cache@v3
+        id: cache-repo
+        env:
+          cache-name: cache-repo
+        with:
+          path: ${{ github.workspace }}/*
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
+
+      # Checkout the branch if not restored via cache
+      - name: Checkout Target Branch
+        if: steps.cache-repo.outputs.cache-hit != 'true'
+        uses: actions/checkout@v3
+
       # Cache Node modules
       - name: Cache node modules
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         env:
           cache-name: cache-node-modules
         with:
           # npm cache files are stored in `~/.npm` on Linux/macOS
           path: ~/.npm
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('*/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
 
       # Log in to OpenShift.
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
@@ -183,43 +253,53 @@ jobs:
       - name: Build API Image
         working-directory: "./api/.pipeline/"
         run: |
-          npm install
-          # npm ci
-          DEBUG=* npm run build -- --pr=$BUILD_ID
+          npm ci --only=production
+          DEBUG=* npm run build -- --pr=$PR_NUMBER
 
   # Build the web frontend app image
   buildAPP:
-    name: Build App Image
+    name: Build APP Image
     runs-on: ubuntu-latest
     if: ${{ github.event.pull_request.merged == false && github.event.pull_request.draft == false }}
     env:
-      BUILD_ID: ${{ github.event.number }}
+      PR_NUMBER: ${{ github.event.number }}
     needs:
-      - scaleDownPods
+      - checkoutRepo
     steps:
-      # Checkout the PR branch
-      - name: Checkout Target Branch
-        uses: actions/checkout@v2
-
       # Install Node - for `node` and `npm` commands
       - name: Setup Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: 14
 
+      # Load repo from cache
+      - name: Cache repo
+        uses: actions/cache@v3
+        id: cache-repo
+        env:
+          cache-name: cache-repo
+        with:
+          path: ${{ github.workspace }}/*
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
+
+      # Checkout the branch if not restored via cache
+      - name: Checkout Target Branch
+        if: steps.cache-repo.outputs.cache-hit != 'true'
+        uses: actions/checkout@v3
+
       # Cache Node modules
       - name: Cache node modules
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         env:
           cache-name: cache-node-modules
         with:
           # npm cache files are stored in `~/.npm` on Linux/macOS
           path: ~/.npm
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('*/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
 
       # Log in to OpenShift.
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
@@ -231,9 +311,8 @@ jobs:
       - name: Build APP Image
         working-directory: "./app/.pipeline/"
         run: |
-          npm install
-          # npm ci
-          DEBUG=* npm run build -- --pr=$BUILD_ID
+          npm ci --only=production
+          DEBUG=* npm run build -- --pr=$PR_NUMBER
 
   # Deploy Database image
   deployDatabase:
@@ -241,34 +320,45 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.event.pull_request.merged == false && github.event.pull_request.draft == false }}
     env:
-      BUILD_ID: ${{ github.event.number }}
-      BRANCH: ${{ github.base_ref }}
+      PR_NUMBER: ${{ github.event.number }}
     needs:
+      - scaleDownPods
       - buildDatabase
     steps:
-      # Checkout the PR branch
-      - name: Checkout Target Branch
-        uses: actions/checkout@v2
-
       # Install Node - for `node` and `npm` commands
       - name: Setup Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: 14
 
+      # Load repo from cache
+      - name: Cache repo
+        uses: actions/cache@v3
+        id: cache-repo
+        env:
+          cache-name: cache-repo
+        with:
+          path: ${{ github.workspace }}/*
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
+
+      # Checkout the branch if not restored via cache
+      - name: Checkout Target Branch
+        if: steps.cache-repo.outputs.cache-hit != 'true'
+        uses: actions/checkout@v3
+
       # Cache Node modules
       - name: Cache node modules
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         env:
           cache-name: cache-node-modules
         with:
           # npm cache files are stored in `~/.npm` on Linux/macOS
           path: ~/.npm
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('*/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
 
       # Log in to OpenShift.
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
@@ -280,8 +370,8 @@ jobs:
       - name: Deploy Database Image
         working-directory: "./database/.pipeline/"
         run: |
-          npm install
-          DEBUG=* npm run db:deploy -- --pr=$BUILD_ID --env=dev
+          npm ci --only=production
+          DEBUG=* npm run db:deploy -- --pr=$PR_NUMBER --env=dev
 
   # Deploy Database image
   deployDatabaseSetup:
@@ -289,35 +379,46 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.event.pull_request.merged == false && github.event.pull_request.draft == false }}
     env:
-      BUILD_ID: ${{ github.event.number }}
-      BRANCH: ${{ github.base_ref }}
+      PR_NUMBER: ${{ github.event.number }}
     needs:
+      - scaleDownPods
       - buildDatabaseSetup
       - deployDatabase
     steps:
-      # Checkout the PR branch
-      - name: Checkout Target Branch
-        uses: actions/checkout@v2
-
       # Install Node - for `node` and `npm` commands
       - name: Setup Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: 14
 
+      # Load repo from cache
+      - name: Cache repo
+        uses: actions/cache@v3
+        id: cache-repo
+        env:
+          cache-name: cache-repo
+        with:
+          path: ${{ github.workspace }}/*
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
+
+      # Checkout the branch if not restored via cache
+      - name: Checkout Target Branch
+        if: steps.cache-repo.outputs.cache-hit != 'true'
+        uses: actions/checkout@v3
+
       # Cache Node modules
       - name: Cache node modules
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         env:
           cache-name: cache-node-modules
         with:
           # npm cache files are stored in `~/.npm` on Linux/macOS
           path: ~/.npm
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('*/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
 
       # Log in to OpenShift.
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
@@ -329,9 +430,8 @@ jobs:
       - name: Deploy Database Setup Image
         working-directory: "./database/.pipeline/"
         run: |
-          npm install
-          # npm ci
-          DEBUG=* npm run db-setup:deploy -- --pr=$BUILD_ID --env=dev
+          npm ci --only=production
+          DEBUG=* npm run db-setup:deploy -- --pr=$PR_NUMBER --env=dev
 
   # Deploy API image
   deployAPI:
@@ -339,35 +439,46 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.event.pull_request.merged == false && github.event.pull_request.draft == false }}
     env:
-      BUILD_ID: ${{ github.event.number }}
-      BRANCH: ${{ github.base_ref }}
+      PR_NUMBER: ${{ github.event.number }}
     needs:
+      - scaleDownPods
       - buildAPI
       - deployDatabase
     steps:
-      # Checkout the PR branch
-      - name: Checkout Target Branch
-        uses: actions/checkout@v2
-
       # Install Node - for `node` and `npm` commands
       - name: Setup Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: 14
 
+      # Load repo from cache
+      - name: Cache repo
+        uses: actions/cache@v3
+        id: cache-repo
+        env:
+          cache-name: cache-repo
+        with:
+          path: ${{ github.workspace }}/*
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
+
+      # Checkout the branch if not restored via cache
+      - name: Checkout Target Branch
+        if: steps.cache-repo.outputs.cache-hit != 'true'
+        uses: actions/checkout@v3
+
       # Cache Node modules
       - name: Cache node modules
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         env:
           cache-name: cache-node-modules
         with:
           # npm cache files are stored in `~/.npm` on Linux/macOS
           path: ~/.npm
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('*/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
 
       # Log in to OpenShift.
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
@@ -379,44 +490,54 @@ jobs:
       - name: Deploy API Image
         working-directory: "./api/.pipeline/"
         run: |
-          npm install
-          # npm ci
-          DEBUG=* npm run deploy -- --pr=$BUILD_ID --env=dev
+          npm ci --only=production
+          DEBUG=* npm run deploy -- --pr=$PR_NUMBER --env=dev
 
-  # Deploy App image
+  # Deploy APP image
   deployAPP:
-    name: Deploy App Image
+    name: Deploy APP Image
     runs-on: ubuntu-latest
     if: ${{ github.event.pull_request.merged == false && github.event.pull_request.draft == false }}
     env:
-      BUILD_ID: ${{ github.event.number }}
-      BRANCH: ${{ github.base_ref }}
+      PR_NUMBER: ${{ github.event.number }}
     needs:
+      - scaleDownPods
       - buildAPP
     steps:
-      # Checkout the PR branch
-      - name: Checkout Target Branch
-        uses: actions/checkout@v2
-
       # Install Node - for `node` and `npm` commands
       - name: Setup Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: 14
 
+      # Load repo from cache
+      - name: Cache repo
+        uses: actions/cache@v3
+        id: cache-repo
+        env:
+          cache-name: cache-repo
+        with:
+          path: ${{ github.workspace }}/*
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
+
+      # Checkout the branch if not restored via cache
+      - name: Checkout Target Branch
+        if: steps.cache-repo.outputs.cache-hit != 'true'
+        uses: actions/checkout@v3
+
       # Cache Node modules
       - name: Cache node modules
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         env:
           cache-name: cache-node-modules
         with:
           # npm cache files are stored in `~/.npm` on Linux/macOS
           path: ~/.npm
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('*/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
 
       # Log in to OpenShift.
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
@@ -425,12 +546,11 @@ jobs:
         run: oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
 
       # Deploy the app image
-      - name: Deploy App Image
+      - name: Deploy APP Image
         working-directory: "./app/.pipeline"
         run: |
-          npm install
-          # npm ci
-          DEBUG=* npm run deploy -- --pr=$BUILD_ID --env=dev
+          npm ci --only=production
+          DEBUG=* npm run deploy -- --pr=$PR_NUMBER --env=dev
 
   cypress-run:
     runs-on: ubuntu-latest
@@ -439,12 +559,12 @@ jobs:
       CYPRESS_RECORD_KEY: ${{ secrets.RECORDING_KEY }}
       CYPRESS_username: ${{ secrets.CYPRESS_USER_NAME }}
       CYPRESS_password: ${{ secrets.CYPRESS_PASSWORD }}
-      CYPRESS_BASE_URL: 'https://biohubbc-app-${{ github.event.number }}-af2668-dev.apps.silver.devops.gov.bc.ca'
-      CYPRESS_host: 'https://biohubbc-app-${{ github.event.number }}-af2668-dev.apps.silver.devops.gov.bc.ca'
+      CYPRESS_BASE_URL: "https://biohubbc-app-${{ github.event.number }}-af2668-dev.apps.silver.devops.gov.bc.ca"
+      CYPRESS_host: "https://biohubbc-app-${{ github.event.number }}-af2668-dev.apps.silver.devops.gov.bc.ca"
       CYPRESS_ENVIRONMENT: ${{ github.base_ref }}
-      CYPRESS_authRealm: '35r1iman'
-      CYPRESS_authClientId: 'biohubbc'
-      CYPRESS_authUrl: 'https://${{ github.base_ref }}.oidc.gov.bc.ca'
+      CYPRESS_authRealm: "35r1iman"
+      CYPRESS_authClientId: "biohubbc"
+      CYPRESS_authUrl: "https://${{ github.base_ref }}.oidc.gov.bc.ca"
     needs:
       - deployDatabase
       - deployDatabaseSetup
@@ -453,12 +573,12 @@ jobs:
     steps:
       # Checkout the PR branch
       - name: Checkout Target Branch
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Wait for API response
         uses: nev7n/wait_for_response@v1.0.1
         with:
-          url: 'https://biohubbc-api-${{ github.event.number }}-af2668-dev.apps.silver.devops.gov.bc.ca/version'
+          url: "https://biohubbc-api-${{ github.event.number }}-af2668-dev.apps.silver.devops.gov.bc.ca/version"
           responseCode: 200
           timeout: 240000
           interval: 500
@@ -466,16 +586,16 @@ jobs:
       - name: Wait for APP response
         uses: nev7n/wait_for_response@v1.0.1
         with:
-          url: 'https://biohubbc-app-${{ github.event.number }}-af2668-dev.apps.silver.devops.gov.bc.ca'
+          url: "https://biohubbc-app-${{ github.event.number }}-af2668-dev.apps.silver.devops.gov.bc.ca"
           responseCode: 200
           timeout: 120000
           interval: 500
 
       # Install Node - for `node` and `npm` commands
       - name: Setup Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 14
 
       - name: E2E Smoke tests
         uses: cypress-io/github-action@v2
@@ -484,7 +604,7 @@ jobs:
         id: smoke
         continue-on-error: false
         with:
-          wait-on: 'https://biohubbc-app-${{ github.event.number }}-af2668-dev.apps.silver.devops.gov.bc.ca'
+          wait-on: "https://biohubbc-app-${{ github.event.number }}-af2668-dev.apps.silver.devops.gov.bc.ca"
           wait-on-timeout: 120
           record: true
           working-directory: testing/e2e
@@ -501,4 +621,3 @@ jobs:
           echo $CYPRESS_authRealm
           echo $CYPRESS_authClientId
           echo $CYPRESS_authUrl
-

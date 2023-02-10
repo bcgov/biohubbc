@@ -22,39 +22,68 @@ export class XLSXCSV {
 
     this.mediaValidation = new MediaValidation(this.rawFile.fileName);
 
-    this.workbook = new CSVWorkBook(xlsx.read(this.rawFile.buffer, { ...options }));
+    this.workbook = new CSVWorkBook(
+      // See https://www.npmjs.com/package/xlsx#parsing-options for details on parsing options
+      xlsx.read(this.rawFile.buffer, { cellDates: true, cellNF: true, cellHTML: false, ...options })
+    );
   }
 
-  isMediaValid(validationSchemaParser: ValidationSchemaParser): IMediaState {
+  /**
+   * Runs all media-related validation for this CSV file, based on given validation schema parser.
+   * @param validationSchemaParser The validation schema
+   * @returns {*} {void}
+   * @memberof XLSXCSV
+   */
+  validateMedia(validationSchemaParser: ValidationSchemaParser): void {
     const validators = validationSchemaParser.getSubmissionValidations();
 
-    const mediaValidation = this.validate(validators as XLSXCSVValidator[]);
-
-    return mediaValidation.getState();
+    this.validate(validators as XLSXCSVValidator[]);
   }
 
-  isContentValid(validationSchemaParser: ValidationSchemaParser): ICsvState[] {
-    const csvStates: ICsvState[] = [];
+  /**
+   * Runs all content and workbook-related validation for this CSV file, based on the given validation
+   * schema parser.
+   *
+   * @param {ValidationSchemaParser} validationSchemaParser The validation schema
+   * @return {*}  {void}
+   * @memberof XLSXCSV
+   */
+  validateContent(validationSchemaParser: ValidationSchemaParser): void {
+    // Run workbook validators.
+    const workbookValidators = validationSchemaParser.getWorkbookValidations();
+    this.workbook.validate(workbookValidators);
 
-    Object.keys(this.workbook.worksheets).forEach((fileName) => {
+    // Run content validators.
+    Object.entries(this.workbook.worksheets).forEach(([fileName, worksheet]) => {
       const fileValidators = validationSchemaParser.getFileValidations(fileName);
-
       const columnValidators = validationSchemaParser.getAllColumnValidations(fileName);
 
-      const validators = [...fileValidators, ...columnValidators];
+      const validationRules = [...fileValidators, ...columnValidators];
 
-      const worksheet: CSVWorksheet = this.workbook.worksheets[fileName];
-
-      if (!worksheet) {
-        return;
+      if (validationRules.length) {
+        worksheet.validate(validationRules);
       }
-
-      const csvValidation = worksheet.validate(validators);
-
-      csvStates.push(csvValidation.getState());
     });
+  }
 
-    return csvStates;
+  /**
+   * Returns the current media state belonging to the CSV file.
+   * @returns {*} {IMediaState} The state of the CSV media.
+   * @memberof XLSXCSV
+   */
+  getMediaState(): IMediaState {
+    return this.mediaValidation.getState();
+  }
+
+  /**
+   * Returns the current CSV states belonging to all worksheets in the CSV file.
+   * @returns {*} {ICsvState[]} The state of each worksheet in the CSV file.
+   * @memberof XLSXCSV
+   */
+  getContentState(): ICsvState[] {
+    return Object.values(this.workbook.worksheets)
+      .map((worksheet: CSVWorksheet) => worksheet.csvValidation.getState())
+      .filter(Boolean);
   }
 
   worksheetToBuffer(worksheet: xlsx.WorkSheet): Buffer {

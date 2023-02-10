@@ -1,20 +1,25 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
 import xlsx from 'xlsx';
+import { SUBMISSION_MESSAGE_TYPE } from '../../../../constants/status';
 import { CSVWorksheet } from '../csv-file';
 import {
+  FileColumnUniqueValidatorConfig,
   getCodeValueFieldsValidator,
   getNumericFieldsValidator,
   getRequiredFieldsValidator,
+  getUniqueColumnsValidator,
   getValidFormatFieldsValidator,
   getValidRangeFieldsValidator
 } from './csv-row-validator';
 
 describe('getRequiredFieldsValidator', () => {
-  it('adds no errors when required fields are not provided', () => {
-    const requiredFieldsByHeader: string[] = [];
+  it('adds no errors when required fields are populated', () => {
+    const requiredColumnsConfig = {
+      columnName: 'Header1'
+    };
 
-    const validator = getRequiredFieldsValidator(requiredFieldsByHeader);
+    const validator = getRequiredFieldsValidator(requiredColumnsConfig);
 
     const xlsxWorkSheet = xlsx.utils.aoa_to_sheet([
       ['Header1', 'Header2'],
@@ -29,8 +34,11 @@ describe('getRequiredFieldsValidator', () => {
   });
 
   it('adds no errors when header does not exist', () => {
-    const requiredFieldsByHeader: string[] = ['Header1', 'Header2']; // fields for these headers are required
-    const validator = getRequiredFieldsValidator(requiredFieldsByHeader);
+    const requiredColumnsConfig = {
+      columnName: 'Header1'
+    };
+
+    const validator = getRequiredFieldsValidator(requiredColumnsConfig);
 
     const xlsxWorkSheet = xlsx.utils.aoa_to_sheet([[], [5]]);
 
@@ -41,10 +49,12 @@ describe('getRequiredFieldsValidator', () => {
     expect(csvWorkSheet.csvValidation.rowErrors).to.eql([]);
   });
 
-  it('adds errors for every field if required fields are provided and there are zero data rows in the worksheet', () => {
-    const requiredFieldsByHeader: string[] = ['Header1', 'Header2']; // fields for these headers are required
+  it('adds no errors if there are zero rows in the worksheet', () => {
+    const requiredColumnsConfig = {
+      columnName: 'Header1'
+    };
 
-    const validator = getRequiredFieldsValidator(requiredFieldsByHeader);
+    const validator = getRequiredFieldsValidator(requiredColumnsConfig);
 
     const xlsxWorkSheet = xlsx.utils.aoa_to_sheet([['Header1', 'Header2']]); // no data rows
 
@@ -52,26 +62,15 @@ describe('getRequiredFieldsValidator', () => {
 
     validator(csvWorkSheet);
 
-    expect(csvWorkSheet.csvValidation.rowErrors).to.eql([
-      {
-        col: 'Header1',
-        errorCode: 'Missing Required Field',
-        message: 'Missing required value for column',
-        row: 2
-      },
-      {
-        col: 'Header2',
-        errorCode: 'Missing Required Field',
-        message: 'Missing required value for column',
-        row: 2
-      }
-    ]);
+    expect(csvWorkSheet.csvValidation.rowErrors).to.eql([]);
   });
 
   it('adds errors for required fields that are empty', () => {
-    const requiredFieldsByHeader: string[] = ['Header1', 'Header2']; // fields for these headers are required
+    const requiredColumnsConfig = {
+      columnName: 'Header1'
+    };
 
-    const validator = getRequiredFieldsValidator(requiredFieldsByHeader);
+    const validator = getRequiredFieldsValidator(requiredColumnsConfig);
 
     const xlsxWorkSheet = xlsx.utils.aoa_to_sheet([
       ['Header1', 'Header2', 'Header3'],
@@ -85,21 +84,23 @@ describe('getRequiredFieldsValidator', () => {
     expect(csvWorkSheet.csvValidation.rowErrors).to.eql([
       {
         col: 'Header1',
-        errorCode: 'Missing Required Field',
-        message: 'Missing required value for column',
+        errorCode: SUBMISSION_MESSAGE_TYPE.MISSING_REQUIRED_FIELD,
+        message: 'Value is required and cannot be empty',
         row: 2
       }
     ]);
   });
 
-  it('adds no errors if there are no invalid required fields', () => {
-    const requiredFieldsByHeader: string[] = ['Header1', 'Header2']; // fields for these headers are required
+  it('adds no errors if there are no empty required fields', () => {
+    const requiredColumnsConfig = {
+      columnName: 'Header1'
+    };
 
-    const validator = getRequiredFieldsValidator(requiredFieldsByHeader);
+    const validator = getRequiredFieldsValidator(requiredColumnsConfig);
 
     const xlsxWorkSheet = xlsx.utils.aoa_to_sheet([
       ['Header1', 'Header2', 'Header3'],
-      ['header2Data', 'Header2Data', ''] // valid fields
+      ['header1Data', 'Header2Data', ''] // valid fields
     ]);
 
     const csvWorkSheet = new CSVWorksheet('Sheet1', xlsxWorkSheet);
@@ -181,7 +182,7 @@ describe('getCodeValueFieldsValidator', () => {
     expect(csvWorkSheet.csvValidation.rowErrors).to.eql([
       {
         col: 'Header1',
-        errorCode: 'Invalid Value',
+        errorCode: SUBMISSION_MESSAGE_TYPE.INVALID_VALUE,
         message: 'Invalid value: invalidCode. Must be one of [Code1, Code2]',
         row: 2
       }
@@ -304,7 +305,7 @@ describe('getValidRangeFieldsValidator', () => {
     expect(csvWorkSheet.csvValidation.rowErrors).to.eql([
       {
         col: 'Header1',
-        errorCode: 'Out of Range',
+        errorCode: SUBMISSION_MESSAGE_TYPE.OUT_OF_RANGE,
         message: 'Invalid value: 11. Value must be between 1 and 10 ',
         row: 2
       }
@@ -331,7 +332,7 @@ describe('getValidRangeFieldsValidator', () => {
     expect(csvWorkSheet.csvValidation.rowErrors).to.eql([
       {
         col: 'Header1',
-        errorCode: 'Out of Range',
+        errorCode: SUBMISSION_MESSAGE_TYPE.OUT_OF_RANGE,
         message: 'Invalid value: 1. Value must be between 5 and 10 ',
         row: 2
       }
@@ -357,7 +358,7 @@ describe('getValidRangeFieldsValidator', () => {
     expect(csvWorkSheet.csvValidation.rowErrors).to.eql([
       {
         col: 'Header1',
-        errorCode: 'Out of Range',
+        errorCode: SUBMISSION_MESSAGE_TYPE.OUT_OF_RANGE,
         message: 'Invalid value: 11. Value must be less than 10 ',
         row: 2
       }
@@ -383,7 +384,7 @@ describe('getValidRangeFieldsValidator', () => {
     expect(csvWorkSheet.csvValidation.rowErrors).to.eql([
       {
         col: 'Header1',
-        errorCode: 'Out of Range',
+        errorCode: SUBMISSION_MESSAGE_TYPE.OUT_OF_RANGE,
         message: 'Invalid value: 4. Value must be greater than 5 ',
         row: 2
       }
@@ -410,7 +411,7 @@ describe('getValidRangeFieldsValidator', () => {
     expect(csvWorkSheet.csvValidation.rowErrors).to.eql([
       {
         col: 'Header1',
-        errorCode: 'Invalid Value',
+        errorCode: SUBMISSION_MESSAGE_TYPE.INVALID_VALUE,
         message: 'Invalid value: a. Value must be a number ',
         row: 2
       }
@@ -467,7 +468,7 @@ describe('getNumericFieldsValidator', () => {
     expect(csvWorkSheet.csvValidation.rowErrors).to.eql([
       {
         col: 'Header1',
-        errorCode: 'Invalid Value',
+        errorCode: SUBMISSION_MESSAGE_TYPE.INVALID_VALUE,
         message: 'Invalid value: a. Value must be a number ',
         row: 2
       }
@@ -571,7 +572,7 @@ describe('getValidFormatFieldsValidator', () => {
     expect(csvWorkSheet.csvValidation.rowErrors).to.eql([
       {
         col: 'Header1',
-        errorCode: 'Unexpected Format',
+        errorCode: SUBMISSION_MESSAGE_TYPE.UNEXPECTED_FORMAT,
         message: 'Unexpected Format: WPT 1. Must be in the format "WPT X": WPT 11 (case sensitive)',
         row: 2
       }
@@ -598,10 +599,93 @@ describe('getValidFormatFieldsValidator', () => {
     expect(csvWorkSheet.csvValidation.rowErrors).to.eql([
       {
         col: 'Header1',
-        errorCode: 'Unexpected Format',
+        errorCode: SUBMISSION_MESSAGE_TYPE.UNEXPECTED_FORMAT,
         message: 'Unexpected Format: WXT1. Must be in the format "WPT X": WPT 11 (case sensitive)',
         row: 2
       }
     ]);
+  });
+
+  describe('getValidFormatFieldsValidator', () => {
+    it('adds no errors when no config is supplied', () => {
+      const validator = getUniqueColumnsValidator();
+      const worksheet = xlsx.utils.aoa_to_sheet([['Header1'], ['stuff']]);
+      const csvWorkSheet = new CSVWorksheet('Sheet', worksheet);
+
+      validator(csvWorkSheet);
+
+      expect(csvWorkSheet.csvValidation.rowErrors).to.be.empty;
+    });
+
+    it('adds no errors when no columns are specified in config', () => {
+      const config: FileColumnUniqueValidatorConfig = {
+        file_column_unique_validator: {
+          column_names: ['']
+        }
+      };
+      const validator = getUniqueColumnsValidator(config);
+      const worksheet = xlsx.utils.aoa_to_sheet([['Header1'], ['stuff']]);
+      const csvWorkSheet = new CSVWorksheet('Sheet', worksheet);
+
+      validator(csvWorkSheet);
+
+      expect(csvWorkSheet.csvValidation.rowErrors).to.be.empty;
+    });
+
+    it('adds no errors when specified key column is missing from the worksheet', () => {
+      const config: FileColumnUniqueValidatorConfig = {
+        file_column_unique_validator: {
+          column_names: ['Header1', 'Header2']
+        }
+      };
+      const validator = getUniqueColumnsValidator(config);
+      const worksheet = xlsx.utils.aoa_to_sheet([['Header1'], ['stuff']]);
+      const csvWorkSheet = new CSVWorksheet('Sheet', worksheet);
+
+      validator(csvWorkSheet);
+
+      expect(csvWorkSheet.csvValidation.rowErrors).to.be.empty;
+    });
+
+    it('adds no errors when all keys specified are unique', () => {
+      const config: FileColumnUniqueValidatorConfig = {
+        file_column_unique_validator: {
+          column_names: ['Header1', 'Header2']
+        }
+      };
+      const validator = getUniqueColumnsValidator(config);
+      const worksheet = xlsx.utils.aoa_to_sheet([
+        ['Header1', 'Header2', 'Header3'],
+        [1, 2, 3],
+        [2, 2, 3],
+        [3, 2, 3]
+      ]);
+      const csvWorkSheet = new CSVWorksheet('Sheet', worksheet);
+
+      validator(csvWorkSheet);
+
+      expect(csvWorkSheet.csvValidation.rowErrors).to.be.empty;
+    });
+
+    it('adds errors when not all keys are unique', () => {
+      const config: FileColumnUniqueValidatorConfig = {
+        file_column_unique_validator: {
+          column_names: ['Header1', 'Header2']
+        }
+      };
+      const validator = getUniqueColumnsValidator(config);
+      const worksheet = xlsx.utils.aoa_to_sheet([
+        ['Header1', 'Header2', 'Header3'],
+        [1, 2, 3],
+        [2, 2, 3],
+        [2, 2, 3]
+      ]);
+      const csvWorkSheet = new CSVWorksheet('Sheet', worksheet);
+
+      validator(csvWorkSheet);
+
+      expect(csvWorkSheet.csvValidation.rowErrors).to.not.be.empty;
+      expect(csvWorkSheet.csvValidation.rowErrors[0].errorCode).to.be.eql(SUBMISSION_MESSAGE_TYPE.NON_UNIQUE_KEY);
+    });
   });
 });

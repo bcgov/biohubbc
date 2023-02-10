@@ -1,4 +1,5 @@
 import Box from '@material-ui/core/Box';
+import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import React from 'react';
 
@@ -17,19 +18,21 @@ const HorizontalSplitFormComponent: React.FC<IHorizontalSplitFormComponentProps>
   const { title, summary, component } = props;
 
   return (
-    <>
-      <Box width="100%" display="flex" flexWrap="nowrap">
-        <Box width="30%" p={5}>
-          <Typography variant="h2">{title}</Typography>
-          <Box pt={3}>
-            <Typography variant="body2">{summary}</Typography>
-          </Box>
+    <Grid container spacing={3}>
+      <Grid item xs={12} lg={4}>
+        <Typography variant="h3" component="h2">
+          {title}
+        </Typography>
+        <Box pt={2} pb={3} maxWidth="55ch">
+          <Typography variant="body1" color="textSecondary">
+            {summary}
+          </Typography>
         </Box>
-        <Box width="70%" p={5}>
-          {component}
-        </Box>
-      </Box>
-    </>
+      </Grid>
+      <Grid item xs={12} lg={8}>
+        {component}
+      </Grid>
+    </Grid>
   );
 };
 

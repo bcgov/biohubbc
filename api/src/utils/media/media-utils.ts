@@ -56,7 +56,7 @@ export const parseUnknownS3File = (rawMedia: GetObjectOutput): null | MediaFile 
  * Note: Ignores any directory structures, flattening all nested files into a single array.
  *
  * @param {Buffer} zipFile
- * @return {*}  {ArchiveFile}
+ * @return {*}  {MediaFile[]}
  */
 export const parseUnknownZipFile = (zipFile: Buffer): MediaFile[] => {
   const unzippedFile = new AdmZip(zipFile);

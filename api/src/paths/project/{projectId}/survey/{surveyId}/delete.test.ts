@@ -1,15 +1,17 @@
-import { DeleteObjectOutput } from 'aws-sdk/clients/s3';
+import { S3 } from 'aws-sdk';
 import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import SQL from 'sql-template-strings';
 import * as db from '../../../../../database/db';
-import { HTTPError } from '../../../../../errors/custom-error';
-import survey_queries from '../../../../../queries/survey';
+import { HTTPError } from '../../../../../errors/http-error';
+import { IProjectAttachment } from '../../../../../repositories/attachment-repository';
+import { AttachmentService } from '../../../../../services/attachment-service';
+import { PlatformService } from '../../../../../services/platform-service';
+import { SurveyService } from '../../../../../services/survey-service';
 import * as file_utils from '../../../../../utils/file-utils';
 import { getMockDBConnection } from '../../../../../__mocks__/db';
-import * as delete_survey from './delete';
+import * as del from './delete';
 
 chai.use(sinonChai);
 
@@ -18,138 +20,118 @@ describe('deleteSurvey', () => {
     sinon.restore();
   });
 
-  const dbConnectionObj = getMockDBConnection();
-
-  const sampleReq = {
-    keycloak_token: {},
-    params: {
-      projectId: 1,
-      surveyId: 1
-    }
-  } as any;
-
-  let actualResult: any = null;
-
-  const sampleRes = {
-    status: () => {
-      return {
-        json: (result: any) => {
-          actualResult = result;
-        }
-      };
-    }
-  };
-
-  it('should throw an error when surveyId is missing', async () => {
+  it('should throw an error when a failure occurs', async () => {
+    const dbConnectionObj = getMockDBConnection();
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-    try {
-      const result = delete_survey.deleteSurvey();
+    const expectedError = new Error('cannot process request');
+    sinon.stub(AttachmentService.prototype, 'getSurveyAttachments').rejects(expectedError);
 
-      await result(
-        { ...sampleReq, params: { ...sampleReq.params, surveyId: null } },
-        (null as unknown) as any,
-        (null as unknown) as any
-      );
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal('Missing required path param `surveyId`');
-    }
-  });
-
-  it('should throw a 400 error when no sql statement returned', async () => {
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
+    const sampleReq = {
+      keycloak_token: {},
+      body: {},
+      params: {
+        projectId: 1,
+        surveyId: 2
       }
-    });
-
-    sinon.stub(survey_queries, 'getSurveyAttachmentsSQL').returns(null);
+    } as any;
 
     try {
-      const result = delete_survey.deleteSurvey();
+      const result = del.deleteSurvey();
 
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal('Failed to build SQL get statement');
+      expect((actualError as HTTPError).message).to.equal(expectedError.message);
     }
   });
 
-  it('should throw a 400 error when failed to get result for survey attachments', async () => {
-    const mockQuery = sinon.stub();
+  it('should delete Survey if no S3 files deleted return', async () => {
+    const dbConnectionObj = getMockDBConnection();
+    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-    mockQuery.resolves({ rows: null });
+    const sampleReq = {
+      keycloak_token: {},
+      body: {},
+      params: {
+        projectId: 1,
+        surveyId: 2
+      }
+    } as any;
 
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      },
-      query: mockQuery
-    });
+    const getSurveyAttachmentsStub = sinon
+      .stub(AttachmentService.prototype, 'getSurveyAttachments')
+      .resolves([({ key: 'key' } as unknown) as IProjectAttachment]);
 
-    sinon.stub(survey_queries, 'getSurveyAttachmentsSQL').returns(SQL`something`);
+    const deleteSurveyStub = sinon.stub(SurveyService.prototype, 'deleteSurvey').resolves();
 
-    try {
-      const result = delete_survey.deleteSurvey();
+    const fileUtilsStub = sinon
+      .stub(file_utils, 'deleteFileFromS3')
+      .resolves((false as unknown) as S3.DeleteObjectOutput);
 
-      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal('Failed to get survey attachments');
-    }
+    let actualResult: any = null;
+    const sampleRes = {
+      status: () => {
+        return {
+          json: (response: any) => {
+            actualResult = response;
+          }
+        };
+      }
+    };
+
+    const result = del.deleteSurvey();
+
+    await result(sampleReq, (sampleRes as unknown) as any, (null as unknown) as any);
+    expect(actualResult).to.eql(null);
+    expect(getSurveyAttachmentsStub).to.be.calledOnce;
+    expect(deleteSurveyStub).to.be.calledOnce;
+    expect(fileUtilsStub).to.be.calledOnce;
   });
 
-  it('should return null when deleting file from S3 fails', async () => {
-    const mockQuery = sinon.stub();
+  it('should delete Survey in db and s3', async () => {
+    const dbConnectionObj = getMockDBConnection();
+    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-    mockQuery.resolves({ rows: [{ key: 's3Key' }] });
+    const sampleReq = {
+      keycloak_token: {},
+      body: {},
+      params: {
+        projectId: 1,
+        surveyId: 2
+      }
+    } as any;
 
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      },
-      query: mockQuery
-    });
+    const getSurveyAttachmentsStub = sinon
+      .stub(AttachmentService.prototype, 'getSurveyAttachments')
+      .resolves([({ key: 'key' } as unknown) as IProjectAttachment]);
 
-    sinon.stub(survey_queries, 'getSurveyAttachmentsSQL').returns(SQL`something`);
-    sinon.stub(survey_queries, 'deleteSurveySQL').returns(SQL`something`);
-    sinon.stub(file_utils, 'deleteFileFromS3').resolves(null);
+    const deleteSurveyStub = sinon.stub(SurveyService.prototype, 'deleteSurvey').resolves();
 
-    const result = delete_survey.deleteSurvey();
+    const fileUtilsStub = sinon
+      .stub(file_utils, 'deleteFileFromS3')
+      .resolves((true as unknown) as S3.DeleteObjectOutput);
 
-    await result(sampleReq, sampleRes as any, (null as unknown) as any);
+    const submitDwCAMetadataPackageStub = sinon.stub(PlatformService.prototype, 'submitDwCAMetadataPackage').resolves();
 
-    expect(actualResult).to.equal(null);
-  });
+    let actualResult: any = null;
+    const sampleRes = {
+      status: () => {
+        return {
+          json: (response: any) => {
+            actualResult = response;
+          }
+        };
+      }
+    };
 
-  it('should return true boolean response on success', async () => {
-    const mockQuery = sinon.stub();
+    const result = del.deleteSurvey();
 
-    mockQuery.resolves({ rows: [{ key: 's3Key' }] });
-
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      },
-      query: mockQuery
-    });
-
-    sinon.stub(survey_queries, 'getSurveyAttachmentsSQL').returns(SQL`something`);
-    sinon.stub(survey_queries, 'deleteSurveySQL').returns(SQL`something`);
-    sinon.stub(file_utils, 'deleteFileFromS3').resolves('non null response' as DeleteObjectOutput);
-
-    const result = delete_survey.deleteSurvey();
-
-    await result(sampleReq, sampleRes as any, (null as unknown) as any);
-
-    expect(actualResult).to.equal(true);
+    await result(sampleReq, (sampleRes as unknown) as any, (null as unknown) as any);
+    expect(actualResult).to.eql(true);
+    expect(getSurveyAttachmentsStub).to.be.calledOnce;
+    expect(deleteSurveyStub).to.be.calledOnce;
+    expect(fileUtilsStub).to.be.calledOnce;
+    expect(submitDwCAMetadataPackageStub).to.be.calledOnce;
   });
 });

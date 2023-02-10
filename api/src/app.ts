@@ -4,7 +4,7 @@ import multer from 'multer';
 import { OpenAPIV3 } from 'openapi-types';
 import swaggerUIExperss from 'swagger-ui-express';
 import { defaultPoolConfig, initDBPool } from './database/db';
-import { ensureHTTPError, HTTPErrorType } from './errors/custom-error';
+import { ensureHTTPError, HTTPErrorType } from './errors/http-error';
 import { rootAPIDoc } from './openapi/root-api-doc';
 import { authenticateRequest } from './request-handlers/security/authentication';
 import { getLogger } from './utils/logger';
@@ -88,6 +88,11 @@ const openAPIFramework = initialize({
   // If `next` is not included express will silently skip calling the `errorMiddleware` entirely.
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   errorMiddleware: function (error, req, res, next) {
+    if (res.headersSent) {
+      // response has already been sent
+      return;
+    }
+
     // Ensure all errors (intentionally thrown or not) are in the same format as specified by the schema
     const httpError = ensureHTTPError(error);
 
@@ -156,6 +161,13 @@ function validateAllResponses(req: Request, res: Response, next: NextFunction) {
       if (!isStrictValidation || !validationResult?.errors) {
         return json.apply(res, args);
       } else {
+        defaultLog.debug({
+          label: 'validateAllResponses',
+          message: validationMessage,
+          responseBody: body,
+          errors: errorList
+        });
+
         return res.status(500).json({
           name: HTTPErrorType.INTERNAL_SERVER_ERROR,
           status: 500,

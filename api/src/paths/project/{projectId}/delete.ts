@@ -2,7 +2,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../../constants/roles';
 import { getDBConnection } from '../../../database/db';
-import { HTTP400 } from '../../../errors/custom-error';
+import { HTTP400 } from '../../../errors/http-error';
 import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
 import { ProjectService } from '../../../services/project-service';
 import { getLogger } from '../../../utils/logger';
@@ -73,14 +73,13 @@ export function deleteProject(): RequestHandler {
 
     const connection = getDBConnection(req['keycloak_token']);
     const projectId = Number(req.params.projectId);
-    const userRoles = req['system_user']['role_names'];
 
     try {
       await connection.open();
 
       const projectService = new ProjectService(connection);
 
-      const resp = await projectService.deleteProject(projectId, userRoles);
+      const resp = await projectService.deleteProject(projectId);
 
       await connection.commit();
 

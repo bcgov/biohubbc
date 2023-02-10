@@ -2,14 +2,12 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { ATTACHMENT_TYPE } from '../../../../../../../constants/attachments';
 import { PROJECT_ROLE } from '../../../../../../../constants/roles';
-import { getDBConnection, IDBConnection } from '../../../../../../../database/db';
-import { HTTP400 } from '../../../../../../../errors/custom-error';
-import { queries } from '../../../../../../../queries/queries';
+import { getDBConnection } from '../../../../../../../database/db';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
+import { AttachmentService } from '../../../../../../../services/attachment-service';
 import { deleteFileFromS3 } from '../../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../../utils/logger';
 import { attachmentApiDocObject } from '../../../../../../../utils/shared-api-docs';
-import { deleteSurveyReportAttachmentAuthors } from '../report/upload';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/attachments/{attachmentId}/delete');
 
@@ -35,7 +33,8 @@ POST.apiDoc = {
       in: 'path',
       name: 'projectId',
       schema: {
-        type: 'number'
+        type: 'integer',
+        minimum: 1
       },
       required: true
     },
@@ -43,7 +42,8 @@ POST.apiDoc = {
       in: 'path',
       name: 'surveyId',
       schema: {
-        type: 'number'
+        type: 'integer',
+        minimum: 1
       },
       required: true
     },
@@ -51,7 +51,8 @@ POST.apiDoc = {
       in: 'path',
       name: 'attachmentId',
       schema: {
-        type: 'number'
+        type: 'integer',
+        minimum: 1
       },
       required: true
     }
@@ -61,7 +62,13 @@ POST.apiDoc = {
     content: {
       'application/json': {
         schema: {
-          type: 'object'
+          type: 'object',
+          required: ['attachmentType'],
+          properties: {
+            attachmentType: {
+              type: 'string'
+            }
+          }
         }
       }
     }
@@ -92,35 +99,20 @@ export function deleteAttachment(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({ label: 'Delete attachment', message: 'params', req_params: req.params });
 
-    if (!req.params.surveyId) {
-      throw new HTTP400('Missing required path param `surveyId`');
-    }
-
-    if (!req.params.attachmentId) {
-      throw new HTTP400('Missing required path param `attachmentId`');
-    }
-
-    if (!req.body || !req.body.attachmentType) {
-      throw new HTTP400('Missing required body param `attachmentType`');
-    }
-
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
       await connection.open();
 
-      // If the attachment record is currently secured, need to unsecure it prior to deleting it
-      if (req.body.securityToken) {
-        await unsecureSurveyAttachmentRecord(req.body.securityToken, req.body.attachmentType, connection);
-      }
+      const attachmentService = new AttachmentService(connection);
 
       let deleteResult: { key: string };
       if (req.body.attachmentType === ATTACHMENT_TYPE.REPORT) {
-        await deleteSurveyReportAttachmentAuthors(Number(req.params.attachmentId), connection);
+        await attachmentService.deleteSurveyReportAttachmentAuthors(Number(req.params.attachmentId));
 
-        deleteResult = await deleteSurveyReportAttachment(Number(req.params.attachmentId), connection);
+        deleteResult = await attachmentService.deleteSurveyReportAttachment(Number(req.params.attachmentId));
       } else {
-        deleteResult = await deleteSurveyAttachment(Number(req.params.attachmentId), connection);
+        deleteResult = await attachmentService.deleteSurveyAttachment(Number(req.params.attachmentId));
       }
 
       await connection.commit();
@@ -141,65 +133,3 @@ export function deleteAttachment(): RequestHandler {
     }
   };
 }
-
-const unsecureSurveyAttachmentRecord = async (
-  securityToken: any,
-  attachmentType: string,
-  connection: IDBConnection
-): Promise<void> => {
-  const unsecureRecordSQLStatement =
-    attachmentType === 'Report'
-      ? queries.security.unsecureAttachmentRecordSQL('survey_report_attachment', securityToken)
-      : queries.security.unsecureAttachmentRecordSQL('survey_attachment', securityToken);
-
-  if (!unsecureRecordSQLStatement) {
-    throw new HTTP400('Failed to build SQL unsecure record statement');
-  }
-
-  const unsecureRecordSQLResponse = await connection.query(
-    unsecureRecordSQLStatement.text,
-    unsecureRecordSQLStatement.values
-  );
-
-  if (!unsecureRecordSQLResponse || !unsecureRecordSQLResponse.rowCount) {
-    throw new HTTP400('Failed to unsecure record');
-  }
-};
-
-export const deleteSurveyAttachment = async (
-  attachmentId: number,
-  connection: IDBConnection
-): Promise<{ key: string }> => {
-  const sqlStatement = queries.survey.deleteSurveyAttachmentSQL(attachmentId);
-
-  if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL delete project attachment statement');
-  }
-
-  const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
-  if (!response || !response.rowCount) {
-    throw new HTTP400('Failed to delete survey attachment record');
-  }
-
-  return response.rows[0];
-};
-
-export const deleteSurveyReportAttachment = async (
-  attachmentId: number,
-  connection: IDBConnection
-): Promise<{ key: string }> => {
-  const sqlStatement = queries.survey.deleteSurveyReportAttachmentSQL(attachmentId);
-
-  if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL delete project report attachment statement');
-  }
-
-  const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
-  if (!response || !response.rowCount) {
-    throw new HTTP400('Failed to delete survey attachment report record');
-  }
-
-  return response.rows[0];
-};

@@ -3,7 +3,7 @@ import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as db from '../../database/db';
-import { HTTPError } from '../../errors/custom-error';
+import { HTTPError } from '../../errors/http-error';
 import { UserService } from '../../services/user-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../__mocks__/db';
 import * as self from './self';
@@ -40,7 +40,7 @@ describe('getUser', () => {
 
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-    sinon.stub(UserService.prototype, 'getUserById').resolves(null);
+    sinon.stub(UserService.prototype, 'getUserById').resolves(undefined);
 
     try {
       const requestHandler = self.getUser();
@@ -63,6 +63,8 @@ describe('getUser', () => {
     sinon.stub(UserService.prototype, 'getUserById').resolves({
       id: 1,
       user_identifier: 'identifier',
+      user_guid: 'aaaa',
+      identity_source: 'idir',
       record_end_date: '',
       role_ids: [1, 2],
       role_names: ['role 1', 'role 2']

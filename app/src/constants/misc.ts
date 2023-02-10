@@ -9,16 +9,16 @@ export enum AdministrativeActivityStatusType {
 }
 
 export enum ProjectStatusType {
-  UNPUBLISHED = 'Unpublished',
-  PUBLISHED = 'Published',
   COMPLETED = 'Completed',
   ACTIVE = 'Active',
   DRAFT = 'Draft'
 }
 
 export enum SurveyStatusType {
-  UNPUBLISHED = 'Unpublished',
-  PUBLISHED = 'Published',
   COMPLETED = 'Completed',
   ACTIVE = 'Active'
+}
+
+export enum DocumentReviewStatus {
+  PENDING = 'Pending Review'
 }

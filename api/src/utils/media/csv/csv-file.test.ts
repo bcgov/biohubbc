@@ -2,7 +2,8 @@ import { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import xlsx from 'xlsx';
-import { CSVValidation, CSVWorkBook, CSVWorksheet, IHeaderError, IRowError } from './csv-file';
+import { SUBMISSION_MESSAGE_TYPE } from '../../../constants/status';
+import { CSVValidation, CSVWorkBook, CSVWorksheet, IHeaderError, IKeyError, IRowError } from './csv-file';
 
 describe('CSVWorkBook', () => {
   it('constructs with no rawWorkbook param', () => {
@@ -150,13 +151,13 @@ describe('CSVValidation', () => {
       expect(csvValidation).not.to.be.null;
 
       const headerError1: IHeaderError = {
-        errorCode: 'Duplicate Header',
+        errorCode: SUBMISSION_MESSAGE_TYPE.DUPLICATE_HEADER,
         message: 'a header error',
         col: 0
       };
 
       const headerError2: IHeaderError = {
-        errorCode: 'Unknown Header',
+        errorCode: SUBMISSION_MESSAGE_TYPE.UNKNOWN_HEADER,
         message: 'a second header error',
         col: 1
       };
@@ -178,14 +179,14 @@ describe('CSVValidation', () => {
       expect(csvValidation).not.to.be.null;
 
       const rowError1: IRowError = {
-        errorCode: 'Missing Required Field',
+        errorCode: SUBMISSION_MESSAGE_TYPE.MISSING_REQUIRED_FIELD,
         message: 'a row error',
         col: 'col1',
         row: 1
       };
 
       const rowError2: IRowError = {
-        errorCode: 'Missing Required Field',
+        errorCode: SUBMISSION_MESSAGE_TYPE.MISSING_REQUIRED_FIELD,
         message: 'a second row error',
         col: 'col1',
         row: 2
@@ -210,21 +211,29 @@ describe('CSVValidation', () => {
       const fileError1 = 'a file error';
 
       const headerError1: IHeaderError = {
-        errorCode: 'Duplicate Header',
+        errorCode: SUBMISSION_MESSAGE_TYPE.DUPLICATE_HEADER,
         message: 'a header error',
         col: 0
       };
 
       const rowError1: IRowError = {
-        errorCode: 'Missing Required Field',
+        errorCode: SUBMISSION_MESSAGE_TYPE.MISSING_REQUIRED_FIELD,
         message: 'a row error',
         col: 'col1',
         row: 1
       };
 
+      const keyError1: IKeyError = {
+        errorCode: SUBMISSION_MESSAGE_TYPE.DANGLING_PARENT_CHILD_KEY,
+        message: 'a key error',
+        colNames: ['col1', 'col2'],
+        rows: [2, 3, 4]
+      };
+
       csvValidation.addFileErrors([fileError1]);
       csvValidation.addHeaderErrors([headerError1]);
       csvValidation.addRowErrors([rowError1]);
+      csvValidation.addKeyErrors([keyError1]);
 
       const validationState = csvValidation.getState();
 
@@ -233,6 +242,7 @@ describe('CSVValidation', () => {
         fileErrors: [fileError1],
         headerErrors: [headerError1],
         rowErrors: [rowError1],
+        keyErrors: [keyError1],
         isValid: false
       });
     });

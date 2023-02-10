@@ -1,7 +1,11 @@
 import xlsx from 'xlsx';
+import { SUBMISSION_MESSAGE_TYPE } from '../../../constants/status';
+import { safeToLowerCase, safeTrim } from '../../string-utils';
 import { IMediaState, MediaValidation } from '../media-file';
+import { getCellValue, getWorksheetRange, replaceCellDates, trimCellWhitespace } from '../xlsx/xlsx-utils';
 
 export type CSVWorksheets = { [name: string]: CSVWorksheet };
+export type WorkBookValidators = { [name: string]: CSVValidation };
 
 export class CSVWorkBook {
   rawWorkbook: xlsx.WorkBook;
@@ -11,13 +15,34 @@ export class CSVWorkBook {
   constructor(workbook?: xlsx.WorkBook) {
     this.rawWorkbook = workbook || xlsx.utils.book_new();
 
-    const worksheets = {};
+    const worksheets: CSVWorksheets = {};
 
     Object.entries(this.rawWorkbook.Sheets).forEach(([key, value]) => {
       worksheets[key] = new CSVWorksheet(key, value);
     });
 
     this.worksheets = worksheets;
+  }
+
+  /**
+   * Performs all of the given workbook validators on the workbook. Results of the validation
+   * are stored in the `csvValidation` property on each of the worksheets within the workbook. This
+   * method returns the corresponding validations in an object.
+   *
+   * @param {WorkBookValidator[]} validators A series of validators to be run on the workbook
+   * @return {*}  {WorkBookValidation} A key-value pair representing all CSV validations for each worksheet,
+   * where the keys are the names of the worksheets and the values are the corresponding CSV validations.
+   * @memberof CSVWorkBook
+   */
+  validate(validators: WorkBookValidator[]): WorkBookValidation {
+    validators.forEach((validator) => validator(this));
+
+    const validations: WorkBookValidation = {};
+    Object.entries(this.worksheets).forEach(([key, value]) => {
+      validations[key] = value.csvValidation;
+    });
+
+    return validations;
   }
 }
 
@@ -59,15 +84,13 @@ export class CSVWorksheet {
       return [];
     }
 
-    const ref = this.worksheet['!ref'];
+    const originalRange = getWorksheetRange(this.worksheet);
 
-    if (!ref) {
+    if (!originalRange) {
       return [];
     }
 
     if (!this._headers.length) {
-      const originalRange = xlsx.utils.decode_range(ref);
-
       // Specify range to only include the 0th row (header row)
       const customRange: xlsx.Range = { ...originalRange, e: { ...originalRange.e, r: 0 } };
 
@@ -79,7 +102,7 @@ export class CSVWorksheet {
 
       if (aoaHeaders.length > 0) {
         // Parse the headers array from the array of arrays produced by calling `xlsx.utils.sheet_to_json`
-        this._headers = aoaHeaders[0].map((item) => item?.trim());
+        this._headers = aoaHeaders[0].map(safeTrim);
       }
     }
 
@@ -88,7 +111,7 @@ export class CSVWorksheet {
 
   getHeadersLowerCase(): string[] {
     if (!this._headersLowerCase.length) {
-      this._headersLowerCase = this.getHeaders().map((item) => item?.toLowerCase());
+      this._headersLowerCase = this.getHeaders().map(safeToLowerCase);
     }
 
     return this._headersLowerCase;
@@ -111,16 +134,14 @@ export class CSVWorksheet {
       return [];
     }
 
-    const ref = this.worksheet['!ref'];
+    const originalRange = getWorksheetRange(this.worksheet);
 
-    if (!ref) {
+    if (!originalRange) {
       return [];
     }
 
     if (!this._rows.length) {
       const rowsToReturn: string[][] = [];
-
-      const originalRange = xlsx.utils.decode_range(ref);
 
       for (let i = 1; i <= originalRange.e.r; i++) {
         const row = new Array(this.getHeaders().length);
@@ -129,17 +150,13 @@ export class CSVWorksheet {
         for (let j = 0; j <= originalRange.e.c; j++) {
           const cellAddress = { c: j, r: i };
           const cellRef = xlsx.utils.encode_cell(cellAddress);
-          const cellValue = this.worksheet[cellRef];
+          const cell = this.worksheet[cellRef];
 
-          if (!cellValue) {
+          if (!cell) {
             continue;
           }
 
-          // Some cell types (like dates) store different interpretations of the raw value in different properties of
-          // the `cellValue`. In these cases, always try and return the string version `w`, before returning the
-          // raw version `v`.
-          // See https://www.npmjs.com/package/xlsx -> Cell Object
-          row[j] = cellValue.w || cellValue.v;
+          row[j] = getCellValue(trimCellWhitespace(replaceCellDates(cell)));
 
           rowHasValues = true;
         }
@@ -205,6 +222,14 @@ export class CSVWorksheet {
     return row[headerIndex];
   }
 
+  /**
+   * Runs all of the given validators on the worksheet, whereby the results of all validations
+   * are stored in `this.csvValidation`.
+   *
+   * @param {CSVValidator[]} validators A series of CSV validators to be run on the worksheet.
+   * @return {*}  {CSVValidation} The result of all validations, namely `this.csvValidation`.
+   * @memberof CSVWorksheet
+   */
   validate(validators: CSVValidator[]): CSVValidation {
     validators.forEach((validator) => validator(this));
 
@@ -213,38 +238,44 @@ export class CSVWorksheet {
 }
 
 export type CSVValidator = (csvWorksheet: CSVWorksheet) => CSVWorksheet;
+export type WorkBookValidator = (csvWorkBook: CSVWorkBook) => CSVWorkBook;
 
 // ensure these error codes match the 'name' column in the table: submission_message_type
 
-export type IHeaderErrorCode =
-  | 'Duplicate Header'
-  | 'Unknown Header'
-  | 'Missing Required Header'
-  | 'Missing Recommended Header'
-  | 'Miscellaneous';
-
-export type IRowErrorCode =
-  | 'Missing Required Field'
-  | 'Unexpected Format'
-  | 'Out of Range'
-  | 'Invalid Value'
-  | 'Miscellaneous';
-
 export interface IHeaderError {
-  errorCode: IHeaderErrorCode;
+  errorCode:
+    | SUBMISSION_MESSAGE_TYPE.DUPLICATE_HEADER
+    | SUBMISSION_MESSAGE_TYPE.UNKNOWN_HEADER
+    | SUBMISSION_MESSAGE_TYPE.MISSING_RECOMMENDED_HEADER
+    | SUBMISSION_MESSAGE_TYPE.MISSING_REQUIRED_HEADER;
   message: string;
   col: string | number;
 }
 
 export interface IRowError {
-  errorCode: IRowErrorCode;
+  errorCode:
+    | SUBMISSION_MESSAGE_TYPE.MISSING_REQUIRED_FIELD
+    | SUBMISSION_MESSAGE_TYPE.OUT_OF_RANGE
+    | SUBMISSION_MESSAGE_TYPE.INVALID_VALUE
+    | SUBMISSION_MESSAGE_TYPE.UNEXPECTED_FORMAT
+    | SUBMISSION_MESSAGE_TYPE.NON_UNIQUE_KEY
+    | SUBMISSION_MESSAGE_TYPE.DANGLING_PARENT_CHILD_KEY;
   message: string;
   col: string;
   row: number;
 }
+
+export interface IKeyError {
+  errorCode: SUBMISSION_MESSAGE_TYPE.DANGLING_PARENT_CHILD_KEY;
+  message: string;
+  colNames: string[];
+  rows: number[];
+}
+
 export interface ICsvState extends IMediaState {
   headerErrors: IHeaderError[];
   rowErrors: IRowError[];
+  keyErrors: IKeyError[];
 }
 
 /**
@@ -257,12 +288,14 @@ export interface ICsvState extends IMediaState {
 export class CSVValidation extends MediaValidation {
   headerErrors: IHeaderError[];
   rowErrors: IRowError[];
+  keyErrors: IKeyError[];
 
   constructor(fileName: string) {
     super(fileName);
 
     this.headerErrors = [];
     this.rowErrors = [];
+    this.keyErrors = [];
   }
 
   addHeaderErrors(errors: IHeaderError[]) {
@@ -285,13 +318,24 @@ export class CSVValidation extends MediaValidation {
     }
   }
 
+  addKeyErrors(errors: IKeyError[]) {
+    this.keyErrors = this.keyErrors.concat(errors);
+
+    if (errors?.length) {
+      this.isValid = false;
+    }
+  }
+
   getState(): ICsvState {
     return {
       fileName: this.fileName,
       fileErrors: this.fileErrors,
       headerErrors: this.headerErrors,
       rowErrors: this.rowErrors,
+      keyErrors: this.keyErrors,
       isValid: this.isValid
     };
   }
 }
+
+export type WorkBookValidation = { [name: string]: CSVValidation };

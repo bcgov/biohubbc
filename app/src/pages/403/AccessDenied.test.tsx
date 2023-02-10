@@ -1,6 +1,6 @@
 import { fireEvent, render } from '@testing-library/react';
 import { SYSTEM_ROLE } from 'constants/roles';
-import { AuthStateContext } from 'contexts/authStateContext';
+import { AuthStateContext, IAuthState } from 'contexts/authStateContext';
 import { createMemoryHistory } from 'history';
 import React from 'react';
 import { Router } from 'react-router-dom';
@@ -10,7 +10,7 @@ const history = createMemoryHistory();
 
 describe('AccessDenied', () => {
   it('redirects to `/` when user is not authenticated', () => {
-    const authState = {
+    const authState = ({
       keycloakWrapper: {
         keycloak: {
           authenticated: false
@@ -25,11 +25,9 @@ describe('AccessDenied', () => {
         username: 'testusername',
         displayName: 'testdisplayname',
         email: 'test@email.com',
-        firstName: 'testfirst',
-        lastName: 'testlast',
         refresh: () => {}
       }
-    };
+    } as any) as IAuthState;
 
     const history = createMemoryHistory();
 
@@ -43,11 +41,11 @@ describe('AccessDenied', () => {
       </AuthStateContext.Provider>
     );
 
-    expect(history.location.pathname).toEqual('/');
+    expect(history.location.pathname).toEqual('/forbidden');
   });
 
   it('renders a spinner when user is authenticated and `hasLoadedAllUserInfo` is false', () => {
-    const authState = {
+    const authState = ({
       keycloakWrapper: {
         keycloak: {
           authenticated: true
@@ -62,11 +60,9 @@ describe('AccessDenied', () => {
         username: 'testusername',
         displayName: 'testdisplayname',
         email: 'test@email.com',
-        firstName: 'testfirst',
-        lastName: 'testlast',
         refresh: () => {}
       }
-    };
+    } as any) as IAuthState;
 
     const history = createMemoryHistory();
 
@@ -88,7 +84,7 @@ describe('AccessDenied', () => {
   });
 
   it('redirects to `/request-submitted` when user is authenticated and has a pending access request', () => {
-    const authState = {
+    const authState = ({
       keycloakWrapper: {
         keycloak: {
           authenticated: true
@@ -103,11 +99,9 @@ describe('AccessDenied', () => {
         username: 'testusername',
         displayName: 'testdisplayname',
         email: 'test@email.com',
-        firstName: 'testfirst',
-        lastName: 'testlast',
         refresh: () => {}
       }
-    };
+    } as any) as IAuthState;
 
     const history = createMemoryHistory();
 
@@ -125,7 +119,7 @@ describe('AccessDenied', () => {
   });
 
   it('renders correctly when the user is authenticated and has no pending access requests', () => {
-    const authState = {
+    const authState = ({
       keycloakWrapper: {
         keycloak: {
           authenticated: true
@@ -140,11 +134,9 @@ describe('AccessDenied', () => {
         username: 'testusername',
         displayName: 'testdisplayname',
         email: 'test@email.com',
-        firstName: 'testfirst',
-        lastName: 'testlast',
         refresh: () => {}
       }
-    };
+    } as any) as IAuthState;
 
     const { getByText, queryByTestId } = render(
       <AuthStateContext.Provider value={authState}>
@@ -159,7 +151,7 @@ describe('AccessDenied', () => {
   });
 
   it('redirects to `/access-request` when the `Request Access` button clicked', () => {
-    const authState = {
+    const authState = ({
       keycloakWrapper: {
         keycloak: {
           authenticated: true
@@ -174,11 +166,9 @@ describe('AccessDenied', () => {
         username: 'testusername',
         displayName: 'testdisplayname',
         email: 'test@email.com',
-        firstName: 'testfirst',
-        lastName: 'testlast',
         refresh: () => {}
       }
-    };
+    } as any) as IAuthState;
 
     const { getByText, getByTestId } = render(
       <AuthStateContext.Provider value={authState}>

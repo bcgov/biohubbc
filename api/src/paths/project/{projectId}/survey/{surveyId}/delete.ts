@@ -1,10 +1,11 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../../../../constants/roles';
-import { getDBConnection, IDBConnection } from '../../../../../database/db';
-import { HTTP400 } from '../../../../../errors/custom-error';
-import { queries } from '../../../../../queries/queries';
+import { getDBConnection } from '../../../../../database/db';
 import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
+import { AttachmentService } from '../../../../../services/attachment-service';
+import { PlatformService } from '../../../../../services/platform-service';
+import { SurveyService } from '../../../../../services/survey-service';
 import { deleteFileFromS3 } from '../../../../../utils/file-utils';
 import { getLogger } from '../../../../../utils/logger';
 
@@ -76,11 +77,8 @@ DELETE.apiDoc = {
 
 export function deleteSurvey(): RequestHandler {
   return async (req, res) => {
-    defaultLog.debug({ label: 'Delete survey', message: 'params', req_params: req.params });
-
-    if (!req.params.surveyId) {
-      throw new HTTP400('Missing required path param `surveyId`');
-    }
+    const projectId = Number(req.params.projectId);
+    const surveyId = Number(req.params.surveyId);
 
     const connection = getDBConnection(req['keycloak_token']);
 
@@ -91,15 +89,17 @@ export function deleteSurvey(): RequestHandler {
        * Get the attachment S3 keys for all attachments associated to this survey
        * Used to delete them from S3 separately later
        */
-      const surveyAttachmentS3Keys: string[] = await getSurveyAttachmentS3Keys(Number(req.params.surveyId), connection);
+      const attachmentService = new AttachmentService(connection);
+
+      const surveyAttachments = await attachmentService.getSurveyAttachments(surveyId);
+      const surveyAttachmentS3Keys: string[] = surveyAttachments.map((attachment) => attachment.key);
 
       /**
        * PART 2
        * Delete the survey and all associated records/resources from our DB
        */
-      const deleteSurveySQLStatement = queries.survey.deleteSurveySQL(Number(req.params.surveyId));
-
-      await connection.query(deleteSurveySQLStatement.text, deleteSurveySQLStatement.values);
+      const surveyService = new SurveyService(connection);
+      await surveyService.deleteSurvey(surveyId);
 
       /**
        * PART 3
@@ -109,6 +109,14 @@ export function deleteSurvey(): RequestHandler {
 
       if (deleteResult.some((deleteResult) => !deleteResult)) {
         return res.status(200).json(null);
+      }
+
+      try {
+        const platformService = new PlatformService(connection);
+        await platformService.submitDwCAMetadataPackage(projectId);
+      } catch (error) {
+        // Don't fail the rest of the endpoint if submitting metadata fails
+        defaultLog.error({ label: 'deleteSurvey->submitDwCAMetadataPackage', message: 'error', error });
       }
 
       await connection.commit();
@@ -123,22 +131,3 @@ export function deleteSurvey(): RequestHandler {
     }
   };
 }
-
-export const getSurveyAttachmentS3Keys = async (surveyId: number, connection: IDBConnection) => {
-  const getSurveyAttachmentSQLStatement = queries.survey.getSurveyAttachmentsSQL(surveyId);
-
-  if (!getSurveyAttachmentSQLStatement) {
-    throw new HTTP400('Failed to build SQL get statement');
-  }
-
-  const getResult = await connection.query(
-    getSurveyAttachmentSQLStatement.text,
-    getSurveyAttachmentSQLStatement.values
-  );
-
-  if (!getResult || !getResult.rows) {
-    throw new HTTP400('Failed to get survey attachments');
-  }
-
-  return getResult.rows.map((attachment: any) => attachment.key);
-};

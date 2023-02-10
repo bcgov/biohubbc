@@ -4,7 +4,7 @@ import OpenAPIResponseValidator, { OpenAPIResponseValidatorArgs } from 'openapi-
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as db from '../../../../../database/db';
-import { HTTPError } from '../../../../../errors/custom-error';
+import { HTTPError } from '../../../../../errors/http-error';
 import { SurveyObject } from '../../../../../models/survey-view';
 import { SurveyService } from '../../../../../services/survey-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../__mocks__/db';
@@ -26,7 +26,6 @@ describe('survey/{surveyId}/view', () => {
               end_date: '2020-05-05',
               biologist_first_name: 'first',
               biologist_last_name: 'last',
-              publish_date: '',
               revision_count: 1
             },
             species: {
@@ -97,7 +96,6 @@ describe('survey/{surveyId}/view', () => {
               end_date: '2020-05-05',
               biologist_first_name: 'first',
               biologist_last_name: 'last',
-              publish_date: null,
               revision_count: 1
             },
             species: {

@@ -4,12 +4,10 @@ import { describe } from 'mocha';
 import { QueryResult } from 'pg';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import SQL from 'sql-template-strings';
 import { PROJECT_ROLE, SYSTEM_ROLE } from '../../constants/roles';
 import * as db from '../../database/db';
-import { HTTPError } from '../../errors/custom-error';
+import { HTTPError } from '../../errors/http-error';
 import { ProjectUserObject, UserObject } from '../../models/user';
-import project_participation_queries from '../../queries/project-participation';
 import { UserService } from '../../services/user-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../__mocks__/db';
 import * as authorization from './authorization';
@@ -755,30 +753,11 @@ describe('getProjectUserWithRoles', function () {
     expect(result).to.be.null;
   });
 
-  it('returns null if the get user by id SQL statement is null', async function () {
-    const mockDBConnection = getMockDBConnection({ systemUserId: () => 1 });
-    sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
-
-    const mockUsersByIdSQLResponse = null;
-    sinon
-      .stub(project_participation_queries, 'getProjectParticipationBySystemUserSQL')
-      .returns(mockUsersByIdSQLResponse);
-
-    const result = await authorization.getProjectUserWithRoles(1, mockDBConnection);
-
-    expect(result).to.be.null;
-  });
-
   it('returns the first row of the response', async function () {
     const mockResponseRow = { 'Test Column': 'Test Value' };
     const mockQueryResponse = ({ rowCount: 1, rows: [mockResponseRow] } as unknown) as QueryResult<any>;
     const mockDBConnection = getMockDBConnection({ systemUserId: () => 1, query: async () => mockQueryResponse });
     sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
-
-    const mockUsersByIdSQLResponse = SQL`Test SQL Statement`;
-    sinon
-      .stub(project_participation_queries, 'getProjectParticipationBySystemUserSQL')
-      .returns(mockUsersByIdSQLResponse);
 
     const result = await authorization.getProjectUserWithRoles(1, mockDBConnection);
 

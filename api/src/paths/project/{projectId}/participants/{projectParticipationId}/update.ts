@@ -2,12 +2,11 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../../../../constants/roles';
 import { getDBConnection } from '../../../../../database/db';
-import { HTTP400, HTTP500 } from '../../../../../errors/custom-error';
+import { HTTP400, HTTP500 } from '../../../../../errors/http-error';
 import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
 import { ProjectService } from '../../../../../services/project-service';
 import { getLogger } from '../../../../../utils/logger';
 import { doAllProjectsHaveAProjectLead } from '../../../../user/{userId}/delete';
-import { deleteProjectParticipationRecord } from './delete';
 
 const defaultLog = getLogger('/api/project/{projectId}/participants/{projectParticipationId}/update');
 
@@ -39,7 +38,8 @@ PUT.apiDoc = {
       in: 'path',
       name: 'projectId',
       schema: {
-        type: 'number'
+        type: 'integer',
+        minimum: 1
       },
       required: true
     },
@@ -47,7 +47,8 @@ PUT.apiDoc = {
       in: 'path',
       name: 'projectParticipationId',
       schema: {
-        type: 'number'
+        type: 'integer',
+        minimum: 1
       },
       required: true
     }
@@ -60,7 +61,8 @@ PUT.apiDoc = {
           required: ['roleId'],
           properties: {
             roleId: {
-              type: 'number'
+              type: 'integer',
+              minimum: 1
             }
           }
         }
@@ -91,19 +93,9 @@ PUT.apiDoc = {
 
 export function updateProjectParticipantRole(): RequestHandler {
   return async (req, res) => {
-    defaultLog.debug({ label: 'updateProjectParticipantRole', message: 'params', req_params: req.params });
-
-    if (!req.params.projectId) {
-      throw new HTTP400('Missing required path param `projectId`');
-    }
-
-    if (!req.params.projectParticipationId) {
-      throw new HTTP400('Missing required path param `projectParticipationId`');
-    }
-
-    if (!req.body.roleId) {
-      throw new HTTP400('Missing required body param `roleId`');
-    }
+    const projectId = Number(req.params.projectId);
+    const projectParticipationId = Number(req.params.projectParticipationId);
+    const roleId = Number(req.body.roleId);
 
     const connection = getDBConnection(req['keycloak_token']);
 
@@ -117,7 +109,7 @@ export function updateProjectParticipantRole(): RequestHandler {
       const projectHasLeadResponse1 = doAllProjectsHaveAProjectLead(projectParticipantsResponse1);
 
       // Delete the user's old participation record, returning the old record
-      const result = await deleteProjectParticipationRecord(Number(req.params.projectParticipationId), connection);
+      const result = await projectService.deleteProjectParticipationRecord(projectParticipationId);
 
       if (!result || !result.system_user_id) {
         // The delete result is missing necessary data, fail the request
@@ -125,9 +117,9 @@ export function updateProjectParticipantRole(): RequestHandler {
       }
 
       await projectService.addProjectParticipant(
-        Number(req.params.projectId),
+        projectId,
         Number(result.system_user_id), // get the user's system id from the old participation record
-        Number(req.body.roleId)
+        roleId
       );
 
       // If Project Lead roles are invalid skip check to prevent removal of only Project Lead of project

@@ -1,26 +1,79 @@
 import AWS from 'aws-sdk';
-import { DeleteObjectOutput, GetObjectOutput, ManagedUpload, Metadata } from 'aws-sdk/clients/s3';
+import {
+  DeleteObjectOutput,
+  GetObjectOutput,
+  HeadObjectOutput,
+  ListObjectsOutput,
+  ManagedUpload,
+  Metadata
+} from 'aws-sdk/clients/s3';
 import clamd from 'clamdjs';
 import { S3_ROLE } from '../constants/roles';
+import { SUBMISSION_MESSAGE_TYPE } from '../constants/status';
+import { SubmissionErrorFromMessageType } from './submission-error';
 
-const ClamAVScanner =
-  (process.env.ENABLE_FILE_VIRUS_SCAN === 'true' &&
-    process.env.CLAMAV_HOST &&
-    process.env.CLAMAV_PORT &&
-    clamd.createScanner(process.env.CLAMAV_HOST, Number(process.env.CLAMAV_PORT))) ||
-  null;
+/**
+ * Local getter for retrieving the ClamAV client.
+ *
+ * @returns {*} {clamd.ClamScanner | null} The ClamAV Scanner if `process.env.ENABLE_FILE_VIRUS_SCAN` is set to
+ * 'true' and other appropriate environment variables are set; `null` otherwise.
+ */
+export const _getClamAvScanner = (): clamd.ClamScanner | null => {
+  if (process.env.ENABLE_FILE_VIRUS_SCAN === 'true' && process.env.CLAMAV_HOST && process.env.CLAMAV_PORT) {
+    return clamd.createScanner(process.env.CLAMAV_HOST, Number(process.env.CLAMAV_PORT));
+  }
 
-const OBJECT_STORE_BUCKET_NAME = process.env.OBJECT_STORE_BUCKET_NAME || '';
-const OBJECT_STORE_URL = process.env.OBJECT_STORE_URL || 'nrs.objectstore.gov.bc.ca';
-const AWS_ENDPOINT = new AWS.Endpoint(OBJECT_STORE_URL);
-const S3 = new AWS.S3({
-  endpoint: AWS_ENDPOINT.href,
-  accessKeyId: process.env.OBJECT_STORE_ACCESS_KEY_ID,
-  secretAccessKey: process.env.OBJECT_STORE_SECRET_KEY_ID,
-  signatureVersion: 'v4',
-  s3ForcePathStyle: true,
-  region: 'ca-central-1'
-});
+  return null;
+};
+
+/**
+ * Local getter for retrieving the S3 client.
+ *
+ * @returns {*} {AWS.S3} The S3 client
+ */
+export const _getS3Client = (): AWS.S3 => {
+  const awsEndpoint = new AWS.Endpoint(_getObjectStoreUrl());
+
+  return new AWS.S3({
+    endpoint: awsEndpoint.href,
+    accessKeyId: process.env.OBJECT_STORE_ACCESS_KEY_ID,
+    secretAccessKey: process.env.OBJECT_STORE_SECRET_KEY_ID,
+    signatureVersion: 'v4',
+    s3ForcePathStyle: true,
+    region: 'ca-central-1'
+  });
+};
+
+/**
+ * Local getter for retrieving the S3 object store URL.
+ *
+ * @returns {*} {string} The object store URL
+ */
+export const _getObjectStoreUrl = (): string => {
+  return process.env.OBJECT_STORE_URL || 'nrs.objectstore.gov.bc.ca';
+};
+
+/**
+ * Local getter for retrieving the S3 object store bucket name.
+ *
+ * @returns {*} {string} The object store bucket name
+ */
+export const _getObjectStoreBucketName = (): string => {
+  return process.env.OBJECT_STORE_BUCKET_NAME || '';
+};
+
+/**
+ * Returns the S3 host URL. It optionally takes an S3 key as a parameter, which produces
+ * a full URL to the given file in S3.
+ *
+ * @export
+ * @param {string} [key] The key to an object in S3
+ * @returns {*} {string} The s3 host URL
+ */
+export const getS3HostUrl = (key?: string): string => {
+  // Appends the given S3 object key, trimming between 0 and 2 trailing '/' characters
+  return `${_getObjectStoreUrl()}/${_getObjectStoreBucketName()}/${key || ''}`.replace(/\/{0,2}$/, '');
+};
 
 /**
  * Delete a file from S3, based on its key.
@@ -33,11 +86,12 @@ const S3 = new AWS.S3({
  * @returns {Promise<GetObjectOutput>} the response from S3 or null if required parameters are null
  */
 export async function deleteFileFromS3(key: string): Promise<DeleteObjectOutput | null> {
-  if (!key) {
+  const s3Client = _getS3Client();
+  if (!key || !s3Client) {
     return null;
   }
 
-  return S3.deleteObject({ Bucket: OBJECT_STORE_BUCKET_NAME, Key: key }).promise();
+  return s3Client.deleteObject({ Bucket: _getObjectStoreBucketName(), Key: key }).promise();
 }
 
 /**
@@ -56,14 +110,18 @@ export async function uploadFileToS3(
   key: string,
   metadata: Metadata = {}
 ): Promise<ManagedUpload.SendData> {
-  return S3.upload({
-    Bucket: OBJECT_STORE_BUCKET_NAME,
-    Body: file.buffer,
-    ContentType: file.mimetype,
-    Key: key,
-    ACL: S3_ROLE.AUTH_READ,
-    Metadata: metadata
-  }).promise();
+  const s3Client = _getS3Client();
+
+  return s3Client
+    .upload({
+      Bucket: _getObjectStoreBucketName(),
+      Body: file.buffer,
+      ContentType: file.mimetype,
+      Key: key,
+      ACL: S3_ROLE.AUTH_READ,
+      Metadata: metadata
+    })
+    .promise();
 }
 
 export async function uploadBufferToS3(
@@ -72,14 +130,21 @@ export async function uploadBufferToS3(
   key: string,
   metadata: Metadata = {}
 ): Promise<ManagedUpload.SendData> {
-  return S3.upload({
-    Bucket: OBJECT_STORE_BUCKET_NAME,
-    Body: buffer,
-    ContentType: mimetype,
-    Key: key,
-    ACL: S3_ROLE.AUTH_READ,
-    Metadata: metadata
-  }).promise();
+  const s3Client = _getS3Client();
+
+  return s3Client
+    .upload({
+      Bucket: _getObjectStoreBucketName(),
+      Body: buffer,
+      ContentType: mimetype,
+      Key: key,
+      ACL: S3_ROLE.AUTH_READ,
+      Metadata: metadata
+    })
+    .promise()
+    .catch(() => {
+      throw SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_UPLOAD_FILE_TO_S3);
+    });
 }
 
 /**
@@ -91,11 +156,45 @@ export async function uploadBufferToS3(
  * @return {*}  {Promise<GetObjectOutput>}
  */
 export async function getFileFromS3(key: string, versionId?: string): Promise<GetObjectOutput> {
-  return S3.getObject({
-    Bucket: OBJECT_STORE_BUCKET_NAME,
-    Key: key,
-    VersionId: versionId
-  }).promise();
+  const s3Client = _getS3Client();
+
+  return s3Client
+    .getObject({
+      Bucket: _getObjectStoreBucketName(),
+      Key: key,
+      VersionId: versionId
+    })
+    .promise()
+    .catch(() => {
+      throw SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_GET_FILE_FROM_S3);
+    });
+}
+
+/**
+ * Fetchs a list of files in S3 at the given path
+ *
+ * @export
+ * @param {string} path the path (Prefix) of the directory in S3
+ * @return {*}  {Promise<ListObjectsOutput>} All objects at the given path, also including
+ * the directory itself.
+ */
+export const listFilesFromS3 = async (path: string): Promise<ListObjectsOutput> => {
+  const s3Client = _getS3Client();
+
+  return s3Client.listObjects({ Bucket: _getObjectStoreBucketName(), Prefix: path }).promise();
+};
+
+/**
+ * Retrieves all metadata for the given S3 object, including custom HTTP headers.
+ *
+ * @export
+ * @param {string} key the key of the object
+ * @returns {*} {Promise<HeadObjectOutput}
+ */
+export async function getObjectMeta(key: string): Promise<HeadObjectOutput> {
+  const s3Client = _getS3Client();
+
+  return s3Client.headObject({ Bucket: _getObjectStoreBucketName(), Key: key }).promise();
 }
 
 /**
@@ -105,12 +204,14 @@ export async function getFileFromS3(key: string, versionId?: string): Promise<Ge
  * @returns {Promise<string>} the response from S3 or null if required parameters are null
  */
 export async function getS3SignedURL(key: string): Promise<string | null> {
-  if (!key) {
+  const s3Client = _getS3Client();
+
+  if (!key || !s3Client) {
     return null;
   }
 
-  return S3.getSignedUrl('getObject', {
-    Bucket: OBJECT_STORE_BUCKET_NAME,
+  return s3Client.getSignedUrl('getObject', {
+    Bucket: _getObjectStoreBucketName(),
     Key: key,
     Expires: 300000 // 5 minutes
   });
@@ -160,6 +261,8 @@ export function generateS3FileKey(options: IS3FileKey): string {
 }
 
 export async function scanFileForVirus(file: Express.Multer.File): Promise<boolean> {
+  const ClamAVScanner = _getClamAvScanner();
+
   // if virus scan is not to be performed/cannot be performed
   if (!ClamAVScanner) {
     return true;

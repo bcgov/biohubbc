@@ -45,8 +45,8 @@ const investment_action_category: IInvestmentActionCategoryOption[] = [
 ];
 
 describe('ProjectFundingForm', () => {
-  it('renders correctly with default empty values', () => {
-    const { baseElement } = render(
+  it('renders correctly with default empty values', async () => {
+    const { queryByText } = render(
       <Formik
         initialValues={ProjectFundingFormInitialValues}
         validationSchema={ProjectFundingFormYupSchema}
@@ -62,27 +62,31 @@ describe('ProjectFundingForm', () => {
       </Formik>
     );
 
-    expect(baseElement).toMatchSnapshot();
+    await waitFor(() => {
+      expect(queryByText('Add Funding Source')).toBeInTheDocument();
+    });
   });
 
-  it('renders correctly with existing funding values', () => {
+  it('renders correctly with existing funding values', async () => {
     const existingFormValues: IProjectFundingForm = {
-      funding_sources: [
-        {
-          id: 11,
-          agency_id: 1,
-          investment_action_category: 1,
-          investment_action_category_name: 'Action 23',
-          agency_project_id: '111',
-          funding_amount: 222,
-          start_date: '2021-03-14',
-          end_date: '2021-04-14',
-          revision_count: 23
-        }
-      ]
+      funding: {
+        fundingSources: [
+          {
+            id: 11,
+            agency_id: 1,
+            investment_action_category: 1,
+            investment_action_category_name: 'Action 23',
+            agency_project_id: '111',
+            funding_amount: 222,
+            start_date: '2021-03-14',
+            end_date: '2021-04-14',
+            revision_count: 23
+          }
+        ]
+      }
     };
 
-    const { baseElement } = render(
+    const { queryByText } = render(
       <Formik
         initialValues={existingFormValues}
         validationSchema={ProjectFundingFormYupSchema}
@@ -93,35 +97,40 @@ describe('ProjectFundingForm', () => {
       </Formik>
     );
 
-    expect(baseElement).toMatchSnapshot();
+    await waitFor(() => {
+      expect(queryByText('Add Funding Source')).toBeInTheDocument();
+      expect(queryByText('111')).toBeInTheDocument();
+    });
   });
 
   it('shows add funding source dialog on add click', async () => {
     const existingFormValues: IProjectFundingForm = {
-      funding_sources: [
-        {
-          id: 11,
-          agency_id: 1,
-          investment_action_category: 1,
-          investment_action_category_name: 'action 1',
-          agency_project_id: '111',
-          funding_amount: 222,
-          start_date: '2021-03-14',
-          end_date: '2021-04-14',
-          revision_count: 23
-        },
-        {
-          id: 12,
-          agency_id: 2,
-          investment_action_category: 2,
-          investment_action_category_name: 'category 1',
-          agency_project_id: '112',
-          funding_amount: 223,
-          start_date: '2021-03-15',
-          end_date: '2021-04-15',
-          revision_count: 24
-        }
-      ]
+      funding: {
+        fundingSources: [
+          {
+            id: 11,
+            agency_id: 1,
+            investment_action_category: 1,
+            investment_action_category_name: 'action 1',
+            agency_project_id: '111',
+            funding_amount: 222,
+            start_date: '2021-03-14',
+            end_date: '2021-04-14',
+            revision_count: 23
+          },
+          {
+            id: 12,
+            agency_id: 2,
+            investment_action_category: 2,
+            investment_action_category_name: 'category 1',
+            agency_project_id: '112',
+            funding_amount: 223,
+            start_date: '2021-03-15',
+            end_date: '2021-04-15',
+            revision_count: 24
+          }
+        ]
+      }
     };
 
     const { getByTestId, queryByText } = render(
@@ -149,19 +158,21 @@ describe('ProjectFundingForm', () => {
   it('shows edit funding source dialog on edit click', async () => {
     await act(async () => {
       const existingFormValues: IProjectFundingForm = {
-        funding_sources: [
-          {
-            id: 11,
-            agency_id: 1,
-            investment_action_category: 1,
-            investment_action_category_name: 'action 1',
-            agency_project_id: '111',
-            funding_amount: 222,
-            start_date: '2021-03-14',
-            end_date: '2021-04-14',
-            revision_count: 23
-          }
-        ]
+        funding: {
+          fundingSources: [
+            {
+              id: 11,
+              agency_id: 1,
+              investment_action_category: 1,
+              investment_action_category_name: 'action 1',
+              agency_project_id: '111',
+              funding_amount: 222,
+              start_date: '2021-03-14',
+              end_date: '2021-04-14',
+              revision_count: 23
+            }
+          ]
+        }
       };
 
       const { getByTestId, getByText, queryByText } = render(
@@ -197,19 +208,21 @@ describe('ProjectFundingForm', () => {
   it('deletes funding source dialog on delete click', async () => {
     await act(async () => {
       const existingFormValues: IProjectFundingForm = {
-        funding_sources: [
-          {
-            id: 11,
-            agency_id: 1,
-            investment_action_category: 1,
-            investment_action_category_name: 'action 1',
-            agency_project_id: '111',
-            funding_amount: 222,
-            start_date: '2021-03-14',
-            end_date: '2021-04-14',
-            revision_count: 23
-          }
-        ]
+        funding: {
+          fundingSources: [
+            {
+              id: 11,
+              agency_id: 1,
+              investment_action_category: 1,
+              investment_action_category_name: 'action 1',
+              agency_project_id: '111',
+              funding_amount: 222,
+              start_date: '2021-03-14',
+              end_date: '2021-04-14',
+              revision_count: 23
+            }
+          ]
+        }
       };
 
       const { getByTestId, queryByTestId } = render(

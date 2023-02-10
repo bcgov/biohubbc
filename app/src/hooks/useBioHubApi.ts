@@ -6,11 +6,10 @@ import useAxios from './api/useAxios';
 import useCodesApi from './api/useCodesApi';
 import useDraftApi from './api/useDraftApi';
 import useExternalApi from './api/useExternalApi';
-import useN8NApi from './api/useN8NApi';
 import useObservationApi from './api/useObservationApi';
-import usePermitApi from './api/usePermitApi';
-import useProjectApi, { usePublicProjectApi } from './api/useProjectApi';
-import useSearchApi, { usePublicSearchApi } from './api/useSearchApi';
+import useProjectApi from './api/useProjectApi';
+import useResourcesApi from './api/useResourcesApi';
+import useSearchApi from './api/useSearchApi';
 import useSurveyApi from './api/useSurveyApi';
 import useTaxonomyApi from './api/useTaxonomyApi';
 import useUserApi from './api/useUserApi';
@@ -23,11 +22,8 @@ import useUserApi from './api/useUserApi';
 export const useBiohubApi = () => {
   const config = useContext(ConfigContext);
   const apiAxios = useAxios(config?.API_HOST);
-  const n8nAxios = useAxios(config?.N8N_HOST);
 
   const project = useProjectApi(apiAxios);
-
-  const permit = usePermitApi(apiAxios);
 
   const search = useSearchApi(apiAxios);
 
@@ -45,28 +41,21 @@ export const useBiohubApi = () => {
 
   const observation = useObservationApi(apiAxios);
 
-  const n8n = useN8NApi(n8nAxios);
+  const resources = useResourcesApi(apiAxios);
 
   const external = useExternalApi(axios);
 
-  const publicApis = {
-    project: usePublicProjectApi(apiAxios),
-    search: usePublicSearchApi(apiAxios)
-  };
-
   return {
     project,
-    permit,
     search,
     taxonomy,
     survey,
     observation,
+    resources,
     codes,
     draft,
     user,
     admin,
-    n8n,
-    external,
-    public: publicApis
+    external
   };
 };

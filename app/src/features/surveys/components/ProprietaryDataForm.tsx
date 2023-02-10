@@ -66,7 +66,7 @@ export const ProprietaryDataYupSchema = yup.object().shape({
     proprietor_name: yup
       .string()
       .when('survey_data_proprietary', { is: 'true', then: yup.string().required('Required') }),
-    first_nations_id: yup.number().when('survey_data_category', { is: 2, then: yup.number().min(1, 'required') }),
+    first_nations_id: yup.number().when('proprietary_data_category', { is: 2, then: yup.number().min(1, 'required') }),
     category_rationale: yup
       .string()
       .max(3000, 'Cannot exceed 3000 characters')
@@ -138,7 +138,7 @@ const ProprietaryDataForm: React.FC<IProprietaryDataFormProps> = (props) => {
                   <Typography component="span">Learn more</Typography>
                 </Button>
               </Typography>
-              <Box mt={2}>
+              <Box mt={1}>
                 <RadioGroup
                   name="proprietor.survey_data_proprietary"
                   aria-label="Survey Data Proprietary"
@@ -162,84 +162,92 @@ const ProprietaryDataForm: React.FC<IProprietaryDataFormProps> = (props) => {
             </FormControl>
           </Grid>
           {values.proprietor?.survey_data_proprietary === 'true' && (
-            <>
-              <Grid item xs={12}>
-                <Typography>Proprietary Information</Typography>
-              </Grid>
-              <Grid item xs={12}>
-                <AutocompleteField
-                  id="proprietary_data_category"
-                  name="proprietor.proprietary_data_category"
-                  label="Proprietary Data Category"
-                  options={props.proprietary_data_category}
-                  onChange={(event, option) => {
-                    // Reset proprietor_name and first_nations_id if user changes proprietary_data_category from
-                    // `First Nations Land` to any other option. This is because the `First Nations Land` category is
-                    // based on a dropdown, where as the other options are free-text and only one of `proprietor_name` or
-                    // `first_nations_id` should be populated at a time.
-                    if (
-                      isProprietaryDataCategoryAFirstNation(values.proprietor?.proprietary_data_category) &&
-                      !isProprietaryDataCategoryAFirstNation(option?.value)
-                    ) {
-                      resetField('proprietor.first_nations_id');
-                      resetField('proprietor.proprietor_name');
-                    }
+            <Grid item xs={12}>
+              <Box component="fieldset">
+                <Typography component="legend" variant="h5">
+                  Proprietary Information
+                </Typography>
+                <Grid container spacing={3}>
+                  <Grid item xs={12}>
+                    <AutocompleteField
+                      id="proprietary_data_category"
+                      name="proprietor.proprietary_data_category"
+                      label="Proprietary Data Category"
+                      options={props.proprietary_data_category}
+                      onChange={(event, option) => {
+                        // Reset proprietor_name and first_nations_id if user changes proprietary_data_category from
+                        // `First Nations Land` to any other option. This is because the `First Nations Land` category is
+                        // based on a dropdown, where as the other options are free-text and only one of `proprietor_name` or
+                        // `first_nations_id` should be populated at a time.
+                        if (
+                          isProprietaryDataCategoryAFirstNation(values.proprietor?.proprietary_data_category) &&
+                          !isProprietaryDataCategoryAFirstNation(option?.value)
+                        ) {
+                          resetField('proprietor.first_nations_id');
+                          resetField('proprietor.proprietor_name');
+                        }
 
-                    // Reset proprietor_name if user changes proprietary_data_category from any other option to
-                    // `First Nations Land`. This is because the other options are free-text, where as the
-                    // `First Nations Land` category is based on a dropdown, and only one of `proprietor_name` or
-                    // `first_nations_id` should be populated at a time.
-                    if (
-                      !isProprietaryDataCategoryAFirstNation(values.proprietor?.proprietary_data_category) &&
-                      isProprietaryDataCategoryAFirstNation(option?.value)
-                    ) {
-                      resetField('proprietor.proprietor_name');
-                    }
+                        // Reset proprietor_name if user changes proprietary_data_category from any other option to
+                        // `First Nations Land`. This is because the other options are free-text, where as the
+                        // `First Nations Land` category is based on a dropdown, and only one of `proprietor_name` or
+                        // `first_nations_id` should be populated at a time.
+                        if (
+                          !isProprietaryDataCategoryAFirstNation(values.proprietor?.proprietary_data_category) &&
+                          isProprietaryDataCategoryAFirstNation(option?.value)
+                        ) {
+                          resetField('proprietor.proprietor_name');
+                        }
 
-                    setFieldValue('proprietor.proprietary_data_category', option?.value);
-                  }}
-                  required={true}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                {isProprietaryDataCategoryAFirstNation(values.proprietor?.proprietary_data_category) && (
-                  <AutocompleteField
-                    id="first_nations_id"
-                    name="proprietor.first_nations_id"
-                    label="Proprietor Name"
-                    options={props.first_nations}
-                    onChange={(event, option) => {
-                      // Set the first nations id field for sending to the API
-                      setFieldValue('proprietor.first_nations_id', option?.value);
-                      setFieldValue('proprietor.proprietor_name', option?.label);
-                    }}
-                    required={true}
-                  />
-                )}
-                {!isProprietaryDataCategoryAFirstNation(values.proprietor?.proprietary_data_category) && (
-                  <CustomTextField
-                    name="proprietor.proprietor_name"
-                    label="Proprietor Name"
-                    other={{
-                      required: true
-                    }}
-                  />
-                )}
-              </Grid>
-              <Grid item xs={12}>
-                <CustomTextField
-                  name="proprietor.category_rationale"
-                  label="Category Rationale"
-                  other={{ multiline: true, required: true, rows: 4 }}
-                />
-              </Grid>
-              <Grid item xs={12}>
+                        setFieldValue('proprietor.proprietary_data_category', option?.value);
+                      }}
+                      required={true}
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    {isProprietaryDataCategoryAFirstNation(values.proprietor?.proprietary_data_category) && (
+                      <AutocompleteField
+                        id="first_nations_id"
+                        name="proprietor.first_nations_id"
+                        label="Proprietor Name"
+                        options={props.first_nations}
+                        onChange={(event, option) => {
+                          // Set the first nations id field for sending to the API
+                          setFieldValue('proprietor.first_nations_id', option?.value);
+                          setFieldValue('proprietor.proprietor_name', option?.label);
+                        }}
+                        required={true}
+                      />
+                    )}
+                    {!isProprietaryDataCategoryAFirstNation(values.proprietor?.proprietary_data_category) && (
+                      <CustomTextField
+                        name="proprietor.proprietor_name"
+                        label="Proprietor Name"
+                        other={{
+                          required: true
+                        }}
+                      />
+                    )}
+                  </Grid>
+                  <Grid item xs={12}>
+                    <CustomTextField
+                      name="proprietor.category_rationale"
+                      label="Category Rationale"
+                      other={{ multiline: true, required: true, rows: 4 }}
+                    />
+                  </Grid>
+                </Grid>
+              </Box>
+              <Box mt={5}>
                 <FormControl
                   required={true}
                   component="fieldset"
                   error={touched.proprietor?.disa_required && Boolean(errors.proprietor?.disa_required)}>
-                  <Typography component="legend">Data and Information Sharing Agreement (DISA)</Typography>
-                  <Typography>Do you require a data and information sharing agreement?</Typography>
+                  <Typography component="legend" variant="h5">
+                    Data and Information Sharing Agreement (DISA)
+                  </Typography>
+                  <Typography variant="body1" color="textSecondary">
+                    Do you require a data and information sharing agreement?
+                  </Typography>
                   <Box mt={2}>
                     <RadioGroup
                       name="proprietor.disa_required"
@@ -252,8 +260,8 @@ const ProprietaryDataForm: React.FC<IProprietaryDataFormProps> = (props) => {
                     </RadioGroup>
                   </Box>
                 </FormControl>
-              </Grid>
-            </>
+              </Box>
+            </Grid>
           )}
         </Grid>
       </form>

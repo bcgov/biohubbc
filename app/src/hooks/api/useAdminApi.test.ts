@@ -1,5 +1,10 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
+import {
+  IAccessRequestDataObject,
+  IgcNotifyGenericMessage,
+  IgcNotifyRecipient
+} from 'interfaces/useAdminApi.interface';
 import useAdminApi from './useAdminApi';
 
 describe('useAdminApi', () => {
@@ -16,7 +21,10 @@ describe('useAdminApi', () => {
   it('sendGCNotification works as expected', async () => {
     mock.onPost('/api/gcnotify/send').reply(200);
 
-    const result = await useAdminApi(axios).sendGCNotification({ emailAddress: 'test@@email.com' }, { body: 'test' });
+    const result = await useAdminApi(axios).sendGCNotification(
+      ({ emailAddress: 'test@@email.com' } as unknown) as IgcNotifyRecipient,
+      ({ body: 'test' } as unknown) as IgcNotifyGenericMessage
+    );
 
     expect(result).toEqual(true);
   });
@@ -49,7 +57,9 @@ describe('useAdminApi', () => {
       date: '2020/04/04'
     });
 
-    const result = await useAdminApi(axios).createAdministrativeActivity({ key: 'value' });
+    const result = await useAdminApi(axios).createAdministrativeActivity(({
+      key: 'value'
+    } as unknown) as IAccessRequestDataObject);
 
     expect(result).toEqual({
       id: 2,
@@ -65,18 +75,10 @@ describe('useAdminApi', () => {
     expect(result).toEqual(10);
   });
 
-  it('addSystemUserRoles works as expected', async () => {
-    mock.onPost(`/api/user/1/system-roles/create`).reply(200, true);
-
-    const result = await useAdminApi(axios).addSystemUserRoles(1, [2]);
-
-    expect(result).toEqual(true);
-  });
-
   it('addSystemUser works as expected', async () => {
     mock.onPost(`/api/user/add`).reply(200, true);
 
-    const result = await useAdminApi(axios).addSystemUser('userIdentifier', 'identitySource', 1);
+    const result = await useAdminApi(axios).addSystemUser('userGuid', 'userIdentifier', 'identitySource', 1);
 
     expect(result).toEqual(true);
   });

@@ -1,4 +1,4 @@
-import { Feature } from 'geojson';
+import { Feature, FeatureCollection } from 'geojson';
 
 export interface IGetSubmissionCSVForViewItem {
   name: string;
@@ -10,12 +10,13 @@ export interface IGetSubmissionCSVForViewResponse {
   data: IGetSubmissionCSVForViewItem[];
 }
 
+export type ObservationSubmissionMessageSeverityLabel = 'Notice' | 'Error' | 'Warning';
+
 interface IGetObservationSubmissionResponseMessages {
-  id: number;
-  status: string;
-  class: string;
-  type: string;
-  message: string;
+  severityLabel: ObservationSubmissionMessageSeverityLabel;
+  messageTypeLabel: string;
+  messageStatus: string;
+  messages: { id: number; message: string }[];
 }
 
 /**
@@ -27,8 +28,9 @@ interface IGetObservationSubmissionResponseMessages {
 export interface IGetObservationSubmissionResponse {
   id: number;
   inputFileName: string;
-  status: string;
-  messages: IGetObservationSubmissionResponseMessages[];
+  status?: string;
+  isValidating: boolean;
+  messageTypes: IGetObservationSubmissionResponseMessages[];
 }
 
 export interface IGetObservationSubmissionErrorListResponse {
@@ -52,4 +54,17 @@ export interface IGetOccurrencesForViewResponseDetails {
   organismQuantityType: string;
   occurrenceId: number;
   eventDate: string;
+}
+
+export type EmptyObject = Record<string, never>;
+
+export interface ITaxaData {
+  associated_taxa?: string;
+  vernacular_name?: string;
+  submission_spatial_component_id: number;
+}
+
+export interface ISpatialData {
+  taxa_data: ITaxaData[];
+  spatial_data: FeatureCollection | EmptyObject;
 }

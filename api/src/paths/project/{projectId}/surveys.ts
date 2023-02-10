@@ -2,7 +2,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../../constants/roles';
 import { getDBConnection } from '../../../database/db';
-import { HTTP400 } from '../../../errors/custom-error';
+import { HTTP400 } from '../../../errors/http-error';
 import { geoJsonFeature } from '../../../openapi/schemas/geoJson';
 import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
 import { SurveyService } from '../../../services/survey-service';
@@ -64,7 +64,6 @@ GET.apiDoc = {
                     'biologist_last_name',
                     'start_date',
                     'geometry',
-                    'publish_date',
                     'survey_area_name',
                     'survey_name',
                     'revision_count'
@@ -94,11 +93,6 @@ GET.apiDoc = {
                       items: {
                         ...(geoJsonFeature as object)
                       }
-                    },
-                    publish_date: {
-                      oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
-                      nullable: true,
-                      description: 'Determines if the record has been published'
                     },
                     survey_area_name: {
                       type: 'string'
@@ -145,17 +139,27 @@ GET.apiDoc = {
                   }
                 },
                 permit: {
-                  description: 'Survey Permit',
                   type: 'object',
-                  required: ['permit_number', 'permit_type'],
+                  description: 'Survey Permit Information',
                   properties: {
-                    permit_number: {
-                      type: 'string',
-                      nullable: true
-                    },
-                    permit_type: {
-                      type: 'string',
-                      nullable: true
+                    permits: {
+                      description: 'Survey Permits',
+                      type: 'array',
+                      items: {
+                        required: ['permit_id', 'permit_number', 'permit_type'],
+                        properties: {
+                          permit_id: {
+                            type: 'number',
+                            minimum: 1
+                          },
+                          permit_number: {
+                            type: 'string'
+                          },
+                          permit_type: {
+                            type: 'string'
+                          }
+                        }
+                      }
                     }
                   }
                 },
@@ -204,8 +208,7 @@ GET.apiDoc = {
                     'additional_details',
                     'intended_outcome_id',
                     'ecological_season_id',
-                    'vantage_code_ids',
-                    'surveyed_all_areas'
+                    'vantage_code_ids'
                   ],
                   properties: {
                     field_method_id: {
@@ -228,10 +231,6 @@ GET.apiDoc = {
                       items: {
                         type: 'number'
                       }
-                    },
-                    surveyed_all_areas: {
-                      type: 'string',
-                      enum: ['true', 'false']
                     }
                   }
                 },
@@ -273,6 +272,9 @@ GET.apiDoc = {
                       type: 'string'
                     }
                   }
+                },
+                docs_to_be_reviewed: {
+                  type: 'number'
                 }
               }
             }

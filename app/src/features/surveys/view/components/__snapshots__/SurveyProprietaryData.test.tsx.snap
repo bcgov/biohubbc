@@ -9,11 +9,11 @@ exports[`SurveyProprietaryData renders correctly 1`] = `
       class="MuiToolbar-root MuiToolbar-regular"
       style="justify-content: space-between;"
     >
-      <h3
-        class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+      <h4
+        class="MuiTypography-root MuiTypography-h4 MuiTypography-colorInherit"
       >
         Proprietary Data
-      </h3>
+      </h4>
       <div
         class="MuiBox-root MuiBox-root-2"
       >
@@ -43,9 +43,7 @@ exports[`SurveyProprietaryData renders correctly 1`] = `
                 />
               </svg>
             </span>
-            <strong>
-              Edit
-            </strong>
+            Edit
           </span>
           <span
             class="MuiTouchRipple-root"

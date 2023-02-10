@@ -27,17 +27,6 @@ describe('useObservationApi', () => {
     expect(result.inputFileName).toEqual('file.txt');
   });
 
-  it('initiateScrapeOccurrences works as expected', async () => {
-    const projectId = 1;
-    const submissionId = 1;
-
-    mock.onPost(`/api/dwc/scrape-occurrences`).reply(200, true);
-
-    const result = await useObservationApi(axios).initiateScrapeOccurrences(projectId, submissionId);
-
-    expect(result).toEqual(true);
-  });
-
   it('deleteObservationSubmission works as expected', async () => {
     const submissionId = 1;
 
@@ -95,53 +84,12 @@ describe('useObservationApi', () => {
   it('initiateXLSXSubmissionTransform works as expected', async () => {
     const projectId = 1;
     const submissionId = 2;
+    const surveyId = 3;
     mock.onPost(`/api/xlsx/transform`).reply(200, true);
 
-    const result = await useObservationApi(axios).initiateXLSXSubmissionTransform(projectId, submissionId);
+    const result = await useObservationApi(axios).initiateXLSXSubmissionTransform(projectId, submissionId, surveyId);
 
     expect(result).toEqual(true);
-  });
-
-  it('initiateXLSXSubmissionValidation works as expected', async () => {
-    const projectId = 1;
-    const submissionId = 2;
-    mock.onPost(`/api/xlsx/validate`).reply(200, true);
-
-    const result = await useObservationApi(axios).initiateXLSXSubmissionValidation(projectId, submissionId);
-
-    expect(result).toEqual(true);
-  });
-
-  it('initiateDwCSubmissionValidation works as expected', async () => {
-    const projectId = 1;
-    const submissionId = 2;
-    mock.onPost(`/api/dwc/validate`).reply(200, true);
-
-    const result = await useObservationApi(axios).initiateDwCSubmissionValidation(projectId, submissionId);
-
-    expect(result).toEqual(true);
-  });
-
-  it('getSubmissionCSVForView works as expected', async () => {
-    const submissionId = 2;
-    const data = [
-      {
-        name: 'name 1',
-        headers: ['header 1', 'header 2'],
-        rows: [
-          ['row 1', 'row 1 again'],
-          ['row 2', 'row 2 again']
-        ]
-      }
-    ];
-
-    mock
-      .onGet(`/api/project/${projectId}/survey/${surveyId}/observation/submission/${submissionId}/view`)
-      .reply(200, { data });
-
-    const result = await useObservationApi(axios).getSubmissionCSVForView(projectId, surveyId, submissionId);
-
-    expect(result.data[0].name).toEqual('name 1');
   });
 
   it('getOccurrencesForView works as expected', async () => {
@@ -168,9 +116,11 @@ describe('useObservationApi', () => {
   it('processOccurrences works as expected', async () => {
     const projectId = 1;
     const submissionId = 2;
+    const surveyId = 3;
+
     mock.onPost(`/api/xlsx/process`).reply(200, true);
 
-    const result = await useObservationApi(axios).processOccurrences(projectId, submissionId);
+    const result = await useObservationApi(axios).processOccurrences(projectId, submissionId, surveyId);
 
     expect(result).toEqual(true);
   });

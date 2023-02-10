@@ -2,10 +2,9 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import SQL from 'sql-template-strings';
 import * as db from '../../../../../../../database/db';
-import { HTTPError } from '../../../../../../../errors/custom-error';
-import survey_queries from '../../../../../../../queries/survey';
+import { HTTPError } from '../../../../../../../errors/http-error';
+import { SurveyService } from '../../../../../../../services/survey-service';
 import * as file_utils from '../../../../../../../utils/file-utils';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../../__mocks__/db';
 import * as upload from './upload';
@@ -203,11 +202,13 @@ describe('uploadObservationSubmission', () => {
       systemUserId: () => {
         return 20;
       },
-      query: mockQuery
+      knex: mockQuery
     });
 
     sinon.stub(file_utils, 'scanFileForVirus').resolves(true);
-    sinon.stub(survey_queries, 'insertSurveyOccurrenceSubmissionSQL').returns(SQL`some query`);
+    sinon
+      .stub(SurveyService.prototype, 'insertSurveyOccurrenceSubmission')
+      .resolves({ submissionId: (undefined as unknown) as number });
 
     const requestHandler = upload.uploadMedia();
 
@@ -217,52 +218,6 @@ describe('uploadObservationSubmission', () => {
     } catch (actualError) {
       expect((actualError as HTTPError).status).to.equal(400);
       expect((actualError as HTTPError).message).to.equal('Failed to insert survey occurrence submission record');
-    }
-  });
-
-  it('should throw a 400 error when it fails to get the update SQL', async () => {
-    const dbConnectionObj = getMockDBConnection();
-
-    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
-
-    mockReq.params = {
-      projectId: '1',
-      surveyId: '2'
-    };
-    mockReq.files = [
-      {
-        fieldname: 'media',
-        originalname: 'test.txt',
-        encoding: '7bit',
-        mimetype: 'text/plain',
-        size: 340
-      }
-    ] as any;
-
-    const mockQuery = sinon.stub();
-
-    mockQuery.onCall(0).resolves({ rowCount: 1, rows: [{ id: 1 }] });
-
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      },
-      query: mockQuery
-    });
-
-    sinon.stub(file_utils, 'scanFileForVirus').resolves(true);
-    sinon.stub(survey_queries, 'insertSurveyOccurrenceSubmissionSQL').returns(SQL`some query`);
-    sinon.stub(survey_queries, 'updateSurveyOccurrenceSubmissionSQL').returns(null);
-
-    const requestHandler = upload.uploadMedia();
-
-    try {
-      await requestHandler(mockReq, mockRes, mockNext);
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal('Failed to build SQL update statement');
     }
   });
 
@@ -287,20 +242,18 @@ describe('uploadObservationSubmission', () => {
 
     const mockQuery = sinon.stub();
 
-    mockQuery.onCall(0).resolves({ rowCount: 1, rows: [{ id: 1 }] });
-    mockQuery.onCall(1).resolves(null);
+    mockQuery.onCall(0).resolves({ rowCount: 1, rows: [{ submissionId: 1 }] });
+    mockQuery.onCall(1).resolves({ rowCount: 1, rows: [{ submissionId: undefined }] });
 
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
       systemUserId: () => {
         return 20;
       },
-      query: mockQuery
+      knex: mockQuery
     });
 
     sinon.stub(file_utils, 'scanFileForVirus').resolves(true);
-    sinon.stub(survey_queries, 'insertSurveyOccurrenceSubmissionSQL').returns(SQL`some query`);
-    sinon.stub(survey_queries, 'updateSurveyOccurrenceSubmissionSQL').returns(SQL`some query`);
 
     const requestHandler = upload.uploadMedia();
 
@@ -334,20 +287,18 @@ describe('uploadObservationSubmission', () => {
 
     const mockQuery = sinon.stub();
 
-    mockQuery.onCall(0).resolves({ rowCount: 1, rows: [{ id: 1 }] });
-    mockQuery.onCall(1).resolves({ rowCount: 1, rows: [{ id: 1 }] });
+    mockQuery.onCall(0).resolves({ rowCount: 1, rows: [{ submissionId: 1 }] });
+    mockQuery.onCall(1).resolves({ rowCount: 1, rows: [{ submissionId: 1 }] });
 
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
       systemUserId: () => {
         return 20;
       },
-      query: mockQuery
+      knex: mockQuery
     });
 
     sinon.stub(file_utils, 'scanFileForVirus').resolves(true);
-    sinon.stub(survey_queries, 'insertSurveyOccurrenceSubmissionSQL').returns(SQL`some query`);
-    sinon.stub(survey_queries, 'updateSurveyOccurrenceSubmissionSQL').returns(SQL`some query`);
     sinon.stub(file_utils, 'uploadFileToS3').rejects('Failed to insert occurrence submission data');
 
     const requestHandler = upload.uploadMedia();
@@ -385,71 +336,24 @@ describe('uploadObservationSubmission', () => {
 
     const mockQuery = sinon.stub();
 
-    mockQuery.onCall(0).resolves({ rowCount: 1, rows: [{ id: 1 }] });
-    mockQuery.onCall(1).resolves({ rowCount: 1, rows: [{ id: 1 }] });
-    mockQuery.onCall(2).resolves({ rowCount: 1, rows: [{ id: 1 }] });
+    mockQuery.onCall(0).resolves({ rowCount: 1, rows: [{ submissionId: 1 }] });
+    mockQuery.onCall(1).resolves({ rowCount: 1, rows: [{ submissionId: 1 }] });
+    mockQuery.onCall(2).resolves({ rowCount: 1, rows: [{ submissionId: 1 }] });
 
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
       systemUserId: () => {
         return 20;
       },
-      query: mockQuery
+      knex: mockQuery
     });
 
     sinon.stub(file_utils, 'scanFileForVirus').resolves(true);
-    sinon.stub(survey_queries, 'insertSurveyOccurrenceSubmissionSQL').returns(SQL`some query`);
-    sinon.stub(survey_queries, 'updateSurveyOccurrenceSubmissionSQL').returns(SQL`some query`);
     sinon.stub(file_utils, 'uploadFileToS3').resolves({ key: 'projects/1/surveys/1/test.txt' } as any);
 
     const requestHandler = upload.uploadMedia();
 
     await requestHandler(mockReq, mockRes, mockNext);
     expect(mockRes.statusValue).to.equal(200);
-  });
-
-  it('should throw a 400 error when it fails to get the insertSurveyOccurrenceSubmissionSQL SQL', async () => {
-    const dbConnectionObj = getMockDBConnection();
-
-    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
-
-    mockReq.params = {
-      projectId: '1',
-      surveyId: '2'
-    };
-    mockReq.files = [
-      {
-        fieldname: 'media',
-        originalname: 'test.txt',
-        encoding: '7bit',
-        mimetype: 'text/plain',
-        size: 340
-      }
-    ] as any;
-
-    const mockQuery = sinon.stub();
-
-    mockQuery.onCall(0).resolves({ rowCount: 1, rows: [{ id: 1 }] });
-
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      },
-      query: mockQuery
-    });
-
-    sinon.stub(file_utils, 'scanFileForVirus').resolves(true);
-    sinon.stub(survey_queries, 'insertSurveyOccurrenceSubmissionSQL').returns(null);
-
-    const requestHandler = upload.uploadMedia();
-
-    try {
-      await requestHandler(mockReq, mockRes, mockNext);
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal('Failed to build SQL insert statement');
-    }
   });
 });

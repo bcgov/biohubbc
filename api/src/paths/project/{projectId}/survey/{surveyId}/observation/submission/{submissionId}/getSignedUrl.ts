@@ -2,9 +2,9 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../../database/db';
-import { HTTP400 } from '../../../../../../../../errors/custom-error';
-import { queries } from '../../../../../../../../queries/queries';
+import { HTTP400 } from '../../../../../../../../errors/http-error';
 import { authorizeRequestHandler } from '../../../../../../../../request-handlers/security/authorization';
+import { OccurrenceService } from '../../../../../../../../services/occurrence-service';
 import { getS3SignedURL } from '../../../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../../../utils/logger';
 import { attachmentApiDocObject } from '../../../../../../../../utils/shared-api-docs';
@@ -92,25 +92,14 @@ export function getSingleSubmissionURL(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const getSurveyOccurrenceSubmissionSQLStatement = queries.survey.getSurveyOccurrenceSubmissionSQL(
-        Number(req.params.submissionId)
-      );
-
-      if (!getSurveyOccurrenceSubmissionSQLStatement) {
-        throw new HTTP400('Failed to build SQL get statement');
-      }
-
       await connection.open();
+      const occurrenceService = new OccurrenceService(connection);
 
-      const result = await connection.query(
-        getSurveyOccurrenceSubmissionSQLStatement.text,
-        getSurveyOccurrenceSubmissionSQLStatement.values
-      );
+      const result = await occurrenceService.getOccurrenceSubmission(Number(req.params.submissionId));
 
       await connection.commit();
 
-      const s3Key = result && result.rows.length && result.rows[0].input_key;
-      const s3SignedUrl = await getS3SignedURL(s3Key);
+      const s3SignedUrl = await getS3SignedURL(result.input_key);
 
       if (!s3SignedUrl) {
         return res.status(200).json(null);

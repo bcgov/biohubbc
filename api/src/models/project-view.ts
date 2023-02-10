@@ -5,7 +5,6 @@ import { COMPLETION_STATUS } from '../constants/status';
 export interface IGetProject {
   id: number;
   coordinator: GetCoordinatorData;
-  permit: GetPermitData;
   project: GetProjectData;
   objectives: GetObjectivesData;
   location: GetLocationData;
@@ -29,7 +28,6 @@ export class GetProjectData {
   end_date: string;
   comments: string;
   completion_status: string;
-  publish_date: string;
   revision_count: number;
 
   constructor(projectData?: any, activityData?: any[]) {
@@ -46,7 +44,6 @@ export class GetProjectData {
         moment(projectData.end_date).endOf('day').isBefore(moment()) &&
         COMPLETION_STATUS.COMPLETED) ||
       COMPLETION_STATUS.ACTIVE;
-    this.publish_date = String(projectData?.publish_date || '');
     this.revision_count = projectData?.revision_count ?? null;
   }
 }
@@ -90,33 +87,6 @@ export class GetCoordinatorData {
     this.coordinator_agency = coordinatorData?.coordinator_agency_name || '';
     this.share_contact_details = coordinatorData?.coordinator_public ? 'true' : 'false';
     this.revision_count = coordinatorData?.revision_count ?? null;
-  }
-}
-
-export interface IGetPermit {
-  permit_number: string;
-  permit_type: string;
-}
-
-/**
- * Pre-processes GET /projects/{id} permit data
- *
- * @export
- * @class GetPermitData
- */
-export class GetPermitData {
-  permits: IGetPermit[];
-
-  constructor(permitData?: any[]) {
-    this.permits =
-      (permitData?.length &&
-        permitData.map((item: any) => {
-          return {
-            permit_number: item.number,
-            permit_type: item.type
-          };
-        })) ||
-      [];
   }
 }
 
@@ -221,5 +191,82 @@ export class GetPartnershipsData {
       (indigenous_partnerships?.length && indigenous_partnerships.map((item: any) => item.id)) || [];
     this.stakeholder_partnerships =
       (stakeholder_partnerships?.length && stakeholder_partnerships.map((item: any) => item.partnership_name)) || [];
+  }
+}
+
+interface IGetAttachmentsSource {
+  file_name: string;
+  file_type: string;
+  title: string;
+  description: string;
+  key: string;
+  file_size: string;
+}
+
+/**
+ * Pre-processes GET /projects/{id} attachments data
+ *
+ * @export
+ * @class GetAttachmentsData
+ */
+export class GetAttachmentsData {
+  attachmentDetails: IGetAttachmentsSource[];
+
+  constructor(attachments?: any[]) {
+    this.attachmentDetails =
+      (attachments?.length &&
+        attachments.map((item: any) => {
+          return {
+            file_name: item.file_name,
+            file_type: item.file_type,
+            title: item.title,
+            description: item.description,
+            key: item.key,
+            file_size: item.file_size
+          };
+        })) ||
+      [];
+  }
+}
+
+interface IGetReportAttachmentsSource {
+  file_name: string;
+  title: string;
+  year: string;
+  description: string;
+  key: string;
+  file_size: string;
+  authors?: { author: string }[];
+}
+
+/**
+ * Pre-processes GET /projects/{id} report attachments data
+ *
+ * @export
+ * @class GetReportAttachmentsData
+ */
+export class GetReportAttachmentsData {
+  attachmentDetails: IGetReportAttachmentsSource[];
+
+  constructor(attachments?: any[]) {
+    this.attachmentDetails =
+      (attachments?.length &&
+        attachments.map((item: any) => {
+          const attachmentItem = {
+            file_name: item.file_name,
+            title: item.title,
+            year: item.year,
+            description: item.description,
+            key: item.key,
+            file_size: item.file_size
+          };
+
+          if (item.authors?.length) {
+            attachmentItem['authors'] = item.authors;
+          }
+
+          return attachmentItem;
+        })) ||
+      [];
   }
 }

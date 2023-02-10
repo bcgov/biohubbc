@@ -5,12 +5,13 @@ import {
   IAddProjectParticipant,
   ICreateProjectRequest,
   ICreateProjectResponse,
+  IGetAttachmentDetails,
   IGetProjectAttachmentsResponse,
   IGetProjectForUpdateResponse,
   IGetProjectForViewResponse,
   IGetProjectParticipantsResponse,
   IGetProjectsListResponse,
-  IGetReportMetaData,
+  IGetReportDetails,
   IGetUserProjectsListResponse,
   IProjectAdvancedFilterRequest,
   IUpdateProjectRequest,
@@ -67,18 +68,15 @@ const useProjectApi = (axios: AxiosInstance) => {
    * @param {number} projectId
    * @param {number} attachmentId
    * @param {string} attachmentType
-   * @param {any} securityToken
    * @returns {*} {Promise<number>}
    */
   const deleteProjectAttachment = async (
     projectId: number,
     attachmentId: number,
-    attachmentType: string,
-    securityToken: string
+    attachmentType: string
   ): Promise<number> => {
     const { data } = await axios.post(`/api/project/${projectId}/attachments/${attachmentId}/delete`, {
-      attachmentType,
-      securityToken
+      attachmentType
     });
 
     return data;
@@ -285,49 +283,6 @@ const useProjectApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Make security status of project attachment secure.
-   *
-   * @param {number} projectId
-   * @param {number} attachmentId
-   * @param {string} attachmentType
-   * @return {*}  {Promise<any>}
-   */
-  const makeAttachmentSecure = async (
-    projectId: number,
-    attachmentId: number,
-    attachmentType: string
-  ): Promise<any> => {
-    const { data } = await axios.put(`/api/project/${projectId}/attachments/${attachmentId}/makeSecure`, {
-      attachmentType
-    });
-
-    return data;
-  };
-
-  /**
-   * Make security status of project attachment unsecure.
-   *
-   * @param {number} projectId
-   * @param {number} attachmentId
-   * @param {any} securityToken
-   * @param {string} attachmentType
-   * @return {*}  {Promise<any>}
-   */
-  const makeAttachmentUnsecure = async (
-    projectId: number,
-    attachmentId: number,
-    securityToken: string,
-    attachmentType: string
-  ): Promise<any> => {
-    const { data } = await axios.put(`/api/project/${projectId}/attachments/${attachmentId}/makeUnsecure`, {
-      securityToken,
-      attachmentType
-    });
-
-    return data;
-  };
-
-  /**
    * Delete funding source based on project and funding source ID
    *
    * @param {number} projectId
@@ -354,18 +309,6 @@ const useProjectApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Publish/unpublish a project.
-   *
-   * @param {number} projectId the project id
-   * @param {boolean} publish set to `true` to publish the project, `false` to unpublish the project.
-   * @return {*}  {Promise<any>}
-   */
-  const publishProject = async (projectId: number, publish: boolean): Promise<any> => {
-    const { data } = await axios.put(`/api/project/${projectId}/publish`, { publish: publish });
-    return data;
-  };
-
-  /**
    * Get project report metadata based on project ID, attachment ID, and attachmentType
    *
    * @param {number} projectId
@@ -373,8 +316,22 @@ const useProjectApi = (axios: AxiosInstance) => {
    * @param {string} attachmentType
    * @return {*}  {Promise<IGetReportMetaData>}
    */
-  const getProjectReportMetadata = async (projectId: number, attachmentId: number): Promise<IGetReportMetaData> => {
+  const getProjectReportDetails = async (projectId: number, attachmentId: number): Promise<IGetReportDetails> => {
     const { data } = await axios.get(`/api/project/${projectId}/attachments/${attachmentId}/metadata/get`, {
+      params: {},
+      paramsSerializer: (params: any) => {
+        return qs.stringify(params);
+      }
+    });
+
+    return data;
+  };
+
+  const getProjectAttachmentDetails = async (
+    projectId: number,
+    attachmentId: number
+  ): Promise<IGetAttachmentDetails> => {
+    const { data } = await axios.get(`/api/project/${projectId}/attachments/${attachmentId}/get`, {
       params: {},
       paramsSerializer: (params: any) => {
         return qs.stringify(params);
@@ -458,114 +415,16 @@ const useProjectApi = (axios: AxiosInstance) => {
     getProjectAttachments,
     getAttachmentSignedURL,
     deleteProjectAttachment,
-    deleteFundingSource,
-    addFundingSource,
     deleteProject,
-    publishProject,
-    makeAttachmentSecure,
-    makeAttachmentUnsecure,
-    getProjectReportMetadata,
+    getProjectReportDetails,
+    getProjectAttachmentDetails,
     getProjectParticipants,
     addProjectParticipants,
     removeProjectParticipant,
-    updateProjectParticipantRole
+    updateProjectParticipantRole,
+    deleteFundingSource,
+    addFundingSource
   };
 };
 
 export default useProjectApi;
-
-/**
- * Returns a set of supported api methods for working with public (published) project records.
- *
- * @param {AxiosInstance} axios
- * @return {*} object whose properties are supported api methods.
- */
-export const usePublicProjectApi = (axios: AxiosInstance) => {
-  /**
-   * Get public facing (published) projects list.
-   *
-   * @return {*}  {Promise<IGetProjectsListResponse[]>}
-   */
-  const getProjectsList = async (): Promise<IGetProjectsListResponse[]> => {
-    const { data } = await axios.get(`/api/public/project/list`);
-
-    return data;
-  };
-
-  /**
-   * Get public (published) project details based on its ID for viewing purposes.
-   *
-   * @param {number} projectId
-   * @return {*} {Promise<IGetProjectForViewResponse>}
-   */
-  const getProjectForView = async (projectId: number): Promise<IGetProjectForViewResponse> => {
-    const { data } = await axios.get(`/api/public/project/${projectId}/view`);
-
-    return data;
-  };
-
-  /**
-   * Get public (published) project attachments based on project ID
-   *
-   * @param {number} projectId
-   * @returns {*} {Promise<IGetProjectAttachmentsResponse>}
-   */
-  const getProjectAttachments = async (projectId: number): Promise<IGetProjectAttachmentsResponse> => {
-    const { data } = await axios.get(`/api/public/project/${projectId}/attachments/list`);
-
-    return data;
-  };
-
-  /**
-   * Get public (published) project attachment S3 url based on project and attachment ID
-   *
-   * @param {number} projectId
-   * @param {number} attachmentId
-   * @param {string} attachmentType
-   * @returns {*} {Promise<string>}
-   */
-  const getAttachmentSignedURL = async (
-    projectId: number,
-    attachmentId: number,
-    attachmentType: string
-  ): Promise<string> => {
-    const { data } = await axios.get(`/api/public/project/${projectId}/attachments/${attachmentId}/getSignedUrl`, {
-      params: { attachmentType: attachmentType },
-      paramsSerializer: (params: any) => {
-        return qs.stringify(params);
-      }
-    });
-
-    return data;
-  };
-
-  /**
-   * Get project report metadata based on project ID, attachment ID, and attachmentType
-   *
-   * @param {number} projectId
-   * @param {number} attachmentId
-   * @param {string} attachmentType
-   * @returns {*} {Promise<string>}
-   */
-  const getPublicProjectReportMetadata = async (
-    projectId: number,
-    attachmentId: number
-  ): Promise<IGetReportMetaData> => {
-    const { data } = await axios.get(`/api/public/project/${projectId}/attachments/${attachmentId}/metadata/get`, {
-      params: {},
-      paramsSerializer: (params: any) => {
-        return qs.stringify(params);
-      }
-    });
-
-    return data;
-  };
-
-  return {
-    getProjectsList,
-    getProjectForView,
-    getProjectAttachments,
-    getAttachmentSignedURL,
-    getPublicProjectReportMetadata
-  };
-};

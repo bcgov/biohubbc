@@ -2,10 +2,10 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import SQL from 'sql-template-strings';
 import * as db from '../../../../../../../../database/db';
-import { HTTPError } from '../../../../../../../../errors/custom-error';
-import survey_queries from '../../../../../../../../queries/survey';
+import { HTTPError } from '../../../../../../../../errors/http-error';
+import { IOccurrenceSubmission } from '../../../../../../../../repositories/occurrence-repository';
+import { OccurrenceService } from '../../../../../../../../services/occurrence-service';
 import * as file_utils from '../../../../../../../../utils/file-utils';
 import { getMockDBConnection } from '../../../../../../../../__mocks__/db';
 import * as get_signed_url from './getSignedUrl';
@@ -94,7 +94,7 @@ describe('getSingleSubmissionURL', () => {
     }
   });
 
-  it('should throw a 400 error when no sql statement returned', async () => {
+  it('should return null when getting signed url from S3 fails', async () => {
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
       systemUserId: () => {
@@ -102,34 +102,10 @@ describe('getSingleSubmissionURL', () => {
       }
     });
 
-    sinon.stub(survey_queries, 'getSurveyOccurrenceSubmissionSQL').returns(null);
-
-    try {
-      const result = get_signed_url.getSingleSubmissionURL();
-
-      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal('Failed to build SQL get statement');
-    }
-  });
-
-  it('should return null when getting signed url from S3 fails', async () => {
-    const mockQuery = sinon.stub();
-
-    mockQuery.resolves({ rows: [{ key: 's3Key' }] });
-
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      },
-      query: mockQuery
-    });
-
-    sinon.stub(survey_queries, 'getSurveyOccurrenceSubmissionSQL').returns(SQL`some query`);
     sinon.stub(file_utils, 'getS3SignedURL').resolves(null);
+    sinon
+      .stub(OccurrenceService.prototype, 'getOccurrenceSubmission')
+      .resolves(({ input_key: 'string' } as unknown) as IOccurrenceSubmission);
 
     const result = get_signed_url.getSingleSubmissionURL();
 
@@ -139,19 +115,17 @@ describe('getSingleSubmissionURL', () => {
   });
 
   it('should return the signed url response on success', async () => {
-    const mockQuery = sinon.stub();
-
-    mockQuery.resolves({ rows: [{ key: 's3Key' }] });
-
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
       systemUserId: () => {
         return 20;
-      },
-      query: mockQuery
+      }
     });
 
-    sinon.stub(survey_queries, 'getSurveyOccurrenceSubmissionSQL').returns(SQL`some query`);
+    sinon
+      .stub(OccurrenceService.prototype, 'getOccurrenceSubmission')
+      .resolves(({ input_key: 'string' } as unknown) as IOccurrenceSubmission);
+
     sinon.stub(file_utils, 'getS3SignedURL').resolves('myurlsigned.com');
 
     const result = get_signed_url.getSingleSubmissionURL();

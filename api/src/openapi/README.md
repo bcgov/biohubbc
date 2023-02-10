@@ -2,7 +2,7 @@
 
 ## Whats the difference between [OpenAPI](https://swagger.io/specification/) and [JSON-Schema](https://json-schema.org/)?
 
-OpenAPI and JSON-SChema are identical in many ways, but in general:
+OpenAPI and JSON-Schema are identical in many ways, but in general:
 
 ### OpenAPI
 

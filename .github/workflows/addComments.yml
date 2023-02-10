@@ -3,9 +3,7 @@ name: Add Comments
 
 on:
   pull_request:
-    types: [opened]
-    branches:
-      - dev
+    types: [opened, ready_for_review]
 
 jobs:
   addOpenshiftURLComment:

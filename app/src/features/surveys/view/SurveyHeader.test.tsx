@@ -109,60 +109,6 @@ describe('SurveyPage', () => {
     });
   });
 
-  it('sees delete survey button as enabled when accessing an unpublished survey as a project creator', async () => {
-    mockBiohubApi().survey.deleteSurvey.mockResolvedValue(true);
-
-    const authState = {
-      keycloakWrapper: {
-        ...defaultAuthState.keycloakWrapper,
-        systemRoles: [SYSTEM_ROLE.PROJECT_CREATOR] as string[],
-        hasSystemRole: jest.fn().mockReturnValueOnce(true).mockReturnValueOnce(false).mockReturnValueOnce(true)
-      }
-    };
-
-    const surveyData: IGetSurveyForViewResponse = {
-      ...surveyForView,
-      surveyData: {
-        ...surveyForView.surveyData,
-        survey_details: { ...surveyForView.surveyData.survey_details, publish_date: '' }
-      }
-    };
-
-    const { getByTestId, findByText } = renderComponent(authState, surveyData);
-
-    const surveyHeaderText = await findByText('survey name', { selector: 'h1 span' });
-    expect(surveyHeaderText).toBeVisible();
-
-    expect(getByTestId('delete-survey-button')).toBeEnabled();
-  });
-
-  it('sees delete survey button as disabled when accessing a published survey as a project creator', async () => {
-    mockBiohubApi().survey.deleteSurvey.mockResolvedValue(true);
-
-    const authState = {
-      keycloakWrapper: {
-        ...defaultAuthState.keycloakWrapper,
-        systemRoles: [SYSTEM_ROLE.PROJECT_CREATOR] as string[],
-        hasSystemRole: jest.fn().mockReturnValueOnce(true).mockReturnValueOnce(false).mockReturnValueOnce(true)
-      }
-    };
-
-    const surveyData: IGetSurveyForViewResponse = {
-      ...surveyForView,
-      surveyData: {
-        ...surveyForView.surveyData,
-        survey_details: { ...surveyForView.surveyData.survey_details, publish_date: '2021-07-07' }
-      }
-    };
-
-    const { getByTestId, findByText } = renderComponent(authState, surveyData);
-
-    const surveyHeaderText = await findByText('survey name', { selector: 'h1 span' });
-    expect(surveyHeaderText).toBeVisible();
-
-    expect(getByTestId('delete-survey-button')).toBeDisabled();
-  });
-
   it('does not see the delete button when accessing survey as non admin user', async () => {
     const authState = {
       keycloakWrapper: {
@@ -178,28 +124,5 @@ describe('SurveyPage', () => {
     expect(surveyHeaderText).toBeVisible();
 
     expect(queryByTestId('delete-survey-button')).toBeNull();
-  });
-
-  it('calls refresh after publishing or unpublishing a survey', async () => {
-    const surveyData: IGetSurveyForViewResponse = {
-      ...surveyForView,
-      surveyData: {
-        ...surveyForView.surveyData,
-        survey_details: { ...surveyForView.surveyData.survey_details, publish_date: '' }
-      }
-    };
-
-    mockBiohubApi().survey.publishSurvey.mockResolvedValue({ id: 1 });
-
-    const { getByTestId, findByText } = renderComponent(defaultAuthState, surveyData);
-
-    const publishButtonText1 = await findByText('Publish Survey');
-    expect(publishButtonText1).toBeVisible();
-
-    fireEvent.click(getByTestId('publish-survey-button'));
-
-    waitFor(() => {
-      expect(refresh).toHaveBeenCalled();
-    });
   });
 });

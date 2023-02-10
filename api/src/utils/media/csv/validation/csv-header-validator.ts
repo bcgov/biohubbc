@@ -1,3 +1,5 @@
+import { SUBMISSION_MESSAGE_TYPE } from '../../../../constants/status';
+import { safeToLowerCase, safeTrim } from '../../../string-utils';
 import { CSVValidator } from '../csv-file';
 
 /**
@@ -19,8 +21,8 @@ export const getDuplicateHeadersValidator = (): CSVValidator => {
       if (seenHeaders.includes(header)) {
         csvWorksheet.csvValidation.addHeaderErrors([
           {
-            errorCode: 'Duplicate Header',
-            message: 'Duplicate header',
+            errorCode: SUBMISSION_MESSAGE_TYPE.DUPLICATE_HEADER,
+            message: 'Duplicate Header',
             col: header
           }
         ]);
@@ -60,25 +62,11 @@ export const hasRequiredHeadersValidator = (config?: FileRequiredHeaderValidator
 
     const headersLowerCase = csvWorksheet.getHeadersLowerCase();
 
-    if (!headersLowerCase?.length) {
-      csvWorksheet.csvValidation.addHeaderErrors(
-        config.file_required_columns_validator.required_columns.map((requiredHeader) => {
-          return {
-            errorCode: 'Missing Required Header',
-            message: 'Missing required header',
-            col: requiredHeader
-          };
-        })
-      );
-
-      return csvWorksheet;
-    }
-
     for (const requiredHeader of config.file_required_columns_validator.required_columns) {
-      if (!headersLowerCase.includes(requiredHeader.toLowerCase())) {
+      if (!headersLowerCase.includes(safeToLowerCase(requiredHeader))) {
         csvWorksheet.csvValidation.addHeaderErrors([
           {
-            errorCode: 'Missing Required Header',
+            errorCode: SUBMISSION_MESSAGE_TYPE.MISSING_REQUIRED_HEADER,
             message: 'Missing required header',
             col: requiredHeader
           }
@@ -120,7 +108,7 @@ export const hasRecommendedHeadersValidator = (config?: FileRecommendedHeaderVal
       csvWorksheet.csvValidation.addHeaderWarnings(
         config.file_recommended_columns_validator.recommended_columns.map((recommendedHeader) => {
           return {
-            errorCode: 'Missing Recommended Header',
+            errorCode: SUBMISSION_MESSAGE_TYPE.MISSING_RECOMMENDED_HEADER,
             message: 'Missing recommended header',
             col: recommendedHeader
           };
@@ -131,10 +119,10 @@ export const hasRecommendedHeadersValidator = (config?: FileRecommendedHeaderVal
     }
 
     for (const recommendedHeader of config.file_recommended_columns_validator.recommended_columns) {
-      if (!headersLowerCase.includes(recommendedHeader.toLowerCase())) {
+      if (!headersLowerCase.includes(safeToLowerCase(recommendedHeader))) {
         csvWorksheet.csvValidation.addHeaderWarnings([
           {
-            errorCode: 'Missing Recommended Header',
+            errorCode: SUBMISSION_MESSAGE_TYPE.MISSING_RECOMMENDED_HEADER,
             message: 'Missing recommended header',
             col: recommendedHeader
           }
@@ -175,12 +163,12 @@ export const getValidHeadersValidator = (config?: FileValidHeadersValidatorConfi
     for (const header of headers) {
       if (
         !config.file_valid_columns_validator.valid_columns
-          .map((item) => item.toLowerCase())
-          .includes(header.trim().toLowerCase())
+          .map(safeToLowerCase)
+          .includes(safeToLowerCase(safeTrim(header)))
       ) {
         csvWorksheet.csvValidation.addHeaderWarnings([
           {
-            errorCode: 'Unknown Header',
+            errorCode: SUBMISSION_MESSAGE_TYPE.UNKNOWN_HEADER,
             message: 'Unsupported header',
             col: header
           }

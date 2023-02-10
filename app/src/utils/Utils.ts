@@ -1,5 +1,8 @@
 import { DATE_FORMAT, TIME_FORMAT } from 'constants/dateTimeFormats';
 import { IConfig } from 'contexts/configContext';
+import { Feature, Polygon } from 'geojson';
+import { SYSTEM_IDENTITY_SOURCE } from 'hooks/useKeycloakWrapper';
+import { LatLngBounds } from 'leaflet';
 import moment from 'moment';
 
 /**
@@ -148,3 +151,79 @@ export const getFormattedFileSize = (fileSize: number) => {
 export function getKeyByValue(object: any, value: any) {
   return Object.keys(object).find((key) => object[key] === value);
 }
+
+/**
+ * Converts a `LatLngBounds` object into a GeoJSON Feature object.
+ *
+ * @export
+ * @param {LatLngBounds} bounds
+ * @return {*}  {Feature<Polygon>}
+ */
+export function getFeatureObjectFromLatLngBounds(bounds: LatLngBounds): Feature<Polygon> {
+  const southWest = bounds.getSouthWest();
+  const northEast = bounds.getNorthEast();
+
+  return {
+    type: 'Feature',
+    properties: {},
+    geometry: {
+      type: 'Polygon',
+      coordinates: [
+        [
+          [southWest.lng, southWest.lat],
+          [southWest.lng, northEast.lat],
+          [northEast.lng, northEast.lat],
+          [northEast.lng, southWest.lat],
+          [southWest.lng, southWest.lat]
+        ]
+      ]
+    }
+  };
+}
+
+/**
+ * Takes an array of objects and produces an object URL pointing to a Blob which contains
+ * the array. Supports large arrays thanks to use of Blob datatype.
+ * @param entries Array containing objects
+ * @returns A data URL, which downloads the given array as a CSV when clicked on in a browser.
+ */
+export const makeCsvObjectUrl = (entries: Array<Record<string, any>>) => {
+  const keys = [...new Set(entries.reduce((acc: string[], entry) => acc.concat(Object.keys(entry)), []))];
+
+  const rows = entries.map((entry: Record<string, any>) => {
+    return keys.map((key) => String(entry[key]));
+  });
+
+  // Prepend the column names (object keys) to the CSV.
+  rows.unshift(keys);
+
+  const csvContent = rows.map((row) => row.join(',')).join('\n');
+
+  const blob = new Blob([csvContent], { type: 'text/csv' });
+
+  return window.URL.createObjectURL(blob);
+};
+
+/**
+ * Returns a human-readible identity source string.
+ *
+ * @example getFormattedIdentitySource("BCEIDBUSINESS"); // => "BCeID Business"
+ *
+ * @param {SYSTEM_IDENTITY_SOURCE} identitySource The identity source
+ * @returns {*} {string} the string representing the identity source
+ */
+export const getFormattedIdentitySource = (identitySource: SYSTEM_IDENTITY_SOURCE): string | null => {
+  switch (identitySource) {
+    case SYSTEM_IDENTITY_SOURCE.BCEID_BASIC:
+      return 'BCeID Basic';
+
+    case SYSTEM_IDENTITY_SOURCE.BCEID_BUSINESS:
+      return 'BCeID Business';
+
+    case SYSTEM_IDENTITY_SOURCE.IDIR:
+      return 'IDIR';
+
+    default:
+      return null;
+  }
+};

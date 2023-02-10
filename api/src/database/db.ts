@@ -1,18 +1,17 @@
 import knex, { Knex } from 'knex';
 import * as pg from 'pg';
-import { SQLStatement } from 'sql-template-strings';
-import { ApiExecuteSQLError, ApiGeneralError } from '../errors/custom-error';
-import { queries } from '../queries/queries';
-import { getUserIdentifier, getUserIdentitySource } from '../utils/keycloak-utils';
+import SQL, { SQLStatement } from 'sql-template-strings';
+import { ApiExecuteSQLError, ApiGeneralError } from '../errors/api-error';
+import { getUserGuid, getUserIdentifier, getUserIdentitySource } from '../utils/keycloak-utils';
 import { getLogger } from '../utils/logger';
 
 const defaultLog = getLogger('database/db');
 
-const DB_HOST = process.env.DB_HOST;
-const DB_PORT = Number(process.env.DB_PORT);
-const DB_USERNAME = process.env.DB_USER_API;
-const DB_PASSWORD = process.env.DB_USER_API_PASS;
-const DB_DATABASE = process.env.DB_DATABASE;
+const getDbHost = () => process.env.DB_HOST;
+const getDbPort = () => Number(process.env.DB_PORT);
+const getDbUsername = () => process.env.DB_USER_API;
+const getDbPassword = () => process.env.DB_USER_API_PASS;
+const getDbDatabase = () => process.env.DB_DATABASE;
 
 const DB_POOL_SIZE: number = Number(process.env.DB_POOL_SIZE) || 20;
 const DB_CONNECTION_TIMEOUT: number = Number(process.env.DB_CONNECTION_TIMEOUT) || 0;
@@ -21,11 +20,11 @@ const DB_IDLE_TIMEOUT: number = Number(process.env.DB_IDLE_TIMEOUT) || 10000;
 const DB_CLIENT = 'pg';
 
 export const defaultPoolConfig: pg.PoolConfig = {
-  user: DB_USERNAME,
-  password: DB_PASSWORD,
-  database: DB_DATABASE,
-  port: DB_PORT,
-  host: DB_HOST,
+  user: getDbUsername(),
+  password: getDbPassword(),
+  database: getDbDatabase(),
+  port: getDbPort(),
+  host: getDbHost(),
   max: DB_POOL_SIZE,
   connectionTimeoutMillis: DB_CONNECTION_TIMEOUT,
   idleTimeoutMillis: DB_IDLE_TIMEOUT
@@ -33,7 +32,7 @@ export const defaultPoolConfig: pg.PoolConfig = {
 
 // Custom type handler for psq `DATE` type to prevent local time/zone information from being added.
 // Why? By default, node-postgres assumes local time/zone for any psql `DATE` or `TIME` types that don't have timezone information.
-// This Can lead to unexpected behaviour when the original psql `DATE` value was intentionally omitting time/zone information.
+// This Can lead to unexpected behavior when the original psql `DATE` value was intentionally omitting time/zone information.
 // PSQL date types: https://www.postgresql.org/docs/12/datatype-datetime.html
 // node-postgres type handling (see bottom of page): https://node-postgres.com/features/types
 pg.types.setTypeParser(pg.types.builtins.DATE, (stringValue: string) => {
@@ -313,24 +312,49 @@ export const getDBConnection = function (keycloakToken: object): IDBConnection {
    * Sets the _systemUserId if successful.
    */
   const _setUserContext = async () => {
+    const userGuid = getUserGuid(_token);
     const userIdentifier = getUserIdentifier(_token);
     const userIdentitySource = getUserIdentitySource(_token);
+    defaultLog.debug({ label: '_setUserContext', userGuid, userIdentifier, userIdentitySource });
 
-    if (!userIdentifier || !userIdentitySource) {
+    if (!userGuid || !userIdentifier || !userIdentitySource) {
       throw new ApiGeneralError('Failed to identify authenticated user');
     }
 
-    // Set the user context for all queries made using this connection
-    const setSystemUserContextSQLStatement = queries.database.setSystemUserContextSQL(
-      userIdentifier,
-      userIdentitySource
-    );
+    // Patch user GUID
+    const patchUserGuidSqlStatement = SQL`
+      UPDATE
+        system_user
+      SET
+        user_guid = ${userGuid.toLowerCase()}
+      WHERE
+        system_user_id
+      IN (
+        SELECT
+          su.system_user_id
+        FROM
+          system_user su
+        LEFT JOIN
+          user_identity_source uis
+        ON
+          uis.user_identity_source_id = su.user_identity_source_id
+        WHERE
+          su.user_identifier ILIKE ${userIdentifier}
+        AND
+          uis.name ILIKE ${userIdentitySource}
+        AND
+          user_guid IS NULL
+      );
+    `;
 
-    if (!setSystemUserContextSQLStatement) {
-      throw new ApiExecuteSQLError('Failed to build SQL user context statement');
-    }
+    // Set the user context for all queries made using this connection
+    const setSystemUserContextSQLStatement = SQL`
+      SELECT api_set_context(${userGuid}, ${userIdentitySource});
+    `;
 
     try {
+      await _client.query(patchUserGuidSqlStatement.text, patchUserGuidSqlStatement.values);
+
       const response = await _client.query(
         setSystemUserContextSQLStatement.text,
         setSystemUserContextSQLStatement.values
@@ -343,14 +367,14 @@ export const getDBConnection = function (keycloakToken: object): IDBConnection {
   };
 
   return {
-    open: _open,
-    query: _query,
-    sql: _sql,
-    knex: _knex,
-    release: _release,
-    commit: _commit,
-    rollback: _rollback,
-    systemUserId: _getSystemUserID
+    open: asyncErrorWrapper(_open),
+    query: asyncErrorWrapper(_query),
+    sql: asyncErrorWrapper(_sql),
+    knex: asyncErrorWrapper(_knex),
+    release: syncErrorWrapper(_release),
+    commit: asyncErrorWrapper(_commit),
+    rollback: asyncErrorWrapper(_rollback),
+    systemUserId: syncErrorWrapper(_getSystemUserID)
   };
 };
 
@@ -363,7 +387,11 @@ export const getDBConnection = function (keycloakToken: object): IDBConnection {
  * @return {*}  {IDBConnection}
  */
 export const getAPIUserDBConnection = (): IDBConnection => {
-  return getDBConnection({ preferred_username: 'biohub_api@database' });
+  return getDBConnection({
+    preferred_username: `${getDbUsername()}@database`,
+    sims_system_username: getDbUsername(),
+    identity_provider: 'database'
+  });
 };
 
 /**
@@ -378,4 +406,54 @@ export const getKnex = <TRecord extends Record<string, any> = any, TResult = Rec
   TResult
 > => {
   return knex<TRecord, TResult>({ client: DB_CLIENT });
+};
+
+/**
+ * An asynchronous wrapper function that will catch any exceptions thrown by the wrapped function
+ *
+ * @param fn the function to be wrapped
+ * @returns Promise<WrapperReturn> A Promise with the wrapped functions return value
+ */
+const asyncErrorWrapper = <WrapperArgs extends any[], WrapperReturn>(
+  fn: (...args: WrapperArgs) => Promise<WrapperReturn>
+) => async (...args: WrapperArgs): Promise<WrapperReturn> => {
+  try {
+    return await fn(...args);
+  } catch (err) {
+    throw parseError(err);
+  }
+};
+
+/**
+ * A synchronous wrapper function that will catch any exceptions thrown by the wrapped function
+ *
+ * @param fn the function to be wrapped
+ * @returns WrapperReturn The wrapped functions return value
+ */
+const syncErrorWrapper = <WrapperArgs extends any[], WrapperReturn>(fn: (...args: WrapperArgs) => WrapperReturn) => (
+  ...args: WrapperArgs
+): WrapperReturn => {
+  try {
+    return fn(...args);
+  } catch (err) {
+    throw parseError(err);
+  }
+};
+
+/**
+ * This function parses the passed in error and translates them into a human readable error
+ *
+ * @param error error to be parsed
+ * @returns an error to throw
+ */
+const parseError = (error: any) => {
+  switch (error.message) {
+    // error thrown by DB trigger based on revision_count
+    // will be thrown if two updates to the same record are made concurrently
+    case 'CONCURRENCY_EXCEPTION':
+      throw new ApiExecuteSQLError('Failed to update stale data', [error]);
+    default:
+      // Generic error thrown if not captured above
+      throw new ApiExecuteSQLError('Failed to execute SQL', [error]);
+  }
 };

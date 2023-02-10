@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
-import { HTTPError } from '../errors/custom-error';
+import { HTTPError } from '../errors/http-error';
 import * as logger from './logger';
 
 describe('logger', () => {

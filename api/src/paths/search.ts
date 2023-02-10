@@ -2,7 +2,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../constants/roles';
 import { getDBConnection } from '../database/db';
-import { HTTP400 } from '../errors/custom-error';
+import { HTTP400 } from '../errors/http-error';
 import { searchResponseObject } from '../openapi/schemas/search';
 import { queries } from '../queries/queries';
 import { authorizeRequestHandler, userHasValidRole } from '../request-handlers/security/authorization';
@@ -24,7 +24,7 @@ export const GET: Operation = [
 ];
 
 GET.apiDoc = {
-  description: 'Gets a list of published project geometries for given systemUserId',
+  description: 'Gets a list of project geometries for given systemUserId',
   tags: ['projects'],
   security: [
     {

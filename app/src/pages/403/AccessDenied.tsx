@@ -1,6 +1,5 @@
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import Container from '@material-ui/core/Container';
 import Typography from '@material-ui/core/Typography';
 import { mdiAlertCircleOutline } from '@mdi/js';
@@ -14,17 +13,7 @@ const AccessDenied = () => {
 
   const { keycloakWrapper } = useContext(AuthStateContext);
 
-  if (!keycloakWrapper?.keycloak?.authenticated) {
-    // User is not logged in
-    return <Redirect to={{ pathname: '/' }} />;
-  }
-
-  if (!keycloakWrapper.hasLoadedAllUserInfo) {
-    // User data has not been loaded, can not yet determine if they have a role
-    return <CircularProgress className="pageProgress" />;
-  }
-
-  if (keycloakWrapper.hasAccessRequest) {
+  if (keycloakWrapper?.hasAccessRequest) {
     // User already has a pending access request
     return <Redirect to={{ pathname: '/request-submitted' }} />;
   }
@@ -42,7 +31,15 @@ const AccessDenied = () => {
         <Box pt={4}>
           {!userHasARole && (
             <Button
-              onClick={() => history.push('/access-request')}
+              onClick={() => {
+                if (keycloakWrapper?.keycloak?.authenticated) {
+                  history.push('/access-request');
+                } else {
+                  // setting page to return to after login
+                  history.push('/access-request');
+                  keycloakWrapper?.keycloak?.login();
+                }
+              }}
               type="submit"
               size="large"
               variant="contained"

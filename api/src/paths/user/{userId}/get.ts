@@ -2,7 +2,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../../constants/roles';
 import { getDBConnection } from '../../../database/db';
-import { HTTP400 } from '../../../errors/custom-error';
+import { HTTP400 } from '../../../errors/http-error';
 import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
 import { UserService } from '../../../services/user-service';
 import { getLogger } from '../../../utils/logger';
@@ -57,6 +57,10 @@ GET.apiDoc = {
               user_identifier: {
                 description: 'The unique user identifier',
                 type: 'string'
+              },
+              user_guid: {
+                type: 'string',
+                description: 'The GUID for the user.'
               },
               record_end_date: {
                 oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],

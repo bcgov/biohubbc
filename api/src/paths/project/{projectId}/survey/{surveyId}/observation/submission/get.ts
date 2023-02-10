@@ -1,10 +1,10 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../../../../../../constants/roles';
+import { SUBMISSION_STATUS_TYPE } from '../../../../../../../constants/status';
 import { getDBConnection } from '../../../../../../../database/db';
-import { HTTP400 } from '../../../../../../../errors/custom-error';
-import { queries } from '../../../../../../../queries/queries';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
+import { IMessageTypeGroup, SurveyService } from '../../../../../../../services/survey-service';
 import { getLogger } from '../../../../../../../utils/logger';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/observation/submission/get');
@@ -37,7 +37,8 @@ GET.apiDoc = {
       in: 'path',
       name: 'projectId',
       schema: {
-        type: 'number'
+        type: 'number',
+        minimum: 1
       },
       required: true
     },
@@ -45,7 +46,8 @@ GET.apiDoc = {
       in: 'path',
       name: 'surveyId',
       schema: {
-        type: 'number'
+        type: 'number',
+        minimum: 1
       },
       required: true
     }
@@ -58,9 +60,11 @@ GET.apiDoc = {
           schema: {
             type: 'object',
             nullable: true,
+            required: ['id', 'inputFileName', 'status', 'isValidating', 'messageTypes'],
             properties: {
               id: {
-                type: 'number'
+                type: 'number',
+                minimum: 1
               },
               inputFileName: {
                 description: 'The file name of the submission',
@@ -71,12 +75,50 @@ GET.apiDoc = {
                 nullable: true,
                 type: 'string'
               },
-              messages: {
-                description: 'The validation status messages of the observation submission',
+              isValidating: {
+                description: 'True if the submission has not yet been validated, false otherwise',
+                type: 'boolean'
+              },
+              messageTypes: {
+                description: 'An array containing all submission messages grouped by message type',
                 type: 'array',
                 items: {
                   type: 'object',
-                  description: 'A validation status message of the observation submission'
+                  required: ['severityLabel', 'messageTypeLabel', 'messageStatus', 'messages'],
+                  properties: {
+                    severityLabel: {
+                      type: 'string',
+                      description:
+                        'The label of the "class" or severity of this type of message, e.g. "Error", "Warning", "Notice", etc.'
+                    },
+                    messageTypeLabel: {
+                      type: 'string',
+                      description: 'The name of the type of error pertaining to this submission'
+                    },
+                    messageStatus: {
+                      type: 'string',
+                      description: 'The resulting status of the submission as a consequence of the error'
+                    },
+                    messages: {
+                      type: 'array',
+                      description: 'The array of submission messages belonging to this type of message',
+                      items: {
+                        type: 'object',
+                        description: 'A submission message object belonging to a particular message type group',
+                        required: ['id', 'message'],
+                        properties: {
+                          id: {
+                            type: 'number',
+                            description: 'The ID of this submission message'
+                          },
+                          message: {
+                            type: 'string',
+                            description: 'The actual message which describes the concern in detail'
+                          }
+                        }
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -104,77 +146,60 @@ GET.apiDoc = {
 
 export function getOccurrenceSubmission(): RequestHandler {
   return async (req, res) => {
-    defaultLog.debug({ label: 'Get an occurrence submission', message: 'params', req_params: req.params });
-
-    if (!req.params.surveyId) {
-      throw new HTTP400('Missing required path param `surveyId`');
-    }
+    defaultLog.debug({
+      label: 'getOccurrenceSubmission',
+      description: 'Gets an occurrence submission',
+      req_params: req.params
+    });
 
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const getOccurrenceSubmissionSQLStatement = queries.survey.getLatestSurveyOccurrenceSubmissionSQL(
-        Number(req.params.surveyId)
-      );
-
-      if (!getOccurrenceSubmissionSQLStatement) {
-        throw new HTTP400('Failed to build SQL getLatestSurveyOccurrenceSubmissionSQL statement');
-      }
-
       await connection.open();
 
-      const occurrenceSubmissionData = await connection.query(
-        getOccurrenceSubmissionSQLStatement.text,
-        getOccurrenceSubmissionSQLStatement.values
-      );
+      const surveyService = new SurveyService(connection);
+      const occurrenceSubmission = await surveyService.getLatestSurveyOccurrenceSubmission(Number(req.params.surveyId));
 
-      // Ensure we only retrieve the latest occurrence submission record if it has not been soft deleted
-      if (
-        !occurrenceSubmissionData ||
-        !occurrenceSubmissionData.rows ||
-        !occurrenceSubmissionData.rows[0] ||
-        occurrenceSubmissionData.rows[0].delete_timestamp
-      ) {
+      if (!occurrenceSubmission || occurrenceSubmission.delete_timestamp) {
+        // Ensure we only retrieve the latest occurrence submission record if it has not been soft deleted
         return res.status(200).json(null);
       }
 
-      let messageList: any[] = [];
+      const willFetchAdditionalMessages =
+        occurrenceSubmission.submission_status_type_name &&
+        [
+          // Submission statuses for validation/transformation failure
+          SUBMISSION_STATUS_TYPE.SYSTEM_ERROR,
+          SUBMISSION_STATUS_TYPE.FAILED_OCCURRENCE_PREPARATION,
+          SUBMISSION_STATUS_TYPE.FAILED_VALIDATION,
+          SUBMISSION_STATUS_TYPE.FAILED_TRANSFORMED,
+          SUBMISSION_STATUS_TYPE.FAILED_PROCESSING_OCCURRENCE_DATA,
+          SUBMISSION_STATUS_TYPE['AWAITING CURRATION'],
+          SUBMISSION_STATUS_TYPE.REJECTED,
+          SUBMISSION_STATUS_TYPE['ON HOLD']
+        ].includes(occurrenceSubmission.submission_status_type_name);
 
-      const errorStatus = occurrenceSubmissionData.rows[0].submission_status_type_name;
+      const isDoneValidating =
+        willFetchAdditionalMessages ||
+        (occurrenceSubmission.submission_status_type_name &&
+          [
+            // Submission statuses for validation completion
+            SUBMISSION_STATUS_TYPE.TEMPLATE_VALIDATED,
+            SUBMISSION_STATUS_TYPE.DARWIN_CORE_VALIDATED,
+            SUBMISSION_STATUS_TYPE.TEMPLATE_TRANSFORMED
+          ].includes(occurrenceSubmission.submission_status_type_name));
 
-      if (errorStatus === 'Rejected' || errorStatus === 'System Error') {
-        const occurrence_submission_id = occurrenceSubmissionData.rows[0].id;
+      const messageTypes: IMessageTypeGroup[] = willFetchAdditionalMessages
+        ? await surveyService.getOccurrenceSubmissionMessages(Number(occurrenceSubmission.id))
+        : [];
 
-        const getSubmissionErrorListSQLStatement = queries.survey.getOccurrenceSubmissionMessagesSQL(
-          Number(occurrence_submission_id)
-        );
-
-        if (!getSubmissionErrorListSQLStatement) {
-          throw new HTTP400('Failed to build SQL getOccurrenceSubmissionMessagesSQL statement');
-        }
-
-        const submissionErrorListData = await connection.query(
-          getSubmissionErrorListSQLStatement.text,
-          getSubmissionErrorListSQLStatement.values
-        );
-
-        messageList = (submissionErrorListData && submissionErrorListData.rows) || [];
-      }
-
-      await connection.commit();
-
-      const getOccurrenceSubmissionData =
-        (occurrenceSubmissionData &&
-          occurrenceSubmissionData.rows &&
-          occurrenceSubmissionData.rows[0] && {
-            id: occurrenceSubmissionData.rows[0].id,
-            inputFileName: occurrenceSubmissionData.rows[0].input_file_name,
-            status: occurrenceSubmissionData.rows[0].submission_status_type_name,
-            messages: messageList
-          }) ||
-        null;
-
-      return res.status(200).json(getOccurrenceSubmissionData);
+      return res.status(200).json({
+        id: occurrenceSubmission.id,
+        inputFileName: occurrenceSubmission.input_file_name,
+        status: occurrenceSubmission.submission_status_type_name || null,
+        isValidating: !isDoneValidating,
+        messageTypes
+      });
     } catch (error) {
       defaultLog.error({ label: 'getOccurrenceSubmission', message: 'error', error });
       await connection.rollback();

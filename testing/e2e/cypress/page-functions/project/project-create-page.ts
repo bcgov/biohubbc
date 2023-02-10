@@ -234,18 +234,6 @@ export function add_partnerships() {
   cy.wait(5000);
 }
 
-export function publish_project() {
-  cy.get('button[data-testid="publish-project-button"]')
-    .contains("Publish")
-    .should("be.visible");
-  cy.get('button[data-testid="publish-project-button"]').click();
-  cy.wait(10000);
-  cy.get('button[data-testid="publish-project-button"]')
-    .contains("Unpublish")
-    .should("be.visible");
-  cy.wait(2000);
-}
-
 export function attach_file() {
   cy.get("#custom-menu-button-Upload").focus().click();
   cy.wait(1000);
@@ -290,35 +278,35 @@ export function add_survey() {
         "-" +
         edate.slice(4, 6).trim();
       cy.log("edate", edate);
-      cy.get("#survey_name").clear().type(faker.lorem.words());
+      cy.get("#survey_details\\.survey_name").clear().type(faker.lorem.words());
 
       cy.log("sdate", sdate);
-      cy.get("#start_date").type(sdate);
+      cy.get('[data-testid="start-date"]').type(sdate);
       cy.log("edate", edate);
-      cy.get("#end_date").type(edate);
+      cy.get('[data-testid="end-date"]').type(edate);
     });
   });
 
-  cy.get("#focal_species").focus().type("killer");
+  cy.get("#species\\.focal_species").focus().type("killer");
   cy.wait(2000);
-  cy.get('#focal_species-option-0').click();
-  cy.get("#funding_sources").click()
+  cy.get('#species\\.focal_species-option-0').click();
+  cy.get("#funding\\.funding_sources").click()
 
-  cy.get("#ancillary_species").click().type("grey whale");
-  cy.get('#ancillary_species-option-0').click();
-  cy.get("#funding_sources").click()
+  cy.get("#species\\.ancillary_species").click().type("grey whale");
+  cy.get('#species\\.ancillary_species-option-0').click();
+  cy.get("#funding\\.funding_sources").click()
 
-  cy.get("#biologist_first_name").type(faker.name.firstName());
-  cy.get("#biologist_last_name").type(faker.name.lastName());
+  cy.get("#survey_details\\.biologist_first_name").type(faker.name.firstName());
+  cy.get("#survey_details\\.biologist_last_name").type(faker.name.lastName());
   cy.get("#permit_number").click().type("{downArrow}{enter}");
-  cy.get("#funding_sources").click().type("{enter}");
-  cy.get("#mui-component-select-intended_outcome_id").focus().type("{downArrow}{enter}");
-  cy.get("#additional_details").type(faker.lorem.text());
-  cy.get("#mui-component-select-field_method_id").focus().type("{downArrow}{enter}");
-  cy.get("#mui-component-select-ecological_season_id").focus().type("{downArrow}{enter}");
-  cy.get("#vantage_code_ids").focus().type("{downArrow}{enter}");
-  cy.get('input[name="surveyed_all_areas"]').first().click({force: true});
-  cy.get("#survey_area_name").clear().type(faker.lorem.words());
+  cy.get("#funding\\.funding_sources").click().type("{enter}");
+  cy.get("#mui-component-select-purpose_and_methodology\\.intended_outcome_id").focus().type("{downArrow}{enter}");
+  cy.get("#purpose_and_methodology\\.additional_details").type(faker.lorem.text());
+  cy.get("#mui-component-select-purpose_and_methodology\\.field_method_id").focus().type("{downArrow}{enter}");
+  cy.get("#mui-component-select-purpose_and_methodology\\.ecological_season_id").focus().type("{downArrow}{enter}");
+  cy.get("#purpose_and_methodology\\.vantage_code_ids").focus().type("{downArrow}{enter}");
+  cy.get('input[name="purpose_and_methodology\\.surveyed_all_areas"]').first().click({force: true});
+  cy.get("#location\\.survey_area_name").clear().type(faker.lorem.words());
 
   cy.get('[data-testid="boundary_file-upload"]').click();
   cy.get('[data-testid="drop-zone-input"]').attachFile(
@@ -327,8 +315,8 @@ export function add_survey() {
   cy.wait(5000);
   cy.get("button").contains("Close").click();
 
-  cy.get('input[name="sedis_procedures_accepted"]').click();
-  cy.get('input[name="foippa_requirements_accepted"]').click();
+  cy.get('input[name="agreements\\.sedis_procedures_accepted"]').click();
+  cy.get('input[name="agreements\\.foippa_requirements_accepted"]').click();
   cy.get("button").contains("Save and Exit").click();
 
   cy.wait(5000);

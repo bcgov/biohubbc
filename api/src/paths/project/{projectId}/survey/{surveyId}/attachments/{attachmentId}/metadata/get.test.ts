@@ -2,178 +2,91 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import SQL from 'sql-template-strings';
 import * as db from '../../../../../../../../database/db';
-import { HTTPError } from '../../../../../../../../errors/custom-error';
-import survey_queries from '../../../../../../../../queries/survey';
+import { HTTPError } from '../../../../../../../../errors/http-error';
+import {
+  IProjectReportAttachment,
+  IReportAttachmentAuthor
+} from '../../../../../../../../repositories/attachment-repository';
+import { AttachmentService } from '../../../../../../../../services/attachment-service';
 import { getMockDBConnection } from '../../../../../../../../__mocks__/db';
-import * as get_survey_metadata from './get';
+import * as get from './get';
 
 chai.use(sinonChai);
 
-describe('gets metadata for a survey report', () => {
-  const dbConnectionObj = getMockDBConnection();
-
-  const sampleReq = {
-    keycloak_token: {},
-    body: {},
-    params: {
-      projectId: 1,
-      surveyId: 1,
-      attachmentId: 1
-    }
-  } as any;
-
-  let actualResult: any = null;
-
-  const sampleRes = {
-    status: () => {
-      return {
-        json: (result: any) => {
-          actualResult = result;
-        }
-      };
-    }
-  };
-
+describe('getSurveyReportDetails', () => {
   afterEach(() => {
     sinon.restore();
   });
 
-  it('should throw a 400 error when no projectId is provided', async () => {
+  it('should throw an error if failure occurs', async () => {
+    const dbConnectionObj = getMockDBConnection();
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-    try {
-      const result = get_survey_metadata.getSurveyReportMetaData();
-      await result(
-        { ...sampleReq, params: { ...sampleReq.params, projectId: null } },
-        (null as unknown) as any,
-        (null as unknown) as any
-      );
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal('Missing required path param `projectId`');
-    }
-  });
-
-  it('should throw a 400 error when no surveyId is provided', async () => {
-    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
-
-    try {
-      const result = get_survey_metadata.getSurveyReportMetaData();
-      await result(
-        { ...sampleReq, params: { ...sampleReq.params, surveyId: null } },
-        (null as unknown) as any,
-        (null as unknown) as any
-      );
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal('Missing required path param `surveyId`');
-    }
-  });
-
-  it('should throw a 400 error when no attachmentId is provided', async () => {
-    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
-
-    try {
-      const result = get_survey_metadata.getSurveyReportMetaData();
-      await result(
-        { ...sampleReq, params: { ...sampleReq.params, attachmentId: null } },
-        (null as unknown) as any,
-        (null as unknown) as any
-      );
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal('Missing required path param `attachmentId`');
-    }
-  });
-
-  it('should throw a 400 error when no sql statement returned for getProjectReportAttachmentSQL', async () => {
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      }
-    });
-
-    sinon.stub(survey_queries, 'getSurveyReportAttachmentSQL').returns(null);
-
-    try {
-      const result = get_survey_metadata.getSurveyReportMetaData();
-
-      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal('Failed to build metadata SQLStatement');
-    }
-  });
-
-  it('should throw a 400 error when no sql statement returned for getSurveyReportAuthorsSQL', async () => {
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      }
-    });
-
-    sinon.stub(survey_queries, 'getSurveyReportAuthorsSQL').returns(null);
-
-    try {
-      const result = get_survey_metadata.getSurveyReportMetaData();
-
-      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal('Failed to build metadata SQLStatement');
-    }
-  });
-
-  it('should return a project report metadata, on success', async () => {
-    const mockQuery = sinon.stub();
-
-    mockQuery.onCall(0).resolves({
-      rowCount: 1,
-      rows: [
-        {
-          attachment_id: 1,
-          title: 'My report',
-          update_date: '2020-10-10',
-          description: 'some description',
-          year_published: 2020,
-          revision_count: '1'
-        }
-      ]
-    });
-    mockQuery.onCall(1).resolves({ rowCount: 1, rows: [{ first_name: 'John', last_name: 'Smith' }] });
-
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
+    const mockReq = {
+      keycloak_token: {},
+      params: {
+        projectId: 1,
+        attachmentId: 2
       },
-      query: mockQuery
-    });
+      body: {}
+    } as any;
 
-    sinon.stub(survey_queries, 'getSurveyReportAttachmentSQL').returns(SQL`something`);
-    sinon.stub(survey_queries, 'getSurveyReportAuthorsSQL').returns(SQL`something`);
+    const expectedError = new Error('cannot process request');
+    sinon.stub(AttachmentService.prototype, 'getSurveyReportAttachmentById').rejects(expectedError);
 
-    const result = get_survey_metadata.getSurveyReportMetaData();
+    try {
+      const result = get.getSurveyReportDetails();
 
-    await result(sampleReq, sampleRes as any, (null as unknown) as any);
+      await result(mockReq, (null as unknown) as any, (null as unknown) as any);
+      expect.fail();
+    } catch (actualError) {
+      expect((actualError as HTTPError).message).to.equal(expectedError.message);
+    }
+  });
 
-    expect(actualResult).to.be.eql({
-      attachment_id: 1,
-      title: 'My report',
-      last_modified: '2020-10-10',
-      description: 'some description',
-      year_published: 2020,
-      revision_count: '1',
-      authors: [{ first_name: 'John', last_name: 'Smith' }]
-    });
+  it('should succeed with valid params', async () => {
+    const dbConnectionObj = getMockDBConnection();
+    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
+
+    const mockReq = {
+      keycloak_token: {},
+      params: {
+        projectId: 1,
+        attachmentId: 2
+      },
+      body: {}
+    } as any;
+
+    const getSurveyReportAttachmentByIdStub = sinon
+      .stub(AttachmentService.prototype, 'getSurveyReportAttachmentById')
+      .resolves(({ report: 1 } as unknown) as IProjectReportAttachment);
+
+    const getSurveyAttachmentAuthorsStub = sinon
+      .stub(AttachmentService.prototype, 'getSurveyAttachmentAuthors')
+      .resolves([({ author: 2 } as unknown) as IReportAttachmentAuthor]);
+
+    const expectedResponse = {
+      metadata: { report: 1 },
+      authors: [{ author: 2 }]
+    };
+
+    let actualResult: any = null;
+    const sampleRes = {
+      status: () => {
+        return {
+          json: (response: any) => {
+            actualResult = response;
+          }
+        };
+      }
+    };
+
+    const result = get.getSurveyReportDetails();
+    await result(mockReq, (sampleRes as unknown) as any, (null as unknown) as any);
+
+    expect(actualResult).to.eql(expectedResponse);
+    expect(getSurveyReportAttachmentByIdStub).to.be.calledOnce;
+    expect(getSurveyAttachmentAuthorsStub).to.be.calledOnce;
   });
 });

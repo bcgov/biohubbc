@@ -5,7 +5,6 @@ import { IProjectIUCNForm } from 'features/projects/components/ProjectIUCNForm';
 import { IProjectLocationForm } from 'features/projects/components/ProjectLocationForm';
 import { IProjectObjectivesForm } from 'features/projects/components/ProjectObjectivesForm';
 import { IProjectPartnershipsForm } from 'features/projects/components/ProjectPartnershipsForm';
-import { IProjectPermitForm } from 'features/projects/components/ProjectPermitForm';
 import { Feature } from 'geojson';
 
 export interface IGetProjectAttachment {
@@ -14,16 +13,16 @@ export interface IGetProjectAttachment {
   fileType: string;
   lastModified: string;
   size: number;
-  securityToken: string;
   revisionCount: number;
 }
+
+export type IGetProjectReportAttachment = IGetProjectAttachment & { fileType: 'Report' };
 
 /**
  * An interface for an instance of filter fields for project advanced filter search
  */
 export interface IProjectAdvancedFilterRequest {
   coordinator_agency: string;
-  permit_number: string;
   project_type: string;
   start_date: string;
   end_date: string;
@@ -42,6 +41,7 @@ export interface IProjectAdvancedFilterRequest {
  */
 export interface IGetProjectAttachmentsResponse {
   attachmentsList: IGetProjectAttachment[];
+  reportAttachmentsList: IGetProjectReportAttachment[];
 }
 
 /**
@@ -71,8 +71,6 @@ export interface IGetProjectsListResponse {
   end_date: string;
   coordinator_agency: string;
   project_type: string;
-  permits_list: string;
-  publish_status: string;
   completion_status: string;
 }
 
@@ -82,16 +80,14 @@ export interface IGetProjectsListResponse {
  * @export
  * @interface ICreateProjectRequest
  */
-export interface ICreateProjectRequest {
-  coordinator: IProjectCoordinatorForm;
-  permit: IProjectPermitForm;
-  project: IProjectDetailsForm;
-  objectives: IProjectObjectivesForm;
-  location: IProjectLocationForm;
-  iucn: IProjectIUCNForm;
-  funding: IProjectFundingForm;
-  partnerships: IProjectPartnershipsForm;
-}
+export interface ICreateProjectRequest
+  extends IProjectCoordinatorForm,
+    IProjectDetailsForm,
+    IProjectObjectivesForm,
+    IProjectLocationForm,
+    IProjectIUCNForm,
+    IProjectFundingForm,
+    IProjectPartnershipsForm {}
 
 /**
  * Create project response object.
@@ -105,7 +101,6 @@ export interface ICreateProjectResponse {
 
 export enum UPDATE_GET_ENTITIES {
   coordinator = 'coordinator',
-  permit = 'permit',
   project = 'project',
   objectives = 'objectives',
   location = 'location',
@@ -122,7 +117,6 @@ export enum UPDATE_GET_ENTITIES {
  */
 export interface IGetProjectForUpdateResponse {
   project?: IGetProjectForUpdateResponseDetails;
-  permit?: IGetProjectForUpdateResponsePermit;
   objectives?: IGetProjectForUpdateResponseObjectives;
   location?: IGetProjectForUpdateResponseLocation;
   coordinator?: IGetProjectForUpdateResponseCoordinator;
@@ -139,19 +133,8 @@ export interface IGetProjectForUpdateResponseDetails {
   end_date: string;
   revision_count: number;
 }
-
-interface IGetProjectForUpdateResponsePermitArrayItem {
-  permit_number: string;
-  permit_type: string;
-}
-
-export interface IGetProjectForUpdateResponsePermit {
-  permits: IGetProjectForUpdateResponsePermitArrayItem[];
-}
-
 export interface IGetProjectForUpdateResponseObjectives {
   objectives: string;
-  caveats: string;
   revision_count: number;
 }
 
@@ -193,7 +176,7 @@ export interface IGetProjectForUpdateResponseFundingSource {
 }
 
 export interface IGetProjectForUpdateResponseFundingData {
-  fundingSources: IGetProjectForUpdateResponseFundingSource[];
+  funding_sources: IGetProjectForUpdateResponseFundingSource[];
 }
 
 export interface IGetProjectForUpdateResponsePartnerships {
@@ -219,7 +202,6 @@ export type IUpdateProjectRequest = IGetProjectForUpdateResponse;
 export interface IGetProjectForViewResponse {
   id: number;
   project: IGetProjectForViewResponseDetails;
-  permit: IGetProjectForViewResponsePermit;
   objectives: IGetProjectForViewResponseObjectives;
   location: IGetProjectForViewResponseLocation;
   coordinator: IGetProjectForViewResponseCoordinator;
@@ -235,21 +217,9 @@ export interface IGetProjectForViewResponseDetails {
   start_date: string;
   end_date: string;
   completion_status: string;
-  publish_date: string;
 }
-
-interface IGetProjectForViewResponsePermitArrayItem {
-  permit_number: string;
-  permit_type: string;
-}
-
-export interface IGetProjectForViewResponsePermit {
-  permits: IGetProjectForViewResponsePermitArrayItem[];
-}
-
 export interface IGetProjectForViewResponseObjectives {
   objectives: string;
-  caveats: string;
 }
 
 export interface IGetProjectForViewResponseLocation {
@@ -319,14 +289,23 @@ export interface IUploadAttachmentResponse {
   revision_count: number;
 }
 
-export interface IGetReportMetaData {
-  attachment_id: number;
+export interface IGetReportDetails {
+  metadata: IGetReportMetadata | null;
+  authors: IGetReportAuthors[];
+}
+
+export interface IGetAttachmentDetails {
+  metadata: { last_modified: string };
+  authors: IGetReportAuthors[];
+}
+
+export interface IGetReportMetadata {
+  id: number;
   title: string;
   year_published: number;
   description: string;
   last_modified: string;
   revision_count: number;
-  authors: IGetReportAuthors[];
 }
 
 export interface IGetReportAuthors {

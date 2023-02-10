@@ -11,7 +11,6 @@ const defaultLog = getLogger('models/project-create');
  */
 export class PostProjectObject {
   coordinator: PostCoordinatorData;
-  permit: PostPermitData;
   project: PostProjectData;
   objectives: PostObjectivesData;
   location: PostLocationData;
@@ -23,7 +22,6 @@ export class PostProjectObject {
     defaultLog.debug({ label: 'PostProjectObject', message: 'params', obj });
 
     this.coordinator = (obj?.coordinator && new PostCoordinatorData(obj.coordinator)) || null;
-    this.permit = (obj?.permit && new PostPermitData(obj.permit)) || null;
     this.project = (obj?.project && new PostProjectData(obj.project)) || null;
     this.objectives = (obj?.project && new PostObjectivesData(obj.objectives)) || null;
     this.location = (obj?.location && new PostLocationData(obj.location)) || null;
@@ -54,49 +52,6 @@ export class PostCoordinatorData {
     this.email_address = obj?.email_address || null;
     this.coordinator_agency = obj?.coordinator_agency || null;
     this.share_contact_details = (obj?.share_contact_details === 'true' && true) || false;
-  }
-}
-
-export interface IPostPermit {
-  permit_number: string;
-  permit_type: string;
-}
-
-export interface IPostExistingPermit {
-  permit_id: number;
-}
-
-/**
- * Processes POST /project permit data
- *
- * @export
- * @class PostPermitData
- */
-export class PostPermitData {
-  permits: IPostPermit[];
-  existing_permits: IPostExistingPermit[];
-
-  constructor(obj?: any) {
-    defaultLog.debug({ label: 'PostPermitData', message: 'params', obj });
-
-    this.permits =
-      (obj?.permits?.length &&
-        obj.permits.map((item: any) => {
-          return {
-            permit_number: item.permit_number,
-            permit_type: item.permit_type
-          };
-        })) ||
-      [];
-
-    this.existing_permits =
-      (obj?.existing_permits?.length &&
-        obj.existing_permits.map((item: any) => {
-          return {
-            permit_id: item
-          };
-        })) ||
-      [];
   }
 }
 
@@ -237,13 +192,13 @@ export class PostFundingSource {
  * @class PostFundingData
  */
 export class PostFundingData {
-  funding_sources: PostFundingSource[];
+  fundingSources: PostFundingSource[];
 
   constructor(obj?: any) {
     defaultLog.debug({ label: 'PostFundingData', message: 'params', obj });
 
-    this.funding_sources =
-      (obj?.funding_sources?.length && obj.funding_sources.map((item: any) => new PostFundingSource(item))) || [];
+    this.fundingSources =
+      (obj?.fundingSources?.length && obj.fundingSources.map((item: any) => new PostFundingSource(item))) || [];
   }
 }
 

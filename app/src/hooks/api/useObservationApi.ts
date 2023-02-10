@@ -1,8 +1,8 @@
 import { AxiosInstance, CancelTokenSource } from 'axios';
+import { GeoJsonProperties } from 'geojson';
 import {
   IGetObservationSubmissionResponse,
-  IGetOccurrencesForViewResponseDetails,
-  IGetSubmissionCSVForViewResponse,
+  ISpatialData,
   IUploadObservationSubmissionResponse
 } from 'interfaces/useObservationApi.interface';
 
@@ -47,25 +47,6 @@ const useObservationApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Get observation submission csv data/details by submission id.
-   * @param {number} projectId
-   * @param {number} surveyId
-   * @param {number} submissionId
-   * @return {*}  {Promise<IGetSubmissionCSVForViewResponse>}
-   */
-  const getSubmissionCSVForView = async (
-    projectId: number,
-    surveyId: number,
-    submissionId: number
-  ): Promise<IGetSubmissionCSVForViewResponse> => {
-    const { data } = await axios.get(
-      `/api/project/${projectId}/survey/${surveyId}/observation/submission/${submissionId}/view`
-    );
-
-    return data;
-  };
-
-  /**
    * Get observation submission based on survey ID
    *
    * @param {number} projectId
@@ -84,17 +65,20 @@ const useObservationApi = (axios: AxiosInstance) => {
   /**
    * Get occurrence information for view-only purposes based on occurrence submission id
    *
-   * @param {number} projectId
    * @param {number} occurrenceSubmissionId
-   * @returns {*} {Promise<IGetOccurrencesForViewResponseDetails[]>}
+   * @returns {*} {Promise<ISpatialData[]>}
    */
-  const getOccurrencesForView = async (
-    projectId: number,
-    occurrenceSubmissionId: number
-  ): Promise<IGetOccurrencesForViewResponseDetails[]> => {
+  const getOccurrencesForView = async (occurrenceSubmissionId: number): Promise<ISpatialData[]> => {
     const { data } = await axios.post(`/api/dwc/view-occurrences`, {
-      project_id: projectId,
       occurrence_submission_id: occurrenceSubmissionId
+    });
+
+    return data;
+  };
+
+  const getSpatialMetadata = async <T = GeoJsonProperties>(submissionSpatialComponentIds: number[]): Promise<T[]> => {
+    const { data } = await axios.get<T[]>(`/api/dwc/metadata`, {
+      params: { submissionSpatialComponentIds: submissionSpatialComponentIds }
     });
 
     return data;
@@ -121,60 +105,16 @@ const useObservationApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Initiate the validation process for the submitted DWC observations
-   *
-   * @param {number} projectId
-   * @param {number} submissionId
-   */
-  const initiateDwCSubmissionValidation = async (projectId: number, submissionId: number) => {
-    const { data } = await axios.post(`/api/dwc/validate`, {
-      project_id: projectId,
-      occurrence_submission_id: submissionId
-    });
-
-    return data;
-  };
-
-  /**
-   * Initiate the validation process for the submitted XLSX observations
-   *
-   * @param {number} projectId
-   * @param {number} submissionId
-   */
-  const initiateXLSXSubmissionValidation = async (projectId: number, submissionId: number) => {
-    const { data } = await axios.post(`/api/xlsx/validate`, {
-      project_id: projectId,
-      occurrence_submission_id: submissionId
-    });
-
-    return data;
-  };
-
-  /**
    * Initiate the transformation process for the submitted observation template.
    *
    * @param {number} projectId
    * @param {number} submissionId
    */
-  const initiateXLSXSubmissionTransform = async (projectId: number, submissionId: number) => {
+  const initiateXLSXSubmissionTransform = async (projectId: number, submissionId: number, surveyId: number) => {
     const { data } = await axios.post(`/api/xlsx/transform`, {
       project_id: projectId,
-      occurrence_submission_id: submissionId
-    });
-
-    return data;
-  };
-
-  /**
-   * Initiate the scraping process for the submitted DWC observations
-   *
-   * @param {number} projectId
-   * @param {number} submissionId
-   */
-  const initiateScrapeOccurrences = async (projectId: number, submissionId: number) => {
-    const { data } = await axios.post(`/api/dwc/scrape-occurrences`, {
-      project_id: projectId,
-      occurrence_submission_id: submissionId
+      occurrence_submission_id: submissionId,
+      survey_id: surveyId
     });
 
     return data;
@@ -187,8 +127,25 @@ const useObservationApi = (axios: AxiosInstance) => {
    * @param {number} submissionId
    * @return {*}
    */
-  const processOccurrences = async (projectId: number, submissionId: number) => {
+  const processOccurrences = async (projectId: number, submissionId: number, surveyId: number) => {
     const { data } = await axios.post(`/api/xlsx/process`, {
+      project_id: projectId,
+      occurrence_submission_id: submissionId,
+      survey_id: surveyId
+    });
+
+    return data;
+  };
+
+  /**
+   * Validates and processes a submitted Darwin Core File
+   *
+   * @param {number} projectId
+   * @param {number} submissionId
+   * @return {*}
+   */
+  const processDWCFile = async (projectId: number, submissionId: number) => {
+    const { data } = await axios.post(`api/dwc/process`, {
       project_id: projectId,
       occurrence_submission_id: submissionId
     });
@@ -198,15 +155,13 @@ const useObservationApi = (axios: AxiosInstance) => {
 
   return {
     uploadObservationSubmission,
-    getSubmissionCSVForView,
     getObservationSubmission,
     deleteObservationSubmission,
-    initiateDwCSubmissionValidation,
-    initiateXLSXSubmissionValidation,
     initiateXLSXSubmissionTransform,
-    initiateScrapeOccurrences,
     getOccurrencesForView,
-    processOccurrences
+    processOccurrences,
+    processDWCFile,
+    getSpatialMetadata
   };
 };
 

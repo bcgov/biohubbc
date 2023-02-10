@@ -2,11 +2,11 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { ATTACHMENT_TYPE } from '../../../../../../constants/attachments';
 import { PROJECT_ROLE } from '../../../../../../constants/roles';
-import { getDBConnection, IDBConnection } from '../../../../../../database/db';
-import { HTTP400 } from '../../../../../../errors/custom-error';
-import { queries } from '../../../../../../queries/queries';
+import { getDBConnection } from '../../../../../../database/db';
+import { HTTP400 } from '../../../../../../errors/http-error';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
-import { generateS3FileKey, scanFileForVirus, uploadFileToS3 } from '../../../../../../utils/file-utils';
+import { AttachmentService } from '../../../../../../services/attachment-service';
+import { scanFileForVirus, uploadFileToS3 } from '../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../utils/logger';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/attachments/upload');
@@ -102,14 +102,6 @@ export function uploadMedia(): RequestHandler {
   return async (req, res) => {
     const rawMediaArray: Express.Multer.File[] = req.files as Express.Multer.File[];
 
-    if (!req.params.projectId) {
-      throw new HTTP400('Missing projectId');
-    }
-
-    if (!req.params.surveyId) {
-      throw new HTTP400('Missing surveyId');
-    }
-
     if (!rawMediaArray || !rawMediaArray.length) {
       // no media objects included, skipping media upload step
       throw new HTTP400('Missing upload data');
@@ -135,12 +127,13 @@ export function uploadMedia(): RequestHandler {
         throw new HTTP400('Malicious content detected, upload cancelled');
       }
 
-      const upsertResult = await upsertSurveyAttachment(
+      const attachmentService = new AttachmentService(connection);
+
+      const upsertResult = await attachmentService.upsertSurveyAttachment(
         rawMediaFile,
         Number(req.params.projectId),
         Number(req.params.surveyId),
-        ATTACHMENT_TYPE.OTHER,
-        connection
+        ATTACHMENT_TYPE.OTHER
       );
 
       const metadata = {
@@ -165,89 +158,3 @@ export function uploadMedia(): RequestHandler {
     }
   };
 }
-
-export const upsertSurveyAttachment = async (
-  file: Express.Multer.File,
-  projectId: number,
-  surveyId: number,
-  attachmentType: string,
-  connection: IDBConnection
-): Promise<{ id: number; revision_count: number; key: string }> => {
-  const getSqlStatement = queries.survey.getSurveyAttachmentByFileNameSQL(surveyId, file.originalname);
-
-  if (!getSqlStatement) {
-    throw new HTTP400('Failed to build SQL get statement');
-  }
-
-  const key = generateS3FileKey({ projectId: projectId, surveyId: surveyId, fileName: file.originalname });
-
-  const getResponse = await connection.query(getSqlStatement.text, getSqlStatement.values);
-
-  let attachmentResult: { id: number; revision_count: number };
-
-  if (getResponse && getResponse.rowCount > 0) {
-    // Existing attachment with matching name found, update it
-    attachmentResult = await updateSurveyAttachment(file, surveyId, attachmentType, connection);
-  } else {
-    // No matching attachment found, insert new attachment
-    attachmentResult = await insertSurveyAttachment(file, projectId, surveyId, attachmentType, connection);
-  }
-
-  return { ...attachmentResult, key };
-};
-
-export const insertSurveyAttachment = async (
-  file: Express.Multer.File,
-  projectId: number,
-  surveyId: number,
-  attachmentType: string,
-  connection: IDBConnection
-): Promise<{ id: number; revision_count: number }> => {
-  const key = generateS3FileKey({
-    projectId: projectId,
-    surveyId: surveyId,
-    fileName: file.originalname,
-    folder: 'reports'
-  });
-
-  const sqlStatement = queries.survey.postSurveyAttachmentSQL(
-    file.originalname,
-    file.size,
-    attachmentType,
-    surveyId,
-    key
-  );
-
-  if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL insert statement');
-  }
-
-  const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
-  if (!response || !response?.rows?.[0]) {
-    throw new HTTP400('Failed to insert survey attachment data');
-  }
-
-  return response.rows[0];
-};
-
-export const updateSurveyAttachment = async (
-  file: Express.Multer.File,
-  surveyId: number,
-  attachmentType: string,
-  connection: IDBConnection
-): Promise<{ id: number; revision_count: number }> => {
-  const sqlStatement = queries.survey.putSurveyAttachmentSQL(surveyId, file.originalname, attachmentType);
-
-  if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL update statement');
-  }
-
-  const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
-  if (!response || !response?.rows?.[0]) {
-    throw new HTTP400('Failed to update survey attachment data');
-  }
-
-  return response.rows[0];
-};

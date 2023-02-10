@@ -1,7 +1,6 @@
-import { cleanup, fireEvent, getAllByText, render, waitFor } from '@testing-library/react';
+import { cleanup, fireEvent, getAllByText, render } from '@testing-library/react';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { UPDATE_GET_ENTITIES } from 'interfaces/useProjectApi.interface';
 import React from 'react';
 import { codes } from 'test-helpers/code-helpers';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
@@ -64,7 +63,7 @@ describe('ProjectObjectives', () => {
       <ProjectObjectives
         projectForViewData={{
           ...getProjectForViewResponse,
-          objectives: { ...getProjectForViewResponse.objectives, objectives: longData, caveats: '' }
+          objectives: { ...getProjectForViewResponse.objectives, objectives: longData }
         }}
         codes={codes}
         refresh={mockRefresh}
@@ -79,7 +78,7 @@ describe('ProjectObjectives', () => {
       <ProjectObjectives
         projectForViewData={{
           ...getProjectForViewResponse,
-          objectives: { ...getProjectForViewResponse.objectives, objectives: longData, caveats: longData }
+          objectives: { ...getProjectForViewResponse.objectives, objectives: longData }
         }}
         codes={codes}
         refresh={mockRefresh}
@@ -91,7 +90,6 @@ describe('ProjectObjectives', () => {
 
   it('renders correctly when objectives and caveats are < 850 characters and in multiple paragraphs', () => {
     const multilineObjectives = 'Paragraph1\nParagraph2\n\nParagraph3';
-    const multilineCaveats = 'Paragraph1\nParagraph2\n\nParagraph3';
 
     const { asFragment } = render(
       <ProjectObjectives
@@ -99,8 +97,7 @@ describe('ProjectObjectives', () => {
           ...getProjectForViewResponse,
           objectives: {
             ...getProjectForViewResponse.objectives,
-            objectives: multilineObjectives,
-            caveats: multilineCaveats
+            objectives: multilineObjectives
           }
         }}
         codes={codes}
@@ -111,12 +108,12 @@ describe('ProjectObjectives', () => {
     expect(asFragment()).toMatchSnapshot();
   });
 
-  it('functions as expected with the read more and read less buttons', () => {
+  it('functions as expected with the read more and READ LESS buttons', () => {
     const { container } = render(
       <ProjectObjectives
         projectForViewData={{
           ...getProjectForViewResponse,
-          objectives: { ...getProjectForViewResponse.objectives, objectives: longData, caveats: longData }
+          objectives: { ...getProjectForViewResponse.objectives, objectives: longData }
         }}
         codes={codes}
         refresh={mockRefresh}
@@ -125,177 +122,18 @@ describe('ProjectObjectives', () => {
 
     // for finding 'project objectives'
     //@ts-ignore
-    expect(getAllByText(container, 'Read More')[0]).toBeInTheDocument();
+    expect(getAllByText(container, 'READ MORE...')[0]).toBeInTheDocument();
 
     //@ts-ignore
-    fireEvent.click(getAllByText(container, 'Read More')[0]);
+    fireEvent.click(getAllByText(container, 'READ MORE...')[0]);
 
     //@ts-ignore
-    expect(getAllByText(container, 'Read Less')[0]).toBeInTheDocument();
+    expect(getAllByText(container, 'READ LESS')[0]).toBeInTheDocument();
 
     //@ts-ignore
-    fireEvent.click(getAllByText(container, 'Read Less')[0]);
+    fireEvent.click(getAllByText(container, 'READ LESS')[0]);
 
     //@ts-ignore
-    expect(getAllByText(container, 'Read More')[0]).toBeInTheDocument();
-
-    // for finding 'project caveats'
-    //@ts-ignore
-    expect(getAllByText(container, 'Read More')[1]).toBeInTheDocument();
-
-    //@ts-ignore
-    fireEvent.click(getAllByText(container, 'Read More')[1]);
-
-    //@ts-ignore
-    expect(getAllByText(container, 'Read Less')[0]).toBeInTheDocument();
-
-    //@ts-ignore
-    fireEvent.click(getAllByText(container, 'Read Less')[0]);
-
-    //@ts-ignore
-    expect(getAllByText(container, 'Read More')[1]).toBeInTheDocument();
-  });
-
-  it('editing the project objectives works in the dialog', async () => {
-    mockBiohubApi().project.getProjectForUpdate.mockResolvedValue({
-      objectives: {
-        objectives: 'initial objectives',
-        caveats: 'initial caveats',
-        revision_count: 0
-      }
-    });
-
-    const { getByText, queryByText } = renderContainer();
-
-    await waitFor(() => {
-      expect(getByText('Objectives')).toBeVisible();
-    });
-
-    fireEvent.click(getByText('Edit'));
-
-    await waitFor(() => {
-      expect(mockBiohubApi().project.getProjectForUpdate).toBeCalledWith(getProjectForViewResponse.id, [
-        UPDATE_GET_ENTITIES.objectives
-      ]);
-    });
-
-    await waitFor(() => {
-      expect(getByText('Edit Project Objectives')).toBeVisible();
-    });
-
-    fireEvent.click(getByText('Cancel'));
-
-    await waitFor(() => {
-      expect(queryByText('Edit Project Objectives')).not.toBeInTheDocument();
-    });
-
-    fireEvent.click(getByText('Edit'));
-
-    await waitFor(() => {
-      expect(getByText('Edit Project Objectives')).toBeVisible();
-    });
-
-    fireEvent.click(getByText('Save Changes'));
-
-    await waitFor(() => {
-      expect(mockBiohubApi().project.updateProject).toHaveBeenCalledTimes(1);
-      expect(mockBiohubApi().project.updateProject).toBeCalledWith(getProjectForViewResponse.id, {
-        objectives: {
-          objectives: 'initial objectives',
-          caveats: 'initial caveats',
-          revision_count: 0
-        }
-      });
-      expect(mockRefresh).toBeCalledTimes(1);
-    });
-  });
-
-  it('displays an error dialog when fetching the update data fails', async () => {
-    mockBiohubApi().project.getProjectForUpdate.mockResolvedValue({
-      objectives: undefined
-    });
-
-    const { getByText, queryByText } = renderContainer();
-
-    await waitFor(() => {
-      expect(getByText('Objectives')).toBeVisible();
-    });
-
-    fireEvent.click(getByText('Edit'));
-
-    await waitFor(() => {
-      expect(getByText('Error Editing Project Objectives')).toBeVisible();
-    });
-
-    fireEvent.click(getByText('Ok'));
-
-    await waitFor(() => {
-      expect(queryByText('Error Editing Project Objectives')).not.toBeInTheDocument();
-    });
-  });
-
-  it('shows error dialog with API error message when getting objectives data for update fails', async () => {
-    mockBiohubApi().project.getProjectForUpdate = jest.fn(() => Promise.reject(new Error('API Error is Here')));
-
-    const { getByText, queryByText } = renderContainer();
-
-    await waitFor(() => {
-      expect(getByText('Objectives')).toBeVisible();
-    });
-
-    fireEvent.click(getByText('Edit'));
-
-    await waitFor(() => {
-      expect(queryByText('API Error is Here')).toBeInTheDocument();
-    });
-
-    fireEvent.click(getByText('Ok'));
-
-    await waitFor(() => {
-      expect(queryByText('API Error is Here')).toBeNull();
-    });
-  });
-
-  it('shows error dialog with API error message when updating objectives data fails', async () => {
-    mockBiohubApi().project.getProjectForUpdate.mockResolvedValue({
-      objectives: {
-        objectives: 'initial objectives',
-        caveats: 'initial caveats',
-        revision_count: 0
-      }
-    });
-    mockBiohubApi().project.updateProject = jest.fn(() => Promise.reject(new Error('API Error is Here')));
-
-    const { getByText, queryByText, getAllByRole } = renderContainer();
-
-    await waitFor(() => {
-      expect(getByText('Objectives')).toBeVisible();
-    });
-
-    fireEvent.click(getByText('Edit'));
-
-    await waitFor(() => {
-      expect(mockBiohubApi().project.getProjectForUpdate).toBeCalledWith(getProjectForViewResponse.id, [
-        UPDATE_GET_ENTITIES.objectives
-      ]);
-    });
-
-    await waitFor(() => {
-      expect(getByText('Edit Project Objectives')).toBeVisible();
-    });
-
-    fireEvent.click(getByText('Save Changes'));
-
-    await waitFor(() => {
-      expect(queryByText('API Error is Here')).toBeInTheDocument();
-    });
-
-    // Get the backdrop, then get the firstChild because this is where the event listener is attached
-    //@ts-ignore
-    fireEvent.click(getAllByRole('presentation')[0].firstChild);
-
-    await waitFor(() => {
-      expect(queryByText('API Error is Here')).toBeNull();
-    });
+    expect(getAllByText(container, 'READ MORE...')[0]).toBeInTheDocument();
   });
 });

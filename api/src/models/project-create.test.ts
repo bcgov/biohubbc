@@ -8,7 +8,6 @@ import {
   PostLocationData,
   PostObjectivesData,
   PostPartnershipsData,
-  PostPermitData,
   PostProjectData,
   PostProjectObject
 } from './project-create';
@@ -23,10 +22,6 @@ describe('PostProjectObject', () => {
 
     it('sets coordinator', function () {
       expect(projectPostObject.coordinator).to.equal(null);
-    });
-
-    it('sets permit', function () {
-      expect(projectPostObject.permit).to.equal(null);
     });
 
     it('sets project', function () {
@@ -65,13 +60,6 @@ describe('PostProjectObject', () => {
         coordinator_agency: 'agency',
         share_contact_details: 'true'
       },
-      permit: {
-        permits: [
-          {
-            permit_number: 1
-          }
-        ]
-      },
       project: {
         project_name: 'name_test_data',
         project_type: 'test_type',
@@ -105,7 +93,7 @@ describe('PostProjectObject', () => {
         ]
       },
       funding: {
-        funding_sources: [
+        fundingSources: [
           {
             agency_id: 1,
             investment_action_category: 1,
@@ -251,100 +239,6 @@ describe('PostObjectivesData', () => {
 
     it('sets caveats', function () {
       expect(projectObjectivesData.caveats).to.equal(obj.caveats);
-    });
-  });
-});
-
-describe('PostPermitData', () => {
-  describe('No values provided', () => {
-    let projectPermitData: PostPermitData;
-
-    before(() => {
-      projectPermitData = new PostPermitData(null);
-    });
-
-    it('sets permits', function () {
-      expect(projectPermitData.permits).to.eql([]);
-    });
-  });
-
-  describe('All values provided are null', () => {
-    let projectPermitData: PostPermitData;
-
-    before(() => {
-      projectPermitData = new PostPermitData({
-        permits: null
-      });
-    });
-
-    it('sets permits', function () {
-      expect(projectPermitData.permits).to.eql([]);
-    });
-  });
-
-  describe('All values provided are empty arrays', () => {
-    let projectPermitData: PostPermitData;
-
-    before(() => {
-      projectPermitData = new PostPermitData({
-        permits: []
-      });
-    });
-
-    it('sets permits', function () {
-      expect(projectPermitData.permits).to.eql([]);
-    });
-  });
-
-  describe('All values provided with sampling conducted as true', () => {
-    let projectPermitData: PostPermitData;
-
-    const obj = {
-      permits: [
-        {
-          permit_number: '1',
-          permit_type: 'permit type'
-        }
-      ]
-    };
-
-    before(() => {
-      projectPermitData = new PostPermitData(obj);
-    });
-
-    it('sets permits', function () {
-      expect(projectPermitData.permits).to.eql([
-        {
-          permit_number: '1',
-          permit_type: 'permit type'
-        }
-      ]);
-    });
-  });
-
-  describe('All values provided with sampling conducted as false', () => {
-    let projectPermitData: PostPermitData;
-
-    const obj = {
-      permits: [
-        {
-          permit_number: '1',
-          permit_type: 'permit type'
-        }
-      ]
-    };
-
-    before(() => {
-      projectPermitData = new PostPermitData(obj);
-    });
-
-    it('sets permits', function () {
-      expect(projectPermitData.permits).to.eql([
-        {
-          permit_number: '1',
-          permit_type: 'permit type'
-        }
-      ]);
     });
   });
 });
@@ -628,8 +522,8 @@ describe('PostFundingData', () => {
       data = new PostFundingData(null);
     });
 
-    it('sets funding_sources', () => {
-      expect(data.funding_sources).to.eql([]);
+    it('sets fundingSources', () => {
+      expect(data.fundingSources).to.eql([]);
     });
   });
 
@@ -637,15 +531,15 @@ describe('PostFundingData', () => {
     let data: PostFundingData;
 
     const obj = {
-      funding_sources: null
+      fundingSources: null
     };
 
     before(() => {
       data = new PostFundingData(obj);
     });
 
-    it('sets funding_sources', () => {
-      expect(data.funding_sources).to.eql([]);
+    it('sets fundingSources', () => {
+      expect(data.fundingSources).to.eql([]);
     });
   });
 
@@ -653,15 +547,15 @@ describe('PostFundingData', () => {
     let data: PostFundingData;
 
     const obj = {
-      funding_sources: []
+      fundingSources: []
     };
 
     before(() => {
       data = new PostFundingData(obj);
     });
 
-    it('sets funding_sources', () => {
-      expect(data.funding_sources).to.eql([]);
+    it('sets fundingSources', () => {
+      expect(data.fundingSources).to.eql([]);
     });
   });
 
@@ -669,7 +563,7 @@ describe('PostFundingData', () => {
     let data: PostFundingData;
 
     const obj = {
-      funding_sources: [
+      fundingSources: [
         {
           agency_id: 1,
           investment_action_category: 1,
@@ -685,8 +579,8 @@ describe('PostFundingData', () => {
       data = new PostFundingData(obj);
     });
 
-    it('sets funding_sources', () => {
-      expect(data.funding_sources).to.eql(obj.funding_sources);
+    it('sets fundingSources', () => {
+      expect(data.fundingSources).to.eql(obj.fundingSources);
     });
   });
 });

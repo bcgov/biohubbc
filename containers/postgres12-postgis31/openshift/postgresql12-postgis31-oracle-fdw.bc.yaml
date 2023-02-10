@@ -3,68 +3,6 @@ kind: Template
 apiVersion: template.openshift.io/v1
 metadata:
   name: ${NAME}-build-template
-objects:
-
-  - kind: ImageStream
-    apiVersion: v1
-    metadata:
-      name: ${NAME}
-      labels:
-        name: ${NAME}
-        app: ${APP_NAME}${SUFFIX}
-        app-group: ${APP_GROUP}
-
-  - kind: BuildConfig
-    apiVersion: v1
-    metadata:
-      name: ${NAME}
-      labels:
-        name: ${NAME}
-        app: ${APP_NAME}${SUFFIX}
-        app-group: ${APP_GROUP}
-    spec:
-      runPolicy: Serial
-      source:
-        type: Git
-        git:
-          ref: ${GIT_REF}
-          uri: ${GIT_REPO_URL}
-        contextDir: ${SOURCE_CONTEXT_DIR}
-        secrets:
-        - secret:
-            name: etc-pki-entitlement
-          destinationDir: etc-pki-entitlement
-        configMaps:
-        - configMap:
-            name: rhsm-conf
-          destinationDir: rhsm-conf
-        - configMap:
-            name: rhsm-ca
-          destinationDir: rhsm-ca
-      strategy:
-        type: Docker
-        dockerStrategy:
-          noCache: true
-          imageOptimizationPolicy: SkipLayers
-          dockerfilePath: ${DOCKER_FILE_PATH}
-          from:
-            kind: ${SOURCE_IMAGE_KIND}
-            name: ${SOURCE_IMAGE_NAME}:${SOURCE_IMAGE_TAG}
-      output:
-        to:
-          kind: ImageStreamTag
-          name: ${NAME}:${OUTPUT_IMAGE_TAG}
-      resources:
-        requests:
-          cpu: ${CPU_REQUEST}
-          memory: ${MEMORY_REQUEST}
-        limits:
-          cpu: ${CPU_LIMIT}
-          memory: ${MEMORY_LIMIT}
-      triggers:
-        - type: ImageChange
-        - type: ConfigChange
-
 parameters:
   - name: NAME
     displayName: Name
@@ -156,3 +94,63 @@ parameters:
       use default.
     required: true
     value: 0Mi
+objects:
+  - kind: ImageStream
+    apiVersion: image.openshift.io/v1
+    metadata:
+      name: ${NAME}
+      labels:
+        name: ${NAME}
+        app: ${APP_NAME}${SUFFIX}
+        app-group: ${APP_GROUP}
+
+  - kind: BuildConfig
+    apiVersion: build.openshift.io/v1
+    metadata:
+      name: ${NAME}
+      labels:
+        name: ${NAME}
+        app: ${APP_NAME}${SUFFIX}
+        app-group: ${APP_GROUP}
+    spec:
+      runPolicy: Serial
+      source:
+        type: Git
+        git:
+          ref: ${GIT_REF}
+          uri: ${GIT_REPO_URL}
+        contextDir: ${SOURCE_CONTEXT_DIR}
+        secrets:
+          - secret:
+              name: platform-services-controlled-etc-pki-entitlement
+            destinationDir: etc-pki-entitlement
+        configMaps:
+          - configMap:
+              name: platform-services-controlled-rhsm-conf
+            destinationDir: rhsm-conf
+          - configMap:
+              name: platform-services-controlled-rhsm-ca
+            destinationDir: rhsm-ca
+      strategy:
+        type: Docker
+        dockerStrategy:
+          noCache: true
+          imageOptimizationPolicy: SkipLayers
+          dockerfilePath: ${DOCKER_FILE_PATH}
+          from:
+            kind: ${SOURCE_IMAGE_KIND}
+            name: ${SOURCE_IMAGE_NAME}:${SOURCE_IMAGE_TAG}
+      output:
+        to:
+          kind: ImageStreamTag
+          name: ${NAME}:${OUTPUT_IMAGE_TAG}
+      resources:
+        requests:
+          cpu: ${CPU_REQUEST}
+          memory: ${MEMORY_REQUEST}
+        limits:
+          cpu: ${CPU_LIMIT}
+          memory: ${MEMORY_LIMIT}
+      triggers:
+        - type: ImageChange
+        - type: ConfigChange

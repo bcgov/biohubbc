@@ -2,10 +2,9 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../../constants/roles';
 import { getDBConnection } from '../../../database/db';
-import { HTTP400 } from '../../../errors/custom-error';
 import { draftGetResponseObject } from '../../../openapi/schemas/draft';
-import { queries } from '../../../queries/queries';
 import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
+import { ProjectService } from '../../../services/project-service';
 import { getLogger } from '../../../utils/logger';
 
 const defaultLog = getLogger('paths/draft/{draftId}');
@@ -15,7 +14,7 @@ export const GET: Operation = [
     return {
       and: [
         {
-          validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_CREATOR],
+          validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_CREATOR, SYSTEM_ROLE.DATA_ADMINISTRATOR],
           discriminator: 'SystemRole'
         }
       ]
@@ -37,7 +36,8 @@ GET.apiDoc = {
       in: 'path',
       name: 'draftId',
       schema: {
-        type: 'number'
+        type: 'integer',
+        minimum: 1
       },
       required: true
     }
@@ -81,21 +81,15 @@ export function getSingleDraft(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const getDraftSQLStatement = queries.project.draft.getDraftSQL(Number(req.params.draftId));
-
-      if (!getDraftSQLStatement) {
-        throw new HTTP400('Failed to build SQL get statement');
-      }
-
       await connection.open();
 
-      const draftResponse = await connection.query(getDraftSQLStatement.text, getDraftSQLStatement.values);
+      const projectService = new ProjectService(connection);
+
+      const response = await projectService.getSingleDraft(Number(req.params.draftId));
 
       await connection.commit();
 
-      const draftResult = (draftResponse && draftResponse.rows && draftResponse.rows[0]) || null;
-
-      return res.status(200).json(draftResult);
+      return res.status(200).json(response);
     } catch (error) {
       defaultLog.error({ label: 'getSingleDraft', message: 'error', error });
       throw error;

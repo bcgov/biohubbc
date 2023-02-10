@@ -12,17 +12,16 @@ import {
   mdiAlertCircleOutline,
   mdiDownload,
   mdiFileOutline,
-  mdiImport,
   mdiInformationOutline,
+  mdiPlus,
   mdiTrashCanOutline
 } from '@mdi/js';
 import Icon from '@mdi/react';
-import FileUpload from 'components/attachments/FileUpload';
-import { IUploadHandler } from 'components/attachments/FileUploadItem';
 import ComponentDialog from 'components/dialog/ComponentDialog';
+import FileUpload from 'components/file-upload/FileUpload';
+import { IUploadHandler } from 'components/file-upload/FileUploadItem';
 import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
 import { DialogContext } from 'contexts/dialogContext';
-import ObservationSubmissionCSV from 'features/observations/components/ObservationSubmissionCSV';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetSummaryResultsResponse } from 'interfaces/useSummaryResultsApi.interface';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
@@ -300,57 +299,46 @@ const SurveySummaryResults = () => {
 
   return (
     <>
-      <Paper>
+      <Paper elevation={0}>
         <H2ButtonToolbar
           label="Summary Results"
-          buttonLabel="Import"
+          buttonProps={{ variant: 'contained', color: 'primary' }}
+          buttonLabel="Import Summary Results"
           buttonTitle="Import Summary Results"
-          buttonStartIcon={<Icon path={mdiImport} size={1} />}
+          buttonStartIcon={<Icon path={mdiPlus} size={0.8} />}
           buttonOnClick={() => showUploadDialog()}
         />
 
-        <Box>
+        <Divider></Divider>
+
+        <Box p={3}>
           {!submission && (
-            <>
-              <Box component={Divider} m={0} />
-              <Box p={3} textAlign="center">
-                <Typography data-testid="observations-nodata" variant="body2">
-                  No Summary Results. &nbsp;
-                  <Link onClick={() => setOpenImportSummaryResults(true)} className={classes.browseLink}>
-                    Click Here to Import
-                  </Link>
-                </Typography>
-              </Box>
-            </>
+            <Box textAlign="center">
+              <Typography data-testid="observations-nodata" variant="body2" color="textSecondary">
+                No Summary Results. &nbsp;
+                <Link onClick={() => setOpenImportSummaryResults(true)} className={classes.browseLink}>
+                  Click Here to Import
+                </Link>
+              </Typography>
+            </Box>
           )}
 
           {submission && hasErrorMessages && (
-            <>
-              <Box px={3} pb={3}>
-                {displayAlertBox('error', mdiAlertCircleOutline, submission.fileName, 'Validation Failed')}
-                <Box my={3}>
-                  <Typography data-testid="observations-error-details" variant="body1">
-                    Resolve the following errors in your local file and re-import.
-                  </Typography>
-                </Box>
-                <Box>
-                  {displayMessages(submissionErrors, messageGrouping, mdiAlertCircleOutline)}
-                  {displayMessages(submissionWarnings, messageGrouping, mdiInformationOutline)}
-                </Box>
+            <Box>
+              {displayAlertBox('error', mdiAlertCircleOutline, submission.fileName, 'Validation Failed')}
+              <Box my={3}>
+                <Typography data-testid="observations-error-details" variant="body1">
+                  Resolve the following errors in your local file and re-import.
+                </Typography>
               </Box>
-            </>
+              <Box>
+                {displayMessages(submissionErrors, messageGrouping, mdiAlertCircleOutline)}
+                {displayMessages(submissionWarnings, messageGrouping, mdiInformationOutline)}
+              </Box>
+            </Box>
           )}
           {submission && !hasErrorMessages && (
-            <>
-              <Box px={3}>{displayAlertBox('info', mdiFileOutline, submission?.fileName, '')}</Box>
-              <Box mt={1} overflow="hidden">
-                <ObservationSubmissionCSV
-                  getCSVData={() => {
-                    return biohubApi.survey.getSubmissionCSVForView(projectId, surveyId, submission.id);
-                  }}
-                />
-              </Box>
-            </>
+            <Box>{displayAlertBox('info', mdiFileOutline, submission?.fileName, '')}</Box>
           )}
         </Box>
       </Paper>

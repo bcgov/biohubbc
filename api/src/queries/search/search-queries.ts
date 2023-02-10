@@ -19,15 +19,12 @@ export const getSpatialSearchResultsSQL = (isUserAdmin: boolean, systemUserId: n
       public.ST_asGeoJSON(p.geography) as geometry
     from
       project as p
-    where
-      p.publish_timestamp is not null
   `;
 
   if (!isUserAdmin) {
-    sqlStatement.append(SQL` and p.create_user = ${systemUserId};`);
-  } else {
-    sqlStatement.append(SQL`;`);
+    sqlStatement.append(SQL`WHERE p.create_user = ${systemUserId};`);
   }
 
+  sqlStatement.append(SQL`;`);
   return sqlStatement;
 };

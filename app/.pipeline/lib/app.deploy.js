@@ -1,15 +1,16 @@
 'use strict';
+
 const { OpenShiftClientX } = require('pipeline-cli');
 const path = require('path');
 
-module.exports = (settings) => {
+const appDeploy = (settings) => {
   const phases = settings.phases;
   const options = settings.options;
   const phase = options.env;
 
   const oc = new OpenShiftClientX(Object.assign({ namespace: phases[phase].namespace }, options));
 
-  const templatesLocalBaseUrl = oc.toFileUrl(path.resolve(__dirname, '../../openshift'));
+  const templatesLocalBaseUrl = oc.toFileUrl(path.resolve(__dirname, '../templates'));
 
   const changeId = phases[phase].changeId;
 
@@ -30,11 +31,15 @@ module.exports = (settings) => {
         REACT_APP_MAX_UPLOAD_FILE_SIZE: phases[phase].maxUploadFileSize,
         NODE_ENV: phases[phase].env || 'dev',
         REACT_APP_NODE_ENV: phases[phase].env || 'dev',
-        SSO_URL: phases[phase].sso.url,
-        SSO_CLIENT_ID: phases[phase].sso.clientId,
-        SSO_REALM: phases[phase].sso.realm,
-        REPLICAS: phases[phase].replicas || 1,
-        REPLICA_MAX: phases[phase].maxReplicas || 1
+        REACT_APP_KEYCLOAK_HOST: phases[phase].sso.url,
+        REACT_APP_KEYCLOAK_REALM: phases[phase].sso.realm,
+        REACT_APP_KEYCLOAK_CLIENT_ID: phases[phase].sso.clientId,
+        CPU_REQUEST: phases[phase].cpuRequest,
+        CPU_LIMIT: phases[phase].cpuLimit,
+        MEMORY_REQUEST: phases[phase].memoryRequest,
+        MEMORY_LIMIT: phases[phase].memoryLimit,
+        REPLICAS: phases[phase].replicas,
+        REPLICAS_MAX: phases[phase].replicasMax
       }
     })
   );
@@ -44,3 +49,5 @@ module.exports = (settings) => {
 
   oc.applyAndDeploy(objects, phases[phase].instance);
 };
+
+module.exports = { appDeploy };

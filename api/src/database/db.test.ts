@@ -4,8 +4,8 @@ import * as pg from 'pg';
 import Sinon from 'sinon';
 import SQL from 'sql-template-strings';
 import { SYSTEM_IDENTITY_SOURCE } from '../constants/database';
-import { HTTPError } from '../errors/custom-error';
-import { setSystemUserContextSQL } from '../queries/database/user-context-queries';
+import { ApiExecuteSQLError } from '../errors/api-error';
+import { HTTPError } from '../errors/http-error';
 import * as db from './db';
 import { getAPIUserDBConnection, getDBConnection, getDBPool, getKnex, IDBConnection, initDBPool } from './db';
 
@@ -51,7 +51,11 @@ describe('db', () => {
     describe('DBConnection', () => {
       const sinonSandbox = Sinon.createSandbox();
 
-      const mockKeycloakToken = { preferred_username: 'test@idir' };
+      const mockKeycloakToken = {
+        preferred_username: 'testguid@idir',
+        idir_username: 'testuser',
+        identity_provider: SYSTEM_IDENTITY_SOURCE.IDIR
+      };
 
       const queryStub = sinonSandbox.stub().resolves();
       const releaseStub = sinonSandbox.stub().resolves();
@@ -78,12 +82,6 @@ describe('db', () => {
 
             expect(getDBPoolStub).to.have.been.calledOnce;
             expect(connectStub).to.have.been.calledOnce;
-
-            const expectedSystemUserContextSQL = setSystemUserContextSQL('test', SYSTEM_IDENTITY_SOURCE.IDIR);
-            expect(queryStub).to.have.been.calledWith(
-              expectedSystemUserContextSQL?.text,
-              expectedSystemUserContextSQL?.values
-            );
 
             expect(queryStub).to.have.been.calledWith('BEGIN');
           });
@@ -114,17 +112,24 @@ describe('db', () => {
           it('throws an error', async () => {
             const getDBPoolStub = sinonSandbox.stub(db, 'getDBPool').returns(undefined);
 
-            let expectedError: Error;
+            let expectedError: ApiExecuteSQLError;
             try {
               await connection.open();
 
               expect.fail('Expected an error to be thrown');
             } catch (error) {
-              expectedError = error as Error;
+              expectedError = error as ApiExecuteSQLError;
             }
 
-            expect(expectedError.message).to.equal('DBPool is not initialized');
+            expect(expectedError.message).to.equal('Failed to execute SQL');
 
+            expect(expectedError.errors?.length).to.be.greaterThan(0);
+            expectedError.errors?.forEach((item) => {
+              expect(item).to.be.instanceOf(Error);
+              if (item instanceof Error) {
+                expect(item.message).to.be.eql('DBPool is not initialized');
+              }
+            });
             expect(getDBPoolStub).to.have.been.calledOnce;
 
             expect(connectStub).not.to.have.been.called;
@@ -193,16 +198,24 @@ describe('db', () => {
           it('throws an error', async () => {
             sinonSandbox.stub(db, 'getDBPool').returns((mockPool as unknown) as pg.Pool);
 
-            let expectedError: Error;
+            let expectedError: ApiExecuteSQLError;
             try {
               await connection.commit();
 
               expect.fail('Expected an error to be thrown');
             } catch (error) {
-              expectedError = error as Error;
+              expectedError = error as ApiExecuteSQLError;
             }
 
-            expect(expectedError.message).to.equal('DBConnection is not open');
+            expect(expectedError.message).to.equal('Failed to execute SQL');
+
+            expect(expectedError.errors?.length).to.be.greaterThan(0);
+            expectedError.errors?.forEach((item) => {
+              expect(item).to.be.instanceOf(Error);
+              if (item instanceof Error) {
+                expect(item.message).to.be.eql('DBConnection is not open');
+              }
+            });
           });
         });
       });
@@ -224,16 +237,24 @@ describe('db', () => {
           it('throws an error', async () => {
             sinonSandbox.stub(db, 'getDBPool').returns((mockPool as unknown) as pg.Pool);
 
-            let expectedError: Error;
+            let expectedError: ApiExecuteSQLError;
             try {
               await connection.rollback();
 
               expect.fail('Expected an error to be thrown');
             } catch (error) {
-              expectedError = error as Error;
+              expectedError = error as ApiExecuteSQLError;
             }
 
-            expect(expectedError.message).to.equal('DBConnection is not open');
+            expect(expectedError.message).to.equal('Failed to execute SQL');
+
+            expect(expectedError.errors?.length).to.be.greaterThan(0);
+            expectedError.errors?.forEach((item) => {
+              expect(item).to.be.instanceOf(Error);
+              if (item instanceof Error) {
+                expect(item.message).to.be.eql('DBConnection is not open');
+              }
+            });
           });
         });
       });
@@ -265,16 +286,24 @@ describe('db', () => {
           it('throws an error', async () => {
             sinonSandbox.stub(db, 'getDBPool').returns((mockPool as unknown) as pg.Pool);
 
-            let expectedError: Error;
+            let expectedError: ApiExecuteSQLError;
             try {
               await connection.query('sql query');
 
               expect.fail('Expected an error to be thrown');
             } catch (error) {
-              expectedError = error as Error;
+              expectedError = error as ApiExecuteSQLError;
             }
 
-            expect(expectedError.message).to.equal('DBConnection is not open');
+            expect(expectedError.message).to.equal('Failed to execute SQL');
+
+            expect(expectedError.errors?.length).to.be.greaterThan(0);
+            expectedError.errors?.forEach((item) => {
+              expect(item).to.be.instanceOf(Error);
+              if (item instanceof Error) {
+                expect(item.message).to.be.eql('DBConnection is not open');
+              }
+            });
           });
         });
       });
@@ -298,7 +327,7 @@ describe('db', () => {
           it('throws an error', async () => {
             sinonSandbox.stub(db, 'getDBPool').returns((mockPool as unknown) as pg.Pool);
 
-            let expectedError: Error;
+            let expectedError: ApiExecuteSQLError;
             try {
               const sqlStatement = SQL`sql query ${123}`;
 
@@ -306,10 +335,17 @@ describe('db', () => {
 
               expect.fail('Expected an error to be thrown');
             } catch (error) {
-              expectedError = error as Error;
+              expectedError = error as ApiExecuteSQLError;
             }
+            expect(expectedError.message).to.equal('Failed to execute SQL');
 
-            expect(expectedError.message).to.equal('DBConnection is not open');
+            expect(expectedError.errors?.length).to.be.greaterThan(0);
+            expectedError.errors?.forEach((item) => {
+              expect(item).to.be.instanceOf(Error);
+              if (item instanceof Error) {
+                expect(item.message).to.be.eql('DBConnection is not open');
+              }
+            });
           });
         });
       });
@@ -317,6 +353,10 @@ describe('db', () => {
   });
 
   describe('getAPIUserDBConnection', () => {
+    beforeEach(() => {
+      process.env.DB_USER_API = 'example_db_username';
+    });
+
     afterEach(() => {
       Sinon.restore();
     });
@@ -328,8 +368,12 @@ describe('db', () => {
 
       getAPIUserDBConnection();
 
+      const DB_USERNAME = process.env.DB_USER_API;
+
       expect(getDBConnectionStub).to.have.been.calledWith({
-        preferred_username: 'biohub_api@database'
+        preferred_username: `${DB_USERNAME}@database`,
+        sims_system_username: DB_USERNAME,
+        identity_provider: 'database'
       });
     });
   });

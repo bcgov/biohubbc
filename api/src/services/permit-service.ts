@@ -1,124 +1,95 @@
-import { HTTP400 } from '../errors/custom-error';
-import { IPostPermitNoSampling, PostPermitNoSamplingObject } from '../models/permit-no-sampling';
-import { PostCoordinatorData } from '../models/project-create';
-import { PutCoordinatorData } from '../models/project-update';
-import { queries } from '../queries/queries';
-import { DBService } from './service';
-
-interface IGetAllPermits {
-  id: string;
-  number: string;
-  type: string;
-  coordinator_agency: string;
-  project_name: string;
-}
-
-interface IGetNonSamplingPermits {
-  permit_id: string;
-  number: string;
-  type: string;
-}
-
+import { SYSTEM_ROLE } from '../constants/roles';
+import { IDBConnection } from '../database/db';
+import { ApiGeneralError } from '../errors/api-error';
+import { IPermitModel, PermitRepository } from '../repositories/permit-repository';
+import { DBService } from './db-service';
+import { UserService } from './user-service';
 export class PermitService extends DBService {
-  /**
-   * get all non-sampling permits
-   *
-   * @param {(number | null)} systemUserId
-   * @return {*}  {Promise<IGetAllPermits[]>}
-   * @memberof PermitService
-   */
-  async getAllPermits(systemUserId: number | null): Promise<IGetAllPermits[]> {
-    const sqlStatement = queries.permit.getAllPermitsSQL(systemUserId);
+  permitRepository: PermitRepository;
 
-    if (!sqlStatement) {
-      throw new HTTP400('Failed to build SQL get statement');
-    }
+  constructor(connection: IDBConnection) {
+    super(connection);
 
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
-
-    if (!response || !response.rows) {
-      throw new HTTP400('Failed to get all user permits');
-    }
-
-    return response.rows;
+    this.permitRepository = new PermitRepository(connection);
   }
 
   /**
-   * get all non-sampling permits
+   * Get permit by id.
    *
-   * @param {(number | null)} systemUserId
-   * @return {*}  {Promise<IGetNonSamplingPermits[]>}
+   * @param {number} surveyId
+   * @return {*}  {IPermitModel[]}
    * @memberof PermitService
    */
-  async getNonSamplingPermits(systemUserId: number | null): Promise<IGetNonSamplingPermits[]> {
-    const sqlStatement = queries.permit.getNonSamplingPermitsSQL(systemUserId);
-
-    if (!sqlStatement) {
-      throw new HTTP400('Failed to build SQL get statement');
-    }
-
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
-
-    if (!response || !response.rows) {
-      throw new HTTP400('Failed to get all user permits');
-    }
-
-    return response.rows;
+  async getPermitBySurveyId(surveyId: number): Promise<IPermitModel[]> {
+    return this.permitRepository.getPermitBySurveyId(surveyId);
   }
 
   /**
-   * Creates new no sample permit objects and insert all
+   * Get permit by user.
    *
-   * @param {object} permitRequestBody
-   * @return {*}  {Promise<number[]>}
+   * @param
+   * @return {*}  {IPermitModel[]}
    * @memberof PermitService
    */
-  async createNoSamplePermits(permitRequestBody: object): Promise<number[]> {
-    const sanitizedNoSamplePermitPostData = new PostPermitNoSamplingObject(permitRequestBody);
+  async getPermitByUser(systemUserId: number): Promise<IPermitModel[]> {
+    const userService = new UserService(this.connection);
+    const user = await userService.getUserById(systemUserId);
 
-    if (!sanitizedNoSamplePermitPostData.permit || !sanitizedNoSamplePermitPostData.permit.permits.length) {
-      throw new HTTP400('Missing request body param `permit`');
+    if (!user) {
+      throw new ApiGeneralError('Failed to acquire user');
     }
 
-    if (!sanitizedNoSamplePermitPostData.coordinator) {
-      throw new HTTP400('Missing request body param `coordinator`');
+    if (
+      user.role_names.includes(SYSTEM_ROLE.SYSTEM_ADMIN) ||
+      user.role_names.includes(SYSTEM_ROLE.DATA_ADMINISTRATOR)
+    ) {
+      return this.permitRepository.getAllPermits();
     }
 
-    return Promise.all(
-      sanitizedNoSamplePermitPostData.permit.permits.map(async (permit: IPostPermitNoSampling) =>
-        this.insertNoSamplePermit(permit, sanitizedNoSamplePermitPostData.coordinator)
-      )
-    );
+    return this.permitRepository.getPermitByUser(systemUserId);
   }
 
   /**
-   * insert a no sample permit row.
+   * Create and associate permit for survey.
    *
-   * @param {IPostPermitNoSampling} permit
-   * @param {(PostCoordinatorData | PutCoordinatorData)} coordinator
-   * @return {*}  {Promise<number>}
+   * @param {number} surveyId
+   * @param {string} permitNumber
+   * @param {string} permitType
+   * @return {*}  {IPermitModel[]}
    * @memberof PermitService
    */
-  async insertNoSamplePermit(
-    permit: IPostPermitNoSampling,
-    coordinator: PostCoordinatorData | PutCoordinatorData
+  async createSurveyPermit(surveyId: number, permitNumber: string, permitType: string): Promise<number | null> {
+    return this.permitRepository.createSurveyPermit(surveyId, permitNumber, permitType);
+  }
+
+  /**
+   * Update a survey permit.
+   *
+   * @param {number} surveyId
+   * @param {number} permitId
+   * @param {string} permitNumber
+   * @param {string} permitType
+   * @return {*}  {IPermitModel[]}
+   * @memberof PermitService
+   */
+  async updateSurveyPermit(
+    surveyId: number,
+    permitId: number,
+    permitNumber: string,
+    permitType: string
   ): Promise<number> {
-    const systemUserId = this.connection.systemUserId();
+    return this.permitRepository.updateSurveyPermit(surveyId, permitId, permitNumber, permitType);
+  }
 
-    const sqlStatement = queries.permit.postPermitNoSamplingSQL({ ...permit, ...coordinator }, systemUserId);
-
-    if (!sqlStatement) {
-      throw new HTTP400('Failed to build SQL insert statement');
-    }
-
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
-
-    const result = (response && response.rows && response.rows[0]) || null;
-
-    if (!result || !result.id) {
-      throw new HTTP400('Failed to insert non-sampling permit data');
-    }
-
-    return result.id;
+  /**
+   * Delete a survey permit.
+   *
+   * @param {number} surveyId
+   * @param {number} permitId
+   * @return {*}  QueryResult<any>
+   * @memberof PermitService
+   */
+  async deleteSurveyPermit(surveyId: number, permitId: number): Promise<number> {
+    return this.permitRepository.deleteSurveyPermit(surveyId, permitId);
   }
 }

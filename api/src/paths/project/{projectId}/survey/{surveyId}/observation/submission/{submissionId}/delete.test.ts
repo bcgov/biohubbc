@@ -2,18 +2,14 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import SQL from 'sql-template-strings';
 import * as db from '../../../../../../../../database/db';
-import { HTTPError } from '../../../../../../../../errors/custom-error';
-import survey_queries from '../../../../../../../../queries/survey';
+import { OccurrenceService } from '../../../../../../../../services/occurrence-service';
 import { getMockDBConnection } from '../../../../../../../../__mocks__/db';
 import * as delete_submission from './delete';
 
 chai.use(sinonChai);
 
 describe('deleteOccurrenceSubmission', () => {
-  const dbConnectionObj = getMockDBConnection();
-
   const sampleReq = {
     keycloak_token: {},
     params: {
@@ -39,119 +35,31 @@ describe('deleteOccurrenceSubmission', () => {
     sinon.restore();
   });
 
-  it('should throw a 400 error when no projectId is provided', async () => {
+  it('should return false if no rows were deleted', async () => {
+    const dbConnectionObj = getMockDBConnection();
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-    try {
-      const result = delete_submission.deleteOccurrenceSubmission();
-      await result(
-        { ...sampleReq, params: { ...sampleReq.params, projectId: null } },
-        (null as unknown) as any,
-        (null as unknown) as any
-      );
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal('Missing required path param `projectId`');
-    }
-  });
-
-  it('should throw a 400 error when no surveyId is provided', async () => {
-    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
-
-    try {
-      const result = delete_submission.deleteOccurrenceSubmission();
-      await result(
-        { ...sampleReq, params: { ...sampleReq.params, surveyId: null } },
-        (null as unknown) as any,
-        (null as unknown) as any
-      );
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal('Missing required path param `surveyId`');
-    }
-  });
-
-  it('should throw a 400 error when no submissionId is provided', async () => {
-    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
-
-    try {
-      const result = delete_submission.deleteOccurrenceSubmission();
-      await result(
-        { ...sampleReq, params: { ...sampleReq.params, submissionId: null } },
-        (null as unknown) as any,
-        (null as unknown) as any
-      );
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal('Missing required path param `submissionId`');
-    }
-  });
-
-  it('should throw a 400 error when no sql statement returned for deleteOccurrenceSubmissionSQL', async () => {
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      }
-    });
-
-    sinon.stub(survey_queries, 'deleteOccurrenceSubmissionSQL').returns(null);
-
-    try {
-      const result = delete_submission.deleteOccurrenceSubmission();
-
-      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal('Failed to build SQL delete statement');
-    }
-  });
-
-  it('should return null when no rowCount', async () => {
-    const mockQuery = sinon.stub();
-
-    mockQuery.resolves({ rowCount: null });
-
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      },
-      query: mockQuery
-    });
-
-    sinon.stub(survey_queries, 'deleteOccurrenceSubmissionSQL').returns(SQL`something`);
+    sinon.stub(OccurrenceService.prototype, 'deleteOccurrenceSubmission').resolves([]);
 
     const result = delete_submission.deleteOccurrenceSubmission();
 
     await result(sampleReq, sampleRes as any, (null as unknown) as any);
 
-    expect(actualResult).to.equal(null);
+    expect(actualResult).to.equal(false);
   });
 
-  it('should return rowCount on success', async () => {
-    const mockQuery = sinon.stub();
+  it('should return true if occurrence submission was deleted', async () => {
+    const dbConnectionObj = getMockDBConnection();
+    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-    mockQuery.resolves({ rowCount: 1 });
-
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      },
-      query: mockQuery
-    });
-
-    sinon.stub(survey_queries, 'deleteOccurrenceSubmissionSQL').returns(SQL`something`);
+    sinon
+      .stub(OccurrenceService.prototype, 'deleteOccurrenceSubmission')
+      .resolves([{ submission_spatial_component_id: 1 }]);
 
     const result = delete_submission.deleteOccurrenceSubmission();
 
     await result(sampleReq, sampleRes as any, (null as unknown) as any);
 
-    expect(actualResult).to.equal(1);
+    expect(actualResult).to.equal(true);
   });
 });

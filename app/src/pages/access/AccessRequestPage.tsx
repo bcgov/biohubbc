@@ -12,12 +12,21 @@ import { DialogContext } from 'contexts/dialogContext';
 import { Formik } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import useCodes from 'hooks/useCodes';
+import useDataLoader from 'hooks/useDataLoader';
 import { SYSTEM_IDENTITY_SOURCE } from 'hooks/useKeycloakWrapper';
-import { IBCeIDAccessRequestDataObject, IIDIRAccessRequestDataObject } from 'interfaces/useAdminApi.interface';
+import {
+  IBCeIDBasicAccessRequestDataObject,
+  IBCeIDBusinessAccessRequestDataObject,
+  IIDIRAccessRequestDataObject
+} from 'interfaces/useAdminApi.interface';
 import React, { ReactElement, useContext, useState } from 'react';
 import { Redirect, useHistory } from 'react-router';
-import BCeIDRequestForm, { BCeIDRequestFormInitialValues, BCeIDRequestFormYupSchema } from './BCeIDRequestForm';
+import BCeIDRequestForm, {
+  BCeIDBasicRequestFormInitialValues,
+  BCeIDBasicRequestFormYupSchema,
+  BCeIDBusinessRequestFormInitialValues,
+  BCeIDBusinessRequestFormYupSchema
+} from './BCeIDRequestForm';
 import IDIRRequestForm, { IDIRRequestFormInitialValues, IDIRRequestFormYupSchema } from './IDIRRequestForm';
 
 const useStyles = makeStyles(() => ({
@@ -57,7 +66,8 @@ export const AccessRequestPage: React.FC = () => {
 
   const [isSubmittingRequest, setIsSubmittingRequest] = useState(false);
 
-  const codes = useCodes();
+  const codesDataLoader = useDataLoader(() => biohubApi.codes.getAllCodeSets());
+  codesDataLoader.load();
 
   const showAccessRequestErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
     dialogContext.setErrorDialog({
@@ -69,10 +79,13 @@ export const AccessRequestPage: React.FC = () => {
     });
   };
 
-  const handleSubmitAccessRequest = async (values: IIDIRAccessRequestDataObject | IBCeIDAccessRequestDataObject) => {
+  const handleSubmitAccessRequest = async (
+    values: IIDIRAccessRequestDataObject | IBCeIDBasicAccessRequestDataObject | IBCeIDBusinessAccessRequestDataObject
+  ) => {
     try {
       const response = await biohubApi.admin.createAdministrativeActivity({
         ...values,
+        userGuid: keycloakWrapper?.getUserGuid() as string,
         name: keycloakWrapper?.displayName as string,
         username: keycloakWrapper?.getUserIdentifier() as string,
         email: keycloakWrapper?.email as string,
@@ -117,18 +130,36 @@ export const AccessRequestPage: React.FC = () => {
     return <Redirect to={{ pathname: '/request-submitted' }} />;
   }
 
-  let initialValues: IIDIRAccessRequestDataObject | IBCeIDAccessRequestDataObject;
-  let validationSchema: typeof IDIRRequestFormYupSchema | typeof BCeIDRequestFormYupSchema;
+  let initialValues:
+    | IIDIRAccessRequestDataObject
+    | IBCeIDBasicAccessRequestDataObject
+    | IBCeIDBusinessAccessRequestDataObject;
+
+  let validationSchema:
+    | typeof IDIRRequestFormYupSchema
+    | typeof BCeIDBasicRequestFormYupSchema
+    | typeof BCeIDBusinessRequestFormYupSchema;
+
   let requestForm: ReactElement;
 
-  if (keycloakWrapper?.getIdentitySource() === SYSTEM_IDENTITY_SOURCE.BCEID) {
-    initialValues = BCeIDRequestFormInitialValues;
-    validationSchema = BCeIDRequestFormYupSchema;
-    requestForm = <BCeIDRequestForm />;
-  } else {
-    initialValues = IDIRRequestFormInitialValues;
-    validationSchema = IDIRRequestFormYupSchema;
-    requestForm = <IDIRRequestForm codes={codes.data} />;
+  switch (keycloakWrapper?.getIdentitySource()) {
+    case SYSTEM_IDENTITY_SOURCE.BCEID_BUSINESS:
+      initialValues = BCeIDBusinessRequestFormInitialValues;
+      validationSchema = BCeIDBusinessRequestFormYupSchema;
+      requestForm = <BCeIDRequestForm accountType={SYSTEM_IDENTITY_SOURCE.BCEID_BUSINESS} />;
+      break;
+
+    case SYSTEM_IDENTITY_SOURCE.BCEID_BASIC:
+      initialValues = BCeIDBasicRequestFormInitialValues;
+      validationSchema = BCeIDBasicRequestFormYupSchema;
+      requestForm = <BCeIDRequestForm accountType={SYSTEM_IDENTITY_SOURCE.BCEID_BASIC} />;
+      break;
+
+    case SYSTEM_IDENTITY_SOURCE.IDIR:
+    default:
+      initialValues = IDIRRequestFormInitialValues;
+      validationSchema = IDIRRequestFormYupSchema;
+      requestForm = <IDIRRequestForm codes={codesDataLoader.data} />;
   }
 
   return (

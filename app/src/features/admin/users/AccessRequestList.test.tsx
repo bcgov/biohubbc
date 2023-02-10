@@ -60,6 +60,7 @@ describe('AccessRequestList', () => {
           data: {
             name: 'test user',
             username: 'testusername',
+            userGuid: 'aaaa',
             email: 'email@email.com',
             role: 2,
             identitySource: SYSTEM_IDENTITY_SOURCE.IDIR,
@@ -76,7 +77,7 @@ describe('AccessRequestList', () => {
     await waitFor(() => {
       expect(getByText('testusername')).toBeVisible();
       expect(getByText('Apr 20, 2020')).toBeVisible();
-      expect(getByText('Pending')).toBeVisible();
+      expect(getByText('Review')).toBeVisible();
       expect(getByRole('button')).toHaveTextContent('Review');
     });
   });
@@ -95,6 +96,7 @@ describe('AccessRequestList', () => {
           data: {
             name: 'test user',
             username: 'testusername',
+            userGuid: 'aaaa',
             email: 'email@email.com',
             role: 2,
             identitySource: SYSTEM_IDENTITY_SOURCE.IDIR,
@@ -130,6 +132,7 @@ describe('AccessRequestList', () => {
           data: {
             name: 'test user',
             username: 'testusername',
+            userGuid: 'aaaa',
             email: 'email@email.com',
             role: 2,
             identitySource: SYSTEM_IDENTITY_SOURCE.IDIR,
@@ -172,7 +175,7 @@ describe('AccessRequestList', () => {
 
     await waitFor(() => {
       expect(getByText('Apr 20, 2020')).toBeVisible();
-      expect(getByText('Pending')).toBeVisible();
+      expect(getByText('Review')).toBeVisible();
     });
   });
 
@@ -192,6 +195,7 @@ describe('AccessRequestList', () => {
           data: {
             name: 'test user',
             username: 'testusername',
+            userGuid: 'aaaa',
             email: 'email@email.com',
             role: 2,
             identitySource: SYSTEM_IDENTITY_SOURCE.IDIR,
@@ -220,6 +224,7 @@ describe('AccessRequestList', () => {
       expect(mockBiohubApi().admin.approveAccessRequest).toHaveBeenCalledTimes(1);
       expect(mockBiohubApi().admin.approveAccessRequest).toHaveBeenCalledWith(
         1,
+        'aaaa',
         'testusername',
         SYSTEM_IDENTITY_SOURCE.IDIR,
         [2]
@@ -243,6 +248,7 @@ describe('AccessRequestList', () => {
           data: {
             name: 'test user',
             username: 'testusername',
+            userGuid: 'aaaa',
             email: 'email@email.com',
             role: 1,
             identitySource: SYSTEM_IDENTITY_SOURCE.IDIR,

@@ -1,15 +1,31 @@
 export const CreateProjectI18N = {
-  cancelTitle: 'Cancel Create Project',
-  cancelText: 'Are you sure you want to cancel?',
+  cancelTitle: 'Cancel Project Creation',
+  cancelText: 'Are you sure you want to cancel? Changes you have made will not be saved.',
   createErrorTitle: 'Error Creating Project',
   createErrorText:
     'An error has occurred while attempting to create your project, please try again. If the error persists, please contact your system administrator.'
 };
 
+export const EditProjectI18N = {
+  cancelTitle: 'Cancel Edit Project',
+  cancelText: 'Are you sure you want to cancel? Changes you have made will not be saved.',
+  createErrorTitle: 'Error Editing Project',
+  createErrorText:
+    'An error has occurred while attempting to edit your project, please try again. If the error persists, please contact your system administrator.'
+};
+
 export const CreateSurveyI18N = {
-  cancelTitle: 'Cancel Create Survey',
-  cancelText: 'Are you sure you want to cancel?',
+  cancelTitle: 'Cancel Survey Creation',
+  cancelText: 'Are you sure you want to cancel? Changes you have made will not be saved.',
   createErrorTitle: 'Error Creating Survey',
+  createErrorText:
+    'An error has occurred while attempting to create your survey, please try again. If the error persists, please contact your system administrator.'
+};
+
+export const EditSurveyI18N = {
+  cancelTitle: 'Cancel Survey Edit',
+  cancelText: 'Are you sure you want to cancel? Changes you have made will not be saved.',
+  createErrorTitle: 'Error Editing Survey',
   createErrorText:
     'An error has occurred while attempting to create your survey, please try again. If the error persists, please contact your system administrator.'
 };
@@ -40,6 +56,12 @@ export const CreateProjectDraftI18N = {
   draftErrorTitle: 'Error Saving Draft',
   draftErrorText:
     'An error has occurred while attempting to save your draft, please try again. If the error persists, please contact your system administrator.'
+};
+
+export const DeleteProjectDraftI18N = {
+  draftErrorTitle: 'Error Deleting Draft',
+  draftErrorText:
+    'An error has occurred while attempting to delete your draft, please try again. If the error persists, please contact your system administrator.'
 };
 
 export const EditPartnershipsI18N = {
@@ -163,6 +185,18 @@ export const AccessRequestI18N = {
     'An error has occurred while attempting to make an access request, please try again. If the error persists, please contact your system administrator.'
 };
 
+export const AccessApprovalDispatchI18N = {
+  reviewErrorTitle: 'Error dispatching granted access notification',
+  reviewErrorText:
+    'The access request was approved successfully, but an error occurred while attempting to notify the user. Please contact your system administrator.'
+};
+
+export const AccessDenialDispatchI18N = {
+  reviewErrorTitle: 'Error dispatching denied access notification',
+  reviewErrorText:
+    'The access request was denied successfully, but an error occurred while attempting to notify the user. Please contact your system administrator.'
+};
+
 export const ReviewAccessRequestI18N = {
   reviewErrorTitle: 'Error reviewing access request',
   reviewErrorText:
@@ -177,28 +211,12 @@ export const DeleteProjectI18N = {
     'An error has occurred while attempting to delete this project, its attachments and associated surveys/observations, please try again. If the error persists, please contact your system administrator.'
 };
 
-export const PublishProjectI18N = {
-  publishTitle: 'Publish Project',
-  publishText: 'Are you sure you want to publish this project?',
-  publishErrorTitle: 'Error Publishing Project',
-  publishErrorText:
-    'An error has occurred while attempting to publish this project, please try again. If the error persists, please contact your system administrator.'
-};
-
 export const DeleteSurveyI18N = {
   deleteTitle: 'Delete Survey',
   deleteText: 'Are you sure you want to delete this survey, its attachments and associated observations?',
   deleteErrorTitle: 'Error Deleting Project',
   deleteErrorText:
     'An error has occurred while attempting to delete this project, its attachments and associated surveys/observations, please try again. If the error persists, please contact your system administrator.'
-};
-
-export const PublishSurveyI18N = {
-  publishTitle: 'Publish Survey',
-  publishText: 'Are you sure you want to publish this survey?',
-  publishErrorTitle: 'Error Publishing Survey',
-  publishErrorText:
-    'An error has occurred while attempting to publish this survey, please try again. If the error persists, please contact your system administrator.'
 };
 
 export const EditReportMetaDataI18N = {
@@ -208,10 +226,22 @@ export const EditReportMetaDataI18N = {
     'An error has occurred while attempting to edit your report meta data, please try again. If the error persists, please contact your system administrator.'
 };
 
+export const AddSystemUserI18N = {
+  addUserErrorTitle: 'Error Adding System User',
+  addUserErrorText:
+    'An error has occurred while attempting to add the system user. This user has already been granted this role. If the error persists, please contact your system administrator.'
+};
+
+export const UpdateSystemUserI18N = {
+  updateUserErrorTitle: 'Error Updating System User',
+  updateUserErrorText:
+    'An error has occurred while attempting to update the system user. If the error persists, please contact your system administrator.'
+};
+
 export const DeleteSystemUserI18N = {
-  deleteErrorTitle: 'Error Deleting System User',
-  deleteErrorText:
-    'An error has occurred while attempting to delete the system user, please try again. If the error persists, please contact your system administrator.'
+  deleteUserErrorTitle: 'Error Deleting System User',
+  deleteUserErrorText:
+    'An error has occurred while attempting to delete the system user. If the error persists, please contact your system administrator.'
 };
 
 export const ProjectParticipantsI18N = {

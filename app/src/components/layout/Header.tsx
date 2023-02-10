@@ -1,7 +1,7 @@
 import AppBar from '@material-ui/core/AppBar';
-import Badge from '@material-ui/core/Badge';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
+import Container from '@material-ui/core/Container';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -13,18 +13,17 @@ import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
-import { mdiAccountCircle, mdiBellOutline, mdiHelpCircleOutline, mdiLoginVariant } from '@mdi/js';
+import { mdiAccountCircle, mdiHelpCircleOutline, mdiLoginVariant } from '@mdi/js';
 import Icon from '@mdi/react';
 import headerImageLarge from 'assets/images/gov-bc-logo-horiz.png';
 import headerImageSmall from 'assets/images/gov-bc-logo-vert.png';
-import { OpenSplashDialog, SplashDialog } from 'components/dialog/SplashDialog';
 import { AuthGuard, SystemRoleGuard, UnAuthGuard } from 'components/security/Guards';
 import { SYSTEM_ROLE } from 'constants/roles';
 import { AuthStateContext } from 'contexts/authStateContext';
-import { ConfigContext } from 'contexts/configContext';
 import { SYSTEM_IDENTITY_SOURCE } from 'hooks/useKeycloakWrapper';
 import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
+import { getFormattedIdentitySource } from 'utils/Utils';
 
 const useStyles = makeStyles((theme: Theme) => ({
   govHeaderToolbar: {
@@ -109,57 +108,32 @@ const useStyles = makeStyles((theme: Theme) => ({
     '& p + p': {
       marginTop: theme.spacing(2)
     }
-  },
-  notificationBadge: {
-    '& .MuiBadge-dot': {
-      backgroundColor: '#fcba19'
-    }
   }
 }));
 
-function getDisplayName(userName: string, identitySource: string) {
-  return identitySource === SYSTEM_IDENTITY_SOURCE.BCEID ? `BCEID / ${userName}` : `IDIR / ${userName}`;
-}
-
 const Header: React.FC = () => {
   const classes = useStyles();
-  const config = useContext(ConfigContext);
+  // const config = useContext(ConfigContext);
 
   const { keycloakWrapper } = useContext(AuthStateContext);
 
   // Authenticated view
   const LoggedInUser = () => {
     const identitySource = keycloakWrapper?.getIdentitySource() || '';
-
     const userIdentifier = keycloakWrapper?.getUserIdentifier() || '';
-
-    const loggedInUserDisplayName = getDisplayName(userIdentifier, identitySource);
+    const formattedUsername = [getFormattedIdentitySource(identitySource as SYSTEM_IDENTITY_SOURCE), userIdentifier]
+      .filter(Boolean)
+      .join('/');
 
     return (
       <Box display="flex" className={classes.userProfile} my="auto" alignItems="center">
-        <IconButton
-          className={classes.govHeaderIconButton}
-          onClick={() => OpenSplashDialog()}
-          aria-label="Notifications">
-          <Badge
-            className={classes.notificationBadge}
-            variant="dot"
-            overlap="rectangle"
-            anchorOrigin={{
-              vertical: 'top',
-              horizontal: 'right'
-            }}>
-            <Icon path={mdiBellOutline} size={1.12} />
-          </Badge>
-        </IconButton>
         <IconButton aria-label="need help" className={classes.govHeaderIconButton} onClick={showSupportDialog}>
           <Icon path={mdiHelpCircleOutline} size={1.12} />
         </IconButton>
         <Box className={classes.userProfile} display="flex" alignItems="center" ml={2}>
           <Icon path={mdiAccountCircle} size={1.12} />
-          <Box ml={1}>{loggedInUserDisplayName}</Box>
+          <Box ml={1}>{formattedUsername}</Box>
         </Box>
-
         <Box px={2}>
           <Divider orientation="vertical" />
         </Box>
@@ -205,79 +179,62 @@ const Header: React.FC = () => {
     return <span aria-label="This application is currently in beta phase of development">Beta</span>;
   };
 
-  const EnvironmentLabel = () => {
-    if (config?.REACT_APP_NODE_ENV === 'prod') {
-      return <></>;
-    }
-
-    return (
-      <span aria-label={`This application is currently being run in the ${config?.REACT_APP_NODE_ENV} environment`}>
-        & {config?.REACT_APP_NODE_ENV}
-      </span>
-    );
-  };
-
   return (
     <>
-      <SplashDialog />
-      <AppBar position="sticky" style={{ boxShadow: 'none' }}>
-        <Toolbar className={classes.govHeaderToolbar}>
-          <Box display="flex" justifyContent="space-between" width="100%">
-            <Link to="/projects" className={classes.brand} aria-label="Go to SIMS Home">
-              <picture>
-                <source srcSet={headerImageLarge} media="(min-width: 1200px)"></source>
-                <source srcSet={headerImageSmall} media="(min-width: 600px)"></source>
-                <img src={headerImageSmall} alt={'Government of British Columbia'} />
-              </picture>
-              <span>
-                Species Inventory Management System
-                <sup className={classes.appPhaseTag}>
-                  <BetaLabel />
-                  &nbsp;
-                  <EnvironmentLabel />
-                </sup>
-              </span>
-            </Link>
-            <UnAuthGuard>
-              <PublicViewUser />
-            </UnAuthGuard>
-            <AuthGuard>
-              <LoggedInUser />
-            </AuthGuard>
-          </Box>
+      <AppBar position="sticky" elevation={0}>
+        <Toolbar disableGutters className={classes.govHeaderToolbar}>
+          <Container maxWidth="xl">
+            <Box display="flex" justifyContent="space-between" width="100%">
+              <Link to="/projects" className={classes.brand} aria-label="Go to SIMS Home">
+                <picture>
+                  <source srcSet={headerImageLarge} media="(min-width: 1200px)"></source>
+                  <source srcSet={headerImageSmall} media="(min-width: 600px)"></source>
+                  <img src={headerImageSmall} alt={'Government of British Columbia'} />
+                </picture>
+                <span>
+                  Species Inventory Management System
+                  <sup className={classes.appPhaseTag}>
+                    <BetaLabel />
+                  </sup>
+                </span>
+              </Link>
+              <UnAuthGuard>
+                <PublicViewUser />
+              </UnAuthGuard>
+              <AuthGuard>
+                <LoggedInUser />
+              </AuthGuard>
+            </Box>
+          </Container>
         </Toolbar>
 
-        <Box className={classes.mainNav}>
-          <Toolbar variant="dense" className={classes.mainNavToolbar} role="navigation" aria-label="Main Navigation">
-            <UnAuthGuard>
-              <Link to="/" id="menu_projects">
-                Projects
-              </Link>
-              <Link to="/search" id="menu_search">
-                Map
-              </Link>
-            </UnAuthGuard>
-            <AuthGuard>
-              <Link to="/admin/projects" id="menu_projects">
-                Projects
-              </Link>
-              <Link to="/admin/permits" id="menu_permits">
-                Permits
-              </Link>
-              <Link to="/admin/search" id="menu_search">
-                Map
-              </Link>
-            </AuthGuard>
-            <Link to="/resources" id="menu_resources">
-              Resources
-            </Link>
-            <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN]}>
-              <Link to="/admin/users" id="menu_admin_users">
-                Manage Users
-              </Link>
-            </SystemRoleGuard>
-          </Toolbar>
-        </Box>
+        <AuthGuard>
+          <Box className={classes.mainNav}>
+            <Container maxWidth="xl">
+              <Toolbar
+                variant="dense"
+                disableGutters
+                className={classes.mainNavToolbar}
+                role="navigation"
+                aria-label="Main Navigation">
+                <Link to="/admin/projects" id="menu_projects">
+                  Projects
+                </Link>
+                <Link to="/admin/search" id="menu_search">
+                  Map
+                </Link>
+                <Link to="/admin/resources" id="menu_resources">
+                  Resources
+                </Link>
+                <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN]}>
+                  <Link to="/admin/users" id="menu_admin_users">
+                    Manage Users
+                  </Link>
+                </SystemRoleGuard>
+              </Toolbar>
+            </Container>
+          </Box>
+        </AuthGuard>
       </AppBar>
 
       <Dialog open={open}>

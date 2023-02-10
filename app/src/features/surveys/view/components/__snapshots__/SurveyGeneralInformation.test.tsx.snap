@@ -9,11 +9,11 @@ exports[`SurveyGeneralInformation renders correctly with all fields 1`] = `
       class="MuiToolbar-root MuiToolbar-regular"
       style="justify-content: space-between;"
     >
-      <h3
-        class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+      <h4
+        class="MuiTypography-root MuiTypography-h4 MuiTypography-colorInherit"
       >
         General Information
-      </h3>
+      </h4>
       <div
         class="MuiBox-root MuiBox-root-8"
       >
@@ -43,9 +43,7 @@ exports[`SurveyGeneralInformation renders correctly with all fields 1`] = `
                 />
               </svg>
             </span>
-            <strong>
-              Edit
-            </strong>
+            Edit
           </span>
           <span
             class="MuiTouchRipple-root"
@@ -140,11 +138,11 @@ exports[`SurveyGeneralInformation renders correctly with all fields 1`] = `
       class="MuiToolbar-root MuiToolbar-regular"
       style="justify-content: space-between;"
     >
-      <h3
-        class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+      <h4
+        class="MuiTypography-root MuiTypography-h4 MuiTypography-colorInherit"
       >
         Permits
-      </h3>
+      </h4>
       <div
         class="MuiBox-root MuiBox-root-10"
       >
@@ -174,9 +172,7 @@ exports[`SurveyGeneralInformation renders correctly with all fields 1`] = `
                 />
               </svg>
             </span>
-            <strong>
-              Edit
-            </strong>
+            Edit
           </span>
           <span
             class="MuiTouchRipple-root"
@@ -238,11 +234,11 @@ exports[`SurveyGeneralInformation renders correctly with all fields 1`] = `
       class="MuiToolbar-root MuiToolbar-regular"
       style="justify-content: space-between;"
     >
-      <h3
-        class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+      <h4
+        class="MuiTypography-root MuiTypography-h4 MuiTypography-colorInherit"
       >
         Funding Sources
-      </h3>
+      </h4>
       <div
         class="MuiBox-root MuiBox-root-12"
       >
@@ -272,9 +268,7 @@ exports[`SurveyGeneralInformation renders correctly with all fields 1`] = `
                 />
               </svg>
             </span>
-            <strong>
-              Edit
-            </strong>
+            Edit
           </span>
           <span
             class="MuiTouchRipple-root"
@@ -352,11 +346,11 @@ exports[`SurveyGeneralInformation renders correctly with no end date (only start
       class="MuiToolbar-root MuiToolbar-regular"
       style="justify-content: space-between;"
     >
-      <h3
-        class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+      <h4
+        class="MuiTypography-root MuiTypography-h4 MuiTypography-colorInherit"
       >
         General Information
-      </h3>
+      </h4>
       <div
         class="MuiBox-root MuiBox-root-2"
       >
@@ -386,9 +380,7 @@ exports[`SurveyGeneralInformation renders correctly with no end date (only start
                 />
               </svg>
             </span>
-            <strong>
-              Edit
-            </strong>
+            Edit
           </span>
           <span
             class="MuiTouchRipple-root"
@@ -486,11 +478,11 @@ exports[`SurveyGeneralInformation renders correctly with no end date (only start
       class="MuiToolbar-root MuiToolbar-regular"
       style="justify-content: space-between;"
     >
-      <h3
-        class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+      <h4
+        class="MuiTypography-root MuiTypography-h4 MuiTypography-colorInherit"
       >
         Permits
-      </h3>
+      </h4>
       <div
         class="MuiBox-root MuiBox-root-4"
       >
@@ -520,9 +512,7 @@ exports[`SurveyGeneralInformation renders correctly with no end date (only start
                 />
               </svg>
             </span>
-            <strong>
-              Edit
-            </strong>
+            Edit
           </span>
           <span
             class="MuiTouchRipple-root"
@@ -584,11 +574,11 @@ exports[`SurveyGeneralInformation renders correctly with no end date (only start
       class="MuiToolbar-root MuiToolbar-regular"
       style="justify-content: space-between;"
     >
-      <h3
-        class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+      <h4
+        class="MuiTypography-root MuiTypography-h4 MuiTypography-colorInherit"
       >
         Funding Sources
-      </h3>
+      </h4>
       <div
         class="MuiBox-root MuiBox-root-6"
       >
@@ -618,9 +608,7 @@ exports[`SurveyGeneralInformation renders correctly with no end date (only start
                 />
               </svg>
             </span>
-            <strong>
-              Edit
-            </strong>
+            Edit
           </span>
           <span
             class="MuiTouchRipple-root"

@@ -1,8 +1,9 @@
 import { fireEvent, render, waitFor } from '@testing-library/react';
 import { SYSTEM_ROLE } from 'constants/roles';
-import { AuthStateContext } from 'contexts/authStateContext';
+import { AuthStateContext, IAuthState } from 'contexts/authStateContext';
 import { createMemoryHistory } from 'history';
 import { SYSTEM_IDENTITY_SOURCE } from 'hooks/useKeycloakWrapper';
+import Keycloak from 'keycloak-js';
 import React from 'react';
 import { Router } from 'react-router-dom';
 import Header from './Header';
@@ -15,27 +16,25 @@ describe('Header', () => {
 
     mockHasSystemRole
       .mockReturnValueOnce(true) // Return true when the `Projects` secure link is parsed
-      .mockReturnValueOnce(true) // Return true when the `Permits` secure link is parsed
       .mockReturnValueOnce(true) // Return true when the `Manage Users` secure link is parsed
       .mockReturnValueOnce(true); // Return true when the `Map` secure link is parsed
 
-    const authState = {
+    const authState: IAuthState = {
       keycloakWrapper: {
         keycloak: {
           authenticated: true
-        },
+        } as Keycloak,
+        isSystemUser: () => true,
         hasLoadedAllUserInfo: true,
         systemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN],
         getUserIdentifier: () => 'testuser',
         hasAccessRequest: false,
-        isSystemUser: true,
         hasSystemRole: mockHasSystemRole,
         getIdentitySource: () => SYSTEM_IDENTITY_SOURCE.IDIR,
+        getUserGuid: () => 'abcd',
         username: 'testusername',
         displayName: 'IDID / testusername',
         email: 'test@email',
-        firstName: 'testfirst',
-        lastName: 'testlast',
         refresh: () => {}
       }
     };
@@ -58,7 +57,6 @@ describe('Header', () => {
 
     mockHasSystemRole
       .mockReturnValueOnce(true) // Return true when the `Projects` secure link is parsed
-      .mockReturnValueOnce(true) // Return true when the `Permits` secure link is parsed
       .mockReturnValueOnce(true) // Return true when the `Manage Users` secure link is parsed
       .mockReturnValueOnce(true) // Return true when the `Map` secure link is parsed
       .mockReturnValueOnce(true); // Return true when the `Resources` secure link is parsed
@@ -67,14 +65,15 @@ describe('Header', () => {
       keycloakWrapper: {
         keycloak: {
           authenticated: true
-        },
+        } as Keycloak,
+        isSystemUser: () => true,
         hasLoadedAllUserInfo: true,
         systemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN],
         getUserIdentifier: () => 'testuser',
         hasAccessRequest: false,
-        isSystemUser: true,
         hasSystemRole: mockHasSystemRole,
-        getIdentitySource: () => SYSTEM_IDENTITY_SOURCE.BCEID,
+        getIdentitySource: () => SYSTEM_IDENTITY_SOURCE.BCEID_BASIC,
+        getUserGuid: () => 'abcd',
         username: 'testusername',
         displayName: 'testdisplayname',
         email: 'test@email.com',
@@ -93,7 +92,6 @@ describe('Header', () => {
     );
 
     expect(getByText('Projects')).toBeVisible();
-    expect(getByText('Permits')).toBeVisible();
     expect(getByText('Map')).toBeVisible();
     expect(getByText('Manage Users')).toBeVisible();
     expect(getByText('Resources')).toBeVisible();
@@ -104,14 +102,15 @@ describe('Header', () => {
       keycloakWrapper: {
         keycloak: {
           authenticated: true
-        },
+        } as Keycloak,
+        isSystemUser: () => true,
         hasLoadedAllUserInfo: true,
         systemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN],
-        isSystemUser: true,
         getUserIdentifier: () => 'testuser',
+        getUserGuid: () => 'abcd',
         hasAccessRequest: false,
         hasSystemRole: jest.fn(),
-        getIdentitySource: () => SYSTEM_IDENTITY_SOURCE.BCEID,
+        getIdentitySource: () => SYSTEM_IDENTITY_SOURCE.BCEID_BASIC,
         username: 'testusername',
         displayName: 'testdisplayname',
         email: 'test@email.com',
@@ -131,7 +130,7 @@ describe('Header', () => {
 
     expect(getByTestId('menu_log_out')).toBeVisible();
 
-    expect(getByText('BCEID / testuser')).toBeVisible();
+    expect(getByText('BCeID Basic/testuser')).toBeVisible();
   });
 
   describe('Log Out', () => {
@@ -140,16 +139,17 @@ describe('Header', () => {
         keycloakWrapper: {
           keycloak: {
             authenticated: true
-          },
+          } as Keycloak,
+          isSystemUser: () => true,
           hasLoadedAllUserInfo: true,
           hasAccessRequest: false,
           systemRoles: [],
-          isSystemUser: true,
           getUserIdentifier: jest.fn(),
           hasSystemRole: jest.fn(),
           getIdentitySource: jest.fn(),
           username: 'testusername',
           displayName: 'testdisplayname',
+          getUserGuid: () => 'abcd',
           email: 'test@email.com',
           firstName: 'testfirst',
           lastName: 'testlast',

@@ -3,7 +3,7 @@ import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as db from '../../../database/db';
-import { HTTPError } from '../../../errors/custom-error';
+import { HTTPError } from '../../../errors/http-error';
 import { UserService } from '../../../services/user-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../__mocks__/db';
 import * as user from './get';
@@ -49,7 +49,7 @@ describe('user', () => {
         userId: '1'
       };
 
-      sinon.stub(UserService.prototype, 'getUserById').resolves(null);
+      sinon.stub(UserService.prototype, 'getUserById').resolves(undefined);
 
       try {
         const requestHandler = user.getUserById();
@@ -75,10 +75,12 @@ describe('user', () => {
 
       sinon.stub(UserService.prototype, 'getUserById').resolves({
         id: 1,
-        user_identifier: 'user_identifier',
+        identity_source: 'idir',
         record_end_date: '',
         role_ids: [],
-        role_names: []
+        role_names: [],
+        user_guid: 'aaaa',
+        user_identifier: 'user_identifier'
       });
 
       const requestHandler = user.getUserById();
@@ -87,10 +89,12 @@ describe('user', () => {
 
       expect(mockRes.jsonValue).to.eql({
         id: 1,
-        user_identifier: 'user_identifier',
+        identity_source: 'idir',
         record_end_date: '',
         role_ids: [],
-        role_names: []
+        role_names: [],
+        user_guid: 'aaaa',
+        user_identifier: 'user_identifier'
       });
     });
   });

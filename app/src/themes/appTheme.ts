@@ -1,5 +1,9 @@
-import { createMuiTheme } from '@material-ui/core';
+// import createBreakpoints from '@material-ui/core/styles/createBreakpoints'
+import { grey } from '@material-ui/core/colors';
+import { createMuiTheme } from '@material-ui/core/styles';
 import 'styles.scss';
+
+// const breakpoints = createBreakpoints({})
 
 const appTheme = createMuiTheme({
   breakpoints: {
@@ -8,7 +12,7 @@ const appTheme = createMuiTheme({
       sm: 600,
       md: 960,
       lg: 1280,
-      xl: 1600
+      xl: 1720
     }
   },
   palette: {
@@ -27,7 +31,7 @@ const appTheme = createMuiTheme({
     },
     text: {
       primary: '#313132',
-      secondary: '#7f7f81'
+      secondary: '#757575'
     }
   },
   typography: {
@@ -35,49 +39,64 @@ const appTheme = createMuiTheme({
   },
   overrides: {
     MuiTypography: {
-      // https://material-ui.com/api/typography/
       h1: {
-        letterSpacing: '-0.02rem',
-        fontSize: '2rem',
+        fontSize: '2.25rem',
         fontWeight: 700
       },
       h2: {
-        letterSpacing: '-0.01rem',
-        fontSize: '1.25rem',
+        fontSize: '1.875rem',
         fontWeight: 700
       },
       h3: {
-        fontSize: '1rem',
+        fontSize: '1.5rem',
         fontWeight: 700
       },
       h4: {
-        fontSize: '1rem',
+        fontSize: '1.25rem',
+        fontWeight: 700
+      },
+      h5: {
+        fontSize: '1.125rem',
         fontWeight: 700
       },
       h6: {
-        letterSpacing: '-0.01rem',
         fontWeight: 700
       }
     },
-    MuiAlert: {
-      root: {
-        alignItems: 'center',
-        fontSize: '1rem'
+    MuiBreadcrumbs: {
+      li: {
+        maxWidth: '40ch',
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis'
       }
     },
     MuiButton: {
       root: {
-        textTransform: 'none'
+        textTransform: 'none',
+        fontSize: '0.9rem',
+        borderRadius: '5px'
+      },
+      sizeLarge: {
+        fontSize: '1rem'
+      },
+      containedPrimary: {
+        fontWeight: 700
       },
       outlinedPrimary: {
-        background: '#ffffff'
-      },
-      endIcon: {
-        marginLeft: '4px'
+        backgroundColor: '#ffffff',
+        borderColor: '#003366',
+        '&:hover': {
+          backgroundColor: '#ffffff'
+        }
+      }
+    },
+    MuiChip: {
+      colorSecondary: {
+        backgroundColor: 'red'
       }
     },
     MuiContainer: {
-      // https://material-ui.com/api/container/
       root: {
         maxWidth: 'xl',
         margin: 'auto'
@@ -88,17 +107,17 @@ const appTheme = createMuiTheme({
         width: '800px'
       }
     },
-    MuiDialogTitle: {
-      root: {
-        padding: '20px 24px'
-      }
-    },
     MuiDialogActions: {
       root: {
         padding: '20px 24px',
         '& button': {
           minWidth: '6rem'
         }
+      }
+    },
+    MuiFormHelperText: {
+      root: {
+        fontSize: '0.875rem'
       }
     },
     MuiLink: {
@@ -114,76 +133,46 @@ const appTheme = createMuiTheme({
         borderRadius: '3px'
       }
     },
+    MuiListItem: {
+      root: {
+        '&:last-of-type': {
+          borderBottom: 'none'
+        }
+      }
+    },
     MuiListItemIcon: {
       root: {
         minWidth: '42px'
       }
     },
-    MuiOutlinedInput: {
-      root: {
-        background: '#ffffff'
+    MuiPaper: {
+      rounded: {
+        borderRadius: '6px'
       }
     },
-    MuiStepper: {
+    MuiTable: {
       root: {
-        padding: 0
-      }
-    },
-    MuiStep: {
-      root: {
-        cursor: 'pointer'
-      }
-    },
-    MuiStepLabel: {
-      active: {
-        color: '#003366 !important'
-      }
-    },
-    MuiStepIcon: {
-      root: {
-        marginLeft: '1rem',
-        marginRight: '1rem',
-        zIndex: 999,
-        color: '#999999',
-        fontSize: '33px',
-        borderRadius: '50%',
-        '&.Mui-error': {
-          backgroundColor: '#ffffff',
-          border: '3px solid red',
-          color: 'red'
+        '& th': {
+          letterSpacing: '0.02rem',
+          textTransform: 'uppercase'
+        },
+        '& tr:last-of-type td': {
+          borderBottom: 'none'
+        },
+        '& .MuiLink-root': {
+          fontFamily: 'inherit',
+          fontSize: 'inherit'
         }
-      },
-      text: {
-        fontWeight: 700,
-        fontSize: '0.35em'
-      },
-      active: {
-        borderColor: '#003366',
-        color: '#ffffff'
-      },
-      completed: {
-        backgroundColor: '#ffffff',
-        border: '3px solid #003366',
-        padding: '2px',
-        color: '#003366'
-      }
-    },
-    MuiStepConnector: {
-      vertical: {
-        marginLeft: '32px',
-        paddingBottom: 0
-      },
-      lineVertical: {
-        borderLeftWidth: '2px'
       }
     },
     MuiTableCell: {
       root: {
-        verticalAlign: 'top'
+        fontSize: '0.9rem'
       },
       head: {
-        backgroundColor: '#f5f5f5',
-        lineHeight: 'normal'
+        fontSize: '0.875rem',
+        fontWeight: 700,
+        color: grey[600]
       }
     },
     MuiTab: {

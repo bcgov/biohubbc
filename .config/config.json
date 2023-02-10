@@ -17,11 +17,6 @@
     "api": "biohubbc-api",
     "app": "biohubbc-app"
   },
-  "staticBranches": [
-    "dev",
-    "test",
-    "prod"
-  ],
   "staticUrls": {
     "dev": "dev-biohubbc.apps.silver.devops.gov.bc.ca",
     "test": "test-biohubbc.apps.silver.devops.gov.bc.ca",
@@ -37,11 +32,6 @@
     "test": "n8n-af2668-test.apps.silver.devops.gov.bc.ca",
     "prod": "n8n-af2668-prod.apps.silver.devops.gov.bc.ca"
   },
-  "certificateURL": {
-    "dev": "https://dev.oidc.gov.bc.ca/auth/realms/35r1iman/protocol/openid-connect/certs",
-    "test": "https://test.oidc.gov.bc.ca/auth/realms/35r1iman/protocol/openid-connect/certs",
-    "prod": "https://oidc.gov.bc.ca/auth/realms/35r1iman/protocol/openid-connect/certs"
-  },
   "siteminderLogoutURL": {
     "dev": "https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi",
     "test": "https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi",
@@ -49,19 +39,37 @@
   },
   "sso": {
     "dev": {
-      "url": "https://dev.oidc.gov.bc.ca/auth",
-      "clientId": "biohubbc",
-      "realm": "35r1iman"
+      "url": "https://dev.loginproxy.gov.bc.ca/auth",
+      "clientId": "sims-4461",
+      "realm": "standard",
+      "integrationId": "4461",
+      "adminHost": "https://loginproxy.gov.bc.ca/auth",
+      "adminUserName": "sims-svc-4464",
+      "apiHost": "https://api.loginproxy.gov.bc.ca/api/v1",
+      "keycloakSecret": "keycloak-admin-password",
+      "keycloakSecretAdminPassword": "keycloak_admin_password"
     },
     "test": {
-      "url": "https://test.oidc.gov.bc.ca/auth",
-      "clientId": "biohubbc",
-      "realm": "35r1iman"
+      "url": "https://test.loginproxy.gov.bc.ca/auth",
+      "clientId": "sims-4461",
+      "realm": "standard",
+      "integrationId": "4461",
+      "adminHost": "https://loginproxy.gov.bc.ca/auth",
+      "adminUserName": "sims-svc-4464",
+      "apiHost": "https://api.loginproxy.gov.bc.ca/api/v1",
+      "keycloakSecret": "keycloak-admin-password",
+      "keycloakSecretAdminPassword": "keycloak_admin_password"
     },
     "prod": {
-      "url": "https://oidc.gov.bc.ca/auth",
-      "clientId": "biohubbc",
-      "realm": "35r1iman"
+      "url": "https://loginproxy.gov.bc.ca/auth",
+      "clientId": "sims-4461",
+      "realm": "standard",
+      "integrationId": "4461",
+      "adminHost": "https://loginproxy.gov.bc.ca/auth",
+      "adminUserName": "sims-svc-4464",
+      "apiHost": "https://api.loginproxy.gov.bc.ca/api/v1",
+      "keycloakSecret": "keycloak-admin-password",
+      "keycloakSecretAdminPassword": "keycloak_admin_password"
     }
   }
 }

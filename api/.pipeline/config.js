@@ -1,29 +1,30 @@
 'use strict';
+
+let process = require('process');
+
 let options = require('pipeline-cli').Util.parseArguments();
 
 // The root config for common values
 const config = require('../../.config/config.json');
 
-const defaultHost = 'biohubbc-af2668-api.apps.silver.devops.gov.bc.ca';
-const defaultHostAPP = 'biohubbc-af2668-dev.apps.silver.devops.gov.bc.ca';
+const appName = config.module.app;
+const name = config.module.api;
+const dbName = config.module.db;
 
-const appName = (config.module && config.module['app']) || 'biohubbc-app';
-const name = (config.module && config.module['api']) || 'biohubbc-api';
-const dbName = (config.module && config.module['db']) || 'biohubbc-db';
+const version = config.version;
 
-const changeId = options.pr || `${Math.floor(Date.now() * 1000) / 60.0}`; // aka pull-request or branch
-const version = config.version || '1.0.0';
+const changeId = options.pr; // pull-request number or branch name
 
 // A static deployment is when the deployment is updating dev, test, or prod (rather than a temporary PR)
+// See `--type=static` in the `deployStatic.yml` git workflow
 const isStaticDeployment = options.type === 'static';
 
 const deployChangeId = (isStaticDeployment && 'deploy') || changeId;
 const branch = (isStaticDeployment && options.branch) || null;
 const tag = (branch && `build-${version}-${changeId}-${branch}`) || `build-${version}-${changeId}`;
 
-const staticBranches = config.staticBranches || [];
-const staticUrlsAPI = config.staticUrlsAPI || {};
-const staticUrls = config.staticUrls || {};
+const staticUrlsAPI = config.staticUrlsAPI;
+const staticUrls = config.staticUrls;
 
 const processOptions = (options) => {
   const result = { ...options };
@@ -61,10 +62,12 @@ const phases = {
     version: `${version}-${changeId}`,
     tag: tag,
     env: 'build',
-    elasticsearchURL: 'https://elasticsearch-af2668-dev.apps.silver.devops.gov.bc.ca',
     tz: config.timezone.api,
     branch: branch,
-    logLevel: (isStaticDeployment && 'info') || 'debug'
+    cpuRequest: '100m',
+    cpuLimit: '1250m',
+    memoryRequest: '512Mi',
+    memoryLimit: '3Gi'
   },
   dev: {
     namespace: 'af2668-dev',
@@ -76,20 +79,23 @@ const phases = {
     instance: `${name}-dev-${deployChangeId}`,
     version: `${deployChangeId}-${changeId}`,
     tag: `dev-${version}-${deployChangeId}`,
-    host:
-      (isStaticDeployment && (staticUrlsAPI.dev || defaultHost)) ||
-      `${name}-${changeId}-af2668-dev.apps.silver.devops.gov.bc.ca`,
-    appHost:
-      (isStaticDeployment && (staticUrls.dev || defaultHostAPP)) ||
-      `${appName}-${changeId}-af2668-dev.apps.silver.devops.gov.bc.ca`,
+    host: (isStaticDeployment && staticUrlsAPI.dev) || `${name}-${changeId}-af2668-dev.apps.silver.devops.gov.bc.ca`,
+    appHost: (isStaticDeployment && staticUrls.dev) || `${appName}-${changeId}-af2668-dev.apps.silver.devops.gov.bc.ca`,
     backboneApiHost: 'https://api-dev-biohub-platform.apps.silver.devops.gov.bc.ca',
+    backboneIntakePath: '/api/dwc/submission/intake',
+    backboneIntakeEnabled: true,
     env: 'dev',
-    elasticsearchURL: 'https://elasticsearch-af2668-dev.apps.silver.devops.gov.bc.ca',
+    elasticsearchURL: 'http://es01:9200',
+    elasticsearchTaxonomyIndex: 'taxonomy_2.0.0',
     tz: config.timezone.api,
-    certificateURL: config.certificateURL.dev,
-    replicas: 1,
-    maxReplicas: 1,
-    logLevel: (isStaticDeployment && 'info') || 'debug'
+    sso: config.sso.dev,
+    logLevel: 'debug',
+    cpuRequest: '100m',
+    cpuLimit: '500m',
+    memoryRequest: '512Mi',
+    memoryLimit: '2Gi',
+    replicas: (isStaticDeployment && '2') || '1',
+    replicasMax: (isStaticDeployment && '3') || '1'
   },
   test: {
     namespace: 'af2668-test',
@@ -104,13 +110,20 @@ const phases = {
     host: staticUrlsAPI.test,
     appHost: staticUrls.test,
     backboneApiHost: 'https://api-test-biohub-platform.apps.silver.devops.gov.bc.ca',
+    backboneIntakePath: '/api/dwc/submission/intake',
+    backboneIntakeEnabled: false,
     env: 'test',
     elasticsearchURL: 'http://es01:9200',
+    elasticsearchTaxonomyIndex: 'taxonomy_2.0.0',
     tz: config.timezone.api,
-    certificateURL: config.certificateURL.test,
-    replicas: 3,
-    maxReplicas: 5,
-    logLevel: 'info'
+    sso: config.sso.test,
+    logLevel: 'info',
+    cpuRequest: '200m',
+    cpuLimit: '1000m',
+    memoryRequest: '512Mi',
+    memoryLimit: '3Gi',
+    replicas: '3',
+    replicasMax: '5'
   },
   prod: {
     namespace: 'af2668-prod',
@@ -125,20 +138,27 @@ const phases = {
     host: staticUrlsAPI.prod,
     appHost: staticUrls.prod,
     backboneApiHost: 'https://api-biohub-platform.apps.silver.devops.gov.bc.ca',
+    backboneIntakePath: '/api/dwc/submission/intake',
+    backboneIntakeEnabled: false,
     env: 'prod',
     elasticsearchURL: 'http://es01:9200',
+    elasticsearchTaxonomyIndex: 'taxonomy_2.0.0',
     tz: config.timezone.api,
-    certificateURL: config.certificateURL.prod,
-    replicas: 3,
-    maxReplicas: 6,
-    logLevel: 'info'
+    sso: config.sso.prod,
+    logLevel: 'info',
+    cpuRequest: '200m',
+    cpuLimit: '1000m',
+    memoryRequest: '512Mi',
+    memoryLimit: '3Gi',
+    replicas: '5',
+    replicasMax: '8'
   }
 };
 
 // This callback forces the node process to exit as failure.
-process.on('unhandledRejection', (reason) => {
-  console.log(reason);
+process.on('unhandledRejection', (reason, promise) => {
+  console.log('Unhandled Rejection at:', promise, 'reason:', reason);
   process.exit(1);
 });
 
-module.exports = exports = { phases, options, staticBranches };
+module.exports = exports = { phases, options };

@@ -7,19 +7,26 @@ fieldset {
 }
 
 legend.MuiTypography-root {
-  margin-bottom: 1rem;
   font-weight: 700;
+  + div {
+    margin-top: 1.25rem;
+  }
+  + div.MuiGrid-root {
+    margin-top: 0.5rem;
+  }
+  + p {
+    margin-top: 0.75rem;
+  }
+}
+
+h3.MuiTypography-root + p {
+  margin-top: 0.75rem;
 }
 
 .sectionHeaderButton {
   & + button {
     margin-left: 0.5rem;
   }
-}
-
-dd {
-  margin: 0;
-  font-size: 1rem;
 }
 
 .ddInline {
@@ -58,7 +65,7 @@ dd {
 }
 
 .pageProgress {
-  position: absolute;
+  position: fixed;
   top: 50%;
   left: 50%;
   margin-left: -20px;
@@ -70,6 +77,71 @@ dd {
   margin-right: calc(50% - 20px);
 }
 
-.mapLocations dd {
-  display: inline-block;
+.marker-cluster-small {
+  background-color: rgba(31, 102, 229, 0.5);
+}
+.marker-cluster-small div {
+  background-color: rgba(31, 102, 229, 1);
+}
+
+.marker-cluster-medium {
+  background-color: rgba(241, 211, 87, 0.6);
+}
+.marker-cluster-medium div {
+  background-color: rgba(240, 194, 12, 0.6);
+}
+
+.marker-cluster-large {
+  background-color: rgba(253, 156, 115, 0.6);
+}
+.marker-cluster-large div {
+  background-color: rgba(241, 128, 23, 0.6);
+}
+
+/* IE 6-8 fallback colors */
+.leaflet-oldie .marker-cluster-small {
+  background-color: rgb(181, 226, 140);
+}
+
+.leaflet-oldie .marker-cluster-small div {
+  background-color: rgb(110, 204, 57);
+}
+
+.leaflet-oldie .marker-cluster-medium {
+  background-color: rgb(241, 211, 87);
+}
+
+.leaflet-oldie .marker-cluster-medium div {
+  background-color: rgb(240, 194, 12);
+}
+
+.leaflet-oldie .marker-cluster-large {
+  background-color: rgb(253, 156, 115);
+}
+
+.leaflet-oldie .marker-cluster-large div {
+  background-color: rgb(241, 128, 23);
+}
+
+.marker-cluster {
+  background-clip: padding-box;
+  border-radius: 12px;
+}
+
+.marker-cluster div {
+  width: 24px;
+  height: 24px;
+  margin-left: 0px;
+  margin-top: 0px;
+
+  text-align: center;
+  border-radius: 12px;
+  font-family: 'BCSans';
+  font-weight: 700;
+  font-size: 11px;
+  color: #ffffff;
+}
+
+.marker-cluster span {
+  line-height: 24px;
 }

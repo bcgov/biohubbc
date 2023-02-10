@@ -2,9 +2,8 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../../database/db';
-import { HTTP400 } from '../../../../../../../../errors/custom-error';
-import { queries } from '../../../../../../../../queries/queries';
 import { authorizeRequestHandler } from '../../../../../../../../request-handlers/security/authorization';
+import { OccurrenceService } from '../../../../../../../../services/occurrence-service';
 import { getLogger } from '../../../../../../../../utils/logger';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/observation/submission/{submissionId}/delete');
@@ -60,12 +59,12 @@ DELETE.apiDoc = {
   ],
   responses: {
     200: {
-      description: 'Observation submission csv details response.',
+      description: 'Boolean true value representing successful deletion.',
       content: {
         'application/json': {
           schema: {
-            title: 'Row count of soft deleted records',
-            type: 'number'
+            title: 'Occurrence delete response',
+            type: 'boolean'
           }
         }
       }
@@ -96,41 +95,18 @@ export function deleteOccurrenceSubmission(): RequestHandler {
       req_params: req.params
     });
 
-    if (!req.params.projectId) {
-      throw new HTTP400('Missing required path param `projectId`');
-    }
-
-    if (!req.params.surveyId) {
-      throw new HTTP400('Missing required path param `surveyId`');
-    }
-
-    if (!req.params.submissionId) {
-      throw new HTTP400('Missing required path param `submissionId`');
-    }
-
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const deleteSubmissionSQLStatement = queries.survey.deleteOccurrenceSubmissionSQL(
-        Number(req.params.submissionId)
-      );
-
-      if (!deleteSubmissionSQLStatement) {
-        throw new HTTP400('Failed to build SQL delete statement');
-      }
-
       await connection.open();
 
-      const deleteResult = await connection.query(
-        deleteSubmissionSQLStatement.text,
-        deleteSubmissionSQLStatement.values
-      );
+      const occurrenceService = new OccurrenceService(connection);
+
+      const response = await occurrenceService.deleteOccurrenceSubmission(Number(req.params.submissionId));
 
       await connection.commit();
 
-      const deleteResponse = (deleteResult && deleteResult.rowCount) || null;
-
-      return res.status(200).json(deleteResponse);
+      return res.status(200).json(!!response.length);
     } catch (error) {
       defaultLog.error({ label: 'deleteOccurrenceSubmission', message: 'error', error });
       await connection.rollback();

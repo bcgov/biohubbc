@@ -143,6 +143,7 @@ const MultiAutocompleteFieldVariableSize: React.FC<IMultiAutocompleteField> = (p
           async loadOptionsForSelectedValues() {
             const selectedValues = get(values, props.id);
             const response = await props.getInitList(selectedValues);
+
             setOptions(response);
           },
           async searchSpecies() {
@@ -166,12 +167,17 @@ const MultiAutocompleteFieldVariableSize: React.FC<IMultiAutocompleteField> = (p
   useEffect(() => {
     apiSearchTypeHelpers && apiSearchTypeHelpers.loadOptionsForSelectedValues();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [values]);
 
   useEffect(() => {
     apiSearchTypeHelpers && apiSearchTypeHelpers.searchSpecies();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inputValue]);
+
+  useEffect(() => {
+    setOptions(props.options || []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.options]);
 
   const getExistingValue = (existingValues: (number | string)[]): IMultiAutocompleteFieldOption[] => {
     if (existingValues) {

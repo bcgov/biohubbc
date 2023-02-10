@@ -171,11 +171,7 @@ const CheckIfAuthenticatedUser: React.FC = ({ children }) => {
       }
     } else {
       // The user does not have a pending access request, restrict them to the access-request, request-submitted or logout pages
-      if (
-        location.pathname !== '/access-request' &&
-        location.pathname !== '/request-submitted' &&
-        location.pathname !== '/logout'
-      ) {
+      if (!['/access-request', '/request-submitted', '/logout'].includes(location.pathname)) {
         // User attempted to go to restricted page
         return <Redirect to="/forbidden" />;
       }

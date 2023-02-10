@@ -5,12 +5,20 @@ import { coordEach } from '@turf/meta';
 import jsonpatch from 'fast-json-patch';
 import xml2js from 'xml2js';
 import { IDBConnection } from '../database/db';
-import { IGetProject } from '../models/project-view';
-import { SurveyObject } from '../models/survey-view';
+import {
+  GetAttachmentsData as GetProjectAttachmentsData,
+  GetReportAttachmentsData as GetProjectReportAttachmentsData,
+  IGetProject
+} from '../models/project-view';
+import {
+  GetAttachmentsData as GetSurveyAttachmentsData,
+  GetReportAttachmentsData as GetSurveyReportAttachmentsData,
+  SurveyObject
+} from '../models/survey-view';
 import { getDbCharacterSystemMetaDataConstantSQL } from '../queries/codes/db-constant-queries';
 import { CodeService, IAllCodeSets } from './code-service';
+import { DBService } from './db-service';
 import { ProjectService } from './project-service';
-import { DBService } from './service';
 import { SurveyService } from './survey-service';
 import { TaxonomyService } from './taxonomy-service';
 
@@ -36,13 +44,20 @@ type EMLDBConstants = {
   EML_INTELLECTUAL_RIGHTS: string;
 };
 
+type SurveyObjectWithAttachments = SurveyObject & {
+  attachments?: GetSurveyAttachmentsData;
+  report_attachments?: GetSurveyReportAttachmentsData;
+};
+
 type Cache = {
   projectData?: IGetProject;
-  surveyData?: SurveyObject[];
+  surveyData?: SurveyObjectWithAttachments[];
+  projectAttachmentData?: GetProjectAttachmentsData;
+  projectReportAttachmentData?: GetProjectReportAttachmentsData;
   codes?: IAllCodeSets;
 };
 
-type BuildProjectEMLOptions = {
+export type BuildProjectEMLOptions = {
   /**
    * Whether or not to include typically non-public data in the EML. Defaults to `false`.
    *
@@ -108,14 +123,14 @@ export class EmlService extends DBService {
   /**
    * Compiles and returns the project metadata as an Ecological Metadata Language (EML) compliant XML string.
    *
-   * @param {BuildProjectEMLOptions} options
-   * @return {*}
+   * @param {BuildProjectEMLOptions} [options]
+   * @return {*}  {Promise<string>}
    * @memberof EmlService
    */
-  async buildProjectEml(options: BuildProjectEMLOptions) {
-    this.includeSensitiveData = options.includeSensitiveData || false;
+  async buildProjectEml(options?: BuildProjectEMLOptions): Promise<string> {
+    this.includeSensitiveData = options?.includeSensitiveData || false;
 
-    this.surveyIds = options.surveyIds;
+    this.surveyIds = options?.surveyIds || [];
 
     await this.loadProjectData();
     await this.loadSurveyData();
@@ -188,13 +203,25 @@ export class EmlService extends DBService {
     return this.cache.projectData;
   }
 
-  async loadProjectData() {
-    const projectData = await this.projectService.getProjectById(this.projectId);
-
-    this.cache.projectData = projectData;
+  get projectAttachmentData(): GetProjectAttachmentsData | undefined {
+    return this.cache.projectAttachmentData;
   }
 
-  get surveyData(): SurveyObject[] {
+  get projectReportAttachmentData(): GetProjectReportAttachmentsData | undefined {
+    return this.cache.projectReportAttachmentData;
+  }
+
+  async loadProjectData() {
+    const projectData = await this.projectService.getProjectById(this.projectId);
+    const attachmentData = await this.projectService.getAttachmentsData(this.projectId);
+    const attachmentReportData = await this.projectService.getReportAttachmentsData(this.projectId);
+
+    this.cache.projectData = projectData;
+    this.cache.projectAttachmentData = attachmentData;
+    this.cache.projectReportAttachmentData = attachmentReportData;
+  }
+
+  get surveyData(): SurveyObjectWithAttachments[] {
     if (!this.cache.surveyData) {
       throw Error('Survey data was not loaded');
     }
@@ -208,11 +235,19 @@ export class EmlService extends DBService {
     const allSurveyIds = response.map((item) => item.id);
 
     // if `BuildProjectEMLOptions.surveyIds` was provided then filter out any ids not in the list
-    const includedSurveyIds = allSurveyIds.filter((item) => !this.surveyIds || this.surveyIds?.includes(item));
+    const includedSurveyIds = allSurveyIds.filter((item) => !this.surveyIds?.length || this.surveyIds?.includes(item));
 
     const surveyData = await this.surveyService.getSurveysByIds(includedSurveyIds);
 
     this.cache.surveyData = surveyData;
+
+    this.cache.surveyData.forEach(
+      async (item) => (item.attachments = await this.surveyService.getAttachmentsData(item.survey_details.id))
+    );
+    this.cache.surveyData.forEach(
+      async (item) =>
+        (item.report_attachments = await this.surveyService.getReportAttachmentsData(item.survey_details.id))
+    );
   }
 
   buildEMLSection() {
@@ -251,11 +286,12 @@ export class EmlService extends DBService {
         $: { system: this.constants.EML_PROVIDER_URL, id: this.packageId },
         title: options?.datasetTitle || this.projectData.project.project_name,
         creator: this.getDatasetCreator(),
-        ...(this.projectData.project.publish_date && { pubDate: this.projectData.project.publish_date }),
         metadataProvider: {
           organizationName: this.constants.EML_ORGANIZATION_NAME,
           onlineUrl: this.constants.EML_ORGANIZATION_URL
         },
+        //EML specification expects short ISO format
+        pubDate: new Date().toISOString().substring(0, 10),
         language: 'English',
         contact: this.getProjectContact(),
         project: {
@@ -373,37 +409,39 @@ export class EmlService extends DBService {
       });
     }
 
-    if (this.includeSensitiveData) {
-      // only include permits if sensitive data is enabled
-      if (this.projectData.permit.permits?.length) {
-        data.push({
-          describes: this.projectData.project.uuid,
-          metadata: {
-            permits: {
-              permit: this.projectData.permit.permits.map((item) => {
-                return { permitType: item.permit_type, permitNumber: item.permit_number };
-              })
-            }
-          }
-        });
-      }
-    }
+    // TODO add back when survey supports permits
+    // if (this.includeSensitiveData) {
+    //   // only include permits if sensitive data is enabled
+    //   if (this.projectData.permit.permits?.length) {
+    //     data.push({
+    //       describes: this.projectData.project.uuid,
+    //       metadata: {
+    //         permits: {
+    //           permit: this.projectData.permit.permits.map((item) => {
+    //             return { permitType: item.permit_type, permitNumber: item.permit_number };
+    //           })
+    //         }
+    //       }
+    //     });
+    //   }
+    // }
 
-    if (this.includeSensitiveData) {
-      // only include permits if sensitive data is enabled
-      this.surveyData.forEach((item) => {
-        if (item.permit.permit_number && item.permit.permit_type) {
-          data.push({
-            describes: item.survey_details.uuid,
-            metadata: {
-              permits: {
-                permit: { permitType: item.permit.permit_type, permitNumber: item.permit.permit_number }
-              }
-            }
-          });
-        }
-      });
-    }
+    // TODO add back when survey supports permits
+    // if (this.includeSensitiveData) {
+    //   // only include permits if sensitive data is enabled
+    //   this.surveyData.forEach((item) => {
+    //     if (item.permit.permit_number && item.permit.permit_type) {
+    //       data.push({
+    //         describes: item.survey_details.uuid,
+    //         metadata: {
+    //           permits: {
+    //             permit: { permitType: item.permit.permit_type, permitNumber: item.permit.permit_number }
+    //           }
+    //         }
+    //       });
+    //     }
+    //   });
+    // }
 
     this.surveyData.forEach((item) => {
       if (item.proprietor) {
@@ -437,13 +475,60 @@ export class EmlService extends DBService {
       }
     });
 
-    this.surveyData.forEach((item) => {
+    if (this.projectAttachmentData?.attachmentDetails.length) {
       data.push({
-        describes: item.survey_details.uuid,
+        describes: this.projectData.project.uuid,
         metadata: {
-          surveyedAllAreas: item.purpose_and_methodology.surveyed_all_areas === 'true' || false
+          projectAttachments: {
+            projectAttachment: this.projectAttachmentData.attachmentDetails.map((item) => {
+              return item;
+            })
+          }
         }
       });
+    }
+
+    if (this.projectReportAttachmentData?.attachmentDetails.length) {
+      data.push({
+        describes: this.projectData.project.uuid,
+        metadata: {
+          projectReportAttachments: {
+            projectReportAttachment: this.projectReportAttachmentData.attachmentDetails.map((item) => {
+              return item;
+            })
+          }
+        }
+      });
+    }
+
+    this.surveyData.forEach((item) => {
+      if (item.attachments?.attachmentDetails.length) {
+        data.push({
+          describes: item.survey_details.uuid,
+          metadata: {
+            surveyAttachments: {
+              surveyAttachment: item.attachments?.attachmentDetails.map((item) => {
+                return item;
+              })
+            }
+          }
+        });
+      }
+    });
+
+    this.surveyData.forEach((item) => {
+      if (item.report_attachments?.attachmentDetails.length) {
+        data.push({
+          describes: item.survey_details.uuid,
+          metadata: {
+            surveyReportAttachments: {
+              surveyReportAttachment: item.report_attachments?.attachmentDetails.map((item) => {
+                return item;
+              })
+            }
+          }
+        });
+      }
     });
 
     jsonpatch.applyOperation(this.data, {
@@ -521,11 +606,11 @@ export class EmlService extends DBService {
    * Get all contacts for the survey.
    *
    * @
-   * @param {SurveyObject} surveyData
+   * @param {SurveyObjectWithAttachments} surveyData
    * @return {*}  {Record<any, any>[]}
    * @memberof EmlService
    */
-  getSurveyPersonnel(surveyData: SurveyObject): Record<any, any>[] {
+  getSurveyPersonnel(surveyData: SurveyObjectWithAttachments): Record<any, any>[] {
     return [
       {
         individualName: {
@@ -561,7 +646,7 @@ export class EmlService extends DBService {
     };
   }
 
-  getSurveyFundingSources(surveyData: SurveyObject): Record<any, any> {
+  getSurveyFundingSources(surveyData: SurveyObjectWithAttachments): Record<any, any> {
     if (!surveyData.funding.funding_sources.length) {
       return {};
     }
@@ -603,7 +688,7 @@ export class EmlService extends DBService {
     };
   }
 
-  getSurveyTemporalCoverageEML(surveyData: SurveyObject): Record<any, any> {
+  getSurveyTemporalCoverageEML(surveyData: SurveyObjectWithAttachments): Record<any, any> {
     if (!surveyData.survey_details.end_date) {
       // no end date
       return {
@@ -670,7 +755,7 @@ export class EmlService extends DBService {
     };
   }
 
-  getSurveyGeographicCoverageEML(surveyData: SurveyObject): Record<any, any> {
+  getSurveyGeographicCoverageEML(surveyData: SurveyObjectWithAttachments): Record<any, any> {
     if (!surveyData.location.geometry?.length) {
       return {};
     }
@@ -719,7 +804,7 @@ export class EmlService extends DBService {
     };
   }
 
-  async getSurveyFocalTaxonomicCoverage(surveyData: SurveyObject): Promise<Record<any, any>> {
+  async getSurveyFocalTaxonomicCoverage(surveyData: SurveyObjectWithAttachments): Promise<Record<any, any>> {
     const taxonomySearchService = new TaxonomyService();
 
     // TODO include ancillary_species alongside focal_species?
@@ -741,7 +826,7 @@ export class EmlService extends DBService {
     return { taxonomicClassification: taxonomicClassifications };
   }
 
-  async getSurveyDesignDescription(surveyData: SurveyObject): Promise<Record<any, any>> {
+  async getSurveyDesignDescription(surveyData: SurveyObjectWithAttachments): Promise<Record<any, any>> {
     return {
       description: {
         section: [
@@ -784,7 +869,7 @@ export class EmlService extends DBService {
     return Promise.all(promises);
   }
 
-  async getSurveyEML(surveyData: SurveyObject): Promise<Record<any, any>> {
+  async getSurveyEML(surveyData: SurveyObjectWithAttachments): Promise<Record<any, any>> {
     return {
       $: { id: surveyData.survey_details.uuid, system: this.constants.EML_PROVIDER_URL },
       title: surveyData.survey_details.survey_name,

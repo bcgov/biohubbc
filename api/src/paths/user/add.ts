@@ -3,7 +3,7 @@ import { Operation } from 'express-openapi';
 import { SYSTEM_IDENTITY_SOURCE } from '../../constants/database';
 import { SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection } from '../../database/db';
-import { HTTP400 } from '../../errors/custom-error';
+import { HTTP400 } from '../../errors/http-error';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
 import { UserService } from '../../services/user-service';
 import { getLogger } from '../../utils/logger';
@@ -41,12 +41,21 @@ POST.apiDoc = {
           type: 'object',
           required: ['userIdentifier', 'identitySource', 'roleId'],
           properties: {
+            userGuid: {
+              type: 'string',
+              description: 'The GUID for the user.'
+            },
             userIdentifier: {
-              type: 'string'
+              type: 'string',
+              description: 'The identifier for the user.'
             },
             identitySource: {
               type: 'string',
-              enum: [SYSTEM_IDENTITY_SOURCE.IDIR, SYSTEM_IDENTITY_SOURCE.BCEID]
+              enum: [
+                SYSTEM_IDENTITY_SOURCE.IDIR,
+                SYSTEM_IDENTITY_SOURCE.BCEID_BASIC,
+                SYSTEM_IDENTITY_SOURCE.BCEID_BUSINESS
+              ]
             },
             roleId: {
               type: 'number',
@@ -88,8 +97,9 @@ export function addSystemRoleUser(): RequestHandler {
   return async (req, res) => {
     const connection = getDBConnection(req['keycloak_token']);
 
-    const userIdentifier = req.body?.userIdentifier || null;
-    const identitySource = req.body?.identitySource || null;
+    const userGuid: string | null = req.body?.userGuid || null;
+    const userIdentifier: string | null = req.body?.userIdentifier || null;
+    const identitySource: string | null = req.body?.identitySource || null;
 
     const roleId = req.body?.roleId || null;
 
@@ -110,7 +120,7 @@ export function addSystemRoleUser(): RequestHandler {
 
       const userService = new UserService(connection);
 
-      const userObject = await userService.ensureSystemUser(userIdentifier, identitySource);
+      const userObject = await userService.ensureSystemUser(userGuid, userIdentifier, identitySource);
 
       if (userObject) {
         await userService.addUserSystemRoles(userObject.id, [roleId]);

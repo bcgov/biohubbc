@@ -27,6 +27,9 @@ const sampleValidationSchema = {
             },
             {
               column_range_validator: {}
+            },
+            {
+              column_required_validator: {}
             }
           ]
         }
@@ -126,11 +129,12 @@ describe('ValidationSchemaParser', () => {
 
       const validators = validationSchemaParser.getAllColumnValidations('testFile1');
 
-      expect(validators.length).to.equal(3);
+      expect(validators.length).to.equal(4);
 
       expect(typeof validators[0]).to.equal('function');
       expect(typeof validators[1]).to.equal('function');
       expect(typeof validators[2]).to.equal('function');
+      expect(typeof validators[3]).to.equal('function');
     });
   });
 
@@ -150,7 +154,7 @@ describe('ValidationSchemaParser', () => {
     it('returns an array of validation schemas', () => {
       const validationSchemaParser = new ValidationSchemaParser(sampleValidationSchema);
 
-      const validationSchemas = validationSchemaParser.getSubmissionValidationSChemas();
+      const validationSchemas = validationSchemaParser.getSubmissionValidationSchemas();
 
       expect(validationSchemas).to.eql([
         { mimetype_validator: {} },

@@ -1,16 +1,19 @@
 import { AxiosInstance, CancelTokenSource } from 'axios';
 import { IEditReportMetaForm } from 'components/attachments/EditReportMetaForm';
 import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
-import { IGetSubmissionCSVForViewResponse } from 'interfaces/useObservationApi.interface';
-import { IGetReportMetaData, IUploadAttachmentResponse } from 'interfaces/useProjectApi.interface';
+import {
+  IGetAttachmentDetails,
+  IGetReportDetails,
+  IUploadAttachmentResponse
+} from 'interfaces/useProjectApi.interface';
 import { IGetSummaryResultsResponse, IUploadSummaryResultsResponse } from 'interfaces/useSummaryResultsApi.interface';
 import {
   ICreateSurveyRequest,
   ICreateSurveyResponse,
   IGetSurveyAttachmentsResponse,
+  IGetSurveyForUpdateResponse,
   IGetSurveyForViewResponse,
   ISurveyAvailableFundingSources,
-  ISurveyPermits,
   SurveyUpdateObject,
   SurveyViewObject
 } from 'interfaces/useSurveyApi.interface';
@@ -44,6 +47,19 @@ const useSurveyApi = (axios: AxiosInstance) => {
    */
   const getSurveyForView = async (projectId: number, surveyId: number): Promise<IGetSurveyForViewResponse> => {
     const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/view`);
+
+    return data;
+  };
+
+  /**
+   * Get project survey details based on its ID for update purposes.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @return {*} {Promise<IGetSurveyForUpdateResponse>}
+   */
+  const getSurveyForUpdate = async (projectId: number, surveyId: number): Promise<IGetSurveyForUpdateResponse> => {
+    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/update/get`);
 
     return data;
   };
@@ -168,7 +184,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
     attachmentMeta: IEditReportMetaForm,
     revisionCount: number
   ): Promise<number> => {
-    const obj = {
+    const requestBody = {
       attachment_type: attachmentType,
       attachment_meta: {
         title: attachmentMeta.title,
@@ -181,7 +197,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
 
     const { data } = await axios.put(
       `/api/project/${projectId}/survey/${surveyId}/attachments/${attachmentId}/metadata/update`,
-      obj
+      requestBody
     );
 
     return data;
@@ -196,72 +212,6 @@ const useSurveyApi = (axios: AxiosInstance) => {
    */
   const getSurveyAttachments = async (projectId: number, surveyId: number): Promise<IGetSurveyAttachmentsResponse> => {
     const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/attachments/list`);
-
-    return data;
-  };
-
-  /**
-   * Make security status of survey attachment secure.
-   *
-   * @param {number} projectId
-   * @param {number} surveyId
-   * @param {number} attachmentId
-   * @param {string} attachmentType
-   * @return {*}  {Promise<any>}
-   */
-  const makeAttachmentSecure = async (
-    projectId: number,
-    surveyId: number,
-    attachmentId: number,
-    attachmentType: string
-  ): Promise<any> => {
-    const { data } = await axios.put(
-      `/api/project/${projectId}/survey/${surveyId}/attachments/${attachmentId}/makeSecure`,
-      {
-        attachmentType
-      }
-    );
-
-    return data;
-  };
-
-  /**
-   * Make security status of survey attachment unsecure.
-   *
-   * @param {number} projectId
-   * @param {number} surveyId
-   * @param {number} attachmentId
-   * @param {any} securityToken
-   * @param {string} attachmentType
-   * @return {*}  {Promise<any>}
-   */
-  const makeAttachmentUnsecure = async (
-    projectId: number,
-    surveyId: number,
-    attachmentId: number,
-    securityToken: any,
-    attachmentType: string
-  ): Promise<any> => {
-    const { data } = await axios.put(
-      `/api/project/${projectId}/survey/${surveyId}/attachments/${attachmentId}/makeUnsecure`,
-      {
-        securityToken,
-        attachmentType
-      }
-    );
-
-    return data;
-  };
-
-  /**
-   * Get permits that have not already been assigned to a survey, by project ID
-   * Note: This is because a survey can have exactly one permit assigned to it and permits cannot be used more than once
-   *
-   * @param {number} projectId
-   * @returns {*} {Promise<SurveyPermits[]>}
-   */
-  const getSurveyPermits = async (projectId: number): Promise<ISurveyPermits[]> => {
-    const { data } = await axios.get(`/api/project/${projectId}/survey/permits/list`);
 
     return data;
   };
@@ -285,21 +235,18 @@ const useSurveyApi = (axios: AxiosInstance) => {
    * @param {number} surveyId
    * @param {number} attachmentId
    * @param {string} attachmentType
-   * @param {any} securityToken
    * @returns {*} {Promise<number>}
    */
   const deleteSurveyAttachment = async (
     projectId: number,
     surveyId: number,
     attachmentId: number,
-    attachmentType: string,
-    securityToken: any
+    attachmentType: string
   ): Promise<number> => {
     const { data } = await axios.post(
       `/api/project/${projectId}/survey/${surveyId}/attachments/${attachmentId}/delete`,
       {
-        attachmentType,
-        securityToken
+        attachmentType
       }
     );
 
@@ -400,20 +347,6 @@ const useSurveyApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Publish/unpublish a survey.
-   *
-   * @param {number} projectId
-   * @param {number} surveyId
-   * @param {boolean} publish set to `true` to publish the survey, `false` to unpublish the survey.
-   * @return {*}  {Promise<boolean>} `true` if the request was successful, false otherwise.
-   */
-  const publishSurvey = async (projectId: number, surveyId: number, publish: boolean): Promise<boolean> => {
-    const { status } = await axios.put(`/api/project/${projectId}/survey/${surveyId}/publish`, { publish: publish });
-
-    return status === 200;
-  };
-
-  /**
    * Upload survey summary results.
    *
    * @param {number} projectId
@@ -462,25 +395,6 @@ const useSurveyApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Get observation submission csv data/details by submission id.
-   * @param {number} projectId
-   * @param {number} surveyId
-   * @param {number} summaryId
-   * @return {*}  {Promise<IGetSubmissionCSVForViewResponse>}
-   */
-  const getSubmissionCSVForView = async (
-    projectId: number,
-    surveyId: number,
-    summaryId: number
-  ): Promise<IGetSubmissionCSVForViewResponse> => {
-    const { data } = await axios.get(
-      `/api/project/${projectId}/survey/${surveyId}/summary/submission/${summaryId}/view`
-    );
-
-    return data;
-  };
-
-  /**
    * Get survey report metadata based on project ID, surveyID, attachment ID, and attachmentType
    *
    * @param {number} projectId
@@ -489,11 +403,11 @@ const useSurveyApi = (axios: AxiosInstance) => {
    * @param {string} attachmentType
    * @returns {*} {Promise<string>}
    */
-  const getSurveyReportMetadata = async (
+  const getSurveyReportDetails = async (
     projectId: number,
     surveyId: number,
     attachmentId: number
-  ): Promise<IGetReportMetaData> => {
+  ): Promise<IGetReportDetails> => {
     const { data } = await axios.get(
       `/api/project/${projectId}/survey/${surveyId}/attachments/${attachmentId}/metadata/get`,
       {
@@ -507,15 +421,45 @@ const useSurveyApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  const getSurveyAttachmentDetails = async (
+    projectId: number,
+    surveyId: number,
+    attachmentId: number
+  ): Promise<IGetAttachmentDetails> => {
+    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/attachments/${attachmentId}/get`, {
+      params: {},
+      paramsSerializer: (params: any) => {
+        return qs.stringify(params);
+      }
+    });
+
+    return data;
+  };
+
+  /**
+   * Upload Survey/Project/Observation data to BioHub
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @return {*}  {Promise<boolean>}
+   */
+  const uploadSurveyDataToBioHub = async (projectId: number, surveyId: number): Promise<boolean> => {
+    const response = await axios.post(`/api/project/${projectId}/survey/${surveyId}/upload`);
+
+    return response.data;
+  };
+
   return {
     createSurvey,
     getSurveyForView,
     getSurveysList,
+    getSurveyForUpdate,
     updateSurvey,
     uploadSurveyAttachments,
     uploadSurveyReports,
     updateSurveyReportMetadata,
-    getSurveyReportMetadata,
+    getSurveyReportDetails,
+    getSurveyAttachmentDetails,
     uploadSurveySummaryResults,
     getSurveySummarySubmission,
     getSurveyAttachments,
@@ -523,14 +467,10 @@ const useSurveyApi = (axios: AxiosInstance) => {
     getSurveyAttachmentSignedURL,
     getObservationSubmissionSignedURL,
     deleteSurvey,
-    getSurveyPermits,
     getAvailableSurveyFundingSources,
-    publishSurvey,
-    getSubmissionCSVForView,
-    makeAttachmentUnsecure,
-    makeAttachmentSecure,
     getSummarySubmissionSignedURL,
-    deleteSummarySubmission
+    deleteSummarySubmission,
+    uploadSurveyDataToBioHub
   };
 };
 

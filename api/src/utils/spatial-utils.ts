@@ -1,3 +1,7 @@
+import { Feature } from 'geojson';
+import SQL, { SQLStatement } from 'sql-template-strings';
+import { toLatLon } from 'utm';
+
 export interface IUTM {
   easting: number;
   northing: number;
@@ -12,7 +16,7 @@ const SOPUTH_UTM_BASE_ZONE_NUMBER = 32700;
 const NORTH_UTM_ZONE_LETTERS = ['N', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X'];
 const SOUTH_UTM_ZONE_LETTERS = ['C', 'D', 'E', 'F', 'G', 'H', 'J', 'K', 'L', 'M'];
 
-const UTM_STRING_FORMAT = RegExp(/^[1-9]\d?[NPQRSTUVWXCDEFGHJKLM]? \d+ \d+$/i);
+const UTM_STRING_FORMAT = RegExp(/^[1-9]\d?[NPQRSTUVWXCDEFGHJKLM]? \d{0,8}\.?\d{0,12} \d{0,8}\.?\d{0,12}$/i);
 const UTM_ZONE_WITH_LETTER_FORMAT = RegExp(/^[1-9]\d?[NPQRSTUVWXCDEFGHJKLM]$/i);
 
 /**
@@ -116,4 +120,61 @@ export function parseLatLongString(latLong: string): ILatLong | null {
   }
 
   return { lat, long };
+}
+
+/**
+ * Function to generate the SQL for insertion of a geometry collection
+ *
+ * @export
+ * @param {(Feature | Feature[])} geometry
+ * @return {*}  {SQLStatement}
+ */
+export function generateGeometryCollectionSQL(geometry: Feature | Feature[]): SQLStatement {
+  if (!Array.isArray(geometry)) {
+    const geo = JSON.stringify(geometry.geometry);
+
+    return SQL`public.ST_Force2D(public.ST_GeomFromGeoJSON(${geo}))`;
+  }
+
+  if (geometry.length === 1) {
+    const geo = JSON.stringify(geometry[0].geometry);
+
+    return SQL`public.ST_Force2D(public.ST_GeomFromGeoJSON(${geo}))`;
+  }
+
+  const sqlStatement: SQLStatement = SQL`public.ST_AsText(public.ST_Collect(array[`;
+
+  geometry.forEach((geom: Feature, index: number) => {
+    const geo = JSON.stringify(geom.geometry);
+
+    // as long as it is not the last geometry, keep adding to the ST_collect
+    if (index !== geometry.length - 1) {
+      sqlStatement.append(SQL`
+        public.ST_Force2D(public.ST_GeomFromGeoJSON(${geo})),`);
+    } else {
+      sqlStatement.append(SQL`
+        public.ST_Force2D(public.ST_GeomFromGeoJSON(${geo}))]))`);
+    }
+  });
+
+  return sqlStatement;
+}
+
+export function utmToLatLng(verbatimCoordinates: IUTM): { latitude: number; longitude: number } {
+  if (verbatimCoordinates.zone_letter) {
+    return toLatLon(
+      verbatimCoordinates?.easting,
+      verbatimCoordinates?.northing,
+      verbatimCoordinates?.zone_number,
+      verbatimCoordinates?.zone_letter
+    );
+  } else {
+    return toLatLon(
+      verbatimCoordinates?.easting,
+      verbatimCoordinates?.northing,
+      verbatimCoordinates?.zone_number,
+      undefined,
+      true
+    );
+  }
 }

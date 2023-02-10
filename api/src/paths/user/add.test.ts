@@ -4,7 +4,7 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { SYSTEM_IDENTITY_SOURCE } from '../../constants/database';
 import * as db from '../../database/db';
-import { HTTPError } from '../../errors/custom-error';
+import { HTTPError } from '../../errors/http-error';
 import { UserObject } from '../../models/user';
 import { UserService } from '../../services/user-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../__mocks__/db';
@@ -46,6 +46,7 @@ describe('user', () => {
       const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
       mockReq.body = {
+        userGuid: 'aaaa',
         identitySource: SYSTEM_IDENTITY_SOURCE.IDIR,
         roleId: 1
       };
@@ -69,6 +70,7 @@ describe('user', () => {
       const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
       mockReq.body = {
+        userGuid: 'aaaa',
         userIdentifier: 'username',
         roleId: 1
       };
@@ -92,6 +94,7 @@ describe('user', () => {
       const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
       mockReq.body = {
+        userGuid: 'aaaa',
         userIdentifier: 'username',
         identitySource: SYSTEM_IDENTITY_SOURCE.IDIR
       };
@@ -115,6 +118,7 @@ describe('user', () => {
       const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
       mockReq.body = {
+        userGuid: 'aaaa',
         userIdentifier: 'username',
         identitySource: SYSTEM_IDENTITY_SOURCE.IDIR,
         roleId: 1
@@ -123,6 +127,8 @@ describe('user', () => {
       const mockUserObject: UserObject = {
         id: 1,
         user_identifier: '',
+        user_guid: '',
+        identity_source: '',
         record_end_date: '',
         role_ids: [1],
         role_names: []
@@ -136,6 +142,40 @@ describe('user', () => {
 
       await requestHandler(mockReq, mockRes, mockNext);
 
+      expect(ensureSystemUserStub).to.have.been.calledOnce;
+      expect(adduserSystemRolesStub).to.have.been.calledOnce;
+    });
+
+    it('should success when no userGuid', async () => {
+      const dbConnectionObj = getMockDBConnection();
+
+      sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
+
+      const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+
+      mockReq.body = {
+        identitySource: SYSTEM_IDENTITY_SOURCE.IDIR,
+        userIdentifier: 'username',
+        roleId: 1
+      };
+
+      const mockUserObject: UserObject = {
+        id: 1,
+        user_identifier: '',
+        user_guid: null,
+        identity_source: '',
+        record_end_date: '',
+        role_ids: [1],
+        role_names: []
+      };
+
+      const ensureSystemUserStub = sinon.stub(UserService.prototype, 'ensureSystemUser').resolves(mockUserObject);
+
+      const adduserSystemRolesStub = sinon.stub(UserService.prototype, 'addUserSystemRoles');
+
+      const requestHandler = user.addSystemRoleUser();
+
+      await requestHandler(mockReq, mockRes, mockNext);
       expect(ensureSystemUserStub).to.have.been.calledOnce;
       expect(adduserSystemRolesStub).to.have.been.calledOnce;
     });

@@ -40,6 +40,7 @@ export interface ISurveyFundingSourceForView {
   funding_start_date: string;
   funding_end_date: string;
   agency_name: string;
+  funding_source_project_id: string;
 }
 
 export type ISurveyAvailableFundingSources = IGetProjectForUpdateResponseFundingSource;
@@ -53,7 +54,6 @@ export interface IGetSurveyForViewResponseDetails {
   biologist_last_name: string;
   survey_area_name: string;
   geometry: Feature[];
-  publish_date: string;
   revision_count: number;
 }
 
@@ -84,6 +84,7 @@ export interface SurveyViewObject {
   purpose_and_methodology: IGetSurveyForViewResponsePurposeAndMethodology;
   funding: ISurveyFundingSources;
   proprietor: IGetSurveyForViewResponseProprietor | null;
+  docs_to_be_reviewed: number;
 }
 
 export interface SurveyUpdateObject {
@@ -99,7 +100,13 @@ export interface SurveyUpdateObject {
     focal_species: number[];
     ancillary_species: number[];
   };
-  permit?: ISurveyPermits;
+  permit?: {
+    permits: {
+      permit_id?: number;
+      permit_number: string;
+      permit_type: string;
+    }[];
+  };
   purpose_and_methodology?: {
     intended_outcome_id: number;
     additional_details: string;
@@ -148,7 +155,6 @@ export interface IGetSurveyDetailsResponse {
   name: string;
   start_date: string;
   end_date: string;
-  publish_status: string;
   completion_status: string;
 }
 
@@ -165,9 +171,10 @@ export interface IGetSurveyAttachment {
   fileType: string;
   lastModified: string;
   size: number;
-  securityToken: any;
   revisionCount: number;
 }
+
+export type IGetSurveyReportAttachment = IGetSurveyAttachment & { fileType: 'Report' };
 
 /**
  * Get survey attachments response object.
@@ -177,9 +184,31 @@ export interface IGetSurveyAttachment {
  */
 export interface IGetSurveyAttachmentsResponse {
   attachmentsList: IGetSurveyAttachment[];
+  reportAttachmentsList: IGetSurveyReportAttachment[];
 }
 
 export interface ISurveyPermits {
-  permit_number: string;
-  permit_type: string;
+  permits: {
+    id: number;
+    permit_number: string;
+    permit_type: string;
+  }[];
 }
+
+export interface IUpdateAgreementsForm {
+  agreements: {
+    sedis_procedures_accepted: StringBoolean;
+    foippa_requirements_accepted: StringBoolean;
+  };
+}
+
+export interface IGetSurveyForUpdateResponse {
+  surveyData: SurveyUpdateObject;
+}
+
+export interface IEditSurveyRequest
+  extends IGeneralInformationForm,
+    IPurposeAndMethodologyForm,
+    IStudyAreaForm,
+    IProprietaryDataForm,
+    IUpdateAgreementsForm {}

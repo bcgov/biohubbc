@@ -2,9 +2,9 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../../../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../../../../database/db';
-import { HTTP400 } from '../../../../../../../errors/custom-error';
-import { queries } from '../../../../../../../queries/queries';
+import { HTTP400 } from '../../../../../../../errors/http-error';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
+import { SurveyService } from '../../../../../../../services/survey-service';
 import { generateS3FileKey, scanFileForVirus, uploadFileToS3 } from '../../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../../utils/logger';
 
@@ -152,7 +152,7 @@ export function uploadMedia(): RequestHandler {
         connection
       );
 
-      const submissionId = response.rows[0].id;
+      const { submissionId } = response;
 
       const inputKey = generateS3FileKey({
         projectId: Number(req.params.projectId),
@@ -199,24 +199,20 @@ export const insertSurveyOccurrenceSubmission = async (
   source: string,
   inputFileName: string,
   connection: IDBConnection
-): Promise<any> => {
-  const insertSqlStatement = queries.survey.insertSurveyOccurrenceSubmissionSQL({
+): Promise<{ submissionId: number }> => {
+  const surveyService = new SurveyService(connection);
+
+  const response = await surveyService.insertSurveyOccurrenceSubmission({
     surveyId,
     source,
     inputFileName
   });
 
-  if (!insertSqlStatement) {
-    throw new HTTP400('Failed to build SQL insert statement');
-  }
-
-  const insertResponse = await connection.query(insertSqlStatement.text, insertSqlStatement.values);
-
-  if (!insertResponse.rowCount) {
+  if (!response.submissionId) {
     throw new HTTP400('Failed to insert survey occurrence submission record');
   }
 
-  return insertResponse;
+  return response;
 };
 
 /**
@@ -231,18 +227,14 @@ export const updateSurveyOccurrenceSubmissionWithKey = async (
   submissionId: number,
   inputKey: string,
   connection: IDBConnection
-): Promise<any> => {
-  const updateSqlStatement = queries.survey.updateSurveyOccurrenceSubmissionSQL({ submissionId, inputKey });
+): Promise<{ submissionId: number }> => {
+  const surveyService = new SurveyService(connection);
 
-  if (!updateSqlStatement) {
-    throw new HTTP400('Failed to build SQL update statement');
-  }
+  const response = await surveyService.updateSurveyOccurrenceSubmission({ submissionId, inputKey });
 
-  const updateResponse = await connection.query(updateSqlStatement.text, updateSqlStatement.values);
-
-  if (!updateResponse || !updateResponse.rowCount) {
+  if (!response.submissionId) {
     throw new HTTP400('Failed to update survey occurrence submission record');
   }
 
-  return updateResponse;
+  return response;
 };

@@ -2,7 +2,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../../../constants/roles';
 import { getDBConnection } from '../../../../database/db';
-import { HTTP400 } from '../../../../errors/custom-error';
+import { HTTP400 } from '../../../../errors/http-error';
 import { authorizeRequestHandler } from '../../../../request-handlers/security/authorization';
 import { ProjectService } from '../../../../services/project-service';
 import { getLogger } from '../../../../utils/logger';
@@ -37,7 +37,8 @@ GET.apiDoc = {
       in: 'path',
       name: 'projectId',
       schema: {
-        type: 'number'
+        type: 'integer',
+        minimum: 1
       },
       required: true
     }
@@ -69,6 +70,11 @@ GET.apiDoc = {
                     },
                     project_role_name: {
                       type: 'string'
+                    },
+                    user_guid: {
+                      type: 'string',
+                      description: 'The GUID for the user.',
+                      nullable: true
                     },
                     user_identifier: {
                       type: 'string'

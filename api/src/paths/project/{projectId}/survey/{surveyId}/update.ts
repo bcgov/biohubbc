@@ -5,6 +5,7 @@ import { getDBConnection } from '../../../../../database/db';
 import { PutSurveyObject } from '../../../../../models/survey-update';
 import { geoJsonFeature } from '../../../../../openapi/schemas/geoJson';
 import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
+import { PlatformService } from '../../../../../services/platform-service';
 import { SurveyService } from '../../../../../services/survey-service';
 import { getLogger } from '../../../../../utils/logger';
 
@@ -81,7 +82,8 @@ PUT.apiDoc = {
                 },
                 end_date: {
                   type: 'string',
-                  description: 'ISO 8601 date string'
+                  description: 'ISO 8601 date string',
+                  nullable: true
                 },
                 biologist_first_name: {
                   type: 'string'
@@ -116,13 +118,25 @@ PUT.apiDoc = {
             },
             permit: {
               type: 'object',
-              required: ['permit_number', 'permit_type'],
               properties: {
-                permit_number: {
-                  type: 'string'
-                },
-                permit_type: {
-                  type: 'string'
+                permits: {
+                  type: 'array',
+                  items: {
+                    type: 'object',
+                    required: ['permit_number', 'permit_type'],
+                    properties: {
+                      permit_id: {
+                        type: 'number',
+                        nullable: true
+                      },
+                      permit_number: {
+                        type: 'string'
+                      },
+                      permit_type: {
+                        type: 'string'
+                      }
+                    }
+                  }
                 }
               }
             },
@@ -146,7 +160,6 @@ PUT.apiDoc = {
                 'proprietary_data_category',
                 'proprietor_name',
                 'category_rationale',
-                'first_nations_id',
                 'disa_required'
               ],
               properties: {
@@ -162,9 +175,6 @@ PUT.apiDoc = {
                 category_rationale: {
                   type: 'string'
                 },
-                first_nations_id: {
-                  type: 'number'
-                },
                 disa_required: {
                   type: 'string'
                 }
@@ -178,7 +188,6 @@ PUT.apiDoc = {
                 'field_method_id',
                 'vantage_code_ids',
                 'ecological_season_id',
-                'surveyed_all_areas',
                 'revision_count'
               ],
               properties: {
@@ -200,10 +209,6 @@ PUT.apiDoc = {
                 ecological_season_id: {
                   type: 'number'
                 },
-                surveyed_all_areas: {
-                  type: 'string',
-                  enum: ['true', 'false']
-                },
                 revision_count: {
                   type: 'number'
                 }
@@ -211,7 +216,7 @@ PUT.apiDoc = {
             },
             location: {
               type: 'object',
-              required: ['survey_area_name', 'geometry', 'revision_count'],
+              required: ['survey_area_name', 'geometry'],
               properties: {
                 survey_area_name: {
                   type: 'string'
@@ -282,7 +287,15 @@ export function updateSurvey(): RequestHandler {
 
       const surveyService = new SurveyService(connection);
 
-      await surveyService.updateSurvey(projectId, surveyId, sanitizedPutSurveyData);
+      await surveyService.updateSurvey(surveyId, sanitizedPutSurveyData);
+
+      try {
+        const platformService = new PlatformService(connection);
+        await platformService.submitDwCAMetadataPackage(projectId);
+      } catch (error) {
+        // Don't fail the rest of the endpoint if submitting metadata fails
+        defaultLog.error({ label: 'updateSurvey->submitDwCAMetadataPackage', message: 'error', error });
+      }
 
       await connection.commit();
 
