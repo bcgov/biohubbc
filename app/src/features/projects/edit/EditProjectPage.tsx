@@ -197,14 +197,7 @@ const EditProjectPage: React.FC = (props) => {
               </Typography>
             </Box>
             <Box flex="0 0 auto" className={classes.pageTitleActions}>
-              <Button
-                color="primary"
-                variant="contained"
-                onClick={() => {
-                  if (formikRef && formikRef.current && formikRef.current.values) {
-                    updateProject(formikRef.current?.values);
-                  }
-                }}>
+              <Button color="primary" variant="contained" onClick={() => formikRef.current?.submitForm()}>
                 Save Project
               </Button>
               <Button color="primary" variant="outlined" onClick={handleCancel}>

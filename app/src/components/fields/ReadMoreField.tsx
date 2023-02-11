@@ -1,12 +1,14 @@
+import { Typography, TypographyProps } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
+import { mdiChevronDown, mdiChevronUp } from '@mdi/js';
+import Icon from '@mdi/react';
 import React, { useState } from 'react';
-import { v4 as uuidv4 } from 'uuid';
 
 export interface IReadMoreFieldProps {
   text: string;
   maxCharLength: number;
+  TypographyProps?: Partial<TypographyProps>;
 }
 
 /**
@@ -15,78 +17,51 @@ export interface IReadMoreFieldProps {
  * @return {*}
  */
 export const ReadMoreField: React.FC<IReadMoreFieldProps> = (props) => {
-  const { text, maxCharLength } = props;
+  const { text, maxCharLength, TypographyProps } = props;
+  const [showTruncated, setShowTruncated] = useState(false);
 
-  /*
-    Determines whether or not the given body of text will be truncated based on
-    the max character length.
-  */
-  const willTruncateText = (content: string): boolean => {
-    return content?.trim().length > maxCharLength || false;
-  };
+  if (!text || maxCharLength <= 0) {
+    return <></>;
+  }
 
-  const [isTruncatedText, setIsTruncatedText] = useState(willTruncateText(text));
+  const sanitizedText = String(text).trim();
+  const willTruncateText = sanitizedText.length > maxCharLength;
 
-  const renderParagraph = (paragraph: string) => {
-    if (paragraph) {
-      return (
-        <Typography color="textSecondary" key={uuidv4()}>
-          {paragraph}
-        </Typography>
-      );
-    }
-    return <p key={uuidv4()}></p>;
-  };
+  if (!willTruncateText) {
+    return <span>{sanitizedText}</span>;
+  }
 
-  /*
-    Function that finds a nice index (at a period ending a sentence)
-    to truncate objectives longer than maxCharLength characters
-  */
-  const determineTruncatingLength = () => {
-    const periodIndices = [];
+  let truncationIndex = sanitizedText.slice(0, maxCharLength).lastIndexOf(' ');
+  if (truncationIndex < 0) {
+    truncationIndex = maxCharLength;
+  }
 
-    for (let i = 0; i < text.length; i++) {
-      if (text[i - 1] === '.' && text[i] === ' ') {
-        periodIndices.push(i);
-      }
-    }
-
-    return periodIndices.reduce((prev, curr) => {
-      return Math.abs(curr - maxCharLength) < Math.abs(prev - maxCharLength) ? curr : prev;
-    });
-  };
+  const persistentTextPortion = sanitizedText.slice(0, truncationIndex);
 
   return (
     <Box>
-      {isTruncatedText && (
-        <>
-          {text
-            .slice(0, determineTruncatingLength())
-            .split('\n')
-            .map((paragraph: string) => {
-              return renderParagraph(paragraph);
-            })}
-          <Box mt={0.5} mb={-0.75} ml="-5px">
-            <Button size="small" variant="text" onClick={() => setIsTruncatedText(false)} style={{ color: '#757575' }}>
-              READ MORE...
-            </Button>
-          </Box>
-        </>
-      )}
-      {!isTruncatedText && (
-        <>
-          {text?.split('\n').map((paragraph: string) => {
-            return renderParagraph(paragraph);
-          })}
-          {willTruncateText(text) && (
-            <Box mt={0.5} mb={-0.75} ml="-5px">
-              <Button size="small" variant="text" onClick={() => setIsTruncatedText(true)} style={{ color: '#757575' }}>
-                READ LESS
-              </Button>
-            </Box>
-          )}
-        </>
-      )}
+      <Typography {...TypographyProps}>
+        {showTruncated ? (
+          <span>{sanitizedText}</span>
+        ) : (
+          <>
+            <span>{persistentTextPortion}</span>
+            <span>&hellip;</span>
+          </>
+        )}
+      </Typography>
+      <Box mt={0.5} mb={-0.75} ml="-5px">
+        <Button
+          size="small"
+          variant="text"
+          onClick={() => setShowTruncated(!showTruncated)}
+          style={{ color: '#757575', fontWeight: 600, textTransform: 'uppercase' }}>
+          <>
+            <Icon path={showTruncated ? mdiChevronUp : mdiChevronDown} size={1} />
+            <span>{showTruncated ? 'Read Less' : 'Read More'}</span>
+          </>
+        </Button>
+      </Box>
     </Box>
   );
 };
