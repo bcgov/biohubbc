@@ -133,16 +133,11 @@ describe('ProjectObjectives', () => {
   });
 
   it('toggles as expected if the text contains no spaces', () => {
-    let objectivesData = '';
-    for (let i = 0; i < 400; i++) {
-      objectivesData += 'a';
-    }
-
     const { container } = render(
       <ProjectObjectives
         projectForViewData={{
           ...getProjectForViewResponse,
-          objectives: { ...getProjectForViewResponse.objectives, objectives: objectivesData }
+          objectives: { ...getProjectForViewResponse.objectives, objectives: 'a'.repeat(400) }
         }}
         codes={codes}
         refresh={mockRefresh}
