@@ -108,7 +108,7 @@ describe('ProjectObjectives', () => {
     expect(asFragment()).toMatchSnapshot();
   });
 
-  it('functions as expected with the read more and READ LESS buttons', () => {
+  it('toggles as expected with the Read More and Read Less buttons', () => {
     const { container } = render(
       <ProjectObjectives
         projectForViewData={{
