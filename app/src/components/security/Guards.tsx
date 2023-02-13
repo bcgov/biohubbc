@@ -32,6 +32,13 @@ export interface IProjectParticipantGuardProps {
    * @memberof IProjectParticipantGuardProps
    */
   validProjectRoles: PROJECT_ROLE[];
+  /**
+   * An array of valid system roles. The user may have 1 or more matching system roles to override the guard.
+   *
+   * @type {SYSTEM_ROLE[]}
+   * @memberof ISystemRoleGuardProps
+   */
+  validSystemRoles?: SYSTEM_ROLE[];
 }
 
 
@@ -64,20 +71,19 @@ export const SystemRoleGuard: React.FC<ISystemRoleGuardProps & IGuardProps> = (p
  * @return {*}
  */
 export const ProjectRoleGuard: React.FC<IProjectParticipantGuardProps & IGuardProps> = (props) => {
-  const { validProjectRoles } = props
+  const { validProjectRoles, validSystemRoles } = props
+  const { keycloakWrapper } = useContext(AuthStateContext);
   const { participant, projectId, isReady } = useContext(ProjectParticipantGuardContext);
+
+  const hasSystemRole = validSystemRoles && keycloakWrapper?.hasSystemRole(validSystemRoles);
 
   const hasProjectRole = participant
     && participant.project_id === projectId
     && participant.project_role_names.some((roleName) => validProjectRoles.includes(roleName));
 
-  console.log('participant:', Boolean(participant))
-  console.log('participant.project_id === projectId')
+  console.log({ hasSystemRole, hasProjectRole, isReady })
 
-  if (!hasProjectRole) {
-    console.log('User does not have any of the needed roles in:', validProjectRoles);
-    console.log({ participant, projectId, isReady });
-
+  if (!hasSystemRole && (!hasProjectRole || !isReady)) {
     if (props.fallback) {
       return <>{props.fallback}</>;
     } else {
