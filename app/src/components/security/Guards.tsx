@@ -65,15 +65,18 @@ export const SystemRoleGuard: React.FC<ISystemRoleGuardProps & IGuardProps> = (p
  */
 export const ProjectRoleGuard: React.FC<IProjectParticipantGuardProps & IGuardProps> = (props) => {
   const { validProjectRoles } = props
-  const { participant, projectId } = useContext(ProjectParticipantGuardContext);
-  
+  const { participant, projectId, isReady } = useContext(ProjectParticipantGuardContext);
+
   const hasProjectRole = participant
     && participant.project_id === projectId
     && participant.project_role_names.some((roleName) => validProjectRoles.includes(roleName));
 
+  console.log('participant:', Boolean(participant))
+  console.log('participant.project_id === projectId')
+
   if (!hasProjectRole) {
-    console.log('User does not have role:', validProjectRoles);
-    console.log({ participant });
+    console.log('User does not have any of the needed roles in:', validProjectRoles);
+    console.log({ participant, projectId, isReady });
 
     if (props.fallback) {
       return <>{props.fallback}</>;

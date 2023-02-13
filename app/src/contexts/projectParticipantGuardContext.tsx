@@ -1,50 +1,63 @@
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetUserProjectParticipantResponse } from 'interfaces/useProjectApi.interface';
-import React, { useRef } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useParams } from 'react-router';
 
 export interface IProjectParticipantGuard {
   participant: IGetUserProjectParticipantResponse['participant'] | null;
   projectId: number;
-  isLoading: boolean;
+  isReady: boolean;
 }
 
 export const ProjectParticipantGuardContext = React.createContext<IProjectParticipantGuard>({
   participant: null,
   projectId: -1,
-  isLoading: false
+  isReady: false
 });
 
 export const ProjectParticipantGuardContextProvider: React.FC = (props) => {
   const biohubApi = useBiohubApi();
-  const [participant, setParticipant] = React.useState<IGetUserProjectParticipantResponse['participant'] | null>(null);
-  const isLoading = useRef<boolean>(false);
+  const [participant, setParticipant] = useState<IGetUserProjectParticipantResponse['participant'] | null>(null);
+  const [isReady, setIsReady] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const urlParams = useParams();
 
-  const projectId = Number(urlParams['id']);
-  console.log({ projectId })
+  const projectId: string | number | undefined = urlParams['id'];
+  console.log({ projectId, participant, isReady: isReady });
+
+  const fetchProjectParticipant = useCallback(async () => {
+
+    try {
+      const response = await biohubApi.project.getUserProjectParticipant(urlParams['id']);
+      if (!response.participant) {
+        return;
+      }
+  
+      setParticipant(response.participant);
+    } catch (error) {
+      setParticipant(null);
+    } finally {
+      setIsReady(true);
+      setIsLoading(false);
+    }
+  }, [biohubApi.project, urlParams])
 
   React.useEffect(() => {
-    if (!projectId || isLoading.current) {
-      return;
+    console.log([isLoading, participant, fetchProjectParticipant])
+
+    if (!isLoading && !participant) {
+      fetchProjectParticipant();
+      setIsLoading(true);
+      setIsReady(false);
     }
-
-    isLoading.current = true;
-
-    biohubApi.project.getUserProjectParticipant(projectId)
-      .then((response) => setParticipant(response.participant))
-      .catch((_error) => setParticipant(null))
-      .finally(() => {
-        isLoading.current = false;
-      });
-  }, [projectId]);
+  }, [isLoading, participant, fetchProjectParticipant]);
 
   return (
     <ProjectParticipantGuardContext.Provider
       value={{
         participant,
-        projectId,
-        isLoading: isLoading.current
+        projectId: Number(projectId),
+        isReady
       }}>
       {props.children}
     </ProjectParticipantGuardContext.Provider>

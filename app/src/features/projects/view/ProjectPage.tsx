@@ -68,7 +68,7 @@ const ProjectPage: React.FC = () => {
     }
   }, [isLoadingProject, projectWithDetails, getProject]);
 
-  if (!codes || !projectWithDetails || participantGuardContext.isLoading) {
+  if (!codes || !projectWithDetails || !participantGuardContext.isReady) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
