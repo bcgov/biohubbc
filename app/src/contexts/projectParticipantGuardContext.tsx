@@ -23,34 +23,33 @@ export const ProjectParticipantGuardContextProvider: React.FC = (props) => {
   const urlParams = useParams();
 
   const projectId: string | number | undefined = urlParams['id'];
-  console.log({ projectId, participant, isReady: isReady });
 
   const fetchProjectParticipant = useCallback(async () => {
-
+    console.log('fetchParticipants()')
     try {
+      console.log('try')
+      setIsReady(false);
+      setIsLoading(true);
       const response = await biohubApi.project.getUserProjectParticipant(urlParams['id']);
-      if (!response.participant) {
-        return;
-      }
-  
       setParticipant(response.participant);
     } catch (error) {
+      console.log('catch')
       setParticipant(null);
     } finally {
+      console.log('finally')
       setIsReady(true);
       setIsLoading(false);
     }
-  }, [biohubApi.project, urlParams])
+  }, [biohubApi.project.getUserProjectParticipant, urlParams])
 
   React.useEffect(() => {
-    console.log([isLoading, participant, fetchProjectParticipant])
-
-    if (!isLoading && !participant) {
+    console.log('urlParams changed:', urlParams)
+    if (!isLoading) {
       fetchProjectParticipant();
-      setIsLoading(true);
-      setIsReady(false);
     }
-  }, [isLoading, participant, fetchProjectParticipant]);
+  }, [urlParams]);
+
+  console.log({ projectId, participant, isReady });
 
   return (
     <ProjectParticipantGuardContext.Provider

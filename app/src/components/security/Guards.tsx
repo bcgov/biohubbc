@@ -77,7 +77,7 @@ export const ProjectRoleGuard: React.FC<IProjectParticipantGuardProps & IGuardPr
 
   const hasSystemRole = validSystemRoles && keycloakWrapper?.hasSystemRole(validSystemRoles);
 
-  const hasProjectRole = participant
+  const hasProjectRole = !!participant
     && participant.project_id === projectId
     && participant.project_role_names.some((roleName) => validProjectRoles.includes(roleName));
 

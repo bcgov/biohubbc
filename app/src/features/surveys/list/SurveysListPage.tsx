@@ -53,7 +53,7 @@ const SurveysListPage: React.FC<ISurveysListPageProps> = (props) => {
     <>
       <ProjectRoleGuard
         validProjectRoles={[PROJECT_ROLE.PROJECT_VIEWER, PROJECT_ROLE.PROJECT_EDITOR]}
-        validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR]}
+        validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN]}
       >
         <H2ButtonToolbar
           label="Surveys"
