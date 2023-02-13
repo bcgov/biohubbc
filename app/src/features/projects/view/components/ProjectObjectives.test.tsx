@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, getAllByText, render } from '@testing-library/react';
+import { cleanup, fireEvent, getAllByText, queryByText, render } from '@testing-library/react';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import React from 'react';
@@ -108,7 +108,7 @@ describe('ProjectObjectives', () => {
     expect(asFragment()).toMatchSnapshot();
   });
 
-  it('functions as expected with the read more and READ LESS buttons', () => {
+  it('toggles as expected with the Read More and Read Less buttons', () => {
     const { container } = render(
       <ProjectObjectives
         projectForViewData={{
@@ -120,20 +120,77 @@ describe('ProjectObjectives', () => {
       />
     );
 
-    // for finding 'project objectives'
     //@ts-ignore
-    expect(getAllByText(container, 'READ MORE...')[0]).toBeInTheDocument();
+    expect(getAllByText(container, 'Read More')[0]).toBeInTheDocument();
+    //@ts-ignore
+    fireEvent.click(getAllByText(container, 'Read More')[0]);
+    //@ts-ignore
+    expect(getAllByText(container, 'Read Less')[0]).toBeInTheDocument();
+    //@ts-ignore
+    fireEvent.click(getAllByText(container, 'Read Less')[0]);
+    //@ts-ignore
+    expect(getAllByText(container, 'Read More')[0]).toBeInTheDocument();
+  });
+
+  it('toggles as expected if the text contains no spaces', () => {
+    const { container } = render(
+      <ProjectObjectives
+        projectForViewData={{
+          ...getProjectForViewResponse,
+          objectives: { ...getProjectForViewResponse.objectives, objectives: 'a'.repeat(400) }
+        }}
+        codes={codes}
+        refresh={mockRefresh}
+      />
+    );
 
     //@ts-ignore
-    fireEvent.click(getAllByText(container, 'READ MORE...')[0]);
+    expect(getAllByText(container, 'Read More')[0]).toBeInTheDocument();
+    //@ts-ignore
+    fireEvent.click(getAllByText(container, 'Read More')[0]);
+    //@ts-ignore
+    expect(getAllByText(container, 'Read Less')[0]).toBeInTheDocument();
+    //@ts-ignore
+    fireEvent.click(getAllByText(container, 'Read Less')[0]);
+    //@ts-ignore
+    expect(getAllByText(container, 'Read More')[0]).toBeInTheDocument();
+  });
+
+  it('does not show the Read More or Read Less buttons if text is not long enough', () => {
+    const { container } = render(
+      <ProjectObjectives
+        projectForViewData={{
+          ...getProjectForViewResponse,
+          objectives: { ...getProjectForViewResponse.objectives, objectives: 'short text' }
+        }}
+        codes={codes}
+        refresh={mockRefresh}
+      />
+    );
 
     //@ts-ignore
-    expect(getAllByText(container, 'READ LESS')[0]).toBeInTheDocument();
+    expect(queryByText(container, 'Read More')).not.toBeInTheDocument();
 
     //@ts-ignore
-    fireEvent.click(getAllByText(container, 'READ LESS')[0]);
+    expect(queryByText(container, 'Read Less')).not.toBeInTheDocument();
+  });
+
+  it('does not show the Read More or Read Less buttons if text is not empty', () => {
+    const { container } = render(
+      <ProjectObjectives
+        projectForViewData={{
+          ...getProjectForViewResponse,
+          objectives: { ...getProjectForViewResponse.objectives, objectives: '' }
+        }}
+        codes={codes}
+        refresh={mockRefresh}
+      />
+    );
 
     //@ts-ignore
-    expect(getAllByText(container, 'READ MORE...')[0]).toBeInTheDocument();
+    expect(queryByText(container, 'Read More')).not.toBeInTheDocument();
+
+    //@ts-ignore
+    expect(queryByText(container, 'Read Less')).not.toBeInTheDocument();
   });
 });
