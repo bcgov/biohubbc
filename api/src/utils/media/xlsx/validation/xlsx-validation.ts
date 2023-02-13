@@ -1,4 +1,5 @@
 import { SUBMISSION_MESSAGE_TYPE } from '../../../../constants/status';
+import { safeTrim } from '../../../string-utils';
 import { CSVWorkBook, WorkBookValidator } from '../../csv/csv-file';
 
 export type ParentChildKeyMatchValidatorConfig = {
@@ -48,7 +49,7 @@ export const getParentChildKeyMatchValidator = (config?: ParentChildKeyMatchVali
     }
 
     // Filter column names to only check key violation on columns included in the child sheet
-    const filteredColumnNames = column_names.filter((columnName: string) => Boolean(childRowObjects[0][columnName]));
+    const filteredColumnNames = column_names.filter((columnName) => Boolean(childRowObjects[0][columnName]));
 
     /**
      * Encodes the column values for a worksheet at a given row into a string, which is used for comparison with another worksheet
@@ -66,7 +67,7 @@ export const getParentChildKeyMatchValidator = (config?: ParentChildKeyMatchVali
 
           // Escape possible column deliminator occurrences from column value string
           // Trim whitespace
-          .map((columnValue: string) => columnValue.trim())
+          .map(safeTrim)
 
           // Deliminate column values
           .join('|')

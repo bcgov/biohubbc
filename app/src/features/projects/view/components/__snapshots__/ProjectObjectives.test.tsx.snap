@@ -3,26 +3,44 @@
 exports[`ProjectObjectives renders correctly when both objectives and caveats have length is > 850 characters and are in multiple paragraphs 1`] = `
 <DocumentFragment>
   <div
-    class="MuiBox-root MuiBox-root-4"
+    class="MuiBox-root MuiBox-root-3"
   >
     <p
       class="MuiTypography-root MuiTypography-body1 MuiTypography-colorTextSecondary"
     >
-      Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa.
+      <span>
+        Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.
+ Donec
+      </span>
+      <span>
+        …
+      </span>
     </p>
     <div
-      class="MuiBox-root MuiBox-root-5"
+      class="MuiBox-root MuiBox-root-4"
     >
       <button
         class="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textSizeSmall MuiButton-sizeSmall"
-        style="color: rgb(117, 117, 117);"
+        style="color: rgb(117, 117, 117); font-weight: 600; text-transform: uppercase;"
         tabindex="0"
         type="button"
       >
         <span
           class="MuiButton-label"
         >
-          READ MORE...
+          <svg
+            role="presentation"
+            style="width: 1.5rem; height: 1.5rem;"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z"
+              style="fill: currentColor;"
+            />
+          </svg>
+          <span>
+            Read More
+          </span>
         </span>
         <span
           class="MuiTouchRipple-root"
@@ -35,30 +53,24 @@ exports[`ProjectObjectives renders correctly when both objectives and caveats ha
 
 exports[`ProjectObjectives renders correctly when objectives and caveats are < 850 characters and in multiple paragraphs 1`] = `
 <DocumentFragment>
-  <div
-    class="MuiBox-root MuiBox-root-6"
-  >
-    <p
-      class="MuiTypography-root MuiTypography-body1 MuiTypography-colorTextSecondary"
-    >
-      Paragraph1
-    </p>
-    <p
-      class="MuiTypography-root MuiTypography-body1 MuiTypography-colorTextSecondary"
-    >
-      Paragraph2
-    </p>
-    <p />
-    <p
-      class="MuiTypography-root MuiTypography-body1 MuiTypography-colorTextSecondary"
-    >
-      Paragraph3
-    </p>
-  </div>
+  <span>
+    Paragraph1
+Paragraph2
+
+Paragraph3
+  </span>
 </DocumentFragment>
 `;
 
 exports[`ProjectObjectives renders correctly when objectives length is <= 850 characters 1`] = `
+<DocumentFragment>
+  <span>
+    Et ad et in culpa si
+  </span>
+</DocumentFragment>
+`;
+
+exports[`ProjectObjectives renders correctly when objectives length is > 850 characters and caveats is empty 1`] = `
 <DocumentFragment>
   <div
     class="MuiBox-root MuiBox-root-1"
@@ -66,35 +78,39 @@ exports[`ProjectObjectives renders correctly when objectives length is <= 850 ch
     <p
       class="MuiTypography-root MuiTypography-body1 MuiTypography-colorTextSecondary"
     >
-      Et ad et in culpa si
-    </p>
-  </div>
-</DocumentFragment>
-`;
-
-exports[`ProjectObjectives renders correctly when objectives length is > 850 characters and caveats is empty 1`] = `
-<DocumentFragment>
-  <div
-    class="MuiBox-root MuiBox-root-2"
-  >
-    <p
-      class="MuiTypography-root MuiTypography-body1 MuiTypography-colorTextSecondary"
-    >
-      Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa.
+      <span>
+        Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.
+ Donec
+      </span>
+      <span>
+        …
+      </span>
     </p>
     <div
-      class="MuiBox-root MuiBox-root-3"
+      class="MuiBox-root MuiBox-root-2"
     >
       <button
         class="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textSizeSmall MuiButton-sizeSmall"
-        style="color: rgb(117, 117, 117);"
+        style="color: rgb(117, 117, 117); font-weight: 600; text-transform: uppercase;"
         tabindex="0"
         type="button"
       >
         <span
           class="MuiButton-label"
         >
-          READ MORE...
+          <svg
+            role="presentation"
+            style="width: 1.5rem; height: 1.5rem;"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z"
+              style="fill: currentColor;"
+            />
+          </svg>
+          <span>
+            Read More
+          </span>
         </span>
         <span
           class="MuiTouchRipple-root"
