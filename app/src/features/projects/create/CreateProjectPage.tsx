@@ -90,7 +90,7 @@ const CreateProjectPage: React.FC = () => {
     if (draftDataLoader.data?.data) {
       setFormikValues(draftDataLoader.data?.data);
     }
-  }, [draftDataLoader]);
+  }, [draftDataLoader.data]);
 
   // Whether or not to show the 'Save as draft' dialog
   const [openDraftDialog, setOpenDraftDialog] = useState(false);
@@ -170,9 +170,16 @@ const CreateProjectPage: React.FC = () => {
       const draftId = Number(queryParams.draftId) || draft?.id;
 
       if (draftId) {
-        response = await biohubApi.draft.updateDraft(draftId, values.draft_name, draftFormData);
+        response = await biohubApi.draft.updateDraft(
+          draftId,
+          draftFormData?.project?.project_name || values.draft_name,
+          draftFormData
+        );
       } else {
-        response = await biohubApi.draft.createDraft(values.draft_name, draftFormData);
+        response = await biohubApi.draft.createDraft(
+          draftFormData?.project?.project_name || values.draft_name,
+          draftFormData
+        );
       }
 
       setOpenDraftDialog(false);

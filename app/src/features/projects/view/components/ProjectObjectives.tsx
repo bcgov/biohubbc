@@ -19,7 +19,9 @@ const ProjectObjectives: React.FC<IProjectObjectivesProps> = (props) => {
     projectForViewData: { objectives }
   } = props;
 
-  return <ReadMoreField text={objectives.objectives} maxCharLength={200} />;
+  return (
+    <ReadMoreField text={objectives.objectives} maxCharLength={200} TypographyProps={{ color: 'textSecondary' }} />
+  );
 };
 
 export default ProjectObjectives;

@@ -31,18 +31,12 @@ exports[`ProjectDetails renders correctly 1`] = `
         <hr
           class="MuiDivider-root"
         />
-        <div
-          class="MuiBox-root MuiBox-root-8"
-        >
-          <p
-            class="MuiTypography-root MuiTypography-body1 MuiTypography-colorTextSecondary"
-          >
-            Et ad et in culpa si
-          </p>
-        </div>
+        <span>
+          Et ad et in culpa si
+        </span>
       </section>
       <section
-        class="MuiBox-root MuiBox-root-9"
+        class="MuiBox-root MuiBox-root-8"
       >
         <h4
           class="MuiTypography-root makeStyles-projectMetaSectionHeader-3 MuiTypography-body1"
@@ -53,7 +47,7 @@ exports[`ProjectDetails renders correctly 1`] = `
           class="MuiDivider-root"
         />
         <dl
-          class="MuiBox-root MuiBox-root-10"
+          class="MuiBox-root MuiBox-root-9"
         >
           <div
             class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-1"
@@ -104,7 +98,7 @@ exports[`ProjectDetails renders correctly 1`] = `
         </dl>
       </section>
       <section
-        class="MuiBox-root MuiBox-root-11"
+        class="MuiBox-root MuiBox-root-10"
       >
         <h4
           class="MuiTypography-root makeStyles-projectMetaSectionHeader-3 MuiTypography-body1"
@@ -115,7 +109,7 @@ exports[`ProjectDetails renders correctly 1`] = `
           class="MuiDivider-root"
         />
         <div
-          class="MuiBox-root MuiBox-root-12"
+          class="MuiBox-root MuiBox-root-11"
         >
           <div
             class="MuiTypography-root MuiTypography-body1"
@@ -140,7 +134,7 @@ exports[`ProjectDetails renders correctly 1`] = `
         </div>
       </section>
       <section
-        class="MuiBox-root MuiBox-root-13"
+        class="MuiBox-root MuiBox-root-12"
       >
         <h4
           class="MuiTypography-root makeStyles-projectMetaSectionHeader-3 MuiTypography-body1"
@@ -157,10 +151,10 @@ exports[`ProjectDetails renders correctly 1`] = `
             class="MuiListItem-root MuiListItem-divider"
           >
             <div
-              class="MuiBox-root MuiBox-root-15"
+              class="MuiBox-root MuiBox-root-14"
             >
               <div
-                class="MuiBox-root MuiBox-root-16"
+                class="MuiBox-root MuiBox-root-15"
               >
                 <span
                   class="MuiTypography-root MuiTypography-body1"
@@ -174,7 +168,7 @@ exports[`ProjectDetails renders correctly 1`] = `
                 </span>
               </div>
               <dl
-                class="MuiBox-root MuiBox-root-17 makeStyles-fundingSourceMeta-14"
+                class="MuiBox-root MuiBox-root-16 makeStyles-fundingSourceMeta-13"
               >
                 <div
                   class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-1"
@@ -228,7 +222,7 @@ exports[`ProjectDetails renders correctly 1`] = `
         </ul>
       </section>
       <section
-        class="MuiBox-root MuiBox-root-18"
+        class="MuiBox-root MuiBox-root-17"
       >
         <h4
           class="MuiTypography-root makeStyles-projectMetaSectionHeader-3 MuiTypography-body1"
@@ -239,13 +233,13 @@ exports[`ProjectDetails renders correctly 1`] = `
           class="MuiDivider-root"
         />
         <div
-          class="MuiBox-root MuiBox-root-19"
+          class="MuiBox-root MuiBox-root-18"
         >
           <dl
-            class="MuiBox-root MuiBox-root-21"
+            class="MuiBox-root MuiBox-root-20"
           >
             <div
-              class="MuiBox-root MuiBox-root-22"
+              class="MuiBox-root MuiBox-root-21"
             >
               <dt
                 class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
@@ -253,16 +247,16 @@ exports[`ProjectDetails renders correctly 1`] = `
                 Indigenous
               </dt>
               <dd
-                class="MuiTypography-root makeStyles-projectPartners-20 MuiTypography-body1"
+                class="MuiTypography-root makeStyles-projectPartners-19 MuiTypography-body1"
               >
                 First nations code
               </dd>
               <dd
-                class="MuiTypography-root makeStyles-projectPartners-20 MuiTypography-body1"
+                class="MuiTypography-root makeStyles-projectPartners-19 MuiTypography-body1"
               />
             </div>
             <div
-              class="MuiBox-root MuiBox-root-23"
+              class="MuiBox-root MuiBox-root-22"
             >
               <dt
                 class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
@@ -270,12 +264,12 @@ exports[`ProjectDetails renders correctly 1`] = `
                 Other Partnerships
               </dt>
               <dd
-                class="MuiTypography-root makeStyles-projectPartners-20 MuiTypography-body1"
+                class="MuiTypography-root makeStyles-projectPartners-19 MuiTypography-body1"
               >
                 partner 3
               </dd>
               <dd
-                class="MuiTypography-root makeStyles-projectPartners-20 MuiTypography-body1"
+                class="MuiTypography-root makeStyles-projectPartners-19 MuiTypography-body1"
               >
                 partner 4
               </dd>
@@ -284,7 +278,7 @@ exports[`ProjectDetails renders correctly 1`] = `
         </div>
       </section>
       <section
-        class="MuiBox-root MuiBox-root-24"
+        class="MuiBox-root MuiBox-root-23"
       >
         <h4
           class="MuiTypography-root makeStyles-projectMetaSectionHeader-3 MuiTypography-body1"

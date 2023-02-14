@@ -5,6 +5,7 @@ import Icon from '@mdi/react';
 import SurveysList from 'components/surveys/SurveysList';
 import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import { SurveyViewObject } from 'interfaces/useSurveyApi.interface';
 import React, { useEffect, useState } from 'react';
@@ -12,6 +13,7 @@ import { useHistory } from 'react-router';
 
 export interface ISurveysListPageProps {
   projectForViewData: IGetProjectForViewResponse;
+  codes: IGetAllCodeSetsResponse;
 }
 
 /**
@@ -23,7 +25,7 @@ const SurveysListPage: React.FC<ISurveysListPageProps> = (props) => {
   const history = useHistory();
   const biohubApi = useBiohubApi();
 
-  const { projectForViewData } = props;
+  const { projectForViewData, codes } = props;
 
   const [surveys, setSurveys] = useState<SurveyViewObject[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -59,7 +61,7 @@ const SurveysListPage: React.FC<ISurveysListPageProps> = (props) => {
       />
       <Divider></Divider>
       <Box px={1}>
-        <SurveysList projectId={projectForViewData.id} surveysList={surveys} />
+        <SurveysList projectId={projectForViewData.id} surveysList={surveys} codes={codes} />
       </Box>
     </>
   );
