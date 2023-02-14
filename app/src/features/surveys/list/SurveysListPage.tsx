@@ -1,4 +1,5 @@
 import Box from '@material-ui/core/Box';
+import Button from '@material-ui/core/Button';
 import Divider from '@material-ui/core/Divider';
 import { mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
@@ -51,19 +52,22 @@ const SurveysListPage: React.FC<ISurveysListPageProps> = (props) => {
 
   return (
     <>
-      <ProjectRoleGuard
-        validProjectRoles={[PROJECT_ROLE.PROJECT_VIEWER, PROJECT_ROLE.PROJECT_EDITOR]}
-        validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN]}
-      >
-        <H2ButtonToolbar
-          label="Surveys"
-          buttonLabel="Create Survey"
-          buttonTitle="Create Survey"
-          buttonStartIcon={<Icon path={mdiPlus} size={0.8} />}
-          buttonProps={{ variant: 'contained' }}
-          buttonOnClick={() => navigateToCreateSurveyPage(projectForViewData.id)}
-        />
-      </ProjectRoleGuard>
+      <H2ButtonToolbar
+        label="Surveys"
+        buttonLabel="Create Survey"
+        buttonTitle="Create Survey"
+        buttonStartIcon={<Icon path={mdiPlus} size={0.8} />}
+        buttonProps={{ variant: 'contained' }}
+        buttonOnClick={() => navigateToCreateSurveyPage(projectForViewData.id)}
+        renderButton={(buttonProps) => (
+          <ProjectRoleGuard
+            validProjectRoles={[PROJECT_ROLE.PROJECT_VIEWER, PROJECT_ROLE.PROJECT_EDITOR]}
+            validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN + '0' as SYSTEM_ROLE]}
+          >
+            <Button {...buttonProps} />
+          </ProjectRoleGuard>
+        )}
+      />
       <Divider></Divider>
       <Box px={1}>
         <SurveysList projectId={projectForViewData.id} surveysList={surveys} />

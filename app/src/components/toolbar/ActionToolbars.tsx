@@ -15,6 +15,7 @@ export interface ICustomButtonProps {
   buttonStartIcon: ReactNode;
   buttonEndIcon?: ReactNode;
   buttonProps?: Partial<ButtonProps> & { 'data-testid'?: string };
+  renderButton?: (buttonProps: Partial<ButtonProps>) => React.ReactNode
 }
 
 export interface IButtonToolbarProps extends ICustomButtonProps, IActionToolbarProps {}
@@ -22,22 +23,24 @@ export interface IButtonToolbarProps extends ICustomButtonProps, IActionToolbarP
 export const H3ButtonToolbar: React.FC<IButtonToolbarProps> = (props) => {
   const id = `h3-button-toolbar-${props.buttonLabel.replace(/\s/g, '')}`;
 
+  const buttonProps: Partial<ButtonProps> & { 'data-testid'?: string } = {
+    ...props.buttonProps,
+    id,
+    ['data-testid']: id,
+    variant: 'text',
+    color: 'primary',
+    className: 'sectionHeaderButton',
+    title: props.buttonTitle,
+    ['aria-label']: props.buttonTitle,
+    startIcon: props.buttonStartIcon,
+    endIcon: props.buttonEndIcon,
+    onClick: () => props.buttonOnClick(),
+    children: props.buttonLabel
+  }
+  console.log('props.renderButton:', Boolean(props.renderButton))
   return (
     <ActionToolbar label={props.label} labelProps={{ variant: 'h3' }} toolbarProps={props.toolbarProps}>
-      <Button
-        id={id}
-        data-testid={id}
-        variant="text"
-        color="primary"
-        className="sectionHeaderButton"
-        title={props.buttonTitle}
-        aria-label={props.buttonTitle}
-        startIcon={props.buttonStartIcon}
-        endIcon={props.buttonEndIcon}
-        onClick={() => props.buttonOnClick()}
-        {...props.buttonProps}>
-        {props.buttonLabel}
-      </Button>
+      {props.renderButton ? props.renderButton(buttonProps) : <Button {...buttonProps} />}
     </ActionToolbar>
   );
 };
