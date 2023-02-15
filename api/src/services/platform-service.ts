@@ -2,6 +2,7 @@ import AdmZip from 'adm-zip';
 import axios from 'axios';
 import FormData from 'form-data';
 import { URL } from 'url';
+import { v4 as uuidV4 } from 'uuid';
 import { HTTP400 } from '../errors/http-error';
 import { getFileFromS3 } from '../utils/file-utils';
 import { DBService } from './db-service';
@@ -9,31 +10,58 @@ import { EmlService } from './eml-service';
 import { KeycloakService } from './keycloak-service';
 import { SurveyService } from './survey-service';
 
+export interface IArchiveFile {
+  /**
+   * Raw file data
+   */
+  data: Buffer;
+  /**
+   * The name of the archive file.
+   */
+  fileName: string;
+  /**
+   * The mime type, should be `application/zip` or similar.
+   */
+  mimeType: string;
+}
+
 export interface IDwCADataset {
-  archiveFile: {
-    /**
-     * A Darwin Core Archive (DwCA) zip file.
-     */
-    data: Buffer;
-    /**
-     * The name of the archive file.
-     */
-    fileName: string;
-    /**
-     * The mime type, should be `application/zip` or similar.
-     */
-    mimeType: string;
-  };
+  /**
+   * A Darwin Core Archive (DwCA) zip file.
+   */
+  archiveFile: IArchiveFile;
   /**
    * A UUID that uniquely identifies this DwCA dataset.
    */
   dataPackageId: string;
 }
 
+export interface IArtifactMetadata {
+  file_type: string;
+  title?: string;
+  description?: string;
+}
+
+export interface IArtifact {
+  /**
+   * An artifact zip file.
+   */
+  archiveFile: IArchiveFile;
+  /**
+   * UUID that uniquely identifies the artifact
+   */
+  dataPackageId: string;
+
+  metadata: IArtifactMetadata & {
+    file_name: string;
+    file_size: number;
+  };
+}
 export class PlatformService extends DBService {
   BACKBONE_INTAKE_ENABLED = process.env.BACKBONE_INTAKE_ENABLED === 'true' || false;
   BACKBONE_API_HOST = process.env.BACKBONE_API_HOST;
   BACKBONE_INTAKE_PATH = process.env.BACKBONE_INTAKE_PATH || '/api/dwc/submission/intake';
+  BACKBONE_ARTIFACT_INTAKE_PATH = process.env.BACKBONE_ARTIFACT_INTAKE_PATH || '/api/artifact/intake';
 
   /**
    * Submit a Darwin Core Archive (DwCA) data package, that only contains the project/survey metadata, to the BioHub
@@ -188,5 +216,61 @@ export class PlatformService extends DBService {
     };
 
     return this._submitDwCADatasetToBioHubBackbone(dwCADataset);
+  }
+
+  async uploadArtifactsToBioHub(dataPackageId: string, artifacts: { file: Express.Multer.File, metadata: IArtifactMetadata}[]): Promise<{artifact_id: number}[]> {
+    const promises = artifacts.map((artifact) => {
+      const artifactZip = new AdmZip();
+      artifactZip.addFile(artifact.file.originalname, artifact.file.buffer);
+
+      const artifactUuid = uuidV4();
+
+      return this._submitArtifactToBioHub({
+        dataPackageId,
+        archiveFile: {
+          data: artifactZip.toBuffer(),
+          fileName: `${artifactUuid}.zip`,
+          mimeType: 'application/zip'
+        },
+        metadata: {
+          ...artifact.metadata,
+          file_name: artifact.file.originalname,
+          file_size: artifact.file.size
+        },
+      });
+    });
+
+    return Promise.all(promises);
+  }
+
+  async _submitArtifactToBioHub(artifact: IArtifact): Promise<{ artifact_id : number }> {
+    const keycloakService = new KeycloakService();
+
+    const token = await keycloakService.getKeycloakToken();
+
+    const formData = new FormData();
+
+    formData.append('media', artifact.archiveFile.data, {
+      filename: artifact.archiveFile.fileName,
+      contentType: artifact.archiveFile.mimeType
+    });
+
+    formData.append('data_package_id', artifact.dataPackageId);
+
+    Object.entries(artifact.metadata)
+      .forEach(([metadataKey, metadataValue]) => {
+        formData.append(`metadata[${metadataKey}]`, metadataValue)
+      });
+
+    const backboneArtifactIntakeUrl = new URL(this.BACKBONE_ARTIFACT_INTAKE_PATH, this.BACKBONE_API_HOST).href;
+
+    const { data } = await axios.post<{ artifact_id: number }>(backboneArtifactIntakeUrl, formData.getBuffer(), {
+      headers: {
+        authorization: `Bearer ${token}`,
+        ...formData.getHeaders()
+      }
+    });
+
+    return data;
   }
 }
