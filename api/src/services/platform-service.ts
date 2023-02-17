@@ -207,15 +207,15 @@ export class PlatformService extends DBService {
     const queueResponse = await this._submitDwCADatasetToBioHubBackbone(dwCADataset);
 
     Promise.all([
-      publishRepo.insertProjectMetadataRecord({
+      publishRepo.insertProjectMetadataPublishRecord({
         project_id: projectId,
         queue_id: queueResponse.queue_id
       }),
-      publishRepo.insertSurveyMetadataRecord({
+      publishRepo.insertSurveyMetadataPublishRecord({
         survey_id: surveyId,
         queue_id: queueResponse.queue_id
       }),
-      publishRepo.insertOccurrenceSubmissionRecord({
+      publishRepo.insertOccurrenceSubmissionPublishRecord({
         occurrence_submission_id: surveyData.id,
         queue_id: queueResponse.queue_id
       })
