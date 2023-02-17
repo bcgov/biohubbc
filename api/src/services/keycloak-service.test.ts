@@ -9,7 +9,6 @@ chai.use(sinonChai);
 
 describe('KeycloakService', () => {
   beforeEach(() => {
-    process.env.KEYCLOAK_ADMIN_HOST = 'host';
     process.env.KEYCLOAK_REALM = 'realm';
     process.env.KEYCLOAK_API_HOST = 'api-host';
     process.env.KEYCLOAK_ADMIN_USERNAME = 'admin';

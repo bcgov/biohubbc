@@ -70,9 +70,6 @@ parameters:
   - name: KEYCLOAK_CLIENT_ID
     description: Client Id for application
     required: true
-  - name: KEYCLOAK_ADMIN_HOST
-    description: Keycloak admin host
-    required: true
   - name: KEYCLOAK_ADMIN_USERNAME
     description: keycloak host admin username
     required: true
@@ -221,8 +218,6 @@ objects:
                   value: ${KEYCLOAK_CLIENT_ID}
                 - name: KEYCLOAK_INTEGRATION_ID
                   value: ${KEYCLOAK_INTEGRATION_ID}
-                - name: KEYCLOAK_ADMIN_HOST
-                  value: ${KEYCLOAK_ADMIN_HOST}
                 - name: KEYCLOAK_ADMIN_USERNAME
                   value: ${KEYCLOAK_ADMIN_USERNAME}
                 - name: KEYCLOAK_ADMIN_PASSWORD
