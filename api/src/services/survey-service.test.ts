@@ -16,7 +16,8 @@ import {
   GetSurveyFundingSources,
   GetSurveyLocationData,
   GetSurveyProprietorData,
-  GetSurveyPurposeAndMethodologyData
+  GetSurveyPurposeAndMethodologyData,
+  SurveyObject
 } from '../models/survey-view';
 import { IPermitModel } from '../repositories/permit-repository';
 import {
@@ -26,6 +27,7 @@ import {
 } from '../repositories/survey-repository';
 import { getMockDBConnection } from '../__mocks__/db';
 import { PermitService } from './permit-service';
+import { PlatformService } from './platform-service';
 import { SurveyService } from './survey-service';
 import { TaxonomyService } from './taxonomy-service';
 
@@ -108,6 +110,12 @@ describe('SurveyService', () => {
       const updateSurveyProprietorDataStub = sinon
         .stub(SurveyService.prototype, 'updateSurveyProprietorData')
         .resolves();
+      const getSurveyByIdStub = sinon
+        .stub(SurveyService.prototype, 'getSurveyById')
+        .resolves(({ survey_details: { project_id: 1 } } as unknown) as SurveyObject);
+      const submitDwCAMetadataPackageStub = sinon
+        .stub(PlatformService.prototype, 'submitDwCAMetadataPackage')
+        .resolves();
 
       const surveyService = new SurveyService(dbConnectionObj);
 
@@ -122,6 +130,8 @@ describe('SurveyService', () => {
       expect(updateSurveyPermitDataStub).not.to.have.been.called;
       expect(updateSurveyFundingDataStub).not.to.have.been.called;
       expect(updateSurveyProprietorDataStub).not.to.have.been.called;
+      expect(getSurveyByIdStub).to.have.been.called;
+      expect(submitDwCAMetadataPackageStub).to.have.been.called;
     });
 
     it('updates everything when all data provided', async () => {
@@ -137,7 +147,12 @@ describe('SurveyService', () => {
       const updateSurveyProprietorDataStub = sinon
         .stub(SurveyService.prototype, 'updateSurveyProprietorData')
         .resolves();
-
+      const getSurveyByIdStub = sinon
+        .stub(SurveyService.prototype, 'getSurveyById')
+        .resolves(({ survey_details: { project_id: 1 } } as unknown) as SurveyObject);
+      const submitDwCAMetadataPackageStub = sinon
+        .stub(PlatformService.prototype, 'submitDwCAMetadataPackage')
+        .resolves();
       const surveyService = new SurveyService(dbConnectionObj);
 
       const surveyId = 2;
@@ -159,6 +174,8 @@ describe('SurveyService', () => {
       expect(updateSurveyPermitDataStub).to.have.been.calledOnce;
       expect(updateSurveyFundingDataStub).to.have.been.calledOnce;
       expect(updateSurveyProprietorDataStub).to.have.been.calledOnce;
+      expect(getSurveyByIdStub).to.have.been.called;
+      expect(submitDwCAMetadataPackageStub).to.have.been.called;
     });
   });
 
