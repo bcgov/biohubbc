@@ -10,6 +10,7 @@ jobs:
   scaleDownPods:
     name: Scale down the pods for this PR
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     env:
       BUILD_ID: ${{ github.event.number }}
     steps:
@@ -20,6 +21,4 @@ jobs:
         run: oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
 
       - name: Scale down
-        run: |
-          oc project af2668-dev
-          oc get deploymentconfig --selector env-id=$BUILD_ID -o name | awk '{print "oc scale --replicas=0  " $1}' | bash
+        run: oc get deploymentconfig --namespace af2668-dev --selector env-id=$BUILD_ID -o name | awk '{print "oc scale --replicas=0  " $1}' | bash

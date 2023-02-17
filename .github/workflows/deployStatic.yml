@@ -15,6 +15,7 @@ jobs:
   checkEnv:
     name: Print Env variables
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     if: ${{ github.event.pull_request.merged == true }}
     steps:
       - name: Print Env Vars
@@ -34,9 +35,12 @@ jobs:
   scaleDownPods:
     name: Scale down the pods for this PR
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     if: ${{ github.event.pull_request.merged == true }}
     env:
       PR_NUMBER: ${{ github.event.number }}
+    needs:
+      - checkEnv
     steps:
       # Log in to OpenShift.
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
@@ -45,20 +49,21 @@ jobs:
         run: oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
 
       - name: Scale down
-        run: |
-          oc project af2668-dev
-          oc get deploymentconfig --selector env-id=$PR_NUMBER -o name | awk '{print "oc scale --replicas=0  " $1}' | bash
+        run: oc get deploymentconfig --namespace af2668-dev --selector env-id=$PR_NUMBER -o name | awk '{print "oc scale --replicas=0  " $1}' | bash
 
   # Checkout the repo once and cache it for use in subsequent jobs
   checkoutRepo:
     name: Checkout and cache target branch
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     if: ${{ github.event.pull_request.merged == true }}
     env:
       PR_NUMBER: ${{ github.event.number }}
+    needs:
+      - checkEnv
     steps:
       # Install Node - for `node` and `npm` commands
-      # Note: already uses actions/cache internally, so repeat calls are not a performance hit
+      # Note: This already uses actions/cache internally, so repeat calls in subsequent jobs are not a performance hit
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
@@ -79,13 +84,12 @@ jobs:
           # Cache repo based on the commit sha that triggered the workflow
           path: ${{ github.workspace }}/*
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
 
-  # Build the Database image
-  buildDatabase:
-    name: Build Database Image
+  # Build the web frontend app image
+  buildAPP:
+    name: Build APP Image
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     if: ${{ github.event.pull_request.merged == true }}
     env:
       PR_NUMBER: ${{ github.event.number }}
@@ -108,8 +112,6 @@ jobs:
         with:
           path: ${{ github.workspace }}/*
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
 
       # Checkout the branch if not restored via cache
       - name: Checkout Target Branch
@@ -117,14 +119,14 @@ jobs:
         uses: actions/checkout@v3
 
       # Cache Node modules
-      - name: Cache node modules
+      - name: Cache app pipeline node modules
         uses: actions/cache@v3
         env:
-          cache-name: cache-node-modules
+          cache-name: cache-app-pipeline-node-modules
         with:
           # npm cache files are stored in `~/.npm` on Linux/macOS
           path: ~/.npm
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('*/package-lock.json') }}
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('app/.pipeline/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-
 
@@ -134,17 +136,84 @@ jobs:
       - name: Log in to OpenShift
         run: oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
 
+      # Install app pipeline node modules
+      - name: Install app pipeline node modules
+        working-directory: "app/.pipeline/"
+        run: npm install --only=production
+
+      # Build the app image
+      - name: Build APP Image
+        working-directory: "app/.pipeline/"
+        run: |
+          DEBUG=* npm run build -- --pr=$PR_NUMBER --branch=$BRANCH --type=static
+
+  # Build the Database image
+  buildDatabase:
+    name: Build Database Image
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    if: ${{ github.event.pull_request.merged == true }}
+    env:
+      PR_NUMBER: ${{ github.event.number }}
+      BRANCH: ${{ github.base_ref }}
+    needs:
+      - checkoutRepo
+    steps:
+      # Install Node - for `node` and `npm` commands
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 14
+
+      # Load repo from cache
+      - name: Cache repo
+        uses: actions/cache@v3
+        id: cache-repo
+        env:
+          cache-name: cache-repo
+        with:
+          path: ${{ github.workspace }}/*
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
+
+      # Checkout the branch if not restored via cache
+      - name: Checkout Target Branch
+        if: steps.cache-repo.outputs.cache-hit != 'true'
+        uses: actions/checkout@v3
+
+      # Cache Node modules
+      - name: Cache database pipeline node modules
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-database-pipeline-node-modules
+        with:
+          # npm cache files are stored in `~/.npm` on Linux/macOS
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('database/.pipeline/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+
+      # Log in to OpenShift.
+      # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
+      # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
+      - name: Log in to OpenShift
+        run: oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
+
+      # Install database pipeline node modules
+      - name: Install database pipeline node modules
+        working-directory: "database/.pipeline/"
+        run: npm install --only=production
+
       # Build the database image
       - name: Build Database Image
-        working-directory: "./database/.pipeline/"
+        working-directory: "database/.pipeline/"
         run: |
-          npm ci --only=production
           DEBUG=* npm run db:build -- --pr=$PR_NUMBER --branch=$BRANCH --type=static
 
   # Build the Database Setup image
   buildDatabaseSetup:
     name: Build Database Setup Image
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     if: ${{ github.event.pull_request.merged == true }}
     env:
       PR_NUMBER: ${{ github.event.number }}
@@ -167,8 +236,6 @@ jobs:
         with:
           path: ${{ github.workspace }}/*
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
 
       # Checkout the branch if not restored via cache
       - name: Checkout Target Branch
@@ -176,14 +243,14 @@ jobs:
         uses: actions/checkout@v3
 
       # Cache Node modules
-      - name: Cache node modules
+      - name: Cache database pipeline node modules
         uses: actions/cache@v3
         env:
-          cache-name: cache-node-modules
+          cache-name: cache-database-pipeline-node-modules
         with:
           # npm cache files are stored in `~/.npm` on Linux/macOS
           path: ~/.npm
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('*/package-lock.json') }}
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('database/.pipeline/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-
 
@@ -193,17 +260,22 @@ jobs:
       - name: Log in to OpenShift
         run: oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
 
+      # Install database pipeline node modules
+      - name: Install database pipeline node modules
+        working-directory: "database/.pipeline/"
+        run: npm install --only=production
+
       # Build the database image
       - name: Build Database Setup Image
-        working-directory: "./database/.pipeline/"
+        working-directory: "database/.pipeline/"
         run: |
-          npm ci --only=production
           DEBUG=* npm run db-setup:build -- --pr=$PR_NUMBER --branch=$BRANCH --type=static
 
   # Build the API image
   buildAPI:
     name: Build API Image
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     if: ${{ github.event.pull_request.merged == true }}
     env:
       PR_NUMBER: ${{ github.event.number }}
@@ -226,8 +298,6 @@ jobs:
         with:
           path: ${{ github.workspace }}/*
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
 
       # Checkout the branch if not restored via cache
       - name: Checkout Target Branch
@@ -235,14 +305,14 @@ jobs:
         uses: actions/checkout@v3
 
       # Cache Node modules
-      - name: Cache node modules
+      - name: Cache api pipeline node modules
         uses: actions/cache@v3
         env:
-          cache-name: cache-node-modules
+          cache-name: cache-api-pipeline-node-modules
         with:
           # npm cache files are stored in `~/.npm` on Linux/macOS
           path: ~/.npm
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('*/package-lock.json') }}
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('api/.pipeline/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-
 
@@ -251,24 +321,30 @@ jobs:
       # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
       - name: Log in to OpenShift
         run: oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
+
+      # Install api pipeline node modules
+      - name: Install api pipeline node modules
+        working-directory: "api/.pipeline/"
+        run: npm install --only=production
 
       # Build the api image
       - name: Build API Image
-        working-directory: "./api/.pipeline/"
+        working-directory: "api/.pipeline/"
         run: |
-          npm ci --only=production
           DEBUG=* npm run build -- --pr=$PR_NUMBER --branch=$BRANCH --type=static
 
-  # Build the web frontend app
-  buildAPP:
-    name: Build APP Image
+  # Deploy APP image
+  deployAPP:
+    name: Deploy APP Image
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     if: ${{ github.event.pull_request.merged == true }}
     env:
       PR_NUMBER: ${{ github.event.number }}
       BRANCH: ${{ github.base_ref }}
     needs:
-      - checkoutRepo
+      - scaleDownPods
+      - buildAPP
     steps:
       # Install Node - for `node` and `npm` commands
       - name: Setup Node.js
@@ -285,8 +361,6 @@ jobs:
         with:
           path: ${{ github.workspace }}/*
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
 
       # Checkout the branch if not restored via cache
       - name: Checkout Target Branch
@@ -294,14 +368,14 @@ jobs:
         uses: actions/checkout@v3
 
       # Cache Node modules
-      - name: Cache node modules
+      - name: Cache app pipeline node modules
         uses: actions/cache@v3
         env:
-          cache-name: cache-node-modules
+          cache-name: cache-app-pipeline-node-modules
         with:
           # npm cache files are stored in `~/.npm` on Linux/macOS
           path: ~/.npm
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('*/package-lock.json') }}
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('app/.pipeline/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-
 
@@ -311,17 +385,22 @@ jobs:
       - name: Log in to OpenShift
         run: oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
 
-      # Build the app image
-      - name: Build APP Image
-        working-directory: "./app/.pipeline/"
+      # Install app pipeline node modules
+      - name: Install app pipeline node modules
+        working-directory: "app/.pipeline"
+        run: npm install --only=production
+
+      # Deploy the app image
+      - name: Deploy APP Image
+        working-directory: "app/.pipeline"
         run: |
-          npm ci --only=production
-          DEBUG=* npm run build -- --pr=$PR_NUMBER --branch=$BRANCH --type=static
+          DEBUG=* npm run deploy -- --pr=$PR_NUMBER --env=$BRANCH --branch=$BRANCH --type=static
 
   # Deploy Database image
   deployDatabase:
     name: Deploy Database Image
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     if: ${{ github.event.pull_request.merged == true }}
     env:
       PR_NUMBER: ${{ github.event.number }}
@@ -345,8 +424,6 @@ jobs:
         with:
           path: ${{ github.workspace }}/*
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
 
       # Checkout the branch if not restored via cache
       - name: Checkout Target Branch
@@ -354,14 +431,14 @@ jobs:
         uses: actions/checkout@v3
 
       # Cache Node modules
-      - name: Cache node modules
+      - name: Cache database pipeline node modules
         uses: actions/cache@v3
         env:
-          cache-name: cache-node-modules
+          cache-name: cache-database-pipeline-node-modules
         with:
           # npm cache files are stored in `~/.npm` on Linux/macOS
           path: ~/.npm
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('*/package-lock.json') }}
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('database/.pipeline/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-
 
@@ -371,17 +448,22 @@ jobs:
       - name: Log in to OpenShift
         run: oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
 
+      # Install database pipeline node modules
+      - name: Install database pipeline node modules
+        working-directory: "database/.pipeline/"
+        run: npm install --only=production
+
       # Deploy the database image
       - name: Deploy Database Image
-        working-directory: "./database/.pipeline/"
+        working-directory: "database/.pipeline/"
         run: |
-          npm ci --only=production
           DEBUG=* npm run db:deploy -- --pr=$PR_NUMBER --env=$BRANCH --branch=$BRANCH --type=static
 
   # Deploy Database setup image
   deployDatabaseSetup:
     name: Deploy Database Setup Image
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     if: ${{ github.event.pull_request.merged == true }}
     env:
       PR_NUMBER: ${{ github.event.number }}
@@ -406,8 +488,6 @@ jobs:
         with:
           path: ${{ github.workspace }}/*
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
 
       # Checkout the branch if not restored via cache
       - name: Checkout Target Branch
@@ -415,14 +495,14 @@ jobs:
         uses: actions/checkout@v3
 
       # Cache Node modules
-      - name: Cache node modules
+      - name: Cache database pipeline node modules
         uses: actions/cache@v3
         env:
-          cache-name: cache-node-modules
+          cache-name: cache-database-pipeline-node-modules
         with:
           # npm cache files are stored in `~/.npm` on Linux/macOS
           path: ~/.npm
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('*/package-lock.json') }}
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('database/.pipeline/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-
 
@@ -432,17 +512,22 @@ jobs:
       - name: Log in to OpenShift
         run: oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
 
+      # Install database pipeline node modules
+      - name: Install database pipeline node modules
+        working-directory: "database/.pipeline/"
+        run: npm install --only=production
+
       # Deploy the database setup image
       - name: Deploy Database Setup Image
-        working-directory: "./database/.pipeline/"
+        working-directory: "database/.pipeline/"
         run: |
-          npm ci --only=production
           DEBUG=* npm run db-setup:deploy -- --pr=$PR_NUMBER --env=$BRANCH --branch=$BRANCH --type=static
 
   # Deploy API image
   deployAPI:
     name: Deploy API Image
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     if: ${{ github.event.pull_request.merged == true }}
     env:
       PR_NUMBER: ${{ github.event.number }}
@@ -467,8 +552,6 @@ jobs:
         with:
           path: ${{ github.workspace }}/*
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
 
       # Checkout the branch if not restored via cache
       - name: Checkout Target Branch
@@ -476,14 +559,14 @@ jobs:
         uses: actions/checkout@v3
 
       # Cache Node modules
-      - name: Cache node modules
+      - name: Cache api pipeline node modules
         uses: actions/cache@v3
         env:
-          cache-name: cache-node-modules
+          cache-name: cache-api-pipeline-node-modules
         with:
           # npm cache files are stored in `~/.npm` on Linux/macOS
           path: ~/.npm
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('*/package-lock.json') }}
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('api/.pipeline/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-
 
@@ -492,99 +575,23 @@ jobs:
       # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
       - name: Log in to OpenShift
         run: oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
+
+      # Install api pipeline node modules
+      - name: Install api pipeline node modules
+        working-directory: "api/.pipeline/"
+        run: npm install --only=production
 
       # Deploy the api image
       - name: Deploy API Image
-        working-directory: "./api/.pipeline/"
+        working-directory: "api/.pipeline/"
         run: |
-          npm ci --only=production
           DEBUG=* npm run deploy -- --pr=$PR_NUMBER --env=$BRANCH --branch=$BRANCH --type=static
-
-  # Deploy APP image
-  deployAPP:
-    name: Deploy APP Image
-    runs-on: ubuntu-latest
-    if: ${{ github.event.pull_request.merged == true }}
-    env:
-      PR_NUMBER: ${{ github.event.number }}
-      BRANCH: ${{ github.base_ref }}
-    needs:
-      - scaleDownPods
-      - buildAPP
-    steps:
-      # Install Node - for `node` and `npm` commands
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 14
-
-      # Load repo from cache
-      - name: Cache repo
-        uses: actions/cache@v3
-        id: cache-repo
-        env:
-          cache-name: cache-repo
-        with:
-          path: ${{ github.workspace }}/*
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
-
-      # Checkout the branch if not restored via cache
-      - name: Checkout Target Branch
-        if: steps.cache-repo.outputs.cache-hit != 'true'
-        uses: actions/checkout@v3
-
-      # Cache Node modules
-      - name: Cache node modules
-        uses: actions/cache@v3
-        env:
-          cache-name: cache-node-modules
-        with:
-          # npm cache files are stored in `~/.npm` on Linux/macOS
-          path: ~/.npm
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('*/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-
-      # Log in to OpenShift.
-      # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
-      # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
-      - name: Log in to OpenShift
-        run: oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
-
-      # Deploy the app image
-      - name: Deploy APP Image
-        working-directory: "./app/.pipeline"
-        run: |
-          npm ci --only=production
-          DEBUG=* npm run deploy -- --pr=$PR_NUMBER --env=$BRANCH --branch=$BRANCH --type=static
-
-  cycleschemaspy:
-    name: Cycle SchemaSpy to refresh after database update in dev
-    runs-on: ubuntu-latest
-    if: ${{ github.event.pull_request.merged == true && github.base_ref == 'dev' }}
-    env:
-      PR_NUMBER: ${{ github.event.number }}
-    needs:
-      - deployDatabaseSetup
-    steps:
-      # Log in to OpenShift.
-      # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
-      # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
-      - name: Log in to OpenShift
-        run: oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
-
-      - name: Scale down
-        run: |
-          oc project af2668-dev
-          oc scale --replicas=0 dc schemaspy
-          oc scale --replicas=1 dc schemaspy
 
   # Clean build/deployment artifacts
   clean:
     name: Clean Build/Deployment Artifacts
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     if: ${{ github.event.pull_request.merged == true }}
     needs:
       - deployDatabase
@@ -610,25 +617,11 @@ jobs:
         with:
           path: ${{ github.workspace }}/*
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
 
       # Checkout the branch if not restored via cache
       - name: Checkout Target Branch
         if: steps.cache-repo.outputs.cache-hit != 'true'
         uses: actions/checkout@v3
-
-      # Cache Node modules
-      - name: Cache node modules
-        uses: actions/cache@v3
-        env:
-          cache-name: cache-node-modules
-        with:
-          # npm cache files are stored in `~/.npm` on Linux/macOS
-          path: ~/.npm
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('*/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
 
       # Log in to OpenShift.
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
@@ -636,34 +629,70 @@ jobs:
       - name: Log in to OpenShift
         run: oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
 
+      # Cache Node modules
+      - name: Cache app pipeline node modules
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-app-pipeline-node-modules
+        with:
+          # npm cache files are stored in `~/.npm` on Linux/macOS
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('app/.pipeline/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+
+      # Clean the app deployment artifacts
+      - name: Clean APP Deployment
+        working-directory: "app/.pipeline/"
+        run: |
+          npm install --only=production
+          DEBUG=* npm run clean -- --pr=$PR_NUMBER --env=build
+          DEBUG=* npm run clean -- --pr=$PR_NUMBER --env=dev
+
+      # Cache Node modules
+      - name: Cache database pipeline node modules
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-database-pipeline-node-modules
+        with:
+          # npm cache files are stored in `~/.npm` on Linux/macOS
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('database/.pipeline/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+
       # Clean the database build/deployment artifacts
       - name: Clean Database Artifacts
-        working-directory: "./database/.pipeline/"
+        working-directory: "database/.pipeline/"
         run: |
-          npm ci --only=production
+          npm install --only=production
           DEBUG=* npm run clean -- --pr=$PR_NUMBER --env=build
           DEBUG=* npm run clean -- --pr=$PR_NUMBER --env=dev
 
-      # Clean the api build/deployment artifacts
-      - name: Clean API Artifacts
-        working-directory: "./api/.pipeline/"
-        run: |
-          npm ci --only=production
-          DEBUG=* npm run clean -- --pr=$PR_NUMBER --env=build
-          DEBUG=* npm run clean -- --pr=$PR_NUMBER --env=dev
+      # Cache Node modules
+      - name: Cache api pipeline node modules
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-api-pipeline-node-modules
+        with:
+          # npm cache files are stored in `~/.npm` on Linux/macOS
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('api/.pipeline/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
 
-      # Clean the app build/deployment artifacts
-      - name: Clean APP Artifacts
-        working-directory: "./app/.pipeline/"
+      # Clean the api deployment artifacts
+      - name: Clean API Deployment
+        working-directory: "api/.pipeline/"
         run: |
-          npm ci --only=production
+          npm install --only=production
           DEBUG=* npm run clean -- --pr=$PR_NUMBER --env=build
           DEBUG=* npm run clean -- --pr=$PR_NUMBER --env=dev
 
       # Clean the reamaining build/deployment artifacts
       - name: Clean remaining Artifacts
+        env:
+          POD_SELECTOR: biohubbc
         run: |
-          oc project af2668-dev
-          oc get all,pvc,secret,pods,ReplicationController,DeploymentConfig,HorizontalPodAutoscaler,imagestreamtag -o name | grep biohubbc | grep $PR_NUMBER | awk '{print "oc delete " $1}' | bash
-          oc project af2668-tools
-          oc get all,pvc,secret,pods,ReplicationController,DeploymentConfig,HorizontalPodAutoscaler,imagestreamtag -o name | grep biohubbc | grep $PR_NUMBER | awk '{print "oc delete " $1}' | bash
+          oc --namespace af2668-dev   get all,pvc,secret,pods,ReplicationController,DeploymentConfig,HorizontalPodAutoscaler,imagestreamtag -o name | grep $POD_SELECTOR | grep $PR_NUMBER | awk '{print "oc delete " $1}' | bash
+          oc --namespace af2668-tools get all,pvc,secret,pods,ReplicationController,DeploymentConfig,HorizontalPodAutoscaler,imagestreamtag -o name | grep $POD_SELECTOR | grep $PR_NUMBER | awk '{print "oc delete " $1}' | bash
