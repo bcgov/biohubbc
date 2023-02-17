@@ -51,7 +51,7 @@ export class PlatformService extends DBService {
    * @memberof PlatformService
    */
   async submitDwCAMetadataPackage(projectId: number) {
-    console.log("SUBMIT META DATA PACKAGE")
+    console.log('SUBMIT META DATA PACKAGE');
     if (!this.BACKBONE_INTAKE_ENABLED) {
       return;
     }
@@ -86,7 +86,7 @@ export class PlatformService extends DBService {
    * @memberof PlatformService
    */
   async submitDwCADataPackage(projectId: number) {
-    console.log("SUBMIT DATA PACKAGE")
+    console.log('SUBMIT DATA PACKAGE');
     if (!this.BACKBONE_INTAKE_ENABLED) {
       return;
     }
@@ -203,7 +203,7 @@ export class PlatformService extends DBService {
         queue_id: queueResponse.queue_id
       }),
       publishRepo.insertOccurrenceSubmissionRecord({
-        occurrence_submission_id: surveyData.id, 
+        occurrence_submission_id: surveyData.id,
         queue_id: queueResponse.queue_id
       })
     ]);

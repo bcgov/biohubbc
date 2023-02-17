@@ -45,7 +45,7 @@ describe('PlatformService', () => {
 
       const _submitDwCADatasetToBioHubBackboneStub = sinon
         .stub(PlatformService.prototype, '_submitDwCADatasetToBioHubBackbone')
-        .resolves({ data_package_id: '123-456-789' });
+        .resolves({ queue_id: 1 });
 
       const platformService = new PlatformService(mockDBConnection);
 
@@ -91,7 +91,7 @@ describe('PlatformService', () => {
 
       const _submitDwCADatasetToBioHubBackboneStub = sinon
         .stub(PlatformService.prototype, '_submitDwCADatasetToBioHubBackbone')
-        .resolves({ data_package_id: '123-456-789' });
+        .resolves({ queue_id: 1 });
 
       const platformService = new PlatformService(mockDBConnection);
 
@@ -277,7 +277,7 @@ describe('PlatformService', () => {
 
       const _submitDwCADatasetToBioHubBackboneStub = sinon
         .stub(PlatformService.prototype, '_submitDwCADatasetToBioHubBackbone')
-        .resolves({ data_package_id: '123-456-789' });
+        .resolves({ queue_id: 1 });
 
       const platformService = new PlatformService(mockDBConnection);
 
