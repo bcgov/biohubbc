@@ -82,7 +82,7 @@ export class HistoryPublishRepository extends BaseRepository {
         (occurrence_submission_id, queue_id, event_timestamp)
       VALUES
         (${data.occurrence_submission_id}, ${data.queue_id}, NOW())
-      RETURNING occurrence_submission_publish_id;
+      RETURNING occurrence_submission_id;
     `;
     const response = await this.connection.sql(sqlStatement);
     if (!response.rowCount) {
@@ -92,7 +92,7 @@ export class HistoryPublishRepository extends BaseRepository {
       ]);
     }
 
-    return response.rows[0].project_metadata_publish_id;
+    return response.rows[0].occurrence_submission_id;
   }
 
   async insertProjectAttachmentPublishRecord(data: IProjectAttachmentPublish): Promise<number> {
@@ -111,7 +111,7 @@ export class HistoryPublishRepository extends BaseRepository {
       ]);
     }
 
-    return response.rows[0].project_metadata_publish_id;
+    return response.rows[0].project_attachment_publish_id;
   }
 
   async insertProjectReportPublishRecord(data: IProjectReportPublish): Promise<number> {
@@ -130,7 +130,7 @@ export class HistoryPublishRepository extends BaseRepository {
       ]);
     }
 
-    return response.rows[0].project_metadata_publish_id;
+    return response.rows[0].project_report_publish_id;
   }
 
   async insertSurveyAttachmentPublishRecord(data: ISurveyAttachmentPublish): Promise<number> {
@@ -149,7 +149,7 @@ export class HistoryPublishRepository extends BaseRepository {
       ]);
     }
 
-    return response.rows[0].project_metadata_publish_id;
+    return response.rows[0].survey_attachment_publish_id;
   }
 
   async insertSurveyReportPublishRecord(data: ISurveyReportPublish): Promise<number> {

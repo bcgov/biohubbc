@@ -80,7 +80,7 @@ describe('HistoryPublishRepository', () => {
     it('should insert a record and return an id', async () => {
       const mockConnection = getMockDBConnection({
         sql: async () => {
-          return ({ rowCount: 1, rows: [{ project_metadata_publish_id: 1 }] } as any) as Promise<QueryResult<any>>;
+          return ({ rowCount: 1, rows: [{ occurrence_submission_id: 1 }] } as any) as Promise<QueryResult<any>>;
         }
       });
 
@@ -103,6 +103,130 @@ describe('HistoryPublishRepository', () => {
         expect.fail();
       } catch (error) {
         expect((error as ApiExecuteSQLError).message).to.equal('Failed to insert Occurrence Submission Publish record');
+      }
+    });
+  });
+
+  describe('insertProjectAttachmentPublishRecord', () => {
+    it('should insert a record and return an id', async () => {
+      const mockConnection = getMockDBConnection({
+        sql: async () => {
+          return ({ rowCount: 1, rows: [{ project_attachment_publish_id: 1 }] } as any) as Promise<QueryResult<any>>;
+        }
+      });
+
+      const repo = new HistoryPublishRepository(mockConnection);
+      const response = await repo.insertProjectAttachmentPublishRecord({ project_attachment_publish_id: 1, queue_id: 1 });
+
+      expect(response).to.be.eql(1);
+    });
+
+    it('should throw a `Failed insert` error', async () => {
+      const mockConnection = getMockDBConnection({
+        sql: async () => {
+          return ({ rowCount: 0, rows: [] } as any) as Promise<QueryResult<any>>;
+        }
+      });
+
+      const repo = new HistoryPublishRepository(mockConnection);
+      try {
+        await repo.insertProjectAttachmentPublishRecord({ project_attachment_publish_id: 1, queue_id: 1 });
+        expect.fail();
+      } catch (error) {
+        expect((error as ApiExecuteSQLError).message).to.equal('Failed to insert Project Attachment Publish record');
+      }
+    });
+  });
+
+  describe('insertProjectReportPublishRecord', () => {
+    it('should insert a record and return an id', async () => {
+      const mockConnection = getMockDBConnection({
+        sql: async () => {
+          return ({ rowCount: 1, rows: [{ project_report_publish_id: 1 }] } as any) as Promise<QueryResult<any>>;
+        }
+      });
+
+      const repo = new HistoryPublishRepository(mockConnection);
+      const response = await repo.insertProjectReportPublishRecord({ project_report_publish_id: 1, queue_id: 1 });
+
+      expect(response).to.be.eql(1);
+    });
+
+    it('should throw a `Failed insert` error', async () => {
+      const mockConnection = getMockDBConnection({
+        sql: async () => {
+          return ({ rowCount: 0, rows: [] } as any) as Promise<QueryResult<any>>;
+        }
+      });
+
+      const repo = new HistoryPublishRepository(mockConnection);
+      try {
+        await repo.insertProjectReportPublishRecord({ project_report_publish_id: 1, queue_id: 1 });
+        expect.fail();
+      } catch (error) {
+        expect((error as ApiExecuteSQLError).message).to.equal('Failed to insert Project Report Publish record');
+      }
+    });
+  });
+
+  describe('insertSurveyAttachmentPublishRecord', () => {
+    it('should insert a record and return an id', async () => {
+      const mockConnection = getMockDBConnection({
+        sql: async () => {
+          return ({ rowCount: 1, rows: [{ survey_attachment_publish_id: 1 }] } as any) as Promise<QueryResult<any>>;
+        }
+      });
+
+      const repo = new HistoryPublishRepository(mockConnection);
+      const response = await repo.insertSurveyAttachmentPublishRecord({ survey_attachment_publish_id: 1, queue_id: 1 });
+
+      expect(response).to.be.eql(1);
+    });
+
+    it('should throw a `Failed insert` error', async () => {
+      const mockConnection = getMockDBConnection({
+        sql: async () => {
+          return ({ rowCount: 0, rows: [] } as any) as Promise<QueryResult<any>>;
+        }
+      });
+
+      const repo = new HistoryPublishRepository(mockConnection);
+      try {
+        await repo.insertSurveyAttachmentPublishRecord({ survey_attachment_publish_id: 1, queue_id: 1 });
+        expect.fail();
+      } catch (error) {
+        expect((error as ApiExecuteSQLError).message).to.equal('Failed to insert Survey Attachment Publish record');
+      }
+    });
+  });
+
+  describe('insertSurveyReportPublishRecord', () => {
+    it('should insert a record and return an id', async () => {
+      const mockConnection = getMockDBConnection({
+        sql: async () => {
+          return ({ rowCount: 1, rows: [{ survey_report_publish_id: 1 }] } as any) as Promise<QueryResult<any>>;
+        }
+      });
+
+      const repo = new HistoryPublishRepository(mockConnection);
+      const response = await repo.insertSurveyReportPublishRecord({ survey_report_publish_id: 1, queue_id: 1 });
+
+      expect(response).to.be.eql(1);
+    });
+
+    it('should throw a `Failed insert` error', async () => {
+      const mockConnection = getMockDBConnection({
+        sql: async () => {
+          return ({ rowCount: 0, rows: [] } as any) as Promise<QueryResult<any>>;
+        }
+      });
+
+      const repo = new HistoryPublishRepository(mockConnection);
+      try {
+        await repo.insertSurveyReportPublishRecord({ survey_report_publish_id: 1, queue_id: 1 });
+        expect.fail();
+      } catch (error) {
+        expect((error as ApiExecuteSQLError).message).to.equal('Failed to insert Survey Report Publish record');
       }
     });
   });
