@@ -5,6 +5,12 @@ import { PostReportAttachmentMetadata, PutReportAttachmentMetadata } from '../mo
 import { getLogger } from '../utils/logger';
 import { BaseRepository } from './base-repository';
 
+export type IAttachment = 
+  | ISurveyAttachment
+  | ISurveyReportAttachment
+  | IProjectAttachment
+  | IProjectReportAttachment;
+
 export type ISurveyAttachment = IProjectAttachment;
 
 export type ISurveyReportAttachment = IProjectReportAttachment;
@@ -17,12 +23,16 @@ export interface IProjectAttachment {
   create_date: string;
   update_date: string;
   file_size: string;
+  uuid: string;
+  title: string | null;
+  description: string | null;
   key: string;
   revision_count: number;
 }
 
 export interface IProjectReportAttachment {
   id: number;
+  uuid: string;
   file_name: string;
   create_user: number;
   title: string;
@@ -66,8 +76,11 @@ export class AttachmentRepository extends BaseRepository {
     const sqlStatement = SQL`
       SELECT
         project_attachment_id AS id,
+        uuid,
         file_name,
         file_type,
+        title,
+        description,
         create_user,
         update_date,
         create_date,
@@ -105,8 +118,11 @@ export class AttachmentRepository extends BaseRepository {
     const sqlStatement = SQL`
       SELECT
         project_attachment_id AS id,
+        uuid,
         file_name,
         file_type,
+        title,
+        description,
         create_user,
         update_date,
         create_date,
@@ -145,6 +161,7 @@ export class AttachmentRepository extends BaseRepository {
     const sqlStatement = SQL`
       SELECT
         project_report_attachment_id as id,
+        uuid,
         file_name,
         create_user,
         title,
@@ -192,6 +209,7 @@ export class AttachmentRepository extends BaseRepository {
     const sqlStatement = SQL`
       SELECT
         project_report_attachment_id as id,
+        uuid,
         file_name,
         title,
         description,
@@ -237,8 +255,11 @@ export class AttachmentRepository extends BaseRepository {
     const sqlStatement = SQL`
       SELECT
         survey_attachment_id as id,
+        uuid,
         file_name,
         file_type,
+        title,
+        description,
         create_date,
         update_date,
         create_date,
@@ -275,6 +296,7 @@ export class AttachmentRepository extends BaseRepository {
     const sqlStatement = SQL`
       SELECT
         survey_report_attachment_id as id,
+        uuid,
         file_name,
         create_user,
         title,
@@ -319,6 +341,7 @@ export class AttachmentRepository extends BaseRepository {
     const sqlStatement = SQL`
       SELECT
         survey_report_attachment_id as id,
+        uuid,
         file_name,
         title,
         description,
@@ -484,7 +507,10 @@ export class AttachmentRepository extends BaseRepository {
     const sqlStatement = SQL`
     SELECT
       project_attachment_id as id,
+      uuid,
       file_name,
+      title,
+      description,
       update_date,
       create_date,
       file_size
@@ -620,7 +646,10 @@ export class AttachmentRepository extends BaseRepository {
     const sqlStatement = SQL`
       SELECT
         project_report_attachment_id as id,
+        uuid,
         file_name,
+        title,
+        description,
         update_date,
         create_date,
         file_size
@@ -876,7 +905,10 @@ export class AttachmentRepository extends BaseRepository {
     const sqlStatement = SQL`
       SELECT
         survey_report_attachment_id as id,
+        uuid,
         file_name,
+        title,
+        description,
         update_date,
         create_date,
         file_size
@@ -1089,7 +1121,10 @@ export class AttachmentRepository extends BaseRepository {
     const sqlStatement = SQL`
       SELECT
         survey_attachment_id as id,
+        uuid,
         file_name,
+        title,
+        description,
         update_date,
         create_date,
         file_size
