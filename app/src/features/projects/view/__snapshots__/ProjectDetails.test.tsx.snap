@@ -31,9 +31,11 @@ exports[`ProjectDetails renders correctly 1`] = `
         <hr
           class="MuiDivider-root"
         />
-        <span>
+        <p
+          class="MuiTypography-root MuiTypography-body1 MuiTypography-colorTextSecondary"
+        >
           Et ad et in culpa si
-        </span>
+        </p>
       </section>
       <section
         class="MuiBox-root MuiBox-root-8"
