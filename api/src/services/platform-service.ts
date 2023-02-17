@@ -235,35 +235,46 @@ export class PlatformService extends DBService {
   }
 
   /**
-   * Makes an artifact object from the given attachment record.
+   * Makes artifact objects from the given attachment records.
    * 
-   * @param {IAttachment} attachment The attachment record
-   * @param {string} dataPackageId The dataPackageId for the artifact
-   * @param {string} file_type The file type for the artifact metadata
-   * @returns {*} {Promise<IArtifact>} The artifact object
+   * @param {IAttachment[]} attachments The attachment records
+   * @param {string} dataPackageId The dataPackageId for the artifacts
+   * @returns {*} {Promise<IArtifact[]>} The artifact objects
    * 
    * @memberof PlatformService
    */
-  async _makeArtifactFromAttachment(attachment: IAttachment, dataPackageId: string, file_type: string): Promise<IArtifact> {
-    const s3File = await getFileFromS3(attachment.key);
-    const artifactZip = new AdmZip();
-    artifactZip.addFile(attachment.file_name, s3File.Body as Buffer);
-
-    return {
-      dataPackageId,
-      archiveFile: {
-        data: artifactZip.toBuffer(),
-        fileName: `${attachment.uuid}.zip`,
-        mimeType: 'application/zip'
-      },
-      metadata: {
-        file_name: attachment.file_name,
-        file_size: attachment.file_size,
-        file_type,
-        title: attachment.title,
-        description: attachment.description
+  _makeArtifactsFromAttachments(
+    dataPackageId: string,
+    attachments: (IProjectAttachment | ISurveyAttachment)[],
+    reportAttachments: (IProjectReportAttachment | ISurveyReportAttachment)[]
+  ): Promise<IArtifact[]> {
+    const promises = [...attachments, ...reportAttachments].map(async (attachment: IAttachment, index: number) => {
+      const isReportAttachment = (attachment: IAttachment): attachment is IProjectReportAttachment | ISurveyReportAttachment => {
+        return index >= attachments.length;
       }
-    };
+
+      const s3File = await getFileFromS3(attachment.key);
+      const artifactZip = new AdmZip();
+      artifactZip.addFile(attachment.file_name, s3File.Body as Buffer);
+
+      return {
+        dataPackageId,
+        archiveFile: {
+          data: artifactZip.toBuffer(),
+          fileName: `${attachment.uuid}.zip`,
+          mimeType: 'application/zip'
+        },
+        metadata: {
+          file_name: attachment.file_name,
+          file_size: attachment.file_size,
+          file_type: isReportAttachment(attachment) ? 'Report' : (attachment.file_type || 'Other'),
+          title: attachment.title,
+          description: attachment.description
+        }
+      };
+    });
+
+    return Promise.all(promises);
   }
 
   /**
@@ -323,14 +334,8 @@ export class PlatformService extends DBService {
     const reportAttachments = (await this.attachmentService.getProjectReportAttachments(projectId))
       .filter((reportAttachment: IProjectReportAttachment) => reportAttachmentIds.includes(reportAttachment.id));
 
-    const promises = [...attachments, ...reportAttachments].map(async (attachment: IAttachment, index: number) => {
-      const isReportAttachment = (attachment: IAttachment): attachment is IProjectReportAttachment | ISurveyReportAttachment => {
-        return index >= attachments.length;
-      }
-
-      const fileType = isReportAttachment(attachment) ? 'Report' : (attachment.file_type || 'Other');
-      return this._submitArtifactToBioHub(await this._makeArtifactFromAttachment(attachment, dataPackageId, fileType));
-    });
+    const promises = (await this._makeArtifactsFromAttachments(dataPackageId, attachments, reportAttachments))
+      .map(this._submitArtifactToBioHub);
 
     return Promise.all(promises);
   }
@@ -353,14 +358,8 @@ export class PlatformService extends DBService {
     const reportAttachments = (await this.attachmentService.getSurveyReportAttachments(surveyId))
       .filter((reportAttachment: ISurveyReportAttachment) => reportAttachmentIds.includes(reportAttachment.id));
 
-    const promises = [...attachments, ...reportAttachments].map(async (attachment: IAttachment, index: number) => {
-      const isReportAttachment = (attachment: IAttachment): attachment is ISurveyReportAttachment | ISurveyReportAttachment => {
-        return index >= attachments.length;
-      }
-
-      const fileType = isReportAttachment(attachment) ? 'Report' : (attachment.file_type || 'Other');
-      return this._submitArtifactToBioHub(await this._makeArtifactFromAttachment(attachment, dataPackageId, fileType));
-    });
+    const promises = (await this._makeArtifactsFromAttachments(dataPackageId, attachments, reportAttachments))
+      .map(this._submitArtifactToBioHub);
 
     return Promise.all(promises);
   }
