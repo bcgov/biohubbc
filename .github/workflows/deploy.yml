@@ -122,13 +122,12 @@ jobs:
       # Cache Node modules
       - name: Cache node modules
         uses: actions/cache@v3
-        working-directory: "./app/.pipeline/"
         env:
           cache-name: cache-app-pipeline-node-modules
         with:
           # npm cache files are stored in `~/.npm` on Linux/macOS
           path: ~/.npm
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('package-lock.json') }}
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('app/.pipeline/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-
 
@@ -140,7 +139,7 @@ jobs:
 
       # Build the app image
       - name: Build APP Image
-        working-directory: "./app/.pipeline/"
+        working-directory: "app/.pipeline/"
         run: |
           npm ci --only=production
           DEBUG=* npm run build -- --pr=$PR_NUMBER
@@ -180,13 +179,12 @@ jobs:
       # Cache Node modules
       - name: Cache node modules
         uses: actions/cache@v3
-        working-directory: "./database/.pipeline/"
         env:
           cache-name: cache-database-pipeline-node-modules
         with:
           # npm cache files are stored in `~/.npm` on Linux/macOS
           path: ~/.npm
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('package-lock.json') }}
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('database/.pipeline/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-
 
@@ -198,7 +196,7 @@ jobs:
 
       # Build the database image
       - name: Build Database Image
-        working-directory: "./database/.pipeline/"
+        working-directory: "database/.pipeline/"
         run: |
           npm ci --only=production
           DEBUG=* npm run db:build -- --pr=$PR_NUMBER
@@ -238,13 +236,12 @@ jobs:
       # Cache Node modules
       - name: Cache node modules
         uses: actions/cache@v3
-        working-directory: "./database/.pipeline/"
         env:
-          cache-name: cache-datapase-pipeline-node-modules
+          cache-name: cache-database-pipeline-node-modules
         with:
           # npm cache files are stored in `~/.npm` on Linux/macOS
           path: ~/.npm
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('package-lock.json') }}
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('database/.pipeline/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-
 
@@ -256,7 +253,7 @@ jobs:
 
       # Build the database image
       - name: Build Database Setup Image
-        working-directory: "./database/.pipeline/"
+        working-directory: "database/.pipeline/"
         run: |
           npm ci --only=production
           DEBUG=* npm run db-setup:build -- --pr=$PR_NUMBER
@@ -296,13 +293,12 @@ jobs:
       # Cache Node modules
       - name: Cache node modules
         uses: actions/cache@v3
-        working-directory: "./api/.pipeline/"
         env:
           cache-name: cache-api-pipeline-node-modules
         with:
           # npm cache files are stored in `~/.npm` on Linux/macOS
           path: ~/.npm
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('package-lock.json') }}
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('api/.pipeline/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-
 
@@ -314,7 +310,7 @@ jobs:
 
       # Build the api image
       - name: Build API Image
-        working-directory: "./api/.pipeline/"
+        working-directory: "api/.pipeline/"
         run: |
           npm ci --only=production
           DEBUG=* npm run build -- --pr=$PR_NUMBER
@@ -355,13 +351,12 @@ jobs:
       # Cache Node modules
       - name: Cache node modules
         uses: actions/cache@v3
-        working-directory: "./app/.pipeline"
         env:
           cache-name: cache-app-pipeline-node-modules
         with:
           # npm cache files are stored in `~/.npm` on Linux/macOS
           path: ~/.npm
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('package-lock.json') }}
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('app/.pipeline/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-
 
@@ -373,7 +368,7 @@ jobs:
 
       # Deploy the app image
       - name: Deploy APP Image
-        working-directory: "./app/.pipeline"
+        working-directory: "app/.pipeline"
         run: |
           npm ci --only=production
           DEBUG=* npm run deploy -- --pr=$PR_NUMBER --env=dev
@@ -414,13 +409,12 @@ jobs:
       # Cache Node modules
       - name: Cache node modules
         uses: actions/cache@v3
-        working-directory: "./database/.pipeline/"
         env:
           cache-name: cache-database-pipeline-node-modules
         with:
           # npm cache files are stored in `~/.npm` on Linux/macOS
           path: ~/.npm
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('package-lock.json') }}
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('database/.pipeline/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-
 
@@ -432,7 +426,7 @@ jobs:
 
       # Deploy the database image
       - name: Deploy Database Image
-        working-directory: "./database/.pipeline/"
+        working-directory: "database/.pipeline/"
         run: |
           npm ci --only=production
           DEBUG=* npm run db:deploy -- --pr=$PR_NUMBER --env=dev
@@ -474,13 +468,12 @@ jobs:
       # Cache Node modules
       - name: Cache node modules
         uses: actions/cache@v3
-        working-directory: "./database/.pipeline/"
         env:
           cache-name: cache-database-pipeline-node-modules
         with:
           # npm cache files are stored in `~/.npm` on Linux/macOS
           path: ~/.npm
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('package-lock.json') }}
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('database/.pipeline/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-
 
@@ -492,7 +485,7 @@ jobs:
 
       # Deploy the database setup image
       - name: Deploy Database Setup Image
-        working-directory: "./database/.pipeline/"
+        working-directory: "database/.pipeline/"
         run: |
           npm ci --only=production
           DEBUG=* npm run db-setup:deploy -- --pr=$PR_NUMBER --env=dev
@@ -533,14 +526,13 @@ jobs:
 
       # Cache Node modules
       - name: Cache node modules
-        working-directory: "./api/.pipeline/"
         uses: actions/cache@v3
         env:
           cache-name: cache-api-pipeline-node-modules
         with:
           # npm cache files are stored in `~/.npm` on Linux/macOS
           path: ~/.npm
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('package-lock.json') }}
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('api/.pipeline/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-
 
@@ -552,7 +544,7 @@ jobs:
 
       # Deploy the api image
       - name: Deploy API Image
-        working-directory: "./api/.pipeline/"
+        working-directory: "api/.pipeline/"
         run: |
           npm ci --only=production
           DEBUG=* npm run deploy -- --pr=$PR_NUMBER --env=dev
