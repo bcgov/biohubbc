@@ -22,6 +22,7 @@ import {
   IObservationSubmissionInsertDetails,
   IObservationSubmissionUpdateDetails,
   IOccurrenceSubmissionMessagesResponse,
+  ISurveyProprietorModel,
   SurveyRepository
 } from '../repositories/survey-repository';
 import { getLogger } from '../utils/logger';
@@ -143,6 +144,10 @@ export class SurveyService extends DBService {
 
   async getLatestSurveyOccurrenceSubmission(surveyId: number): Promise<IGetLatestSurveyOccurrenceSubmission | null> {
     return this.surveyRepository.getLatestSurveyOccurrenceSubmission(surveyId);
+  }
+
+  async getSurveyProprietorDataForSecurityRequest(surveyId: number): Promise<ISurveyProprietorModel> {
+    return this.surveyRepository.getSurveyProprietorDataForSecurityRequest(surveyId)
   }
 
   /**

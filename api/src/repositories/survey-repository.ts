@@ -66,6 +66,15 @@ export interface IObservationSubmissionUpdateDetails {
   outputKey?: string;
 }
 
+export interface ISurveyProprietorModel {
+  first_nations_id: number;
+  proprietor_type_id: number;
+  survey_id: number;
+  rational: string;
+  proprietor_name: string;
+  disa_required: boolean;
+}
+
 const defaultLog = getLogger('repositories/survey-repository');
 
 export class SurveyRepository extends BaseRepository {
@@ -242,6 +251,18 @@ export class SurveyRepository extends BaseRepository {
     }
 
     return new GetSurveyFundingSources(result);
+  }
+
+  async getSurveyProprietorDataForSecurityRequest(surveyId: number): Promise<ISurveyProprietorModel> {
+    const sqlStatement = SQL`
+      SELECT * 
+      FROM survey_proprietor as sp
+      WHERE survey_id = ${surveyId};
+    `;
+
+    const response = await this.connection.sql<ISurveyProprietorModel>(sqlStatement);
+    
+    return (response && response.rows && response.rows?.[0]) || null;
   }
 
   async getSurveyProprietorDataForView(surveyId: number): Promise<GetSurveyProprietorData | null> {

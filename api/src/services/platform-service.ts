@@ -4,6 +4,7 @@ import FormData from 'form-data';
 import { URL } from 'url';
 import { HTTP400 } from '../errors/http-error';
 import { HistoryPublishRepository } from '../repositories/history-publish-repository';
+import { ISurveyProprietorModel } from '../repositories/survey-repository';
 import { getFileFromS3 } from '../utils/file-utils';
 import { DBService } from './db-service';
 import { EmlService } from './eml-service';
@@ -29,6 +30,8 @@ export interface IDwCADataset {
    * A UUID that uniquely identifies this DwCA dataset.
    */
   dataPackageId: string;
+
+  securityRequest?: ISurveyProprietorModel;
 }
 
 export class PlatformService extends DBService {
@@ -51,7 +54,7 @@ export class PlatformService extends DBService {
    * @memberof PlatformService
    */
   async submitDwCAMetadataPackage(projectId: number) {
-    console.log('SUBMIT META DATA PACKAGE');
+
     if (!this.BACKBONE_INTAKE_ENABLED) {
       return;
     }
@@ -86,7 +89,7 @@ export class PlatformService extends DBService {
    * @memberof PlatformService
    */
   async submitDwCADataPackage(projectId: number) {
-    console.log('SUBMIT DATA PACKAGE');
+
     if (!this.BACKBONE_INTAKE_ENABLED) {
       return;
     }
@@ -132,6 +135,15 @@ export class PlatformService extends DBService {
 
     formData.append('data_package_id', dwcaDataset.dataPackageId);
 
+    if (dwcaDataset.securityRequest) {
+      formData.append("security_request[first_nations_id]", dwcaDataset.securityRequest.first_nations_id || 0);
+      formData.append("security_request[proprietor_type_id]", dwcaDataset.securityRequest.proprietor_type_id || 0);
+      formData.append("security_request[survey_id]", dwcaDataset.securityRequest.survey_id);
+      formData.append("security_request[rational]", dwcaDataset.securityRequest.rational || "ok what about this");
+      formData.append("security_request[proprietor_name]", dwcaDataset.securityRequest.proprietor_name || "");
+      formData.append("security_request[disa_required]", `${dwcaDataset.securityRequest.disa_required}`);
+    }
+
     const backboneIntakeUrl = new URL(this.BACKBONE_INTAKE_PATH, this.BACKBONE_API_HOST).href;
 
     const { data } = await axios.post<{ queue_id: number }>(backboneIntakeUrl, formData.getBuffer(), {
@@ -140,7 +152,6 @@ export class PlatformService extends DBService {
         ...formData.getHeaders()
       }
     });
-
     return data;
   }
 
@@ -160,6 +171,7 @@ export class PlatformService extends DBService {
     const publishRepo = new HistoryPublishRepository(this.connection);
     const surveyService = new SurveyService(this.connection);
     const surveyData = await surveyService.getLatestSurveyOccurrenceSubmission(surveyId);
+    const securityRequest = await surveyService.getSurveyProprietorDataForSecurityRequest(surveyId);
 
     if (!surveyData || !surveyData.output_key) {
       throw new HTTP400('no s3Key found');
@@ -182,13 +194,14 @@ export class PlatformService extends DBService {
 
     dwcArchiveZip.addFile('eml.xml', Buffer.from(emlString));
 
-    const dwCADataset = {
+    const dwCADataset: IDwCADataset = {
       archiveFile: {
         data: dwcArchiveZip.toBuffer(),
         fileName: `${emlService.packageId}.zip`,
         mimeType: 'application/zip'
       },
-      dataPackageId: emlService.packageId
+      dataPackageId: emlService.packageId,
+      securityRequest
     };
 
     const queueResponse = await this._submitDwCADatasetToBioHubBackbone(dwCADataset);
