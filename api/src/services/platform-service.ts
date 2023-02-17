@@ -3,6 +3,7 @@ import axios from 'axios';
 import FormData from 'form-data';
 import { URL } from 'url';
 import { HTTP400 } from '../errors/http-error';
+import { HistoryPublishRepository } from '../repositories/history-publish-repository';
 import { getFileFromS3 } from '../utils/file-utils';
 import { DBService } from './db-service';
 import { EmlService } from './eml-service';
@@ -33,7 +34,7 @@ export interface IDwCADataset {
 export class PlatformService extends DBService {
   BACKBONE_INTAKE_ENABLED = process.env.BACKBONE_INTAKE_ENABLED === 'true' || false;
   BACKBONE_API_HOST = process.env.BACKBONE_API_HOST;
-  BACKBONE_INTAKE_PATH = process.env.BACKBONE_INTAKE_PATH || '/api/dwc/submission/intake';
+  BACKBONE_INTAKE_PATH = process.env.BACKBONE_INTAKE_PATH || '/api/dwc/submission/queue';
 
   /**
    * Submit a Darwin Core Archive (DwCA) data package, that only contains the project/survey metadata, to the BioHub
@@ -50,6 +51,7 @@ export class PlatformService extends DBService {
    * @memberof PlatformService
    */
   async submitDwCAMetadataPackage(projectId: number) {
+    console.log("SUBMIT META DATA PACKAGE")
     if (!this.BACKBONE_INTAKE_ENABLED) {
       return;
     }
@@ -84,6 +86,7 @@ export class PlatformService extends DBService {
    * @memberof PlatformService
    */
   async submitDwCADataPackage(projectId: number) {
+    console.log("SUBMIT DATA PACKAGE")
     if (!this.BACKBONE_INTAKE_ENABLED) {
       return;
     }
@@ -115,7 +118,7 @@ export class PlatformService extends DBService {
    * @return {*}  {Promise<{ data_package_id: string }>}
    * @memberof PlatformService
    */
-  async _submitDwCADatasetToBioHubBackbone(dwcaDataset: IDwCADataset): Promise<{ data_package_id: string }> {
+  async _submitDwCADatasetToBioHubBackbone(dwcaDataset: IDwCADataset): Promise<{ queue_id: number }> {
     const keycloakService = new KeycloakService();
 
     const token = await keycloakService.getKeycloakToken();
@@ -131,7 +134,7 @@ export class PlatformService extends DBService {
 
     const backboneIntakeUrl = new URL(this.BACKBONE_INTAKE_PATH, this.BACKBONE_API_HOST).href;
 
-    const { data } = await axios.post<{ data_package_id: string }>(backboneIntakeUrl, formData.getBuffer(), {
+    const { data } = await axios.post<{ queue_id: number }>(backboneIntakeUrl, formData.getBuffer(), {
       headers: {
         authorization: `Bearer ${token}`,
         ...formData.getHeaders()
@@ -154,6 +157,7 @@ export class PlatformService extends DBService {
       return;
     }
 
+    const publishRepo = new HistoryPublishRepository(this.connection);
     const surveyService = new SurveyService(this.connection);
     const surveyData = await surveyService.getLatestSurveyOccurrenceSubmission(surveyId);
 
@@ -181,12 +185,27 @@ export class PlatformService extends DBService {
     const dwCADataset = {
       archiveFile: {
         data: dwcArchiveZip.toBuffer(),
-        fileName: 'DwCA.zip',
+        fileName: `${emlService.packageId}.zip`,
         mimeType: 'application/zip'
       },
       dataPackageId: emlService.packageId
     };
 
-    return this._submitDwCADatasetToBioHubBackbone(dwCADataset);
+    const queueResponse = await this._submitDwCADatasetToBioHubBackbone(dwCADataset);
+
+    Promise.all([
+      publishRepo.insertProjectMetadataRecord({
+        project_id: projectId,
+        queue_id: queueResponse.queue_id
+      }),
+      publishRepo.insertSurveyMetadataRecord({
+        survey_id: surveyId,
+        queue_id: queueResponse.queue_id
+      }),
+      publishRepo.insertOccurrenceSubmissionRecord({
+        occurrence_submission_id: surveyData.id, 
+        queue_id: queueResponse.queue_id
+      })
+    ]);
   }
 }
