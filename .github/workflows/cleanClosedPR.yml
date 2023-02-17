@@ -46,7 +46,7 @@ jobs:
         run: oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
 
       # Cache Node modules
-      - name: Cache node modules
+      - name: Cache app pipeline node modules
         uses: actions/cache@v3
         env:
           cache-name: cache-app-pipeline-node-modules
@@ -66,7 +66,7 @@ jobs:
           DEBUG=* npm run clean -- --pr=$PR_NUMBER --env=dev
 
       # Cache Node modules
-      - name: Cache node modules
+      - name: Cache database pipeline node modules
         uses: actions/cache@v3
         env:
           cache-name: cache-database-pipeline-node-modules
@@ -86,7 +86,7 @@ jobs:
           DEBUG=* npm run clean -- --pr=$PR_NUMBER --env=dev
 
       # Cache Node modules
-      - name: Cache node modules
+      - name: Cache api pipeline node modules
         uses: actions/cache@v3
         env:
           cache-name: cache-api-pipeline-node-modules

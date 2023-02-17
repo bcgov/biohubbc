@@ -120,7 +120,7 @@ jobs:
         uses: actions/checkout@v3
 
       # Cache Node modules
-      - name: Cache node modules
+      - name: Cache app pipeline node modules
         uses: actions/cache@v3
         env:
           cache-name: cache-app-pipeline-node-modules
@@ -177,7 +177,7 @@ jobs:
         uses: actions/checkout@v3
 
       # Cache Node modules
-      - name: Cache node modules
+      - name: Cache database pipeline node modules
         uses: actions/cache@v3
         env:
           cache-name: cache-database-pipeline-node-modules
@@ -234,7 +234,7 @@ jobs:
         uses: actions/checkout@v3
 
       # Cache Node modules
-      - name: Cache node modules
+      - name: Cache database pipeline node modules
         uses: actions/cache@v3
         env:
           cache-name: cache-database-pipeline-node-modules
@@ -291,7 +291,7 @@ jobs:
         uses: actions/checkout@v3
 
       # Cache Node modules
-      - name: Cache node modules
+      - name: Cache api pipeline node modules
         uses: actions/cache@v3
         env:
           cache-name: cache-api-pipeline-node-modules
@@ -349,7 +349,7 @@ jobs:
         uses: actions/checkout@v3
 
       # Cache Node modules
-      - name: Cache node modules
+      - name: Cache app pipeline node modules
         uses: actions/cache@v3
         env:
           cache-name: cache-app-pipeline-node-modules
@@ -407,7 +407,7 @@ jobs:
         uses: actions/checkout@v3
 
       # Cache Node modules
-      - name: Cache node modules
+      - name: Cache database pipeline node modules
         uses: actions/cache@v3
         env:
           cache-name: cache-database-pipeline-node-modules
@@ -466,7 +466,7 @@ jobs:
         uses: actions/checkout@v3
 
       # Cache Node modules
-      - name: Cache node modules
+      - name: Cache database pipeline node modules
         uses: actions/cache@v3
         env:
           cache-name: cache-database-pipeline-node-modules
@@ -525,7 +525,7 @@ jobs:
         uses: actions/checkout@v3
 
       # Cache Node modules
-      - name: Cache node modules
+      - name: Cache api pipeline node modules
         uses: actions/cache@v3
         env:
           cache-name: cache-api-pipeline-node-modules
