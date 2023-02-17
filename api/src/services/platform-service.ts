@@ -54,7 +54,6 @@ export class PlatformService extends DBService {
    * @memberof PlatformService
    */
   async submitDwCAMetadataPackage(projectId: number) {
-
     if (!this.BACKBONE_INTAKE_ENABLED) {
       return;
     }
@@ -89,7 +88,6 @@ export class PlatformService extends DBService {
    * @memberof PlatformService
    */
   async submitDwCADataPackage(projectId: number) {
-
     if (!this.BACKBONE_INTAKE_ENABLED) {
       return;
     }
@@ -136,12 +134,12 @@ export class PlatformService extends DBService {
     formData.append('data_package_id', dwcaDataset.dataPackageId);
 
     if (dwcaDataset.securityRequest) {
-      formData.append("security_request[first_nations_id]", dwcaDataset.securityRequest.first_nations_id || 0);
-      formData.append("security_request[proprietor_type_id]", dwcaDataset.securityRequest.proprietor_type_id || 0);
-      formData.append("security_request[survey_id]", dwcaDataset.securityRequest.survey_id);
-      formData.append("security_request[rational]", dwcaDataset.securityRequest.rational || "ok what about this");
-      formData.append("security_request[proprietor_name]", dwcaDataset.securityRequest.proprietor_name || "");
-      formData.append("security_request[disa_required]", `${dwcaDataset.securityRequest.disa_required}`);
+      formData.append('security_request[first_nations_id]', dwcaDataset.securityRequest.first_nations_id || 0);
+      formData.append('security_request[proprietor_type_id]', dwcaDataset.securityRequest.proprietor_type_id || 0);
+      formData.append('security_request[survey_id]', dwcaDataset.securityRequest.survey_id);
+      formData.append('security_request[rational]', dwcaDataset.securityRequest.rational || 'ok what about this');
+      formData.append('security_request[proprietor_name]', dwcaDataset.securityRequest.proprietor_name || '');
+      formData.append('security_request[disa_required]', `${dwcaDataset.securityRequest.disa_required}`);
     }
 
     const backboneIntakeUrl = new URL(this.BACKBONE_INTAKE_PATH, this.BACKBONE_API_HOST).href;

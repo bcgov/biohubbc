@@ -261,7 +261,7 @@ export class SurveyRepository extends BaseRepository {
     `;
 
     const response = await this.connection.sql<ISurveyProprietorModel>(sqlStatement);
-    
+
     return (response && response.rows && response.rows?.[0]) || null;
   }
 

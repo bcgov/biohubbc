@@ -116,7 +116,10 @@ describe('HistoryPublishRepository', () => {
       });
 
       const repo = new HistoryPublishRepository(mockConnection);
-      const response = await repo.insertProjectAttachmentPublishRecord({ project_attachment_publish_id: 1, queue_id: 1 });
+      const response = await repo.insertProjectAttachmentPublishRecord({
+        project_attachment_publish_id: 1,
+        queue_id: 1
+      });
 
       expect(response).to.be.eql(1);
     });

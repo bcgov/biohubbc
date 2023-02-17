@@ -147,7 +147,7 @@ export class SurveyService extends DBService {
   }
 
   async getSurveyProprietorDataForSecurityRequest(surveyId: number): Promise<ISurveyProprietorModel> {
-    return this.surveyRepository.getSurveyProprietorDataForSecurityRequest(surveyId)
+    return this.surveyRepository.getSurveyProprietorDataForSecurityRequest(surveyId);
   }
 
   /**
