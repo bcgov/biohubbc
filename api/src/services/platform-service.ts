@@ -4,6 +4,7 @@ import FormData from 'form-data';
 import { URL } from 'url';
 import { HTTP400 } from '../errors/http-error';
 import { getFileFromS3 } from '../utils/file-utils';
+import { getLogger } from '../utils/logger';
 import { DBService } from './db-service';
 import { EmlService } from './eml-service';
 import { KeycloakService } from './keycloak-service';
@@ -33,7 +34,7 @@ export interface IDwCADataset {
 export class PlatformService extends DBService {
   BACKBONE_INTAKE_ENABLED = process.env.BACKBONE_INTAKE_ENABLED === 'true' || false;
   BACKBONE_API_HOST = process.env.BACKBONE_API_HOST;
-  BACKBONE_INTAKE_PATH = process.env.BACKBONE_INTAKE_PATH || '/api/dwc/submission/intake';
+  BACKBONE_INTAKE_PATH = process.env.BACKBONE_INTAKE_PATH || '/api/dwc/submission/queue';
 
   /**
    * Submit a Darwin Core Archive (DwCA) data package, that only contains the project/survey metadata, to the BioHub
@@ -50,27 +51,33 @@ export class PlatformService extends DBService {
    * @memberof PlatformService
    */
   async submitDwCAMetadataPackage(projectId: number) {
-    if (!this.BACKBONE_INTAKE_ENABLED) {
-      return;
+    try {
+      if (!this.BACKBONE_INTAKE_ENABLED) {
+        return;
+      }
+
+      const emlService = new EmlService({ projectId: projectId }, this.connection);
+
+      const emlString = await emlService.buildProjectEml();
+
+      const dwcArchiveZip = new AdmZip();
+      dwcArchiveZip.addFile('eml.xml', Buffer.from(emlString));
+
+      const dwCADataset = {
+        archiveFile: {
+          data: dwcArchiveZip.toBuffer(),
+          fileName: 'DwCA.zip',
+          mimeType: 'application/zip'
+        },
+        dataPackageId: emlService.packageId
+      };
+
+      return this._submitDwCADatasetToBioHubBackbone(dwCADataset);
+    } catch (error) {
+      const defaultLog = getLogger('platformService->submitDwCAMetadataPackage');
+      // Don't fail the rest of the endpoint if submitting metadata fails
+      defaultLog.error({ label: 'platformService->submitDwCAMetadataPackage', message: 'error', error });
     }
-
-    const emlService = new EmlService({ projectId: projectId }, this.connection);
-
-    const emlString = await emlService.buildProjectEml();
-
-    const dwcArchiveZip = new AdmZip();
-    dwcArchiveZip.addFile('eml.xml', Buffer.from(emlString));
-
-    const dwCADataset = {
-      archiveFile: {
-        data: dwcArchiveZip.toBuffer(),
-        fileName: 'DwCA.zip',
-        mimeType: 'application/zip'
-      },
-      dataPackageId: emlService.packageId
-    };
-
-    return this._submitDwCADatasetToBioHubBackbone(dwCADataset);
   }
 
   /**
