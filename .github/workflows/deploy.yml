@@ -139,6 +139,7 @@ jobs:
       # Cache Node modules
       - name: Cache app pipeline node modules
         uses: actions/cache@v3
+        if: ${{ env.APP_DIFF }}
         env:
           cache-name: cache-app-pipeline-node-modules
         with:
