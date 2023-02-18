@@ -144,7 +144,7 @@ export class PlatformService extends DBService {
       formData.append('security_request[first_nations_id]', dwcaDataset.securityRequest.first_nations_id || 0);
       formData.append('security_request[proprietor_type_id]', dwcaDataset.securityRequest.proprietor_type_id || 0);
       formData.append('security_request[survey_id]', dwcaDataset.securityRequest.survey_id);
-      formData.append('security_request[rational]', dwcaDataset.securityRequest.rational || 'ok what about this');
+      formData.append('security_request[rational]', dwcaDataset.securityRequest.rational || '');
       formData.append('security_request[proprietor_name]', dwcaDataset.securityRequest.proprietor_name || '');
       formData.append('security_request[disa_required]', `${dwcaDataset.securityRequest.disa_required}`);
     }
