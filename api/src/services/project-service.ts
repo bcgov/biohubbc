@@ -28,7 +28,6 @@ import {
   IGetProject
 } from '../models/project-view';
 import { GET_ENTITIES, IUpdateProject } from '../paths/project/{projectId}/update';
-import { HistoryPublishRepository } from '../repositories/history-publish-repository';
 import { ProjectRepository } from '../repositories/project-repository';
 import { deleteFileFromS3 } from '../utils/file-utils';
 import { AttachmentService } from './attachment-service';
