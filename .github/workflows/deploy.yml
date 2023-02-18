@@ -141,7 +141,7 @@ jobs:
       - name: Install app pipeline node modules
         working-directory: "app/.pipeline/"
         run: |
-          npm ci --only=production
+          npm install --only=production
 
       # Build the app image
       - name: Build APP Image
@@ -203,7 +203,7 @@ jobs:
       - name: Install database pipeline node modules
         working-directory: "database/.pipeline/"
         run: |
-          npm ci --only=production
+          npm install --only=production
 
       # Build the database image
       - name: Build Database Image
@@ -265,7 +265,7 @@ jobs:
       - name: Install database pipeline node modules
         working-directory: "database/.pipeline/"
         run: |
-          npm ci --only=production
+          npm install --only=production
 
       # Build the database image
       - name: Build Database Setup Image
@@ -327,7 +327,7 @@ jobs:
       - name: Install api pipeline node modules
         working-directory: "api/.pipeline/"
         run: |
-          npm ci --only=production
+          npm install --only=production
 
       # Build the api image
       - name: Build API Image
@@ -390,7 +390,7 @@ jobs:
       - name: Install app pipeline node modules
         working-directory: "app/.pipeline"
         run: |
-          npm ci --only=production
+          npm install --only=production
 
       # Deploy the app image
       - name: Deploy APP Image
@@ -453,7 +453,7 @@ jobs:
       - name: Install database pipeline node modules
         working-directory: "database/.pipeline/"
         run: |
-          npm ci --only=production
+          npm install --only=production
 
       # Deploy the database image
       - name: Deploy Database Image
@@ -517,7 +517,7 @@ jobs:
       - name: Install database pipeline node modules
         working-directory: "database/.pipeline/"
         run: |
-          npm ci --only=production
+          npm install --only=production
 
       # Deploy the database setup image
       - name: Deploy Database Setup Image
@@ -581,7 +581,7 @@ jobs:
       - name: Install api pipeline node modules
         working-directory: "api/.pipeline/"
         run: |
-          npm ci --only=production
+          npm install --only=production
 
       # Deploy the api image
       - name: Deploy API Image
