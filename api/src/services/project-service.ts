@@ -33,6 +33,7 @@ import { ProjectRepository } from '../repositories/project-repository';
 import { deleteFileFromS3 } from '../utils/file-utils';
 import { AttachmentService } from './attachment-service';
 import { DBService } from './db-service';
+import { HistoryPublishService } from './history-publish-service';
 import { PlatformService } from './platform-service';
 import { SurveyService } from './survey-service';
 
@@ -347,7 +348,7 @@ export class ProjectService extends DBService {
 
     // take queue id and insert into history publish table
     if (queueResponse?.queue_id) {
-      const historyRepo = new HistoryPublishRepository(this.connection);
+      const historyRepo = new HistoryPublishService(this.connection);
       await historyRepo.insertProjectMetadataPublishRecord({ project_id: projectId, queue_id: queueResponse.queue_id });
     }
 
@@ -408,7 +409,7 @@ export class ProjectService extends DBService {
 
     // take queue id and insert into history publish table
     if (queueResponse?.queue_id) {
-      const historyRepo = new HistoryPublishRepository(this.connection);
+      const historyRepo = new HistoryPublishService(this.connection);
       await historyRepo.insertProjectMetadataPublishRecord({ project_id: projectId, queue_id: queueResponse.queue_id });
     }
   }

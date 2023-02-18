@@ -17,7 +17,6 @@ import {
   SurveySupplementaryData
 } from '../models/survey-view';
 import { AttachmentRepository } from '../repositories/attachment-repository';
-import { HistoryPublishRepository } from '../repositories/history-publish-repository';
 import {
   IGetLatestSurveyOccurrenceSubmission,
   IObservationSubmissionInsertDetails,
@@ -28,6 +27,7 @@ import {
 } from '../repositories/survey-repository';
 import { getLogger } from '../utils/logger';
 import { DBService } from './db-service';
+import { HistoryPublishService } from './history-publish-service';
 import { PermitService } from './permit-service';
 import { PlatformService } from './platform-service';
 import { TaxonomyService } from './taxonomy-service';
@@ -259,7 +259,7 @@ export class SurveyService extends DBService {
 
     // take queue id and insert into history publish table
     if (queueResponse?.queue_id) {
-      const historyRepo = new HistoryPublishRepository(this.connection);
+      const historyRepo = new HistoryPublishService(this.connection);
       await historyRepo.insertSurveyMetadataPublishRecord({ survey_id: surveyId, queue_id: queueResponse.queue_id });
     }
 
@@ -347,7 +347,7 @@ export class SurveyService extends DBService {
 
     // take queue id and insert into history publish table
     if (queueResponse?.queue_id) {
-      const historyRepo = new HistoryPublishRepository(this.connection);
+      const historyRepo = new HistoryPublishService(this.connection);
       await historyRepo.insertSurveyMetadataPublishRecord({ survey_id: surveyId, queue_id: queueResponse.queue_id });
     }
   }

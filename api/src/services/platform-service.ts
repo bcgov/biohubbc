@@ -3,12 +3,12 @@ import axios from 'axios';
 import FormData from 'form-data';
 import { URL } from 'url';
 import { HTTP400 } from '../errors/http-error';
-import { HistoryPublishRepository } from '../repositories/history-publish-repository';
 import { ISurveyProprietorModel } from '../repositories/survey-repository';
 import { getFileFromS3 } from '../utils/file-utils';
 import { getLogger } from '../utils/logger';
 import { DBService } from './db-service';
 import { EmlService } from './eml-service';
+import { HistoryPublishService } from './history-publish-service';
 import { KeycloakService } from './keycloak-service';
 import { SurveyService } from './survey-service';
 
@@ -173,7 +173,7 @@ export class PlatformService extends DBService {
       return;
     }
 
-    const publishRepo = new HistoryPublishRepository(this.connection);
+    const publishRepo = new HistoryPublishService(this.connection);
     const surveyService = new SurveyService(this.connection);
     const surveyData = await surveyService.getLatestSurveyOccurrenceSubmission(surveyId);
     const securityRequest = await surveyService.getSurveyProprietorDataForSecurityRequest(surveyId);
