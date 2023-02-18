@@ -38,6 +38,14 @@ export interface ISurveyReportPublish {
 }
 
 export class HistoryPublishRepository extends BaseRepository {
+
+  /**
+   * Inserts a record into `project_metadata_publish` for a given queue and project id
+   * and returns an id
+   * @param {IProjectMetadataPublish} data 
+   * @returns {*} {Promise<number>}
+   * @memberof HistoryPublishRepository
+   */
   async insertProjectMetadataPublishRecord(data: IProjectMetadataPublish): Promise<number> {
     const sqlStatement = SQL`
       INSERT INTO project_metadata_publish 
@@ -57,6 +65,13 @@ export class HistoryPublishRepository extends BaseRepository {
     return response.rows[0].project_metadata_publish_id;
   }
 
+  /**
+   * Inserts a record into `survey_metadata_publish` for a given queue and survey id
+   * and returns an id
+   * @param {ISurveyMetadataPublish} data 
+   * @returns {*} {Promise<number>}
+   * @memberof HistoryPublishRepository
+   */
   async insertSurveyMetadataPublishRecord(data: ISurveyMetadataPublish): Promise<number> {
     const sqlStatement = SQL`
       INSERT INTO survey_metadata_publish 
@@ -76,6 +91,13 @@ export class HistoryPublishRepository extends BaseRepository {
     return response.rows[0].project_metadata_publish_id;
   }
 
+  /**
+   * Inserts a record into `occurrence_submission_publish` for a given queue and occurrence id
+   * and returns an id
+   * @param {IOccurrenceSubmissionPublish} data 
+   * @returns {*} {Promise<number>}
+   * @memberof HistoryPublishRepository
+   */
   async insertOccurrenceSubmissionPublishRecord(data: IOccurrenceSubmissionPublish): Promise<number> {
     const sqlStatement = SQL`
       INSERT INTO occurrence_submission_publish 
@@ -95,6 +117,13 @@ export class HistoryPublishRepository extends BaseRepository {
     return response.rows[0].occurrence_submission_id;
   }
 
+  /**
+   * Inserts a record into `project_attachment_publish` for a given queue and project id
+   * and returns an id
+   * @param {IProjectAttachmentPublish} data 
+   * @returns {*} {Promise<number>}
+   * @memberof HistoryPublishRepository
+   */
   async insertProjectAttachmentPublishRecord(data: IProjectAttachmentPublish): Promise<number> {
     const sqlStatement = SQL`
       INSERT INTO project_attachment_publish 
@@ -114,6 +143,13 @@ export class HistoryPublishRepository extends BaseRepository {
     return response.rows[0].project_attachment_publish_id;
   }
 
+  /**
+   * Inserts a record into `project_report_publish` for a given queue and project id
+   * and returns an id
+   * @param {IProjectReportPublish} data 
+   * @returns {*} {Promise<number>}
+   * @memberof HistoryPublishRepository
+   */
   async insertProjectReportPublishRecord(data: IProjectReportPublish): Promise<number> {
     const sqlStatement = SQL`
       INSERT INTO project_report_publish 
@@ -133,6 +169,13 @@ export class HistoryPublishRepository extends BaseRepository {
     return response.rows[0].project_report_publish_id;
   }
 
+  /**
+   * Inserts a record into `survey_attachment_publish` for a given queue and survey id
+   * and returns an id
+   * @param {ISurveyAttachmentPublish} data 
+   * @returns {*} {Promise<number>}
+   * @memberof HistoryPublishRepository
+   */
   async insertSurveyAttachmentPublishRecord(data: ISurveyAttachmentPublish): Promise<number> {
     const sqlStatement = SQL`
       INSERT INTO survey_attachment_publish 
@@ -152,6 +195,13 @@ export class HistoryPublishRepository extends BaseRepository {
     return response.rows[0].survey_attachment_publish_id;
   }
 
+  /**
+   * Inserts a record into `survey_report_publish` for a given queue and survey id
+   * and returns an id
+   * @param {ISurveyReportPublish} data 
+   * @returns {*} {Promise<number>}
+   * @memberof HistoryPublishRepository
+   */
   async insertSurveyReportPublishRecord(data: ISurveyReportPublish): Promise<number> {
     const sqlStatement = SQL`
       INSERT INTO survey_report_publish 
