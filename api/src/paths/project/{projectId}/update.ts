@@ -6,7 +6,6 @@ import { HTTP400 } from '../../../errors/http-error';
 import { geoJsonFeature } from '../../../openapi/schemas/geoJson';
 import { projectIdResponseObject, projectUpdatePutRequestObject } from '../../../openapi/schemas/project';
 import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
-import { PlatformService } from '../../../services/platform-service';
 import { ProjectService } from '../../../services/project-service';
 import { getLogger } from '../../../utils/logger';
 
@@ -438,14 +437,6 @@ export function updateProject(): RequestHandler {
       const projectService = new ProjectService(connection);
 
       await projectService.updateProject(projectId, entities);
-
-      try {
-        const platformService = new PlatformService(connection);
-        await platformService.submitDwCAMetadataPackage(projectId);
-      } catch (error) {
-        // Don't fail the rest of the endpoint if submitting metadata fails
-        defaultLog.error({ label: 'updateProject->submitDwCAMetadataPackage', message: 'error', error });
-      }
 
       await connection.commit();
 

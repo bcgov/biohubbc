@@ -12,6 +12,7 @@ import {
   ISurveyReportAttachment
 } from '../repositories/attachment-repository';
 import { getFileFromS3 } from '../utils/file-utils';
+import { getLogger } from '../utils/logger';
 import { AttachmentService } from './attachment-service';
 import { DBService } from './db-service';
 import { EmlService } from './eml-service';
@@ -77,7 +78,7 @@ export class PlatformService extends DBService {
 
     this.backboneIntakeEnabled = process.env.BACKBONE_INTAKE_ENABLED === 'true' || false;
     this.backboneApiHost = process.env.BACKBONE_API_HOST || '';
-    this.backboneIntakePath = process.env.BACKBONE_INTAKE_PATH || '/api/dwc/submission/intake';
+    this.backboneIntakePath = process.env.BACKBONE_INTAKE_PATH || '/api/dwc/submission/queue';
     this.backboneArtifactIntakePath = process.env.BACKBONE_ARTIFACT_INTAKE_PATH || '/api/artifact/intake';
 
     this.attachmentService = new AttachmentService(connection);
@@ -98,27 +99,33 @@ export class PlatformService extends DBService {
    * @memberof PlatformService
    */
   async submitDwCAMetadataPackage(projectId: number) {
-    if (!this.backboneIntakeEnabled) {
-      return;
+    try {
+      if (!this.backboneIntakeEnabled) {
+        return;
+      }
+
+      const emlService = new EmlService({ projectId: projectId }, this.connection);
+
+      const emlString = await emlService.buildProjectEml();
+
+      const dwcArchiveZip = new AdmZip();
+      dwcArchiveZip.addFile('eml.xml', Buffer.from(emlString));
+
+      const dwCADataset = {
+        archiveFile: {
+          data: dwcArchiveZip.toBuffer(),
+          fileName: 'DwCA.zip',
+          mimeType: 'application/zip'
+        },
+        dataPackageId: emlService.packageId
+      };
+
+      return this._submitDwCADatasetToBioHubBackbone(dwCADataset);
+    } catch (error) {
+      const defaultLog = getLogger('platformService->submitDwCAMetadataPackage');
+      // Don't fail the rest of the endpoint if submitting metadata fails
+      defaultLog.error({ label: 'platformService->submitDwCAMetadataPackage', message: 'error', error });
     }
-
-    const emlService = new EmlService({ projectId: projectId }, this.connection);
-
-    const emlString = await emlService.buildProjectEml();
-
-    const dwcArchiveZip = new AdmZip();
-    dwcArchiveZip.addFile('eml.xml', Buffer.from(emlString));
-
-    const dwCADataset = {
-      archiveFile: {
-        data: dwcArchiveZip.toBuffer(),
-        fileName: 'DwCA.zip',
-        mimeType: 'application/zip'
-      },
-      dataPackageId: emlService.packageId
-    };
-
-    return this._submitDwCADatasetToBioHubBackbone(dwCADataset);
   }
 
   /**

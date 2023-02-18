@@ -32,16 +32,19 @@ import { ProjectRepository } from '../repositories/project-repository';
 import { deleteFileFromS3 } from '../utils/file-utils';
 import { AttachmentService } from './attachment-service';
 import { DBService } from './db-service';
+import { PlatformService } from './platform-service';
 import { SurveyService } from './survey-service';
 
 export class ProjectService extends DBService {
   attachmentService: AttachmentService;
   projectRepository: ProjectRepository;
+  platformService: PlatformService;
 
   constructor(connection: IDBConnection) {
     super(connection);
     this.attachmentService = new AttachmentService(connection);
     this.projectRepository = new ProjectRepository(connection);
+    this.platformService = new PlatformService(connection);
   }
 
   /**
@@ -338,6 +341,9 @@ export class ProjectService extends DBService {
     // The user that creates a project is automatically assigned a project lead role, for this project
     await this.insertParticipantRole(projectId, PROJECT_ROLE.PROJECT_LEAD);
 
+    //Submit Eml to biohub
+    await this.platformService.submitDwCAMetadataPackage(projectId);
+
     return projectId;
   }
 
@@ -389,6 +395,9 @@ export class ProjectService extends DBService {
     }
 
     await Promise.all(promises);
+
+    //Update Eml to biohub
+    await this.platformService.submitDwCAMetadataPackage(projectId);
   }
 
   async updateIUCNData(projectId: number, entities: IUpdateProject): Promise<void> {

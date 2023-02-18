@@ -27,6 +27,7 @@ import {
 import { getLogger } from '../utils/logger';
 import { DBService } from './db-service';
 import { PermitService } from './permit-service';
+import { PlatformService } from './platform-service';
 import { TaxonomyService } from './taxonomy-service';
 
 const defaultLog = getLogger('services/survey-service');
@@ -41,12 +42,14 @@ export interface IMessageTypeGroup {
 export class SurveyService extends DBService {
   attachmentRepository: AttachmentRepository;
   surveyRepository: SurveyRepository;
+  platformService: PlatformService;
 
   constructor(connection: IDBConnection) {
     super(connection);
 
     this.attachmentRepository = new AttachmentRepository(connection);
     this.surveyRepository = new SurveyRepository(connection);
+    this.platformService = new PlatformService(connection);
   }
 
   async getSurveyIdsByProjectId(projectId: number): Promise<{ id: number }[]> {
@@ -246,6 +249,8 @@ export class SurveyService extends DBService {
 
     await Promise.all(promises);
 
+    await this.platformService.submitDwCAMetadataPackage(projectId);
+
     return surveyId;
   }
 
@@ -323,6 +328,10 @@ export class SurveyService extends DBService {
     }
 
     await Promise.all(promises);
+
+    const surveyData = await this.getSurveyById(surveyId);
+
+    await this.platformService.submitDwCAMetadataPackage(surveyData.survey_details.project_id);
   }
 
   async updateSurveyDetailsData(surveyId: number, surveyData: PutSurveyObject) {
