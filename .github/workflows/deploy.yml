@@ -119,27 +119,9 @@ jobs:
         if: steps.cache-repo.outputs.cache-hit != 'true'
         uses: actions/checkout@v3
 
-      - uses: technote-space/get-diff-action@v6
-        inputs:
-          SET_ENV_NAME: 'APP_DIFF'
-        with:
-          PATTERNS: |
-            src/**
-            server/**
-            public/**
-            .pipeline/**
-          FILES: |
-            package.json
-            package-lock.json
-            Dockerfile
-            tsconfig.json
-          RELATIVE: 'app'
-      - run: echo '${{ env.GIT_DIFF }}' | jq
-
       # Cache Node modules
       - name: Cache app pipeline node modules
         uses: actions/cache@v3
-        if: ${{ env.APP_DIFF }}
         env:
           cache-name: cache-app-pipeline-node-modules
         with:
@@ -153,19 +135,16 @@ jobs:
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
       # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
       - name: Log in to OpenShift
-        if: ${{ env.APP_DIFF }}
         run: oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
 
       # Install app pipeline node modules
       - name: Install app pipeline node modules
-        if: ${{ env.APP_DIFF }}
         working-directory: "app/.pipeline/"
         run: |
           npm install --only=production --prefer-offline
 
       # Build the app image
       - name: Build APP Image
-        if: ${{ env.APP_DIFF }}
         working-directory: "app/.pipeline/"
         run: |
           DEBUG=* npm run build -- --pr=$PR_NUMBER
