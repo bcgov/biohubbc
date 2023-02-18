@@ -260,7 +260,7 @@ export class SurveyService extends DBService {
     // take queue id and insert into history publish table
     if (queueResponse?.queue_id) {
       const historyRepo = new HistoryPublishRepository(this.connection);
-      await historyRepo.insertSurveyMetadataPublishRecord({survey_id: surveyId, queue_id: queueResponse.queue_id})
+      await historyRepo.insertSurveyMetadataPublishRecord({ survey_id: surveyId, queue_id: queueResponse.queue_id });
     }
 
     return surveyId;
@@ -348,7 +348,7 @@ export class SurveyService extends DBService {
     // take queue id and insert into history publish table
     if (queueResponse?.queue_id) {
       const historyRepo = new HistoryPublishRepository(this.connection);
-      await historyRepo.insertSurveyMetadataPublishRecord({survey_id: surveyId, queue_id: queueResponse.queue_id})
+      await historyRepo.insertSurveyMetadataPublishRecord({ survey_id: surveyId, queue_id: queueResponse.queue_id });
     }
   }
 

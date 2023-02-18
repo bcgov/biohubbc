@@ -348,7 +348,7 @@ export class ProjectService extends DBService {
     // take queue id and insert into history publish table
     if (queueResponse?.queue_id) {
       const historyRepo = new HistoryPublishRepository(this.connection);
-      await historyRepo.insertProjectMetadataPublishRecord({project_id: projectId, queue_id: queueResponse.queue_id})
+      await historyRepo.insertProjectMetadataPublishRecord({ project_id: projectId, queue_id: queueResponse.queue_id });
     }
 
     return projectId;
@@ -409,7 +409,7 @@ export class ProjectService extends DBService {
     // take queue id and insert into history publish table
     if (queueResponse?.queue_id) {
       const historyRepo = new HistoryPublishRepository(this.connection);
-      await historyRepo.insertProjectMetadataPublishRecord({project_id: projectId, queue_id: queueResponse.queue_id})
+      await historyRepo.insertProjectMetadataPublishRecord({ project_id: projectId, queue_id: queueResponse.queue_id });
     }
   }
 
