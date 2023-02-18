@@ -87,18 +87,6 @@ jobs:
           path: ${{ github.workspace }}/*
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
 
-  shouldBuildApp:
-    name: Build APP Image
-      runs-on: ubuntu-latest
-      timeout-minutes: 30
-      if: ${{ github.event.pull_request.merged == false && github.event.pull_request.draft == false }}
-      env:
-        PR_NUMBER: ${{ github.event.number }}
-      needs:
-        - checkoutRepo
-      steps:
-
-
   # Build the web frontend app image
   buildAPP:
     name: Build APP Image
@@ -172,7 +160,7 @@ jobs:
         if: ${{ env.APP_DIFF }}
         working-directory: "app/.pipeline/"
         run: |
-          npm install --only=production
+          npm install --only=production --prefer-offline
 
       # Build the app image
       - name: Build APP Image
@@ -235,7 +223,7 @@ jobs:
       - name: Install database pipeline node modules
         working-directory: "database/.pipeline/"
         run: |
-          npm install --only=production
+          npm install --only=production --prefer-offline
 
       # Build the database image
       - name: Build Database Image
@@ -297,7 +285,7 @@ jobs:
       - name: Install database pipeline node modules
         working-directory: "database/.pipeline/"
         run: |
-          npm install --only=production
+          npm install --only=production --prefer-offline
 
       # Build the database image
       - name: Build Database Setup Image
@@ -359,7 +347,7 @@ jobs:
       - name: Install api pipeline node modules
         working-directory: "api/.pipeline/"
         run: |
-          npm install --only=production
+          npm install --only=production --prefer-offline
 
       # Build the api image
       - name: Build API Image
@@ -422,7 +410,7 @@ jobs:
       - name: Install app pipeline node modules
         working-directory: "app/.pipeline"
         run: |
-          npm install --only=production
+          npm install --only=production --prefer-offline
 
       # Deploy the app image
       - name: Deploy APP Image
@@ -485,7 +473,7 @@ jobs:
       - name: Install database pipeline node modules
         working-directory: "database/.pipeline/"
         run: |
-          npm install --only=production
+          npm install --only=production --prefer-offline
 
       # Deploy the database image
       - name: Deploy Database Image
@@ -549,7 +537,7 @@ jobs:
       - name: Install database pipeline node modules
         working-directory: "database/.pipeline/"
         run: |
-          npm install --only=production
+          npm install --only=production --prefer-offline
 
       # Deploy the database setup image
       - name: Deploy Database Setup Image
@@ -613,7 +601,7 @@ jobs:
       - name: Install api pipeline node modules
         working-directory: "api/.pipeline/"
         run: |
-          npm install --only=production
+          npm install --only=production --prefer-offline
 
       # Deploy the api image
       - name: Deploy API Image

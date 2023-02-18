@@ -61,7 +61,7 @@ jobs:
       - name: Clean APP Deployment
         working-directory: "app/.pipeline/"
         run: |
-          npm install --only=production
+          npm install --only=production --prefer-offline
           DEBUG=* npm run clean -- --pr=$PR_NUMBER --env=build
           DEBUG=* npm run clean -- --pr=$PR_NUMBER --env=dev
 
@@ -81,7 +81,7 @@ jobs:
       - name: Clean Database Artifacts
         working-directory: "database/.pipeline/"
         run: |
-          npm install --only=production
+          npm install --only=production --prefer-offline
           DEBUG=* npm run clean -- --pr=$PR_NUMBER --env=build
           DEBUG=* npm run clean -- --pr=$PR_NUMBER --env=dev
 
@@ -101,7 +101,7 @@ jobs:
       - name: Clean API Deployment
         working-directory: "api/.pipeline/"
         run: |
-          npm install --only=production
+          npm install --only=production --prefer-offline
           DEBUG=* npm run clean -- --pr=$PR_NUMBER --env=build
           DEBUG=* npm run clean -- --pr=$PR_NUMBER --env=dev
 

@@ -84,7 +84,7 @@ jobs:
 
       - name: Install api dependencies
         working-directory: api
-        run: npm install
+        run: npm install --prefer-offline
 
       - name: Run api tests with coverage
         working-directory: api
@@ -110,7 +110,7 @@ jobs:
 
       - name: Install app dependencies
         working-directory: app
-        run: npm install
+        run: npm install --prefer-offline
 
       - name: Run app tests with coverage
         working-directory: app
