@@ -17,6 +17,7 @@ import {
   SurveySupplementaryData
 } from '../models/survey-view';
 import { AttachmentRepository } from '../repositories/attachment-repository';
+import { HistoryPublishRepository } from '../repositories/history-publish-repository';
 import {
   IGetLatestSurveyOccurrenceSubmission,
   IObservationSubmissionInsertDetails,
@@ -254,7 +255,13 @@ export class SurveyService extends DBService {
 
     await Promise.all(promises);
 
-    await this.platformService.submitDwCAMetadataPackage(projectId);
+    const queueResponse = await this.platformService.submitDwCAMetadataPackage(projectId);
+
+    // take queue id and insert into history publish table
+    if (queueResponse?.queue_id) {
+      const historyRepo = new HistoryPublishRepository(this.connection);
+      await historyRepo.insertSurveyMetadataPublishRecord({survey_id: surveyId, queue_id: queueResponse.queue_id})
+    }
 
     return surveyId;
   }
@@ -336,7 +343,13 @@ export class SurveyService extends DBService {
 
     const surveyData = await this.getSurveyById(surveyId);
 
-    await this.platformService.submitDwCAMetadataPackage(surveyData.survey_details.project_id);
+    const queueResponse = await this.platformService.submitDwCAMetadataPackage(surveyData.survey_details.project_id);
+
+    // take queue id and insert into history publish table
+    if (queueResponse?.queue_id) {
+      const historyRepo = new HistoryPublishRepository(this.connection);
+      await historyRepo.insertSurveyMetadataPublishRecord({survey_id: surveyId, queue_id: queueResponse.queue_id})
+    }
   }
 
   async updateSurveyDetailsData(surveyId: number, surveyData: PutSurveyObject) {
