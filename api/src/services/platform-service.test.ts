@@ -119,6 +119,7 @@ describe('PlatformService', () => {
 
       process.env.BACKBONE_API_HOST = 'http://backbone.com';
       process.env.BACKBONE_INTAKE_PATH = 'api/intake';
+      process.env.BACKBONE_ARTIFACT_INTAKE_PATH = 'api/artifact/intake';
       process.env.BACKBONE_INTAKE_ENABLED = 'true';
 
       const keycloakServiceStub = sinon.stub(KeycloakService.prototype, 'getKeycloakToken').resolves('token');
@@ -288,5 +289,21 @@ describe('PlatformService', () => {
       expect(getFileFromS3Stub).to.have.been.calledOnce;
       expect(_submitDwCADatasetToBioHubBackboneStub).to.have.been.calledOnce;
     });
+  });
+
+  describe('_makeArtifactsFromAttachments', () => {
+    // TODO
+  });
+
+  describe('_submitArtifactToBioHub', () => {
+    // TODO
+  });
+
+  describe('uploadProjectAttachmentsToBioHub', () => {
+    // TODO
+  });
+
+  describe('uploadSurveyAttachmentsToBioHub', () => {
+    // TOOD
   });
 });

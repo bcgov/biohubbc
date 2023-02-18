@@ -33,6 +33,7 @@ const apiDeploy = (settings) => {
         APP_HOST: phases[phase].appHost,
         BACKBONE_API_HOST: phases[phase].backboneApiHost,
         BACKBONE_INTAKE_PATH: phases[phase].backboneIntakePath,
+        BACKBONE_ARTIFACT_INTAKE_PATH: phases[phase].backboneArtifactIntakePath,
         BACKBONE_INTAKE_ENABLED: phases[phase].backboneIntakeEnabled,
         NODE_ENV: phases[phase].env || 'dev',
         ELASTICSEARCH_URL: phases[phase].elasticsearchURL,

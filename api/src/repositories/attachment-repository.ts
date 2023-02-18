@@ -5,11 +5,7 @@ import { PostReportAttachmentMetadata, PutReportAttachmentMetadata } from '../mo
 import { getLogger } from '../utils/logger';
 import { BaseRepository } from './base-repository';
 
-export type IAttachment = 
-  | ISurveyAttachment
-  | ISurveyReportAttachment
-  | IProjectAttachment
-  | IProjectReportAttachment;
+export type IAttachment = ISurveyAttachment | ISurveyReportAttachment | IProjectAttachment | IProjectReportAttachment;
 
 export type ISurveyAttachment = IProjectAttachment;
 
