@@ -12,7 +12,6 @@ process.on('unhandledRejection', (reason, promise) => {
 
 process.on('exit', (code) => {
   console.log('api deploy - exit:', 'code:', code);
-  process.exit(1);
 });
 
 // Deploys the api image

@@ -12,7 +12,6 @@ process.on('unhandledRejection', (reason, promise) => {
 
 process.on('exit', (code) => {
   console.log('database deploy - exit:', 'code:', code);
-  process.exit(1);
 });
 
 // Deploys the database image

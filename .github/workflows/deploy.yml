@@ -137,11 +137,16 @@ jobs:
       - name: Log in to OpenShift
         run: oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
 
+      # Install app pipeline node modules
+      - name: Install app pipeline node modules
+        working-directory: "app/.pipeline/"
+        run: |
+          npm ci --only=production
+
       # Build the app image
       - name: Build APP Image
         working-directory: "app/.pipeline/"
         run: |
-          npm ci --only=production
           DEBUG=* npm run build -- --pr=$PR_NUMBER
 
   # Build the Database image
@@ -194,11 +199,16 @@ jobs:
       - name: Log in to OpenShift
         run: oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
 
+      # Install database pipeline node modules
+      - name: Install database pipeline node modules
+        working-directory: "database/.pipeline/"
+        run: |
+          npm ci --only=production
+
       # Build the database image
       - name: Build Database Image
         working-directory: "database/.pipeline/"
         run: |
-          npm ci --only=production
           DEBUG=* npm run db:build -- --pr=$PR_NUMBER
 
   # Build the Database Setup image
@@ -251,11 +261,16 @@ jobs:
       - name: Log in to OpenShift
         run: oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
 
+      # Install database pipeline node modules
+      - name: Install database pipeline node modules
+        working-directory: "database/.pipeline/"
+        run: |
+          npm ci --only=production
+
       # Build the database image
       - name: Build Database Setup Image
         working-directory: "database/.pipeline/"
         run: |
-          npm ci --only=production
           DEBUG=* npm run db-setup:build -- --pr=$PR_NUMBER
 
   # Build the API image
@@ -308,11 +323,16 @@ jobs:
       - name: Log in to OpenShift
         run: oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
 
+      # Install api pipeline node modules
+      - name: Install api pipeline node modules
+        working-directory: "api/.pipeline/"
+        run: |
+          npm ci --only=production
+
       # Build the api image
       - name: Build API Image
         working-directory: "api/.pipeline/"
         run: |
-          npm ci --only=production
           DEBUG=* npm run build -- --pr=$PR_NUMBER
 
   # Deploy APP image
@@ -366,11 +386,16 @@ jobs:
       - name: Log in to OpenShift
         run: oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
 
+      # Install app pipeline node modules
+      - name: Install app pipeline node modules
+        working-directory: "app/.pipeline"
+        run: |
+          npm ci --only=production
+
       # Deploy the app image
       - name: Deploy APP Image
         working-directory: "app/.pipeline"
         run: |
-          npm ci --only=production
           DEBUG=* npm run deploy -- --pr=$PR_NUMBER --env=dev
 
   # Deploy Database image
@@ -424,11 +449,16 @@ jobs:
       - name: Log in to OpenShift
         run: oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
 
+      # Install database pipeline node modules
+      - name: Install database pipeline node modules
+        working-directory: "database/.pipeline/"
+        run: |
+          npm ci --only=production
+
       # Deploy the database image
       - name: Deploy Database Image
         working-directory: "database/.pipeline/"
         run: |
-          npm ci --only=production
           DEBUG=* npm run db:deploy -- --pr=$PR_NUMBER --env=dev
 
   # Deploy Database image
@@ -483,11 +513,16 @@ jobs:
       - name: Log in to OpenShift
         run: oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
 
+      # Install database pipeline node modules
+      - name: Install database pipeline node modules
+        working-directory: "database/.pipeline/"
+        run: |
+          npm ci --only=production
+
       # Deploy the database setup image
       - name: Deploy Database Setup Image
         working-directory: "database/.pipeline/"
         run: |
-          npm ci --only=production
           DEBUG=* npm run db-setup:deploy -- --pr=$PR_NUMBER --env=dev
 
   # Deploy API image
@@ -542,9 +577,14 @@ jobs:
       - name: Log in to OpenShift
         run: oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
 
+      # Install api pipeline node modules
+      - name: Install api pipeline node modules
+        working-directory: "api/.pipeline/"
+        run: |
+          npm ci --only=production
+
       # Deploy the api image
       - name: Deploy API Image
         working-directory: "api/.pipeline/"
         run: |
-          npm ci --only=production
           DEBUG=* npm run deploy -- --pr=$PR_NUMBER --env=dev
