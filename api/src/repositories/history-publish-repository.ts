@@ -38,11 +38,10 @@ export interface ISurveyReportPublish {
 }
 
 export class HistoryPublishRepository extends BaseRepository {
-
   /**
    * Inserts a record into `project_metadata_publish` for a given queue and project id
    * and returns an id
-   * @param {IProjectMetadataPublish} data 
+   * @param {IProjectMetadataPublish} data
    * @returns {*} {Promise<number>}
    * @memberof HistoryPublishRepository
    */
@@ -68,7 +67,7 @@ export class HistoryPublishRepository extends BaseRepository {
   /**
    * Inserts a record into `survey_metadata_publish` for a given queue and survey id
    * and returns an id
-   * @param {ISurveyMetadataPublish} data 
+   * @param {ISurveyMetadataPublish} data
    * @returns {*} {Promise<number>}
    * @memberof HistoryPublishRepository
    */
@@ -94,7 +93,7 @@ export class HistoryPublishRepository extends BaseRepository {
   /**
    * Inserts a record into `occurrence_submission_publish` for a given queue and occurrence id
    * and returns an id
-   * @param {IOccurrenceSubmissionPublish} data 
+   * @param {IOccurrenceSubmissionPublish} data
    * @returns {*} {Promise<number>}
    * @memberof HistoryPublishRepository
    */
@@ -120,7 +119,7 @@ export class HistoryPublishRepository extends BaseRepository {
   /**
    * Inserts a record into `project_attachment_publish` for a given queue and project id
    * and returns an id
-   * @param {IProjectAttachmentPublish} data 
+   * @param {IProjectAttachmentPublish} data
    * @returns {*} {Promise<number>}
    * @memberof HistoryPublishRepository
    */
@@ -146,7 +145,7 @@ export class HistoryPublishRepository extends BaseRepository {
   /**
    * Inserts a record into `project_report_publish` for a given queue and project id
    * and returns an id
-   * @param {IProjectReportPublish} data 
+   * @param {IProjectReportPublish} data
    * @returns {*} {Promise<number>}
    * @memberof HistoryPublishRepository
    */
@@ -172,7 +171,7 @@ export class HistoryPublishRepository extends BaseRepository {
   /**
    * Inserts a record into `survey_attachment_publish` for a given queue and survey id
    * and returns an id
-   * @param {ISurveyAttachmentPublish} data 
+   * @param {ISurveyAttachmentPublish} data
    * @returns {*} {Promise<number>}
    * @memberof HistoryPublishRepository
    */
@@ -198,7 +197,7 @@ export class HistoryPublishRepository extends BaseRepository {
   /**
    * Inserts a record into `survey_report_publish` for a given queue and survey id
    * and returns an id
-   * @param {ISurveyReportPublish} data 
+   * @param {ISurveyReportPublish} data
    * @returns {*} {Promise<number>}
    * @memberof HistoryPublishRepository
    */

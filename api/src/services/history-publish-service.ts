@@ -18,10 +18,10 @@ export class HistoryPublishService extends DBService {
     this.historyRepository = new HistoryPublishRepository(connection);
   }
 
-/**
+  /**
    * Inserts a Project Metadata Publish record for a given queue and project id
    * and returns an id
-   * @param {IProjectMetadataPublish} data 
+   * @param {IProjectMetadataPublish} data
    * @returns {*} {Promise<number>}
    * @memberof HistoryPublishRepository
    */
@@ -29,10 +29,10 @@ export class HistoryPublishService extends DBService {
     return this.historyRepository.insertProjectMetadataPublishRecord(data);
   }
 
-/**
+  /**
    * Inserts a Survey Metadata Publish record for a given queue and survey id
    * and returns an id
-   * @param {ISurveyMetadataPublish} data 
+   * @param {ISurveyMetadataPublish} data
    * @returns {*} {Promise<number>}
    * @memberof HistoryPublishRepository
    */
@@ -40,10 +40,10 @@ export class HistoryPublishService extends DBService {
     return this.historyRepository.insertSurveyMetadataPublishRecord(data);
   }
 
-/**
+  /**
    * Inserts a Occurrence Submission Publish record for a given queue and occurrence id
    * and returns an id
-   * @param {IOccurrenceSubmissionPublish} data 
+   * @param {IOccurrenceSubmissionPublish} data
    * @returns {*} {Promise<number>}
    * @memberof HistoryPublishRepository
    */
@@ -51,10 +51,10 @@ export class HistoryPublishService extends DBService {
     return this.historyRepository.insertOccurrenceSubmissionPublishRecord(data);
   }
 
-/**
+  /**
    * Inserts a Project Attachment Publish record for a given queue and project id
    * and returns an id
-   * @param {IProjectAttachmentPublish} data 
+   * @param {IProjectAttachmentPublish} data
    * @returns {*} {Promise<number>}
    * @memberof HistoryPublishRepository
    */
@@ -62,10 +62,10 @@ export class HistoryPublishService extends DBService {
     return this.historyRepository.insertProjectAttachmentPublishRecord(data);
   }
 
-/**
+  /**
    * Inserts a Project Report Publish record for a given queue and project id
    * and returns an id
-   * @param {IProjectReportPublish} data 
+   * @param {IProjectReportPublish} data
    * @returns {*} {Promise<number>}
    * @memberof HistoryPublishRepository
    */
@@ -73,10 +73,10 @@ export class HistoryPublishService extends DBService {
     return this.historyRepository.insertProjectReportPublishRecord(data);
   }
 
-/**
+  /**
    * Inserts a Survey Attachment Publish record for a given queue and survey id
    * and returns an id
-   * @param {ISurveyAttachmentPublish} data 
+   * @param {ISurveyAttachmentPublish} data
    * @returns {*} {Promise<number>}
    * @memberof HistoryPublishRepository
    */
@@ -87,7 +87,7 @@ export class HistoryPublishService extends DBService {
   /**
    * Inserts a Survey Report Publish record for a given queue and survey id
    * and returns an id
-   * @param {ISurveyReportPublish} data 
+   * @param {ISurveyReportPublish} data
    * @returns {*} {Promise<number>}
    * @memberof HistoryPublishRepository
    */
