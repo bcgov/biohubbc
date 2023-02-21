@@ -26,10 +26,13 @@ jobs:
           echo Git Pull Request Ref: ${{ github.event.pull_request.head.sha }}
           echo Git Event Name: ${{ github.event_name }}
           echo Git Event Action: ${{ github.event.action }}
+          echo Git Branch Ref: ${{ github.head_ref || github.ref_name }}
           echo Git Labels: "$LABELS"
           echo PR in Draft: ${{ github.event.pull_request.draft }}
 
   # Scans the commit against past commits, and determines if any jobs are skippable (due to no changes in target files).
+  # Note: this does not take into account the current branch and will check past workflows from any branch, so an 
+  # additional check against the current branch is added to the `if` in the build jobs below.
   skipDuplicateActions:
     name: Check for duplicate actions
     runs-on: ubuntu-latest
@@ -115,9 +118,14 @@ jobs:
     name: Build APP Image
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    if: ${{ github.event.pull_request.merged == false && github.event.pull_request.draft == false && !fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip }}
+    if: |
+      github.event.pull_request.merged == false && 
+      github.event.pull_request.draft == false && 
+      !(fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch == '$BRANCH_REF')
     env:
       PR_NUMBER: ${{ github.event.number }}
+      APP_NAME: 'biohubbc-app'
+      BRANCH_REF: ${{ github.head_ref || github.ref_name }}
     needs:
       - checkoutRepo
       - skipDuplicateActions
@@ -167,7 +175,7 @@ jobs:
       - name: Scale down app pods
         run: |
           oc project af2668-dev
-          oc get deploymentconfig --selector env-id=$PR_NUMBER,app-name=biohubbc-app -o name | awk '{print "oc scale --replicas=0  " $1}' | bash
+          oc get deploymentconfig --selector env-id=$PR_NUMBER,app-name=$APP_NAME -o name | awk '{print "oc scale --replicas=0  " $1}' | bash
 
       # Install app pipeline node modules
       - name: Install app pipeline node modules
@@ -186,9 +194,14 @@ jobs:
     name: Build Database Image
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    if: ${{ github.event.pull_request.merged == false && github.event.pull_request.draft == false && !fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.should_skip }}
+    if: |
+      github.event.pull_request.merged == false && 
+      github.event.pull_request.draft == false && 
+      !(fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.skipped_by.branch == '$BRANCH_REF')
     env:
       PR_NUMBER: ${{ github.event.number }}
+      APP_NAME: 'biohubbc-db'
+      BRANCH_REF: ${{ github.head_ref || github.ref_name }}
     needs:
       - checkoutRepo
       - skipDuplicateActions
@@ -238,7 +251,7 @@ jobs:
       - name: Scale down database pods
         run: |
           oc project af2668-dev
-          oc get deploymentconfig --selector env-id=$PR_NUMBER,app-name=biohubbc-db -o name | awk '{print "oc scale --replicas=0  " $1}' | bash
+          oc get deploymentconfig --selector env-id=$PR_NUMBER,app-name=$APP_NAME -o name | awk '{print "oc scale --replicas=0  " $1}' | bash
 
       # Install database pipeline node modules
       - name: Install database pipeline node modules
@@ -257,9 +270,13 @@ jobs:
     name: Build Database Setup Image
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    if: ${{ github.event.pull_request.merged == false && github.event.pull_request.draft == false && !fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.should_skip }}
+    if: |
+      github.event.pull_request.merged == false && 
+      github.event.pull_request.draft == false && 
+      !(fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.skipped_by.branch == '$BRANCH_REF')
     env:
       PR_NUMBER: ${{ github.event.number }}
+      BRANCH_REF: ${{ github.head_ref || github.ref_name }}
     needs:
       - checkoutRepo
       - skipDuplicateActions
@@ -320,9 +337,14 @@ jobs:
     name: Build API Image
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    if: ${{ github.event.pull_request.merged == false && github.event.pull_request.draft == false && !fromJSON(needs.skipDuplicateActions.outputs.paths_result).api.should_skip }}
+    if: |
+      github.event.pull_request.merged == false && 
+      github.event.pull_request.draft == false && 
+      !(fromJSON(needs.skipDuplicateActions.outputs.paths_result).api.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).api.skipped_by.branch == '$BRANCH_REF')
     env:
       PR_NUMBER: ${{ github.event.number }}
+      APP_NAME: 'biohubbc-api'
+      BRANCH_REF: ${{ github.head_ref || github.ref_name }}
     needs:
       - checkoutRepo
       - skipDuplicateActions
@@ -372,7 +394,7 @@ jobs:
       - name: Scale down api pods
         run: |
           oc project af2668-dev
-          oc get deploymentconfig --selector env-id=$PR_NUMBER,app-name=biohubbc-api -o name | awk '{print "oc scale --replicas=0  " $1}' | bash
+          oc get deploymentconfig --selector env-id=$PR_NUMBER,app-name=$APP_NAME -o name | awk '{print "oc scale --replicas=0  " $1}' | bash
 
       # Install api pipeline node modules
       - name: Install api pipeline node modules
