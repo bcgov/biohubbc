@@ -27,7 +27,6 @@ import {
 } from '../repositories/survey-repository';
 import { getLogger } from '../utils/logger';
 import { DBService } from './db-service';
-import { HistoryPublishService } from './history-publish-service';
 import { PermitService } from './permit-service';
 import { PlatformService } from './platform-service';
 import { TaxonomyService } from './taxonomy-service';
@@ -255,13 +254,8 @@ export class SurveyService extends DBService {
 
     await Promise.all(promises);
 
-    const queueResponse = await this.platformService.submitDwCAMetadataPackage(projectId);
-
-    // take queue id and insert into history publish table
-    if (queueResponse?.queue_id) {
-      const historyRepo = new HistoryPublishService(this.connection);
-      await historyRepo.insertSurveyMetadataPublishRecord({ survey_id: surveyId, queue_id: queueResponse.queue_id });
-    }
+    //Update Eml to biohub and publish record
+    await this.platformService.submitAndPublishDwcAMetadata(projectId, surveyId);
 
     return surveyId;
   }
@@ -343,13 +337,8 @@ export class SurveyService extends DBService {
 
     const surveyData = await this.getSurveyById(surveyId);
 
-    const queueResponse = await this.platformService.submitDwCAMetadataPackage(surveyData.survey_details.project_id);
-
-    // take queue id and insert into history publish table
-    if (queueResponse?.queue_id) {
-      const historyRepo = new HistoryPublishService(this.connection);
-      await historyRepo.insertSurveyMetadataPublishRecord({ survey_id: surveyId, queue_id: queueResponse.queue_id });
-    }
+    //Update Eml to biohub and publish record
+    await this.platformService.submitAndPublishDwcAMetadata(surveyData.survey_details.project_id, surveyId);
   }
 
   async updateSurveyDetailsData(surveyId: number, surveyData: PutSurveyObject) {

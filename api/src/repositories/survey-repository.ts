@@ -78,12 +78,25 @@ export interface ISurveyProprietorModel {
 const defaultLog = getLogger('repositories/survey-repository');
 
 export class SurveyRepository extends BaseRepository {
+  /**
+   * Deletes a survey and any associations for a given survey
+   *
+   * @param {number} surveyId
+   * @memberof SurveyRepository
+   */
   async deleteSurvey(surveyId: number): Promise<void> {
     const sqlStatement = SQL`call api_delete_survey(${surveyId})`;
 
     await this.connection.sql(sqlStatement);
   }
 
+  /**
+   * Get survey(s) for a given project id
+   *
+   * @param {number} projectId
+   * @returns {*} {Promise<{id: number}[]>}
+   * @memberof SurveyRepository
+   */
   async getSurveyIdsByProjectId(projectId: number): Promise<{ id: number }[]> {
     const sqlStatement = SQL`
       SELECT
@@ -107,6 +120,13 @@ export class SurveyRepository extends BaseRepository {
     return response.rows;
   }
 
+  /**
+   * Gets survey data for a given survey ID
+   *
+   * @param {number} surveyId
+   * @returns {*} {Promise<GetSurveyData>}
+   * @memberof SurveyRepository
+   */
   async getSurveyData(surveyId: number): Promise<GetSurveyData> {
     const sqlStatement = SQL`
       SELECT
@@ -131,6 +151,13 @@ export class SurveyRepository extends BaseRepository {
     return new GetSurveyData(result);
   }
 
+  /**
+   * Get species data for a given survey ID
+   *
+   * @param {number} surveyId
+   * @returns {*} {Promise<IGetSpeciesData[]>}
+   * @memberof SurveyRepository
+   */
   async getSpeciesData(surveyId: number): Promise<IGetSpeciesData[]> {
     const sqlStatement = SQL`
       SELECT
@@ -156,6 +183,12 @@ export class SurveyRepository extends BaseRepository {
     return result;
   }
 
+  /**
+   * Deletes a survey and any associations for a given survey
+   *
+   * @param {number} surveyId
+   * @memberof SurveyRepository
+   */
   async getSurveyPurposeAndMethodology(surveyId: number): Promise<GetSurveyPurposeAndMethodologyData> {
     const sqlStatement = SQL`
       SELECT
@@ -193,6 +226,12 @@ export class SurveyRepository extends BaseRepository {
     return new GetSurveyPurposeAndMethodologyData(result);
   }
 
+  /**
+   * Deletes a survey and any associations for a given survey
+   *
+   * @param {number} surveyId
+   * @memberof SurveyRepository
+   */
   async getSurveyFundingSourcesData(surveyId: number): Promise<GetSurveyFundingSources> {
     const sqlStatement = SQL`
       SELECT
@@ -253,6 +292,13 @@ export class SurveyRepository extends BaseRepository {
     return new GetSurveyFundingSources(result);
   }
 
+  /**
+   * Get a Survey Proprietor for a given survey ID
+   *
+   * @param {number} surveyId
+   * @returns {*} {Promise<ISurveyProprietorModel>}
+   * @memberof SurveyRepository
+   */
   async getSurveyProprietorDataForSecurityRequest(surveyId: number): Promise<ISurveyProprietorModel> {
     const sqlStatement = SQL`
       SELECT * 

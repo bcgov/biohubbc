@@ -32,7 +32,6 @@ import { ProjectRepository } from '../repositories/project-repository';
 import { deleteFileFromS3 } from '../utils/file-utils';
 import { AttachmentService } from './attachment-service';
 import { DBService } from './db-service';
-import { HistoryPublishService } from './history-publish-service';
 import { PlatformService } from './platform-service';
 import { SurveyService } from './survey-service';
 
@@ -342,14 +341,8 @@ export class ProjectService extends DBService {
     // The user that creates a project is automatically assigned a project lead role, for this project
     await this.insertParticipantRole(projectId, PROJECT_ROLE.PROJECT_LEAD);
 
-    //Submit Eml to biohub
-    const queueResponse = await this.platformService.submitDwCAMetadataPackage(projectId);
-
-    // take queue id and insert into history publish table
-    if (queueResponse?.queue_id) {
-      const historyRepo = new HistoryPublishService(this.connection);
-      await historyRepo.insertProjectMetadataPublishRecord({ project_id: projectId, queue_id: queueResponse.queue_id });
-    }
+    //Submit Eml to biohub and publish record
+    await this.platformService.submitAndPublishDwcAMetadata(projectId);
 
     return projectId;
   }
@@ -403,14 +396,8 @@ export class ProjectService extends DBService {
 
     await Promise.all(promises);
 
-    //Update Eml to biohub
-    const queueResponse = await this.platformService.submitDwCAMetadataPackage(projectId);
-
-    // take queue id and insert into history publish table
-    if (queueResponse?.queue_id) {
-      const historyRepo = new HistoryPublishService(this.connection);
-      await historyRepo.insertProjectMetadataPublishRecord({ project_id: projectId, queue_id: queueResponse.queue_id });
-    }
+    //Update Eml to biohub and publish record
+    await this.platformService.submitAndPublishDwcAMetadata(projectId);
   }
 
   async updateIUCNData(projectId: number, entities: IUpdateProject): Promise<void> {

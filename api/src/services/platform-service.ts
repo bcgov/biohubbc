@@ -165,10 +165,10 @@ export class PlatformService extends DBService {
    *
    * @param {number} projectId
    * @param {number} surveyId
-   * @return {*}
+   * @return {*} {Promise<void>}
    * @memberof PlatformService
    */
-  async uploadSurveyDataToBioHub(projectId: number, surveyId: number) {
+  async uploadSurveyDataToBioHub(projectId: number, surveyId: number): Promise<void> {
     if (!this.BACKBONE_INTAKE_ENABLED) {
       return;
     }
@@ -211,7 +211,7 @@ export class PlatformService extends DBService {
 
     const queueResponse = await this._submitDwCADatasetToBioHubBackbone(dwCADataset);
 
-    Promise.all([
+    await Promise.all([
       publishRepo.insertProjectMetadataPublishRecord({
         project_id: projectId,
         queue_id: queueResponse.queue_id
@@ -225,5 +225,29 @@ export class PlatformService extends DBService {
         queue_id: queueResponse.queue_id
       })
     ]);
+  }
+
+  async submitAndPublishDwcAMetadata(projectId: number, surveyId?: number) {
+    try {
+      const queueResponse = await this.submitDwCAMetadataPackage(projectId);
+      const historyRepo = new HistoryPublishService(this.connection);
+
+      // take queue id and insert into history publish table
+      if (queueResponse?.queue_id) {
+        await historyRepo.insertProjectMetadataPublishRecord({
+          project_id: projectId,
+          queue_id: queueResponse.queue_id
+        });
+      }
+
+      // take queue id and insert into history publish table
+      if (queueResponse?.queue_id && surveyId) {
+        await historyRepo.insertSurveyMetadataPublishRecord({ survey_id: surveyId, queue_id: queueResponse.queue_id });
+      }
+    } catch (error) {
+      const defaultLog = getLogger('platformService->submitDwCAMetadataPackage');
+      // Don't fail the rest of the endpoint if submitting metadata fails
+      defaultLog.error({ label: 'platformService->submitDwCAMetadataPackage', message: 'error', error });
+    }
   }
 }
