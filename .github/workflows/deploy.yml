@@ -29,30 +29,6 @@ jobs:
           echo Git Labels: "$LABELS"
           echo PR in Draft: ${{ github.event.pull_request.draft }}
 
-  # Scale down any existing OpenShift pods for this PR deployment
-  # Why? The new pods will be deployed before the existing pods are terminated, and twice the resources will be needed
-  # in that moment. If not enough resources are available to spin up the new pods, then they may fail to deploy.
-  scaleDownPods:
-    name: Scale down the pods for this PR
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    if: ${{ github.event.pull_request.merged == false }}
-    env:
-      PR_NUMBER: ${{ github.event.number }}
-    needs:
-      - checkEnv
-    steps:
-      # Log in to OpenShift.
-      # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
-      # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
-      - name: Log in to OpenShift
-        run: oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
-
-      - name: Scale down
-        run: |
-          oc project af2668-dev
-          oc get deploymentconfig --selector env-id=$PR_NUMBER -o name | awk '{print "oc scale --replicas=0  " $1}' | bash
-
   # Checkout the repo once and cache it for use in subsequent jobs
   checkoutRepo:
     name: Checkout and cache target branch
@@ -87,16 +63,62 @@ jobs:
           path: ${{ github.workspace }}/*
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
 
+  # Scans the commit against past commits, and determines if any jobs are skippable (due to no changes in target files).
+  skipDuplicateActions:
+    name: Check for duplicate actions
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs:
+      - checkEnv
+    outputs:
+      should_skip: ${{ steps.skip_check.outputs.should_skip }}
+      paths_result: ${{ steps.skip_check.outputs.paths_result }}
+    steps:
+      - id: skip_check
+        uses: fkirc/skip-duplicate-actions@v5
+        with:
+          paths_filter: |
+            app:
+              paths:
+                - 'app/src/**'
+                - 'app/package*.json'
+                - 'app/.pipeline/**'
+                - 'app/Dockerfile'
+                - 'app/server/**'
+                - 'app/public/**'
+              paths_ignore:
+                - 'app/src/**/*.test.*'
+                - 'app/**.md'
+            api:
+              paths:
+                - 'api/src/**'
+                - 'api/package*.json'
+                - 'api/.pipeline/**'
+                - 'api/Dockerfile'
+              paths_ignore:
+                - 'api/src/**/*.test.ts'
+                - 'api/**.md'
+            database:
+              paths:
+                - 'database/src/**' 
+                - 'database/package*.json'
+                - 'database/.pipeline/**'
+              paths_ignore:
+                - 'database/src/**/*.test.ts'
+                - 'database/**.md'
+          paths_ignore: '["**/*.md", "**/*.test.ts"]'
+
   # Build the web frontend app image
   buildAPP:
     name: Build APP Image
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    if: ${{ github.event.pull_request.merged == false && github.event.pull_request.draft == false }}
+    if: ${{ github.event.pull_request.merged == false && github.event.pull_request.draft == false && !fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip }}
     env:
       PR_NUMBER: ${{ github.event.number }}
     needs:
       - checkoutRepo
+      - skipDuplicateActions
     steps:
       # Install Node - for `node` and `npm` commands
       - name: Setup Node.js
@@ -137,6 +159,14 @@ jobs:
       - name: Log in to OpenShift
         run: oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
 
+      # Scale down any existing OpenShift pods for this PR deployment
+      # Why? The new pods will be deployed before the existing pods are terminated, and twice the resources will be needed
+      # in that moment. If not enough resources are available to spin up the new pods, then they may fail to deploy.
+      - name: Scale down app pods
+        run: |
+          oc project af2668-dev
+          oc get deploymentconfig --selector env-id=$PR_NUMBER,app-name=biohubbc-app -o name | awk '{print "oc scale --replicas=0  " $1}' | bash
+
       # Install app pipeline node modules
       - name: Install app pipeline node modules
         working-directory: "app/.pipeline/"
@@ -154,11 +184,12 @@ jobs:
     name: Build Database Image
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    if: ${{ github.event.pull_request.merged == false && github.event.pull_request.draft == false }}
+    if: ${{ github.event.pull_request.merged == false && github.event.pull_request.draft == false && !fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.should_skip }}
     env:
       PR_NUMBER: ${{ github.event.number }}
     needs:
       - checkoutRepo
+      - skipDuplicateActions
     steps:
       # Install Node - for `node` and `npm` commands
       - name: Setup Node.js
@@ -199,6 +230,14 @@ jobs:
       - name: Log in to OpenShift
         run: oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
 
+      # Scale down any existing OpenShift pods for this PR deployment
+      # Why? The new pods will be deployed before the existing pods are terminated, and twice the resources will be needed
+      # in that moment. If not enough resources are available to spin up the new pods, then they may fail to deploy.
+      - name: Scale down database pods
+        run: |
+          oc project af2668-dev
+          oc get deploymentconfig --selector env-id=$PR_NUMBER,app-name=biohubbc-db -o name | awk '{print "oc scale --replicas=0  " $1}' | bash
+
       # Install database pipeline node modules
       - name: Install database pipeline node modules
         working-directory: "database/.pipeline/"
@@ -216,11 +255,12 @@ jobs:
     name: Build Database Setup Image
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    if: ${{ github.event.pull_request.merged == false && github.event.pull_request.draft == false }}
+    if: ${{ github.event.pull_request.merged == false && github.event.pull_request.draft == false && !fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.should_skip }}
     env:
       PR_NUMBER: ${{ github.event.number }}
     needs:
       - checkoutRepo
+      - skipDuplicateActions
     steps:
       # Install Node - for `node` and `npm` commands
       - name: Setup Node.js
@@ -278,11 +318,12 @@ jobs:
     name: Build API Image
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    if: ${{ github.event.pull_request.merged == false && github.event.pull_request.draft == false }}
+    if: ${{ github.event.pull_request.merged == false && github.event.pull_request.draft == false && !fromJSON(needs.skipDuplicateActions.outputs.paths_result).api.should_skip }}
     env:
       PR_NUMBER: ${{ github.event.number }}
     needs:
       - checkoutRepo
+      - skipDuplicateActions
     steps:
       # Install Node - for `node` and `npm` commands
       - name: Setup Node.js
@@ -323,6 +364,14 @@ jobs:
       - name: Log in to OpenShift
         run: oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
 
+      # Scale down any existing OpenShift pods for this PR deployment
+      # Why? The new pods will be deployed before the existing pods are terminated, and twice the resources will be needed
+      # in that moment. If not enough resources are available to spin up the new pods, then they may fail to deploy.
+      - name: Scale down api pods
+        run: |
+          oc project af2668-dev
+          oc get deploymentconfig --selector env-id=$PR_NUMBER,app-name=biohubbc-api -o name | awk '{print "oc scale --replicas=0  " $1}' | bash
+
       # Install api pipeline node modules
       - name: Install api pipeline node modules
         working-directory: "api/.pipeline/"
@@ -344,7 +393,6 @@ jobs:
     env:
       PR_NUMBER: ${{ github.event.number }}
     needs:
-      - scaleDownPods
       - buildAPP
     steps:
       # Install Node - for `node` and `npm` commands
@@ -407,7 +455,6 @@ jobs:
     env:
       PR_NUMBER: ${{ github.event.number }}
     needs:
-      - scaleDownPods
       - buildDatabase
     steps:
       # Install Node - for `node` and `npm` commands
@@ -470,7 +517,6 @@ jobs:
     env:
       PR_NUMBER: ${{ github.event.number }}
     needs:
-      - scaleDownPods
       - buildDatabaseSetup
       - deployDatabase
     steps:
@@ -534,7 +580,6 @@ jobs:
     env:
       PR_NUMBER: ${{ github.event.number }}
     needs:
-      - scaleDownPods
       - buildAPI
       - deployDatabase
     steps:
