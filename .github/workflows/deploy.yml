@@ -29,40 +29,6 @@ jobs:
           echo Git Labels: "$LABELS"
           echo PR in Draft: ${{ github.event.pull_request.draft }}
 
-  # Checkout the repo once and cache it for use in subsequent jobs
-  checkoutRepo:
-    name: Checkout and cache target branch
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    if: ${{ github.event.pull_request.merged == false }}
-    env:
-      PR_NUMBER: ${{ github.event.number }}
-    needs:
-      - checkEnv
-    steps:
-      # Install Node - for `node` and `npm` commands
-      # Note: This already uses actions/cache internally, so repeat calls in subsequent jobs are not a performance hit
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 14
-
-      - name: Checkout Target Branch
-        uses: actions/checkout@v3
-        with:
-          persist-credentials: false
-
-      # Cache the repo
-      - name: Cache repo
-        uses: actions/cache@v3
-        id: cache-repo
-        env:
-          cache-name: cache-repo
-        with:
-          # Cache repo based on the commit sha that triggered the workflow
-          path: ${{ github.workspace }}/*
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
-
   # Scans the commit against past commits, and determines if any jobs are skippable (due to no changes in target files).
   skipDuplicateActions:
     name: Check for duplicate actions
@@ -107,7 +73,40 @@ jobs:
                 - 'database/src/**/*.test.ts'
                 - 'database/**.md'
           paths_ignore: '["**/*.md", "**/*.test.ts"]'
-          do_not_skip: '["pull_request", "workflow_dispatch", "schedule"]'
+
+  # Checkout the repo once and cache it for use in subsequent jobs
+  checkoutRepo:
+    name: Checkout and cache target branch
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    if: ${{ github.event.pull_request.merged == false }}
+    env:
+      PR_NUMBER: ${{ github.event.number }}
+    needs:
+      - skipDuplicateActions
+    steps:
+      # Install Node - for `node` and `npm` commands
+      # Note: This already uses actions/cache internally, so repeat calls in subsequent jobs are not a performance hit
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 14
+
+      - name: Checkout Target Branch
+        uses: actions/checkout@v3
+        with:
+          persist-credentials: false
+
+      # Cache the repo
+      - name: Cache repo
+        uses: actions/cache@v3
+        id: cache-repo
+        env:
+          cache-name: cache-repo
+        with:
+          # Cache repo based on the commit sha that triggered the workflow
+          path: ${{ github.workspace }}/*
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
 
   # Build the web frontend app image
   buildAPP:
