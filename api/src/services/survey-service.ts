@@ -55,9 +55,9 @@ export class SurveyService extends DBService {
 
   /**
    * Get Survey IDs for a project ID
-   * 
+   *
    * @param {number} projectID
-   * @returns {*} {Promise<{id: number}[]>} 
+   * @returns {*} {Promise<{id: number}[]>}
    * @memberof SurveyService
    */
   async getSurveyIdsByProjectId(projectId: number): Promise<{ id: number }[]> {
@@ -66,9 +66,9 @@ export class SurveyService extends DBService {
 
   /**
    * Gets all information of a Survey for a given survey ID
-   * 
+   *
    * @param {number} surveyID
-   * @returns {*} {Promise<SurveyObject>} 
+   * @returns {*} {Promise<SurveyObject>}
    * @memberof SurveyService
    */
   async getSurveyById(surveyId: number): Promise<SurveyObject> {
@@ -103,9 +103,9 @@ export class SurveyService extends DBService {
 
   /**
    * Get Survey supplementary data for a given survey ID
-   * 
+   *
    * @param {number} surveyID
-   * @returns {*} {Promise<SurveySupplementaryData>} 
+   * @returns {*} {Promise<SurveySupplementaryData>}
    * @memberof SurveyService
    */
   async getSurveySupplementaryDataById(surveyId: number): Promise<SurveySupplementaryData> {
@@ -122,9 +122,9 @@ export class SurveyService extends DBService {
 
   /**
    * Gets Survey data for a given survey ID
-   * 
+   *
    * @param {number} surveyID
-   * @returns {*} {Promise<GetSurveyData>} 
+   * @returns {*} {Promise<GetSurveyData>}
    * @memberof SurveyService
    */
   async getSurveyData(surveyId: number): Promise<GetSurveyData> {
@@ -133,9 +133,9 @@ export class SurveyService extends DBService {
 
   /**
    * Get associated species data for a survey from the taxonomic service for a given Survey ID
-   * 
+   *
    * @param {number} surveyID
-   * @returns {*} {Promise<GetFocalSpeciesData & GetAncillarySpeciesData>} 
+   * @returns {*} {Promise<GetFocalSpeciesData & GetAncillarySpeciesData>}
    * @memberof SurveyService
    */
   async getSpeciesData(surveyId: number): Promise<GetFocalSpeciesData & GetAncillarySpeciesData> {
@@ -154,9 +154,9 @@ export class SurveyService extends DBService {
 
   /**
    * Get Survey permit data for a given survey ID
-   * 
+   *
    * @param {number} surveyID
-   * @returns {*} {Promise<GetPermitData>} 
+   * @returns {*} {Promise<GetPermitData>}
    * @memberof SurveyService
    */
   async getPermitData(surveyId: number): Promise<GetPermitData> {
@@ -169,9 +169,9 @@ export class SurveyService extends DBService {
 
   /**
    * Get Survey purpose and Methodology information for a given survey ID
-   * 
+   *
    * @param {number} surveyID
-   * @returns {*} {Promise<GetSurveyPurposeAndMethodologyData>} 
+   * @returns {*} {Promise<GetSurveyPurposeAndMethodologyData>}
    * @memberof SurveyService
    */
   async getSurveyPurposeAndMethodology(surveyId: number): Promise<GetSurveyPurposeAndMethodologyData> {
@@ -180,20 +180,20 @@ export class SurveyService extends DBService {
 
   /**
    * Get Survey funding sources for a given survey ID
-   * 
+   *
    * @param {number} surveyID
-   * @returns {*} {Promise<GetSurveyFundingSources>} 
+   * @returns {*} {Promise<GetSurveyFundingSources>}
    * @memberof SurveyService
    */
   async getSurveyFundingSourcesData(surveyId: number): Promise<GetSurveyFundingSources> {
     return this.surveyRepository.getSurveyFundingSourcesData(surveyId);
   }
 
-/**
+  /**
    * Gets proprietor data for view or null for a given survey ID
-   * 
+   *
    * @param {number} surveyID
-   * @returns {*} {Promise<GetSurveyProprietorData | null>} 
+   * @returns {*} {Promise<GetSurveyProprietorData | null>}
    * @memberof SurveyService
    */
   async getSurveyProprietorDataForView(surveyId: number): Promise<GetSurveyProprietorData | null> {
@@ -202,9 +202,9 @@ export class SurveyService extends DBService {
 
   /**
    * Get Survey location for a given survey ID
-   * 
+   *
    * @param {number} surveyID
-   * @returns {*} {Promise<GetSurveyLocationData>} 
+   * @returns {*} {Promise<GetSurveyLocationData>}
    * @memberof SurveyService
    */
   async getSurveyLocationData(surveyId: number): Promise<GetSurveyLocationData> {
@@ -213,9 +213,9 @@ export class SurveyService extends DBService {
 
   /**
    * Get Occurrence Submission Id for a given survey ID
-   * 
+   *
    * @param {number} surveyID
-   * @returns {*} {Promise<number>} 
+   * @returns {*} {Promise<number>}
    * @memberof SurveyService
    */
   async getOccurrenceSubmissionId(surveyId: number): Promise<number> {
@@ -224,21 +224,21 @@ export class SurveyService extends DBService {
 
   /**
    * Get latest Occurrence Submission or null for a given survey ID
-   * 
+   *
    * @param {number} surveyID
-   * @returns {*} {Promise<IGetLatestSurveyOccurrenceSubmission | null>} 
+   * @returns {*} {Promise<IGetLatestSurveyOccurrenceSubmission | null>}
    * @memberof SurveyService
    */
   async getLatestSurveyOccurrenceSubmission(surveyId: number): Promise<IGetLatestSurveyOccurrenceSubmission | null> {
     return this.surveyRepository.getLatestSurveyOccurrenceSubmission(surveyId);
   }
 
-   /**
+  /**
    * Gets the Proprietor Data to be be submitted
    * to BioHub as a Security Request
-   * 
+   *
    * @param {number} surveyID
-   * @returns {*} {Promise<ISurveyProprietorModel>} 
+   * @returns {*} {Promise<ISurveyProprietorModel>}
    * @memberof SurveyService
    */
   async getSurveyProprietorDataForSecurityRequest(surveyId: number): Promise<ISurveyProprietorModel> {

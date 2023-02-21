@@ -850,7 +850,7 @@ export class SurveyRepository extends BaseRepository {
   }
 
   /**
-   * Associated Survey to a particular permit 
+   * Associated Survey to a particular permit
    *
    * @param {number} projectId
    * @param {number} surveyId
