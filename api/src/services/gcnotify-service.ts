@@ -53,6 +53,14 @@ const config = {
     'Content-Type': 'application/json'
   }
 };
+/**
+ * Service for interacting with GC Notify.
+ * 
+ * GC Notify is a federal government of Canada hosted email/text notification service for government services.
+ *
+ * @export
+ * @class GCNotifyService
+ */
 export class GCNotifyService {
   /**
    * Send email notification to recipient

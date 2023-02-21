@@ -53,7 +53,7 @@ jobs:
                 - 'app/server/**'
                 - 'app/public/**'
               paths_ignore:
-                - 'app/src/**/*.test.*'
+                - 'app/src/**/*.test.ts'
                 - 'app/**.md'
             api:
               paths:
@@ -69,6 +69,8 @@ jobs:
                 - 'database/src/**' 
                 - 'database/package*.json'
                 - 'database/.pipeline/**'
+                - 'database/.docker/Dockerfile.setup'
+                - 'database/.docker/Dockerfile.migrate'
               paths_ignore:
                 - 'database/src/**/*.test.ts'
                 - 'database/**.md'
