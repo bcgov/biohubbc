@@ -145,6 +145,49 @@ export class AttachmentRepository extends BaseRepository {
   }
 
   /**
+   * Query to get all project attachment by the given attachment IDs
+   * @param {number} projectId The ID of the project
+   * @param {number[]} attachmentIds The ID of the attachment
+   * @return {Promise<IProjectAttachment[]>} The project attachment having the given IDs.
+   * @memberof AttachmentRepository
+   */
+  async getProjectAttachmentsByIds(projectId: number, attachmentIds: number[]): Promise<IProjectAttachment[]> {
+    defaultLog.debug({ label: 'getProjectAttachmentsByIds' });
+
+    const sqlStatement = SQL`
+      SELECT
+        project_attachment_id AS id,
+        uuid,
+        file_name,
+        file_type,
+        title,
+        description,
+        create_user,
+        update_date,
+        create_date,
+        file_size,
+        key
+      FROM
+        project_attachment
+      WHERE
+        project_id = ${projectId};
+      AND
+        project_attachment_id IN (${attachmentIds})
+    `;
+
+    const response = await this.connection.sql<IProjectAttachment>(sqlStatement);
+
+    if (!response.rows) {
+      throw new ApiExecuteSQLError('Failed to get project attachments by attachmentIds', [
+        'AttachmentRepository->getProjectAttachmentsByIds',
+        'rows was null or undefined, expected rows != null'
+      ]);
+    }
+
+    return response.rows;
+  }
+
+  /**
    * Query to return all project report attachments belonging to the given project.
    * @param {number} projectId the ID of the project
    * @return {Promise<IProjectReportAttachment[]>} Promise resolving all of the attachments for the
@@ -239,6 +282,55 @@ export class AttachmentRepository extends BaseRepository {
   }
 
   /**
+   * Query to return the report attachments having the given IDs and belonging to the given project.
+   * @param {number} projectId the ID of the project
+   * @param {number[]} reportAttachmentIds the IDs of the report attachments
+   * @return {Promise<IProjectReportAttachment[]>} Promise resolving the report attachment
+   * @memberof AttachmentRepository
+   */
+  async getProjectReportAttachmentsByIds(
+    projectId: number,
+    reportAttachmentIds: number[]
+  ): Promise<IProjectReportAttachment[]> {
+    defaultLog.debug({ label: 'getProjectReportAttachmentsByIds' });
+
+    const sqlStatement = SQL`
+      SELECT
+        project_report_attachment_id as id,
+        uuid,
+        file_name,
+        title,
+        description,
+        year::int as year_published,
+        CASE
+          WHEN update_date IS NULL
+          THEN create_date::text
+          ELSE update_date::text
+        END AS last_modified,
+        file_size,
+        key,
+        revision_count
+      FROM
+        project_report_attachment
+      WHERE
+        project_id = ${projectId};
+      AND
+        project_report_attachment_id IN (${reportAttachmentIds})
+    `;
+
+    const response = await this.connection.sql<IProjectReportAttachment>(sqlStatement);
+
+    if (!response.rows) {
+      throw new ApiExecuteSQLError('Failed to get project report attachments by reportAttachmentIds', [
+        'AttachmentRepository->getProjectReportAttachmentsByIds',
+        'rows was null or undefined, expected rows != null'
+      ]);
+    }
+
+    return response.rows;
+  }
+
+  /**
    * SQL query to get survey attachments for a single project.
    *
    * @param {number} surveyId The survey ID
@@ -272,6 +364,50 @@ export class AttachmentRepository extends BaseRepository {
     if (!response.rows) {
       throw new ApiExecuteSQLError('Failed to get survey attachments by surveyId', [
         'AttachmentRepository->getSurveyAttachments',
+        'rows was null or undefined, expected rows != null'
+      ]);
+    }
+
+    return response.rows;
+  }
+
+  /**
+   * SQL query to get all survey attachments for a single project with the given surveyAttachmentIds
+   *
+   * @param {number} surveyId The survey ID
+   * @param {number[]} attachmentIds The IDs of the survey attachments
+   * @return {Promise<IProjectAttachment[]>} All survey attachments having the given IDs
+   * @memberof AttachmentRepository
+   */
+  async getSurveyAttachmentsByIds(surveyId: number, attachmentIds: number[]): Promise<ISurveyAttachment[]> {
+    defaultLog.debug({ label: 'getSurveyAttachmentsByIds' });
+
+    const sqlStatement = SQL`
+      SELECT
+        survey_attachment_id as id,
+        uuid,
+        file_name,
+        file_type,
+        title,
+        description,
+        create_date,
+        update_date,
+        create_date,
+        file_size,
+        key
+      FROM
+        survey_attachment
+      WHERE
+        survey_id = ${surveyId}
+      AND
+        survey_attachment_id IN (${attachmentIds});
+    `;
+
+    const response = await this.connection.sql<ISurveyAttachment>(sqlStatement);
+
+    if (!response.rows) {
+      throw new ApiExecuteSQLError('Failed to get survey attachments by surveyId and attachmentIds', [
+        'AttachmentRepository->getSurveyAttachmentsByIds',
         'rows was null or undefined, expected rows != null'
       ]);
     }
@@ -368,6 +504,55 @@ export class AttachmentRepository extends BaseRepository {
     }
 
     return response.rows[0];
+  }
+
+  /**
+   * Query to return the report attachment having the given IDs and belonging to the given survey.
+   * @param {number} surveyId the ID of the survey
+   * @param {number[]} reportAttachmentIds the IDs of the report attachments
+   * @return {Promise<ISurveyReportAttachment[]>} The survey report attachments having the given IDs
+   * @memberof AttachmentRepository
+   */
+  async getSurveyReportAttachmentsByIds(
+    surveyId: number,
+    reportAttachmentIds: number[]
+  ): Promise<ISurveyReportAttachment[]> {
+    defaultLog.debug({ label: 'getSurveyReportAttachmentsByIds' });
+
+    const sqlStatement = SQL`
+      SELECT
+        survey_report_attachment_id as id,
+        uuid,
+        file_name,
+        title,
+        description,
+        year::int as year_published,
+        CASE
+          WHEN update_date IS NULL
+          THEN create_date::text
+          ELSE update_date::text
+        END AS last_modified,
+        file_size,
+        key,
+        revision_count
+      FROM
+        survey_report_attachment
+      WHERE
+        survey_id = ${surveyId}
+      AND
+        survey_report_attachment_id IN (${reportAttachmentIds});
+      `;
+
+    const response = await this.connection.sql<ISurveyReportAttachment>(sqlStatement);
+
+    if (!response.rows) {
+      throw new ApiExecuteSQLError('Failed to get survey report attachments by reportAttachmentIds', [
+        'AttachmentRepository->getSurveyReportAttachmentsByIds',
+        'rows was null or undefined, expected rows != null'
+      ]);
+    }
+
+    return response.rows;
   }
 
   /**

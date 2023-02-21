@@ -345,13 +345,11 @@ export class PlatformService extends DBService {
     attachmentIds: number[],
     reportAttachmentIds: number[]
   ): Promise<{ artifact_id: number }[]> {
-    const attachments = (
-      await this.attachmentService.getProjectAttachments(projectId)
-    ).filter((attachment: IProjectAttachment) => attachmentIds.includes(attachment.id));
-
-    const reportAttachments = (
-      await this.attachmentService.getProjectReportAttachments(projectId)
-    ).filter((reportAttachment: IProjectReportAttachment) => reportAttachmentIds.includes(reportAttachment.id));
+    const attachments = await this.attachmentService.getProjectAttachmentsByIds(projectId, attachmentIds);
+    const reportAttachments = await this.attachmentService.getProjectReportAttachmentsByIds(
+      projectId,
+      reportAttachmentIds
+    );
 
     const promises = (await this._makeArtifactsFromAttachments(dataPackageId, attachments, reportAttachments)).map(
       this._submitArtifactToBioHub
@@ -377,13 +375,11 @@ export class PlatformService extends DBService {
     attachmentIds: number[],
     reportAttachmentIds: number[]
   ): Promise<{ artifact_id: number }[]> {
-    const attachments = (
-      await this.attachmentService.getSurveyAttachments(surveyId)
-    ).filter((attachment: ISurveyAttachment) => attachmentIds.includes(attachment.id));
-
-    const reportAttachments = (
-      await this.attachmentService.getSurveyReportAttachments(surveyId)
-    ).filter((reportAttachment: ISurveyReportAttachment) => reportAttachmentIds.includes(reportAttachment.id));
+    const attachments = await this.attachmentService.getSurveyAttachmentsByIds(surveyId, attachmentIds);
+    const reportAttachments = await this.attachmentService.getSurveyReportAttachmentsByIds(
+      surveyId,
+      reportAttachmentIds
+    );
 
     const promises = (await this._makeArtifactsFromAttachments(dataPackageId, attachments, reportAttachments)).map(
       this._submitArtifactToBioHub

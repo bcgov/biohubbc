@@ -82,7 +82,7 @@ const phases = {
     host: (isStaticDeployment && staticUrlsAPI.dev) || `${name}-${changeId}-af2668-dev.apps.silver.devops.gov.bc.ca`,
     appHost: (isStaticDeployment && staticUrls.dev) || `${appName}-${changeId}-af2668-dev.apps.silver.devops.gov.bc.ca`,
     backboneApiHost: 'https://api-dev-biohub-platform.apps.silver.devops.gov.bc.ca',
-    backboneIntakePath: '/api/dwc/submission/intake',
+    backboneIntakePath: '/api/dwc/submission/queue',
     backboneArtifactIntakePath: '/api/artifact/intake',
     backboneIntakeEnabled: true,
     env: 'dev',
