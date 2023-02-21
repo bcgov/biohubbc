@@ -53,10 +53,24 @@ export class SurveyService extends DBService {
     this.platformService = new PlatformService(connection);
   }
 
+  /**
+   * Get Survey IDs for a project ID
+   * 
+   * @param {number} projectID
+   * @returns {*} {Promise<{id: number}[]>} 
+   * @memberof SurveyService
+   */
   async getSurveyIdsByProjectId(projectId: number): Promise<{ id: number }[]> {
     return this.surveyRepository.getSurveyIdsByProjectId(projectId);
   }
 
+  /**
+   * Gets all information of a Survey for a given survey ID
+   * 
+   * @param {number} surveyID
+   * @returns {*} {Promise<SurveyObject>} 
+   * @memberof SurveyService
+   */
   async getSurveyById(surveyId: number): Promise<SurveyObject> {
     const [
       surveyData,
@@ -87,6 +101,13 @@ export class SurveyService extends DBService {
     };
   }
 
+  /**
+   * Get Survey supplementary data for a given survey ID
+   * 
+   * @param {number} surveyID
+   * @returns {*} {Promise<SurveySupplementaryData>} 
+   * @memberof SurveyService
+   */
   async getSurveySupplementaryDataById(surveyId: number): Promise<SurveySupplementaryData> {
     const [submissionId, summaryResultId] = await Promise.all([
       this.getOccurrenceSubmissionId(surveyId),
@@ -99,10 +120,24 @@ export class SurveyService extends DBService {
     };
   }
 
+  /**
+   * Gets Survey data for a given survey ID
+   * 
+   * @param {number} surveyID
+   * @returns {*} {Promise<GetSurveyData>} 
+   * @memberof SurveyService
+   */
   async getSurveyData(surveyId: number): Promise<GetSurveyData> {
     return this.surveyRepository.getSurveyData(surveyId);
   }
 
+  /**
+   * Get associated species data for a survey from the taxonomic service for a given Survey ID
+   * 
+   * @param {number} surveyID
+   * @returns {*} {Promise<GetFocalSpeciesData & GetAncillarySpeciesData>} 
+   * @memberof SurveyService
+   */
   async getSpeciesData(surveyId: number): Promise<GetFocalSpeciesData & GetAncillarySpeciesData> {
     const response = await this.surveyRepository.getSpeciesData(surveyId);
 
@@ -117,6 +152,13 @@ export class SurveyService extends DBService {
     return { ...new GetFocalSpeciesData(focalSpecies), ...new GetAncillarySpeciesData(ancillarySpecies) };
   }
 
+  /**
+   * Get Survey permit data for a given survey ID
+   * 
+   * @param {number} surveyID
+   * @returns {*} {Promise<GetPermitData>} 
+   * @memberof SurveyService
+   */
   async getPermitData(surveyId: number): Promise<GetPermitData> {
     const permitService = new PermitService(this.connection);
 
@@ -125,26 +167,68 @@ export class SurveyService extends DBService {
     return new GetPermitData(result);
   }
 
+  /**
+   * Get Survey purpose and Methodology information for a given survey ID
+   * 
+   * @param {number} surveyID
+   * @returns {*} {Promise<GetSurveyPurposeAndMethodologyData>} 
+   * @memberof SurveyService
+   */
   async getSurveyPurposeAndMethodology(surveyId: number): Promise<GetSurveyPurposeAndMethodologyData> {
     return this.surveyRepository.getSurveyPurposeAndMethodology(surveyId);
   }
 
+  /**
+   * Get Survey funding sources for a given survey ID
+   * 
+   * @param {number} surveyID
+   * @returns {*} {Promise<GetSurveyFundingSources>} 
+   * @memberof SurveyService
+   */
   async getSurveyFundingSourcesData(surveyId: number): Promise<GetSurveyFundingSources> {
     return this.surveyRepository.getSurveyFundingSourcesData(surveyId);
   }
 
+/**
+   * Gets proprietor data for view or null for a given survey ID
+   * 
+   * @param {number} surveyID
+   * @returns {*} {Promise<GetSurveyProprietorData | null>} 
+   * @memberof SurveyService
+   */
   async getSurveyProprietorDataForView(surveyId: number): Promise<GetSurveyProprietorData | null> {
     return this.surveyRepository.getSurveyProprietorDataForView(surveyId);
   }
 
+  /**
+   * Get Survey location for a given survey ID
+   * 
+   * @param {number} surveyID
+   * @returns {*} {Promise<GetSurveyLocationData>} 
+   * @memberof SurveyService
+   */
   async getSurveyLocationData(surveyId: number): Promise<GetSurveyLocationData> {
     return this.surveyRepository.getSurveyLocationData(surveyId);
   }
 
+  /**
+   * Get Occurrence Submission Id for a given survey ID
+   * 
+   * @param {number} surveyID
+   * @returns {*} {Promise<number>} 
+   * @memberof SurveyService
+   */
   async getOccurrenceSubmissionId(surveyId: number): Promise<number> {
     return this.surveyRepository.getOccurrenceSubmissionId(surveyId);
   }
 
+  /**
+   * Get latest Occurrence Submission or null for a given survey ID
+   * 
+   * @param {number} surveyID
+   * @returns {*} {Promise<IGetLatestSurveyOccurrenceSubmission | null>} 
+   * @memberof SurveyService
+   */
   async getLatestSurveyOccurrenceSubmission(surveyId: number): Promise<IGetLatestSurveyOccurrenceSubmission | null> {
     return this.surveyRepository.getLatestSurveyOccurrenceSubmission(surveyId);
   }
