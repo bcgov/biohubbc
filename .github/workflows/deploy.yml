@@ -107,6 +107,7 @@ jobs:
                 - 'database/src/**/*.test.ts'
                 - 'database/**.md'
           paths_ignore: '["**/*.md", "**/*.test.ts"]'
+          do_not_skip: '["pull_request", "workflow_dispatch", "schedule"]'
 
   # Build the web frontend app image
   buildAPP:
