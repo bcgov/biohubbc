@@ -149,6 +149,14 @@ export class SurveyService extends DBService {
     return this.surveyRepository.getLatestSurveyOccurrenceSubmission(surveyId);
   }
 
+   /**
+   * Gets the Proprietor Data to be be submitted
+   * to BioHub as a Security Request
+   * 
+   * @param {number} surveyID
+   * @returns {*} {Promise<ISurveyProprietorModel>} 
+   * @memberof SurveyService
+   */
   async getSurveyProprietorDataForSecurityRequest(surveyId: number): Promise<ISurveyProprietorModel> {
     return this.surveyRepository.getSurveyProprietorDataForSecurityRequest(surveyId);
   }
