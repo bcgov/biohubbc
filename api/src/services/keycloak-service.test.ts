@@ -9,7 +9,8 @@ chai.use(sinonChai);
 
 describe('KeycloakService', () => {
   beforeEach(() => {
-    process.env.KEYCLOAK_REALM = 'realm';
+    process.env.KEYCLOAK_HOST = 'test-host';
+    process.env.KEYCLOAK_REALM = 'test-realm';
     process.env.KEYCLOAK_API_HOST = 'api-host';
     process.env.KEYCLOAK_ADMIN_USERNAME = 'admin';
     process.env.KEYCLOAK_ADMIN_PASSWORD = 'password';
@@ -34,7 +35,7 @@ describe('KeycloakService', () => {
       expect(response).to.eql('token');
 
       expect(axiosStub).to.have.been.calledWith(
-        `${'host'}/realms/${'realm'}/protocol/openid-connect/token`,
+        `${'test-host'}/realms/${'test-realm'}/protocol/openid-connect/token`,
         `${'grant_type=client_credentials'}&${'client_id=admin'}&${'client_secret=password'}`,
         {
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
