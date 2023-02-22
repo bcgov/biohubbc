@@ -32,7 +32,7 @@ jobs:
 
   # Scans the commit against past commits, and determines if any jobs are skippable (due to no changes in target files).
   # Note: this does not take into account the current branch and will check past workflows from any branch, so an
-  # additional check against the current branch is added to the `if` in the build jobs below.
+  # additional check against the current branch is added to the `if` in the build/deploy jobs below.
   skipDuplicateActions:
     name: Check for duplicate actions
     runs-on: ubuntu-latest
@@ -118,6 +118,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     if: |
+      always() && 
       github.event.pull_request.merged == false && 
       github.event.pull_request.draft == false && 
       !(fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch == github.head_ref)
@@ -161,9 +162,7 @@ jobs:
       # Why? The new pods will be deployed before the existing pods are terminated, and twice the resources will be needed
       # in that moment. If not enough resources are available to spin up the new pods, then they may fail to deploy.
       - name: Scale down app pods
-        run: |
-          oc project af2668-dev
-          oc get deploymentconfig --selector env-id=$PR_NUMBER,app-name=$APP_NAME -o name | awk '{print "oc scale --replicas=0  " $1}' | bash
+        run: oc get deploymentconfig --namespace af2668-dev --selector env-id=$PR_NUMBER,app-name=$APP_NAME -o name | awk '{print "oc scale --replicas=0  " $1}' | bash
 
       # Install app pipeline node modules
       # Note: This already caches node modules internally
@@ -231,9 +230,7 @@ jobs:
       # Why? The new pods will be deployed before the existing pods are terminated, and twice the resources will be needed
       # in that moment. If not enough resources are available to spin up the new pods, then they may fail to deploy.
       - name: Scale down database pods
-        run: |
-          oc project af2668-dev
-          oc get deploymentconfig --selector env-id=$PR_NUMBER,app-name=$APP_NAME -o name | awk '{print "oc scale --replicas=0  " $1}' | bash
+        run: oc get deploymentconfig --namespace af2668-dev --selector env-id=$PR_NUMBER,app-name=$APP_NAME -o name | awk '{print "oc scale --replicas=0  " $1}' | bash
 
       # Install database pipeline node modules
       # Note: This already caches node modules internally
@@ -362,9 +359,7 @@ jobs:
       # Why? The new pods will be deployed before the existing pods are terminated, and twice the resources will be needed
       # in that moment. If not enough resources are available to spin up the new pods, then they may fail to deploy.
       - name: Scale down api pods
-        run: |
-          oc project af2668-dev
-          oc get deploymentconfig --selector env-id=$PR_NUMBER,app-name=$APP_NAME -o name | awk '{print "oc scale --replicas=0  " $1}' | bash
+        run: oc get deploymentconfig --namespace af2668-dev --selector env-id=$PR_NUMBER,app-name=$APP_NAME -o name | awk '{print "oc scale --replicas=0  " $1}' | bash
 
       # Install api pipeline node modules
       # Note: This already caches node modules internally
@@ -389,7 +384,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     if: |
-      success() &&
       github.event.pull_request.merged == false && 
       github.event.pull_request.draft == false && 
       !(fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch == github.head_ref)
@@ -511,7 +505,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     if: |
-      success() &&
+      always() &&
+      (needs.deployDatabase.result == 'success' || needs.deployDatabase.result == 'skipped') &&
       github.event.pull_request.merged == false && 
       github.event.pull_request.draft == false && 
       !(fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.skipped_by.branch == github.head_ref)
@@ -573,7 +568,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     if: |
-      success() &&
+      always() &&F
+      (needs.deployDatabase.result == 'success' || needs.deployDatabase.result == 'skipped') &&
       github.event.pull_request.merged == false && 
       github.event.pull_request.draft == false && 
       !(fromJSON(needs.skipDuplicateActions.outputs.paths_result).api.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).api.skipped_by.branch == github.head_ref)
@@ -616,7 +612,7 @@ jobs:
       # Note: This already caches node modules internally
       - name: Install pipeline node modules
         working-directory: api/.pipeline/
-        run: npm ci
+
       # - name: Install api pipeline node modules
       #   uses: bahmutov/npm-install@v1
       #   with:

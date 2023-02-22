@@ -12,30 +12,6 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # Scans the commit against past commits, and determines if any jobs are skippable (due to no changes in target files).
-  skipDuplicateActions:
-    name: Check for duplicate actions
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    needs:
-      - checkEnv
-    outputs:
-      should_skip: ${{ steps.skip_check.outputs.should_skip }}
-      paths_result: ${{ steps.skip_check.outputs.paths_result }}
-    steps:
-      - id: skip_check
-        uses: fkirc/skip-duplicate-actions@v5
-        with:
-          paths_filter: |
-            app:
-              paths:
-                - 'app/src/**'
-                - 'app/package*.json'
-            api:
-              paths:
-                - 'api/src/**'
-                - 'api/package*.json'
-
   # Checkout the repo once and cache it for use in subsequent jobs
   checkoutRepo:
     name: Checkout and cache target branch
@@ -43,8 +19,6 @@ jobs:
     timeout-minutes: 30
     env:
       PR_NUMBER: ${{ github.event.number }}
-    needs:
-      - skipDuplicateActions
     steps:
       # Install Node - for `node` and `npm` commands
       # Note: This already uses actions/cache internally, so repeat calls in subsequent jobs are not a performance hit
@@ -75,7 +49,6 @@ jobs:
     timeout-minutes: 30
     needs:
       - checkoutRepo
-      - skipDuplicateActions
     steps:
       - name: Setup node
         uses: actions/setup-node@v3
@@ -99,7 +72,6 @@ jobs:
 
       # api
       - name: Cache api node modules
-        if: ${{ !fromJSON(needs.skipDuplicateActions.outputs.paths_result).api.should_skip }}
         uses: actions/cache@v3
         env:
           cache-name: cache-api-node-modules
@@ -111,17 +83,14 @@ jobs:
             ${{ runner.os }}-build-${{ env.cache-name }}-
 
       - name: Install api dependencies
-        if: ${{ !fromJSON(needs.skipDuplicateActions.outputs.paths_result).api.should_skip }}
         working-directory: api
         run: npm install --prefer-offline
 
       - name: Run api tests with coverage
-        if: ${{ !fromJSON(needs.skipDuplicateActions.outputs.paths_result).api.should_skip }}
         working-directory: api
         run: CI=true npm run coverage
 
       - name: Upload coverage to Codecov
-        if: ${{ !fromJSON(needs.skipDuplicateActions.outputs.paths_result).api.should_skip }}
         uses: codecov/codecov-action@v3
         with:
           token: ${{secrets.CODECOV_TOKEN}}
@@ -129,7 +98,6 @@ jobs:
 
       # app
       - name: Cache app node modules
-        if: ${{ !fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip }}
         uses: actions/cache@v3
         env:
           cache-name: cache-app-node-modules
@@ -141,17 +109,14 @@ jobs:
             ${{ runner.os }}-build-${{ env.cache-name }}-
 
       - name: Install app dependencies
-        if: ${{ !fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip }}
         working-directory: app
         run: npm install --prefer-offline
 
       - name: Run app tests with coverage
-        if: ${{ !fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip }}
         working-directory: app
         run: CI=true npm run coverage
 
       - name: Upload coverage to Codecov
-        if: ${{ !fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip }}
         uses: codecov/codecov-action@v3
         with:
           token: ${{secrets.CODECOV_TOKEN}}
