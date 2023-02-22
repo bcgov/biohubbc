@@ -181,7 +181,10 @@ describe('HistoryPublishRepository', () => {
       });
 
       const repo = new HistoryPublishRepository(mockConnection);
-      const response = await repo.insertSurveyAttachmentPublishRecord({ survey_attachment_publish_id: 1, artifact_id: 1 });
+      const response = await repo.insertSurveyAttachmentPublishRecord({
+        survey_attachment_publish_id: 1,
+        artifact_id: 1
+      });
 
       expect(response).to.be.eql(1);
     });

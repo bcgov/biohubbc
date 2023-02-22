@@ -362,8 +362,15 @@ export class SurveyService extends DBService {
 
     const dataPackageId = v4();
     const attachmentIds = (await attachmentService.getProjectAttachments(projectId)).map((attachment) => attachment.id);
-    const reportAttachmentIds = (await attachmentService.getProjectReportAttachments(projectId)).map((attachment) => attachment.id);
-    await this.platformService.uploadProjectAttachmentsToBioHub(dataPackageId, projectId, attachmentIds, reportAttachmentIds);
+    const reportAttachmentIds = (await attachmentService.getProjectReportAttachments(projectId)).map(
+      (attachment) => attachment.id
+    );
+    await this.platformService.uploadProjectAttachmentsToBioHub(
+      dataPackageId,
+      projectId,
+      attachmentIds,
+      reportAttachmentIds
+    );
 
     return surveyId;
   }

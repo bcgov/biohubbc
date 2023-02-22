@@ -318,9 +318,9 @@ export class PlatformService extends DBService {
    * @memberof PlatformService
    */
   async _makeArtifactFromAttachment(data: {
-    dataPackageId: string,
-    attachment: IProjectAttachment | ISurveyAttachment | IProjectReportAttachment | ISurveyReportAttachment,
-    file_type: string
+    dataPackageId: string;
+    attachment: IProjectAttachment | ISurveyAttachment | IProjectReportAttachment | ISurveyReportAttachment;
+    file_type: string;
   }): Promise<IArtifact> {
     const { dataPackageId, attachment, file_type } = data;
     const s3File = await getFileFromS3(attachment.key);
@@ -399,7 +399,7 @@ export class PlatformService extends DBService {
     projectId: number,
     attachmentIds: number[],
     reportAttachmentIds: number[]
-  ): Promise<({ project_attachment_publish_id: number; } | { project_report_publish_id: number; })[]> {
+  ): Promise<({ project_attachment_publish_id: number } | { project_report_publish_id: number })[]> {
     const attachments = await this.attachmentService.getProjectAttachmentsByIds(projectId, attachmentIds);
     const reportAttachments = await this.attachmentService.getProjectReportAttachmentsByIds(
       projectId,
@@ -407,17 +407,27 @@ export class PlatformService extends DBService {
     );
 
     const attachmentArtifactPromises = attachments.map(async (attachment) => {
-      const artifact = await this._makeArtifactFromAttachment({ dataPackageId, attachment, file_type: attachment.file_type || 'Other' });
+      const artifact = await this._makeArtifactFromAttachment({
+        dataPackageId,
+        attachment,
+        file_type: attachment.file_type || 'Other'
+      });
       const { artifact_id } = await this._submitArtifactToBioHub(artifact);
 
-      return this.publishService.insertProjectAttachmentPublishRecord({ artifact_id, project_attachment_id: attachment.id });
+      return this.publishService.insertProjectAttachmentPublishRecord({
+        artifact_id,
+        project_attachment_id: attachment.id
+      });
     });
 
     const reportArtifactPromises = reportAttachments.map(async (attachment) => {
       const artifact = await this._makeArtifactFromAttachment({ dataPackageId, attachment, file_type: 'Report' });
       const { artifact_id } = await this._submitArtifactToBioHub(artifact);
 
-      return this.publishService.insertProjectReportPublishRecord({ artifact_id, project_report_attachment_id: attachment.id });
+      return this.publishService.insertProjectReportPublishRecord({
+        artifact_id,
+        project_report_attachment_id: attachment.id
+      });
     });
 
     return Promise.all([...attachmentArtifactPromises, ...reportArtifactPromises]);
@@ -439,7 +449,7 @@ export class PlatformService extends DBService {
     surveyId: number,
     attachmentIds: number[],
     reportAttachmentIds: number[]
-  ): Promise<({ survey_attachment_publish_id: number; } | { survey_report_publish_id: number; })[]> {
+  ): Promise<({ survey_attachment_publish_id: number } | { survey_report_publish_id: number })[]> {
     const attachments = await this.attachmentService.getSurveyAttachmentsByIds(surveyId, attachmentIds);
     const reportAttachments = await this.attachmentService.getSurveyReportAttachmentsByIds(
       surveyId,
@@ -447,17 +457,27 @@ export class PlatformService extends DBService {
     );
 
     const attachmentArtifactPromises = attachments.map(async (attachment) => {
-      const artifact = await this._makeArtifactFromAttachment({ dataPackageId, attachment, file_type: attachment.file_type || 'Other' });
+      const artifact = await this._makeArtifactFromAttachment({
+        dataPackageId,
+        attachment,
+        file_type: attachment.file_type || 'Other'
+      });
       const { artifact_id } = await this._submitArtifactToBioHub(artifact);
 
-      return this.publishService.insertSurveyAttachmentPublishRecord({ artifact_id, survey_attachment_id: attachment.id });
+      return this.publishService.insertSurveyAttachmentPublishRecord({
+        artifact_id,
+        survey_attachment_id: attachment.id
+      });
     });
 
     const reportArtifactPromises = reportAttachments.map(async (attachment) => {
       const artifact = await this._makeArtifactFromAttachment({ dataPackageId, attachment, file_type: 'Report' });
       const { artifact_id } = await this._submitArtifactToBioHub(artifact);
 
-      return this.publishService.insertSurveyReportPublishRecord({ artifact_id, survey_report_attachment_id: attachment.id });
+      return this.publishService.insertSurveyReportPublishRecord({
+        artifact_id,
+        survey_report_attachment_id: attachment.id
+      });
     });
 
     return Promise.all([...attachmentArtifactPromises, ...reportArtifactPromises]);

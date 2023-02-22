@@ -123,7 +123,9 @@ export class HistoryPublishRepository extends BaseRepository {
    * @returns {*} {Promise<number>}
    * @memberof HistoryPublishRepository
    */
-  async insertProjectAttachmentPublishRecord(data: IProjectAttachmentPublish): Promise<{ project_attachment_publish_id: number }> {
+  async insertProjectAttachmentPublishRecord(
+    data: IProjectAttachmentPublish
+  ): Promise<{ project_attachment_publish_id: number }> {
     const sqlStatement = SQL`
       INSERT INTO project_attachment_publish 
         (project_attachment_id, artifact_revision_id, event_timestamp)
@@ -175,7 +177,9 @@ export class HistoryPublishRepository extends BaseRepository {
    * @returns {*} {Promise<number>}
    * @memberof HistoryPublishRepository
    */
-  async insertSurveyAttachmentPublishRecord(data: ISurveyAttachmentPublish): Promise<{ survey_attachment_publish_id: number }> {
+  async insertSurveyAttachmentPublishRecord(
+    data: ISurveyAttachmentPublish
+  ): Promise<{ survey_attachment_publish_id: number }> {
     const sqlStatement = SQL`
       INSERT INTO survey_attachment_publish 
         (survey_attachment_id, artifact_revision_id, event_timestamp)

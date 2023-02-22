@@ -347,9 +347,18 @@ export class ProjectService extends DBService {
 
     // @TODO Remove this call upon implementing artifact submission UIs
     const dataPackageId = v4();
-    const attachmentIds = (await this.attachmentService.getProjectAttachments(projectId)).map((attachment) => attachment.id);
-    const reportAttachmentIds = (await this.attachmentService.getProjectReportAttachments(projectId)).map((attachment) => attachment.id);
-    await this.platformService.uploadProjectAttachmentsToBioHub(dataPackageId, projectId, attachmentIds, reportAttachmentIds);
+    const attachmentIds = (await this.attachmentService.getProjectAttachments(projectId)).map(
+      (attachment) => attachment.id
+    );
+    const reportAttachmentIds = (await this.attachmentService.getProjectReportAttachments(projectId)).map(
+      (attachment) => attachment.id
+    );
+    await this.platformService.uploadProjectAttachmentsToBioHub(
+      dataPackageId,
+      projectId,
+      attachmentIds,
+      reportAttachmentIds
+    );
 
     return projectId;
   }

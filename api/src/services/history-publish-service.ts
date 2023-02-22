@@ -58,7 +58,9 @@ export class HistoryPublishService extends DBService {
    * @returns {*} {Promise<number>}
    * @memberof HistoryPublishRepository
    */
-  async insertProjectAttachmentPublishRecord(data: IProjectAttachmentPublish): Promise<{
+  async insertProjectAttachmentPublishRecord(
+    data: IProjectAttachmentPublish
+  ): Promise<{
     project_attachment_publish_id: number;
   }> {
     return this.historyRepository.insertProjectAttachmentPublishRecord(data);
@@ -71,7 +73,9 @@ export class HistoryPublishService extends DBService {
    * @returns {*} {Promise<number>}
    * @memberof HistoryPublishRepository
    */
-  async insertProjectReportPublishRecord(data: IProjectReportPublish): Promise<{
+  async insertProjectReportPublishRecord(
+    data: IProjectReportPublish
+  ): Promise<{
     project_report_publish_id: number;
   }> {
     return this.historyRepository.insertProjectReportPublishRecord(data);
@@ -84,7 +88,9 @@ export class HistoryPublishService extends DBService {
    * @returns {*} {Promise<number>}
    * @memberof HistoryPublishRepository
    */
-  async insertSurveyAttachmentPublishRecord(data: ISurveyAttachmentPublish): Promise<{
+  async insertSurveyAttachmentPublishRecord(
+    data: ISurveyAttachmentPublish
+  ): Promise<{
     survey_attachment_publish_id: number;
   }> {
     return this.historyRepository.insertSurveyAttachmentPublishRecord(data);
