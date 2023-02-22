@@ -154,25 +154,29 @@ export class AttachmentRepository extends BaseRepository {
   async getProjectAttachmentsByIds(projectId: number, attachmentIds: number[]): Promise<IProjectAttachment[]> {
     defaultLog.debug({ label: 'getProjectAttachmentsByIds' });
 
+    if (!attachmentIds.length) {
+      return [];
+    }
+
     const sqlStatement = SQL`
-      SELECT
-        project_attachment_id AS id,
-        uuid,
-        file_name,
-        file_type,
-        title,
-        description,
-        create_user,
-        update_date,
-        create_date,
-        file_size,
-        key
+    SELECT
+      project_attachment_id AS id,
+      uuid,
+      file_name,
+      file_type,
+      title,
+      description,
+      create_user,
+      update_date,
+      create_date,
+      file_size,
+      key
       FROM
-        project_attachment
-      WHERE
-        project_id = ${projectId};
+      project_attachment
+    WHERE
+        project_id = ${projectId}
       AND
-        project_attachment_id IN (${attachmentIds})
+        project_attachment_id IN (${attachmentIds.map(String).join(',')});
     `;
 
     const response = await this.connection.sql<IProjectAttachment>(sqlStatement);
@@ -293,6 +297,9 @@ export class AttachmentRepository extends BaseRepository {
     reportAttachmentIds: number[]
   ): Promise<IProjectReportAttachment[]> {
     defaultLog.debug({ label: 'getProjectReportAttachmentsByIds' });
+    if (!reportAttachmentIds.length) {
+      return [];
+    }
 
     const sqlStatement = SQL`
       SELECT
@@ -313,9 +320,9 @@ export class AttachmentRepository extends BaseRepository {
       FROM
         project_report_attachment
       WHERE
-        project_id = ${projectId};
+        project_id = ${projectId}
       AND
-        project_report_attachment_id IN (${reportAttachmentIds})
+        project_report_attachment_id IN (${reportAttachmentIds.map(String).join(',')});
     `;
 
     const response = await this.connection.sql<IProjectReportAttachment>(sqlStatement);
@@ -381,6 +388,9 @@ export class AttachmentRepository extends BaseRepository {
    */
   async getSurveyAttachmentsByIds(surveyId: number, attachmentIds: number[]): Promise<ISurveyAttachment[]> {
     defaultLog.debug({ label: 'getSurveyAttachmentsByIds' });
+    if (!attachmentIds.length) {
+      return [];
+    }
 
     const sqlStatement = SQL`
       SELECT
@@ -400,7 +410,7 @@ export class AttachmentRepository extends BaseRepository {
       WHERE
         survey_id = ${surveyId}
       AND
-        survey_attachment_id IN (${attachmentIds});
+        survey_attachment_id IN (${attachmentIds.map(String).join(',')});
     `;
 
     const response = await this.connection.sql<ISurveyAttachment>(sqlStatement);
@@ -518,6 +528,9 @@ export class AttachmentRepository extends BaseRepository {
     reportAttachmentIds: number[]
   ): Promise<ISurveyReportAttachment[]> {
     defaultLog.debug({ label: 'getSurveyReportAttachmentsByIds' });
+    if (!reportAttachmentIds.length) {
+      return [];
+    }
 
     const sqlStatement = SQL`
       SELECT
@@ -540,7 +553,7 @@ export class AttachmentRepository extends BaseRepository {
       WHERE
         survey_id = ${surveyId}
       AND
-        survey_report_attachment_id IN (${reportAttachmentIds});
+        survey_report_attachment_id IN (${reportAttachmentIds.map(String).join(',')});
       `;
 
     const response = await this.connection.sql<ISurveyReportAttachment>(sqlStatement);

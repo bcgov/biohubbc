@@ -368,7 +368,9 @@ export class PlatformService extends DBService {
     formData.append('data_package_id', artifact.dataPackageId);
 
     Object.entries(artifact.metadata).forEach(([metadataKey, metadataValue]) => {
-      formData.append(`metadata[${metadataKey}]`, metadataValue);
+      if (metadataValue) {
+        formData.append(`metadata[${metadataKey}]`, metadataValue);
+      }
     });
 
     const backboneArtifactIntakeUrl = new URL(this.backboneArtifactIntakePath, this.backboneApiHost).href;
@@ -430,7 +432,7 @@ export class PlatformService extends DBService {
       });
     });
 
-    return [...await Promise.all(attachmentArtifactPromises), ...await Promise.all(reportArtifactPromises)];
+    return [...(await Promise.all(attachmentArtifactPromises)), ...(await Promise.all(reportArtifactPromises))];
   }
 
   /**
@@ -480,6 +482,6 @@ export class PlatformService extends DBService {
       });
     });
 
-    return [...await Promise.all(attachmentArtifactPromises), ...await Promise.all(reportArtifactPromises)];
+    return [...(await Promise.all(attachmentArtifactPromises)), ...(await Promise.all(reportArtifactPromises))];
   }
 }
