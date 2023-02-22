@@ -181,6 +181,7 @@ jobs:
         uses: bahmutov/npm-install@v1
         with:
           working-directory: "app/.pipeline/"
+          useRollingCache: true
 
       # Build the app image
       - name: Build APP Image
@@ -257,6 +258,7 @@ jobs:
         uses: bahmutov/npm-install@v1
         with:
           working-directory: "database/.pipeline/"
+          useRollingCache: true
 
       # Build the database image
       - name: Build Database Image
@@ -324,6 +326,7 @@ jobs:
         uses: bahmutov/npm-install@v1
         with:
           working-directory: "database/.pipeline/"
+          useRollingCache: true
 
       # Build the database image
       - name: Build Database Setup Image
@@ -400,6 +403,7 @@ jobs:
         uses: bahmutov/npm-install@v1
         with:
           working-directory: "api/.pipeline/"
+          useRollingCache: true
 
       # Build the api image
       - name: Build API Image
@@ -466,6 +470,7 @@ jobs:
         uses: bahmutov/npm-install@v1
         with:
           working-directory: "app/.pipeline"
+          useRollingCache: true
 
       # Deploy the app image
       - name: Deploy APP Image
@@ -532,6 +537,7 @@ jobs:
         uses: bahmutov/npm-install@v1
         with:
           working-directory: "database/.pipeline/"
+          useRollingCache: true
 
       # Deploy the database image
       - name: Deploy Database Image
@@ -599,6 +605,7 @@ jobs:
         uses: bahmutov/npm-install@v1
         with:
           working-directory: "database/.pipeline/"
+          useRollingCache: true
 
       # Deploy the database setup image
       - name: Deploy Database Setup Image
@@ -666,6 +673,7 @@ jobs:
         uses: bahmutov/npm-install@v1
         with:
           working-directory: "api/.pipeline/"
+          useRollingCache: true
 
       # Deploy the api image
       - name: Deploy API Image
