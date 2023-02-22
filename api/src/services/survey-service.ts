@@ -22,6 +22,7 @@ import {
   IObservationSubmissionInsertDetails,
   IObservationSubmissionUpdateDetails,
   IOccurrenceSubmissionMessagesResponse,
+  ISurveyProprietorModel,
   SurveyRepository
 } from '../repositories/survey-repository';
 import { getLogger } from '../utils/logger';
@@ -52,10 +53,24 @@ export class SurveyService extends DBService {
     this.platformService = new PlatformService(connection);
   }
 
+  /**
+   * Get Survey IDs for a project ID
+   *
+   * @param {number} projectID
+   * @returns {*} {Promise<{id: number}[]>}
+   * @memberof SurveyService
+   */
   async getSurveyIdsByProjectId(projectId: number): Promise<{ id: number }[]> {
     return this.surveyRepository.getSurveyIdsByProjectId(projectId);
   }
 
+  /**
+   * Gets all information of a Survey for a given survey ID
+   *
+   * @param {number} surveyID
+   * @returns {*} {Promise<SurveyObject>}
+   * @memberof SurveyService
+   */
   async getSurveyById(surveyId: number): Promise<SurveyObject> {
     const [
       surveyData,
@@ -86,6 +101,13 @@ export class SurveyService extends DBService {
     };
   }
 
+  /**
+   * Get Survey supplementary data for a given survey ID
+   *
+   * @param {number} surveyID
+   * @returns {*} {Promise<SurveySupplementaryData>}
+   * @memberof SurveyService
+   */
   async getSurveySupplementaryDataById(surveyId: number): Promise<SurveySupplementaryData> {
     const [submissionId, summaryResultId] = await Promise.all([
       this.getOccurrenceSubmissionId(surveyId),
@@ -98,10 +120,24 @@ export class SurveyService extends DBService {
     };
   }
 
+  /**
+   * Gets Survey data for a given survey ID
+   *
+   * @param {number} surveyID
+   * @returns {*} {Promise<GetSurveyData>}
+   * @memberof SurveyService
+   */
   async getSurveyData(surveyId: number): Promise<GetSurveyData> {
     return this.surveyRepository.getSurveyData(surveyId);
   }
 
+  /**
+   * Get associated species data for a survey from the taxonomic service for a given Survey ID
+   *
+   * @param {number} surveyID
+   * @returns {*} {Promise<GetFocalSpeciesData & GetAncillarySpeciesData>}
+   * @memberof SurveyService
+   */
   async getSpeciesData(surveyId: number): Promise<GetFocalSpeciesData & GetAncillarySpeciesData> {
     const response = await this.surveyRepository.getSpeciesData(surveyId);
 
@@ -116,6 +152,13 @@ export class SurveyService extends DBService {
     return { ...new GetFocalSpeciesData(focalSpecies), ...new GetAncillarySpeciesData(ancillarySpecies) };
   }
 
+  /**
+   * Get Survey permit data for a given survey ID
+   *
+   * @param {number} surveyID
+   * @returns {*} {Promise<GetPermitData>}
+   * @memberof SurveyService
+   */
   async getPermitData(surveyId: number): Promise<GetPermitData> {
     const permitService = new PermitService(this.connection);
 
@@ -124,28 +167,82 @@ export class SurveyService extends DBService {
     return new GetPermitData(result);
   }
 
+  /**
+   * Get Survey purpose and Methodology information for a given survey ID
+   *
+   * @param {number} surveyID
+   * @returns {*} {Promise<GetSurveyPurposeAndMethodologyData>}
+   * @memberof SurveyService
+   */
   async getSurveyPurposeAndMethodology(surveyId: number): Promise<GetSurveyPurposeAndMethodologyData> {
     return this.surveyRepository.getSurveyPurposeAndMethodology(surveyId);
   }
 
+  /**
+   * Get Survey funding sources for a given survey ID
+   *
+   * @param {number} surveyID
+   * @returns {*} {Promise<GetSurveyFundingSources>}
+   * @memberof SurveyService
+   */
   async getSurveyFundingSourcesData(surveyId: number): Promise<GetSurveyFundingSources> {
     return this.surveyRepository.getSurveyFundingSourcesData(surveyId);
   }
 
+  /**
+   * Gets proprietor data for view or null for a given survey ID
+   *
+   * @param {number} surveyID
+   * @returns {*} {Promise<GetSurveyProprietorData | null>}
+   * @memberof SurveyService
+   */
   async getSurveyProprietorDataForView(surveyId: number): Promise<GetSurveyProprietorData | null> {
     return this.surveyRepository.getSurveyProprietorDataForView(surveyId);
   }
 
+  /**
+   * Get Survey location for a given survey ID
+   *
+   * @param {number} surveyID
+   * @returns {*} {Promise<GetSurveyLocationData>}
+   * @memberof SurveyService
+   */
   async getSurveyLocationData(surveyId: number): Promise<GetSurveyLocationData> {
     return this.surveyRepository.getSurveyLocationData(surveyId);
   }
 
+  /**
+   * Get Occurrence Submission Id for a given survey ID
+   *
+   * @param {number} surveyID
+   * @returns {*} {Promise<number>}
+   * @memberof SurveyService
+   */
   async getOccurrenceSubmissionId(surveyId: number): Promise<number> {
     return this.surveyRepository.getOccurrenceSubmissionId(surveyId);
   }
 
+  /**
+   * Get latest Occurrence Submission or null for a given survey ID
+   *
+   * @param {number} surveyID
+   * @returns {*} {Promise<IGetLatestSurveyOccurrenceSubmission | null>}
+   * @memberof SurveyService
+   */
   async getLatestSurveyOccurrenceSubmission(surveyId: number): Promise<IGetLatestSurveyOccurrenceSubmission | null> {
     return this.surveyRepository.getLatestSurveyOccurrenceSubmission(surveyId);
+  }
+
+  /**
+   * Gets the Proprietor Data to be be submitted
+   * to BioHub as a Security Request
+   *
+   * @param {number} surveyID
+   * @returns {*} {Promise<ISurveyProprietorModel>}
+   * @memberof SurveyService
+   */
+  async getSurveyProprietorDataForSecurityRequest(surveyId: number): Promise<ISurveyProprietorModel> {
+    return this.surveyRepository.getSurveyProprietorDataForSecurityRequest(surveyId);
   }
 
   /**
@@ -197,6 +294,14 @@ export class SurveyService extends DBService {
     return Promise.all(surveyIds.map(async (surveyId) => this.getSurveyById(surveyId)));
   }
 
+  /**
+   * Creates a new survey for a project and returns survey ID
+   *
+   * @param {number} projectId
+   * @param {PostSurveyObject} postSurveyData
+   * @returns {*} {Promise<number>}
+   * @memberof SurveyService
+   */
   async createSurvey(projectId: number, postSurveyData: PostSurveyObject): Promise<number> {
     const surveyId = await this.insertSurveyData(projectId, postSurveyData);
 
@@ -249,39 +354,105 @@ export class SurveyService extends DBService {
 
     await Promise.all(promises);
 
-    await this.platformService.submitDwCAMetadataPackage(projectId);
+    //Update Eml to biohub and publish record
+    await this.platformService.submitAndPublishDwcAMetadata(projectId, surveyId);
 
     return surveyId;
   }
 
+  /**
+   * Get survey attachments data for a given survey ID
+   *
+   * @param {number} surveyID
+   * @returns {*} {Promise<GetAttachmentsData>}
+   * @memberof SurveyService
+   */
   async getAttachmentsData(surveyId: number): Promise<GetAttachmentsData> {
     return this.surveyRepository.getAttachmentsData(surveyId);
   }
 
+  /**
+   * Get survey report attachments for a given survey ID
+   *
+   * @param {number} surveyID
+   * @returns {*} {Promise<GetReportAttachmentsData>}
+   * @memberof SurveyService
+   */
   async getReportAttachmentsData(surveyId: number): Promise<GetReportAttachmentsData> {
     return this.surveyRepository.getReportAttachmentsData(surveyId);
   }
 
+  /**
+   * Inserts Survey data and returns new survey Id
+   *
+   * @param {number} projectId
+   * @param {PostSurveyObject} surveyData
+   * @returns {*} {Promise<number>}
+   * @memberof SurveyService
+   */
   async insertSurveyData(projectId: number, surveyData: PostSurveyObject): Promise<number> {
     return this.surveyRepository.insertSurveyData(projectId, surveyData);
   }
 
+  /**
+   * Inserts a new record and associates focal species to a survey
+   *
+   * @param {number} focal_species_id
+   * @param {number} surveyID
+   * @returns {*} {Promise<number>}
+   * @memberof SurveyService
+   */
   async insertFocalSpecies(focal_species_id: number, surveyId: number): Promise<number> {
     return this.surveyRepository.insertFocalSpecies(focal_species_id, surveyId);
   }
 
+  /**
+   * Inserts a new record and associates ancillary species to a survey
+   *
+   * @param {number} ancillary_species_id
+   * @param {number} surveyID
+   * @returns {*} {Promise<number>}
+   * @memberof SurveyService
+   */
   async insertAncillarySpecies(ancillary_species_id: number, surveyId: number): Promise<number> {
     return this.surveyRepository.insertAncillarySpecies(ancillary_species_id, surveyId);
   }
 
+  /**
+   * Inserts new record and associated a vantage code to a survey
+   *
+   * @param {number} vantage_code_id
+   * @param {number} surveyID
+   * @returns {*} {Promise<number>}
+   * @memberof SurveyService
+   */
   async insertVantageCodes(vantage_code_id: number, surveyId: number): Promise<number> {
     return this.surveyRepository.insertVantageCodes(vantage_code_id, surveyId);
   }
 
+  /**
+   * Inserts proprietor data for a survey
+   *
+   * @param {PostProprietorData} survey_proprietor
+   * @param {number} surveyID
+   * @returns {*} {Promise<number | undefined>}
+   * @memberof SurveyService
+   */
   async insertSurveyProprietor(survey_proprietor: PostProprietorData, surveyId: number): Promise<number | undefined> {
     return this.surveyRepository.insertSurveyProprietor(survey_proprietor, surveyId);
   }
 
+  /**
+   * Insert or update association of permit to a given survey
+   *
+   * @param {number} systemUserId
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {number} permitNumber
+   * @param {number} permitType
+   * @returns {*} {Promise<void>}
+   * @memberof SurveyService
+   */
   async insertOrAssociatePermitToSurvey(
     systemUserId: number,
     projectId: number,
@@ -296,10 +467,26 @@ export class SurveyService extends DBService {
     }
   }
 
+  /**
+   * Inserts new record and associates funding source to a survey
+   *
+   * @param {number} funding_source_id
+   * @param {number} surveyID
+   * @returns {*} {Promise<void>}
+   * @memberof SurveyService
+   */
   async insertSurveyFundingSource(funding_source_id: number, surveyId: number) {
     return this.surveyRepository.insertSurveyFundingSource(funding_source_id, surveyId);
   }
 
+  /**
+   * Updates provided survey information and submits to BioHub
+   *
+   * @param {number} surveyId
+   * @param {PutSurveyObject} putSurveyData
+   * @returns {*} {Promise<void>}
+   * @memberof SurveyService
+   */
   async updateSurvey(surveyId: number, putSurveyData: PutSurveyObject): Promise<void> {
     const promises: Promise<any>[] = [];
 
@@ -331,13 +518,30 @@ export class SurveyService extends DBService {
 
     const surveyData = await this.getSurveyById(surveyId);
 
-    await this.platformService.submitDwCAMetadataPackage(surveyData.survey_details.project_id);
+    //Update Eml to biohub and publish record
+    await this.platformService.submitAndPublishDwcAMetadata(surveyData.survey_details.project_id, surveyId);
   }
 
+  /**
+   * Updates Survey details
+   *
+   * @param {number} surveyID
+   * @param {PutSurveyObject} surveyData
+   * @returns {*} {Promise<void>}
+   * @memberof SurveyService
+   */
   async updateSurveyDetailsData(surveyId: number, surveyData: PutSurveyObject) {
     return this.surveyRepository.updateSurveyDetailsData(surveyId, surveyData);
   }
 
+  /**
+   * Updates survey species data
+   *
+   * @param {number} surveyID
+   * @param {PutSurveyObject} surveyData
+   * @returns {*} {Promise<any[]>}
+   * @memberof SurveyService
+   */
   async updateSurveySpeciesData(surveyId: number, surveyData: PutSurveyObject) {
     this.deleteSurveySpeciesData(surveyId);
 
@@ -354,6 +558,13 @@ export class SurveyService extends DBService {
     return Promise.all(promises);
   }
 
+  /**
+   * Delete species data for a given survey ID
+   *
+   * @param {number} surveyID
+   * @returns {*} {Promise<void>}
+   * @memberof SurveyService
+   */
   async deleteSurveySpeciesData(surveyId: number) {
     return this.surveyRepository.deleteSurveySpeciesData(surveyId);
   }
@@ -408,10 +619,24 @@ export class SurveyService extends DBService {
     return Promise.all(promises);
   }
 
+  /**
+   * Breaks link between permit and survey for a given survey ID
+   *
+   * @param {number} surveyID
+   * @returns {*} {Promise<void>}
+   * @memberof SurveyService
+   */
   async unassociatePermitFromSurvey(surveyId: number): Promise<void> {
     return this.surveyRepository.unassociatePermitFromSurvey(surveyId);
   }
 
+  /**
+   * Updates a Survey funding source for a given survey ID
+   *
+   * @param {number} surveyID
+   * @returns {*} {Promise<any[]>}
+   * @memberof SurveyService
+   */
   async updateSurveyFundingData(surveyId: number, surveyData: PutSurveyObject) {
     await this.deleteSurveyFundingSourcesData(surveyId);
 
@@ -424,10 +649,26 @@ export class SurveyService extends DBService {
     return Promise.all(promises);
   }
 
+  /**
+   * Breaks link between a funding source and a survey for a given survey ID
+   *
+   * @param {number} surveyID
+   * @returns {*} {Promise<void>}
+   * @memberof SurveyService
+   */
   async deleteSurveyFundingSourcesData(surveyId: number): Promise<void> {
     return this.surveyRepository.deleteSurveyFundingSourcesData(surveyId);
   }
 
+  /**
+   * Updates proprietor data on a survey
+   *
+   * @param {number} surveyID
+   * @param {PutSurveyObject} surveyData
+   * @param {PutSurveyObject}
+   * @returns {*} {Promise<void>}
+   * @memberof SurveyService
+   */
   async updateSurveyProprietorData(surveyId: number, surveyData: PutSurveyObject) {
     await this.deleteSurveyProprietorData(surveyId);
 
@@ -438,10 +679,25 @@ export class SurveyService extends DBService {
     return this.insertSurveyProprietor(surveyData.proprietor, surveyId);
   }
 
+  /**
+   * Deletes proprietor data for a given survey
+   *
+   * @param {number} surveyID
+   * @returns {*} {Promise<void>}
+   * @memberof SurveyService
+   */
   async deleteSurveyProprietorData(surveyId: number): Promise<void> {
     return this.surveyRepository.deleteSurveyProprietorData(surveyId);
   }
 
+  /**
+   * Updates vantage codes associated to a survey
+   *
+   * @param {number} surveyID
+   * @param {PutSurveyObject} surveyData
+   * @returns {*} {Promise<void>}
+   * @memberof SurveyService
+   */
   async updateSurveyVantageCodesData(surveyId: number, surveyData: PutSurveyObject) {
     await this.deleteSurveyVantageCodes(surveyId);
 
@@ -456,10 +712,24 @@ export class SurveyService extends DBService {
     return Promise.all(promises);
   }
 
+  /**
+   * Breaks link between vantage codes and a survey fora  given survey Id
+   *
+   * @param {number} surveyID
+   * @returns {*} {Promise<void>}
+   * @memberof SurveyService
+   */
   async deleteSurveyVantageCodes(surveyId: number): Promise<void> {
     return this.surveyRepository.deleteSurveyVantageCodes(surveyId);
   }
 
+  /**
+   * Deletes a survey for a given ID
+   *
+   * @param {number} surveyID
+   * @returns {*} {Promise<void>}
+   * @memberof SurveyService
+   */
   async deleteSurvey(surveyId: number): Promise<void> {
     return this.surveyRepository.deleteSurvey(surveyId);
   }

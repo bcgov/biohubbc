@@ -341,8 +341,8 @@ export class ProjectService extends DBService {
     // The user that creates a project is automatically assigned a project lead role, for this project
     await this.insertParticipantRole(projectId, PROJECT_ROLE.PROJECT_LEAD);
 
-    //Submit Eml to biohub
-    await this.platformService.submitDwCAMetadataPackage(projectId);
+    //Submit Eml to biohub and publish record
+    await this.platformService.submitAndPublishDwcAMetadata(projectId);
 
     return projectId;
   }
@@ -396,8 +396,8 @@ export class ProjectService extends DBService {
 
     await Promise.all(promises);
 
-    //Update Eml to biohub
-    await this.platformService.submitDwCAMetadataPackage(projectId);
+    //Update Eml to biohub and publish record
+    await this.platformService.submitAndPublishDwcAMetadata(projectId);
   }
 
   async updateIUCNData(projectId: number, entities: IUpdateProject): Promise<void> {
