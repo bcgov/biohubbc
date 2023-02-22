@@ -120,11 +120,10 @@ jobs:
     if: |
       github.event.pull_request.merged == false && 
       github.event.pull_request.draft == false && 
-      !(fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch == $BRANCH_REF)
+      !(fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch == github.head_ref)
     env:
       PR_NUMBER: ${{ github.event.number }}
       APP_NAME: "biohubbc-app"
-      BRANCH_REF: ${{ github.head_ref }}
     needs:
       - checkoutRepo
       - skipDuplicateActions
@@ -196,11 +195,10 @@ jobs:
     if: |
       github.event.pull_request.merged == false && 
       github.event.pull_request.draft == false && 
-      !(fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.skipped_by.branch == $BRANCH_REF)
+      !(fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.skipped_by.branch == github.head_ref)
     env:
       PR_NUMBER: ${{ github.event.number }}
       APP_NAME: "biohubbc-db"
-      BRANCH_REF: ${{ github.head_ref }}
     needs:
       - checkoutRepo
       - skipDuplicateActions
@@ -272,10 +270,9 @@ jobs:
     if: |
       github.event.pull_request.merged == false && 
       github.event.pull_request.draft == false && 
-      !(fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.skipped_by.branch == $BRANCH_REF)
+      !(fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.skipped_by.branch == github.head_ref)
     env:
       PR_NUMBER: ${{ github.event.number }}
-      BRANCH_REF: ${{ github.head_ref }}
     needs:
       - checkoutRepo
       - skipDuplicateActions
@@ -339,11 +336,10 @@ jobs:
     if: |
       github.event.pull_request.merged == false && 
       github.event.pull_request.draft == false && 
-      !(fromJSON(needs.skipDuplicateActions.outputs.paths_result).api.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).api.skipped_by.branch == $BRANCH_REF)
+      !(fromJSON(needs.skipDuplicateActions.outputs.paths_result).api.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).api.skipped_by.branch == github.head_ref)
     env:
       PR_NUMBER: ${{ github.event.number }}
       APP_NAME: "biohubbc-api"
-      BRANCH_REF: ${{ github.head_ref }}
     needs:
       - checkoutRepo
       - skipDuplicateActions
@@ -415,10 +411,9 @@ jobs:
     if: |
       github.event.pull_request.merged == false && 
       github.event.pull_request.draft == false && 
-      !(fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch == $BRANCH_REF)
+      !(fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch == github.head_ref)
     env:
       PR_NUMBER: ${{ github.event.number }}
-      BRANCH_REF: ${{ github.head_ref }}
     needs:
       - buildAPP
     steps:
@@ -481,10 +476,9 @@ jobs:
     if: |
       github.event.pull_request.merged == false && 
       github.event.pull_request.draft == false && 
-      !(fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.skipped_by.branch == $BRANCH_REF)
+      !(fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.skipped_by.branch == github.head_ref)
     env:
       PR_NUMBER: ${{ github.event.number }}
-      BRANCH_REF: ${{ github.head_ref }}
     needs:
       - buildDatabase
     steps:
@@ -547,10 +541,9 @@ jobs:
     if: |
       github.event.pull_request.merged == false && 
       github.event.pull_request.draft == false && 
-      !(fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.skipped_by.branch == $BRANCH_REF)
+      !(fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.skipped_by.branch == github.head_ref)
     env:
       PR_NUMBER: ${{ github.event.number }}
-      BRANCH_REF: ${{ github.head_ref }}
     needs:
       - buildDatabaseSetup
       - deployDatabase
@@ -614,10 +607,9 @@ jobs:
     if: |
       github.event.pull_request.merged == false && 
       github.event.pull_request.draft == false && 
-      !(fromJSON(needs.skipDuplicateActions.outputs.paths_result).api.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).api.skipped_by.branch == $BRANCH_REF)
+      !(fromJSON(needs.skipDuplicateActions.outputs.paths_result).api.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).api.skipped_by.branch == github.head_ref)
     env:
       PR_NUMBER: ${{ github.event.number }}
-      BRANCH_REF: ${{ github.head_ref }}
     needs:
       - buildAPI
       - deployDatabase
