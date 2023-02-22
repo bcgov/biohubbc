@@ -31,7 +31,7 @@ jobs:
           echo PR in Draft: ${{ github.event.pull_request.draft }}
 
   # Scans the commit against past commits, and determines if any jobs are skippable (due to no changes in target files).
-  # Note: this does not take into account the current branch and will check past workflows from any branch, so an 
+  # Note: this does not take into account the current branch and will check past workflows from any branch, so an
   # additional check against the current branch is added to the `if` in the build jobs below.
   skipDuplicateActions:
     name: Check for duplicate actions
@@ -124,7 +124,7 @@ jobs:
       !(fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch == '$BRANCH_REF')
     env:
       PR_NUMBER: ${{ github.event.number }}
-      APP_NAME: 'biohubbc-app'
+      APP_NAME: "biohubbc-app"
       BRANCH_REF: ${{ github.head_ref || github.ref_name }}
     needs:
       - checkoutRepo
@@ -189,6 +189,25 @@ jobs:
         run: |
           DEBUG=* npm run build -- --pr=$PR_NUMBER
 
+  # Opposite - Build the web frontend app image
+  buildAPP:
+    name: Build APP Image
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    if: |
+      github.event.pull_request.merged == false && 
+      github.event.pull_request.draft == false && 
+      fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch == '$BRANCH_REF'
+    env:
+      BRANCH_REF: ${{ github.head_ref || github.ref_name }}
+    needs:
+      - checkoutRepo
+      - skipDuplicateActions
+    steps:
+      - name: No build required
+        run: |
+          echo No build required
+
   # Build the Database image
   buildDatabase:
     name: Build Database Image
@@ -200,7 +219,7 @@ jobs:
       !(fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.skipped_by.branch == '$BRANCH_REF')
     env:
       PR_NUMBER: ${{ github.event.number }}
-      APP_NAME: 'biohubbc-db'
+      APP_NAME: "biohubbc-db"
       BRANCH_REF: ${{ github.head_ref || github.ref_name }}
     needs:
       - checkoutRepo
@@ -264,6 +283,25 @@ jobs:
         working-directory: "database/.pipeline/"
         run: |
           DEBUG=* npm run db:build -- --pr=$PR_NUMBER
+
+  # Opposite - Build the Database image
+  buildDatabase:
+    name: Build Database Image
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    if: |
+      github.event.pull_request.merged == false && 
+      github.event.pull_request.draft == false && 
+      fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.skipped_by.branch == '$BRANCH_REF'
+    env:
+      BRANCH_REF: ${{ github.head_ref || github.ref_name }}
+    needs:
+      - checkoutRepo
+      - skipDuplicateActions
+    steps:
+      - name: No build required
+        run: |
+          echo No build required
 
   # Build the Database Setup image
   buildDatabaseSetup:
@@ -332,6 +370,25 @@ jobs:
         run: |
           DEBUG=* npm run db-setup:build -- --pr=$PR_NUMBER
 
+  # Opposite - Build the Database Setup image
+  buildDatabaseSetup:
+    name: Build Database Setup Image
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    if: |
+      github.event.pull_request.merged == false && 
+      github.event.pull_request.draft == false && 
+      fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.skipped_by.branch == '$BRANCH_REF'
+    env:
+      BRANCH_REF: ${{ github.head_ref || github.ref_name }}
+    needs:
+      - checkoutRepo
+      - skipDuplicateActions
+    steps:
+      - name: No build required
+        run: |
+          echo No build required
+
   # Build the API image
   buildAPI:
     name: Build API Image
@@ -343,7 +400,7 @@ jobs:
       !(fromJSON(needs.skipDuplicateActions.outputs.paths_result).api.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).api.skipped_by.branch == '$BRANCH_REF')
     env:
       PR_NUMBER: ${{ github.event.number }}
-      APP_NAME: 'biohubbc-api'
+      APP_NAME: "biohubbc-api"
       BRANCH_REF: ${{ github.head_ref || github.ref_name }}
     needs:
       - checkoutRepo
@@ -408,14 +465,37 @@ jobs:
         run: |
           DEBUG=* npm run build -- --pr=$PR_NUMBER
 
+  # Opposite - Build the API image
+  buildAPI:
+    name: Build API Image
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    if: |
+      github.event.pull_request.merged == false && 
+      github.event.pull_request.draft == false && 
+      fromJSON(needs.skipDuplicateActions.outputs.paths_result).api.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).api.skipped_by.branch == '$BRANCH_REF'
+    env:
+      BRANCH_REF: ${{ github.head_ref || github.ref_name }}
+    needs:
+      - checkoutRepo
+      - skipDuplicateActions
+    steps:
+      - name: No build required
+        run: |
+          echo No build required
+
   # Deploy APP image
   deployAPP:
     name: Deploy APP Image
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    if: ${{ github.event.pull_request.merged == false && github.event.pull_request.draft == false }}
+    if: |
+      github.event.pull_request.merged == false && 
+      github.event.pull_request.draft == false && 
+      !(fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch == '$BRANCH_REF')
     env:
       PR_NUMBER: ${{ github.event.number }}
+      BRANCH_REF: ${{ github.head_ref || github.ref_name }}
     needs:
       - buildAPP
     steps:
@@ -470,14 +550,37 @@ jobs:
         run: |
           DEBUG=* npm run deploy -- --pr=$PR_NUMBER --env=dev
 
+  # Opposite - Deploy APP image
+  deployAPP:
+    name: Deploy APP Image
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    if: |
+      github.event.pull_request.merged == false && 
+      github.event.pull_request.draft == false && 
+      fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch == '$BRANCH_REF'
+    env:
+      PR_NUMBER: ${{ github.event.number }}
+      BRANCH_REF: ${{ github.head_ref || github.ref_name }}
+    needs:
+      - buildAPP
+    steps:
+      - name: No deploy required
+        run: |
+          echo No deploy required
+
   # Deploy Database image
   deployDatabase:
     name: Deploy Database Image
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    if: ${{ github.event.pull_request.merged == false && github.event.pull_request.draft == false }}
+    if: |
+      github.event.pull_request.merged == false && 
+      github.event.pull_request.draft == false && 
+      !(fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.skipped_by.branch == '$BRANCH_REF')
     env:
       PR_NUMBER: ${{ github.event.number }}
+      BRANCH_REF: ${{ github.head_ref || github.ref_name }}
     needs:
       - buildDatabase
     steps:
@@ -532,14 +635,37 @@ jobs:
         run: |
           DEBUG=* npm run db:deploy -- --pr=$PR_NUMBER --env=dev
 
+  # Opposite - Deploy Database image
+  deployDatabase:
+    name: Deploy Database Image
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    if: |
+      github.event.pull_request.merged == false && 
+      github.event.pull_request.draft == false && 
+      fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.skipped_by.branch == '$BRANCH_REF'
+    env:
+      PR_NUMBER: ${{ github.event.number }}
+      BRANCH_REF: ${{ github.head_ref || github.ref_name }}
+    needs:
+      - buildDatabase
+    steps:
+      - name: No deploy required
+        run: |
+          echo No deploy required
+
   # Deploy Database image
   deployDatabaseSetup:
     name: Deploy Database Setup Image
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    if: ${{ github.event.pull_request.merged == false && github.event.pull_request.draft == false }}
+    if: |
+      github.event.pull_request.merged == false && 
+      github.event.pull_request.draft == false && 
+      !(fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.skipped_by.branch == '$BRANCH_REF')
     env:
       PR_NUMBER: ${{ github.event.number }}
+      BRANCH_REF: ${{ github.head_ref || github.ref_name }}
     needs:
       - buildDatabaseSetup
       - deployDatabase
@@ -595,14 +721,38 @@ jobs:
         run: |
           DEBUG=* npm run db-setup:deploy -- --pr=$PR_NUMBER --env=dev
 
+  # Opposite - Deploy Database image
+  deployDatabaseSetup:
+    name: Deploy Database Setup Image
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    if: |
+      github.event.pull_request.merged == false && 
+      github.event.pull_request.draft == false && 
+      fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.skipped_by.branch == '$BRANCH_REF'
+    env:
+      PR_NUMBER: ${{ github.event.number }}
+      BRANCH_REF: ${{ github.head_ref || github.ref_name }}
+    needs:
+      - buildDatabaseSetup
+      - deployDatabase
+    steps:
+      - name: No deploy required
+        run: |
+          echo No deploy required
+
   # Deploy API image
   deployAPI:
     name: Deploy API Image
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    if: ${{ github.event.pull_request.merged == false && github.event.pull_request.draft == false }}
+    if: |
+      github.event.pull_request.merged == false && 
+      github.event.pull_request.draft == false && 
+      !(fromJSON(needs.skipDuplicateActions.outputs.paths_result).api.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).api.skipped_by.branch == '$BRANCH_REF')
     env:
       PR_NUMBER: ${{ github.event.number }}
+      BRANCH_REF: ${{ github.head_ref || github.ref_name }}
     needs:
       - buildAPI
       - deployDatabase
@@ -657,3 +807,23 @@ jobs:
         working-directory: "api/.pipeline/"
         run: |
           DEBUG=* npm run deploy -- --pr=$PR_NUMBER --env=dev
+
+  # Opposite - Deploy API image
+  deployAPI:
+    name: Deploy API Image
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    if: |
+      github.event.pull_request.merged == false && 
+      github.event.pull_request.draft == false && 
+      fromJSON(needs.skipDuplicateActions.outputs.paths_result).api.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).api.skipped_by.branch == '$BRANCH_REF'
+    env:
+      PR_NUMBER: ${{ github.event.number }}
+      BRANCH_REF: ${{ github.head_ref || github.ref_name }}
+    needs:
+      - buildAPI
+      - deployDatabase
+    steps:
+      - name: No deploy required
+        run: |
+          echo No deploy required
