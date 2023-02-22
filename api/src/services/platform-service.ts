@@ -430,7 +430,7 @@ export class PlatformService extends DBService {
       });
     });
 
-    return Promise.all([...attachmentArtifactPromises, ...reportArtifactPromises]);
+    return [...await Promise.all(attachmentArtifactPromises), ...await Promise.all(reportArtifactPromises)];
   }
 
   /**
@@ -480,6 +480,6 @@ export class PlatformService extends DBService {
       });
     });
 
-    return Promise.all([...attachmentArtifactPromises, ...reportArtifactPromises]);
+    return [...await Promise.all(attachmentArtifactPromises), ...await Promise.all(reportArtifactPromises)];
   }
 }
