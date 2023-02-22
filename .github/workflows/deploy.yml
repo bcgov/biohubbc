@@ -128,14 +128,6 @@ jobs:
       - checkoutRepo
       - skipDuplicateActions
     steps:
-      # Install Node - for `node` and `npm` commands
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 14
-          cache-dependency-path: "app/.pipeline/package-lock.json"
-          cache: "npm"
-
       # Load repo from cache
       - name: Cache repo
         uses: actions/cache@v3
@@ -150,6 +142,14 @@ jobs:
       - name: Checkout Target Branch
         if: steps.cache-repo.outputs.cache-hit != 'true'
         uses: actions/checkout@v3
+
+      # Install Node - for `node` and `npm` commands
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 14
+          cache-dependency-path: "app/.pipeline/package-lock.json"
+          cache: "npm"
 
       # Log in to OpenShift.
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
@@ -198,14 +198,6 @@ jobs:
       - checkoutRepo
       - skipDuplicateActions
     steps:
-      # Install Node - for `node` and `npm` commands
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 14
-          cache-dependency-path: "database/.pipeline/package-lock.json"
-          cache: "npm"
-
       # Load repo from cache
       - name: Cache repo
         uses: actions/cache@v3
@@ -220,6 +212,14 @@ jobs:
       - name: Checkout Target Branch
         if: steps.cache-repo.outputs.cache-hit != 'true'
         uses: actions/checkout@v3
+
+      # Install Node - for `node` and `npm` commands
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 14
+          cache-dependency-path: "database/.pipeline/package-lock.json"
+          cache: "npm"
 
       # Log in to OpenShift.
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
@@ -267,14 +267,6 @@ jobs:
       - checkoutRepo
       - skipDuplicateActions
     steps:
-      # Install Node - for `node` and `npm` commands
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 14
-          cache-dependency-path: "database/.pipeline/package-lock.json"
-          cache: "npm"
-
       # Load repo from cache
       - name: Cache repo
         uses: actions/cache@v3
@@ -289,6 +281,14 @@ jobs:
       - name: Checkout Target Branch
         if: steps.cache-repo.outputs.cache-hit != 'true'
         uses: actions/checkout@v3
+
+      # Install Node - for `node` and `npm` commands
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 14
+          cache-dependency-path: "database/.pipeline/package-lock.json"
+          cache: "npm"
 
       # Log in to OpenShift.
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
@@ -329,14 +329,6 @@ jobs:
       - checkoutRepo
       - skipDuplicateActions
     steps:
-      # Install Node - for `node` and `npm` commands
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 14
-          cache-dependency-path: "api/.pipeline/package-lock.json"
-          cache: "npm"
-
       # Load repo from cache
       - name: Cache repo
         uses: actions/cache@v3
@@ -351,6 +343,14 @@ jobs:
       - name: Checkout Target Branch
         if: steps.cache-repo.outputs.cache-hit != 'true'
         uses: actions/checkout@v3
+
+      # Install Node - for `node` and `npm` commands
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 14
+          cache-dependency-path: "api/.pipeline/package-lock.json"
+          cache: "npm"
 
       # Log in to OpenShift.
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
@@ -397,14 +397,6 @@ jobs:
     needs:
       - buildAPP
     steps:
-      # Install Node - for `node` and `npm` commands
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 14
-          cache-dependency-path: "app/.pipeline/package-lock.json"
-          cache: "npm"
-
       # Load repo from cache
       - name: Cache repo
         uses: actions/cache@v3
@@ -419,6 +411,14 @@ jobs:
       - name: Checkout Target Branch
         if: steps.cache-repo.outputs.cache-hit != 'true'
         uses: actions/checkout@v3
+
+      # Install Node - for `node` and `npm` commands
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 14
+          cache-dependency-path: "app/.pipeline/package-lock.json"
+          cache: "npm"
 
       # Log in to OpenShift.
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
@@ -457,14 +457,6 @@ jobs:
     needs:
       - buildDatabase
     steps:
-      # Install Node - for `node` and `npm` commands
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 14
-          cache-dependency-path: "database/.pipeline/package-lock.json"
-          cache: "npm"
-
       # Load repo from cache
       - name: Cache repo
         uses: actions/cache@v3
@@ -479,6 +471,14 @@ jobs:
       - name: Checkout Target Branch
         if: steps.cache-repo.outputs.cache-hit != 'true'
         uses: actions/checkout@v3
+
+      # Install Node - for `node` and `npm` commands
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 14
+          cache-dependency-path: "database/.pipeline/package-lock.json"
+          cache: "npm"
 
       # Log in to OpenShift.
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
@@ -518,14 +518,6 @@ jobs:
       - buildDatabaseSetup
       - deployDatabase
     steps:
-      # Install Node - for `node` and `npm` commands
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 14
-          cache-dependency-path: "database/.pipeline/package-lock.json"
-          cache: "npm"
-
       # Load repo from cache
       - name: Cache repo
         uses: actions/cache@v3
@@ -540,6 +532,14 @@ jobs:
       - name: Checkout Target Branch
         if: steps.cache-repo.outputs.cache-hit != 'true'
         uses: actions/checkout@v3
+
+      # Install Node - for `node` and `npm` commands
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 14
+          cache-dependency-path: "database/.pipeline/package-lock.json"
+          cache: "npm"
 
       # Log in to OpenShift.
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
@@ -579,14 +579,6 @@ jobs:
       - buildAPI
       - deployDatabase
     steps:
-      # Install Node - for `node` and `npm` commands
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 14
-          cache-dependency-path: "api/.pipeline/package-lock.json"
-          cache: "npm"
-
       # Load repo from cache
       - name: Cache repo
         uses: actions/cache@v3
@@ -601,6 +593,14 @@ jobs:
       - name: Checkout Target Branch
         if: steps.cache-repo.outputs.cache-hit != 'true'
         uses: actions/checkout@v3
+
+      # Install Node - for `node` and `npm` commands
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 14
+          cache-dependency-path: "api/.pipeline/package-lock.json"
+          cache: "npm"
 
       # Log in to OpenShift.
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
