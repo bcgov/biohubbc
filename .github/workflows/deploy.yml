@@ -176,6 +176,7 @@ jobs:
           oc get deploymentconfig --selector env-id=$PR_NUMBER,app-name=$APP_NAME -o name | awk '{print "oc scale --replicas=0  " $1}' | bash
 
       # Install app pipeline node modules
+      # Note: This already caches node modules internally
       - name: Install app pipeline node modules
         uses: bahmutov/npm-install@v1
         with:
@@ -251,6 +252,7 @@ jobs:
           oc get deploymentconfig --selector env-id=$PR_NUMBER,app-name=$APP_NAME -o name | awk '{print "oc scale --replicas=0  " $1}' | bash
 
       # Install database pipeline node modules
+      # Note: This already caches node modules internally
       - name: Install database pipeline node modules
         uses: bahmutov/npm-install@v1
         with:
@@ -317,6 +319,7 @@ jobs:
         run: oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
 
       # Install database pipeline node modules
+      # Note: This already caches node modules internally
       - name: Install database pipeline node modules
         uses: bahmutov/npm-install@v1
         with:
@@ -392,6 +395,7 @@ jobs:
           oc get deploymentconfig --selector env-id=$PR_NUMBER,app-name=$APP_NAME -o name | awk '{print "oc scale --replicas=0  " $1}' | bash
 
       # Install api pipeline node modules
+      # Note: This already caches node modules internally
       - name: Install api pipeline node modules
         uses: bahmutov/npm-install@v1
         with:
@@ -457,6 +461,7 @@ jobs:
         run: oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
 
       # Install app pipeline node modules
+      # Note: This already caches node modules internally
       - name: Install app pipeline node modules
         uses: bahmutov/npm-install@v1
         with:
@@ -522,6 +527,7 @@ jobs:
         run: oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
 
       # Install database pipeline node modules
+      # Note: This already caches node modules internally
       - name: Install database pipeline node modules
         uses: bahmutov/npm-install@v1
         with:
@@ -588,6 +594,7 @@ jobs:
         run: oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
 
       # Install database pipeline node modules
+      # Note: This already caches node modules internally
       - name: Install database pipeline node modules
         uses: bahmutov/npm-install@v1
         with:
@@ -654,6 +661,7 @@ jobs:
         run: oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
 
       # Install api pipeline node modules
+      # Note: This already caches node modules internally
       - name: Install api pipeline node modules
         uses: bahmutov/npm-install@v1
         with:
