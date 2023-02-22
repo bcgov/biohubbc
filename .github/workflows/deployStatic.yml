@@ -49,9 +49,7 @@ jobs:
         run: oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
 
       - name: Scale down
-        run: |
-          oc project af2668-dev
-          oc get deploymentconfig --selector env-id=$PR_NUMBER -o name | awk '{print "oc scale --replicas=0  " $1}' | bash
+        run: oc get deploymentconfig --namespace af2668-dev --selector env-id=$PR_NUMBER -o name | awk '{print "oc scale --replicas=0  " $1}' | bash
 
   # Checkout the repo once and cache it for use in subsequent jobs
   checkoutRepo:
@@ -141,8 +139,7 @@ jobs:
       # Install app pipeline node modules
       - name: Install app pipeline node modules
         working-directory: "app/.pipeline/"
-        run: |
-          npm install --only=production --prefer-offline
+        run: npm install --only=production
 
       # Build the app image
       - name: Build APP Image
@@ -204,8 +201,7 @@ jobs:
       # Install database pipeline node modules
       - name: Install database pipeline node modules
         working-directory: "database/.pipeline/"
-        run: |
-          npm install --only=production --prefer-offline
+        run: npm install --only=production
 
       # Build the database image
       - name: Build Database Image
@@ -267,8 +263,7 @@ jobs:
       # Install database pipeline node modules
       - name: Install database pipeline node modules
         working-directory: "database/.pipeline/"
-        run: |
-          npm install --only=production --prefer-offline
+        run: npm install --only=production
 
       # Build the database image
       - name: Build Database Setup Image
@@ -330,8 +325,7 @@ jobs:
       # Install api pipeline node modules
       - name: Install api pipeline node modules
         working-directory: "api/.pipeline/"
-        run: |
-          npm install --only=production --prefer-offline
+        run: npm install --only=production
 
       # Build the api image
       - name: Build API Image
@@ -394,8 +388,7 @@ jobs:
       # Install app pipeline node modules
       - name: Install app pipeline node modules
         working-directory: "app/.pipeline"
-        run: |
-          npm install --only=production --prefer-offline
+        run: npm install --only=production
 
       # Deploy the app image
       - name: Deploy APP Image
@@ -458,8 +451,7 @@ jobs:
       # Install database pipeline node modules
       - name: Install database pipeline node modules
         working-directory: "database/.pipeline/"
-        run: |
-          npm install --only=production --prefer-offline
+        run: npm install --only=production
 
       # Deploy the database image
       - name: Deploy Database Image
@@ -523,8 +515,7 @@ jobs:
       # Install database pipeline node modules
       - name: Install database pipeline node modules
         working-directory: "database/.pipeline/"
-        run: |
-          npm install --only=production --prefer-offline
+        run: npm install --only=production
 
       # Deploy the database setup image
       - name: Deploy Database Setup Image
@@ -588,8 +579,7 @@ jobs:
       # Install api pipeline node modules
       - name: Install api pipeline node modules
         working-directory: "api/.pipeline/"
-        run: |
-          npm install --only=production --prefer-offline
+        run: npm install --only=production
 
       # Deploy the api image
       - name: Deploy API Image
@@ -655,7 +645,7 @@ jobs:
       - name: Clean APP Deployment
         working-directory: "app/.pipeline/"
         run: |
-          npm install --only=production --prefer-offline
+          npm install --only=production
           DEBUG=* npm run clean -- --pr=$PR_NUMBER --env=build
           DEBUG=* npm run clean -- --pr=$PR_NUMBER --env=dev
 
@@ -675,7 +665,7 @@ jobs:
       - name: Clean Database Artifacts
         working-directory: "database/.pipeline/"
         run: |
-          npm install --only=production --prefer-offline
+          npm install --only=production
           DEBUG=* npm run clean -- --pr=$PR_NUMBER --env=build
           DEBUG=* npm run clean -- --pr=$PR_NUMBER --env=dev
 
@@ -695,7 +685,7 @@ jobs:
       - name: Clean API Deployment
         working-directory: "api/.pipeline/"
         run: |
-          npm install --only=production --prefer-offline
+          npm install --only=production
           DEBUG=* npm run clean -- --pr=$PR_NUMBER --env=build
           DEBUG=* npm run clean -- --pr=$PR_NUMBER --env=dev
 
@@ -704,7 +694,5 @@ jobs:
         env:
           POD_SELECTOR: biohubbc
         run: |
-          oc project af2668-dev
-          oc get all,pvc,secret,pods,ReplicationController,DeploymentConfig,HorizontalPodAutoscaler,imagestreamtag -o name | grep $POD_SELECTOR | grep $PR_NUMBER | awk '{print "oc delete " $1}' | bash
-          oc project af2668-tools
-          oc get all,pvc,secret,pods,ReplicationController,DeploymentConfig,HorizontalPodAutoscaler,imagestreamtag -o name | grep $POD_SELECTOR | grep $PR_NUMBER | awk '{print "oc delete " $1}' | bash
+          oc --namespace af2668-dev   get all,pvc,secret,pods,ReplicationController,DeploymentConfig,HorizontalPodAutoscaler,imagestreamtag -o name | grep $POD_SELECTOR | grep $PR_NUMBER | awk '{print "oc delete " $1}' | bash
+          oc --namespace af2668-tools get all,pvc,secret,pods,ReplicationController,DeploymentConfig,HorizontalPodAutoscaler,imagestreamtag -o name | grep $POD_SELECTOR | grep $PR_NUMBER | awk '{print "oc delete " $1}' | bash

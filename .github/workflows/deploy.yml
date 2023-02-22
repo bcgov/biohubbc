@@ -1,4 +1,4 @@
-# PR Based Deploy On OpenShift
+deploydata# PR Based Deploy On OpenShift
 # Builds and Deploys unmerged PR's to temporary pods/services/routes/etc in the OpenShift Dev environment.
 name: PR-Based Deploy on OpenShift
 
@@ -118,7 +118,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     if: |
-      always() && 
       github.event.pull_request.merged == false && 
       github.event.pull_request.draft == false && 
       !(fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch == github.head_ref)
@@ -134,8 +133,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 14
-          # cache-dependency-path: app/.pipeline/package-lock.json
-          # cache: "npm"
 
       # Load repo from cache
       - name: Cache repo
@@ -169,11 +166,6 @@ jobs:
       - name: Install pipeline node modules
         working-directory: app/.pipeline/
         run: npm ci
-      # - name: Install app pipeline node modules
-      #   uses: bahmutov/npm-install@v1
-      #   with:
-      #     working-directory: app/.pipeline/
-      #     useRollingCache: true
 
       # Build the app image
       - name: Build APP Image
@@ -202,8 +194,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 14
-          # cache-dependency-path: database/.pipeline/package-lock.json
-          # cache: "npm"
 
       # Load repo from cache
       - name: Cache repo
@@ -237,11 +227,6 @@ jobs:
       - name: Install pipeline node modules
         working-directory: database/.pipeline/
         run: npm ci
-      # - name: Install database pipeline node modules
-      #   uses: bahmutov/npm-install@v1
-      #   with:
-      #     working-directory: database/.pipeline/
-      #     useRollingCache: true
 
       # Build the database image
       - name: Build Database Image
@@ -269,8 +254,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 14
-          # cache-dependency-path: database/.pipeline/package-lock.json
-          # cache: "npm"
 
       # Load repo from cache
       - name: Cache repo
@@ -298,11 +281,6 @@ jobs:
       - name: Install pipeline node modules
         working-directory: database/.pipeline/
         run: npm ci
-      # - name: Install database pipeline node modules
-      #   uses: bahmutov/npm-install@v1
-      #   with:
-      #     working-directory: database/.pipeline/
-      #     useRollingCache: true
 
       # Build the database image
       - name: Build Database Setup Image
@@ -331,8 +309,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 14
-          # cache-dependency-path: api/.pipeline/package-lock.json
-          # cache: "npm"
 
       # Load repo from cache
       - name: Cache repo
@@ -366,11 +342,6 @@ jobs:
       - name: Install pipeline node modules
         working-directory: api/.pipeline/
         run: npm ci
-      # - name: Install api pipeline node modules
-      #   uses: bahmutov/npm-install@v1
-      #   with:
-      #     working-directory: api/.pipeline/
-      #     useRollingCache: true
 
       # Build the api image
       - name: Build API Image
@@ -397,8 +368,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 14
-          # cache-dependency-path: app/.pipeline/package-lock.json
-          # cache: "npm"
 
       # Load repo from cache
       - name: Cache repo
@@ -426,11 +395,6 @@ jobs:
       - name: Install pipeline node modules
         working-directory: app/.pipeline
         run: npm ci
-      # - name: Install app pipeline node modules
-      #   uses: bahmutov/npm-install@v1
-      #   with:
-      #     working-directory: app/.pipeline
-      #     useRollingCache: true
 
       # Deploy the app image
       - name: Deploy APP Image
@@ -444,7 +408,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     if: |
-      success() &&
       github.event.pull_request.merged == false && 
       github.event.pull_request.draft == false && 
       !(fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.skipped_by.branch == github.head_ref)
@@ -458,8 +421,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 14
-          # cache-dependency-path: database/.pipeline/package-lock.json
-          # cache: "npm"
 
       # Load repo from cache
       - name: Cache repo
@@ -487,11 +448,6 @@ jobs:
       - name: Install pipeline node modules
         working-directory: database/.pipeline/
         run: npm ci
-      # - name: Install database pipeline node modules
-      #   uses: bahmutov/npm-install@v1
-      #   with:
-      #     working-directory: database/.pipeline/
-      #     useRollingCache: true
 
       # Deploy the database image
       - name: Deploy Database Image
@@ -505,8 +461,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     if: |
-      always() &&
-      (needs.deployDatabase.result == 'success' || needs.deployDatabase.result == 'skipped') &&
       github.event.pull_request.merged == false && 
       github.event.pull_request.draft == false && 
       !(fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.skipped_by.branch == github.head_ref)
@@ -521,8 +475,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 14
-          # cache-dependency-path: database/.pipeline/package-lock.json
-          # cache: "npm"
 
       # Load repo from cache
       - name: Cache repo
@@ -550,11 +502,6 @@ jobs:
       - name: Install pipeline node modules
         working-directory: database/.pipeline/
         run: npm ci
-      # - name: Install database pipeline node modules
-      #   uses: bahmutov/npm-install@v1
-      #   with:
-      #     working-directory: database/.pipeline/
-      #     useRollingCache: true
 
       # Deploy the database setup image
       - name: Deploy Database Setup Image
@@ -584,8 +531,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 14
-          # cache-dependency-path: api/.pipeline/package-lock.json
-          # cache: "npm"
 
       # Load repo from cache
       - name: Cache repo
@@ -613,11 +558,6 @@ jobs:
       - name: Install pipeline node modules
         working-directory: api/.pipeline/
         run: npm ci
-      # - name: Install api pipeline node modules
-      #   uses: bahmutov/npm-install@v1
-      #   with:
-      #     working-directory: api/.pipeline/
-      #     useRollingCache: true
 
       # Deploy the api image
       - name: Deploy API Image
@@ -625,10 +565,12 @@ jobs:
         run: |
           DEBUG=* npm run deploy -- --pr=$PR_NUMBER --env=dev
 
-  # Report the overall status of all deployments.
-  # Note: skipped jobs are considered successes, cancelled jobs are considered failures.
-  deploymentStatus:
-    name: Deployment Status
+  # Report the overall status of all jobs.
+  # Why? Skipped jobs are not considered successes when specifying requird jobs in the GitHub PR settings. Rather than
+  # specify each job, we can specify this final job only, and use its status as an indicator of all previous jobs 
+  # having successfully run. We can then manually include the 'skipped' status as part our definition of success.
+  workflowStatus:
+    name: Workflow Status
     runs-on: ubuntu-latest
     timeout-minutes: 30
     if: |
@@ -636,6 +578,9 @@ jobs:
       github.event.pull_request.merged == false && 
       github.event.pull_request.draft == false
     needs:
+      - checkEnv
+      - skipDuplicateActions
+      - checkoutRepo
       - buildAPP
       - buildDatabase
       - buildDatabaseSetup
@@ -647,6 +592,9 @@ jobs:
     steps:
       - name: Log result
         run: |
+          echo needs.checkEnv.result: ${{ needs.checkEnv.result }}
+          echo needs.skipDuplicateActions.result: ${{ needs.skipDuplicateActions.result }}
+          echo needs.checkoutRepo.result: ${{ needs.checkoutRepo.result }}
           echo needs.buildAPP.result: ${{ needs.buildAPP.result }}
           echo needs.buildDatabase.result: ${{ needs.buildDatabase.result }}
           echo needs.buildDatabaseSetup.result: ${{ needs.buildDatabaseSetup.result }}

@@ -63,7 +63,7 @@ jobs:
       - name: Clean APP Deployment
         working-directory: "app/.pipeline/"
         run: |
-          npm install --only=production --prefer-offline
+          npm install --only=production
           DEBUG=* npm run clean -- --pr=$PR_NUMBER --env=build
           DEBUG=* npm run clean -- --pr=$PR_NUMBER --env=dev
 
@@ -83,7 +83,7 @@ jobs:
       - name: Clean Database Artifacts
         working-directory: "database/.pipeline/"
         run: |
-          npm install --only=production --prefer-offline
+          npm install --only=production
           DEBUG=* npm run clean -- --pr=$PR_NUMBER --env=build
           DEBUG=* npm run clean -- --pr=$PR_NUMBER --env=dev
 
@@ -103,7 +103,7 @@ jobs:
       - name: Clean API Deployment
         working-directory: "api/.pipeline/"
         run: |
-          npm install --only=production --prefer-offline
+          npm install --only=production
           DEBUG=* npm run clean -- --pr=$PR_NUMBER --env=build
           DEBUG=* npm run clean -- --pr=$PR_NUMBER --env=dev
 
@@ -112,7 +112,5 @@ jobs:
         env:
           POD_SELECTOR: biohubbc
         run: |
-          oc project af2668-dev
-          oc get all,pvc,secret,pods,ReplicationController,DeploymentConfig,HorizontalPodAutoscaler,imagestreamtag -o name | grep $POD_SELECTOR | grep $PR_NUMBER | awk '{print "oc delete " $1}' | bash
-          oc project af2668-tools
-          oc get all,pvc,secret,pods,ReplicationController,DeploymentConfig,HorizontalPodAutoscaler,imagestreamtag -o name | grep $POD_SELECTOR | grep $PR_NUMBER | awk '{print "oc delete " $1}' | bash
+          oc --namespace af2668-dev   get all,pvc,secret,pods,ReplicationController,DeploymentConfig,HorizontalPodAutoscaler,imagestreamtag -o name | grep $POD_SELECTOR | grep $PR_NUMBER | awk '{print "oc delete " $1}' | bash
+          oc --namespace af2668-tools get all,pvc,secret,pods,ReplicationController,DeploymentConfig,HorizontalPodAutoscaler,imagestreamtag -o name | grep $POD_SELECTOR | grep $PR_NUMBER | awk '{print "oc delete " $1}' | bash

@@ -12,31 +12,6 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # Scans the commit against past commits, and determines if any jobs are skippable (due to no changes in target files).
-  # Note: this does not take into account the current branch and will check past workflows from any branch, so an
-  # additional check against the current branch is added to the `if` in the jobs below.
-  skipDuplicateActions:
-    name: Check for duplicate actions
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    outputs:
-      should_skip: ${{ steps.skip_check.outputs.should_skip }}
-      paths_result: ${{ steps.skip_check.outputs.paths_result }}
-    steps:
-      - id: skip_check
-        uses: fkirc/skip-duplicate-actions@v5
-        with:
-          paths_filter: |
-            app:
-              paths:
-                - 'app/src/**'
-                - 'app/package*.json'
-            api:
-              paths:
-                - 'api/src/**'
-                - 'api/package*.json'
-                - 'api/mocha-fixtures.ts'
-
   # Checkout the repo once and cache it for use in subsequent jobs
   checkoutRepo:
     name: Checkout and cache target branch
@@ -44,8 +19,6 @@ jobs:
     timeout-minutes: 30
     env:
       PR_NUMBER: ${{ github.event.number }}
-    needs:
-      - skipDuplicateActions
     steps:
       # Install Node - for `node` and `npm` commands
       # Note: This already uses actions/cache internally, so repeat calls in subsequent jobs are not a performance hit
@@ -111,7 +84,7 @@ jobs:
 
       - name: Install api dependencies
         working-directory: api
-        run: npm install --prefer-offline
+        run: npm install
 
       - name: Run api tests with coverage
         working-directory: api
@@ -137,7 +110,7 @@ jobs:
 
       - name: Install app dependencies
         working-directory: app
-        run: npm install --prefer-offline
+        run: npm install
 
       - name: Run app tests with coverage
         working-directory: app
