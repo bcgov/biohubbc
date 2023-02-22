@@ -51,10 +51,10 @@ export class PlatformService extends DBService {
    * Note: Does nothing if `process.env.BACKBONE_INTAKE_ENABLED` is not `true`.
    *
    * @param {number} projectId
-   * @return {*}
+   * @return {*} Promise<{queue_id: number} | undefined>
    * @memberof PlatformService
    */
-  async submitDwCAMetadataPackage(projectId: number) {
+  async submitDwCAMetadataPackage(projectId: number): Promise<{ queue_id: number } | undefined> {
     try {
       if (!this.BACKBONE_INTAKE_ENABLED) {
         return;
@@ -227,7 +227,16 @@ export class PlatformService extends DBService {
     ]);
   }
 
-  async submitAndPublishDwcAMetadata(projectId: number, surveyId?: number) {
+  /**
+   * Submits DwCA Metadata and publishes project data
+   * and survey metadata if a survey ID is provided
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @returns {*} Promise<void>
+   * @memberof PlatformService
+   */
+  async submitAndPublishDwcAMetadata(projectId: number, surveyId?: number): Promise<void> {
     try {
       const queueResponse = await this.submitDwCAMetadataPackage(projectId);
       const historyRepo = new HistoryPublishService(this.connection);
@@ -245,9 +254,9 @@ export class PlatformService extends DBService {
         await historyRepo.insertSurveyMetadataPublishRecord({ survey_id: surveyId, queue_id: queueResponse.queue_id });
       }
     } catch (error) {
-      const defaultLog = getLogger('platformService->submitDwCAMetadataPackage');
+      const defaultLog = getLogger('platformService->submitAndPublishDwcAMetadata');
       // Don't fail the rest of the endpoint if submitting metadata fails
-      defaultLog.error({ label: 'platformService->submitDwCAMetadataPackage', message: 'error', error });
+      defaultLog.error({ label: 'platformService->submitAndPublishDwcAMetadata', message: 'error', error });
     }
   }
 }
