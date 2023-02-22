@@ -148,8 +148,8 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 14
-          cache-dependency-path: app/.pipeline/package-lock.json
-          cache: "npm"
+          # cache-dependency-path: app/.pipeline/package-lock.json
+          # cache: "npm"
 
       # Log in to OpenShift.
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
@@ -169,8 +169,7 @@ jobs:
       # Note: This already caches node modules internally
       - name: Install pipeline node modules
         working-directory: app/.pipeline/
-        run: |
-          npm ci
+        run: npm ci
       # - name: Install app pipeline node modules
       #   uses: bahmutov/npm-install@v1
       #   with:
@@ -219,8 +218,8 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 14
-          cache-dependency-path: database/.pipeline/package-lock.json
-          cache: "npm"
+          # cache-dependency-path: database/.pipeline/package-lock.json
+          # cache: "npm"
 
       # Log in to OpenShift.
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
@@ -240,8 +239,7 @@ jobs:
       # Note: This already caches node modules internally
       - name: Install pipeline node modules
         working-directory: database/.pipeline/
-        run: |
-          npm ci
+        run: npm ci
       # - name: Install database pipeline node modules
       #   uses: bahmutov/npm-install@v1
       #   with:
@@ -289,8 +287,8 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 14
-          cache-dependency-path: database/.pipeline/package-lock.json
-          cache: "npm"
+          # cache-dependency-path: database/.pipeline/package-lock.json
+          # cache: "npm"
 
       # Log in to OpenShift.
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
@@ -302,8 +300,7 @@ jobs:
       # Note: This already caches node modules internally
       - name: Install pipeline node modules
         working-directory: database/.pipeline/
-        run: |
-          npm ci
+        run: npm ci
       # - name: Install database pipeline node modules
       #   uses: bahmutov/npm-install@v1
       #   with:
@@ -352,8 +349,8 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 14
-          cache-dependency-path: api/.pipeline/package-lock.json
-          cache: "npm"
+          # cache-dependency-path: api/.pipeline/package-lock.json
+          # cache: "npm"
 
       # Log in to OpenShift.
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
@@ -371,15 +368,14 @@ jobs:
 
       # Install api pipeline node modules
       # Note: This already caches node modules internally
-      # - name: Install pipeline node modules
-      #   working-directory: api/.pipeline/
-      #   run: |
-      #     npm ci
-      - name: Install api pipeline node modules
-        uses: bahmutov/npm-install@v1
-        with:
-          working-directory: api/.pipeline/
-          useRollingCache: true
+      - name: Install pipeline node modules
+        working-directory: api/.pipeline/
+        run: npm ci
+      # - name: Install api pipeline node modules
+      #   uses: bahmutov/npm-install@v1
+      #   with:
+      #     working-directory: api/.pipeline/
+      #     useRollingCache: true
 
       # Build the api image
       - name: Build API Image
@@ -422,8 +418,8 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 14
-          cache-dependency-path: app/.pipeline/package-lock.json
-          cache: "npm"
+          # cache-dependency-path: app/.pipeline/package-lock.json
+          # cache: "npm"
 
       # Log in to OpenShift.
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
@@ -435,8 +431,7 @@ jobs:
       # Note: This already caches node modules internally
       - name: Install pipeline node modules
         working-directory: app/.pipeline
-        run: |
-          npm ci
+        run: npm ci
       # - name: Install app pipeline node modules
       #   uses: bahmutov/npm-install@v1
       #   with:
@@ -484,8 +479,8 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 14
-          cache-dependency-path: database/.pipeline/package-lock.json
-          cache: "npm"
+          # cache-dependency-path: database/.pipeline/package-lock.json
+          # cache: "npm"
 
       # Log in to OpenShift.
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
@@ -497,8 +492,7 @@ jobs:
       # Note: This already caches node modules internally
       - name: Install pipeline node modules
         working-directory: database/.pipeline/
-        run: |
-          npm ci
+        run: npm ci
       # - name: Install database pipeline node modules
       #   uses: bahmutov/npm-install@v1
       #   with:
@@ -547,8 +541,8 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 14
-          cache-dependency-path: database/.pipeline/package-lock.json
-          cache: "npm"
+          # cache-dependency-path: database/.pipeline/package-lock.json
+          # cache: "npm"
 
       # Log in to OpenShift.
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
@@ -560,8 +554,7 @@ jobs:
       # Note: This already caches node modules internally
       - name: Install pipeline node modules
         working-directory: database/.pipeline/
-        run: |
-          npm ci
+        run: npm ci
       # - name: Install database pipeline node modules
       #   uses: bahmutov/npm-install@v1
       #   with:
@@ -610,8 +603,8 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 14
-          cache-dependency-path: api/.pipeline/package-lock.json
-          cache: "npm"
+          # cache-dependency-path: api/.pipeline/package-lock.json
+          # cache: "npm"
 
       # Log in to OpenShift.
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
@@ -623,8 +616,7 @@ jobs:
       # Note: This already caches node modules internally
       - name: Install pipeline node modules
         working-directory: api/.pipeline/
-        run: |
-          npm ci
+        run: npm ci
       # - name: Install api pipeline node modules
       #   uses: bahmutov/npm-install@v1
       #   with:
@@ -670,28 +662,14 @@ jobs:
 
       - name: Report success
         if: |
-          (needs.buildAPP.result == 'success' || needs.buildAPP.result == 'skipped') &&
-          (needs.buildDatabase.result == 'success' || needs.buildDatabase.result == 'skipped') &&
-          (needs.buildDatabaseSetup.result == 'success' || needs.buildDatabaseSetup.result == 'skipped') &&
-          (needs.buildAPI.result == 'success' || needs.buildAPI.result == 'skipped') &&
-          (needs.deployAPP.result == 'success' || needs.deployAPP.result == 'skipped') &&
-          (needs.deployDatabase.result == 'success' || needs.deployDatabase.result == 'skipped') &&
-          (needs.deployDatabaseSetup.result == 'success' || needs.deployDatabaseSetup.result == 'skipped') &&
-          (needs.deployAPI.result == 'success' || needs.deployAPI.result == 'skipped')
+          !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled')
         run: |
           echo All deployments completed successfully or were skipped
           exit 0
 
       - name: Report failure
         if: |
-          (needs.buildAPP.result == 'success' || needs.buildAPP.result == 'skipped') &&
-          (needs.buildDatabase.result == 'success' || needs.buildDatabase.result == 'skipped') &&
-          (needs.buildDatabaseSetup.result == 'success' || needs.buildDatabaseSetup.result == 'skipped') &&
-          (needs.buildAPI.result == 'success' || needs.buildAPI.result == 'skipped') &&
-          (needs.deployAPP.result == 'failure' || needs.deployAPP.result == 'cancelled') &&
-          (needs.deployDatabase.result == 'failure' || needs.deployDatabase.result == 'cancelled') &&
-          (needs.deployDatabaseSetup.result == 'failure' || needs.deployDatabaseSetup.result == 'cancelled') &&
-          (needs.deployAPI.result == 'failure' || needs.deployAPI.result == 'cancelled')
+          contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled')
         run: |
           echo One or more deployments failed or was cancelled
           exit 1
