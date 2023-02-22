@@ -1,4 +1,5 @@
 import { QueryResult } from 'pg';
+import { v4 } from 'uuid';
 import { IDBConnection } from '../database/db';
 import { PostReportAttachmentMetadata, PutReportAttachmentMetadata } from '../models/project-survey-attachments';
 import {
@@ -11,6 +12,7 @@ import {
 } from '../repositories/attachment-repository';
 import { generateS3FileKey } from '../utils/file-utils';
 import { DBService } from './db-service';
+import { PlatformService } from './platform-service';
 
 export interface IAttachmentType {
   id: number;
@@ -31,6 +33,19 @@ export class AttachmentService extends DBService {
     super(connection);
 
     this.attachmentRepository = new AttachmentRepository(connection);
+  }
+
+  async testSubmitAttachments(projectId: number) {
+    const platformService = new PlatformService(this.connection);
+    const dataPackageId = v4();
+    const attachmentIds = (await this.getProjectAttachments(projectId)).map((attachment) => attachment.id);
+    const reportAttachmentIds = (await this.getProjectReportAttachments(projectId)).map((attachment) => attachment.id);
+    await platformService.uploadProjectAttachmentsToBioHub(
+      dataPackageId,
+      projectId,
+      attachmentIds,
+      reportAttachmentIds
+    );
   }
 
   /**
