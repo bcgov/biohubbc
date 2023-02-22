@@ -7,6 +7,7 @@ import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { HTTP400 } from '../errors/http-error';
+import { HistoryPublishRepository } from '../repositories/history-publish-repository';
 import { IGetLatestSurveyOccurrenceSubmission } from '../repositories/survey-repository';
 import * as file_utils from '../utils/file-utils';
 import { getMockDBConnection } from '../__mocks__/db';
@@ -45,7 +46,7 @@ describe('PlatformService', () => {
 
       const _submitDwCADatasetToBioHubBackboneStub = sinon
         .stub(PlatformService.prototype, '_submitDwCADatasetToBioHubBackbone')
-        .resolves({ data_package_id: '123-456-789' });
+        .resolves({ queue_id: 1 });
 
       const platformService = new PlatformService(mockDBConnection);
 
@@ -91,7 +92,7 @@ describe('PlatformService', () => {
 
       const _submitDwCADatasetToBioHubBackboneStub = sinon
         .stub(PlatformService.prototype, '_submitDwCADatasetToBioHubBackbone')
-        .resolves({ data_package_id: '123-456-789' });
+        .resolves({ queue_id: 1 });
 
       const platformService = new PlatformService(mockDBConnection);
 
@@ -277,7 +278,17 @@ describe('PlatformService', () => {
 
       const _submitDwCADatasetToBioHubBackboneStub = sinon
         .stub(PlatformService.prototype, '_submitDwCADatasetToBioHubBackbone')
-        .resolves({ data_package_id: '123-456-789' });
+        .resolves({ queue_id: 1 });
+
+      const insertProject = sinon
+        .stub(HistoryPublishRepository.prototype, 'insertProjectMetadataPublishRecord')
+        .resolves(1);
+      const insertSurvey = sinon
+        .stub(HistoryPublishRepository.prototype, 'insertSurveyMetadataPublishRecord')
+        .resolves(1);
+      const insertOccurrence = sinon
+        .stub(HistoryPublishRepository.prototype, 'insertOccurrenceSubmissionPublishRecord')
+        .resolves(1);
 
       const platformService = new PlatformService(mockDBConnection);
 
@@ -287,6 +298,9 @@ describe('PlatformService', () => {
       expect(getLatestSurveyOccurrenceSubmissionStub).to.have.been.calledOnce;
       expect(getFileFromS3Stub).to.have.been.calledOnce;
       expect(_submitDwCADatasetToBioHubBackboneStub).to.have.been.calledOnce;
+      expect(insertProject).to.have.been.calledOnce;
+      expect(insertSurvey).to.have.been.calledOnce;
+      expect(insertOccurrence).to.have.been.calledOnce;
     });
   });
 });

@@ -3,9 +3,12 @@ import axios from 'axios';
 import FormData from 'form-data';
 import { URL } from 'url';
 import { HTTP400 } from '../errors/http-error';
+import { ISurveyProprietorModel } from '../repositories/survey-repository';
 import { getFileFromS3 } from '../utils/file-utils';
+import { getLogger } from '../utils/logger';
 import { DBService } from './db-service';
 import { EmlService } from './eml-service';
+import { HistoryPublishService } from './history-publish-service';
 import { KeycloakService } from './keycloak-service';
 import { SurveyService } from './survey-service';
 
@@ -28,12 +31,14 @@ export interface IDwCADataset {
    * A UUID that uniquely identifies this DwCA dataset.
    */
   dataPackageId: string;
+
+  securityRequest?: ISurveyProprietorModel;
 }
 
 export class PlatformService extends DBService {
   BACKBONE_INTAKE_ENABLED = process.env.BACKBONE_INTAKE_ENABLED === 'true' || false;
   BACKBONE_API_HOST = process.env.BACKBONE_API_HOST;
-  BACKBONE_INTAKE_PATH = process.env.BACKBONE_INTAKE_PATH || '/api/dwc/submission/intake';
+  BACKBONE_INTAKE_PATH = process.env.BACKBONE_INTAKE_PATH || '/api/dwc/submission/queue';
 
   /**
    * Submit a Darwin Core Archive (DwCA) data package, that only contains the project/survey metadata, to the BioHub
@@ -46,31 +51,37 @@ export class PlatformService extends DBService {
    * Note: Does nothing if `process.env.BACKBONE_INTAKE_ENABLED` is not `true`.
    *
    * @param {number} projectId
-   * @return {*}
+   * @return {*} Promise<{queue_id: number} | undefined>
    * @memberof PlatformService
    */
-  async submitDwCAMetadataPackage(projectId: number) {
-    if (!this.BACKBONE_INTAKE_ENABLED) {
-      return;
+  async submitDwCAMetadataPackage(projectId: number): Promise<{ queue_id: number } | undefined> {
+    try {
+      if (!this.BACKBONE_INTAKE_ENABLED) {
+        return;
+      }
+
+      const emlService = new EmlService({ projectId: projectId }, this.connection);
+
+      const emlString = await emlService.buildProjectEml();
+
+      const dwcArchiveZip = new AdmZip();
+      dwcArchiveZip.addFile('eml.xml', Buffer.from(emlString));
+
+      const dwCADataset = {
+        archiveFile: {
+          data: dwcArchiveZip.toBuffer(),
+          fileName: 'DwCA.zip',
+          mimeType: 'application/zip'
+        },
+        dataPackageId: emlService.packageId
+      };
+
+      return this._submitDwCADatasetToBioHubBackbone(dwCADataset);
+    } catch (error) {
+      const defaultLog = getLogger('platformService->submitDwCAMetadataPackage');
+      // Don't fail the rest of the endpoint if submitting metadata fails
+      defaultLog.error({ label: 'platformService->submitDwCAMetadataPackage', message: 'error', error });
     }
-
-    const emlService = new EmlService({ projectId: projectId }, this.connection);
-
-    const emlString = await emlService.buildProjectEml();
-
-    const dwcArchiveZip = new AdmZip();
-    dwcArchiveZip.addFile('eml.xml', Buffer.from(emlString));
-
-    const dwCADataset = {
-      archiveFile: {
-        data: dwcArchiveZip.toBuffer(),
-        fileName: 'DwCA.zip',
-        mimeType: 'application/zip'
-      },
-      dataPackageId: emlService.packageId
-    };
-
-    return this._submitDwCADatasetToBioHubBackbone(dwCADataset);
   }
 
   /**
@@ -115,7 +126,7 @@ export class PlatformService extends DBService {
    * @return {*}  {Promise<{ data_package_id: string }>}
    * @memberof PlatformService
    */
-  async _submitDwCADatasetToBioHubBackbone(dwcaDataset: IDwCADataset): Promise<{ data_package_id: string }> {
+  async _submitDwCADatasetToBioHubBackbone(dwcaDataset: IDwCADataset): Promise<{ queue_id: number }> {
     const keycloakService = new KeycloakService();
 
     const token = await keycloakService.getKeycloakToken();
@@ -129,15 +140,23 @@ export class PlatformService extends DBService {
 
     formData.append('data_package_id', dwcaDataset.dataPackageId);
 
+    if (dwcaDataset.securityRequest) {
+      formData.append('security_request[first_nations_id]', dwcaDataset.securityRequest.first_nations_id || 0);
+      formData.append('security_request[proprietor_type_id]', dwcaDataset.securityRequest.proprietor_type_id || 0);
+      formData.append('security_request[survey_id]', dwcaDataset.securityRequest.survey_id);
+      formData.append('security_request[rational]', dwcaDataset.securityRequest.rational || '');
+      formData.append('security_request[proprietor_name]', dwcaDataset.securityRequest.proprietor_name || '');
+      formData.append('security_request[disa_required]', `${dwcaDataset.securityRequest.disa_required}`);
+    }
+
     const backboneIntakeUrl = new URL(this.BACKBONE_INTAKE_PATH, this.BACKBONE_API_HOST).href;
 
-    const { data } = await axios.post<{ data_package_id: string }>(backboneIntakeUrl, formData.getBuffer(), {
+    const { data } = await axios.post<{ queue_id: number }>(backboneIntakeUrl, formData.getBuffer(), {
       headers: {
         authorization: `Bearer ${token}`,
         ...formData.getHeaders()
       }
     });
-
     return data;
   }
 
@@ -146,16 +165,18 @@ export class PlatformService extends DBService {
    *
    * @param {number} projectId
    * @param {number} surveyId
-   * @return {*}
+   * @return {*} {Promise<void>}
    * @memberof PlatformService
    */
-  async uploadSurveyDataToBioHub(projectId: number, surveyId: number) {
+  async uploadSurveyDataToBioHub(projectId: number, surveyId: number): Promise<void> {
     if (!this.BACKBONE_INTAKE_ENABLED) {
       return;
     }
 
+    const publishRepo = new HistoryPublishService(this.connection);
     const surveyService = new SurveyService(this.connection);
     const surveyData = await surveyService.getLatestSurveyOccurrenceSubmission(surveyId);
+    const securityRequest = await surveyService.getSurveyProprietorDataForSecurityRequest(surveyId);
 
     if (!surveyData || !surveyData.output_key) {
       throw new HTTP400('no s3Key found');
@@ -178,15 +199,64 @@ export class PlatformService extends DBService {
 
     dwcArchiveZip.addFile('eml.xml', Buffer.from(emlString));
 
-    const dwCADataset = {
+    const dwCADataset: IDwCADataset = {
       archiveFile: {
         data: dwcArchiveZip.toBuffer(),
-        fileName: 'DwCA.zip',
+        fileName: `${emlService.packageId}.zip`,
         mimeType: 'application/zip'
       },
-      dataPackageId: emlService.packageId
+      dataPackageId: emlService.packageId,
+      securityRequest
     };
 
-    return this._submitDwCADatasetToBioHubBackbone(dwCADataset);
+    const queueResponse = await this._submitDwCADatasetToBioHubBackbone(dwCADataset);
+
+    await Promise.all([
+      publishRepo.insertProjectMetadataPublishRecord({
+        project_id: projectId,
+        queue_id: queueResponse.queue_id
+      }),
+      publishRepo.insertSurveyMetadataPublishRecord({
+        survey_id: surveyId,
+        queue_id: queueResponse.queue_id
+      }),
+      publishRepo.insertOccurrenceSubmissionPublishRecord({
+        occurrence_submission_id: surveyData.id,
+        queue_id: queueResponse.queue_id
+      })
+    ]);
+  }
+
+  /**
+   * Submits DwCA Metadata and publishes project data
+   * and survey metadata if a survey ID is provided
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @returns {*} Promise<void>
+   * @memberof PlatformService
+   */
+  async submitAndPublishDwcAMetadata(projectId: number, surveyId?: number): Promise<void> {
+    try {
+      const queueResponse = await this.submitDwCAMetadataPackage(projectId);
+      const historyRepo = new HistoryPublishService(this.connection);
+
+      // take queue id and insert into history publish table
+      if (queueResponse?.queue_id) {
+        await historyRepo.insertProjectMetadataPublishRecord({
+          project_id: projectId,
+          queue_id: queueResponse.queue_id
+        });
+      }
+
+      // take queue id and insert into history publish table
+      if (queueResponse?.queue_id && surveyId) {
+        await historyRepo.insertSurveyMetadataPublishRecord({ survey_id: surveyId, queue_id: queueResponse.queue_id });
+      }
+    } catch (error) {
+      const defaultLog = getLogger('platformService->submitAndPublishDwcAMetadata');
+      // Don't fail the rest of the endpoint if submitting metadata fails
+      defaultLog.error({ label: 'platformService->submitAndPublishDwcAMetadata', message: 'error', error });
+    }
   }
 }
