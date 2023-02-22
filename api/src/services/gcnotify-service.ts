@@ -55,7 +55,7 @@ const config = {
 };
 
 /**
- * Service for working with GC Notify.
+ * Service for interacting with GC Notify.
  *
  * GC Notify is a federal government of Canada hosted email/text notification service for government services.
  *

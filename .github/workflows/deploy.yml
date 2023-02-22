@@ -371,15 +371,15 @@ jobs:
 
       # Install api pipeline node modules
       # Note: This already caches node modules internally
-      - name: Install pipeline node modules
-        working-directory: api/.pipeline/
-        run: |
-          npm ci
-      # - name: Install api pipeline node modules
-      #   uses: bahmutov/npm-install@v1
-      #   with:
-      #     working-directory: api/.pipeline/
-      #     useRollingCache: true
+      # - name: Install pipeline node modules
+      #   working-directory: api/.pipeline/
+      #   run: |
+      #     npm ci
+      - name: Install api pipeline node modules
+        uses: bahmutov/npm-install@v1
+        with:
+          working-directory: api/.pipeline/
+          useRollingCache: true
 
       # Build the api image
       - name: Build API Image
@@ -393,6 +393,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     if: |
+      success() &&
       github.event.pull_request.merged == false && 
       github.event.pull_request.draft == false && 
       !(fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch == github.head_ref)
@@ -454,6 +455,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     if: |
+      success() &&
       github.event.pull_request.merged == false && 
       github.event.pull_request.draft == false && 
       !(fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.skipped_by.branch == github.head_ref)
@@ -515,6 +517,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     if: |
+      success() &&
       github.event.pull_request.merged == false && 
       github.event.pull_request.draft == false && 
       !(fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.skipped_by.branch == github.head_ref)
@@ -577,6 +580,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     if: |
+      success() &&
       github.event.pull_request.merged == false && 
       github.event.pull_request.draft == false && 
       !(fromJSON(needs.skipDuplicateActions.outputs.paths_result).api.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).api.skipped_by.branch == github.head_ref)
