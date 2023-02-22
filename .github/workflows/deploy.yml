@@ -189,25 +189,6 @@ jobs:
         run: |
           DEBUG=* npm run build -- --pr=$PR_NUMBER
 
-  # Opposite - Build the web frontend app image
-  buildAPP:
-    name: Build APP Image
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    if: |
-      github.event.pull_request.merged == false && 
-      github.event.pull_request.draft == false && 
-      fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch == '$BRANCH_REF'
-    env:
-      BRANCH_REF: ${{ github.head_ref || github.ref_name }}
-    needs:
-      - checkoutRepo
-      - skipDuplicateActions
-    steps:
-      - name: No build required
-        run: |
-          echo No build required
-
   # Build the Database image
   buildDatabase:
     name: Build Database Image
@@ -284,25 +265,6 @@ jobs:
         run: |
           DEBUG=* npm run db:build -- --pr=$PR_NUMBER
 
-  # Opposite - Build the Database image
-  buildDatabase:
-    name: Build Database Image
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    if: |
-      github.event.pull_request.merged == false && 
-      github.event.pull_request.draft == false && 
-      fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.skipped_by.branch == '$BRANCH_REF'
-    env:
-      BRANCH_REF: ${{ github.head_ref || github.ref_name }}
-    needs:
-      - checkoutRepo
-      - skipDuplicateActions
-    steps:
-      - name: No build required
-        run: |
-          echo No build required
-
   # Build the Database Setup image
   buildDatabaseSetup:
     name: Build Database Setup Image
@@ -369,25 +331,6 @@ jobs:
         working-directory: "database/.pipeline/"
         run: |
           DEBUG=* npm run db-setup:build -- --pr=$PR_NUMBER
-
-  # Opposite - Build the Database Setup image
-  buildDatabaseSetup:
-    name: Build Database Setup Image
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    if: |
-      github.event.pull_request.merged == false && 
-      github.event.pull_request.draft == false && 
-      fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.skipped_by.branch == '$BRANCH_REF'
-    env:
-      BRANCH_REF: ${{ github.head_ref || github.ref_name }}
-    needs:
-      - checkoutRepo
-      - skipDuplicateActions
-    steps:
-      - name: No build required
-        run: |
-          echo No build required
 
   # Build the API image
   buildAPI:
@@ -465,25 +408,6 @@ jobs:
         run: |
           DEBUG=* npm run build -- --pr=$PR_NUMBER
 
-  # Opposite - Build the API image
-  buildAPI:
-    name: Build API Image
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    if: |
-      github.event.pull_request.merged == false && 
-      github.event.pull_request.draft == false && 
-      fromJSON(needs.skipDuplicateActions.outputs.paths_result).api.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).api.skipped_by.branch == '$BRANCH_REF'
-    env:
-      BRANCH_REF: ${{ github.head_ref || github.ref_name }}
-    needs:
-      - checkoutRepo
-      - skipDuplicateActions
-    steps:
-      - name: No build required
-        run: |
-          echo No build required
-
   # Deploy APP image
   deployAPP:
     name: Deploy APP Image
@@ -550,25 +474,6 @@ jobs:
         run: |
           DEBUG=* npm run deploy -- --pr=$PR_NUMBER --env=dev
 
-  # Opposite - Deploy APP image
-  deployAPP:
-    name: Deploy APP Image
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    if: |
-      github.event.pull_request.merged == false && 
-      github.event.pull_request.draft == false && 
-      fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch == '$BRANCH_REF'
-    env:
-      PR_NUMBER: ${{ github.event.number }}
-      BRANCH_REF: ${{ github.head_ref || github.ref_name }}
-    needs:
-      - buildAPP
-    steps:
-      - name: No deploy required
-        run: |
-          echo No deploy required
-
   # Deploy Database image
   deployDatabase:
     name: Deploy Database Image
@@ -634,25 +539,6 @@ jobs:
         working-directory: "database/.pipeline/"
         run: |
           DEBUG=* npm run db:deploy -- --pr=$PR_NUMBER --env=dev
-
-  # Opposite - Deploy Database image
-  deployDatabase:
-    name: Deploy Database Image
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    if: |
-      github.event.pull_request.merged == false && 
-      github.event.pull_request.draft == false && 
-      fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.skipped_by.branch == '$BRANCH_REF'
-    env:
-      PR_NUMBER: ${{ github.event.number }}
-      BRANCH_REF: ${{ github.head_ref || github.ref_name }}
-    needs:
-      - buildDatabase
-    steps:
-      - name: No deploy required
-        run: |
-          echo No deploy required
 
   # Deploy Database image
   deployDatabaseSetup:
@@ -721,26 +607,6 @@ jobs:
         run: |
           DEBUG=* npm run db-setup:deploy -- --pr=$PR_NUMBER --env=dev
 
-  # Opposite - Deploy Database image
-  deployDatabaseSetup:
-    name: Deploy Database Setup Image
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    if: |
-      github.event.pull_request.merged == false && 
-      github.event.pull_request.draft == false && 
-      fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.skipped_by.branch == '$BRANCH_REF'
-    env:
-      PR_NUMBER: ${{ github.event.number }}
-      BRANCH_REF: ${{ github.head_ref || github.ref_name }}
-    needs:
-      - buildDatabaseSetup
-      - deployDatabase
-    steps:
-      - name: No deploy required
-        run: |
-          echo No deploy required
-
   # Deploy API image
   deployAPI:
     name: Deploy API Image
@@ -808,22 +674,38 @@ jobs:
         run: |
           DEBUG=* npm run deploy -- --pr=$PR_NUMBER --env=dev
 
-  # Opposite - Deploy API image
-  deployAPI:
-    name: Deploy API Image
+  # Report the overall status of all deployments.
+  # Note: skipped jobs are considered successes, cancelled jobs are considered failures.
+  deploymentStatus:
+    name: Deployment Status
     runs-on: ubuntu-latest
     timeout-minutes: 30
     if: |
+      always() &&
       github.event.pull_request.merged == false && 
-      github.event.pull_request.draft == false && 
-      fromJSON(needs.skipDuplicateActions.outputs.paths_result).api.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).api.skipped_by.branch == '$BRANCH_REF'
-    env:
-      PR_NUMBER: ${{ github.event.number }}
-      BRANCH_REF: ${{ github.head_ref || github.ref_name }}
+      github.event.pull_request.draft == false
     needs:
-      - buildAPI
+      - deployAPP
       - deployDatabase
+      - deployDatabaseSetup
+      - deployAPI
     steps:
-      - name: No deploy required
+      - name: Report success
+        if: |
+          (needs.deployAPP.result == 'success' || needs.deployAPP.result == 'skipped') &&
+          (needs.deployDatabase.result == 'success' || needs.deployDatabase.result == 'skipped') &&
+          (needs.deployDatabaseSetup.result == 'success' || needs.deployDatabaseSetup.result == 'skipped') &&
+          (needs.deployAPI.result == 'success' || needs.deployAPI.result == 'skipped')
         run: |
-          echo No deploy required
+          echo All deployments completed successfully or were skipped
+          exit 0
+
+      - name: Report failure
+        if: |
+          (needs.deployAPP.result == 'failure' || needs.deployAPP.result == 'cancelled') &&
+          (needs.deployDatabase.result == 'failure' || needs.deployDatabase.result == 'cancelled') &&
+          (needs.deployDatabaseSetup.result == 'failure' || needs.deployDatabaseSetup.result == 'cancelled') &&
+          (needs.deployAPI.result == 'failure' || needs.deployAPI.result == 'cancelled')
+        run: |
+          echo One or more deployments failed or was cancelled
+          exit 1
