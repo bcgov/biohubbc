@@ -1,3 +1,4 @@
+import { v4 } from 'uuid';
 import { MESSAGE_CLASS_NAME, SUBMISSION_MESSAGE_TYPE, SUBMISSION_STATUS_TYPE } from '../constants/status';
 import { IDBConnection } from '../database/db';
 import { PostProprietorData, PostSurveyObject } from '../models/survey-create';
@@ -26,6 +27,7 @@ import {
   SurveyRepository
 } from '../repositories/survey-repository';
 import { getLogger } from '../utils/logger';
+import { AttachmentService } from './attachment-service';
 import { DBService } from './db-service';
 import { PermitService } from './permit-service';
 import { PlatformService } from './platform-service';
@@ -304,6 +306,7 @@ export class SurveyService extends DBService {
    */
   async createSurvey(projectId: number, postSurveyData: PostSurveyObject): Promise<number> {
     const surveyId = await this.insertSurveyData(projectId, postSurveyData);
+    const attachmentService = new AttachmentService(this.connection);
 
     const promises: Promise<any>[] = [];
 
@@ -356,6 +359,11 @@ export class SurveyService extends DBService {
 
     //Update Eml to biohub and publish record
     await this.platformService.submitAndPublishDwcAMetadata(projectId, surveyId);
+
+    const dataPackageId = v4();
+    const attachmentIds = (await attachmentService.getProjectAttachments(projectId)).map((attachment) => attachment.id);
+    const reportAttachmentIds = (await attachmentService.getProjectReportAttachments(projectId)).map((attachment) => attachment.id);
+    await this.platformService.uploadProjectAttachmentsToBioHub(dataPackageId, projectId, attachmentIds, reportAttachmentIds);
 
     return surveyId;
   }

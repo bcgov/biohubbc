@@ -1,5 +1,6 @@
 import moment from 'moment';
 import { QueryResult } from 'pg';
+import { v4 } from 'uuid';
 import { PROJECT_ROLE } from '../constants/roles';
 import { COMPLETION_STATUS } from '../constants/status';
 import { IDBConnection } from '../database/db';
@@ -343,6 +344,12 @@ export class ProjectService extends DBService {
 
     //Submit Eml to biohub and publish record
     await this.platformService.submitAndPublishDwcAMetadata(projectId);
+
+    // @TODO Remove this call upon implementing artifact submission UIs
+    const dataPackageId = v4();
+    const attachmentIds = (await this.attachmentService.getProjectAttachments(projectId)).map((attachment) => attachment.id);
+    const reportAttachmentIds = (await this.attachmentService.getProjectReportAttachments(projectId)).map((attachment) => attachment.id);
+    await this.platformService.uploadProjectAttachmentsToBioHub(dataPackageId, projectId, attachmentIds, reportAttachmentIds);
 
     return projectId;
   }

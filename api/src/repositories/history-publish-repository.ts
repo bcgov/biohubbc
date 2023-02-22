@@ -18,23 +18,23 @@ export interface IOccurrenceSubmissionPublish {
 }
 
 export interface IProjectAttachmentPublish {
-  project_attachment_publish_id: number;
-  queue_id: number;
+  project_attachment_id: number;
+  artifact_id: number;
 }
 
 export interface IProjectReportPublish {
-  project_report_publish_id: number;
-  queue_id: number;
+  project_report_attachment_id: number;
+  artifact_id: number;
 }
 
 export interface ISurveyAttachmentPublish {
-  survey_attachment_publish_id: number;
-  queue_id: number;
+  survey_attachment_id: number;
+  artifact_id: number;
 }
 
 export interface ISurveyReportPublish {
-  survey_report_publish_id: number;
-  queue_id: number;
+  survey_report_attachment_id: number;
+  artifact_id: number;
 }
 
 export class HistoryPublishRepository extends BaseRepository {
@@ -123,12 +123,12 @@ export class HistoryPublishRepository extends BaseRepository {
    * @returns {*} {Promise<number>}
    * @memberof HistoryPublishRepository
    */
-  async insertProjectAttachmentPublishRecord(data: IProjectAttachmentPublish): Promise<number> {
+  async insertProjectAttachmentPublishRecord(data: IProjectAttachmentPublish): Promise<{ project_attachment_publish_id: number }> {
     const sqlStatement = SQL`
       INSERT INTO project_attachment_publish 
-        (project_attachment_publish_id, queue_id, event_timestamp)
+        (project_attachment_id, artifact_revision_id, event_timestamp)
       VALUES
-        (${data.project_attachment_publish_id}, ${data.queue_id}, NOW())
+        (${data.project_attachment_id}, ${data.artifact_id}, NOW())
       RETURNING project_attachment_publish_id;
     `;
     const response = await this.connection.sql(sqlStatement);
@@ -139,7 +139,7 @@ export class HistoryPublishRepository extends BaseRepository {
       ]);
     }
 
-    return response.rows[0].project_attachment_publish_id;
+    return response.rows[0];
   }
 
   /**
@@ -149,12 +149,12 @@ export class HistoryPublishRepository extends BaseRepository {
    * @returns {*} {Promise<number>}
    * @memberof HistoryPublishRepository
    */
-  async insertProjectReportPublishRecord(data: IProjectReportPublish): Promise<number> {
+  async insertProjectReportPublishRecord(data: IProjectReportPublish): Promise<{ project_report_publish_id: number }> {
     const sqlStatement = SQL`
       INSERT INTO project_report_publish 
-        (project_report_publish_id, queue_id, event_timestamp)
+        (project_report_attachment_id, artifact_revision_id, event_timestamp)
       VALUES
-        (${data.project_report_publish_id}, ${data.queue_id}, NOW())
+        (${data.project_report_attachment_id}, ${data.artifact_id}, NOW())
       RETURNING project_report_publish_id;
     `;
     const response = await this.connection.sql(sqlStatement);
@@ -165,7 +165,7 @@ export class HistoryPublishRepository extends BaseRepository {
       ]);
     }
 
-    return response.rows[0].project_report_publish_id;
+    return response.rows[0];
   }
 
   /**
@@ -175,12 +175,12 @@ export class HistoryPublishRepository extends BaseRepository {
    * @returns {*} {Promise<number>}
    * @memberof HistoryPublishRepository
    */
-  async insertSurveyAttachmentPublishRecord(data: ISurveyAttachmentPublish): Promise<number> {
+  async insertSurveyAttachmentPublishRecord(data: ISurveyAttachmentPublish): Promise<{ survey_attachment_publish_id: number }> {
     const sqlStatement = SQL`
       INSERT INTO survey_attachment_publish 
-        (survey_attachment_publish_id, queue_id, event_timestamp)
+        (survey_attachment_id, artifact_revision_id, event_timestamp)
       VALUES
-        (${data.survey_attachment_publish_id}, ${data.queue_id}, NOW())
+        (${data.survey_attachment_id}, ${data.artifact_id}, NOW())
       RETURNING survey_attachment_publish_id;
     `;
     const response = await this.connection.sql(sqlStatement);
@@ -191,7 +191,7 @@ export class HistoryPublishRepository extends BaseRepository {
       ]);
     }
 
-    return response.rows[0].survey_attachment_publish_id;
+    return response.rows[0];
   }
 
   /**
@@ -201,12 +201,12 @@ export class HistoryPublishRepository extends BaseRepository {
    * @returns {*} {Promise<number>}
    * @memberof HistoryPublishRepository
    */
-  async insertSurveyReportPublishRecord(data: ISurveyReportPublish): Promise<number> {
+  async insertSurveyReportPublishRecord(data: ISurveyReportPublish): Promise<{ survey_report_publish_id: number }> {
     const sqlStatement = SQL`
       INSERT INTO survey_report_publish 
-        (survey_report_publish_id, queue_id, event_timestamp)
+        (survey_report_attachment_id, artifact_revision_id, event_timestamp)
       VALUES
-        (${data.survey_report_publish_id}, ${data.queue_id}, NOW())
+        (${data.survey_report_attachment_id}, ${data.artifact_id}, NOW())
       RETURNING survey_report_publish_id;
     `;
     const response = await this.connection.sql(sqlStatement);
@@ -217,6 +217,6 @@ export class HistoryPublishRepository extends BaseRepository {
       ]);
     }
 
-    return response.rows[0].survey_report_publish_id;
+    return response.rows[0];
   }
 }

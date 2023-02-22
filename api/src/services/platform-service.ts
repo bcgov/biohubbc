@@ -5,7 +5,6 @@ import { URL } from 'url';
 import { IDBConnection } from '../database/db';
 import { HTTP400 } from '../errors/http-error';
 import {
-  IAttachment,
   IProjectAttachment,
   IProjectReportAttachment,
   ISurveyAttachment,
@@ -72,6 +71,7 @@ export interface IArtifact {
 }
 export class PlatformService extends DBService {
   attachmentService: AttachmentService;
+  publishService: HistoryPublishService;
   backboneIntakeEnabled: boolean;
   backboneApiHost: string;
   backboneIntakePath: string;
@@ -85,6 +85,7 @@ export class PlatformService extends DBService {
     this.backboneIntakePath = process.env.BACKBONE_INTAKE_PATH || '/api/dwc/submission/queue';
     this.backboneArtifactIntakePath = process.env.BACKBONE_ARTIFACT_INTAKE_PATH || '/api/artifact/intake';
 
+    this.publishService = new HistoryPublishService(this.connection);
     this.attachmentService = new AttachmentService(connection);
   }
 
@@ -221,7 +222,6 @@ export class PlatformService extends DBService {
       return;
     }
 
-    const publishRepo = new HistoryPublishService(this.connection);
     const surveyService = new SurveyService(this.connection);
     const surveyData = await surveyService.getLatestSurveyOccurrenceSubmission(surveyId);
     const securityRequest = await surveyService.getSurveyProprietorDataForSecurityRequest(surveyId);
@@ -260,15 +260,15 @@ export class PlatformService extends DBService {
     const queueResponse = await this._submitDwCADatasetToBioHubBackbone(dwCADataset);
 
     await Promise.all([
-      publishRepo.insertProjectMetadataPublishRecord({
+      this.publishService.insertProjectMetadataPublishRecord({
         project_id: projectId,
         queue_id: queueResponse.queue_id
       }),
-      publishRepo.insertSurveyMetadataPublishRecord({
+      this.publishService.insertSurveyMetadataPublishRecord({
         survey_id: surveyId,
         queue_id: queueResponse.queue_id
       }),
-      publishRepo.insertOccurrenceSubmissionPublishRecord({
+      this.publishService.insertOccurrenceSubmissionPublishRecord({
         occurrence_submission_id: surveyData.id,
         queue_id: queueResponse.queue_id
       })
@@ -317,40 +317,32 @@ export class PlatformService extends DBService {
    *
    * @memberof PlatformService
    */
-  _makeArtifactsFromAttachments(
+  async _makeArtifactFromAttachment(data: {
     dataPackageId: string,
-    attachments: (IProjectAttachment | ISurveyAttachment)[],
-    reportAttachments: (IProjectReportAttachment | ISurveyReportAttachment)[]
-  ): Promise<IArtifact[]> {
-    const promises = [...attachments, ...reportAttachments].map(async (attachment: IAttachment, index: number) => {
-      const isReportAttachment = (
-        attachment: IAttachment
-      ): attachment is IProjectReportAttachment | ISurveyReportAttachment => {
-        return index >= attachments.length;
-      };
+    attachment: IProjectAttachment | ISurveyAttachment | IProjectReportAttachment | ISurveyReportAttachment,
+    file_type: string
+  }): Promise<IArtifact> {
+    const { dataPackageId, attachment, file_type } = data;
+    const s3File = await getFileFromS3(attachment.key);
+    const artifactZip = new AdmZip();
+    artifactZip.addFile(attachment.file_name, s3File.Body as Buffer);
 
-      const s3File = await getFileFromS3(attachment.key);
-      const artifactZip = new AdmZip();
-      artifactZip.addFile(attachment.file_name, s3File.Body as Buffer);
-
-      return {
-        dataPackageId,
-        archiveFile: {
-          data: artifactZip.toBuffer(),
-          fileName: `${attachment.uuid}.zip`,
-          mimeType: 'application/zip'
-        },
-        metadata: {
-          file_name: attachment.file_name,
-          file_size: attachment.file_size,
-          file_type: isReportAttachment(attachment) ? 'Report' : attachment.file_type || 'Other',
-          title: attachment.title,
-          description: attachment.description
-        }
-      };
-    });
-
-    return Promise.all(promises);
+    return {
+      dataPackageId,
+      archiveFile: {
+        data: artifactZip.toBuffer(),
+        fileName: `${attachment.uuid}.zip`,
+        mimeType: 'application/zip'
+      },
+      metadata: {
+        file_name: attachment.file_name,
+        file_size: attachment.file_size,
+        file_type,
+        // file_type: isReportAttachment(attachment) ? 'Report',
+        title: attachment.title,
+        description: attachment.description
+      }
+    };
   }
 
   /**
@@ -407,18 +399,28 @@ export class PlatformService extends DBService {
     projectId: number,
     attachmentIds: number[],
     reportAttachmentIds: number[]
-  ): Promise<{ artifact_id: number }[]> {
+  ): Promise<({ project_attachment_publish_id: number; } | { project_report_publish_id: number; })[]> {
     const attachments = await this.attachmentService.getProjectAttachmentsByIds(projectId, attachmentIds);
     const reportAttachments = await this.attachmentService.getProjectReportAttachmentsByIds(
       projectId,
       reportAttachmentIds
     );
 
-    const promises = (await this._makeArtifactsFromAttachments(dataPackageId, attachments, reportAttachments)).map(
-      this._submitArtifactToBioHub
-    );
+    const attachmentArtifactPromises = attachments.map(async (attachment) => {
+      const artifact = await this._makeArtifactFromAttachment({ dataPackageId, attachment, file_type: attachment.file_type || 'Other' });
+      const { artifact_id } = await this._submitArtifactToBioHub(artifact);
 
-    return Promise.all(promises);
+      return this.publishService.insertProjectAttachmentPublishRecord({ artifact_id, project_attachment_id: attachment.id });
+    });
+
+    const reportArtifactPromises = reportAttachments.map(async (attachment) => {
+      const artifact = await this._makeArtifactFromAttachment({ dataPackageId, attachment, file_type: 'Report' });
+      const { artifact_id } = await this._submitArtifactToBioHub(artifact);
+
+      return this.publishService.insertProjectReportPublishRecord({ artifact_id, project_report_attachment_id: attachment.id });
+    });
+
+    return Promise.all([...attachmentArtifactPromises, ...reportArtifactPromises]);
   }
 
   /**
@@ -437,17 +439,27 @@ export class PlatformService extends DBService {
     surveyId: number,
     attachmentIds: number[],
     reportAttachmentIds: number[]
-  ): Promise<{ artifact_id: number }[]> {
+  ): Promise<({ survey_attachment_publish_id: number; } | { survey_report_publish_id: number; })[]> {
     const attachments = await this.attachmentService.getSurveyAttachmentsByIds(surveyId, attachmentIds);
     const reportAttachments = await this.attachmentService.getSurveyReportAttachmentsByIds(
       surveyId,
       reportAttachmentIds
     );
 
-    const promises = (await this._makeArtifactsFromAttachments(dataPackageId, attachments, reportAttachments)).map(
-      this._submitArtifactToBioHub
-    );
+    const attachmentArtifactPromises = attachments.map(async (attachment) => {
+      const artifact = await this._makeArtifactFromAttachment({ dataPackageId, attachment, file_type: attachment.file_type || 'Other' });
+      const { artifact_id } = await this._submitArtifactToBioHub(artifact);
 
-    return Promise.all(promises);
+      return this.publishService.insertSurveyAttachmentPublishRecord({ artifact_id, survey_attachment_id: attachment.id });
+    });
+
+    const reportArtifactPromises = reportAttachments.map(async (attachment) => {
+      const artifact = await this._makeArtifactFromAttachment({ dataPackageId, attachment, file_type: 'Report' });
+      const { artifact_id } = await this._submitArtifactToBioHub(artifact);
+
+      return this.publishService.insertSurveyReportPublishRecord({ artifact_id, survey_report_attachment_id: attachment.id });
+    });
+
+    return Promise.all([...attachmentArtifactPromises, ...reportArtifactPromises]);
   }
 }
