@@ -296,10 +296,10 @@ export class SurveyService extends DBService {
 
   /**
    * Creates a new survey for a project and returns survey ID
-   * 
+   *
    * @param {number} projectId
    * @param {PostSurveyObject} postSurveyData
-   * @returns {*} {Promise<number>} 
+   * @returns {*} {Promise<number>}
    * @memberof SurveyService
    */
   async createSurvey(projectId: number, postSurveyData: PostSurveyObject): Promise<number> {
@@ -362,9 +362,9 @@ export class SurveyService extends DBService {
 
   /**
    * Get survey attachments data for a given survey ID
-   * 
+   *
    * @param {number} surveyID
-   * @returns {*} {Promise<GetAttachmentsData>} 
+   * @returns {*} {Promise<GetAttachmentsData>}
    * @memberof SurveyService
    */
   async getAttachmentsData(surveyId: number): Promise<GetAttachmentsData> {
@@ -373,9 +373,9 @@ export class SurveyService extends DBService {
 
   /**
    * Get survey report attachments for a given survey ID
-   * 
+   *
    * @param {number} surveyID
-   * @returns {*} {Promise<GetReportAttachmentsData>} 
+   * @returns {*} {Promise<GetReportAttachmentsData>}
    * @memberof SurveyService
    */
   async getReportAttachmentsData(surveyId: number): Promise<GetReportAttachmentsData> {
@@ -384,10 +384,10 @@ export class SurveyService extends DBService {
 
   /**
    * Inserts Survey data and returns new survey Id
-   * 
+   *
    * @param {number} projectId
    * @param {PostSurveyObject} surveyData
-   * @returns {*} {Promise<number>} 
+   * @returns {*} {Promise<number>}
    * @memberof SurveyService
    */
   async insertSurveyData(projectId: number, surveyData: PostSurveyObject): Promise<number> {
@@ -395,11 +395,11 @@ export class SurveyService extends DBService {
   }
 
   /**
-   * Inserts a new record and associates focal species to a survey 
-   * 
+   * Inserts a new record and associates focal species to a survey
+   *
    * @param {number} focal_species_id
    * @param {number} surveyID
-   * @returns {*} {Promise<number>} 
+   * @returns {*} {Promise<number>}
    * @memberof SurveyService
    */
   async insertFocalSpecies(focal_species_id: number, surveyId: number): Promise<number> {
@@ -408,10 +408,10 @@ export class SurveyService extends DBService {
 
   /**
    * Inserts a new record and associates ancillary species to a survey
-   * 
+   *
    * @param {number} ancillary_species_id
    * @param {number} surveyID
-   * @returns {*} {Promise<number>} 
+   * @returns {*} {Promise<number>}
    * @memberof SurveyService
    */
   async insertAncillarySpecies(ancillary_species_id: number, surveyId: number): Promise<number> {
@@ -419,11 +419,11 @@ export class SurveyService extends DBService {
   }
 
   /**
-   * Inserts new record and associated a vantage code to a survey 
-   * 
+   * Inserts new record and associated a vantage code to a survey
+   *
    * @param {number} vantage_code_id
    * @param {number} surveyID
-   * @returns {*} {Promise<number>} 
+   * @returns {*} {Promise<number>}
    * @memberof SurveyService
    */
   async insertVantageCodes(vantage_code_id: number, surveyId: number): Promise<number> {
@@ -432,10 +432,10 @@ export class SurveyService extends DBService {
 
   /**
    * Inserts proprietor data for a survey
-   * 
+   *
    * @param {PostProprietorData} survey_proprietor
    * @param {number} surveyID
-   * @returns {*} {Promise<number | undefined>} 
+   * @returns {*} {Promise<number | undefined>}
    * @memberof SurveyService
    */
   async insertSurveyProprietor(survey_proprietor: PostProprietorData, surveyId: number): Promise<number | undefined> {
@@ -444,13 +444,13 @@ export class SurveyService extends DBService {
 
   /**
    * Insert or update association of permit to a given survey
-   * 
+   *
    * @param {number} systemUserId
    * @param {number} projectId
    * @param {number} surveyId
    * @param {number} permitNumber
    * @param {number} permitType
-   * @returns {*} {Promise<void>} 
+   * @returns {*} {Promise<void>}
    * @memberof SurveyService
    */
   async insertOrAssociatePermitToSurvey(
@@ -469,10 +469,10 @@ export class SurveyService extends DBService {
 
   /**
    * Inserts new record and associates funding source to a survey
-   * 
+   *
    * @param {number} funding_source_id
    * @param {number} surveyID
-   * @returns {*} {Promise<void>} 
+   * @returns {*} {Promise<void>}
    * @memberof SurveyService
    */
   async insertSurveyFundingSource(funding_source_id: number, surveyId: number) {
@@ -481,10 +481,10 @@ export class SurveyService extends DBService {
 
   /**
    * Updates provided survey information and submits to BioHub
-   * 
+   *
    * @param {number} surveyId
    * @param {PutSurveyObject} putSurveyData
-   * @returns {*} {Promise<void>} 
+   * @returns {*} {Promise<void>}
    * @memberof SurveyService
    */
   async updateSurvey(surveyId: number, putSurveyData: PutSurveyObject): Promise<void> {
@@ -524,10 +524,10 @@ export class SurveyService extends DBService {
 
   /**
    * Updates Survey details
-   * 
+   *
    * @param {number} surveyID
    * @param {PutSurveyObject} surveyData
-   * @returns {*} {Promise<void>} 
+   * @returns {*} {Promise<void>}
    * @memberof SurveyService
    */
   async updateSurveyDetailsData(surveyId: number, surveyData: PutSurveyObject) {
@@ -536,7 +536,7 @@ export class SurveyService extends DBService {
 
   /**
    * Updates survey species data
-   * 
+   *
    * @param {number} surveyID
    * @param {PutSurveyObject} surveyData
    * @returns {*} {Promise<any[]>}
@@ -560,7 +560,7 @@ export class SurveyService extends DBService {
 
   /**
    * Delete species data for a given survey ID
-   * 
+   *
    * @param {number} surveyID
    * @returns {*} {Promise<void>}
    * @memberof SurveyService
@@ -621,9 +621,9 @@ export class SurveyService extends DBService {
 
   /**
    * Breaks link between permit and survey for a given survey ID
-   * 
+   *
    * @param {number} surveyID
-   * @returns {*} {Promise<void>} 
+   * @returns {*} {Promise<void>}
    * @memberof SurveyService
    */
   async unassociatePermitFromSurvey(surveyId: number): Promise<void> {
@@ -632,9 +632,9 @@ export class SurveyService extends DBService {
 
   /**
    * Updates a Survey funding source for a given survey ID
-   * 
+   *
    * @param {number} surveyID
-   * @returns {*} {Promise<any[]>} 
+   * @returns {*} {Promise<any[]>}
    * @memberof SurveyService
    */
   async updateSurveyFundingData(surveyId: number, surveyData: PutSurveyObject) {
@@ -650,10 +650,10 @@ export class SurveyService extends DBService {
   }
 
   /**
-   * Breaks link between a funding source and a survey for a given survey ID 
-   * 
+   * Breaks link between a funding source and a survey for a given survey ID
+   *
    * @param {number} surveyID
-   * @returns {*} {Promise<void>} 
+   * @returns {*} {Promise<void>}
    * @memberof SurveyService
    */
   async deleteSurveyFundingSourcesData(surveyId: number): Promise<void> {
@@ -662,11 +662,11 @@ export class SurveyService extends DBService {
 
   /**
    * Updates proprietor data on a survey
-   * 
+   *
    * @param {number} surveyID
    * @param {PutSurveyObject} surveyData
    * @param {PutSurveyObject}
-   * @returns {*} {Promise<void>} 
+   * @returns {*} {Promise<void>}
    * @memberof SurveyService
    */
   async updateSurveyProprietorData(surveyId: number, surveyData: PutSurveyObject) {
@@ -681,9 +681,9 @@ export class SurveyService extends DBService {
 
   /**
    * Deletes proprietor data for a given survey
-   * 
+   *
    * @param {number} surveyID
-   * @returns {*} {Promise<void>} 
+   * @returns {*} {Promise<void>}
    * @memberof SurveyService
    */
   async deleteSurveyProprietorData(surveyId: number): Promise<void> {
@@ -692,7 +692,7 @@ export class SurveyService extends DBService {
 
   /**
    * Updates vantage codes associated to a survey
-   * 
+   *
    * @param {number} surveyID
    * @param {PutSurveyObject} surveyData
    * @returns {*} {Promise<void>}
@@ -714,9 +714,9 @@ export class SurveyService extends DBService {
 
   /**
    * Breaks link between vantage codes and a survey fora  given survey Id
-   * 
+   *
    * @param {number} surveyID
-   * @returns {*} {Promise<void>} 
+   * @returns {*} {Promise<void>}
    * @memberof SurveyService
    */
   async deleteSurveyVantageCodes(surveyId: number): Promise<void> {
@@ -725,9 +725,9 @@ export class SurveyService extends DBService {
 
   /**
    * Deletes a survey for a given ID
-   * 
+   *
    * @param {number} surveyID
-   * @returns {*} {Promise<void>} 
+   * @returns {*} {Promise<void>}
    * @memberof SurveyService
    */
   async deleteSurvey(surveyId: number): Promise<void> {
