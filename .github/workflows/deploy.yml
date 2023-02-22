@@ -1,4 +1,4 @@
-deploydata# PR Based Deploy On OpenShift
+# PR Based Deploy On OpenShift
 # Builds and Deploys unmerged PR's to temporary pods/services/routes/etc in the OpenShift Dev environment.
 name: PR-Based Deploy on OpenShift
 
