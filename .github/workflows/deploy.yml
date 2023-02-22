@@ -657,6 +657,17 @@ jobs:
       - deployDatabaseSetup
       - deployAPI
     steps:
+      - name: Log result
+        run: |
+          echo needs.buildAPP.result: ${{ needs.buildAPP.result }}
+          echo needs.buildDatabase.result: ${{ needs.buildDatabase.result }}
+          echo needs.buildDatabaseSetup.result: ${{ needs.buildDatabaseSetup.result }}
+          echo needs.buildAPI.result: ${{ needs.buildAPI.result }}
+          echo needs.deployAPP.result: ${{ needs.deployAPP.result }}
+          echo needs.deployDatabase.result: ${{ needs.deployDatabase.result }}
+          echo needs.deployDatabaseSetup.result: ${{ needs.deployDatabaseSetup.result }}
+          echo needs.deployAPI.result: ${{ needs.deployAPI.result }}
+
       - name: Report success
         if: |
           (needs.buildAPP.result == 'success' || needs.buildAPP.result == 'skipped') &&
