@@ -89,13 +89,6 @@ jobs:
     needs:
       - skipDuplicateActions
     steps:
-      # Install Node - for `node` and `npm` commands
-      # Note: This already uses actions/cache internally, so repeat calls in subsequent jobs are not a performance hit
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 14
-
       - name: Checkout Target Branch
         uses: actions/checkout@v3
         with:
@@ -111,6 +104,13 @@ jobs:
           # Cache repo based on the commit sha that triggered the workflow
           path: ${{ github.workspace }}/*
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
+
+      # Install Node - for `node` and `npm` commands
+      # Note: This already uses actions/cache internally, so repeat calls in subsequent jobs are not a performance hit
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 14
 
   # Build the web frontend app image
   buildAPP:
@@ -148,7 +148,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 14
-          cache-dependency-path: "app/.pipeline/package-lock.json"
+          cache-dependency-path: app/.pipeline/package-lock.json
           cache: "npm"
 
       # Log in to OpenShift.
@@ -168,6 +168,7 @@ jobs:
       # Install app pipeline node modules
       # Note: This already caches node modules internally
       - name: Install pipeline node modules
+        working-directory: app/.pipeline/
         run: |
           npm ci
       # - name: Install app pipeline node modules
@@ -218,7 +219,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 14
-          cache-dependency-path: "database/.pipeline/package-lock.json"
+          cache-dependency-path: database/.pipeline/package-lock.json
           cache: "npm"
 
       # Log in to OpenShift.
@@ -238,6 +239,7 @@ jobs:
       # Install database pipeline node modules
       # Note: This already caches node modules internally
       - name: Install pipeline node modules
+        working-directory: database/.pipeline/
         run: |
           npm ci
       # - name: Install database pipeline node modules
@@ -287,7 +289,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 14
-          cache-dependency-path: "database/.pipeline/package-lock.json"
+          cache-dependency-path: database/.pipeline/package-lock.json
           cache: "npm"
 
       # Log in to OpenShift.
@@ -299,6 +301,7 @@ jobs:
       # Install database pipeline node modules
       # Note: This already caches node modules internally
       - name: Install pipeline node modules
+        working-directory: database/.pipeline/
         run: |
           npm ci
       # - name: Install database pipeline node modules
@@ -349,7 +352,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 14
-          cache-dependency-path: "api/.pipeline/package-lock.json"
+          cache-dependency-path: api/.pipeline/package-lock.json
           cache: "npm"
 
       # Log in to OpenShift.
@@ -369,6 +372,7 @@ jobs:
       # Install api pipeline node modules
       # Note: This already caches node modules internally
       - name: Install pipeline node modules
+        working-directory: api/.pipeline/
         run: |
           npm ci
       # - name: Install api pipeline node modules
@@ -417,7 +421,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 14
-          cache-dependency-path: "app/.pipeline/package-lock.json"
+          cache-dependency-path: app/.pipeline/package-lock.json
           cache: "npm"
 
       # Log in to OpenShift.
@@ -429,6 +433,7 @@ jobs:
       # Install app pipeline node modules
       # Note: This already caches node modules internally
       - name: Install pipeline node modules
+        working-directory: app/.pipeline
         run: |
           npm ci
       # - name: Install app pipeline node modules
@@ -477,7 +482,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 14
-          cache-dependency-path: "database/.pipeline/package-lock.json"
+          cache-dependency-path: database/.pipeline/package-lock.json
           cache: "npm"
 
       # Log in to OpenShift.
@@ -489,6 +494,7 @@ jobs:
       # Install database pipeline node modules
       # Note: This already caches node modules internally
       - name: Install pipeline node modules
+        working-directory: database/.pipeline/
         run: |
           npm ci
       # - name: Install database pipeline node modules
@@ -538,7 +544,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 14
-          cache-dependency-path: "database/.pipeline/package-lock.json"
+          cache-dependency-path: database/.pipeline/package-lock.json
           cache: "npm"
 
       # Log in to OpenShift.
@@ -550,6 +556,7 @@ jobs:
       # Install database pipeline node modules
       # Note: This already caches node modules internally
       - name: Install pipeline node modules
+        working-directory: database/.pipeline/
         run: |
           npm ci
       # - name: Install database pipeline node modules
@@ -599,7 +606,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 14
-          cache-dependency-path: "api/.pipeline/package-lock.json"
+          cache-dependency-path: api/.pipeline/package-lock.json
           cache: "npm"
 
       # Log in to OpenShift.
@@ -611,6 +618,7 @@ jobs:
       # Install api pipeline node modules
       # Note: This already caches node modules internally
       - name: Install pipeline node modules
+        working-directory: api/.pipeline/
         run: |
           npm ci
       # - name: Install api pipeline node modules
