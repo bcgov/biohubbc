@@ -650,7 +650,7 @@ jobs:
           (needs.buildAPP.result == 'success' || needs.buildAPP.result == 'skipped') &&
           (needs.buildDatabase.result == 'success' || needs.buildDatabase.result == 'skipped') &&
           (needs.buildDatabaseSetup.result == 'success' || needs.buildDatabaseSetup.result == 'skipped') &&
-          (needs.buildAPI.result == 'success' || needs.buildAPI.result == 'skipped')
+          (needs.buildAPI.result == 'success' || needs.buildAPI.result == 'skipped') &&
           (needs.deployAPP.result == 'success' || needs.deployAPP.result == 'skipped') &&
           (needs.deployDatabase.result == 'success' || needs.deployDatabase.result == 'skipped') &&
           (needs.deployDatabaseSetup.result == 'success' || needs.deployDatabaseSetup.result == 'skipped') &&
@@ -664,7 +664,7 @@ jobs:
           (needs.buildAPP.result == 'success' || needs.buildAPP.result == 'skipped') &&
           (needs.buildDatabase.result == 'success' || needs.buildDatabase.result == 'skipped') &&
           (needs.buildDatabaseSetup.result == 'success' || needs.buildDatabaseSetup.result == 'skipped') &&
-          (needs.buildAPI.result == 'success' || needs.buildAPI.result == 'skipped')
+          (needs.buildAPI.result == 'success' || needs.buildAPI.result == 'skipped') &&
           (needs.deployAPP.result == 'failure' || needs.deployAPP.result == 'cancelled') &&
           (needs.deployDatabase.result == 'failure' || needs.deployDatabase.result == 'cancelled') &&
           (needs.deployDatabaseSetup.result == 'failure' || needs.deployDatabaseSetup.result == 'cancelled') &&
