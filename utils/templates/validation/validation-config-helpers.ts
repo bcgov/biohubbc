@@ -1,3 +1,26 @@
+import * as fs from 'fs';
+
+/**
+ * Stringifies the template object for insertion into the database.
+ * 
+ * Note: outputName should follow the pattern `template_validation_config_output`
+ * Example: `elk_general_validation_config_output`
+ * 
+ * @param {any} template validation schema for a given template
+ * @param {string} outputName output name for the file
+ */
+export const outputValidationSchema = (template: any, outputName: string) => {
+  fs.writeFile(
+    `./output/${outputName}.json`,
+    JSON.stringify(template),
+    (err) => {
+      // file written successfully
+  
+      console.log('All done!');
+    }
+  );
+};
+
 export const basicNumericValidator = () => {
   return [
     {
@@ -172,6 +195,30 @@ export const utmZonePickListValidator = () => {
             description: '11'
           }
         ]
+      }
+    }
+  ];
+};
+
+export const eastingValidator = () => {
+  return [
+    {
+      column_format_validator: {
+        reg_exp: '^[0-9]{6,6}$',
+        reg_exp_flags: 'g',
+        expected_format: 'Easting needs to be a 6 digit number. For example: 123456.'
+      }
+    }
+  ];
+};
+
+export const northingValidator = () => {
+  return [
+    {
+      column_format_validator: {
+        reg_exp: '^[0-9]{7,7}$',
+        reg_exp_flags: 'g',
+        expected_format: 'Northing needs to be a 7 digit number. For example: 1234567.'
       }
     }
   ];
@@ -499,7 +546,7 @@ export const observationActivityPickListValidator = () => {
   ];
 };
 
-export const activityNonTargettedPickListValidator = () => {
+export const activityNonTargetedPickListValidator = () => {
   return [
     {
       column_code_validator: {
@@ -687,7 +734,7 @@ export const activityNonTargettedPickListValidator = () => {
             description: 'Urinating'
           },
           {
-            name: 'Described in comments',
+            name: 'Activity described in comments',
             description: 'Described in comments'
           }
         ]
