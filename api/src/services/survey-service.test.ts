@@ -26,6 +26,7 @@ import {
   SurveyRepository
 } from '../repositories/survey-repository';
 import { getMockDBConnection } from '../__mocks__/db';
+import { AttachmentService } from './attachment-service';
 import { PermitService } from './permit-service';
 import { PlatformService } from './platform-service';
 import { SurveyService } from './survey-service';
@@ -93,6 +94,10 @@ describe('SurveyService', () => {
   });
 
   describe('updateSurvey', () => {
+    beforeEach(() => {
+      sinon.stub(AttachmentService.prototype, 'testSubmitAttachments').resolves();
+    });
+
     afterEach(() => {
       sinon.restore();
     });

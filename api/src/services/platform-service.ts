@@ -338,7 +338,6 @@ export class PlatformService extends DBService {
         file_name: attachment.file_name,
         file_size: attachment.file_size,
         file_type,
-        // file_type: isReportAttachment(attachment) ? 'Report',
         title: attachment.title,
         description: attachment.description
       }
