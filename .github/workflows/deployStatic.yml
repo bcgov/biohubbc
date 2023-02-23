@@ -15,7 +15,7 @@ jobs:
   checkEnv:
     name: Print Env variables
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 20
     if: ${{ github.event.pull_request.merged == true }}
     steps:
       - name: Print Env Vars
@@ -35,7 +35,7 @@ jobs:
   scaleDownPods:
     name: Scale down the pods for this PR
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 20
     if: ${{ github.event.pull_request.merged == true }}
     env:
       PR_NUMBER: ${{ github.event.number }}
@@ -55,7 +55,7 @@ jobs:
   checkoutRepo:
     name: Checkout and cache target branch
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 20
     if: ${{ github.event.pull_request.merged == true }}
     env:
       PR_NUMBER: ${{ github.event.number }}
@@ -89,7 +89,7 @@ jobs:
   buildAPP:
     name: Build APP Image
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 20
     if: ${{ github.event.pull_request.merged == true }}
     env:
       PR_NUMBER: ${{ github.event.number }}
@@ -151,7 +151,7 @@ jobs:
   buildDatabase:
     name: Build Database Image
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 20
     if: ${{ github.event.pull_request.merged == true }}
     env:
       PR_NUMBER: ${{ github.event.number }}
@@ -213,7 +213,7 @@ jobs:
   buildDatabaseSetup:
     name: Build Database Setup Image
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 20
     if: ${{ github.event.pull_request.merged == true }}
     env:
       PR_NUMBER: ${{ github.event.number }}
@@ -275,7 +275,7 @@ jobs:
   buildAPI:
     name: Build API Image
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 20
     if: ${{ github.event.pull_request.merged == true }}
     env:
       PR_NUMBER: ${{ github.event.number }}
@@ -337,7 +337,7 @@ jobs:
   deployAPP:
     name: Deploy APP Image
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 20
     if: ${{ github.event.pull_request.merged == true }}
     env:
       PR_NUMBER: ${{ github.event.number }}
@@ -400,7 +400,7 @@ jobs:
   deployDatabase:
     name: Deploy Database Image
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 20
     if: ${{ github.event.pull_request.merged == true }}
     env:
       PR_NUMBER: ${{ github.event.number }}
@@ -463,7 +463,7 @@ jobs:
   deployDatabaseSetup:
     name: Deploy Database Setup Image
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 20
     if: ${{ github.event.pull_request.merged == true }}
     env:
       PR_NUMBER: ${{ github.event.number }}
@@ -527,7 +527,7 @@ jobs:
   deployAPI:
     name: Deploy API Image
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 20
     if: ${{ github.event.pull_request.merged == true }}
     env:
       PR_NUMBER: ${{ github.event.number }}
@@ -591,7 +591,7 @@ jobs:
   clean:
     name: Clean Build/Deployment Artifacts
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 20
     if: ${{ github.event.pull_request.merged == true }}
     needs:
       - deployDatabase

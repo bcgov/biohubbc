@@ -15,7 +15,7 @@ jobs:
   checkEnv:
     name: Print Env variables
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 20
     if: ${{ github.event.pull_request.merged == false }}
     steps:
       - name: Print Env Vars
@@ -37,7 +37,7 @@ jobs:
   skipDuplicateActions:
     name: Check for duplicate actions
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 20
     needs:
       - checkEnv
     outputs:
@@ -83,7 +83,7 @@ jobs:
   checkoutRepo:
     name: Checkout and cache target branch
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 20
     if: ${{ github.event.pull_request.merged == false }}
     env:
       PR_NUMBER: ${{ github.event.number }}
@@ -117,7 +117,7 @@ jobs:
   buildAPP:
     name: Build APP Image
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 20
     if: |
       github.event.pull_request.merged == false && 
       github.event.pull_request.draft == false && 
@@ -178,7 +178,7 @@ jobs:
   buildDatabase:
     name: Build Database Image
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 20
     if: |
       github.event.pull_request.merged == false && 
       github.event.pull_request.draft == false && 
@@ -239,7 +239,7 @@ jobs:
   buildDatabaseSetup:
     name: Build Database Setup Image
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 20
     if: |
       github.event.pull_request.merged == false && 
       github.event.pull_request.draft == false && 
@@ -293,7 +293,7 @@ jobs:
   buildAPI:
     name: Build API Image
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 20
     if: |
       github.event.pull_request.merged == false && 
       github.event.pull_request.draft == false && 
@@ -354,7 +354,7 @@ jobs:
   deployAPP:
     name: Deploy APP Image
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 20
     if: |
       github.event.pull_request.merged == false && 
       github.event.pull_request.draft == false && 
@@ -407,7 +407,7 @@ jobs:
   deployDatabase:
     name: Deploy Database Image
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 20
     if: |
       github.event.pull_request.merged == false && 
       github.event.pull_request.draft == false && 
@@ -460,7 +460,7 @@ jobs:
   deployDatabaseSetup:
     name: Deploy Database Setup Image
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 20
     if: |
       github.event.pull_request.merged == false && 
       github.event.pull_request.draft == false && 
@@ -514,7 +514,7 @@ jobs:
   deployAPI:
     name: Deploy API Image
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 20
     if: |
       always() &&
       (needs.deployDatabase.result == 'success' || needs.deployDatabase.result == 'skipped') &&
@@ -573,7 +573,7 @@ jobs:
   workflowStatus:
     name: Workflow Status
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 20
     if: |
       always() &&
       github.event.pull_request.merged == false && 

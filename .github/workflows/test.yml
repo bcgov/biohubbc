@@ -16,7 +16,7 @@ jobs:
   checkoutRepo:
     name: Checkout and cache target branch
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 20
     env:
       PR_NUMBER: ${{ github.event.number }}
     steps:
@@ -46,7 +46,7 @@ jobs:
   test:
     name: Running Tests
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 20
     needs:
       - checkoutRepo
     steps:
