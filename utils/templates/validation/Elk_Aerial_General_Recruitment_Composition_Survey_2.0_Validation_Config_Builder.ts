@@ -1,4 +1,3 @@
-import * as fs from 'fs';
 import { activityNonTargetedPickListValidator, ageOfSignPickListValidator, aircraftPickListValidator, basicNumericValidator, datumPickListValidator, eastingValidator, featureTypePickListValidator, frequencyPickListValidator, northingValidator, observationActivityPickListValidator, outputValidationSchema, presentAbsentPickListValidator, signTypePickListValidator, surveyOrTelemetryPickListValidator, targetPickListValidator, utmZonePickListValidator } from './validation-config-helpers';
 
 const elkSpeciesValidator = () => {
