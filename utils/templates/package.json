@@ -19,6 +19,7 @@
     "build-validation-goat": "ts-node ./validation/Goat_2.0_Validation_Config_Builder.ts",
     "build-validation-caribou": "ts-node ./validation/Caribou_1.0_Validation_Config_Builder.ts",
     "build-validation-elk-general": "ts-node ./validation/Elk_Aerial_General_Recruitment_Composition_Survey_2.0_Validation_Config_Builder.ts",
+    "build-validation-elk-srb": "ts-node ./validation/Elk_Aerial_Stratified_Random_Block_Recruitment_Composition_Survey_2.0_Validation_config_Builder.ts",
     "build-transformation": "ts-node ./transformation/transformation-config-builder.ts",
     "lint": "eslint . --ext .js,.ts",
     "lint-fix": "npm run lint -- --fix",
