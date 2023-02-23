@@ -1,4 +1,4 @@
-import { activityNonTargetedPickListValidator, aircraftPickListValidator, basicNumericValidator, datumPickListValidator, habitatPickListValidator, outputValidationSchema, signTypePickListValidator, surveyOrTelemetryPickListValidator, utmZonePickListValidator } from "./validation-config-helpers";
+import { activityNonTargetedPickListValidator, aircraftPickListValidator, basicNumericValidator, datumPickListValidator, featureTypePickListValidator, frequencyPickListValidator, habitatPickListValidator, outputValidationSchema, signTypePickListValidator, surveyOrTelemetryPickListValidator, targetPickListValidator, utmZonePickListValidator } from "./validation-config-helpers";
 
 const elkSpeciesValidator = () => {
   return [
@@ -84,6 +84,31 @@ const sampledPickListValidator = () => {
           {
             name: 'N',
             description: 'N'
+          }
+        ]
+      }
+    }
+  ];
+}
+
+const speciesOccurrenceStatusPickListValidator = () => {
+  return [
+    {
+      column_code_validator: {
+        name: {
+          type: 'string'
+        },
+        description: {
+          type: 'string'
+        },
+        allowed_code_values: [
+          {
+            name: 'Present',
+            description: 'Present'
+          },
+          {
+            name: 'Absent',
+            description: 'Absent'
           }
         ]
       }
@@ -302,14 +327,24 @@ const elkSRBTemplateValidationSchema = {
       validations: [
         {
           file_duplicate_columns_validator: {}
+        },
+        {
+          file_required_columns_validator: {
+            required_columns: ['Group Label']
+          }
         }
       ],
       columns: [
-        // {
-        //   name: '',
-        //   description: '',
-        //   validations: basicNumericValidator()
-        // },
+        {
+          name: 'Target or Non-Targeted',
+          description: '',
+          validations: targetPickListValidator()
+        },
+        {
+          name: 'Frequency Unit',
+          description: '',
+          validations: frequencyPickListValidator()
+        },
       ]
     },
     {
@@ -320,7 +355,80 @@ const elkSRBTemplateValidationSchema = {
           file_duplicate_columns_validator: {}
         }
       ],
-      columns: []
+      columns: [
+        {
+          name: 'UTM Zone',
+          description: '',
+          validations: utmZonePickListValidator()
+        },
+        {
+          name: 'Easting',
+          description: '',
+          validations: basicNumericValidator()
+        },
+        {
+          name: 'Northing',
+          description: '',
+          validations: basicNumericValidator()
+        },
+        {
+          name: 'Datum',
+          description: '',
+          validations: datumPickListValidator()
+        },
+        {
+          name: 'Lat (DD)',
+          description: '',
+          validations: basicNumericValidator()
+        },
+        {
+          name: 'Long (DD)',
+          description: '',
+          validations: basicNumericValidator()
+        },
+        {name: "Adult Males", description: "", validators: basicNumericValidator()},
+        {name: "Adult Females", description: "", validators: basicNumericValidator()},
+        {name: "Adults - Unclassified Sex", description: "", validators: basicNumericValidator()},
+        {name: "Juvenile Males", description: "", validators: basicNumericValidator()},
+        {name: "Juvenile Females", description: "", validators: basicNumericValidator()},
+        {name: "Juveniles - Unclassified Sex", description: "", validators: basicNumericValidator()},
+        {name: "Unknown Age/Sex", description: "", validators: basicNumericValidator()},
+        {
+          name: 'SpeciesOccurrence Status',
+          description: '',
+          validations: speciesOccurrenceStatusPickListValidator()
+        },
+        {
+          name: 'Activity',
+          description: '',
+          validations: activityNonTargetedPickListValidator()
+        },
+        {
+          name: 'Activity Count',
+          description: '',
+          validations: basicNumericValidator()
+        },
+        {
+          name: 'Feature Type',
+          description: '',
+          validations: featureTypePickListValidator()
+        },
+        {
+          name: 'Feature Type Count',
+          description: '',
+          validations: basicNumericValidator()
+        },
+        {
+          name: 'Sign Type',
+          description: '',
+          validations: signTypePickListValidator()
+        },
+        {
+          name: 'Sign Count',
+          description: '',
+          validations: basicNumericValidator()
+        }
+      ]
     }
   ],
   validations: [
