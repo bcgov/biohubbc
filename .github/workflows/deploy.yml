@@ -160,7 +160,7 @@ jobs:
       # Why? The new pods will be deployed before the existing pods are terminated, and twice the resources will be needed
       # in that moment. If not enough resources are available to spin up the new pods, then they may fail to deploy.
       - name: Scale down app pods
-        run: oc get deploymentconfig --namespace af2668-dev --selector env-id=$PR_NUMBER,app-name=$APP_NAME -o name | awk '{print "oc scale --replicas=0 --ignore-not-found " $1}' | bash
+        run: oc get deploymentconfig --namespace af2668-dev --selector env-id=$PR_NUMBER,app-name=$APP_NAME -o name | awk '{print "oc scale --replicas=0 " $1}' | bash
 
       # Install app pipeline node modules
       # Note: This already caches node modules internally
@@ -221,7 +221,7 @@ jobs:
       # Why? The new pods will be deployed before the existing pods are terminated, and twice the resources will be needed
       # in that moment. If not enough resources are available to spin up the new pods, then they may fail to deploy.
       - name: Scale down database pods
-        run: oc get deploymentconfig --namespace af2668-dev --selector env-id=$PR_NUMBER,app-name=$APP_NAME -o name | awk '{print "oc scale --replicas=0 --ignore-not-found " $1}' | bash
+        run: oc get deploymentconfig --namespace af2668-dev --selector env-id=$PR_NUMBER,app-name=$APP_NAME -o name | awk '{print "oc scale --replicas=0 " $1}' | bash
 
       # Install database pipeline node modules
       # Note: This already caches node modules internally
@@ -336,7 +336,7 @@ jobs:
       # Why? The new pods will be deployed before the existing pods are terminated, and twice the resources will be needed
       # in that moment. If not enough resources are available to spin up the new pods, then they may fail to deploy.
       - name: Scale down api pods
-        run: oc get deploymentconfig --namespace af2668-dev --selector env-id=$PR_NUMBER,app-name=$APP_NAME -o name | awk '{print "oc scale --replicas=0 --ignore-not-found " $1}' | bash
+        run: oc get deploymentconfig --namespace af2668-dev --selector env-id=$PR_NUMBER,app-name=$APP_NAME -o name | awk '{print "oc scale --replicas=0 " $1}' | bash
 
       # Install api pipeline node modules
       # Note: This already caches node modules internally
