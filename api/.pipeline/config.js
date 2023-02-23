@@ -1,7 +1,5 @@
 'use strict';
 
-let process = require('process');
-
 let options = require('pipeline-cli').Util.parseArguments();
 
 // The root config for common values
@@ -122,7 +120,7 @@ const phases = {
     cpuLimit: '1000m',
     memoryRequest: '512Mi',
     memoryLimit: '3Gi',
-    replicas: '3',
+    replicas: '2',
     replicasMax: '5'
   },
   prod: {
@@ -150,8 +148,8 @@ const phases = {
     cpuLimit: '1000m',
     memoryRequest: '512Mi',
     memoryLimit: '3Gi',
-    replicas: '5',
-    replicasMax: '8'
+    replicas: '2',
+    replicasMax: '5'
   }
 };
 

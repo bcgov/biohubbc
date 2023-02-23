@@ -1,5 +1,6 @@
 'use strict';
 
+const process = require('process');
 const { dbDeploy } = require('../lib/db.deploy.js');
 const config = require('../config.js');
 
