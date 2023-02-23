@@ -32,7 +32,8 @@ jobs:
 
   # Scans the commit against past commits, and determines if any jobs are skippable (due to no changes in target files).
   # Note: this does not take into account the current branch and will check past workflows from any branch, so an
-  # additional check against the current branch is added to the `if` in the jobs below.
+  # additional check against the current branch is added to the `if` in the jobs below. This ensures that we only skip
+  # jobs if there are no changes AND the previous successful job was against the current branch.
   skipDuplicateActions:
     name: Check for duplicate actions
     runs-on: ubuntu-latest
@@ -159,7 +160,7 @@ jobs:
       # Why? The new pods will be deployed before the existing pods are terminated, and twice the resources will be needed
       # in that moment. If not enough resources are available to spin up the new pods, then they may fail to deploy.
       - name: Scale down app pods
-        run: oc get deploymentconfig --namespace af2668-dev --selector env-id=$PR_NUMBER,app-name=$APP_NAME -o name | awk '{print "oc scale --replicas=0  " $1}' | bash
+        run: oc get deploymentconfig --namespace af2668-dev --selector env-id=$PR_NUMBER,app-name=$APP_NAME -o name | awk '{print "oc scale --replicas=0 --ignore-not-found " $1}' | bash
 
       # Install app pipeline node modules
       # Note: This already caches node modules internally
@@ -220,7 +221,7 @@ jobs:
       # Why? The new pods will be deployed before the existing pods are terminated, and twice the resources will be needed
       # in that moment. If not enough resources are available to spin up the new pods, then they may fail to deploy.
       - name: Scale down database pods
-        run: oc get deploymentconfig --namespace af2668-dev --selector env-id=$PR_NUMBER,app-name=$APP_NAME -o name | awk '{print "oc scale --replicas=0  " $1}' | bash
+        run: oc get deploymentconfig --namespace af2668-dev --selector env-id=$PR_NUMBER,app-name=$APP_NAME -o name | awk '{print "oc scale --replicas=0 --ignore-not-found " $1}' | bash
 
       # Install database pipeline node modules
       # Note: This already caches node modules internally
@@ -335,7 +336,7 @@ jobs:
       # Why? The new pods will be deployed before the existing pods are terminated, and twice the resources will be needed
       # in that moment. If not enough resources are available to spin up the new pods, then they may fail to deploy.
       - name: Scale down api pods
-        run: oc get deploymentconfig --namespace af2668-dev --selector env-id=$PR_NUMBER,app-name=$APP_NAME -o name | awk '{print "oc scale --replicas=0  " $1}' | bash
+        run: oc get deploymentconfig --namespace af2668-dev --selector env-id=$PR_NUMBER,app-name=$APP_NAME -o name | awk '{print "oc scale --replicas=0 --ignore-not-found " $1}' | bash
 
       # Install api pipeline node modules
       # Note: This already caches node modules internally

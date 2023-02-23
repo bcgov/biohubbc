@@ -21,4 +21,4 @@ jobs:
         run: oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
 
       - name: Scale down
-        run: oc get deploymentconfig --namespace af2668-dev --selector env-id=$BUILD_ID -o name | awk '{print "oc scale --replicas=0  " $1}' | bash
+        run: oc get deploymentconfig --namespace af2668-dev --selector env-id=$BUILD_ID -o name | awk '{print "oc scale --replicas=0 --ignore-not-found " $1}' | bash
