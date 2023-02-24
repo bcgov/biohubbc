@@ -9,6 +9,7 @@ jobs:
   addOpenshiftURLComment:
     name: Add Openshift URL Comment
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - name: Add Comment
         uses: peter-evans/create-or-update-comment@v2

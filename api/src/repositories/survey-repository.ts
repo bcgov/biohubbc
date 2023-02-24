@@ -66,15 +66,37 @@ export interface IObservationSubmissionUpdateDetails {
   outputKey?: string;
 }
 
+export interface ISurveyProprietorModel {
+  first_nations_id: number;
+  proprietor_type_id: number;
+  survey_id: number;
+  rational: string;
+  proprietor_name: string;
+  disa_required: boolean;
+}
+
 const defaultLog = getLogger('repositories/survey-repository');
 
 export class SurveyRepository extends BaseRepository {
+  /**
+   * Deletes a survey and any associations for a given survey
+   *
+   * @param {number} surveyId
+   * @memberof SurveyRepository
+   */
   async deleteSurvey(surveyId: number): Promise<void> {
     const sqlStatement = SQL`call api_delete_survey(${surveyId})`;
 
     await this.connection.sql(sqlStatement);
   }
 
+  /**
+   * Get survey(s) for a given project id
+   *
+   * @param {number} projectId
+   * @returns {*} {Promise<{id: number}[]>}
+   * @memberof SurveyRepository
+   */
   async getSurveyIdsByProjectId(projectId: number): Promise<{ id: number }[]> {
     const sqlStatement = SQL`
       SELECT
@@ -98,6 +120,13 @@ export class SurveyRepository extends BaseRepository {
     return response.rows;
   }
 
+  /**
+   * Gets survey data for a given survey ID
+   *
+   * @param {number} surveyId
+   * @returns {*} {Promise<GetSurveyData>}
+   * @memberof SurveyRepository
+   */
   async getSurveyData(surveyId: number): Promise<GetSurveyData> {
     const sqlStatement = SQL`
       SELECT
@@ -122,6 +151,13 @@ export class SurveyRepository extends BaseRepository {
     return new GetSurveyData(result);
   }
 
+  /**
+   * Get species data for a given survey ID
+   *
+   * @param {number} surveyId
+   * @returns {*} {Promise<IGetSpeciesData[]>}
+   * @memberof SurveyRepository
+   */
   async getSpeciesData(surveyId: number): Promise<IGetSpeciesData[]> {
     const sqlStatement = SQL`
       SELECT
@@ -147,6 +183,12 @@ export class SurveyRepository extends BaseRepository {
     return result;
   }
 
+  /**
+   * Deletes a survey and any associations for a given survey
+   *
+   * @param {number} surveyId
+   * @memberof SurveyRepository
+   */
   async getSurveyPurposeAndMethodology(surveyId: number): Promise<GetSurveyPurposeAndMethodologyData> {
     const sqlStatement = SQL`
       SELECT
@@ -184,6 +226,13 @@ export class SurveyRepository extends BaseRepository {
     return new GetSurveyPurposeAndMethodologyData(result);
   }
 
+  /**
+   * Get Survey and Funding Source data for a given surveyId
+   *
+   * @param {number} surveyId
+   * @returns {*} Promise<GetSurveyFundingSources>
+   * @memberof SurveyRepository
+   */
   async getSurveyFundingSourcesData(surveyId: number): Promise<GetSurveyFundingSources> {
     const sqlStatement = SQL`
       SELECT
@@ -244,6 +293,32 @@ export class SurveyRepository extends BaseRepository {
     return new GetSurveyFundingSources(result);
   }
 
+  /**
+   * Get a Survey Proprietor for a given survey ID
+   *
+   * @param {number} surveyId
+   * @returns {*} {Promise<ISurveyProprietorModel>}
+   * @memberof SurveyRepository
+   */
+  async getSurveyProprietorDataForSecurityRequest(surveyId: number): Promise<ISurveyProprietorModel> {
+    const sqlStatement = SQL`
+      SELECT * 
+      FROM survey_proprietor as sp
+      WHERE survey_id = ${surveyId};
+    `;
+
+    const response = await this.connection.sql<ISurveyProprietorModel>(sqlStatement);
+
+    return (response && response.rows && response.rows?.[0]) || null;
+  }
+
+  /**
+   * Get Survey Proprietor data for view for a given survey id
+   *
+   * @param {number} surveyId
+   * @returns {*} Promise<GetSurveyProprietorData | null>
+   * @memberof SurveyRepository
+   */
   async getSurveyProprietorDataForView(surveyId: number): Promise<GetSurveyProprietorData | null> {
     const sqlStatement = SQL`
       SELECT
@@ -280,6 +355,13 @@ export class SurveyRepository extends BaseRepository {
     return new GetSurveyProprietorData(result);
   }
 
+  /**
+   * Get Survey location for a given survey ID
+   *
+   * @param {number} surveyId
+   * @returns {*} Promise<GetSurveyLocationDAta>
+   * @memberof SurveyRepository
+   */
   async getSurveyLocationData(surveyId: number): Promise<GetSurveyLocationData> {
     const sqlStatement = SQL`
       SELECT
@@ -297,6 +379,13 @@ export class SurveyRepository extends BaseRepository {
     return new GetSurveyLocationData(result);
   }
 
+  /**
+   * Get Occurrence submission id for a given survey ID
+   *
+   * @param {number} surveyId
+   * @returns {*} Promise<number>
+   * @memberof SurveyRepository
+   */
   async getOccurrenceSubmissionId(surveyId: number): Promise<number> {
     const sqlStatement = SQL`
       SELECT
@@ -320,6 +409,13 @@ export class SurveyRepository extends BaseRepository {
     return result;
   }
 
+  /**
+   * Gets the latest Survey occurrence submission or null for a given surveyId
+   *
+   * @param {number} surveyId
+   * @returns {*} Promise<IGetLastSurveyOccurrenceSubmission | null>
+   * @memberof SurveyRepository
+   */
   async getLatestSurveyOccurrenceSubmission(surveyId: number): Promise<IGetLatestSurveyOccurrenceSubmission | null> {
     const sqlStatement = SQL`
       SELECT
@@ -376,7 +472,7 @@ export class SurveyRepository extends BaseRepository {
    * SQL query to get the list of messages for an occurrence submission.
    *
    * @param {number} submissionId The ID of the submission
-   * @returns {*} Promise<IOccurrenceSubmissionMessagesResponse[]> Promsie resolving the array of submission messages
+   * @returns {*} Promise<IOccurrenceSubmissionMessagesResponse[]> Promise resolving the array of submission messages
    */
   async getOccurrenceSubmissionMessages(submissionId: number): Promise<IOccurrenceSubmissionMessagesResponse[]> {
     const sqlStatement = SQL`
@@ -427,6 +523,13 @@ export class SurveyRepository extends BaseRepository {
     return response.rows;
   }
 
+  /**
+   * Get Survey summary result ID for a given surveyId
+   *
+   * @param {number} surveyId
+   * @returns {*} Promise<number>
+   * @memberof SurveyRepository
+   */
   async getSummaryResultId(surveyId: number): Promise<number> {
     const sqlStatement = SQL`
       SELECT
@@ -451,6 +554,13 @@ export class SurveyRepository extends BaseRepository {
     return result;
   }
 
+  /**
+   * Get Survey attachments data for a given surveyId
+   *
+   * @param {number} surveyId
+   * @returns {*} Promise<GetAttachmentsData>
+   * @memberof SurveyRepository
+   */
   async getAttachmentsData(surveyId: number): Promise<GetAttachmentsData> {
     const sqlStatement = SQL`
       SELECT
@@ -467,6 +577,13 @@ export class SurveyRepository extends BaseRepository {
     return new GetAttachmentsData(result);
   }
 
+  /**
+   * Get Survey Report attachments data for a given surveyId
+   *
+   * @param {number} surveyId
+   * @returns {*} Promise<GetReportAttachmentsData>
+   * @memberof SurveyRepository
+   */
   async getReportAttachmentsData(surveyId: number): Promise<GetReportAttachmentsData> {
     const sqlStatement = SQL`
       SELECT
@@ -508,6 +625,14 @@ export class SurveyRepository extends BaseRepository {
     return new GetReportAttachmentsData(result);
   }
 
+  /**
+   * Inserts a new survey record and returns the new ID
+   *
+   * @param {number} projectId
+   * @param {PostSurveyObject} surveyData
+   * @returns {*} Promise<number>
+   * @memberof SurveyRepository
+   */
   async insertSurveyData(projectId: number, surveyData: PostSurveyObject): Promise<number> {
     const sqlStatement = SQL`
       INSERT INTO survey (
@@ -579,6 +704,14 @@ export class SurveyRepository extends BaseRepository {
     return result.id;
   }
 
+  /**
+   * Inserts a new focal species record and returns the new ID
+   *
+   * @param {number} focal_species_id
+   * @param {number} surveyId
+   * @returns {*} Promise<number>
+   * @memberof SurveyRepository
+   */
   async insertFocalSpecies(focal_species_id: number, surveyId: number): Promise<number> {
     const sqlStatement = SQL`
       INSERT INTO study_species (
@@ -605,6 +738,14 @@ export class SurveyRepository extends BaseRepository {
     return result.id;
   }
 
+  /**
+   * Inserts a new Ancillary species record and returns the new ID
+   *
+   * @param {number} ancillary_species_id
+   * @param {number} surveyId
+   * @returns {*} Promise<number>
+   * @memberof SurveyRepository
+   */
   async insertAncillarySpecies(ancillary_species_id: number, surveyId: number): Promise<number> {
     const sqlStatement = SQL`
       INSERT INTO study_species (
@@ -631,6 +772,14 @@ export class SurveyRepository extends BaseRepository {
     return result.id;
   }
 
+  /**
+   * Inserts a new vantage code record and returns the new ID
+   *
+   * @param {number} vantage_code_id
+   * @param {number} surveyId
+   * @returns {*} Promise<number>
+   * @memberof SurveyRepository
+   */
   async insertVantageCodes(vantage_code_id: number, surveyId: number): Promise<number> {
     const sqlStatement = SQL`
       INSERT INTO survey_vantage (
@@ -654,6 +803,14 @@ export class SurveyRepository extends BaseRepository {
     return result.id;
   }
 
+  /**
+   * Inserts a new Survey Proprietor record and returns the new ID
+   *
+   * @param {number} ancillary_species_id
+   * @param {number} surveyId
+   * @returns {*} Promise<number>
+   * @memberof SurveyRepository
+   */
   async insertSurveyProprietor(survey_proprietor: PostProprietorData, surveyId: number): Promise<number | undefined> {
     if (!survey_proprietor.survey_data_proprietary) {
       return;
@@ -692,6 +849,15 @@ export class SurveyRepository extends BaseRepository {
     return result.id;
   }
 
+  /**
+   * Associated Survey to a particular permit
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {number} permitNumber
+   * @returns {*} Promise<void>
+   * @memberof SurveyRepository
+   */
   async associateSurveyToPermit(projectId: number, surveyId: number, permitNumber: string): Promise<void> {
     const sqlStatement = SQL`
       UPDATE
@@ -714,6 +880,17 @@ export class SurveyRepository extends BaseRepository {
     }
   }
 
+  /**
+   * Inserts or updates survey permit
+   *
+   * @param {number} systemUserId
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {string} permitNumber
+   * @param {string} permitType
+   * @returns {*} Promise<void>
+   * @memberof SurveyRepository
+   */
   async insertSurveyPermit(
     systemUserId: number,
     projectId: number,
@@ -754,6 +931,14 @@ export class SurveyRepository extends BaseRepository {
     }
   }
 
+  /**
+   * Links a Survey and a Funding source together
+   *
+   * @param {number} funding_source_id
+   * @param {number} surveyId
+   * @returns {*} Promise<void>
+   * @memberof SurveyRepository
+   */
   async insertSurveyFundingSource(funding_source_id: number, surveyId: number) {
     const sqlStatement = SQL`
       INSERT INTO survey_funding_source (
@@ -767,6 +952,14 @@ export class SurveyRepository extends BaseRepository {
     await this.connection.query(sqlStatement.text, sqlStatement.values);
   }
 
+  /**
+   * Updates Survey details
+   *
+   * @param {number} surveyId
+   * @param {PutSurveyObject} surveyData
+   * @returns {*} Promise<void>
+   * @memberof SurveyRepository
+   */
   async updateSurveyDetailsData(surveyId: number, surveyData: PutSurveyObject) {
     const knex = getKnex();
 
@@ -838,6 +1031,13 @@ export class SurveyRepository extends BaseRepository {
     }
   }
 
+  /**
+   * Deletes Survey species data for a given survey ID
+   *
+   * @param {number} surveyId
+   * @returns {*} Promise<void>
+   * @memberof SurveyRepository
+   */
   async deleteSurveySpeciesData(surveyId: number) {
     const sqlStatement = SQL`
       DELETE
@@ -849,6 +1049,13 @@ export class SurveyRepository extends BaseRepository {
     await this.connection.sql(sqlStatement);
   }
 
+  /**
+   * Breaks permit survey link for a given survey ID
+   *
+   * @param {number} surveyId
+   * @returns {*} Promise<void>
+   * @memberof SurveyRepository
+   */
   async unassociatePermitFromSurvey(surveyId: number) {
     const sqlStatement = SQL`
       UPDATE
@@ -862,6 +1069,13 @@ export class SurveyRepository extends BaseRepository {
     await this.connection.sql(sqlStatement);
   }
 
+  /**
+   * Deletes Survey vantage codes for a given survey ID
+   *
+   * @param {number} surveyId
+   * @returns {*} Promise<void>
+   * @memberof SurveyRepository
+   */
   async deleteSurveyFundingSourcesData(surveyId: number) {
     const sqlStatement = SQL`
       DELETE
@@ -873,6 +1087,13 @@ export class SurveyRepository extends BaseRepository {
     await this.connection.sql(sqlStatement);
   }
 
+  /**
+   * Deletes Survey proprietor data for a given survey ID
+   *
+   * @param {number} surveyId
+   * @returns {*} Promise<void>
+   * @memberof SurveyRepository
+   */
   async deleteSurveyProprietorData(surveyId: number) {
     const sqlStatement = SQL`
       DELETE
@@ -884,6 +1105,13 @@ export class SurveyRepository extends BaseRepository {
     await this.connection.sql(sqlStatement);
   }
 
+  /**
+   * Deletes Survey vantage codes for a given survey ID
+   *
+   * @param {number} surveyId
+   * @returns {*} Promise<void>
+   * @memberof SurveyRepository
+   */
   async deleteSurveyVantageCodes(surveyId: number) {
     const sqlStatement = SQL`
       DELETE

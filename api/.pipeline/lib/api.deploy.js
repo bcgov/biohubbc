@@ -9,7 +9,7 @@ const path = require('path');
  * @param {*} settings
  * @returns
  */
-const apiDeploy = (settings) => {
+const apiDeploy = async (settings) => {
   const phases = settings.phases;
   const options = settings.options;
   const phase = options.env;
@@ -33,6 +33,7 @@ const apiDeploy = (settings) => {
         APP_HOST: phases[phase].appHost,
         BACKBONE_API_HOST: phases[phase].backboneApiHost,
         BACKBONE_INTAKE_PATH: phases[phase].backboneIntakePath,
+        BACKBONE_ARTIFACT_INTAKE_PATH: phases[phase].backboneArtifactIntakePath,
         BACKBONE_INTAKE_ENABLED: phases[phase].backboneIntakeEnabled,
         NODE_ENV: phases[phase].env || 'dev',
         ELASTICSEARCH_URL: phases[phase].elasticsearchURL,
@@ -46,7 +47,6 @@ const apiDeploy = (settings) => {
         KEYCLOAK_CLIENT_ID: phases[phase].sso.clientId,
         KEYCLOAK_REALM: phases[phase].sso.realm,
         KEYCLOAK_INTEGRATION_ID: phases[phase].sso.integrationId,
-        KEYCLOAK_ADMIN_HOST: phases[phase].sso.adminHost,
         KEYCLOAK_API_HOST: phases[phase].sso.apiHost,
         KEYCLOAK_ADMIN_USERNAME: phases[phase].sso.adminUserName,
         KEYCLOAK_SECRET: phases[phase].sso.keycloakSecret,
@@ -65,7 +65,7 @@ const apiDeploy = (settings) => {
   oc.applyRecommendedLabels(objects, phases[phase].name, phase, `${changeId}`, phases[phase].instance);
   oc.importImageStreams(objects, phases[phase].tag, phases.build.namespace, phases.build.tag);
 
-  oc.applyAndDeploy(objects, phases[phase].instance);
+  await oc.applyAndDeploy(objects, phases[phase].instance);
 };
 
 module.exports = { apiDeploy };

@@ -55,6 +55,17 @@ export class AttachmentService extends DBService {
   }
 
   /**
+   * Finds an array of project attachments having the given project ID and attachment IDs
+   * @param {number} projectId the ID of the project
+   * @param {number[]} attachmentIds the IDs of the attachments
+   * @return {Promise<IProjectAttachment[]>} The given project attachments
+   * @memberof AttachmentService
+   */
+  async getProjectAttachmentsByIds(projectId: number, attachmentIds: number[]): Promise<IProjectAttachment[]> {
+    return this.attachmentRepository.getProjectAttachmentsByIds(projectId, attachmentIds);
+  }
+
+  /**
    * Finds all authors belonging to the given project report attachment
    * @param {number} reportAttachmentId the ID of the report attachment
    * @return {Promise<IReportAttachmentAuthor[]>} Promise resolving all of the report authors
@@ -89,6 +100,20 @@ export class AttachmentService extends DBService {
   }
 
   /**
+   * Finds project report attachments having the given project ID and report attachment IDs
+   * @param {number} projectId the ID of the project
+   * @param {number[]} reportAttachmentIds the IDs of the report attachments
+   * @return {Promise<IProjectReportAttachment[]>} The given project report attachments
+   * @memberof AttachmentService
+   */
+  async getProjectReportAttachmentsByIds(
+    projectId: number,
+    reportAttachmentIds: number[]
+  ): Promise<IProjectReportAttachment[]> {
+    return this.attachmentRepository.getProjectReportAttachmentsByIds(projectId, reportAttachmentIds);
+  }
+
+  /**
    * Finds all of the survey attachments for the given survey ID.
    * @param {number} surveyId the ID of the survey
    * @return {Promise<ISurveyAttachment[]>} Promise resolving all survey attachments.
@@ -96,6 +121,17 @@ export class AttachmentService extends DBService {
    */
   async getSurveyAttachments(surveyId: number): Promise<ISurveyAttachment[]> {
     return this.attachmentRepository.getSurveyAttachments(surveyId);
+  }
+
+  /**
+   * Finds all of the survey attachments for the given survey ID and attachment IDs.
+   * @param {number} surveyId the ID of the survey
+   * @param {number[]} attachmentIds the IDs of the attachments to retreive
+   * @return {Promise<ISurveyAttachment[]>} The given survey attachments.
+   * @memberof AttachmentService
+   */
+  async getSurveyAttachmentsByIds(surveyId: number, attachmentIds: number[]): Promise<ISurveyAttachment[]> {
+    return this.attachmentRepository.getSurveyAttachmentsByIds(surveyId, attachmentIds);
   }
 
   /**
@@ -117,6 +153,20 @@ export class AttachmentService extends DBService {
    */
   async getSurveyReportAttachmentById(surveyId: number, reportAttachmentId: number): Promise<ISurveyReportAttachment> {
     return this.attachmentRepository.getSurveyReportAttachmentById(surveyId, reportAttachmentId);
+  }
+
+  /**
+   * Finds a survey report attachment having the given survey ID and attachment IDs
+   * @param {number} surveyId the ID of the survey
+   * @param {number[]} reportAttachmentIds the IDs of the survey report attachments
+   * @return {Promise<ISurveyReportAttachment[]>} The given survey attachments
+   * @memberof AttachmentService
+   */
+  async getSurveyReportAttachmentsByIds(
+    surveyId: number,
+    reportAttachmentIds: number[]
+  ): Promise<ISurveyReportAttachment[]> {
+    return this.attachmentRepository.getSurveyReportAttachmentsByIds(surveyId, reportAttachmentIds);
   }
 
   /**

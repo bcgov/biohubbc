@@ -142,10 +142,4 @@ const phases = {
   }
 };
 
-// This callback forces the node process to exit as failure.
-process.on('unhandledRejection', (reason, promise) => {
-  console.log('Unhandled Rejection at:', promise, 'reason:', reason);
-  process.exit(1);
-});
-
 module.exports = exports = { phases, options };

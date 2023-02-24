@@ -5,7 +5,6 @@ import { getDBConnection } from '../../../../../database/db';
 import { PutSurveyObject } from '../../../../../models/survey-update';
 import { geoJsonFeature } from '../../../../../openapi/schemas/geoJson';
 import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
-import { PlatformService } from '../../../../../services/platform-service';
 import { SurveyService } from '../../../../../services/survey-service';
 import { getLogger } from '../../../../../utils/logger';
 
@@ -275,7 +274,6 @@ PUT.apiDoc = {
 
 export function updateSurvey(): RequestHandler {
   return async (req, res) => {
-    const projectId = Number(req.params.projectId);
     const surveyId = Number(req.params.surveyId);
 
     const sanitizedPutSurveyData = new PutSurveyObject(req.body);
@@ -288,14 +286,6 @@ export function updateSurvey(): RequestHandler {
       const surveyService = new SurveyService(connection);
 
       await surveyService.updateSurvey(surveyId, sanitizedPutSurveyData);
-
-      try {
-        const platformService = new PlatformService(connection);
-        await platformService.submitDwCAMetadataPackage(projectId);
-      } catch (error) {
-        // Don't fail the rest of the endpoint if submitting metadata fails
-        defaultLog.error({ label: 'updateSurvey->submitDwCAMetadataPackage', message: 'error', error });
-      }
 
       await connection.commit();
 

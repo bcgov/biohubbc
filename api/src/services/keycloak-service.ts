@@ -53,7 +53,7 @@ export class KeycloakService {
   keycloakEnvironment: string;
 
   constructor() {
-    this.keycloakTokenHost = `${process.env.KEYCLOAK_ADMIN_HOST}/realms/${process.env.KEYCLOAK_REALM}/protocol/openid-connect/token`;
+    this.keycloakTokenHost = `${process.env.KEYCLOAK_HOST}/realms/${process.env.KEYCLOAK_REALM}/protocol/openid-connect/token`;
     this.keycloakApiHost = `${process.env.KEYCLOAK_API_HOST}`;
     this.keycloakIntegrationId = `${process.env.KEYCLOAK_INTEGRATION_ID}`;
     this.keycloakEnvironment = `${process.env.KEYCLOAK_ENVIRONMENT}`;
