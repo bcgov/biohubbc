@@ -99,12 +99,12 @@ const elkGeneralTemplateValidationSchema = {
         {
           name: 'Lat (DD)',
           description: '',
-          validations: []
+          validations: basicNumericValidator()
         },
         {
           name: 'Long (DD)',
           description: '',
-          validations: []
+          validations: basicNumericValidator()
         },
         {
           name: 'Species',

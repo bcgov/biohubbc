@@ -411,13 +411,41 @@ const elkSRBTemplateValidationSchema = {
           description: '',
           validations: basicNumericValidator()
         },
-        { name: 'Adult Males', description: '', validators: basicNumericValidator() },
-        { name: 'Adult Females', description: '', validators: basicNumericValidator() },
-        { name: 'Adults - Unclassified Sex', description: '', validators: basicNumericValidator() },
-        { name: 'Juvenile Males', description: '', validators: basicNumericValidator() },
-        { name: 'Juvenile Females', description: '', validators: basicNumericValidator() },
-        { name: 'Juveniles - Unclassified Sex', description: '', validators: basicNumericValidator() },
-        { name: 'Unknown Age/Sex', description: '', validators: basicNumericValidator() },
+        { 
+          name: 'Adult Males', 
+          description: '', 
+          validators: basicNumericValidator() 
+        },
+        { 
+          name: 'Adult Females', 
+          description: '', 
+          validators: basicNumericValidator() 
+        },
+        { 
+          name: 'Adults - Unclassified Sex', 
+          description: '', 
+          validators: basicNumericValidator() 
+        },
+        { 
+          name: 'Juvenile Males', 
+          description: '', 
+          validators: basicNumericValidator() 
+        },
+        { 
+          name: 'Juvenile Females', 
+          description: '', 
+          validators: basicNumericValidator() 
+        },
+        { 
+          name: 'Juveniles - Unclassified Sex', 
+          description: '', 
+          validators: basicNumericValidator() 
+        },
+        { 
+          name: 'Unknown Age/Sex', 
+          description: '', 
+          validators: basicNumericValidator() 
+        },
         {
           name: 'SpeciesOccurrence Status',
           description: '',
