@@ -2,31 +2,44 @@ import AdmZip from 'adm-zip';
 import axios from 'axios';
 import FormData from 'form-data';
 import { URL } from 'url';
+import { IDBConnection } from '../database/db';
 import { HTTP400 } from '../errors/http-error';
+import {
+  IProjectAttachment,
+  IProjectReportAttachment,
+  ISurveyAttachment,
+  ISurveyReportAttachment
+} from '../repositories/attachment-repository';
 import { ISurveyProprietorModel } from '../repositories/survey-repository';
 import { getFileFromS3 } from '../utils/file-utils';
 import { getLogger } from '../utils/logger';
+import { AttachmentService } from './attachment-service';
 import { DBService } from './db-service';
 import { EmlService } from './eml-service';
 import { HistoryPublishService } from './history-publish-service';
 import { KeycloakService } from './keycloak-service';
 import { SurveyService } from './survey-service';
 
+export interface IArchiveFile {
+  /**
+   * Raw file data
+   */
+  data: Buffer;
+  /**
+   * The name of the archive file.
+   */
+  fileName: string;
+  /**
+   * The mime type, should be `application/zip` or similar.
+   */
+  mimeType: string;
+}
+
 export interface IDwCADataset {
-  archiveFile: {
-    /**
-     * A Darwin Core Archive (DwCA) zip file.
-     */
-    data: Buffer;
-    /**
-     * The name of the archive file.
-     */
-    fileName: string;
-    /**
-     * The mime type, should be `application/zip` or similar.
-     */
-    mimeType: string;
-  };
+  /**
+   * A Darwin Core Archive (DwCA) zip file.
+   */
+  archiveFile: IArchiveFile;
   /**
    * A UUID that uniquely identifies this DwCA dataset.
    */
@@ -35,10 +48,49 @@ export interface IDwCADataset {
   securityRequest?: ISurveyProprietorModel;
 }
 
+export interface IArtifactMetadata {
+  file_type: string;
+  title: string | null;
+  description: string | null;
+}
+
+export interface IArtifact {
+  /**
+   * An artifact zip file.
+   */
+  archiveFile: IArchiveFile;
+  /**
+   * UUID that uniquely identifies the artifact
+   */
+  dataPackageId: string;
+
+  metadata: IArtifactMetadata & {
+    file_name: string;
+    file_size: string;
+  };
+}
+
+const defaultLog = getLogger('services/platform-repository');
+
 export class PlatformService extends DBService {
-  BACKBONE_INTAKE_ENABLED = process.env.BACKBONE_INTAKE_ENABLED === 'true' || false;
-  BACKBONE_API_HOST = process.env.BACKBONE_API_HOST;
-  BACKBONE_INTAKE_PATH = process.env.BACKBONE_INTAKE_PATH || '/api/dwc/submission/queue';
+  attachmentService: AttachmentService;
+  publishService: HistoryPublishService;
+  backboneIntakeEnabled: boolean;
+  backboneApiHost: string;
+  backboneIntakePath: string;
+  backboneArtifactIntakePath: string;
+
+  constructor(connection: IDBConnection) {
+    super(connection);
+
+    this.backboneIntakeEnabled = process.env.BACKBONE_INTAKE_ENABLED === 'true' || false;
+    this.backboneApiHost = process.env.BACKBONE_API_HOST || '';
+    this.backboneIntakePath = process.env.BACKBONE_INTAKE_PATH || '/api/dwc/submission/queue';
+    this.backboneArtifactIntakePath = process.env.BACKBONE_ARTIFACT_INTAKE_PATH || '/api/artifact/intake';
+
+    this.publishService = new HistoryPublishService(this.connection);
+    this.attachmentService = new AttachmentService(connection);
+  }
 
   /**
    * Submit a Darwin Core Archive (DwCA) data package, that only contains the project/survey metadata, to the BioHub
@@ -56,7 +108,7 @@ export class PlatformService extends DBService {
    */
   async submitDwCAMetadataPackage(projectId: number): Promise<{ queue_id: number } | undefined> {
     try {
-      if (!this.BACKBONE_INTAKE_ENABLED) {
+      if (!this.backboneIntakeEnabled) {
         return;
       }
 
@@ -95,7 +147,7 @@ export class PlatformService extends DBService {
    * @memberof PlatformService
    */
   async submitDwCADataPackage(projectId: number) {
-    if (!this.BACKBONE_INTAKE_ENABLED) {
+    if (!this.backboneIntakeEnabled) {
       return;
     }
 
@@ -149,7 +201,7 @@ export class PlatformService extends DBService {
       formData.append('security_request[disa_required]', `${dwcaDataset.securityRequest.disa_required}`);
     }
 
-    const backboneIntakeUrl = new URL(this.BACKBONE_INTAKE_PATH, this.BACKBONE_API_HOST).href;
+    const backboneIntakeUrl = new URL(this.backboneIntakePath, this.backboneApiHost).href;
 
     const { data } = await axios.post<{ queue_id: number }>(backboneIntakeUrl, formData.getBuffer(), {
       headers: {
@@ -169,11 +221,10 @@ export class PlatformService extends DBService {
    * @memberof PlatformService
    */
   async uploadSurveyDataToBioHub(projectId: number, surveyId: number): Promise<void> {
-    if (!this.BACKBONE_INTAKE_ENABLED) {
+    if (!this.backboneIntakeEnabled) {
       return;
     }
 
-    const publishRepo = new HistoryPublishService(this.connection);
     const surveyService = new SurveyService(this.connection);
     const surveyData = await surveyService.getLatestSurveyOccurrenceSubmission(surveyId);
     const securityRequest = await surveyService.getSurveyProprietorDataForSecurityRequest(surveyId);
@@ -212,15 +263,15 @@ export class PlatformService extends DBService {
     const queueResponse = await this._submitDwCADatasetToBioHubBackbone(dwCADataset);
 
     await Promise.all([
-      publishRepo.insertProjectMetadataPublishRecord({
+      this.publishService.insertProjectMetadataPublishRecord({
         project_id: projectId,
         queue_id: queueResponse.queue_id
       }),
-      publishRepo.insertSurveyMetadataPublishRecord({
+      this.publishService.insertSurveyMetadataPublishRecord({
         survey_id: surveyId,
         queue_id: queueResponse.queue_id
       }),
-      publishRepo.insertOccurrenceSubmissionPublishRecord({
+      this.publishService.insertOccurrenceSubmissionPublishRecord({
         occurrence_submission_id: surveyData.id,
         queue_id: queueResponse.queue_id
       })
@@ -258,5 +309,191 @@ export class PlatformService extends DBService {
       // Don't fail the rest of the endpoint if submitting metadata fails
       defaultLog.error({ label: 'platformService->submitAndPublishDwcAMetadata', message: 'error', error });
     }
+  }
+
+  /**
+   * Makes artifact objects from the given attachment records.
+   *
+   * @param {IAttachment[]} attachments The attachment records
+   * @param {string} dataPackageId The dataPackageId for the artifacts
+   * @returns {*} {Promise<IArtifact[]>} The artifact objects
+   *
+   * @memberof PlatformService
+   */
+  async _makeArtifactFromAttachment(data: {
+    dataPackageId: string;
+    attachment: IProjectAttachment | ISurveyAttachment | IProjectReportAttachment | ISurveyReportAttachment;
+    file_type: string;
+  }): Promise<IArtifact> {
+    const { dataPackageId, attachment, file_type } = data;
+    const s3File = await getFileFromS3(attachment.key);
+    const artifactZip = new AdmZip();
+    artifactZip.addFile(attachment.file_name, s3File.Body as Buffer);
+
+    return {
+      dataPackageId,
+      archiveFile: {
+        data: artifactZip.toBuffer(),
+        fileName: `${attachment.uuid}.zip`,
+        mimeType: 'application/zip'
+      },
+      metadata: {
+        file_name: attachment.file_name,
+        file_size: attachment.file_size,
+        file_type,
+        title: attachment.title,
+        description: attachment.description
+      }
+    };
+  }
+
+  /**
+   * Makes a request to the BioHub API to submit an artifact.
+   *
+   * @param {IArtifact} artifact The artifact to submit to BioHub
+   * @returns {*} {Promise<{artifact_id: number>}} The ID belonging to the artifact record in BioHub
+   *
+   * @memberof PlatformService
+   */
+  async _submitArtifactToBioHub(artifact: IArtifact): Promise<{ artifact_id: number }> {
+    defaultLog.debug({ label: '_submitArtifactToBioHub', metadata: artifact.metadata });
+
+    const keycloakService = new KeycloakService();
+
+    const token = await keycloakService.getKeycloakToken();
+
+    const formData = new FormData();
+
+    formData.append('media', artifact.archiveFile.data, {
+      filename: artifact.archiveFile.fileName,
+      contentType: artifact.archiveFile.mimeType
+    });
+
+    formData.append('data_package_id', artifact.dataPackageId);
+
+    Object.entries(artifact.metadata).forEach(([metadataKey, metadataValue]) => {
+      if (metadataValue !== undefined && metadataValue !== null) {
+        formData.append(`metadata[${metadataKey}]`, metadataValue);
+      }
+    });
+
+    const backboneArtifactIntakeUrl = new URL(this.backboneArtifactIntakePath, this.backboneApiHost).href;
+
+    const { data } = await axios.post<{ artifact_id: number }>(backboneArtifactIntakeUrl, formData.getBuffer(), {
+      headers: {
+        authorization: `Bearer ${token}`,
+        ...formData.getHeaders()
+      }
+    });
+
+    return data;
+  }
+
+  /**
+   * Uploads the given project attachments and report attachments to BioHub.
+   *
+   * @param {string} dataPackageId The dataPackageId for the artifact submission
+   * @param {number} projectId The ID of the project
+   * @param {number[]} attachmentIds The particular IDs of the attachments to submit to BioHub
+   * @param {number[]} reportAttachmentIds The particular IDs of the report attachments to submit to BioHub
+   * @returns {*} {Promise<{artifact_id: number}[]>} The IDs of all the artifact records in BioHub
+   *
+   * @memberof PlatformService
+   */
+  async uploadProjectAttachmentsToBioHub(
+    dataPackageId: string,
+    projectId: number,
+    attachmentIds: number[],
+    reportAttachmentIds: number[]
+  ): Promise<({ project_attachment_publish_id: number } | { project_report_publish_id: number })[]> {
+    const attachments = await this.attachmentService.getProjectAttachmentsByIds(projectId, attachmentIds);
+    const reportAttachments = await this.attachmentService.getProjectReportAttachmentsByIds(
+      projectId,
+      reportAttachmentIds
+    );
+
+    const attachmentArtifactPublishRecords = await Promise.all(
+      attachments.map(async (attachment) => {
+        const artifact = await this._makeArtifactFromAttachment({
+          dataPackageId,
+          attachment,
+          file_type: attachment.file_type || 'Other'
+        });
+        const { artifact_id } = await this._submitArtifactToBioHub(artifact);
+
+        return this.publishService.insertProjectAttachmentPublishRecord({
+          artifact_id,
+          project_attachment_id: attachment.id
+        });
+      })
+    );
+
+    const reportArtifactPublishRecords = await Promise.all(
+      reportAttachments.map(async (attachment) => {
+        const artifact = await this._makeArtifactFromAttachment({ dataPackageId, attachment, file_type: 'Report' });
+        const { artifact_id } = await this._submitArtifactToBioHub(artifact);
+
+        return this.publishService.insertProjectReportPublishRecord({
+          artifact_id,
+          project_report_attachment_id: attachment.id
+        });
+      })
+    );
+
+    return [...attachmentArtifactPublishRecords, ...reportArtifactPublishRecords];
+  }
+
+  /**
+   * Uploads the given survey attachments and report attachments to BioHub.
+   *
+   * @param {string} dataPackageId The dataPackageId for the artifact submission
+   * @param {number} surveyId The ID of the survey
+   * @param {number[]} attachmentIds The particular IDs of the attachments to submit to BioHub
+   * @param {number[]} reportAttachmentIds The particular IDs of the report attachments to submit to BioHub
+   * @returns {*} {Promise<{artifact_id: number}[]>} The IDs of all the artifact records in BioHub
+   *
+   * @memberof PlatformService
+   */
+  async uploadSurveyAttachmentsToBioHub(
+    dataPackageId: string,
+    surveyId: number,
+    attachmentIds: number[],
+    reportAttachmentIds: number[]
+  ): Promise<({ survey_attachment_publish_id: number } | { survey_report_publish_id: number })[]> {
+    const attachments = await this.attachmentService.getSurveyAttachmentsByIds(surveyId, attachmentIds);
+    const reportAttachments = await this.attachmentService.getSurveyReportAttachmentsByIds(
+      surveyId,
+      reportAttachmentIds
+    );
+
+    const attachmentArtifactPublishRecords = await Promise.all(
+      attachments.map(async (attachment) => {
+        const artifact = await this._makeArtifactFromAttachment({
+          dataPackageId,
+          attachment,
+          file_type: attachment.file_type || 'Other'
+        });
+        const { artifact_id } = await this._submitArtifactToBioHub(artifact);
+
+        return this.publishService.insertSurveyAttachmentPublishRecord({
+          artifact_id,
+          survey_attachment_id: attachment.id
+        });
+      })
+    );
+
+    const reportArtifactPublishRecords = await Promise.all(
+      reportAttachments.map(async (attachment) => {
+        const artifact = await this._makeArtifactFromAttachment({ dataPackageId, attachment, file_type: 'Report' });
+        const { artifact_id } = await this._submitArtifactToBioHub(artifact);
+
+        return this.publishService.insertSurveyReportPublishRecord({
+          artifact_id,
+          survey_report_attachment_id: attachment.id
+        });
+      })
+    );
+
+    return [...attachmentArtifactPublishRecords, ...reportArtifactPublishRecords];
   }
 }

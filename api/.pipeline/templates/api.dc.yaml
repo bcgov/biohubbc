@@ -30,6 +30,9 @@ parameters:
   - name: BACKBONE_INTAKE_PATH
     required: true
     description: API path for BioHub Platform Backbone DwCA submission intake endpoint. Example "/api/path/to/intake".
+  - name: BACKBONE_ARTIFACT_INTAKE_PATH
+    required: true
+    description: API path for BioHub Platform Backbone artifact submission intake endpoint. Example "/api/path/to/artifact/intake".
   - name: BACKBONE_INTAKE_ENABLED
     required: true
     description: Controls whether or not SIMS will submit DwCA datasets to the BioHub Platform Backbone. Set to "true" to enable it, will be disabled by default otherwise.
@@ -69,9 +72,6 @@ parameters:
     required: true
   - name: KEYCLOAK_CLIENT_ID
     description: Client Id for application
-    required: true
-  - name: KEYCLOAK_ADMIN_HOST
-    description: Keycloak admin host
     required: true
   - name: KEYCLOAK_ADMIN_USERNAME
     description: keycloak host admin username
@@ -184,6 +184,8 @@ objects:
                   value: ${BACKBONE_API_HOST}
                 - name: BACKBONE_INTAKE_PATH
                   value: ${BACKBONE_INTAKE_PATH}
+                - name: BACKBONE_ARTIFACT_INTAKE_PATH
+                  value: ${BACKBONE_ARTIFACT_INTAKE_PATH}
                 - name: BACKBONE_INTAKE_ENABLED
                   value: ${BACKBONE_INTAKE_ENABLED}
                 - name: ENABLE_FILE_VIRUS_SCAN
@@ -221,8 +223,6 @@ objects:
                   value: ${KEYCLOAK_CLIENT_ID}
                 - name: KEYCLOAK_INTEGRATION_ID
                   value: ${KEYCLOAK_INTEGRATION_ID}
-                - name: KEYCLOAK_ADMIN_HOST
-                  value: ${KEYCLOAK_ADMIN_HOST}
                 - name: KEYCLOAK_ADMIN_USERNAME
                   value: ${KEYCLOAK_ADMIN_USERNAME}
                 - name: KEYCLOAK_ADMIN_PASSWORD

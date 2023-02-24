@@ -7,11 +7,19 @@ import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { HTTP400 } from '../errors/http-error';
+import {
+  IProjectAttachment,
+  IProjectReportAttachment,
+  ISurveyAttachment,
+  ISurveyReportAttachment
+} from '../repositories/attachment-repository';
 import { HistoryPublishRepository } from '../repositories/history-publish-repository';
 import { IGetLatestSurveyOccurrenceSubmission } from '../repositories/survey-repository';
 import * as file_utils from '../utils/file-utils';
 import { getMockDBConnection } from '../__mocks__/db';
+import { AttachmentService } from './attachment-service';
 import { EmlService } from './eml-service';
+import { HistoryPublishService } from './history-publish-service';
 import { KeycloakService } from './keycloak-service';
 import { IDwCADataset, PlatformService } from './platform-service';
 import { SurveyService } from './survey-service';
@@ -120,6 +128,7 @@ describe('PlatformService', () => {
 
       process.env.BACKBONE_API_HOST = 'http://backbone.com';
       process.env.BACKBONE_INTAKE_PATH = 'api/intake';
+      process.env.BACKBONE_ARTIFACT_INTAKE_PATH = 'api/artifact/intake';
       process.env.BACKBONE_INTAKE_ENABLED = 'true';
 
       const keycloakServiceStub = sinon.stub(KeycloakService.prototype, 'getKeycloakToken').resolves('token');
@@ -301,6 +310,392 @@ describe('PlatformService', () => {
       expect(insertProject).to.have.been.calledOnce;
       expect(insertSurvey).to.have.been.calledOnce;
       expect(insertOccurrence).to.have.been.calledOnce;
+    });
+  });
+
+  describe('_makeArtifactFromAttachment', () => {
+    it('should make an artifact from the given data', async () => {
+      const mockDBConnection = getMockDBConnection();
+
+      const platformService = new PlatformService(mockDBConnection);
+
+      const testData = {
+        dataPackageId: 'aaaa',
+        attachment: {
+          id: 1,
+          uuid: 'test-uuid',
+          file_name: 'test-filename.txt',
+          file_size: '20',
+          title: 'test-title',
+          description: 'test-description',
+          key: 'test-key'
+        } as IProjectAttachment,
+        file_type: 'Test File'
+      };
+
+      const testArtifactZip = new AdmZip();
+      testArtifactZip.addFile('test-filename.txt', Buffer.from('hello-world'));
+
+      const s3FileStub = sinon.stub(file_utils, 'getFileFromS3').resolves({
+        Body: 'hello-world'
+      });
+
+      const artifact = await platformService._makeArtifactFromAttachment(testData);
+
+      expect(s3FileStub).to.be.calledWith('test-key');
+      expect(artifact).to.eql({
+        dataPackageId: 'aaaa',
+        archiveFile: {
+          data: testArtifactZip.toBuffer(),
+          fileName: `test-uuid.zip`,
+          mimeType: 'application/zip'
+        },
+        metadata: {
+          file_name: 'test-filename.txt',
+          file_size: '20',
+          file_type: 'Test File',
+          title: 'test-title',
+          description: 'test-description'
+        }
+      });
+    });
+  });
+
+  describe('_submitArtifactToBioHub', () => {
+    beforeEach(() => {
+      process.env.BACKBONE_API_HOST = 'http://backbone-host.dev/';
+      process.env.BACKBONE_INTAKE_PATH = 'api/intake';
+      process.env.BACKBONE_ARTIFACT_INTAKE_PATH = 'api/artifact/intake';
+      process.env.BACKBONE_INTAKE_ENABLED = 'true';
+    });
+
+    it('should submit an artifact to biohub successfully', async () => {
+      const mockDBConnection = getMockDBConnection();
+      const platformService = new PlatformService(mockDBConnection);
+
+      const keycloakServiceStub = sinon.stub(KeycloakService.prototype, 'getKeycloakToken').resolves('token');
+
+      const axiosStub = sinon.stub(axios, 'post').resolves({
+        data: {
+          artifact_id: 222
+        }
+      });
+
+      const testArtifactZip = new AdmZip();
+      testArtifactZip.addFile('test-filename.txt', Buffer.from('hello-world'));
+
+      const testArtifact = {
+        dataPackageId: 'aaaa',
+        archiveFile: {
+          data: testArtifactZip.toBuffer(),
+          fileName: `test-uuid.zip`,
+          mimeType: 'application/zip'
+        },
+        metadata: {
+          file_name: 'test-filename.txt',
+          file_size: '20',
+          file_type: 'Test File',
+          title: 'test-title',
+          description: 'test-description'
+        }
+      };
+
+      await platformService._submitArtifactToBioHub(testArtifact);
+
+      expect(keycloakServiceStub).to.have.been.calledOnce;
+
+      expect(axiosStub).to.have.been.calledOnceWith(
+        'http://backbone-host.dev/api/artifact/intake',
+        sinon.match.instanceOf(Buffer),
+        {
+          headers: {
+            authorization: `Bearer token`,
+            'content-type': sinon.match(new RegExp(/^multipart\/form-data; boundary=[-]*[0-9]*$/))
+          }
+        }
+      );
+    });
+  });
+
+  describe('uploadProjectAttachmentsToBioHub', () => {
+    beforeEach(() => {
+      sinon.restore();
+    });
+
+    it('should upload attachments to biohub successfully', async () => {
+      const mockDBConnection = getMockDBConnection();
+      const platformService = new PlatformService(mockDBConnection);
+
+      const attachmentsStub = sinon.stub(AttachmentService.prototype, 'getProjectAttachmentsByIds').resolves([
+        {
+          id: 1,
+          uuid: 'test-uuid1',
+          file_name: 'test-filename1.txt',
+          file_size: '20',
+          title: 'test-title1',
+          description: 'test-description1',
+          key: 'test-key1'
+        },
+        {
+          id: 2,
+          uuid: 'test-uuid2',
+          file_name: 'test-filename2.txt',
+          file_type: 'Test File',
+          file_size: '20',
+          title: 'test-title2',
+          description: 'test-description2',
+          key: 'test-key2'
+        }
+      ] as IProjectAttachment[]);
+
+      const reportAttachmentsStub = sinon
+        .stub(AttachmentService.prototype, 'getProjectReportAttachmentsByIds')
+        .resolves([
+          {
+            id: 3,
+            uuid: 'test-uuid3',
+            file_name: 'test-filename3.txt',
+            file_size: '20',
+            title: 'test-title3',
+            description: 'test-description3',
+            key: 'test-key3'
+          }
+        ] as IProjectReportAttachment[]);
+
+      sinon
+        .stub(file_utils, 'getFileFromS3')
+        .onCall(0)
+        .resolves({ Body: Buffer.from('content1') })
+        .onCall(1)
+        .resolves({ Body: Buffer.from('content2') })
+        .onCall(2)
+        .resolves({ Body: Buffer.from('content3') });
+
+      const submitArtifactStub = sinon
+        .stub(platformService, '_submitArtifactToBioHub')
+        .onCall(0)
+        .resolves({ artifact_id: 1 })
+        .onCall(1)
+        .resolves({ artifact_id: 2 })
+        .onCall(2)
+        .resolves({ artifact_id: 3 });
+
+      const attachmentHistoryStub = sinon
+        .stub(HistoryPublishService.prototype, 'insertProjectAttachmentPublishRecord')
+        .onCall(0)
+        .resolves({ project_attachment_publish_id: 1 })
+        .onCall(1)
+        .resolves({ project_attachment_publish_id: 2 });
+
+      const reportHistoryStub = sinon
+        .stub(HistoryPublishService.prototype, 'insertProjectReportPublishRecord')
+        .onCall(0)
+        .resolves({ project_report_publish_id: 1 })
+        .onCall(1)
+        .resolves({ project_report_publish_id: 2 });
+
+      const response = await platformService.uploadProjectAttachmentsToBioHub('cccc', 1, [1, 2], [3]);
+
+      expect(attachmentsStub).to.be.calledWith(1, [1, 2]);
+      expect(reportAttachmentsStub).to.be.calledWith(1, [3]);
+
+      expect(submitArtifactStub).to.be.calledWith({
+        dataPackageId: 'cccc',
+        archiveFile: {
+          data: sinon.match.any,
+          fileName: `test-uuid1.zip`,
+          mimeType: 'application/zip'
+        },
+        metadata: {
+          file_name: 'test-filename1.txt',
+          file_size: '20',
+          file_type: 'Other',
+          title: 'test-title1',
+          description: 'test-description1'
+        }
+      });
+
+      expect(submitArtifactStub).to.be.calledWith({
+        dataPackageId: 'cccc',
+        archiveFile: {
+          data: sinon.match.any,
+          fileName: `test-uuid2.zip`,
+          mimeType: 'application/zip'
+        },
+        metadata: {
+          file_name: 'test-filename2.txt',
+          file_size: '20',
+          file_type: 'Test File',
+          title: 'test-title2',
+          description: 'test-description2'
+        }
+      });
+
+      expect(submitArtifactStub).to.be.calledWith({
+        dataPackageId: 'cccc',
+        archiveFile: {
+          data: sinon.match.any,
+          fileName: `test-uuid3.zip`,
+          mimeType: 'application/zip'
+        },
+        metadata: {
+          file_name: 'test-filename3.txt',
+          file_size: '20',
+          file_type: 'Report',
+          title: 'test-title3',
+          description: 'test-description3'
+        }
+      });
+
+      expect(attachmentHistoryStub).to.be.calledTwice;
+      expect(reportHistoryStub).to.be.calledOnce;
+
+      expect(response).to.eql([
+        { project_attachment_publish_id: 1 },
+        { project_attachment_publish_id: 2 },
+        { project_report_publish_id: 1 }
+      ]);
+    });
+  });
+
+  describe('uploadSurveyAttachmentsToBioHub', () => {
+    beforeEach(() => {
+      sinon.restore();
+    });
+
+    it('should upload survey attachments to biohub successfully', async () => {
+      const mockDBConnection = getMockDBConnection();
+      const platformService = new PlatformService(mockDBConnection);
+
+      const attachmentsStub = sinon.stub(AttachmentService.prototype, 'getSurveyAttachmentsByIds').resolves([
+        {
+          id: 1,
+          uuid: 'test-uuid1',
+          file_name: 'test-filename1.txt',
+          file_size: '20',
+          title: 'test-title1',
+          description: 'test-description1',
+          key: 'test-key1'
+        },
+        {
+          id: 2,
+          uuid: 'test-uuid2',
+          file_name: 'test-filename2.txt',
+          file_type: 'Test File',
+          file_size: '20',
+          title: 'test-title2',
+          description: 'test-description2',
+          key: 'test-key2'
+        }
+      ] as ISurveyAttachment[]);
+
+      const reportAttachmentsStub = sinon
+        .stub(AttachmentService.prototype, 'getSurveyReportAttachmentsByIds')
+        .resolves([
+          {
+            id: 3,
+            uuid: 'test-uuid3',
+            file_name: 'test-filename3.txt',
+            file_size: '20',
+            title: 'test-title3',
+            description: 'test-description3',
+            key: 'test-key3'
+          }
+        ] as ISurveyReportAttachment[]);
+
+      sinon
+        .stub(file_utils, 'getFileFromS3')
+        .onCall(0)
+        .resolves({ Body: Buffer.from('content1') })
+        .onCall(1)
+        .resolves({ Body: Buffer.from('content2') })
+        .onCall(2)
+        .resolves({ Body: Buffer.from('content3') });
+
+      const submitArtifactStub = sinon
+        .stub(platformService, '_submitArtifactToBioHub')
+        .onCall(0)
+        .resolves({ artifact_id: 1 })
+        .onCall(1)
+        .resolves({ artifact_id: 2 })
+        .onCall(2)
+        .resolves({ artifact_id: 3 });
+
+      const attachmentHistoryStub = sinon
+        .stub(HistoryPublishService.prototype, 'insertSurveyAttachmentPublishRecord')
+        .onCall(0)
+        .resolves({ survey_attachment_publish_id: 1 })
+        .onCall(1)
+        .resolves({ survey_attachment_publish_id: 2 });
+
+      const reportHistoryStub = sinon
+        .stub(HistoryPublishService.prototype, 'insertSurveyReportPublishRecord')
+        .onCall(0)
+        .resolves({ survey_report_publish_id: 1 })
+        .onCall(1)
+        .resolves({ survey_report_publish_id: 2 });
+
+      const response = await platformService.uploadSurveyAttachmentsToBioHub('cccc', 1, [1, 2], [3]);
+
+      expect(attachmentsStub).to.be.calledWith(1, [1, 2]);
+      expect(reportAttachmentsStub).to.be.calledWith(1, [3]);
+
+      expect(submitArtifactStub).to.be.calledWith({
+        dataPackageId: 'cccc',
+        archiveFile: {
+          data: sinon.match.any,
+          fileName: `test-uuid1.zip`,
+          mimeType: 'application/zip'
+        },
+        metadata: {
+          file_name: 'test-filename1.txt',
+          file_size: '20',
+          file_type: 'Other',
+          title: 'test-title1',
+          description: 'test-description1'
+        }
+      });
+
+      expect(submitArtifactStub).to.be.calledWith({
+        dataPackageId: 'cccc',
+        archiveFile: {
+          data: sinon.match.any,
+          fileName: `test-uuid2.zip`,
+          mimeType: 'application/zip'
+        },
+        metadata: {
+          file_name: 'test-filename2.txt',
+          file_size: '20',
+          file_type: 'Test File',
+          title: 'test-title2',
+          description: 'test-description2'
+        }
+      });
+
+      expect(submitArtifactStub).to.be.calledWith({
+        dataPackageId: 'cccc',
+        archiveFile: {
+          data: sinon.match.any,
+          fileName: `test-uuid3.zip`,
+          mimeType: 'application/zip'
+        },
+        metadata: {
+          file_name: 'test-filename3.txt',
+          file_size: '20',
+          file_type: 'Report',
+          title: 'test-title3',
+          description: 'test-description3'
+        }
+      });
+
+      expect(attachmentHistoryStub).to.be.calledTwice;
+      expect(reportHistoryStub).to.be.calledOnce;
+
+      expect(response).to.eql([
+        { survey_attachment_publish_id: 1 },
+        { survey_attachment_publish_id: 2 },
+        { survey_report_publish_id: 1 }
+      ]);
     });
   });
 });

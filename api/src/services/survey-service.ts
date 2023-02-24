@@ -518,8 +518,8 @@ export class SurveyService extends DBService {
 
     const surveyData = await this.getSurveyById(surveyId);
 
-    //Update Eml to biohub and publish record
-    await this.platformService.submitAndPublishDwcAMetadata(surveyData.survey_details.project_id, surveyId);
+    // Update Eml to biohub and publish record
+    return this.platformService.submitAndPublishDwcAMetadata(surveyData.survey_details.project_id, surveyId);
   }
 
   /**

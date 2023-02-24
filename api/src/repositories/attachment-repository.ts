@@ -1,9 +1,12 @@
 import { QueryResult } from 'pg';
 import SQL from 'sql-template-strings';
+import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { PostReportAttachmentMetadata, PutReportAttachmentMetadata } from '../models/project-survey-attachments';
 import { getLogger } from '../utils/logger';
 import { BaseRepository } from './base-repository';
+
+export type IAttachment = ISurveyAttachment | ISurveyReportAttachment | IProjectAttachment | IProjectReportAttachment;
 
 export type ISurveyAttachment = IProjectAttachment;
 
@@ -17,12 +20,16 @@ export interface IProjectAttachment {
   create_date: string;
   update_date: string;
   file_size: string;
+  uuid: string;
+  title: string | null;
+  description: string | null;
   key: string;
   revision_count: number;
 }
 
 export interface IProjectReportAttachment {
   id: number;
+  uuid: string;
   file_name: string;
   create_user: number;
   title: string;
@@ -66,8 +73,11 @@ export class AttachmentRepository extends BaseRepository {
     const sqlStatement = SQL`
       SELECT
         project_attachment_id AS id,
+        uuid,
         file_name,
         file_type,
+        title,
+        description,
         create_user,
         update_date,
         create_date,
@@ -105,8 +115,11 @@ export class AttachmentRepository extends BaseRepository {
     const sqlStatement = SQL`
       SELECT
         project_attachment_id AS id,
+        uuid,
         file_name,
         file_type,
+        title,
+        description,
         create_user,
         update_date,
         create_date,
@@ -133,6 +146,42 @@ export class AttachmentRepository extends BaseRepository {
   }
 
   /**
+   * Query to get all project attachment by the given attachment IDs
+   * @param {number} projectId The ID of the project
+   * @param {number[]} attachmentIds The ID of the attachment
+   * @return {Promise<IProjectAttachment[]>} The project attachment having the given IDs.
+   * @memberof AttachmentRepository
+   */
+  async getProjectAttachmentsByIds(projectId: number, attachmentIds: number[]): Promise<IProjectAttachment[]> {
+    defaultLog.debug({ label: 'getProjectAttachmentsByIds' });
+
+    const knex = getKnex();
+
+    const queryBuilder = knex
+      .queryBuilder()
+      .select([
+        'project_attachment_id AS id',
+        'uuid',
+        'file_name',
+        'file_type',
+        'title',
+        'description',
+        'create_user',
+        'update_date',
+        'create_date',
+        'file_size',
+        'key'
+      ])
+      .from('project_attachment')
+      .whereIn('project_attachment_id', attachmentIds)
+      .andWhere('project_id', projectId);
+
+    const response = await this.connection.knex<IProjectAttachment>(queryBuilder);
+
+    return response.rows;
+  }
+
+  /**
    * Query to return all project report attachments belonging to the given project.
    * @param {number} projectId the ID of the project
    * @return {Promise<IProjectReportAttachment[]>} Promise resolving all of the attachments for the
@@ -145,6 +194,7 @@ export class AttachmentRepository extends BaseRepository {
     const sqlStatement = SQL`
       SELECT
         project_report_attachment_id as id,
+        uuid,
         file_name,
         create_user,
         title,
@@ -192,6 +242,7 @@ export class AttachmentRepository extends BaseRepository {
     const sqlStatement = SQL`
       SELECT
         project_report_attachment_id as id,
+        uuid,
         file_name,
         title,
         description,
@@ -225,6 +276,49 @@ export class AttachmentRepository extends BaseRepository {
   }
 
   /**
+   * Query to return the report attachments having the given IDs and belonging to the given project.
+   * @param {number} projectId the ID of the project
+   * @param {number[]} reportAttachmentIds the IDs of the report attachments
+   * @return {Promise<IProjectReportAttachment[]>} Promise resolving the report attachment
+   * @memberof AttachmentRepository
+   */
+  async getProjectReportAttachmentsByIds(
+    projectId: number,
+    reportAttachmentIds: number[]
+  ): Promise<IProjectReportAttachment[]> {
+    defaultLog.debug({ label: 'getProjectReportAttachmentsByIds' });
+
+    const knex = getKnex();
+    const queryBuilder = knex
+      .queryBuilder()
+      .select([
+        'project_report_attachment_id as id',
+        'uuid',
+        'file_name',
+        'title',
+        'description',
+        knex.raw('year::int as year_published'),
+        knex.raw(`
+          CASE
+            WHEN update_date IS NULL
+            THEN create_date::text
+            ELSE update_date::text
+          END AS last_modified
+        `),
+        'file_size',
+        'key',
+        'revision_count'
+      ])
+      .from('project_report_attachment')
+      .whereIn('project_report_attachment_id', reportAttachmentIds)
+      .andWhere('project_id', projectId);
+
+    const response = await this.connection.knex<IProjectReportAttachment>(queryBuilder);
+
+    return response.rows;
+  }
+
+  /**
    * SQL query to get survey attachments for a single project.
    *
    * @param {number} surveyId The survey ID
@@ -237,8 +331,11 @@ export class AttachmentRepository extends BaseRepository {
     const sqlStatement = SQL`
       SELECT
         survey_attachment_id as id,
+        uuid,
         file_name,
         file_type,
+        title,
+        description,
         create_date,
         update_date,
         create_date,
@@ -263,6 +360,42 @@ export class AttachmentRepository extends BaseRepository {
   }
 
   /**
+   * SQL query to get all survey attachments for a single project with the given surveyAttachmentIds
+   *
+   * @param {number} surveyId The survey ID
+   * @param {number[]} attachmentIds The IDs of the survey attachments
+   * @return {Promise<IProjectAttachment[]>} All survey attachments having the given IDs
+   * @memberof AttachmentRepository
+   */
+  async getSurveyAttachmentsByIds(surveyId: number, attachmentIds: number[]): Promise<ISurveyAttachment[]> {
+    defaultLog.debug({ label: 'getSurveyAttachmentsByIds' });
+
+    const knex = getKnex();
+    const queryBuilder = knex
+      .queryBuilder()
+      .select([
+        'survey_attachment_id as id',
+        'uuid',
+        'file_name',
+        'file_type',
+        'title',
+        'description',
+        'create_date',
+        'update_date',
+        'create_date',
+        'file_size',
+        'key'
+      ])
+      .from('survey_attachment')
+      .whereIn('survey_attachment_id', attachmentIds)
+      .andWhere('survey_id', surveyId);
+
+    const response = await this.connection.knex<ISurveyAttachment>(queryBuilder);
+
+    return response.rows;
+  }
+
+  /**
    * Query to return all survey report attachments belonging to the given survey.
    * @param {number} surveyId the ID of the survey
    * @return {Promise<ISurveyReportAttachment[]>} Promise resolving all of the attachments for the
@@ -275,6 +408,7 @@ export class AttachmentRepository extends BaseRepository {
     const sqlStatement = SQL`
       SELECT
         survey_report_attachment_id as id,
+        uuid,
         file_name,
         create_user,
         title,
@@ -319,6 +453,7 @@ export class AttachmentRepository extends BaseRepository {
     const sqlStatement = SQL`
       SELECT
         survey_report_attachment_id as id,
+        uuid,
         file_name,
         title,
         description,
@@ -349,6 +484,49 @@ export class AttachmentRepository extends BaseRepository {
     }
 
     return response.rows[0];
+  }
+
+  /**
+   * Query to return the report attachment having the given IDs and belonging to the given survey.
+   * @param {number} surveyId the ID of the survey
+   * @param {number[]} reportAttachmentIds the IDs of the report attachments
+   * @return {Promise<ISurveyReportAttachment[]>} The survey report attachments having the given IDs
+   * @memberof AttachmentRepository
+   */
+  async getSurveyReportAttachmentsByIds(
+    surveyId: number,
+    reportAttachmentIds: number[]
+  ): Promise<ISurveyReportAttachment[]> {
+    defaultLog.debug({ label: 'getSurveyReportAttachmentsByIds' });
+
+    const knex = getKnex();
+    const queryBuilder = knex
+      .queryBuilder()
+      .select([
+        'survey_report_attachment_id as id',
+        'uuid',
+        'file_name',
+        'title',
+        'description',
+        knex.raw('year::int as year_published'),
+        knex.raw(`
+          CASE
+            WHEN update_date IS NULL
+            THEN create_date::text
+            ELSE update_date::text
+          END AS last_modified
+        `),
+        'file_size',
+        'key',
+        'revision_count'
+      ])
+      .from('survey_report_attachment')
+      .whereIn('survey_report_attachment_id', reportAttachmentIds)
+      .andWhere('survey_id', surveyId);
+
+    const response = await this.connection.knex<ISurveyReportAttachment>(queryBuilder);
+
+    return response.rows;
   }
 
   /**
@@ -503,7 +681,10 @@ export class AttachmentRepository extends BaseRepository {
     const sqlStatement = SQL`
     SELECT
       project_attachment_id as id,
+      uuid,
       file_name,
+      title,
+      description,
       update_date,
       create_date,
       file_size
@@ -674,7 +855,10 @@ export class AttachmentRepository extends BaseRepository {
     const sqlStatement = SQL`
       SELECT
         project_report_attachment_id as id,
+        uuid,
         file_name,
+        title,
+        description,
         update_date,
         create_date,
         file_size
@@ -930,7 +1114,10 @@ export class AttachmentRepository extends BaseRepository {
     const sqlStatement = SQL`
       SELECT
         survey_report_attachment_id as id,
+        uuid,
         file_name,
+        title,
+        description,
         update_date,
         create_date,
         file_size
@@ -1143,7 +1330,10 @@ export class AttachmentRepository extends BaseRepository {
     const sqlStatement = SQL`
       SELECT
         survey_attachment_id as id,
+        uuid,
         file_name,
+        title,
+        description,
         update_date,
         create_date,
         file_size
