@@ -499,6 +499,14 @@ export class AttachmentRepository extends BaseRepository {
     return response.rows[0];
   }
 
+  /**
+   * Get Project Atachment by filename
+   *
+   * @param {number} projectId
+   * @param {string} fileName
+   * @return {*}  {Promise<QueryResult>}
+   * @memberof AttachmentRepository
+   */
   async getProjectAttachmentByFileName(projectId: number, fileName: string): Promise<QueryResult> {
     const sqlStatement = SQL`
     SELECT
