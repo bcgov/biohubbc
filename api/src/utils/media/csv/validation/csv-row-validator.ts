@@ -93,7 +93,7 @@ export const getCodeValueFieldsValidator = (config?: ColumnCodeValidatorConfig):
         // cell is empty, use the getRequiredFieldsValidator to assert required fields
         return csvWorksheet;
       }
-      
+
       // compare allowed code values as lowercase strings
       const allowedCodeValuesLowerCase: (string | number)[] = [];
       const allowedCodeValues = config.column_code_validator.allowed_code_values.map((allowedCode) => {
