@@ -69,6 +69,9 @@ export interface IArtifact {
     file_size: string;
   };
 }
+
+const defaultLog = getLogger('services/platform-repository');
+
 export class PlatformService extends DBService {
   attachmentService: AttachmentService;
   publishService: HistoryPublishService;
@@ -353,6 +356,8 @@ export class PlatformService extends DBService {
    * @memberof PlatformService
    */
   async _submitArtifactToBioHub(artifact: IArtifact): Promise<{ artifact_id: number }> {
+    defaultLog.debug({ label: '_submitArtifactToBioHub', metadata: artifact.metadata });
+
     const keycloakService = new KeycloakService();
 
     const token = await keycloakService.getKeycloakToken();
@@ -367,7 +372,7 @@ export class PlatformService extends DBService {
     formData.append('data_package_id', artifact.dataPackageId);
 
     Object.entries(artifact.metadata).forEach(([metadataKey, metadataValue]) => {
-      if (metadataValue) {
+      if (metadataValue !== undefined && metadataValue !== null) {
         formData.append(`metadata[${metadataKey}]`, metadataValue);
       }
     });

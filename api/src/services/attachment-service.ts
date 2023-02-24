@@ -35,7 +35,7 @@ export class AttachmentService extends DBService {
     this.attachmentRepository = new AttachmentRepository(connection);
   }
 
-  async testSubmitAttachments(projectId: number) {
+  async tempSubmitProjectAttachments(projectId: number) {
     const platformService = new PlatformService(this.connection);
     const dataPackageId = v4();
     const attachmentIds = (await this.getProjectAttachments(projectId)).map((attachment) => attachment.id);
@@ -46,6 +46,14 @@ export class AttachmentService extends DBService {
       attachmentIds,
       reportAttachmentIds
     );
+  }
+
+  async tempSubmitSurveyAttachments(surveyId: number) {
+    const platformService = new PlatformService(this.connection);
+    const dataPackageId = v4();
+    const attachmentIds = (await this.getSurveyAttachments(surveyId)).map((attachment) => attachment.id);
+    const reportAttachmentIds = (await this.getSurveyReportAttachments(surveyId)).map((attachment) => attachment.id);
+    await platformService.uploadSurveyAttachmentsToBioHub(dataPackageId, surveyId, attachmentIds, reportAttachmentIds);
   }
 
   /**

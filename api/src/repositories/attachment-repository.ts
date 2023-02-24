@@ -1,5 +1,6 @@
 import { QueryResult } from 'pg';
 import SQL from 'sql-template-strings';
+import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { PostReportAttachmentMetadata, PutReportAttachmentMetadata } from '../models/project-survey-attachments';
 import { getLogger } from '../utils/logger';
@@ -154,32 +155,28 @@ export class AttachmentRepository extends BaseRepository {
   async getProjectAttachmentsByIds(projectId: number, attachmentIds: number[]): Promise<IProjectAttachment[]> {
     defaultLog.debug({ label: 'getProjectAttachmentsByIds' });
 
-    if (!attachmentIds.length) {
-      return [];
-    }
+    const knex = getKnex();
 
-    const sqlStatement = SQL`
-    SELECT
-      project_attachment_id AS id,
-      uuid,
-      file_name,
-      file_type,
-      title,
-      description,
-      create_user,
-      update_date,
-      create_date,
-      file_size,
-      key
-      FROM
-      project_attachment
-    WHERE
-        project_id = ${projectId}
-      AND
-        project_attachment_id IN (${attachmentIds.map(String).join(',')});
-    `;
+    const queryBuilder = knex
+      .queryBuilder()
+      .select([
+        'project_attachment_id AS id',
+        'uuid',
+        'file_name',
+        'file_type',
+        'title',
+        'description',
+        'create_user',
+        'update_date',
+        'create_date',
+        'file_size',
+        'key'
+      ])
+      .from('project_attachment')
+      .whereIn('project_attachment_id', attachmentIds)
+      .andWhere('project_id', projectId);
 
-    const response = await this.connection.sql<IProjectAttachment>(sqlStatement);
+    const response = await this.connection.knex<IProjectAttachment>(queryBuilder);
 
     if (!response.rows) {
       throw new ApiExecuteSQLError('Failed to get project attachments by attachmentIds', [
@@ -297,35 +294,33 @@ export class AttachmentRepository extends BaseRepository {
     reportAttachmentIds: number[]
   ): Promise<IProjectReportAttachment[]> {
     defaultLog.debug({ label: 'getProjectReportAttachmentsByIds' });
-    if (!reportAttachmentIds.length) {
-      return [];
-    }
 
-    const sqlStatement = SQL`
-      SELECT
-        project_report_attachment_id as id,
-        uuid,
-        file_name,
-        title,
-        description,
-        year::int as year_published,
-        CASE
-          WHEN update_date IS NULL
-          THEN create_date::text
-          ELSE update_date::text
-        END AS last_modified,
-        file_size,
-        key,
-        revision_count
-      FROM
-        project_report_attachment
-      WHERE
-        project_id = ${projectId}
-      AND
-        project_report_attachment_id IN (${reportAttachmentIds.map(String).join(',')});
-    `;
+    const knex = getKnex();
+    const queryBuilder = knex
+      .queryBuilder()
+      .select([
+        'project_report_attachment_id as id',
+        'uuid',
+        'file_name',
+        'title',
+        'description',
+        knex.raw('year::int as year_published'),
+        knex.raw(`
+          CASE
+            WHEN update_date IS NULL
+            THEN create_date::text
+            ELSE update_date::text
+          END AS last_modified
+        `),
+        'file_size',
+        'key',
+        'revision_count'
+      ])
+      .from('project_report_attachment')
+      .whereIn('project_report_attachment_id', reportAttachmentIds)
+      .andWhere('project_id', projectId);
 
-    const response = await this.connection.sql<IProjectReportAttachment>(sqlStatement);
+    const response = await this.connection.knex<IProjectReportAttachment>(queryBuilder);
 
     if (!response.rows) {
       throw new ApiExecuteSQLError('Failed to get project report attachments by reportAttachmentIds', [

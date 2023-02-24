@@ -400,7 +400,7 @@ export class ProjectService extends DBService {
     await this.platformService.submitAndPublishDwcAMetadata(projectId);
 
     const attachmentService = new AttachmentService(this.connection);
-    await attachmentService.testSubmitAttachments(projectId);
+    await attachmentService.tempSubmitProjectAttachments(projectId);
   }
 
   async updateIUCNData(projectId: number, entities: IUpdateProject): Promise<void> {

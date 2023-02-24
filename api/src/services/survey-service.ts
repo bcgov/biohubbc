@@ -523,7 +523,7 @@ export class SurveyService extends DBService {
     await this.platformService.submitAndPublishDwcAMetadata(surveyData.survey_details.project_id, surveyId);
 
     const attachmentService = new AttachmentService(this.connection);
-    await attachmentService.testSubmitAttachments(surveyData.survey_details.project_id);
+    await attachmentService.tempSubmitSurveyAttachments(surveyData.survey_details.project_id);
   }
 
   /**

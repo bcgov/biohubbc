@@ -95,7 +95,7 @@ describe('SurveyService', () => {
 
   describe('updateSurvey', () => {
     beforeEach(() => {
-      sinon.stub(AttachmentService.prototype, 'testSubmitAttachments').resolves();
+      sinon.stub(AttachmentService.prototype, 'tempSubmitAttachments').resolves();
     });
 
     afterEach(() => {
