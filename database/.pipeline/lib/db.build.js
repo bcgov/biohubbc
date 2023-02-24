@@ -4,7 +4,7 @@ const { OpenShiftClientX } = require('pipeline-cli');
 const path = require('path');
 
 /**
- * Run a pod to build the database image stream.
+ * Build the database image.
  *
  * @param {*} settings
  */
@@ -17,21 +17,19 @@ const dbBuild = (settings) => {
 
   const templatesLocalBaseUrl = oc.toFileUrl(path.resolve(__dirname, '../templates'));
 
-  const name = `${phases[phase].name}`;
-
   const objects = [];
 
   objects.push(
     ...oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/db.bc.yaml`, {
       param: {
-        NAME: name,
+        NAME: phases[phase].name,
         SUFFIX: `${phases[phase].suffix}`,
         TAG_NAME: `${phases[phase].tag}`
       }
     })
   );
 
-  oc.applyRecommendedLabels(objects, name, phase, phases[phase].changeId, phases[phase].instance);
+  oc.applyRecommendedLabels(objects, phases[phase].name, phase, phases[phase].changeId, phases[phase].instance);
   oc.applyAndBuild(objects);
 };
 

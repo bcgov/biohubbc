@@ -623,6 +623,16 @@ export class AttachmentRepository extends BaseRepository {
     return response.rows;
   }
 
+  /**
+   * Insert new Project Attachment
+   *
+   * @param {Express.Multer.File} file
+   * @param {number} projectId
+   * @param {string} attachmentType
+   * @param {string} key
+   * @return {*}  {Promise<{ id: number; revision_count: number }>}
+   * @memberof AttachmentRepository
+   */
   async insertProjectAttachment(
     file: Express.Multer.File,
     projectId: number,
@@ -660,6 +670,15 @@ export class AttachmentRepository extends BaseRepository {
     return response.rows[0];
   }
 
+  /**
+   * Update Project Attachment
+   *
+   * @param {string} fileName
+   * @param {number} projectId
+   * @param {string} attachmentType
+   * @return {*}  {Promise<{ id: number; revision_count: number }>}
+   * @memberof AttachmentRepository
+   */
   async updateProjectAttachment(
     fileName: string,
     projectId: number,
@@ -716,6 +735,17 @@ export class AttachmentRepository extends BaseRepository {
     return response;
   }
 
+  /**
+   * Insert new Project Report Attachment
+   *
+   * @param {string} fileName
+   * @param {number} fileSize
+   * @param {number} projectId
+   * @param {PostReportAttachmentMetadata} attachmentMeta
+   * @param {string} key
+   * @return {*}  {Promise<{ id: number; revision_count: number }>}
+   * @memberof AttachmentRepository
+   */
   async insertProjectReportAttachment(
     fileName: string,
     fileSize: number,
@@ -758,6 +788,15 @@ export class AttachmentRepository extends BaseRepository {
     return response.rows[0];
   }
 
+  /**
+   * Update Project Report Attachment
+   *
+   * @param {string} fileName
+   * @param {number} projectId
+   * @param {PutReportAttachmentMetadata} attachmentMeta
+   * @return {*}  {Promise<{ id: number; revision_count: number }>}
+   * @memberof AttachmentRepository
+   */
   async updateProjectReportAttachment(
     fileName: string,
     projectId: number,
@@ -792,6 +831,13 @@ export class AttachmentRepository extends BaseRepository {
     return response.rows[0];
   }
 
+  /**
+   * Delete Attachment authors on project report
+   *
+   * @param {number} attachmentId
+   * @return {*}  {Promise<QueryResult>}
+   * @memberof AttachmentRepository
+   */
   async deleteProjectReportAttachmentAuthors(attachmentId: number): Promise<QueryResult> {
     const sqlStatement = SQL`
       DELETE
@@ -805,6 +851,14 @@ export class AttachmentRepository extends BaseRepository {
     return response;
   }
 
+  /**
+   * Insert Attachment authors on project Report
+   *
+   * @param {number} attachmentId
+   * @param {{ first_name: string; last_name: string }} author
+   * @return {*}  {Promise<void>}
+   * @memberof AttachmentRepository
+   */
   async insertProjectReportAttachmentAuthor(
     attachmentId: number,
     author: { first_name: string; last_name: string }
