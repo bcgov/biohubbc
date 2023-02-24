@@ -26,7 +26,6 @@ import {
   SurveyRepository
 } from '../repositories/survey-repository';
 import { getLogger } from '../utils/logger';
-import { AttachmentService } from './attachment-service';
 import { DBService } from './db-service';
 import { PermitService } from './permit-service';
 import { PlatformService } from './platform-service';
@@ -519,11 +518,8 @@ export class SurveyService extends DBService {
 
     const surveyData = await this.getSurveyById(surveyId);
 
-    //Update Eml to biohub and publish record
-    await this.platformService.submitAndPublishDwcAMetadata(surveyData.survey_details.project_id, surveyId);
-
-    const attachmentService = new AttachmentService(this.connection);
-    await attachmentService.tempSubmitSurveyAttachments(surveyData.survey_details.project_id);
+    // Update Eml to biohub and publish record
+    return this.platformService.submitAndPublishDwcAMetadata(surveyData.survey_details.project_id, surveyId);
   }
 
   /**

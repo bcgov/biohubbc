@@ -462,7 +462,7 @@ export class PlatformService extends DBService {
       reportAttachmentIds
     );
 
-    const attachmentArtifactPromises = attachments.map(async (attachment) => {
+    const attachmentArtifactPublishRecords = await Promise.all(attachments.map(async (attachment) => {
       const artifact = await this._makeArtifactFromAttachment({
         dataPackageId,
         attachment,
@@ -474,9 +474,9 @@ export class PlatformService extends DBService {
         artifact_id,
         survey_attachment_id: attachment.id
       });
-    });
+    }));
 
-    const reportArtifactPromises = reportAttachments.map(async (attachment) => {
+    const reportArtifactPublishRecords = await Promise.all(reportAttachments.map(async (attachment) => {
       const artifact = await this._makeArtifactFromAttachment({ dataPackageId, attachment, file_type: 'Report' });
       const { artifact_id } = await this._submitArtifactToBioHub(artifact);
 
@@ -484,8 +484,8 @@ export class PlatformService extends DBService {
         artifact_id,
         survey_report_attachment_id: attachment.id
       });
-    });
+    }));
 
-    return [...(await Promise.all(attachmentArtifactPromises)), ...(await Promise.all(reportArtifactPromises))];
+    return [...attachmentArtifactPublishRecords, ...reportArtifactPublishRecords];
   }
 }

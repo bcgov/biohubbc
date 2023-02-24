@@ -396,11 +396,8 @@ export class ProjectService extends DBService {
 
     await Promise.all(promises);
 
-    //Update Eml to biohub and publish record
-    await this.platformService.submitAndPublishDwcAMetadata(projectId);
-
-    const attachmentService = new AttachmentService(this.connection);
-    await attachmentService.tempSubmitProjectAttachments(projectId);
+    // Update Eml to biohub and publish record
+    return this.platformService.submitAndPublishDwcAMetadata(projectId);
   }
 
   async updateIUCNData(projectId: number, entities: IUpdateProject): Promise<void> {
