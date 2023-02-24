@@ -369,32 +369,28 @@ export class AttachmentRepository extends BaseRepository {
    */
   async getSurveyAttachmentsByIds(surveyId: number, attachmentIds: number[]): Promise<ISurveyAttachment[]> {
     defaultLog.debug({ label: 'getSurveyAttachmentsByIds' });
-    if (!attachmentIds.length) {
-      return [];
-    }
 
-    const sqlStatement = SQL`
-      SELECT
-        survey_attachment_id as id,
-        uuid,
-        file_name,
-        file_type,
-        title,
-        description,
-        create_date,
-        update_date,
-        create_date,
-        file_size,
-        key
-      FROM
-        survey_attachment
-      WHERE
-        survey_id = ${surveyId}
-      AND
-        survey_attachment_id IN (${attachmentIds.map(String).join(',')});
-    `;
+    const knex = getKnex();
+    const queryBuilder = knex
+      .queryBuilder()
+      .select([
+        'survey_attachment_id as id',
+        'uuid',
+        'file_name',
+        'file_type',
+        'title',
+        'description',
+        'create_date',
+        'update_date',
+        'create_date',
+        'file_size',
+        'key'
+      ])
+      .from('survey_attachment')
+      .whereIn('survey_attachment_id', attachmentIds)
+      .andWhere('survey_id', surveyId);
 
-    const response = await this.connection.sql<ISurveyAttachment>(sqlStatement);
+    const response = await this.connection.knex<ISurveyAttachment>(queryBuilder);
 
     return response.rows;
   }
@@ -502,35 +498,33 @@ export class AttachmentRepository extends BaseRepository {
     reportAttachmentIds: number[]
   ): Promise<ISurveyReportAttachment[]> {
     defaultLog.debug({ label: 'getSurveyReportAttachmentsByIds' });
-    if (!reportAttachmentIds.length) {
-      return [];
-    }
 
-    const sqlStatement = SQL`
-      SELECT
-        survey_report_attachment_id as id,
-        uuid,
-        file_name,
-        title,
-        description,
-        year::int as year_published,
-        CASE
-          WHEN update_date IS NULL
-          THEN create_date::text
-          ELSE update_date::text
-        END AS last_modified,
-        file_size,
-        key,
-        revision_count
-      FROM
-        survey_report_attachment
-      WHERE
-        survey_id = ${surveyId}
-      AND
-        survey_report_attachment_id IN (${reportAttachmentIds.map(String).join(',')});
-      `;
+    const knex = getKnex();
+    const queryBuilder = knex
+      .queryBuilder()
+      .select([
+        'survey_report_attachment_id as id',
+        'uuid',
+        'file_name',
+        'title',
+        'description',
+        knex.raw('year::int as year_published'),
+        knex.raw(`
+          CASE
+            WHEN update_date IS NULL
+            THEN create_date::text
+            ELSE update_date::text
+          END AS last_modified
+        `),
+        'file_size',
+        'key',
+        'revision_count'
+      ])
+      .from('survey_report_attachment')
+      .whereIn('survey_report_attachment_id', reportAttachmentIds)
+      .andWhere('survey_id', surveyId);
 
-    const response = await this.connection.sql<ISurveyReportAttachment>(sqlStatement);
+    const response = await this.connection.knex<ISurveyReportAttachment>(queryBuilder);
 
     return response.rows;
   }

@@ -75,7 +75,7 @@ describe('AttachmentRepository', () => {
       describe('getProjectAttachmentsByIds', () => {
         it('should return rows', async () => {
           const mockResponse = ({ rows: [{ id: 1 }, { id: 2 }], rowCount: 2 } as any) as Promise<QueryResult<any>>;
-          const dbConnection = getMockDBConnection({ sql: () => mockResponse });
+          const dbConnection = getMockDBConnection({ knex: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
 
@@ -283,7 +283,7 @@ describe('AttachmentRepository', () => {
       describe('getProjectReportAttachmentsByIds', () => {
         it('should return rows', async () => {
           const mockResponse = ({ rows: [{ id: 1 }, { id: 2 }], rowCount: 2 } as any) as Promise<QueryResult<any>>;
-          const dbConnection = getMockDBConnection({ sql: () => mockResponse });
+          const dbConnection = getMockDBConnection({ knex: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
 
@@ -579,7 +579,7 @@ describe('AttachmentRepository', () => {
       describe('getSurveyAttachmentsByIds', () => {
         it('should return rows', async () => {
           const mockResponse = ({ rows: [{ id: 1 }, { id: 2 }], rowCount: 2 } as any) as Promise<QueryResult<any>>;
-          const dbConnection = getMockDBConnection({ sql: () => mockResponse });
+          const dbConnection = getMockDBConnection({ knex: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
 
@@ -777,7 +777,7 @@ describe('AttachmentRepository', () => {
       describe('getSurveyReportAttachmentsByIds', () => {
         it('should return rows', async () => {
           const mockResponse = ({ rows: [{ id: 1 }, { id: 2 }], rowCount: 2 } as any) as Promise<QueryResult<any>>;
-          const dbConnection = getMockDBConnection({ sql: () => mockResponse });
+          const dbConnection = getMockDBConnection({ knex: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
 
