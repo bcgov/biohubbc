@@ -412,29 +412,33 @@ export class PlatformService extends DBService {
       reportAttachmentIds
     );
 
-    const attachmentArtifactPublishRecords = await Promise.all(attachments.map(async (attachment) => {
-      const artifact = await this._makeArtifactFromAttachment({
-        dataPackageId,
-        attachment,
-        file_type: attachment.file_type || 'Other'
-      });
-      const { artifact_id } = await this._submitArtifactToBioHub(artifact);
+    const attachmentArtifactPublishRecords = await Promise.all(
+      attachments.map(async (attachment) => {
+        const artifact = await this._makeArtifactFromAttachment({
+          dataPackageId,
+          attachment,
+          file_type: attachment.file_type || 'Other'
+        });
+        const { artifact_id } = await this._submitArtifactToBioHub(artifact);
 
-      return this.publishService.insertProjectAttachmentPublishRecord({
-        artifact_id,
-        project_attachment_id: attachment.id
-      });
-    }));
+        return this.publishService.insertProjectAttachmentPublishRecord({
+          artifact_id,
+          project_attachment_id: attachment.id
+        });
+      })
+    );
 
-    const reportArtifactPublishRecords = await Promise.all(reportAttachments.map(async (attachment) => {
-      const artifact = await this._makeArtifactFromAttachment({ dataPackageId, attachment, file_type: 'Report' });
-      const { artifact_id } = await this._submitArtifactToBioHub(artifact);
+    const reportArtifactPublishRecords = await Promise.all(
+      reportAttachments.map(async (attachment) => {
+        const artifact = await this._makeArtifactFromAttachment({ dataPackageId, attachment, file_type: 'Report' });
+        const { artifact_id } = await this._submitArtifactToBioHub(artifact);
 
-      return this.publishService.insertProjectReportPublishRecord({
-        artifact_id,
-        project_report_attachment_id: attachment.id
-      });
-    }));
+        return this.publishService.insertProjectReportPublishRecord({
+          artifact_id,
+          project_report_attachment_id: attachment.id
+        });
+      })
+    );
 
     return [...attachmentArtifactPublishRecords, ...reportArtifactPublishRecords];
   }
@@ -462,29 +466,33 @@ export class PlatformService extends DBService {
       reportAttachmentIds
     );
 
-    const attachmentArtifactPublishRecords = await Promise.all(attachments.map(async (attachment) => {
-      const artifact = await this._makeArtifactFromAttachment({
-        dataPackageId,
-        attachment,
-        file_type: attachment.file_type || 'Other'
-      });
-      const { artifact_id } = await this._submitArtifactToBioHub(artifact);
+    const attachmentArtifactPublishRecords = await Promise.all(
+      attachments.map(async (attachment) => {
+        const artifact = await this._makeArtifactFromAttachment({
+          dataPackageId,
+          attachment,
+          file_type: attachment.file_type || 'Other'
+        });
+        const { artifact_id } = await this._submitArtifactToBioHub(artifact);
 
-      return this.publishService.insertSurveyAttachmentPublishRecord({
-        artifact_id,
-        survey_attachment_id: attachment.id
-      });
-    }));
+        return this.publishService.insertSurveyAttachmentPublishRecord({
+          artifact_id,
+          survey_attachment_id: attachment.id
+        });
+      })
+    );
 
-    const reportArtifactPublishRecords = await Promise.all(reportAttachments.map(async (attachment) => {
-      const artifact = await this._makeArtifactFromAttachment({ dataPackageId, attachment, file_type: 'Report' });
-      const { artifact_id } = await this._submitArtifactToBioHub(artifact);
+    const reportArtifactPublishRecords = await Promise.all(
+      reportAttachments.map(async (attachment) => {
+        const artifact = await this._makeArtifactFromAttachment({ dataPackageId, attachment, file_type: 'Report' });
+        const { artifact_id } = await this._submitArtifactToBioHub(artifact);
 
-      return this.publishService.insertSurveyReportPublishRecord({
-        artifact_id,
-        survey_report_attachment_id: attachment.id
-      });
-    }));
+        return this.publishService.insertSurveyReportPublishRecord({
+          artifact_id,
+          survey_report_attachment_id: attachment.id
+        });
+      })
+    );
 
     return [...attachmentArtifactPublishRecords, ...reportArtifactPublishRecords];
   }
