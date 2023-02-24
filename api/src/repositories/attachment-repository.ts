@@ -178,13 +178,6 @@ export class AttachmentRepository extends BaseRepository {
 
     const response = await this.connection.knex<IProjectAttachment>(queryBuilder);
 
-    if (!response.rows) {
-      throw new ApiExecuteSQLError('Failed to get project attachments by attachmentIds', [
-        'AttachmentRepository->getProjectAttachmentsByIds',
-        'rows was null or undefined, expected rows != null'
-      ]);
-    }
-
     return response.rows;
   }
 
@@ -322,13 +315,6 @@ export class AttachmentRepository extends BaseRepository {
 
     const response = await this.connection.knex<IProjectReportAttachment>(queryBuilder);
 
-    if (!response.rows) {
-      throw new ApiExecuteSQLError('Failed to get project report attachments by reportAttachmentIds', [
-        'AttachmentRepository->getProjectReportAttachmentsByIds',
-        'rows was null or undefined, expected rows != null'
-      ]);
-    }
-
     return response.rows;
   }
 
@@ -409,13 +395,6 @@ export class AttachmentRepository extends BaseRepository {
     `;
 
     const response = await this.connection.sql<ISurveyAttachment>(sqlStatement);
-
-    if (!response.rows) {
-      throw new ApiExecuteSQLError('Failed to get survey attachments by surveyId and attachmentIds', [
-        'AttachmentRepository->getSurveyAttachmentsByIds',
-        'rows was null or undefined, expected rows != null'
-      ]);
-    }
 
     return response.rows;
   }
@@ -552,13 +531,6 @@ export class AttachmentRepository extends BaseRepository {
       `;
 
     const response = await this.connection.sql<ISurveyReportAttachment>(sqlStatement);
-
-    if (!response.rows) {
-      throw new ApiExecuteSQLError('Failed to get survey report attachments by reportAttachmentIds', [
-        'AttachmentRepository->getSurveyReportAttachmentsByIds',
-        'rows was null or undefined, expected rows != null'
-      ]);
-    }
 
     return response.rows;
   }
