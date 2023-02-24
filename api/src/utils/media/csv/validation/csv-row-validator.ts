@@ -83,37 +83,32 @@ export const getCodeValueFieldsValidator = (config?: ColumnCodeValidatorConfig):
     rows.forEach((row, rowIndex) => {
       const columnIndex = headersLowerCase.indexOf(safeToLowerCase(config.columnName));
 
-      console.log('column name is: ', config.columnName.toLowerCase());
-
       // if column does not exist, return
       if (columnIndex < 0) {
         return csvWorksheet;
       }
 
       const rowValueForColumn = row[columnIndex];
-
-      console.log('rowValueForColumn is: ', rowValueForColumn);
-
       if (rowValueForColumn === undefined || rowValueForColumn === null || rowValueForColumn === '') {
         // cell is empty, use the getRequiredFieldsValidator to assert required fields
         return csvWorksheet;
       }
-
+      
       // compare allowed code values as lowercase strings
       const allowedCodeValuesLowerCase: (string | number)[] = [];
       const allowedCodeValues = config.column_code_validator.allowed_code_values.map((allowedCode) => {
-        allowedCodeValuesLowerCase.push(safeToLowerCase(allowedCode.name));
+        allowedCodeValuesLowerCase.push(safeToLowerCase(allowedCode.name).toString());
         return allowedCode.name;
       });
 
       // Add an error if the cell value is not one of the elements in the codeValues array
-      if (!allowedCodeValuesLowerCase.includes(safeToLowerCase(rowValueForColumn))) {
+      if (!allowedCodeValuesLowerCase.includes(safeToLowerCase(rowValueForColumn).toString())) {
         csvWorksheet.csvValidation.addRowErrors([
           {
             errorCode: SUBMISSION_MESSAGE_TYPE.INVALID_VALUE,
             message: `Invalid value: ${rowValueForColumn}. Must be one of [${allowedCodeValues.join(', ')}]`,
             col: config.columnName,
-            row: rowIndex + 2
+            row: rowIndex + 2 // offset the index for a 0 start index and first row in every template being a header row
           }
         ]);
       }
