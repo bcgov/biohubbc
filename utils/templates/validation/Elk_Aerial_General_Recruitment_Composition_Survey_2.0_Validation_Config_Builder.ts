@@ -1,4 +1,21 @@
-import { activityNonTargetedPickListValidator, ageOfSignPickListValidator, aircraftPickListValidator, basicNumericValidator, datumPickListValidator, eastingValidator, featureTypePickListValidator, frequencyPickListValidator, northingValidator, observationActivityPickListValidator, outputValidationSchema, presentAbsentPickListValidator, signTypePickListValidator, surveyOrTelemetryPickListValidator, targetPickListValidator, utmZonePickListValidator } from './validation-config-helpers';
+import {
+  activityNonTargetedPickListValidator,
+  ageOfSignPickListValidator,
+  aircraftPickListValidator,
+  basicNumericValidator,
+  datumPickListValidator,
+  eastingValidator,
+  featureTypePickListValidator,
+  frequencyPickListValidator,
+  northingValidator,
+  observationActivityPickListValidator,
+  outputValidationSchema,
+  presentAbsentPickListValidator,
+  signTypePickListValidator,
+  surveyOrTelemetryPickListValidator,
+  targetPickListValidator,
+  utmZonePickListValidator
+} from './validation-config-helpers';
 
 const elkSpeciesValidator = () => {
   return [
@@ -23,7 +40,7 @@ const elkSpeciesValidator = () => {
       }
     }
   ];
-}
+};
 
 const elkGeneralTemplateValidationSchema = {
   name: '',
@@ -383,7 +400,7 @@ const elkGeneralTemplateValidationSchema = {
     {
       submission_required_files_validator: {
         required_files: ['Effort & Site Conditions', 'Observations', 'Marked Animals', 'Incidental Observations']
-      } 
+      }
     }
   ],
   workbookValidations: [
@@ -397,4 +414,4 @@ const elkGeneralTemplateValidationSchema = {
   ]
 };
 
-outputValidationSchema(elkGeneralTemplateValidationSchema, "elk_general_validation_config_output")
+outputValidationSchema(elkGeneralTemplateValidationSchema, 'elk_general_validation_config_output');

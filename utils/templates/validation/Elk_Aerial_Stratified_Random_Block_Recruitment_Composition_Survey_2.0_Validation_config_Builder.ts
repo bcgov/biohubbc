@@ -1,4 +1,17 @@
-import { activityNonTargetedPickListValidator, aircraftPickListValidator, basicNumericValidator, datumPickListValidator, featureTypePickListValidator, frequencyPickListValidator, habitatPickListValidator, outputValidationSchema, signTypePickListValidator, surveyOrTelemetryPickListValidator, targetPickListValidator, utmZonePickListValidator } from "./validation-config-helpers";
+import {
+  activityNonTargetedPickListValidator,
+  aircraftPickListValidator,
+  basicNumericValidator,
+  datumPickListValidator,
+  featureTypePickListValidator,
+  frequencyPickListValidator,
+  habitatPickListValidator,
+  outputValidationSchema,
+  signTypePickListValidator,
+  surveyOrTelemetryPickListValidator,
+  targetPickListValidator,
+  utmZonePickListValidator
+} from './validation-config-helpers';
 
 const elkSpeciesValidator = () => {
   return [
@@ -23,7 +36,7 @@ const elkSpeciesValidator = () => {
       }
     }
   ];
-}
+};
 
 const stratumPickListValidator = () => {
   return [
@@ -63,8 +76,8 @@ const stratumPickListValidator = () => {
         ]
       }
     }
-  ]
-}
+  ];
+};
 
 const sampledPickListValidator = () => {
   return [
@@ -89,7 +102,7 @@ const sampledPickListValidator = () => {
       }
     }
   ];
-}
+};
 
 const speciesOccurrenceStatusPickListValidator = () => {
   return [
@@ -114,33 +127,33 @@ const speciesOccurrenceStatusPickListValidator = () => {
       }
     }
   ];
-}
+};
 
 const signAgePickListValidator = () => {
   return [
     {
       column_code_validator: {
         name: {
-          type: "string"
+          type: 'string'
         },
         description: {
-          type: "string"
+          type: 'string'
         },
         allowed_code_values: [
-          {name: "New", description: "New"},
-{name: "Old", description: "Old"},
-{name: "Hour", description: "Hour"},
-{name: "Day", description: "Day"},
-{name: "Week", description: "Week"},
-{name: "Month", description: "Month"},
-{name: "Year", description: "Year"},
-{name: "Unclassified", description: "Unclassified"},
-{name: "Described in Comments", description: "Described in Comments"}
+          { name: 'New', description: 'New' },
+          { name: 'Old', description: 'Old' },
+          { name: 'Hour', description: 'Hour' },
+          { name: 'Day', description: 'Day' },
+          { name: 'Week', description: 'Week' },
+          { name: 'Month', description: 'Month' },
+          { name: 'Year', description: 'Year' },
+          { name: 'Unclassified', description: 'Unclassified' },
+          { name: 'Described in Comments', description: 'Described in Comments' }
         ]
       }
     }
-  ]
-}
+  ];
+};
 
 const elkSRBTemplateValidationSchema = {
   name: '',
@@ -207,7 +220,19 @@ const elkSRBTemplateValidationSchema = {
         },
         {
           file_required_columns_validator: {
-            required_columns: ['Study Area', 'Block ID/SU ID', 'Stratum', 'UTM Zone', 'Easting', 'Northing', 'Lat (DD)', 'Long (DD)', 'Species', 'Group Label', 'Date']
+            required_columns: [
+              'Study Area',
+              'Block ID/SU ID',
+              'Stratum',
+              'UTM Zone',
+              'Easting',
+              'Northing',
+              'Lat (DD)',
+              'Long (DD)',
+              'Species',
+              'Group Label',
+              'Date'
+            ]
           }
         }
       ],
@@ -252,73 +277,73 @@ const elkSRBTemplateValidationSchema = {
           description: '',
           validations: elkSpeciesValidator()
         },
-        { name: "BC RISC Yearlings Bulls", description: "", validations: basicNumericValidator()},
-{ name: "BC RISC Class I Bulls", description: "", validations: basicNumericValidator()},
-{ name: "BC RISC Class II Bulls", description: "", validations: basicNumericValidator()},
-{ name: "BC RISC Class III Bulls", description: "", validations: basicNumericValidator()},
-{ name: "BC RISC Class IV Bulls", description: "", validations: basicNumericValidator()},
-{ name: "Spike Bulls", description: "", validations: basicNumericValidator()},
-{ name: "Raghorn Bulls", description: "", validations: basicNumericValidator()},
-{ name: "<=3 Point Bulls", description: "", validations: basicNumericValidator()},
-{ name: "3 - 4 Point Bulls", description: "", validations: basicNumericValidator()},
-{ name: "3 - 5 Point Bulls", description: "", validations: basicNumericValidator()},
-{ name: "<4 Point Bulls", description: "", validations: basicNumericValidator()},
-{ name: ">=4 Point Bulls", description: "", validations: basicNumericValidator()},
-{ name: "5 Point Bulls", description: "", validations: basicNumericValidator()},
-{ name: ">=5 Point Bulls", description: "", validations: basicNumericValidator()},
-{ name: ">= 6 Point Bulls", description: "", validations: basicNumericValidator()},
-{ name: "Adult Bulls - Unclassified", description: "", validations: basicNumericValidator()},
-{ name: "Unclassified Bulls", description: "", validations: basicNumericValidator()},
-{ name: "Cows", description: "", validations: basicNumericValidator()},
-{ name: "Calves", description: "", validations: basicNumericValidator()},
-{ name: "Adult Unclassified Sex", description: "", validations: basicNumericValidator()},
-{ name: "Yearling - Unclassified Sex", description: "", validations: basicNumericValidator()},
-{ name: "Unclassified Age/Sex", description: "", validations: basicNumericValidator()},
-{
-  name: 'Sign Type',
-  description: '',
-  validations: signTypePickListValidator()
-},
-{
-  name: 'Sign Count',
-  description: '',
-  validations: basicNumericValidator()
-},
-{
-  name: 'Sign Age',
-  description: '',
-  validations: signAgePickListValidator()
-},
-{
-  name: 'Habitat',
-  description: '',
-  validations: habitatPickListValidator()
-},
-{
-  name: '% Veg Cover',
-  description: '',
-  validations: basicNumericValidator()
-},
-{
-  name: '% Snow Cover',
-  description: '',
-  validations: basicNumericValidator()
-},
-{
-  name: 'Activity',
-  description: '',
-  validations: activityNonTargetedPickListValidator()
-},
-{
-  name: 'Number of Marked Animals Observed',
-  description: '',
-  validations: basicNumericValidator()
-},
-{
-  name: 'Survey or Telemetry Search',
-  description: '',
-  validations: surveyOrTelemetryPickListValidator()
-}
+        { name: 'BC RISC Yearlings Bulls', description: '', validations: basicNumericValidator() },
+        { name: 'BC RISC Class I Bulls', description: '', validations: basicNumericValidator() },
+        { name: 'BC RISC Class II Bulls', description: '', validations: basicNumericValidator() },
+        { name: 'BC RISC Class III Bulls', description: '', validations: basicNumericValidator() },
+        { name: 'BC RISC Class IV Bulls', description: '', validations: basicNumericValidator() },
+        { name: 'Spike Bulls', description: '', validations: basicNumericValidator() },
+        { name: 'Raghorn Bulls', description: '', validations: basicNumericValidator() },
+        { name: '<=3 Point Bulls', description: '', validations: basicNumericValidator() },
+        { name: '3 - 4 Point Bulls', description: '', validations: basicNumericValidator() },
+        { name: '3 - 5 Point Bulls', description: '', validations: basicNumericValidator() },
+        { name: '<4 Point Bulls', description: '', validations: basicNumericValidator() },
+        { name: '>=4 Point Bulls', description: '', validations: basicNumericValidator() },
+        { name: '5 Point Bulls', description: '', validations: basicNumericValidator() },
+        { name: '>=5 Point Bulls', description: '', validations: basicNumericValidator() },
+        { name: '>= 6 Point Bulls', description: '', validations: basicNumericValidator() },
+        { name: 'Adult Bulls - Unclassified', description: '', validations: basicNumericValidator() },
+        { name: 'Unclassified Bulls', description: '', validations: basicNumericValidator() },
+        { name: 'Cows', description: '', validations: basicNumericValidator() },
+        { name: 'Calves', description: '', validations: basicNumericValidator() },
+        { name: 'Adult Unclassified Sex', description: '', validations: basicNumericValidator() },
+        { name: 'Yearling - Unclassified Sex', description: '', validations: basicNumericValidator() },
+        { name: 'Unclassified Age/Sex', description: '', validations: basicNumericValidator() },
+        {
+          name: 'Sign Type',
+          description: '',
+          validations: signTypePickListValidator()
+        },
+        {
+          name: 'Sign Count',
+          description: '',
+          validations: basicNumericValidator()
+        },
+        {
+          name: 'Sign Age',
+          description: '',
+          validations: signAgePickListValidator()
+        },
+        {
+          name: 'Habitat',
+          description: '',
+          validations: habitatPickListValidator()
+        },
+        {
+          name: '% Veg Cover',
+          description: '',
+          validations: basicNumericValidator()
+        },
+        {
+          name: '% Snow Cover',
+          description: '',
+          validations: basicNumericValidator()
+        },
+        {
+          name: 'Activity',
+          description: '',
+          validations: activityNonTargetedPickListValidator()
+        },
+        {
+          name: 'Number of Marked Animals Observed',
+          description: '',
+          validations: basicNumericValidator()
+        },
+        {
+          name: 'Survey or Telemetry Search',
+          description: '',
+          validations: surveyOrTelemetryPickListValidator()
+        }
       ]
     },
     {
@@ -344,7 +369,7 @@ const elkSRBTemplateValidationSchema = {
           name: 'Frequency Unit',
           description: '',
           validations: frequencyPickListValidator()
-        },
+        }
       ]
     },
     {
@@ -386,13 +411,13 @@ const elkSRBTemplateValidationSchema = {
           description: '',
           validations: basicNumericValidator()
         },
-        {name: "Adult Males", description: "", validators: basicNumericValidator()},
-        {name: "Adult Females", description: "", validators: basicNumericValidator()},
-        {name: "Adults - Unclassified Sex", description: "", validators: basicNumericValidator()},
-        {name: "Juvenile Males", description: "", validators: basicNumericValidator()},
-        {name: "Juvenile Females", description: "", validators: basicNumericValidator()},
-        {name: "Juveniles - Unclassified Sex", description: "", validators: basicNumericValidator()},
-        {name: "Unknown Age/Sex", description: "", validators: basicNumericValidator()},
+        { name: 'Adult Males', description: '', validators: basicNumericValidator() },
+        { name: 'Adult Females', description: '', validators: basicNumericValidator() },
+        { name: 'Adults - Unclassified Sex', description: '', validators: basicNumericValidator() },
+        { name: 'Juvenile Males', description: '', validators: basicNumericValidator() },
+        { name: 'Juvenile Females', description: '', validators: basicNumericValidator() },
+        { name: 'Juveniles - Unclassified Sex', description: '', validators: basicNumericValidator() },
+        { name: 'Unknown Age/Sex', description: '', validators: basicNumericValidator() },
         {
           name: 'SpeciesOccurrence Status',
           description: '',
@@ -434,8 +459,14 @@ const elkSRBTemplateValidationSchema = {
   validations: [
     {
       submission_required_files_validator: {
-        required_files: ['Block Summary', 'Effort & Site Conditions', 'Observations', 'Marked Animals', 'Incidental Observations']
-      } 
+        required_files: [
+          'Block Summary',
+          'Effort & Site Conditions',
+          'Observations',
+          'Marked Animals',
+          'Incidental Observations'
+        ]
+      }
     }
   ],
   workbookValidations: [
@@ -447,6 +478,6 @@ const elkSRBTemplateValidationSchema = {
       }
     }
   ]
-}
+};
 
-outputValidationSchema(elkSRBTemplateValidationSchema, "elk_srb_validation_config_output")
+outputValidationSchema(elkSRBTemplateValidationSchema, 'elk_srb_validation_config_output');

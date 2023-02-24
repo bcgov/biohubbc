@@ -2,23 +2,19 @@ import * as fs from 'fs';
 
 /**
  * Stringifies the template object for insertion into the database.
- * 
+ *
  * Note: outputName should follow the pattern `template_validation_config_output`
  * Example: `elk_general_validation_config_output`
- * 
+ *
  * @param {any} template validation schema for a given template
  * @param {string} outputName output name for the file
  */
 export const outputValidationSchema = (template: any, outputName: string) => {
-  fs.writeFile(
-    `./output/${outputName}.json`,
-    JSON.stringify(template),
-    (err) => {
-      // file written successfully
-  
-      console.log('All done!');
-    }
-  );
+  fs.writeFile(`./output/${outputName}.json`, JSON.stringify(template), (err) => {
+    // file written successfully
+
+    console.log('All done!');
+  });
 };
 
 export const basicNumericValidator = () => {
