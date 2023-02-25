@@ -56,6 +56,22 @@ describe('AttachmentService', () => {
         });
       });
 
+      describe('getProjectAttachmentsByIds', () => {
+        it('should return IProjectAttachment[]', async () => {
+          const dbConnection = getMockDBConnection();
+          const service = new AttachmentService(dbConnection);
+
+          const data = ([{ id: 1 }, { id: 2 }] as unknown) as IProjectAttachment[];
+
+          const repoStub = sinon.stub(AttachmentRepository.prototype, 'getProjectAttachmentsByIds').resolves(data);
+
+          const response = await service.getProjectAttachmentsByIds(1, [1, 2]);
+
+          expect(repoStub).to.be.calledOnce;
+          expect(response).to.eql(data);
+        });
+      });
+
       describe('insertProjectAttachment', () => {
         it('should return { id: number; revision_count: number }', async () => {
           const dbConnection = getMockDBConnection();
@@ -219,6 +235,24 @@ describe('AttachmentService', () => {
           const repoStub = sinon.stub(AttachmentRepository.prototype, 'getProjectReportAttachmentById').resolves(data);
 
           const response = await service.getProjectReportAttachmentById(1, 1);
+
+          expect(repoStub).to.be.calledOnce;
+          expect(response).to.eql(data);
+        });
+      });
+
+      describe('getProjectReportAttachmentsByIds', () => {
+        it('should return IProjectReportAttachment[]', async () => {
+          const dbConnection = getMockDBConnection();
+          const service = new AttachmentService(dbConnection);
+
+          const data = ([{ id: 1 }, { id: 2 }] as unknown) as IProjectReportAttachment[];
+
+          const repoStub = sinon
+            .stub(AttachmentRepository.prototype, 'getProjectReportAttachmentsByIds')
+            .resolves(data);
+
+          const response = await service.getProjectReportAttachmentsByIds(1, [1, 2]);
 
           expect(repoStub).to.be.calledOnce;
           expect(response).to.eql(data);
@@ -482,6 +516,22 @@ describe('AttachmentService', () => {
         });
       });
 
+      describe('getSurveyAttachmentsByIds', () => {
+        it('should return ISurveyAttachment[]', async () => {
+          const dbConnection = getMockDBConnection();
+          const service = new AttachmentService(dbConnection);
+
+          const data = ([{ id: 1 }, { id: 2 }] as unknown) as ISurveyAttachment[];
+
+          const repoStub = sinon.stub(AttachmentRepository.prototype, 'getSurveyAttachmentsByIds').resolves(data);
+
+          const response = await service.getSurveyAttachmentsByIds(1, [1, 2]);
+
+          expect(repoStub).to.be.calledOnce;
+          expect(response).to.eql(data);
+        });
+      });
+
       describe('deleteSurveyAttachment', () => {
         it('should return key string', async () => {
           const dbConnection = getMockDBConnection();
@@ -640,6 +690,22 @@ describe('AttachmentService', () => {
           const repoStub = sinon.stub(AttachmentRepository.prototype, 'getSurveyReportAttachmentById').resolves(data);
 
           const response = await service.getSurveyReportAttachmentById(1, 1);
+
+          expect(repoStub).to.be.calledOnce;
+          expect(response).to.eql(data);
+        });
+      });
+
+      describe('getSurveyReportAttachmentsByIds', () => {
+        it('should return ISurveyReportAttachment[]', async () => {
+          const dbConnection = getMockDBConnection();
+          const service = new AttachmentService(dbConnection);
+
+          const data = ([{ id: 1 }, { id: 2 }] as unknown) as ISurveyReportAttachment[];
+
+          const repoStub = sinon.stub(AttachmentRepository.prototype, 'getSurveyReportAttachmentsByIds').resolves(data);
+
+          const response = await service.getSurveyReportAttachmentsByIds(1, [1, 2]);
 
           expect(repoStub).to.be.calledOnce;
           expect(response).to.eql(data);

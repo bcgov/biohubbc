@@ -52,8 +52,6 @@ parameters:
     required: true
   - name: REACT_APP_KEYCLOAK_INTEGRATION_ID
     description: integration Id
-  - name: REACT_APP_KEYCLOAK_ADMIN_HOST
-    description: admin host
   - name: REACT_APP_KEYCLOAK_API_HOST
     description: api host
   - name: CPU_REQUEST
