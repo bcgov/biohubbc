@@ -124,7 +124,7 @@ describe('AttachmentService', () => {
         });
       });
 
-      describe.only('upsertProjectAttachment', () => {
+      describe('upsertProjectAttachment', () => {
         it('should update and return { id: number; revision_count: number; key: string }', async () => {
           const dbConnection = getMockDBConnection();
           const service = new AttachmentService(dbConnection);
@@ -375,7 +375,7 @@ describe('AttachmentService', () => {
         });
       });
 
-      describe.only('upsertProjectReportAttachment', () => {
+      describe('upsertProjectReportAttachment', () => {
         it('should update and return { id: number; revision_count: number; key: string }', async () => {
           const dbConnection = getMockDBConnection();
           const service = new AttachmentService(dbConnection);
@@ -623,7 +623,7 @@ describe('AttachmentService', () => {
         });
       });
 
-      describe.only('upsertSurveyAttachment', () => {
+      describe('upsertSurveyAttachment', () => {
         it('should update and return { id: number; revision_count: number; key: string }', async () => {
           const dbConnection = getMockDBConnection();
           const service = new AttachmentService(dbConnection);
@@ -838,7 +838,7 @@ describe('AttachmentService', () => {
         });
       });
 
-      describe.only('upsertSurveyReportAttachment', () => {
+      describe('upsertSurveyReportAttachment', () => {
         it('should update and return { id: number; revision_count: number; key: string }', async () => {
           const dbConnection = getMockDBConnection();
           const service = new AttachmentService(dbConnection);
