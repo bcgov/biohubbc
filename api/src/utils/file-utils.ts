@@ -96,7 +96,6 @@ export async function deleteFileFromS3(key: string): Promise<DeleteObjectOutput 
 /**
  * Upload a file to S3.
  *
- *
  * @export
  * @param {Express.Multer.File} file an object containing information about a single piece of media
  * @param {string} key the path where S3 will store the file

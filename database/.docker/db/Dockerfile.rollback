@@ -21,4 +21,4 @@ COPY . .
 RUN npm install
 
 # rollback the database migrations
-CMD [ "npm", "run", "migrate:rollback" ]
+CMD [ "npm", "run", "migrate-rollback" ]
