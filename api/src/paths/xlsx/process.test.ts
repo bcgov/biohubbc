@@ -5,7 +5,6 @@ import OpenAPIResponseValidator, { OpenAPIResponseValidatorArgs } from 'openapi-
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as db from '../../database/db';
-import { HTTPError } from '../../errors/http-error';
 import { ErrorService } from '../../services/error-service';
 import { ValidationService } from '../../services/validation-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../__mocks__/db';
@@ -33,10 +32,12 @@ describe('xlsx/process', () => {
 
             expect(response.status).to.equal(400);
             expect(response.errors[0].path).to.equal('project_id');
-            expect(response.errors[1].path).to.equal('occurrence_submission_id');
+            expect(response.errors[1].path).to.equal('survey_id');
+            expect(response.errors[2].path).to.equal('occurrence_submission_id');
             expect(response.errors[0].message).to.equal(`must have required property 'project_id'`);
-            expect(response.errors[1].message).to.equal(`must have required property 'occurrence_submission_id'`);
-            expect(response.errors[2]).to.be.undefined;
+            expect(response.errors[1].message).to.equal(`must have required property 'survey_id'`);
+            expect(response.errors[2].message).to.equal(`must have required property 'occurrence_submission_id'`);
+            expect(response.errors[3]).to.be.undefined;
           });
 
           it('is missing required fields', async () => {
@@ -45,7 +46,7 @@ describe('xlsx/process', () => {
                 'content-type': 'application/json'
               },
 
-              body: { project_id: 1 }
+              body: { project_id: 1, survey_id: 1 }
             };
 
             const response = requestValidator.validateRequest(request);
@@ -61,25 +62,27 @@ describe('xlsx/process', () => {
                 'content-type': 'application/json'
               },
 
-              body: { project_id: undefined, occurrence_submission_id: undefined }
+              body: { project_id: undefined, survey_id: undefined, occurrence_submission_id: undefined }
             };
 
             const response = requestValidator.validateRequest(request);
 
             expect(response.status).to.equal(400);
             expect(response.errors[0].path).to.equal('project_id');
-            expect(response.errors[1].path).to.equal('occurrence_submission_id');
+            expect(response.errors[1].path).to.equal('survey_id');
+            expect(response.errors[2].path).to.equal('occurrence_submission_id');
             expect(response.errors[0].message).to.equal(`must have required property 'project_id'`);
-            expect(response.errors[1].message).to.equal(`must have required property 'occurrence_submission_id'`);
-            expect(response.errors[2]).to.be.undefined;
+            expect(response.errors[1].message).to.equal(`must have required property 'survey_id'`);
+            expect(response.errors[2].message).to.equal(`must have required property 'occurrence_submission_id'`);
+            expect(response.errors[3]).to.be.undefined;
           });
         });
 
-        describe('project_id and occurrence_submission_id', () => {
+        describe('project_id, survey_id, and occurrence_submission_id', () => {
           it('have invalid type', async () => {
             const request = {
               headers: { 'content-type': 'application/json' },
-              body: { project_id: 'not a number', occurrence_submission_id: 'not a number' }
+              body: { project_id: 'not a number', survey_id: 'not a number', occurrence_submission_id: 'not a number' }
             };
 
             const response = requestValidator.validateRequest(request);
@@ -87,6 +90,7 @@ describe('xlsx/process', () => {
             expect(response.status).to.equal(400);
             expect(response.errors[0].message).to.equal('must be number');
             expect(response.errors[1].message).to.equal('must be number');
+            expect(response.errors[2].message).to.equal('must be number');
           });
         });
       });
@@ -95,7 +99,7 @@ describe('xlsx/process', () => {
         it('required values are valid', async () => {
           const request = {
             headers: { 'content-type': 'application/json' },
-            body: { project_id: 1, occurrence_submission_id: 2 }
+            body: { project_id: 1, survey_id: 1, occurrence_submission_id: 2 }
           };
 
           const response = requestValidator.validateRequest(request);
@@ -140,21 +144,6 @@ describe('xlsx/process', () => {
   describe('process file', () => {
     afterEach(() => {
       sinon.restore();
-    });
-
-    it('throws an error when req.body.occurrence_submission_id is empty', async () => {
-      const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
-      mockReq.body = {};
-
-      const requestHandler = process.processFile();
-
-      try {
-        await requestHandler(mockReq, mockRes, mockNext);
-        expect.fail();
-      } catch (actualError) {
-        expect((actualError as HTTPError).status).to.equal(400);
-        expect((actualError as HTTPError).message).to.equal('Missing required parameter `occurrence field`');
-      }
     });
 
     it('returns a 200 if req.body.occurrence_submission_id exists', async () => {

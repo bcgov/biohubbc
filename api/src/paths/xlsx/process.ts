@@ -3,7 +3,6 @@ import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../constants/roles';
 import { SUBMISSION_STATUS_TYPE } from '../../constants/status';
 import { getDBConnection } from '../../database/db';
-import { HTTP400 } from '../../errors/http-error';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
 import { ErrorService } from '../../services/error-service';
 import { ValidationService } from '../../services/validation-service';
@@ -28,7 +27,7 @@ export const POST: Operation = [
 
 POST.apiDoc = {
   description:
-    'Validates, transforms and scrapes an XLSX survey observation submission file into a Darwin Core Archive file, and scrapes the occurences from the DwC archive',
+    'Validates and transforms an XLSX survey observation submission file into a Darwin Core Archive file, and scrapes the occurrences from the DwC archive',
   tags: ['survey', 'observation', 'xlsx'],
   security: [
     {
@@ -41,18 +40,18 @@ POST.apiDoc = {
       'application/json': {
         schema: {
           type: 'object',
-          required: ['project_id', 'occurrence_submission_id'],
+          required: ['project_id', 'survey_id', 'occurrence_submission_id'],
           properties: {
             project_id: {
+              type: 'number'
+            },
+            survey_id: {
               type: 'number'
             },
             occurrence_submission_id: {
               description: 'A survey occurrence submission ID',
               type: 'number',
               example: 1
-            },
-            survey_id: {
-              type: 'number'
             }
           }
         }
@@ -100,9 +99,6 @@ export function processFile(): RequestHandler {
   return async (req, res) => {
     const submissionId = req.body.occurrence_submission_id;
     const surveyId = req.body.survey_id;
-    if (!submissionId) {
-      throw new HTTP400('Missing required parameter `occurrence field`');
-    }
 
     res.status(200).json({ status: 'success' });
 
