@@ -116,3 +116,5 @@ n8n/.config
 
 # IDE custom workspace settings
 .vscode/settings.json
+
+/utils
