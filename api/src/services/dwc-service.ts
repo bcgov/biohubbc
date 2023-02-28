@@ -66,7 +66,7 @@ export class DwCService extends DBService {
     const taxonIds = this.collectTaxonIDs(pathsToPatch);
 
     // Make a request for each unique taxon ID
-    // TODO this approach assumes every row in the provided has a unique taxon ID
+    // TODO this approach assumes that every not every row will have a unique taxon ID
     // TODO investigate elastic search batch calls
     const taxonData = await this.getEnrichedDataForSpeciesSet(taxonIds);
 
