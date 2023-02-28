@@ -54,4 +54,3 @@ There are 2 kinds of authentication that are supported by this Postman collectio
   - Note: Environment variables marked secret should automatically be scrubbed from the exported environment variables file, but it
   - is always best to double check just in case.
 - Upload the files to S3 under ./postman
-- Ensure the All Users -> Read permission is checked, so that the postman collection can be downloaded and used by anyone (with sufficient access to authentication credentials).
