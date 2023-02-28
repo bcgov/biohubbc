@@ -1,7 +1,0 @@
-{
-  "compilerOptions": {},
-  "include": ["*"],
-  "ts-node": {
-    "files": true
-  }
-}
