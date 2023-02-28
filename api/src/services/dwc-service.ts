@@ -42,10 +42,10 @@ export class DwCService extends DBService {
    */
   async getEnrichedDataForSpeciesSet(set: Set<string>): Promise<any> {
     const taxonomyService = new TaxonomyService();
-    const taxonLibrary = {}
+    const taxonLibrary = {};
     set.forEach(async (item) => {
       const data = await taxonomyService.getEnrichedDataForSpeciesCode(item);
-      taxonLibrary[item] = data
+      taxonLibrary[item] = data;
     });
 
     return taxonLibrary;
