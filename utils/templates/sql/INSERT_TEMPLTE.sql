@@ -6,8 +6,8 @@ do $$
 		_tempalte_description varchar := '';
 		_field_method_name varchar := 'Stratified Random Block';
 		_field_method_id integer := 0;
-
 		_taxonomy_id integer := 1;
+    
 		_validation_schema varchar := $v_s${}$v_s$;
 		_transformation_schema varchar := $t_s${}$t_s$;
 begin
