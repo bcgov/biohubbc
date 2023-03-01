@@ -3,7 +3,7 @@ import { JSONPath } from 'jsonpath-plus';
 import { IDBConnection } from '../database/db';
 import { parseUTMString, utmToLatLng } from '../utils/spatial-utils';
 import { DBService } from './db-service';
-import { TaxonomyService } from './taxonomy-service';
+import { IEnrichedTaxonomyData, TaxonomyService } from './taxonomy-service';
 /**
  * Service to produce DWC data for a project.
  *
@@ -37,14 +37,15 @@ export class DwCService extends DBService {
    * Calls elastic search taxonomy service with the given set of taxon codes
    *
    * @param {Set<string>} set A set of taxon IDs
-   * @return {*}  {Promise<any>}
+   * @return {*}  {Promise<Map<string, IEnrichedTaxonomyData>>}
    * @memberof DwCService
    */
-  async getEnrichedDataForSpeciesSet(set: Set<string>): Promise<any> {
+  async getEnrichedDataForSpeciesSet(set: Set<string>): Promise<Map<string, IEnrichedTaxonomyData>> {
     const taxonomyService = new TaxonomyService();
-    const taxonLibrary = {};
+    const taxonLibrary: Map<string, IEnrichedTaxonomyData> = new Map();
     set.forEach(async (item) => {
       const data = await taxonomyService.getEnrichedDataForSpeciesCode(item);
+
       taxonLibrary[item] = data;
     });
 
@@ -75,7 +76,7 @@ export class DwCService extends DBService {
     // Build patch operations
     await Promise.all(
       pathsToPatch.map(async (item: any) => {
-        const enrichedData = taxonData[item.value['taxonID']];
+        const enrichedData = taxonData.get(item.value['taxonID']);
 
         if (!enrichedData) {
           // No matching taxon information found for provided taxonID code
