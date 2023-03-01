@@ -47,7 +47,7 @@ export class DwCService extends DBService {
       const data = await taxonomyService.getEnrichedDataForSpeciesCode(item);
       // skip null returns
       if (data) {
-        taxonLibrary[item] = data;
+        taxonLibrary.set(item, data);
       }
     });
 
