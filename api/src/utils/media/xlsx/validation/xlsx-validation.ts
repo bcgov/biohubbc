@@ -19,7 +19,7 @@ export type ParentChildKeyMatchValidatorConfig = {
  * required fields.
  *
  * @param {ParentChildKeyMatchValidatorConfig} [config] The validator config
- * @return {*}  {WorkBookValidator} The workbook validator
+ * @return {*}  {WorkBookValidator} The workbook validator68
  *
  */
 export const getParentChildKeyMatchValidator = (config?: ParentChildKeyMatchValidatorConfig): WorkBookValidator => {
@@ -65,6 +65,7 @@ export const getParentChildKeyMatchValidator = (config?: ParentChildKeyMatchVali
           // Remove empty column values
           .filter(Boolean)
 
+          // Escape possible column deliminator occurrences from column value string
           // Trim whitespace
           .map(safeTrim)
 
