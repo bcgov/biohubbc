@@ -3,9 +3,23 @@
 name: PR-Based Deploy on OpenShift
 
 on:
+  workflow_dispatch:
+    inputs:
+      name:
+        type: choice
+        description: Who to greet
+        options: 
+        - monalisa
+        - cschleiden
+      message:
+        required: true
+      use-emoji:
+        type: boolean
+        description: Include  emojis
+      environment:
+        type: environment
   pull_request:
     types: [opened, reopened, synchronize, ready_for_review]
-  workflow_dispatch
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.number }}
