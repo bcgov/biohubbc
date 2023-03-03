@@ -92,6 +92,12 @@ export class PlatformService extends DBService {
     this.attachmentService = new AttachmentService(connection);
   }
 
+  async submitSurveyDataPackage(surveyId: number, projectId: number, data: any): Promise<void> {
+    console.log('data', data);
+    console.log('projectId', projectId);
+    console.log('surveyId', surveyId);
+  }
+
   /**
    * Submit a Darwin Core Archive (DwCA) data package, that only contains the project/survey metadata, to the BioHub
    * Platform Backbone.

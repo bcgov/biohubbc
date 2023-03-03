@@ -4,9 +4,16 @@ import Typography from '@material-ui/core/Typography';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import useDataLoaderError from 'hooks/useDataLoaderError';
-import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
+import { IGetObservationSubmissionResponse } from 'interfaces/useObservationApi.interface';
+import { IGetSummaryResultsResponse } from 'interfaces/useSummaryResultsApi.interface';
+import {
+  IGetSurveyAttachment,
+  IGetSurveyForViewResponse,
+  IGetSurveyReportAttachment
+} from 'interfaces/useSurveyApi.interface';
 import React from 'react';
 import yup from 'utils/YupSchema';
+import SelectAllButton from './SelectAllButton';
 import SubmitSection from './SubmitSection';
 
 export interface ISubmitSurvey {
@@ -14,10 +21,10 @@ export interface ISubmitSurvey {
 }
 
 export interface ISurveySubmitForm {
-  observations: any[];
-  summarys: any[];
-  reports: any[];
-  attachments: any[];
+  observations: IGetObservationSubmissionResponse[];
+  summarys: IGetSummaryResultsResponse[];
+  reports: IGetSurveyReportAttachment[];
+  attachments: IGetSurveyAttachment[];
 }
 
 export const SurveySubmitFormInitialValues: ISurveySubmitForm = {
@@ -93,12 +100,35 @@ const SubmitSurvey: React.FC<ISubmitSurvey> = (props) => {
         </Typography>
       </Box>
 
+      <SelectAllButton
+        formikData={[
+          { key: 'observations', value: !!observationDataLoader.data ? [observationDataLoader.data] : [] },
+          { key: 'summarys', value: !!summaryDataLoader.data ? [summaryDataLoader.data] : [] },
+          {
+            key: 'reports',
+            value:
+              !!reportDataLoader.data && reportDataLoader.data.reportAttachmentsList
+                ? reportDataLoader.data.reportAttachmentsList
+                : []
+          },
+          {
+            key: 'attachments',
+            value:
+              !!reportDataLoader.data && reportDataLoader.data.attachmentsList
+                ? reportDataLoader.data.attachmentsList
+                : []
+          }
+        ]}
+      />
+
       {observationDataLoader.isReady && (
         <SubmitSection
           subHeader="OBSERVATIONS"
           formikName="observations"
           data={!!observationDataLoader.data ? [observationDataLoader.data] : []}
-          nameLocation="inputFileName"
+          getName={(item: IGetObservationSubmissionResponse) => {
+            return item.inputFileName;
+          }}
         />
       )}
 
@@ -107,7 +137,9 @@ const SubmitSurvey: React.FC<ISubmitSurvey> = (props) => {
           subHeader="SUMMARY RESULTS"
           formikName="summarys"
           data={!!summaryDataLoader.data ? [summaryDataLoader.data] : []}
-          nameLocation="fileName"
+          getName={(item: IGetSummaryResultsResponse) => {
+            return item.fileName;
+          }}
         />
       )}
 
@@ -115,8 +147,14 @@ const SubmitSurvey: React.FC<ISubmitSurvey> = (props) => {
         <SubmitSection
           subHeader="REPORTS"
           formikName="reports"
-          data={reportDataLoader.data && reportDataLoader.data.reportAttachmentsList}
-          nameLocation="fileName"
+          data={
+            !!reportDataLoader.data && reportDataLoader.data.reportAttachmentsList
+              ? reportDataLoader.data.reportAttachmentsList
+              : []
+          }
+          getName={(item: IGetSurveyReportAttachment) => {
+            return item.fileName;
+          }}
         />
       )}
 
@@ -124,8 +162,14 @@ const SubmitSurvey: React.FC<ISubmitSurvey> = (props) => {
         <SubmitSection
           subHeader="OTHER DOCUMENTS"
           formikName="attachments"
-          data={reportDataLoader.data && reportDataLoader.data.attachmentsList}
-          nameLocation="fileName"
+          data={
+            !!reportDataLoader.data && reportDataLoader.data.attachmentsList
+              ? reportDataLoader.data.attachmentsList
+              : []
+          }
+          getName={(item: IGetSurveyAttachment) => {
+            return item.fileName;
+          }}
         />
       )}
     </Container>

@@ -20,11 +20,12 @@ import {
 import Icon from '@mdi/react';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import SubmitBiohubDialog from 'components/dialog/SubmitBiohubDialog';
-import { SystemRoleGuard } from 'components/security/Guards';
 import SubmitSurvey, {
+  ISurveySubmitForm,
   SurveySubmitFormInitialValues,
   SurveySubmitFormYupSchema
 } from 'components/publish/SubmitSurvey';
+import { SystemRoleGuard } from 'components/security/Guards';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { DeleteSurveyI18N } from 'constants/i18n';
 import { SYSTEM_ROLE } from 'constants/roles';
@@ -306,11 +307,12 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
         dialogTitle="Submit Survey Information"
         open={openSubmitSurvey}
         onClose={() => setOpenSubmitSurvey(!openSubmitSurvey)}
-        onSubmit={(values: any) => {
-          console.log('values', values);
-          return () => {
-            return 1;
-          };
+        onSubmit={async (values: ISurveySubmitForm) => {
+          biohubApi.publish.publishSurvey(
+            projectWithDetails.id,
+            surveyWithDetails.surveyData.survey_details.id,
+            values
+          );
         }}
         formikProps={{
           initialValues: SurveySubmitFormInitialValues,
