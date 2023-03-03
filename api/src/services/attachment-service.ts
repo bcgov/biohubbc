@@ -489,8 +489,7 @@ export class AttachmentService extends DBService {
     const key = generateS3FileKey({
       projectId: projectId,
       surveyId: surveyId,
-      fileName: file.originalname,
-      folder: 'reports'
+      fileName: file.originalname
     });
 
     const getResponse = await this.getSurveyReportAttachmentByFileName(surveyId, file.originalname);

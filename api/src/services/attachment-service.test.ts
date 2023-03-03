@@ -12,7 +12,6 @@ import {
   ISurveyAttachment,
   ISurveyReportAttachment
 } from '../repositories/attachment-repository';
-import * as file_utils from '../utils/file-utils';
 import { getMockDBConnection } from '../__mocks__/db';
 import { AttachmentService } from './attachment-service';
 chai.use(sinonChai);
@@ -114,10 +113,6 @@ describe('AttachmentService', () => {
           const dbConnection = getMockDBConnection();
           const service = new AttachmentService(dbConnection);
 
-          const data = { id: 1, revision_count: 1, key: 'key' };
-
-          const fileStub = sinon.stub(file_utils, 'generateS3FileKey').returns('key');
-
           const serviceStub1 = sinon
             .stub(AttachmentService.prototype, 'getProjectAttachmentByFileName')
             .resolves(({ rowCount: 1 } as unknown) as QueryResult);
@@ -126,21 +121,24 @@ describe('AttachmentService', () => {
             .stub(AttachmentService.prototype, 'updateProjectAttachment')
             .resolves({ id: 1, revision_count: 1 });
 
-          const response = await service.upsertProjectAttachment(({} as unknown) as Express.Multer.File, 1, 'string');
+          const response = await service.upsertProjectAttachment(
+            ({ originalname: 'file.test' } as unknown) as Express.Multer.File,
+            1,
+            'string'
+          );
 
           expect(serviceStub1).to.be.calledOnce;
           expect(serviceStub2).to.be.calledOnce;
-          expect(fileStub).to.be.calledOnce;
-          expect(response).to.eql(data);
+          expect(response).to.eql({
+            id: 1,
+            revision_count: 1,
+            key: 'projects/1/file.test'
+          });
         });
 
         it('should insert and return { id: number; revision_count: number; key: string }', async () => {
           const dbConnection = getMockDBConnection();
           const service = new AttachmentService(dbConnection);
-
-          const data = { id: 1, revision_count: 1, key: 'key' };
-
-          const fileStub = sinon.stub(file_utils, 'generateS3FileKey').returns('key');
 
           const serviceStub1 = sinon
             .stub(AttachmentService.prototype, 'getProjectAttachmentByFileName')
@@ -150,12 +148,19 @@ describe('AttachmentService', () => {
             .stub(AttachmentService.prototype, 'insertProjectAttachment')
             .resolves({ id: 1, revision_count: 1 });
 
-          const response = await service.upsertProjectAttachment(({} as unknown) as Express.Multer.File, 1, 'string');
+          const response = await service.upsertProjectAttachment(
+            ({ originalname: 'file.test' } as unknown) as Express.Multer.File,
+            1,
+            'string'
+          );
 
           expect(serviceStub1).to.be.calledOnce;
           expect(serviceStub2).to.be.calledOnce;
-          expect(fileStub).to.be.calledOnce;
-          expect(response).to.eql(data);
+          expect(response).to.eql({
+            id: 1,
+            revision_count: 1,
+            key: 'projects/1/file.test'
+          });
         });
       });
 
@@ -341,10 +346,6 @@ describe('AttachmentService', () => {
           const dbConnection = getMockDBConnection();
           const service = new AttachmentService(dbConnection);
 
-          const data = { id: 1, revision_count: 1, key: 'key' };
-
-          const fileStub = sinon.stub(file_utils, 'generateS3FileKey').returns('key');
-
           const serviceStub1 = sinon
             .stub(AttachmentService.prototype, 'getProjectReportAttachmentByFileName')
             .resolves(({ rowCount: 1 } as unknown) as QueryResult);
@@ -361,26 +362,29 @@ describe('AttachmentService', () => {
             .stub(AttachmentService.prototype, 'insertProjectReportAttachmentAuthor')
             .resolves();
 
-          const response = await service.upsertProjectReportAttachment(({} as unknown) as Express.Multer.File, 1, {
-            title: 'string',
-            authors: [{ first_name: 'first', last_name: 'last' }]
-          });
+          const response = await service.upsertProjectReportAttachment(
+            ({ originalname: 'file.test' } as unknown) as Express.Multer.File,
+            1,
+            {
+              title: 'string',
+              authors: [{ first_name: 'first', last_name: 'last' }]
+            }
+          );
 
           expect(serviceStub1).to.be.calledOnce;
           expect(serviceStub2).to.be.calledOnce;
           expect(serviceStub3).to.be.calledOnce;
           expect(serviceStub4).to.be.calledOnce;
-          expect(fileStub).to.be.calledOnce;
-          expect(response).to.eql(data);
+          expect(response).to.eql({
+            id: 1,
+            revision_count: 1,
+            key: 'projects/1/reports/file.test'
+          });
         });
 
         it('should insert and return { id: number; revision_count: number; key: string }', async () => {
           const dbConnection = getMockDBConnection();
           const service = new AttachmentService(dbConnection);
-
-          const data = { id: 1, revision_count: 1, key: 'key' };
-
-          const fileStub = sinon.stub(file_utils, 'generateS3FileKey').returns('key');
 
           const serviceStub1 = sinon
             .stub(AttachmentService.prototype, 'getProjectReportAttachmentByFileName')
@@ -398,17 +402,24 @@ describe('AttachmentService', () => {
             .stub(AttachmentService.prototype, 'insertProjectReportAttachmentAuthor')
             .resolves();
 
-          const response = await service.upsertProjectReportAttachment(({} as unknown) as Express.Multer.File, 1, {
-            title: 'string',
-            authors: [{ first_name: 'first', last_name: 'last' }]
-          });
+          const response = await service.upsertProjectReportAttachment(
+            ({ originalname: 'file.test' } as unknown) as Express.Multer.File,
+            1,
+            {
+              title: 'string',
+              authors: [{ first_name: 'first', last_name: 'last' }]
+            }
+          );
 
           expect(serviceStub1).to.be.calledOnce;
           expect(serviceStub2).to.be.calledOnce;
           expect(serviceStub3).to.be.calledOnce;
           expect(serviceStub4).to.be.calledOnce;
-          expect(fileStub).to.be.calledOnce;
-          expect(response).to.eql(data);
+          expect(response).to.eql({
+            id: 1,
+            revision_count: 1,
+            key: 'projects/1/reports/file.test'
+          });
         });
       });
 
@@ -567,10 +578,6 @@ describe('AttachmentService', () => {
           const dbConnection = getMockDBConnection();
           const service = new AttachmentService(dbConnection);
 
-          const data = { id: 1, revision_count: 1, key: 'key' };
-
-          const fileStub = sinon.stub(file_utils, 'generateS3FileKey').returns('key');
-
           const serviceStub1 = sinon
             .stub(AttachmentService.prototype, 'getSurveyReportAttachmentByFileName')
             .resolves(({ rowCount: 1 } as unknown) as QueryResult);
@@ -579,21 +586,25 @@ describe('AttachmentService', () => {
             .stub(AttachmentService.prototype, 'updateSurveyAttachment')
             .resolves({ id: 1, revision_count: 1 });
 
-          const response = await service.upsertSurveyAttachment(({} as unknown) as Express.Multer.File, 1, 1, 'string');
+          const response = await service.upsertSurveyAttachment(
+            ({ originalname: 'file.test' } as unknown) as Express.Multer.File,
+            1,
+            1,
+            'string'
+          );
 
           expect(serviceStub1).to.be.calledOnce;
           expect(serviceStub2).to.be.calledOnce;
-          expect(fileStub).to.be.calledOnce;
-          expect(response).to.eql(data);
+          expect(response).to.eql({
+            id: 1,
+            revision_count: 1,
+            key: 'projects/1/surveys/1/file.test'
+          });
         });
 
         it('should insert and return { id: number; revision_count: number; key: string }', async () => {
           const dbConnection = getMockDBConnection();
           const service = new AttachmentService(dbConnection);
-
-          const data = { id: 1, revision_count: 1, key: 'key' };
-
-          const fileStub = sinon.stub(file_utils, 'generateS3FileKey').returns('key');
 
           const serviceStub1 = sinon
             .stub(AttachmentService.prototype, 'getSurveyReportAttachmentByFileName')
@@ -603,12 +614,20 @@ describe('AttachmentService', () => {
             .stub(AttachmentService.prototype, 'insertSurveyAttachment')
             .resolves({ id: 1, revision_count: 1 });
 
-          const response = await service.upsertSurveyAttachment(({} as unknown) as Express.Multer.File, 1, 1, 'string');
+          const response = await service.upsertSurveyAttachment(
+            ({ originalname: 'file.test' } as unknown) as Express.Multer.File,
+            1,
+            1,
+            'string'
+          );
 
           expect(serviceStub1).to.be.calledOnce;
           expect(serviceStub2).to.be.calledOnce;
-          expect(fileStub).to.be.calledOnce;
-          expect(response).to.eql(data);
+          expect(response).to.eql({
+            id: 1,
+            revision_count: 1,
+            key: 'projects/1/surveys/1/file.test'
+          });
         });
       });
     });
@@ -758,10 +777,6 @@ describe('AttachmentService', () => {
           const dbConnection = getMockDBConnection();
           const service = new AttachmentService(dbConnection);
 
-          const data = { id: 1, revision_count: 1, key: 'key' };
-
-          const fileStub = sinon.stub(file_utils, 'generateS3FileKey').returns('key');
-
           const serviceStub1 = sinon
             .stub(AttachmentService.prototype, 'getSurveyReportAttachmentByFileName')
             .resolves(({ rowCount: 1 } as unknown) as QueryResult);
@@ -776,26 +791,30 @@ describe('AttachmentService', () => {
 
           const serviceStub4 = sinon.stub(AttachmentService.prototype, 'insertSurveyReportAttachmentAuthor').resolves();
 
-          const response = await service.upsertSurveyReportAttachment(({} as unknown) as Express.Multer.File, 1, 1, {
-            title: 'string',
-            authors: [{ first_name: 'first', last_name: 'last' }]
-          });
+          const response = await service.upsertSurveyReportAttachment(
+            ({ originalname: 'file.test' } as unknown) as Express.Multer.File,
+            1,
+            1,
+            {
+              title: 'string',
+              authors: [{ first_name: 'first', last_name: 'last' }]
+            }
+          );
 
           expect(serviceStub1).to.be.calledOnce;
           expect(serviceStub2).to.be.calledOnce;
           expect(serviceStub3).to.be.calledOnce;
           expect(serviceStub4).to.be.calledOnce;
-          expect(fileStub).to.be.calledOnce;
-          expect(response).to.eql(data);
+          expect(response).to.eql({
+            id: 1,
+            revision_count: 1,
+            key: 'projects/1/surveys/1/reports/file.test'
+          });
         });
 
         it('should insert and return { id: number; revision_count: number; key: string }', async () => {
           const dbConnection = getMockDBConnection();
           const service = new AttachmentService(dbConnection);
-
-          const data = { id: 1, revision_count: 1, key: 'key' };
-
-          const fileStub = sinon.stub(file_utils, 'generateS3FileKey').returns('key');
 
           const serviceStub1 = sinon
             .stub(AttachmentService.prototype, 'getSurveyReportAttachmentByFileName')
@@ -811,17 +830,25 @@ describe('AttachmentService', () => {
 
           const serviceStub4 = sinon.stub(AttachmentService.prototype, 'insertSurveyReportAttachmentAuthor').resolves();
 
-          const response = await service.upsertSurveyReportAttachment(({} as unknown) as Express.Multer.File, 1, 1, {
-            title: 'string',
-            authors: [{ first_name: 'first', last_name: 'last' }]
-          });
+          const response = await service.upsertSurveyReportAttachment(
+            ({ originalname: 'file.test' } as unknown) as Express.Multer.File,
+            1,
+            1,
+            {
+              title: 'string',
+              authors: [{ first_name: 'first', last_name: 'last' }]
+            }
+          );
 
           expect(serviceStub1).to.be.calledOnce;
           expect(serviceStub2).to.be.calledOnce;
           expect(serviceStub3).to.be.calledOnce;
           expect(serviceStub4).to.be.calledOnce;
-          expect(fileStub).to.be.calledOnce;
-          expect(response).to.eql(data);
+          expect(response).to.eql({
+            id: 1,
+            revision_count: 1,
+            key: 'projects/1/surveys/1/reports/file.test'
+          });
         });
       });
 
