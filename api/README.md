@@ -122,8 +122,6 @@ Supported log properties:
 
 - [Mocha](https://www.npmjs.com/package/mocha) - Unit test framework
 - [Chai](https://www.npmjs.com/package/chai) - Assertion library
-- [SuperTest](https://www.npmjs.com/package/supertest) - API testing library
-- [Nock](https://www.npmjs.com/package/nock) - HTTP mocking library
 
 ## Running Tests
 
