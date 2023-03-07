@@ -97,12 +97,12 @@ export const getCodeValueFieldsValidator = (config?: ColumnCodeValidatorConfig):
       // compare allowed code values as lowercase strings
       const allowedCodeValuesLowerCase: (string | number)[] = [];
       const allowedCodeValues = config.column_code_validator.allowed_code_values.map((allowedCode) => {
-        allowedCodeValuesLowerCase.push(String(safeToLowerCase(allowedCode.name)));
+        allowedCodeValuesLowerCase.push(safeToLowerCase(String(allowedCode.name)));
         return allowedCode.name;
       });
 
       // Add an error if the cell value is not one of the elements in the codeValues array
-      if (!allowedCodeValuesLowerCase.includes(String(safeToLowerCase(rowValueForColumn)))) {
+      if (!allowedCodeValuesLowerCase.includes(safeToLowerCase(String(rowValueForColumn)))) {
         csvWorksheet.csvValidation.addRowErrors([
           {
             errorCode: SUBMISSION_MESSAGE_TYPE.INVALID_VALUE,
@@ -255,11 +255,11 @@ export const getNumericFieldsValidator = (config?: ColumnNumericValidatorConfig)
         return csvWorksheet;
       }
 
-      const rowValueForColumn = Number(row[columnIndex]);
-
       if (row[columnIndex] === undefined || row[columnIndex] === null) {
         return csvWorksheet;
       }
+
+      const rowValueForColumn = Number(row[columnIndex]);
 
       if (isNaN(rowValueForColumn)) {
         csvWorksheet.csvValidation.addRowErrors([

@@ -19,7 +19,7 @@ export type ParentChildKeyMatchValidatorConfig = {
  * required fields.
  *
  * @param {ParentChildKeyMatchValidatorConfig} [config] The validator config
- * @return {*}  {WorkBookValidator} The workbook validator68
+ * @return {*}  {WorkBookValidator} The workbook validator
  *
  */
 export const getParentChildKeyMatchValidator = (config?: ParentChildKeyMatchValidatorConfig): WorkBookValidator => {
