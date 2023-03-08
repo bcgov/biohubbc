@@ -1,21 +1,14 @@
-[![img](https://img.shields.io/badge/Lifecycle-Experimental-339999)](https://github.com/bcgov/repomountie/blob/master/doc/lifecycle-badges.md) [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=bcgov_biohubbc&metric=alert_status)](https://sonarcloud.io/dashboard?id=bcgov_biohubbc) [![codecov](https://codecov.io/gh/bcgov/biohubbc/branch/dev/graph/badge.svg?token=CF2ZR3T3U2)](https://codecov.io/gh/bcgov/biohubbc) [![BioHubBC](https://img.shields.io/endpoint?url=https://dashboard.cypress.io/badge/simple/w8oxci/dev&style=flat&logo=cypress)](https://dashboard.cypress.io/projects/w8oxci/runs)
+![Lifecycle:Experimental](https://img.shields.io/badge/Lifecycle-Experimental-339999) [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=bcgov_biohubbc-platform&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=bcgov_biohubbc-platform) [![codecov](https://codecov.io/gh/bcgov/biohubbc-platform/branch/dev/graph/badge.svg?token=a8JYkqRXz4)](https://codecov.io/gh/bcgov/biohubbc-platform)
 
-# BioDiversityHub BC
+# BioHub Platform
 
-Sub-project under the SEISM Capital project, the source of BC’s species inventory data.
-
-The objectives for the SIMS project are:
-
-- To provide a single source for aquatic and terrestrial species and habitat data.
-- To reduce the barriers for collecting and sharing aquatic and terrestrial species and habitat data throughout the province of British Columbia.
-- To reduce the effort involved with managing aquatic and terrestrial species and habitat data.
-- To improve access for all stakeholders to the aquatic and terrestrial species and habitat data needed to make informed decisions and policies for the province.
+Platform Components for BioHub
 
 # Pre-reqs
 
 ## Install Node/NPM
 
-- Requires Node version 12+
+- Requires Node version 14+
 - https://nodejs.org/en/download/
 
 ## Install Git
@@ -24,7 +17,7 @@ The objectives for the SIMS project are:
 
 ### Clone the repo
 
-- `git clone https://github.com/bcgov/biohubbc.git`
+- `git clone https://github.com/bcgov/biohubbc-platform.git`
 
 ## Install Docker
 
@@ -113,18 +106,18 @@ make env
 ```
 
 Result of running `make env` for the first time:  
-![make env screenshot](README/images/make/running_make_env.png "Running `make env`")
+![make env screenshot](images/make/running_make_env.png "Running `make env`")
 
 ## Start all Applications
 
-Starts all applications (database, api, app).
+Starts all applications (database, api, app, and n8n).
 
 ```
 make web
 ```
 
 Result of running `make web` (condensed to only show the important parts):  
-![make web screenshot](README/images/make/running_make_start.png "Running `make web`")
+![make web screenshot](images/make/running_make_start.png "Running `make web`")
 
 ## Access the Running Applications
 
@@ -135,6 +128,10 @@ api:
 app:
 
 - `localhost:7100`
+
+n8n:
+
+- `localhost:5100`
 
 # Helpful Makefile Commands
 
@@ -212,7 +209,7 @@ _Note: Not all formatting issues can be auto-fixed._
 make format-fix
 ```
 
-## Shell Into a Docker Container (database, api, app, etc)
+## Shell Into a Docker Container (database, api, app, n8n, etc)
 
 See `./Makefile` for all available commands.
 
@@ -240,7 +237,7 @@ docker ps -a
 ```
 
 What a successfully built/run set of docker containers looks like:
-![make web screenshot](README/images/make/running_docker_ps_-a.png "Running `docker ps -a`")
+![make web screenshot](images/make/running_docker_ps_-a.png "Running `docker ps -a`")
 
 _Note: The exited container is correct, as that container executes database migrations and then closes_
 
@@ -322,7 +319,7 @@ _Note: all of the above connection values can be found in the `.env` file_
 
 # Acknowledgements
 
-[![SonarCloud](https://sonarcloud.io/images/project_badges/sonarcloud-black.svg)](https://sonarcloud.io/dashboard?id=bcgov_biohubbc)
+[![SonarCloud](https://sonarcloud.io/images/project_badges/sonarcloud-white.svg)](https://sonarcloud.io/summary/new_code?id=bcgov_biohubbc-platform)
 
 # License
 
