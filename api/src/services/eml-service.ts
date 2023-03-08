@@ -69,16 +69,8 @@ type AdditionalMetadata = {
   metadata: Record<string, any>
 }
 
-class EmlPackage<S extends Record<string, any>> {
-  /**
-   * Source data, on which the EML package is comprised.
-   *
-   * @type {S}
-   * @memberof EmlPackage
-   */
-  _source: S;
-
-  _packageId: string;
+class EmlPackage {
+  packageId: string;
   
   _xml2jsBuilder: xml2js.Builder;
   
@@ -89,9 +81,9 @@ class EmlPackage<S extends Record<string, any>> {
   _relatedProjects: Record<string, any>[] = [];
   _additionalMetadata: AdditionalMetadata[] = [];
 
-  constructor(options: { source: S, packageId: string }) {
-    this._source = options.source;
-    this._packageId = options.packageId;
+  constructor(options: { packageId: string }) {
+    // this._source = options.source;
+    this.packageId = options.packageId;
 
     this._xml2jsBuilder = new xml2js.Builder({ renderOpts: { pretty: false } });
   }
@@ -120,7 +112,7 @@ class EmlPackage<S extends Record<string, any>> {
     return this;
   }
 
-  build() {
+  build(): EmlString {
     if (this._relatedProjects.length) {
       if (!this._datasetMetadata) {
         throw new Error("Can't build related projects EML without first building dataset EML.");
@@ -186,20 +178,20 @@ export class EmlService extends DBService {
    * @return {*}  {Promise<EmlString>}
    * @memberof EmlService
    */
-  async buildProjectEml(options: BuildProjectEmlOptions): Promise<EmlString> {
+  async createProjectEml(options: BuildProjectEmlOptions): Promise<EmlPackage> {
     const { projectId } = options;
     await this.loadEmlDbConstants();
 
-    const source = await this.loadProjectSource(projectId);
-    const packageId = source.projectData.project.uuid;
+    const projectSource = await this.loadProjectSource(projectId);
+    const packageId = projectSource.projectData.project.uuid;
 
-    return new EmlPackage({ source, packageId })
+    return new EmlPackage({ packageId })
       .withEml(this.buildProjectEmlSection(packageId))
-      .withDataset(await this.buildProjectEmlDatasetSection(source.projectData, packageId))
-      .withAdditionalMetadata(await this.getProjectAdditionalMetadata(source))
-      .withAdditionalMetadata(this.getSurveyAdditionalMetadata(source))
-      .withRelatedProjects(await this.buildAllSurveyEmlDatasetSections(source.surveys))
-      .build();
+      .withDataset(await this.buildProjectEmlDatasetSection(projectSource.projectData, packageId))
+      .withAdditionalMetadata(await this.getProjectAdditionalMetadata(projectSource))
+      .withAdditionalMetadata(this.getSurveyAdditionalMetadata(projectSource))
+      .withRelatedProjects(await this.buildAllSurveyEmlDatasetSections(projectSource.surveys));
+
   }
 
   async codes(): Promise<IAllCodeSets> {

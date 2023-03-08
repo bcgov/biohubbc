@@ -10,7 +10,7 @@ describe('EmlService', () => {
   it('constructs', () => {
     const dbConnectionObj = getMockDBConnection();
 
-    const emlService = new EmlService({ projectId: 1 }, dbConnectionObj);
+    const emlService = new EmlService(dbConnectionObj);
 
     expect(emlService).to.be.instanceof(EmlService);
   });

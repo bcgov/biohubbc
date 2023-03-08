@@ -107,6 +107,7 @@ export class PlatformService extends DBService {
    * @memberof PlatformService
    */
   async submitDwCAMetadataPackage(projectId: number): Promise<{ queue_id: number } | undefined> {
+    defaultLog.debug({ label: 'submitDwCAMetadataPackage' });
 
     try {
       if (!this.backboneIntakeEnabled) {
@@ -114,12 +115,10 @@ export class PlatformService extends DBService {
       }
 
       const emlService = new EmlService(this.connection);
-
-      const emlString = await emlService.buildProjectEml({ projectId: projectId });
-      defaultLog.debug({ label: 'submitDwCAMetadataPackage', emlString });
+      const emlPackage = await emlService.createProjectEml({ projectId });
 
       const dwcArchiveZip = new AdmZip();
-      dwcArchiveZip.addFile('eml.xml', Buffer.from(emlString));
+      dwcArchiveZip.addFile('eml.xml', Buffer.from(emlPackage.build()));
 
       const dwCADataset = {
         archiveFile: {
@@ -127,7 +126,7 @@ export class PlatformService extends DBService {
           fileName: 'DwCA.zip',
           mimeType: 'application/zip'
         },
-        dataPackageId: emlService.packageId
+        dataPackageId: emlPackage.packageId
       };
 
       return this._submitDwCADatasetToBioHubBackbone(dwCADataset);
@@ -153,12 +152,11 @@ export class PlatformService extends DBService {
       return;
     }
 
-    const emlService = new EmlService({ projectId: projectId }, this.connection);
-
-    const emlString = await emlService.buildProjectEml();
+    const emlService = new EmlService(this.connection);
+    const emlPackage = await emlService.createProjectEml({ projectId });
 
     const dwcArchiveZip = new AdmZip();
-    dwcArchiveZip.addFile('eml.xml', Buffer.from(emlString));
+    dwcArchiveZip.addFile('eml.xml', Buffer.from(emlPackage.build()));
     // TODO fetch and add DwCA data files to archive
 
     const dwCADataset = {
@@ -167,7 +165,7 @@ export class PlatformService extends DBService {
         fileName: 'DwCA.zip',
         mimeType: 'application/zip'
       },
-      dataPackageId: emlService.packageId
+      dataPackageId: emlPackage.packageId
     };
 
     return this._submitDwCADatasetToBioHubBackbone(dwCADataset);
@@ -243,8 +241,9 @@ export class PlatformService extends DBService {
 
     const dwcArchiveZip = new AdmZip(s3File.Body as Buffer);
 
-    const emlService = new EmlService({ projectId: projectId }, this.connection);
-    const emlString = await emlService.buildProjectEml();
+    const emlService = new EmlService(this.connection);
+    const emlPackage = await emlService.createProjectEml({ projectId });
+    const emlString = emlPackage.build();
 
     if (!emlString) {
       throw new HTTP400('emlString failed to build');
@@ -255,10 +254,10 @@ export class PlatformService extends DBService {
     const dwCADataset: IDwCADataset = {
       archiveFile: {
         data: dwcArchiveZip.toBuffer(),
-        fileName: `${emlService.packageId}.zip`,
+        fileName: `${emlPackage.packageId}.zip`,
         mimeType: 'application/zip'
       },
-      dataPackageId: emlService.packageId,
+      dataPackageId: emlPackage.packageId,
       securityRequest
     };
 
