@@ -34,7 +34,7 @@ const DEFAULT_DB_CONSTANTS = {
   EML_INTELLECTUAL_RIGHTS: NOT_SUPPLIED_CONSTANT
 };
 
-type EMLDBConstants = {
+type EmlDbConstants = {
   EML_VERSION: string;
   EML_PROVIDER_URL: string;
   EML_SECURITY_PROVIDER_URL: string;
@@ -49,36 +49,42 @@ type SurveyObjectWithAttachments = SurveyObject & {
   report_attachments?: GetSurveyReportAttachmentsData;
 };
 
-type Cache = {
-  projectData?: IGetProject;
-  surveyData?: SurveyObjectWithAttachments[];
-  projectAttachmentData?: GetProjectAttachmentsData;
-  projectReportAttachmentData?: GetProjectReportAttachmentsData;
-  codes?: IAllCodeSets;
+
+type ProjectMetadataSource = {
+  projectData: IGetProject;
+  projectAttachmentsData: GetProjectAttachmentsData;
+  projectReportAttachmentsData: GetProjectReportAttachmentsData;
+  surveys: SurveyObjectWithAttachments[];
+  codes: IAllCodeSets;
 };
 
-export type BuildProjectEMLOptions = {
-  /**
-   * Whether or not to include typically non-public data in the EML. Defaults to `false`.
-   *
-   * @type {boolean}
-   */
-  includeSensitiveData?: boolean;
-  /**
-   * Specify which surveys to include in the EML. Defaults to undefined (all surveys).
-   *
-   * Usage:
-   * - If left unset (undefined), all surveys will be included (default).
-   * - If set to an array, then only those surveys will be included. An empty array indicates no surveys should be
-   * included.
-   *
-   * @type {number[]}
-   */
-  surveyIds?: number[];
+type BuildProjectEmlOptions = {
+  projectId: number;
 };
+
+type EmlString = string;
+
+class EmlPackage<S extends Record<string, any>> {
+  /**
+   * Source data, on which the EML package is comprised.
+   *
+   * @type {S}
+   * @memberof EmlPackage
+   */
+  source: S;
+
+  packageId: string;
+  
+  data: Record<string, unknown> = {};
+
+  constructor(options: { source: S, packageId: string }) {
+    this.source = options.source;
+    this.packageId = options.packageId
+  }
+}
 
 /**
- * Service to produce EML data for a project.
+ * Service to produce Ecological Metadata Language (EML) data for projects and surveys.
  *
  * @see https://eml.ecoinformatics.org for EML specification
  * @see https://knb.ecoinformatics.org/emlparser/ for an online EML validator.
@@ -87,31 +93,20 @@ export type BuildProjectEMLOptions = {
  * @extends {DBService}
  */
 export class EmlService extends DBService {
-  data: Record<string, unknown> = {};
 
-  _packageId: string | undefined;
-
-  projectId: number;
-  surveyIds: number[] | undefined = undefined;
 
   projectService: ProjectService;
   surveyService: SurveyService;
   codeService: CodeService;
 
-  cache: Cache = {};
-
-  constants: EMLDBConstants = DEFAULT_DB_CONSTANTS;
+  constants: EmlDbConstants = DEFAULT_DB_CONSTANTS;
 
   xml2jsBuilder: xml2js.Builder;
 
   includeSensitiveData = false;
 
-  constructor(options: { projectId: number; packageId?: string }, connection: IDBConnection) {
+  constructor(connection: IDBConnection) {
     super(connection);
-
-    this._packageId = options.packageId;
-
-    this.projectId = options.projectId;
 
     this.projectService = new ProjectService(this.connection);
     this.surveyService = new SurveyService(this.connection);
@@ -121,31 +116,34 @@ export class EmlService extends DBService {
   }
 
   /**
-   * Compiles and returns the project metadata as an Ecological Metadata Language (EML) compliant XML string.
+   * Compiles and returns the project metadata as an EML-compliant XML string.
    *
-   * @param {BuildProjectEMLOptions} [options]
-   * @return {*}  {Promise<string>}
+   * @param {BuildProjectEmlOptions} options
+   * @return {*}  {Promise<EmlString>}
    * @memberof EmlService
    */
-  async buildProjectEml(options?: BuildProjectEMLOptions): Promise<string> {
-    this.includeSensitiveData = options?.includeSensitiveData || false;
+  async buildProjectEml(options: BuildProjectEmlOptions): Promise<EmlString> {
+    const { projectId } = options;
+    await this.loadEmlDbConstants();
 
-    this.surveyIds = options?.surveyIds || [];
+    const source = await this.loadProjectSource(projectId);
 
-    await this.loadProjectData();
-    await this.loadSurveyData();
-    await this.loadEMLDBConstants();
-    await this.loadCodes();
+    const emlPackage = new EmlPackage({
+      source,
+      packageId: source.projectData.project.uuid
+    });
 
     this.buildEMLSection();
-    this.buildAccessSection();
     await this.buildDatasetSection();
     await this.buildAdditionalMetadataSection();
 
     return this.xml2jsBuilder.buildObject(this.data);
   }
 
-  async loadEMLDBConstants() {
+  /**
+   * Loads constants pertaining to EML generation from the database.
+   */
+  async loadEmlDbConstants() {
     const [
       organizationUrl,
       organizationName,
@@ -189,12 +187,6 @@ export class EmlService extends DBService {
     return this.cache.codes;
   }
 
-  async loadCodes() {
-    const allCodeSets = await this.codeService.getAllCodeSets();
-
-    this.cache.codes = allCodeSets;
-  }
-
   get projectData(): IGetProject {
     if (!this.cache.projectData) {
       throw Error('Project data was not loaded');
@@ -211,14 +203,24 @@ export class EmlService extends DBService {
     return this.cache.projectReportAttachmentData;
   }
 
-  async loadProjectData() {
-    const projectData = await this.projectService.getProjectById(this.projectId);
-    const attachmentData = await this.projectService.getAttachmentsData(this.projectId);
-    const attachmentReportData = await this.projectService.getReportAttachmentsData(this.projectId);
+  /**
+   * Loads all source data needed to produce a project EML package
+   * @param {number} projectId The ID of the project
+   */
+  async loadProjectSource(projectId: number): Promise<ProjectMetadataSource> {
+    const projectData = await this.projectService.getProjectById(projectId);
+    const projectAttachmentsData = await this.projectService.getAttachmentsData(projectId);
+    const projectReportAttachmentsData = await this.projectService.getReportAttachmentsData(projectId);
+    const codes = await this.codeService.getAllCodeSets();
+    const surveys = await this.surveyService.getSurveysByProjectId(projectId);
 
-    this.cache.projectData = projectData;
-    this.cache.projectAttachmentData = attachmentData;
-    this.cache.projectReportAttachmentData = attachmentReportData;
+    return {
+      projectData,
+      projectAttachmentsData,
+      projectReportAttachmentsData,
+      codes,
+      surveys
+    }
   }
 
   get surveyData(): SurveyObjectWithAttachments[] {
@@ -267,17 +269,6 @@ export class EmlService extends DBService {
     });
   }
 
-  buildAccessSection() {
-    jsonpatch.applyOperation(this.data, {
-      op: 'add',
-      path: '/eml:eml/access',
-      value: {
-        $: { authSystem: this.constants.EML_SECURITY_PROVIDER_URL, order: 'allowFirst' },
-        allow: { principal: 'public', permission: 'read' }
-      }
-    });
-  }
-
   async buildDatasetSection(options?: { datasetTitle?: string }) {
     jsonpatch.applyOperation(this.data, {
       op: 'add',
@@ -286,10 +277,6 @@ export class EmlService extends DBService {
         $: { system: this.constants.EML_PROVIDER_URL, id: this.packageId },
         title: options?.datasetTitle || this.projectData.project.project_name,
         creator: this.getDatasetCreator(),
-        metadataProvider: {
-          organizationName: this.constants.EML_ORGANIZATION_NAME,
-          onlineUrl: this.constants.EML_ORGANIZATION_URL
-        },
         //EML specification expects short ISO format
         pubDate: new Date().toISOString().substring(0, 10),
         language: 'English',
@@ -318,10 +305,10 @@ export class EmlService extends DBService {
   }
 
   async buildAdditionalMetadataSection() {
-    const data: { describes: any; metadata: any }[] = [];
+    const additionalMetadata: { describes: any; metadata: any }[] = [];
 
     if (this.projectData.project.project_type) {
-      data.push({
+      additionalMetadata.push({
         describes: this.projectData.project.uuid,
         metadata: {
           projectTypes: {
@@ -336,7 +323,7 @@ export class EmlService extends DBService {
         .filter((item) => this.projectData.project.project_activities.includes(item.id))
         .map((item) => item.name);
 
-      data.push({
+        additionalMetadata.push({
         describes: this.projectData.project.uuid,
         metadata: {
           projectActivities: {
@@ -363,7 +350,7 @@ export class EmlService extends DBService {
         };
       });
 
-      data.push({
+      additionalMetadata.push({
         describes: this.projectData.project.uuid,
         metadata: {
           IUCNConservationActions: {
@@ -380,7 +367,7 @@ export class EmlService extends DBService {
     }
 
     if (this.projectData.partnerships.stakeholder_partnerships?.length) {
-      data.push({
+      additionalMetadata.push({
         describes: this.projectData.project.uuid,
         metadata: {
           stakeholderPartnerships: {
@@ -397,7 +384,7 @@ export class EmlService extends DBService {
         .filter((item) => this.projectData.partnerships.indigenous_partnerships.includes(item.id))
         .map((item) => item.name);
 
-      data.push({
+        additionalMetadata.push({
         describes: this.projectData.project.uuid,
         metadata: {
           firstNationPartnerships: {
@@ -409,74 +396,8 @@ export class EmlService extends DBService {
       });
     }
 
-    // TODO add back when survey supports permits
-    // if (this.includeSensitiveData) {
-    //   // only include permits if sensitive data is enabled
-    //   if (this.projectData.permit.permits?.length) {
-    //     data.push({
-    //       describes: this.projectData.project.uuid,
-    //       metadata: {
-    //         permits: {
-    //           permit: this.projectData.permit.permits.map((item) => {
-    //             return { permitType: item.permit_type, permitNumber: item.permit_number };
-    //           })
-    //         }
-    //       }
-    //     });
-    //   }
-    // }
-
-    // TODO add back when survey supports permits
-    // if (this.includeSensitiveData) {
-    //   // only include permits if sensitive data is enabled
-    //   this.surveyData.forEach((item) => {
-    //     if (item.permit.permit_number && item.permit.permit_type) {
-    //       data.push({
-    //         describes: item.survey_details.uuid,
-    //         metadata: {
-    //           permits: {
-    //             permit: { permitType: item.permit.permit_type, permitNumber: item.permit.permit_number }
-    //           }
-    //         }
-    //       });
-    //     }
-    //   });
-    // }
-
-    this.surveyData.forEach((item) => {
-      if (item.proprietor) {
-        data.push({
-          describes: item.survey_details.uuid,
-          metadata: {
-            proprietaryDataCategory: item.proprietor.proprietor_type_name
-          }
-        });
-
-        data.push({
-          describes: item.survey_details.uuid,
-          metadata: {
-            proprietorName: item.proprietor.proprietor_name
-          }
-        });
-
-        data.push({
-          describes: item.survey_details.uuid,
-          metadata: {
-            proprietaryDataCategoryRationale: item.proprietor.category_rationale
-          }
-        });
-
-        data.push({
-          describes: item.survey_details.uuid,
-          metadata: {
-            dataSharingAgreementRequired: item.proprietor.disa_required
-          }
-        });
-      }
-    });
-
     if (this.projectAttachmentData?.attachmentDetails.length) {
-      data.push({
+      additionalMetadata.push({
         describes: this.projectData.project.uuid,
         metadata: {
           projectAttachments: {
@@ -489,7 +410,7 @@ export class EmlService extends DBService {
     }
 
     if (this.projectReportAttachmentData?.attachmentDetails.length) {
-      data.push({
+      additionalMetadata.push({
         describes: this.projectData.project.uuid,
         metadata: {
           projectReportAttachments: {
@@ -503,7 +424,7 @@ export class EmlService extends DBService {
 
     this.surveyData.forEach((item) => {
       if (item.attachments?.attachmentDetails.length) {
-        data.push({
+        additionalMetadata.push({
           describes: item.survey_details.uuid,
           metadata: {
             surveyAttachments: {
@@ -518,7 +439,7 @@ export class EmlService extends DBService {
 
     this.surveyData.forEach((item) => {
       if (item.report_attachments?.attachmentDetails.length) {
-        data.push({
+        additionalMetadata.push({
           describes: item.survey_details.uuid,
           metadata: {
             surveyReportAttachments: {
@@ -534,7 +455,7 @@ export class EmlService extends DBService {
     jsonpatch.applyOperation(this.data, {
       op: 'add',
       path: '/eml:eml/additionalMetadata',
-      value: data
+      value: additionalMetadata
     });
   }
 

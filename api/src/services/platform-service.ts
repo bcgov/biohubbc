@@ -107,14 +107,16 @@ export class PlatformService extends DBService {
    * @memberof PlatformService
    */
   async submitDwCAMetadataPackage(projectId: number): Promise<{ queue_id: number } | undefined> {
+
     try {
       if (!this.backboneIntakeEnabled) {
         return;
       }
 
-      const emlService = new EmlService({ projectId: projectId }, this.connection);
+      const emlService = new EmlService(this.connection);
 
-      const emlString = await emlService.buildProjectEml();
+      const emlString = await emlService.buildProjectEml({ projectId: projectId });
+      defaultLog.debug({ label: 'submitDwCAMetadataPackage', emlString });
 
       const dwcArchiveZip = new AdmZip();
       dwcArchiveZip.addFile('eml.xml', Buffer.from(emlString));

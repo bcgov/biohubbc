@@ -295,6 +295,19 @@ export class SurveyService extends DBService {
   }
 
   /**
+   * Get all surveys by their associated project ID.
+   *
+   * @param {number} projectId the ID of the project
+   * @return {*}  {Promise<SurveyObject[]>} The associated surveys
+   * @memberof SurveyService
+   */
+  async getSurveysByProjectId(projectId: number): Promise<SurveyObject[]> {
+    const surveyIds = await this.getSurveyIdsByProjectId(projectId);
+
+    return this.getSurveysByIds(surveyIds.map((survey) => survey.id))
+  }
+
+  /**
    * Creates a new survey for a project and returns survey ID
    *
    * @param {number} projectId
