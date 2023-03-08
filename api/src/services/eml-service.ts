@@ -20,7 +20,7 @@ import { CodeService, IAllCodeSets } from './code-service';
 import { DBService } from './db-service';
 import { ProjectService } from './project-service';
 import { SurveyService } from './survey-service';
-import { TaxonomyService } from './taxonomy-service';
+import { TaxonomyService, ITaxonomySource } from './taxonomy-service';
 
 const NOT_SUPPLIED_CONSTANT = 'Not Supplied';
 
@@ -64,6 +64,11 @@ type BuildProjectEmlOptions = {
 
 type EmlString = string;
 
+type AdditionalMetadata = {
+  describes: string;
+  metadata: Record<string, any>
+}
+
 class EmlPackage<S extends Record<string, any>> {
   /**
    * Source data, on which the EML package is comprised.
@@ -71,15 +76,29 @@ class EmlPackage<S extends Record<string, any>> {
    * @type {S}
    * @memberof EmlPackage
    */
-  source: S;
+  _source: S;
 
-  packageId: string;
+  _packageId: string;
   
-  data: Record<string, unknown> = {};
+  _xml2jsBuilder: xml2js.Builder;
+  
+  _data: Record<string, unknown> = {};
+
+  _additionalMetadata: AdditionalMetadata[] = [];
 
   constructor(options: { source: S, packageId: string }) {
-    this.source = options.source;
-    this.packageId = options.packageId
+    this._source = options.source;
+    this._packageId = options.packageId;
+
+    this._xml2jsBuilder = new xml2js.Builder({ renderOpts: { pretty: false } });
+  }
+
+  additionalMetadata(meta: AdditionalMetadata) {
+    this._additionalMetadata.push(meta);
+  }
+
+  build() {
+    return this._xml2jsBuilder.buildObject(this._data);
   }
 }
 
@@ -101,18 +120,12 @@ export class EmlService extends DBService {
 
   constants: EmlDbConstants = DEFAULT_DB_CONSTANTS;
 
-  xml2jsBuilder: xml2js.Builder;
-
-  includeSensitiveData = false;
-
   constructor(connection: IDBConnection) {
     super(connection);
 
     this.projectService = new ProjectService(this.connection);
     this.surveyService = new SurveyService(this.connection);
     this.codeService = new CodeService(this.connection);
-
-    this.xml2jsBuilder = new xml2js.Builder({ renderOpts: { pretty: false } });
   }
 
   /**
@@ -137,7 +150,7 @@ export class EmlService extends DBService {
     await this.buildDatasetSection();
     await this.buildAdditionalMetadataSection();
 
-    return this.xml2jsBuilder.buildObject(this.data);
+    return emlPackage.build();
   }
 
   /**
@@ -171,48 +184,30 @@ export class EmlService extends DBService {
     this.constants.EML_TAXONOMIC_PROVIDER_URL = taxonomicProviderURL.rows[0].constant || NOT_SUPPLIED_CONSTANT;
   }
 
-  get packageId(): string {
-    if (!this._packageId) {
-      return this.projectData.project.uuid;
-    }
-
-    return this._packageId;
-  }
-
-  get codes(): IAllCodeSets {
-    if (!this.cache.codes) {
-      throw Error('Codes data was not loaded');
-    }
-
-    return this.cache.codes;
-  }
-
-  get projectData(): IGetProject {
-    if (!this.cache.projectData) {
-      throw Error('Project data was not loaded');
-    }
-
-    return this.cache.projectData;
-  }
-
-  get projectAttachmentData(): GetProjectAttachmentsData | undefined {
-    return this.cache.projectAttachmentData;
-  }
-
-  get projectReportAttachmentData(): GetProjectReportAttachmentsData | undefined {
-    return this.cache.projectReportAttachmentData;
-  }
-
   /**
    * Loads all source data needed to produce a project EML package
    * @param {number} projectId The ID of the project
    */
   async loadProjectSource(projectId: number): Promise<ProjectMetadataSource> {
+    // Fetch project data
     const projectData = await this.projectService.getProjectById(projectId);
+
+    // Fetch project attachments
     const projectAttachmentsData = await this.projectService.getAttachmentsData(projectId);
     const projectReportAttachmentsData = await this.projectService.getReportAttachmentsData(projectId);
+
+    // Fetch all codes
     const codes = await this.codeService.getAllCodeSets();
-    const surveys = await this.surveyService.getSurveysByProjectId(projectId);
+
+    // Fetch surveys with all respective attachments
+    const surveys = await this.surveyService.getSurveysByProjectId(projectId)
+      .then(async (surveys: SurveyObject[]) => {
+        return Promise.all(surveys.map(async (survey: SurveyObject) => ({
+          ...survey,
+          attachments: await this.surveyService.getAttachmentsData(survey.survey_details.id),
+          reportAttachments: await this.surveyService.getReportAttachmentsData(survey.survey_details.id)
+        })));
+      });
 
     return {
       projectData,
@@ -221,35 +216,6 @@ export class EmlService extends DBService {
       codes,
       surveys
     }
-  }
-
-  get surveyData(): SurveyObjectWithAttachments[] {
-    if (!this.cache.surveyData) {
-      throw Error('Survey data was not loaded');
-    }
-
-    return this.cache.surveyData;
-  }
-
-  async loadSurveyData() {
-    const response = await this.surveyService.getSurveyIdsByProjectId(this.projectId);
-
-    const allSurveyIds = response.map((item) => item.id);
-
-    // if `BuildProjectEMLOptions.surveyIds` was provided then filter out any ids not in the list
-    const includedSurveyIds = allSurveyIds.filter((item) => !this.surveyIds?.length || this.surveyIds?.includes(item));
-
-    const surveyData = await this.surveyService.getSurveysByIds(includedSurveyIds);
-
-    this.cache.surveyData = surveyData;
-
-    this.cache.surveyData.forEach(
-      async (item) => (item.attachments = await this.surveyService.getAttachmentsData(item.survey_details.id))
-    );
-    this.cache.surveyData.forEach(
-      async (item) =>
-        (item.report_attachments = await this.surveyService.getReportAttachmentsData(item.survey_details.id))
-    );
   }
 
   buildEMLSection() {
@@ -676,20 +642,27 @@ export class EmlService extends DBService {
     };
   }
 
-  getSurveyGeographicCoverageEML(surveyData: SurveyObjectWithAttachments): Record<any, any> {
+  /**
+   * Gets survey geographic coverage EML pertaining to a survey data object
+   *
+   * @param {SurveyObjectWithAttachments} surveyData
+   * @return {*}  {Record<string, any>}
+   * @memberof EmlService
+   */
+  getSurveyGeographicCoverageEML(surveyData: SurveyObjectWithAttachments): Record<string, any> {
     if (!surveyData.location.geometry?.length) {
       return {};
     }
 
-    const polygonFeatures = surveyData.location.geometry?.map((item) => {
-      if (item.geometry.type === 'Point' && item.properties?.radius) {
-        return circle(item.geometry, item.properties.radius, { units: 'meters' });
+    const polygonFeatures = surveyData.location.geometry?.map((feature) => {
+      if (feature.geometry.type === 'Point' && feature.properties?.radius) {
+        return circle(feature.geometry, feature.properties.radius, { units: 'meters' });
       }
 
-      return item;
+      return feature;
     });
 
-    const datasetGPolygons: Record<any, any>[] = [];
+    const datasetGPolygons: Record<string, any>[] = [];
 
     polygonFeatures.forEach((feature) => {
       const featureCoords: number[][] = [];
@@ -725,29 +698,36 @@ export class EmlService extends DBService {
     };
   }
 
-  async getSurveyFocalTaxonomicCoverage(surveyData: SurveyObjectWithAttachments): Promise<Record<any, any>> {
+  /**
+   * Retrieves taxonomic coverage details for the given survey's focal species.
+   *
+   * @param {SurveyObjectWithAttachments} surveyData
+   * @return {*}  {Promise<Record<string, any>>}
+   * @memberof EmlService
+   */
+  async getSurveyFocalTaxonomicCoverage(surveyData: SurveyObjectWithAttachments): Promise<Record<string, any>> {
     const taxonomySearchService = new TaxonomyService();
 
-    // TODO include ancillary_species alongside focal_species?
     const response = await taxonomySearchService.getTaxonomyFromIds(surveyData.species.focal_species);
 
-    const taxonomicClassifications: Record<string, any>[] = [];
+    const taxonomicClassification: Record<string, any>[] = [];
 
-    response.forEach((item) => {
-      const taxonRecord = item as Record<string, any>;
-
-      taxonomicClassifications.push({
-        taxonRankName: taxonRecord.tty_name,
-        taxonRankValue: `${taxonRecord.unit_name1} ${taxonRecord.unit_name2} ${taxonRecord.unit_name3}`,
-        commonName: taxonRecord.english_name,
-        taxonId: { $: { provider: this.constants.EML_TAXONOMIC_PROVIDER_URL }, _: taxonRecord.code }
-      });
+    response.forEach((taxonRecord: ITaxonomySource | undefined) => {  
+      if (taxonRecord) {
+        taxonomicClassification.push({
+          taxonRankName: taxonRecord.tty_name,
+          taxonRankValue: `${taxonRecord.unit_name1} ${taxonRecord.unit_name2} ${taxonRecord.unit_name3}`,
+          commonName: taxonRecord.english_name,
+          taxonId: { $: { provider: this.constants.EML_TAXONOMIC_PROVIDER_URL }, _: taxonRecord.code }
+        });
+      }
     });
 
-    return { taxonomicClassification: taxonomicClassifications };
+    return { taxonomicClassification };
   }
 
-  async getSurveyDesignDescription(surveyData: SurveyObjectWithAttachments): Promise<Record<any, any>> {
+  
+  getSurveyDesignDescription(surveyData: SurveyObjectWithAttachments): Record<any, any> {
     return {
       description: {
         section: [
