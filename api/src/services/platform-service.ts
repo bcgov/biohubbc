@@ -92,10 +92,84 @@ export class PlatformService extends DBService {
     this.attachmentService = new AttachmentService(connection);
   }
 
-  async submitSurveyDataPackage(surveyId: number, projectId: number, data: any): Promise<void> {
+  async submitSurveyDataPackage(
+    surveyId: number,
+    projectId: number,
+    data: { observations: any[]; summarys: any[]; reports: any[]; attachments: any[] }
+  ): Promise<void> {
     console.log('data', data);
     console.log('projectId', projectId);
     console.log('surveyId', surveyId);
+
+    if (!this.backboneIntakeEnabled) {
+      return;
+    }
+
+    const surveyService = new SurveyService(this.connection);
+    const emlService = new EmlService({ projectId: projectId }, this.connection);
+    const emlString = await emlService.buildProjectEml();
+
+    if (!emlString) {
+      throw new HTTP400('emlString failed to build');
+    }
+
+    const dwcArchiveZip = new AdmZip();
+    dwcArchiveZip.addFile('eml.xml', Buffer.from(emlString));
+    console.log('dwcArchiveZip', dwcArchiveZip);
+
+    // const publishRecordPromises = [];
+
+    if (data.observations.length !== 0) {
+      const occurrenceData = await surveyService.getLatestSurveyOccurrenceSubmission(surveyId);
+      console.log('occurrenceData', occurrenceData);
+
+      if (!occurrenceData || !occurrenceData.output_key) {
+        throw new HTTP400('no s3Key found');
+      }
+
+      const s3File = await getFileFromS3(occurrenceData.output_key);
+      console.log('s3File', s3File);
+
+      if (!s3File) {
+        throw new HTTP400('no s3File found');
+      }
+
+      dwcArchiveZip.addFile(data.observations[0].inputFileName, Buffer.from(s3File.Body as Buffer));
+      console.log('dwcArchiveZip', dwcArchiveZip);
+    }
+
+    if (data.summarys.length !== 0) {
+      // summary data in repo not supported
+    }
+
+    if (data.reports.length !== 0) {
+      const reportIds = data.reports.map((report) => report.id);
+      console.log('reportIds', reportIds);
+      await this.uploadSurveyReportAttachmentsToBioHub(emlService.packageId, projectId, reportIds);
+    }
+
+    if (data.attachments.length !== 0) {
+      const attachmentIds = data.attachments.map((attachment) => attachment.id);
+      console.log('attachmentIds', attachmentIds);
+      await this.uploadSurveyAttachmentsToBioHub(emlService.packageId, projectId, attachmentIds);
+    }
+
+    const securityRequest = await surveyService.getSurveyProprietorDataForSecurityRequest(surveyId);
+    console.log('securityRequest', securityRequest);
+
+    const dwCADataset: IDwCADataset = {
+      archiveFile: {
+        data: dwcArchiveZip.toBuffer(),
+        fileName: `${emlService.packageId}.zip`,
+        mimeType: 'application/zip'
+      },
+      dataPackageId: emlService.packageId,
+      securityRequest
+    };
+    console.log('dwCADataset', dwCADataset);
+
+    const queueResponse = await this._submitDwCADatasetToBioHubBackbone(dwCADataset);
+    console.log('queueResponse', queueResponse);
   }
 
   /**
@@ -396,12 +470,11 @@ export class PlatformService extends DBService {
   }
 
   /**
-   * Uploads the given project attachments and report attachments to BioHub.
+   * Uploads the given project attachments to BioHub.
    *
    * @param {string} dataPackageId The dataPackageId for the artifact submission
    * @param {number} projectId The ID of the project
    * @param {number[]} attachmentIds The particular IDs of the attachments to submit to BioHub
-   * @param {number[]} reportAttachmentIds The particular IDs of the report attachments to submit to BioHub
    * @returns {*} {Promise<{artifact_id: number}[]>} The IDs of all the artifact records in BioHub
    *
    * @memberof PlatformService
@@ -409,14 +482,9 @@ export class PlatformService extends DBService {
   async uploadProjectAttachmentsToBioHub(
     dataPackageId: string,
     projectId: number,
-    attachmentIds: number[],
-    reportAttachmentIds: number[]
-  ): Promise<({ project_attachment_publish_id: number } | { project_report_publish_id: number })[]> {
+    attachmentIds: number[]
+  ): Promise<{ project_attachment_publish_id: number }[]> {
     const attachments = await this.attachmentService.getProjectAttachmentsByIds(projectId, attachmentIds);
-    const reportAttachments = await this.attachmentService.getProjectReportAttachmentsByIds(
-      projectId,
-      reportAttachmentIds
-    );
 
     const attachmentArtifactPublishRecords = await Promise.all(
       attachments.map(async (attachment) => {
@@ -434,6 +502,29 @@ export class PlatformService extends DBService {
       })
     );
 
+    return [...attachmentArtifactPublishRecords];
+  }
+
+  /**
+   * Uploads the given project report attachments to BioHub.
+   *
+   * @param {string} dataPackageId The dataPackageId for the artifact submission
+   * @param {number} projectId The ID of the project
+   * @param {number[]} reportAttachmentIds The particular IDs of the report attachments to submit to BioHub
+   * @returns {*} {Promise<{artifact_id: number}[]>} The IDs of all the artifact records in BioHub
+   *
+   * @memberof PlatformService
+   */
+  async uploadProjectReportAttachmentsToBioHub(
+    dataPackageId: string,
+    projectId: number,
+    reportAttachmentIds: number[]
+  ): Promise<{ project_report_publish_id: number }[]> {
+    const reportAttachments = await this.attachmentService.getProjectReportAttachmentsByIds(
+      projectId,
+      reportAttachmentIds
+    );
+
     const reportArtifactPublishRecords = await Promise.all(
       reportAttachments.map(async (attachment) => {
         const artifact = await this._makeArtifactFromAttachment({ dataPackageId, attachment, file_type: 'Report' });
@@ -446,16 +537,15 @@ export class PlatformService extends DBService {
       })
     );
 
-    return [...attachmentArtifactPublishRecords, ...reportArtifactPublishRecords];
+    return [...reportArtifactPublishRecords];
   }
 
   /**
-   * Uploads the given survey attachments and report attachments to BioHub.
+   * Uploads the given survey attachments to BioHub.
    *
    * @param {string} dataPackageId The dataPackageId for the artifact submission
    * @param {number} surveyId The ID of the survey
    * @param {number[]} attachmentIds The particular IDs of the attachments to submit to BioHub
-   * @param {number[]} reportAttachmentIds The particular IDs of the report attachments to submit to BioHub
    * @returns {*} {Promise<{artifact_id: number}[]>} The IDs of all the artifact records in BioHub
    *
    * @memberof PlatformService
@@ -463,14 +553,9 @@ export class PlatformService extends DBService {
   async uploadSurveyAttachmentsToBioHub(
     dataPackageId: string,
     surveyId: number,
-    attachmentIds: number[],
-    reportAttachmentIds: number[]
-  ): Promise<({ survey_attachment_publish_id: number } | { survey_report_publish_id: number })[]> {
+    attachmentIds: number[]
+  ): Promise<{ survey_attachment_publish_id: number }[]> {
     const attachments = await this.attachmentService.getSurveyAttachmentsByIds(surveyId, attachmentIds);
-    const reportAttachments = await this.attachmentService.getSurveyReportAttachmentsByIds(
-      surveyId,
-      reportAttachmentIds
-    );
 
     const attachmentArtifactPublishRecords = await Promise.all(
       attachments.map(async (attachment) => {
@@ -488,10 +573,36 @@ export class PlatformService extends DBService {
       })
     );
 
+    return [...attachmentArtifactPublishRecords];
+  }
+
+  /**
+   * Uploads the given survey report attachments to BioHub.
+   *
+   * @param {string} dataPackageId The dataPackageId for the artifact submission
+   * @param {number} surveyId The ID of the survey
+   * @param {number[]} reportAttachmentIds The particular IDs of the report attachments to submit to BioHub
+   * @returns {*} {Promise<{artifact_id: number}[]>} The IDs of all the artifact records in BioHub
+   *
+   * @memberof PlatformService
+   */
+  async uploadSurveyReportAttachmentsToBioHub(
+    dataPackageId: string,
+    surveyId: number,
+    reportAttachmentIds: number[]
+  ): Promise<{ survey_report_publish_id: number }[]> {
+    const reportAttachments = await this.attachmentService.getSurveyReportAttachmentsByIds(
+      surveyId,
+      reportAttachmentIds
+    );
+    console.log('reportAttachments', reportAttachments);
+
     const reportArtifactPublishRecords = await Promise.all(
       reportAttachments.map(async (attachment) => {
         const artifact = await this._makeArtifactFromAttachment({ dataPackageId, attachment, file_type: 'Report' });
+        console.log('artifact', artifact);
         const { artifact_id } = await this._submitArtifactToBioHub(artifact);
+        console.log('artifact_id', artifact_id);
 
         return this.publishService.insertSurveyReportPublishRecord({
           artifact_id,
@@ -499,7 +610,8 @@ export class PlatformService extends DBService {
         });
       })
     );
+    console.log('reportArtifactPublishRecords', reportArtifactPublishRecords);
 
-    return [...attachmentArtifactPublishRecords, ...reportArtifactPublishRecords];
+    return [...reportArtifactPublishRecords];
   }
 }

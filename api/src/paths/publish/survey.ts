@@ -98,9 +98,7 @@ export function publishSurvey(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     const { projectId, surveyId, data } = req.body;
-    console.log('data', data);
-    console.log('surveyId', surveyId);
-    console.log('projectId', projectId);
+
     try {
       await connection.open();
 

@@ -18,10 +18,8 @@ const usePublishApi = (axios: AxiosInstance) => {
       surveyId: surveyId,
       data: dataSubmission
     };
-    console.log('sendData', sendData);
     const { data } = await axios.post('/api/publish/survey', sendData);
 
-    console.log('data', data);
     return data;
   };
 
