@@ -18,6 +18,7 @@ import { DBService } from './db-service';
 import { EmlService } from './eml-service';
 import { HistoryPublishService } from './history-publish-service';
 import { KeycloakService } from './keycloak-service';
+import { SummaryService } from './summary-service';
 import { SurveyService } from './survey-service';
 
 export interface IArchiveFile {
@@ -115,47 +116,77 @@ export class PlatformService extends DBService {
 
     const dwcArchiveZip = new AdmZip();
     dwcArchiveZip.addFile('eml.xml', Buffer.from(emlString));
-    console.log('dwcArchiveZip', dwcArchiveZip);
+    // console.log('dwcArchiveZip', dwcArchiveZip);
 
     // const publishRecordPromises = [];
 
     if (data.observations.length !== 0) {
       const occurrenceData = await surveyService.getLatestSurveyOccurrenceSubmission(surveyId);
-      console.log('occurrenceData', occurrenceData);
+      // console.log('occurrenceData', occurrenceData);
 
       if (!occurrenceData || !occurrenceData.output_key) {
         throw new HTTP400('no s3Key found');
       }
 
       const s3File = await getFileFromS3(occurrenceData.output_key);
-      console.log('s3File', s3File);
+      // console.log('s3File', s3File);
 
       if (!s3File) {
         throw new HTTP400('no s3File found');
       }
 
       dwcArchiveZip.addFile(data.observations[0].inputFileName, Buffer.from(s3File.Body as Buffer));
-      console.log('dwcArchiveZip', dwcArchiveZip);
+      // console.log('dwcArchiveZip', dwcArchiveZip);
     }
 
     if (data.summarys.length !== 0) {
-      // summary data in repo not supported
+      const summaryService = new SummaryService(this.connection);
+      const summaryData = await summaryService.getLatestSurveySummarySubmission(surveyId);
+      console.log('summaryData', summaryData);
+
+      if (!summaryData || !summaryData.key) {
+        throw new HTTP400('no s3Key found');
+      }
+
+      const s3File = await getFileFromS3(summaryData.key);
+      const artifactZip = new AdmZip();
+      artifactZip.addFile(summaryData.file_name, s3File.Body as Buffer);
+
+      const dataPackageId = emlService.packageId;
+      const artifact: IArtifact = {
+        dataPackageId,
+        archiveFile: {
+          data: artifactZip.toBuffer(),
+          fileName: `${summaryData.uuid}.zip`,
+          mimeType: 'application/zip'
+        },
+        metadata: {
+          file_name: summaryData.file_name,
+          file_size: '1',
+          file_type: 'Summary',
+          title: summaryData.file_name,
+          description: summaryData.message
+        }
+      };
+
+      const { artifact_id } = await this._submitArtifactToBioHub(artifact);
+      console.log('artifact_id', artifact_id);
     }
 
     if (data.reports.length !== 0) {
       const reportIds = data.reports.map((report) => report.id);
-      console.log('reportIds', reportIds);
+      // console.log('reportIds', reportIds);
       await this.uploadSurveyReportAttachmentsToBioHub(emlService.packageId, projectId, reportIds);
     }
 
     if (data.attachments.length !== 0) {
       const attachmentIds = data.attachments.map((attachment) => attachment.id);
-      console.log('attachmentIds', attachmentIds);
+      // console.log('attachmentIds', attachmentIds);
       await this.uploadSurveyAttachmentsToBioHub(emlService.packageId, projectId, attachmentIds);
     }
 
     const securityRequest = await surveyService.getSurveyProprietorDataForSecurityRequest(surveyId);
-    console.log('securityRequest', securityRequest);
+    // console.log('securityRequest', securityRequest);
 
     const dwCADataset: IDwCADataset = {
       archiveFile: {
@@ -166,7 +197,7 @@ export class PlatformService extends DBService {
       dataPackageId: emlService.packageId,
       securityRequest
     };
-    console.log('dwCADataset', dwCADataset);
+    // console.log('dwCADataset', dwCADataset);
 
     const queueResponse = await this._submitDwCADatasetToBioHubBackbone(dwCADataset);
     console.log('queueResponse', queueResponse);
@@ -595,14 +626,11 @@ export class PlatformService extends DBService {
       surveyId,
       reportAttachmentIds
     );
-    console.log('reportAttachments', reportAttachments);
 
     const reportArtifactPublishRecords = await Promise.all(
       reportAttachments.map(async (attachment) => {
         const artifact = await this._makeArtifactFromAttachment({ dataPackageId, attachment, file_type: 'Report' });
-        console.log('artifact', artifact);
         const { artifact_id } = await this._submitArtifactToBioHub(artifact);
-        console.log('artifact_id', artifact_id);
 
         return this.publishService.insertSurveyReportPublishRecord({
           artifact_id,
@@ -610,7 +638,6 @@ export class PlatformService extends DBService {
         });
       })
     );
-    console.log('reportArtifactPublishRecords', reportArtifactPublishRecords);
 
     return [...reportArtifactPublishRecords];
   }

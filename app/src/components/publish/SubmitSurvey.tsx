@@ -1,4 +1,5 @@
 import Box from '@material-ui/core/Box';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import Container from '@material-ui/core/Container';
 import Typography from '@material-ui/core/Typography';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -78,18 +79,25 @@ const SubmitSurvey: React.FC<ISubmitSurvey> = (props) => {
   );
   // console.log('summaryDataLoader.data', summaryDataLoader.data);
 
-  const reportDataLoader = useDataLoader((projectId: number, surveyId: number) =>
+  const attachmentAndReportDataLoader = useDataLoader((projectId: number, surveyId: number) =>
     biohubApi.survey.getSurveyAttachments(projectId, surveyId)
   );
-  useDataLoaderError(reportDataLoader, () => {
+  useDataLoaderError(attachmentAndReportDataLoader, () => {
     return {
-      dialogTitle: 'Error Loading Report Details',
+      dialogTitle: 'Error Loading Reports and Attachments Details',
       dialogText:
-        'An error has occurred while attempting to load Report deteails, please try again. If the error persists, please contact your system administrator.'
+        'An error has occurred while attempting to load Report/Attachment details, please try again. If the error persists, please contact your system administrator.'
     };
   });
-  reportDataLoader.load(surveyDetails.surveyData.survey_details.project_id, surveyDetails.surveyData.survey_details.id);
-  // console.log('reportDataLoader.data', reportDataLoader.data);
+  attachmentAndReportDataLoader.load(
+    surveyDetails.surveyData.survey_details.project_id,
+    surveyDetails.surveyData.survey_details.id
+  );
+  // console.log('attachmentAndReportDataLoader.data', attachmentAndReportDataLoader.data);
+
+  if (attachmentAndReportDataLoader.isLoading || observationDataLoader.isLoading || summaryDataLoader.isLoading) {
+    return <CircularProgress className="pageProgress" size={40} />;
+  }
 
   return (
     <Container maxWidth={false} disableGutters>
@@ -107,15 +115,15 @@ const SubmitSurvey: React.FC<ISubmitSurvey> = (props) => {
           {
             key: 'reports',
             value:
-              !!reportDataLoader.data && reportDataLoader.data.reportAttachmentsList
-                ? reportDataLoader.data.reportAttachmentsList
+              !!attachmentAndReportDataLoader.data && attachmentAndReportDataLoader.data.reportAttachmentsList
+                ? attachmentAndReportDataLoader.data.reportAttachmentsList
                 : []
           },
           {
             key: 'attachments',
             value:
-              !!reportDataLoader.data && reportDataLoader.data.attachmentsList
-                ? reportDataLoader.data.attachmentsList
+              !!attachmentAndReportDataLoader.data && attachmentAndReportDataLoader.data.attachmentsList
+                ? attachmentAndReportDataLoader.data.attachmentsList
                 : []
           }
         ]}
@@ -143,13 +151,13 @@ const SubmitSurvey: React.FC<ISubmitSurvey> = (props) => {
         />
       )}
 
-      {reportDataLoader.isReady && (
+      {attachmentAndReportDataLoader.isReady && (
         <SubmitSection
           subHeader="REPORTS"
           formikName="reports"
           data={
-            !!reportDataLoader.data && reportDataLoader.data.reportAttachmentsList
-              ? reportDataLoader.data.reportAttachmentsList
+            !!attachmentAndReportDataLoader.data && attachmentAndReportDataLoader.data.reportAttachmentsList
+              ? attachmentAndReportDataLoader.data.reportAttachmentsList
               : []
           }
           getName={(item: IGetSurveyReportAttachment) => {
@@ -158,13 +166,13 @@ const SubmitSurvey: React.FC<ISubmitSurvey> = (props) => {
         />
       )}
 
-      {reportDataLoader.isReady && (
+      {attachmentAndReportDataLoader.isReady && (
         <SubmitSection
           subHeader="OTHER DOCUMENTS"
           formikName="attachments"
           data={
-            !!reportDataLoader.data && reportDataLoader.data.attachmentsList
-              ? reportDataLoader.data.attachmentsList
+            !!attachmentAndReportDataLoader.data && attachmentAndReportDataLoader.data.attachmentsList
+              ? attachmentAndReportDataLoader.data.attachmentsList
               : []
           }
           getName={(item: IGetSurveyAttachment) => {

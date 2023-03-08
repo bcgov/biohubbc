@@ -499,8 +499,6 @@ export class AttachmentRepository extends BaseRepository {
   ): Promise<ISurveyReportAttachment[]> {
     defaultLog.debug({ label: 'getSurveyReportAttachmentsByIds' });
 
-    console.log('surveyId', surveyId);
-    console.log('reportAttachmentIds', reportAttachmentIds);
     const knex = getKnex();
     const queryBuilder = knex
       .queryBuilder()
@@ -526,9 +524,7 @@ export class AttachmentRepository extends BaseRepository {
       .whereIn('survey_report_attachment_id', reportAttachmentIds)
       .andWhere('survey_id', surveyId);
 
-    console.log('queryBuilder', queryBuilder);
     const response = await this.connection.knex<ISurveyReportAttachment>(queryBuilder);
-    console.log('response', response);
 
     return response.rows;
   }
