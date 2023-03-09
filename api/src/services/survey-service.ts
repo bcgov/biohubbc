@@ -304,7 +304,7 @@ export class SurveyService extends DBService {
   async getSurveysByProjectId(projectId: number): Promise<SurveyObject[]> {
     const surveyIds = await this.getSurveyIdsByProjectId(projectId);
 
-    return this.getSurveysByIds(surveyIds.map((survey) => survey.id))
+    return this.getSurveysByIds(surveyIds.map((survey) => survey.id));
   }
 
   /**

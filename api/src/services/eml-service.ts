@@ -22,7 +22,7 @@ import { CodeService, IAllCodeSets } from './code-service';
 import { DBService } from './db-service';
 import { ProjectService } from './project-service';
 import { SurveyService } from './survey-service';
-import { TaxonomyService, ITaxonomySource } from './taxonomy-service';
+import { ITaxonomySource, TaxonomyService } from './taxonomy-service';
 
 const NOT_SUPPLIED = 'Not Supplied';
 const EMPTY_STRING = ``;
@@ -51,7 +51,6 @@ type SurveyObjectWithAttachments = SurveyObject & {
   attachments?: GetSurveyAttachmentsData;
   report_attachments?: GetSurveyReportAttachmentsData;
 };
-
 
 type ProjectMetadataSource = {
   projectData: IGetProject;
@@ -168,7 +167,7 @@ class EmlPackage {
    * @memberof EmlPackage
    */
   withEml(emlMetadata: Record<string, any>): EmlPackage {
-    this._emlMetadata = emlMetadata;  
+    this._emlMetadata = emlMetadata;
 
     return this;
   }
@@ -177,7 +176,7 @@ class EmlPackage {
    * Sets the Dataset data field for the EML package
    *
    * @param {Record<string, any>} datasetMetadata
-   * @return {*} 
+   * @return {*}
    * @memberof EmlPackage
    */
   withDataset(datasetMetadata: Record<string, any>): EmlPackage {
@@ -186,13 +185,13 @@ class EmlPackage {
     return this;
   }
 
-/**
- * Sets the Dataset Project data field for the EML package
- *
- * @param {Record<string, any>} projectMetadata
- * @return {*} 
- * @memberof EmlPackage
- */
+  /**
+   * Sets the Dataset Project data field for the EML package
+   *
+   * @param {Record<string, any>} projectMetadata
+   * @return {*}
+   * @memberof EmlPackage
+   */
   withProject(projectMetadata: Record<string, any>): EmlPackage {
     this._projectMetadata = projectMetadata;
 
@@ -203,7 +202,7 @@ class EmlPackage {
    * Appends Additional Metadata fields on the EML package
    *
    * @param {AdditionalMetadata[]} additionalMetadata
-   * @return {*} 
+   * @return {*}
    * @memberof EmlPackage
    */
   withAdditionalMetadata(additionalMetadata: AdditionalMetadata[]): EmlPackage {
@@ -337,25 +336,27 @@ export class EmlService extends DBService {
 
     const emlPackage = new EmlPackage({ packageId });
 
-    return emlPackage
-      // Build EML field
-      .withEml(this._buildEmlSection(packageId))
+    return (
+      emlPackage
+        // Build EML field
+        .withEml(this._buildEmlSection(packageId))
 
-      // Build EML->Dataset field
-      .withDataset(await this._buildEmlDatasetSection(packageId, projectSource.projectData))
+        // Build EML->Dataset field
+        .withDataset(await this._buildEmlDatasetSection(packageId, projectSource.projectData))
 
-      // Build EML->Dataset->Project field
-      .withProject(await this._buildProjectEmlProjectSection(projectSource.projectData))
+        // Build EML->Dataset->Project field
+        .withProject(await this._buildProjectEmlProjectSection(projectSource.projectData))
 
-      // Build EML->Dataset->Project->AdditionalMetadata field
-      .withAdditionalMetadata(await this._getProjectAdditionalMetadata(projectSource))
-      .withAdditionalMetadata(this._getSurveyAdditionalMetadata(projectSource.surveys))
+        // Build EML->Dataset->Project->AdditionalMetadata field
+        .withAdditionalMetadata(await this._getProjectAdditionalMetadata(projectSource))
+        .withAdditionalMetadata(this._getSurveyAdditionalMetadata(projectSource.surveys))
 
-      // Build EML->Dataset->Project->RelatedProject field
-      .withRelatedProjects(await this._buildAllSurveyEmlProjectSections(projectSource.surveys))
+        // Build EML->Dataset->Project->RelatedProject field
+        .withRelatedProjects(await this._buildAllSurveyEmlProjectSections(projectSource.surveys))
 
-      // Compile the EML package
-      .build();
+        // Compile the EML package
+        .build()
+    );
   }
 
   /**
@@ -374,25 +375,27 @@ export class EmlService extends DBService {
 
     const emlPackage = new EmlPackage({ packageId });
 
-    return emlPackage
-      // Build EML field
-      .withEml(this._buildEmlSection(packageId))
+    return (
+      emlPackage
+        // Build EML field
+        .withEml(this._buildEmlSection(packageId))
 
-      // Build EML->Dataset field
-      .withDataset(await this._buildEmlDatasetSection(packageId, surveySource.projectData))
+        // Build EML->Dataset field
+        .withDataset(await this._buildEmlDatasetSection(packageId, surveySource.projectData))
 
-      // Build EML->Dataset->Project field
-      .withProject(await this._buildSurveyEmlProjectSection(surveySource.surveyData))
+        // Build EML->Dataset->Project field
+        .withProject(await this._buildSurveyEmlProjectSection(surveySource.surveyData))
 
-      // Build EML->Dataset->Project->AdditionalMetadata field
-      .withAdditionalMetadata(await this._getProjectAdditionalMetadata(surveySource))
-      .withAdditionalMetadata(this._getSurveyAdditionalMetadata([surveySource.surveyData]))
+        // Build EML->Dataset->Project->AdditionalMetadata field
+        .withAdditionalMetadata(await this._getProjectAdditionalMetadata(surveySource))
+        .withAdditionalMetadata(this._getSurveyAdditionalMetadata([surveySource.surveyData]))
 
-      // Build EML->Dataset->Project->RelatedProject field//
-      .withRelatedProjects([this._buildProjectEmlProjectSection(surveySource.projectData)])
+        // Build EML->Dataset->Project->RelatedProject field//
+        .withRelatedProjects([this._buildProjectEmlProjectSection(surveySource.projectData)])
 
-      // Compile the EML package
-      .build();
+        // Compile the EML package
+        .build()
+    );
   }
 
   async codes(): Promise<IAllCodeSets> {
@@ -447,21 +450,22 @@ export class EmlService extends DBService {
     const projectReportAttachmentsData = await this._projectService.getReportAttachmentsData(projectId);
 
     // Fetch surveys with all respective attachments
-    const surveys = await this._surveyService.getSurveysByProjectId(projectId)
-      .then(async (surveys: SurveyObject[]) => {
-        return Promise.all(surveys.map(async (survey: SurveyObject) => ({
+    const surveys = await this._surveyService.getSurveysByProjectId(projectId).then(async (surveys: SurveyObject[]) => {
+      return Promise.all(
+        surveys.map(async (survey: SurveyObject) => ({
           ...survey,
           attachments: await this._surveyService.getAttachmentsData(survey.survey_details.id),
           reportAttachments: await this._surveyService.getReportAttachmentsData(survey.survey_details.id)
-        })));
-      });
+        }))
+      );
+    });
 
     return {
       projectData,
       projectAttachmentsData,
       projectReportAttachmentsData,
       surveys
-    }
+    };
   }
 
   /**
@@ -470,17 +474,16 @@ export class EmlService extends DBService {
    */
   async loadSurveySource(surveyId: number): Promise<SurveyMetadataSource> {
     // Fetch survey data with attachments
-    const surveyData = await this._surveyService.getSurveyById(surveyId)
-      .then( async (surveyObject: SurveyObject) => {
-        return {
-          ...surveyObject,
-          attachments: await this._surveyService.getAttachmentsData(surveyId),
-          reportAttachments: await this._surveyService.getReportAttachmentsData(surveyId)
-        }
-      });
+    const surveyData = await this._surveyService.getSurveyById(surveyId).then(async (surveyObject: SurveyObject) => {
+      return {
+        ...surveyObject,
+        attachments: await this._surveyService.getAttachmentsData(surveyId),
+        reportAttachments: await this._surveyService.getReportAttachmentsData(surveyId)
+      };
+    });
 
     // Fetch project data and project attachments
-    const projectId = surveyData.survey_details.project_id
+    const projectId = surveyData.survey_details.project_id;
     const projectData = await this._projectService.getProjectById(projectId);
     const projectAttachmentsData = await this._projectService.getAttachmentsData(projectId);
     const projectReportAttachmentsData = await this._projectService.getReportAttachmentsData(projectId);
@@ -489,8 +492,8 @@ export class EmlService extends DBService {
       surveyData,
       projectData,
       projectAttachmentsData,
-      projectReportAttachmentsData,
-    }
+      projectReportAttachmentsData
+    };
   }
 
   /**
@@ -510,7 +513,7 @@ export class EmlService extends DBService {
         'xmlns:stmml': 'http://www.xml-cml.org/schema/schema24',
         'xsi:schemaLocation': 'https://eml.ecoinformatics.org/eml-2.2.0 xsd/eml.xsd'
       }
-    }
+    };
   }
 
   /**
@@ -531,7 +534,7 @@ export class EmlService extends DBService {
       pubDate: this._makeEmlDateString(),
       language: 'English',
       contact: this._getProjectContact(projectData)
-    }
+    };
   }
 
   /**
@@ -561,7 +564,7 @@ export class EmlService extends DBService {
           }
         }
       }
-    }
+    };
   }
 
   /**
@@ -610,7 +613,9 @@ export class EmlService extends DBService {
    * @return {*}  {Promise<AdditionalMetadata[]>}
    * @memberof EmlService
    */
-  async _getProjectAdditionalMetadata(source: ProjectMetadataSource | SurveyMetadataSource): Promise<AdditionalMetadata[]> {
+  async _getProjectAdditionalMetadata(
+    source: ProjectMetadataSource | SurveyMetadataSource
+  ): Promise<AdditionalMetadata[]> {
     const additionalMetadata: AdditionalMetadata[] = [];
     const codes = await this.codes();
 
@@ -693,7 +698,7 @@ export class EmlService extends DBService {
         .filter((code) => projectData.partnerships.indigenous_partnerships.includes(code.id))
         .map((code) => code.name);
 
-        additionalMetadata.push({
+      additionalMetadata.push({
         describes: projectData.project.uuid,
         metadata: {
           firstNationPartnerships: {
@@ -1090,9 +1095,7 @@ export class EmlService extends DBService {
         section: [
           {
             title: 'Field Method',
-            para: codes.field_methods.find(
-              (code) => code.id === survey.purpose_and_methodology.field_method_id
-            )?.name
+            para: codes.field_methods.find((code) => code.id === survey.purpose_and_methodology.field_method_id)?.name
           },
           {
             title: 'Ecological Season',
