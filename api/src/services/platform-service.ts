@@ -107,18 +107,20 @@ export class PlatformService extends DBService {
    * @memberof PlatformService
    */
   async submitDwCAMetadataPackage(projectId: number): Promise<{ queue_id: number } | undefined> {
-    defaultLog.debug({ label: 'submitDwCAMetadataPackage' });
-
     try {
       if (!this.backboneIntakeEnabled) {
         return;
       }
 
+      
       const emlService = new EmlService(this.connection);
       const emlPackage = await emlService.createProjectEml({ projectId });
+      const emlString = emlPackage.build();
+
+      defaultLog.debug({ label: 'submitDwCAMetadataPackage', emlString });
 
       const dwcArchiveZip = new AdmZip();
-      dwcArchiveZip.addFile('eml.xml', Buffer.from(emlPackage.build()));
+      dwcArchiveZip.addFile('eml.xml', Buffer.from(emlString));
 
       const dwCADataset = {
         archiveFile: {
@@ -131,7 +133,6 @@ export class PlatformService extends DBService {
 
       return this._submitDwCADatasetToBioHubBackbone(dwCADataset);
     } catch (error) {
-      const defaultLog = getLogger('platformService->submitDwCAMetadataPackage');
       // Don't fail the rest of the endpoint if submitting metadata fails
       defaultLog.error({ label: 'platformService->submitDwCAMetadataPackage', message: 'error', error });
     }
@@ -306,7 +307,6 @@ export class PlatformService extends DBService {
         await historyRepo.insertSurveyMetadataPublishRecord({ survey_id: surveyId, queue_id: queueResponse.queue_id });
       }
     } catch (error) {
-      const defaultLog = getLogger('platformService->submitAndPublishDwcAMetadata');
       // Don't fail the rest of the endpoint if submitting metadata fails
       defaultLog.error({ label: 'platformService->submitAndPublishDwcAMetadata', message: 'error', error });
     }

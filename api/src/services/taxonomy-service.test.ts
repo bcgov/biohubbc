@@ -85,7 +85,16 @@ describe('TaxonomyService', () => {
 
       expect(elasticSearchStub).to.be.calledOnce;
 
-      expect(response).to.eql([{ ...taxonDetails, end_date: null }]);
+      expect(response).to.eql([
+        {
+          _index: process.env.ELASTICSEARCH_TAXONOMY_INDEX,
+          _id: '1',
+          _source: {
+            ...taxonDetails,
+            end_date: null
+          }
+        }
+      ]);
     });
   });
 

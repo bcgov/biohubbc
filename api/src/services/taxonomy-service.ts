@@ -82,10 +82,12 @@ export class TaxonomyService {
    *
    * Searches the taxonomy Elasticsearch index by taxonomic code IDs
    * @param {string[] | number[]} ids The array of taxonomic code IDs
-   * @return {Promise<(ITaxonomySource | undefined)[]>} The source of the response from Elasticsearch
+   * @return {Promise<SearchHit<ITaxonomySource>[]>} The response from Elasticsearch
    * @memberof TaxonomyService
    */
-  async getTaxonomyFromIds(ids: string[] | number[]) {
+  async getTaxonomyFromIds(ids: string[] | number[]): Promise<SearchHit<ITaxonomySource>[]> {
+    defaultLog.debug({ label: 'getTaxonomyFromIds' });
+
     const response = await this._elasticSearch({
       query: {
         terms: {
@@ -94,7 +96,11 @@ export class TaxonomyService {
       }
     });
 
-    return (response && response.hits.hits.map((item) => item._source)) || [];
+    if (!response) {
+      return [];
+    }
+
+    return response.hits.hits;
   }
 
   /**

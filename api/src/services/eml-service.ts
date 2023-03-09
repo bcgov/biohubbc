@@ -1,3 +1,4 @@
+import { SearchHit } from '@elastic/elasticsearch/lib/api/types';
 import bbox from '@turf/bbox';
 import circle from '@turf/circle';
 import { AllGeoJSON, featureCollection } from '@turf/helpers';
@@ -24,6 +25,7 @@ import { SurveyService } from './survey-service';
 import { TaxonomyService, ITaxonomySource } from './taxonomy-service';
 
 const NOT_SUPPLIED = 'Not Supplied';
+const EMPTY_STRING = ``;
 
 const DEFAULT_DB_CONSTANTS = {
   EML_VERSION: '1.0.0',
@@ -185,7 +187,9 @@ export class EmlService extends DBService {
     const projectSource = await this.loadProjectSource(projectId);
     const packageId = projectSource.projectData.project.uuid;
 
-    return new EmlPackage({ packageId })
+    const emlPackage = new EmlPackage({ packageId });
+
+    return emlPackage
       .withEml(this.buildProjectEmlSection(packageId))
       .withDataset(await this.buildProjectEmlDatasetSection(projectSource.projectData, packageId))
       .withAdditionalMetadata(await this.getProjectAdditionalMetadata(projectSource))
@@ -195,7 +199,7 @@ export class EmlService extends DBService {
   }
 
   async codes(): Promise<IAllCodeSets> {
-    if (this._codes === null) {
+    if (!this._codes) {
       this._codes = await this.codeService.getAllCodeSets();
     }
 
@@ -267,7 +271,7 @@ export class EmlService extends DBService {
     return {
       $: {
         packageId: `urn:uuid:${packageId}`,
-        system: this.constants.EML_PROVIDER_URL,
+        system: EMPTY_STRING,
         'xmlns:eml': 'https://eml.ecoinformatics.org/eml-2.2.0',
         'xmlns:xsi': 'http://www.w3.org/2001/XMLSchema-instance',
         'xmlns:stmml': 'http://www.xml-cml.org/schema/schema24',
@@ -278,7 +282,7 @@ export class EmlService extends DBService {
 
   async buildProjectEmlDatasetSection(projectData: IGetProject, packageId: string): Promise<Record<string, any>> {
     return {
-      $: { system: this.constants.EML_PROVIDER_URL, id: packageId },
+      $: { system: EMPTY_STRING, id: packageId },
       title: projectData.project.project_name,
       creator: this.getDatasetCreator(projectData),
       // EML specification expects short ISO format
@@ -286,7 +290,7 @@ export class EmlService extends DBService {
       language: 'English',
       contact: this.getProjectContact(projectData),
       project: {
-        $: { id: projectData.project.uuid, system: this.constants.EML_PROVIDER_URL },
+        $: { id: projectData.project.uuid, system: EMPTY_STRING },
         title: projectData.project.project_name,
         personnel: this.getProjectPersonnel(projectData),
         abstract: {
@@ -788,13 +792,18 @@ export class EmlService extends DBService {
 
     const taxonomicClassification: Record<string, any>[] = [];
 
-    response.forEach((taxonRecord: ITaxonomySource | undefined) => {  
-      if (taxonRecord) {
+    response.forEach((taxonResult: SearchHit<ITaxonomySource>) => {
+      const { _source } = taxonResult;
+
+      if (_source) {
         taxonomicClassification.push({
-          taxonRankName: taxonRecord.tty_name,
-          taxonRankValue: `${taxonRecord.unit_name1} ${taxonRecord.unit_name2} ${taxonRecord.unit_name3}`,
-          commonName: taxonRecord.english_name,
-          taxonId: { $: { provider: this.constants.EML_TAXONOMIC_PROVIDER_URL }, _: taxonRecord.code }
+          taxonRankName: _source.tty_name,
+          taxonRankValue: `${_source.unit_name1} ${_source.unit_name2} ${_source.unit_name3}`,
+          commonName: _source.english_name,
+          taxonId: {
+            $: { provider: EMPTY_STRING },
+            _: taxonResult._id
+          }
         });
       }
     });
@@ -852,7 +861,7 @@ export class EmlService extends DBService {
    * @memberof EmlService
    */
   async buildAllSurveyEmlDatasetSections(surveys: SurveyObjectWithAttachments[]): Promise<Record<string, any>[]> {
-    return Promise.all(surveys.map(this.buildSurveyEmlDatasetSection));
+    return Promise.all(surveys.map(async (survey) => await this.buildSurveyEmlDatasetSection(survey)));
   }
 
   /**
@@ -866,7 +875,7 @@ export class EmlService extends DBService {
     const codes = await this.codes();
 
     return {
-      $: { id: surveyData.survey_details.uuid, system: this.constants.EML_PROVIDER_URL },
+      $: { id: surveyData.survey_details.uuid, system: EMPTY_STRING },
       title: surveyData.survey_details.survey_name,
       personnel: this.getSurveyPersonnel(surveyData),
       abstract: {
