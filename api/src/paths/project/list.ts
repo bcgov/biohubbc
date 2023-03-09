@@ -131,7 +131,7 @@ export function getProjectList(): RequestHandler {
     try {
       await connection.open();
 
-      const isUserAdmin = userHasValidRole([SYSTEM_ROLE.SYSTEM_ADMIN], req['system_user']['role_names']);
+      const isUserAdmin = userHasValidRole([SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR], req['system_user']['role_names']);
       const systemUserId = connection.systemUserId();
       const filterFields = req.query || {};
 
