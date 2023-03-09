@@ -10,6 +10,7 @@ import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { Formik, FormikProps } from 'formik';
 import React, { useRef, useState } from 'react';
 import yup from 'utils/YupSchema';
+import { ErrorDialog } from './ErrorDialog';
 
 const useStyles = makeStyles((theme) => ({
   wrapper: {
@@ -90,50 +91,93 @@ const SubmitBiohubDialog: React.FC<ISubmitBiohubDialogProps> = (props) => {
 
   const [formikRef] = useState(useRef<FormikProps<any>>(null));
   const [isFinishing, setIsFinishing] = useState(false);
+  const [noSubmission, setNoSubmission] = useState(false);
+  const [finishSubmission, setFinishSubmission] = useState(false);
+
+  const onSubmitForm = (values: any) => {
+    if (JSON.stringify(values) === JSON.stringify(initialValues)) {
+      setNoSubmission(true);
+      return;
+    }
+
+    setIsFinishing(true);
+    onSubmit(values).finally(() => {
+      setFinishSubmission(true);
+    });
+  };
 
   if (!open) {
     return <></>;
   }
 
   return (
-    <Dialog
-      fullScreen={fullScreen}
-      maxWidth="xl"
-      open={open}
-      aria-labelledby="component-dialog-title"
-      aria-describedby="component-dialog-description">
-      <Formik
-        innerRef={formikRef}
-        initialValues={initialValues}
-        validationSchema={validationSchema}
-        validateOnBlur={true}
-        validateOnChange={false}
-        onSubmit={(values) => {
-          setIsFinishing(true);
-          onSubmit(values).finally(() => {
-            setIsFinishing(false);
-            onClose();
-          });
-        }}>
-        {(formikProps) => (
-          <>
-            <DialogTitle id="component-dialog-title">{dialogTitle}</DialogTitle>
-            <DialogContent>{props.children}</DialogContent>
-            <DialogActions>
-              <Box className={classes.wrapper}>
-                <Button onClick={formikProps.submitForm} color="primary" variant="contained" disabled={isFinishing}>
-                  <strong>Submit</strong>
+    <>
+      <ErrorDialog
+        dialogTitle="No Information to Submit"
+        dialogText=" No information has been uploaded to Biohub for submission."
+        open={noSubmission}
+        onClose={() => {
+          setNoSubmission(false);
+          onClose();
+        }}
+        onOk={() => {
+          setNoSubmission(false);
+          onClose();
+        }}></ErrorDialog>
+
+      <ErrorDialog
+        dialogTitle="Survey data submitted!"
+        dialogText="Thank you for submitting your survey data to Biohub."
+        open={finishSubmission}
+        onClose={() => {
+          setFinishSubmission(false);
+          setIsFinishing(false);
+          onClose();
+        }}
+        onOk={() => {
+          setFinishSubmission(false);
+          setIsFinishing(false);
+          onClose();
+        }}></ErrorDialog>
+      <Dialog
+        fullScreen={fullScreen}
+        maxWidth="xl"
+        open={open}
+        aria-labelledby="component-dialog-title"
+        aria-describedby="component-dialog-description">
+        <Formik
+          innerRef={formikRef}
+          initialValues={initialValues}
+          validationSchema={validationSchema}
+          validateOnBlur={true}
+          validateOnChange={false}
+          onSubmit={(values) => {
+            onSubmitForm(values);
+          }}>
+          {(formikProps) => (
+            <>
+              <DialogTitle id="component-dialog-title">{dialogTitle}</DialogTitle>
+              <DialogContent>{props.children}</DialogContent>
+              <DialogActions>
+                <Box className={classes.wrapper}>
+                  <Button
+                    onClick={formikProps.submitForm}
+                    color="primary"
+                    variant="contained"
+                    disabled={formikProps.values === initialValues}>
+                    <strong>Submit</strong>
+                  </Button>
+                  {isFinishing && <CircularProgress size={24} className={classes.buttonProgress} />}
+                </Box>
+                <Button onClick={onClose} color="primary" variant="outlined" disabled={isFinishing}>
+                  Cancel
                 </Button>
-                {isFinishing && <CircularProgress size={24} className={classes.buttonProgress} />}
-              </Box>
-              <Button onClick={onClose} color="primary" variant="outlined" disabled={isFinishing}>
-                Cancel
-              </Button>
-            </DialogActions>
-          </>
-        )}
-      </Formik>
-    </Dialog>
+              </DialogActions>
+            </>
+          )}
+        </Formik>
+      </Dialog>
+    </>
   );
 };
 

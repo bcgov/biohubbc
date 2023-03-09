@@ -63,7 +63,7 @@ POST.apiDoc = {
             type: 'object',
             properties: {
               uuid: {
-                type: 'number'
+                type: 'string'
               }
             }
           }
@@ -103,11 +103,11 @@ export function publishSurvey(): RequestHandler {
       await connection.open();
 
       const platformService = new PlatformService(connection);
-      await platformService.submitSurveyDataPackage(projectId, surveyId, data);
+      const response = await platformService.submitSurveyDataPackage(projectId, surveyId, data);
 
       await connection.commit();
 
-      return res.status(200).send({ uuid: 1 });
+      return res.status(200).send(response);
     } catch (error) {
       defaultLog.error({ label: 'publishSurvey', message: 'error', error });
       await connection.rollback();

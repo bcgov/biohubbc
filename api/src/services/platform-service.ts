@@ -71,6 +71,12 @@ export interface IArtifact {
   };
 }
 
+interface publishIds {
+  queueId: number | null;
+  occurrenceId: number | null;
+  summaryInfo: { summaryId: number | null; artifactId: number | null };
+}
+
 const defaultLog = getLogger('services/platform-repository');
 
 export class PlatformService extends DBService {
@@ -93,17 +99,32 @@ export class PlatformService extends DBService {
     this.attachmentService = new AttachmentService(connection);
   }
 
+  /**
+   * Submit Surey Data Package to Biohub
+   *
+   * @param {number} surveyId
+   * @param {number} projectId
+   * @param {{
+   *       observations: IGetObservationSubmissionResponse[];
+   *       summarys: IGetSummaryResultsResponse[];
+   *       reports: IGetSurveyReportAttachment[];
+   *       attachments: IGetSurveyAttachment[];
+   *     }} data
+   * @return {*}  {Promise<void>}
+   * @memberof PlatformService
+   */
   async submitSurveyDataPackage(
     surveyId: number,
     projectId: number,
-    data: { observations: any[]; summarys: any[]; reports: any[]; attachments: any[] }
-  ): Promise<void> {
-    console.log('data', data);
-    console.log('projectId', projectId);
-    console.log('surveyId', surveyId);
-
+    data: {
+      observations: IGetObservationSubmissionResponse[];
+      summarys: IGetSummaryResultsResponse[];
+      reports: IGetSurveyReportAttachment[];
+      attachments: IGetSurveyAttachment[];
+    }
+  ): Promise<{ uuid: string }> {
     if (!this.backboneIntakeEnabled) {
-      return;
+      throw new HTTP400('Biohub intake is not enabled');
     }
 
     const surveyService = new SurveyService(this.connection);
@@ -116,37 +137,46 @@ export class PlatformService extends DBService {
 
     const dwcArchiveZip = new AdmZip();
     dwcArchiveZip.addFile('eml.xml', Buffer.from(emlString));
-    // console.log('dwcArchiveZip', dwcArchiveZip);
 
-    // const publishRecordPromises = [];
+    const publishIds: publishIds = {
+      queueId: null,
+      occurrenceId: null,
+      summaryInfo: { summaryId: null, artifactId: null }
+    };
 
+    /**
+     * Check for observations, if observations are present,
+     * then get file from S3 and add to dwcArchiveZip
+     */
     if (data.observations.length !== 0) {
       const occurrenceData = await surveyService.getLatestSurveyOccurrenceSubmission(surveyId);
-      // console.log('occurrenceData', occurrenceData);
-
       if (!occurrenceData || !occurrenceData.output_key) {
         throw new HTTP400('no s3Key found');
       }
 
-      const s3File = await getFileFromS3(occurrenceData.output_key);
-      // console.log('s3File', s3File);
+      publishIds.occurrenceId = occurrenceData.id;
 
+      const s3File = await getFileFromS3(occurrenceData.output_key);
       if (!s3File) {
         throw new HTTP400('no s3File found');
       }
 
       dwcArchiveZip.addFile(data.observations[0].inputFileName, Buffer.from(s3File.Body as Buffer));
-      // console.log('dwcArchiveZip', dwcArchiveZip);
     }
 
+    /**
+     * Check for summarys, if summarys are present,
+     * then get file from S3 and submit to biohub as an artifact
+     */
     if (data.summarys.length !== 0) {
       const summaryService = new SummaryService(this.connection);
       const summaryData = await summaryService.getLatestSurveySummarySubmission(surveyId);
-      console.log('summaryData', summaryData);
 
       if (!summaryData || !summaryData.key) {
         throw new HTTP400('no s3Key found');
       }
+
+      publishIds.summaryInfo.summaryId = summaryData.id;
 
       const s3File = await getFileFromS3(summaryData.key);
       const artifactZip = new AdmZip();
@@ -162,7 +192,7 @@ export class PlatformService extends DBService {
         },
         metadata: {
           file_name: summaryData.file_name,
-          file_size: '1',
+          file_size: String(s3File.ContentLength),
           file_type: 'Summary',
           title: summaryData.file_name,
           description: summaryData.message
@@ -170,24 +200,29 @@ export class PlatformService extends DBService {
       };
 
       const { artifact_id } = await this._submitArtifactToBioHub(artifact);
-      console.log('artifact_id', artifact_id);
+      publishIds.summaryInfo.artifactId = artifact_id;
     }
 
+    /**
+     * Check for report, if report are present,
+     * then submit all reports to biohub as an artifact
+     */
     if (data.reports.length !== 0) {
       const reportIds = data.reports.map((report) => report.id);
-      // console.log('reportIds', reportIds);
       await this.uploadSurveyReportAttachmentsToBioHub(emlService.packageId, projectId, reportIds);
     }
 
+    /**
+     * Check for attachments, if attachments are present,
+     * then submit all attachments to biohub as an artifact
+     */
     if (data.attachments.length !== 0) {
       const attachmentIds = data.attachments.map((attachment) => attachment.id);
-      // console.log('attachmentIds', attachmentIds);
       await this.uploadSurveyAttachmentsToBioHub(emlService.packageId, projectId, attachmentIds);
     }
 
+    //Check security request and create DWCA file for submission
     const securityRequest = await surveyService.getSurveyProprietorDataForSecurityRequest(surveyId);
-    // console.log('securityRequest', securityRequest);
-
     const dwCADataset: IDwCADataset = {
       archiveFile: {
         data: dwcArchiveZip.toBuffer(),
@@ -197,10 +232,61 @@ export class PlatformService extends DBService {
       dataPackageId: emlService.packageId,
       securityRequest
     };
-    // console.log('dwCADataset', dwCADataset);
 
+    //Submit DWCA file to biohub
     const queueResponse = await this._submitDwCADatasetToBioHubBackbone(dwCADataset);
-    console.log('queueResponse', queueResponse);
+    publishIds.queueId = queueResponse.queue_id;
+
+    //Publish records to history
+    await this.publishHistory(projectId, surveyId, publishIds);
+
+    return { uuid: emlService.packageId };
+  }
+
+  /**
+   * Publishes the history of the submission to the database
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {publishIds} publishIds
+   * @memberof PlatformService
+   */
+  async publishHistory(projectId: number, surveyId: number, publishIds: publishIds) {
+    const publishArray = [];
+    if (publishIds.queueId) {
+      publishArray.push(
+        this.publishService.insertProjectMetadataPublishRecord({
+          project_id: projectId,
+          queue_id: publishIds.queueId
+        })
+      );
+      publishArray.push(
+        this.publishService.insertSurveyMetadataPublishRecord({
+          survey_id: surveyId,
+          queue_id: publishIds.queueId
+        })
+      );
+
+      if (publishIds.occurrenceId) {
+        publishArray.push(
+          this.publishService.insertOccurrenceSubmissionPublishRecord({
+            occurrence_submission_id: publishIds.occurrenceId,
+            queue_id: publishIds.queueId
+          })
+        );
+      }
+    }
+
+    if (publishIds.summaryInfo && publishIds.summaryInfo.summaryId && publishIds.summaryInfo.artifactId) {
+      publishArray.push(
+        this.publishService.insertSurveySummaryPublishRecord({
+          survey_summary_submission_id: publishIds.summaryInfo.summaryId,
+          artifact_id: publishIds.summaryInfo.artifactId
+        })
+      );
+    }
+
+    await Promise.all([publishArray]);
   }
 
   /**
@@ -642,3 +728,40 @@ export class PlatformService extends DBService {
     return [...reportArtifactPublishRecords];
   }
 }
+
+//Interfaces for publishing to backbone
+type ObservationSubmissionMessageSeverityLabel = 'Notice' | 'Error' | 'Warning';
+interface IGetObservationSubmissionResponse {
+  id: number;
+  inputFileName: string;
+  status?: string;
+  isValidating: boolean;
+  messageTypes: {
+    severityLabel: ObservationSubmissionMessageSeverityLabel;
+    messageTypeLabel: string;
+    messageStatus: string;
+    messages: { id: number; message: string }[];
+  }[];
+}
+
+interface IGetSummaryResultsResponse {
+  id: number;
+  fileName: string;
+  messages: {
+    id: number;
+    class: string;
+    type: string;
+    message: string;
+  }[];
+}
+
+interface IGetSurveyAttachment {
+  id: number;
+  fileName: string;
+  fileType: string;
+  lastModified: string;
+  size: number;
+  revisionCount: number;
+}
+
+type IGetSurveyReportAttachment = IGetSurveyAttachment & { fileType: 'Report' };
