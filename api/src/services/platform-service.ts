@@ -112,10 +112,9 @@ export class PlatformService extends DBService {
         return;
       }
 
-      
       const emlService = new EmlService(this.connection);
-      const emlPackage = await emlService.createProjectEml({ projectId });
-      const emlString = emlPackage.build();
+      const emlPackage = await emlService.buildProjectEmlPackage({ projectId });
+      const emlString = emlPackage.toString();
 
       defaultLog.debug({ label: 'submitDwCAMetadataPackage', emlString });
 
@@ -154,10 +153,10 @@ export class PlatformService extends DBService {
     }
 
     const emlService = new EmlService(this.connection);
-    const emlPackage = await emlService.createProjectEml({ projectId });
+    const emlPackage = await emlService.buildProjectEmlPackage({ projectId });
 
     const dwcArchiveZip = new AdmZip();
-    dwcArchiveZip.addFile('eml.xml', Buffer.from(emlPackage.build()));
+    dwcArchiveZip.addFile('eml.xml', Buffer.from(emlPackage.toString()));
     // TODO fetch and add DwCA data files to archive
 
     const dwCADataset = {
@@ -243,11 +242,11 @@ export class PlatformService extends DBService {
     const dwcArchiveZip = new AdmZip(s3File.Body as Buffer);
 
     const emlService = new EmlService(this.connection);
-    const emlPackage = await emlService.createProjectEml({ projectId });
-    const emlString = emlPackage.build();
+    const emlPackage = await emlService.buildProjectEmlPackage({ projectId });
+    const emlString = emlPackage.toString();
 
     if (!emlString) {
-      throw new HTTP400('emlString failed to build');
+      throw new HTTP400('EML string failed to build');
     }
 
     dwcArchiveZip.addFile('eml.xml', Buffer.from(emlString));
