@@ -3,7 +3,6 @@
 name: PR-Based Deploy on OpenShift
 
 on:
-  workflow_dispatch:
   pull_request:
     types: [opened, reopened, synchronize, ready_for_review]
 
@@ -28,7 +27,6 @@ jobs:
           echo Git Event Name: ${{ github.event_name }}
           echo Git Event Action: ${{ github.event.action }}
           echo Git Branch Ref: ${{ github.head_ref }}
-          echo Git Labels: "$LABELS"
           echo PR in Draft: ${{ github.event.pull_request.draft }}
 
   # Scans the commit against past commits, and determines if any jobs are skippable (due to no changes in target files).
@@ -42,8 +40,10 @@ jobs:
     needs:
       - checkEnv
     outputs:
-      should_skip: ${{ steps.skip_check.outputs.should_skip }}
       paths_result: ${{ steps.skip_check.outputs.paths_result }}
+      # Set to `true` if the latest commit message contains `ignore-skip` anywhere in the message.
+      # Used to disable duplicate action skipping, if needed.
+      ignore_skip: ${{ contains(steps.head_commit_message.outputs.commit_message, 'ignore-skip') }}
     steps:
       - id: skip_check
         uses: fkirc/skip-duplicate-actions@v5
@@ -79,6 +79,18 @@ jobs:
               paths_ignore:
                 - 'database/src/**/*.test.ts'
                 - 'database/**.md'
+
+      # Get the head commit for this pull request, parse out the commit message, and assign to the `commit_message`
+      # output variable, which is then used to determine if the term `ignore-skip` is found in the commit message.
+      - name: Checkout head commit
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Get head commit message
+        id: head_commit_message
+        run: |
+          echo commit message: $(git show -s --format=%s)
+          echo "commit_message=$(git show -s --format=%s)" >> $GITHUB_OUTPUT
 
   # Checkout the repo once and cache it for use in subsequent jobs
   checkoutRepo:
@@ -119,10 +131,11 @@ jobs:
     name: Build APP Image
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    if: |
-      github.event.pull_request.merged == false && 
-      github.event.pull_request.draft == false && 
-      !(fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch == github.head_ref)
+    if: ${{ github.event.pull_request.merged == false &&
+      github.event.pull_request.draft == false &&
+      ( needs.skipDuplicateActions.outputs.ignore_skip == 'true' ||
+      fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip == false ||
+      fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch != github.head_ref ) }}
     env:
       PR_NUMBER: ${{ github.event.number }}
       APP_NAME: "biohubbc-app"
@@ -180,10 +193,11 @@ jobs:
     name: Build Database Image
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    if: |
-      github.event.pull_request.merged == false && 
-      github.event.pull_request.draft == false && 
-      !(fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.skipped_by.branch == github.head_ref)
+    if: ${{ github.event.pull_request.merged == false &&
+      github.event.pull_request.draft == false &&
+      ( needs.skipDuplicateActions.outputs.ignore_skip == 'true' ||
+      fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.should_skip == false ||
+      fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.skipped_by.branch != github.head_ref ) }}
     env:
       PR_NUMBER: ${{ github.event.number }}
       APP_NAME: "biohubbc-db"
@@ -241,10 +255,11 @@ jobs:
     name: Build Database Setup Image
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    if: |
-      github.event.pull_request.merged == false && 
-      github.event.pull_request.draft == false && 
-      !(fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.skipped_by.branch == github.head_ref)
+    if: ${{ github.event.pull_request.merged == false &&
+      github.event.pull_request.draft == false &&
+      ( needs.skipDuplicateActions.outputs.ignore_skip == 'true' ||
+      fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.should_skip == false ||
+      fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.skipped_by.branch != github.head_ref ) }}
     env:
       PR_NUMBER: ${{ github.event.number }}
     needs:
@@ -295,10 +310,11 @@ jobs:
     name: Build API Image
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    if: |
-      github.event.pull_request.merged == false && 
-      github.event.pull_request.draft == false && 
-      !(fromJSON(needs.skipDuplicateActions.outputs.paths_result).api.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).api.skipped_by.branch == github.head_ref)
+    if: ${{ github.event.pull_request.merged == false &&
+      github.event.pull_request.draft == false &&
+      ( needs.skipDuplicateActions.outputs.ignore_skip == 'true' ||
+      fromJSON(needs.skipDuplicateActions.outputs.paths_result).api.should_skip == false ||
+      fromJSON(needs.skipDuplicateActions.outputs.paths_result).api.skipped_by.branch != github.head_ref ) }}
     env:
       PR_NUMBER: ${{ github.event.number }}
       APP_NAME: "biohubbc-api"
@@ -356,10 +372,11 @@ jobs:
     name: Deploy APP Image
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    if: |
-      github.event.pull_request.merged == false && 
-      github.event.pull_request.draft == false && 
-      !(fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch == github.head_ref)
+    if: ${{ github.event.pull_request.merged == false &&
+      github.event.pull_request.draft == false &&
+      ( needs.skipDuplicateActions.outputs.ignore_skip == 'true' ||
+      fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip == false ||
+      fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch != github.head_ref ) }}
     env:
       PR_NUMBER: ${{ github.event.number }}
     needs:
@@ -409,10 +426,11 @@ jobs:
     name: Deploy Database Image
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    if: |
-      github.event.pull_request.merged == false && 
-      github.event.pull_request.draft == false && 
-      !(fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.skipped_by.branch == github.head_ref)
+    if: ${{ github.event.pull_request.merged == false &&
+      github.event.pull_request.draft == false &&
+      ( needs.skipDuplicateActions.outputs.ignore_skip == 'true' ||
+      fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.should_skip == false ||
+      fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.skipped_by.branch != github.head_ref ) }}
     env:
       PR_NUMBER: ${{ github.event.number }}
     needs:
@@ -462,10 +480,11 @@ jobs:
     name: Deploy Database Setup Image
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    if: |
-      github.event.pull_request.merged == false && 
-      github.event.pull_request.draft == false && 
-      !(fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.skipped_by.branch == github.head_ref)
+    if: ${{ github.event.pull_request.merged == false &&
+      github.event.pull_request.draft == false &&
+      ( needs.skipDuplicateActions.outputs.ignore_skip == 'true' ||
+      fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.should_skip == false ||
+      fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.skipped_by.branch != github.head_ref ) }}
     env:
       PR_NUMBER: ${{ github.event.number }}
     needs:
@@ -516,12 +535,13 @@ jobs:
     name: Deploy API Image
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    if: |
-      always() &&
-      (needs.deployDatabase.result == 'success' || needs.deployDatabase.result == 'skipped') &&
-      github.event.pull_request.merged == false && 
-      github.event.pull_request.draft == false && 
-      !(fromJSON(needs.skipDuplicateActions.outputs.paths_result).api.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).api.skipped_by.branch == github.head_ref)
+    if: ${{ always() &&
+      ( needs.deployDatabase.result == 'success' || needs.deployDatabase.result == 'skipped' ) &&
+      github.event.pull_request.merged == false &&
+      github.event.pull_request.draft == false &&
+      ( needs.skipDuplicateActions.outputs.ignore_skip == 'true' ||
+      fromJSON(needs.skipDuplicateActions.outputs.paths_result).api.should_skip == false ||
+      fromJSON(needs.skipDuplicateActions.outputs.paths_result).api.skipped_by.branch != github.head_ref ) }}
     env:
       PR_NUMBER: ${{ github.event.number }}
     needs:
@@ -569,16 +589,15 @@ jobs:
 
   # Report the overall status of all jobs.
   # Why? Skipped jobs are not considered successes when specifying requird jobs in the GitHub PR settings. Rather than
-  # specify each job, we can specify this final job only, and use its status as an indicator of all previous jobs 
+  # specify each job, we can specify this final job only, and use its status as an indicator of all previous jobs
   # having successfully run. We can then manually include the 'skipped' status as part our definition of success.
   workflowStatus:
     name: Workflow Status
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    if: |
-      always() &&
-      github.event.pull_request.merged == false && 
-      github.event.pull_request.draft == false
+    if: ${{ always() &&
+      github.event.pull_request.merged == false &&
+      github.event.pull_request.draft == false }}
     needs:
       - checkEnv
       - skipDuplicateActions
