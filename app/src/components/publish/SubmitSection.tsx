@@ -7,7 +7,8 @@ const useStyles = makeStyles((theme: Theme) => ({
   subHeader: {
     width: '100%',
     backgroundColor: '#dadada',
-    opacity: '.5'
+    opacity: '.5',
+    textTransform: 'uppercase'
   },
   results: {
     width: '100%'
@@ -32,7 +33,6 @@ const SubmitSection: React.FC<ISubmitSectionProps> = (props) => {
     if (!data || !data.length) {
       return (
         <Box className={classes.results} pl={2} py={2}>
-          {' '}
           - No {formikName} available
         </Box>
       );

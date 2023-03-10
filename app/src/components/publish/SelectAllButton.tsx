@@ -10,7 +10,8 @@ const useStyles = makeStyles((theme: Theme) => ({
     opacity: '.5'
   },
   results: {
-    width: '100%'
+    width: '100%',
+    textTransform: 'uppercase'
   }
 }));
 
@@ -47,8 +48,8 @@ const SelectAllButton: React.FC<ISelectAllButtonProps> = (props) => {
             }
           }}
           name={`select-all`}
-          color="primary"></Checkbox>{' '}
-        SELECT ALL
+          color="primary"></Checkbox>
+        Select All
       </Box>
     </>
   );

@@ -10,6 +10,7 @@ import {
   ISurveyAttachment,
   ISurveyReportAttachment
 } from '../repositories/attachment-repository';
+import { ISurveySummaryDetails } from '../repositories/summary-repository';
 import { ISurveyProprietorModel } from '../repositories/survey-repository';
 import { getFileFromS3 } from '../utils/file-utils';
 import { getLogger } from '../utils/logger';
@@ -71,7 +72,7 @@ export interface IArtifact {
   };
 }
 
-interface publishIds {
+interface IPublishIds {
   queueId: number | null;
   occurrenceId: number | null;
   summaryInfo: { summaryId: number | null; artifactId: number | null };
@@ -106,7 +107,7 @@ export class PlatformService extends DBService {
    * @param {number} projectId
    * @param {{
    *       observations: IGetObservationSubmissionResponse[];
-   *       summarys: IGetSummaryResultsResponse[];
+   *       summary: IGetSummaryResultsResponse[];
    *       reports: IGetSurveyReportAttachment[];
    *       attachments: IGetSurveyAttachment[];
    *     }} data
@@ -118,7 +119,7 @@ export class PlatformService extends DBService {
     projectId: number,
     data: {
       observations: IGetObservationSubmissionResponse[];
-      summarys: IGetSummaryResultsResponse[];
+      summary: IGetSummaryResultsResponse[];
       reports: IGetSurveyReportAttachment[];
       attachments: IGetSurveyAttachment[];
     }
@@ -138,7 +139,8 @@ export class PlatformService extends DBService {
     const dwcArchiveZip = new AdmZip();
     dwcArchiveZip.addFile('eml.xml', Buffer.from(emlString));
 
-    const publishIds: publishIds = {
+    //Collect publish ids to insert into history tables
+    const publishIds: IPublishIds = {
       queueId: null,
       occurrenceId: null,
       summaryInfo: { summaryId: null, artifactId: null }
@@ -165,10 +167,10 @@ export class PlatformService extends DBService {
     }
 
     /**
-     * Check for summarys, if summarys are present,
+     * Check for summary, if summary are present,
      * then get file from S3 and submit to biohub as an artifact
      */
-    if (data.summarys.length !== 0) {
+    if (data.summary.length !== 0) {
       const summaryService = new SummaryService(this.connection);
       const summaryData = await summaryService.getLatestSurveySummarySubmission(surveyId);
 
@@ -178,28 +180,9 @@ export class PlatformService extends DBService {
 
       publishIds.summaryInfo.summaryId = summaryData.id;
 
-      const s3File = await getFileFromS3(summaryData.key);
-      const artifactZip = new AdmZip();
-      artifactZip.addFile(summaryData.file_name, s3File.Body as Buffer);
+      const summaryArtifact = await this._makeArtifactFromSummary(emlService.packageId, summaryData);
+      const { artifact_id } = await this._submitArtifactToBioHub(summaryArtifact);
 
-      const dataPackageId = emlService.packageId;
-      const artifact: IArtifact = {
-        dataPackageId,
-        archiveFile: {
-          data: artifactZip.toBuffer(),
-          fileName: `${summaryData.uuid}.zip`,
-          mimeType: 'application/zip'
-        },
-        metadata: {
-          file_name: summaryData.file_name,
-          file_size: String(s3File.ContentLength),
-          file_type: 'Summary',
-          title: summaryData.file_name,
-          description: summaryData.message
-        }
-      };
-
-      const { artifact_id } = await this._submitArtifactToBioHub(artifact);
       publishIds.summaryInfo.artifactId = artifact_id;
     }
 
@@ -237,29 +220,29 @@ export class PlatformService extends DBService {
     const queueResponse = await this._submitDwCADatasetToBioHubBackbone(dwCADataset);
     publishIds.queueId = queueResponse.queue_id;
 
-    //Publish records to history
-    await this.publishHistory(projectId, surveyId, publishIds);
+    //Publish Survey records to history
+    await this.publishSurveyHistory(surveyId, publishIds);
+
+    //Pulish Project Metadata records to history
+    await this.publishService.insertProjectMetadataPublishRecord({
+      project_id: projectId,
+      queue_id: publishIds.queueId
+    });
 
     return { uuid: emlService.packageId };
   }
 
   /**
-   * Publishes the history of the submission to the database
+   * Publishes the history of the Survey submission to the database
    *
    * @param {number} projectId
    * @param {number} surveyId
    * @param {publishIds} publishIds
    * @memberof PlatformService
    */
-  async publishHistory(projectId: number, surveyId: number, publishIds: publishIds) {
+  async publishSurveyHistory(surveyId: number, publishIds: IPublishIds) {
     const publishArray = [];
     if (publishIds.queueId) {
-      publishArray.push(
-        this.publishService.insertProjectMetadataPublishRecord({
-          project_id: projectId,
-          queue_id: publishIds.queueId
-        })
-      );
       publishArray.push(
         this.publishService.insertSurveyMetadataPublishRecord({
           survey_id: surveyId,
@@ -545,6 +528,38 @@ export class PlatformService extends DBService {
   }
 
   /**
+   * Makes artifact objects from the given summary data.
+   *
+   * @param {string} dataPackageId
+   * @param {ISurveySummaryDetails} summaryData
+   * @return {*}  {Promise<IArtifact>}
+   * @memberof PlatformService
+   */
+  async _makeArtifactFromSummary(dataPackageId: string, summaryData: ISurveySummaryDetails): Promise<IArtifact> {
+    const s3File = await getFileFromS3(summaryData.key);
+    const artifactZip = new AdmZip();
+    artifactZip.addFile(summaryData.file_name, s3File.Body as Buffer);
+
+    const artifact: IArtifact = {
+      dataPackageId,
+      archiveFile: {
+        data: artifactZip.toBuffer(),
+        fileName: `${summaryData.uuid}.zip`,
+        mimeType: 'application/zip'
+      },
+      metadata: {
+        file_name: summaryData.file_name,
+        file_size: String(s3File.ContentLength),
+        file_type: 'Summary',
+        title: summaryData.file_name,
+        description: summaryData.message
+      }
+    };
+
+    return artifact;
+  }
+
+  /**
    * Makes a request to the BioHub API to submit an artifact.
    *
    * @param {IArtifact} artifact The artifact to submit to BioHub
@@ -619,7 +634,7 @@ export class PlatformService extends DBService {
       })
     );
 
-    return [...attachmentArtifactPublishRecords];
+    return attachmentArtifactPublishRecords;
   }
 
   /**
@@ -654,7 +669,7 @@ export class PlatformService extends DBService {
       })
     );
 
-    return [...reportArtifactPublishRecords];
+    return reportArtifactPublishRecords;
   }
 
   /**
@@ -690,7 +705,7 @@ export class PlatformService extends DBService {
       })
     );
 
-    return [...attachmentArtifactPublishRecords];
+    return attachmentArtifactPublishRecords;
   }
 
   /**
@@ -725,7 +740,7 @@ export class PlatformService extends DBService {
       })
     );
 
-    return [...reportArtifactPublishRecords];
+    return reportArtifactPublishRecords;
   }
 }
 

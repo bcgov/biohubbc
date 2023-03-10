@@ -1,4 +1,5 @@
 import { AxiosInstance } from 'axios';
+import { ISurveySubmitForm } from 'components/publish/SubmitSurvey';
 
 /**
  * Returns a list of all resources
@@ -10,9 +11,16 @@ const usePublishApi = (axios: AxiosInstance) => {
   /**
    * Publish Survey Data
    *
-   * @return {*}  {Promise<IListResourcesResponse>}
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {ISurveySubmitForm} dataSubmission
+   * @return {*}  {Promise<{ uuid: string }>}
    */
-  const publishSurvey = async (projectId: number, surveyId: number, dataSubmission: any): Promise<{ uuid: string }> => {
+  const publishSurvey = async (
+    projectId: number,
+    surveyId: number,
+    dataSubmission: ISurveySubmitForm
+  ): Promise<{ uuid: string }> => {
     const sendData = {
       projectId: projectId,
       surveyId: surveyId,

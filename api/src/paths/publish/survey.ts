@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SYSTEM_ROLE } from '../../constants/roles';
+import { PROJECT_ROLE, SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection } from '../../database/db';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
 import { PlatformService } from '../../services/platform-service';
@@ -9,12 +9,17 @@ import { getLogger } from '../../utils/logger';
 const defaultLog = getLogger('/api/publish/survey');
 
 export const POST: Operation = [
-  authorizeRequestHandler(() => {
+  authorizeRequestHandler((req) => {
     return {
-      and: [
+      or: [
         {
-          validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_CREATOR, SYSTEM_ROLE.DATA_ADMINISTRATOR],
+          validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR],
           discriminator: 'SystemRole'
+        },
+        {
+          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD],
+          projectId: Number(req.body.projectId),
+          discriminator: 'ProjectRole'
         }
       ]
     };
@@ -47,7 +52,7 @@ POST.apiDoc = {
             data: {
               description: 'All survey data to upload',
               type: 'object',
-              required: ['observations', 'summarys', 'reports', 'attachments']
+              required: ['observations', 'summary', 'reports', 'attachments']
             }
           }
         }
@@ -63,7 +68,8 @@ POST.apiDoc = {
             type: 'object',
             properties: {
               uuid: {
-                type: 'string'
+                type: 'string',
+                format: 'uuid'
               }
             }
           }

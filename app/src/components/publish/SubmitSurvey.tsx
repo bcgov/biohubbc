@@ -23,14 +23,14 @@ export interface ISubmitSurvey {
 
 export interface ISurveySubmitForm {
   observations: IGetObservationSubmissionResponse[];
-  summarys: IGetSummaryResultsResponse[];
+  summary: IGetSummaryResultsResponse[];
   reports: IGetSurveyReportAttachment[];
   attachments: IGetSurveyAttachment[];
 }
 
 export const SurveySubmitFormInitialValues: ISurveySubmitForm = {
   observations: [],
-  summarys: [],
+  summary: [],
   reports: [],
   attachments: []
 };
@@ -54,14 +54,13 @@ const SubmitSurvey: React.FC<ISubmitSurvey> = (props) => {
     return {
       dialogTitle: 'Error Loading Occurrence Details',
       dialogText:
-        'An error has occurred while attempting to load occurrence deteails, please try again. If the error persists, please contact your system administrator.'
+        'An error has occurred while attempting to load occurrence details, please try again. If the error persists, please contact your system administrator.'
     };
   });
   observationDataLoader.load(
     surveyDetails.surveyData.survey_details.project_id,
     surveyDetails.surveyData.survey_details.id
   );
-  // console.log('observationDataLoader.data', observationDataLoader.data);
 
   const summaryDataLoader = useDataLoader((projectId: number, surveyId: number) =>
     biohubApi.survey.getSurveySummarySubmission(projectId, surveyId)
@@ -70,14 +69,13 @@ const SubmitSurvey: React.FC<ISubmitSurvey> = (props) => {
     return {
       dialogTitle: 'Error Loading Summary Details',
       dialogText:
-        'An error has occurred while attempting to load Summary deteails, please try again. If the error persists, please contact your system administrator.'
+        'An error has occurred while attempting to load Summary details, please try again. If the error persists, please contact your system administrator.'
     };
   });
   summaryDataLoader.load(
     surveyDetails.surveyData.survey_details.project_id,
     surveyDetails.surveyData.survey_details.id
   );
-  // console.log('summaryDataLoader.data', summaryDataLoader.data);
 
   const attachmentAndReportDataLoader = useDataLoader((projectId: number, surveyId: number) =>
     biohubApi.survey.getSurveyAttachments(projectId, surveyId)
@@ -93,7 +91,6 @@ const SubmitSurvey: React.FC<ISubmitSurvey> = (props) => {
     surveyDetails.surveyData.survey_details.project_id,
     surveyDetails.surveyData.survey_details.id
   );
-  // console.log('attachmentAndReportDataLoader.data', attachmentAndReportDataLoader.data);
 
   if (attachmentAndReportDataLoader.isLoading || observationDataLoader.isLoading || summaryDataLoader.isLoading) {
     return <CircularProgress className="pageProgress" size={40} />;
@@ -110,19 +107,19 @@ const SubmitSurvey: React.FC<ISubmitSurvey> = (props) => {
 
       <SelectAllButton
         formikData={[
-          { key: 'observations', value: !!observationDataLoader.data ? [observationDataLoader.data] : [] },
-          { key: 'summarys', value: !!summaryDataLoader.data ? [summaryDataLoader.data] : [] },
+          { key: 'observations', value: observationDataLoader.data ? [observationDataLoader.data] : [] },
+          { key: 'summary', value: summaryDataLoader.data ? [summaryDataLoader.data] : [] },
           {
             key: 'reports',
             value:
-              !!attachmentAndReportDataLoader.data && attachmentAndReportDataLoader.data.reportAttachmentsList
+              attachmentAndReportDataLoader.data && attachmentAndReportDataLoader.data.reportAttachmentsList
                 ? attachmentAndReportDataLoader.data.reportAttachmentsList
                 : []
           },
           {
             key: 'attachments',
             value:
-              !!attachmentAndReportDataLoader.data && attachmentAndReportDataLoader.data.attachmentsList
+              attachmentAndReportDataLoader.data && attachmentAndReportDataLoader.data.attachmentsList
                 ? attachmentAndReportDataLoader.data.attachmentsList
                 : []
           }
@@ -131,9 +128,9 @@ const SubmitSurvey: React.FC<ISubmitSurvey> = (props) => {
 
       {observationDataLoader.isReady && (
         <SubmitSection
-          subHeader="OBSERVATIONS"
+          subHeader="Observations"
           formikName="observations"
-          data={!!observationDataLoader.data ? [observationDataLoader.data] : []}
+          data={observationDataLoader.data ? [observationDataLoader.data] : []}
           getName={(item: IGetObservationSubmissionResponse) => {
             return item.inputFileName;
           }}
@@ -142,9 +139,9 @@ const SubmitSurvey: React.FC<ISubmitSurvey> = (props) => {
 
       {summaryDataLoader.isReady && (
         <SubmitSection
-          subHeader="SUMMARY RESULTS"
-          formikName="summarys"
-          data={!!summaryDataLoader.data ? [summaryDataLoader.data] : []}
+          subHeader="Summary Results"
+          formikName="summary"
+          data={summaryDataLoader.data ? [summaryDataLoader.data] : []}
           getName={(item: IGetSummaryResultsResponse) => {
             return item.fileName;
           }}
@@ -153,10 +150,10 @@ const SubmitSurvey: React.FC<ISubmitSurvey> = (props) => {
 
       {attachmentAndReportDataLoader.isReady && (
         <SubmitSection
-          subHeader="REPORTS"
+          subHeader="Reports"
           formikName="reports"
           data={
-            !!attachmentAndReportDataLoader.data && attachmentAndReportDataLoader.data.reportAttachmentsList
+            attachmentAndReportDataLoader.data && attachmentAndReportDataLoader.data.reportAttachmentsList
               ? attachmentAndReportDataLoader.data.reportAttachmentsList
               : []
           }
@@ -168,10 +165,10 @@ const SubmitSurvey: React.FC<ISubmitSurvey> = (props) => {
 
       {attachmentAndReportDataLoader.isReady && (
         <SubmitSection
-          subHeader="OTHER DOCUMENTS"
+          subHeader="Other Documents"
           formikName="attachments"
           data={
-            !!attachmentAndReportDataLoader.data && attachmentAndReportDataLoader.data.attachmentsList
+            attachmentAndReportDataLoader.data && attachmentAndReportDataLoader.data.attachmentsList
               ? attachmentAndReportDataLoader.data.attachmentsList
               : []
           }
