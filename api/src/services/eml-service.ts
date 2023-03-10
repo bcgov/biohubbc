@@ -403,6 +403,12 @@ export class EmlService extends DBService {
     );
   }
 
+  /**
+   * Loads all codesets.
+   *
+   * @return {*}  {Promise<IAllCodeSets>}
+   * @memberof EmlService
+   */
   async codes(): Promise<IAllCodeSets> {
     if (!this._codes) {
       this._codes = await this._codeService.getAllCodeSets();
