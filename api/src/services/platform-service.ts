@@ -115,8 +115,8 @@ export class PlatformService extends DBService {
    * @memberof PlatformService
    */
   async submitSurveyDataPackage(
-    surveyId: number,
     projectId: number,
+    surveyId: number,
     data: {
       observations: IGetObservationSubmissionResponse[];
       summary: IGetSummaryResultsResponse[];

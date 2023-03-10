@@ -97,6 +97,7 @@ describe('getSummarySubmission', () => {
       id: 13,
       file_name: 'file13.xlsx',
       key: 's3_key',
+      uuid: 's3_uuid',
       delete_timestamp: null,
       submission_message_type_id: 1,
       message: 'another error message',

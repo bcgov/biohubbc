@@ -7,12 +7,7 @@ import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { HTTP400 } from '../errors/http-error';
-import {
-  IProjectAttachment,
-  IProjectReportAttachment,
-  ISurveyAttachment,
-  ISurveyReportAttachment
-} from '../repositories/attachment-repository';
+import { IProjectAttachment, ISurveyAttachment } from '../repositories/attachment-repository';
 import { HistoryPublishRepository } from '../repositories/history-publish-repository';
 import { IGetLatestSurveyOccurrenceSubmission } from '../repositories/survey-repository';
 import * as file_utils from '../utils/file-utils';
@@ -448,37 +443,19 @@ describe('PlatformService', () => {
         }
       ] as IProjectAttachment[]);
 
-      const reportAttachmentsStub = sinon
-        .stub(AttachmentService.prototype, 'getProjectReportAttachmentsByIds')
-        .resolves([
-          {
-            id: 3,
-            uuid: 'test-uuid3',
-            file_name: 'test-filename3.txt',
-            file_size: '20',
-            title: 'test-title3',
-            description: 'test-description3',
-            key: 'test-key3'
-          }
-        ] as IProjectReportAttachment[]);
-
       sinon
         .stub(file_utils, 'getFileFromS3')
         .onCall(0)
         .resolves({ Body: Buffer.from('content1') })
         .onCall(1)
-        .resolves({ Body: Buffer.from('content2') })
-        .onCall(2)
-        .resolves({ Body: Buffer.from('content3') });
+        .resolves({ Body: Buffer.from('content2') });
 
       const submitArtifactStub = sinon
         .stub(platformService, '_submitArtifactToBioHub')
         .onCall(0)
         .resolves({ artifact_id: 1 })
         .onCall(1)
-        .resolves({ artifact_id: 2 })
-        .onCall(2)
-        .resolves({ artifact_id: 3 });
+        .resolves({ artifact_id: 2 });
 
       const attachmentHistoryStub = sinon
         .stub(HistoryPublishService.prototype, 'insertProjectAttachmentPublishRecord')
@@ -487,17 +464,9 @@ describe('PlatformService', () => {
         .onCall(1)
         .resolves({ project_attachment_publish_id: 2 });
 
-      const reportHistoryStub = sinon
-        .stub(HistoryPublishService.prototype, 'insertProjectReportPublishRecord')
-        .onCall(0)
-        .resolves({ project_report_publish_id: 1 })
-        .onCall(1)
-        .resolves({ project_report_publish_id: 2 });
-
-      const response = await platformService.uploadProjectAttachmentsToBioHub('cccc', 1, [1, 2], [3]);
+      const response = await platformService.uploadProjectAttachmentsToBioHub('cccc', 1, [1, 2]);
 
       expect(attachmentsStub).to.be.calledWith(1, [1, 2]);
-      expect(reportAttachmentsStub).to.be.calledWith(1, [3]);
 
       expect(submitArtifactStub).to.be.calledWith({
         dataPackageId: 'cccc',
@@ -531,30 +500,9 @@ describe('PlatformService', () => {
         }
       });
 
-      expect(submitArtifactStub).to.be.calledWith({
-        dataPackageId: 'cccc',
-        archiveFile: {
-          data: sinon.match.any,
-          fileName: `test-uuid3.zip`,
-          mimeType: 'application/zip'
-        },
-        metadata: {
-          file_name: 'test-filename3.txt',
-          file_size: '20',
-          file_type: 'Report',
-          title: 'test-title3',
-          description: 'test-description3'
-        }
-      });
-
       expect(attachmentHistoryStub).to.be.calledTwice;
-      expect(reportHistoryStub).to.be.calledOnce;
 
-      expect(response).to.eql([
-        { project_attachment_publish_id: 1 },
-        { project_attachment_publish_id: 2 },
-        { project_report_publish_id: 1 }
-      ]);
+      expect(response).to.eql([{ project_attachment_publish_id: 1 }, { project_attachment_publish_id: 2 }]);
     });
   });
 
@@ -589,37 +537,19 @@ describe('PlatformService', () => {
         }
       ] as ISurveyAttachment[]);
 
-      const reportAttachmentsStub = sinon
-        .stub(AttachmentService.prototype, 'getSurveyReportAttachmentsByIds')
-        .resolves([
-          {
-            id: 3,
-            uuid: 'test-uuid3',
-            file_name: 'test-filename3.txt',
-            file_size: '20',
-            title: 'test-title3',
-            description: 'test-description3',
-            key: 'test-key3'
-          }
-        ] as ISurveyReportAttachment[]);
-
       sinon
         .stub(file_utils, 'getFileFromS3')
         .onCall(0)
         .resolves({ Body: Buffer.from('content1') })
         .onCall(1)
-        .resolves({ Body: Buffer.from('content2') })
-        .onCall(2)
-        .resolves({ Body: Buffer.from('content3') });
+        .resolves({ Body: Buffer.from('content2') });
 
       const submitArtifactStub = sinon
         .stub(platformService, '_submitArtifactToBioHub')
         .onCall(0)
         .resolves({ artifact_id: 1 })
         .onCall(1)
-        .resolves({ artifact_id: 2 })
-        .onCall(2)
-        .resolves({ artifact_id: 3 });
+        .resolves({ artifact_id: 2 });
 
       const attachmentHistoryStub = sinon
         .stub(HistoryPublishService.prototype, 'insertSurveyAttachmentPublishRecord')
@@ -628,17 +558,9 @@ describe('PlatformService', () => {
         .onCall(1)
         .resolves({ survey_attachment_publish_id: 2 });
 
-      const reportHistoryStub = sinon
-        .stub(HistoryPublishService.prototype, 'insertSurveyReportPublishRecord')
-        .onCall(0)
-        .resolves({ survey_report_publish_id: 1 })
-        .onCall(1)
-        .resolves({ survey_report_publish_id: 2 });
-
-      const response = await platformService.uploadSurveyAttachmentsToBioHub('cccc', 1, [1, 2], [3]);
+      const response = await platformService.uploadSurveyAttachmentsToBioHub('cccc', 1, [1, 2]);
 
       expect(attachmentsStub).to.be.calledWith(1, [1, 2]);
-      expect(reportAttachmentsStub).to.be.calledWith(1, [3]);
 
       expect(submitArtifactStub).to.be.calledWith({
         dataPackageId: 'cccc',
@@ -672,30 +594,9 @@ describe('PlatformService', () => {
         }
       });
 
-      expect(submitArtifactStub).to.be.calledWith({
-        dataPackageId: 'cccc',
-        archiveFile: {
-          data: sinon.match.any,
-          fileName: `test-uuid3.zip`,
-          mimeType: 'application/zip'
-        },
-        metadata: {
-          file_name: 'test-filename3.txt',
-          file_size: '20',
-          file_type: 'Report',
-          title: 'test-title3',
-          description: 'test-description3'
-        }
-      });
-
       expect(attachmentHistoryStub).to.be.calledTwice;
-      expect(reportHistoryStub).to.be.calledOnce;
 
-      expect(response).to.eql([
-        { survey_attachment_publish_id: 1 },
-        { survey_attachment_publish_id: 2 },
-        { survey_report_publish_id: 1 }
-      ]);
+      expect(response).to.eql([{ survey_attachment_publish_id: 1 }, { survey_attachment_publish_id: 2 }]);
     });
   });
 });
