@@ -116,7 +116,7 @@ export class PlatformService extends DBService {
       const emlPackage = await emlService.buildProjectEmlPackage({ projectId });
       const emlString = emlPackage.toString();
 
-      defaultLog.debug({ label: 'submitDwCAMetadataPackage', emlString });
+      defaultLog.debug({ label: 'submitDwCAMetadataPackage' });
 
       const dwcArchiveZip = new AdmZip();
       dwcArchiveZip.addFile('eml.xml', Buffer.from(emlString));
@@ -147,7 +147,7 @@ export class PlatformService extends DBService {
    * @return {*}
    * @memberof PlatformService
    */
-  async submitDwCADataPackage(projectId: number) {
+  async submitDwCADataPackage(projectId: number): Promise<{ queue_id: number } | void> {
     if (!this.backboneIntakeEnabled) {
       return;
     }
@@ -243,13 +243,18 @@ export class PlatformService extends DBService {
 
     const emlService = new EmlService(this.connection);
     const emlPackage = await emlService.buildProjectEmlPackage({ projectId });
-    const emlString = emlPackage.toString();
+    const projectEmlString = emlPackage.toString();
 
-    if (!emlString) {
+    const surveyEmlPackage = await emlService.buildSurveyEmlPackage({ surveyId });
+    const surveyEmlString = surveyEmlPackage.toString();
+
+    defaultLog.debug({ label: 'uploadSurveyDataToBioHub', projectEmlString, surveyEmlString })
+
+    if (!projectEmlString) {
       throw new HTTP400('EML string failed to build');
     }
 
-    dwcArchiveZip.addFile('eml.xml', Buffer.from(emlString));
+    dwcArchiveZip.addFile('eml.xml', Buffer.from(projectEmlString));
 
     const dwCADataset: IDwCADataset = {
       archiveFile: {

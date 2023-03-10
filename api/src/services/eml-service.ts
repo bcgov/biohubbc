@@ -231,6 +231,11 @@ export class EmlPackage {
    * @memberof EmlPackage
    */
   build(): EmlPackage {
+    if (this._data) {
+      // Support subsequent compilations
+      this._data = {};
+    }
+
     // Add project metadata to dataset
     if (this._projectMetadata) {
       if (!this._datasetMetadata) {
@@ -546,22 +551,20 @@ export class EmlService extends DBService {
    */
   _buildProjectEmlProjectSection(projectData: IGetProject): Record<string, any> {
     return {
-      project: {
-        $: { id: projectData.project.uuid, system: EMPTY_STRING },
-        title: projectData.project.project_name,
-        personnel: this._getProjectPersonnel(projectData),
-        abstract: {
-          section: [
-            { title: 'Objectives', para: projectData.objectives.objectives },
-            { title: 'Caveats', para: projectData.objectives.caveats || NOT_SUPPLIED }
-          ]
-        },
-        ...this._getProjectFundingSources(projectData),
-        studyAreaDescription: {
-          coverage: {
-            ...this._getProjectGeographicCoverage(projectData),
-            temporalCoverage: this._getProjectTemporalCoverage(projectData)
-          }
+      $: { id: projectData.project.uuid, system: EMPTY_STRING },
+      title: projectData.project.project_name,
+      personnel: this._getProjectPersonnel(projectData),
+      abstract: {
+        section: [
+          { title: 'Objectives', para: projectData.objectives.objectives },
+          { title: 'Caveats', para: projectData.objectives.caveats || NOT_SUPPLIED }
+        ]
+      },
+      ...this._getProjectFundingSources(projectData),
+      studyAreaDescription: {
+        coverage: {
+          ...this._getProjectGeographicCoverage(projectData),
+          temporalCoverage: this._getProjectTemporalCoverage(projectData)
         }
       }
     };
