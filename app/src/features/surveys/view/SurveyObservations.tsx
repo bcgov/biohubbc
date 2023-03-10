@@ -70,8 +70,7 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
   const submissionExists = Boolean(occurrenceSubmission);
 
   const submissionPollingInterval = useInterval(refreshSubmission, 5000, 60000);
-  console.log('___________________________');
-  console.log(submissionMessageTypes);
+
   useEffect(() => {
     if (submissionExists) {
       submissionPollingInterval.enable();
