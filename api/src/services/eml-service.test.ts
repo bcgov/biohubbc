@@ -57,14 +57,6 @@ describe('EmlService', () => {
     // TODO
   });
 
-  describe('loadProjectSource', () => {
-    // TODO
-  });
-
-  describe('loadSurveySource', () => {
-    // TODO
-  });
-
   describe('_buildEmlSection', () => {
     // TODO
   });

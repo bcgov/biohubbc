@@ -7,16 +7,8 @@ import jsonpatch from 'fast-json-patch';
 import { Feature, GeoJsonProperties, Geometry } from 'geojson';
 import xml2js from 'xml2js';
 import { IDBConnection } from '../database/db';
-import {
-  GetAttachmentsData as GetProjectAttachmentsData,
-  GetReportAttachmentsData as GetProjectReportAttachmentsData,
-  IGetProject
-} from '../models/project-view';
-import {
-  GetAttachmentsData as GetSurveyAttachmentsData,
-  GetReportAttachmentsData as GetSurveyReportAttachmentsData,
-  SurveyObject
-} from '../models/survey-view';
+import { IGetProject } from '../models/project-view';
+import { SurveyObject } from '../models/survey-view';
 import { getDbCharacterSystemMetaDataConstantSQL } from '../queries/codes/db-constant-queries';
 import { CodeService, IAllCodeSets } from './code-service';
 import { DBService } from './db-service';
@@ -45,25 +37,6 @@ type EmlDbConstants = {
   EML_ORGANIZATION_URL: string;
   EML_TAXONOMIC_PROVIDER_URL: string;
   EML_INTELLECTUAL_RIGHTS: string;
-};
-
-type SurveyObjectWithAttachments = SurveyObject & {
-  attachments?: GetSurveyAttachmentsData;
-  report_attachments?: GetSurveyReportAttachmentsData;
-};
-
-type ProjectMetadataSource = {
-  projectData: IGetProject;
-  projectAttachmentsData: GetProjectAttachmentsData;
-  projectReportAttachmentsData: GetProjectReportAttachmentsData;
-  surveys: SurveyObjectWithAttachments[];
-};
-
-type SurveyMetadataSource = {
-  surveyData: SurveyObjectWithAttachments;
-  projectData: IGetProject;
-  projectAttachmentsData: GetProjectAttachmentsData;
-  projectReportAttachmentsData: GetProjectReportAttachmentsData;
 };
 
 type BuildProjectEmlOptions = {
@@ -336,8 +309,10 @@ export class EmlService extends DBService {
     const { projectId } = options;
     await this.loadEmlDbConstants();
 
-    const projectSource = await this.loadProjectSource(projectId);
-    const packageId = projectSource.projectData.project.uuid;
+    const projectData = await this._projectService.getProjectById(projectId);
+    const packageId = projectData.project.uuid;
+
+    const surveysData = await this._surveyService.getSurveysByProjectId(projectId);
 
     const emlPackage = new EmlPackage({ packageId });
 
@@ -347,17 +322,17 @@ export class EmlService extends DBService {
         .withEml(this._buildEmlSection(packageId))
 
         // Build EML->Dataset field
-        .withDataset(await this._buildEmlDatasetSection(packageId, projectSource.projectData))
+        .withDataset(await this._buildEmlDatasetSection(packageId, projectData))
 
         // Build EML->Dataset->Project field
-        .withProject(this._buildProjectEmlProjectSection(projectSource.projectData))
+        .withProject(this._buildProjectEmlProjectSection(projectData))
 
         // Build EML->Dataset->Project->AdditionalMetadata field
-        .withAdditionalMetadata(await this._getProjectAdditionalMetadata(projectSource))
-        .withAdditionalMetadata(this._getSurveyAdditionalMetadata(projectSource.surveys))
+        .withAdditionalMetadata(await this._getProjectAdditionalMetadata(projectData))
+        .withAdditionalMetadata(this._getSurveyAdditionalMetadata(surveysData))
 
         // Build EML->Dataset->Project->RelatedProject field
-        .withRelatedProjects(await this._buildAllSurveyEmlProjectSections(projectSource.surveys))
+        .withRelatedProjects(await this._buildAllSurveyEmlProjectSections(surveysData))
 
         // Compile the EML package
         .build()
@@ -375,8 +350,11 @@ export class EmlService extends DBService {
     const { surveyId } = options;
     await this.loadEmlDbConstants();
 
-    const surveySource = await this.loadSurveySource(surveyId);
-    const packageId = surveySource.surveyData.survey_details.uuid;
+    const surveyData = await this._surveyService.getSurveyById(surveyId)
+    const packageId = surveyData.survey_details.uuid;
+
+    const projectId = surveyData.survey_details.project_id;    
+    const projectData = await this._projectService.getProjectById(projectId);
 
     const emlPackage = new EmlPackage({ packageId });
 
@@ -386,17 +364,17 @@ export class EmlService extends DBService {
         .withEml(this._buildEmlSection(packageId))
 
         // Build EML->Dataset field
-        .withDataset(await this._buildEmlDatasetSection(packageId, surveySource.projectData))
+        .withDataset(await this._buildEmlDatasetSection(packageId, projectData))
 
         // Build EML->Dataset->Project field
-        .withProject(await this._buildSurveyEmlProjectSection(surveySource.surveyData))
+        .withProject(await this._buildSurveyEmlProjectSection(surveyData))
 
         // Build EML->Dataset->Project->AdditionalMetadata field
-        .withAdditionalMetadata(await this._getProjectAdditionalMetadata(surveySource))
-        .withAdditionalMetadata(this._getSurveyAdditionalMetadata([surveySource.surveyData]))
+        .withAdditionalMetadata(await this._getProjectAdditionalMetadata(projectData))
+        .withAdditionalMetadata(this._getSurveyAdditionalMetadata([surveyData]))
 
         // Build EML->Dataset->Project->RelatedProject field//
-        .withRelatedProjects([this._buildProjectEmlProjectSection(surveySource.projectData)])
+        .withRelatedProjects([this._buildProjectEmlProjectSection(projectData)])
 
         // Compile the EML package
         .build()
@@ -446,65 +424,6 @@ export class EmlService extends DBService {
     this._constants.EML_ORGANIZATION_URL = organizationURL.rows[0].constant || NOT_SUPPLIED;
     this._constants.EML_INTELLECTUAL_RIGHTS = intellectualRights.rows[0].constant || NOT_SUPPLIED;
     this._constants.EML_TAXONOMIC_PROVIDER_URL = taxonomicProviderURL.rows[0].constant || NOT_SUPPLIED;
-  }
-
-  /**
-   * Loads all source data needed to produce a project EML package
-   * @param {number} projectId The ID of the project
-   */
-  async loadProjectSource(projectId: number): Promise<ProjectMetadataSource> {
-    // Fetch project data
-    const projectData = await this._projectService.getProjectById(projectId);
-
-    // Fetch project attachments
-    const projectAttachmentsData = await this._projectService.getAttachmentsData(projectId);
-    const projectReportAttachmentsData = await this._projectService.getReportAttachmentsData(projectId);
-
-    // Fetch surveys with all respective attachments
-    const surveys = await this._surveyService.getSurveysByProjectId(projectId).then(async (surveys: SurveyObject[]) => {
-      return Promise.all(
-        surveys.map(async (survey: SurveyObject) => ({
-          ...survey,
-          attachments: await this._surveyService.getAttachmentsData(survey.survey_details.id),
-          reportAttachments: await this._surveyService.getReportAttachmentsData(survey.survey_details.id)
-        }))
-      );
-    });
-
-    return {
-      projectData,
-      projectAttachmentsData,
-      projectReportAttachmentsData,
-      surveys
-    };
-  }
-
-  /**
-   * Loads all source data needed to produce a survey EML package
-   * @param {number} surveyId The ID of the survey
-   */
-  async loadSurveySource(surveyId: number): Promise<SurveyMetadataSource> {
-    // Fetch survey data with attachments
-    const surveyData = await this._surveyService.getSurveyById(surveyId).then(async (surveyObject: SurveyObject) => {
-      return {
-        ...surveyObject,
-        attachments: await this._surveyService.getAttachmentsData(surveyId),
-        reportAttachments: await this._surveyService.getReportAttachmentsData(surveyId)
-      };
-    });
-
-    // Fetch project data and project attachments
-    const projectId = surveyData.survey_details.project_id;
-    const projectData = await this._projectService.getProjectById(projectId);
-    const projectAttachmentsData = await this._projectService.getAttachmentsData(projectId);
-    const projectReportAttachmentsData = await this._projectService.getReportAttachmentsData(projectId);
-
-    return {
-      surveyData,
-      projectData,
-      projectAttachmentsData,
-      projectReportAttachmentsData
-    };
   }
 
   /**
@@ -583,52 +502,22 @@ export class EmlService extends DBService {
    * @return {*}  {AdditionalMetadata[]}
    * @memberof EmlService
    */
-  _getSurveyAdditionalMetadata(surveys: SurveyObjectWithAttachments[]): AdditionalMetadata[] {
-    const additionalMetadata: AdditionalMetadata[] = [];
-
-    surveys.forEach((survey: SurveyObjectWithAttachments) => {
-      if (survey.attachments?.attachmentDetails.length) {
-        additionalMetadata.push({
-          describes: survey.survey_details.uuid,
-          metadata: {
-            surveyAttachments: {
-              surveyAttachment: survey.attachments?.attachmentDetails
-            }
-          }
-        });
-      }
-    });
-
-    surveys.forEach((survey: SurveyObjectWithAttachments) => {
-      if (survey.report_attachments?.attachmentDetails.length) {
-        additionalMetadata.push({
-          describes: survey.survey_details.uuid,
-          metadata: {
-            surveyReportAttachments: {
-              surveyReportAttachment: survey.report_attachments?.attachmentDetails
-            }
-          }
-        });
-      }
-    });
-
-    return additionalMetadata;
+  _getSurveyAdditionalMetadata(surveysData: SurveyObject[]): AdditionalMetadata[] {
+    return [];
   }
 
   /**
    * Generates additional metadata fields for the given project
    *
-   * @param {ProjectMetadataSource} projectSource
+   * @param {IGetProject} projectData
    * @return {*}  {Promise<AdditionalMetadata[]>}
    * @memberof EmlService
    */
   async _getProjectAdditionalMetadata(
-    source: ProjectMetadataSource | SurveyMetadataSource
+    projectData: IGetProject
   ): Promise<AdditionalMetadata[]> {
     const additionalMetadata: AdditionalMetadata[] = [];
     const codes = await this.codes();
-
-    const { projectData, projectAttachmentsData, projectReportAttachmentsData } = source;
 
     if (projectData.project.project_type) {
       additionalMetadata.push({
@@ -719,28 +608,6 @@ export class EmlService extends DBService {
       });
     }
 
-    if (projectAttachmentsData?.attachmentDetails.length) {
-      additionalMetadata.push({
-        describes: projectData.project.uuid,
-        metadata: {
-          projectAttachments: {
-            projectAttachment: projectAttachmentsData.attachmentDetails
-          }
-        }
-      });
-    }
-
-    if (projectReportAttachmentsData?.attachmentDetails.length) {
-      additionalMetadata.push({
-        describes: projectData.project.uuid,
-        metadata: {
-          projectReportAttachments: {
-            projectReportAttachment: projectReportAttachmentsData.attachmentDetails
-          }
-        }
-      });
-    }
-
     return additionalMetadata;
   }
 
@@ -815,11 +682,11 @@ export class EmlService extends DBService {
   /**
    * Creates an object representing all contacts for the given survey.
    *
-   * @param {SurveyObjectWithAttachments} surveyData
+   * @param {SurveyObject} surveyData
    * @return {*}  {Record<string, any>[]}
    * @memberof EmlService
    */
-  _getSurveyPersonnel(surveyData: SurveyObjectWithAttachments): Record<string, any>[] {
+  _getSurveyPersonnel(surveyData: SurveyObject): Record<string, any>[] {
     return [
       {
         individualName: {
@@ -865,11 +732,11 @@ export class EmlService extends DBService {
   /**
    * Creates an object representing all funding sources for the given survey.
    *
-   * @param {SurveyObjectWithAttachments} surveyData
+   * @param {SurveyObject} surveyData
    * @return {*}  {Record<string, any>}
    * @memberof EmlService
    */
-  _getSurveyFundingSources(surveyData: SurveyObjectWithAttachments): Record<string, any> {
+  _getSurveyFundingSources(surveyData: SurveyObject): Record<string, any> {
     if (!surveyData.funding.funding_sources.length) {
       return {};
     }
@@ -920,11 +787,11 @@ export class EmlService extends DBService {
   /**
    * Creates an object representing temporal coverage for the given survey
    *
-   * @param {SurveyObjectWithAttachments} surveyData
+   * @param {SurveyObject} surveyData
    * @return {*}  {Record<string, any>}
    * @memberof EmlService
    */
-  _getSurveyTemporalCoverage(surveyData: SurveyObjectWithAttachments): Record<string, any> {
+  _getSurveyTemporalCoverage(surveyData: SurveyObject): Record<string, any> {
     if (!surveyData.survey_details.end_date) {
       return {
         singleDateTime: {
@@ -1029,11 +896,11 @@ export class EmlService extends DBService {
   /**
    * Creates an object representing geographic coverage pertaining to the given survey
    *
-   * @param {SurveyObjectWithAttachments} surveyData
+   * @param {SurveyObject} surveyData
    * @return {*}  {Record<string, any>}
    * @memberof EmlService
    */
-  _getSurveyGeographicCoverage(surveyData: SurveyObjectWithAttachments): Record<string, any> {
+  _getSurveyGeographicCoverage(surveyData: SurveyObject): Record<string, any> {
     if (!surveyData.location.geometry?.length) {
       return {};
     }
@@ -1059,11 +926,11 @@ export class EmlService extends DBService {
   /**
    * Retrieves taxonomic coverage details for the given survey's focal species.
    *
-   * @param {SurveyObjectWithAttachments} surveyData
+   * @param {SurveyObject} surveyData
    * @return {*}  {Promise<Record<string, any>>}
    * @memberof EmlService
    */
-  async _getSurveyFocalTaxonomicCoverage(surveyData: SurveyObjectWithAttachments): Promise<Record<string, any>> {
+  async _getSurveyFocalTaxonomicCoverage(surveyData: SurveyObject): Promise<Record<string, any>> {
     const taxonomySearchService = new TaxonomyService();
 
     const response = await taxonomySearchService.getTaxonomyFromIds(surveyData.species.focal_species);
@@ -1092,11 +959,11 @@ export class EmlService extends DBService {
   /**
    * Creates an object representing the design description for the given survey
    *
-   * @param {SurveyObjectWithAttachments} surveyData
+   * @param {SurveyObject} surveyData
    * @return {*}  {Promise<Record<string, any>>}
    * @memberof EmlService
    */
-  async _getSurveyDesignDescription(survey: SurveyObjectWithAttachments): Promise<Record<string, any>> {
+  async _getSurveyDesignDescription(survey: SurveyObject): Promise<Record<string, any>> {
     const codes = await this.codes();
 
     return {
@@ -1136,18 +1003,18 @@ export class EmlService extends DBService {
    * @return {*}  {Promise<Record<string, any>[]>}
    * @memberof EmlService
    */
-  async _buildAllSurveyEmlProjectSections(surveys: SurveyObjectWithAttachments[]): Promise<Record<string, any>[]> {
-    return Promise.all(surveys.map(async (survey) => await this._buildSurveyEmlProjectSection(survey)));
+  async _buildAllSurveyEmlProjectSections(surveysData: SurveyObject[]): Promise<Record<string, any>[]> {
+    return Promise.all(surveysData.map(async (survey) => await this._buildSurveyEmlProjectSection(survey)));
   }
 
   /**
    * Builds the EML Project section for the given survey
    *
-   * @param {SurveyObjectWithAttachments} surveyData
+   * @param {SurveyObject} surveyData
    * @return {*}  {Promise<Record<string, any>>}
    * @memberof EmlService
    */
-  async _buildSurveyEmlProjectSection(surveyData: SurveyObjectWithAttachments): Promise<Record<string, any>> {
+  async _buildSurveyEmlProjectSection(surveyData: SurveyObject): Promise<Record<string, any>> {
     const codes = await this.codes();
 
     return {
