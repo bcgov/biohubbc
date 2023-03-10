@@ -247,6 +247,6 @@ export class TaxonomyService {
       }
     });
 
-    return response ? this._formatEnrichedData(response.hits.hits[0]) : null;
+    return response && response.hits.hits.length ? this._formatEnrichedData(response.hits.hits[0]) : null;
   }
 }
