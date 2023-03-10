@@ -18,7 +18,7 @@ import { IGetLatestSurveyOccurrenceSubmission } from '../repositories/survey-rep
 import * as file_utils from '../utils/file-utils';
 import { getMockDBConnection } from '../__mocks__/db';
 import { AttachmentService } from './attachment-service';
-import { EmlService } from './eml-service';
+import { EmlPackage, EmlService } from './eml-service';
 import { HistoryPublishService } from './history-publish-service';
 import { KeycloakService } from './keycloak-service';
 import { IDwCADataset, PlatformService } from './platform-service';
@@ -48,9 +48,12 @@ describe('PlatformService', () => {
 
       process.env.BACKBONE_INTAKE_ENABLED = 'true';
 
-      const buildProjectEmlStub = sinon.stub(EmlService.prototype, 'buildProjectEml').resolves('xml data');
-
-      sinon.stub(EmlService.prototype, 'packageId').get(() => '123-456-789');
+      const buildProjectEmlStub = sinon.stub(EmlService.prototype, 'buildProjectEmlPackage').callsFake((_options) =>
+        Promise.resolve({
+          packageId: '123-456-789',
+          toString: () => '<eml:eml />'
+        } as EmlPackage)
+      );
 
       const _submitDwCADatasetToBioHubBackboneStub = sinon
         .stub(PlatformService.prototype, '_submitDwCADatasetToBioHubBackbone')
@@ -94,9 +97,12 @@ describe('PlatformService', () => {
 
       process.env.BACKBONE_INTAKE_ENABLED = 'true';
 
-      const buildProjectEmlStub = sinon.stub(EmlService.prototype, 'buildProjectEml').resolves('xml data');
-
-      sinon.stub(EmlService.prototype, 'packageId').get(() => '123-456-789');
+      const buildProjectEmlStub = sinon.stub(EmlService.prototype, 'buildProjectEmlPackage').callsFake((_options) =>
+        Promise.resolve({
+          packageId: '123-456-789',
+          toString: () => '<eml:eml />'
+        } as EmlPackage)
+      );
 
       const _submitDwCADatasetToBioHubBackboneStub = sinon
         .stub(PlatformService.prototype, '_submitDwCADatasetToBioHubBackbone')
@@ -244,7 +250,12 @@ describe('PlatformService', () => {
 
       const getFileFromS3Stub = sinon.stub(file_utils, 'getFileFromS3').resolves(s3File);
 
-      const buildProjectEmlStub = sinon.stub(EmlService.prototype, 'buildProjectEml').resolves();
+      const buildProjectEmlStub = sinon.stub(EmlService.prototype, 'buildProjectEmlPackage').callsFake((_options) =>
+        Promise.resolve({
+          packageId: '123-456-789',
+          toString: () => ''
+        } as EmlPackage)
+      );
 
       const platformService = new PlatformService(mockDBConnection);
 
@@ -252,7 +263,7 @@ describe('PlatformService', () => {
         await platformService.uploadSurveyDataToBioHub(1, 1);
         expect.fail();
       } catch (actualError) {
-        expect((actualError as HTTP400).message).to.equal('emlString failed to build');
+        expect((actualError as HTTP400).message).to.equal('EML string failed to build');
         expect(getLatestSurveyOccurrenceSubmissionStub).to.have.been.calledOnce;
         expect(buildProjectEmlStub).to.have.been.calledOnce;
         expect(getFileFromS3Stub).to.have.been.calledOnce;
@@ -282,8 +293,12 @@ describe('PlatformService', () => {
 
       const getFileFromS3Stub = sinon.stub(file_utils, 'getFileFromS3').resolves(s3File);
 
-      const buildProjectEmlStub = sinon.stub(EmlService.prototype, 'buildProjectEml').resolves('string');
-      sinon.stub(EmlService.prototype, 'packageId').get(() => 1);
+      const buildProjectEmlStub = sinon.stub(EmlService.prototype, 'buildProjectEmlPackage').callsFake((_options) =>
+        Promise.resolve({
+          packageId: '123-456-789',
+          toString: () => '<eml:eml />'
+        } as EmlPackage)
+      );
 
       const _submitDwCADatasetToBioHubBackboneStub = sinon
         .stub(PlatformService.prototype, '_submitDwCADatasetToBioHubBackbone')

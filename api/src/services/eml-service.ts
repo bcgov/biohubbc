@@ -88,7 +88,7 @@ type EmlPackageOptions = {
  *
  * @class EmlPackage
  */
-class EmlPackage {
+export class EmlPackage {
   /**
    * The unique identifier representing the EML package
    *
@@ -345,7 +345,7 @@ export class EmlService extends DBService {
         .withDataset(await this._buildEmlDatasetSection(packageId, projectSource.projectData))
 
         // Build EML->Dataset->Project field
-        .withProject(await this._buildProjectEmlProjectSection(projectSource.projectData))
+        .withProject(this._buildProjectEmlProjectSection(projectSource.projectData))
 
         // Build EML->Dataset->Project->AdditionalMetadata field
         .withAdditionalMetadata(await this._getProjectAdditionalMetadata(projectSource))
@@ -538,7 +538,7 @@ export class EmlService extends DBService {
   }
 
   /**
-   * @TODO jsdoc
+   * Builds the EML Project section for the given project data
    *
    * @param {IGetProject} projectData
    * @return {*}  {Record<string, any>}
@@ -568,7 +568,7 @@ export class EmlService extends DBService {
   }
 
   /**
-   * @TODO jsdoc
+   * Generates additional metadata fields for the given array of surveys
    *
    * @param {SurveyObjectWithAttachments[]} surveys
    * @return {*}  {AdditionalMetadata[]}
@@ -607,7 +607,7 @@ export class EmlService extends DBService {
   }
 
   /**
-   * @TODO jsdoc
+   * Generates additional metadata fields for the given project
    *
    * @param {ProjectMetadataSource} projectSource
    * @return {*}  {Promise<AdditionalMetadata[]>}
@@ -933,7 +933,7 @@ export class EmlService extends DBService {
   }
 
   /**
-   * @TODO jsdoc
+   * Converts a Date or string into a date string compatible with EML.
    *
    * @param {Date | string} [date]
    * @return {*}  {string}
@@ -944,7 +944,7 @@ export class EmlService extends DBService {
   }
 
   /**
-   * @TODO jsdoc
+   * Creates an array of polygon features for the given project or survey geometry.
    *
    * @param {Feature<Geometry, GeoJsonProperties>[]} geometry
    * @return {*}  {Feature<Geometry, GeoJsonProperties>[]}
@@ -961,7 +961,7 @@ export class EmlService extends DBService {
   }
 
   /**
-   * @TODO jsdoc
+   * Creates a set of datasetGPoloygons for the given project or survey
    *
    * @param {Feature<Geometry, GeoJsonProperties>[]} polygonFeatures
    * @return {*}  {Record<string, any>[]}
@@ -1081,7 +1081,7 @@ export class EmlService extends DBService {
   }
 
   /**
-   * @TODO jsdoc
+   * Creates an object representing the design description for the given survey
    *
    * @param {SurveyObjectWithAttachments} surveyData
    * @return {*}  {Promise<Record<string, any>>}
@@ -1121,7 +1121,7 @@ export class EmlService extends DBService {
   }
 
   /**
-   * @TODO jsdoc
+   * Builds the EML Project section for the given array of surveys
    *
    * @param {SurveyObjectWithAttachments[]} surveys
    * @return {*}  {Promise<Record<string, any>[]>}
@@ -1132,7 +1132,7 @@ export class EmlService extends DBService {
   }
 
   /**
-   * @TODO jsdoc
+   * Builds the EML Project section for the given survey
    *
    * @param {SurveyObjectWithAttachments} surveyData
    * @return {*}  {Promise<Record<string, any>>}
