@@ -113,7 +113,7 @@ export function publishSurvey(): RequestHandler {
 
       await connection.commit();
 
-      return res.status(200).send(response);
+      return res.status(200).json(response);
     } catch (error) {
       defaultLog.error({ label: 'publishSurvey', message: 'error', error });
       await connection.rollback();

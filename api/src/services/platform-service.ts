@@ -470,11 +470,11 @@ export class PlatformService extends DBService {
   async submitAndPublishDwcAMetadata(projectId: number, surveyId?: number): Promise<void> {
     try {
       const queueResponse = await this.submitDwCAMetadataPackage(projectId);
-      const historyRepo = new HistoryPublishService(this.connection);
+      const historyPublishService = new HistoryPublishService(this.connection);
 
       // take queue id and insert into history publish table
       if (queueResponse?.queue_id) {
-        await historyRepo.insertProjectMetadataPublishRecord({
+        await historyPublishService.insertProjectMetadataPublishRecord({
           project_id: projectId,
           queue_id: queueResponse.queue_id
         });
@@ -482,7 +482,10 @@ export class PlatformService extends DBService {
 
       // take queue id and insert into history publish table
       if (queueResponse?.queue_id && surveyId) {
-        await historyRepo.insertSurveyMetadataPublishRecord({ survey_id: surveyId, queue_id: queueResponse.queue_id });
+        await historyPublishService.insertSurveyMetadataPublishRecord({
+          survey_id: surveyId,
+          queue_id: queueResponse.queue_id
+        });
       }
     } catch (error) {
       const defaultLog = getLogger('platformService->submitAndPublishDwcAMetadata');
@@ -746,7 +749,7 @@ export class PlatformService extends DBService {
 
 //Interfaces for publishing to backbone
 type ObservationSubmissionMessageSeverityLabel = 'Notice' | 'Error' | 'Warning';
-interface IGetObservationSubmissionResponse {
+export interface IGetObservationSubmissionResponse {
   id: number;
   inputFileName: string;
   status?: string;
@@ -759,7 +762,7 @@ interface IGetObservationSubmissionResponse {
   }[];
 }
 
-interface IGetSummaryResultsResponse {
+export interface IGetSummaryResultsResponse {
   id: number;
   fileName: string;
   messages: {
@@ -770,7 +773,7 @@ interface IGetSummaryResultsResponse {
   }[];
 }
 
-interface IGetSurveyAttachment {
+export interface IGetSurveyAttachment {
   id: number;
   fileName: string;
   fileType: string;
@@ -779,4 +782,4 @@ interface IGetSurveyAttachment {
   revisionCount: number;
 }
 
-type IGetSurveyReportAttachment = IGetSurveyAttachment & { fileType: 'Report' };
+export type IGetSurveyReportAttachment = IGetSurveyAttachment & { fileType: 'Report' };
