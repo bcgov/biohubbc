@@ -429,6 +429,361 @@ describe('EmlService', () => {
 
   describe('buildSurveyEmlPackage', () => {
     // TODO
+
+
+    /*
+{
+  "wDataset": {
+    "$": {
+      "system": "",
+      "id": "69b506d1-3a50-4a39-b4c7-190bd0b34b96"
+    },
+    "title": "Project Name",
+    "creator": {
+      "organizationName": "A Rocha Canada",
+      "electronicMailAddress": "EMAIL@address.com"
+    },
+    "pubDate": "2023-03-13",
+    "language": "English",
+    "contact": {
+      "individualName": {
+        "givenName": "First Name",
+        "surName": "Last Name"
+      },
+      "organizationName": "A Rocha Canada",
+      "electronicMailAddress": "EMAIL@address.com"
+    }
+  },
+  "wProject": {
+    "$": {
+      "id": "69b506d1-3a50-4a39-b4c7-190bd0b34b96",
+      "system": ""
+    },
+    "title": "Survey Name",
+    "personnel": [
+      {
+        "individualName": {
+          "givenName": "First Name",
+          "surName": "Last Name"
+        },
+        "role": "pointOfContact"
+      }
+    ],
+    "abstract": {
+      "section": [
+        {
+          "title": "Intended Outcomes",
+          "para": "Habitat Assessment"
+        },
+        {
+          "title": "Additional Details",
+          "para": "Additional Details"
+        }
+      ]
+    },
+    "funding": {
+      "section": [
+        {
+          "title": "Agency Name",
+          "para": "BC Hydro",
+          "section": [
+            {
+              "title": "Funding Agency Project ID",
+              "para": "AGENCY PROJECT ID"
+            },
+            {
+              "title": "Investment Action/Category",
+              "para": "Not Applicable"
+            },
+            {
+              "title": "Funding Amount",
+              "para": 123456789
+            },
+            {
+              "title": "Funding Start Date",
+              "para": "2023-01-02"
+            },
+            {
+              "title": "Funding End Date",
+              "para": "2023-01-30"
+            }
+          ]
+        }
+      ]
+    },
+    "studyAreaDescription": {
+      "coverage": {
+        "geographicCoverage": {
+          "geographicDescription": "Survey Area Name",
+          "boundingCoordinates": {
+            "westBoundingCoordinate": -121.904297,
+            "eastBoundingCoordinate": -120.19043,
+            "northBoundingCoordinate": 51.971346,
+            "southBoundingCoordinate": 50.930738
+          },
+          "datasetGPolygon": [
+            {
+              "datasetGPolygonOuterGRing": [
+                {
+                  "gRingPoint": [
+                    {
+                      "gRingLatitude": 50.930738,
+                      "gRingLongitude": -121.904297
+                    },
+                    {
+                      "gRingLatitude": 51.971346,
+                      "gRingLongitude": -121.904297
+                    },
+                    {
+                      "gRingLatitude": 51.971346,
+                      "gRingLongitude": -120.19043
+                    },
+                    {
+                      "gRingLatitude": 50.930738,
+                      "gRingLongitude": -120.19043
+                    },
+                    {
+                      "gRingLatitude": 50.930738,
+                      "gRingLongitude": -121.904297
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "temporalCoverage": {
+          "rangeOfDates": {
+            "beginDate": {
+              "calendarDate": "2023-01-02"
+            },
+            "endDate": {
+              "calendarDate": "2023-01-30"
+            }
+          }
+        },
+        "taxonomicCoverage": {
+          "taxonomicClassification": [
+            {
+              "taxonRankName": "SPECIES",
+              "taxonRankValue": "Alces americanus",
+              "commonName": "Moose",
+              "taxonId": {
+                "$": {
+                  "provider": ""
+                },
+                "_": "2065"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "designDescription": {
+      "description": {
+        "section": [
+          {
+            "title": "Field Method",
+            "para": "Call Playback"
+          },
+          {
+            "title": "Ecological Season",
+            "para": "Spring"
+          },
+          {
+            "title": "Vantage Codes",
+            "para": {
+              "itemizedlist": {
+                "listitem": [
+                  {
+                    "para": "Aerial"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "wAddMeta1": [
+    {
+      "describes": "1116c94a-8cd5-480d-a1f3-dac794e57c05",
+      "metadata": {
+        "projectTypes": {
+          "projectType": "Aquatic Habitat"
+        }
+      }
+    },
+    {
+      "describes": "1116c94a-8cd5-480d-a1f3-dac794e57c05",
+      "metadata": {
+        "projectActivities": {
+          "projectActivity": [
+            {
+              "name": "Habitat Protection"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "describes": "1116c94a-8cd5-480d-a1f3-dac794e57c05",
+      "metadata": {
+        "IUCNConservationActions": {
+          "IUCNConservationAction": [
+            {
+              "IUCNConservationActionLevel1Classification": "Awareness Raising",
+              "IUCNConservationActionLevel2SubClassification": "Outreach & Communications",
+              "IUCNConservationActionLevel3SubClassification": "Reported and social media"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "describes": "1116c94a-8cd5-480d-a1f3-dac794e57c05",
+      "metadata": {
+        "stakeholderPartnerships": {
+          "stakeholderPartnership": [
+            {
+              "name": "BC Hydro"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "describes": "1116c94a-8cd5-480d-a1f3-dac794e57c05",
+      "metadata": {
+        "firstNationPartnerships": {
+          "firstNationPartnership": [
+            {
+              "name": "Acho Dene Koe First Nation"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "wAddMeta2": [],
+  "wRelated": [
+    {
+      "$": {
+        "id": "1116c94a-8cd5-480d-a1f3-dac794e57c05",
+        "system": ""
+      },
+      "title": "Project Name",
+      "personnel": [
+        {
+          "individualName": {
+            "givenName": "First Name",
+            "surName": "Last Name"
+          },
+          "organizationName": "A Rocha Canada",
+          "electronicMailAddress": "EMAIL@address.com",
+          "role": "pointOfContact"
+        }
+      ],
+      "abstract": {
+        "section": [
+          {
+            "title": "Objectives",
+            "para": "Objectives"
+          },
+          {
+            "title": "Caveats",
+            "para": "Not Supplied"
+          }
+        ]
+      },
+      "funding": {
+        "section": [
+          {
+            "title": "Agency Name",
+            "para": "BC Hydro",
+            "section": [
+              {
+                "title": "Funding Agency Project ID",
+                "para": "AGENCY PROJECT ID"
+              },
+              {
+                "title": "Investment Action/Category",
+                "para": "Not Applicable"
+              },
+              {
+                "title": "Funding Amount",
+                "para": 123456789
+              },
+              {
+                "title": "Funding Start Date",
+                "para": "2023-01-02"
+              },
+              {
+                "title": "Funding End Date",
+                "para": "2023-01-30"
+              }
+            ]
+          }
+        ]
+      },
+      "studyAreaDescription": {
+        "coverage": {
+          "geographicCoverage": {
+            "geographicDescription": "Location Description",
+            "boundingCoordinates": {
+              "westBoundingCoordinate": -121.904297,
+              "eastBoundingCoordinate": -120.19043,
+              "northBoundingCoordinate": 51.971346,
+              "southBoundingCoordinate": 50.930738
+            },
+            "datasetGPolygon": [
+              {
+                "datasetGPolygonOuterGRing": [
+                  {
+                    "gRingPoint": [
+                      {
+                        "gRingLatitude": 50.930738,
+                        "gRingLongitude": -121.904297
+                      },
+                      {
+                        "gRingLatitude": 51.971346,
+                        "gRingLongitude": -121.904297
+                      },
+                      {
+                        "gRingLatitude": 51.971346,
+                        "gRingLongitude": -120.19043
+                      },
+                      {
+                        "gRingLatitude": 50.930738,
+                        "gRingLongitude": -120.19043
+                      },
+                      {
+                        "gRingLatitude": 50.930738,
+                        "gRingLongitude": -121.904297
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "temporalCoverage": {
+            "rangeOfDates": {
+              "beginDate": {
+                "calendarDate": "2023-01-01"
+              },
+              "endDate": {
+                "calendarDate": "2023-01-31"
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}
+    */
   });
 
   describe('codes', () => {
