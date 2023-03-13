@@ -4,6 +4,7 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 //import * as db from '../database/db';
 import { IGetProject } from '../models/project-view';
+import { SurveyObject } from '../models/survey-view';
 import { getMockDBConnection } from '../__mocks__/db';
 import { CodeService } from './code-service';
 import { EmlService } from './eml-service';
@@ -664,7 +665,219 @@ describe('EmlService', () => {
   });
 
   describe('_buildProjectEmlProjectSection', () => {
-    // TODO
+    it('should build a project EML Project section', () => {
+      const mockDBConnection = getMockDBConnection();
+      const emlService = new EmlService(mockDBConnection);
+
+      const mockProjectData = {
+        project: {
+          uuid: 'aaaabbbb-cccc-dddd-eeee-ffffgggghhhhiiii',
+          project_name: 'Test Project Name'
+        },
+        objectives: {
+          objectives: 'Project objectives.',
+          caveats: 'Project caveats.'
+        }
+      } as IGetProject;
+
+      sinon.stub(EmlService.prototype, '_getProjectPersonnel').returns([
+        {
+          individualName: { givenName: "First Name", surName: "Last Name" },
+          organizationName: "A Rocha Canada",
+          electronicMailAddress: "EMAIL@address.com",
+          role: "pointOfContact"
+        }
+      ]);
+
+      sinon.stub(EmlService.prototype, '_getProjectFundingSources').returns({
+        funding: {        
+          section: [
+            {
+              title: "Agency Name",
+              para: "BC Hydro",
+              section: [
+                { title: "Funding Agency Project ID", para: "AGENCY PROJECT ID" },
+                { title: "Investment Action/Category", para: "Not Applicable" },
+                { title: "Funding Amount", para: 123456789 },
+                { title: "Funding Start Date", para: "2023-01-02" },
+                { title: "Funding End Date", para: "2023-01-30" }
+              ]
+            }
+          ]
+        }
+      });
+
+      sinon.stub(EmlService.prototype, '_getProjectGeographicCoverage').returns({
+        geographicCoverage: {
+          geographicDescription: "Location Description",
+          boundingCoordinates: {
+            westBoundingCoordinate: -121.904297,
+            eastBoundingCoordinate: -120.19043,
+            northBoundingCoordinate: 51.971346,
+            southBoundingCoordinate: 50.930738
+          },
+          datasetGPolygon: [
+            {
+              datasetGPolygonOuterGRing: [
+                {
+                  gRingPoint: [
+                    { gRingLatitude: 50.930738, gRingLongitude: -121.904297 },
+                    { gRingLatitude: 51.971346, gRingLongitude: -121.904297 },
+                    { gRingLatitude: 51.971346, gRingLongitude: -120.19043 },
+                    { gRingLatitude: 50.930738, gRingLongitude: -120.19043 },
+                    { gRingLatitude: 50.930738, gRingLongitude: -121.904297 }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+      });
+
+      sinon.stub(EmlService.prototype, '_getProjectTemporalCoverage').returns({
+        rangeOfDates: {
+          beginDate: { calendarDate: "2023-01-01" },
+          endDate: { calendarDate: "2023-01-31" }
+        }
+      });
+
+      const response = emlService._buildProjectEmlProjectSection(mockProjectData);
+
+      expect(response).to.eql({
+        $: { id: 'aaaabbbb-cccc-dddd-eeee-ffffgggghhhhiiii', system: '' },
+        title: 'Test Project Name',
+        personnel: [
+          {
+            individualName: { givenName: "First Name", surName: "Last Name" },
+            organizationName: "A Rocha Canada",
+            electronicMailAddress: "EMAIL@address.com",
+            role: "pointOfContact"
+          }
+        ],
+        abstract: {
+          section: [
+            { title: 'Objectives', para: 'Project objectives.' },
+            { title: 'Caveats', para: 'Project caveats.' }
+          ]
+        },
+        funding: {
+          section: [
+            {
+              title: "Agency Name",
+              para: "BC Hydro",
+              section: [
+                { title: "Funding Agency Project ID", para: "AGENCY PROJECT ID" },
+                { title: "Investment Action/Category", para: "Not Applicable" },
+                { title: "Funding Amount", para: 123456789 },
+                { title: "Funding Start Date", para: "2023-01-02" },
+                { title: "Funding End Date", para: "2023-01-30" }
+              ]
+            }
+          ]
+        },
+        studyAreaDescription: {
+          coverage: {
+            geographicCoverage: {
+              geographicDescription: "Location Description",
+              boundingCoordinates: {
+                westBoundingCoordinate: -121.904297,
+                eastBoundingCoordinate: -120.19043,
+                northBoundingCoordinate: 51.971346,
+                southBoundingCoordinate: 50.930738
+              },
+              datasetGPolygon: [
+                {
+                  datasetGPolygonOuterGRing: [
+                    {
+                      gRingPoint: [
+                        { gRingLatitude: 50.930738, gRingLongitude: -121.904297 },
+                        { gRingLatitude: 51.971346, gRingLongitude: -121.904297 },
+                        { gRingLatitude: 51.971346, gRingLongitude: -120.19043 },
+                        { gRingLatitude: 50.930738, gRingLongitude: -120.19043 },
+                        { gRingLatitude: 50.930738, gRingLongitude: -121.904297 }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            temporalCoverage: {
+              rangeOfDates: {
+                beginDate: { calendarDate: "2023-01-01" },
+                endDate: { calendarDate: "2023-01-31" }
+              }
+            }
+          }
+        }
+      });
+    });
+
+    it('should build if optional parameters are missing', () => {
+      const mockDBConnection = getMockDBConnection();
+      const emlService = new EmlService(mockDBConnection);
+
+      const mockProjectData = {
+        project: {
+          uuid: 'aaaabbbb-cccc-dddd-eeee-ffffgggghhhhiiii',
+          project_name: 'Test Project Name'
+        },
+        objectives: {
+          objectives: 'Project objectives.',
+          caveats: 'Project caveats.'
+        }
+      } as IGetProject;
+
+      sinon.stub(EmlService.prototype, '_getProjectPersonnel').returns([
+        {
+          individualName: { givenName: "First Name", surName: "Last Name" },
+          organizationName: "A Rocha Canada",
+          electronicMailAddress: "EMAIL@address.com",
+          role: "pointOfContact"
+        }
+      ]);
+
+      sinon.stub(EmlService.prototype, '_getProjectFundingSources').returns({});
+
+      sinon.stub(EmlService.prototype, '_getProjectGeographicCoverage').returns({});
+
+      sinon.stub(EmlService.prototype, '_getProjectTemporalCoverage').returns({
+        rangeOfDates: {
+          beginDate: { calendarDate: "2023-01-01" },
+          endDate: { calendarDate: "2023-01-31" }
+        }
+      });
+
+      const response = emlService._buildProjectEmlProjectSection(mockProjectData);
+
+      expect(response).to.eql({
+        $: { id: 'aaaabbbb-cccc-dddd-eeee-ffffgggghhhhiiii', system: '' },
+        title: 'Test Project Name',
+        personnel: [
+          {
+            individualName: { givenName: "First Name", surName: "Last Name" },
+            organizationName: "A Rocha Canada",
+            electronicMailAddress: "EMAIL@address.com",
+            role: "pointOfContact"
+          }
+        ],
+        abstract: {
+          section: [
+            { title: 'Objectives', para: 'Project objectives.' },
+            { title: 'Caveats', para: 'Project caveats.' }
+          ]
+        },
+        studyAreaDescription: {
+          coverage: {
+            temporalCoverage: {
+              rangeOfDates: {
+                beginDate: { calendarDate: "2023-01-01" },
+                endDate: { calendarDate: "2023-01-31" }
+              }
+            }
+          }
+        }
+      });
+    });
   });
 
   describe('_getSurveyAdditionalMetadata', () => {
@@ -676,19 +889,156 @@ describe('EmlService', () => {
   });
 
   describe('_getDatasetCreator', () => {
-    // TODO
+    it('should return the coordinator agency if share_contract_details is false', async () => {
+      const mockDBConnection = getMockDBConnection();
+      const emlService = new EmlService(mockDBConnection);
+
+      const mockProjectData = {
+        coordinator: {
+          first_name: 'first',
+          last_name: 'last',
+          email_address: 'email@example.com',
+          coordinator_agency: 'test-agency',
+          share_contact_details: 'false'
+        }
+      } as IGetProject
+
+      const response = emlService._getDatasetCreator(mockProjectData);
+
+      expect(response).to.eql({ organizationName: 'test-agency' });
+    });
+
+    it('should return the organization if share_contract_details is true', async () => {
+      const mockDBConnection = getMockDBConnection();
+      const emlService = new EmlService(mockDBConnection);
+
+      const mockProjectData = {
+        coordinator: {
+          first_name: 'first',
+          last_name: 'last',
+          email_address: 'email@example.com',
+          coordinator_agency: 'test-agency',
+          share_contact_details: 'true'
+        }
+      } as IGetProject
+
+      const response = emlService._getDatasetCreator(mockProjectData);
+
+      expect(response).to.eql({
+        organizationName: 'test-agency',
+        electronicMailAddress: 'email@example.com'
+      });
+    });
   });
 
   describe('_getProjectContact', () => {
-    // TODO
+    it('should return the coordinator agency if share_contract_details is false', async () => {
+      const mockDBConnection = getMockDBConnection();
+      const emlService = new EmlService(mockDBConnection);
+
+      const mockProjectData = {
+        coordinator: {
+          first_name: 'first',
+          last_name: 'last',
+          email_address: 'email@example.com',
+          coordinator_agency: 'test-agency',
+          share_contact_details: 'false'
+        }
+      } as IGetProject
+
+      const response = emlService._getProjectContact(mockProjectData);
+
+      expect(response).to.eql({ organizationName: 'test-agency' });
+    });
+
+    it('should return the individual name and organization if share_contract_details is true', async () => {
+      const mockDBConnection = getMockDBConnection();
+      const emlService = new EmlService(mockDBConnection);
+
+      const mockProjectData = {
+        coordinator: {
+          first_name: 'first',
+          last_name: 'last',
+          email_address: 'email@example.com',
+          coordinator_agency: 'test-agency',
+          share_contact_details: 'true'
+        }
+      } as IGetProject
+
+      const response = emlService._getProjectContact(mockProjectData);
+
+      expect(response).to.eql({
+        individualName: { givenName: 'first', surName: 'last' },
+        organizationName: 'test-agency',
+        electronicMailAddress: 'email@example.com'
+      });
+    });
   });
 
-  describe('_getProjectPersonnel', () => {
-    // TODO
+  describe.only('_getProjectPersonnel', () => {
+    it('should return the coordinator agency if share_contract_details is false', async () => {
+      const mockDBConnection = getMockDBConnection();
+      const emlService = new EmlService(mockDBConnection);
+
+      const mockProjectData = {
+        coordinator: {
+          first_name: 'first',
+          last_name: 'last',
+          email_address: 'email@example.com',
+          coordinator_agency: 'test-agency',
+          share_contact_details: 'false'
+        }
+      } as IGetProject
+
+      const response = emlService._getProjectPersonnel(mockProjectData);
+
+      expect(response).to.eql([{ organizationName: 'test-agency' }]);
+    });
+
+    it('should return the role, individual name and organization if share_contract_details is true', async () => {
+      const mockDBConnection = getMockDBConnection();
+      const emlService = new EmlService(mockDBConnection);
+
+      const mockProjectData = {
+        coordinator: {
+          first_name: 'first',
+          last_name: 'last',
+          email_address: 'email@example.com',
+          coordinator_agency: 'test-agency',
+          share_contact_details: 'true'
+        }
+      } as IGetProject
+
+      const response = emlService._getProjectPersonnel(mockProjectData);
+
+      expect(response).to.eql([{
+        individualName: { givenName: 'first', surName: 'last' },
+        organizationName: 'test-agency',
+        electronicMailAddress: 'email@example.com',
+        role: 'pointOfContact'
+      }]);
+    });
   });
 
   describe('_getSurveyPersonnel', () => {
-    // TODO
+    it('should return survey personnel', async () => {
+      const mockDBConnection = getMockDBConnection();
+      const emlService = new EmlService(mockDBConnection);
+
+      const mockSurveyData = {
+        survey_details: {
+          biologist_first_name: 'biologist-fname',
+          biologist_last_name: 'biologist-lname'
+        }
+      } as SurveyObject
+
+      const response = emlService._getSurveyPersonnel(mockSurveyData);
+
+      expect(response).to.eql([{
+        individualName: { givenName: 'biologist-fname', surName: 'biologist-lname' },
+        role: 'pointOfContact'
+      }]);
+    });
   });
 
   describe('_getProjectFundingSources', () => {
