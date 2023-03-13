@@ -175,7 +175,9 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
     });
   }
 
-  function alphabetizeSubmissionMessages(data: IGetObservationSubmissionResponse | undefined): IGetObservationSubmissionResponseMessages[] {
+  function alphabetizeSubmissionMessages(
+    data: IGetObservationSubmissionResponse | undefined
+  ): IGetObservationSubmissionResponseMessages[] {
     // nothing to sort
     if (!data?.messageTypes) {
       return [];
@@ -313,23 +315,23 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
                       {
                         // Alphabetize message types for consistency
                         submissionMessageTypes.map((messageType) => {
-                            return (
-                              <Box key={messageType.messageTypeLabel}>
-                                <Alert severity={alertSeverityFromSeverityLabel(messageType.severityLabel)}>
-                                  {messageType.messageTypeLabel}
-                                </Alert>
-                                <Box component="ul" my={3}>
-                                  {messageType.messages.map((messageObject: { id: number; message: string }) => {
-                                    return (
-                                      <li key={messageObject.id}>
-                                        <Typography variant="body2">{messageObject.message}</Typography>
-                                      </li>
-                                    );
-                                  })}
-                                </Box>
+                          return (
+                            <Box key={messageType.messageTypeLabel}>
+                              <Alert severity={alertSeverityFromSeverityLabel(messageType.severityLabel)}>
+                                {messageType.messageTypeLabel}
+                              </Alert>
+                              <Box component="ul" my={3}>
+                                {messageType.messages.map((messageObject: { id: number; message: string }) => {
+                                  return (
+                                    <li key={messageObject.id}>
+                                      <Typography variant="body2">{messageObject.message}</Typography>
+                                    </li>
+                                  );
+                                })}
                               </Box>
-                            );
-                          })
+                            </Box>
+                          );
+                        })
                       }
                     </Box>
                   )}
