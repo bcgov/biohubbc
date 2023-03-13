@@ -2,8 +2,10 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
+//import * as db from '../database/db';
 import { IGetProject } from '../models/project-view';
 import { getMockDBConnection } from '../__mocks__/db';
+import { CodeService } from './code-service';
 import { EmlService } from './eml-service';
 import { ProjectService } from './project-service';
 import { SurveyService } from './survey-service';
@@ -59,6 +61,15 @@ describe('EmlService', () => {
     const emlService = new EmlService(dbConnectionObj);
 
     expect(emlService).to.be.instanceof(EmlService);
+    expect(emlService._constants).to.eql({
+      EML_VERSION: '1.0.0',
+      EML_PROVIDER_URL: 'Not Supplied',
+      EML_SECURITY_PROVIDER_URL: 'Not Supplied',
+      EML_ORGANIZATION_NAME: 'Not Supplied',
+      EML_ORGANIZATION_URL: 'Not Supplied',
+      EML_TAXONOMIC_PROVIDER_URL: 'Not Supplied',
+      EML_INTELLECTUAL_RIGHTS: 'Not Supplied'
+    })
   });
 
   describe('buildProjectEmlPackage', () => {
@@ -84,7 +95,7 @@ describe('EmlService', () => {
         .to.equal(`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><eml:eml><dataset><project/></dataset></eml:eml>`);
     });
 
-    it.only('should build an EML package successfully', async () => {
+    it('should build an EML package successfully', async () => {
       const mockDBConnection = getMockDBConnection();
       const emlService = new EmlService(mockDBConnection);
 
@@ -420,19 +431,236 @@ describe('EmlService', () => {
   });
 
   describe('codes', () => {
-    // TODO
+    const mockAllCodesResponse = {
+      management_action_type: [],
+      first_nations: [],
+      funding_source: [],
+      investment_action_category: [],
+      activity: [],
+      project_type: [],
+      coordinator_agency: [],
+      region: [],
+      proprietor_type: [],
+      iucn_conservation_action_level_1_classification: [],
+      iucn_conservation_action_level_2_subclassification: [],
+      iucn_conservation_action_level_3_subclassification: [],
+      system_roles: [],
+      project_roles: [],
+      regional_offices: [],
+      administrative_activity_status_type: [],
+      ecological_seasons: [],
+      field_methods: [],
+      intended_outcomes: [],
+      vantage_codes: []
+    }
+
+    it('should retrieve codes if _codes is undefined', async () => {
+      const mockDBConnection = getMockDBConnection();
+      const emlService = new EmlService(mockDBConnection);
+
+      const codeStub = sinon.stub(CodeService.prototype, 'getAllCodeSets').resolves(mockAllCodesResponse);
+
+      const codes = await emlService.codes();
+
+      expect(emlService._codes).to.eql(mockAllCodesResponse);
+      expect(emlService._codes).to.eql(codes);
+      expect(codeStub).to.be.calledOnce;
+    });
+
+    it('should return cached codes if _codes is not undefined', async () => {
+      const mockDBConnection = getMockDBConnection();
+      const emlService = new EmlService(mockDBConnection);
+
+      emlService._codes = mockAllCodesResponse;
+
+      const codeStub = sinon.stub(CodeService.prototype, 'getAllCodeSets');
+
+      const codes = await emlService.codes();
+
+      expect(emlService._codes).to.eql(mockAllCodesResponse);
+      expect(emlService._codes).to.eql(codes);
+      expect(codeStub).not.to.be.called;
+    });
+
+    it('should return cached codes upon subsequent calls', async () => {
+      const mockDBConnection = getMockDBConnection();
+      const emlService = new EmlService(mockDBConnection);
+
+      const codeStub = sinon.stub(CodeService.prototype, 'getAllCodeSets').resolves(mockAllCodesResponse);
+
+      const freshCodes = await emlService.codes();
+      const cachedCodes = await emlService.codes();
+
+      expect(freshCodes).to.eql(cachedCodes);
+      expect(codeStub).to.be.calledOnce;
+    });
   });
 
   describe('loadEmlDbConstants', () => {
-    // TODO
+    beforeEach(() => {
+      sinon.restore();
+    });
+
+    it('should yield Not Supplied constants if the database returns no rows', async () => {
+      const mockQuery = sinon.stub();
+
+      mockQuery.onCall(0).resolves({ rowCount: 0, rows: [] });
+      mockQuery.onCall(1).resolves({ rowCount: 0, rows: [] });
+      mockQuery.onCall(2).resolves({ rowCount: 0, rows: [] });
+      mockQuery.onCall(3).resolves({ rowCount: 0, rows: [] });
+      mockQuery.onCall(4).resolves({ rowCount: 0, rows: [] });
+      mockQuery.onCall(5).resolves({ rowCount: 0, rows: [] });
+
+      const mockDBConnection = {
+        ...getMockDBConnection(),
+        sql: mockQuery
+      }
+
+      const emlService = new EmlService(mockDBConnection);
+
+      await emlService.loadEmlDbConstants();
+
+      expect(emlService._constants).to.eql({
+        EML_VERSION: '1.0.0',
+        EML_PROVIDER_URL: 'Not Supplied',
+        EML_SECURITY_PROVIDER_URL: 'Not Supplied',
+        EML_ORGANIZATION_NAME: 'Not Supplied',
+        EML_ORGANIZATION_URL: 'Not Supplied',
+        EML_TAXONOMIC_PROVIDER_URL: 'Not Supplied',
+        EML_INTELLECTUAL_RIGHTS: 'Not Supplied'
+      });
+    });
+
+    it('should yield Not Supplied constants if the database returns null constants', async () => {
+      const mockQuery = sinon.stub();
+
+      mockQuery.onCall(0).resolves({ rowCount: 0, rows: [{ constant: null }] });
+      mockQuery.onCall(1).resolves({ rowCount: 0, rows: [{ constant: null }] });
+      mockQuery.onCall(2).resolves({ rowCount: 0, rows: [{ constant: null }] });
+      mockQuery.onCall(3).resolves({ rowCount: 0, rows: [{ constant: null }] });
+      mockQuery.onCall(4).resolves({ rowCount: 0, rows: [{ constant: null }] });
+      mockQuery.onCall(5).resolves({ rowCount: 0, rows: [{ constant: null }] });
+
+      const mockDBConnection = {
+        ...getMockDBConnection(),
+        sql: mockQuery
+      }
+
+      const emlService = new EmlService(mockDBConnection);
+
+      await emlService.loadEmlDbConstants();
+
+      expect(emlService._constants).to.eql({
+        EML_VERSION: '1.0.0',
+        EML_PROVIDER_URL: 'Not Supplied',
+        EML_SECURITY_PROVIDER_URL: 'Not Supplied',
+        EML_ORGANIZATION_NAME: 'Not Supplied',
+        EML_ORGANIZATION_URL: 'Not Supplied',
+        EML_TAXONOMIC_PROVIDER_URL: 'Not Supplied',
+        EML_INTELLECTUAL_RIGHTS: 'Not Supplied'
+      });
+    });
+
+    it('should fetch DB constants successfully', async () => {
+      const mockQuery = sinon.stub();
+
+      mockQuery.onCall(0).resolves({ rowCount: 1, rows: [{ constant: 'test-org-url' }] });
+      mockQuery.onCall(1).resolves({ rowCount: 1, rows: [{ constant: 'test-org-name' }] });
+      mockQuery.onCall(2).resolves({ rowCount: 1, rows: [{ constant: 'test-provider-url' }] });
+      mockQuery.onCall(3).resolves({ rowCount: 1, rows: [{ constant: 'test-security-provider' }] });
+      mockQuery.onCall(4).resolves({ rowCount: 1, rows: [{ constant: 'test-int-rights' }] });
+      mockQuery.onCall(5).resolves({ rowCount: 1, rows: [{ constant: 'test-taxon-url' }] });
+
+      const mockDBConnection = {
+        ...getMockDBConnection(),
+        sql: mockQuery
+      }
+
+      const emlService = new EmlService(mockDBConnection);
+
+      await emlService.loadEmlDbConstants();
+
+      expect(emlService._constants).to.eql({
+        EML_VERSION: '1.0.0',
+        EML_ORGANIZATION_URL: 'test-org-url',
+        EML_ORGANIZATION_NAME: 'test-org-name',
+        EML_PROVIDER_URL: 'test-provider-url',
+        EML_SECURITY_PROVIDER_URL: 'test-security-provider',
+        EML_INTELLECTUAL_RIGHTS: 'test-int-rights',
+        EML_TAXONOMIC_PROVIDER_URL: 'test-taxon-url'
+      });
+    });
   });
 
   describe('_buildEmlSection', () => {
-    // TODO
+    it('should build an EML section', () => {
+      const mockDBConnection = getMockDBConnection();
+      const emlService = new EmlService(mockDBConnection);
+
+      const response = emlService._buildEmlSection('aaaabbbb-cccc-dddd-eeee-ffffgggghhhhiiii');
+      expect(response).to.eql({
+        $: {
+          packageId: 'urn:uuid:aaaabbbb-cccc-dddd-eeee-ffffgggghhhhiiii',
+          system: '',
+          'xmlns:eml': 'https://eml.ecoinformatics.org/eml-2.2.0',
+          'xmlns:xsi': 'http://www.w3.org/2001/XMLSchema-instance',
+          'xmlns:stmml': 'http://www.xml-cml.org/schema/schema24',
+          'xsi:schemaLocation': 'https://eml.ecoinformatics.org/eml-2.2.0 xsd/eml.xsd'
+        }
+      });
+    })
   });
 
   describe('_buildEmlDatasetSection', () => {
-    // TODO
+    it('should build an EML dataset section', () => {
+      const mockDBConnection = getMockDBConnection();
+      const emlService = new EmlService(mockDBConnection);
+
+      const mockOrg = {
+        organizationName: "Test Organization",
+        electronicMailAddress: "EMAIL@address.com"
+      };
+
+      const mockPackageId = 'aaaabbbb-cccc-dddd-eeee-ffffgggghhhhiiii'
+      const mockProjectData = {
+        project: {
+          project_name: 'Test Project Name'
+        }
+      } as IGetProject;
+
+      sinon.stub(EmlService.prototype, '_getDatasetCreator').returns(mockOrg);
+
+      sinon.stub(EmlService.prototype, '_makeEmlDateString').returns('2023-01-01');
+
+      sinon.stub(EmlService.prototype, '_getProjectContact').returns({
+        individualName: {
+          givenName: "First Name",
+          surName: "Last Name"
+        },
+        ...mockOrg
+      });
+
+      const response = emlService._buildEmlDatasetSection(mockPackageId, mockProjectData);
+
+      expect(response).to.eql({
+        $: { system: '', id: 'aaaabbbb-cccc-dddd-eeee-ffffgggghhhhiiii' },
+        title: 'Test Project Name',
+        creator: {
+          organizationName: "Test Organization",
+          electronicMailAddress: "EMAIL@address.com"
+        },
+        pubDate: '2023-01-01',
+        language: 'English',
+        contact: {
+          individualName: {
+            givenName: "First Name",
+            surName: "Last Name"
+          },
+          organizationName: "Test Organization",
+          electronicMailAddress: "EMAIL@address.com"
+        }
+      });
+    });
   });
 
   describe('_buildProjectEmlProjectSection', () => {

@@ -322,7 +322,7 @@ export class EmlService extends DBService {
         .withEml(this._buildEmlSection(packageId))
 
         // Build EML->Dataset field
-        .withDataset(await this._buildEmlDatasetSection(packageId, projectData))
+        .withDataset(this._buildEmlDatasetSection(packageId, projectData))
 
         // Build EML->Dataset->Project field
         .withProject(this._buildProjectEmlProjectSection(projectData))
@@ -404,7 +404,6 @@ export class EmlService extends DBService {
       organizationName,
       providerURL,
       securityProviderURL,
-      organizationURL,
       intellectualRights,
       taxonomicProviderURL
     ] = await Promise.all([
@@ -412,18 +411,16 @@ export class EmlService extends DBService {
       this.connection.sql<{ constant: string }>(getDbCharacterSystemMetaDataConstantSQL('ORGANIZATION_NAME_FULL')),
       this.connection.sql<{ constant: string }>(getDbCharacterSystemMetaDataConstantSQL('PROVIDER_URL')),
       this.connection.sql<{ constant: string }>(getDbCharacterSystemMetaDataConstantSQL('SECURITY_PROVIDER_URL')),
-      this.connection.sql<{ constant: string }>(getDbCharacterSystemMetaDataConstantSQL('ORGANIZATION_URL')),
       this.connection.sql<{ constant: string }>(getDbCharacterSystemMetaDataConstantSQL('INTELLECTUAL_RIGHTS')),
       this.connection.sql<{ constant: string }>(getDbCharacterSystemMetaDataConstantSQL('TAXONOMIC_PROVIDER_URL'))
     ]);
 
-    this._constants.EML_ORGANIZATION_URL = organizationUrl.rows[0].constant || NOT_SUPPLIED;
-    this._constants.EML_ORGANIZATION_NAME = organizationName.rows[0].constant || NOT_SUPPLIED;
-    this._constants.EML_PROVIDER_URL = providerURL.rows[0].constant || NOT_SUPPLIED;
-    this._constants.EML_SECURITY_PROVIDER_URL = securityProviderURL.rows[0].constant || NOT_SUPPLIED;
-    this._constants.EML_ORGANIZATION_URL = organizationURL.rows[0].constant || NOT_SUPPLIED;
-    this._constants.EML_INTELLECTUAL_RIGHTS = intellectualRights.rows[0].constant || NOT_SUPPLIED;
-    this._constants.EML_TAXONOMIC_PROVIDER_URL = taxonomicProviderURL.rows[0].constant || NOT_SUPPLIED;
+    this._constants.EML_ORGANIZATION_URL = organizationUrl.rows[0]?.constant || NOT_SUPPLIED;
+    this._constants.EML_ORGANIZATION_NAME = organizationName.rows[0]?.constant || NOT_SUPPLIED;
+    this._constants.EML_PROVIDER_URL = providerURL.rows[0]?.constant || NOT_SUPPLIED;
+    this._constants.EML_SECURITY_PROVIDER_URL = securityProviderURL.rows[0]?.constant || NOT_SUPPLIED;
+    this._constants.EML_INTELLECTUAL_RIGHTS = intellectualRights.rows[0]?.constant || NOT_SUPPLIED;
+    this._constants.EML_TAXONOMIC_PROVIDER_URL = taxonomicProviderURL.rows[0]?.constant || NOT_SUPPLIED;
   }
 
   /**
@@ -454,7 +451,7 @@ export class EmlService extends DBService {
    * @return {*}  {Promise<Record<string, any>>}
    * @memberof EmlService
    */
-  async _buildEmlDatasetSection(packageId: string, projectData: IGetProject): Promise<Record<string, any>> {
+  _buildEmlDatasetSection(packageId: string, projectData: IGetProject): Record<string, any> {
     return {
       $: { system: EMPTY_STRING, id: packageId },
       title: projectData.project.project_name,
