@@ -943,7 +943,7 @@ export class EmlService extends DBService {
       if (_source) {
         taxonomicClassification.push({
           taxonRankName: _source.tty_name,
-          taxonRankValue: `${_source.unit_name1} ${_source.unit_name2} ${_source.unit_name3}`,
+          taxonRankValue: [_source.unit_name1, _source.unit_name2, _source.unit_name3].filter(Boolean).join(' '),
           commonName: _source.english_name,
           taxonId: {
             $: { provider: EMPTY_STRING },
