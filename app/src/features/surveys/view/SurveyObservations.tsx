@@ -27,7 +27,6 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useInterval } from 'hooks/useInterval';
 import {
-  IGetObservationSubmissionResponse,
   IGetObservationSubmissionResponseMessages,
   IUploadObservationSubmissionResponse,
   ObservationSubmissionMessageSeverityLabel
@@ -68,11 +67,11 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
   const refreshSubmission = submissionDataLoader.refresh;
   const occurrenceSubmission = submissionDataLoader.data;
   const occurrenceSubmissionId = occurrenceSubmission?.id;
-  const submissionMessageTypes = alphabetizeSubmissionMessages(occurrenceSubmission);
+  const submissionMessageTypes = occurrenceSubmission?.messageTypes || [];
   const submissionExists = Boolean(occurrenceSubmission);
 
   const submissionPollingInterval = useInterval(refreshSubmission, 5000, 60000);
-
+  alphabetizeSubmissionMessages(submissionMessageTypes);
   useEffect(() => {
     if (submissionExists) {
       submissionPollingInterval.enable();
@@ -175,15 +174,9 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
     });
   }
 
-  function alphabetizeSubmissionMessages(
-    data: IGetObservationSubmissionResponse | undefined
-  ): IGetObservationSubmissionResponseMessages[] {
-    // nothing to sort
-    if (!data?.messageTypes) {
-      return [];
-    }
-
-    return data?.messageTypes.sort((messageA, messageB) => {
+  function alphabetizeSubmissionMessages(data: IGetObservationSubmissionResponseMessages[]) {
+    // sorts data in place, no need to return
+    data.sort((messageA, messageB) => {
       // Message A is sorted before B
       if (messageA.messageTypeLabel < messageB.messageTypeLabel) {
         return -1;
