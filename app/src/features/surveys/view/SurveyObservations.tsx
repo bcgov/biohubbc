@@ -27,6 +27,8 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useInterval } from 'hooks/useInterval';
 import {
+  IGetObservationSubmissionResponse,
+  IGetObservationSubmissionResponseMessages,
   IUploadObservationSubmissionResponse,
   ObservationSubmissionMessageSeverityLabel
 } from 'interfaces/useObservationApi.interface';
@@ -66,7 +68,7 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
   const refreshSubmission = submissionDataLoader.refresh;
   const occurrenceSubmission = submissionDataLoader.data;
   const occurrenceSubmissionId = occurrenceSubmission?.id;
-  const submissionMessageTypes = occurrenceSubmission?.messageTypes || [];
+  const submissionMessageTypes = alphabetizeSubmissionMessages(occurrenceSubmission);
   const submissionExists = Boolean(occurrenceSubmission);
 
   const submissionPollingInterval = useInterval(refreshSubmission, 5000, 60000);
@@ -170,6 +172,28 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
         softDeleteSubmission();
         dialogContext.setYesNoDialog({ open: false });
       }
+    });
+  }
+
+  function alphabetizeSubmissionMessages(data: IGetObservationSubmissionResponse | undefined): IGetObservationSubmissionResponseMessages[] {
+    // nothing to sort
+    if (!data?.messageTypes) {
+      return [];
+    }
+
+    return data?.messageTypes.sort((messageA, messageB) => {
+      // Message A is sorted before B
+      if (messageA.messageTypeLabel < messageB.messageTypeLabel) {
+        return -1;
+      }
+
+      // Message B is sorted before A
+      if (messageA.messageTypeLabel > messageB.messageTypeLabel) {
+        return 1;
+      }
+
+      // Items are already in order
+      return 0;
     });
   }
 
@@ -288,22 +312,7 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
                     <Box mt={1}>
                       {
                         // Alphabetize message types for consistency
-                        submissionMessageTypes
-                          .sort((messageA, messageB) => {
-                            // Message A is sorted before B
-                            if (messageA.messageTypeLabel < messageB.messageTypeLabel) {
-                              return -1;
-                            }
-
-                            // Message B is sorted before A
-                            if (messageA.messageTypeLabel > messageB.messageTypeLabel) {
-                              return 1;
-                            }
-
-                            // Items are already in order
-                            return 0;
-                          })
-                          .map((messageType) => {
+                        submissionMessageTypes.map((messageType) => {
                             return (
                               <Box key={messageType.messageTypeLabel}>
                                 <Alert severity={alertSeverityFromSeverityLabel(messageType.severityLabel)}>
