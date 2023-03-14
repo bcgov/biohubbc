@@ -295,11 +295,28 @@ export class SurveyService extends DBService {
   }
 
   /**
-   * Creates a new survey for a project and returns survey ID
+   * Creates a survey and uploads the metadata to Biohub
    *
    * @param {number} projectId
    * @param {PostSurveyObject} postSurveyData
-   * @returns {*} {Promise<number>}
+   * @return {*}  {Promise<number>}
+   * @memberof SurveyService
+   */
+  async createSurveyAndUploadToBiohub(projectId: number, postSurveyData: PostSurveyObject): Promise<number> {
+    const surveyId = await this.createSurvey(projectId, postSurveyData);
+
+    //Update Eml to biohub and publish record
+    await this.platformService.submitAndPublishDwcAMetadata(projectId, surveyId);
+
+    return surveyId;
+  }
+
+  /**
+   * Creates the survey
+   *
+   * @param {number} projectId
+   * @param {PostSurveyObject} postSurveyData
+   * @return {*}  {Promise<number>}
    * @memberof SurveyService
    */
   async createSurvey(projectId: number, postSurveyData: PostSurveyObject): Promise<number> {
@@ -353,9 +370,6 @@ export class SurveyService extends DBService {
     );
 
     await Promise.all(promises);
-
-    //Update Eml to biohub and publish record
-    await this.platformService.submitAndPublishDwcAMetadata(projectId, surveyId);
 
     return surveyId;
   }
@@ -487,7 +501,22 @@ export class SurveyService extends DBService {
    * @returns {*} {Promise<void>}
    * @memberof SurveyService
    */
-  async updateSurvey(surveyId: number, putSurveyData: PutSurveyObject): Promise<void> {
+  async updateSurveyAndUploadToBiohub(surveyId: number, putSurveyData: PutSurveyObject): Promise<void> {
+    const surveyData = await this.updateSurvey(surveyId, putSurveyData);
+
+    // Update Eml to biohub and publish record
+    return await this.platformService.submitAndPublishDwcAMetadata(surveyData.survey_details.project_id, surveyId);
+  }
+
+  /**
+   * Updates provided survey information and submits to BioHub
+   *
+   * @param {number} surveyId
+   * @param {PutSurveyObject} putSurveyData
+   * @returns {*} {Promise<void>}
+   * @memberof SurveyService
+   */
+  async updateSurvey(surveyId: number, putSurveyData: PutSurveyObject): Promise<SurveyObject> {
     const promises: Promise<any>[] = [];
 
     if (putSurveyData?.survey_details || putSurveyData?.purpose_and_methodology || putSurveyData?.location) {
@@ -516,10 +545,7 @@ export class SurveyService extends DBService {
 
     await Promise.all(promises);
 
-    const surveyData = await this.getSurveyById(surveyId);
-
-    // Update Eml to biohub and publish record
-    return this.platformService.submitAndPublishDwcAMetadata(surveyData.survey_details.project_id, surveyId);
+    return await this.getSurveyById(surveyId);
   }
 
   /**

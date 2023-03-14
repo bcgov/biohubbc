@@ -444,7 +444,7 @@ export function updateProject(): RequestHandler {
 
       const projectService = new ProjectService(connection);
 
-      await projectService.updateProject(projectId, entities);
+      await projectService.updateProjectAndUploadToBiohub(projectId, entities);
 
       await connection.commit();
 

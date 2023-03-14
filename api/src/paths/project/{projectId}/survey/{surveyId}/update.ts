@@ -289,7 +289,7 @@ export function updateSurvey(): RequestHandler {
 
       const surveyService = new SurveyService(connection);
 
-      await surveyService.updateSurvey(surveyId, sanitizedPutSurveyData);
+      await surveyService.updateSurveyAndUploadToBiohub(surveyId, sanitizedPutSurveyData);
 
       await connection.commit();
 
