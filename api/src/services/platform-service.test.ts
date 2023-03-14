@@ -6,7 +6,6 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import winston from 'winston';
 import { MESSAGE_CLASS_NAME } from '../constants/status';
 import { HTTP400 } from '../errors/http-error';
 import {
@@ -19,7 +18,6 @@ import { HistoryPublishRepository } from '../repositories/history-publish-reposi
 import { ISurveySummaryDetails } from '../repositories/summary-repository';
 import { IGetLatestSurveyOccurrenceSubmission, ISurveyProprietorModel } from '../repositories/survey-repository';
 import * as file_utils from '../utils/file-utils';
-import * as getLogger from '../utils/logger';
 import { getMockDBConnection } from '../__mocks__/db';
 import { AttachmentService } from './attachment-service';
 import { EmlPackage, EmlService } from './eml-service';
@@ -76,7 +74,7 @@ describe('PlatformService', () => {
       const platformService = new PlatformService(mockDBConnection);
 
       sinon.stub(EmlService.prototype, 'buildProjectEmlPackage').resolves({
-        toString: () => undefined as unknown as string
+        toString: () => (undefined as unknown) as string
       } as EmlPackage);
 
       try {
@@ -385,20 +383,12 @@ describe('PlatformService', () => {
         .stub(EmlService.prototype, 'buildProjectEmlPackage')
         .rejects(new Error('a test error'));
 
-      const getLoggerStub = sinon.stub(getLogger, 'getLogger').returns(({
-        error: () => {
-          return null;
-        }
-      } as unknown) as winston.Logger);
-
       try {
         await platformService.submitAndPublishDwcAMetadata(1, 1);
         expect.fail();
       } catch (actualError: any) {
         expect(buildProjectEmlStub).to.be.calledOnce;
-        expect(getLoggerStub).to.be.calledWith('platformService->submitDwCAMetadataPackage');
       }
-
     });
   });
 
@@ -772,16 +762,12 @@ describe('PlatformService', () => {
         .stub(PlatformService.prototype, 'submitDwCAMetadataPackage')
         .rejects(new Error('a test error'));
 
-      const getLoggerStub = sinon.stub(getLogger, 'getLogger').returns(({
-        error: () => {
-          return null;
-        }
-      } as unknown) as winston.Logger);
-
-      await platformService.submitAndPublishDwcAMetadata(1, 1);
-
-      expect(submitDwCAMetadataPackageStub).to.be.calledWith(1);
-      expect(getLoggerStub).to.be.calledWith('platformService->submitAndPublishDwcAMetadata');
+      try {
+        await platformService.submitAndPublishDwcAMetadata(1, 1);
+        expect.fail();
+      } catch (actualError: any) {
+        expect(submitDwCAMetadataPackageStub).to.be.calledWith(1);
+      }
     });
   });
 
