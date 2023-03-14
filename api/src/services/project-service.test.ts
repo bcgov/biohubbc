@@ -2,6 +2,7 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
+import { PostProjectObject } from '../models/project-create';
 import {
   GetCoordinatorData,
   GetFundingData,
@@ -13,11 +14,15 @@ import {
 } from '../models/project-view';
 import { ProjectRepository } from '../repositories/project-repository';
 import { getMockDBConnection } from '../__mocks__/db';
+import { PlatformService } from './platform-service';
 import { ProjectService } from './project-service';
 
 chai.use(sinonChai);
 
 describe('ProjectService', () => {
+  afterEach(() => {
+    sinon.restore();
+  });
   describe('ensureProjectParticipant', () => {
     afterEach(() => {
       sinon.restore();
@@ -115,6 +120,38 @@ describe('ProjectService', () => {
 
       expect(repoStub).to.be.calledOnce;
       expect(response).to.eql(undefined);
+    });
+
+    describe('createProjectAndUploadToBiohub', () => {
+      it('returns projectId on success', async () => {
+        const dbConnection = getMockDBConnection();
+        const service = new ProjectService(dbConnection);
+
+        const repoStub1 = sinon.stub(ProjectService.prototype, 'createProject').resolves(1);
+        const repoStub2 = sinon.stub(PlatformService.prototype, 'submitAndPublishDwcAMetadata').resolves();
+
+        const response = await service.createProjectAndUploadToBiohub((null as unknown) as PostProjectObject);
+
+        expect(repoStub1).to.be.calledOnce;
+        expect(repoStub2).to.be.calledOnce;
+        expect(response).to.eql(1);
+      });
+    });
+
+    describe('updateProjectAndUploadToBiohub', () => {
+      it('successfully updates project', async () => {
+        const dbConnection = getMockDBConnection();
+        const service = new ProjectService(dbConnection);
+
+        const repoStub1 = sinon.stub(ProjectService.prototype, 'updateProject').resolves();
+        const repoStub2 = sinon.stub(PlatformService.prototype, 'submitAndPublishDwcAMetadata').resolves();
+
+        const response = await service.updateProjectAndUploadToBiohub(1, (null as unknown) as PostProjectObject);
+
+        expect(repoStub1).to.be.calledOnce;
+        expect(repoStub2).to.be.calledOnce;
+        expect(response).to.eql(undefined);
+      });
     });
   });
 

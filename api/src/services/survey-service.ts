@@ -505,7 +505,7 @@ export class SurveyService extends DBService {
     const surveyData = await this.updateSurvey(surveyId, putSurveyData);
 
     // Update Eml to biohub and publish record
-    return this.platformService.submitAndPublishDwcAMetadata(surveyData.survey_details.project_id, surveyId);
+    return await this.platformService.submitAndPublishDwcAMetadata(surveyData.survey_details.project_id, surveyId);
   }
 
   /**
