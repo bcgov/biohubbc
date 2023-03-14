@@ -47,6 +47,7 @@ export type ISurveyAvailableFundingSources = IGetProjectForUpdateResponseFunding
 
 export interface IGetSurveyForViewResponseDetails {
   id: number;
+  project_id: number;
   survey_name: string;
   start_date: string;
   end_date: string;

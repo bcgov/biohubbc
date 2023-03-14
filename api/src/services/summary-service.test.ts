@@ -19,16 +19,6 @@ import { ICsvState } from '../utils/media/csv/csv-file';
 import { IMediaState, MediaFile } from '../utils/media/media-file';
 import * as MediaUtils from '../utils/media/media-utils';
 import { ValidationSchemaParser } from '../utils/media/validation/validation-schema-parser';
-/*
-import * as MediaUtils from '../utils/media/media-utils';
-import { ValidationSchemaParser } from '../utils/media/validation/validation-schema-parser';
-import { TransformationSchemaParser } from '../utils/media/xlsx/transformation/transformation-schema-parser';
-import { XLSXTransformation } from '../utils/media/xlsx/transformation/xlsx-transformation';
-
-
-
-
-*/
 import { XLSXCSV } from '../utils/media/xlsx/xlsx-file';
 import {
   MessageError,
@@ -389,6 +379,7 @@ describe('SummaryService', () => {
         id: 30,
         file_name: 'file13.xlsx',
         key: 's3_key',
+        uuid: 'string',
         delete_timestamp: null,
         submission_message_type_id: 1,
         message: 'another error message',
@@ -403,6 +394,7 @@ describe('SummaryService', () => {
         id: 30,
         file_name: 'file13.xlsx',
         key: 's3_key',
+        uuid: 'string',
         delete_timestamp: null,
         submission_message_type_id: 1,
         message: 'another error message',

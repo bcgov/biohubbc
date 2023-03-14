@@ -302,7 +302,7 @@ export class SurveyRepository extends BaseRepository {
    */
   async getSurveyProprietorDataForSecurityRequest(surveyId: number): Promise<ISurveyProprietorModel> {
     const sqlStatement = SQL`
-      SELECT * 
+      SELECT *
       FROM survey_proprietor as sp
       WHERE survey_id = ${surveyId};
     `;

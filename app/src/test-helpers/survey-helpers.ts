@@ -7,6 +7,7 @@ import {
 export const surveyObject: SurveyViewObject = {
   survey_details: {
     id: 1,
+    project_id: 1,
     survey_name: 'survey name',
     start_date: '1998-10-10',
     end_date: '2021-02-26',

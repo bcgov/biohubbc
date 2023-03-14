@@ -5,6 +5,7 @@ import {
   IProjectAttachmentPublish,
   IProjectMetadataPublish,
   IProjectReportPublish,
+  ISummarySubmissionPublish,
   ISurveyAttachmentPublish,
   ISurveyMetadataPublish,
   ISurveyReportPublish
@@ -105,5 +106,23 @@ export class HistoryPublishService extends DBService {
    */
   async insertSurveyReportPublishRecord(data: ISurveyReportPublish): Promise<{ survey_report_publish_id: number }> {
     return this.historyRepository.insertSurveyReportPublishRecord(data);
+  }
+
+  /**
+   * Inserts a record into `survey_summary_submission_publish` for a given artifact and summary id
+   * and returns an id
+   *
+   * @param {ISummarySubmissionPublish} data
+   * @return {*}  {Promise<{
+   *     survey_summary_submission_publish_id: number;
+   *   }>}
+   * @memberof HistoryPublishService
+   */
+  async insertSurveySummaryPublishRecord(
+    data: ISummarySubmissionPublish
+  ): Promise<{
+    survey_summary_submission_publish_id: number;
+  }> {
+    return this.historyRepository.insertSurveySummaryPublishRecord(data);
   }
 }

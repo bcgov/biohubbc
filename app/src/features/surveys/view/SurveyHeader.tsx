@@ -14,10 +14,17 @@ import {
   mdiChevronDown,
   mdiCogOutline,
   mdiPencilOutline,
+  mdiShareAll,
   mdiTrashCanOutline
 } from '@mdi/js';
 import Icon from '@mdi/react';
-import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
+import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
+import SubmitBiohubDialog from 'components/dialog/SubmitBiohubDialog';
+import SubmitSurvey, {
+  ISurveySubmitForm,
+  SurveySubmitFormInitialValues,
+  SurveySubmitFormYupSchema
+} from 'components/publish/SubmitSurvey';
 import { SystemRoleGuard } from 'components/security/Guards';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { DeleteSurveyI18N } from 'constants/i18n';
@@ -28,7 +35,7 @@ import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { useHistory } from 'react-router';
 import { getFormattedDateRangeString } from 'utils/Utils';
 
@@ -118,6 +125,9 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
 
   const { keycloakWrapper } = useContext(AuthStateContext);
 
+  const [openSubmitSurvey, setOpenSubmitSurvey] = useState(false);
+  const [finishSubmission, setFinishSubmission] = useState(false);
+
   const defaultYesNoDialogProps = {
     dialogTitle: 'Delete Survey',
     dialogText: 'Are you sure you want to delete this survey, its attachments and associated observations?',
@@ -148,44 +158,6 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
         dialogContext.setYesNoDialog({ open: false });
       }
     });
-  };
-
-  const showUploadSurveyDialog = () => {
-    dialogContext.setYesNoDialog({
-      dialogTitle: 'Upload Survey to BioHub',
-      dialogText: 'Are you sure you want to upload this survey, its attachments and associated observations?',
-      onClose: () => dialogContext.setYesNoDialog({ open: false }),
-      onNo: () => dialogContext.setYesNoDialog({ open: false }),
-      open: true,
-      onYes: () => {
-        uploadSurvey();
-        dialogContext.setYesNoDialog({ open: false });
-      }
-    });
-  };
-
-  const uploadSurvey = async () => {
-    if (!projectWithDetails || !surveyWithDetails) {
-      return;
-    }
-
-    try {
-      await biohubApi.survey.uploadSurveyDataToBioHub(
-        projectWithDetails.id,
-        surveyWithDetails.surveyData.survey_details.id
-      );
-    } catch (error) {
-      const apiError = error as APIError;
-      dialogContext.setErrorDialog({
-        open: true,
-        dialogTitle: 'Failed to Upload to BioHub',
-        dialogText: 'Failed to Upload to BioHub',
-        dialogError: apiError.message,
-        onClose: () => dialogContext.setErrorDialog({ open: false }),
-        onOk: () => dialogContext.setErrorDialog({ open: false })
-      });
-      return error;
-    }
   };
 
   const deleteSurvey = async () => {
@@ -269,7 +241,11 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
               </Box>
               <Box display="flex" alignItems="flex-start" flex="0 0 auto" className={classes.pageTitleActions}>
                 <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-                  <Button color="primary" variant="contained" onClick={showUploadSurveyDialog}>
+                  <Button
+                    color="primary"
+                    variant="contained"
+                    onClick={() => setOpenSubmitSurvey(!openSubmitSurvey)}
+                    startIcon={<Icon path={mdiShareAll} size={0.8} />}>
                     Submit Data
                   </Button>
                 </SystemRoleGuard>
@@ -327,6 +303,38 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
           </Box>
         </Container>
       </Paper>
+
+      <ErrorDialog
+        dialogTitle="Survey data submitted!"
+        dialogText="Thank you for submitting your survey data to Biohub."
+        open={finishSubmission}
+        onClose={() => {
+          setFinishSubmission(false);
+        }}
+        onOk={() => {
+          setFinishSubmission(false);
+        }}></ErrorDialog>
+
+      <SubmitBiohubDialog
+        dialogTitle="Submit Survey Information"
+        open={openSubmitSurvey}
+        onClose={() => {
+          setOpenSubmitSurvey(!openSubmitSurvey);
+        }}
+        onSubmit={async (values: ISurveySubmitForm) => {
+          biohubApi.publish.publishSurvey(
+            projectWithDetails.id,
+            surveyWithDetails.surveyData.survey_details.id,
+            values
+          );
+          setFinishSubmission(true);
+        }}
+        formikProps={{
+          initialValues: SurveySubmitFormInitialValues,
+          validationSchema: SurveySubmitFormYupSchema
+        }}>
+        <SubmitSurvey surveyDetails={surveyWithDetails} />
+      </SubmitBiohubDialog>
     </>
   );
 };
