@@ -27,6 +27,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useInterval } from 'hooks/useInterval';
 import {
+  IGetObservationSubmissionResponseMessages,
   IUploadObservationSubmissionResponse,
   ObservationSubmissionMessageSeverityLabel
 } from 'interfaces/useObservationApi.interface';
@@ -70,7 +71,7 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
   const submissionExists = Boolean(occurrenceSubmission);
 
   const submissionPollingInterval = useInterval(refreshSubmission, 5000, 60000);
-
+  alphabetizeSubmissionMessages(submissionMessageTypes);
   useEffect(() => {
     if (submissionExists) {
       submissionPollingInterval.enable();
@@ -170,6 +171,24 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
         softDeleteSubmission();
         dialogContext.setYesNoDialog({ open: false });
       }
+    });
+  }
+
+  function alphabetizeSubmissionMessages(data: IGetObservationSubmissionResponseMessages[]) {
+    // sorts data in place, no need to return
+    data.sort((messageA, messageB) => {
+      // Message A is sorted before B
+      if (messageA.messageTypeLabel < messageB.messageTypeLabel) {
+        return -1;
+      }
+
+      // Message B is sorted before A
+      if (messageA.messageTypeLabel > messageB.messageTypeLabel) {
+        return 1;
+      }
+
+      // Items are already in order
+      return 0;
     });
   }
 
@@ -286,24 +305,27 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
 
                   {submissionMessageTypes.length > 0 && (
                     <Box mt={1}>
-                      {submissionMessageTypes.map((messageType) => {
-                        return (
-                          <Box key={messageType.messageTypeLabel}>
-                            <Alert severity={alertSeverityFromSeverityLabel(messageType.severityLabel)}>
-                              {messageType.messageTypeLabel}
-                            </Alert>
-                            <Box component="ul" my={3}>
-                              {messageType.messages.map((messageObject: { id: number; message: string }) => {
-                                return (
-                                  <li key={messageObject.id}>
-                                    <Typography variant="body2">{messageObject.message}</Typography>
-                                  </li>
-                                );
-                              })}
+                      {
+                        // Alphabetize message types for consistency
+                        submissionMessageTypes.map((messageType) => {
+                          return (
+                            <Box key={messageType.messageTypeLabel}>
+                              <Alert severity={alertSeverityFromSeverityLabel(messageType.severityLabel)}>
+                                {messageType.messageTypeLabel}
+                              </Alert>
+                              <Box component="ul" my={3}>
+                                {messageType.messages.map((messageObject: { id: number; message: string }) => {
+                                  return (
+                                    <li key={messageObject.id}>
+                                      <Typography variant="body2">{messageObject.message}</Typography>
+                                    </li>
+                                  );
+                                })}
+                              </Box>
                             </Box>
-                          </Box>
-                        );
-                      })}
+                          );
+                        })
+                      }
                     </Box>
                   )}
                 </>
