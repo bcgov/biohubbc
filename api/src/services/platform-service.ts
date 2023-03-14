@@ -248,7 +248,7 @@ export class PlatformService extends DBService {
     const surveyEmlPackage = await emlService.buildSurveyEmlPackage({ surveyId });
     const surveyEmlString = surveyEmlPackage.toString();
 
-    defaultLog.debug({ label: 'uploadSurveyDataToBioHub', projectEmlString, surveyEmlString })
+    defaultLog.debug({ label: 'uploadSurveyDataToBioHub', projectEmlString, surveyEmlString });
 
     if (!projectEmlString) {
       throw new HTTP400('EML string failed to build');

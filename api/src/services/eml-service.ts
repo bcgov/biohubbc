@@ -350,10 +350,10 @@ export class EmlService extends DBService {
     const { surveyId } = options;
     await this.loadEmlDbConstants();
 
-    const surveyData = await this._surveyService.getSurveyById(surveyId)
+    const surveyData = await this._surveyService.getSurveyById(surveyId);
     const packageId = surveyData.survey_details.uuid;
 
-    const projectId = surveyData.survey_details.project_id;    
+    const projectId = surveyData.survey_details.project_id;
     const projectData = await this._projectService.getProjectById(projectId);
 
     const emlPackage = new EmlPackage({ packageId });
@@ -364,7 +364,7 @@ export class EmlService extends DBService {
         .withEml(this._buildEmlSection(packageId))
 
         // Build EML->Dataset field
-        .withDataset(await this._buildEmlDatasetSection(packageId, projectData))
+        .withDataset(this._buildEmlDatasetSection(packageId, projectData))
 
         // Build EML->Dataset->Project field
         .withProject(await this._buildSurveyEmlProjectSection(surveyData))
@@ -510,9 +510,7 @@ export class EmlService extends DBService {
    * @return {*}  {Promise<AdditionalMetadata[]>}
    * @memberof EmlService
    */
-  async _getProjectAdditionalMetadata(
-    projectData: IGetProject
-  ): Promise<AdditionalMetadata[]> {
+  async _getProjectAdditionalMetadata(projectData: IGetProject): Promise<AdditionalMetadata[]> {
     const additionalMetadata: AdditionalMetadata[] = [];
     const codes = await this.codes();
 
