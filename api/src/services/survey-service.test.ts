@@ -122,7 +122,7 @@ describe('SurveyService', () => {
       const surveyId = 2;
       const putSurveyData = new PutSurveyObject(null);
 
-      await surveyService.updateSurvey(surveyId, putSurveyData);
+      await surveyService.updateSurveyAndUploadToBiohub(surveyId, putSurveyData);
 
       expect(updateSurveyDetailsDataStub).not.to.have.been.called;
       expect(updateSurveyVantageCodesDataStub).not.to.have.been.called;
@@ -166,7 +166,7 @@ describe('SurveyService', () => {
         location: {}
       });
 
-      await surveyService.updateSurvey(surveyId, putSurveyData);
+      await surveyService.updateSurveyAndUploadToBiohub(surveyId, putSurveyData);
 
       expect(updateSurveyDetailsDataStub).to.have.been.calledOnce;
       expect(updateSurveyVantageCodesDataStub).to.have.been.calledOnce;

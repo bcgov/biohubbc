@@ -87,7 +87,7 @@ export function createProject(): RequestHandler {
 
       const projectService = new ProjectService(connection);
 
-      const projectId = await projectService.createProject(sanitizedProjectPostData);
+      const projectId = await projectService.createProjectAndUploadToBiohub(sanitizedProjectPostData);
 
       await connection.commit();
 
