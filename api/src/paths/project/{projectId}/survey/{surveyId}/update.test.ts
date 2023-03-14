@@ -20,7 +20,7 @@ describe('updateSurvey', () => {
 
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-    sinon.stub(SurveyService.prototype, 'updateSurvey').resolves();
+    sinon.stub(SurveyService.prototype, 'updateSurveyAndUploadToBiohub').resolves();
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
@@ -48,7 +48,7 @@ describe('updateSurvey', () => {
 
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-    sinon.stub(SurveyService.prototype, 'updateSurvey').rejects(new Error('a test error'));
+    sinon.stub(SurveyService.prototype, 'updateSurveyAndUploadToBiohub').rejects(new Error('a test error'));
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
