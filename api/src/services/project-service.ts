@@ -385,9 +385,7 @@ export class ProjectService extends DBService {
     await this.updateProject(projectId, entities);
 
     // Update Eml to biohub and publish record
-    return this.platformService.submitAndPublishDwcAMetadata(projectId);
-
-    return projectId;
+    return await this.platformService.submitAndPublishDwcAMetadata(projectId);
   }
   async updateProject(projectId: number, entities: IUpdateProject) {
     const promises: Promise<any>[] = [];
