@@ -96,7 +96,9 @@ describe('PlatformService', () => {
 
       const platformService = new PlatformService(mockDBConnection);
 
-      sinon.stub(EmlService.prototype, 'buildProjectEmlPackage').resolves('string');
+      sinon.stub(EmlService.prototype, 'buildProjectEmlPackage').resolves({
+        toString: () => 'string'
+      } as EmlPackage);
 
       sinon
         .stub(SurveyService.prototype, 'getLatestSurveyOccurrenceSubmission')
@@ -122,7 +124,9 @@ describe('PlatformService', () => {
 
       const platformService = new PlatformService(mockDBConnection);
 
-      sinon.stub(EmlService.prototype, 'buildProjectEmlPackage').resolves('string');
+      sinon.stub(EmlService.prototype, 'buildProjectEmlPackage').resolves({
+        toString: () => 'string'
+      } as EmlPackage);
 
       sinon
         .stub(SurveyService.prototype, 'getLatestSurveyOccurrenceSubmission')
@@ -149,7 +153,9 @@ describe('PlatformService', () => {
 
       const platformService = new PlatformService(mockDBConnection);
 
-      sinon.stub(EmlService.prototype, 'buildProjectEmlPackage').resolves('string');
+      sinon.stub(EmlService.prototype, 'buildProjectEmlPackage').resolves({
+        toString: () => 'string'
+      } as EmlPackage);
 
       sinon
         .stub(SummaryService.prototype, 'getLatestSurveySummarySubmission')
@@ -175,8 +181,10 @@ describe('PlatformService', () => {
 
       const platformService = new PlatformService(mockDBConnection);
 
-      sinon.stub(EmlService.prototype, 'buildProjectEmlPackage').resolves('string');
-      sinon.stub(EmlService.prototype, 'packageId').get(() => 'packageId');
+      sinon.stub(EmlService.prototype, 'buildProjectEmlPackage').resolves({
+        toString: () => 'string',
+        packageId: 'packageId'
+      } as EmlPackage);
 
       sinon
         .stub(SummaryService.prototype, 'getLatestSurveySummarySubmission')
@@ -219,8 +227,10 @@ describe('PlatformService', () => {
 
       const platformService = new PlatformService(mockDBConnection);
 
-      sinon.stub(EmlService.prototype, 'buildProjectEmlPackage').resolves('string');
-      sinon.stub(EmlService.prototype, 'packageId').get(() => 'packageId');
+      sinon.stub(EmlService.prototype, 'buildProjectEmlPackage').resolves({
+        toString: () => 'string',
+        packageId: 'packageId'
+      } as EmlPackage);
 
       sinon
         .stub(SurveyService.prototype, 'getSurveyProprietorDataForSecurityRequest')
@@ -255,8 +265,10 @@ describe('PlatformService', () => {
 
       const platformService = new PlatformService(mockDBConnection);
 
-      sinon.stub(EmlService.prototype, 'buildProjectEmlPackage').resolves('string');
-      sinon.stub(EmlService.prototype, 'packageId').get(() => 'packageId');
+      sinon.stub(EmlService.prototype, 'buildProjectEmlPackage').resolves({
+        toString: () => 'string',
+        packageId: 'packageId'
+      } as EmlPackage);
 
       sinon
         .stub(SurveyService.prototype, 'getSurveyProprietorDataForSecurityRequest')

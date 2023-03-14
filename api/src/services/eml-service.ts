@@ -495,11 +495,11 @@ export class EmlService extends DBService {
   /**
    * Generates additional metadata fields for the given array of surveys
    *
-   * @param {SurveyObjectWithAttachments[]} surveys
+   * @param {SurveyObjectWithAttachments[]} _surveysData
    * @return {*}  {AdditionalMetadata[]}
    * @memberof EmlService
    */
-  _getSurveyAdditionalMetadata(surveysData: SurveyObject[]): AdditionalMetadata[] {
+  _getSurveyAdditionalMetadata(_surveysData: SurveyObject[]): AdditionalMetadata[] {
     return [];
   }
 
