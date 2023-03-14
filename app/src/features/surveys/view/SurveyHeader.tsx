@@ -268,7 +268,7 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
                 </Box>
               </Box>
               <Box display="flex" alignItems="flex-start" flex="0 0 auto" className={classes.pageTitleActions}>
-                <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN]}>
+                <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
                   <Button color="primary" variant="contained" onClick={showUploadSurveyDialog}>
                     Submit Data
                   </Button>

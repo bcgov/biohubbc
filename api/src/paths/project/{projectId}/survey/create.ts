@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { PROJECT_ROLE } from '../../../../constants/roles';
+import { PROJECT_ROLE, SYSTEM_ROLE } from '../../../../constants/roles';
 import { getDBConnection } from '../../../../database/db';
 import { PostSurveyObject } from '../../../../models/survey-create';
 import { geoJsonFeature } from '../../../../openapi/schemas/geoJson';
@@ -13,11 +13,15 @@ const defaultLog = getLogger('paths/project/{projectId}/survey/create');
 export const POST: Operation = [
   authorizeRequestHandler((req) => {
     return {
-      and: [
+      or: [
         {
           validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR],
           projectId: Number(req.params.projectId),
           discriminator: 'ProjectRole'
+        },
+        {
+          validSystemRoles: [SYSTEM_ROLE.DATA_ADMINISTRATOR],
+          discriminator: 'SystemRole'
         }
       ]
     };
