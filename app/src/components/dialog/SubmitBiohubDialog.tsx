@@ -96,6 +96,7 @@ const SubmitBiohubDialog: React.FC<ISubmitBiohubDialogProps> = (props) => {
   const onSubmitForm = (values: any) => {
     setIsFinishing(true);
     if (JSON.stringify(values) === JSON.stringify(initialValues)) {
+      setIsFinishing(false);
       setNoSubmission(true);
       return;
     }
