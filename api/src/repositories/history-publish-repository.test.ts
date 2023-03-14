@@ -76,6 +76,39 @@ describe('HistoryPublishRepository', () => {
     });
   });
 
+  describe('insertSurveySummaryPublishRecord', () => {
+    it('should insert a record and return an id', async () => {
+      const mockConnection = getMockDBConnection({
+        sql: async () => {
+          return ({ rowCount: 1, rows: [{ survey_summary_submission_publish_id: 1 }] } as any) as Promise<
+            QueryResult<any>
+          >;
+        }
+      });
+
+      const repo = new HistoryPublishRepository(mockConnection);
+      const response = await repo.insertSurveySummaryPublishRecord({ survey_summary_submission_id: 1, artifact_id: 1 });
+
+      expect(response).to.be.eql(1);
+    });
+
+    it('should throw a `Failed insert` error', async () => {
+      const mockConnection = getMockDBConnection({
+        sql: async () => {
+          return ({ rowCount: 0, rows: [] } as any) as Promise<QueryResult<any>>;
+        }
+      });
+
+      const repo = new HistoryPublishRepository(mockConnection);
+      try {
+        await repo.insertSurveySummaryPublishRecord({ survey_summary_submission_id: 1, artifact_id: 1 });
+        expect.fail();
+      } catch (error) {
+        expect((error as ApiExecuteSQLError).message).to.equal('Failed to insert Survey Summary Publish record');
+      }
+    });
+  });
+
   describe('insertOccurrenceSubmissionRecord', () => {
     it('should insert a record and return an id', async () => {
       const mockConnection = getMockDBConnection({

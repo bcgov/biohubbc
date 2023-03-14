@@ -17,6 +17,11 @@ export interface IOccurrenceSubmissionPublish {
   queue_id: number;
 }
 
+export interface ISummarySubmissionPublish {
+  survey_summary_submission_id: number;
+  artifact_id: number;
+}
+
 export interface IProjectAttachmentPublish {
   project_attachment_id: number;
   artifact_id: number;
@@ -47,7 +52,7 @@ export class HistoryPublishRepository extends BaseRepository {
    */
   async insertProjectMetadataPublishRecord(data: IProjectMetadataPublish): Promise<number> {
     const sqlStatement = SQL`
-      INSERT INTO project_metadata_publish 
+      INSERT INTO project_metadata_publish
         (project_id, queue_id, event_timestamp)
       VALUES
         (${data.project_id}, ${data.queue_id}, NOW())
@@ -56,7 +61,7 @@ export class HistoryPublishRepository extends BaseRepository {
     const response = await this.connection.sql(sqlStatement);
     if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to insert Project Metadata Publish record', [
-        'ProjectMetadataPublishRepository->insertProjectMetadataRecord',
+        'HistoryPublishRepository->insertProjectMetadataPublishRecord',
         'row[0] was null or undefined, expected row[0] != null'
       ]);
     }
@@ -73,7 +78,7 @@ export class HistoryPublishRepository extends BaseRepository {
    */
   async insertSurveyMetadataPublishRecord(data: ISurveyMetadataPublish): Promise<number> {
     const sqlStatement = SQL`
-      INSERT INTO survey_metadata_publish 
+      INSERT INTO survey_metadata_publish
         (survey_id, queue_id, event_timestamp)
       VALUES
         (${data.survey_id}, ${data.queue_id}, NOW())
@@ -82,7 +87,7 @@ export class HistoryPublishRepository extends BaseRepository {
     const response = await this.connection.sql(sqlStatement);
     if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to insert Survey Metadata Publish record', [
-        'ProjectMetadataPublishRepository->insertSurveyMetadataRecord',
+        'HistoryPublishRepository->insertSurveyMetadataPublishRecord',
         'row[0] was null or undefined, expected row[0] != null'
       ]);
     }
@@ -99,7 +104,7 @@ export class HistoryPublishRepository extends BaseRepository {
    */
   async insertOccurrenceSubmissionPublishRecord(data: IOccurrenceSubmissionPublish): Promise<number> {
     const sqlStatement = SQL`
-      INSERT INTO occurrence_submission_publish 
+      INSERT INTO occurrence_submission_publish
         (occurrence_submission_id, queue_id, event_timestamp)
       VALUES
         (${data.occurrence_submission_id}, ${data.queue_id}, NOW())
@@ -108,12 +113,42 @@ export class HistoryPublishRepository extends BaseRepository {
     const response = await this.connection.sql(sqlStatement);
     if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to insert Occurrence Submission Publish record', [
-        'ProjectMetadataPublishRepository->insertOccurrenceSubmissionRecord',
+        'HistoryPublishRepository->insertOccurrenceSubmissionPublishRecord',
         'row[0] was null or undefined, expected row[0] != null'
       ]);
     }
 
     return response.rows[0].occurrence_submission_id;
+  }
+
+  /**
+   * Inserts a record into `survey_summary_submission_publish` for a given artifact and summary id
+   * and returns an id
+   *
+   * @param {ISummarySubmissionPublish} data
+   * @return {*}  {Promise<{ survey_summary_submission_publish_id: number }>}
+   * @memberof HistoryPublishRepository
+   */
+  async insertSurveySummaryPublishRecord(
+    data: ISummarySubmissionPublish
+  ): Promise<{ survey_summary_submission_publish_id: number }> {
+    const sqlStatement = SQL`
+    INSERT INTO survey_summary_submission_publish
+    (survey_summary_submission_id, artifact_revision_id, event_timestamp)
+    VALUES
+    (${data.survey_summary_submission_id}, ${data.artifact_id}, NOW())
+    RETURNING survey_summary_submission_publish_id;
+    `;
+
+    const response = await this.connection.sql(sqlStatement);
+    if (!response.rowCount) {
+      throw new ApiExecuteSQLError('Failed to insert Survey Summary Publish record', [
+        'HistoryPublishRepository->insertSurveySummaryPublishRecord',
+        'row[0] was null or undefined, expected row[0] != null'
+      ]);
+    }
+
+    return response.rows[0].survey_summary_submission_publish_id;
   }
 
   /**
@@ -127,7 +162,7 @@ export class HistoryPublishRepository extends BaseRepository {
     data: IProjectAttachmentPublish
   ): Promise<{ project_attachment_publish_id: number }> {
     const sqlStatement = SQL`
-      INSERT INTO project_attachment_publish 
+      INSERT INTO project_attachment_publish
         (project_attachment_id, artifact_revision_id, event_timestamp)
       VALUES
         (${data.project_attachment_id}, ${data.artifact_id}, NOW())
@@ -136,7 +171,7 @@ export class HistoryPublishRepository extends BaseRepository {
     const response = await this.connection.sql(sqlStatement);
     if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to insert Project Attachment Publish record', [
-        'ProjectMetadataPublishRepository->insertProjectAttachmentPublishRecord',
+        'HistoryPublishRepository->insertProjectAttachmentPublishRecord',
         'row[0] was null or undefined, expected row[0] != null'
       ]);
     }
@@ -153,7 +188,7 @@ export class HistoryPublishRepository extends BaseRepository {
    */
   async insertProjectReportPublishRecord(data: IProjectReportPublish): Promise<{ project_report_publish_id: number }> {
     const sqlStatement = SQL`
-      INSERT INTO project_report_publish 
+      INSERT INTO project_report_publish
         (project_report_attachment_id, artifact_revision_id, event_timestamp)
       VALUES
         (${data.project_report_attachment_id}, ${data.artifact_id}, NOW())
@@ -162,7 +197,7 @@ export class HistoryPublishRepository extends BaseRepository {
     const response = await this.connection.sql(sqlStatement);
     if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to insert Project Report Publish record', [
-        'ProjectMetadataPublishRepository->insertProjectReportPublishRecord',
+        'HistoryPublishRepository->insertProjectReportPublishRecord',
         'row[0] was null or undefined, expected row[0] != null'
       ]);
     }
@@ -181,7 +216,7 @@ export class HistoryPublishRepository extends BaseRepository {
     data: ISurveyAttachmentPublish
   ): Promise<{ survey_attachment_publish_id: number }> {
     const sqlStatement = SQL`
-      INSERT INTO survey_attachment_publish 
+      INSERT INTO survey_attachment_publish
         (survey_attachment_id, artifact_revision_id, event_timestamp)
       VALUES
         (${data.survey_attachment_id}, ${data.artifact_id}, NOW())
@@ -190,7 +225,7 @@ export class HistoryPublishRepository extends BaseRepository {
     const response = await this.connection.sql(sqlStatement);
     if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to insert Survey Attachment Publish record', [
-        'ProjectMetadataPublishRepository->insertSurveyAttachmentPublishRecord',
+        'HistoryPublishRepository->insertSurveyAttachmentPublishRecord',
         'row[0] was null or undefined, expected row[0] != null'
       ]);
     }
@@ -207,7 +242,7 @@ export class HistoryPublishRepository extends BaseRepository {
    */
   async insertSurveyReportPublishRecord(data: ISurveyReportPublish): Promise<{ survey_report_publish_id: number }> {
     const sqlStatement = SQL`
-      INSERT INTO survey_report_publish 
+      INSERT INTO survey_report_publish
         (survey_report_attachment_id, artifact_revision_id, event_timestamp)
       VALUES
         (${data.survey_report_attachment_id}, ${data.artifact_id}, NOW())
@@ -216,7 +251,7 @@ export class HistoryPublishRepository extends BaseRepository {
     const response = await this.connection.sql(sqlStatement);
     if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to insert Survey Report Publish record', [
-        'ProjectMetadataPublishRepository->insertSurveyReportPublishRecord',
+        'HistoryPublishRepository->insertSurveyReportPublishRecord',
         'row[0] was null or undefined, expected row[0] != null'
       ]);
     }

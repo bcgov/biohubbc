@@ -30,6 +30,26 @@ describe('OccurrenceRepository', () => {
       expect(response).to.not.be.null;
       expect(response).to.eql({ occurrence_submission_id: 1 });
     });
+
+    it('should throw Failed to get occurrence submission error', async () => {
+      const mockResponse = ({ rows: [] } as any) as Promise<QueryResult<any>>;
+      const dbConnection = getMockDBConnection({
+        sql: async () => {
+          return mockResponse;
+        }
+      });
+
+      try {
+        const repo = new OccurrenceRepository(dbConnection);
+        await repo.getOccurrenceSubmission(1);
+        expect.fail();
+      } catch (error) {
+        expect(error).to.be.instanceOf(SubmissionError);
+        expect((error as SubmissionError).submissionMessages[0].type).to.be.eql(
+          SUBMISSION_MESSAGE_TYPE.FAILED_GET_OCCURRENCE
+        );
+      }
+    });
   });
 
   describe('getOccurrencesForView', () => {

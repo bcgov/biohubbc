@@ -36,7 +36,7 @@ describe('EmlPackage', () => {
       });
     });
   });
-  
+
   describe('withDataset', () => {
     it('should build an EML dataset section', () => {
       const mockDBConnection = getMockDBConnection();
@@ -91,7 +91,7 @@ describe('EmlPackage', () => {
       });
     });
   });
-  
+
   describe('withProject', () => {
     it('should build a project EML Project section', () => {
       const mockDBConnection = getMockDBConnection();
@@ -245,7 +245,7 @@ describe('EmlPackage', () => {
       });
     });
   });
-  
+
   describe('withAdditionalMetadata', () => {
     it('should add additional metadata to the EML package', () => {
       const additionalMeta1 = [
@@ -312,7 +312,7 @@ describe('EmlPackage', () => {
       expect(emlPackage._additionalMetadata).to.eql([...additionalMeta1, ...additionalMeta2]);
     });
   });
-  
+
   describe('withRelatedProjects', () => {
     it('should add a related project to the EML package', () => {
       const project = {
@@ -363,15 +363,19 @@ describe('EmlPackage', () => {
       ]);
     });
   });
-  
+
   describe('build', () => {
+<<<<<<< HEAD
       //
+=======
+    // TODO
+>>>>>>> 07b11dc6413ce0e3a7221fb4d72f464cd46a790c
   });
 });
 
 describe.only('EmlService', () => {
   beforeEach(() => {
-    sinon.stub(EmlService.prototype, 'loadEmlDbConstants').callsFake(async function(this: EmlService) {
+    sinon.stub(EmlService.prototype, 'loadEmlDbConstants').callsFake(async function (this: EmlService) {
       this._constants.EML_ORGANIZATION_URL = 'Not Supplied';
       this._constants.EML_ORGANIZATION_NAME = 'Not Supplied';
       this._constants.EML_PROVIDER_URL = 'Not Supplied';
@@ -400,7 +404,7 @@ describe.only('EmlService', () => {
       EML_ORGANIZATION_URL: 'Not Supplied',
       EML_TAXONOMIC_PROVIDER_URL: 'Not Supplied',
       EML_INTELLECTUAL_RIGHTS: 'Not Supplied'
-    })
+    });
   });
 
   describe('buildProjectEmlPackage', () => {
@@ -408,8 +412,9 @@ describe.only('EmlService', () => {
       const mockDBConnection = getMockDBConnection();
       const emlService = new EmlService(mockDBConnection);
 
-      sinon.stub(ProjectService.prototype, 'getProjectById')
-        .resolves({ project: { uuid: 'aaaabbbb-cccc-dddd-eeee-ffffgggghhhhiiii' }} as IGetProject);
+      sinon
+        .stub(ProjectService.prototype, 'getProjectById')
+        .resolves({ project: { uuid: 'aaaabbbb-cccc-dddd-eeee-ffffgggghhhhiiii' } } as IGetProject);
 
       sinon.stub(SurveyService.prototype, 'getSurveysByProjectId').resolves([]);
 
@@ -422,16 +427,18 @@ describe.only('EmlService', () => {
 
       const emlPackage = await emlService.buildProjectEmlPackage({ projectId: 1 });
 
-      expect(emlPackage.toString())
-        .to.equal(`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><eml:eml><dataset><project/></dataset></eml:eml>`);
+      expect(emlPackage.toString()).to.equal(
+        `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><eml:eml><dataset><project/></dataset></eml:eml>`
+      );
     });
 
     it('should build an EML package for a project successfully', async () => {
       const mockDBConnection = getMockDBConnection();
       const emlService = new EmlService(mockDBConnection);
 
-      sinon.stub(ProjectService.prototype, 'getProjectById')
-        .resolves({ project: { uuid: '1116c94a-8cd5-480d-a1f3-dac794e57c05' }} as IGetProject);
+      sinon
+        .stub(ProjectService.prototype, 'getProjectById')
+        .resolves({ project: { uuid: '1116c94a-8cd5-480d-a1f3-dac794e57c05' } } as IGetProject);
 
       sinon.stub(SurveyService.prototype, 'getSurveysByProjectId').resolves([]);
 
@@ -450,55 +457,55 @@ describe.only('EmlService', () => {
       // Build dataset EML section
       sinon.stub(EmlService.prototype, '_buildEmlDatasetSection').returns({
         $: {
-          system: "",
-          id: "1116c94a-8cd5-480d-a1f3-dac794e57c05"
+          system: '',
+          id: '1116c94a-8cd5-480d-a1f3-dac794e57c05'
         },
-        title: "Project Name",
+        title: 'Project Name',
         creator: {
-          organizationName: "A Rocha Canada",
-          electronicMailAddress: "EMAIL@address.com"
+          organizationName: 'A Rocha Canada',
+          electronicMailAddress: 'EMAIL@address.com'
         },
-        pubDate: "2023-03-13",
-        language: "English",
+        pubDate: '2023-03-13',
+        language: 'English',
         contact: {
           individualName: {
-            givenName: "First Name",
-            surName: "Last Name"
+            givenName: 'First Name',
+            surName: 'Last Name'
           },
-          organizationName: "A Rocha Canada",
-          electronicMailAddress: "EMAIL@address.com"
+          organizationName: 'A Rocha Canada',
+          electronicMailAddress: 'EMAIL@address.com'
         }
       });
 
       // Build Project EML section
       sinon.stub(EmlService.prototype, '_buildProjectEmlProjectSection').returns({
-        $: { id: "1116c94a-8cd5-480d-a1f3-dac794e57c05", system: "" },
-        title: "Project Name",
+        $: { id: '1116c94a-8cd5-480d-a1f3-dac794e57c05', system: '' },
+        title: 'Project Name',
         personnel: [
           {
-            individualName: { givenName: "First Name", surName: "Last Name" },
-            organizationName: "A Rocha Canada",
-            electronicMailAddress: "EMAIL@address.com",
-            role: "pointOfContact"
+            individualName: { givenName: 'First Name', surName: 'Last Name' },
+            organizationName: 'A Rocha Canada',
+            electronicMailAddress: 'EMAIL@address.com',
+            role: 'pointOfContact'
           }
         ],
         abstract: {
           section: [
-            { title: "Objectives", para: "Objectives" },
-            { title: "Caveats", para: "Not Supplied" }
+            { title: 'Objectives', para: 'Objectives' },
+            { title: 'Caveats', para: 'Not Supplied' }
           ]
         },
         funding: {
           section: [
             {
-              title: "Agency Name",
-              para: "BC Hydro",
+              title: 'Agency Name',
+              para: 'BC Hydro',
               section: [
-                { title: "Funding Agency Project ID", para: "AGENCY PROJECT ID" },
-                { title: "Investment Action/Category", para: "Not Applicable" },
-                { title: "Funding Amount", para: 123456789 },
-                { title: "Funding Start Date", para: "2023-01-02" },
-                { title: "Funding End Date", para: "2023-01-30" }
+                { title: 'Funding Agency Project ID', para: 'AGENCY PROJECT ID' },
+                { title: 'Investment Action/Category', para: 'Not Applicable' },
+                { title: 'Funding Amount', para: 123456789 },
+                { title: 'Funding Start Date', para: '2023-01-02' },
+                { title: 'Funding End Date', para: '2023-01-30' }
               ]
             }
           ]
@@ -506,7 +513,7 @@ describe.only('EmlService', () => {
         studyAreaDescription: {
           coverage: {
             geographicCoverage: {
-              geographicDescription: "Location Description",
+              geographicDescription: 'Location Description',
               boundingCoordinates: {
                 westBoundingCoordinate: -121.904297,
                 eastBoundingCoordinate: -120.19043,
@@ -531,8 +538,8 @@ describe.only('EmlService', () => {
             },
             temporalCoverage: {
               rangeOfDates: {
-                beginDate: { calendarDate: "2023-01-01" },
-                endDate: { calendarDate: "2023-01-31" }
+                beginDate: { calendarDate: '2023-01-01' },
+                endDate: { calendarDate: '2023-01-31' }
               }
             }
           }
@@ -542,50 +549,44 @@ describe.only('EmlService', () => {
       // Build Project additional metadata
       sinon.stub(EmlService.prototype, '_getProjectAdditionalMetadata').resolves([
         {
-          describes: "1116c94a-8cd5-480d-a1f3-dac794e57c05",
-          metadata: { projectTypes: { projectType: "Aquatic Habitat" } }
+          describes: '1116c94a-8cd5-480d-a1f3-dac794e57c05',
+          metadata: { projectTypes: { projectType: 'Aquatic Habitat' } }
         },
         {
-          describes: "1116c94a-8cd5-480d-a1f3-dac794e57c05",
+          describes: '1116c94a-8cd5-480d-a1f3-dac794e57c05',
           metadata: {
             projectActivities: {
-              projectActivity: [
-                { name: "Habitat Protection" }
-              ]
+              projectActivity: [{ name: 'Habitat Protection' }]
             }
           }
         },
         {
-          describes: "1116c94a-8cd5-480d-a1f3-dac794e57c05",
+          describes: '1116c94a-8cd5-480d-a1f3-dac794e57c05',
           metadata: {
             IUCNConservationActions: {
               IUCNConservationAction: [
                 {
-                  IUCNConservationActionLevel1Classification: "Awareness Raising",
-                  IUCNConservationActionLevel2SubClassification: "Outreach & Communications",
-                  IUCNConservationActionLevel3SubClassification: "Reported and social media"
+                  IUCNConservationActionLevel1Classification: 'Awareness Raising',
+                  IUCNConservationActionLevel2SubClassification: 'Outreach & Communications',
+                  IUCNConservationActionLevel3SubClassification: 'Reported and social media'
                 }
               ]
             }
           }
         },
         {
-          describes: "1116c94a-8cd5-480d-a1f3-dac794e57c05",
+          describes: '1116c94a-8cd5-480d-a1f3-dac794e57c05',
           metadata: {
             stakeholderPartnerships: {
-              stakeholderPartnership: [
-                { name: "BC Hydro" }
-              ]
+              stakeholderPartnership: [{ name: 'BC Hydro' }]
             }
           }
         },
         {
-          describes: "1116c94a-8cd5-480d-a1f3-dac794e57c05",
+          describes: '1116c94a-8cd5-480d-a1f3-dac794e57c05',
           metadata: {
             firstNationPartnerships: {
-              firstNationPartnership: [
-                { name: "Acho Dene Koe First Nation" }
-              ]
+              firstNationPartnership: [{ name: 'Acho Dene Koe First Nation' }]
             }
           }
         }
@@ -598,56 +599,56 @@ describe.only('EmlService', () => {
       sinon.stub(EmlService.prototype, '_buildAllSurveyEmlProjectSections').resolves([
         {
           $: {
-            id: "69b506d1-3a50-4a39-b4c7-190bd0b34b96",
-            system: ""
+            id: '69b506d1-3a50-4a39-b4c7-190bd0b34b96',
+            system: ''
           },
-          title: "Survey Name",
+          title: 'Survey Name',
           personnel: [
             {
               individualName: {
-                givenName: "First Name",
-                surName: "Last Name"
+                givenName: 'First Name',
+                surName: 'Last Name'
               },
-              role: "pointOfContact"
+              role: 'pointOfContact'
             }
           ],
           abstract: {
             section: [
               {
-                title: "Intended Outcomes",
-                para: "Habitat Assessment"
+                title: 'Intended Outcomes',
+                para: 'Habitat Assessment'
               },
               {
-                title: "Additional Details",
-                para: "Additional Details"
+                title: 'Additional Details',
+                para: 'Additional Details'
               }
             ]
           },
           funding: {
             section: [
               {
-                title: "Agency Name",
-                para: "BC Hydro",
+                title: 'Agency Name',
+                para: 'BC Hydro',
                 section: [
                   {
-                    title: "Funding Agency Project ID",
-                    para: "AGENCY PROJECT ID"
+                    title: 'Funding Agency Project ID',
+                    para: 'AGENCY PROJECT ID'
                   },
                   {
-                    title: "Investment Action/Category",
-                    para: "Not Applicable"
+                    title: 'Investment Action/Category',
+                    para: 'Not Applicable'
                   },
                   {
-                    title: "Funding Amount",
+                    title: 'Funding Amount',
                     para: 123456789
                   },
                   {
-                    title: "Funding Start Date",
-                    para: "2023-01-02"
+                    title: 'Funding Start Date',
+                    para: '2023-01-02'
                   },
                   {
-                    title: "Funding End Date",
-                    para: "2023-01-30"
+                    title: 'Funding End Date',
+                    para: '2023-01-30'
                   }
                 ]
               }
@@ -656,7 +657,7 @@ describe.only('EmlService', () => {
           studyAreaDescription: {
             coverage: {
               geographicCoverage: {
-                geographicDescription: "Survey Area Name",
+                geographicDescription: 'Survey Area Name',
                 boundingCoordinates: {
                   westBoundingCoordinate: -121.904297,
                   eastBoundingCoordinate: -120.19043,
@@ -697,24 +698,24 @@ describe.only('EmlService', () => {
               temporalCoverage: {
                 rangeOfDates: {
                   beginDate: {
-                    calendarDate: "2023-01-02"
+                    calendarDate: '2023-01-02'
                   },
                   endDate: {
-                    calendarDate: "2023-01-30"
+                    calendarDate: '2023-01-30'
                   }
                 }
               },
               taxonomicCoverage: {
                 taxonomicClassification: [
                   {
-                    taxonRankName: "SPECIES",
-                    taxonRankValue: "Alces americanus",
-                    commonName: "Moose",
+                    taxonRankName: 'SPECIES',
+                    taxonRankValue: 'Alces americanus',
+                    commonName: 'Moose',
                     taxonId: {
-                      "$": {
-                        "provider": ""
+                      $: {
+                        provider: ''
                       },
-                      "_": "2065"
+                      _: '2065'
                     }
                   }
                 ]
@@ -725,20 +726,20 @@ describe.only('EmlService', () => {
             description: {
               section: [
                 {
-                  title: "Field Method",
-                  para: "Call Playback"
+                  title: 'Field Method',
+                  para: 'Call Playback'
                 },
                 {
-                  title: "Ecological Season",
-                  para: "Spring"
+                  title: 'Ecological Season',
+                  para: 'Spring'
                 },
                 {
-                  title: "Vantage Codes",
+                  title: 'Vantage Codes',
                   para: {
                     itemizedlist: {
                       listitem: [
                         {
-                          para: "Aerial"
+                          para: 'Aerial'
                         }
                       ]
                     }
@@ -752,8 +753,9 @@ describe.only('EmlService', () => {
 
       const emlPackage = await emlService.buildProjectEmlPackage({ projectId: 1 });
 
-      expect(emlPackage.toString())
-        .to.equal(`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><eml:eml packageId="urn:uuid:1116c94a-8cd5-480d-a1f3-dac794e57c05" system="" xmlns:eml="https://eml.ecoinformatics.org/eml-2.2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:stmml="http://www.xml-cml.org/schema/schema24" xsi:schemaLocation="https://eml.ecoinformatics.org/eml-2.2.0 xsd/eml.xsd"><dataset system="" id="1116c94a-8cd5-480d-a1f3-dac794e57c05"><title>Project Name</title><creator><organizationName>A Rocha Canada</organizationName><electronicMailAddress>EMAIL@address.com</electronicMailAddress></creator><pubDate>2023-03-13</pubDate><language>English</language><contact><individualName><givenName>First Name</givenName><surName>Last Name</surName></individualName><organizationName>A Rocha Canada</organizationName><electronicMailAddress>EMAIL@address.com</electronicMailAddress></contact><project id="1116c94a-8cd5-480d-a1f3-dac794e57c05" system=""><title>Project Name</title><personnel><individualName><givenName>First Name</givenName><surName>Last Name</surName></individualName><organizationName>A Rocha Canada</organizationName><electronicMailAddress>EMAIL@address.com</electronicMailAddress><role>pointOfContact</role></personnel><abstract><section><title>Objectives</title><para>Objectives</para></section><section><title>Caveats</title><para>Not Supplied</para></section></abstract><funding><section><title>Agency Name</title><para>BC Hydro</para><section><title>Funding Agency Project ID</title><para>AGENCY PROJECT ID</para></section><section><title>Investment Action/Category</title><para>Not Applicable</para></section><section><title>Funding Amount</title><para>123456789</para></section><section><title>Funding Start Date</title><para>2023-01-02</para></section><section><title>Funding End Date</title><para>2023-01-30</para></section></section></funding><studyAreaDescription><coverage><geographicCoverage><geographicDescription>Location Description</geographicDescription><boundingCoordinates><westBoundingCoordinate>-121.904297</westBoundingCoordinate><eastBoundingCoordinate>-120.19043</eastBoundingCoordinate><northBoundingCoordinate>51.971346</northBoundingCoordinate><southBoundingCoordinate>50.930738</southBoundingCoordinate></boundingCoordinates><datasetGPolygon><datasetGPolygonOuterGRing><gRingPoint><gRingLatitude>50.930738</gRingLatitude><gRingLongitude>-121.904297</gRingLongitude></gRingPoint><gRingPoint><gRingLatitude>51.971346</gRingLatitude><gRingLongitude>-121.904297</gRingLongitude></gRingPoint><gRingPoint><gRingLatitude>51.971346</gRingLatitude><gRingLongitude>-120.19043</gRingLongitude></gRingPoint><gRingPoint><gRingLatitude>50.930738</gRingLatitude><gRingLongitude>-120.19043</gRingLongitude></gRingPoint><gRingPoint><gRingLatitude>50.930738</gRingLatitude><gRingLongitude>-121.904297</gRingLongitude></gRingPoint></datasetGPolygonOuterGRing></datasetGPolygon></geographicCoverage><temporalCoverage><rangeOfDates><beginDate><calendarDate>2023-01-01</calendarDate></beginDate><endDate><calendarDate>2023-01-31</calendarDate></endDate></rangeOfDates></temporalCoverage></coverage></studyAreaDescription><relatedProject id="69b506d1-3a50-4a39-b4c7-190bd0b34b96" system=""><title>Survey Name</title><personnel><individualName><givenName>First Name</givenName><surName>Last Name</surName></individualName><role>pointOfContact</role></personnel><abstract><section><title>Intended Outcomes</title><para>Habitat Assessment</para></section><section><title>Additional Details</title><para>Additional Details</para></section></abstract><funding><section><title>Agency Name</title><para>BC Hydro</para><section><title>Funding Agency Project ID</title><para>AGENCY PROJECT ID</para></section><section><title>Investment Action/Category</title><para>Not Applicable</para></section><section><title>Funding Amount</title><para>123456789</para></section><section><title>Funding Start Date</title><para>2023-01-02</para></section><section><title>Funding End Date</title><para>2023-01-30</para></section></section></funding><studyAreaDescription><coverage><geographicCoverage><geographicDescription>Survey Area Name</geographicDescription><boundingCoordinates><westBoundingCoordinate>-121.904297</westBoundingCoordinate><eastBoundingCoordinate>-120.19043</eastBoundingCoordinate><northBoundingCoordinate>51.971346</northBoundingCoordinate><southBoundingCoordinate>50.930738</southBoundingCoordinate></boundingCoordinates><datasetGPolygon><datasetGPolygonOuterGRing><gRingPoint><gRingLatitude>50.930738</gRingLatitude><gRingLongitude>-121.904297</gRingLongitude></gRingPoint><gRingPoint><gRingLatitude>51.971346</gRingLatitude><gRingLongitude>-121.904297</gRingLongitude></gRingPoint><gRingPoint><gRingLatitude>51.971346</gRingLatitude><gRingLongitude>-120.19043</gRingLongitude></gRingPoint><gRingPoint><gRingLatitude>50.930738</gRingLatitude><gRingLongitude>-120.19043</gRingLongitude></gRingPoint><gRingPoint><gRingLatitude>50.930738</gRingLatitude><gRingLongitude>-121.904297</gRingLongitude></gRingPoint></datasetGPolygonOuterGRing></datasetGPolygon></geographicCoverage><temporalCoverage><rangeOfDates><beginDate><calendarDate>2023-01-02</calendarDate></beginDate><endDate><calendarDate>2023-01-30</calendarDate></endDate></rangeOfDates></temporalCoverage><taxonomicCoverage><taxonomicClassification><taxonRankName>SPECIES</taxonRankName><taxonRankValue>Alces americanus</taxonRankValue><commonName>Moose</commonName><taxonId provider="">2065</taxonId></taxonomicClassification></taxonomicCoverage></coverage></studyAreaDescription><designDescription><description><section><title>Field Method</title><para>Call Playback</para></section><section><title>Ecological Season</title><para>Spring</para></section><section><title>Vantage Codes</title><para><itemizedlist><listitem><para>Aerial</para></listitem></itemizedlist></para></section></description></designDescription></relatedProject></project></dataset><additionalMetadata><describes>1116c94a-8cd5-480d-a1f3-dac794e57c05</describes><metadata><projectTypes><projectType>Aquatic Habitat</projectType></projectTypes></metadata></additionalMetadata><additionalMetadata><describes>1116c94a-8cd5-480d-a1f3-dac794e57c05</describes><metadata><projectActivities><projectActivity><name>Habitat Protection</name></projectActivity></projectActivities></metadata></additionalMetadata><additionalMetadata><describes>1116c94a-8cd5-480d-a1f3-dac794e57c05</describes><metadata><IUCNConservationActions><IUCNConservationAction><IUCNConservationActionLevel1Classification>Awareness Raising</IUCNConservationActionLevel1Classification><IUCNConservationActionLevel2SubClassification>Outreach &amp; Communications</IUCNConservationActionLevel2SubClassification><IUCNConservationActionLevel3SubClassification>Reported and social media</IUCNConservationActionLevel3SubClassification></IUCNConservationAction></IUCNConservationActions></metadata></additionalMetadata><additionalMetadata><describes>1116c94a-8cd5-480d-a1f3-dac794e57c05</describes><metadata><stakeholderPartnerships><stakeholderPartnership><name>BC Hydro</name></stakeholderPartnership></stakeholderPartnerships></metadata></additionalMetadata><additionalMetadata><describes>1116c94a-8cd5-480d-a1f3-dac794e57c05</describes><metadata><firstNationPartnerships><firstNationPartnership><name>Acho Dene Koe First Nation</name></firstNationPartnership></firstNationPartnerships></metadata></additionalMetadata></eml:eml>`);
+      expect(emlPackage.toString()).to.equal(
+        `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><eml:eml packageId="urn:uuid:1116c94a-8cd5-480d-a1f3-dac794e57c05" system="" xmlns:eml="https://eml.ecoinformatics.org/eml-2.2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:stmml="http://www.xml-cml.org/schema/schema24" xsi:schemaLocation="https://eml.ecoinformatics.org/eml-2.2.0 xsd/eml.xsd"><dataset system="" id="1116c94a-8cd5-480d-a1f3-dac794e57c05"><title>Project Name</title><creator><organizationName>A Rocha Canada</organizationName><electronicMailAddress>EMAIL@address.com</electronicMailAddress></creator><pubDate>2023-03-13</pubDate><language>English</language><contact><individualName><givenName>First Name</givenName><surName>Last Name</surName></individualName><organizationName>A Rocha Canada</organizationName><electronicMailAddress>EMAIL@address.com</electronicMailAddress></contact><project id="1116c94a-8cd5-480d-a1f3-dac794e57c05" system=""><title>Project Name</title><personnel><individualName><givenName>First Name</givenName><surName>Last Name</surName></individualName><organizationName>A Rocha Canada</organizationName><electronicMailAddress>EMAIL@address.com</electronicMailAddress><role>pointOfContact</role></personnel><abstract><section><title>Objectives</title><para>Objectives</para></section><section><title>Caveats</title><para>Not Supplied</para></section></abstract><funding><section><title>Agency Name</title><para>BC Hydro</para><section><title>Funding Agency Project ID</title><para>AGENCY PROJECT ID</para></section><section><title>Investment Action/Category</title><para>Not Applicable</para></section><section><title>Funding Amount</title><para>123456789</para></section><section><title>Funding Start Date</title><para>2023-01-02</para></section><section><title>Funding End Date</title><para>2023-01-30</para></section></section></funding><studyAreaDescription><coverage><geographicCoverage><geographicDescription>Location Description</geographicDescription><boundingCoordinates><westBoundingCoordinate>-121.904297</westBoundingCoordinate><eastBoundingCoordinate>-120.19043</eastBoundingCoordinate><northBoundingCoordinate>51.971346</northBoundingCoordinate><southBoundingCoordinate>50.930738</southBoundingCoordinate></boundingCoordinates><datasetGPolygon><datasetGPolygonOuterGRing><gRingPoint><gRingLatitude>50.930738</gRingLatitude><gRingLongitude>-121.904297</gRingLongitude></gRingPoint><gRingPoint><gRingLatitude>51.971346</gRingLatitude><gRingLongitude>-121.904297</gRingLongitude></gRingPoint><gRingPoint><gRingLatitude>51.971346</gRingLatitude><gRingLongitude>-120.19043</gRingLongitude></gRingPoint><gRingPoint><gRingLatitude>50.930738</gRingLatitude><gRingLongitude>-120.19043</gRingLongitude></gRingPoint><gRingPoint><gRingLatitude>50.930738</gRingLatitude><gRingLongitude>-121.904297</gRingLongitude></gRingPoint></datasetGPolygonOuterGRing></datasetGPolygon></geographicCoverage><temporalCoverage><rangeOfDates><beginDate><calendarDate>2023-01-01</calendarDate></beginDate><endDate><calendarDate>2023-01-31</calendarDate></endDate></rangeOfDates></temporalCoverage></coverage></studyAreaDescription><relatedProject id="69b506d1-3a50-4a39-b4c7-190bd0b34b96" system=""><title>Survey Name</title><personnel><individualName><givenName>First Name</givenName><surName>Last Name</surName></individualName><role>pointOfContact</role></personnel><abstract><section><title>Intended Outcomes</title><para>Habitat Assessment</para></section><section><title>Additional Details</title><para>Additional Details</para></section></abstract><funding><section><title>Agency Name</title><para>BC Hydro</para><section><title>Funding Agency Project ID</title><para>AGENCY PROJECT ID</para></section><section><title>Investment Action/Category</title><para>Not Applicable</para></section><section><title>Funding Amount</title><para>123456789</para></section><section><title>Funding Start Date</title><para>2023-01-02</para></section><section><title>Funding End Date</title><para>2023-01-30</para></section></section></funding><studyAreaDescription><coverage><geographicCoverage><geographicDescription>Survey Area Name</geographicDescription><boundingCoordinates><westBoundingCoordinate>-121.904297</westBoundingCoordinate><eastBoundingCoordinate>-120.19043</eastBoundingCoordinate><northBoundingCoordinate>51.971346</northBoundingCoordinate><southBoundingCoordinate>50.930738</southBoundingCoordinate></boundingCoordinates><datasetGPolygon><datasetGPolygonOuterGRing><gRingPoint><gRingLatitude>50.930738</gRingLatitude><gRingLongitude>-121.904297</gRingLongitude></gRingPoint><gRingPoint><gRingLatitude>51.971346</gRingLatitude><gRingLongitude>-121.904297</gRingLongitude></gRingPoint><gRingPoint><gRingLatitude>51.971346</gRingLatitude><gRingLongitude>-120.19043</gRingLongitude></gRingPoint><gRingPoint><gRingLatitude>50.930738</gRingLatitude><gRingLongitude>-120.19043</gRingLongitude></gRingPoint><gRingPoint><gRingLatitude>50.930738</gRingLatitude><gRingLongitude>-121.904297</gRingLongitude></gRingPoint></datasetGPolygonOuterGRing></datasetGPolygon></geographicCoverage><temporalCoverage><rangeOfDates><beginDate><calendarDate>2023-01-02</calendarDate></beginDate><endDate><calendarDate>2023-01-30</calendarDate></endDate></rangeOfDates></temporalCoverage><taxonomicCoverage><taxonomicClassification><taxonRankName>SPECIES</taxonRankName><taxonRankValue>Alces americanus</taxonRankValue><commonName>Moose</commonName><taxonId provider="">2065</taxonId></taxonomicClassification></taxonomicCoverage></coverage></studyAreaDescription><designDescription><description><section><title>Field Method</title><para>Call Playback</para></section><section><title>Ecological Season</title><para>Spring</para></section><section><title>Vantage Codes</title><para><itemizedlist><listitem><para>Aerial</para></listitem></itemizedlist></para></section></description></designDescription></relatedProject></project></dataset><additionalMetadata><describes>1116c94a-8cd5-480d-a1f3-dac794e57c05</describes><metadata><projectTypes><projectType>Aquatic Habitat</projectType></projectTypes></metadata></additionalMetadata><additionalMetadata><describes>1116c94a-8cd5-480d-a1f3-dac794e57c05</describes><metadata><projectActivities><projectActivity><name>Habitat Protection</name></projectActivity></projectActivities></metadata></additionalMetadata><additionalMetadata><describes>1116c94a-8cd5-480d-a1f3-dac794e57c05</describes><metadata><IUCNConservationActions><IUCNConservationAction><IUCNConservationActionLevel1Classification>Awareness Raising</IUCNConservationActionLevel1Classification><IUCNConservationActionLevel2SubClassification>Outreach &amp; Communications</IUCNConservationActionLevel2SubClassification><IUCNConservationActionLevel3SubClassification>Reported and social media</IUCNConservationActionLevel3SubClassification></IUCNConservationAction></IUCNConservationActions></metadata></additionalMetadata><additionalMetadata><describes>1116c94a-8cd5-480d-a1f3-dac794e57c05</describes><metadata><stakeholderPartnerships><stakeholderPartnership><name>BC Hydro</name></stakeholderPartnership></stakeholderPartnerships></metadata></additionalMetadata><additionalMetadata><describes>1116c94a-8cd5-480d-a1f3-dac794e57c05</describes><metadata><firstNationPartnerships><firstNationPartnership><name>Acho Dene Koe First Nation</name></firstNationPartnership></firstNationPartnerships></metadata></additionalMetadata></eml:eml>`
+      );
     });
   });
 
@@ -1178,7 +1180,7 @@ describe.only('EmlService', () => {
       field_methods: [],
       intended_outcomes: [],
       vantage_codes: []
-    }
+    };
 
     it('should retrieve codes if _codes is undefined', async () => {
       const mockDBConnection = getMockDBConnection();
@@ -1240,7 +1242,7 @@ describe.only('EmlService', () => {
       const mockDBConnection = {
         ...getMockDBConnection(),
         sql: mockQuery
-      }
+      };
 
       const emlService = new EmlService(mockDBConnection);
 
@@ -1270,7 +1272,7 @@ describe.only('EmlService', () => {
       const mockDBConnection = {
         ...getMockDBConnection(),
         sql: mockQuery
-      }
+      };
 
       const emlService = new EmlService(mockDBConnection);
 
@@ -1300,7 +1302,7 @@ describe.only('EmlService', () => {
       const mockDBConnection = {
         ...getMockDBConnection(),
         sql: mockQuery
-      }
+      };
 
       const emlService = new EmlService(mockDBConnection);
 
@@ -1334,7 +1336,7 @@ describe.only('EmlService', () => {
           'xsi:schemaLocation': 'https://eml.ecoinformatics.org/eml-2.2.0 xsd/eml.xsd'
         }
       });
-    })
+    });
   });
 
   describe('_buildEmlDatasetSection', () => {
@@ -1343,11 +1345,11 @@ describe.only('EmlService', () => {
       const emlService = new EmlService(mockDBConnection);
 
       const mockOrg = {
-        organizationName: "Test Organization",
-        electronicMailAddress: "EMAIL@address.com"
+        organizationName: 'Test Organization',
+        electronicMailAddress: 'EMAIL@address.com'
       };
 
-      const mockPackageId = 'aaaabbbb-cccc-dddd-eeee-ffffgggghhhhiiii'
+      const mockPackageId = 'aaaabbbb-cccc-dddd-eeee-ffffgggghhhhiiii';
       const mockProjectData = {
         project: {
           project_name: 'Test Project Name'
@@ -1360,8 +1362,8 @@ describe.only('EmlService', () => {
 
       sinon.stub(EmlService.prototype, '_getProjectContact').returns({
         individualName: {
-          givenName: "First Name",
-          surName: "Last Name"
+          givenName: 'First Name',
+          surName: 'Last Name'
         },
         ...mockOrg
       });
@@ -1372,18 +1374,18 @@ describe.only('EmlService', () => {
         $: { system: '', id: 'aaaabbbb-cccc-dddd-eeee-ffffgggghhhhiiii' },
         title: 'Test Project Name',
         creator: {
-          organizationName: "Test Organization",
-          electronicMailAddress: "EMAIL@address.com"
+          organizationName: 'Test Organization',
+          electronicMailAddress: 'EMAIL@address.com'
         },
         pubDate: '2023-01-01',
         language: 'English',
         contact: {
           individualName: {
-            givenName: "First Name",
-            surName: "Last Name"
+            givenName: 'First Name',
+            surName: 'Last Name'
           },
-          organizationName: "Test Organization",
-          electronicMailAddress: "EMAIL@address.com"
+          organizationName: 'Test Organization',
+          electronicMailAddress: 'EMAIL@address.com'
         }
       });
     });
@@ -1407,25 +1409,25 @@ describe.only('EmlService', () => {
 
       sinon.stub(EmlService.prototype, '_getProjectPersonnel').returns([
         {
-          individualName: { givenName: "First Name", surName: "Last Name" },
-          organizationName: "A Rocha Canada",
-          electronicMailAddress: "EMAIL@address.com",
-          role: "pointOfContact"
+          individualName: { givenName: 'First Name', surName: 'Last Name' },
+          organizationName: 'A Rocha Canada',
+          electronicMailAddress: 'EMAIL@address.com',
+          role: 'pointOfContact'
         }
       ]);
 
       sinon.stub(EmlService.prototype, '_getProjectFundingSources').returns({
-        funding: {        
+        funding: {
           section: [
             {
-              title: "Agency Name",
-              para: "BC Hydro",
+              title: 'Agency Name',
+              para: 'BC Hydro',
               section: [
-                { title: "Funding Agency Project ID", para: "AGENCY PROJECT ID" },
-                { title: "Investment Action/Category", para: "Not Applicable" },
-                { title: "Funding Amount", para: 123456789 },
-                { title: "Funding Start Date", para: "2023-01-02" },
-                { title: "Funding End Date", para: "2023-01-30" }
+                { title: 'Funding Agency Project ID', para: 'AGENCY PROJECT ID' },
+                { title: 'Investment Action/Category', para: 'Not Applicable' },
+                { title: 'Funding Amount', para: 123456789 },
+                { title: 'Funding Start Date', para: '2023-01-02' },
+                { title: 'Funding End Date', para: '2023-01-30' }
               ]
             }
           ]
@@ -1434,7 +1436,7 @@ describe.only('EmlService', () => {
 
       sinon.stub(EmlService.prototype, '_getProjectGeographicCoverage').returns({
         geographicCoverage: {
-          geographicDescription: "Location Description",
+          geographicDescription: 'Location Description',
           boundingCoordinates: {
             westBoundingCoordinate: -121.904297,
             eastBoundingCoordinate: -120.19043,
@@ -1456,13 +1458,13 @@ describe.only('EmlService', () => {
               ]
             }
           ]
-        },
+        }
       });
 
       sinon.stub(EmlService.prototype, '_getProjectTemporalCoverage').returns({
         rangeOfDates: {
-          beginDate: { calendarDate: "2023-01-01" },
-          endDate: { calendarDate: "2023-01-31" }
+          beginDate: { calendarDate: '2023-01-01' },
+          endDate: { calendarDate: '2023-01-31' }
         }
       });
 
@@ -1473,10 +1475,10 @@ describe.only('EmlService', () => {
         title: 'Test Project Name',
         personnel: [
           {
-            individualName: { givenName: "First Name", surName: "Last Name" },
-            organizationName: "A Rocha Canada",
-            electronicMailAddress: "EMAIL@address.com",
-            role: "pointOfContact"
+            individualName: { givenName: 'First Name', surName: 'Last Name' },
+            organizationName: 'A Rocha Canada',
+            electronicMailAddress: 'EMAIL@address.com',
+            role: 'pointOfContact'
           }
         ],
         abstract: {
@@ -1488,14 +1490,14 @@ describe.only('EmlService', () => {
         funding: {
           section: [
             {
-              title: "Agency Name",
-              para: "BC Hydro",
+              title: 'Agency Name',
+              para: 'BC Hydro',
               section: [
-                { title: "Funding Agency Project ID", para: "AGENCY PROJECT ID" },
-                { title: "Investment Action/Category", para: "Not Applicable" },
-                { title: "Funding Amount", para: 123456789 },
-                { title: "Funding Start Date", para: "2023-01-02" },
-                { title: "Funding End Date", para: "2023-01-30" }
+                { title: 'Funding Agency Project ID', para: 'AGENCY PROJECT ID' },
+                { title: 'Investment Action/Category', para: 'Not Applicable' },
+                { title: 'Funding Amount', para: 123456789 },
+                { title: 'Funding Start Date', para: '2023-01-02' },
+                { title: 'Funding End Date', para: '2023-01-30' }
               ]
             }
           ]
@@ -1503,7 +1505,7 @@ describe.only('EmlService', () => {
         studyAreaDescription: {
           coverage: {
             geographicCoverage: {
-              geographicDescription: "Location Description",
+              geographicDescription: 'Location Description',
               boundingCoordinates: {
                 westBoundingCoordinate: -121.904297,
                 eastBoundingCoordinate: -120.19043,
@@ -1528,8 +1530,8 @@ describe.only('EmlService', () => {
             },
             temporalCoverage: {
               rangeOfDates: {
-                beginDate: { calendarDate: "2023-01-01" },
-                endDate: { calendarDate: "2023-01-31" }
+                beginDate: { calendarDate: '2023-01-01' },
+                endDate: { calendarDate: '2023-01-31' }
               }
             }
           }
@@ -1554,10 +1556,10 @@ describe.only('EmlService', () => {
 
       sinon.stub(EmlService.prototype, '_getProjectPersonnel').returns([
         {
-          individualName: { givenName: "First Name", surName: "Last Name" },
-          organizationName: "A Rocha Canada",
-          electronicMailAddress: "EMAIL@address.com",
-          role: "pointOfContact"
+          individualName: { givenName: 'First Name', surName: 'Last Name' },
+          organizationName: 'A Rocha Canada',
+          electronicMailAddress: 'EMAIL@address.com',
+          role: 'pointOfContact'
         }
       ]);
 
@@ -1567,8 +1569,8 @@ describe.only('EmlService', () => {
 
       sinon.stub(EmlService.prototype, '_getProjectTemporalCoverage').returns({
         rangeOfDates: {
-          beginDate: { calendarDate: "2023-01-01" },
-          endDate: { calendarDate: "2023-01-31" }
+          beginDate: { calendarDate: '2023-01-01' },
+          endDate: { calendarDate: '2023-01-31' }
         }
       });
 
@@ -1579,10 +1581,10 @@ describe.only('EmlService', () => {
         title: 'Test Project Name',
         personnel: [
           {
-            individualName: { givenName: "First Name", surName: "Last Name" },
-            organizationName: "A Rocha Canada",
-            electronicMailAddress: "EMAIL@address.com",
-            role: "pointOfContact"
+            individualName: { givenName: 'First Name', surName: 'Last Name' },
+            organizationName: 'A Rocha Canada',
+            electronicMailAddress: 'EMAIL@address.com',
+            role: 'pointOfContact'
           }
         ],
         abstract: {
@@ -1595,8 +1597,8 @@ describe.only('EmlService', () => {
           coverage: {
             temporalCoverage: {
               rangeOfDates: {
-                beginDate: { calendarDate: "2023-01-01" },
-                endDate: { calendarDate: "2023-01-31" }
+                beginDate: { calendarDate: '2023-01-01' },
+                endDate: { calendarDate: '2023-01-31' }
               }
             }
           }
@@ -1633,7 +1635,7 @@ describe.only('EmlService', () => {
           coordinator_agency: 'test-agency',
           share_contact_details: 'false'
         }
-      } as IGetProject
+      } as IGetProject;
 
       const response = emlService._getDatasetCreator(mockProjectData);
 
@@ -1652,7 +1654,7 @@ describe.only('EmlService', () => {
           coordinator_agency: 'test-agency',
           share_contact_details: 'true'
         }
-      } as IGetProject
+      } as IGetProject;
 
       const response = emlService._getDatasetCreator(mockProjectData);
 
@@ -1676,7 +1678,7 @@ describe.only('EmlService', () => {
           coordinator_agency: 'test-agency',
           share_contact_details: 'false'
         }
-      } as IGetProject
+      } as IGetProject;
 
       const response = emlService._getProjectContact(mockProjectData);
 
@@ -1695,7 +1697,7 @@ describe.only('EmlService', () => {
           coordinator_agency: 'test-agency',
           share_contact_details: 'true'
         }
-      } as IGetProject
+      } as IGetProject;
 
       const response = emlService._getProjectContact(mockProjectData);
 
@@ -1720,7 +1722,7 @@ describe.only('EmlService', () => {
           coordinator_agency: 'test-agency',
           share_contact_details: 'false'
         }
-      } as IGetProject
+      } as IGetProject;
 
       const response = emlService._getProjectPersonnel(mockProjectData);
 
@@ -1739,16 +1741,18 @@ describe.only('EmlService', () => {
           coordinator_agency: 'test-agency',
           share_contact_details: 'true'
         }
-      } as IGetProject
+      } as IGetProject;
 
       const response = emlService._getProjectPersonnel(mockProjectData);
 
-      expect(response).to.eql([{
-        individualName: { givenName: 'first', surName: 'last' },
-        organizationName: 'test-agency',
-        electronicMailAddress: 'email@example.com',
-        role: 'pointOfContact'
-      }]);
+      expect(response).to.eql([
+        {
+          individualName: { givenName: 'first', surName: 'last' },
+          organizationName: 'test-agency',
+          electronicMailAddress: 'email@example.com',
+          role: 'pointOfContact'
+        }
+      ]);
     });
   });
 
@@ -1762,14 +1766,16 @@ describe.only('EmlService', () => {
           biologist_first_name: 'biologist-fname',
           biologist_last_name: 'biologist-lname'
         }
-      } as SurveyObject
+      } as SurveyObject;
 
       const response = emlService._getSurveyPersonnel(mockSurveyData);
 
-      expect(response).to.eql([{
-        individualName: { givenName: 'biologist-fname', surName: 'biologist-lname' },
-        role: 'pointOfContact'
-      }]);
+      expect(response).to.eql([
+        {
+          individualName: { givenName: 'biologist-fname', surName: 'biologist-lname' },
+          role: 'pointOfContact'
+        }
+      ]);
     });
   });
 
