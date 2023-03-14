@@ -75,7 +75,10 @@ describe('PlatformService', () => {
 
       const platformService = new PlatformService(mockDBConnection);
 
-      sinon.stub(EmlService.prototype, 'buildProjectEmlPackage').resolves(undefined);
+      sinon.stub(EmlService.prototype, 'buildProjectEmlPackage').resolves({
+        toString: () => undefined as unknown as string
+      } as EmlPackage);
+
       try {
         await platformService.submitSurveyDataPackage(1, 1, {
           observations: [],
@@ -85,7 +88,7 @@ describe('PlatformService', () => {
         });
         expect.fail();
       } catch (error) {
-        expect((error as Error).message).to.equal('emlString failed to build');
+        expect((error as Error).message).to.equal('EML string failed to build');
       }
     });
 
@@ -388,10 +391,14 @@ describe('PlatformService', () => {
         }
       } as unknown) as winston.Logger);
 
-      await platformService.submitAndPublishDwcAMetadata(1, 1);
+      try {
+        await platformService.submitAndPublishDwcAMetadata(1, 1);
+        expect.fail();
+      } catch (actualError: any) {
+        expect(buildProjectEmlStub).to.be.calledOnce;
+        expect(getLoggerStub).to.be.calledWith('platformService->submitDwCAMetadataPackage');
+      }
 
-      expect(buildProjectEmlStub).to.be.calledOnce;
-      expect(getLoggerStub).to.be.calledWith('platformService->submitDwCAMetadataPackage');
     });
   });
 
@@ -577,6 +584,13 @@ describe('PlatformService', () => {
         } as EmlPackage)
       );
 
+      const buildSurveyEmlStub = sinon.stub(EmlService.prototype, 'buildSurveyEmlPackage').callsFake((_options) =>
+        Promise.resolve({
+          packageId: '123-456-789',
+          toString: () => ''
+        } as EmlPackage)
+      );
+
       const platformService = new PlatformService(mockDBConnection);
 
       try {
@@ -585,6 +599,7 @@ describe('PlatformService', () => {
       } catch (actualError) {
         expect((actualError as HTTP400).message).to.equal('EML string failed to build');
         expect(getLatestSurveyOccurrenceSubmissionStub).to.have.been.calledOnce;
+        expect(buildSurveyEmlStub).to.have.been.calledOnce;
         expect(buildProjectEmlStub).to.have.been.calledOnce;
         expect(getFileFromS3Stub).to.have.been.calledOnce;
       }
@@ -620,6 +635,13 @@ describe('PlatformService', () => {
         } as EmlPackage)
       );
 
+      const buildSurveyEmlStub = sinon.stub(EmlService.prototype, 'buildSurveyEmlPackage').callsFake((_options) =>
+        Promise.resolve({
+          packageId: '123-456-789',
+          toString: () => '<eml:eml />'
+        } as EmlPackage)
+      );
+
       const _submitDwCADatasetToBioHubBackboneStub = sinon
         .stub(PlatformService.prototype, '_submitDwCADatasetToBioHubBackbone')
         .resolves({ queue_id: 1 });
@@ -638,6 +660,7 @@ describe('PlatformService', () => {
 
       await platformService.uploadSurveyDataToBioHub(1, 1);
 
+      expect(buildSurveyEmlStub).to.have.been.calledOnce;
       expect(buildProjectEmlStub).to.have.been.calledOnce;
       expect(getLatestSurveyOccurrenceSubmissionStub).to.have.been.calledOnce;
       expect(getFileFromS3Stub).to.have.been.calledOnce;

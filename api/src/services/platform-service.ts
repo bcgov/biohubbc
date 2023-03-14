@@ -130,11 +130,11 @@ export class PlatformService extends DBService {
 
     const surveyService = new SurveyService(this.connection);
     const emlService = new EmlService(this.connection);
-    const emlPackage = await emlService.buildProjectEmlPackage({ projectId: projectId });
+    const emlPackage = await emlService.buildProjectEmlPackage({ projectId });
     const emlString = emlPackage.toString();
 
     if (!emlString) {
-      throw new HTTP400('emlString failed to build');
+      throw new HTTP400('EML string failed to build');
     }
 
     const dwcArchiveZip = new AdmZip();
