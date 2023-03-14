@@ -295,11 +295,11 @@ export class SurveyService extends DBService {
   }
 
   /**
-   * Creates a new survey for a project and returns survey ID
+   * Creates a survey and uploads the metadata to Biohub
    *
    * @param {number} projectId
    * @param {PostSurveyObject} postSurveyData
-   * @returns {*} {Promise<number>}
+   * @return {*}  {Promise<number>}
    * @memberof SurveyService
    */
   async createSurveyAndUploadToBiohub(projectId: number, postSurveyData: PostSurveyObject): Promise<number> {
@@ -312,11 +312,11 @@ export class SurveyService extends DBService {
   }
 
   /**
-   * Creates a new survey for a project and returns survey ID
+   * Creates the survey
    *
    * @param {number} projectId
    * @param {PostSurveyObject} postSurveyData
-   * @returns {*} {Promise<number>}
+   * @return {*}  {Promise<number>}
    * @memberof SurveyService
    */
   async createSurvey(projectId: number, postSurveyData: PostSurveyObject): Promise<number> {

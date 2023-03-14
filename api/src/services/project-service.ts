@@ -286,6 +286,13 @@ export class ProjectService extends DBService {
     return this.projectRepository.getReportAttachmentsData(projectId);
   }
 
+  /**
+   *
+   *
+   * @param {PostProjectObject} postProjectData
+   * @return {*}  {Promise<number>}
+   * @memberof ProjectService
+   */
   async createProjectAndUploadToBiohub(postProjectData: PostProjectObject): Promise<number> {
     const projectId = await this.createProject(postProjectData);
 
@@ -295,6 +302,13 @@ export class ProjectService extends DBService {
     return projectId;
   }
 
+  /**
+   *
+   *
+   * @param {PostProjectObject} postProjectData
+   * @return {*}  {Promise<number>}
+   * @memberof ProjectService
+   */
   async createProject(postProjectData: PostProjectObject): Promise<number> {
     const projectId = await this.insertProject(postProjectData);
 
@@ -381,12 +395,28 @@ export class ProjectService extends DBService {
     return this.projectRepository.insertParticipantRole(projectId, projectParticipantRole);
   }
 
+  /**
+   * Updates the project and uploads to Biohub
+   *
+   * @param {number} projectId
+   * @param {IUpdateProject} entities
+   * @return {*}
+   * @memberof ProjectService
+   */
   async updateProjectAndUploadToBiohub(projectId: number, entities: IUpdateProject) {
     await this.updateProject(projectId, entities);
 
     // Update Eml to biohub and publish record
     return await this.platformService.submitAndPublishDwcAMetadata(projectId);
   }
+
+  /**
+   * Updates the project
+   *
+   * @param {number} projectId
+   * @param {IUpdateProject} entities
+   * @memberof ProjectService
+   */
   async updateProject(projectId: number, entities: IUpdateProject) {
     const promises: Promise<any>[] = [];
 
