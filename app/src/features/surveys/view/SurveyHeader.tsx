@@ -18,7 +18,7 @@ import {
   mdiTrashCanOutline
 } from '@mdi/js';
 import Icon from '@mdi/react';
-import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
+import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import SubmitBiohubDialog from 'components/dialog/SubmitBiohubDialog';
 import SubmitSurvey, {
   ISurveySubmitForm,
@@ -126,6 +126,7 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
   const { keycloakWrapper } = useContext(AuthStateContext);
 
   const [openSubmitSurvey, setOpenSubmitSurvey] = useState(false);
+  const [finishSubmission, setFinishSubmission] = useState(false);
 
   const defaultYesNoDialogProps = {
     dialogTitle: 'Delete Survey',
@@ -303,16 +304,30 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
         </Container>
       </Paper>
 
+      <ErrorDialog
+        dialogTitle="Survey data submitted!"
+        dialogText="Thank you for submitting your survey data to Biohub."
+        open={finishSubmission}
+        onClose={() => {
+          setFinishSubmission(false);
+        }}
+        onOk={() => {
+          setFinishSubmission(false);
+        }}></ErrorDialog>
+
       <SubmitBiohubDialog
         dialogTitle="Submit Survey Information"
         open={openSubmitSurvey}
-        onClose={() => setOpenSubmitSurvey(!openSubmitSurvey)}
+        onClose={() => {
+          setOpenSubmitSurvey(!openSubmitSurvey);
+        }}
         onSubmit={async (values: ISurveySubmitForm) => {
           biohubApi.publish.publishSurvey(
             projectWithDetails.id,
             surveyWithDetails.surveyData.survey_details.id,
             values
           );
+          setFinishSubmission(true);
         }}
         formikProps={{
           initialValues: SurveySubmitFormInitialValues,

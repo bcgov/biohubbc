@@ -92,17 +92,17 @@ const SubmitBiohubDialog: React.FC<ISubmitBiohubDialogProps> = (props) => {
   const [formikRef] = useState(useRef<FormikProps<any>>(null));
   const [isFinishing, setIsFinishing] = useState(false);
   const [noSubmission, setNoSubmission] = useState(false);
-  const [finishSubmission, setFinishSubmission] = useState(false);
 
   const onSubmitForm = (values: any) => {
+    setIsFinishing(true);
     if (JSON.stringify(values) === JSON.stringify(initialValues)) {
       setNoSubmission(true);
       return;
     }
 
-    setIsFinishing(true);
     onSubmit(values).finally(() => {
-      setFinishSubmission(true);
+      setIsFinishing(false);
+      onClose();
     });
   };
 
@@ -125,20 +125,6 @@ const SubmitBiohubDialog: React.FC<ISubmitBiohubDialogProps> = (props) => {
           onClose();
         }}></ErrorDialog>
 
-      <ErrorDialog
-        dialogTitle="Survey data submitted!"
-        dialogText="Thank you for submitting your survey data to Biohub."
-        open={finishSubmission}
-        onClose={() => {
-          setFinishSubmission(false);
-          setIsFinishing(false);
-          onClose();
-        }}
-        onOk={() => {
-          setFinishSubmission(false);
-          setIsFinishing(false);
-          onClose();
-        }}></ErrorDialog>
       <Dialog
         fullScreen={fullScreen}
         maxWidth="xl"
