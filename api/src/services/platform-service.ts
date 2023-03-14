@@ -129,8 +129,9 @@ export class PlatformService extends DBService {
     }
 
     const surveyService = new SurveyService(this.connection);
-    const emlService = new EmlService({ projectId: projectId }, this.connection);
-    const emlString = await emlService.buildProjectEml();
+    const emlService = new EmlService(this.connection);
+    const emlPackage = await emlService.buildProjectEmlPackage({ projectId: projectId });
+    const emlString = emlPackage.toString();
 
     if (!emlString) {
       throw new HTTP400('emlString failed to build');
@@ -180,7 +181,7 @@ export class PlatformService extends DBService {
 
       publishIds.summaryInfo.summaryId = summaryData.id;
 
-      const summaryArtifact = await this._makeArtifactFromSummary(emlService.packageId, summaryData);
+      const summaryArtifact = await this._makeArtifactFromSummary(emlPackage.packageId, summaryData);
       const { artifact_id } = await this._submitArtifactToBioHub(summaryArtifact);
 
       publishIds.summaryInfo.artifactId = artifact_id;
@@ -192,7 +193,7 @@ export class PlatformService extends DBService {
      */
     if (data.reports.length !== 0) {
       const reportIds = data.reports.map((report) => report.id);
-      await this.uploadSurveyReportAttachmentsToBioHub(emlService.packageId, projectId, reportIds);
+      await this.uploadSurveyReportAttachmentsToBioHub(emlPackage.packageId, projectId, reportIds);
     }
 
     /**
@@ -201,7 +202,7 @@ export class PlatformService extends DBService {
      */
     if (data.attachments.length !== 0) {
       const attachmentIds = data.attachments.map((attachment) => attachment.id);
-      await this.uploadSurveyAttachmentsToBioHub(emlService.packageId, projectId, attachmentIds);
+      await this.uploadSurveyAttachmentsToBioHub(emlPackage.packageId, projectId, attachmentIds);
     }
 
     //Check security request and create DWCA file for submission
@@ -209,10 +210,10 @@ export class PlatformService extends DBService {
     const dwCADataset: IDwCADataset = {
       archiveFile: {
         data: dwcArchiveZip.toBuffer(),
-        fileName: `${emlService.packageId}.zip`,
+        fileName: `${emlPackage.packageId}.zip`,
         mimeType: 'application/zip'
       },
-      dataPackageId: emlService.packageId,
+      dataPackageId: emlPackage.packageId,
       securityRequest
     };
 
@@ -229,7 +230,7 @@ export class PlatformService extends DBService {
       queue_id: publishIds.queueId
     });
 
-    return { uuid: emlService.packageId };
+    return { uuid: emlPackage.packageId };
   }
 
   /**
