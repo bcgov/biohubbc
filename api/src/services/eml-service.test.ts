@@ -2,12 +2,11 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-//import * as db from '../database/db';
 import { IGetProject } from '../models/project-view';
 import { SurveyObject } from '../models/survey-view';
 import { getMockDBConnection } from '../__mocks__/db';
 import { CodeService } from './code-service';
-import { EmlService } from './eml-service';
+import { EmlPackage, EmlService } from './eml-service';
 import { ProjectService } from './project-service';
 import { SurveyService } from './survey-service';
 
@@ -15,31 +14,362 @@ chai.use(sinonChai);
 
 describe('EmlPackage', () => {
   describe('withEml', () => {
-    // TODO
+    it('should build an EML section', () => {
+      const mockDBConnection = getMockDBConnection();
+      const emlService = new EmlService(mockDBConnection);
+      const packageId = 'aaaabbbb-cccc-dddd-eeee-ffffgggghhhhiiii'
+
+      const emlPackage = new EmlPackage({ packageId });
+
+      const response = emlPackage.withEml(emlService._buildEmlSection(packageId));
+
+      expect(response._emlMetadata).to.eql(emlPackage._emlMetadata);
+      expect(response._emlMetadata).to.eql({
+        $: {
+          packageId: 'urn:uuid:aaaabbbb-cccc-dddd-eeee-ffffgggghhhhiiii',
+          system: '',
+          'xmlns:eml': 'https://eml.ecoinformatics.org/eml-2.2.0',
+          'xmlns:xsi': 'http://www.w3.org/2001/XMLSchema-instance',
+          'xmlns:stmml': 'http://www.xml-cml.org/schema/schema24',
+          'xsi:schemaLocation': 'https://eml.ecoinformatics.org/eml-2.2.0 xsd/eml.xsd'
+        }
+      });
+    });
   });
   
   describe('withDataset', () => {
-    // TODO
+    it('should build an EML dataset section', () => {
+      const mockDBConnection = getMockDBConnection();
+      const emlService = new EmlService(mockDBConnection);
+
+      const mockOrg = {
+        organizationName: "Test Organization",
+        electronicMailAddress: "EMAIL@address.com"
+      };
+
+      const mockPackageId = 'aaaabbbb-cccc-dddd-eeee-ffffgggghhhhiiii'
+      const mockProjectData = {
+        project: {
+          project_name: 'Test Project Name'
+        }
+      } as IGetProject;
+
+      const emlPackage = new EmlPackage({ packageId: mockPackageId });
+
+      sinon.stub(EmlService.prototype, '_getDatasetCreator').returns(mockOrg);
+
+      sinon.stub(EmlService.prototype, '_makeEmlDateString').returns('2023-01-01');
+
+      sinon.stub(EmlService.prototype, '_getProjectContact').returns({
+        individualName: {
+          givenName: "First Name",
+          surName: "Last Name"
+        },
+        ...mockOrg
+      });
+
+      const response = emlPackage.withDataset(emlService._buildEmlDatasetSection(mockPackageId, mockProjectData));
+
+      expect(response._datasetMetadata).to.eql(emlPackage._datasetMetadata)
+      expect(response._datasetMetadata).to.eql({
+        $: { system: '', id: 'aaaabbbb-cccc-dddd-eeee-ffffgggghhhhiiii' },
+        title: 'Test Project Name',
+        creator: {
+          organizationName: "Test Organization",
+          electronicMailAddress: "EMAIL@address.com"
+        },
+        pubDate: '2023-01-01',
+        language: 'English',
+        contact: {
+          individualName: {
+            givenName: "First Name",
+            surName: "Last Name"
+          },
+          organizationName: "Test Organization",
+          electronicMailAddress: "EMAIL@address.com"
+        }
+      });
+    });
   });
   
   describe('withProject', () => {
-    // TODO
+    it('should build a project EML Project section', () => {
+      const mockDBConnection = getMockDBConnection();
+      const emlService = new EmlService(mockDBConnection);
+
+      const mockPackageId = 'aaaabbbb-cccc-dddd-eeee-ffffgggghhhhiiii';
+
+      const mockProjectData = {
+        project: {
+          uuid: mockPackageId,
+          project_name: 'Test Project Name'
+        },
+        objectives: {
+          objectives: 'Project objectives.',
+          caveats: 'Project caveats.'
+        }
+      } as IGetProject;
+
+      const emlPackage = new EmlPackage({ packageId: mockPackageId });
+
+      sinon.stub(EmlService.prototype, '_getProjectPersonnel').returns([
+        {
+          individualName: { givenName: "First Name", surName: "Last Name" },
+          organizationName: "A Rocha Canada",
+          electronicMailAddress: "EMAIL@address.com",
+          role: "pointOfContact"
+        }
+      ]);
+
+      sinon.stub(EmlService.prototype, '_getProjectFundingSources').returns({
+        funding: {        
+          section: [
+            {
+              title: "Agency Name",
+              para: "BC Hydro",
+              section: [
+                { title: "Funding Agency Project ID", para: "AGENCY PROJECT ID" },
+                { title: "Investment Action/Category", para: "Not Applicable" },
+                { title: "Funding Amount", para: 123456789 },
+                { title: "Funding Start Date", para: "2023-01-02" },
+                { title: "Funding End Date", para: "2023-01-30" }
+              ]
+            }
+          ]
+        }
+      });
+
+      sinon.stub(EmlService.prototype, '_getProjectGeographicCoverage').returns({
+        geographicCoverage: {
+          geographicDescription: "Location Description",
+          boundingCoordinates: {
+            westBoundingCoordinate: -121.904297,
+            eastBoundingCoordinate: -120.19043,
+            northBoundingCoordinate: 51.971346,
+            southBoundingCoordinate: 50.930738
+          },
+          datasetGPolygon: [
+            {
+              datasetGPolygonOuterGRing: [
+                {
+                  gRingPoint: [
+                    { gRingLatitude: 50.930738, gRingLongitude: -121.904297 },
+                    { gRingLatitude: 51.971346, gRingLongitude: -121.904297 },
+                    { gRingLatitude: 51.971346, gRingLongitude: -120.19043 },
+                    { gRingLatitude: 50.930738, gRingLongitude: -120.19043 },
+                    { gRingLatitude: 50.930738, gRingLongitude: -121.904297 }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+      });
+
+      sinon.stub(EmlService.prototype, '_getProjectTemporalCoverage').returns({
+        rangeOfDates: {
+          beginDate: { calendarDate: "2023-01-01" },
+          endDate: { calendarDate: "2023-01-31" }
+        }
+      });
+
+      const response = emlPackage.withProject(emlService._buildProjectEmlProjectSection(mockProjectData));
+
+      expect(response._projectMetadata).to.eql(emlPackage._projectMetadata);
+      expect(response._projectMetadata).to.eql({
+        $: { id: 'aaaabbbb-cccc-dddd-eeee-ffffgggghhhhiiii', system: '' },
+        title: 'Test Project Name',
+        personnel: [
+          {
+            individualName: { givenName: "First Name", surName: "Last Name" },
+            organizationName: "A Rocha Canada",
+            electronicMailAddress: "EMAIL@address.com",
+            role: "pointOfContact"
+          }
+        ],
+        abstract: {
+          section: [
+            { title: 'Objectives', para: 'Project objectives.' },
+            { title: 'Caveats', para: 'Project caveats.' }
+          ]
+        },
+        funding: {
+          section: [
+            {
+              title: "Agency Name",
+              para: "BC Hydro",
+              section: [
+                { title: "Funding Agency Project ID", para: "AGENCY PROJECT ID" },
+                { title: "Investment Action/Category", para: "Not Applicable" },
+                { title: "Funding Amount", para: 123456789 },
+                { title: "Funding Start Date", para: "2023-01-02" },
+                { title: "Funding End Date", para: "2023-01-30" }
+              ]
+            }
+          ]
+        },
+        studyAreaDescription: {
+          coverage: {
+            geographicCoverage: {
+              geographicDescription: "Location Description",
+              boundingCoordinates: {
+                westBoundingCoordinate: -121.904297,
+                eastBoundingCoordinate: -120.19043,
+                northBoundingCoordinate: 51.971346,
+                southBoundingCoordinate: 50.930738
+              },
+              datasetGPolygon: [
+                {
+                  datasetGPolygonOuterGRing: [
+                    {
+                      gRingPoint: [
+                        { gRingLatitude: 50.930738, gRingLongitude: -121.904297 },
+                        { gRingLatitude: 51.971346, gRingLongitude: -121.904297 },
+                        { gRingLatitude: 51.971346, gRingLongitude: -120.19043 },
+                        { gRingLatitude: 50.930738, gRingLongitude: -120.19043 },
+                        { gRingLatitude: 50.930738, gRingLongitude: -121.904297 }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            temporalCoverage: {
+              rangeOfDates: {
+                beginDate: { calendarDate: "2023-01-01" },
+                endDate: { calendarDate: "2023-01-31" }
+              }
+            }
+          }
+        }
+      });
+    });
   });
   
   describe('withAdditionalMetadata', () => {
-    // TODO
+    it('should add additional metadata to the EML package', () => {
+      const additionalMeta1 = [
+        {
+          describes: "1116c94a-8cd5-480d-a1f3-dac794e57c05",
+          metadata: { projectTypes: { projectType: "Aquatic Habitat" } }
+        },
+        {
+          describes: "1116c94a-8cd5-480d-a1f3-dac794e57c05",
+          metadata: {
+            projectActivities: {
+              projectActivity: [
+                { name: "Habitat Protection" }
+              ]
+            }
+          }
+        },
+        {
+          describes: "1116c94a-8cd5-480d-a1f3-dac794e57c05",
+          metadata: {
+            IUCNConservationActions: {
+              IUCNConservationAction: [
+                {
+                  IUCNConservationActionLevel1Classification: "Awareness Raising",
+                  IUCNConservationActionLevel2SubClassification: "Outreach & Communications",
+                  IUCNConservationActionLevel3SubClassification: "Reported and social media"
+                }
+              ]
+            }
+          }
+        }
+      ];
+
+      const additionalMeta2 = [
+        {
+          describes: "1116c94a-8cd5-480d-a1f3-dac794e57c05",
+          metadata: {
+            stakeholderPartnerships: {
+              stakeholderPartnership: [
+                { name: "BC Hydro" }
+              ]
+            }
+          }
+        },
+        {
+          describes: "1116c94a-8cd5-480d-a1f3-dac794e57c05",
+          metadata: {
+            firstNationPartnerships: {
+              firstNationPartnership: [
+                { name: "Acho Dene Koe First Nation" }
+              ]
+            }
+          }
+        }
+      ];
+
+      const emlPackage = new EmlPackage({ packageId: null as unknown as string });
+
+      const response = emlPackage
+        .withAdditionalMetadata(additionalMeta1)
+        .withAdditionalMetadata(additionalMeta2);
+
+      expect(response._additionalMetadata).to.eql(emlPackage._additionalMetadata)
+      expect(emlPackage._additionalMetadata).to.eql([...additionalMeta1, ...additionalMeta2]);
+    });
   });
   
   describe('withRelatedProjects', () => {
-    // TODO
+    it('should add a related project to the EML package', () => {
+      const project = {
+        $: { id: "1116c94a-8cd5-480d-a1f3-dac794e57c05", system: "" },
+        title: "Project Name 1"
+      };
+
+      const emlPackage = new EmlPackage({ packageId: null as unknown as string });
+
+      const response = emlPackage.withRelatedProjects([project])
+
+      expect(response._relatedProjects).to.eql(emlPackage._relatedProjects)
+      expect(emlPackage._relatedProjects).to.eql([
+        {
+          $: { id: "1116c94a-8cd5-480d-a1f3-dac794e57c05", system: "" },
+          title: "Project Name 1"
+        }
+      ]);
+    });
+
+    it('should add multiple related projects to the EML package', () => {
+      const project1 = {
+        $: { id: "1116c94a-8cd5-480d-a1f3-dac794e57c05", system: "" },
+        title: "Project Name 1"
+      };
+
+      const project2 = {
+        $: { id: "1116c94a-8cd5-480d-a1f3-dac794e57c06", system: "" },
+        title: "Project Name 2"
+      };
+
+      const emlPackage = new EmlPackage({ packageId: null as unknown as string });
+
+      const response = emlPackage
+        .withRelatedProjects([project1])
+        .withRelatedProjects([project2]);
+
+      expect(response._relatedProjects).to.eql(emlPackage._relatedProjects)
+      expect(emlPackage._relatedProjects).to.eql([
+        {
+          $: { id: "1116c94a-8cd5-480d-a1f3-dac794e57c05", system: "" },
+          title: "Project Name 1"
+        },
+        {
+          $: { id: "1116c94a-8cd5-480d-a1f3-dac794e57c06", system: "" },
+          title: "Project Name 2"
+        }
+      ]);
+    });
   });
   
   describe('build', () => {
-      // TODO
+      //
   });
 });
 
-describe('EmlService', () => {
+describe.only('EmlService', () => {
   beforeEach(() => {
     sinon.stub(EmlService.prototype, 'loadEmlDbConstants').callsFake(async function(this: EmlService) {
       this._constants.EML_ORGANIZATION_URL = 'Not Supplied';
@@ -96,7 +426,7 @@ describe('EmlService', () => {
         .to.equal(`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><eml:eml><dataset><project/></dataset></eml:eml>`);
     });
 
-    it('should build an EML package successfully', async () => {
+    it('should build an EML package for a project successfully', async () => {
       const mockDBConnection = getMockDBConnection();
       const emlService = new EmlService(mockDBConnection);
 
@@ -118,7 +448,7 @@ describe('EmlService', () => {
       });
 
       // Build dataset EML section
-      sinon.stub(EmlService.prototype, '_buildEmlDatasetSection').resolves({
+      sinon.stub(EmlService.prototype, '_buildEmlDatasetSection').returns({
         $: {
           system: "",
           id: "1116c94a-8cd5-480d-a1f3-dac794e57c05"
@@ -428,362 +758,402 @@ describe('EmlService', () => {
   });
 
   describe('buildSurveyEmlPackage', () => {
-    // TODO
+    it.skip('should build an EML string with no content if no data is provided', async () => {
+      const mockDBConnection = getMockDBConnection();
+      const emlService = new EmlService(mockDBConnection);
 
+      sinon.stub(ProjectService.prototype, 'getProjectById')
+        .resolves({ project: { uuid: 'aaaabbbb-cccc-dddd-eeee-ffffgggghhhhiiii' }} as IGetProject);
 
-    /*
-{
-  "wDataset": {
-    "$": {
-      "system": "",
-      "id": "69b506d1-3a50-4a39-b4c7-190bd0b34b96"
-    },
-    "title": "Project Name",
-    "creator": {
-      "organizationName": "A Rocha Canada",
-      "electronicMailAddress": "EMAIL@address.com"
-    },
-    "pubDate": "2023-03-13",
-    "language": "English",
-    "contact": {
-      "individualName": {
-        "givenName": "First Name",
-        "surName": "Last Name"
-      },
-      "organizationName": "A Rocha Canada",
-      "electronicMailAddress": "EMAIL@address.com"
-    }
-  },
-  "wProject": {
-    "$": {
-      "id": "69b506d1-3a50-4a39-b4c7-190bd0b34b96",
-      "system": ""
-    },
-    "title": "Survey Name",
-    "personnel": [
-      {
-        "individualName": {
-          "givenName": "First Name",
-          "surName": "Last Name"
-        },
-        "role": "pointOfContact"
-      }
-    ],
-    "abstract": {
-      "section": [
-        {
-          "title": "Intended Outcomes",
-          "para": "Habitat Assessment"
-        },
-        {
-          "title": "Additional Details",
-          "para": "Additional Details"
+      sinon.stub(SurveyService.prototype, 'getSurveysByProjectId').resolves([]);
+
+      sinon.stub(EmlService.prototype, '_buildEmlSection').returns({});
+      sinon.stub(EmlService.prototype, '_buildEmlDatasetSection').resolves({});
+      sinon.stub(EmlService.prototype, '_buildProjectEmlProjectSection').returns({});
+      sinon.stub(EmlService.prototype, '_getProjectAdditionalMetadata').resolves([]);
+      sinon.stub(EmlService.prototype, '_getSurveyAdditionalMetadata').returns([]);
+      sinon.stub(EmlService.prototype, '_buildAllSurveyEmlProjectSections').resolves([]);
+
+      const emlPackage = await emlService.buildProjectEmlPackage({ projectId: 1 });
+
+      expect(emlPackage.toString())
+        .to.equal(`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><eml:eml><dataset><project/></dataset></eml:eml>`);
+    });
+
+    it.only('should build an EML package for a project successfully', async () => {
+      const mockDBConnection = getMockDBConnection();
+      const emlService = new EmlService(mockDBConnection);
+
+      sinon.stub(ProjectService.prototype, 'getProjectById')
+        .resolves({ project: { uuid: '1116c94a-8cd5-480d-a1f3-dac794e57c05' }} as IGetProject);
+
+      sinon.stub(SurveyService.prototype, 'getSurveyById')
+        .resolves({ survey_details: { uuid: '69b506d1-3a50-4a39-b4c7-190bd0b34b9' }} as SurveyObject);
+
+      // Build EML section
+      sinon.stub(EmlService.prototype, '_buildEmlSection').returns({
+        $: {
+          packageId: 'urn:uuid:1116c94a-8cd5-480d-a1f3-dac794e57c05',
+          system: '',
+          'xmlns:eml': 'https://eml.ecoinformatics.org/eml-2.2.0',
+          'xmlns:xsi': 'http://www.w3.org/2001/XMLSchema-instance',
+          'xmlns:stmml': 'http://www.xml-cml.org/schema/schema24',
+          'xsi:schemaLocation': 'https://eml.ecoinformatics.org/eml-2.2.0 xsd/eml.xsd'
         }
-      ]
-    },
-    "funding": {
-      "section": [
-        {
-          "title": "Agency Name",
-          "para": "BC Hydro",
+      });
+
+      // Build dataset EML section
+      sinon.stub(EmlService.prototype, '_buildEmlDatasetSection').returns({
+        $: {
+          system: "",
+          id: "1116c94a-8cd5-480d-a1f3-dac794e57c05"
+        },
+        title: "Project Name",
+        creator: {
+          organizationName: "A Rocha Canada",
+          electronicMailAddress: "EMAIL@address.com"
+        },
+        pubDate: "2023-03-13",
+        language: "English",
+        contact: {
+          individualName: {
+            givenName: "First Name",
+            surName: "Last Name"
+          },
+          organizationName: "A Rocha Canada",
+          electronicMailAddress: "EMAIL@address.com"
+        }
+      });
+
+      // Build Project EML section
+      sinon.stub(EmlService.prototype, '_buildSurveyEmlProjectSection').resolves({
+        "$": {
+          "id": "69b506d1-3a50-4a39-b4c7-190bd0b34b96",
+          "system": ""
+        },
+        "title": "Survey Name",
+        "personnel": [
+          {
+            "individualName": {
+              "givenName": "First Name",
+              "surName": "Last Name"
+            },
+            "role": "pointOfContact"
+          }
+        ],
+        "abstract": {
           "section": [
             {
-              "title": "Funding Agency Project ID",
-              "para": "AGENCY PROJECT ID"
+              "title": "Intended Outcomes",
+              "para": "Habitat Assessment"
             },
             {
-              "title": "Investment Action/Category",
-              "para": "Not Applicable"
-            },
-            {
-              "title": "Funding Amount",
-              "para": 123456789
-            },
-            {
-              "title": "Funding Start Date",
-              "para": "2023-01-02"
-            },
-            {
-              "title": "Funding End Date",
-              "para": "2023-01-30"
+              "title": "Additional Details",
+              "para": "Additional Details"
             }
           ]
-        }
-      ]
-    },
-    "studyAreaDescription": {
-      "coverage": {
-        "geographicCoverage": {
-          "geographicDescription": "Survey Area Name",
-          "boundingCoordinates": {
-            "westBoundingCoordinate": -121.904297,
-            "eastBoundingCoordinate": -120.19043,
-            "northBoundingCoordinate": 51.971346,
-            "southBoundingCoordinate": 50.930738
-          },
-          "datasetGPolygon": [
+        },
+        "funding": {
+          "section": [
             {
-              "datasetGPolygonOuterGRing": [
+              "title": "Agency Name",
+              "para": "BC Hydro",
+              "section": [
                 {
-                  "gRingPoint": [
-                    {
-                      "gRingLatitude": 50.930738,
-                      "gRingLongitude": -121.904297
-                    },
-                    {
-                      "gRingLatitude": 51.971346,
-                      "gRingLongitude": -121.904297
-                    },
-                    {
-                      "gRingLatitude": 51.971346,
-                      "gRingLongitude": -120.19043
-                    },
-                    {
-                      "gRingLatitude": 50.930738,
-                      "gRingLongitude": -120.19043
-                    },
-                    {
-                      "gRingLatitude": 50.930738,
-                      "gRingLongitude": -121.904297
-                    }
-                  ]
+                  "title": "Funding Agency Project ID",
+                  "para": "AGENCY PROJECT ID"
+                },
+                {
+                  "title": "Investment Action/Category",
+                  "para": "Not Applicable"
+                },
+                {
+                  "title": "Funding Amount",
+                  "para": 123456789
+                },
+                {
+                  "title": "Funding Start Date",
+                  "para": "2023-01-02"
+                },
+                {
+                  "title": "Funding End Date",
+                  "para": "2023-01-30"
                 }
               ]
             }
           ]
         },
-        "temporalCoverage": {
-          "rangeOfDates": {
-            "beginDate": {
-              "calendarDate": "2023-01-02"
+        "studyAreaDescription": {
+          "coverage": {
+            "geographicCoverage": {
+              "geographicDescription": "Survey Area Name",
+              "boundingCoordinates": {
+                "westBoundingCoordinate": -121.904297,
+                "eastBoundingCoordinate": -120.19043,
+                "northBoundingCoordinate": 51.971346,
+                "southBoundingCoordinate": 50.930738
+              },
+              "datasetGPolygon": [
+                {
+                  "datasetGPolygonOuterGRing": [
+                    {
+                      "gRingPoint": [
+                        {
+                          "gRingLatitude": 50.930738,
+                          "gRingLongitude": -121.904297
+                        },
+                        {
+                          "gRingLatitude": 51.971346,
+                          "gRingLongitude": -121.904297
+                        },
+                        {
+                          "gRingLatitude": 51.971346,
+                          "gRingLongitude": -120.19043
+                        },
+                        {
+                          "gRingLatitude": 50.930738,
+                          "gRingLongitude": -120.19043
+                        },
+                        {
+                          "gRingLatitude": 50.930738,
+                          "gRingLongitude": -121.904297
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
             },
-            "endDate": {
-              "calendarDate": "2023-01-30"
+            "temporalCoverage": {
+              "rangeOfDates": {
+                "beginDate": {
+                  "calendarDate": "2023-01-02"
+                },
+                "endDate": {
+                  "calendarDate": "2023-01-30"
+                }
+              }
+            },
+            "taxonomicCoverage": {
+              "taxonomicClassification": [
+                {
+                  "taxonRankName": "SPECIES",
+                  "taxonRankValue": "Alces americanus",
+                  "commonName": "Moose",
+                  "taxonId": {
+                    "$": {
+                      "provider": ""
+                    },
+                    "_": "2065"
+                  }
+                }
+              ]
             }
           }
         },
-        "taxonomicCoverage": {
-          "taxonomicClassification": [
-            {
-              "taxonRankName": "SPECIES",
-              "taxonRankValue": "Alces americanus",
-              "commonName": "Moose",
-              "taxonId": {
-                "$": {
-                  "provider": ""
-                },
-                "_": "2065"
-              }
-            }
-          ]
-        }
-      }
-    },
-    "designDescription": {
-      "description": {
-        "section": [
-          {
-            "title": "Field Method",
-            "para": "Call Playback"
-          },
-          {
-            "title": "Ecological Season",
-            "para": "Spring"
-          },
-          {
-            "title": "Vantage Codes",
-            "para": {
-              "itemizedlist": {
-                "listitem": [
-                  {
-                    "para": "Aerial"
-                  }
-                ]
-              }
-            }
-          }
-        ]
-      }
-    }
-  },
-  "wAddMeta1": [
-    {
-      "describes": "1116c94a-8cd5-480d-a1f3-dac794e57c05",
-      "metadata": {
-        "projectTypes": {
-          "projectType": "Aquatic Habitat"
-        }
-      }
-    },
-    {
-      "describes": "1116c94a-8cd5-480d-a1f3-dac794e57c05",
-      "metadata": {
-        "projectActivities": {
-          "projectActivity": [
-            {
-              "name": "Habitat Protection"
-            }
-          ]
-        }
-      }
-    },
-    {
-      "describes": "1116c94a-8cd5-480d-a1f3-dac794e57c05",
-      "metadata": {
-        "IUCNConservationActions": {
-          "IUCNConservationAction": [
-            {
-              "IUCNConservationActionLevel1Classification": "Awareness Raising",
-              "IUCNConservationActionLevel2SubClassification": "Outreach & Communications",
-              "IUCNConservationActionLevel3SubClassification": "Reported and social media"
-            }
-          ]
-        }
-      }
-    },
-    {
-      "describes": "1116c94a-8cd5-480d-a1f3-dac794e57c05",
-      "metadata": {
-        "stakeholderPartnerships": {
-          "stakeholderPartnership": [
-            {
-              "name": "BC Hydro"
-            }
-          ]
-        }
-      }
-    },
-    {
-      "describes": "1116c94a-8cd5-480d-a1f3-dac794e57c05",
-      "metadata": {
-        "firstNationPartnerships": {
-          "firstNationPartnership": [
-            {
-              "name": "Acho Dene Koe First Nation"
-            }
-          ]
-        }
-      }
-    }
-  ],
-  "wAddMeta2": [],
-  "wRelated": [
-    {
-      "$": {
-        "id": "1116c94a-8cd5-480d-a1f3-dac794e57c05",
-        "system": ""
-      },
-      "title": "Project Name",
-      "personnel": [
-        {
-          "individualName": {
-            "givenName": "First Name",
-            "surName": "Last Name"
-          },
-          "organizationName": "A Rocha Canada",
-          "electronicMailAddress": "EMAIL@address.com",
-          "role": "pointOfContact"
-        }
-      ],
-      "abstract": {
-        "section": [
-          {
-            "title": "Objectives",
-            "para": "Objectives"
-          },
-          {
-            "title": "Caveats",
-            "para": "Not Supplied"
-          }
-        ]
-      },
-      "funding": {
-        "section": [
-          {
-            "title": "Agency Name",
-            "para": "BC Hydro",
+        "designDescription": {
+          "description": {
             "section": [
               {
-                "title": "Funding Agency Project ID",
-                "para": "AGENCY PROJECT ID"
+                "title": "Field Method",
+                "para": "Call Playback"
               },
               {
-                "title": "Investment Action/Category",
-                "para": "Not Applicable"
+                "title": "Ecological Season",
+                "para": "Spring"
               },
               {
-                "title": "Funding Amount",
-                "para": 123456789
-              },
-              {
-                "title": "Funding Start Date",
-                "para": "2023-01-02"
-              },
-              {
-                "title": "Funding End Date",
-                "para": "2023-01-30"
-              }
-            ]
-          }
-        ]
-      },
-      "studyAreaDescription": {
-        "coverage": {
-          "geographicCoverage": {
-            "geographicDescription": "Location Description",
-            "boundingCoordinates": {
-              "westBoundingCoordinate": -121.904297,
-              "eastBoundingCoordinate": -120.19043,
-              "northBoundingCoordinate": 51.971346,
-              "southBoundingCoordinate": 50.930738
-            },
-            "datasetGPolygon": [
-              {
-                "datasetGPolygonOuterGRing": [
-                  {
-                    "gRingPoint": [
+                "title": "Vantage Codes",
+                "para": {
+                  "itemizedlist": {
+                    "listitem": [
                       {
-                        "gRingLatitude": 50.930738,
-                        "gRingLongitude": -121.904297
-                      },
-                      {
-                        "gRingLatitude": 51.971346,
-                        "gRingLongitude": -121.904297
-                      },
-                      {
-                        "gRingLatitude": 51.971346,
-                        "gRingLongitude": -120.19043
-                      },
-                      {
-                        "gRingLatitude": 50.930738,
-                        "gRingLongitude": -120.19043
-                      },
-                      {
-                        "gRingLatitude": 50.930738,
-                        "gRingLongitude": -121.904297
+                        "para": "Aerial"
                       }
                     ]
                   }
-                ]
+                }
               }
             ]
-          },
-          "temporalCoverage": {
-            "rangeOfDates": {
-              "beginDate": {
-                "calendarDate": "2023-01-01"
+          }
+        }
+      });
+    
+      // Build Project additional metadata
+      sinon.stub(EmlService.prototype, '_getProjectAdditionalMetadata').resolves([
+        {
+          describes: "1116c94a-8cd5-480d-a1f3-dac794e57c05",
+          metadata: { projectTypes: { projectType: "Aquatic Habitat" } }
+        },
+        {
+          describes: "1116c94a-8cd5-480d-a1f3-dac794e57c05",
+          metadata: {
+            projectActivities: {
+              projectActivity: [
+                { name: "Habitat Protection" }
+              ]
+            }
+          }
+        },
+        {
+          describes: "1116c94a-8cd5-480d-a1f3-dac794e57c05",
+          metadata: {
+            IUCNConservationActions: {
+              IUCNConservationAction: [
+                {
+                  IUCNConservationActionLevel1Classification: "Awareness Raising",
+                  IUCNConservationActionLevel2SubClassification: "Outreach & Communications",
+                  IUCNConservationActionLevel3SubClassification: "Reported and social media"
+                }
+              ]
+            }
+          }
+        },
+        {
+          describes: "1116c94a-8cd5-480d-a1f3-dac794e57c05",
+          metadata: {
+            stakeholderPartnerships: {
+              stakeholderPartnership: [
+                { name: "BC Hydro" }
+              ]
+            }
+          }
+        },
+        {
+          describes: "1116c94a-8cd5-480d-a1f3-dac794e57c05",
+          metadata: {
+            firstNationPartnerships: {
+              firstNationPartnership: [
+                { name: "Acho Dene Koe First Nation" }
+              ]
+            }
+          }
+        }
+      ]);
+
+      // Build survey additional metadata
+      sinon.stub(EmlService.prototype, '_getSurveyAdditionalMetadata').returns([]);
+    
+      // Build related project section
+      sinon.stub(EmlService.prototype, '_buildProjectEmlProjectSection').returns({
+        "$": {
+          "id": "1116c94a-8cd5-480d-a1f3-dac794e57c05",
+          "system": ""
+        },
+        "title": "Project Name",
+        "personnel": [
+          {
+            "individualName": {
+              "givenName": "First Name",
+              "surName": "Last Name"
+            },
+            "organizationName": "A Rocha Canada",
+            "electronicMailAddress": "EMAIL@address.com",
+            "role": "pointOfContact"
+          }
+        ],
+        "abstract": {
+          "section": [
+            {
+              "title": "Objectives",
+              "para": "Objectives"
+            },
+            {
+              "title": "Caveats",
+              "para": "Not Supplied"
+            }
+          ]
+        },
+        "funding": {
+          "section": [
+            {
+              "title": "Agency Name",
+              "para": "BC Hydro",
+              "section": [
+                {
+                  "title": "Funding Agency Project ID",
+                  "para": "AGENCY PROJECT ID"
+                },
+                {
+                  "title": "Investment Action/Category",
+                  "para": "Not Applicable"
+                },
+                {
+                  "title": "Funding Amount",
+                  "para": 123456789
+                },
+                {
+                  "title": "Funding Start Date",
+                  "para": "2023-01-02"
+                },
+                {
+                  "title": "Funding End Date",
+                  "para": "2023-01-30"
+                }
+              ]
+            }
+          ]
+        },
+        "studyAreaDescription": {
+          "coverage": {
+            "geographicCoverage": {
+              "geographicDescription": "Location Description",
+              "boundingCoordinates": {
+                "westBoundingCoordinate": -121.904297,
+                "eastBoundingCoordinate": -120.19043,
+                "northBoundingCoordinate": 51.971346,
+                "southBoundingCoordinate": 50.930738
               },
-              "endDate": {
-                "calendarDate": "2023-01-31"
+              "datasetGPolygon": [
+                {
+                  "datasetGPolygonOuterGRing": [
+                    {
+                      "gRingPoint": [
+                        {
+                          "gRingLatitude": 50.930738,
+                          "gRingLongitude": -121.904297
+                        },
+                        {
+                          "gRingLatitude": 51.971346,
+                          "gRingLongitude": -121.904297
+                        },
+                        {
+                          "gRingLatitude": 51.971346,
+                          "gRingLongitude": -120.19043
+                        },
+                        {
+                          "gRingLatitude": 50.930738,
+                          "gRingLongitude": -120.19043
+                        },
+                        {
+                          "gRingLatitude": 50.930738,
+                          "gRingLongitude": -121.904297
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            "temporalCoverage": {
+              "rangeOfDates": {
+                "beginDate": {
+                  "calendarDate": "2023-01-01"
+                },
+                "endDate": {
+                  "calendarDate": "2023-01-31"
+                }
               }
             }
           }
         }
-      }
-    }
-  ]
-}
-    */
+      });
+
+      const emlPackage = await emlService.buildProjectEmlPackage({ projectId: 1 });
+
+      expect(emlPackage.toString())
+        .to.equal('howdy');
+    });
   });
 
   describe('codes', () => {
@@ -1236,11 +1606,18 @@ describe('EmlService', () => {
   });
 
   describe('_getSurveyAdditionalMetadata', () => {
-    // TODO
+    it('should return an empty array, since there is (currently) no additional metadata for surveys', async () => {
+      const mockDBConnection = getMockDBConnection();
+      const emlService = new EmlService(mockDBConnection);
+
+      const additionalMeta = emlService._getSurveyAdditionalMetadata([]);
+
+      expect(additionalMeta).to.eql([]);
+    });
   });
 
   describe('_getProjectAdditionalMetadata', () => {
-    // TODO
+    //
   });
 
   describe('_getDatasetCreator', () => {
@@ -1330,7 +1707,7 @@ describe('EmlService', () => {
     });
   });
 
-  describe.only('_getProjectPersonnel', () => {
+  describe('_getProjectPersonnel', () => {
     it('should return the coordinator agency if share_contract_details is false', async () => {
       const mockDBConnection = getMockDBConnection();
       const emlService = new EmlService(mockDBConnection);
@@ -1397,54 +1774,54 @@ describe('EmlService', () => {
   });
 
   describe('_getProjectFundingSources', () => {
-    // TODO
+    //
   });
 
   describe('_getSurveyFundingSources', () => {
-    // TODO
+    //
   });
 
   describe('_getProjectTemporalCoverage', () => {
-    // TODO
+    //
   });
 
   describe('_getSurveyTemporalCoverage', () => {
-    // TODO
+    //
   });
 
   describe('_makeEmlDateString', () => {
-    // TODO
+    //
   });
 
   describe('_makePolygonFeatures', () => {
-    // TODO
+    //
   });
 
   describe('_makeDatasetGPolygons', () => {
-    // TODO
+    //
   });
 
   describe('_getProjectGeographicCoverage', () => {
-    // TODO
+    //
   });
 
   describe('_getSurveyGeographicCoverage', () => {
-    // TODO
+    //
   });
 
   describe('_getSurveyFocalTaxonomicCoverage', () => {
-    // TODO
+    //
   });
 
   describe('_getSurveyDesignDescription', () => {
-    // TODO
+    //
   });
 
   describe('_buildAllSurveyEmlProjectSections', () => {
-    // TODO
+    //
   });
 
   describe('_buildSurveyEmlProjectSection', () => {
-    // TODO
+    //
   });
 });
