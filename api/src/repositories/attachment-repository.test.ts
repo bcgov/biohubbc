@@ -72,6 +72,20 @@ describe('AttachmentRepository', () => {
         });
       });
 
+      describe('getProjectAttachmentsByIds', () => {
+        it('should return rows', async () => {
+          const mockResponse = ({ rows: [{ id: 1 }, { id: 2 }], rowCount: 2 } as any) as Promise<QueryResult<any>>;
+          const dbConnection = getMockDBConnection({ knex: () => mockResponse });
+
+          const repository = new AttachmentRepository(dbConnection);
+
+          const response = await repository.getProjectAttachmentsByIds(1, [1, 2]);
+
+          expect(response).to.not.be.null;
+          expect(response).to.eql([{ id: 1 }, { id: 2 }]);
+        });
+      });
+
       describe('insertProjectAttachment', () => {
         it('should return row', async () => {
           const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
@@ -263,6 +277,20 @@ describe('AttachmentRepository', () => {
           } catch (error) {
             expect((error as Error).message).to.equal('Failed to get project report attachments by reportAttachmentId');
           }
+        });
+      });
+
+      describe('getProjectReportAttachmentsByIds', () => {
+        it('should return rows', async () => {
+          const mockResponse = ({ rows: [{ id: 1 }, { id: 2 }], rowCount: 2 } as any) as Promise<QueryResult<any>>;
+          const dbConnection = getMockDBConnection({ knex: () => mockResponse });
+
+          const repository = new AttachmentRepository(dbConnection);
+
+          const response = await repository.getProjectReportAttachmentsByIds(1, [1, 2]);
+
+          expect(response).to.not.be.null;
+          expect(response).to.eql([{ id: 1 }, { id: 2 }]);
         });
       });
 
@@ -548,6 +576,20 @@ describe('AttachmentRepository', () => {
         });
       });
 
+      describe('getSurveyAttachmentsByIds', () => {
+        it('should return rows', async () => {
+          const mockResponse = ({ rows: [{ id: 1 }, { id: 2 }], rowCount: 2 } as any) as Promise<QueryResult<any>>;
+          const dbConnection = getMockDBConnection({ knex: () => mockResponse });
+
+          const repository = new AttachmentRepository(dbConnection);
+
+          const response = await repository.getSurveyAttachmentsByIds(1, [1, 2]);
+
+          expect(response).to.not.be.null;
+          expect(response).to.eql([{ id: 1 }, { id: 2 }]);
+        });
+      });
+
       describe('deleteSurveyAttachment', () => {
         it('should return result', async () => {
           const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
@@ -729,6 +771,20 @@ describe('AttachmentRepository', () => {
           } catch (error) {
             expect((error as Error).message).to.equal('Failed to get survey report attachments by reportAttachmentId');
           }
+        });
+      });
+
+      describe('getSurveyReportAttachmentsByIds', () => {
+        it('should return rows', async () => {
+          const mockResponse = ({ rows: [{ id: 1 }, { id: 2 }], rowCount: 2 } as any) as Promise<QueryResult<any>>;
+          const dbConnection = getMockDBConnection({ knex: () => mockResponse });
+
+          const repository = new AttachmentRepository(dbConnection);
+
+          const response = await repository.getSurveyReportAttachmentsByIds(1, [1, 2]);
+
+          expect(response).to.not.be.null;
+          expect(response).to.eql([{ id: 1 }, { id: 2 }]);
         });
       });
 

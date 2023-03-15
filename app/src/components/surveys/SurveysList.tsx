@@ -8,6 +8,7 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
+import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { SurveyViewObject } from 'interfaces/useSurveyApi.interface';
 import React, { useState } from 'react';
 
@@ -20,6 +21,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 export interface ISurveysListProps {
   surveysList: SurveyViewObject[];
   projectId: number;
+  codes: IGetAllCodeSetsResponse;
 }
 
 const SurveysList: React.FC<ISurveysListProps> = (props) => {
@@ -54,7 +56,12 @@ const SurveysList: React.FC<ISurveysListProps> = (props) => {
                   <TableCell>
                     {[...row.species?.focal_species_names, ...row.species?.ancillary_species_names].join(', ')}
                   </TableCell>
-                  <TableCell>Community Composition</TableCell>
+                  <TableCell>
+                    {row.purpose_and_methodology.intended_outcome_id &&
+                      props.codes?.intended_outcomes?.find(
+                        (item: any) => item.id === row.purpose_and_methodology.intended_outcome_id
+                      )?.name}
+                  </TableCell>
                 </TableRow>
               ))}
             {!props.surveysList.length && (

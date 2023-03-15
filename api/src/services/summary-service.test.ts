@@ -13,22 +13,10 @@ import {
 import { HTTP400 } from '../errors/http-error';
 import { SummaryRepository } from '../repositories/summary-repository';
 import * as FileUtils from '../utils/file-utils';
-// import { ITemplateMethodologyData } from '../repositories/validation-repository';
 import { ICsvState } from '../utils/media/csv/csv-file';
-// import { DWCArchive } from '../utils/media/dwc/dwc-archive-file';
 import { IMediaState, MediaFile } from '../utils/media/media-file';
 import * as MediaUtils from '../utils/media/media-utils';
 import { ValidationSchemaParser } from '../utils/media/validation/validation-schema-parser';
-/*
-import * as MediaUtils from '../utils/media/media-utils';
-import { ValidationSchemaParser } from '../utils/media/validation/validation-schema-parser';
-import { TransformationSchemaParser } from '../utils/media/xlsx/transformation/transformation-schema-parser';
-import { XLSXTransformation } from '../utils/media/xlsx/transformation/xlsx-transformation';
-
-
-
-
-*/
 import { XLSXCSV } from '../utils/media/xlsx/xlsx-file';
 import {
   MessageError,
@@ -41,22 +29,6 @@ import { SummaryService } from './summary-service';
 import { SurveyService } from './survey-service';
 
 chai.use(sinonChai);
-
-// const mockS3File = {
-//   fieldname: 'media',
-//   originalname: 'test.csv',
-//   encoding: '7bit',
-//   mimetype: 'text/csv',
-//   size: 340
-// };
-
-// const s3Archive = {
-//   fieldname: 'media',
-//   originalname: 'test.zip',
-//   encoding: '7bit',
-//   mimetype: 'application/zip',
-//   size: 340
-// };
 
 const mockService = () => {
   const dbConnection = getMockDBConnection();
@@ -389,6 +361,7 @@ describe('SummaryService', () => {
         id: 30,
         file_name: 'file13.xlsx',
         key: 's3_key',
+        uuid: 'string',
         delete_timestamp: null,
         submission_message_type_id: 1,
         message: 'another error message',
@@ -403,6 +376,7 @@ describe('SummaryService', () => {
         id: 30,
         file_name: 'file13.xlsx',
         key: 's3_key',
+        uuid: 'string',
         delete_timestamp: null,
         submission_message_type_id: 1,
         message: 'another error message',

@@ -3,7 +3,7 @@ import { queries } from '../queries/queries';
 import { getLogger } from '../utils/logger';
 import { DBService } from './db-service';
 
-const defaultLog = getLogger('queries/code-queries');
+const defaultLog = getLogger('services/code-queries');
 
 /**
  * A single code value.

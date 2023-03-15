@@ -87,7 +87,7 @@ const ProjectPage: React.FC = () => {
             <Grid item md={12} lg={8}>
               <Box mb={3}>
                 <Paper elevation={0}>
-                  <SurveysListPage projectForViewData={projectWithDetails} />
+                  <SurveysListPage projectForViewData={projectWithDetails} codes={codes} />
                 </Paper>
               </Box>
               <Box mb={3}>

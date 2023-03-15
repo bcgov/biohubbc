@@ -4,7 +4,6 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as db from '../../../database/db';
 import { HTTPError } from '../../../errors/http-error';
-import { PlatformService } from '../../../services/platform-service';
 import { ProjectService } from '../../../services/project-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../__mocks__/db';
 import * as update from './update';
@@ -155,9 +154,7 @@ describe('update', () => {
 
       sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-      sinon.stub(ProjectService.prototype, 'updateProject').resolves();
-
-      sinon.stub(PlatformService.prototype, 'submitDwCAMetadataPackage').resolves();
+      sinon.stub(ProjectService.prototype, 'updateProjectAndUploadToBiohub').resolves();
 
       const requestHandler = update.updateProject();
 

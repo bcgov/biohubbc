@@ -11,9 +11,13 @@ const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/upload'
 export const POST: Operation = [
   authorizeRequestHandler(() => {
     return {
-      and: [
+      or: [
         {
           validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN],
+          discriminator: 'SystemRole'
+        },
+        {
+          validSystemRoles: [SYSTEM_ROLE.DATA_ADMINISTRATOR],
           discriminator: 'SystemRole'
         }
       ]

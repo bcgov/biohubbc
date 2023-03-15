@@ -8,6 +8,7 @@ import useDraftApi from './api/useDraftApi';
 import useExternalApi from './api/useExternalApi';
 import useObservationApi from './api/useObservationApi';
 import useProjectApi from './api/useProjectApi';
+import usePublishApi from './api/usePublishApi';
 import useResourcesApi from './api/useResourcesApi';
 import useSearchApi from './api/useSearchApi';
 import useSurveyApi from './api/useSurveyApi';
@@ -45,6 +46,8 @@ export const useBiohubApi = () => {
 
   const external = useExternalApi(axios);
 
+  const publish = usePublishApi(apiAxios);
+
   return {
     project,
     search,
@@ -56,6 +59,7 @@ export const useBiohubApi = () => {
     draft,
     user,
     admin,
-    external
+    external,
+    publish
   };
 };

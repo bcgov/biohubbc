@@ -32,16 +32,19 @@ import { ProjectRepository } from '../repositories/project-repository';
 import { deleteFileFromS3 } from '../utils/file-utils';
 import { AttachmentService } from './attachment-service';
 import { DBService } from './db-service';
+import { PlatformService } from './platform-service';
 import { SurveyService } from './survey-service';
 
 export class ProjectService extends DBService {
   attachmentService: AttachmentService;
   projectRepository: ProjectRepository;
+  platformService: PlatformService;
 
   constructor(connection: IDBConnection) {
     super(connection);
     this.attachmentService = new AttachmentService(connection);
     this.projectRepository = new ProjectRepository(connection);
+    this.platformService = new PlatformService(connection);
   }
 
   /**
@@ -283,6 +286,29 @@ export class ProjectService extends DBService {
     return this.projectRepository.getReportAttachmentsData(projectId);
   }
 
+  /**
+   *
+   *
+   * @param {PostProjectObject} postProjectData
+   * @return {*}  {Promise<number>}
+   * @memberof ProjectService
+   */
+  async createProjectAndUploadToBiohub(postProjectData: PostProjectObject): Promise<number> {
+    const projectId = await this.createProject(postProjectData);
+
+    //Submit Eml to biohub and publish record
+    await this.platformService.submitAndPublishDwcAMetadata(projectId);
+
+    return projectId;
+  }
+
+  /**
+   *
+   *
+   * @param {PostProjectObject} postProjectData
+   * @return {*}  {Promise<number>}
+   * @memberof ProjectService
+   */
   async createProject(postProjectData: PostProjectObject): Promise<number> {
     const projectId = await this.insertProject(postProjectData);
 
@@ -369,6 +395,28 @@ export class ProjectService extends DBService {
     return this.projectRepository.insertParticipantRole(projectId, projectParticipantRole);
   }
 
+  /**
+   * Updates the project and uploads to Biohub
+   *
+   * @param {number} projectId
+   * @param {IUpdateProject} entities
+   * @return {*}
+   * @memberof ProjectService
+   */
+  async updateProjectAndUploadToBiohub(projectId: number, entities: IUpdateProject) {
+    await this.updateProject(projectId, entities);
+
+    // Update Eml to biohub and publish record
+    return await this.platformService.submitAndPublishDwcAMetadata(projectId);
+  }
+
+  /**
+   * Updates the project
+   *
+   * @param {number} projectId
+   * @param {IUpdateProject} entities
+   * @memberof ProjectService
+   */
   async updateProject(projectId: number, entities: IUpdateProject) {
     const promises: Promise<any>[] = [];
 

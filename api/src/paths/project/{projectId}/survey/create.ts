@@ -1,11 +1,10 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { PROJECT_ROLE } from '../../../../constants/roles';
+import { PROJECT_ROLE, SYSTEM_ROLE } from '../../../../constants/roles';
 import { getDBConnection } from '../../../../database/db';
 import { PostSurveyObject } from '../../../../models/survey-create';
 import { geoJsonFeature } from '../../../../openapi/schemas/geoJson';
 import { authorizeRequestHandler } from '../../../../request-handlers/security/authorization';
-import { PlatformService } from '../../../../services/platform-service';
 import { SurveyService } from '../../../../services/survey-service';
 import { getLogger } from '../../../../utils/logger';
 
@@ -14,11 +13,15 @@ const defaultLog = getLogger('paths/project/{projectId}/survey/create');
 export const POST: Operation = [
   authorizeRequestHandler((req) => {
     return {
-      and: [
+      or: [
         {
           validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR],
           projectId: Number(req.params.projectId),
           discriminator: 'ProjectRole'
+        },
+        {
+          validSystemRoles: [SYSTEM_ROLE.DATA_ADMINISTRATOR],
+          discriminator: 'SystemRole'
         }
       ]
     };
@@ -249,15 +252,7 @@ export function createSurvey(): RequestHandler {
 
       const surveyService = new SurveyService(connection);
 
-      const surveyId = await surveyService.createSurvey(projectId, sanitizedPostSurveyData);
-
-      try {
-        const platformService = new PlatformService(connection);
-        await platformService.submitDwCAMetadataPackage(projectId);
-      } catch (error) {
-        // Don't fail the rest of the endpoint if submitting metadata fails
-        defaultLog.error({ label: 'createSurvey->submitDwCAMetadataPackage', message: 'error', error });
-      }
+      const surveyId = await surveyService.createSurveyAndUploadToBiohub(projectId, sanitizedPostSurveyData);
 
       await connection.commit();
 

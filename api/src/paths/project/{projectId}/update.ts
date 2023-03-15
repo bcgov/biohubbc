@@ -1,12 +1,11 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { PROJECT_ROLE } from '../../../constants/roles';
+import { PROJECT_ROLE, SYSTEM_ROLE } from '../../../constants/roles';
 import { getDBConnection } from '../../../database/db';
 import { HTTP400 } from '../../../errors/http-error';
 import { geoJsonFeature } from '../../../openapi/schemas/geoJson';
 import { projectIdResponseObject, projectUpdatePutRequestObject } from '../../../openapi/schemas/project';
 import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
-import { PlatformService } from '../../../services/platform-service';
 import { ProjectService } from '../../../services/project-service';
 import { getLogger } from '../../../utils/logger';
 
@@ -15,11 +14,15 @@ const defaultLog = getLogger('paths/project/{projectId}/update');
 export const GET: Operation = [
   authorizeRequestHandler((req) => {
     return {
-      and: [
+      or: [
         {
           validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR],
           projectId: Number(req.params.projectId),
           discriminator: 'ProjectRole'
+        },
+        {
+          validSystemRoles: [SYSTEM_ROLE.DATA_ADMINISTRATOR],
+          discriminator: 'SystemRole'
         }
       ]
     };
@@ -340,11 +343,15 @@ export function getProjectForUpdate(): RequestHandler {
 export const PUT: Operation = [
   authorizeRequestHandler((req) => {
     return {
-      and: [
+      or: [
         {
           validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR],
           projectId: Number(req.params.projectId),
           discriminator: 'ProjectRole'
+        },
+        {
+          validSystemRoles: [SYSTEM_ROLE.DATA_ADMINISTRATOR],
+          discriminator: 'SystemRole'
         }
       ]
     };
@@ -437,15 +444,7 @@ export function updateProject(): RequestHandler {
 
       const projectService = new ProjectService(connection);
 
-      await projectService.updateProject(projectId, entities);
-
-      try {
-        const platformService = new PlatformService(connection);
-        await platformService.submitDwCAMetadataPackage(projectId);
-      } catch (error) {
-        // Don't fail the rest of the endpoint if submitting metadata fails
-        defaultLog.error({ label: 'updateProject->submitDwCAMetadataPackage', message: 'error', error });
-      }
+      await projectService.updateProjectAndUploadToBiohub(projectId, entities);
 
       await connection.commit();
 

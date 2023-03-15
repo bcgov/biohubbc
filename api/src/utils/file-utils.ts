@@ -8,7 +8,6 @@ import {
   Metadata
 } from 'aws-sdk/clients/s3';
 import clamd from 'clamdjs';
-import { S3_ROLE } from '../constants/roles';
 import { SUBMISSION_MESSAGE_TYPE } from '../constants/status';
 import { SubmissionErrorFromMessageType } from './submission-error';
 
@@ -97,8 +96,6 @@ export async function deleteFileFromS3(key: string): Promise<DeleteObjectOutput 
 /**
  * Upload a file to S3.
  *
- * Note: Assigns the `authenticated-read` permission.
- *
  * @export
  * @param {Express.Multer.File} file an object containing information about a single piece of media
  * @param {string} key the path where S3 will store the file
@@ -118,7 +115,6 @@ export async function uploadFileToS3(
       Body: file.buffer,
       ContentType: file.mimetype,
       Key: key,
-      ACL: S3_ROLE.AUTH_READ,
       Metadata: metadata
     })
     .promise();
@@ -138,7 +134,6 @@ export async function uploadBufferToS3(
       Body: buffer,
       ContentType: mimetype,
       Key: key,
-      ACL: S3_ROLE.AUTH_READ,
       Metadata: metadata
     })
     .promise()

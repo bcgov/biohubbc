@@ -58,7 +58,6 @@ services:
       - KEYCLOAK_ADMIN_PASSWORD=${KEYCLOAK_ADMIN_PASSWORD}
       - KEYCLOAK_INTEGRATION_ID=${KEYCLOAK_INTEGRATION_ID}
       - KEYCLOAK_ENVIRONMENT=${KEYCLOAK_ENVIRONMENT}
-      - KEYCLOAK_ADMIN_HOST=${KEYCLOAK_ADMIN_HOST}
       - KEYCLOAK_API_HOST=${KEYCLOAK_API_HOST}
       - OBJECT_STORE_URL=${OBJECT_STORE_URL}
       - OBJECT_STORE_ACCESS_KEY_ID=${OBJECT_STORE_ACCESS_KEY_ID}
@@ -80,6 +79,7 @@ services:
       - APP_HOST=${APP_HOST}
       - BACKBONE_API_HOST=${BACKBONE_API_HOST}
       - BACKBONE_INTAKE_PATH=${BACKBONE_INTAKE_PATH}
+      - BACKBONE_ARTIFACT_INTAKE_PATH=${BACKBONE_ARTIFACT_INTAKE_PATH}
       - BACKBONE_INTAKE_ENABLED=${BACKBONE_INTAKE_ENABLED}
     volumes:
       - ./api:/opt/app-root/src
@@ -98,109 +98,6 @@ services:
       - ${CLAMAV_PORT}:3310
     networks:
       - sims-network
-
-  # Build the n8n nginx proxy docker image
-  n8n_nginx:
-    image: ${DOCKER_PROJECT_NAME}-n8n-nginx-${DOCKER_NAMESPACE}-img
-    container_name: ${DOCKER_PROJECT_NAME}-n8n-nginx-${DOCKER_NAMESPACE}-container
-    build:
-      context: ./.docker/nginx/n8n
-      dockerfile: Dockerfile
-    restart: always
-    ports:
-      - ${N8N_PROXY_PORT}:5100
-    networks:
-      - sims-network
-    depends_on:
-      - n8n
-
-  ## Build the n8n workflow automation image
-  n8n:
-    image: n8nio/n8n:latest
-    container_name: ${DOCKER_PROJECT_NAME}-n8n-${DOCKER_NAMESPACE}-container
-    expose:
-      - 5678
-    environment:
-      - NODE_ENV=${NODE_ENV}
-      - N8N_HOST=${N8N_HOST}
-      - N8N_PROTOCOL=${N8N_PROTOCOL}
-      - N8N_PORT=5678
-      - WEBHOOK_TUNNEL_URL=${WEBHOOK_TUNNEL_URL}
-      - DB_TYPE=${N8N_DB_TYPE}
-      - DB_POSTGRESDB_HOST=${DB_HOST}
-      - DB_POSTGRESDB_USER=${DB_ADMIN}
-      - DB_POSTGRESDB_PASSWORD=${DB_ADMIN_PASS}
-      - DB_POSTGRESDB_PORT=${DB_PORT}
-      - DB_POSTGRESDB_DATABASE=${DB_DATABASE}
-      - DB_POSTGRESDB_SCHEMA=${N8N_DB_SCHEMA}
-      - N8N_BASIC_AUTH_ACTIVE=${N8N_BASIC_AUTH_ACTIVE}
-      - N8N_BASIC_AUTH_USER=${N8N_BASIC_AUTH_USER}
-      - N8N_BASIC_AUTH_PASSWORD=${N8N_BASIC_AUTH_PASSWORD}
-      - N8N_ENCRYPTION_KEY=${N8N_ENCRYPTION_KEY}
-      - N8N_API_HOST=${N8N_API_HOST}
-      - N8N_API_PORT=${API_PORT}
-      - N8N_USER_MANAGEMENT_DISABLED=true
-      - EXECUTIONS_PROCESS=main
-    networks:
-      - sims-network
-    volumes:
-      - ./n8n/.n8n:/home/node/.n8n
-    depends_on:
-      db:
-        condition: service_healthy
-
-    restart: always # n8n doesnt always start after db_setup is done, and can fail. Always restart to help resolve this.
-    command: ["n8n", "start"]
-
-  ## Run the n8n setup
-  n8n_setup:
-    image: ${DOCKER_PROJECT_NAME}-n8n-setup-${DOCKER_NAMESPACE}-img
-    container_name: ${DOCKER_PROJECT_NAME}-n8n-setup-${DOCKER_NAMESPACE}-container
-    build:
-      context: ./n8n
-      dockerfile: ./.docker/n8n/Dockerfile.setup
-    environment:
-      - NODE_ENV=${NODE_ENV}
-      - DB_TYPE=${N8N_DB_TYPE}
-      - DB_POSTGRESDB_HOST=${DB_HOST}
-      - DB_POSTGRESDB_USER=${DB_ADMIN}
-      - DB_POSTGRESDB_PASSWORD=${DB_ADMIN_PASS}
-      - DB_POSTGRESDB_PORT=${DB_PORT}
-      - DB_POSTGRESDB_DATABASE=${DB_DATABASE}
-      - DB_POSTGRESDB_SCHEMA=${N8N_DB_SCHEMA}
-      - N8N_ENCRYPTION_KEY=${N8N_ENCRYPTION_KEY}
-    volumes:
-      - /opt/app-root/src/node_modules # prevents local node_modules overriding container node_modules
-      - ./n8n:/opt/app-root/src
-    networks:
-      - sims-network
-    depends_on:
-      - n8n
-
-  ## Export the n8n credentials and workflows
-  n8n_export:
-    image: ${DOCKER_PROJECT_NAME}-n8n-export-${DOCKER_NAMESPACE}-img
-    container_name: ${DOCKER_PROJECT_NAME}-n8n-export-${DOCKER_NAMESPACE}-container
-    build:
-      context: ./n8n
-      dockerfile: ./.docker/n8n/Dockerfile.export
-    environment:
-      - NODE_ENV=${NODE_ENV}
-      - DB_TYPE=${N8N_DB_TYPE}
-      - DB_POSTGRESDB_HOST=${DB_HOST}
-      - DB_POSTGRESDB_USER=${DB_ADMIN}
-      - DB_POSTGRESDB_PASSWORD=${DB_ADMIN_PASS}
-      - DB_POSTGRESDB_PORT=${DB_PORT}
-      - DB_POSTGRESDB_DATABASE=${DB_DATABASE}
-      - DB_POSTGRESDB_SCHEMA=${N8N_DB_SCHEMA}
-      - N8N_ENCRYPTION_KEY=${N8N_ENCRYPTION_KEY}
-    volumes:
-      - /opt/app-root/src/node_modules # prevents local node_modules overriding container node_modules
-      - ./n8n:/opt/app-root/src
-    networks:
-      - sims-network
-    depends_on:
-      - n8n
 
   ## Build the app docker image
   app:
@@ -221,8 +118,6 @@ services:
       - REACT_APP_MAX_UPLOAD_NUM_FILES=${MAX_UPLOAD_NUM_FILES}
       - REACT_APP_MAX_UPLOAD_FILE_SIZE=${MAX_UPLOAD_FILE_SIZE}
       - REACT_APP_SITEMINDER_LOGOUT_URL=${SITEMINDER_LOGOUT_URL}
-      - REACT_APP_N8N_HOST=${N8N_HOST}
-      - REACT_APP_N8N_PORT=${N8N_PROXY_PORT}
       - REACT_APP_KEYCLOAK_HOST=${KEYCLOAK_HOST}
       - REACT_APP_KEYCLOAK_REALM=${KEYCLOAK_REALM}
       - REACT_APP_KEYCLOAK_CLIENT_ID=${KEYCLOAK_CLIENT_ID}
@@ -286,7 +181,7 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    command: ["npm", "run", "migrate:latest"]
+    command: ["npm", "run", "migrate-latest"]
 
   ## Rollback the latest database migrations
   db_rollback:
@@ -313,7 +208,7 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    command: ["npm", "run", "migrate:rollback"]
+    command: ["npm", "run", "migrate-rollback"]
 
 networks:
   sims-network:

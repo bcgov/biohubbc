@@ -12,16 +12,14 @@
     "start": "ts-node src/app",
     "clean": "gulp clean",
     "build": "gulp build",
-    "start:reload": "./node_modules/.bin/nodemon src/app.ts --exec ts-node",
-    "migrate:latest": "knex migrate:latest",
-    "migrate:rollback": "knex migrate:rollback",
+    "start-reload": "./node_modules/.bin/nodemon src/app.ts --exec ts-node",
     "test": "mocha",
-    "test:watch": "mocha --watch",
+    "test-watch": "mocha --watch",
     "coverage": "nyc mocha",
     "lint": "eslint . --ignore-pattern 'node_modules' --ext .ts",
-    "lint:fix": "eslint . --fix --ignore-pattern 'node_modules' --ext .ts",
+    "lint-fix": "eslint . --fix --ignore-pattern 'node_modules' --ext .ts",
     "format": "prettier --check \"./src/**/*.{js,jsx,ts,tsx,css,scss}\"",
-    "format:fix": "prettier --write \"./src/**/*.{js,jsx,ts,tsx,json,css,scss}\""
+    "format-fix": "prettier --write \"./src/**/*.{js,jsx,ts,tsx,json,css,scss}\""
   },
   "engines": {
     "node": ">= 14.0.0",

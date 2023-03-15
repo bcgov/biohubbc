@@ -21,6 +21,7 @@ export interface ISummaryTemplateSpeciesData {
 export interface ISurveySummaryDetails {
   id: number;
   key: string;
+  uuid: string;
   file_name: string;
   delete_timestamp: string | null;
   submission_message_type_id: number;
@@ -92,6 +93,7 @@ export class SummaryRepository extends BaseRepository {
         sss.survey_summary_submission_id as id,
         sss.key,
         sss.file_name,
+        sss.uuid,
         sss.delete_timestamp,
         sssm.submission_message_type_id,
         sssm.message,

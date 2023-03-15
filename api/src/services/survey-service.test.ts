@@ -16,7 +16,8 @@ import {
   GetSurveyFundingSources,
   GetSurveyLocationData,
   GetSurveyProprietorData,
-  GetSurveyPurposeAndMethodologyData
+  GetSurveyPurposeAndMethodologyData,
+  SurveyObject
 } from '../models/survey-view';
 import { IPermitModel } from '../repositories/permit-repository';
 import {
@@ -26,6 +27,7 @@ import {
 } from '../repositories/survey-repository';
 import { getMockDBConnection } from '../__mocks__/db';
 import { PermitService } from './permit-service';
+import { PlatformService } from './platform-service';
 import { SurveyService } from './survey-service';
 import { TaxonomyService } from './taxonomy-service';
 
@@ -108,13 +110,19 @@ describe('SurveyService', () => {
       const updateSurveyProprietorDataStub = sinon
         .stub(SurveyService.prototype, 'updateSurveyProprietorData')
         .resolves();
+      const getSurveyByIdStub = sinon
+        .stub(SurveyService.prototype, 'getSurveyById')
+        .resolves(({ survey_details: { project_id: 1 } } as unknown) as SurveyObject);
+      const submitDwCAMetadataPackageStub = sinon
+        .stub(PlatformService.prototype, 'submitDwCAMetadataPackage')
+        .resolves();
 
       const surveyService = new SurveyService(dbConnectionObj);
 
       const surveyId = 2;
       const putSurveyData = new PutSurveyObject(null);
 
-      await surveyService.updateSurvey(surveyId, putSurveyData);
+      await surveyService.updateSurveyAndUploadToBiohub(surveyId, putSurveyData);
 
       expect(updateSurveyDetailsDataStub).not.to.have.been.called;
       expect(updateSurveyVantageCodesDataStub).not.to.have.been.called;
@@ -122,6 +130,8 @@ describe('SurveyService', () => {
       expect(updateSurveyPermitDataStub).not.to.have.been.called;
       expect(updateSurveyFundingDataStub).not.to.have.been.called;
       expect(updateSurveyProprietorDataStub).not.to.have.been.called;
+      expect(getSurveyByIdStub).to.have.been.called;
+      expect(submitDwCAMetadataPackageStub).to.have.been.called;
     });
 
     it('updates everything when all data provided', async () => {
@@ -137,7 +147,12 @@ describe('SurveyService', () => {
       const updateSurveyProprietorDataStub = sinon
         .stub(SurveyService.prototype, 'updateSurveyProprietorData')
         .resolves();
-
+      const getSurveyByIdStub = sinon
+        .stub(SurveyService.prototype, 'getSurveyById')
+        .resolves(({ survey_details: { project_id: 1 } } as unknown) as SurveyObject);
+      const submitDwCAMetadataPackageStub = sinon
+        .stub(PlatformService.prototype, 'submitDwCAMetadataPackage')
+        .resolves();
       const surveyService = new SurveyService(dbConnectionObj);
 
       const surveyId = 2;
@@ -151,7 +166,7 @@ describe('SurveyService', () => {
         location: {}
       });
 
-      await surveyService.updateSurvey(surveyId, putSurveyData);
+      await surveyService.updateSurveyAndUploadToBiohub(surveyId, putSurveyData);
 
       expect(updateSurveyDetailsDataStub).to.have.been.calledOnce;
       expect(updateSurveyVantageCodesDataStub).to.have.been.calledOnce;
@@ -159,6 +174,8 @@ describe('SurveyService', () => {
       expect(updateSurveyPermitDataStub).to.have.been.calledOnce;
       expect(updateSurveyFundingDataStub).to.have.been.calledOnce;
       expect(updateSurveyProprietorDataStub).to.have.been.calledOnce;
+      expect(getSurveyByIdStub).to.have.been.called;
+      expect(submitDwCAMetadataPackageStub).to.have.been.called;
     });
   });
 
@@ -1061,6 +1078,47 @@ describe('SurveyService', () => {
       } catch (actualError) {
         expect((actualError as ApiGeneralError).message).to.equal('Failed to delete survey occurrence submission');
       }
+    });
+  });
+
+  describe('createSurveyAndUploadToBiohub', () => {
+    it('returns projectId on success', async () => {
+      const dbConnection = getMockDBConnection();
+      const service = new SurveyService(dbConnection);
+
+      const repoStub1 = sinon.stub(SurveyService.prototype, 'createSurvey').resolves(1);
+      const repoStub2 = sinon.stub(PlatformService.prototype, 'submitAndPublishDwcAMetadata').resolves();
+
+      const response = await service.createSurveyAndUploadToBiohub(1, (null as unknown) as PostSurveyObject);
+
+      expect(repoStub1).to.be.calledOnce;
+      expect(repoStub2).to.be.calledOnce;
+      expect(response).to.eql(1);
+    });
+  });
+
+  describe('updateProjectAndUploadToBiohub', () => {
+    it('successfully updates project', async () => {
+      const dbConnection = getMockDBConnection();
+      const service = new SurveyService(dbConnection);
+
+      const repoStub1 = sinon.stub(SurveyService.prototype, 'updateSurvey').resolves(({
+        survey_details: {
+          survey_name: 'my survey',
+          start_date: '2020-10-10',
+          end_date: '2021-10-10',
+          biologist_last_name: 'henry',
+          biologist_first_name: 'erin',
+          revision_count: 1
+        }
+      } as unknown) as SurveyObject);
+      const repoStub2 = sinon.stub(PlatformService.prototype, 'submitAndPublishDwcAMetadata').resolves();
+
+      const response = await service.updateSurveyAndUploadToBiohub(1, (null as unknown) as PutSurveyObject);
+
+      expect(repoStub1).to.be.calledOnce;
+      expect(repoStub2).to.be.calledOnce;
+      expect(response).to.eql(undefined);
     });
   });
 });
