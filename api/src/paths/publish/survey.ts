@@ -52,7 +52,37 @@ POST.apiDoc = {
             data: {
               description: 'All survey data to upload',
               type: 'object',
-              required: ['observations', 'summary', 'reports', 'attachments']
+              required: ['observations', 'summary', 'reports', 'attachments'],
+              properties: {
+                observations: {
+                  type: 'array',
+                  items: {
+                    type: 'object',
+                    properties: {}
+                  }
+                },
+                summary: {
+                  type: 'array',
+                  items: {
+                    type: 'object',
+                    properties: {}
+                  }
+                },
+                reports: {
+                  type: 'array',
+                  items: {
+                    type: 'object',
+                    properties: {}
+                  }
+                },
+                attachments: {
+                  type: 'array',
+                  items: {
+                    type: 'object',
+                    properties: {}
+                  }
+                }
+              }
             }
           }
         }
