@@ -33,7 +33,7 @@ const SelectAllButton: React.FC<ISelectAllButtonProps> = (props) => {
         setSelected(false);
       }
     });
-  },[values]);
+  }, [formikData, values]);
 
   const handleAll = () => {
     formikData.forEach((item) => {

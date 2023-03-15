@@ -69,7 +69,6 @@ POST.apiDoc = {
 
 export function uploadSurveyDataToBioHub(): RequestHandler {
   return async (req, res) => {
-    const projectId = Number(req.params.projectId);
     const surveyId = Number(req.params.surveyId);
 
     const connection = getDBConnection(req['keycloak_token']);
@@ -78,7 +77,7 @@ export function uploadSurveyDataToBioHub(): RequestHandler {
       await connection.open();
 
       const platformService = new PlatformService(connection);
-      await platformService.uploadSurveyDataToBioHub(projectId, surveyId);
+      await platformService.uploadSurveyDataToBioHub(surveyId);
 
       await connection.commit();
 
