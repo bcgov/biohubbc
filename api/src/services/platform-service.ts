@@ -402,14 +402,14 @@ export class PlatformService extends DBService {
   }
 
   /**
-   * Upload Survey/Project/Observation data to Backbone
+   * Upload Survey/EML/Observation data to Backbone
+   * Then publish Survey Metadata/Observation records to DB
    *
-   * @param {number} projectId
    * @param {number} surveyId
    * @return {*} {Promise<void>}
    * @memberof PlatformService
    */
-  async uploadSurveyDataToBioHub(projectId: number, surveyId: number): Promise<void> {
+  async uploadSurveyDataToBioHub(surveyId: number): Promise<void> {
     if (!this.backboneIntakeEnabled) {
       return;
     }
