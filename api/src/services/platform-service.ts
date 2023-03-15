@@ -431,37 +431,31 @@ export class PlatformService extends DBService {
     const dwcArchiveZip = new AdmZip(s3File.Body as Buffer);
 
     const emlService = new EmlService(this.connection);
-    const emlPackage = await emlService.buildProjectEmlPackage({ projectId });
-    const projectEmlString = emlPackage.toString();
 
     const surveyEmlPackage = await emlService.buildSurveyEmlPackage({ surveyId });
     const surveyEmlString = surveyEmlPackage.toString();
 
-    defaultLog.debug({ label: 'uploadSurveyDataToBioHub', projectEmlString, surveyEmlString });
+    defaultLog.debug({ label: 'uploadSurveyDataToBioHub', surveyEmlString });
 
-    if (!projectEmlString) {
+    if (!surveyEmlString) {
       throw new HTTP400('EML string failed to build');
     }
 
-    dwcArchiveZip.addFile('eml.xml', Buffer.from(projectEmlString));
+    dwcArchiveZip.addFile('eml.xml', Buffer.from(surveyEmlString));
 
     const dwCADataset: IDwCADataset = {
       archiveFile: {
         data: dwcArchiveZip.toBuffer(),
-        fileName: `${emlPackage.packageId}.zip`,
+        fileName: `${surveyEmlPackage.packageId}.zip`,
         mimeType: 'application/zip'
       },
-      dataPackageId: emlPackage.packageId,
+      dataPackageId: surveyEmlPackage.packageId,
       securityRequest
     };
 
     const queueResponse = await this._submitDwCADatasetToBioHubBackbone(dwCADataset);
 
     await Promise.all([
-      this.publishService.insertProjectMetadataPublishRecord({
-        project_id: projectId,
-        queue_id: queueResponse.queue_id
-      }),
       this.publishService.insertSurveyMetadataPublishRecord({
         survey_id: surveyId,
         queue_id: queueResponse.queue_id

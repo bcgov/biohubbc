@@ -1,7 +1,7 @@
 import { Box, makeStyles, Theme } from '@material-ui/core';
 import Checkbox from '@material-ui/core/Checkbox';
 import { useFormikContext } from 'formik';
-import React from 'react';
+import React, { useEffect } from 'react';
 
 const useStyles = makeStyles((theme: Theme) => ({
   subHeader: {
@@ -25,7 +25,15 @@ const SelectAllButton: React.FC<ISelectAllButtonProps> = (props) => {
   const [selected, setSelected] = React.useState(false);
 
   const { formikData } = props;
-  const { resetForm, setFieldValue } = useFormikContext<any>();
+  const { resetForm, setFieldValue, values } = useFormikContext<any>();
+
+  useEffect(() => {
+    formikData.forEach((item) => {
+      if (values[item.key] !== item.value) {
+        setSelected(false);
+      }
+    });
+  },[values]);
 
   const handleAll = () => {
     formikData.forEach((item) => {
