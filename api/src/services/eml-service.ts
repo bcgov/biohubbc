@@ -1,40 +1,35 @@
+import { SearchHit } from '@elastic/elasticsearch/lib/api/types';
 import bbox from '@turf/bbox';
 import circle from '@turf/circle';
 import { AllGeoJSON, featureCollection } from '@turf/helpers';
 import { coordEach } from '@turf/meta';
 import jsonpatch from 'fast-json-patch';
+import { Feature, GeoJsonProperties, Geometry } from 'geojson';
 import xml2js from 'xml2js';
 import { IDBConnection } from '../database/db';
-import {
-  GetAttachmentsData as GetProjectAttachmentsData,
-  GetReportAttachmentsData as GetProjectReportAttachmentsData,
-  IGetProject
-} from '../models/project-view';
-import {
-  GetAttachmentsData as GetSurveyAttachmentsData,
-  GetReportAttachmentsData as GetSurveyReportAttachmentsData,
-  SurveyObject
-} from '../models/survey-view';
+import { IGetProject } from '../models/project-view';
+import { SurveyObject } from '../models/survey-view';
 import { getDbCharacterSystemMetaDataConstantSQL } from '../queries/codes/db-constant-queries';
 import { CodeService, IAllCodeSets } from './code-service';
 import { DBService } from './db-service';
 import { ProjectService } from './project-service';
 import { SurveyService } from './survey-service';
-import { TaxonomyService } from './taxonomy-service';
+import { ITaxonomySource, TaxonomyService } from './taxonomy-service';
 
-const NOT_SUPPLIED_CONSTANT = 'Not Supplied';
+const NOT_SUPPLIED = 'Not Supplied';
+const EMPTY_STRING = ``;
 
 const DEFAULT_DB_CONSTANTS = {
   EML_VERSION: '1.0.0',
-  EML_PROVIDER_URL: NOT_SUPPLIED_CONSTANT,
-  EML_SECURITY_PROVIDER_URL: NOT_SUPPLIED_CONSTANT,
-  EML_ORGANIZATION_NAME: NOT_SUPPLIED_CONSTANT,
-  EML_ORGANIZATION_URL: NOT_SUPPLIED_CONSTANT,
-  EML_TAXONOMIC_PROVIDER_URL: NOT_SUPPLIED_CONSTANT,
-  EML_INTELLECTUAL_RIGHTS: NOT_SUPPLIED_CONSTANT
+  EML_PROVIDER_URL: NOT_SUPPLIED,
+  EML_SECURITY_PROVIDER_URL: NOT_SUPPLIED,
+  EML_ORGANIZATION_NAME: NOT_SUPPLIED,
+  EML_ORGANIZATION_URL: NOT_SUPPLIED,
+  EML_TAXONOMIC_PROVIDER_URL: NOT_SUPPLIED,
+  EML_INTELLECTUAL_RIGHTS: NOT_SUPPLIED
 };
 
-type EMLDBConstants = {
+type EmlDbConstants = {
   EML_VERSION: string;
   EML_PROVIDER_URL: string;
   EML_SECURITY_PROVIDER_URL: string;
@@ -44,41 +39,240 @@ type EMLDBConstants = {
   EML_INTELLECTUAL_RIGHTS: string;
 };
 
-type SurveyObjectWithAttachments = SurveyObject & {
-  attachments?: GetSurveyAttachmentsData;
-  report_attachments?: GetSurveyReportAttachmentsData;
+type BuildProjectEmlOptions = {
+  projectId: number;
 };
 
-type Cache = {
-  projectData?: IGetProject;
-  surveyData?: SurveyObjectWithAttachments[];
-  projectAttachmentData?: GetProjectAttachmentsData;
-  projectReportAttachmentData?: GetProjectReportAttachmentsData;
-  codes?: IAllCodeSets;
+type BuildSurveyEmlOptions = {
+  surveyId: number;
 };
 
-export type BuildProjectEMLOptions = {
-  /**
-   * Whether or not to include typically non-public data in the EML. Defaults to `false`.
-   *
-   * @type {boolean}
-   */
-  includeSensitiveData?: boolean;
-  /**
-   * Specify which surveys to include in the EML. Defaults to undefined (all surveys).
-   *
-   * Usage:
-   * - If left unset (undefined), all surveys will be included (default).
-   * - If set to an array, then only those surveys will be included. An empty array indicates no surveys should be
-   * included.
-   *
-   * @type {number[]}
-   */
-  surveyIds?: number[];
+type AdditionalMetadata = {
+  describes: string;
+  metadata: Record<string, any>;
+};
+
+type EmlPackageOptions = {
+  packageId: string;
 };
 
 /**
- * Service to produce EML data for a project.
+ * Represents an EML package used to produce an EML string
+ *
+ * @class EmlPackage
+ */
+export class EmlPackage {
+  /**
+   * The unique identifier representing the EML package
+   *
+   * @type {string}
+   * @memberof EmlPackage
+   */
+  packageId: string;
+
+  /**
+   * Maintains all EML package fields
+   *
+   * @type {Record<string, unknown>}
+   * @memberof EmlPackage
+   */
+  _data: Record<string, unknown> = {};
+
+  /**
+   * Maintains EML field data for the EML package
+   *
+   * @type {(Record<string, any> | null)}
+   * @memberof EmlPackage
+   */
+  _emlMetadata: Record<string, any> | null = null;
+
+  /**
+   * Maintains Dataset EML data for the EML package
+   *
+   * @type {(Record<string, any> | null)}
+   * @memberof EmlPackage
+   */
+  _datasetMetadata: Record<string, any> | null = null;
+
+  /**
+   * Maintains Dataset Project EML data for the EML package
+   *
+   * @type {(Record<string, any> | null)}
+   * @memberof EmlPackage
+   */
+  _projectMetadata: Record<string, any> | null = null;
+
+  /**
+   * Maintains Related Projects fields for the EML package
+   *
+   * @type {Record<string, any>[]}
+   * @memberof EmlPackage
+   */
+  _relatedProjects: Record<string, any>[] = [];
+
+  /**
+   * Maintains Additional Metadata fields for the EML package
+   *
+   * @type {AdditionalMetadata[]}
+   * @memberof EmlPackage
+   */
+  _additionalMetadata: AdditionalMetadata[] = [];
+
+  /**
+   * The XML2JS Builder which builds the EML string
+   *
+   * @type {xml2js.Builder}
+   * @memberof EmlPackage
+   */
+  _xml2jsBuilder: xml2js.Builder;
+
+  constructor(options: EmlPackageOptions) {
+    this.packageId = options.packageId;
+
+    this._xml2jsBuilder = new xml2js.Builder({ renderOpts: { pretty: false } });
+  }
+
+  /**
+   * Sets the EML data field for the EML package
+   *
+   * @param {Record<string, any>} emlMetadata
+   * @return {*}
+   * @memberof EmlPackage
+   */
+  withEml(emlMetadata: Record<string, any>): EmlPackage {
+    this._emlMetadata = emlMetadata;
+
+    return this;
+  }
+
+  /**
+   * Sets the Dataset data field for the EML package
+   *
+   * @param {Record<string, any>} datasetMetadata
+   * @return {*}
+   * @memberof EmlPackage
+   */
+  withDataset(datasetMetadata: Record<string, any>): EmlPackage {
+    this._datasetMetadata = datasetMetadata;
+
+    return this;
+  }
+
+  /**
+   * Sets the Dataset Project data field for the EML package
+   *
+   * @param {Record<string, any>} projectMetadata
+   * @return {*}
+   * @memberof EmlPackage
+   */
+  withProject(projectMetadata: Record<string, any>): EmlPackage {
+    this._projectMetadata = projectMetadata;
+
+    return this;
+  }
+
+  /**
+   * Appends Additional Metadata fields on the EML package
+   *
+   * @param {AdditionalMetadata[]} additionalMetadata
+   * @return {*}
+   * @memberof EmlPackage
+   */
+  withAdditionalMetadata(additionalMetadata: AdditionalMetadata[]): EmlPackage {
+    additionalMetadata.forEach((meta) => this._additionalMetadata.push(meta));
+
+    return this;
+  }
+
+  /**
+   * Appends Related Project fields on the EML package
+   *
+   * @param {Record<string, any>[]} relatedProjects
+   * @return {*}
+   * @memberof EmlPackage
+   */
+  withRelatedProjects(relatedProjects: Record<string, any>[]): EmlPackage {
+    relatedProjects.forEach((project) => this._relatedProjects.push(project));
+
+    return this;
+  }
+
+  /**
+   * Compiles the EML package
+   *
+   * @return {*}  {EmlPackage}
+   * @memberof EmlPackage
+   */
+  build(): EmlPackage {
+    if (this._data) {
+      // Support subsequent compilations
+      this._data = {};
+    }
+
+    // Add project metadata to dataset
+    if (this._projectMetadata) {
+      if (!this._datasetMetadata) {
+        throw new Error("Can't build Project EML without first building dataset EML.");
+      }
+
+      this._datasetMetadata.project = this._projectMetadata;
+    }
+
+    // Add related projects metadata to project
+    if (this._relatedProjects.length) {
+      if (!this._datasetMetadata?.project) {
+        throw new Error("Can't build Project EML without first building Dataset Project EML.");
+      } else if (!this._datasetMetadata) {
+        throw new Error("Can't build Related Project EML without first building dataset EML.");
+      }
+
+      this._datasetMetadata.project.relatedProject = this._relatedProjects;
+    }
+
+    jsonpatch.applyOperation(this._data, {
+      op: 'add',
+      path: '/eml:eml',
+      value: this._emlMetadata
+    });
+
+    jsonpatch.applyOperation(this._data, {
+      op: 'add',
+      path: '/eml:eml/dataset',
+      value: this._datasetMetadata
+    });
+
+    jsonpatch.applyOperation(this._data, {
+      op: 'add',
+      path: '/eml:eml/additionalMetadata',
+      value: this._additionalMetadata
+    });
+
+    return this;
+  }
+
+  /**
+   * Returns the EML package as an EML-compliant XML string.
+   *
+   * @return {*}  {string}
+   * @memberof EmlPackage
+   */
+  toString(): string {
+    return this._xml2jsBuilder.buildObject(this._data);
+  }
+
+  /**
+   * Returns the EML as a JSON object
+   *
+   * @return {*}  {Record<string, any>}
+   * @memberof EmlPackage
+   */
+  toJson(): Record<string, any> {
+    return this._data;
+  }
+}
+
+/**
+ * Service to produce Ecological Metadata Language (EML) data for projects and surveys.
  *
  * @see https://eml.ecoinformatics.org for EML specification
  * @see https://knb.ecoinformatics.org/emlparser/ for an online EML validator.
@@ -87,71 +281,129 @@ export type BuildProjectEMLOptions = {
  * @extends {DBService}
  */
 export class EmlService extends DBService {
-  data: Record<string, unknown> = {};
+  _projectService: ProjectService;
+  _surveyService: SurveyService;
+  _codeService: CodeService;
 
-  _packageId: string | undefined;
+  _constants: EmlDbConstants = DEFAULT_DB_CONSTANTS;
 
-  projectId: number;
-  surveyIds: number[] | undefined = undefined;
+  _codes: IAllCodeSets | null;
 
-  projectService: ProjectService;
-  surveyService: SurveyService;
-  codeService: CodeService;
-
-  cache: Cache = {};
-
-  constants: EMLDBConstants = DEFAULT_DB_CONSTANTS;
-
-  xml2jsBuilder: xml2js.Builder;
-
-  includeSensitiveData = false;
-
-  constructor(options: { projectId: number; packageId?: string }, connection: IDBConnection) {
+  constructor(connection: IDBConnection) {
     super(connection);
 
-    this._packageId = options.packageId;
-
-    this.projectId = options.projectId;
-
-    this.projectService = new ProjectService(this.connection);
-    this.surveyService = new SurveyService(this.connection);
-    this.codeService = new CodeService(this.connection);
-
-    this.xml2jsBuilder = new xml2js.Builder({ renderOpts: { pretty: false } });
+    this._projectService = new ProjectService(this.connection);
+    this._surveyService = new SurveyService(this.connection);
+    this._codeService = new CodeService(this.connection);
+    this._codes = null;
   }
 
   /**
-   * Compiles and returns the project metadata as an Ecological Metadata Language (EML) compliant XML string.
+   * Produces an EML package representing the project with the given project ID
    *
-   * @param {BuildProjectEMLOptions} [options]
-   * @return {*}  {Promise<string>}
+   * @param {BuildProjectEmlOptions} options
+   * @return {*}  {Promise<EmlString>}
    * @memberof EmlService
    */
-  async buildProjectEml(options?: BuildProjectEMLOptions): Promise<string> {
-    this.includeSensitiveData = options?.includeSensitiveData || false;
+  async buildProjectEmlPackage(options: BuildProjectEmlOptions): Promise<EmlPackage> {
+    const { projectId } = options;
+    await this.loadEmlDbConstants();
 
-    this.surveyIds = options?.surveyIds || [];
+    const projectData = await this._projectService.getProjectById(projectId);
+    const packageId = projectData.project.uuid;
 
-    await this.loadProjectData();
-    await this.loadSurveyData();
-    await this.loadEMLDBConstants();
-    await this.loadCodes();
+    const surveysData = await this._surveyService.getSurveysByProjectId(projectId);
 
-    this.buildEMLSection();
-    this.buildAccessSection();
-    await this.buildDatasetSection();
-    await this.buildAdditionalMetadataSection();
+    const emlPackage = new EmlPackage({ packageId });
 
-    return this.xml2jsBuilder.buildObject(this.data);
+    return (
+      emlPackage
+        // Build EML field
+        .withEml(this._buildEmlSection(packageId))
+
+        // Build EML->Dataset field
+        .withDataset(this._buildEmlDatasetSection(packageId, projectData))
+
+        // Build EML->Dataset->Project field
+        .withProject(this._buildProjectEmlProjectSection(projectData))
+
+        // Build EML->Dataset->Project->AdditionalMetadata field
+        .withAdditionalMetadata(await this._getProjectAdditionalMetadata(projectData))
+        .withAdditionalMetadata(this._getSurveyAdditionalMetadata(surveysData))
+
+        // Build EML->Dataset->Project->RelatedProject field
+        .withRelatedProjects(await this._buildAllSurveyEmlProjectSections(surveysData))
+
+        // Compile the EML package
+        .build()
+    );
   }
 
-  async loadEMLDBConstants() {
+  /**
+   * Produces an EML package representing the survey with the given survey ID
+   *
+   * @param {BuildSurveyEmlOptions} options
+   * @return {*}  {Promise<EmlString>}
+   * @memberof EmlService
+   */
+  async buildSurveyEmlPackage(options: BuildSurveyEmlOptions): Promise<EmlPackage> {
+    const { surveyId } = options;
+    await this.loadEmlDbConstants();
+
+    const surveyData = await this._surveyService.getSurveyById(surveyId);
+    const packageId = surveyData.survey_details.uuid;
+
+    const projectId = surveyData.survey_details.project_id;
+    const projectData = await this._projectService.getProjectById(projectId);
+
+    const emlPackage = new EmlPackage({ packageId });
+
+    return (
+      emlPackage
+        // Build EML field
+        .withEml(this._buildEmlSection(packageId))
+
+        // Build EML->Dataset field
+        .withDataset(this._buildEmlDatasetSection(packageId, projectData))
+
+        // Build EML->Dataset->Project field
+        .withProject(await this._buildSurveyEmlProjectSection(surveyData))
+
+        // Build EML->Dataset->Project->AdditionalMetadata field
+        .withAdditionalMetadata(await this._getProjectAdditionalMetadata(projectData))
+        .withAdditionalMetadata(this._getSurveyAdditionalMetadata([surveyData]))
+
+        // Build EML->Dataset->Project->RelatedProject field//
+        .withRelatedProjects([this._buildProjectEmlProjectSection(projectData)])
+
+        // Compile the EML package
+        .build()
+    );
+  }
+
+  /**
+   * Loads all codesets.
+   *
+   * @return {*}  {Promise<IAllCodeSets>}
+   * @memberof EmlService
+   */
+  async codes(): Promise<IAllCodeSets> {
+    if (!this._codes) {
+      this._codes = await this._codeService.getAllCodeSets();
+    }
+
+    return this._codes;
+  }
+
+  /**
+   * Loads constants pertaining to EML generation from the database.
+   */
+  async loadEmlDbConstants() {
     const [
       organizationUrl,
       organizationName,
       providerURL,
       securityProviderURL,
-      organizationURL,
       intellectualRights,
       taxonomicProviderURL
     ] = await Promise.all([
@@ -159,185 +411,127 @@ export class EmlService extends DBService {
       this.connection.sql<{ constant: string }>(getDbCharacterSystemMetaDataConstantSQL('ORGANIZATION_NAME_FULL')),
       this.connection.sql<{ constant: string }>(getDbCharacterSystemMetaDataConstantSQL('PROVIDER_URL')),
       this.connection.sql<{ constant: string }>(getDbCharacterSystemMetaDataConstantSQL('SECURITY_PROVIDER_URL')),
-      this.connection.sql<{ constant: string }>(getDbCharacterSystemMetaDataConstantSQL('ORGANIZATION_URL')),
       this.connection.sql<{ constant: string }>(getDbCharacterSystemMetaDataConstantSQL('INTELLECTUAL_RIGHTS')),
       this.connection.sql<{ constant: string }>(getDbCharacterSystemMetaDataConstantSQL('TAXONOMIC_PROVIDER_URL'))
     ]);
 
-    this.constants.EML_ORGANIZATION_URL = organizationUrl.rows[0].constant || NOT_SUPPLIED_CONSTANT;
-    this.constants.EML_ORGANIZATION_NAME = organizationName.rows[0].constant || NOT_SUPPLIED_CONSTANT;
-    this.constants.EML_PROVIDER_URL = providerURL.rows[0].constant || NOT_SUPPLIED_CONSTANT;
-    this.constants.EML_SECURITY_PROVIDER_URL = securityProviderURL.rows[0].constant || NOT_SUPPLIED_CONSTANT;
-    this.constants.EML_ORGANIZATION_URL = organizationURL.rows[0].constant || NOT_SUPPLIED_CONSTANT;
-    this.constants.EML_INTELLECTUAL_RIGHTS = intellectualRights.rows[0].constant || NOT_SUPPLIED_CONSTANT;
-    this.constants.EML_TAXONOMIC_PROVIDER_URL = taxonomicProviderURL.rows[0].constant || NOT_SUPPLIED_CONSTANT;
+    this._constants.EML_ORGANIZATION_URL = organizationUrl.rows[0]?.constant || NOT_SUPPLIED;
+    this._constants.EML_ORGANIZATION_NAME = organizationName.rows[0]?.constant || NOT_SUPPLIED;
+    this._constants.EML_PROVIDER_URL = providerURL.rows[0]?.constant || NOT_SUPPLIED;
+    this._constants.EML_SECURITY_PROVIDER_URL = securityProviderURL.rows[0]?.constant || NOT_SUPPLIED;
+    this._constants.EML_INTELLECTUAL_RIGHTS = intellectualRights.rows[0]?.constant || NOT_SUPPLIED;
+    this._constants.EML_TAXONOMIC_PROVIDER_URL = taxonomicProviderURL.rows[0]?.constant || NOT_SUPPLIED;
   }
 
-  get packageId(): string {
-    if (!this._packageId) {
-      return this.projectData.project.uuid;
-    }
-
-    return this._packageId;
+  /**
+   * Builds the EML section of an EML package for either a project or survey
+   *
+   * @param {string} packageId
+   * @return {*}  {Record<string, any>}
+   * @memberof EmlService
+   */
+  _buildEmlSection(packageId: string): Record<string, any> {
+    return {
+      $: {
+        packageId: `urn:uuid:${packageId}`,
+        system: EMPTY_STRING,
+        'xmlns:eml': 'https://eml.ecoinformatics.org/eml-2.2.0',
+        'xmlns:xsi': 'http://www.w3.org/2001/XMLSchema-instance',
+        'xmlns:stmml': 'http://www.xml-cml.org/schema/schema24',
+        'xsi:schemaLocation': 'https://eml.ecoinformatics.org/eml-2.2.0 xsd/eml.xsd'
+      }
+    };
   }
 
-  get codes(): IAllCodeSets {
-    if (!this.cache.codes) {
-      throw Error('Codes data was not loaded');
-    }
+  /**
+   * Builds the EML Dataset section for either a project or a survey
+   *
+   * @param {IGetProject} projectData
+   * @param {string} packageId
+   * @return {*}  {Promise<Record<string, any>>}
+   * @memberof EmlService
+   */
+  _buildEmlDatasetSection(packageId: string, projectData: IGetProject): Record<string, any> {
+    return {
+      $: { system: EMPTY_STRING, id: packageId },
+      title: projectData.project.project_name,
+      creator: this._getDatasetCreator(projectData),
 
-    return this.cache.codes;
+      // EML specification expects short ISO format
+      pubDate: this._makeEmlDateString(),
+      language: 'English',
+      contact: this._getProjectContact(projectData)
+    };
   }
 
-  async loadCodes() {
-    const allCodeSets = await this.codeService.getAllCodeSets();
-
-    this.cache.codes = allCodeSets;
-  }
-
-  get projectData(): IGetProject {
-    if (!this.cache.projectData) {
-      throw Error('Project data was not loaded');
-    }
-
-    return this.cache.projectData;
-  }
-
-  get projectAttachmentData(): GetProjectAttachmentsData | undefined {
-    return this.cache.projectAttachmentData;
-  }
-
-  get projectReportAttachmentData(): GetProjectReportAttachmentsData | undefined {
-    return this.cache.projectReportAttachmentData;
-  }
-
-  async loadProjectData() {
-    const projectData = await this.projectService.getProjectById(this.projectId);
-    const attachmentData = await this.projectService.getAttachmentsData(this.projectId);
-    const attachmentReportData = await this.projectService.getReportAttachmentsData(this.projectId);
-
-    this.cache.projectData = projectData;
-    this.cache.projectAttachmentData = attachmentData;
-    this.cache.projectReportAttachmentData = attachmentReportData;
-  }
-
-  get surveyData(): SurveyObjectWithAttachments[] {
-    if (!this.cache.surveyData) {
-      throw Error('Survey data was not loaded');
-    }
-
-    return this.cache.surveyData;
-  }
-
-  async loadSurveyData() {
-    const response = await this.surveyService.getSurveyIdsByProjectId(this.projectId);
-
-    const allSurveyIds = response.map((item) => item.id);
-
-    // if `BuildProjectEMLOptions.surveyIds` was provided then filter out any ids not in the list
-    const includedSurveyIds = allSurveyIds.filter((item) => !this.surveyIds?.length || this.surveyIds?.includes(item));
-
-    const surveyData = await this.surveyService.getSurveysByIds(includedSurveyIds);
-
-    this.cache.surveyData = surveyData;
-
-    this.cache.surveyData.forEach(
-      async (item) => (item.attachments = await this.surveyService.getAttachmentsData(item.survey_details.id))
-    );
-    this.cache.surveyData.forEach(
-      async (item) =>
-        (item.report_attachments = await this.surveyService.getReportAttachmentsData(item.survey_details.id))
-    );
-  }
-
-  buildEMLSection() {
-    jsonpatch.applyOperation(this.data, {
-      op: 'add',
-      path: '/eml:eml',
-      value: {
-        $: {
-          packageId: `urn:uuid:${this.packageId}`,
-          system: this.constants.EML_PROVIDER_URL,
-          'xmlns:eml': 'https://eml.ecoinformatics.org/eml-2.2.0',
-          'xmlns:xsi': 'http://www.w3.org/2001/XMLSchema-instance',
-          'xmlns:stmml': 'http://www.xml-cml.org/schema/schema24',
-          'xsi:schemaLocation': 'https://eml.ecoinformatics.org/eml-2.2.0 xsd/eml.xsd'
+  /**
+   * Builds the EML Project section for the given project data
+   *
+   * @param {IGetProject} projectData
+   * @return {*}  {Record<string, any>}
+   * @memberof EmlService
+   */
+  _buildProjectEmlProjectSection(projectData: IGetProject): Record<string, any> {
+    return {
+      $: { id: projectData.project.uuid, system: EMPTY_STRING },
+      title: projectData.project.project_name,
+      personnel: this._getProjectPersonnel(projectData),
+      abstract: {
+        section: [
+          { title: 'Objectives', para: projectData.objectives.objectives },
+          { title: 'Caveats', para: projectData.objectives.caveats || NOT_SUPPLIED }
+        ]
+      },
+      ...this._getProjectFundingSources(projectData),
+      studyAreaDescription: {
+        coverage: {
+          ...this._getProjectGeographicCoverage(projectData),
+          temporalCoverage: this._getProjectTemporalCoverage(projectData)
         }
       }
-    });
+    };
   }
 
-  buildAccessSection() {
-    jsonpatch.applyOperation(this.data, {
-      op: 'add',
-      path: '/eml:eml/access',
-      value: {
-        $: { authSystem: this.constants.EML_SECURITY_PROVIDER_URL, order: 'allowFirst' },
-        allow: { principal: 'public', permission: 'read' }
-      }
-    });
+  /**
+   * Generates additional metadata fields for the given array of surveys
+   *
+   * @param {SurveyObjectWithAttachments[]} _surveysData
+   * @return {*}  {AdditionalMetadata[]}
+   * @memberof EmlService
+   */
+  _getSurveyAdditionalMetadata(_surveysData: SurveyObject[]): AdditionalMetadata[] {
+    return [];
   }
 
-  async buildDatasetSection(options?: { datasetTitle?: string }) {
-    jsonpatch.applyOperation(this.data, {
-      op: 'add',
-      path: '/eml:eml/dataset',
-      value: {
-        $: { system: this.constants.EML_PROVIDER_URL, id: this.packageId },
-        title: options?.datasetTitle || this.projectData.project.project_name,
-        creator: this.getDatasetCreator(),
-        metadataProvider: {
-          organizationName: this.constants.EML_ORGANIZATION_NAME,
-          onlineUrl: this.constants.EML_ORGANIZATION_URL
-        },
-        //EML specification expects short ISO format
-        pubDate: new Date().toISOString().substring(0, 10),
-        language: 'English',
-        contact: this.getProjectContact(),
-        project: {
-          $: { id: this.projectData.project.uuid, system: this.constants.EML_PROVIDER_URL },
-          title: this.projectData.project.project_name,
-          personnel: this.getProjectPersonnel(),
-          abstract: {
-            section: [
-              { title: 'Objectives', para: this.projectData.objectives.objectives },
-              { title: 'Caveats', para: this.projectData.objectives.caveats || NOT_SUPPLIED_CONSTANT }
-            ]
-          },
-          ...this.getProjectFundingSources(),
-          studyAreaDescription: {
-            coverage: {
-              ...this.getGeographicCoverageEML(),
-              temporalCoverage: this.getTemporalCoverageEML()
-            }
-          },
-          relatedProject: await this.getSurveysEML()
-        }
-      }
-    });
-  }
+  /**
+   * Generates additional metadata fields for the given project
+   *
+   * @param {IGetProject} projectData
+   * @return {*}  {Promise<AdditionalMetadata[]>}
+   * @memberof EmlService
+   */
+  async _getProjectAdditionalMetadata(projectData: IGetProject): Promise<AdditionalMetadata[]> {
+    const additionalMetadata: AdditionalMetadata[] = [];
+    const codes = await this.codes();
 
-  async buildAdditionalMetadataSection() {
-    const data: { describes: any; metadata: any }[] = [];
-
-    if (this.projectData.project.project_type) {
-      data.push({
-        describes: this.projectData.project.uuid,
+    if (projectData.project.project_type) {
+      additionalMetadata.push({
+        describes: projectData.project.uuid,
         metadata: {
           projectTypes: {
-            projectType: this.codes.project_type.find((code) => this.projectData.project.project_type === code.id)?.name
+            projectType: codes.project_type.find((code) => projectData.project.project_type === code.id)?.name
           }
         }
       });
     }
 
-    if (this.projectData.project.project_activities.length) {
-      const names = this.codes.activity
-        .filter((item) => this.projectData.project.project_activities.includes(item.id))
-        .map((item) => item.name);
+    if (projectData.project.project_activities.length) {
+      const names = codes.activity
+        .filter((code) => projectData.project.project_activities.includes(code.id))
+        .map((code) => code.name);
 
-      data.push({
-        describes: this.projectData.project.uuid,
+      additionalMetadata.push({
+        describes: projectData.project.uuid,
         metadata: {
           projectActivities: {
             projectActivity: names.map((item) => {
@@ -348,23 +542,23 @@ export class EmlService extends DBService {
       });
     }
 
-    if (this.projectData.iucn.classificationDetails.length) {
-      const iucnNames = this.projectData.iucn.classificationDetails.map((iucnItem) => {
+    if (projectData.iucn.classificationDetails.length) {
+      const iucnNames = projectData.iucn.classificationDetails.map((iucnItem) => {
         return {
-          level_1_name: this.codes.iucn_conservation_action_level_1_classification.find(
+          level_1_name: codes.iucn_conservation_action_level_1_classification.find(
             (code) => iucnItem.classification === code.id
           )?.name,
-          level_2_name: this.codes.iucn_conservation_action_level_2_subclassification.find(
+          level_2_name: codes.iucn_conservation_action_level_2_subclassification.find(
             (code) => iucnItem.subClassification1 === code.id
           )?.name,
-          level_3_name: this.codes.iucn_conservation_action_level_3_subclassification.find(
+          level_3_name: codes.iucn_conservation_action_level_3_subclassification.find(
             (code) => iucnItem.subClassification2 === code.id
           )?.name
         };
       });
 
-      data.push({
-        describes: this.projectData.project.uuid,
+      additionalMetadata.push({
+        describes: projectData.project.uuid,
         metadata: {
           IUCNConservationActions: {
             IUCNConservationAction: iucnNames.map((item) => {
@@ -379,12 +573,12 @@ export class EmlService extends DBService {
       });
     }
 
-    if (this.projectData.partnerships.stakeholder_partnerships?.length) {
-      data.push({
-        describes: this.projectData.project.uuid,
+    if (projectData.partnerships.stakeholder_partnerships?.length) {
+      additionalMetadata.push({
+        describes: projectData.project.uuid,
         metadata: {
           stakeholderPartnerships: {
-            stakeholderPartnership: this.projectData.partnerships.stakeholder_partnerships.map((item) => {
+            stakeholderPartnership: projectData.partnerships.stakeholder_partnerships.map((item) => {
               return { name: item };
             })
           }
@@ -392,179 +586,59 @@ export class EmlService extends DBService {
       });
     }
 
-    if (this.projectData.partnerships.indigenous_partnerships.length) {
-      const names = this.codes.first_nations
-        .filter((item) => this.projectData.partnerships.indigenous_partnerships.includes(item.id))
-        .map((item) => item.name);
+    if (projectData.partnerships.indigenous_partnerships.length) {
+      const names = codes.first_nations
+        .filter((code) => projectData.partnerships.indigenous_partnerships.includes(code.id))
+        .map((code) => code.name);
 
-      data.push({
-        describes: this.projectData.project.uuid,
+      additionalMetadata.push({
+        describes: projectData.project.uuid,
         metadata: {
           firstNationPartnerships: {
-            firstNationPartnership: names.map((item) => {
-              return { name: item };
+            firstNationPartnership: names.map((name) => {
+              return { name };
             })
           }
         }
       });
     }
 
-    // TODO add back when survey supports permits
-    // if (this.includeSensitiveData) {
-    //   // only include permits if sensitive data is enabled
-    //   if (this.projectData.permit.permits?.length) {
-    //     data.push({
-    //       describes: this.projectData.project.uuid,
-    //       metadata: {
-    //         permits: {
-    //           permit: this.projectData.permit.permits.map((item) => {
-    //             return { permitType: item.permit_type, permitNumber: item.permit_number };
-    //           })
-    //         }
-    //       }
-    //     });
-    //   }
-    // }
-
-    // TODO add back when survey supports permits
-    // if (this.includeSensitiveData) {
-    //   // only include permits if sensitive data is enabled
-    //   this.surveyData.forEach((item) => {
-    //     if (item.permit.permit_number && item.permit.permit_type) {
-    //       data.push({
-    //         describes: item.survey_details.uuid,
-    //         metadata: {
-    //           permits: {
-    //             permit: { permitType: item.permit.permit_type, permitNumber: item.permit.permit_number }
-    //           }
-    //         }
-    //       });
-    //     }
-    //   });
-    // }
-
-    this.surveyData.forEach((item) => {
-      if (item.proprietor) {
-        data.push({
-          describes: item.survey_details.uuid,
-          metadata: {
-            proprietaryDataCategory: item.proprietor.proprietor_type_name
-          }
-        });
-
-        data.push({
-          describes: item.survey_details.uuid,
-          metadata: {
-            proprietorName: item.proprietor.proprietor_name
-          }
-        });
-
-        data.push({
-          describes: item.survey_details.uuid,
-          metadata: {
-            proprietaryDataCategoryRationale: item.proprietor.category_rationale
-          }
-        });
-
-        data.push({
-          describes: item.survey_details.uuid,
-          metadata: {
-            dataSharingAgreementRequired: item.proprietor.disa_required
-          }
-        });
-      }
-    });
-
-    if (this.projectAttachmentData?.attachmentDetails.length) {
-      data.push({
-        describes: this.projectData.project.uuid,
-        metadata: {
-          projectAttachments: {
-            projectAttachment: this.projectAttachmentData.attachmentDetails.map((item) => {
-              return item;
-            })
-          }
-        }
-      });
-    }
-
-    if (this.projectReportAttachmentData?.attachmentDetails.length) {
-      data.push({
-        describes: this.projectData.project.uuid,
-        metadata: {
-          projectReportAttachments: {
-            projectReportAttachment: this.projectReportAttachmentData.attachmentDetails.map((item) => {
-              return item;
-            })
-          }
-        }
-      });
-    }
-
-    this.surveyData.forEach((item) => {
-      if (item.attachments?.attachmentDetails.length) {
-        data.push({
-          describes: item.survey_details.uuid,
-          metadata: {
-            surveyAttachments: {
-              surveyAttachment: item.attachments?.attachmentDetails.map((item) => {
-                return item;
-              })
-            }
-          }
-        });
-      }
-    });
-
-    this.surveyData.forEach((item) => {
-      if (item.report_attachments?.attachmentDetails.length) {
-        data.push({
-          describes: item.survey_details.uuid,
-          metadata: {
-            surveyReportAttachments: {
-              surveyReportAttachment: item.report_attachments?.attachmentDetails.map((item) => {
-                return item;
-              })
-            }
-          }
-        });
-      }
-    });
-
-    jsonpatch.applyOperation(this.data, {
-      op: 'add',
-      path: '/eml:eml/additionalMetadata',
-      value: data
-    });
+    return additionalMetadata;
   }
 
-  getDatasetCreator(): Record<any, any> {
-    const primaryContact = this.projectData.coordinator;
+  /**
+   * Creates an object representing the dataset creator from the given projectData.
+   *
+   * @param {IGetProject} projectData
+   * @return {*}  {Record<string, any>}
+   * @memberof EmlService
+   */
+  _getDatasetCreator(projectData: IGetProject): Record<string, any> {
+    const primaryContact = projectData.coordinator;
 
-    if (JSON.parse(primaryContact.share_contact_details) || this.includeSensitiveData) {
-      // return full details of the primary contact if it is public or sensitive data is enabled.
+    if (JSON.parse(primaryContact.share_contact_details)) {
+      // return full details of the primary contact iff it is public.
       return {
         organizationName: primaryContact.coordinator_agency,
         electronicMailAddress: primaryContact.email_address
       };
     }
 
-    // return partial details of the primary contact
     return { organizationName: primaryContact.coordinator_agency };
   }
 
   /**
-   * Get a primary contact for the project.
+   * Creates an object representing the primary contact for the given project.
    *
-   * @
-   * @return {*}  {Record<any, any>}
+   * @param {IGetProject} projectData
+   * @return {*}  {Record<string, any>}
    * @memberof EmlService
    */
-  getProjectContact(): Record<any, any> {
-    const primaryContact = this.projectData.coordinator;
+  _getProjectContact(projectData: IGetProject): Record<string, any> {
+    const primaryContact = projectData.coordinator;
 
-    if (JSON.parse(primaryContact.share_contact_details) || this.includeSensitiveData) {
-      // return full details of the primary contact if it is public or sensitive data is enabled.
+    if (JSON.parse(primaryContact.share_contact_details)) {
+      // return full details of the primary contact iff it is public
       return {
         individualName: { givenName: primaryContact.first_name, surName: primaryContact.last_name },
         organizationName: primaryContact.coordinator_agency,
@@ -572,22 +646,21 @@ export class EmlService extends DBService {
       };
     }
 
-    // return partial details of the primary contact
     return { organizationName: primaryContact.coordinator_agency };
   }
 
   /**
-   * Get all contacts for the project.
+   * Creates an object representing all contacts for the given project.
    *
-   * @
-   * @return {*}  {Record<any, any>[]}
+   * @param {IGetProject} projectData
+   * @return {*}  {Record<string, any>[]}
    * @memberof EmlService
    */
-  getProjectPersonnel(): Record<any, any>[] {
-    const primaryContact = this.projectData.coordinator;
+  _getProjectPersonnel(projectData: IGetProject): Record<string, any>[] {
+    const primaryContact = projectData.coordinator;
 
-    if (JSON.parse(primaryContact.share_contact_details) || this.includeSensitiveData) {
-      // return full details of the primary contact if it is public or sensitive data is enabled.
+    if (JSON.parse(primaryContact.share_contact_details)) {
+      // return full details of the primary contact iff it is public
       return [
         {
           individualName: { givenName: primaryContact.first_name, surName: primaryContact.last_name },
@@ -598,19 +671,17 @@ export class EmlService extends DBService {
       ];
     }
 
-    // return partial details of the primary contact
     return [{ organizationName: primaryContact.coordinator_agency }];
   }
 
   /**
-   * Get all contacts for the survey.
+   * Creates an object representing all contacts for the given survey.
    *
-   * @
-   * @param {SurveyObjectWithAttachments} surveyData
-   * @return {*}  {Record<any, any>[]}
+   * @param {SurveyObject} surveyData
+   * @return {*}  {Record<string, any>[]}
    * @memberof EmlService
    */
-  getSurveyPersonnel(surveyData: SurveyObjectWithAttachments): Record<any, any>[] {
+  _getSurveyPersonnel(surveyData: SurveyObject): Record<string, any>[] {
     return [
       {
         individualName: {
@@ -622,23 +693,30 @@ export class EmlService extends DBService {
     ];
   }
 
-  getProjectFundingSources(): Record<any, any> {
-    if (!this.projectData.funding.fundingSources.length) {
+  /**
+   * Creates an object representing all funding sources for the given project.
+   *
+   * @param {IGetProject} projectData
+   * @return {*}  {Record<string, any>}
+   * @memberof EmlService
+   */
+  _getProjectFundingSources(projectData: IGetProject): Record<string, any> {
+    if (!projectData.funding.fundingSources.length) {
       return {};
     }
 
     return {
       funding: {
-        section: this.projectData.funding.fundingSources.map((item) => {
+        section: projectData.funding.fundingSources.map((fundingSource) => {
           return {
             title: 'Agency Name',
-            para: item.agency_name,
+            para: fundingSource.agency_name,
             section: [
-              { title: 'Funding Agency Project ID', para: item.agency_project_id },
-              { title: 'Investment Action/Category', para: item.investment_action_category_name },
-              { title: 'Funding Amount', para: item.funding_amount },
-              { title: 'Funding Start Date', para: new Date(item.start_date).toISOString().split('T')[0] },
-              { title: 'Funding End Date', para: new Date(item.end_date).toISOString().split('T')[0] }
+              { title: 'Funding Agency Project ID', para: fundingSource.agency_project_id },
+              { title: 'Investment Action/Category', para: fundingSource.investment_action_category_name },
+              { title: 'Funding Amount', para: fundingSource.funding_amount },
+              { title: 'Funding Start Date', para: this._makeEmlDateString(fundingSource.start_date) },
+              { title: 'Funding End Date', para: this._makeEmlDateString(fundingSource.end_date) }
             ]
           };
         })
@@ -646,23 +724,30 @@ export class EmlService extends DBService {
     };
   }
 
-  getSurveyFundingSources(surveyData: SurveyObjectWithAttachments): Record<any, any> {
+  /**
+   * Creates an object representing all funding sources for the given survey.
+   *
+   * @param {SurveyObject} surveyData
+   * @return {*}  {Record<string, any>}
+   * @memberof EmlService
+   */
+  _getSurveyFundingSources(surveyData: SurveyObject): Record<string, any> {
     if (!surveyData.funding.funding_sources.length) {
       return {};
     }
 
     return {
       funding: {
-        section: surveyData.funding.funding_sources.map((item) => {
+        section: surveyData.funding.funding_sources.map((fundingSource) => {
           return {
             title: 'Agency Name',
-            para: item.agency_name,
+            para: fundingSource.agency_name,
             section: [
-              { title: 'Funding Agency Project ID', para: item.funding_source_project_id },
-              { title: 'Investment Action/Category', para: item.investment_action_category_name },
-              { title: 'Funding Amount', para: item.funding_amount },
-              { title: 'Funding Start Date', para: new Date(item.funding_start_date).toISOString().split('T')[0] },
-              { title: 'Funding End Date', para: new Date(item.funding_end_date).toISOString().split('T')[0] }
+              { title: 'Funding Agency Project ID', para: fundingSource.funding_source_project_id },
+              { title: 'Investment Action/Category', para: fundingSource.investment_action_category_name },
+              { title: 'Funding Amount', para: fundingSource.funding_amount },
+              { title: 'Funding Start Date', para: this._makeEmlDateString(fundingSource.funding_start_date) },
+              { title: 'Funding End Date', para: this._makeEmlDateString(fundingSource.funding_end_date) }
             ]
           };
         })
@@ -670,27 +755,39 @@ export class EmlService extends DBService {
     };
   }
 
-  getTemporalCoverageEML(): Record<any, any> {
-    if (!this.projectData.project.end_date) {
-      // no end date
+  /**
+   * Creates an object representing temporal coverage for the given project
+   *
+   * @param {IGetProject} projectData
+   * @return {*}  {Record<string, any>}
+   * @memberof EmlService
+   */
+  _getProjectTemporalCoverage(projectData: IGetProject): Record<string, any> {
+    if (!projectData.project.end_date) {
       return {
         singleDateTime: {
-          calendarDate: this.projectData.project.start_date
+          calendarDate: projectData.project.start_date
         }
       };
     }
 
     return {
       rangeOfDates: {
-        beginDate: { calendarDate: this.projectData.project.start_date },
-        endDate: { calendarDate: this.projectData.project.end_date }
+        beginDate: { calendarDate: projectData.project.start_date },
+        endDate: { calendarDate: projectData.project.end_date }
       }
     };
   }
 
-  getSurveyTemporalCoverageEML(surveyData: SurveyObjectWithAttachments): Record<any, any> {
+  /**
+   * Creates an object representing temporal coverage for the given survey
+   *
+   * @param {SurveyObject} surveyData
+   * @return {*}  {Record<string, any>}
+   * @memberof EmlService
+   */
+  _getSurveyTemporalCoverage(surveyData: SurveyObject): Record<string, any> {
     if (!surveyData.survey_details.end_date) {
-      // no end date
       return {
         singleDateTime: {
           calendarDate: surveyData.survey_details.start_date
@@ -706,31 +803,50 @@ export class EmlService extends DBService {
     };
   }
 
-  getGeographicCoverageEML(): Record<any, any> {
-    if (!this.projectData.location.geometry) {
-      return {};
-    }
+  /**
+   * Converts a Date or string into a date string compatible with EML.
+   *
+   * @param {Date | string} [date]
+   * @return {*}  {string}
+   * @memberof EmlService
+   */
+  _makeEmlDateString(date?: Date | string): string {
+    return (date ? new Date(date) : new Date()).toISOString().split('T')[0];
+  }
 
-    const polygonFeatures = this.projectData.location.geometry?.map((item) => {
-      if (item.geometry.type === 'Point' && item.properties?.radius) {
-        return circle(item.geometry, item.properties.radius, { units: 'meters' });
+  /**
+   * Creates an array of polygon features for the given project or survey geometry.
+   *
+   * @param {Feature<Geometry, GeoJsonProperties>[]} geometry
+   * @return {*}  {Feature<Geometry, GeoJsonProperties>[]}
+   * @memberof EmlService
+   */
+  _makePolygonFeatures(geometry: Feature<Geometry, GeoJsonProperties>[]): Feature<Geometry, GeoJsonProperties>[] {
+    return geometry.map((feature) => {
+      if (feature.geometry.type === 'Point' && feature.properties?.radius) {
+        return circle(feature.geometry, feature.properties.radius, { units: 'meters' });
       }
 
-      return item;
+      return feature;
     });
+  }
 
-    const projectBoundingBox = bbox(featureCollection(polygonFeatures));
-
-    const datasetGPolygons: Record<any, any>[] = [];
-
-    polygonFeatures.forEach((feature) => {
+  /**
+   * Creates a set of datasetGPoloygons for the given project or survey
+   *
+   * @param {Feature<Geometry, GeoJsonProperties>[]} polygonFeatures
+   * @return {*}  {Record<string, any>[]}
+   * @memberof EmlService
+   */
+  _makeDatasetGPolygons(polygonFeatures: Feature<Geometry, GeoJsonProperties>[]): Record<string, any>[] {
+    return polygonFeatures.map((feature) => {
       const featureCoords: number[][] = [];
 
       coordEach(feature as AllGeoJSON, (currentCoord) => {
         featureCoords.push(currentCoord);
       });
 
-      datasetGPolygons.push({
+      return {
         datasetGPolygonOuterGRing: [
           {
             gRingPoint: featureCoords.map((coords) => {
@@ -738,12 +854,29 @@ export class EmlService extends DBService {
             })
           }
         ]
-      });
+      };
     });
+  }
+
+  /**
+   * Creates an object representing geographic coverage pertaining to the given project
+   *
+   * @param {IGetProject} projectData
+   * @return {*}  {Record<string, any>}
+   * @memberof EmlService
+   */
+  _getProjectGeographicCoverage(projectData: IGetProject): Record<string, any> {
+    if (!projectData.location.geometry) {
+      return {};
+    }
+
+    const polygonFeatures = this._makePolygonFeatures(projectData.location.geometry);
+    const datasetGPolygons = this._makeDatasetGPolygons(polygonFeatures);
+    const projectBoundingBox = bbox(featureCollection(polygonFeatures));
 
     return {
       geographicCoverage: {
-        geographicDescription: this.projectData.location.location_description || NOT_SUPPLIED_CONSTANT,
+        geographicDescription: projectData.location.location_description || NOT_SUPPLIED,
         boundingCoordinates: {
           westBoundingCoordinate: projectBoundingBox[0],
           eastBoundingCoordinate: projectBoundingBox[2],
@@ -755,101 +888,100 @@ export class EmlService extends DBService {
     };
   }
 
-  getSurveyGeographicCoverageEML(surveyData: SurveyObjectWithAttachments): Record<any, any> {
+  /**
+   * Creates an object representing geographic coverage pertaining to the given survey
+   *
+   * @param {SurveyObject} surveyData
+   * @return {*}  {Record<string, any>}
+   * @memberof EmlService
+   */
+  _getSurveyGeographicCoverage(surveyData: SurveyObject): Record<string, any> {
     if (!surveyData.location.geometry?.length) {
       return {};
     }
 
-    const polygonFeatures = surveyData.location.geometry?.map((item) => {
-      if (item.geometry.type === 'Point' && item.properties?.radius) {
-        return circle(item.geometry, item.properties.radius, { units: 'meters' });
-      }
-
-      return item;
-    });
-
-    const datasetGPolygons: Record<any, any>[] = [];
-
-    polygonFeatures.forEach((feature) => {
-      const featureCoords: number[][] = [];
-
-      coordEach(feature as AllGeoJSON, (currentCoord) => {
-        featureCoords.push(currentCoord);
-      });
-
-      datasetGPolygons.push({
-        datasetGPolygonOuterGRing: [
-          {
-            gRingPoint: featureCoords.map((coords) => {
-              return { gRingLatitude: coords[1], gRingLongitude: coords[0] };
-            })
-          }
-        ]
-      });
-    });
-
-    const projectBoundingBox = bbox(featureCollection(polygonFeatures));
+    const polygonFeatures = this._makePolygonFeatures(surveyData.location.geometry);
+    const datasetGPolygons = this._makeDatasetGPolygons(polygonFeatures);
+    const surveyBoundingBox = bbox(featureCollection(polygonFeatures));
 
     return {
       geographicCoverage: {
         geographicDescription: surveyData.location.survey_area_name,
         boundingCoordinates: {
-          westBoundingCoordinate: projectBoundingBox[0],
-          eastBoundingCoordinate: projectBoundingBox[2],
-          northBoundingCoordinate: projectBoundingBox[3],
-          southBoundingCoordinate: projectBoundingBox[1]
+          westBoundingCoordinate: surveyBoundingBox[0],
+          eastBoundingCoordinate: surveyBoundingBox[2],
+          northBoundingCoordinate: surveyBoundingBox[3],
+          southBoundingCoordinate: surveyBoundingBox[1]
         },
         datasetGPolygon: datasetGPolygons
       }
     };
   }
 
-  async getSurveyFocalTaxonomicCoverage(surveyData: SurveyObjectWithAttachments): Promise<Record<any, any>> {
+  /**
+   * Retrieves taxonomic coverage details for the given survey's focal species.
+   *
+   * @param {SurveyObject} surveyData
+   * @return {*}  {Promise<Record<string, any>>}
+   * @memberof EmlService
+   */
+  async _getSurveyFocalTaxonomicCoverage(surveyData: SurveyObject): Promise<Record<string, any>> {
     const taxonomySearchService = new TaxonomyService();
 
-    // TODO include ancillary_species alongside focal_species?
     const response = await taxonomySearchService.getTaxonomyFromIds(surveyData.species.focal_species);
 
-    const taxonomicClassifications: Record<string, any>[] = [];
+    const taxonomicClassification: Record<string, any>[] = [];
 
-    response.forEach((item) => {
-      const taxonRecord = item as Record<string, any>;
+    response.forEach((taxonResult: SearchHit<ITaxonomySource>) => {
+      const { _source } = taxonResult;
 
-      taxonomicClassifications.push({
-        taxonRankName: taxonRecord.tty_name,
-        taxonRankValue: `${taxonRecord.unit_name1} ${taxonRecord.unit_name2} ${taxonRecord.unit_name3}`,
-        commonName: taxonRecord.english_name,
-        taxonId: { $: { provider: this.constants.EML_TAXONOMIC_PROVIDER_URL }, _: taxonRecord.code }
-      });
+      if (_source) {
+        taxonomicClassification.push({
+          taxonRankName: _source.tty_name,
+          taxonRankValue: [_source.unit_name1, _source.unit_name2, _source.unit_name3].filter(Boolean).join(' '),
+          commonName: _source.english_name,
+          taxonId: {
+            $: { provider: EMPTY_STRING },
+            _: taxonResult._id
+          }
+        });
+      }
     });
 
-    return { taxonomicClassification: taxonomicClassifications };
+    return { taxonomicClassification };
   }
 
-  async getSurveyDesignDescription(surveyData: SurveyObjectWithAttachments): Promise<Record<any, any>> {
+  /**
+   * Creates an object representing the design description for the given survey
+   *
+   * @param {SurveyObject} surveyData
+   * @return {*}  {Promise<Record<string, any>>}
+   * @memberof EmlService
+   */
+  async _getSurveyDesignDescription(survey: SurveyObject): Promise<Record<string, any>> {
+    const codes = await this.codes();
+
     return {
       description: {
         section: [
           {
             title: 'Field Method',
-            para: this.codes.field_methods.find(
-              (code) => code.id === surveyData.purpose_and_methodology.field_method_id
-            )?.name
+            para: codes.field_methods.find((code) => code.id === survey.purpose_and_methodology.field_method_id)?.name
           },
           {
             title: 'Ecological Season',
-            para: this.codes.ecological_seasons.find(
-              (code) => code.id === surveyData.purpose_and_methodology.ecological_season_id
+            para: codes.ecological_seasons.find(
+              (code) => code.id === survey.purpose_and_methodology.ecological_season_id
             )?.name
           },
           {
             title: 'Vantage Codes',
             para: {
               itemizedlist: {
-                listitem: this.codes.vantage_codes
-                  .filter((code) => surveyData.purpose_and_methodology.vantage_code_ids.includes(code.id))
-                  .map((item) => {
-                    return { para: item.name };
+                listitem: codes.vantage_codes
+                  .filter((code) => survey.purpose_and_methodology.vantage_code_ids.includes(code.id))
+                  .map((code) => {
+                    return { para: code.name };
                   })
               }
             }
@@ -859,44 +991,54 @@ export class EmlService extends DBService {
     };
   }
 
-  async getSurveysEML(): Promise<Record<any, any>[]> {
-    const promises: Promise<Record<any, any>>[] = [];
-
-    this.surveyData.forEach((item) => {
-      promises.push(this.getSurveyEML(item));
-    });
-
-    return Promise.all(promises);
+  /**
+   * Builds the EML Project section for the given array of surveys
+   *
+   * @param {SurveyObjectWithAttachments[]} surveys
+   * @return {*}  {Promise<Record<string, any>[]>}
+   * @memberof EmlService
+   */
+  async _buildAllSurveyEmlProjectSections(surveysData: SurveyObject[]): Promise<Record<string, any>[]> {
+    return Promise.all(surveysData.map(async (survey) => await this._buildSurveyEmlProjectSection(survey)));
   }
 
-  async getSurveyEML(surveyData: SurveyObjectWithAttachments): Promise<Record<any, any>> {
+  /**
+   * Builds the EML Project section for the given survey
+   *
+   * @param {SurveyObject} surveyData
+   * @return {*}  {Promise<Record<string, any>>}
+   * @memberof EmlService
+   */
+  async _buildSurveyEmlProjectSection(surveyData: SurveyObject): Promise<Record<string, any>> {
+    const codes = await this.codes();
+
     return {
-      $: { id: surveyData.survey_details.uuid, system: this.constants.EML_PROVIDER_URL },
+      $: { id: surveyData.survey_details.uuid, system: EMPTY_STRING },
       title: surveyData.survey_details.survey_name,
-      personnel: this.getSurveyPersonnel(surveyData),
+      personnel: this._getSurveyPersonnel(surveyData),
       abstract: {
         section: [
           {
             title: 'Intended Outcomes',
-            para: this.codes.intended_outcomes.find(
+            para: codes.intended_outcomes.find(
               (code) => code.id === surveyData.purpose_and_methodology.intended_outcome_id
             )?.name
           },
           {
             title: 'Additional Details',
-            para: surveyData.purpose_and_methodology.additional_details || NOT_SUPPLIED_CONSTANT
+            para: surveyData.purpose_and_methodology.additional_details || NOT_SUPPLIED
           }
         ]
       },
-      ...this.getSurveyFundingSources(surveyData),
+      ...this._getSurveyFundingSources(surveyData),
       studyAreaDescription: {
         coverage: {
-          ...this.getSurveyGeographicCoverageEML(surveyData),
-          temporalCoverage: this.getSurveyTemporalCoverageEML(surveyData),
-          taxonomicCoverage: await this.getSurveyFocalTaxonomicCoverage(surveyData)
+          ...this._getSurveyGeographicCoverage(surveyData),
+          temporalCoverage: this._getSurveyTemporalCoverage(surveyData),
+          taxonomicCoverage: await this._getSurveyFocalTaxonomicCoverage(surveyData)
         }
       },
-      designDescription: await this.getSurveyDesignDescription(surveyData)
+      designDescription: await this._getSurveyDesignDescription(surveyData)
     };
   }
 }
