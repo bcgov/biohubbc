@@ -90,7 +90,7 @@ with submission as (select *
                         , 'properties', jsonb_build_object('type', 'Occurrence', 'dwc', jsonb_build_object(
                           'type', 'PhysicalObject', 'basisOfRecord', 'Occurrence', 'datasetID', n.occurrence_submission_id, 'occurrenceID', n.occ->'occurrenceID'
                           , 'sex', n.occ->'sex', 'lifeStage', n.occ->'lifeStage', 'taxonID', n.occ->'taxonID', 'vernacularName', n.occ->'vernacularName', 'individualCount', n.occ->'individualCount'
-                          , 'eventDate', n.evn->'eventDate', 'verbatimSRS', n.evn->'verbatimSRS', 'verbatimCoordinates', n.evn->'verbatimCoordinates'
+                          , 'eventDate', n.evn->'eventDate', 'verbatimSRS', n.loc->'verbatimSRS', 'verbatimCoordinates', n.loc->'verbatimCoordinates'
                           ))))
                   )result_data
   from normal n;
