@@ -164,7 +164,15 @@ export class PlatformService extends DBService {
         throw new HTTP400('no s3File found');
       }
 
-      dwcArchiveZip.addFile(data.observations[0].inputFileName, Buffer.from(s3File.Body as Buffer));
+      const transformedTemplateZip = new AdmZip(Buffer.from(s3File.Body as Buffer));
+
+      transformedTemplateZip.getEntries().forEach((entry) => {
+        if (entry.isDirectory) {
+          return;
+        }
+
+        dwcArchiveZip.addFile(entry.name, entry.getData());
+      });
     }
 
     /**
