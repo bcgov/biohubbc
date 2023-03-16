@@ -349,7 +349,7 @@ describe('uploadObservationSubmission', () => {
     });
 
     sinon.stub(file_utils, 'scanFileForVirus').resolves(true);
-    sinon.stub(file_utils, 'uploadFileToS3').resolves({ key: 'projects/1/surveys/1/test.txt' } as any);
+    sinon.stub(file_utils, 'uploadFileToS3').resolves({ key: 'sims/projects/1/surveys/1/test.txt' } as any);
 
     const requestHandler = upload.uploadMedia();
 
