@@ -413,7 +413,11 @@ export class PlatformService extends DBService {
       }
     } catch (error) {
       // Don't fail the rest of the endpoint if submitting metadata fails
-      defaultLog.error({ label: 'platformService->submitAndPublishDwcAMetadata', message: 'error', error });
+      defaultLog.error({
+        label: 'platformService->submitProjectMetadataToBiohubAndInsertHistoryRecords',
+        message: 'error',
+        error
+      });
     }
   }
 

@@ -69,7 +69,7 @@ describe('PlatformService', () => {
 
       const platformService = new PlatformService(mockDBConnection);
 
-      sinon.stub(EmlService.prototype, 'buildProjectEmlPackage').resolves({
+      sinon.stub(EmlService.prototype, 'buildSurveyEmlPackage').resolves({
         toString: () => (undefined as unknown) as string
       } as EmlPackage);
 
@@ -93,7 +93,7 @@ describe('PlatformService', () => {
 
       const platformService = new PlatformService(mockDBConnection);
 
-      sinon.stub(EmlService.prototype, 'buildProjectEmlPackage').resolves({
+      sinon.stub(EmlService.prototype, 'buildSurveyEmlPackage').resolves({
         toString: () => 'string'
       } as EmlPackage);
 
@@ -121,7 +121,7 @@ describe('PlatformService', () => {
 
       const platformService = new PlatformService(mockDBConnection);
 
-      sinon.stub(EmlService.prototype, 'buildProjectEmlPackage').resolves({
+      sinon.stub(EmlService.prototype, 'buildSurveyEmlPackage').resolves({
         toString: () => 'string'
       } as EmlPackage);
 
@@ -150,7 +150,7 @@ describe('PlatformService', () => {
 
       const platformService = new PlatformService(mockDBConnection);
 
-      sinon.stub(EmlService.prototype, 'buildProjectEmlPackage').resolves({
+      sinon.stub(EmlService.prototype, 'buildSurveyEmlPackage').resolves({
         toString: () => 'string'
       } as EmlPackage);
 
@@ -178,7 +178,7 @@ describe('PlatformService', () => {
 
       const platformService = new PlatformService(mockDBConnection);
 
-      sinon.stub(EmlService.prototype, 'buildProjectEmlPackage').resolves({
+      sinon.stub(EmlService.prototype, 'buildSurveyEmlPackage').resolves({
         toString: () => 'string',
         packageId: 'packageId'
       } as EmlPackage);
@@ -224,7 +224,7 @@ describe('PlatformService', () => {
 
       const platformService = new PlatformService(mockDBConnection);
 
-      sinon.stub(EmlService.prototype, 'buildProjectEmlPackage').resolves({
+      sinon.stub(EmlService.prototype, 'buildSurveyEmlPackage').resolves({
         toString: () => 'string',
         packageId: 'packageId'
       } as EmlPackage);
@@ -262,7 +262,7 @@ describe('PlatformService', () => {
 
       const platformService = new PlatformService(mockDBConnection);
 
-      sinon.stub(EmlService.prototype, 'buildProjectEmlPackage').resolves({
+      sinon.stub(EmlService.prototype, 'buildSurveyEmlPackage').resolves({
         toString: () => 'string',
         packageId: 'packageId'
       } as EmlPackage);
@@ -412,7 +412,7 @@ describe('PlatformService', () => {
     });
   });
 
-  describe('submitAndPublishDwcAMetadata', () => {
+  describe('submitProjectMetadataToBiohubAndInsertHistoryRecords', () => {
     afterEach(() => {
       sinon.restore();
     });
@@ -429,32 +429,10 @@ describe('PlatformService', () => {
         .stub(HistoryPublishService.prototype, 'insertProjectMetadataPublishRecord')
         .resolves();
 
-      await platformService.submitProjectMetadataOnlyToBiohub(1);
+      await platformService.submitProjectMetadataToBiohubAndInsertHistoryRecords(1);
 
       expect(submitDwCAMetadataPackageStub).to.be.calledWith(1);
       expect(insertProjectMetadataPublishRecordStub).to.be.calledWith({ project_id: 1, queue_id: 1 });
-    });
-
-    it('should submit and publish survey DwCA Metadata', async () => {
-      const mockDBConnection = getMockDBConnection();
-      const platformService = new PlatformService(mockDBConnection);
-
-      const submitDwCAMetadataPackageStub = await sinon
-        .stub(PlatformService.prototype, 'submitProjectMetadataOnlyToBiohub')
-        .resolves({ queue_id: 1 });
-
-      const insertProjectMetadataPublishRecordStub = sinon
-        .stub(HistoryPublishService.prototype, 'insertProjectMetadataPublishRecord')
-        .resolves();
-      const insertSurveyMetadataPublishRecordStub = sinon
-        .stub(HistoryPublishService.prototype, 'insertSurveyMetadataPublishRecord')
-        .resolves();
-
-      await platformService.submitProjectMetadataOnlyToBiohub(1);
-
-      expect(submitDwCAMetadataPackageStub).to.be.calledWith(1);
-      expect(insertProjectMetadataPublishRecordStub).to.be.calledWith({ project_id: 1, queue_id: 1 });
-      expect(insertSurveyMetadataPublishRecordStub).to.be.calledWith({ survey_id: 1, queue_id: 1 });
     });
 
     it('should throw error', async () => {
@@ -466,7 +444,7 @@ describe('PlatformService', () => {
         .rejects(new Error('a test error'));
 
       try {
-        await platformService.submitProjectMetadataOnlyToBiohub(1);
+        await platformService.submitProjectMetadataToBiohubAndInsertHistoryRecords(1);
         expect.fail();
       } catch (actualError: any) {
         expect(submitDwCAMetadataPackageStub).to.be.calledWith(1);
