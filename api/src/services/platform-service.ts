@@ -350,40 +350,6 @@ export class PlatformService extends DBService {
   }
 
   /**
-   * Submit a Darwin Core Archive (DwCA) data package, that contains both project/survey metadata and survey occurrence
-   * data, to the BioHub Platform Backbone.
-   *
-   * Note: Does nothing if `process.env.BACKBONE_INTAKE_ENABLED` is not `true`.
-   *
-   * @param {number} projectId
-   * @return {*}
-   * @memberof PlatformService
-   */
-  async submitDwCADataPackage(projectId: number): Promise<{ queue_id: number } | void> {
-    if (!this.backboneIntakeEnabled) {
-      return;
-    }
-
-    const emlService = new EmlService(this.connection);
-    const emlPackage = await emlService.buildProjectEmlPackage({ projectId });
-
-    const dwcArchiveZip = new AdmZip();
-    dwcArchiveZip.addFile('eml.xml', Buffer.from(emlPackage.toString()));
-    // TODO fetch and add DwCA data files to archive
-
-    const dwCADataset = {
-      archiveFile: {
-        data: dwcArchiveZip.toBuffer(),
-        fileName: 'DwCA.zip',
-        mimeType: 'application/zip'
-      },
-      dataPackageId: emlPackage.packageId
-    };
-
-    return this._submitDwCADatasetToBioHubBackbone(dwCADataset);
-  }
-
-  /**
    * Submit a new Darwin Core Archive (DwCA) data package to the BioHub Platform Backbone.
    *
    * @param {IDwCADataset} dwcaDataset
@@ -422,72 +388,6 @@ export class PlatformService extends DBService {
       }
     });
     return data;
-  }
-
-  /**
-   * Upload Survey/EML/Observation data to Backbone
-   * Then publish Survey Metadata/Observation records to DB
-   *
-   * @param {number} surveyId
-   * @return {*} {Promise<void>}
-   * @memberof PlatformService
-   */
-  async uploadSurveyDataToBioHub(surveyId: number): Promise<void> {
-    if (!this.backboneIntakeEnabled) {
-      return;
-    }
-
-    const surveyService = new SurveyService(this.connection);
-    const surveyData = await surveyService.getLatestSurveyOccurrenceSubmission(surveyId);
-    const securityRequest = await surveyService.getSurveyProprietorDataForSecurityRequest(surveyId);
-
-    if (!surveyData || !surveyData.output_key) {
-      throw new HTTP400('no s3Key found');
-    }
-
-    const s3File = await getFileFromS3(surveyData.output_key);
-
-    if (!s3File) {
-      throw new HTTP400('no s3File found');
-    }
-
-    const dwcArchiveZip = new AdmZip(s3File.Body as Buffer);
-
-    const emlService = new EmlService(this.connection);
-
-    const surveyEmlPackage = await emlService.buildSurveyEmlPackage({ surveyId });
-    const surveyEmlString = surveyEmlPackage.toString();
-
-    defaultLog.debug({ label: 'uploadSurveyDataToBioHub', surveyEmlString });
-
-    if (!surveyEmlString) {
-      throw new HTTP400('EML string failed to build');
-    }
-
-    dwcArchiveZip.addFile('eml.xml', Buffer.from(surveyEmlString));
-
-    const dwCADataset: IDwCADataset = {
-      archiveFile: {
-        data: dwcArchiveZip.toBuffer(),
-        fileName: `${surveyEmlPackage.packageId}.zip`,
-        mimeType: 'application/zip'
-      },
-      dataPackageId: surveyEmlPackage.packageId,
-      securityRequest
-    };
-
-    const queueResponse = await this._submitDwCADatasetToBioHubBackbone(dwCADataset);
-
-    await Promise.all([
-      this.publishService.insertSurveyMetadataPublishRecord({
-        survey_id: surveyId,
-        queue_id: queueResponse.queue_id
-      }),
-      this.publishService.insertOccurrenceSubmissionPublishRecord({
-        occurrence_submission_id: surveyData.id,
-        queue_id: queueResponse.queue_id
-      })
-    ]);
   }
 
   /**

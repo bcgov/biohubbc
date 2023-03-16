@@ -403,8 +403,8 @@ export class ProjectService extends DBService {
    * @return {*}
    * @memberof ProjectService
    */
-  async updateProjectAndUploadMetadataToBiohub(projectId: number, entities?: IUpdateProject): Promise<void> {
-    entities && (await this.updateProject(projectId, entities));
+  async updateProjectAndUploadMetadataToBiohub(projectId: number, entities: IUpdateProject): Promise<void> {
+    await this.updateProject(projectId, entities);
 
     // Update Eml to biohub and publish record
     return await this.platformService.submitProjectMetadataAndInsertHistoryRecords(projectId);
