@@ -122,13 +122,15 @@ describe('ProjectService', () => {
       expect(response).to.eql(undefined);
     });
 
-    describe('createProjectAndUploadToBiohub', () => {
+    describe('createProjectAndUploadMetadataToBiohub', () => {
       it('returns projectId on success', async () => {
         const dbConnection = getMockDBConnection();
         const service = new ProjectService(dbConnection);
 
         const repoStub1 = sinon.stub(ProjectService.prototype, 'createProject').resolves(1);
-        const repoStub2 = sinon.stub(PlatformService.prototype, 'submitAndPublishDwcAMetadata').resolves();
+        const repoStub2 = sinon
+          .stub(PlatformService.prototype, 'submitProjectMetadataToBiohubAndInsertHistoryRecords')
+          .resolves();
 
         const response = await service.createProjectAndUploadMetadataToBiohub((null as unknown) as PostProjectObject);
 
@@ -138,13 +140,15 @@ describe('ProjectService', () => {
       });
     });
 
-    describe('updateProjectAndUploadToBiohub', () => {
+    describe('updateProjectAndUploadMetadataToBiohub', () => {
       it('successfully updates project', async () => {
         const dbConnection = getMockDBConnection();
         const service = new ProjectService(dbConnection);
 
         const repoStub1 = sinon.stub(ProjectService.prototype, 'updateProject').resolves();
-        const repoStub2 = sinon.stub(PlatformService.prototype, 'submitAndPublishDwcAMetadata').resolves();
+        const repoStub2 = sinon
+          .stub(PlatformService.prototype, 'submitProjectMetadataToBiohubAndInsertHistoryRecords')
+          .resolves();
 
         const response = await service.updateProjectAndUploadMetadataToBiohub(
           1,

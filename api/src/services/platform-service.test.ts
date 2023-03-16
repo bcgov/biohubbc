@@ -1,20 +1,16 @@
 import AdmZip from 'adm-zip';
-import { S3 } from 'aws-sdk';
-import { GetObjectOutput } from 'aws-sdk/clients/s3';
 import axios from 'axios';
 import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { MESSAGE_CLASS_NAME } from '../constants/status';
-import { HTTP400 } from '../errors/http-error';
 import {
   IProjectAttachment,
   IProjectReportAttachment,
   ISurveyAttachment,
   ISurveyReportAttachment
 } from '../repositories/attachment-repository';
-import { HistoryPublishRepository } from '../repositories/history-publish-repository';
 import { ISurveySummaryDetails } from '../repositories/summary-repository';
 import { IGetLatestSurveyOccurrenceSubmission, ISurveyProprietorModel } from '../repositories/survey-repository';
 import * as file_utils from '../utils/file-utils';
@@ -54,7 +50,7 @@ describe('PlatformService', () => {
       const platformService = new PlatformService(mockDBConnection);
 
       try {
-        await platformService.submitSurveyDataPackage(1, 1, {
+        await platformService.submitSurveyDwcArchiveToBiohub(1, {
           observations: [],
           summary: [],
           reports: [],
@@ -78,7 +74,7 @@ describe('PlatformService', () => {
       } as EmlPackage);
 
       try {
-        await platformService.submitSurveyDataPackage(1, 1, {
+        await platformService.submitSurveyDwcArchiveToBiohub(1, {
           observations: [],
           summary: [],
           reports: [],
@@ -106,7 +102,7 @@ describe('PlatformService', () => {
         .resolves(({ output_key: null } as unknown) as IGetLatestSurveyOccurrenceSubmission);
 
       try {
-        await platformService.submitSurveyDataPackage(1, 1, {
+        await platformService.submitSurveyDwcArchiveToBiohub(1, {
           observations: [({ inputFileName: 'test.csv' } as unknown) as IGetObservationSubmissionResponse],
           summary: [],
           reports: [],
@@ -135,7 +131,7 @@ describe('PlatformService', () => {
 
       sinon.stub(file_utils, 'getFileFromS3').resolves(undefined);
       try {
-        await platformService.submitSurveyDataPackage(1, 1, {
+        await platformService.submitSurveyDwcArchiveToBiohub(1, {
           observations: [({ inputFileName: 'test.csv' } as unknown) as IGetObservationSubmissionResponse],
           summary: [],
           reports: [],
@@ -163,7 +159,7 @@ describe('PlatformService', () => {
         .resolves(({ key: null } as unknown) as ISurveySummaryDetails);
 
       try {
-        await platformService.submitSurveyDataPackage(1, 1, {
+        await platformService.submitSurveyDwcArchiveToBiohub(1, {
           observations: [],
           summary: [({ fileName: 'test.csv' } as unknown) as IGetSummaryResultsResponse],
           reports: [],
@@ -203,11 +199,11 @@ describe('PlatformService', () => {
         .stub(SurveyService.prototype, 'getSurveyProprietorDataForSecurityRequest')
         .resolves(({ first_nations_id: 1, proprietor_type_id: 1 } as unknown) as ISurveyProprietorModel);
 
-      sinon.stub(PlatformService.prototype, '_submitDwCADatasetToBioHubBackbone').resolves({ queue_id: 1 });
-      sinon.stub(PlatformService.prototype, 'publishSurveyHistory').resolves();
+      sinon.stub(PlatformService.prototype, '_submitDwCADatasetToBioHub').resolves({ queue_id: 1 });
+      sinon.stub(PlatformService.prototype, 'publishSurveyDataHistory').resolves();
       sinon.stub(HistoryPublishService.prototype, 'insertProjectMetadataPublishRecord').resolves();
 
-      await platformService.submitSurveyDataPackage(1, 1, {
+      await platformService.submitSurveyDwcArchiveToBiohub(1, {
         observations: [],
         summary: [({ fileName: 'test.csv' } as unknown) as IGetSummaryResultsResponse],
         reports: [],
@@ -237,18 +233,18 @@ describe('PlatformService', () => {
         .stub(SurveyService.prototype, 'getSurveyProprietorDataForSecurityRequest')
         .resolves(({ first_nations_id: 1, proprietor_type_id: 1 } as unknown) as ISurveyProprietorModel);
 
-      sinon.stub(PlatformService.prototype, '_submitDwCADatasetToBioHubBackbone').resolves({ queue_id: 1 });
-      sinon.stub(PlatformService.prototype, 'publishSurveyHistory').resolves();
+      sinon.stub(PlatformService.prototype, '_submitDwCADatasetToBioHub').resolves({ queue_id: 1 });
+      sinon.stub(PlatformService.prototype, 'publishSurveyDataHistory').resolves();
       sinon.stub(HistoryPublishService.prototype, 'insertProjectMetadataPublishRecord').resolves();
 
       const uploadSurveyReportAttachmentsToBioHubStub = sinon
-        .stub(PlatformService.prototype, 'uploadSurveyReportAttachmentsToBioHub')
+        .stub(PlatformService.prototype, 'submitSurveyReportAttachmentsToBioHub')
         .resolves();
       const uploadSurveyAttachmentsToBioHubStub = sinon
-        .stub(PlatformService.prototype, 'uploadSurveyAttachmentsToBioHub')
+        .stub(PlatformService.prototype, 'submitSurveyAttachmentsToBioHub')
         .resolves();
 
-      await platformService.submitSurveyDataPackage(1, 1, {
+      await platformService.submitSurveyDwcArchiveToBiohub(1, {
         observations: [],
         summary: [],
         reports: [({ id: 1, fileName: 'test.csv' } as unknown) as IGetSurveyReportAttachment],
@@ -275,11 +271,11 @@ describe('PlatformService', () => {
         .stub(SurveyService.prototype, 'getSurveyProprietorDataForSecurityRequest')
         .resolves(({ first_nations_id: 1, proprietor_type_id: 1 } as unknown) as ISurveyProprietorModel);
 
-      sinon.stub(PlatformService.prototype, '_submitDwCADatasetToBioHubBackbone').resolves({ queue_id: 1 });
-      sinon.stub(PlatformService.prototype, 'publishSurveyHistory').resolves();
+      sinon.stub(PlatformService.prototype, '_submitDwCADatasetToBioHub').resolves({ queue_id: 1 });
+      sinon.stub(PlatformService.prototype, 'publishSurveyDataHistory').resolves();
       sinon.stub(HistoryPublishService.prototype, 'insertProjectMetadataPublishRecord').resolves();
 
-      const response = await platformService.submitSurveyDataPackage(1, 1, {
+      const response = await platformService.submitSurveyDwcArchiveToBiohub(1, {
         observations: [],
         summary: [],
         reports: [],
@@ -310,7 +306,7 @@ describe('PlatformService', () => {
         .stub(HistoryPublishService.prototype, 'insertSurveySummaryPublishRecord')
         .resolves({ survey_summary_submission_publish_id: 1 });
 
-      await platformService.publishSurveyHistory(1, publishIds);
+      await platformService.publishSurveyDataHistory(1, publishIds);
 
       expect(insertSurveyMetadataPublishRecordStub).to.have.been.calledOnceWith({
         survey_id: 1,
@@ -323,120 +319,6 @@ describe('PlatformService', () => {
       expect(insertSurveySummaryPublishRecordStub).to.have.been.calledOnceWith({
         survey_summary_submission_id: 1,
         artifact_id: 1
-      });
-    });
-  });
-
-  describe('submitDwCAMetadataPackage', () => {
-    afterEach(() => {
-      sinon.restore();
-    });
-    it('returns if intake Disabled', async () => {
-      const mockDBConnection = getMockDBConnection();
-
-      process.env.BACKBONE_INTAKE_ENABLED = 'false';
-
-      const platformService = new PlatformService(mockDBConnection);
-
-      const response = await platformService.submitDwCAMetadataPackage(1);
-
-      expect(response).to.eql(undefined);
-    });
-
-    it('fetches project EML and submits to the backbone', async () => {
-      const mockDBConnection = getMockDBConnection();
-
-      process.env.BACKBONE_INTAKE_ENABLED = 'true';
-
-      const buildProjectEmlStub = sinon.stub(EmlService.prototype, 'buildProjectEmlPackage').callsFake((_options) =>
-        Promise.resolve({
-          packageId: '123-456-789',
-          toString: () => '<eml:eml />'
-        } as EmlPackage)
-      );
-
-      const _submitDwCADatasetToBioHubBackboneStub = sinon
-        .stub(PlatformService.prototype, '_submitDwCADatasetToBioHubBackbone')
-        .resolves({ queue_id: 1 });
-
-      const platformService = new PlatformService(mockDBConnection);
-
-      await platformService.submitDwCAMetadataPackage(1);
-
-      expect(buildProjectEmlStub).to.have.been.calledOnce;
-      expect(_submitDwCADatasetToBioHubBackboneStub).to.have.been.calledOnceWith({
-        archiveFile: {
-          data: sinon.match.any,
-          fileName: 'DwCA.zip',
-          mimeType: 'application/zip'
-        },
-        dataPackageId: '123-456-789'
-      });
-    });
-
-    it('should throw error', async () => {
-      process.env.BACKBONE_INTAKE_ENABLED = 'true';
-      const mockDBConnection = getMockDBConnection();
-      const platformService = new PlatformService(mockDBConnection);
-
-      const buildProjectEmlStub = sinon
-        .stub(EmlService.prototype, 'buildProjectEmlPackage')
-        .rejects(new Error('a test error'));
-
-      try {
-        await platformService.submitAndPublishDwcAMetadata(1, 1);
-        expect.fail();
-      } catch (actualError: any) {
-        expect(buildProjectEmlStub).to.be.calledOnce;
-      }
-    });
-  });
-
-  describe('submitDwCADataPackage', () => {
-    afterEach(() => {
-      sinon.restore();
-    });
-
-    it('returns if intake Disabled', async () => {
-      const mockDBConnection = getMockDBConnection();
-
-      process.env.BACKBONE_INTAKE_ENABLED = 'false';
-
-      const platformService = new PlatformService(mockDBConnection);
-
-      const response = await platformService.submitDwCADataPackage(1);
-
-      expect(response).to.eql(undefined);
-    });
-
-    it('fetches project EML and occurrence data and submits to the backbone', async () => {
-      const mockDBConnection = getMockDBConnection();
-
-      process.env.BACKBONE_INTAKE_ENABLED = 'true';
-
-      const buildProjectEmlStub = sinon.stub(EmlService.prototype, 'buildProjectEmlPackage').callsFake((_options) =>
-        Promise.resolve({
-          packageId: '123-456-789',
-          toString: () => '<eml:eml />'
-        } as EmlPackage)
-      );
-
-      const _submitDwCADatasetToBioHubBackboneStub = sinon
-        .stub(PlatformService.prototype, '_submitDwCADatasetToBioHubBackbone')
-        .resolves({ queue_id: 1 });
-
-      const platformService = new PlatformService(mockDBConnection);
-
-      await platformService.submitDwCADataPackage(1);
-
-      expect(buildProjectEmlStub).to.have.been.calledOnce;
-      expect(_submitDwCADatasetToBioHubBackboneStub).to.have.been.calledOnceWith({
-        archiveFile: {
-          data: sinon.match.any,
-          fileName: 'DwCA.zip',
-          mimeType: 'application/zip'
-        },
-        dataPackageId: '123-456-789'
       });
     });
   });
@@ -469,7 +351,7 @@ describe('PlatformService', () => {
 
       const platformService = new PlatformService(mockDBConnection);
 
-      await platformService._submitDwCADatasetToBioHubBackbone(dwcaDataset);
+      await platformService._submitDwCADatasetToBioHub(dwcaDataset);
 
       expect(keycloakServiceStub).to.have.been.calledOnce;
 
@@ -479,185 +361,6 @@ describe('PlatformService', () => {
           'content-type': sinon.match(new RegExp(/^multipart\/form-data; boundary=[-]*[0-9]*$/))
         }
       });
-    });
-  });
-
-  describe('uploadSurveyDataToBioHub', () => {
-    afterEach(() => {
-      sinon.restore();
-    });
-
-    it('returns if intake Disabled', async () => {
-      const mockDBConnection = getMockDBConnection();
-
-      process.env.BACKBONE_INTAKE_ENABLED = 'false';
-
-      const platformService = new PlatformService(mockDBConnection);
-
-      const response = await platformService.uploadSurveyDataToBioHub(1, 1);
-
-      expect(response).to.eql(undefined);
-    });
-
-    it('Throw error if no s3 key found', async () => {
-      const mockDBConnection = getMockDBConnection();
-
-      process.env.BACKBONE_INTAKE_ENABLED = 'true';
-
-      const getLatestSurveyOccurrenceSubmissionStub = sinon
-        .stub(SurveyService.prototype, 'getLatestSurveyOccurrenceSubmission')
-        .resolves();
-
-      const platformService = new PlatformService(mockDBConnection);
-
-      try {
-        await platformService.uploadSurveyDataToBioHub(1, 1);
-        expect.fail();
-      } catch (actualError) {
-        expect((actualError as HTTP400).message).to.equal('no s3Key found');
-        expect(getLatestSurveyOccurrenceSubmissionStub).to.have.been.calledOnce;
-      }
-    });
-
-    it('Throw error if no s3 file found', async () => {
-      const mockDBConnection = getMockDBConnection();
-
-      process.env.BACKBONE_INTAKE_ENABLED = 'true';
-
-      const getLatestSurveyOccurrenceSubmissionStub = sinon
-        .stub(SurveyService.prototype, 'getLatestSurveyOccurrenceSubmission')
-        .resolves(({ output_key: 'key' } as unknown) as IGetLatestSurveyOccurrenceSubmission);
-
-      const getFileFromS3Stub = sinon
-        .stub(file_utils, 'getFileFromS3')
-        .resolves((false as unknown) as S3.GetObjectOutput);
-
-      const platformService = new PlatformService(mockDBConnection);
-
-      try {
-        await platformService.uploadSurveyDataToBioHub(1, 1);
-        expect.fail();
-      } catch (actualError) {
-        expect((actualError as HTTP400).message).to.equal('no s3File found');
-        expect(getLatestSurveyOccurrenceSubmissionStub).to.have.been.calledOnce;
-        expect(getFileFromS3Stub).to.have.been.calledOnce;
-      }
-    });
-
-    it('Throw error if eml string failed to build', async () => {
-      const mockDBConnection = getMockDBConnection();
-
-      process.env.BACKBONE_INTAKE_ENABLED = 'true';
-
-      const zipFile = new AdmZip();
-
-      zipFile.addFile('file1.txt', Buffer.from('file1data'));
-      zipFile.addFile('folder2/', Buffer.from('')); // add folder
-      zipFile.addFile('folder2/file2.csv', Buffer.from('file2data'));
-
-      const s3File = ({
-        Metadata: { filename: 'zipFile.zip' },
-        ContentType: 'application/zip',
-        Body: zipFile.toBuffer()
-      } as unknown) as GetObjectOutput;
-
-      const getLatestSurveyOccurrenceSubmissionStub = sinon
-        .stub(SurveyService.prototype, 'getLatestSurveyOccurrenceSubmission')
-        .resolves(({ output_key: 'key' } as unknown) as IGetLatestSurveyOccurrenceSubmission);
-
-      const getFileFromS3Stub = sinon.stub(file_utils, 'getFileFromS3').resolves(s3File);
-
-      const buildProjectEmlStub = sinon.stub(EmlService.prototype, 'buildProjectEmlPackage').callsFake((_options) =>
-        Promise.resolve({
-          packageId: '123-456-789',
-          toString: () => ''
-        } as EmlPackage)
-      );
-
-      const buildSurveyEmlStub = sinon.stub(EmlService.prototype, 'buildSurveyEmlPackage').callsFake((_options) =>
-        Promise.resolve({
-          packageId: '123-456-789',
-          toString: () => ''
-        } as EmlPackage)
-      );
-
-      const platformService = new PlatformService(mockDBConnection);
-
-      try {
-        await platformService.uploadSurveyDataToBioHub(1, 1);
-        expect.fail();
-      } catch (actualError) {
-        expect((actualError as HTTP400).message).to.equal('EML string failed to build');
-        expect(getLatestSurveyOccurrenceSubmissionStub).to.have.been.calledOnce;
-        expect(buildSurveyEmlStub).to.have.been.calledOnce;
-        expect(buildProjectEmlStub).to.have.been.calledOnce;
-        expect(getFileFromS3Stub).to.have.been.calledOnce;
-      }
-    });
-
-    it('Should succeed with valid data', async () => {
-      const mockDBConnection = getMockDBConnection();
-
-      process.env.BACKBONE_INTAKE_ENABLED = 'true';
-
-      const zipFile = new AdmZip();
-
-      zipFile.addFile('file1.txt', Buffer.from('file1data'));
-      zipFile.addFile('folder2/', Buffer.from('')); // add folder
-      zipFile.addFile('folder2/file2.csv', Buffer.from('file2data'));
-
-      const s3File = ({
-        Metadata: { filename: 'zipFile.zip' },
-        ContentType: 'application/zip',
-        Body: zipFile.toBuffer()
-      } as unknown) as GetObjectOutput;
-
-      const getLatestSurveyOccurrenceSubmissionStub = sinon
-        .stub(SurveyService.prototype, 'getLatestSurveyOccurrenceSubmission')
-        .resolves(({ output_key: 'key' } as unknown) as IGetLatestSurveyOccurrenceSubmission);
-
-      const getFileFromS3Stub = sinon.stub(file_utils, 'getFileFromS3').resolves(s3File);
-
-      const buildProjectEmlStub = sinon.stub(EmlService.prototype, 'buildProjectEmlPackage').callsFake((_options) =>
-        Promise.resolve({
-          packageId: '123-456-789',
-          toString: () => '<eml:eml />'
-        } as EmlPackage)
-      );
-
-      const buildSurveyEmlStub = sinon.stub(EmlService.prototype, 'buildSurveyEmlPackage').callsFake((_options) =>
-        Promise.resolve({
-          packageId: '123-456-789',
-          toString: () => '<eml:eml />'
-        } as EmlPackage)
-      );
-
-      const _submitDwCADatasetToBioHubBackboneStub = sinon
-        .stub(PlatformService.prototype, '_submitDwCADatasetToBioHubBackbone')
-        .resolves({ queue_id: 1 });
-
-      const insertProject = sinon
-        .stub(HistoryPublishRepository.prototype, 'insertProjectMetadataPublishRecord')
-        .resolves(1);
-      const insertSurvey = sinon
-        .stub(HistoryPublishRepository.prototype, 'insertSurveyMetadataPublishRecord')
-        .resolves(1);
-      const insertOccurrence = sinon
-        .stub(HistoryPublishRepository.prototype, 'insertOccurrenceSubmissionPublishRecord')
-        .resolves(1);
-
-      const platformService = new PlatformService(mockDBConnection);
-
-      await platformService.uploadSurveyDataToBioHub(1, 1);
-
-      expect(buildSurveyEmlStub).to.have.been.calledOnce;
-      expect(buildProjectEmlStub).to.have.been.calledOnce;
-      expect(getLatestSurveyOccurrenceSubmissionStub).to.have.been.calledOnce;
-      expect(getFileFromS3Stub).to.have.been.calledOnce;
-      expect(_submitDwCADatasetToBioHubBackboneStub).to.have.been.calledOnce;
-      expect(insertProject).to.have.been.calledOnce;
-      expect(insertSurvey).to.have.been.calledOnce;
-      expect(insertOccurrence).to.have.been.calledOnce;
     });
   });
 
@@ -719,14 +422,14 @@ describe('PlatformService', () => {
       const platformService = new PlatformService(mockDBConnection);
 
       const submitDwCAMetadataPackageStub = await sinon
-        .stub(PlatformService.prototype, 'submitDwCAMetadataPackage')
+        .stub(PlatformService.prototype, 'submitProjectMetadataOnlyToBiohub')
         .resolves({ queue_id: 1 });
 
       const insertProjectMetadataPublishRecordStub = sinon
         .stub(HistoryPublishService.prototype, 'insertProjectMetadataPublishRecord')
         .resolves();
 
-      await platformService.submitAndPublishDwcAMetadata(1, 1);
+      await platformService.submitProjectMetadataOnlyToBiohub(1);
 
       expect(submitDwCAMetadataPackageStub).to.be.calledWith(1);
       expect(insertProjectMetadataPublishRecordStub).to.be.calledWith({ project_id: 1, queue_id: 1 });
@@ -737,7 +440,7 @@ describe('PlatformService', () => {
       const platformService = new PlatformService(mockDBConnection);
 
       const submitDwCAMetadataPackageStub = await sinon
-        .stub(PlatformService.prototype, 'submitDwCAMetadataPackage')
+        .stub(PlatformService.prototype, 'submitProjectMetadataOnlyToBiohub')
         .resolves({ queue_id: 1 });
 
       const insertProjectMetadataPublishRecordStub = sinon
@@ -747,7 +450,7 @@ describe('PlatformService', () => {
         .stub(HistoryPublishService.prototype, 'insertSurveyMetadataPublishRecord')
         .resolves();
 
-      await platformService.submitAndPublishDwcAMetadata(1, 1);
+      await platformService.submitProjectMetadataOnlyToBiohub(1);
 
       expect(submitDwCAMetadataPackageStub).to.be.calledWith(1);
       expect(insertProjectMetadataPublishRecordStub).to.be.calledWith({ project_id: 1, queue_id: 1 });
@@ -759,11 +462,11 @@ describe('PlatformService', () => {
       const platformService = new PlatformService(mockDBConnection);
 
       const submitDwCAMetadataPackageStub = await sinon
-        .stub(PlatformService.prototype, 'submitDwCAMetadataPackage')
+        .stub(PlatformService.prototype, 'submitProjectMetadataOnlyToBiohub')
         .rejects(new Error('a test error'));
 
       try {
-        await platformService.submitAndPublishDwcAMetadata(1, 1);
+        await platformService.submitProjectMetadataOnlyToBiohub(1);
         expect.fail();
       } catch (actualError: any) {
         expect(submitDwCAMetadataPackageStub).to.be.calledWith(1);
@@ -926,7 +629,7 @@ describe('PlatformService', () => {
         .onCall(1)
         .resolves({ project_attachment_publish_id: 2 });
 
-      const response = await platformService.uploadProjectAttachmentsToBioHub('cccc', 1, [1, 2]);
+      const response = await platformService.submitProjectAttachmentsToBioHub('cccc', 1, [1, 2]);
 
       expect(attachmentsStub).to.be.calledWith(1, [1, 2]);
 
@@ -1020,7 +723,7 @@ describe('PlatformService', () => {
         .onCall(1)
         .resolves({ project_report_publish_id: 2 });
 
-      const response = await platformService.uploadProjectReportAttachmentsToBioHub('cccc', 1, [1, 2]);
+      const response = await platformService.submitProjectReportAttachmentsToBioHub('cccc', 1, [1, 2]);
 
       expect(attachmentsStub).to.be.calledWith(1, [1, 2]);
 
@@ -1114,7 +817,7 @@ describe('PlatformService', () => {
         .onCall(1)
         .resolves({ survey_attachment_publish_id: 2 });
 
-      const response = await platformService.uploadSurveyAttachmentsToBioHub('cccc', 1, [1, 2]);
+      const response = await platformService.submitSurveyAttachmentsToBioHub('cccc', 1, [1, 2]);
 
       expect(attachmentsStub).to.be.calledWith(1, [1, 2]);
 
@@ -1215,7 +918,7 @@ describe('PlatformService', () => {
         .onCall(1)
         .resolves({ survey_report_publish_id: 2 });
 
-      const response = await platformService.uploadSurveyReportAttachmentsToBioHub('cccc', 1, [1, 2]);
+      const response = await platformService.submitSurveyReportAttachmentsToBioHub('cccc', 1, [1, 2]);
 
       expect(attachmentsStub).to.be.calledWith(1, [1, 2]);
 

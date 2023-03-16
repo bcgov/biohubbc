@@ -117,7 +117,7 @@ export function deleteSurvey(): RequestHandler {
 
       try {
         const platformService = new PlatformService(connection);
-        await platformService.submitProjectMetadataAndInsertHistoryRecords(projectId);
+        await platformService.submitProjectMetadataToBiohubAndInsertHistoryRecords(projectId);
       } catch (error) {
         // Don't fail the rest of the endpoint if submitting metadata fails
         defaultLog.error({ label: 'deleteSurvey->submitDwCAMetadataPackage', message: 'error', error });

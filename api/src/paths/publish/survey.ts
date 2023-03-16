@@ -139,7 +139,7 @@ export function publishSurvey(): RequestHandler {
       await connection.open();
 
       const platformService = new PlatformService(connection);
-      const response = await platformService.submitSurveyDwcArchive(surveyId, data);
+      const response = await platformService.submitSurveyDwcArchiveToBiohub(surveyId, data);
 
       await connection.commit();
 

@@ -297,7 +297,7 @@ export class ProjectService extends DBService {
     const projectId = await this.createProject(postProjectData);
 
     //Submit Eml to biohub and publish record
-    await this.platformService.submitProjectMetadataAndInsertHistoryRecords(projectId);
+    await this.platformService.submitProjectMetadataToBiohubAndInsertHistoryRecords(projectId);
 
     return projectId;
   }
@@ -407,7 +407,7 @@ export class ProjectService extends DBService {
     await this.updateProject(projectId, entities);
 
     // Update Eml to biohub and publish record
-    return await this.platformService.submitProjectMetadataAndInsertHistoryRecords(projectId);
+    return await this.platformService.submitProjectMetadataToBiohubAndInsertHistoryRecords(projectId);
   }
 
   /**

@@ -113,7 +113,7 @@ export class PlatformService extends DBService {
    * @return {*}  {Promise<void>}
    * @memberof PlatformService
    */
-  async submitSurveyDwcArchive(
+  async submitSurveyDwcArchiveToBiohub(
     surveyId: number,
     data: {
       observations: IGetObservationSubmissionResponse[];
@@ -199,7 +199,7 @@ export class PlatformService extends DBService {
      */
     if (data.reports.length !== 0) {
       const reportIds = data.reports.map((report) => report.id);
-      await this.uploadSurveyReportAttachmentsToBioHub(emlPackage.packageId, surveyId, reportIds);
+      await this.submitSurveyReportAttachmentsToBioHub(emlPackage.packageId, surveyId, reportIds);
     }
 
     /**
@@ -208,7 +208,7 @@ export class PlatformService extends DBService {
      */
     if (data.attachments.length !== 0) {
       const attachmentIds = data.attachments.map((attachment) => attachment.id);
-      await this.uploadSurveyAttachmentsToBioHub(emlPackage.packageId, surveyId, attachmentIds);
+      await this.submitSurveyAttachmentsToBioHub(emlPackage.packageId, surveyId, attachmentIds);
     }
 
     //Check security request and create DWCA file for submission
@@ -224,7 +224,7 @@ export class PlatformService extends DBService {
     };
 
     //Submit DWCA file to biohub
-    const queueResponse = await this._submitDwCADatasetToBioHubBackbone(dwCADataset);
+    const queueResponse = await this._submitDwCADatasetToBioHub(dwCADataset);
     publishIds.queueId = queueResponse.queue_id;
 
     //Publish Survey records to history
@@ -287,7 +287,7 @@ export class PlatformService extends DBService {
    * @return {*} Promise<{queue_id: number} | undefined>
    * @memberof PlatformService
    */
-  async sendProjectMetadataOnlyToBiohub(projectId: number): Promise<{ queue_id: number } | undefined> {
+  async submitProjectMetadataOnlyToBiohub(projectId: number): Promise<{ queue_id: number } | undefined> {
     try {
       if (!this.backboneIntakeEnabled) {
         return;
@@ -311,14 +311,14 @@ export class PlatformService extends DBService {
         dataPackageId: emlPackage.packageId
       };
 
-      return this._submitDwCADatasetToBioHubBackbone(dwCADataset);
+      return this._submitDwCADatasetToBioHub(dwCADataset);
     } catch (error) {
       // Don't fail the rest of the endpoint if submitting metadata fails
       defaultLog.error({ label: 'platformService->sendProjectMetadataOnlyToBiohub', message: 'error', error });
     }
   }
 
-  async sendSurveyMetadataOnlyToBiohub(surveyId: number): Promise<{ queue_id: number } | undefined> {
+  async submitSurveyMetadataOnlyToBiohub(surveyId: number): Promise<{ queue_id: number } | undefined> {
     try {
       if (!this.backboneIntakeEnabled) {
         return;
@@ -342,7 +342,7 @@ export class PlatformService extends DBService {
         dataPackageId: emlPackage.packageId
       };
 
-      return this._submitDwCADatasetToBioHubBackbone(dwCADataset);
+      return this._submitDwCADatasetToBioHub(dwCADataset);
     } catch (error) {
       // Don't fail the rest of the endpoint if submitting metadata fails
       defaultLog.error({ label: 'platformService->sendSurveyMetadataOnlyToBiohub', message: 'error', error });
@@ -356,7 +356,7 @@ export class PlatformService extends DBService {
    * @return {*}  {Promise<{ data_package_id: string }>}
    * @memberof PlatformService
    */
-  async _submitDwCADatasetToBioHubBackbone(dwcaDataset: IDwCADataset): Promise<{ queue_id: number }> {
+  async _submitDwCADatasetToBioHub(dwcaDataset: IDwCADataset): Promise<{ queue_id: number }> {
     const keycloakService = new KeycloakService();
 
     const token = await keycloakService.getKeycloakToken();
@@ -399,9 +399,9 @@ export class PlatformService extends DBService {
    * @returns {*} Promise<void>
    * @memberof PlatformService
    */
-  async submitProjectMetadataAndInsertHistoryRecords(projectId: number): Promise<void> {
+  async submitProjectMetadataToBiohubAndInsertHistoryRecords(projectId: number): Promise<void> {
     try {
-      const queueResponse = await this.sendProjectMetadataOnlyToBiohub(projectId);
+      const queueResponse = await this.submitProjectMetadataOnlyToBiohub(projectId);
       const historyPublishService = new HistoryPublishService(this.connection);
 
       // take queue id and insert into history publish table
@@ -417,9 +417,9 @@ export class PlatformService extends DBService {
     }
   }
 
-  async submitSurveyMetadataAndInsertHistoryRecords(surveyId: number): Promise<void> {
+  async submitSurveyMetadataToBiohubAndInsertHistoryRecords(surveyId: number): Promise<void> {
     try {
-      const queueResponse = await this.sendSurveyMetadataOnlyToBiohub(surveyId);
+      const queueResponse = await this.submitSurveyMetadataOnlyToBiohub(surveyId);
       const historyPublishService = new HistoryPublishService(this.connection);
 
       // take queue id and insert into history publish table
@@ -555,7 +555,7 @@ export class PlatformService extends DBService {
    *
    * @memberof PlatformService
    */
-  async uploadProjectAttachmentsToBioHub(
+  async submitProjectAttachmentsToBioHub(
     dataPackageId: string,
     projectId: number,
     attachmentIds: number[]
@@ -591,7 +591,7 @@ export class PlatformService extends DBService {
    *
    * @memberof PlatformService
    */
-  async uploadProjectReportAttachmentsToBioHub(
+  async submitProjectReportAttachmentsToBioHub(
     dataPackageId: string,
     projectId: number,
     reportAttachmentIds: number[]
@@ -626,7 +626,7 @@ export class PlatformService extends DBService {
    *
    * @memberof PlatformService
    */
-  async uploadSurveyAttachmentsToBioHub(
+  async submitSurveyAttachmentsToBioHub(
     dataPackageId: string,
     surveyId: number,
     attachmentIds: number[]
@@ -662,7 +662,7 @@ export class PlatformService extends DBService {
    *
    * @memberof PlatformService
    */
-  async uploadSurveyReportAttachmentsToBioHub(
+  async submitSurveyReportAttachmentsToBioHub(
     dataPackageId: string,
     surveyId: number,
     reportAttachmentIds: number[]

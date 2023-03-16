@@ -319,7 +319,7 @@ export class SurveyService extends DBService {
     const surveyId = await this.createSurvey(projectId, postSurveyData);
 
     //Update Eml to biohub and publish record
-    await this.platformService.submitSurveyMetadataAndInsertHistoryRecords(surveyId);
+    await this.platformService.submitSurveyMetadataToBiohubAndInsertHistoryRecords(surveyId);
 
     return surveyId;
   }
@@ -518,7 +518,7 @@ export class SurveyService extends DBService {
     await this.updateSurvey(surveyId, putSurveyData);
 
     // Update Eml to biohub and publish record
-    return await this.platformService.submitSurveyMetadataAndInsertHistoryRecords(surveyId);
+    return await this.platformService.submitSurveyMetadataToBiohubAndInsertHistoryRecords(surveyId);
   }
 
   /**
