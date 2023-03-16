@@ -306,6 +306,7 @@ export class EmlService extends DBService {
    * @memberof EmlService
    */
   async buildProjectEmlPackage(options: BuildProjectEmlOptions): Promise<EmlPackage> {
+    console.log('building the project eml package and include survey metadata');
     const { projectId } = options;
     await this.loadEmlDbConstants();
 

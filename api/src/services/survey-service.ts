@@ -315,11 +315,11 @@ export class SurveyService extends DBService {
    * @return {*}  {Promise<number>}
    * @memberof SurveyService
    */
-  async createSurveyAndUploadToBiohub(projectId: number, postSurveyData: PostSurveyObject): Promise<number> {
+  async createSurveyAndUploadMetadataToBiohub(projectId: number, postSurveyData: PostSurveyObject): Promise<number> {
     const surveyId = await this.createSurvey(projectId, postSurveyData);
 
     //Update Eml to biohub and publish record
-    await this.platformService.submitAndPublishDwcAMetadata(projectId, surveyId);
+    await this.platformService.submitSurveyMetadataAndInsertHistoryRecords(surveyId);
 
     return surveyId;
   }
@@ -514,16 +514,16 @@ export class SurveyService extends DBService {
    * @returns {*} {Promise<void>}
    * @memberof SurveyService
    */
-  async updateSurveyAndUploadToBiohub(surveyId: number, putSurveyData: PutSurveyObject): Promise<void> {
-    const surveyData = await this.updateSurvey(surveyId, putSurveyData);
+  async updateSurveyAndUploadMetadataToBiohub(surveyId: number, putSurveyData: PutSurveyObject): Promise<void> {
+    await this.updateSurvey(surveyId, putSurveyData);
 
     // Update Eml to biohub and publish record
-    return await this.platformService.submitAndPublishDwcAMetadata(surveyData.survey_details.project_id, surveyId);
+    return await this.platformService.submitSurveyMetadataAndInsertHistoryRecords(surveyId);
   }
 
   /**
    * Updates provided survey information and submits to BioHub
-   *
+   *˝
    * @param {number} surveyId
    * @param {PutSurveyObject} putSurveyData
    * @returns {*} {Promise<void>}

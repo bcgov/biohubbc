@@ -122,7 +122,7 @@ describe('SurveyService', () => {
       const surveyId = 2;
       const putSurveyData = new PutSurveyObject(null);
 
-      await surveyService.updateSurveyAndUploadToBiohub(surveyId, putSurveyData);
+      await surveyService.updateSurveyAndUploadMetadataToBiohub(surveyId, putSurveyData);
 
       expect(updateSurveyDetailsDataStub).not.to.have.been.called;
       expect(updateSurveyVantageCodesDataStub).not.to.have.been.called;
@@ -166,7 +166,7 @@ describe('SurveyService', () => {
         location: {}
       });
 
-      await surveyService.updateSurveyAndUploadToBiohub(surveyId, putSurveyData);
+      await surveyService.updateSurveyAndUploadMetadataToBiohub(surveyId, putSurveyData);
 
       expect(updateSurveyDetailsDataStub).to.have.been.calledOnce;
       expect(updateSurveyVantageCodesDataStub).to.have.been.calledOnce;
@@ -1089,7 +1089,7 @@ describe('SurveyService', () => {
       const repoStub1 = sinon.stub(SurveyService.prototype, 'createSurvey').resolves(1);
       const repoStub2 = sinon.stub(PlatformService.prototype, 'submitAndPublishDwcAMetadata').resolves();
 
-      const response = await service.createSurveyAndUploadToBiohub(1, (null as unknown) as PostSurveyObject);
+      const response = await service.createSurveyAndUploadMetadataToBiohub(1, (null as unknown) as PostSurveyObject);
 
       expect(repoStub1).to.be.calledOnce;
       expect(repoStub2).to.be.calledOnce;
@@ -1114,7 +1114,7 @@ describe('SurveyService', () => {
       } as unknown) as SurveyObject);
       const repoStub2 = sinon.stub(PlatformService.prototype, 'submitAndPublishDwcAMetadata').resolves();
 
-      const response = await service.updateSurveyAndUploadToBiohub(1, (null as unknown) as PutSurveyObject);
+      const response = await service.updateSurveyAndUploadMetadataToBiohub(1, (null as unknown) as PutSurveyObject);
 
       expect(repoStub1).to.be.calledOnce;
       expect(repoStub2).to.be.calledOnce;

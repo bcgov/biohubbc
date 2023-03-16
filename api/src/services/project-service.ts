@@ -293,11 +293,11 @@ export class ProjectService extends DBService {
    * @return {*}  {Promise<number>}
    * @memberof ProjectService
    */
-  async createProjectAndUploadToBiohub(postProjectData: PostProjectObject): Promise<number> {
+  async createProjectAndUploadMetadataToBiohub(postProjectData: PostProjectObject): Promise<number> {
     const projectId = await this.createProject(postProjectData);
 
     //Submit Eml to biohub and publish record
-    await this.platformService.submitAndPublishDwcAMetadata(projectId);
+    await this.platformService.submitProjectMetadataAndInsertHistoryRecords(projectId);
 
     return projectId;
   }
@@ -403,11 +403,11 @@ export class ProjectService extends DBService {
    * @return {*}
    * @memberof ProjectService
    */
-  async updateProjectAndUploadToBiohub(projectId: number, entities: IUpdateProject) {
-    await this.updateProject(projectId, entities);
+  async updateProjectAndUploadMetadataToBiohub(projectId: number, entities?: IUpdateProject): Promise<void> {
+    entities && (await this.updateProject(projectId, entities));
 
     // Update Eml to biohub and publish record
-    return await this.platformService.submitAndPublishDwcAMetadata(projectId);
+    return await this.platformService.submitProjectMetadataAndInsertHistoryRecords(projectId);
   }
 
   /**

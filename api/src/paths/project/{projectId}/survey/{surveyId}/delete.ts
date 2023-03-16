@@ -4,7 +4,7 @@ import { PROJECT_ROLE, SYSTEM_ROLE } from '../../../../../constants/roles';
 import { getDBConnection } from '../../../../../database/db';
 import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
 import { AttachmentService } from '../../../../../services/attachment-service';
-import { PlatformService } from '../../../../../services/platform-service';
+import { ProjectService } from '../../../../../services/project-service';
 import { SurveyService } from '../../../../../services/survey-service';
 import { deleteFileFromS3 } from '../../../../../utils/file-utils';
 import { getLogger } from '../../../../../utils/logger';
@@ -116,8 +116,8 @@ export function deleteSurvey(): RequestHandler {
       }
 
       try {
-        const platformService = new PlatformService(connection);
-        await platformService.submitDwCAMetadataPackage(projectId);
+        const projectService = new ProjectService(connection);
+        await projectService.updateProjectAndUploadMetadataToBiohub(projectId);
       } catch (error) {
         // Don't fail the rest of the endpoint if submitting metadata fails
         defaultLog.error({ label: 'deleteSurvey->submitDwCAMetadataPackage', message: 'error', error });
