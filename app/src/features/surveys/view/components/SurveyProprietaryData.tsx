@@ -38,7 +38,9 @@ const SurveyProprietaryData: React.FC<ISurveyProprietaryDataProps> = (props) => 
     return <></>;
   }
 
-  const { surveyData: { proprietor } } = surveyForViewData;
+  const {
+    surveyData: { proprietor }
+  } = surveyForViewData;
 
   return (
     <>

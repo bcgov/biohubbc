@@ -70,25 +70,16 @@ const SurveyDetails: React.FC<ISurveyDetailsProps> = (props) => {
       </Toolbar>
       <Divider></Divider>
       <Box p={3}>
-        <SurveyGeneralInformation
-          projectForViewData={projectForViewData}
-          codes={codes}
-        />
+        <SurveyGeneralInformation projectForViewData={projectForViewData} codes={codes} />
         <Box component="section">
           <Typography component="h4">Purpose and Methodology</Typography>
           <Divider></Divider>
-          <SurveyPurposeAndMethodologyData
-            projectForViewData={projectForViewData}
-            codes={codes}
-          />
+          <SurveyPurposeAndMethodologyData projectForViewData={projectForViewData} codes={codes} />
         </Box>
         <Box component="section">
           <Typography component="h4">Proprietary Information</Typography>
           <Divider></Divider>
-          <SurveyProprietaryData
-            projectForViewData={projectForViewData}
-            codes={codes}
-          />
+          <SurveyProprietaryData projectForViewData={projectForViewData} codes={codes} />
         </Box>
       </Box>
     </Box>

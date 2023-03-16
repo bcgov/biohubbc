@@ -100,8 +100,8 @@ const SurveyPage: React.FC = () => {
   }
 
   const handleRefresh = () => {
-    throw new Error('Not implmented yet!');
-  }
+    // @TODO
+  };
 
   return (
     <>
@@ -111,10 +111,7 @@ const SurveyPage: React.FC = () => {
           <Grid container spacing={3}>
             <Grid item md={12} lg={4}>
               <Paper elevation={0}>
-                <SurveyDetails
-                  projectForViewData={projectWithDetails}
-                  codes={codes}
-                />
+                <SurveyDetails projectForViewData={projectWithDetails} codes={codes} />
               </Paper>
             </Grid>
             <Grid item md={12} lg={8}>

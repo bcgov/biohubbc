@@ -8,10 +8,7 @@ import useDataLoader from 'hooks/useDataLoader';
 import useDataLoaderError from 'hooks/useDataLoaderError';
 import { IGetObservationSubmissionResponse } from 'interfaces/useObservationApi.interface';
 import { IGetSummaryResultsResponse } from 'interfaces/useSummaryResultsApi.interface';
-import {
-  IGetSurveyAttachment,
-  IGetSurveyReportAttachment
-} from 'interfaces/useSurveyApi.interface';
+import { IGetSurveyAttachment, IGetSurveyReportAttachment } from 'interfaces/useSurveyApi.interface';
 import React from 'react';
 import yup from 'utils/YupSchema';
 import SelectAllButton from './SelectAllButton';

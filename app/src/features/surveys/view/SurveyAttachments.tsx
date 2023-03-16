@@ -10,10 +10,7 @@ import { IUploadHandler } from 'components/file-upload/FileUploadItem';
 import { H2MenuToolbar } from 'components/toolbar/ActionToolbars';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetProjectForViewResponse, IUploadAttachmentResponse } from 'interfaces/useProjectApi.interface';
-import {
-  IGetSurveyAttachment,
-  IGetSurveyReportAttachment
-} from 'interfaces/useSurveyApi.interface';
+import { IGetSurveyAttachment, IGetSurveyReportAttachment } from 'interfaces/useSurveyApi.interface';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import { AttachmentType } from '../../../constants/attachments';
@@ -92,9 +89,7 @@ const SurveyAttachments: React.FC<ISurveyAttachmentsProps> = () => {
 
   useEffect(() => {
     getAttachments(false);
-    // @TODO
-    // eslint-disable-next-line
-  }, []);
+  }, [getAttachments]);
 
   return (
     <>

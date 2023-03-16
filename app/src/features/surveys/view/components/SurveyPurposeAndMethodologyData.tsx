@@ -56,8 +56,10 @@ const SurveyPurposeAndMethodologyData: React.FC<ISurveyPurposeAndMethodologyData
   if (!surveyForViewData) {
     return <></>;
   }
-  
-  const { surveyData: { purpose_and_methodology } } = surveyForViewData;
+
+  const {
+    surveyData: { purpose_and_methodology }
+  } = surveyForViewData;
   const { codes } = props;
 
   return (

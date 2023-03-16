@@ -76,7 +76,9 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
   const { projectForViewData } = props;
 
   const survey_details = useMemo(() => surveyForViewData?.surveyData?.survey_details, [surveyForViewData]);
-  const occurrence_submission = useMemo(() => surveyForViewData?.surveySupplementaryData?.occurrence_submission, [surveyForViewData]);
+  const occurrence_submission = useMemo(() => surveyForViewData?.surveySupplementaryData?.occurrence_submission, [
+    surveyForViewData
+  ]);
 
   const surveyGeometry = survey_details?.geometry || [];
 
@@ -159,7 +161,7 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
     if (projectId && surveyId) {
       surveyContext.surveyDataLoader.refresh(projectId, surveyId);
     }
-  }, [])
+  }, [surveyContext]);
 
   const handleDialogEditSave = async (values: IStudyAreaForm) => {
     if (!survey_details) {

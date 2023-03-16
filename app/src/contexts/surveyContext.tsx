@@ -1,9 +1,8 @@
-import React, { createContext, PropsWithChildren, useContext, useEffect } from 'react';
-import { useParams } from "react-router";
-
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader, { DataLoader } from 'hooks/useDataLoader';
 import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
+import React, { createContext, PropsWithChildren, useContext, useEffect } from 'react';
+import { useParams } from 'react-router';
 
 export interface ISurveyContext {
   surveyDataLoader: DataLoader<[project_id: number, survey_id: number], IGetSurveyForViewResponse, unknown>;
@@ -18,10 +17,10 @@ const SurveyContext = createContext<ISurveyContext>({
   projectId: null,
   surveyId: null,
   _setSurveyId: () => null,
-  _setProjectId: () => null,
+  _setProjectId: () => null
 });
 
-export const SurveyContextProvider = (props: PropsWithChildren<{}>) => {
+export const SurveyContextProvider = (props: PropsWithChildren<Record<never, any>>) => {
   const [surveyId, setSurveyId] = React.useState<number | null>(null);
   const [projectId, setProjectId] = React.useState<number | null>(null);
 
@@ -32,7 +31,7 @@ export const SurveyContextProvider = (props: PropsWithChildren<{}>) => {
     if (projectId && surveyId) {
       surveyDataLoader.refresh(projectId, surveyId);
     }
-  }, [projectId, surveyId])
+  }, [projectId, surveyDataLoader, surveyId]);
 
   const surveyContext: ISurveyContext = {
     surveyDataLoader,
@@ -40,16 +39,14 @@ export const SurveyContextProvider = (props: PropsWithChildren<{}>) => {
     surveyId,
     _setSurveyId: setSurveyId,
     _setProjectId: setProjectId
-  }
+  };
 
-  return (
-    <SurveyContext.Provider value={surveyContext} {...props} />
-  );
-}
+  return <SurveyContext.Provider value={surveyContext} {...props} />;
+};
 
 /**
- * 
- * @returns 
+ *
+ * @returns
  */
 export const useSurveyContext = (): ISurveyContext => {
   const urlParams = useParams();
@@ -59,7 +56,7 @@ export const useSurveyContext = (): ISurveyContext => {
   useEffect(() => {
     surveyContext._setSurveyId(urlParams['survey_id']);
     surveyContext._setProjectId(urlParams['id']);
-  }, [urlParams]);
+  }, [surveyContext, urlParams]);
 
   return surveyContext;
-}
+};

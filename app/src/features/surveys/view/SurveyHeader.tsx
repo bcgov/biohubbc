@@ -115,7 +115,7 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
   const { projectWithDetails } = props;
 
   const surveyContext = useSurveyContext();
-  const surveyWithDetails = surveyContext.surveyDataLoader.data
+  const surveyWithDetails = surveyContext.surveyDataLoader.data;
 
   const classes = useStyles();
   const history = useHistory();
@@ -163,7 +163,7 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
 
   const deleteSurvey = async () => {
     if (!projectWithDetails || !surveyWithDetails) {
-      return <></>
+      return <></>;
     }
 
     try {
@@ -207,7 +207,7 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
   };
 
   if (!surveyWithDetails) {
-    return <></>
+    return <></>;
   }
 
   return (
