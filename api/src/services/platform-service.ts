@@ -274,7 +274,7 @@ export class PlatformService extends DBService {
   }
 
   /**
-   * Submit a Darwin Core Archive (DwCA) data package, that only contains the project/survey metadata, to the BioHub
+   * Submit a Darwin Core Archive (DwCA) data package, that only contains the project metadata and metadata of its associated surveys, to the BioHub
    * Platform Backbone.
    *
    * Why submit only metadata? It is beneficial to submit the metadata as early as possible, so that the project/survey
@@ -317,7 +317,20 @@ export class PlatformService extends DBService {
       defaultLog.error({ label: 'platformService->sendProjectMetadataOnlyToBiohub', message: 'error', error });
     }
   }
-
+  /**
+   * Submit a Darwin Core Archive (DwCA) data package, that only contains the survey metadata and metadata of its parent project, to the BioHub
+   * Platform Backbone.
+   *
+   * Why submit only metadata? It is beneficial to submit the metadata as early as possible, so that the project/survey
+   * is discoverable by users of BioHub, even if the project/survey has not yet completed or not all inventory data has
+   * been submitted.
+   *
+   * Note: Does nothing if `process.env.BACKBONE_INTAKE_ENABLED` is not `true`.
+   *
+   * @param {number} surveyId
+   * @return {*}  {(Promise<{ queue_id: number } | undefined>)}
+   * @memberof PlatformService
+   */
   async submitSurveyMetadataOnlyToBiohub(surveyId: number): Promise<{ queue_id: number } | undefined> {
     try {
       if (!this.backboneIntakeEnabled) {
@@ -351,6 +364,7 @@ export class PlatformService extends DBService {
 
   /**
    * Submit a new Darwin Core Archive (DwCA) data package to the BioHub Platform Backbone.
+   * This package includes the metadata (EML) and all observation information
    *
    * @param {IDwCADataset} dwcaDataset
    * @return {*}  {Promise<{ data_package_id: string }>}
@@ -393,6 +407,7 @@ export class PlatformService extends DBService {
   /**
    * Submits DwCA Metadata and publishes project data
    * and survey metadata if a survey ID is provided
+   * and inserts the history records
    *
    * @param {number} projectId
    * @param {number} surveyId
@@ -420,7 +435,15 @@ export class PlatformService extends DBService {
       });
     }
   }
-
+  /**
+   * Submits DwCA Metadata and publishes survey data
+   * and survey metadata if a survey ID is provided
+   * and inserts the history records
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<void>}
+   * @memberof PlatformService
+   */
   async submitSurveyMetadataToBiohubAndInsertHistoryRecords(surveyId: number): Promise<void> {
     try {
       const queueResponse = await this.submitSurveyMetadataOnlyToBiohub(surveyId);
