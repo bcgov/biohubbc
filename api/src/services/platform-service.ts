@@ -101,10 +101,9 @@ export class PlatformService extends DBService {
   }
 
   /**
-   * Submit Surey Data Package to Biohub
+   * Submit a darwin core package of Survey Data to Biohub
    *
    * @param {number} surveyId
-   * @param {number} projectId
    * @param {{
    *       observations: IGetObservationSubmissionResponse[];
    *       summary: IGetSummaryResultsResponse[];
@@ -115,7 +114,6 @@ export class PlatformService extends DBService {
    * @memberof PlatformService
    */
   async submitSurveyDwcArchive(
-    projectId: number,
     surveyId: number,
     data: {
       observations: IGetObservationSubmissionResponse[];

@@ -133,13 +133,13 @@ export function publishSurvey(): RequestHandler {
   return async (req, res) => {
     const connection = getDBConnection(req['keycloak_token']);
 
-    const { projectId, surveyId, data } = req.body;
+    const { surveyId, data } = req.body;
 
     try {
       await connection.open();
 
       const platformService = new PlatformService(connection);
-      const response = await platformService.submitSurveyDwcArchive(projectId, surveyId, data);
+      const response = await platformService.submitSurveyDwcArchive(surveyId, data);
 
       await connection.commit();
 
