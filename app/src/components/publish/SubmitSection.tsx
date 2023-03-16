@@ -1,16 +1,18 @@
 import { Box, makeStyles, Theme, Typography } from '@material-ui/core';
+import { grey } from '@material-ui/core/colors';
 import Checkbox from '@material-ui/core/Checkbox';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
 import { FieldArray, useFormikContext } from 'formik';
 import React from 'react';
 
 const useStyles = makeStyles((theme: Theme) => ({
-  subHeader: {
-    width: '100%',
-    backgroundColor: '#dadada',
-    opacity: '.5'
-  },
-  results: {
-    width: '100%'
+  sectionTitle: {
+    letterSpacing: '0.02rem',
+    textTransform: 'uppercase',
+    background: grey[100]
   }
 }));
 
@@ -26,65 +28,69 @@ interface IDisplayFilesProps {
 
 const SubmitSection: React.FC<ISubmitSectionProps> = (props) => {
   const classes = useStyles();
-
   const { subHeader, formikName, getName, data } = props;
 
   return (
-    <>
-      <Box className={classes.subHeader} boxShadow={2} pl={2} py={2}>
-        <Typography variant="body1" style={{ color: '#787F81' }}>
-          <strong>{subHeader}</strong> {data && data.length > 1 ? `(${data.length})` : ''}
+    <Box mb={2}>
+      <Box py={1.75} px={2} className={classes.sectionTitle}>
+        <Typography variant="body2" color="textSecondary">
+          <strong>{subHeader} {data && data.length > 1 ? `(${data.length})` : ''}</strong>
         </Typography>
       </Box>
       <DisplayFiles data={data} formikName={formikName} getName={getName} />
-    </>
+    </Box>
   );
 };
 
 const DisplayFiles: React.FC<IDisplayFilesProps> = (props) => {
-  const classes = useStyles();
   const { values } = useFormikContext<any>();
-
   const { formikName, getName, data } = props;
 
   if (!data || !data.length) {
     return (
-      <Box className={classes.results} pl={2} py={2}>
-        - No {formikName} available
+      <Box pl={2} py={2}>
+        <Typography variant="body2" color="textSecondary">
+          Nothing to submit
+        </Typography>
       </Box>
     );
   }
 
   return (
-    <Box className={classes.results} pl={2} py={2}>
+    <List disablePadding>
       <FieldArray
         name={formikName}
         render={(arrayHelpers) => (
           <>
             {data.map((item: any, index: number) => (
-              <Box key={`${formikName}[${item.id}]`}>
-                <Checkbox
-                  checked={!values[formikName].find((value: any) => getName(value) === getName(item)) ? false : true}
-                  onChange={() => {
-                    const currentTarget = values[formikName].findIndex(
-                      (value: any) => getName(value) === getName(item)
-                    );
+              <ListItem key={`${formikName}[${item.id}]`} dense divider>
+                <ListItemIcon>
+                  <Checkbox
+                    edge="start"
+                    checked={!values[formikName].find((value: any) => getName(value) === getName(item)) ? false : true}
+                    onChange={() => {
+                      const currentTarget = values[formikName].findIndex(
+                        (value: any) => getName(value) === getName(item)
+                      );
 
-                    if (currentTarget === -1) {
-                      arrayHelpers.push(item);
-                    } else {
-                      arrayHelpers.remove(currentTarget);
-                    }
-                  }}
-                  name={`${formikName}[${index}]`}
-                  color="primary"></Checkbox>{' '}
-                {getName(item)}
-              </Box>
+                      if (currentTarget === -1) {
+                        arrayHelpers.push(item);
+                      } else {
+                        arrayHelpers.remove(currentTarget);
+                      }
+                    }}
+                    name={`${formikName}[${index}]`}
+                    color="primary"></Checkbox>
+                  </ListItemIcon>
+                  <ListItemText>
+                    <strong>{getName(item)}</strong>
+                  </ListItemText>
+              </ListItem>
             ))}
           </>
         )}
       />
-    </Box>
+    </List>
   );
 };
 export default SubmitSection;

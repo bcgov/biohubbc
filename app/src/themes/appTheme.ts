@@ -74,8 +74,12 @@ const appTheme = createMuiTheme({
     MuiButton: {
       root: {
         textTransform: 'none',
-        fontSize: '0.9rem',
-        borderRadius: '5px'
+        borderRadius: '5px',
+        fontWeight: 700
+      },
+      startIcon: {
+        marginBottom: '1px',
+        marginRight: '12px'
       },
       sizeLarge: {
         fontSize: '1rem'
@@ -105,6 +109,11 @@ const appTheme = createMuiTheme({
     MuiDialog: {
       paperWidthXl: {
         width: '800px'
+      }
+    },
+    MuiDialogTitle: {
+      root: {
+        paddingTop: '24px'
       }
     },
     MuiDialogActions: {
