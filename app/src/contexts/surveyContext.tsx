@@ -2,58 +2,56 @@ import React, { createContext, PropsWithChildren, useContext, useEffect } from '
 import { useParams } from "react-router";
 
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import useDataLoader from 'hooks/useDataLoader';
+import useDataLoader, { DataLoader } from 'hooks/useDataLoader';
 import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
 
-
-
 export interface ISurveyContext {
-  surveyWithDetails: IGetSurveyForViewResponse | null;
-  refresh(): void;
+  surveyDataLoader: DataLoader<[project_id: number, survey_id: number], IGetSurveyForViewResponse, unknown>;
+  projectId: number | null;
+  surveyId: number | null;
   _setSurveyId(surveyId: number): void;
   _setProjectId(projectId: number): void;
 }
 
 const SurveyContext = createContext<ISurveyContext>({
-  surveyWithDetails: null,
-  refresh: () => null,
+  surveyDataLoader: {} as DataLoader<[project_id: number, survey_id: number], IGetSurveyForViewResponse, unknown>,
+  projectId: null,
+  surveyId: null,
   _setSurveyId: () => null,
   _setProjectId: () => null,
 });
 
-export const SurveyContextProvider = (props: PropsWithChildren<void>) => {
+export const SurveyContextProvider = (props: PropsWithChildren<{}>) => {
   const [surveyId, setSurveyId] = React.useState<number | null>(null);
   const [projectId, setProjectId] = React.useState<number | null>(null);
 
   const biohubApi = useBiohubApi();
-
-  const surveyDataLoader = useDataLoader((project_id: number, survey_id: number) => {
-    return biohubApi.survey.getSurveyForView(project_id, survey_id);
-  });
-
-  const refresh = () => {
-    if (projectId && surveyId) {
-      surveyDataLoader.refresh(projectId, surveyId)
-    }
-  }
+  const surveyDataLoader = useDataLoader(biohubApi.survey.getSurveyForView);
 
   useEffect(() => {
-    refresh()
+    if (projectId && surveyId) {
+      surveyDataLoader.refresh(projectId, surveyId);
+    }
   }, [projectId, surveyId])
 
   const surveyContext: ISurveyContext = {
-    surveyWithDetails: surveyDataLoader.data || null,
-    refresh,
+    surveyDataLoader,
+    projectId,
+    surveyId,
     _setSurveyId: setSurveyId,
     _setProjectId: setProjectId
   }
 
   return (
-    <SurveyContext.Provider value={surveyContext}>{props.children}</SurveyContext.Provider>
+    <SurveyContext.Provider value={surveyContext} {...props} />
   );
 }
 
-export const useSurveyContext = () => {
+/**
+ * 
+ * @returns 
+ */
+export const useSurveyContext = (): ISurveyContext => {
   const urlParams = useParams();
   const surveyContext = useContext(SurveyContext);
 
