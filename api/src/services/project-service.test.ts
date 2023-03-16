@@ -146,7 +146,10 @@ describe('ProjectService', () => {
         const repoStub1 = sinon.stub(ProjectService.prototype, 'updateProject').resolves();
         const repoStub2 = sinon.stub(PlatformService.prototype, 'submitAndPublishDwcAMetadata').resolves();
 
-        const response = await service.updateProjectAndUploadMetadataToBiohub(1, (null as unknown) as PostProjectObject);
+        const response = await service.updateProjectAndUploadMetadataToBiohub(
+          1,
+          (null as unknown) as PostProjectObject
+        );
 
         expect(repoStub1).to.be.calledOnce;
         expect(repoStub2).to.be.calledOnce;

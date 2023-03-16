@@ -232,12 +232,6 @@ export class PlatformService extends DBService {
     //Publish Survey records to history
     await this.publishSurveyHistory(surveyId, publishIds);
 
-    //Pulish Project Metadata records to history
-    await this.publishService.insertProjectMetadataPublishRecord({
-      project_id: projectId,
-      queue_id: publishIds.queueId
-    });
-
     return { uuid: emlPackage.packageId };
   }
 
@@ -297,7 +291,6 @@ export class PlatformService extends DBService {
    */
   async sendProjectMetadataOnlyToBiohub(projectId: number): Promise<{ queue_id: number } | undefined> {
     try {
-      console.log('Submitting project eml only');
       if (!this.backboneIntakeEnabled) {
         return;
       }
@@ -329,7 +322,6 @@ export class PlatformService extends DBService {
 
   async sendSurveyMetadataOnlyToBiohub(surveyId: number): Promise<{ queue_id: number } | undefined> {
     try {
-      console.log('Submitting survey eml only');
       if (!this.backboneIntakeEnabled) {
         return;
       }
