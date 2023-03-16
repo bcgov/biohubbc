@@ -114,7 +114,7 @@ export class PlatformService extends DBService {
    * @return {*}  {Promise<void>}
    * @memberof PlatformService
    */
-  async submitSurveyDataPackage(
+  async submitSurveyDwcArchive(
     projectId: number,
     surveyId: number,
     data: {
@@ -201,7 +201,7 @@ export class PlatformService extends DBService {
      */
     if (data.reports.length !== 0) {
       const reportIds = data.reports.map((report) => report.id);
-      await this.uploadSurveyReportAttachmentsToBioHub(emlPackage.packageId, projectId, reportIds);
+      await this.uploadSurveyReportAttachmentsToBioHub(emlPackage.packageId, surveyId, reportIds);
     }
 
     /**
@@ -210,7 +210,7 @@ export class PlatformService extends DBService {
      */
     if (data.attachments.length !== 0) {
       const attachmentIds = data.attachments.map((attachment) => attachment.id);
-      await this.uploadSurveyAttachmentsToBioHub(emlPackage.packageId, projectId, attachmentIds);
+      await this.uploadSurveyAttachmentsToBioHub(emlPackage.packageId, surveyId, attachmentIds);
     }
 
     //Check security request and create DWCA file for submission
@@ -230,7 +230,7 @@ export class PlatformService extends DBService {
     publishIds.queueId = queueResponse.queue_id;
 
     //Publish Survey records to history
-    await this.publishSurveyHistory(surveyId, publishIds);
+    await this.publishSurveyDataHistory(surveyId, publishIds);
 
     return { uuid: emlPackage.packageId };
   }
@@ -243,7 +243,7 @@ export class PlatformService extends DBService {
    * @param {publishIds} publishIds
    * @memberof PlatformService
    */
-  async publishSurveyHistory(surveyId: number, publishIds: IPublishIds) {
+  async publishSurveyDataHistory(surveyId: number, publishIds: IPublishIds) {
     const publishArray = [];
     if (publishIds.queueId) {
       publishArray.push(
@@ -316,7 +316,7 @@ export class PlatformService extends DBService {
       return this._submitDwCADatasetToBioHubBackbone(dwCADataset);
     } catch (error) {
       // Don't fail the rest of the endpoint if submitting metadata fails
-      defaultLog.error({ label: 'platformService->submitDwCAMetadataPackage', message: 'error', error });
+      defaultLog.error({ label: 'platformService->sendProjectMetadataOnlyToBiohub', message: 'error', error });
     }
   }
 
@@ -347,7 +347,7 @@ export class PlatformService extends DBService {
       return this._submitDwCADatasetToBioHubBackbone(dwCADataset);
     } catch (error) {
       // Don't fail the rest of the endpoint if submitting metadata fails
-      defaultLog.error({ label: 'platformService->submitDwCAMetadataPackage', message: 'error', error });
+      defaultLog.error({ label: 'platformService->sendSurveyMetadataOnlyToBiohub', message: 'error', error });
     }
   }
 
