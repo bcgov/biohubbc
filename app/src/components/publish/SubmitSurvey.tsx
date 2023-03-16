@@ -2,6 +2,7 @@ import Box from '@material-ui/core/Box';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Container from '@material-ui/core/Container';
 import Typography from '@material-ui/core/Typography';
+import { useSurveyContext } from 'contexts/surveyContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import useDataLoaderError from 'hooks/useDataLoaderError';
@@ -9,17 +10,12 @@ import { IGetObservationSubmissionResponse } from 'interfaces/useObservationApi.
 import { IGetSummaryResultsResponse } from 'interfaces/useSummaryResultsApi.interface';
 import {
   IGetSurveyAttachment,
-  IGetSurveyForViewResponse,
   IGetSurveyReportAttachment
 } from 'interfaces/useSurveyApi.interface';
 import React from 'react';
 import yup from 'utils/YupSchema';
 import SelectAllButton from './SelectAllButton';
 import SubmitSection from './SubmitSection';
-
-export interface ISubmitSurvey {
-  surveyDetails: IGetSurveyForViewResponse;
-}
 
 export interface ISurveySubmitForm {
   observations: IGetObservationSubmissionResponse[];
@@ -42,14 +38,16 @@ export const SurveySubmitFormYupSchema = yup.object().shape({
   attachments: yup.array()
 });
 
-const SubmitSurvey: React.FC<ISubmitSurvey> = (props) => {
+const SubmitSurvey: React.FC = () => {
   const biohubApi = useBiohubApi();
+  const surveyContext = useSurveyContext();
 
-  const { surveyDetails } = props;
+  const surveyDetails = surveyContext.surveyDataLoader.data;
 
   const observationDataLoader = useDataLoader((projectId: number, surveyId: number) =>
     biohubApi.observation.getObservationSubmission(projectId, surveyId)
   );
+
   useDataLoaderError(observationDataLoader, () => {
     return {
       dialogTitle: 'Error Loading Occurrence Details',
@@ -57,10 +55,13 @@ const SubmitSurvey: React.FC<ISubmitSurvey> = (props) => {
         'An error has occurred while attempting to load occurrence details, please try again. If the error persists, please contact your system administrator.'
     };
   });
-  observationDataLoader.load(
-    surveyDetails.surveyData.survey_details.project_id,
-    surveyDetails.surveyData.survey_details.id
-  );
+
+  if (surveyDetails) {
+    observationDataLoader.load(
+      surveyDetails.surveyData.survey_details.project_id,
+      surveyDetails.surveyData.survey_details.id
+    );
+  }
 
   const summaryDataLoader = useDataLoader((projectId: number, surveyId: number) =>
     biohubApi.survey.getSurveySummarySubmission(projectId, surveyId)
@@ -72,10 +73,13 @@ const SubmitSurvey: React.FC<ISubmitSurvey> = (props) => {
         'An error has occurred while attempting to load Summary details, please try again. If the error persists, please contact your system administrator.'
     };
   });
-  summaryDataLoader.load(
-    surveyDetails.surveyData.survey_details.project_id,
-    surveyDetails.surveyData.survey_details.id
-  );
+
+  if (surveyDetails) {
+    summaryDataLoader.load(
+      surveyDetails.surveyData.survey_details.project_id,
+      surveyDetails.surveyData.survey_details.id
+    );
+  }
 
   const attachmentAndReportDataLoader = useDataLoader((projectId: number, surveyId: number) =>
     biohubApi.survey.getSurveyAttachments(projectId, surveyId)
@@ -87,10 +91,13 @@ const SubmitSurvey: React.FC<ISubmitSurvey> = (props) => {
         'An error has occurred while attempting to load Report/Attachment details, please try again. If the error persists, please contact your system administrator.'
     };
   });
-  attachmentAndReportDataLoader.load(
-    surveyDetails.surveyData.survey_details.project_id,
-    surveyDetails.surveyData.survey_details.id
-  );
+
+  if (surveyDetails) {
+    attachmentAndReportDataLoader.load(
+      surveyDetails.surveyData.survey_details.project_id,
+      surveyDetails.surveyData.survey_details.id
+    );
+  }
 
   if (attachmentAndReportDataLoader.isLoading || observationDataLoader.isLoading || summaryDataLoader.isLoading) {
     return <CircularProgress className="pageProgress" size={40} />;

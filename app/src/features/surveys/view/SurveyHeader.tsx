@@ -31,10 +31,10 @@ import { DeleteSurveyI18N } from 'constants/i18n';
 import { SYSTEM_ROLE } from 'constants/roles';
 import { AuthStateContext } from 'contexts/authStateContext';
 import { DialogContext } from 'contexts/dialogContext';
+import { useSurveyContext } from 'contexts/surveyContext';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
-import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
 import React, { useContext, useState } from 'react';
 import { useHistory } from 'react-router';
 import { getFormattedDateRangeString } from 'utils/Utils';
@@ -103,8 +103,6 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 export interface ISurveyHeaderProps {
   projectWithDetails: IGetProjectForViewResponse;
-  surveyWithDetails: IGetSurveyForViewResponse;
-  refresh?: () => void;
 }
 
 /**
@@ -114,7 +112,10 @@ export interface ISurveyHeaderProps {
  * @return {*}
  */
 const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
-  const { projectWithDetails, surveyWithDetails } = props;
+  const { projectWithDetails } = props;
+
+  const surveyContext = useSurveyContext();
+  const surveyWithDetails = surveyContext.surveyDataLoader.data
 
   const classes = useStyles();
   const history = useHistory();
@@ -162,7 +163,7 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
 
   const deleteSurvey = async () => {
     if (!projectWithDetails || !surveyWithDetails) {
-      return;
+      return <></>
     }
 
     try {
@@ -204,6 +205,10 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
   const closeSurveyMenu = () => {
     setAnchorEl(null);
   };
+
+  if (!surveyWithDetails) {
+    return <></>
+  }
 
   return (
     <>
@@ -333,7 +338,7 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
           initialValues: SurveySubmitFormInitialValues,
           validationSchema: SurveySubmitFormYupSchema
         }}>
-        <SubmitSurvey surveyDetails={surveyWithDetails} />
+        <SubmitSurvey />
       </SubmitBiohubDialog>
     </>
   );

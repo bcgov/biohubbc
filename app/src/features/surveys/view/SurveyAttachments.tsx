@@ -12,7 +12,6 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetProjectForViewResponse, IUploadAttachmentResponse } from 'interfaces/useProjectApi.interface';
 import {
   IGetSurveyAttachment,
-  IGetSurveyForViewResponse,
   IGetSurveyReportAttachment
 } from 'interfaces/useSurveyApi.interface';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -21,7 +20,6 @@ import { AttachmentType } from '../../../constants/attachments';
 
 export interface ISurveyAttachmentsProps {
   projectForViewData: IGetProjectForViewResponse;
-  surveyForViewData: IGetSurveyForViewResponse;
 }
 
 /**
@@ -94,6 +92,7 @@ const SurveyAttachments: React.FC<ISurveyAttachmentsProps> = () => {
 
   useEffect(() => {
     getAttachments(false);
+    // @TODO
     // eslint-disable-next-line
   }, []);
 

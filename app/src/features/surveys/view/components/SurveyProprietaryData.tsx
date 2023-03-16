@@ -3,16 +3,14 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { EditSurveyProprietorI18N } from 'constants/i18n';
+import { useSurveyContext } from 'contexts/surveyContext';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
-import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
 import React, { useState } from 'react';
 
 export interface ISurveyProprietaryDataProps {
-  surveyForViewData: IGetSurveyForViewResponse;
   codes: IGetAllCodeSetsResponse;
   projectForViewData: IGetProjectForViewResponse;
-  refresh: () => void;
 }
 
 /**
@@ -21,11 +19,8 @@ export interface ISurveyProprietaryDataProps {
  * @return {*}
  */
 const SurveyProprietaryData: React.FC<ISurveyProprietaryDataProps> = (props) => {
-  const {
-    surveyForViewData: {
-      surveyData: { proprietor }
-    }
-  } = props;
+  const surveyContext = useSurveyContext();
+  const surveyForViewData = surveyContext.surveyDataLoader.data;
 
   const [errorDialogProps, setErrorDialogProps] = useState<IErrorDialogProps>({
     dialogTitle: EditSurveyProprietorI18N.editErrorTitle,
@@ -38,6 +33,12 @@ const SurveyProprietaryData: React.FC<ISurveyProprietaryDataProps> = (props) => 
       setErrorDialogProps({ ...errorDialogProps, open: false });
     }
   });
+
+  if (!surveyForViewData) {
+    return <></>;
+  }
+
+  const { surveyData: { proprietor } } = surveyForViewData;
 
   return (
     <>
@@ -68,14 +69,6 @@ const SurveyProprietaryData: React.FC<ISurveyProprietaryDataProps> = (props) => 
                   {proprietor.proprietor_type_name}
                 </Typography>
               </Grid>
-              {/* <Grid item xs={12} sm={6}>
-                <Typography component="dt" variant="subtitle2" color="textSecondary">
-                  DISA Required
-                </Typography>
-                <Typography component="dd" variant="body1">
-                  {proprietor.disa_required ? 'Yes' : 'No'}
-                </Typography>
-              </Grid> */}
               <Grid item>
                 <Typography component="dt" variant="subtitle2" color="textSecondary">
                   Category Rationale

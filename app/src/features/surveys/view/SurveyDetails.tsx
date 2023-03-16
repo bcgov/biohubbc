@@ -9,7 +9,6 @@ import SurveyProprietaryData from 'features/surveys/view/components/SurveyPropri
 import SurveyPurposeAndMethodologyData from 'features/surveys/view/components/SurveyPurposeAndMethodologyData';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
-import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
 import React from 'react';
 import SurveyGeneralInformation from './components/SurveyGeneralInformation';
 
@@ -49,10 +48,8 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 export interface ISurveyDetailsProps {
-  surveyForViewData: IGetSurveyForViewResponse;
   codes: IGetAllCodeSetsResponse;
   projectForViewData: IGetProjectForViewResponse;
-  refresh: () => void;
 }
 
 /**
@@ -62,7 +59,7 @@ export interface ISurveyDetailsProps {
  */
 const SurveyDetails: React.FC<ISurveyDetailsProps> = (props) => {
   const classes = useStyles();
-  const { surveyForViewData, codes, refresh, projectForViewData } = props;
+  const { codes, projectForViewData } = props;
 
   return (
     <Box className={classes.surveyMetadataContainer}>
@@ -75,18 +72,14 @@ const SurveyDetails: React.FC<ISurveyDetailsProps> = (props) => {
       <Box p={3}>
         <SurveyGeneralInformation
           projectForViewData={projectForViewData}
-          surveyForViewData={surveyForViewData}
           codes={codes}
-          refresh={refresh}
         />
         <Box component="section">
           <Typography component="h4">Purpose and Methodology</Typography>
           <Divider></Divider>
           <SurveyPurposeAndMethodologyData
             projectForViewData={projectForViewData}
-            surveyForViewData={surveyForViewData}
             codes={codes}
-            refresh={refresh}
           />
         </Box>
         <Box component="section">
@@ -94,9 +87,7 @@ const SurveyDetails: React.FC<ISurveyDetailsProps> = (props) => {
           <Divider></Divider>
           <SurveyProprietaryData
             projectForViewData={projectForViewData}
-            surveyForViewData={surveyForViewData}
             codes={codes}
-            refresh={refresh}
           />
         </Box>
       </Box>

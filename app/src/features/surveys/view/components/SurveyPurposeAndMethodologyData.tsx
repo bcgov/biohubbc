@@ -5,9 +5,9 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { EditSurveyPurposeAndMethodologyI18N } from 'constants/i18n';
+import { useSurveyContext } from 'contexts/surveyContext';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
-import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
 import React, { useState } from 'react';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -27,10 +27,8 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 export interface ISurveyPurposeAndMethodologyDataProps {
-  surveyForViewData: IGetSurveyForViewResponse;
   codes: IGetAllCodeSetsResponse;
   projectForViewData: IGetProjectForViewResponse;
-  refresh: () => void;
 }
 
 /**
@@ -40,12 +38,8 @@ export interface ISurveyPurposeAndMethodologyDataProps {
  */
 const SurveyPurposeAndMethodologyData: React.FC<ISurveyPurposeAndMethodologyDataProps> = (props) => {
   const classes = useStyles();
-  const {
-    surveyForViewData: {
-      surveyData: { purpose_and_methodology }
-    },
-    codes
-  } = props;
+  const surveyContext = useSurveyContext();
+  const surveyForViewData = surveyContext.surveyDataLoader.data;
 
   const [errorDialogProps, setErrorDialogProps] = useState<IErrorDialogProps>({
     dialogTitle: EditSurveyPurposeAndMethodologyI18N.editErrorTitle,
@@ -58,6 +52,13 @@ const SurveyPurposeAndMethodologyData: React.FC<ISurveyPurposeAndMethodologyData
       setErrorDialogProps({ ...errorDialogProps, open: false });
     }
   });
+
+  if (!surveyForViewData) {
+    return <></>;
+  }
+  
+  const { surveyData: { purpose_and_methodology } } = surveyForViewData;
+  const { codes } = props;
 
   return (
     <>
