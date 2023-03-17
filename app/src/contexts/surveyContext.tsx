@@ -21,7 +21,7 @@ export interface ISurveyContext {
 
   /**
    * The project ID belonging to the current survey
-   * 
+   *
    * @type {}
    * @memberof ISurveyContext
    */
@@ -29,7 +29,7 @@ export interface ISurveyContext {
 
   /**
    * The ID belonging to the current survey
-   * 
+   *
    * @type {number | null}
    * @memberof ISurveyContext
    */
@@ -37,7 +37,7 @@ export interface ISurveyContext {
 
   /**
    * Callback that updates the current survey loaded by the survey context Data Loader
-   * 
+   *
    * @type {}
    * @memberof ISurveyContext
    */
@@ -45,7 +45,7 @@ export interface ISurveyContext {
 
   /**
    * Callback that updates the current project ID for the survey context
-   * 
+   *
    * @type {}
    * @memberof ISurveyContext
    */
@@ -78,20 +78,23 @@ export const SurveyContextProvider = (props: PropsWithChildren<Record<never, any
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [projectId, surveyId]);
 
-  const surveyContext: ISurveyContext = useMemo(() => ({
-    surveyDataLoader,
-    projectId,
-    surveyId,
-    _setSurveyId: setSurveyId,
-    _setProjectId: setProjectId
-  }), [surveyDataLoader, projectId, surveyId, setSurveyId, setProjectId]);
+  const surveyContext: ISurveyContext = useMemo(
+    () => ({
+      surveyDataLoader,
+      projectId,
+      surveyId,
+      _setSurveyId: setSurveyId,
+      _setProjectId: setProjectId
+    }),
+    [surveyDataLoader, projectId, surveyId, setSurveyId, setProjectId]
+  );
 
   return <SurveyContext.Provider value={surveyContext} {...props} />;
 };
 
 /**
  * Creates a hook that provides Survey Context.
- * 
+ *
  * @returns {ISurveyContext} The Survey Context object
  */
 export const useSurveyContext = (): ISurveyContext => {
