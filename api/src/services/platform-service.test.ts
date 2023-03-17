@@ -452,6 +452,46 @@ describe('PlatformService', () => {
     });
   });
 
+  describe('submitSurveyMetadataToBiohubAndInsertHistoryRecords', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('should submit and publish project DwCA Metadata', async () => {
+      const mockDBConnection = getMockDBConnection();
+      const platformService = new PlatformService(mockDBConnection);
+
+      const submitDwCAMetadataPackageStub = await sinon
+        .stub(PlatformService.prototype, 'submitSurveyMetadataOnlyToBiohub')
+        .resolves({ queue_id: 1 });
+
+      const insertProjectMetadataPublishRecordStub = sinon
+        .stub(HistoryPublishService.prototype, 'insertSurveyMetadataPublishRecord')
+        .resolves();
+
+      await platformService.submitSurveyMetadataToBiohubAndInsertHistoryRecords(1);
+
+      expect(submitDwCAMetadataPackageStub).to.be.calledWith(1);
+      expect(insertProjectMetadataPublishRecordStub).to.be.calledWith({ survey_id: 1, queue_id: 1 });
+    });
+
+    it('should throw error', async () => {
+      const mockDBConnection = getMockDBConnection();
+      const platformService = new PlatformService(mockDBConnection);
+
+      const submitDwCAMetadataPackageStub = await sinon
+        .stub(PlatformService.prototype, 'submitSurveyMetadataOnlyToBiohub')
+        .rejects(new Error('a test error'));
+
+      try {
+        await platformService.submitSurveyMetadataToBiohubAndInsertHistoryRecords(1);
+        expect.fail();
+      } catch (actualError: any) {
+        expect(submitDwCAMetadataPackageStub).to.be.calledWith(1);
+      }
+    });
+  });
+
   describe('_makeArtifactFromSummary', () => {
     it('should make an artifact from the given data', async () => {
       const mockDBConnection = getMockDBConnection();

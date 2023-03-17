@@ -127,7 +127,7 @@ POST.apiDoc = {
 /**
  * Publish survey data to Biohub.
  *
-//  * @return {*}  {RequestHandler}
+ * @return {*}  {RequestHandler}
  */
 export function publishSurvey(): RequestHandler {
   return async (req, res) => {
