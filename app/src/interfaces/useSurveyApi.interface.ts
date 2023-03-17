@@ -85,7 +85,6 @@ export interface SurveyViewObject {
   purpose_and_methodology: IGetSurveyForViewResponsePurposeAndMethodology;
   funding: ISurveyFundingSources;
   proprietor: IGetSurveyForViewResponseProprietor | null;
-  docs_to_be_reviewed: number;
 }
 
 export interface SurveyUpdateObject {
@@ -136,8 +135,45 @@ export interface SurveyUpdateObject {
 }
 
 export interface SurveySupplementaryData {
-  occurrence_submission: { id: number | null };
-  summary_result: { id: number | null };
+  occurrence_submission: {
+    occurrence_submission_id: number;
+  };
+  occurrence_submission_publish: {
+    occurrence_submission_publish_id: number;
+    occurrence_submission_id: number;
+    event_timestamp: string;
+    queue_id: number;
+    create_date: string;
+    create_user: number;
+    update_date: string | null;
+    update_user: number | null;
+    revision_count: number;
+  };
+  survey_summary_submission: {
+    survey_summary_submission_id: number;
+  };
+  survey_summary_submission_publish: {
+    survey_summary_submission_publish_id: number;
+    survey_summary_submission_id: number;
+    event_timestamp: string;
+    artifact_revision_id: number;
+    create_date: string;
+    create_user: number;
+    update_date: string | null;
+    update_user: number | null;
+    revision_count: number;
+  };
+  survey_metadata_publish: {
+    survey_metadata_publish_id: number;
+    survey_id: number;
+    event_timestamp: string;
+    queue_id: number;
+    create_date: string;
+    create_user: number;
+    update_date: string | null;
+    update_user: number | null;
+    revision_count: number;
+  };
 }
 
 /**

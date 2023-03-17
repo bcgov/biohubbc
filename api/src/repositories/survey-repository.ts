@@ -380,33 +380,25 @@ export class SurveyRepository extends BaseRepository {
   }
 
   /**
-   * Get Occurrence submission id for a given survey ID
+   * Get Occurrence submission for a given survey id.
    *
    * @param {number} surveyId
-   * @returns {*} Promise<number>
+   * @return {*}
    * @memberof SurveyRepository
    */
-  async getOccurrenceSubmissionId(surveyId: number): Promise<number> {
+  async getOccurrenceSubmission(surveyId: number) {
     const sqlStatement = SQL`
       SELECT
-        max(occurrence_submission_id) as id
+        max(occurrence_submission_id) as occurrence_submission_id
       FROM
         occurrence_submission
       WHERE
         survey_id = ${surveyId};
-      `;
+    `;
 
-    const response = await this.connection.sql(sqlStatement);
+    const response = await this.connection.sql<{ occurrence_submission_id: number }>(sqlStatement);
 
-    const result = (response && response.rows && response.rows?.[0]) || null;
-
-    if (!result) {
-      throw new ApiExecuteSQLError('Failed to get survey Occurrence submission Id', [
-        'SurveyRepository->getOccurrenceSubmissionId',
-        'response was null or undefined, expected response != null'
-      ]);
-    }
-    return result;
+    return (response.rowCount && response.rows[0]) || null;
   }
 
   /**
@@ -524,34 +516,25 @@ export class SurveyRepository extends BaseRepository {
   }
 
   /**
-   * Get Survey summary result ID for a given surveyId
+   * Get survey summary submission for a given survey id.
    *
    * @param {number} surveyId
-   * @returns {*} Promise<number>
+   * @return {*}
    * @memberof SurveyRepository
    */
-  async getSummaryResultId(surveyId: number): Promise<number> {
+  async getSurveySummarySubmission(surveyId: number) {
     const sqlStatement = SQL`
       SELECT
-        max(survey_summary_submission_id) as id
+        max(survey_summary_submission_id) as survey_summary_submission_id
       FROM
         survey_summary_submission
       WHERE
         survey_id = ${surveyId};
       `;
 
-    const response = await this.connection.sql(sqlStatement);
+    const response = await this.connection.sql<{ survey_summary_submission_id: number }>(sqlStatement);
 
-    const result = (response && response.rows && response.rows?.[0]) || null;
-
-    if (!result) {
-      throw new ApiExecuteSQLError('Failed to get summary result id', [
-        'SurveyRepository->getSummaryResultId',
-        'response was null or undefined, expected response != null'
-      ]);
-    }
-
-    return result;
+    return (response.rowCount && response.rows[0]) || null;
   }
 
   /**

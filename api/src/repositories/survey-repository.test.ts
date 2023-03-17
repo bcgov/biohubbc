@@ -219,23 +219,20 @@ describe('SurveyRepository', () => {
 
       const repository = new SurveyRepository(dbConnection);
 
-      const response = await repository.getOccurrenceSubmissionId(1);
+      const response = await repository.getOccurrenceSubmission(1);
 
       expect(response).to.eql({ id: 1 });
     });
 
-    it('should throw an error', async () => {
-      const mockResponse = (undefined as any) as Promise<QueryResult<any>>;
+    it('should return null if now rows returned', async () => {
+      const mockResponse = ({ rows: [], rowCount: 1 } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
       const repository = new SurveyRepository(dbConnection);
 
-      try {
-        await repository.getOccurrenceSubmissionId(1);
-        expect.fail();
-      } catch (error) {
-        expect((error as Error).message).to.equal('Failed to get survey Occurrence submission Id');
-      }
+      const response = await repository.getOccurrenceSubmission(1);
+
+      expect(response).to.eql(null);
     });
   });
 
@@ -263,30 +260,27 @@ describe('SurveyRepository', () => {
     });
   });
 
-  describe('getSummaryResultId', () => {
+  describe('getSurveySummarySubmission', () => {
     it('should return result', async () => {
       const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
       const repository = new SurveyRepository(dbConnection);
 
-      const response = await repository.getSummaryResultId(1);
+      const response = await repository.getSurveySummarySubmission(1);
 
       expect(response).to.eql({ id: 1 });
     });
 
-    it('should throw an error', async () => {
-      const mockResponse = (undefined as any) as Promise<QueryResult<any>>;
+    it('should return null if now rows returned', async () => {
+      const mockResponse = ({ rows: [], rowCount: 1 } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
       const repository = new SurveyRepository(dbConnection);
 
-      try {
-        await repository.getSummaryResultId(1);
-        expect.fail();
-      } catch (error) {
-        expect((error as Error).message).to.equal('Failed to get summary result id');
-      }
+      const response = await repository.getSurveySummarySubmission(1);
+
+      expect(response).to.eql(null);
     });
   });
 
