@@ -2,6 +2,7 @@ import { cleanup, fireEvent, render, waitFor } from '@testing-library/react';
 import { SYSTEM_ROLE } from 'constants/roles';
 import { AuthStateContext, IAuthState } from 'contexts/authStateContext';
 import { DialogContextProvider } from 'contexts/dialogContext';
+import { useSurveyContext } from 'contexts/surveyContext';
 import SurveyHeader from 'features/surveys/view/SurveyHeader';
 import { createMemoryHistory } from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -22,8 +23,19 @@ const mockUseBiohubApi = {
   }
 };
 
+jest.mock('../../../contexts/surveyContext');
+const mockUseSurveyContext = {
+  surveyDataLoader: {
+    data: getSurveyForViewResponse
+  }
+};
+
 const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBiohubApi>).mockReturnValue(
   mockUseBiohubApi
+);
+
+const mockSurveyContext = ((useSurveyContext as unknown) as jest.Mock<typeof mockUseSurveyContext>).mockReturnValue(
+  mockUseSurveyContext
 );
 
 const defaultAuthState = {
@@ -50,14 +62,13 @@ const surveyForView = getSurveyForViewResponse;
 const projectForView = getProjectForViewResponse;
 const refresh = jest.fn();
 
-describe('SurveyPage', () => {
+describe('SurveyHeader', () => {
   beforeEach(() => {
     // clear mocks before each test
     mockBiohubApi().survey.publishSurvey.mockClear();
     mockBiohubApi().survey.deleteSurvey.mockClear();
     refresh.mockClear();
-
-    // jest.spyOn(console, 'debug').mockImplementation(() => {});
+    mockSurveyContext.mockClear();
   });
 
   afterEach(() => {
@@ -69,7 +80,7 @@ describe('SurveyPage', () => {
       <AuthStateContext.Provider value={authState as IAuthState}>
         <DialogContextProvider>
           <Router history={history}>
-            <SurveyHeader projectWithDetails={projectForView} surveyWithDetails={surveyData} refresh={refresh} />
+            <SurveyHeader projectWithDetails={projectForView} />
           </Router>
         </DialogContextProvider>
       </AuthStateContext.Provider>

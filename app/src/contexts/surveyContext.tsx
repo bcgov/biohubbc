@@ -31,7 +31,7 @@ export const SurveyContextProvider = (props: PropsWithChildren<Record<never, any
     if (projectId && surveyId) {
       surveyDataLoader.refresh(projectId, surveyId);
     }
-  }, [projectId, surveyId]);
+  }, [projectId, surveyDataLoader, surveyId]);
 
   const surveyContext: ISurveyContext = {
     surveyDataLoader,
