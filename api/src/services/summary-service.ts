@@ -186,6 +186,9 @@ export class SummaryService extends DBService {
    */
   async summaryTemplateValidation(xlsx: XLSXCSV, surveyId: number, summarySubmissionId?: number) {
     defaultLog.debug({ label: 'summaryTemplateValidation', data: { surveyId, summarySubmissionId } });
+    console.log("__")
+    console.log("__")
+    console.log("IS IT THIS ONE?")
     try {
       const summaryTemplateSpeciesRecords = await this.getSummaryTemplateSpeciesRecords(xlsx, surveyId);
 
@@ -214,7 +217,10 @@ export class SummaryService extends DBService {
       const csvState = this.validateXLSX(xlsx, schemaParser);
       await this.persistSummaryValidationResults(csvState.csv_state, csvState.media_state);
     } catch (error) {
+      console.log("ERROR PLEASE HALP");
+      console.log(error)
       if (error instanceof SubmissionError) {
+        console.log("SET STATUS PLEASE")
         error.setStatus(SUBMISSION_STATUS_TYPE.FAILED_VALIDATION);
       }
       throw error;

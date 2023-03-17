@@ -5,6 +5,7 @@ import { ApiExecuteSQLError } from '../errors/api-error';
 import { HTTP400 } from '../errors/http-error';
 import { PostSummaryDetails } from '../models/summaryresults-create';
 import { getLogger } from '../utils/logger';
+import { MessageError, SummarySubmissionError } from '../utils/submission-error';
 import { BaseRepository } from './base-repository';
 
 export interface ISummaryTemplateSpeciesData {
@@ -117,7 +118,7 @@ export class SummaryRepository extends BaseRepository {
       WHERE
         sss.survey_id = ${surveyId}
       ORDER BY
-        sss.event_timestamp DESC
+        sss.event_timestamp DESC, sssm.event_timestamp DESC
       LIMIT 1;
     `;
 
@@ -306,7 +307,7 @@ export class SummaryRepository extends BaseRepository {
   }
 
   /**
-   * Retreives the list of messages for a summary submission.
+   * Retrieves the list of messages for a summary submission.
    *
    * @param {number} summarySubmissionId the ID of the summary submission.
    * @returns {Promise<ISummarySubmissionMessagesResponse[]>} all messages for the given summary submission.
@@ -351,7 +352,7 @@ export class SummaryRepository extends BaseRepository {
   }
 
   /**
-   * Retreives the ID of a summary template based on its name and version number.
+   * Retrieves the ID of a summary template based on its name and version number.
    * @param templateName
    * @param templateVersion
    * @returns
@@ -385,7 +386,7 @@ export class SummaryRepository extends BaseRepository {
   }
 
   /**
-   * Reetrieves all summary template species records that are constrained by the given
+   * Retrieves all summary template species records that are constrained by the given
    * template name, version and survey focal species.
    * @param {number} templateName The name of the template.
    * @param {number} templateVersion The version of the template.
@@ -398,6 +399,17 @@ export class SummaryRepository extends BaseRepository {
     species?: number[]
   ): Promise<ISummaryTemplateSpeciesData[]> {
     const templateRow = await this.getSummaryTemplateIdFromNameVersion(templateName, templateVersion);
+
+    if (!templateRow) {
+      throw new SummarySubmissionError({
+        messages: [
+          new MessageError(
+            SUMMARY_SUBMISSION_MESSAGE_TYPE.FAILED_GET_VALIDATION_RULES,
+            `Could not find any validation schema associated with Template Name "${templateName}" and Template Version "${templateVersion}".`
+          )
+        ]
+      });
+    }
 
     const queryBuilder = getKnex()
       .select()
