@@ -4,11 +4,51 @@ import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
 import React, { createContext, PropsWithChildren, useContext, useEffect } from 'react';
 import { useParams } from 'react-router';
 
+/**
+ * Context object that stores information about a survey
+ *
+ * @export
+ * @interface ISurveyContext
+ */
 export interface ISurveyContext {
+  /**
+   * The Data Loader used to load survey data
+   *
+   * @type {DataLoader<[project_id: number, survey_id: number], IGetSurveyForViewResponse, unknown>}
+   * @memberof ISurveyContext
+   */
   surveyDataLoader: DataLoader<[project_id: number, survey_id: number], IGetSurveyForViewResponse, unknown>;
+
+  /**
+   * The project ID belonging to the current survey
+   * 
+   * @type {}
+   * @memberof ISurveyContext
+   */
   projectId: number | null;
+
+  /**
+   * The ID belonging to the current survey
+   * 
+   * @type {number | null}
+   * @memberof ISurveyContext
+   */
   surveyId: number | null;
+
+  /**
+   * Callback that updates the current survey loaded by the survey context Data Loader
+   * 
+   * @type {}
+   * @memberof ISurveyContext
+   */
   _setSurveyId(surveyId: number): void;
+
+  /**
+   * Callback that updates the current project ID for the survey context
+   * 
+   * @type {}
+   * @memberof ISurveyContext
+   */
   _setProjectId(projectId: number): void;
 }
 
@@ -27,11 +67,14 @@ export const SurveyContextProvider = (props: PropsWithChildren<Record<never, any
   const biohubApi = useBiohubApi();
   const surveyDataLoader = useDataLoader(biohubApi.survey.getSurveyForView);
 
+  /**
+   * Refreshes the current survey object whenever the current survey ID changes
+   */
   useEffect(() => {
     if (projectId && surveyId) {
       surveyDataLoader.refresh(projectId, surveyId);
     }
-  }, [projectId, surveyDataLoader, surveyId]);
+  }, [projectId, surveyId]);
 
   const surveyContext: ISurveyContext = {
     surveyDataLoader,
@@ -45,14 +88,18 @@ export const SurveyContextProvider = (props: PropsWithChildren<Record<never, any
 };
 
 /**
- *
- * @returns
+ * Creates a hook that provides Survey Context.
+ * 
+ * @returns {ISurveyContext} The Survey Context object
  */
 export const useSurveyContext = (): ISurveyContext => {
   const urlParams = useParams();
   const surveyContext = useContext(SurveyContext);
 
-  // Update survey each time the survey ID or project ID changes
+  /**
+   * Maintains the current survey loaded by the Data Loader updating the current survey ID
+   * based on the current survey ID and project ID route parameter
+   */
   useEffect(() => {
     surveyContext._setSurveyId(urlParams['survey_id']);
     surveyContext._setProjectId(urlParams['id']);

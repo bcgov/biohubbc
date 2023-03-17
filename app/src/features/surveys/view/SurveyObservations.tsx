@@ -60,7 +60,7 @@ const SurveyObservations: React.FC = () => {
     if (projectId && surveyId) {
       surveyContext.surveyDataLoader.refresh(projectId, surveyId);
     }
-  }, [projectId, surveyContext.surveyDataLoader, surveyId]);
+  }, [projectId, surveyId]);
 
   const submissionDataLoader = useDataLoader(() => biohubApi.observation.getObservationSubmission(projectId, surveyId));
 

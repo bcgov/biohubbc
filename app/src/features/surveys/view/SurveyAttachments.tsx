@@ -89,7 +89,7 @@ const SurveyAttachments: React.FC<ISurveyAttachmentsProps> = () => {
 
   useEffect(() => {
     getAttachments(false);
-  }, [getAttachments]);
+  }, []);
 
   return (
     <>
