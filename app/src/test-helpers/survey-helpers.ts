@@ -78,16 +78,48 @@ export const surveyObject: SurveyViewObject = {
     focal_species_names: ['focal species 1'],
     ancillary_species: [2],
     ancillary_species_names: ['ancillary species 2']
-  },
-  docs_to_be_reviewed: 0
+  }
 };
 
 export const surveySupplementaryData: SurveySupplementaryData = {
   occurrence_submission: {
-    id: null
+    occurrence_submission_id: 1
   },
-  summary_result: {
-    id: null
+  occurrence_submission_publish: {
+    occurrence_submission_publish_id: 1,
+    occurrence_submission_id: 1,
+    event_timestamp: '2000-05-10 11:53:53',
+    queue_id: 1,
+    create_date: '2000-06-10 11:53:53',
+    create_user: 1,
+    update_date: null,
+    update_user: null,
+    revision_count: 1
+  },
+  survey_summary_submission: {
+    survey_summary_submission_id: 2
+  },
+  survey_summary_submission_publish: {
+    survey_summary_submission_publish_id: 1,
+    survey_summary_submission_id: 1,
+    event_timestamp: '2000-08-10 11:53:53',
+    artifact_revision_id: 1,
+    create_date: '2000-09-10 11:53:53',
+    create_user: 1,
+    update_date: null,
+    update_user: null,
+    revision_count: 1
+  },
+  survey_metadata_publish: {
+    survey_metadata_publish_id: 1,
+    survey_id: 1,
+    event_timestamp: '2000-11-10 11:53:53',
+    queue_id: 1,
+    create_date: '2000-12-10 11:53:53',
+    create_user: 1,
+    update_date: '2000-12-20 11:53:53',
+    update_user: 1,
+    revision_count: 1
   }
 };
 

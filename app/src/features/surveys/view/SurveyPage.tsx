@@ -91,8 +91,8 @@ const SurveyPage: React.FC = () => {
       mapDataLoader.refresh(occurrenceSubmissionId);
     };
 
-    if (surveyWithDetailsResponse.surveySupplementaryData.occurrence_submission.id) {
-      getOccurrences(surveyWithDetailsResponse.surveySupplementaryData.occurrence_submission.id);
+    if (surveyWithDetailsResponse.surveySupplementaryData.occurrence_submission.occurrence_submission_id) {
+      getOccurrences(surveyWithDetailsResponse.surveySupplementaryData.occurrence_submission.occurrence_submission_id);
     }
   }, [biohubApi.survey, urlParams, mapDataLoader]);
 
