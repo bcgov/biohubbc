@@ -99,10 +99,6 @@ const SurveyPage: React.FC = () => {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
-  const handleRefresh = () => {
-    // @TODO
-  };
-
   return (
     <>
       <SurveyHeader projectWithDetails={projectWithDetails} />
@@ -117,7 +113,7 @@ const SurveyPage: React.FC = () => {
             <Grid item md={12} lg={8}>
               <Box mb={3}>
                 <Paper elevation={0}>
-                  <SurveyObservations refresh={handleRefresh} />
+                  <SurveyObservations />
                 </Paper>
               </Box>
               <Box mb={3}>
