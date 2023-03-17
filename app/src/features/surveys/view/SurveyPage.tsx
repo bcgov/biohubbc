@@ -16,7 +16,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import { parseSpatialDataByType } from 'utils/spatial-utils';
 import SurveyStudyArea from './components/SurveyStudyArea';
-import SurveyAttachments from './SurveyAttachments';
+// import SurveyAttachments from './SurveyAttachments';
 import SurveyHeader from './SurveyHeader';
 import SurveyObservations from './SurveyObservations';
 import SurveySummaryResults from './SurveySummaryResults';
@@ -39,6 +39,9 @@ const SurveyPage: React.FC = () => {
 
   const [markerLayers, setMarkerLayers] = useState<IMarkerLayer[]>([]);
   const [staticLayers, setStaticLayers] = useState<IStaticLayer[]>([]);
+
+  const surveyContext = useSurveyContext();
+  const surveyWithDetails = surveyContext.surveyDataLoader.data;
 
   const mapDataLoader = useDataLoader((datasetID: number) => biohubApi.observation.getOccurrencesForView(datasetID));
   useDataLoaderError(mapDataLoader, () => {
@@ -75,9 +78,6 @@ const SurveyPage: React.FC = () => {
 
     setProjectWithDetails(projectWithDetailsResponse);
   }, [biohubApi.project, urlParams]);
-
-  const surveyContext = useSurveyContext();
-  const surveyWithDetails = surveyContext.surveyDataLoader.data;
 
   useEffect(() => {
     if (mapDataLoader.data) {
@@ -123,7 +123,9 @@ const SurveyPage: React.FC = () => {
               </Box>
               <Box mb={3}>
                 <Paper elevation={0}>
+                {/*
                   <SurveyAttachments projectForViewData={projectWithDetails} />
+                */}
                 </Paper>
               </Box>
               <Box mb={3}>
