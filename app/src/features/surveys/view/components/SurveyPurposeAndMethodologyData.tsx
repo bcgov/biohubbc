@@ -66,7 +66,7 @@ const SurveyPurposeAndMethodologyData: React.FC<ISurveyPurposeAndMethodologyData
     <>
       <Box>
         <dl>
-          {!purpose_and_methodology && (
+          {!purpose_and_methodology ? (
             <Grid container spacing={1}>
               <Grid item>
                 <Typography>
@@ -74,15 +74,14 @@ const SurveyPurposeAndMethodologyData: React.FC<ISurveyPurposeAndMethodologyData
                 </Typography>
               </Grid>
             </Grid>
-          )}
-          {purpose_and_methodology && (
+          ) : (
             <Grid container spacing={1}>
               <Grid item xs={12} sm={6}>
                 <Typography component="dt" variant="subtitle2" color="textSecondary">
                   Intended Outcome
                 </Typography>
                 <Typography component="dd" variant="body1">
-                  {purpose_and_methodology.intended_outcome_id &&
+                  {Boolean(purpose_and_methodology.intended_outcome_id) &&
                     codes?.intended_outcomes?.find(
                       (item: any) => item.id === purpose_and_methodology.intended_outcome_id
                     )?.name}
@@ -93,7 +92,7 @@ const SurveyPurposeAndMethodologyData: React.FC<ISurveyPurposeAndMethodologyData
                   Field Method
                 </Typography>
                 <Typography component="dd" variant="body1">
-                  {purpose_and_methodology.field_method_id &&
+                  {Boolean(purpose_and_methodology.field_method_id) &&
                     codes?.field_methods?.find((item: any) => item.id === purpose_and_methodology.field_method_id)
                       ?.name}
                 </Typography>
@@ -104,7 +103,7 @@ const SurveyPurposeAndMethodologyData: React.FC<ISurveyPurposeAndMethodologyData
                   Ecological Season
                 </Typography>
                 <Typography component="dd" variant="body1">
-                  {purpose_and_methodology.ecological_season_id &&
+                  {Boolean(purpose_and_methodology.ecological_season_id) &&
                     codes?.ecological_seasons?.find(
                       (item: any) => item.id === purpose_and_methodology.ecological_season_id
                     )?.name}

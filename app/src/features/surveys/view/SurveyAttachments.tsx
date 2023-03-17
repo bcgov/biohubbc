@@ -89,6 +89,8 @@ const SurveyAttachments: React.FC<ISurveyAttachmentsProps> = () => {
 
   useEffect(() => {
     getAttachments(false);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

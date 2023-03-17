@@ -53,13 +53,6 @@ const SubmitSurvey: React.FC = () => {
     };
   });
 
-  if (surveyDetails) {
-    observationDataLoader.load(
-      surveyDetails.surveyData.survey_details.project_id,
-      surveyDetails.surveyData.survey_details.id
-    );
-  }
-
   const summaryDataLoader = useDataLoader((projectId: number, surveyId: number) =>
     biohubApi.survey.getSurveySummarySubmission(projectId, surveyId)
   );
@@ -70,13 +63,6 @@ const SubmitSurvey: React.FC = () => {
         'An error has occurred while attempting to load Summary details, please try again. If the error persists, please contact your system administrator.'
     };
   });
-
-  if (surveyDetails) {
-    summaryDataLoader.load(
-      surveyDetails.surveyData.survey_details.project_id,
-      surveyDetails.surveyData.survey_details.id
-    );
-  }
 
   const attachmentAndReportDataLoader = useDataLoader((projectId: number, surveyId: number) =>
     biohubApi.survey.getSurveyAttachments(projectId, surveyId)
@@ -91,6 +77,16 @@ const SubmitSurvey: React.FC = () => {
 
   if (surveyDetails) {
     attachmentAndReportDataLoader.load(
+      surveyDetails.surveyData.survey_details.project_id,
+      surveyDetails.surveyData.survey_details.id
+    );
+
+    summaryDataLoader.load(
+      surveyDetails.surveyData.survey_details.project_id,
+      surveyDetails.surveyData.survey_details.id
+    );
+
+    observationDataLoader.load(
       surveyDetails.surveyData.survey_details.project_id,
       surveyDetails.surveyData.survey_details.id
     );

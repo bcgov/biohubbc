@@ -60,6 +60,8 @@ const SurveyObservations: React.FC = () => {
     if (projectId && surveyId) {
       surveyContext.surveyDataLoader.refresh(projectId, surveyId);
     }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [projectId, surveyId]);
 
   const submissionDataLoader = useDataLoader(() => biohubApi.observation.getObservationSubmission(projectId, surveyId));
