@@ -315,11 +315,14 @@ export class SurveyService extends DBService {
    * @return {*}  {Promise<number>}
    * @memberof SurveyService
    */
-  async createSurveyAndUploadMetadataToBiohub(projectId: number, postSurveyData: PostSurveyObject): Promise<number> {
+  async createSurveyAndUploadMetadataToBioHub(projectId: number, postSurveyData: PostSurveyObject): Promise<number> {
     const surveyId = await this.createSurvey(projectId, postSurveyData);
 
-    //Update Eml to biohub and publish record
-    await this.platformService.submitSurveyMetadataToBiohubAndInsertHistoryRecords(surveyId);
+    try {
+      await this.platformService.submitSurveyDwCMetadataToBioHub(surveyId);
+    } catch (error) {
+      defaultLog.warn({ label: 'createSurveyAndUploadMetadataToBioHub', message: 'error', error });
+    }
 
     return surveyId;
   }
@@ -517,8 +520,11 @@ export class SurveyService extends DBService {
   async updateSurveyAndUploadMetadataToBiohub(surveyId: number, putSurveyData: PutSurveyObject): Promise<void> {
     await this.updateSurvey(surveyId, putSurveyData);
 
-    // Update Eml to biohub and publish record
-    return await this.platformService.submitSurveyMetadataToBiohubAndInsertHistoryRecords(surveyId);
+    try {
+      await this.platformService.submitSurveyDwCMetadataToBioHub(surveyId);
+    } catch (error) {
+      defaultLog.warn({ label: 'updateSurveyAndUploadMetadataToBiohub', message: 'error', error });
+    }
   }
 
   /**

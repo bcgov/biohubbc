@@ -252,7 +252,7 @@ export function createSurvey(): RequestHandler {
 
       const surveyService = new SurveyService(connection);
 
-      const surveyId = await surveyService.createSurveyAndUploadMetadataToBiohub(projectId, sanitizedPostSurveyData);
+      const surveyId = await surveyService.createSurveyAndUploadMetadataToBioHub(projectId, sanitizedPostSurveyData);
 
       await connection.commit();
 

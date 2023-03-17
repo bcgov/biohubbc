@@ -154,7 +154,7 @@ describe('update', () => {
 
       sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-      sinon.stub(ProjectService.prototype, 'updateProjectAndUploadMetadataToBiohub').resolves();
+      sinon.stub(ProjectService.prototype, 'updateProjectAndUploadMetadataToBioHub').resolves();
 
       const requestHandler = update.updateProject();
 

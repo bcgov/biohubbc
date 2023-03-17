@@ -30,10 +30,13 @@ import {
 import { GET_ENTITIES, IUpdateProject } from '../paths/project/{projectId}/update';
 import { ProjectRepository } from '../repositories/project-repository';
 import { deleteFileFromS3 } from '../utils/file-utils';
+import { getLogger } from '../utils/logger';
 import { AttachmentService } from './attachment-service';
 import { DBService } from './db-service';
 import { PlatformService } from './platform-service';
 import { SurveyService } from './survey-service';
+
+const defaultLog = getLogger('services/project-service');
 
 export class ProjectService extends DBService {
   attachmentService: AttachmentService;
@@ -293,11 +296,14 @@ export class ProjectService extends DBService {
    * @return {*}  {Promise<number>}
    * @memberof ProjectService
    */
-  async createProjectAndUploadMetadataToBiohub(postProjectData: PostProjectObject): Promise<number> {
+  async createProjectAndUploadMetadataToBioHub(postProjectData: PostProjectObject): Promise<number> {
     const projectId = await this.createProject(postProjectData);
 
-    //Submit Eml to biohub and publish record
-    await this.platformService.submitProjectMetadataToBiohubAndInsertHistoryRecords(projectId);
+    try {
+      await this.platformService.submitProjectDwCMetadataToBioHub(projectId);
+    } catch (error) {
+      defaultLog.warn({ label: 'createProjectAndUploadMetadataToBioHub', message: 'error', error });
+    }
 
     return projectId;
   }
@@ -396,18 +402,21 @@ export class ProjectService extends DBService {
   }
 
   /**
-   * Updates the project and uploads to Biohub
+   * Updates the project and uploads to BioHub
    *
    * @param {number} projectId
    * @param {IUpdateProject} entities
-   * @return {*}
+   * @return {*}  {Promise<void>}
    * @memberof ProjectService
    */
-  async updateProjectAndUploadMetadataToBiohub(projectId: number, entities: IUpdateProject): Promise<void> {
+  async updateProjectAndUploadMetadataToBioHub(projectId: number, entities: IUpdateProject): Promise<void> {
     await this.updateProject(projectId, entities);
 
-    // Update Eml to biohub and publish record
-    return await this.platformService.submitProjectMetadataToBiohubAndInsertHistoryRecords(projectId);
+    try {
+      await this.platformService.submitProjectDwCMetadataToBioHub(projectId);
+    } catch (error) {
+      defaultLog.warn({ label: 'updateProjectAndUploadMetadataToBioHub', message: 'error', error });
+    }
   }
 
   /**

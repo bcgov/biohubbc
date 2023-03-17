@@ -113,7 +113,7 @@ describe('deleteSurvey', () => {
       .resolves((true as unknown) as S3.DeleteObjectOutput);
 
     const submitDwCAMetadataPackageStub = sinon
-      .stub(PlatformService.prototype, 'submitProjectMetadataToBiohubAndInsertHistoryRecords')
+      .stub(PlatformService.prototype, 'submitProjectDwCMetadataToBioHub')
       .resolves();
 
     let actualResult: any = null;
