@@ -78,7 +78,7 @@ const SurveyAttachments: React.FC<ISurveyAttachmentsProps> = () => {
   };
 
   const getFinishHandler = () => {
-    return (fileMeta: IReportMetaForm) => {
+    return async (fileMeta: IReportMetaForm) => {
       return biohubApi.survey
         .uploadSurveyReports(projectId, surveyId, fileMeta.attachmentFile, fileMeta)
         .finally(() => {
@@ -89,7 +89,7 @@ const SurveyAttachments: React.FC<ISurveyAttachmentsProps> = () => {
 
   useEffect(() => {
     getAttachments(false);
-  }, [getAttachments]);
+  }, []);
 
   return (
     <>

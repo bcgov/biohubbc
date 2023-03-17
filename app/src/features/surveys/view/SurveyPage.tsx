@@ -16,7 +16,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import { parseSpatialDataByType } from 'utils/spatial-utils';
 import SurveyStudyArea from './components/SurveyStudyArea';
-// import SurveyAttachments from './SurveyAttachments';
+import SurveyAttachments from './SurveyAttachments';
 import SurveyHeader from './SurveyHeader';
 import SurveyObservations from './SurveyObservations';
 import SurveySummaryResults from './SurveySummaryResults';
@@ -123,9 +123,7 @@ const SurveyPage: React.FC = () => {
               </Box>
               <Box mb={3}>
                 <Paper elevation={0}>
-                {/*
                   <SurveyAttachments projectForViewData={projectWithDetails} />
-                */}
                 </Paper>
               </Box>
               <Box mb={3}>
