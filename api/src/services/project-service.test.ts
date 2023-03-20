@@ -128,9 +128,7 @@ describe('ProjectService', () => {
         const service = new ProjectService(dbConnection);
 
         const repoStub1 = sinon.stub(ProjectService.prototype, 'createProject').resolves(1);
-        const repoStub2 = sinon
-          .stub(PlatformService.prototype, 'submitProjectDwCMetadataToBioHub')
-          .resolves();
+        const repoStub2 = sinon.stub(PlatformService.prototype, 'submitProjectDwCMetadataToBioHub').resolves();
 
         const response = await service.createProjectAndUploadMetadataToBioHub((null as unknown) as PostProjectObject);
 
@@ -146,9 +144,7 @@ describe('ProjectService', () => {
         const service = new ProjectService(dbConnection);
 
         const repoStub1 = sinon.stub(ProjectService.prototype, 'updateProject').resolves();
-        const repoStub2 = sinon
-          .stub(PlatformService.prototype, 'submitProjectDwCMetadataToBioHub')
-          .resolves();
+        const repoStub2 = sinon.stub(PlatformService.prototype, 'submitProjectDwCMetadataToBioHub').resolves();
 
         const response = await service.updateProjectAndUploadMetadataToBioHub(
           1,
