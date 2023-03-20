@@ -30,7 +30,7 @@ const ProjectCoordinator: React.FC<IProjectCoordinatorProps> = (props) => {
         {coordinator.coordinator_agency}
       </Typography>
       <Typography component="div">
-        <Link href={'mailto:' + coordinator.email_address}>{coordinator.email_address}</Link>
+        <Link href={`mailto:${coordinator.email_address}`}>{coordinator.email_address}</Link>
       </Typography>
     </Box>
   );

@@ -27,6 +27,7 @@ import { ICreateSurveyRequest, ISurveyAvailableFundingSources } from 'interfaces
 import moment from 'moment';
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
+import { Link as RouterLink } from 'react-router-dom';
 import { getFormattedAmount, getFormattedDate, getFormattedDateRangeString } from 'utils/Utils';
 import yup from 'utils/YupSchema';
 import AgreementsForm, { AgreementsInitialValues, AgreementsYupSchema } from './components/AgreementsForm';
@@ -302,7 +303,7 @@ const CreateSurveyPage = () => {
           <Box py={4}>
             <Box mb={2}>
               <Breadcrumbs separator={<Icon path={mdiChevronRight} size={0.8} />}>
-                <Link color="primary" onClick={() => history.push('/admin/projects')} aria-current="page">
+                <Link color="primary" component={RouterLink} to={'/admin/projects'} aria-current="page">
                   <Typography variant="body1" component="span">
                     Projects
                   </Typography>

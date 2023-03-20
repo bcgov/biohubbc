@@ -8,7 +8,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
-import OtherLink from '@material-ui/core/Link';
+import Link from '@material-ui/core/Link';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -22,7 +22,7 @@ import { SYSTEM_ROLE } from 'constants/roles';
 import { AuthStateContext } from 'contexts/authStateContext';
 import { SYSTEM_IDENTITY_SOURCE } from 'hooks/useKeycloakWrapper';
 import React, { useContext } from 'react';
-import { Link } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
 import { getFormattedIdentitySource } from 'utils/Utils';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -137,9 +137,9 @@ const Header: React.FC = () => {
         <Box px={2}>
           <Divider orientation="vertical" />
         </Box>
-        <Link to="/logout" data-testid="menu_log_out">
+        <RouterLink to="/logout" data-testid="menu_log_out">
           Log Out
-        </Link>
+        </RouterLink>
       </Box>
     );
   };
@@ -185,7 +185,7 @@ const Header: React.FC = () => {
         <Toolbar disableGutters className={classes.govHeaderToolbar}>
           <Container maxWidth="xl">
             <Box display="flex" justifyContent="space-between" width="100%">
-              <Link to="/projects" className={classes.brand} aria-label="Go to SIMS Home">
+              <RouterLink to="/projects" className={classes.brand} aria-label="Go to SIMS Home">
                 <picture>
                   <source srcSet={headerImageLarge} media="(min-width: 1200px)"></source>
                   <source srcSet={headerImageSmall} media="(min-width: 600px)"></source>
@@ -197,7 +197,7 @@ const Header: React.FC = () => {
                     <BetaLabel />
                   </sup>
                 </span>
-              </Link>
+              </RouterLink>
               <UnAuthGuard>
                 <PublicViewUser />
               </UnAuthGuard>
@@ -217,19 +217,19 @@ const Header: React.FC = () => {
                 className={classes.mainNavToolbar}
                 role="navigation"
                 aria-label="Main Navigation">
-                <Link to="/admin/projects" id="menu_projects">
+                <RouterLink to="/admin/projects" id="menu_projects">
                   Projects
-                </Link>
-                <Link to="/admin/search" id="menu_search">
+                </RouterLink>
+                <RouterLink to="/admin/search" id="menu_search">
                   Map
-                </Link>
-                <Link to="/admin/resources" id="menu_resources">
+                </RouterLink>
+                <RouterLink to="/admin/resources" id="menu_resources">
                   Resources
-                </Link>
+                </RouterLink>
                 <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-                  <Link to="/admin/users" id="menu_admin_users">
+                  <RouterLink to="/admin/users" id="menu_admin_users">
                     Manage Users
-                  </Link>
+                  </RouterLink>
                 </SystemRoleGuard>
               </Toolbar>
             </Container>
@@ -242,11 +242,12 @@ const Header: React.FC = () => {
         <DialogContent>
           <Typography variant="body1" component="div" color="textSecondary" gutterBottom>
             For technical support or questions about this application, please contact:&nbsp;
-            <OtherLink
-              href="mailto:biohub@gov.bc.ca?subject=BioHub - Secure Document Access Request"
+            <Link
+              component={RouterLink}
+              to="mailto:biohub@gov.bc.ca?subject=BioHub - Secure Document Access Request"
               underline="always">
               biohub@gov.bc.ca
-            </OtherLink>
+            </Link>
             .
           </Typography>
           <Typography variant="body1" color="textSecondary">

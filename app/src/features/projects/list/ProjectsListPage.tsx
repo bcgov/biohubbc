@@ -34,7 +34,7 @@ import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetDraftsListResponse } from 'interfaces/useDraftApi.interface';
 import { IGetProjectsListResponse } from 'interfaces/useProjectApi.interface';
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { useHistory } from 'react-router';
+import { Link as RouterLink } from 'react-router-dom';
 import { getFormattedDate } from 'utils/Utils';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -92,7 +92,6 @@ const useStyles = makeStyles((theme: Theme) => ({
  * @return {*}
  */
 const ProjectsListPage: React.FC = () => {
-  const history = useHistory();
   const classes = useStyles();
   const biohubApi = useBiohubApi();
 
@@ -123,19 +122,6 @@ const ProjectsListPage: React.FC = () => {
     }
 
     return <Chip size="small" className={clsx(classes.chip, chipStatusClass)} label={chipLabel} />;
-  };
-
-  const navigateToCreateProjectPage = (draftId?: number) => {
-    if (draftId) {
-      history.push(`/admin/projects/create?draftId=${draftId}`);
-      return;
-    }
-
-    history.push('/admin/projects/create');
-  };
-
-  const navigateToProjectPage = (id: number) => {
-    history.push(`/admin/projects/${id}`);
   };
 
   useEffect(() => {
@@ -280,16 +266,17 @@ const ProjectsListPage: React.FC = () => {
               </TableRow>
             </TableHead>
             <TableBody data-testid="project-table">
-              {drafts?.map((row) => (
-                <TableRow key={row.id}>
+              {drafts?.map((draft: IGetDraftsListResponse) => (
+                <TableRow key={draft.id}>
                   <TableCell>
                     <Link
                       className={classes.linkButton}
-                      data-testid={row.name}
+                      data-testid={draft.name}
                       underline="always"
-                      component="button"
-                      onClick={() => navigateToCreateProjectPage(row.id)}>
-                      {row.name}
+                      component={RouterLink}
+                      to={`/admin/projects/create?draftId=${draft.id}`}
+                    >
+                      {draft.name}
                     </Link>
                   </TableCell>
                   <TableCell />
@@ -299,23 +286,24 @@ const ProjectsListPage: React.FC = () => {
                   <TableCell />
                 </TableRow>
               ))}
-              {projects?.map((row) => (
-                <TableRow key={row.id}>
+              {projects?.map((project: IGetProjectsListResponse) => (
+                <TableRow key={project.id}>
                   <TableCell>
                     <Link
                       className={classes.linkButton}
-                      data-testid={row.name}
+                      data-testid={project.name}
                       underline="always"
-                      component="button"
-                      onClick={() => navigateToProjectPage(row.id)}>
-                      {row.name}
+                      component={RouterLink}
+                      to={`/admin/projects/${project.id}`}
+                    >
+                      {project.name}
                     </Link>
                   </TableCell>
-                  <TableCell>{row.coordinator_agency}</TableCell>
-                  <TableCell>{row.project_type}</TableCell>
-                  <TableCell>{getChipIcon(row.completion_status)}</TableCell>
-                  <TableCell>{getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, row.start_date)}</TableCell>
-                  <TableCell>{getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, row.end_date)}</TableCell>
+                  <TableCell>{project.coordinator_agency}</TableCell>
+                  <TableCell>{project.project_type}</TableCell>
+                  <TableCell>{getChipIcon(project.completion_status)}</TableCell>
+                  <TableCell>{getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, project.start_date)}</TableCell>
+                  <TableCell>{getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, project.end_date)}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -355,7 +343,9 @@ const ProjectsListPage: React.FC = () => {
                     variant="contained"
                     color="primary"
                     startIcon={<Icon path={mdiPlus} size={1} />}
-                    onClick={() => navigateToCreateProjectPage()}>
+                    component={RouterLink}
+                    to={'/admin/projects/create'}
+                  >
                     Create Project
                   </Button>
                 </SystemRoleGuard>
