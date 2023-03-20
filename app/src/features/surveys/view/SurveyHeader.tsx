@@ -210,6 +210,7 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
                 </SystemRoleGuard>
                 <Button
                   variant="outlined"
+                  color="primary"
                   startIcon={<Icon path={mdiCogOutline} size={1} />}
                   aria-controls="simple-menu"
                   aria-haspopup="true"
