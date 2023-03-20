@@ -3,7 +3,8 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { EditSurveyProprietorI18N } from 'constants/i18n';
-import { useSurveyContext } from 'contexts/surveyContext';
+import { SurveyContext } from 'contexts/surveyContext';
+import { useContext } from 'react';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import React, { useState } from 'react';
@@ -19,7 +20,7 @@ export interface ISurveyProprietaryDataProps {
  * @return {*}
  */
 const SurveyProprietaryData: React.FC<ISurveyProprietaryDataProps> = (props) => {
-  const surveyContext = useSurveyContext();
+  const surveyContext = useContext(SurveyContext);
   const surveyForViewData = surveyContext.surveyDataLoader.data;
 
   const [errorDialogProps, setErrorDialogProps] = useState<IErrorDialogProps>({

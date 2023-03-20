@@ -5,7 +5,8 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { EditSurveyPurposeAndMethodologyI18N } from 'constants/i18n';
-import { useSurveyContext } from 'contexts/surveyContext';
+import { SurveyContext } from 'contexts/surveyContext';
+import { useContext } from 'react';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import React, { useState } from 'react';
@@ -38,7 +39,7 @@ export interface ISurveyPurposeAndMethodologyDataProps {
  */
 const SurveyPurposeAndMethodologyData: React.FC<ISurveyPurposeAndMethodologyDataProps> = (props) => {
   const classes = useStyles();
-  const surveyContext = useSurveyContext();
+  const surveyContext = useContext(SurveyContext);
   const surveyForViewData = surveyContext.surveyDataLoader.data;
 
   const [errorDialogProps, setErrorDialogProps] = useState<IErrorDialogProps>({

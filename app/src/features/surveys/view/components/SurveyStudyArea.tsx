@@ -17,7 +17,8 @@ import { IStaticLayer } from 'components/map/components/StaticLayers';
 import MapContainer from 'components/map/MapContainer';
 import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
 import { EditSurveyStudyAreaI18N } from 'constants/i18n';
-import { useSurveyContext } from 'contexts/surveyContext';
+import { SurveyContext } from 'contexts/surveyContext';
+import { useContext } from 'react';
 import StudyAreaForm, {
   IStudyAreaForm,
   StudyAreaInitialValues,
@@ -70,7 +71,7 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
   const classes = useStyles();
   const biohubApi = useBiohubApi();
 
-  const surveyContext = useSurveyContext();
+  const surveyContext = useContext(SurveyContext);
   const surveyForViewData = surveyContext.surveyDataLoader.data;
 
   const { projectForViewData } = props;

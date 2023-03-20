@@ -23,7 +23,7 @@ import FileUpload from 'components/file-upload/FileUpload';
 import { IUploadHandler } from 'components/file-upload/FileUploadItem';
 import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
 import { DialogContext } from 'contexts/dialogContext';
-import { useSurveyContext } from 'contexts/surveyContext';
+import { SurveyContext } from 'contexts/surveyContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useInterval } from 'hooks/useInterval';
@@ -49,7 +49,7 @@ const SurveyObservations: React.FC = () => {
   const biohubApi = useBiohubApi();
   const dialogContext = useContext(DialogContext);
   const classes = useStyles();
-  const surveyContext = useSurveyContext();
+  const surveyContext = useContext(SurveyContext);
   const [openImportObservations, setOpenImportObservations] = useState(false);
   const [willRefreshOnClose, setWillRefreshOnClose] = useState(false);
 

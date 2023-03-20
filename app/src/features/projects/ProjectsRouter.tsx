@@ -5,7 +5,7 @@ import CreateSurveyPage from 'features/surveys/CreateSurveyPage';
 import EditSurveyPage from 'features/surveys/edit/EditSurveyPage';
 import SurveyPage from 'features/surveys/view/SurveyPage';
 import React from 'react';
-import { Redirect, Switch } from 'react-router';
+import { matchPath, Redirect, Switch, useLocation } from 'react-router';
 import AppRoute from 'utils/AppRoute';
 import CreateProjectPage from './create/CreateProjectPage';
 import EditProjectPage from './edit/EditProjectPage';
@@ -18,6 +18,16 @@ import ProjectParticipantsPage from './participants/ProjectParticipantsPage';
  * @return {*}
  */
 const ProjectsRouter: React.FC = () => {
+  const location = useLocation();
+  const match = matchPath(location.pathname, {
+    path: '/admin/projects/:id/surveys/:survey_id',
+    exact: false,
+    strict: false
+  });
+
+  const projectId: string | number | null = match?.params['id'];
+  const surveyId: string | number | null = match?.params['survey_id'];
+
   return (
     <Switch>
       <AppRoute exact path="/admin/projects" layout={ProjectsLayout}>
@@ -58,7 +68,7 @@ const ProjectsRouter: React.FC = () => {
         </ProjectsLayout>
       </AppRoute>
 
-      <SurveyContextProvider>
+      <SurveyContextProvider projectId={projectId} surveyId={surveyId}>
         <>
           <AppRoute exact path="/admin/projects/:id/surveys/:survey_id/details" layout={ProjectsLayout}>
             <ProjectsLayout>

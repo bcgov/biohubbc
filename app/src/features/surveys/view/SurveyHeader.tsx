@@ -31,7 +31,7 @@ import { DeleteSurveyI18N } from 'constants/i18n';
 import { SYSTEM_ROLE } from 'constants/roles';
 import { AuthStateContext } from 'contexts/authStateContext';
 import { DialogContext } from 'contexts/dialogContext';
-import { useSurveyContext } from 'contexts/surveyContext';
+import { SurveyContext } from 'contexts/surveyContext';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
@@ -114,7 +114,7 @@ export interface ISurveyHeaderProps {
 const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
   const { projectWithDetails } = props;
 
-  const surveyContext = useSurveyContext();
+  const surveyContext = useContext(SurveyContext);
   const surveyWithDetails = surveyContext.surveyDataLoader.data;
 
   const classes = useStyles();

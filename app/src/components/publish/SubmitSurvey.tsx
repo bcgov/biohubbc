@@ -2,7 +2,8 @@ import Box from '@material-ui/core/Box';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Container from '@material-ui/core/Container';
 import Typography from '@material-ui/core/Typography';
-import { useSurveyContext } from 'contexts/surveyContext';
+import { SurveyContext } from 'contexts/surveyContext';
+import { useContext } from 'react';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import useDataLoaderError from 'hooks/useDataLoaderError';
@@ -37,7 +38,7 @@ export const SurveySubmitFormYupSchema = yup.object().shape({
 
 const SubmitSurvey: React.FC = () => {
   const biohubApi = useBiohubApi();
-  const surveyContext = useSurveyContext();
+  const surveyContext = useContext(SurveyContext);
 
   const surveyDetails = surveyContext.surveyDataLoader.data;
 
