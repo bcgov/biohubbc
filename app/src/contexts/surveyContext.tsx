@@ -82,9 +82,5 @@ export const SurveyContextProvider = (props: PropsWithChildren<Record<never, any
     [surveyDataLoader, projectId, surveyId]
   );
 
-  return (
-    <SurveyContext.Provider value={surveyContext}>
-      {props.children}
-    </SurveyContext.Provider>
-  );
+  return <SurveyContext.Provider value={surveyContext}>{props.children}</SurveyContext.Provider>;
 };

@@ -6,6 +6,7 @@ import ProjectsLayout from 'layouts/ProjectsLayout';
 import React from 'react';
 import { Redirect, Switch } from 'react-router';
 import AppRoute from 'utils/AppRoute';
+import { getTitle } from 'utils/Utils';
 import CreateProjectPage from '../features/projects/create/CreateProjectPage';
 import EditProjectPage from '../features/projects/edit/EditProjectPage';
 import ProjectsListPage from '../features/projects/list/ProjectsListPage';
@@ -58,7 +59,7 @@ const ProjectsRouter: React.FC = () => {
         </ProjectsLayout>
       </AppRoute>
 
-      <AppRoute path="/admin/projects/:id/surveys/:survey_id" layout={ProjectsLayout}>
+      <AppRoute path="/admin/projects/:id/surveys/:survey_id" title={getTitle('Projects')} layout={ProjectsLayout}>
         <SurveyContextProvider>
           <SurveyRouter />
         </SurveyContextProvider>

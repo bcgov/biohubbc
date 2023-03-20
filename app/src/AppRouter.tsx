@@ -18,13 +18,10 @@ import React from 'react';
 import { Redirect, Switch, useLocation } from 'react-router-dom';
 import ProjectsRouter from 'routers/ProjectsRouter';
 import AppRoute from 'utils/AppRoute';
+import { getTitle } from 'utils/Utils';
 
 const AppRouter: React.FC = () => {
   const location = useLocation();
-
-  const getTitle = (page: string) => {
-    return `SIMS - ${page}`;
-  };
 
   return (
     <Switch>
