@@ -319,12 +319,12 @@ GET.apiDoc = {
                   occurrence_submission: {
                     description: 'Occurrence submission record',
                     type: 'object',
-                    nullable: true,
                     required: ['occurrence_submission_id'],
                     properties: {
                       occurrence_submission_id: {
                         type: 'integer',
-                        minimum: 1
+                        minimum: 1,
+                        nullable: true
                       }
                     }
                   },
@@ -387,12 +387,12 @@ GET.apiDoc = {
                   survey_summary_submission: {
                     description: 'Survey summary submission record',
                     type: 'object',
-                    nullable: true,
                     required: ['survey_summary_submission_id'],
                     properties: {
                       survey_summary_submission_id: {
                         type: 'integer',
-                        minimum: 1
+                        minimum: 1,
+                        nullable: true
                       }
                     }
                   },

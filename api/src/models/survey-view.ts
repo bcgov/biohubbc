@@ -166,9 +166,9 @@ export class GetSurveyProprietorData {
 }
 
 export type SurveySupplementaryData = {
-  occurrence_submission: { occurrence_submission_id: number } | null;
+  occurrence_submission: { occurrence_submission_id: number | null };
   occurrence_submission_publish: OccurrenceSubmissionPublish | null;
-  survey_summary_submission: { survey_summary_submission_id: number } | null;
+  survey_summary_submission: { survey_summary_submission_id: number | null };
   survey_summary_submission_publish: SurveySummarySubmissionPublish | null;
   survey_metadata_publish: SurveyMetadataPublish | null;
 };

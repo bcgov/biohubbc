@@ -173,9 +173,13 @@ describe('survey/{surveyId}/view', () => {
             }
           },
           surveySupplementaryData: {
-            occurrence_submission: null,
+            occurrence_submission: {
+              occurrence_submission_id: null
+            },
             occurrence_submission_publish: null,
-            survey_summary_submission: null,
+            survey_summary_submission: {
+              survey_summary_submission_id: null
+            },
             survey_summary_submission_publish: null,
             survey_metadata_publish: null
           }

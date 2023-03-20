@@ -387,6 +387,7 @@ export class SurveyRepository extends BaseRepository {
    * @memberof SurveyRepository
    */
   async getOccurrenceSubmission(surveyId: number) {
+    // Note: `max()` will always return a row, even if the table is empty. The value will be `null` in this case.
     const sqlStatement = SQL`
       SELECT
         max(occurrence_submission_id) as occurrence_submission_id
@@ -396,9 +397,9 @@ export class SurveyRepository extends BaseRepository {
         survey_id = ${surveyId};
     `;
 
-    const response = await this.connection.sql<{ occurrence_submission_id: number }>(sqlStatement);
+    const response = await this.connection.sql<{ occurrence_submission_id: number | null }>(sqlStatement);
 
-    return (response.rowCount && response.rows[0]) || null;
+    return response.rows[0];
   }
 
   /**
@@ -523,6 +524,7 @@ export class SurveyRepository extends BaseRepository {
    * @memberof SurveyRepository
    */
   async getSurveySummarySubmission(surveyId: number) {
+    // Note: `max()` will always return a row, even if the table is empty. The value will be `null` in this case.
     const sqlStatement = SQL`
       SELECT
         max(survey_summary_submission_id) as survey_summary_submission_id
@@ -532,9 +534,9 @@ export class SurveyRepository extends BaseRepository {
         survey_id = ${surveyId};
       `;
 
-    const response = await this.connection.sql<{ survey_summary_submission_id: number }>(sqlStatement);
+    const response = await this.connection.sql<{ survey_summary_submission_id: number | null }>(sqlStatement);
 
-    return (response.rowCount && response.rows[0]) || null;
+    return response.rows[0];
   }
 
   /**
