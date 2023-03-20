@@ -6,10 +6,9 @@ import ListItem from '@material-ui/core/ListItem';
 import Typography from '@material-ui/core/Typography';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { SurveyContext } from 'contexts/surveyContext';
-import { useContext } from 'react';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
-import React from 'react';
+import React, { useContext } from 'react';
 import { getFormattedAmount, getFormattedDateRangeString } from 'utils/Utils';
 
 export interface ISurveyGeneralInformationProps {

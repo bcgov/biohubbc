@@ -8,11 +8,11 @@ import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
 import FileUploadWithMetaDialog from 'components/dialog/attachments/FileUploadWithMetaDialog';
 import { IUploadHandler } from 'components/file-upload/FileUploadItem';
 import { H2MenuToolbar } from 'components/toolbar/ActionToolbars';
+import { SurveyContext } from 'contexts/surveyContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetProjectForViewResponse, IUploadAttachmentResponse } from 'interfaces/useProjectApi.interface';
 import { IGetSurveyAttachment, IGetSurveyReportAttachment } from 'interfaces/useSurveyApi.interface';
-import React, { useCallback, useEffect, useState } from 'react';
-import { useParams } from 'react-router';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { AttachmentType } from '../../../constants/attachments';
 
 export interface ISurveyAttachmentsProps {
@@ -25,10 +25,9 @@ export interface ISurveyAttachmentsProps {
  * @return {*}
  */
 const SurveyAttachments: React.FC<ISurveyAttachmentsProps> = () => {
-  const urlParams = useParams();
-  const projectId = urlParams['id'];
-  const surveyId = urlParams['survey_id'];
   const biohubApi = useBiohubApi();
+  const surveyContext = useContext(SurveyContext);
+  const { projectId, surveyId } = surveyContext;
 
   const [openUploadAttachments, setOpenUploadAttachments] = useState(false);
   const [attachmentType, setAttachmentType] = useState<AttachmentType.REPORT | AttachmentType.OTHER>(

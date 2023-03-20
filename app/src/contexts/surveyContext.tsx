@@ -2,7 +2,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader, { DataLoader } from 'hooks/useDataLoader';
 import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
 import React, { createContext, PropsWithChildren, useEffect, useMemo } from 'react';
-// import { matchPath, useLocation } from 'react-router';
+import { useParams } from 'react-router';
 
 /**
  * Context object that stores information about a survey
@@ -22,43 +22,39 @@ export interface ISurveyContext {
   /**
    * The project ID belonging to the current survey
    *
-   * @type {}
+   * @type {number}
    * @memberof ISurveyContext
    */
-  projectId: number | null;
+  projectId: number;
 
   /**
    * The ID belonging to the current survey
    *
-   * @type {number | null}
+   * @type {number}
    * @memberof ISurveyContext
    */
-  surveyId: number | null;
-}
-
-interface ISurveyContextProps {
-  surveyId: string | number | null;
-  projectId: string | number | null;
+  surveyId: number;
 }
 
 export const SurveyContext = createContext<ISurveyContext>({
   surveyDataLoader: {} as DataLoader<[project_id: number, survey_id: number], IGetSurveyForViewResponse, unknown>,
-  projectId: null,
-  surveyId: null
+  projectId: -1,
+  surveyId: -1
 });
 
-export const SurveyContextProvider = (props: PropsWithChildren<ISurveyContextProps>) => {
+export const SurveyContextProvider = (props: PropsWithChildren<Record<never, any>>) => {
   const biohubApi = useBiohubApi();
   const surveyDataLoader = useDataLoader(biohubApi.survey.getSurveyForView);
+  const urlParams = useParams();
 
-  if (!props.projectId) {
+  if (!urlParams['id']) {
     throw new Error("The project ID found in SurveyContextProvider was invalid. Does your current React route provide an 'id' parameter?");
-  } else if (!props.surveyId) {
+  } else if (!urlParams['survey_id']) {
     throw new Error("The survey ID found in SurveyContextProvider was invalid. Does your current React route provide a 'survey_id' parameter?");
   }
 
-  const projectId = Number(props.projectId);
-  const surveyId = Number(props.surveyId);
+  const projectId = Number(urlParams['id']);
+  const surveyId = Number(urlParams['survey_id']);
 
   /**
    * Refreshes the current survey object whenever the current survey ID changes
