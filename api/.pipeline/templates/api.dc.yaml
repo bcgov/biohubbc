@@ -54,6 +54,11 @@ parameters:
   - name: ELASTICSEARCH_TAXONOMY_INDEX
     description: Platform Elasticsearch Taxonomy Index
     required: true
+    value: 'taxonomy_3.0.0'
+  - name: S3_KEY_PREFIX
+    description: S3 key optional prefix
+    required: false
+    value: 'sims'
   - name: TZ
     description: Application timezone
     required: false
@@ -238,6 +243,8 @@ objects:
                   value: ${ELASTICSEARCH_URL}
                 - name: ELASTICSEARCH_TAXONOMY_INDEX
                   value: ${ELASTICSEARCH_TAXONOMY_INDEX}
+                - name: S3_KEY_PREFIX
+                  value: ${S3_KEY_PREFIX}
                 - name: TZ
                   value: ${TZ}
                 - name: VERSION

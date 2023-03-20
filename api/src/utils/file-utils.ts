@@ -75,6 +75,15 @@ export const getS3HostUrl = (key?: string): string => {
 };
 
 /**
+ * Local getter for retrieving the S3 key prefix.
+ *
+ * @returns {*} {string} The S3 key prefix
+ */
+export const _getS3KeyPrefix = (): string => {
+  return process.env.S3_KEY_PREFIX || 'sims';
+};
+
+/**
  * Delete a file from S3, based on its key.
  *
  * For potential future reference, for deleting the delete marker of a file in S3:
@@ -222,7 +231,7 @@ export interface IS3FileKey {
 }
 
 export function generateS3FileKey(options: IS3FileKey): string {
-  const keyParts: (string | number)[] = [];
+  const keyParts: (string | number)[] = [_getS3KeyPrefix()];
 
   if (options.projectId) {
     keyParts.push('projects');
@@ -252,7 +261,7 @@ export function generateS3FileKey(options: IS3FileKey): string {
     keyParts.push(options.fileName);
   }
 
-  return keyParts.join('/');
+  return keyParts.filter(Boolean).join('/');
 }
 
 export async function scanFileForVirus(file: Express.Multer.File): Promise<boolean> {
