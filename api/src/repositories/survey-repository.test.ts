@@ -225,14 +225,16 @@ describe('SurveyRepository', () => {
     });
 
     it('should return null if now rows returned', async () => {
-      const mockResponse = ({ rows: [], rowCount: 1 } as any) as Promise<QueryResult<any>>;
+      const mockResponse = ({ rows: [{ occurrence_submission_id: null }], rowCount: 1 } as any) as Promise<
+        QueryResult<any>
+      >;
       const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
       const repository = new SurveyRepository(dbConnection);
 
       const response = await repository.getOccurrenceSubmission(1);
 
-      expect(response).to.eql(null);
+      expect(response).to.eql({ occurrence_submission_id: null });
     });
   });
 
@@ -273,14 +275,16 @@ describe('SurveyRepository', () => {
     });
 
     it('should return null if now rows returned', async () => {
-      const mockResponse = ({ rows: [], rowCount: 1 } as any) as Promise<QueryResult<any>>;
+      const mockResponse = ({ rows: [{ survey_summary_submission_id: null }], rowCount: 1 } as any) as Promise<
+        QueryResult<any>
+      >;
       const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
       const repository = new SurveyRepository(dbConnection);
 
       const response = await repository.getSurveySummarySubmission(1);
 
-      expect(response).to.eql(null);
+      expect(response).to.eql({ survey_summary_submission_id: null });
     });
   });
 

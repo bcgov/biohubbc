@@ -136,7 +136,7 @@ export interface SurveyUpdateObject {
 
 export interface SurveySupplementaryData {
   occurrence_submission: {
-    occurrence_submission_id: number;
+    occurrence_submission_id: number | null;
   };
   occurrence_submission_publish: {
     occurrence_submission_publish_id: number;
@@ -148,9 +148,9 @@ export interface SurveySupplementaryData {
     update_date: string | null;
     update_user: number | null;
     revision_count: number;
-  };
+  } | null;
   survey_summary_submission: {
-    survey_summary_submission_id: number;
+    survey_summary_submission_id: number | null;
   };
   survey_summary_submission_publish: {
     survey_summary_submission_publish_id: number;
@@ -162,7 +162,7 @@ export interface SurveySupplementaryData {
     update_date: string | null;
     update_user: number | null;
     revision_count: number;
-  };
+  } | null;
   survey_metadata_publish: {
     survey_metadata_publish_id: number;
     survey_id: number;
@@ -173,7 +173,7 @@ export interface SurveySupplementaryData {
     update_date: string | null;
     update_user: number | null;
     revision_count: number;
-  };
+  } | null;
 }
 
 /**

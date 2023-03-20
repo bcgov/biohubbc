@@ -97,19 +97,9 @@ export const surveySupplementaryData: SurveySupplementaryData = {
     revision_count: 1
   },
   survey_summary_submission: {
-    survey_summary_submission_id: 2
+    survey_summary_submission_id: null
   },
-  survey_summary_submission_publish: {
-    survey_summary_submission_publish_id: 1,
-    survey_summary_submission_id: 1,
-    event_timestamp: '2000-08-10 11:53:53',
-    artifact_revision_id: 1,
-    create_date: '2000-09-10 11:53:53',
-    create_user: 1,
-    update_date: null,
-    update_user: null,
-    revision_count: 1
-  },
+  survey_summary_submission_publish: null,
   survey_metadata_publish: {
     survey_metadata_publish_id: 1,
     survey_id: 1,
