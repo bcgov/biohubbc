@@ -59,7 +59,7 @@ const ProjectsRouter: React.FC = () => {
         </ProjectsLayout>
       </AppRoute>
 
-      <AppRoute path="/admin/projects/:id/surveys/:survey_id" title={getTitle('Projects')} layout={ProjectsLayout}>
+      <AppRoute path="/admin/projects/:id/surveys/:survey_id" title={getTitle('Surveys')} layout={ProjectsLayout}>
         <SurveyContextProvider>
           <SurveyRouter />
         </SurveyContextProvider>
