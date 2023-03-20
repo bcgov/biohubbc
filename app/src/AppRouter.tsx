@@ -5,7 +5,7 @@ import {
 } from 'components/security/RouteGuards';
 import { SYSTEM_ROLE } from 'constants/roles';
 import AdminUsersRouter from 'features/admin/AdminUsersRouter';
-import ProjectsRouter from 'features/projects/ProjectsRouter';
+import ProjectsRouter from 'routers/ProjectsRouter';
 import ResourcesPage from 'features/resources/ResourcesPage';
 import SearchPage from 'features/search/SearchPage';
 import BaseLayout from 'layouts/BaseLayout';

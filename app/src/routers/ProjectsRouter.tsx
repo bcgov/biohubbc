@@ -1,5 +1,5 @@
 import { SurveyContextProvider } from 'contexts/surveyContext';
-import ProjectsLayout from 'features/projects/ProjectsLayout';
+import ProjectsLayout from 'layouts/ProjectsLayout';
 import ProjectPage from 'features/projects/view/ProjectPage';
 import CreateSurveyPage from 'features/surveys/CreateSurveyPage';
 import EditSurveyPage from 'features/surveys/edit/EditSurveyPage';
@@ -7,10 +7,10 @@ import SurveyPage from 'features/surveys/view/SurveyPage';
 import React from 'react';
 import { matchPath, Redirect, Switch, useLocation } from 'react-router';
 import AppRoute from 'utils/AppRoute';
-import CreateProjectPage from './create/CreateProjectPage';
-import EditProjectPage from './edit/EditProjectPage';
-import ProjectsListPage from './list/ProjectsListPage';
-import ProjectParticipantsPage from './participants/ProjectParticipantsPage';
+import CreateProjectPage from '../features/projects/create/CreateProjectPage';
+import EditProjectPage from '../features/projects/edit/EditProjectPage';
+import ProjectsListPage from '../features/projects/list/ProjectsListPage';
+import ProjectParticipantsPage from '../features/projects/participants/ProjectParticipantsPage';
 
 /**
  * Router for all `/admin/projects/*` pages.
