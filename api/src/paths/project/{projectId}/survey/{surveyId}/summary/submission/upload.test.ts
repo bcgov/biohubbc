@@ -336,11 +336,11 @@ describe('uploadSummarySubmission', () => {
     sinon
       .stub(SummaryService.prototype, 'insertSurveySummarySubmission')
       .resolves({ survey_summary_submission_id: 14 });
-    sinon.stub(file_utils, 'uploadFileToS3').resolves({ key: 'projects/1/surveys/1/test.txt' } as any);
+    sinon.stub(file_utils, 'uploadFileToS3').resolves({ key: 'sims/projects/1/surveys/1/test.txt' } as any);
     sinon.stub(SummaryService.prototype, 'summaryTemplateValidation').resolves();
     sinon.stub(SummaryService.prototype, 'prepXLSX').returns({} as XLSXCSV);
     sinon.stub(SummaryService.prototype, 'summaryTemplatePreparation').resolves({
-      s3InputKey: 'projects/1/surveys/1/test.txt',
+      s3InputKey: 'sims/projects/1/surveys/1/test.txt',
       xlsx: {} as XLSXCSV
     });
 
