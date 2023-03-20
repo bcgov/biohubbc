@@ -9,7 +9,8 @@ import {
   _getClamAvScanner,
   _getObjectStoreBucketName,
   _getObjectStoreUrl,
-  _getS3Client
+  _getS3Client,
+  _getS3KeyPrefix
 } from './file-utils';
 
 describe('deleteFileFromS3', () => {
@@ -32,26 +33,27 @@ describe('generateS3FileKey', () => {
   it('returns project file path', async () => {
     const result = generateS3FileKey({ projectId: 1, fileName: 'testFileName' });
 
-    expect(result).to.equal('projects/1/testFileName');
+    expect(result).to.equal('sims/projects/1/testFileName');
   });
 
   it('returns survey file path', async () => {
     const result = generateS3FileKey({ projectId: 1, surveyId: 2, fileName: 'testFileName' });
 
-    expect(result).to.equal('projects/1/surveys/2/testFileName');
+    expect(result).to.equal('sims/projects/1/surveys/2/testFileName');
   });
 
   it('returns project folder file path', async () => {
     const result = generateS3FileKey({ projectId: 1, folder: 'folder', fileName: 'testFileName' });
 
-    expect(result).to.equal('projects/1/folder/testFileName');
+    expect(result).to.equal('sims/projects/1/folder/testFileName');
   });
 
   it('returns survey folder file path', async () => {
     const result = generateS3FileKey({ projectId: 1, surveyId: 2, folder: 'folder', fileName: 'testFileName' });
 
-    expect(result).to.equal('projects/1/surveys/2/folder/testFileName');
+    expect(result).to.equal('sims/projects/1/surveys/2/folder/testFileName');
   });
+
   it('returns survey occurrence folder file path', async () => {
     const result = generateS3FileKey({
       projectId: 1,
@@ -60,8 +62,9 @@ describe('generateS3FileKey', () => {
       fileName: 'testFileName'
     });
 
-    expect(result).to.equal('projects/1/surveys/2/submissions/3/testFileName');
+    expect(result).to.equal('sims/projects/1/surveys/2/submissions/3/testFileName');
   });
+
   it('returns survey summaryresults folder file path', async () => {
     const result = generateS3FileKey({
       projectId: 1,
@@ -70,7 +73,7 @@ describe('generateS3FileKey', () => {
       fileName: 'testFileName'
     });
 
-    expect(result).to.equal('projects/1/surveys/2/summaryresults/3/testFileName');
+    expect(result).to.equal('sims/projects/1/surveys/2/summaryresults/3/testFileName');
   });
 });
 
@@ -179,5 +182,21 @@ describe('_getObjectStoreUrl', () => {
 
     const result = _getObjectStoreUrl();
     expect(result).to.equal('nrs.objectstore.gov.bc.ca');
+  });
+});
+
+describe('_getS3KeyPrefix', () => {
+  it('should return an s3 key prefix', () => {
+    process.env.S3_KEY_PREFIX = 'test-sims';
+
+    const result = _getS3KeyPrefix();
+    expect(result).to.equal('test-sims');
+  });
+
+  it('should return its default value', () => {
+    delete process.env.S3_KEY_PREFIX;
+
+    const result = _getS3KeyPrefix();
+    expect(result).to.equal('sims');
   });
 });
