@@ -1,5 +1,5 @@
-import ProjectsLayout from 'layouts/ProjectsLayout';
 import SurveyPage from 'features/surveys/view/SurveyPage';
+import ProjectsLayout from 'layouts/ProjectsLayout';
 import React from 'react';
 import { Switch } from 'react-router';
 import AppRoute from 'utils/AppRoute';

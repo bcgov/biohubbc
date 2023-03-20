@@ -5,7 +5,6 @@ import {
 } from 'components/security/RouteGuards';
 import { SYSTEM_ROLE } from 'constants/roles';
 import AdminUsersRouter from 'features/admin/AdminUsersRouter';
-import ProjectsRouter from 'routers/ProjectsRouter';
 import ResourcesPage from 'features/resources/ResourcesPage';
 import SearchPage from 'features/search/SearchPage';
 import BaseLayout from 'layouts/BaseLayout';
@@ -17,6 +16,7 @@ import { LandingPage } from 'pages/landing/LandingPage';
 import LogOutPage from 'pages/logout/LogOutPage';
 import React from 'react';
 import { Redirect, Switch, useLocation } from 'react-router-dom';
+import ProjectsRouter from 'routers/ProjectsRouter';
 import AppRoute from 'utils/AppRoute';
 
 const AppRouter: React.FC = () => {

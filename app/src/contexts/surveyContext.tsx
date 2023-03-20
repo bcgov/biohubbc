@@ -48,9 +48,13 @@ export const SurveyContextProvider = (props: PropsWithChildren<Record<never, any
   const urlParams = useParams();
 
   if (!urlParams['id']) {
-    throw new Error("The project ID found in SurveyContextProvider was invalid. Does your current React route provide an 'id' parameter?");
+    throw new Error(
+      "The project ID found in SurveyContextProvider was invalid. Does your current React route provide an 'id' parameter?"
+    );
   } else if (!urlParams['survey_id']) {
-    throw new Error("The survey ID found in SurveyContextProvider was invalid. Does your current React route provide a 'survey_id' parameter?");
+    throw new Error(
+      "The survey ID found in SurveyContextProvider was invalid. Does your current React route provide a 'survey_id' parameter?"
+    );
   }
 
   const projectId = Number(urlParams['id']);
