@@ -348,7 +348,7 @@ describe('PlatformService', () => {
 
       process.env.BACKBONE_INTAKE_ENABLED = 'true';
 
-      const buildProjectEmlStub = sinon.stub(EmlService.prototype, 'buildProjectEmlPackage').callsFake((_options) =>
+      const buildProjectEmlStub = sinon.stub(EmlService.prototype, 'buildProjectEmlPackage').callsFake(() =>
         Promise.resolve({
           packageId: '123-456-789',
           toString: () => '<eml:eml />'
@@ -414,7 +414,7 @@ describe('PlatformService', () => {
 
       process.env.BACKBONE_INTAKE_ENABLED = 'true';
 
-      const buildProjectEmlStub = sinon.stub(EmlService.prototype, 'buildProjectEmlPackage').callsFake((_options) =>
+      const buildProjectEmlStub = sinon.stub(EmlService.prototype, 'buildProjectEmlPackage').callsFake(() =>
         Promise.resolve({
           packageId: '123-456-789',
           toString: () => '<eml:eml />'
@@ -567,14 +567,14 @@ describe('PlatformService', () => {
 
       const getFileFromS3Stub = sinon.stub(file_utils, 'getFileFromS3').resolves(s3File);
 
-      const buildProjectEmlStub = sinon.stub(EmlService.prototype, 'buildProjectEmlPackage').callsFake((_options) =>
+      const buildProjectEmlStub = sinon.stub(EmlService.prototype, 'buildProjectEmlPackage').callsFake(() =>
         Promise.resolve({
           packageId: '123-456-789',
           toString: () => ''
         } as EmlPackage)
       );
 
-      const buildSurveyEmlStub = sinon.stub(EmlService.prototype, 'buildSurveyEmlPackage').callsFake((_options) =>
+      const buildSurveyEmlStub = sinon.stub(EmlService.prototype, 'buildSurveyEmlPackage').callsFake(() =>
         Promise.resolve({
           packageId: '123-456-789',
           toString: () => ''
@@ -618,14 +618,14 @@ describe('PlatformService', () => {
 
       const getFileFromS3Stub = sinon.stub(file_utils, 'getFileFromS3').resolves(s3File);
 
-      const buildProjectEmlStub = sinon.stub(EmlService.prototype, 'buildProjectEmlPackage').callsFake((_options) =>
+      const buildProjectEmlStub = sinon.stub(EmlService.prototype, 'buildProjectEmlPackage').callsFake(() =>
         Promise.resolve({
           packageId: '123-456-789',
           toString: () => '<eml:eml />'
         } as EmlPackage)
       );
 
-      const buildSurveyEmlStub = sinon.stub(EmlService.prototype, 'buildSurveyEmlPackage').callsFake((_options) =>
+      const buildSurveyEmlStub = sinon.stub(EmlService.prototype, 'buildSurveyEmlPackage').callsFake(() =>
         Promise.resolve({
           packageId: '123-456-789',
           toString: () => '<eml:eml />'
