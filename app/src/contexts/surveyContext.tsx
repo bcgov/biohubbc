@@ -20,7 +20,7 @@ export interface ISurveyContext {
   surveyDataLoader: DataLoader<[project_id: number, survey_id: number], IGetSurveyForViewResponse, unknown>;
 
   /**
-   * The project ID belonging to the current survey
+   * The project ID belonging to the current project
    *
    * @type {number}
    * @memberof ISurveyContext
@@ -51,7 +51,9 @@ export const SurveyContextProvider = (props: PropsWithChildren<Record<never, any
     throw new Error(
       "The project ID found in SurveyContextProvider was invalid. Does your current React route provide an 'id' parameter?"
     );
-  } else if (!urlParams['survey_id']) {
+  }
+
+  if (!urlParams['survey_id']) {
     throw new Error(
       "The survey ID found in SurveyContextProvider was invalid. Does your current React route provide a 'survey_id' parameter?"
     );
@@ -80,5 +82,9 @@ export const SurveyContextProvider = (props: PropsWithChildren<Record<never, any
     [surveyDataLoader, projectId, surveyId]
   );
 
-  return <SurveyContext.Provider value={surveyContext} {...props} />;
+  return (
+    <SurveyContext.Provider value={surveyContext}>
+      {props.children}
+    </SurveyContext.Provider>
+  );
 };
