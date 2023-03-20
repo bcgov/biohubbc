@@ -122,15 +122,15 @@ describe('ProjectService', () => {
       expect(response).to.eql(undefined);
     });
 
-    describe('createProjectAndUploadToBiohub', () => {
+    describe('createProjectAndUploadMetadataToBioHub', () => {
       it('returns projectId on success', async () => {
         const dbConnection = getMockDBConnection();
         const service = new ProjectService(dbConnection);
 
         const repoStub1 = sinon.stub(ProjectService.prototype, 'createProject').resolves(1);
-        const repoStub2 = sinon.stub(PlatformService.prototype, 'submitAndPublishDwcAMetadata').resolves();
+        const repoStub2 = sinon.stub(PlatformService.prototype, 'submitProjectDwCMetadataToBioHub').resolves();
 
-        const response = await service.createProjectAndUploadToBiohub((null as unknown) as PostProjectObject);
+        const response = await service.createProjectAndUploadMetadataToBioHub((null as unknown) as PostProjectObject);
 
         expect(repoStub1).to.be.calledOnce;
         expect(repoStub2).to.be.calledOnce;
@@ -138,15 +138,18 @@ describe('ProjectService', () => {
       });
     });
 
-    describe('updateProjectAndUploadToBiohub', () => {
+    describe('updateProjectAndUploadMetadataToBioHub', () => {
       it('successfully updates project', async () => {
         const dbConnection = getMockDBConnection();
         const service = new ProjectService(dbConnection);
 
         const repoStub1 = sinon.stub(ProjectService.prototype, 'updateProject').resolves();
-        const repoStub2 = sinon.stub(PlatformService.prototype, 'submitAndPublishDwcAMetadata').resolves();
+        const repoStub2 = sinon.stub(PlatformService.prototype, 'submitProjectDwCMetadataToBioHub').resolves();
 
-        const response = await service.updateProjectAndUploadToBiohub(1, (null as unknown) as PostProjectObject);
+        const response = await service.updateProjectAndUploadMetadataToBioHub(
+          1,
+          (null as unknown) as PostProjectObject
+        );
 
         expect(repoStub1).to.be.calledOnce;
         expect(repoStub2).to.be.calledOnce;

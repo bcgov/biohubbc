@@ -30,7 +30,7 @@ describe('survey', () => {
 
       sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-      sinon.stub(PlatformService.prototype, 'submitSurveyDataPackage').resolves({ uuid: 'test-uuid' });
+      sinon.stub(PlatformService.prototype, 'submitSurveyDataToBioHub').resolves({ uuid: 'test-uuid' });
 
       const sampleReq = {
         keycloak_token: {},
@@ -72,7 +72,7 @@ describe('survey', () => {
 
       sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-      sinon.stub(PlatformService.prototype, 'submitSurveyDataPackage').rejects(new Error('a test error'));
+      sinon.stub(PlatformService.prototype, 'submitSurveyDataToBioHub').rejects(new Error('a test error'));
 
       const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
