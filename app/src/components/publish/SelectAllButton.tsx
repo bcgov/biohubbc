@@ -2,7 +2,7 @@ import { Box } from '@material-ui/core';
 import Checkbox from '@material-ui/core/Checkbox';
 import Typography from '@material-ui/core/Typography';
 import { useFormikContext } from 'formik';
-import React from 'react';
+import React, { useEffect } from 'react';
 
 
 export interface ISelectAllButtonProps {
@@ -14,7 +14,15 @@ const SelectAllButton: React.FC<ISelectAllButtonProps> = (props) => {
   const [selected, setSelected] = React.useState(false);
 
   const { formikData } = props;
-  const { resetForm, setFieldValue } = useFormikContext<any>();
+  const { resetForm, setFieldValue, values } = useFormikContext<any>();
+
+  useEffect(() => {
+    formikData.forEach((item) => {
+      if (values[item.key] !== item.value) {
+        setSelected(false);
+      }
+    });
+  }, [formikData, values]);
 
   const handleAll = () => {
     formikData.forEach((item) => {

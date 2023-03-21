@@ -436,19 +436,6 @@ const useSurveyApi = (axios: AxiosInstance) => {
     return data;
   };
 
-  /**
-   * Upload Survey/Project/Observation data to BioHub
-   *
-   * @param {number} projectId
-   * @param {number} surveyId
-   * @return {*}  {Promise<boolean>}
-   */
-  const uploadSurveyDataToBioHub = async (projectId: number, surveyId: number): Promise<boolean> => {
-    const response = await axios.post(`/api/project/${projectId}/survey/${surveyId}/upload`);
-
-    return response.data;
-  };
-
   return {
     createSurvey,
     getSurveyForView,
@@ -469,8 +456,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
     deleteSurvey,
     getAvailableSurveyFundingSources,
     getSummarySubmissionSignedURL,
-    deleteSummarySubmission,
-    uploadSurveyDataToBioHub
+    deleteSummarySubmission
   };
 };
 

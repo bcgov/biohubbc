@@ -148,7 +148,7 @@ describe('AttachmentService', () => {
           expect(response).to.eql({
             id: 1,
             revision_count: 1,
-            key: 'projects/1/file.test'
+            key: 'sims/projects/1/file.test'
           });
         });
 
@@ -175,7 +175,7 @@ describe('AttachmentService', () => {
           expect(response).to.eql({
             id: 1,
             revision_count: 1,
-            key: 'projects/1/file.test'
+            key: 'sims/projects/1/file.test'
           });
         });
       });
@@ -412,7 +412,7 @@ describe('AttachmentService', () => {
           expect(response).to.eql({
             id: 1,
             revision_count: 1,
-            key: 'projects/1/reports/file.test'
+            key: 'sims/projects/1/reports/file.test'
           });
         });
 
@@ -452,7 +452,7 @@ describe('AttachmentService', () => {
           expect(response).to.eql({
             id: 1,
             revision_count: 1,
-            key: 'projects/1/reports/file.test'
+            key: 'sims/projects/1/reports/file.test'
           });
         });
       });
@@ -648,7 +648,7 @@ describe('AttachmentService', () => {
           expect(response).to.eql({
             id: 1,
             revision_count: 1,
-            key: 'projects/1/surveys/1/file.test'
+            key: 'sims/projects/1/surveys/1/file.test'
           });
         });
 
@@ -676,7 +676,7 @@ describe('AttachmentService', () => {
           expect(response).to.eql({
             id: 1,
             revision_count: 1,
-            key: 'projects/1/surveys/1/file.test'
+            key: 'sims/projects/1/surveys/1/file.test'
           });
         });
       });
@@ -874,7 +874,7 @@ describe('AttachmentService', () => {
           expect(response).to.eql({
             id: 1,
             revision_count: 1,
-            key: 'projects/1/surveys/1/reports/file.test'
+            key: 'sims/projects/1/surveys/1/reports/file.test'
           });
         });
 
@@ -913,7 +913,7 @@ describe('AttachmentService', () => {
           expect(response).to.eql({
             id: 1,
             revision_count: 1,
-            key: 'projects/1/surveys/1/reports/file.test'
+            key: 'sims/projects/1/surveys/1/reports/file.test'
           });
         });
       });
