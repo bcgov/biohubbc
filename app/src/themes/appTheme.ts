@@ -61,6 +61,9 @@ const appTheme = createMuiTheme({
       },
       h6: {
         fontWeight: 700
+      },
+      body2: {
+        fontSize: '0.9rem'
       }
     },
     MuiBreadcrumbs: {
@@ -75,7 +78,8 @@ const appTheme = createMuiTheme({
       root: {
         textTransform: 'none',
         borderRadius: '5px',
-        fontWeight: 700
+        fontWeight: 700,
+        fontSize: '0.9rem'
       },
       startIcon: {
         marginTop: '1px',
@@ -97,6 +101,19 @@ const appTheme = createMuiTheme({
       }
     },
     MuiChip: {
+      root: {
+        fontWeight: 700
+      },
+      colorPrimary: {
+        color: '#003366',
+        backgroundColor: "#DCEBFB",
+        textTransform: 'uppercase',
+        fontSize: '12px',
+        '&.colorSuccess': {
+          color: '#2D4821',
+          backgroundColor: '#DFF0D8'
+        }
+      },
       colorSecondary: {
         backgroundColor: 'red'
       }

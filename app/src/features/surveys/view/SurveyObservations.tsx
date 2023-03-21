@@ -1,21 +1,21 @@
+import Collapse from '@material-ui/core/Collapse';
 import Box from '@material-ui/core/Box';
+import Chip from '@material-ui/core/Chip';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import { grey } from '@material-ui/core/colors';
 import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
 import Link from '@material-ui/core/Link';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
 import Paper from '@material-ui/core/Paper';
-import { Theme } from '@material-ui/core/styles/createMuiTheme';
-import makeStyles from '@material-ui/core/styles/makeStyles';
+import { makeStyles, createStyles, withStyles, Theme } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Alert from '@material-ui/lab/Alert';
+import LinearProgress from '@material-ui/core/LinearProgress';
 import {
-  mdiAlertCircleOutline,
-  mdiClockOutline,
-  mdiDownload,
-  mdiFileOutline,
-  mdiImport,
-  mdiInformationOutline,
-  mdiTrashCanOutline
+  mdiAlertCircleOutline, mdiDotsVertical, mdiFileOutline, mdiImport, mdiInformationOutline, mdiTrashCanOutline, mdiTrayArrowDown
 } from '@mdi/js';
 import Icon from '@mdi/react';
 import ComponentDialog from 'components/dialog/ComponentDialog';
@@ -39,17 +39,52 @@ interface ISurveyObservationsProps {
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
-  alertLink: {
-    color: 'inherit'
+  observationFile: {
+    '&.MuiAlert-outlinedInfo': {
+      borderColor: grey[400],
+      '& .MuiAlert-icon': {
+        marginTop: '12px',
+        color: grey[600]
+      }
+    },
+    '& .MuiAlert-message': {
+      flex: '1 1 auto',
+      overflow: 'hidden'
+    }
   },
   alertActions: {
     '& > *': {
       marginLeft: theme.spacing(2)
     }
+  },
+  observationFileName: {
+    marginTop: '2px',
+    marginBottom: '4px',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    textDecoration: 'underline',
+    cursor: 'pointer'
   }
 }));
 
+const BorderLinearProgress = withStyles((theme: Theme) =>
+  createStyles({
+    root: {
+      height: 6,
+      borderRadius: 3,
+    },
+    colorPrimary: {
+      backgroundColor: theme.palette.grey[theme.palette.type === 'light' ? 300 : 700],
+    },
+    bar: {
+      borderRadius: 3,
+      backgroundColor: '#1976D2',
+    },
+  }),
+)(LinearProgress);
+
 const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const biohubApi = useBiohubApi();
   const urlParams = useParams();
   const dialogContext = useContext(DialogContext);
@@ -87,9 +122,9 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
   }, [occurrenceSubmission, submissionPollingInterval]);
 
   const defaultUploadYesNoDialogProps = {
-    dialogTitle: 'Upload Observation Data',
+    dialogTitle: 'Import Observation Data',
     dialogText:
-      'Are you sure you want to import a different data set?  This will overwrite the existing data you have already imported.',
+      'Are you sure you want to import a different file for observations? This will overwrite the existing observations file.',
     open: false,
     onClose: () => dialogContext.setYesNoDialog({ open: false }),
     onNo: () => dialogContext.setYesNoDialog({ open: false }),
@@ -98,9 +133,9 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
 
   const defaultDeleteYesNoDialogProps = {
     ...defaultUploadYesNoDialogProps,
-    dialogTitle: 'Delete Observation',
-    dialogText:
-      'Are you sure you want to delete the current observation data? Your observation will be removed from this survey.'
+    dialogTitle: 'Delete Observations?',
+    dialogText: 'Are you sure you want to delete this observation file? This action cannot be undone.'
+    
   };
 
   const importObservations = (): IUploadHandler => {
@@ -167,6 +202,10 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
     dialogContext.setYesNoDialog({
       ...defaultDeleteYesNoDialogProps,
       open: true,
+      yesButtonProps: { color: 'secondary' },
+      yesButtonLabel: 'Delete',
+      noButtonProps: {color: 'default'},
+      noButtonLabel: 'Cancel',
       onYes: () => {
         softDeleteSubmission();
         dialogContext.setYesNoDialog({ open: false });
@@ -192,16 +231,16 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
     });
   }
 
-  const submissionAlertAction = () => (
-    <Box>
-      <IconButton aria-label="open" color="inherit" onClick={openFileContents}>
-        <Icon path={mdiDownload} size={1} />
-      </IconButton>
-      <IconButton aria-label="delete" color="inherit" onClick={showDeleteDialog}>
-        <Icon path={mdiTrashCanOutline} size={1} />
-      </IconButton>
-    </Box>
-  );
+  // const submissionAlertAction = () => (
+  //   <Box>
+  //     <IconButton aria-label="open" color="inherit" onClick={openFileContents}>
+  //       <Icon path={mdiDownload} size={1} />
+  //     </IconButton>
+  //     <IconButton aria-label="delete" color="inherit" onClick={showDeleteDialog}>
+  //       <Icon path={mdiTrashCanOutline} size={1} />
+  //     </IconButton>
+  //   </Box>
+  // );
 
   const openFileContents = useCallback(() => {
     if (!occurrenceSubmissionId) {
@@ -238,7 +277,7 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
     }
   };
 
-  let submissionStatusIcon = occurrenceSubmission?.isValidating ? mdiClockOutline : mdiFileOutline;
+  let submissionStatusIcon = occurrenceSubmission?.isValidating ? mdiFileOutline : mdiFileOutline;
   let submissionStatusSeverity: AlertSeverityLevel = 'info';
 
   if (submissionMessageTypes.some((messageType) => messageType.severityLabel === 'Error')) {
@@ -250,6 +289,14 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
   } else if (submissionMessageTypes.some((messageType) => messageType.severityLabel === 'Notice')) {
     submissionStatusIcon = mdiInformationOutline;
   }
+
+  const openContextMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const closeContextMenu = () => {
+    setAnchorEl(null);
+  };
 
   return (
     <>
@@ -266,6 +313,7 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
         <Divider />
 
         <Box p={3}>
+
           {!submissionExists ? (
             <>
               <Box textAlign="center">
@@ -278,19 +326,75 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
           ) : (
             <>
               <Alert
+                className={classes.observationFile}
+                variant="outlined"
                 icon={<Icon path={submissionStatusIcon} size={1} />}
-                severity={submissionStatusSeverity}
-                action={submissionAlertAction()}>
-                <Box display="flex" alignItems="center" m={0}>
-                  <Link className={classes.alertLink} component="button" variant="body2" onClick={openFileContents}>
-                    <strong>{occurrenceSubmission?.inputFileName}</strong>
-                  </Link>
+                severity={submissionStatusSeverity}>
+
+                <Box display="flex" ml={0.5}>
+                  <Box mr={2} flex="1 1 auto" style={{overflow: 'hidden'}}>
+                    <Typography className={classes.observationFileName} variant="body2" component="div" onClick={openFileContents}>
+                      <strong>{occurrenceSubmission?.inputFileName}</strong>
+                    </Typography>
+                    <Typography variant="body2" color="textSecondary">
+                      {occurrenceSubmission?.isValidating
+                        ? 'Processing file. Please wait...'
+                        : occurrenceSubmission?.status}
+                    </Typography>
+
+                    <Collapse in={occurrenceSubmission?.isValidating} collapsedHeight="0">
+                      <Box mt={2} mr={1}>
+                        <BorderLinearProgress />
+                      </Box>
+                    </Collapse>
+                  </Box>
+
+                  {!occurrenceSubmission?.isValidating && (
+                    <Box display="flex" alignItems="center">
+
+                      {submissionStatusSeverity !== 'error' && (
+                        <Box mr={2}>
+                          <Chip label="Unsubmitted" color="primary" />
+                        </Box>
+                      )}
+
+                      <Box>
+                        <IconButton aria-controls="context-menu" aria-haspopup="true" onClick={openContextMenu}>
+                          <Icon path={mdiDotsVertical} size={1} />
+                        </IconButton>
+                        <Menu
+                          keepMounted
+                          id="context-menu"
+                          anchorEl={anchorEl}
+                          open={Boolean(anchorEl)}
+                          onClose={closeContextMenu}
+                          anchorOrigin={{
+                            vertical: 'top',
+                            horizontal: 'right',
+                          }}
+                          transformOrigin={{
+                            vertical: 'top',
+                            horizontal: 'right'
+                          }}
+                        >
+                          <MenuItem onClick={openFileContents}>
+                            <ListItemIcon>
+                              <Icon path={mdiTrayArrowDown} size={1} />
+                            </ListItemIcon>
+                            Download
+                          </MenuItem>
+                          <MenuItem onClick={showDeleteDialog}>
+                            <ListItemIcon>
+                              <Icon path={mdiTrashCanOutline} size={1} />
+                            </ListItemIcon>
+                            Delete
+                          </MenuItem>
+                        </Menu>
+                      </Box>
+                    </Box>
+                  )}
                 </Box>
-                <Typography variant="body2">
-                  {occurrenceSubmission?.isValidating
-                    ? 'Validating observation data. Please wait...'
-                    : occurrenceSubmission?.status}
-                </Typography>
+
               </Alert>
 
               {!occurrenceSubmission?.isValidating && (
