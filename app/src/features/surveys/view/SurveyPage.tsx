@@ -33,6 +33,13 @@ const SurveyPage: React.FC = () => {
   const [staticLayers, setStaticLayers] = useState<IStaticLayer[]>([]);
 
   const codesDataLoader = useDataLoader(() => biohubApi.codes.getAllCodeSets());
+  useDataLoaderError(codesDataLoader, () => {
+    return {
+      dialogTitle: 'Error Loading Codes Details',
+      dialogText:
+        'An error has occurred while attempting to load codes details, please try again. If the error persists, please contact your system administrator.'
+    };
+  });
   codesDataLoader.load();
 
   const projectDataLoader = useDataLoader(() => biohubApi.project.getProjectForView(urlParams['id']));
