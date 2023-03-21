@@ -2,9 +2,11 @@ import { cleanup, fireEvent, render, waitFor } from '@testing-library/react';
 import { SYSTEM_ROLE } from 'constants/roles';
 import { AuthStateContext, IAuthState } from 'contexts/authStateContext';
 import { DialogContextProvider } from 'contexts/dialogContext';
+import { ISurveyContext, SurveyContext } from 'contexts/surveyContext';
 import SurveyHeader from 'features/surveys/view/SurveyHeader';
 import { createMemoryHistory } from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import { DataLoader } from 'hooks/useDataLoader';
 import { SYSTEM_IDENTITY_SOURCE } from 'hooks/useKeycloakWrapper';
 import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
 import React from 'react';
@@ -20,6 +22,14 @@ const mockUseBiohubApi = {
     publishSurvey: jest.fn(),
     deleteSurvey: jest.fn()
   }
+};
+
+const mockSurveyContext: ISurveyContext = {
+  surveyDataLoader: {
+    data: getSurveyForViewResponse
+  } as DataLoader<[project_id: number, survey_id: number], IGetSurveyForViewResponse, unknown>,
+  surveyId: 1,
+  projectId: 1
 };
 
 const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBiohubApi>).mockReturnValue(
@@ -50,14 +60,12 @@ const surveyForView = getSurveyForViewResponse;
 const projectForView = getProjectForViewResponse;
 const refresh = jest.fn();
 
-describe('SurveyPage', () => {
+describe('SurveyHeader', () => {
   beforeEach(() => {
     // clear mocks before each test
     mockBiohubApi().survey.publishSurvey.mockClear();
     mockBiohubApi().survey.deleteSurvey.mockClear();
     refresh.mockClear();
-
-    // jest.spyOn(console, 'debug').mockImplementation(() => {});
   });
 
   afterEach(() => {
@@ -66,13 +74,15 @@ describe('SurveyPage', () => {
 
   const renderComponent = (authState: any, surveyData: IGetSurveyForViewResponse) => {
     return render(
-      <AuthStateContext.Provider value={authState as IAuthState}>
-        <DialogContextProvider>
-          <Router history={history}>
-            <SurveyHeader projectWithDetails={projectForView} surveyWithDetails={surveyData} refresh={refresh} />
-          </Router>
-        </DialogContextProvider>
-      </AuthStateContext.Provider>
+      <SurveyContext.Provider value={mockSurveyContext}>
+        <AuthStateContext.Provider value={authState as IAuthState}>
+          <DialogContextProvider>
+            <Router history={history}>
+              <SurveyHeader projectWithDetails={projectForView} />
+            </Router>
+          </DialogContextProvider>
+        </AuthStateContext.Provider>
+      </SurveyContext.Provider>
     );
   };
 
