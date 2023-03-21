@@ -13,8 +13,8 @@ import {
   mdiClockOutline,
   mdiDownload,
   mdiFileOutline,
+  mdiImport,
   mdiInformationOutline,
-  mdiPlus,
   mdiTrashCanOutline
 } from '@mdi/js';
 import Icon from '@mdi/react';
@@ -262,10 +262,10 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
       <Paper elevation={0}>
         <H2ButtonToolbar
           label="Observations"
-          buttonLabel="Import Observations"
+          buttonLabel="Import"
           buttonTitle="Import Observations"
           buttonProps={{ variant: 'contained', color: 'primary' }}
-          buttonStartIcon={<Icon path={mdiPlus} size={0.8} />}
+          buttonStartIcon={<Icon path={mdiImport} size={1} />}
           buttonOnClick={() => showUploadDialog()}
         />
 
