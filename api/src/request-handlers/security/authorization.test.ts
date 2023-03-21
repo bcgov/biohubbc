@@ -667,7 +667,7 @@ describe('getSystemUserWithRoles', function () {
   });
 
   it('returns null if the system user id is null', async function () {
-    const mockDBConnection = getMockDBConnection({ systemUserId: () => null });
+    const mockDBConnection = getMockDBConnection({ systemUserId: () => (null as unknown) as number });
     sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
     const result = await authorization.getSystemUserWithRoles(mockDBConnection);
@@ -745,7 +745,7 @@ describe('getProjectUserWithRoles', function () {
   });
 
   it('returns null if the system user id is null', async function () {
-    const mockDBConnection = getMockDBConnection({ systemUserId: () => null });
+    const mockDBConnection = getMockDBConnection({ systemUserId: () => (null as unknown) as number });
     sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
     const result = await authorization.getProjectUserWithRoles(1, mockDBConnection);
