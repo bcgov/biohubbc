@@ -203,6 +203,16 @@ export interface IGetSpecies {
 }
 
 export interface IGetSurveyAttachment {
+  attachmentData: ISurveyAttachmentData;
+  supplementaryAttachmentData: ISurveySupplementaryAttachmentData | null;
+}
+
+export interface IGetSurveyReportAttachment {
+  attachmentData: ISurveyReportAttachmentData;
+  supplementaryAttachmentData: ISurveySupplementaryReportAttachmentData | null;
+}
+
+export interface ISurveyAttachmentData {
   id: number;
   fileName: string;
   fileType: string;
@@ -210,8 +220,37 @@ export interface IGetSurveyAttachment {
   size: number;
   revisionCount: number;
 }
+export interface ISurveyReportAttachmentData {
+  id: number;
+  fileType: 'Report';
+  fileName: string;
+  lastModified: string;
+  size: number;
+  revisionCount: number;
+}
+export interface ISurveySupplementaryAttachmentData {
+  survey_attachment_publish_id: number;
+  survey_attachment_id: number;
+  event_timestamp: string;
+  artifact_revision_id: number;
+  create_date: string;
+  create_user: number;
+  update_date: string | null;
+  update_user: number | null;
+  revision_count: number;
+}
 
-export type IGetSurveyReportAttachment = IGetSurveyAttachment & { fileType: 'Report' };
+export interface ISurveySupplementaryReportAttachmentData {
+  survey_report_publish_id: number;
+  survey_report_attachment_id: number;
+  event_timestamp: string;
+  artifact_revision_id: number;
+  create_date: string;
+  create_user: number;
+  update_date: string | null;
+  update_user: number | null;
+  revision_count: number;
+}
 
 /**
  * Get survey attachments response object.
