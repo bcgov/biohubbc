@@ -400,15 +400,17 @@ export class SummaryRepository extends BaseRepository {
   ): Promise<ISummaryTemplateSpeciesData[]> {
     const templateRow = await this.getSummaryTemplateIdFromNameVersion(templateName, templateVersion);
 
+    const failedToFindValidationRulesError = new SummarySubmissionError({
+      messages: [
+        new MessageError(
+          SUMMARY_SUBMISSION_MESSAGE_TYPE.FAILED_GET_VALIDATION_RULES,
+          `Could not find any validation schema associated with Template Name "${templateName}" and Template Version "${templateVersion}".`
+        )
+      ]
+    });
+
     if (!templateRow) {
-      throw new SummarySubmissionError({
-        messages: [
-          new MessageError(
-            SUMMARY_SUBMISSION_MESSAGE_TYPE.FAILED_GET_VALIDATION_RULES,
-            `Could not find any validation schema associated with Template Name "${templateName}" and Template Version "${templateVersion}".`
-          )
-        ]
-      });
+      throw failedToFindValidationRulesError;
     }
 
     const queryBuilder = getKnex()
@@ -423,7 +425,7 @@ export class SummaryRepository extends BaseRepository {
     const response = await this.connection.knex<ISummaryTemplateSpeciesData>(queryBuilder);
 
     if (!response) {
-      throw new HTTP400('Failed to query summary template species table');
+      throw failedToFindValidationRulesError;
     }
 
     return response.rows;
