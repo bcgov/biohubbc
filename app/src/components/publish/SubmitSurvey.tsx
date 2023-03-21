@@ -1,6 +1,5 @@
 import Box from '@material-ui/core/Box';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import Container from '@material-ui/core/Container';
 import Typography from '@material-ui/core/Typography';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -97,9 +96,9 @@ const SubmitSurvey: React.FC = () => {
   }
 
   return (
-    <Container maxWidth={false} disableGutters>
-      <Box pb={5}>
-        <Typography variant="body1" style={{ color: '#787f81' }}>
+    <>
+      <Box mb={2}>
+        <Typography variant="body1" color="textSecondary">
           <strong>Please Note:</strong> Submitted data cannot be modified. You will need to contact an administrator if
           you need to modify submitted information.
         </Typography>
@@ -177,7 +176,7 @@ const SubmitSurvey: React.FC = () => {
           }}
         />
       )}
-    </Container>
+    </>
   );
 };
 
