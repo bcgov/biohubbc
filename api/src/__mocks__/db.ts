@@ -12,7 +12,7 @@ import { IDBConnection } from '../database/db';
 export const getMockDBConnection = (config?: Partial<IDBConnection>): IDBConnection => {
   return {
     systemUserId: () => {
-      return null;
+      return (null as unknown) as number;
     },
     open: async () => {
       // do nothing
