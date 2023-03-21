@@ -73,11 +73,14 @@ export const SurveyContextProvider = (props: PropsWithChildren<Record<never, any
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [projectId, surveyId]);
 
-  const surveyContext: ISurveyContext = useMemo(() => ({
-    surveyDataLoader,
-    projectId,
-    surveyId
-  }), [surveyDataLoader, projectId, surveyId]);
+  const surveyContext: ISurveyContext = useMemo(
+    () => ({
+      surveyDataLoader,
+      projectId,
+      surveyId
+    }),
+    [surveyDataLoader, projectId, surveyId]
+  );
 
   return <SurveyContext.Provider value={surveyContext}>{props.children}</SurveyContext.Provider>;
 };
