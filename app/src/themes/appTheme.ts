@@ -66,6 +66,26 @@ const appTheme = createMuiTheme({
         fontSize: '0.9rem'
       }
     },
+    MuiAlert: {
+      root: {
+        fontSize: '0.9rem'
+      },
+      icon: {
+        marginRight: '0.85rem'
+      },
+      standardError: {
+        color: '#A12622',
+        border: '1px solid #ebccd1',
+        '& .MuiAlert-icon': {
+          color: '#A12622',
+        }
+      }
+    },
+    MuiAlertTitle: {
+      root: {
+        fontWeight: 700
+      }
+    },
     MuiBreadcrumbs: {
       li: {
         maxWidth: '40ch',
