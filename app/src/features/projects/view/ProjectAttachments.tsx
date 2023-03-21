@@ -6,7 +6,7 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
-import { mdiAttachment, mdiChevronDown, mdiFilePdfBox, mdiPlus } from '@mdi/js';
+import { mdiAttachment, mdiChevronDown, mdiFilePdfBox, mdiTrayArrowUp } from '@mdi/js';
 import Icon from '@mdi/react';
 import AttachmentsList from 'components/attachments/AttachmentsList';
 import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
@@ -138,10 +138,10 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
           <Button
             color="primary"
             variant="contained"
-            endIcon={<Icon path={mdiChevronDown} size={0.8} />}
+            endIcon={<Icon path={mdiChevronDown} size={1} />}
             aria-controls="simple-menu"
             aria-haspopup="true"
-            startIcon={<Icon path={mdiPlus} size={1} />}
+            startIcon={<Icon path={mdiTrayArrowUp} size={1} />}
             onClick={handleClick}>
             Add Documents
           </Button>

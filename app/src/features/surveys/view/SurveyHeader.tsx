@@ -11,10 +11,9 @@ import Typography from '@material-ui/core/Typography';
 import {
   mdiArrowLeft,
   mdiCalendarRangeOutline,
-  mdiChevronDown,
   mdiCogOutline,
   mdiPencilOutline,
-  mdiShareAll,
+  mdiShareAllOutline,
   mdiTrashCanOutline
 } from '@mdi/js';
 import Icon from '@mdi/react';
@@ -40,22 +39,6 @@ import { useHistory } from 'react-router';
 import { getFormattedDateRangeString } from 'utils/Utils';
 
 const useStyles = makeStyles((theme: Theme) => ({
-  projectNav: {
-    minWidth: '15rem',
-    '& a': {
-      color: theme.palette.text.secondary,
-      '&:hover': {
-        background: 'rgba(0, 51, 102, 0.05)'
-      }
-    },
-    '& a.active': {
-      color: theme.palette.primary.main,
-      background: 'rgba(0, 51, 102, 0.05)',
-      '& svg': {
-        color: theme.palette.primary.main
-      }
-    }
-  },
   pageTitleContainer: {
     maxWidth: '150ch',
     overflow: 'hidden',
@@ -72,32 +55,6 @@ const useStyles = makeStyles((theme: Theme) => ({
   pageTitleActions: {
     paddingTop: theme.spacing(0.75),
     paddingBottom: theme.spacing(0.75)
-  },
-  chip: {
-    color: '#ffffff'
-  },
-  chipActive: {
-    backgroundColor: theme.palette.success.main
-  },
-  chipCompleted: {
-    backgroundColor: theme.palette.primary.main
-  },
-  projectMeta: {
-    marginTop: theme.spacing(3),
-    marginBottom: 0,
-    '& dd': {
-      flex: '0 0 200px',
-      color: theme.palette.text.secondary
-    },
-    '& dt': {
-      flex: '1 1 auto'
-    }
-  },
-  projectMetaRow: {
-    display: 'flex',
-    '& + div': {
-      marginTop: theme.spacing(0.25)
-    }
   }
 }));
 
@@ -242,22 +199,24 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
               <Box display="flex" alignItems="flex-start" flex="0 0 auto" className={classes.pageTitleActions}>
                 <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
                   <Button
+                    title="Submit Survey Data and Documents"
                     color="primary"
                     variant="contained"
+                    startIcon={<Icon path={mdiShareAllOutline} size={1} />}
                     onClick={() => setOpenSubmitSurvey(!openSubmitSurvey)}
-                    startIcon={<Icon path={mdiShareAll} size={0.8} />}>
+                    style={{ minWidth: '7rem' }}>
                     Submit Data
                   </Button>
                 </SystemRoleGuard>
                 <Button
                   variant="outlined"
-                  startIcon={<Icon path={mdiCogOutline} size={0.8} />}
-                  endIcon={<Icon path={mdiChevronDown} size={0.8} />}
+                  color="primary"
+                  startIcon={<Icon path={mdiCogOutline} size={1} />}
                   aria-controls="simple-menu"
                   aria-haspopup="true"
                   onClick={openSurveyMenu}
                   style={{ marginLeft: '0.5rem' }}>
-                  Survey Settings
+                  Settings
                 </Button>
                 <Menu
                   style={{ marginTop: '8px' }}
