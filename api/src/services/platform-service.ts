@@ -414,7 +414,7 @@ export class PlatformService extends DBService {
         // Insert publish history record
         return this.historyPublishService.insertProjectAttachmentPublishRecord({
           artifact_id,
-          project_attachment_id: attachment.id
+          project_attachment_id: attachment.project_attachment_id
         });
       })
     );
@@ -457,7 +457,7 @@ export class PlatformService extends DBService {
         // Insert publish history record
         return this.historyPublishService.insertProjectReportPublishRecord({
           artifact_id,
-          project_report_attachment_id: attachment.id
+          project_report_attachment_id: attachment.project_report_attachment_id
         });
       })
     );
@@ -497,7 +497,7 @@ export class PlatformService extends DBService {
         // Insert publish history record
         return this.historyPublishService.insertSurveyAttachmentPublishRecord({
           artifact_id,
-          survey_attachment_id: attachment.id
+          survey_attachment_id: attachment.survey_attachment_id
         });
       })
     );
@@ -540,7 +540,7 @@ export class PlatformService extends DBService {
         // Insert publish history record
         return this.historyPublishService.insertSurveyReportPublishRecord({
           artifact_id,
-          survey_report_attachment_id: attachment.id
+          survey_report_attachment_id: attachment.survey_report_attachment_id
         });
       })
     );

@@ -11,24 +11,69 @@ const defaultLog = getLogger('models/project-survey-attachments');
  */
 export class GetAttachmentsData {
   attachmentsList: any[];
-  reportAttachmentsList: any[];
 
-  constructor(attachmentsData?: any, reportAttachmentsData?: any) {
+  constructor(attachmentsData?: any, attachmentsSupplementaryData?: any) {
     defaultLog.debug({ label: 'GetAttachmentsData', message: 'params', attachmentsData });
 
-    const mapAttachment = (item: any) => {
+    const mapAttachment = (attachment: any, supplementaryData: any) => {
       return {
-        id: item.id,
-        fileName: item.file_name,
-        fileType: item.file_type || 'Report',
-        lastModified: moment(item.update_date || item.create_date).toISOString(),
-        size: item.file_size,
-        status: item.status
+        attachmentData: {
+          id: attachment.survey_attachment_id,
+          fileName: attachment.file_name,
+          fileType: attachment.file_type || 'Report',
+          lastModified: moment(attachment.update_date || attachment.create_date).toISOString(),
+          size: attachment.file_size,
+          status: attachment.status
+        },
+        supplementaryAttachmentData: supplementaryData
       };
     };
 
-    this.attachmentsList = (attachmentsData?.length && attachmentsData.map(mapAttachment)) || [];
-    this.reportAttachmentsList = (reportAttachmentsData?.length && reportAttachmentsData.map(mapAttachment)) || [];
+    const createAttachmentList = [];
+
+    for (let index = 0; index < attachmentsData.length; index++) {
+      if (attachmentsSupplementaryData && attachmentsSupplementaryData[index]) {
+        createAttachmentList.push(mapAttachment(attachmentsData[index], attachmentsSupplementaryData[index]));
+      }
+      createAttachmentList.push(mapAttachment(attachmentsData[index], null));
+    }
+
+    this.attachmentsList = createAttachmentList || [];
+  }
+}
+
+export class GetReportAttachmentsData {
+  reportAttachmentsList: any[];
+
+  constructor(reportAttachmentsData?: any, reportAttachmentsSupplementaryData?: any) {
+    defaultLog.debug({ label: 'GetReprtAttachmentsData', message: 'params', reportAttachmentsData });
+
+    const mapAttachment = (attachment: any, supplementaryData: any) => {
+      return {
+        attachmentData: {
+          id: attachment.survey_report_attachment_id,
+          fileName: attachment.file_name,
+          fileType: attachment.file_type || 'Report',
+          lastModified: moment(attachment.update_date || attachment.create_date).toISOString(),
+          size: attachment.file_size,
+          status: attachment.status
+        },
+        supplementaryAttachmentData: supplementaryData
+      };
+    };
+
+    const createReportAttachmentList = [];
+
+    for (let index = 0; index < reportAttachmentsData.length; index++) {
+      if (reportAttachmentsSupplementaryData && reportAttachmentsSupplementaryData[index]) {
+        createReportAttachmentList.push(
+          mapAttachment(reportAttachmentsData[index], reportAttachmentsSupplementaryData[index])
+        );
+      }
+      createReportAttachmentList.push(mapAttachment(reportAttachmentsData[index], null));
+    }
+
+    this.reportAttachmentsList = createReportAttachmentList || [];
   }
 }
 

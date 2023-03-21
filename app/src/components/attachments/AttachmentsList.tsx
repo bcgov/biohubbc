@@ -21,6 +21,7 @@ import AttachmentTypeSelector from 'components/dialog/attachments/AttachmentType
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { AttachmentType } from 'constants/attachments';
 import { AttachmentsI18N, EditReportMetaDataI18N } from 'constants/i18n';
+import { BioHubSubmittedStatusType } from 'constants/misc';
 import { DialogContext } from 'contexts/dialogContext';
 import { IAttachmentType } from 'features/projects/view/ProjectAttachments';
 import { APIError } from 'hooks/api/useAxios';
@@ -82,7 +83,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
 
     if (updatedAttachments) {
       const cur = updatedAttachments.find((attachment) => {
-        if (attachment.id === id && attachment.fileType === type) {
+        if (attachment.att === id && attachment.fileType === type) {
           return attachment;
         }
         return null;
@@ -195,6 +196,13 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
     }
   };
 
+  const checkSubmissionStatus = (supplementaryData: any | null | undefined): BioHubSubmittedStatusType => {
+    if (supplementaryData?.event_timestamp) {
+      return BioHubSubmittedStatusType.SUBMITTED;
+    }
+    return BioHubSubmittedStatusType.UNSUBMITTED;
+  };
+
   return (
     <>
       <AttachmentTypeSelector
@@ -230,7 +238,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
                       </TableCell>
                       <TableCell>{row.fileType}</TableCell>
                       <TableCell align="right">
-                        <SubmitStatusChip status="" />
+                        <SubmitStatusChip status={checkSubmissionStatus(null)} />
                       </TableCell>
                       <TableCell align="right">
                         <AttachmentItemMenuButton
