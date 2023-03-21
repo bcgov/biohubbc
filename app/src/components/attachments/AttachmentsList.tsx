@@ -16,6 +16,7 @@ import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
 import { mdiDotsVertical, mdiInformationOutline, mdiTrashCanOutline, mdiTrayArrowDown } from '@mdi/js';
 import Icon from '@mdi/react';
+import { SubmitStatusChip } from 'components/chips/SubmitStatusChip';
 import AttachmentTypeSelector from 'components/dialog/attachments/AttachmentTypeSelector';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { AttachmentType } from 'constants/attachments';
@@ -228,6 +229,9 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
                         </Link>
                       </TableCell>
                       <TableCell>{row.fileType}</TableCell>
+                      <TableCell align="right">
+                        <SubmitStatusChip status="" />
+                      </TableCell>
                       <TableCell align="right">
                         <AttachmentItemMenuButton
                           attachment={row}

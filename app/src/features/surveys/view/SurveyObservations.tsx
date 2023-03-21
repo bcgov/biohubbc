@@ -18,6 +18,7 @@ import {
   mdiTrashCanOutline
 } from '@mdi/js';
 import Icon from '@mdi/react';
+import { SubmitStatusChip } from 'components/chips/SubmitStatusChip';
 import ComponentDialog from 'components/dialog/ComponentDialog';
 import FileUpload from 'components/file-upload/FileUpload';
 import { IUploadHandler } from 'components/file-upload/FileUploadItem';
@@ -192,8 +193,13 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
     });
   }
 
+  // const checkSubmissionStatus = () => {
+
+  // };
+
   const submissionAlertAction = () => (
     <Box>
+      <SubmitStatusChip status="" />
       <IconButton aria-label="open" color="inherit" onClick={openFileContents}>
         <Icon path={mdiDownload} size={1} />
       </IconButton>

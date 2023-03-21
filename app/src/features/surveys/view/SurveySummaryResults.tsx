@@ -17,6 +17,7 @@ import {
   mdiTrashCanOutline
 } from '@mdi/js';
 import Icon from '@mdi/react';
+import { SubmitStatusChip } from 'components/chips/SubmitStatusChip';
 import ComponentDialog from 'components/dialog/ComponentDialog';
 import FileUpload from 'components/file-upload/FileUpload';
 import { IUploadHandler } from 'components/file-upload/FileUploadItem';
@@ -162,6 +163,7 @@ const SurveySummaryResults = () => {
   //Action prop for the Alert MUI component to render the delete icon and associated action
   const submissionAlertAction = () => (
     <Box className={classes.alertActions}>
+      <SubmitStatusChip status="" />
       <IconButton aria-label="open" color="inherit" onClick={() => viewFileContents()}>
         <Icon path={mdiDownload} size={1} />
       </IconButton>
