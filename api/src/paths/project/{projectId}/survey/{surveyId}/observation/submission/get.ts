@@ -4,6 +4,7 @@ import { PROJECT_ROLE, SYSTEM_ROLE } from '../../../../../../../constants/roles'
 import { SUBMISSION_STATUS_TYPE } from '../../../../../../../constants/status';
 import { getDBConnection } from '../../../../../../../database/db';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
+import { HistoryPublishService } from '../../../../../../../services/history-publish-service';
 import { IMessageTypeGroup, SurveyService } from '../../../../../../../services/survey-service';
 import { getLogger } from '../../../../../../../utils/logger';
 
@@ -136,63 +137,55 @@ GET.apiDoc = {
                 description: 'Survey supplementary data',
                 type: 'object',
                 nullable: true,
-                required: ['occurrence_submission_publish'],
+                required: [
+                  'occurrence_submission_publish_id',
+                  'occurrence_submission_id',
+                  'event_timestamp',
+                  'queue_id',
+                  'create_date',
+                  'create_user',
+                  'update_date',
+                  'update_user',
+                  'revision_count'
+                ],
                 properties: {
-                  occurrence_submission_publish: {
-                    description: 'Occurrence submission publish record',
-                    type: 'object',
-                    nullable: true,
-                    required: [
-                      'occurrence_submission_publish_id',
-                      'occurrence_submission_id',
-                      'event_timestamp',
-                      'queue_id',
-                      'create_date',
-                      'create_user',
-                      'update_date',
-                      'update_user',
-                      'revision_count'
-                    ],
-                    properties: {
-                      occurrence_submission_publish_id: {
-                        type: 'integer',
-                        minimum: 1
-                      },
-                      occurrence_submission_id: {
-                        type: 'integer',
-                        minimum: 1
-                      },
-                      event_timestamp: {
-                        oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
-                        description: 'ISO 8601 date string for the project start date'
-                      },
-                      queue_id: {
-                        type: 'integer',
-                        minimum: 1
-                      },
-                      create_date: {
-                        oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
-                        description: 'ISO 8601 date string for the project start date'
-                      },
-                      create_user: {
-                        type: 'integer',
-                        minimum: 1
-                      },
-                      update_date: {
-                        oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
-                        description: 'ISO 8601 date string for the project start date',
-                        nullable: true
-                      },
-                      update_user: {
-                        type: 'integer',
-                        minimum: 1,
-                        nullable: true
-                      },
-                      revision_count: {
-                        type: 'integer',
-                        minimum: 0
-                      }
-                    }
+                  occurrence_submission_publish_id: {
+                    type: 'integer',
+                    minimum: 1
+                  },
+                  occurrence_submission_id: {
+                    type: 'integer',
+                    minimum: 1
+                  },
+                  event_timestamp: {
+                    oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
+                    description: 'ISO 8601 date string for the project start date'
+                  },
+                  queue_id: {
+                    type: 'integer',
+                    minimum: 1
+                  },
+                  create_date: {
+                    oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
+                    description: 'ISO 8601 date string for the project start date'
+                  },
+                  create_user: {
+                    type: 'integer',
+                    minimum: 1
+                  },
+                  update_date: {
+                    oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
+                    description: 'ISO 8601 date string for the project start date',
+                    nullable: true
+                  },
+                  update_user: {
+                    type: 'integer',
+                    minimum: 1,
+                    nullable: true
+                  },
+                  revision_count: {
+                    type: 'integer',
+                    minimum: 0
                   }
                 }
               }
@@ -233,6 +226,7 @@ export function getOccurrenceSubmission(): RequestHandler {
       await connection.open();
 
       const surveyService = new SurveyService(connection);
+      const historyPublishService = new HistoryPublishService(connection);
       const occurrenceSubmission = await surveyService.getLatestSurveyOccurrenceSubmission(Number(req.params.surveyId));
       console.log('occurrenceSubmission', occurrenceSubmission);
 
@@ -269,10 +263,9 @@ export function getOccurrenceSubmission(): RequestHandler {
         ? await surveyService.getOccurrenceSubmissionMessages(Number(occurrenceSubmission.occurrence_submission_id))
         : [];
 
-      const surveyObservationSupplementaryData = await surveyService.getSurveyObservationSupplementaryDataById(
+      const surveyObservationSupplementaryData = await historyPublishService.getOccurrenceSubmissionPublishRecord(
         occurrenceSubmission.occurrence_submission_id
       );
-      console.log('surveyObservationSupplementaryData', surveyObservationSupplementaryData);
 
       return res.status(200).json({
         surveyObservationData: {

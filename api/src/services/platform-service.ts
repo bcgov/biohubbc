@@ -616,7 +616,7 @@ export class PlatformService extends DBService {
 
     // Insert publish history record
     const summarySubmissionPublishRecord = await this.historyPublishService.insertSurveySummaryPublishRecord({
-      survey_summary_submission_id: surveySummarySubmissionData.id,
+      survey_summary_submission_id: surveySummarySubmissionData.survey_summary_submission_id,
       artifact_id: artifact_id
     });
 

@@ -17,7 +17,6 @@ import {
   SurveySupplementaryData
 } from '../models/survey-view';
 import { AttachmentRepository } from '../repositories/attachment-repository';
-import { OccurrenceSubmissionPublish } from '../repositories/history-publish-repository';
 import {
   IGetLatestSurveyOccurrenceSubmission,
   IObservationSubmissionInsertDetails,
@@ -137,17 +136,6 @@ export class SurveyService extends DBService {
       survey_summary_submission_publish: surveySummarySubmissionPublish,
       survey_metadata_publish: surveyMetadataPublish
     };
-  }
-
-  /**
-   * Get Survey Observation supplementary data for a given survey ID
-   *
-   * @param {number} surveyId
-   * @return {*}  {(Promise<OccurrenceSubmissionPublish | null>)}
-   * @memberof SurveyService
-   */
-  async getSurveyObservationSupplementaryDataById(occurrneceId: number): Promise<OccurrenceSubmissionPublish | null> {
-    return this.historyPublishService.getOccurrenceSubmissionPublishRecord(occurrneceId);
   }
 
   /**
