@@ -19,7 +19,7 @@ export interface ISummaryTemplateSpeciesData {
 }
 
 export interface ISurveySummaryDetails {
-  id: number;
+  survey_summary_submission_id: number;
   key: string;
   uuid: string;
   file_name: string;
@@ -90,7 +90,7 @@ export class SummaryRepository extends BaseRepository {
   async getLatestSurveySummarySubmission(surveyId: number): Promise<ISurveySummaryDetails> {
     const sqlStatement = SQL`
       SELECT
-        sss.survey_summary_submission_id as id,
+        sss.survey_summary_submission_id,
         sss.key,
         sss.file_name,
         sss.uuid,

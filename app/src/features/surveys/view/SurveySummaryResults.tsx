@@ -1,5 +1,4 @@
 import Box from '@material-ui/core/Box';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
 import Link from '@material-ui/core/Link';
@@ -25,8 +24,10 @@ import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
 import { BioHubSubmittedStatusType } from 'constants/misc';
 import { DialogContext } from 'contexts/dialogContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { IGetSummaryResultsResponse } from 'interfaces/useSummaryResultsApi.interface';
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import useDataLoader from 'hooks/useDataLoader';
+import useDataLoaderError from 'hooks/useDataLoaderError';
+import { ISurveySummarySupplementaryData } from 'interfaces/useSummaryResultsApi.interface';
+import React, { useContext, useState } from 'react';
 import { useParams } from 'react-router';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -55,17 +56,12 @@ export enum ClassGrouping {
 const SurveySummaryResults = () => {
   const biohubApi = useBiohubApi();
   const urlParams = useParams();
+  const dialogContext = useContext(DialogContext);
+  const classes = useStyles();
 
   const projectId = urlParams['id'];
   const surveyId = urlParams['survey_id'];
   const [openImportSummaryResults, setOpenImportSummaryResults] = useState(false);
-
-  const [submission, setSubmission] = useState<IGetSummaryResultsResponse | null>(null);
-  const [hasErrorMessages, setHasErrorMessages] = useState(false);
-
-  const [isLoading, setIsLoading] = useState(true);
-
-  const classes = useStyles();
 
   const importSummaryResults = (): IUploadHandler => {
     return (file, cancelToken, handleFileUploadProgress) => {
@@ -77,44 +73,6 @@ const SurveySummaryResults = () => {
         handleFileUploadProgress
       );
     };
-  };
-
-  const dialogContext = useContext(DialogContext);
-
-  const getSummarySubmission = useCallback(async () => {
-    try {
-      const submissionResponse = await biohubApi.survey.getSurveySummarySubmission(projectId, surveyId);
-
-      if (submissionResponse?.messages.length) {
-        setHasErrorMessages(true);
-      } else {
-        setHasErrorMessages(false);
-      }
-
-      setSubmission(() => {
-        setIsLoading(false);
-
-        return submissionResponse;
-      });
-    } catch (error) {
-      return error;
-    }
-  }, [biohubApi.survey, surveyId, projectId]);
-
-  useEffect(() => {
-    if (isLoading) {
-      getSummarySubmission();
-    }
-  }, [biohubApi, projectId, surveyId, isLoading, submission, getSummarySubmission]);
-
-  const softDeleteSubmission = async () => {
-    if (!submission?.id) {
-      return;
-    }
-
-    await biohubApi.survey.deleteSummarySubmission(projectId, surveyId, submission?.id);
-
-    await getSummarySubmission();
   };
 
   const defaultUploadYesNoDialogProps = {
@@ -134,8 +92,31 @@ const SurveySummaryResults = () => {
       'Are you sure you want to delete the summary results data? Your summary results will be removed from this survey.'
   };
 
+  //Summary Data Loader and Error Handling
+  const summaryDataLoader = useDataLoader(() => biohubApi.survey.getSurveySummarySubmission(projectId, surveyId));
+  useDataLoaderError(summaryDataLoader, () => {
+    return {
+      dialogTitle: 'Error Loading Summary Details',
+      dialogText:
+        'An error has occurred while attempting to load summary details, please try again. If the error persists, please contact your system administrator.'
+    };
+  });
+
+  summaryDataLoader.load();
+  const summaryData = summaryDataLoader.data?.surveySummaryData;
+
+  const softDeleteSubmission = async () => {
+    if (!summaryData?.survey_summary_submission_id) {
+      return;
+    }
+
+    await biohubApi.survey.deleteSummarySubmission(projectId, surveyId, summaryData?.survey_summary_submission_id);
+
+    summaryDataLoader.refresh();
+  };
+
   const showUploadDialog = () => {
-    if (submission) {
+    if (summaryData) {
       // already have summary data, prompt user to confirm override
       dialogContext.setYesNoDialog({
         ...defaultUploadYesNoDialogProps,
@@ -161,7 +142,9 @@ const SurveySummaryResults = () => {
     });
   };
 
-  const checkSubmissionStatus = (supplementaryData: any | null | undefined): BioHubSubmittedStatusType => {
+  const checkSubmissionStatus = (
+    supplementaryData: ISurveySummarySupplementaryData | null | undefined
+  ): BioHubSubmittedStatusType => {
     if (supplementaryData?.event_timestamp) {
       return BioHubSubmittedStatusType.SUBMITTED;
     }
@@ -171,7 +154,7 @@ const SurveySummaryResults = () => {
   //Action prop for the Alert MUI component to render the delete icon and associated action
   const submissionAlertAction = () => (
     <Box className={classes.alertActions}>
-      <SubmitStatusChip status={checkSubmissionStatus(null)} />
+      <SubmitStatusChip status={checkSubmissionStatus(summaryDataLoader.data?.surveySummarySupplementaryData)} />
       <IconButton aria-label="open" color="inherit" onClick={() => viewFileContents()}>
         <Icon path={mdiDownload} size={1} />
       </IconButton>
@@ -218,7 +201,7 @@ const SurveySummaryResults = () => {
   const submissionErrors: SubmissionErrors = {};
   const submissionWarnings: SubmissionWarnings = {};
 
-  const messageList = submission?.messages;
+  const messageList = summaryData?.messages;
 
   if (messageList) {
     Object.entries(messageGrouping).forEach(([key, value]) => {
@@ -243,14 +226,18 @@ const SurveySummaryResults = () => {
     });
   }
   const viewFileContents = async () => {
-    if (!submission) {
+    if (!summaryData) {
       return;
     }
 
     let response;
 
     try {
-      response = await biohubApi.survey.getSummarySubmissionSignedURL(projectId, surveyId, submission?.id);
+      response = await biohubApi.survey.getSummarySubmissionSignedURL(
+        projectId,
+        surveyId,
+        summaryData?.survey_summary_submission_id
+      );
     } catch {
       return;
     }
@@ -261,10 +248,6 @@ const SurveySummaryResults = () => {
 
     window.open(response);
   };
-
-  if (isLoading) {
-    return <CircularProgress className="pageProgress" size={40} />;
-  }
 
   type severityLevel = 'error' | 'info' | 'success' | 'warning' | undefined;
 
@@ -322,7 +305,7 @@ const SurveySummaryResults = () => {
         <Divider></Divider>
 
         <Box p={3}>
-          {!submission && (
+          {!summaryData && (
             <Box textAlign="center">
               <Typography data-testid="observations-nodata" variant="body2" color="textSecondary">
                 No Summary Results. &nbsp;
@@ -333,9 +316,9 @@ const SurveySummaryResults = () => {
             </Box>
           )}
 
-          {submission && hasErrorMessages && (
+          {summaryData && !!summaryData.messages.length && (
             <Box>
-              {displayAlertBox('error', mdiAlertCircleOutline, submission.fileName, 'Validation Failed')}
+              {displayAlertBox('error', mdiAlertCircleOutline, summaryData.fileName, 'Validation Failed')}
               <Box my={3}>
                 <Typography data-testid="observations-error-details" variant="body1">
                   Resolve the following errors in your local file and re-import.
@@ -347,8 +330,8 @@ const SurveySummaryResults = () => {
               </Box>
             </Box>
           )}
-          {submission && !hasErrorMessages && (
-            <Box>{displayAlertBox('info', mdiFileOutline, submission?.fileName, '')}</Box>
+          {summaryData && !summaryData.messages.length && (
+            <Box>{displayAlertBox('info', mdiFileOutline, summaryData?.fileName, '')}</Box>
           )}
         </Box>
       </Paper>
@@ -358,7 +341,7 @@ const SurveySummaryResults = () => {
         dialogTitle="Import Summary Results Data"
         onClose={() => {
           setOpenImportSummaryResults(false);
-          setIsLoading(true);
+          summaryDataLoader.refresh();
         }}>
         <FileUpload
           dropZoneProps={{ maxNumFiles: 1, acceptedFileExtensions: '.csv, .xls, .txt, .xlsm, .xlsx' }}

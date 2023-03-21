@@ -5,7 +5,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import useDataLoaderError from 'hooks/useDataLoaderError';
 import { IGetObservationSubmissionResponse, ISurveyObservationData } from 'interfaces/useObservationApi.interface';
-import { IGetSummaryResultsResponse } from 'interfaces/useSummaryResultsApi.interface';
+import { IGetSummaryResultsResponse, ISurveySummaryData } from 'interfaces/useSummaryResultsApi.interface';
 import {
   IGetSurveyAttachment,
   IGetSurveyForViewResponse,
@@ -142,8 +142,8 @@ const SubmitSurvey: React.FC<ISubmitSurvey> = (props) => {
         <SubmitSection
           subHeader="Summary Results"
           formikName="summary"
-          data={summaryDataLoader.data ? [summaryDataLoader.data] : []}
-          getName={(item: IGetSummaryResultsResponse) => {
+          data={summaryDataLoader.data?.surveySummaryData ? [summaryDataLoader.data.surveySummaryData] : []}
+          getName={(item: ISurveySummaryData) => {
             return item.fileName;
           }}
         />
