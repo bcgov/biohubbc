@@ -76,7 +76,6 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
   const { projectForViewData } = props;
 
   const survey_details = surveyForViewData?.surveyData?.survey_details;
-  const occurrence_submission = surveyForViewData?.surveySupplementaryData?.occurrence_submission;
 
   const surveyGeometry = survey_details?.geometry || [];
 
@@ -103,7 +102,7 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
     });
     zoomToBoundaryExtent();
     setNonEditableGeometries(nonEditableGeometriesResult);
-  }, [surveyGeometry, occurrence_submission, zoomToBoundaryExtent]);
+  }, [surveyGeometry, zoomToBoundaryExtent]);
 
   const [errorDialogProps, setErrorDialogProps] = useState<IErrorDialogProps>({
     dialogTitle: EditSurveyStudyAreaI18N.editErrorTitle,
@@ -153,14 +152,6 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
     setOpenEditDialog(true);
   };
 
-  const refresh = useCallback(() => {
-    const { projectId, surveyId } = surveyContext;
-
-    if (projectId && surveyId) {
-      surveyContext.surveyDataLoader.refresh(projectId, surveyId);
-    }
-  }, [surveyContext]);
-
   const handleDialogEditSave = async (values: IStudyAreaForm) => {
     if (!survey_details) {
       return;
@@ -184,7 +175,7 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
       setOpenEditDialog(false);
     }
 
-    refresh();
+    surveyContext.surveyDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
   };
 
   const handleDialogViewOpen = () => {
