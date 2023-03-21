@@ -306,34 +306,205 @@ GET.apiDoc = {
                 }
               },
               surveySupplementaryData: {
+                description: 'Survey supplementary data',
                 type: 'object',
-                required: ['occurrence_submission', 'summary_result'],
+                required: [
+                  'occurrence_submission',
+                  'occurrence_submission_publish',
+                  'survey_summary_submission',
+                  'survey_summary_submission_publish',
+                  'survey_metadata_publish'
+                ],
                 properties: {
                   occurrence_submission: {
-                    description: 'Occurrence Submission',
+                    description: 'Occurrence submission record',
                     type: 'object',
-                    nullable: true,
-                    required: ['id'],
+                    required: ['occurrence_submission_id'],
                     properties: {
-                      id: {
-                        description: 'A survey occurrence submission ID',
-                        type: 'number',
-                        nullable: true,
-                        example: 1
+                      occurrence_submission_id: {
+                        type: 'integer',
+                        minimum: 1,
+                        nullable: true
                       }
                     }
                   },
-                  summary_result: {
-                    description: 'Summary Result',
+                  occurrence_submission_publish: {
+                    description: 'Occurrence submission publish record',
                     type: 'object',
                     nullable: true,
-                    required: ['id'],
+                    required: [
+                      'occurrence_submission_publish_id',
+                      'occurrence_submission_id',
+                      'event_timestamp',
+                      'queue_id',
+                      'create_date',
+                      'create_user',
+                      'update_date',
+                      'update_user',
+                      'revision_count'
+                    ],
                     properties: {
-                      id: {
-                        description: 'A survey summary result ID',
-                        type: 'number',
-                        nullable: true,
-                        example: 1
+                      occurrence_submission_publish_id: {
+                        type: 'integer',
+                        minimum: 1
+                      },
+                      occurrence_submission_id: {
+                        type: 'integer',
+                        minimum: 1
+                      },
+                      event_timestamp: {
+                        oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
+                        description: 'ISO 8601 date string for the project start date'
+                      },
+                      queue_id: {
+                        type: 'integer',
+                        minimum: 1
+                      },
+                      create_date: {
+                        oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
+                        description: 'ISO 8601 date string for the project start date'
+                      },
+                      create_user: {
+                        type: 'integer',
+                        minimum: 1
+                      },
+                      update_date: {
+                        oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
+                        description: 'ISO 8601 date string for the project start date',
+                        nullable: true
+                      },
+                      update_user: {
+                        type: 'integer',
+                        minimum: 1,
+                        nullable: true
+                      },
+                      revision_count: {
+                        type: 'integer',
+                        minimum: 0
+                      }
+                    }
+                  },
+                  survey_summary_submission: {
+                    description: 'Survey summary submission record',
+                    type: 'object',
+                    required: ['survey_summary_submission_id'],
+                    properties: {
+                      survey_summary_submission_id: {
+                        type: 'integer',
+                        minimum: 1,
+                        nullable: true
+                      }
+                    }
+                  },
+                  survey_summary_submission_publish: {
+                    description: 'Survey summary submission publish record',
+                    type: 'object',
+                    nullable: true,
+                    required: [
+                      'survey_summary_submission_publish_id',
+                      'survey_summary_submission_id',
+                      'event_timestamp',
+                      'artifact_revision_id',
+                      'create_date',
+                      'create_user',
+                      'update_date',
+                      'update_user',
+                      'revision_count'
+                    ],
+                    properties: {
+                      survey_summary_submission_publish_id: {
+                        type: 'integer',
+                        minimum: 1
+                      },
+                      survey_summary_submission_id: {
+                        type: 'integer',
+                        minimum: 1
+                      },
+                      event_timestamp: {
+                        oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
+                        description: 'ISO 8601 date string for the project start date'
+                      },
+                      artifact_revision_id: {
+                        type: 'integer',
+                        minimum: 1
+                      },
+                      create_date: {
+                        oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
+                        description: 'ISO 8601 date string for the project start date'
+                      },
+                      create_user: {
+                        type: 'integer',
+                        minimum: 1
+                      },
+                      update_date: {
+                        oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
+                        description: 'ISO 8601 date string for the project start date',
+                        nullable: true
+                      },
+                      update_user: {
+                        type: 'integer',
+                        minimum: 1,
+                        nullable: true
+                      },
+                      revision_count: {
+                        type: 'integer',
+                        minimum: 0
+                      }
+                    }
+                  },
+                  survey_metadata_publish: {
+                    description: 'Survey metadata publish record',
+                    type: 'object',
+                    nullable: true,
+                    required: [
+                      'survey_metadata_publish_id',
+                      'survey_id',
+                      'event_timestamp',
+                      'queue_id',
+                      'create_date',
+                      'create_user',
+                      'update_date',
+                      'update_user',
+                      'revision_count'
+                    ],
+                    properties: {
+                      survey_metadata_publish_id: {
+                        type: 'integer',
+                        minimum: 1
+                      },
+                      survey_id: {
+                        type: 'integer',
+                        minimum: 1
+                      },
+                      event_timestamp: {
+                        oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
+                        description: 'ISO 8601 date string for the project start date'
+                      },
+                      queue_id: {
+                        type: 'integer',
+                        minimum: 1
+                      },
+                      create_date: {
+                        oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
+                        description: 'ISO 8601 date string for the project start date'
+                      },
+                      create_user: {
+                        type: 'integer',
+                        minimum: 1
+                      },
+                      update_date: {
+                        oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
+                        description: 'ISO 8601 date string for the project start date',
+                        nullable: true
+                      },
+                      update_user: {
+                        type: 'integer',
+                        minimum: 1,
+                        nullable: true
+                      },
+                      revision_count: {
+                        type: 'integer',
+                        minimum: 0
                       }
                     }
                   }

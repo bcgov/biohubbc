@@ -82,6 +82,10 @@ const SurveyPage: React.FC = () => {
     }
   }, [mapDataLoader.data]);
 
+  if (surveyDataLoader.data?.surveySupplementaryData.occurrence_submission.occurrence_submission_id) {
+    mapDataLoader.load(surveyDataLoader.data?.surveySupplementaryData.occurrence_submission.occurrence_submission_id);
+  }
+
   if (!projectDataLoader.data || !surveyDataLoader.data || !codesDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
