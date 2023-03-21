@@ -26,7 +26,24 @@ export interface IGetObservationSubmissionResponseMessages {
  * @interface IGetObservationSubmissionResponse
  */
 export interface IGetObservationSubmissionResponse {
-  id: number;
+  surveyObservationData: ISurveyObservationData;
+  surveyObservationSupplementaryData: ISurveySupplementaryData | null;
+}
+
+export interface ISurveySupplementaryData {
+  occurrence_submission_publish_id: number;
+  occurrence_submission_id: number;
+  event_timestamp: string;
+  queue_id: number;
+  create_date: string;
+  create_user: number;
+  update_date: string | null;
+  update_user: number | null;
+  revision_count: number;
+}
+
+export interface ISurveyObservationData {
+  occurrence_submission_id: number;
   inputFileName: string;
   status?: string;
   isValidating: boolean;

@@ -23,12 +23,14 @@ import ComponentDialog from 'components/dialog/ComponentDialog';
 import FileUpload from 'components/file-upload/FileUpload';
 import { IUploadHandler } from 'components/file-upload/FileUploadItem';
 import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
+import { BioHubSubmittedStatusType } from 'constants/misc';
 import { DialogContext } from 'contexts/dialogContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useInterval } from 'hooks/useInterval';
 import {
   IGetObservationSubmissionResponseMessages,
+  ISurveySupplementaryData,
   IUploadObservationSubmissionResponse,
   ObservationSubmissionMessageSeverityLabel
 } from 'interfaces/useObservationApi.interface';
@@ -66,8 +68,9 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
   submissionDataLoader.load();
 
   const refreshSubmission = submissionDataLoader.refresh;
-  const occurrenceSubmission = submissionDataLoader.data;
-  const occurrenceSubmissionId = occurrenceSubmission?.id;
+  const occurrenceSubmission = submissionDataLoader.data?.surveyObservationData;
+  const occurrenceSupplementaryData = submissionDataLoader.data?.surveyObservationSupplementaryData;
+  const occurrenceSubmissionId = occurrenceSubmission?.occurrence_submission_id;
   const submissionMessageTypes = occurrenceSubmission?.messageTypes || [];
   const submissionExists = Boolean(occurrenceSubmission);
 
@@ -193,13 +196,18 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
     });
   }
 
-  // const checkSubmissionStatus = () => {
-
-  // };
+  const checkSubmissionStatus = (
+    supplementaryData: ISurveySupplementaryData | null | undefined
+  ): BioHubSubmittedStatusType => {
+    if (supplementaryData?.event_timestamp) {
+      return BioHubSubmittedStatusType.SUBMITTED;
+    }
+    return BioHubSubmittedStatusType.UNSUBMITTED;
+  };
 
   const submissionAlertAction = () => (
     <Box>
-      <SubmitStatusChip status="" />
+      <SubmitStatusChip status={checkSubmissionStatus(occurrenceSupplementaryData)} />
       <IconButton aria-label="open" color="inherit" onClick={openFileContents}>
         <Icon path={mdiDownload} size={1} />
       </IconButton>

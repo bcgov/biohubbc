@@ -23,7 +23,7 @@ export interface IGetSpeciesData {
 }
 
 export interface IGetLatestSurveyOccurrenceSubmission {
-  id: number;
+  occurrence_submission_id: number;
   survey_id: number;
   source: string;
   delete_timestamp: string;
@@ -412,7 +412,7 @@ export class SurveyRepository extends BaseRepository {
   async getLatestSurveyOccurrenceSubmission(surveyId: number): Promise<IGetLatestSurveyOccurrenceSubmission | null> {
     const sqlStatement = SQL`
       SELECT
-        os.occurrence_submission_id as id,
+        os.occurrence_submission_id,
         os.survey_id,
         os.source,
         os.delete_timestamp,
