@@ -13,8 +13,8 @@ import {
   mdiCalendarRangeOutline,
   mdiCogOutline,
   mdiPencilOutline,
-  mdiTrashCanOutline,
-  mdiShareAllOutline
+  mdiShareAllOutline,
+  mdiTrashCanOutline
 } from '@mdi/js';
 import Icon from '@mdi/react';
 import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
@@ -204,7 +204,7 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
                     variant="contained"
                     startIcon={<Icon path={mdiShareAllOutline} size={1} />}
                     onClick={() => setOpenSubmitSurvey(!openSubmitSurvey)}
-                    style={{minWidth: '7rem'}}>
+                    style={{ minWidth: '7rem' }}>
                     Submit Data
                   </Button>
                 </SystemRoleGuard>

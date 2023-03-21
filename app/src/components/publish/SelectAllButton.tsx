@@ -4,13 +4,11 @@ import Typography from '@material-ui/core/Typography';
 import { useFormikContext } from 'formik';
 import React, { useEffect } from 'react';
 
-
 export interface ISelectAllButtonProps {
   formikData: { key: string; value: any }[];
 }
 
 const SelectAllButton: React.FC<ISelectAllButtonProps> = (props) => {
-
   const [selected, setSelected] = React.useState(false);
 
   const { formikData } = props;
@@ -47,11 +45,11 @@ const SelectAllButton: React.FC<ISelectAllButtonProps> = (props) => {
           }}
           name={`select-all`}
           color="primary"></Checkbox>
-          <Box ml={1}>
-            <Typography variant="body2">
-              <strong>SELECT ALL</strong>
-            </Typography>
-          </Box>
+        <Box ml={1}>
+          <Typography variant="body2">
+            <strong>SELECT ALL</strong>
+          </Typography>
+        </Box>
       </Box>
     </>
   );

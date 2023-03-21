@@ -13,8 +13,8 @@ import {
   mdiClockOutline,
   mdiDownload,
   mdiFileOutline,
-  mdiInformationOutline,
   mdiImport,
+  mdiInformationOutline,
   mdiTrashCanOutline
 } from '@mdi/js';
 import Icon from '@mdi/react';

@@ -1,6 +1,6 @@
 import { Box, makeStyles, Theme, Typography } from '@material-ui/core';
-import { grey } from '@material-ui/core/colors';
 import Checkbox from '@material-ui/core/Checkbox';
+import { grey } from '@material-ui/core/colors';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -34,7 +34,9 @@ const SubmitSection: React.FC<ISubmitSectionProps> = (props) => {
     <Box mb={2}>
       <Box py={1.75} px={2} className={classes.sectionTitle}>
         <Typography variant="body2" color="textSecondary">
-          <strong>{subHeader} {data && data.length > 1 ? `(${data.length})` : ''}</strong>
+          <strong>
+            {subHeader} {data && data.length > 1 ? `(${data.length})` : ''}
+          </strong>
         </Typography>
       </Box>
       <DisplayFiles data={data} formikName={formikName} getName={getName} />
@@ -81,10 +83,10 @@ const DisplayFiles: React.FC<IDisplayFilesProps> = (props) => {
                     }}
                     name={`${formikName}[${index}]`}
                     color="primary"></Checkbox>
-                  </ListItemIcon>
-                  <ListItemText>
-                    <strong>{getName(item)}</strong>
-                  </ListItemText>
+                </ListItemIcon>
+                <ListItemText>
+                  <strong>{getName(item)}</strong>
+                </ListItemText>
               </ListItem>
             ))}
           </>
