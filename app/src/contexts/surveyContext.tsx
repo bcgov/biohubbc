@@ -1,7 +1,7 @@
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader, { DataLoader } from 'hooks/useDataLoader';
 import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
-import React, { createContext, PropsWithChildren, useEffect, useMemo } from 'react';
+import React, { createContext, PropsWithChildren, useEffect } from 'react';
 import { useParams } from 'react-router';
 
 /**
@@ -73,14 +73,11 @@ export const SurveyContextProvider = (props: PropsWithChildren<Record<never, any
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [projectId, surveyId]);
 
-  const surveyContext: ISurveyContext = useMemo(
-    () => ({
-      surveyDataLoader,
-      projectId,
-      surveyId
-    }),
-    [surveyDataLoader, projectId, surveyId]
-  );
+  const surveyContext: ISurveyContext = {
+    surveyDataLoader,
+    projectId,
+    surveyId
+  };
 
   return <SurveyContext.Provider value={surveyContext}>{props.children}</SurveyContext.Provider>;
 };

@@ -28,7 +28,7 @@ import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import { LatLngBoundsExpression } from 'leaflet';
-import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
 
 export interface ISurveyStudyAreaProps {
@@ -75,10 +75,8 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
 
   const { projectForViewData } = props;
 
-  const survey_details = useMemo(() => surveyForViewData?.surveyData?.survey_details, [surveyForViewData]);
-  const occurrence_submission = useMemo(() => surveyForViewData?.surveySupplementaryData?.occurrence_submission, [
-    surveyForViewData
-  ]);
+  const survey_details = surveyForViewData?.surveyData?.survey_details;
+  const occurrence_submission = surveyForViewData?.surveySupplementaryData?.occurrence_submission;
 
   const surveyGeometry = survey_details?.geometry || [];
 
