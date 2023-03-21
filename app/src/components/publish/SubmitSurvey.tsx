@@ -4,7 +4,7 @@ import Typography from '@material-ui/core/Typography';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import useDataLoaderError from 'hooks/useDataLoaderError';
-import { IGetObservationSubmissionResponse } from 'interfaces/useObservationApi.interface';
+import { IGetObservationSubmissionResponse, ISurveyObservationData } from 'interfaces/useObservationApi.interface';
 import { IGetSummaryResultsResponse } from 'interfaces/useSummaryResultsApi.interface';
 import {
   IGetSurveyAttachment,
@@ -129,8 +129,10 @@ const SubmitSurvey: React.FC<ISubmitSurvey> = (props) => {
         <SubmitSection
           subHeader="Observations"
           formikName="observations"
-          data={observationDataLoader.data ? [observationDataLoader.data] : []}
-          getName={(item: IGetObservationSubmissionResponse) => {
+          data={
+            observationDataLoader.data?.surveyObservationData ? [observationDataLoader.data.surveyObservationData] : []
+          }
+          getName={(item: ISurveyObservationData) => {
             return item.inputFileName;
           }}
         />

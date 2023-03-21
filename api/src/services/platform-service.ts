@@ -334,7 +334,7 @@ export class PlatformService extends DBService {
 
     // Insert publish history record
     await this.historyPublishService.insertOccurrenceSubmissionPublishRecord({
-      occurrence_submission_id: occurrenceSubmission.id,
+      occurrence_submission_id: occurrenceSubmission.occurrence_submission_id,
       queue_id: response.queue_id
     });
   }

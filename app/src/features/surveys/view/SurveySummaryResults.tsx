@@ -22,6 +22,7 @@ import ComponentDialog from 'components/dialog/ComponentDialog';
 import FileUpload from 'components/file-upload/FileUpload';
 import { IUploadHandler } from 'components/file-upload/FileUploadItem';
 import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
+import { BioHubSubmittedStatusType } from 'constants/misc';
 import { DialogContext } from 'contexts/dialogContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetSummaryResultsResponse } from 'interfaces/useSummaryResultsApi.interface';
@@ -160,10 +161,17 @@ const SurveySummaryResults = () => {
     });
   };
 
+  const checkSubmissionStatus = (supplementaryData: any | null | undefined): BioHubSubmittedStatusType => {
+    if (supplementaryData?.event_timestamp) {
+      return BioHubSubmittedStatusType.SUBMITTED;
+    }
+    return BioHubSubmittedStatusType.UNSUBMITTED;
+  };
+
   //Action prop for the Alert MUI component to render the delete icon and associated action
   const submissionAlertAction = () => (
     <Box className={classes.alertActions}>
-      <SubmitStatusChip status="" />
+      <SubmitStatusChip status={checkSubmissionStatus(null)} />
       <IconButton aria-label="open" color="inherit" onClick={() => viewFileContents()}>
         <Icon path={mdiDownload} size={1} />
       </IconButton>
