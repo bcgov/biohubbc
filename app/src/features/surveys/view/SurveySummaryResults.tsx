@@ -199,7 +199,10 @@ const SurveySummaryResults = () => {
       label: 'Unexpected formats in the values provided'
     },
     miscellaneous: { type: ['Miscellaneous'], label: 'Miscellaneous errors exist in your file' },
-    system_error: { type: ['Missing Validation Schema'], label: 'Contact your system administrator' }
+    system_error: {
+      type: ['Missing Validation Schema', 'Failed to Get Validation Rules'],
+      label: 'Contact your system administrator'
+    }
   };
 
   type SubmissionErrors = { [key: string]: string[] };
@@ -325,7 +328,7 @@ const SurveySummaryResults = () => {
 
           {submission && hasErrorMessages && (
             <Box>
-              {displayAlertBox('error', mdiAlertCircleOutline, submission.fileName, 'Validation Failed')}
+              {displayAlertBox('error', mdiAlertCircleOutline, submission.fileName, 'Failed to validate')}
               <Box my={3}>
                 <Typography data-testid="observations-error-details" variant="body1">
                   Resolve the following errors in your local file and re-import.
