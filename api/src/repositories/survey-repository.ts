@@ -383,10 +383,10 @@ export class SurveyRepository extends BaseRepository {
    * Get Occurrence submission for a given survey id.
    *
    * @param {number} surveyId
-   * @return {*}
+   * @return {*}  {(Promise<{ occurrence_submission_id: number | null }>)}
    * @memberof SurveyRepository
    */
-  async getOccurrenceSubmission(surveyId: number) {
+  async getOccurrenceSubmission(surveyId: number): Promise<{ occurrence_submission_id: number | null }> {
     // Note: `max()` will always return a row, even if the table is empty. The value will be `null` in this case.
     const sqlStatement = SQL`
       SELECT
@@ -520,10 +520,10 @@ export class SurveyRepository extends BaseRepository {
    * Get survey summary submission for a given survey id.
    *
    * @param {number} surveyId
-   * @return {*}
+   * @return {*}  {(Promise<{ survey_summary_submission_id: number | null }>)}
    * @memberof SurveyRepository
    */
-  async getSurveySummarySubmission(surveyId: number) {
+  async getSurveySummarySubmission(surveyId: number): Promise<{ survey_summary_submission_id: number | null }> {
     // Note: `max()` will always return a row, even if the table is empty. The value will be `null` in this case.
     const sqlStatement = SQL`
       SELECT
