@@ -499,6 +499,7 @@ export class EmlService extends DBService {
    * @return {*}  {AdditionalMetadata[]}
    * @memberof EmlService
    */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   _getSurveyAdditionalMetadata(_surveysData: SurveyObject[]): AdditionalMetadata[] {
     return [];
   }
