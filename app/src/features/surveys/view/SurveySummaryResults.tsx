@@ -8,6 +8,7 @@ import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
 import Alert from '@material-ui/lab/Alert';
+import AlertTitle from '@material-ui/lab/AlertTitle';
 import {
   mdiAlertCircleOutline,
   mdiDownload,
@@ -312,25 +313,61 @@ const SurveySummaryResults = () => {
         <Divider></Divider>
 
         <Box p={3}>
+
+          <Box style={{display: 'none'}} mb={3}>
+            <Alert
+              severity="error"
+              icon={<Icon path={mdiAlertCircleOutline} size={1} />}>
+              <AlertTitle>Failed to import summary results</AlertTitle>
+              One or more errors occurred while attempting to import your summary results.
+
+              <Box mt={3}>
+                <Box component="section">
+                  <Typography variant="body2"><strong>Section Title</strong></Typography>
+                  <Box component="ul" mt={1} mb={0} pl={4}>
+                    <li>
+                      <Typography variant="body2">Error Message</Typography>
+                    </li>
+                    <li>
+                      <Typography variant="body2">Error Message</Typography>
+                    </li>
+                  </Box>
+                </Box>
+              </Box>
+
+              <Box mt={3}>
+                <Box component="section">
+                  <Typography variant="body2"><strong>Section Title</strong></Typography>
+                  <Box component="ul" mt={1} mb={0} pl={4}>
+                    <li>
+                      <Typography variant="body2">Error Message</Typography>
+                    </li>
+                    <li>
+                      <Typography variant="body2">Error Message</Typography>
+                    </li>
+                  </Box>
+                </Box>
+              </Box>
+
+            </Alert>
+          </Box>
+
           {!submission && (
-            <Box textAlign="center">
-              <Typography data-testid="observations-nodata" variant="body2" color="textSecondary">
-                No Summary Results. &nbsp;
-                <Link onClick={() => setOpenImportSummaryResults(true)} className={classes.browseLink}>
-                  Click Here to Import
-                </Link>
-              </Typography>
-            </Box>
+            <Paper variant="outlined">
+              <Box p={3} textAlign="center">
+                <Typography data-testid="observations-nodata" variant="body2" color="textSecondary">
+                  No Summary Results. &nbsp;
+                  <Link onClick={() => setOpenImportSummaryResults(true)} className={classes.browseLink}>
+                    Click Here to Import
+                  </Link>
+                </Typography>
+              </Box>
+            </Paper>
           )}
 
           {submission && hasErrorMessages && (
             <Box>
               {displayAlertBox('error', mdiAlertCircleOutline, submission.fileName, 'Validation Failed')}
-              <Box my={3}>
-                <Typography data-testid="observations-error-details" variant="body1">
-                  Resolve the following errors in your local file and re-import.
-                </Typography>
-              </Box>
               <Box>
                 {displayMessages(submissionErrors, messageGrouping, mdiAlertCircleOutline)}
                 {displayMessages(submissionWarnings, messageGrouping, mdiInformationOutline)}

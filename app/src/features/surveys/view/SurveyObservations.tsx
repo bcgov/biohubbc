@@ -12,10 +12,10 @@ import Paper from '@material-ui/core/Paper';
 import { makeStyles, createStyles, withStyles, Theme } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Alert from '@material-ui/lab/Alert';
-// import AlertTitle from '@material-ui/lab/AlertTitle';
+import AlertTitle from '@material-ui/lab/AlertTitle';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import {
-  mdiAlertCircleOutline, mdiDotsVertical, mdiFileOutline, mdiImport, mdiInformationOutline, mdiTrashCanOutline, mdiTrayArrowDown
+  mdiAlertCircleOutline, mdiDotsVertical, mdiFileOutline, mdiImport, mdiInformationOutline, mdiTrashCanOutline, mdiTrayArrowDown, mdiFileAlertOutline
 } from '@mdi/js';
 import Icon from '@mdi/react';
 import ComponentDialog from 'components/dialog/ComponentDialog';
@@ -39,6 +39,9 @@ const useStyles = makeStyles((theme: Theme) => ({
     display: 'flex',
     padding: theme.spacing(2),
     overflow: 'hidden',
+    '& .importFile-icon': {
+      color: theme.palette.text.secondary
+    },
     '&.error': {
       borderColor: theme.palette.error.main,
       '& .importFile-icon': {
@@ -282,10 +285,10 @@ const BorderLinearProgress = withStyles((theme: Theme) =>
   let submissionStatusSeverity: AlertSeverityLevel = 'info';
 
   if (submissionMessageTypes.some((messageType) => messageType.severityLabel === 'Error')) {
-    submissionStatusIcon = mdiAlertCircleOutline;
+    submissionStatusIcon = mdiFileAlertOutline;
     submissionStatusSeverity = 'error';
   } else if (submissionMessageTypes.some((messageType) => messageType.severityLabel === 'Warning')) {
-    submissionStatusIcon = mdiAlertCircleOutline;
+    submissionStatusIcon = mdiFileAlertOutline;
     submissionStatusSeverity = 'warning';
   } else if (submissionMessageTypes.some((messageType) => messageType.severityLabel === 'Notice')) {
     submissionStatusIcon = mdiInformationOutline;
@@ -315,15 +318,82 @@ const BorderLinearProgress = withStyles((theme: Theme) =>
 
         <Box p={3}>
 
-          {/* <Box mb={3}>
+          {!occurrenceSubmission?.isValidating && (
+            <>
+              {submissionStatusSeverity === 'error' && (
+                <Box mb={2} mt={3}>
+                  <Typography data-testid="observations-error-details" variant="body1">
+                    Resolve the following errors in your local file and re-import.
+                  </Typography>
+                </Box>
+              )}
+
+              {submissionMessageTypes.length > 0 && (
+                <Box mt={1}>
+                  {
+                    // Alphabetize message types for consistency
+                    submissionMessageTypes.map((messageType) => {
+                      return (
+                        <Box key={messageType.messageTypeLabel}>
+                          <Alert severity={alertSeverityFromSeverityLabel(messageType.severityLabel)}>
+                            {messageType.messageTypeLabel}
+                          </Alert>
+                          <Box component="ul" my={3}>
+                            {messageType.messages.map((messageObject: { id: number; message: string }) => {
+                              return (
+                                <li key={messageObject.id}>
+                                  <Typography variant="body2">{messageObject.message}</Typography>
+                                </li>
+                              );
+                            })}
+                          </Box>
+                        </Box>
+                      );
+                    })
+                  }
+                </Box>
+              )}
+            </>
+          )}
+
+          
+          <Box style={{display: 'none'}} mb={3}>
             <Alert
               severity="error"
-              icon={<Icon path={mdiAlertCircleOutline} size={1} />}
-            >
+              icon={<Icon path={mdiAlertCircleOutline} size={1} />}>
               <AlertTitle>Failed to import observations</AlertTitle>
               One or more errors occurred while attempting to import your observations file.
+
+              <Box mt={3}>
+                <Box component="section">
+                  <Typography variant="body2"><strong>Section Title</strong></Typography>
+                  <Box component="ul" mt={1} mb={0} pl={4}>
+                    <li>
+                      <Typography variant="body2">Error Message</Typography>
+                    </li>
+                    <li>
+                      <Typography variant="body2">Error Message</Typography>
+                    </li>
+                  </Box>
+                </Box>
+              </Box>
+
+              <Box mt={3}>
+                <Box component="section">
+                  <Typography variant="body2"><strong>Section Title</strong></Typography>
+                  <Box component="ul" mt={1} mb={0} pl={4}>
+                    <li>
+                      <Typography variant="body2">Error Message</Typography>
+                    </li>
+                    <li>
+                      <Typography variant="body2">Error Message</Typography>
+                    </li>
+                  </Box>
+                </Box>
+              </Box>
+
             </Alert>
-          </Box> */}
+          </Box>
 
           {!submissionExists ? (
             <>
@@ -364,7 +434,7 @@ const BorderLinearProgress = withStyles((theme: Theme) =>
                 {!occurrenceSubmission?.isValidating && (
                   <Box flex="0 0 auto" display="flex" alignItems="center">
 
-                    {submissionStatusSeverity !== 'error' && (
+                    {submissionStatusSeverity === 'info' && (
                       <Box mr={2}>
                         <Chip label="Unsubmitted" color="primary" />
                       </Box>
@@ -407,44 +477,6 @@ const BorderLinearProgress = withStyles((theme: Theme) =>
                 )}
 
               </Paper>
-
-              {!occurrenceSubmission?.isValidating && (
-                <>
-                  {submissionStatusSeverity === 'error' && (
-                    <Box mb={2} mt={3}>
-                      <Typography data-testid="observations-error-details" variant="body1">
-                        Resolve the following errors in your local file and re-import.
-                      </Typography>
-                    </Box>
-                  )}
-
-                  {submissionMessageTypes.length > 0 && (
-                    <Box mt={1}>
-                      {
-                        // Alphabetize message types for consistency
-                        submissionMessageTypes.map((messageType) => {
-                          return (
-                            <Box key={messageType.messageTypeLabel}>
-                              <Alert severity={alertSeverityFromSeverityLabel(messageType.severityLabel)}>
-                                {messageType.messageTypeLabel}
-                              </Alert>
-                              <Box component="ul" my={3}>
-                                {messageType.messages.map((messageObject: { id: number; message: string }) => {
-                                  return (
-                                    <li key={messageObject.id}>
-                                      <Typography variant="body2">{messageObject.message}</Typography>
-                                    </li>
-                                  );
-                                })}
-                              </Box>
-                            </Box>
-                          );
-                        })
-                      }
-                    </Box>
-                  )}
-                </>
-              )}
             </>
           )}
         </Box>

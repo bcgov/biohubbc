@@ -74,6 +74,8 @@ const appTheme = createMuiTheme({
         marginRight: '0.85rem'
       },
       standardError: {
+        paddingTop: '12px',
+        paddingBottom: '12px',
         color: '#A12622',
         border: '1px solid #ebccd1',
         '& .MuiAlert-icon': {
