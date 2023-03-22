@@ -159,6 +159,7 @@ const BorderLinearProgress = withStyles((theme: Theme) =>
         })
         .finally(() => {
           setWillRefreshOnClose(true);
+          setAnchorEl(null);
         });
     };
   };
