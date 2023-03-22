@@ -5,10 +5,10 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { EditSurveyPurposeAndMethodologyI18N } from 'constants/i18n';
+import { SurveyContext } from 'contexts/surveyContext';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
-import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 
 const useStyles = makeStyles((theme: Theme) => ({
   vantageCodes: {
@@ -27,10 +27,8 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 export interface ISurveyPurposeAndMethodologyDataProps {
-  surveyForViewData: IGetSurveyForViewResponse;
   codes: IGetAllCodeSetsResponse;
   projectForViewData: IGetProjectForViewResponse;
-  refresh: () => void;
 }
 
 /**
@@ -40,12 +38,8 @@ export interface ISurveyPurposeAndMethodologyDataProps {
  */
 const SurveyPurposeAndMethodologyData: React.FC<ISurveyPurposeAndMethodologyDataProps> = (props) => {
   const classes = useStyles();
-  const {
-    surveyForViewData: {
-      surveyData: { purpose_and_methodology }
-    },
-    codes
-  } = props;
+  const surveyContext = useContext(SurveyContext);
+  const surveyForViewData = surveyContext.surveyDataLoader.data;
 
   const [errorDialogProps, setErrorDialogProps] = useState<IErrorDialogProps>({
     dialogTitle: EditSurveyPurposeAndMethodologyI18N.editErrorTitle,
@@ -59,11 +53,20 @@ const SurveyPurposeAndMethodologyData: React.FC<ISurveyPurposeAndMethodologyData
     }
   });
 
+  if (!surveyForViewData) {
+    return <></>;
+  }
+
+  const {
+    surveyData: { purpose_and_methodology }
+  } = surveyForViewData;
+  const { codes } = props;
+
   return (
     <>
       <Box>
         <dl>
-          {!purpose_and_methodology && (
+          {!purpose_and_methodology ? (
             <Grid container spacing={1}>
               <Grid item>
                 <Typography>
@@ -71,15 +74,14 @@ const SurveyPurposeAndMethodologyData: React.FC<ISurveyPurposeAndMethodologyData
                 </Typography>
               </Grid>
             </Grid>
-          )}
-          {purpose_and_methodology && (
+          ) : (
             <Grid container spacing={1}>
               <Grid item xs={12} sm={6}>
                 <Typography component="dt" variant="subtitle2" color="textSecondary">
                   Intended Outcome
                 </Typography>
                 <Typography component="dd" variant="body1">
-                  {purpose_and_methodology.intended_outcome_id &&
+                  {Boolean(purpose_and_methodology.intended_outcome_id) &&
                     codes?.intended_outcomes?.find(
                       (item: any) => item.id === purpose_and_methodology.intended_outcome_id
                     )?.name}
@@ -90,7 +92,7 @@ const SurveyPurposeAndMethodologyData: React.FC<ISurveyPurposeAndMethodologyData
                   Field Method
                 </Typography>
                 <Typography component="dd" variant="body1">
-                  {purpose_and_methodology.field_method_id &&
+                  {Boolean(purpose_and_methodology.field_method_id) &&
                     codes?.field_methods?.find((item: any) => item.id === purpose_and_methodology.field_method_id)
                       ?.name}
                 </Typography>
@@ -101,7 +103,7 @@ const SurveyPurposeAndMethodologyData: React.FC<ISurveyPurposeAndMethodologyData
                   Ecological Season
                 </Typography>
                 <Typography component="dd" variant="body1">
-                  {purpose_and_methodology.ecological_season_id &&
+                  {Boolean(purpose_and_methodology.ecological_season_id) &&
                     codes?.ecological_seasons?.find(
                       (item: any) => item.id === purpose_and_methodology.ecological_season_id
                     )?.name}
