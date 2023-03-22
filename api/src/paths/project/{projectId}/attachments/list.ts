@@ -5,6 +5,7 @@ import { getDBConnection } from '../../../../database/db';
 import { GetAttachmentsData } from '../../../../models/project-survey-attachments';
 import { authorizeRequestHandler } from '../../../../request-handlers/security/authorization';
 import { AttachmentService } from '../../../../services/attachment-service';
+import { HistoryPublishService } from '../../../../services/history-publish-service';
 import { getLogger } from '../../../../utils/logger';
 
 const defaultLog = getLogger('/api/project/{projectId}/attachments/list');
@@ -104,15 +105,33 @@ export function getAttachments(): RequestHandler {
       await connection.open();
 
       const attachmentService = new AttachmentService(connection);
+      const historyPublishService = new HistoryPublishService(connection);
 
       const attachmentsData = await attachmentService.getProjectAttachments(projectId);
       const reportAttachmentsData = await attachmentService.getProjectReportAttachments(projectId);
 
+      const getAttachmentsSupplementaryData = async (attachmentId: number) => {
+        return historyPublishService.getProjectAttachmentPublishRecord(attachmentId);
+      };
+
+      const getReportAttachmentsSupplementaryData = async (attachmentId: number) => {
+        return historyPublishService.getProjectReportPublishRecord(attachmentId);
+      };
+
+      const getAttachmentsData = await GetAttachmentsData.buildAttachmentsData(
+        attachmentsData,
+        getAttachmentsSupplementaryData
+      );
+      const getReportAttachmentsData = await GetAttachmentsData.buildAttachmentsData(
+        reportAttachmentsData,
+        getReportAttachmentsSupplementaryData
+      );
       await connection.commit();
 
-      const getAttachmentsData = new GetAttachmentsData(attachmentsData, reportAttachmentsData);
-
-      return res.status(200).json(getAttachmentsData);
+      return res.status(200).json({
+        attachmentsList: getAttachmentsData,
+        reportAttachmentsList: getReportAttachmentsData
+      });
     } catch (error) {
       defaultLog.error({ label: 'getProjectAttachments', message: 'error', error });
       await connection.rollback();

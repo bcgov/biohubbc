@@ -10,7 +10,6 @@ import { defaultErrorDialogProps, DialogContext } from 'contexts/dialogContext';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
-import { IGetProjectAttachment } from 'interfaces/useProjectApi.interface';
 import { IGetSurveyAttachment } from 'interfaces/useSurveyApi.interface';
 import { default as React, useContext } from 'react';
 import { getFormattedFileSize } from 'utils/Utils';
@@ -47,7 +46,7 @@ const SurveyReportAttachmentDialog: React.FC<ISurveyReportAttachmentDialogProps>
     dialogContext.setErrorDialog({ ...defaultErrorDialogProps, ...textDialogProps, open: true });
   };
 
-  const openAttachment = async (attachment: IGetProjectAttachment) => {
+  const openAttachment = async (attachment: IGetSurveyAttachment) => {
     try {
       const response = await biohubApi.survey.getSurveyAttachmentSignedURL(
         props.projectId,
@@ -87,14 +86,16 @@ const SurveyReportAttachmentDialog: React.FC<ISurveyReportAttachmentDialogProps>
     const fileMeta = values;
 
     try {
-      await biohubApi.survey.updateSurveyReportMetadata(
-        props.projectId,
-        props.surveyId,
-        reportAttachmentDetailsDataLoader.data.metadata.id,
-        AttachmentType.REPORT,
-        fileMeta,
-        reportAttachmentDetailsDataLoader.data.metadata.revision_count
-      );
+      if (reportAttachmentDetailsDataLoader.data.metadata.survey_report_attachment_id) {
+        await biohubApi.survey.updateSurveyReportMetadata(
+          props.projectId,
+          props.surveyId,
+          reportAttachmentDetailsDataLoader.data.metadata.survey_report_attachment_id,
+          AttachmentType.REPORT,
+          fileMeta,
+          reportAttachmentDetailsDataLoader.data.metadata.revision_count
+        );
+      }
     } catch (error) {
       const apiError = error as APIError;
       showErrorDialog({ dialogText: apiError.message, dialogErrorDetails: apiError.errors, open: true });

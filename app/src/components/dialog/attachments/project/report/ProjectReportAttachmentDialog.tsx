@@ -84,13 +84,15 @@ const ProjectReportAttachmentDialog: React.FC<IProjectReportAttachmentDialogProp
     const fileMeta = values;
 
     try {
-      await biohubApi.project.updateProjectReportMetadata(
-        props.projectId,
-        reportAttachmentDetailsDataLoader.data.metadata.id,
-        AttachmentType.REPORT,
-        fileMeta,
-        reportAttachmentDetailsDataLoader.data.metadata.revision_count
-      );
+      if (reportAttachmentDetailsDataLoader.data.metadata.project_report_attachment_id) {
+        await biohubApi.project.updateProjectReportMetadata(
+          props.projectId,
+          reportAttachmentDetailsDataLoader.data.metadata.project_report_attachment_id,
+          AttachmentType.REPORT,
+          fileMeta,
+          reportAttachmentDetailsDataLoader.data.metadata.revision_count
+        );
+      }
     } catch (error) {
       const apiError = error as APIError;
       showErrorDialog({ dialogText: apiError.message, dialogErrorDetails: apiError.errors, open: true });

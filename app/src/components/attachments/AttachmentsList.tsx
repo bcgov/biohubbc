@@ -83,7 +83,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
 
     if (updatedAttachments) {
       const cur = updatedAttachments.find((attachment) => {
-        if (attachment.att === id && attachment.fileType === type) {
+        if (attachment.id === id && attachment.fileType === type) {
           return attachment;
         }
         return null;
@@ -238,7 +238,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
                       </TableCell>
                       <TableCell>{row.fileType}</TableCell>
                       <TableCell align="right">
-                        <SubmitStatusChip status={checkSubmissionStatus(null)} />
+                        <SubmitStatusChip status={checkSubmissionStatus(row.supplementaryAttachmentData)} />
                       </TableCell>
                       <TableCell align="right">
                         <AttachmentItemMenuButton

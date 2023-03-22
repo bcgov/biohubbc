@@ -10,70 +10,34 @@ const defaultLog = getLogger('models/project-survey-attachments');
  * @class GetAttachmentsData
  */
 export class GetAttachmentsData {
-  attachmentsList: any[];
-
-  constructor(attachmentsData?: any, attachmentsSupplementaryData?: any) {
-    defaultLog.debug({ label: 'GetAttachmentsData', message: 'params', attachmentsData });
-
-    const mapAttachment = (attachment: any, supplementaryData: any) => {
-      return {
-        attachmentData: {
-          id: attachment.survey_attachment_id,
-          fileName: attachment.file_name,
-          fileType: attachment.file_type || 'Report',
-          lastModified: moment(attachment.update_date || attachment.create_date).toISOString(),
-          size: attachment.file_size,
-          status: attachment.status
-        },
-        supplementaryAttachmentData: supplementaryData
-      };
-    };
-
-    const createAttachmentList = [];
-
-    for (let index = 0; index < attachmentsData.length; index++) {
-      if (attachmentsSupplementaryData && attachmentsSupplementaryData[index]) {
-        createAttachmentList.push(mapAttachment(attachmentsData[index], attachmentsSupplementaryData[index]));
-      }
-      createAttachmentList.push(mapAttachment(attachmentsData[index], null));
-    }
-
-    this.attachmentsList = createAttachmentList || [];
+  constructor() {
+    defaultLog.debug({ label: 'GetAttachmentsData', message: 'params' });
   }
-}
 
-export class GetReportAttachmentsData {
-  reportAttachmentsList: any[];
-
-  constructor(reportAttachmentsData?: any, reportAttachmentsSupplementaryData?: any) {
-    defaultLog.debug({ label: 'GetReprtAttachmentsData', message: 'params', reportAttachmentsData });
-
+  static async buildAttachmentsData(attachmentsData: any[], getSupplementaryData: (attachmentId: number) => any) {
     const mapAttachment = (attachment: any, supplementaryData: any) => {
       return {
-        attachmentData: {
-          id: attachment.survey_report_attachment_id,
-          fileName: attachment.file_name,
-          fileType: attachment.file_type || 'Report',
-          lastModified: moment(attachment.update_date || attachment.create_date).toISOString(),
-          size: attachment.file_size,
-          status: attachment.status
-        },
+        id: attachment.survey_attachment_id || attachment.survey_report_attachment_id,
+        fileName: attachment.file_name,
+        fileType: attachment.file_type || 'Report',
+        lastModified: moment(attachment.update_date || attachment.create_date).toISOString(),
+        size: attachment.file_size,
+        status: attachment.status,
         supplementaryAttachmentData: supplementaryData
       };
     };
 
-    const createReportAttachmentList = [];
+    const attachmentList: any[] = [];
 
-    for (let index = 0; index < reportAttachmentsData.length; index++) {
-      if (reportAttachmentsSupplementaryData && reportAttachmentsSupplementaryData[index]) {
-        createReportAttachmentList.push(
-          mapAttachment(reportAttachmentsData[index], reportAttachmentsSupplementaryData[index])
-        );
-      }
-      createReportAttachmentList.push(mapAttachment(reportAttachmentsData[index], null));
-    }
+    await attachmentsData.map(async (attachment: any) => {
+      const supplementaryData = await getSupplementaryData(
+        attachment.survey_attachment_id || attachment.survey_report_attachment_id
+      );
 
-    this.reportAttachmentsList = createReportAttachmentList || [];
+      attachmentList.push(mapAttachment(attachment, supplementaryData));
+    });
+
+    return attachmentList;
   }
 }
 

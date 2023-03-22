@@ -9,7 +9,6 @@ import { defaultErrorDialogProps, DialogContext } from 'contexts/dialogContext';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
-import { IGetProjectAttachment } from 'interfaces/useProjectApi.interface';
 import { IGetSurveyAttachment } from 'interfaces/useSurveyApi.interface';
 import { default as React, useContext } from 'react';
 import { getFormattedFileSize } from 'utils/Utils';
@@ -45,7 +44,7 @@ const SurveyAttachmentDialog: React.FC<ISurveyAttachmentDialogProps> = (props) =
     dialogContext.setErrorDialog({ ...defaultErrorDialogProps, ...textDialogProps, open: true });
   };
 
-  const openAttachment = async (attachment: IGetProjectAttachment) => {
+  const openAttachment = async (attachment: IGetSurveyAttachment) => {
     try {
       const response = await biohubApi.survey.getSurveyAttachmentSignedURL(
         props.projectId,

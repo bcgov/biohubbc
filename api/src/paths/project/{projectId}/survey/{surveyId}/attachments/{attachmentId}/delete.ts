@@ -5,6 +5,7 @@ import { PROJECT_ROLE, SYSTEM_ROLE } from '../../../../../../../constants/roles'
 import { getDBConnection } from '../../../../../../../database/db';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
 import { AttachmentService } from '../../../../../../../services/attachment-service';
+import { HistoryPublishService } from '../../../../../../../services/history-publish-service';
 import { deleteFileFromS3 } from '../../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../../utils/logger';
 import { attachmentApiDocObject } from '../../../../../../../utils/shared-api-docs';
@@ -109,13 +110,16 @@ export function deleteAttachment(): RequestHandler {
       await connection.open();
 
       const attachmentService = new AttachmentService(connection);
+      const historyPublishService = new HistoryPublishService(connection);
 
       let deleteResult: { key: string };
       if (req.body.attachmentType === ATTACHMENT_TYPE.REPORT) {
+        await historyPublishService.deleteSurveyReportAttachmentPublishRecord(Number(req.params.attachmentId));
         await attachmentService.deleteSurveyReportAttachmentAuthors(Number(req.params.attachmentId));
 
         deleteResult = await attachmentService.deleteSurveyReportAttachment(Number(req.params.attachmentId));
       } else {
+        await historyPublishService.deleteSurveyAttachmentPublishRecord(Number(req.params.attachmentId));
         deleteResult = await attachmentService.deleteSurveyAttachment(Number(req.params.attachmentId));
       }
 

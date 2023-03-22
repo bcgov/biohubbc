@@ -14,9 +14,34 @@ export interface IGetProjectAttachment {
   lastModified: string;
   size: number;
   revisionCount: number;
+  supplementaryAttachmentData: IProjectSupplementaryAttachmentData | IProjectSupplementaryReportAttachmentData | null;
 }
 
 export type IGetProjectReportAttachment = IGetProjectAttachment & { fileType: 'Report' };
+
+export interface IProjectSupplementaryAttachmentData {
+  project_attachment_publish_id: number;
+  project_attachment_id: number;
+  event_timestamp: string;
+  artifact_revision_id: number;
+  create_date: string;
+  create_user: number;
+  update_date: string | null;
+  update_user: number | null;
+  revision_count: number;
+}
+
+export interface IProjectSupplementaryReportAttachmentData {
+  project_report_publish_id: number;
+  project_report_attachment_id: number;
+  event_timestamp: string;
+  artifact_revision_id: number;
+  create_date: string;
+  create_user: number;
+  update_date: string | null;
+  update_user: number | null;
+  revision_count: number;
+}
 
 /**
  * An interface for an instance of filter fields for project advanced filter search
@@ -300,7 +325,8 @@ export interface IGetAttachmentDetails {
 }
 
 export interface IGetReportMetadata {
-  id: number;
+  project_report_attachment_id?: number;
+  survey_report_attachment_id?: number;
   title: string;
   year_published: number;
   description: string;
