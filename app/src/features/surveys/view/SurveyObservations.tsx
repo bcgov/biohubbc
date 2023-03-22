@@ -53,16 +53,8 @@ const SurveyObservations: React.FC = () => {
   const [openImportObservations, setOpenImportObservations] = useState(false);
   const [willRefreshOnClose, setWillRefreshOnClose] = useState(false);
 
-  const projectId = surveyContext.projectId as number;
-  const surveyId = surveyContext.surveyId as number;
-
-  const refresh = useCallback(() => {
-    if (projectId && surveyId) {
-      surveyContext.surveyDataLoader.refresh(projectId, surveyId);
-    }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [projectId, surveyId]);
+  const projectId = surveyContext.projectId;
+  const surveyId = surveyContext.surveyId;
 
   const submissionDataLoader = useDataLoader(() => biohubApi.observation.getObservationSubmission(projectId, surveyId));
 
@@ -117,7 +109,9 @@ const SurveyObservations: React.FC = () => {
           }
 
           if (file.type === 'application/x-zip-compressed' || file.type === 'application/zip') {
-            biohubApi.observation.processDWCFile(projectId, result.submissionId).then(refresh);
+            biohubApi.observation
+              .processDWCFile(projectId, result.submissionId)
+              .then(() => surveyContext.surveyDataLoader.refresh(projectId, surveyId));
           } else {
             biohubApi.observation.processOccurrences(projectId, result.submissionId, surveyId);
           }
@@ -147,7 +141,7 @@ const SurveyObservations: React.FC = () => {
     }
 
     biohubApi.observation.deleteObservationSubmission(projectId, surveyId, occurrenceSubmissionId).then(() => {
-      refresh();
+      surveyContext.surveyDataLoader.refresh(projectId, surveyId);
       refreshSubmission();
     });
   }
