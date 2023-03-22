@@ -225,4 +225,26 @@ export class HistoryPublishService extends DBService {
   ): Promise<SurveySummarySubmissionPublish | null> {
     return this.historyRepository.getSurveySummarySubmissionPublishRecord(surveySummarySubmissionId);
   }
+
+  /**
+   * Deletes a record from `survey_attachment_publish` for a given attachment id.
+   *
+   * @param {number} surveyAttachmentId
+   * @return {*}  {Promise<void>}
+   * @memberof HistoryPublishService
+   */
+  async deleteSurveyAttachmentPublishRecord(surveyAttachmentId: number): Promise<void> {
+    return this.historyRepository.deleteSurveyAttachmentPublishRecord(surveyAttachmentId);
+  }
+
+  /**
+   * Deletes a record from `survey_report_publish` for a given attachment id.
+   *
+   * @param {number} surveyReportAttachmentId
+   * @return {*}  {Promise<void>}
+   * @memberof HistoryPublishService
+   */
+  async deleteSurveyReportAttachmentPublishRecord(surveyReportAttachmentId: number): Promise<void> {
+    return this.historyRepository.deleteSurveyReportAttachmentPublishRecord(surveyReportAttachmentId);
+  }
 }

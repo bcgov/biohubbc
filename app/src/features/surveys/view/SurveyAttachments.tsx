@@ -12,7 +12,6 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetProjectForViewResponse, IUploadAttachmentResponse } from 'interfaces/useProjectApi.interface';
 import {
   IGetSurveyAttachment,
-  IGetSurveyAttachmentsResponse,
   IGetSurveyForViewResponse,
   IGetSurveyReportAttachment
 } from 'interfaces/useSurveyApi.interface';
@@ -55,7 +54,7 @@ const SurveyAttachments: React.FC<ISurveyAttachmentsProps> = () => {
   };
 
   const getAttachments = useCallback(
-    async (forceFetch: boolean): Promise<IGetSurveyAttachmentsResponse | undefined> => {
+    async (forceFetch: boolean): Promise<IGetSurveyAttachment[] | undefined> => {
       if (attachmentsList.length && !forceFetch) {
         return;
       }
@@ -69,7 +68,7 @@ const SurveyAttachments: React.FC<ISurveyAttachmentsProps> = () => {
 
         setReportAttachmentsList([...response.reportAttachmentsList]);
         setAttachmentsList([...response.attachmentsList]);
-        return response;
+        return [...response.reportAttachmentsList, ...response.attachmentsList];
       } catch (error) {
         return;
       }
@@ -132,7 +131,6 @@ const SurveyAttachments: React.FC<ISurveyAttachmentsProps> = () => {
             selectedAttachments={[]}
             getAttachments={getAttachments}
           />
-          {/* TODO: RESOLVE TYPESSS */}
         </Box>
       </Paper>
     </>

@@ -26,9 +26,17 @@ const AttachmentTypeSelector: React.FC<IAttachmentTypeSelectorProps> = (props) =
     return <></>;
   }
 
+  const instanceOfIGetProjectAttachment = (object: any): object is IGetProjectAttachment => {
+    return true;
+  };
+
+  const instanceOfIGetSurveyAttachment = (object: any): object is IGetSurveyAttachment => {
+    return true;
+  };
+
   return (
     <>
-      {props.surveyId && (
+      {props.surveyId && instanceOfIGetSurveyAttachment(props.currentAttachment) && (
         <>
           {props.currentAttachment?.fileType === AttachmentType.REPORT && (
             <SurveyReportAttachmentDialog
@@ -57,7 +65,7 @@ const AttachmentTypeSelector: React.FC<IAttachmentTypeSelectorProps> = (props) =
           )}
         </>
       )}
-      {!props.surveyId && (
+      {!props.surveyId && instanceOfIGetProjectAttachment(props.currentAttachment) && (
         <>
           {props.currentAttachment?.fileType === AttachmentType.REPORT && (
             <ProjectReportAttachmentDialog

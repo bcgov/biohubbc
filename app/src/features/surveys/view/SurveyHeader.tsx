@@ -61,7 +61,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 export interface ISurveyHeaderProps {
   projectWithDetails: IGetProjectForViewResponse;
   surveyWithDetails: IGetSurveyForViewResponse;
-  refresh?: () => void;
+  refresh: () => void;
 }
 
 /**
@@ -269,9 +269,11 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
         open={finishSubmission}
         onClose={() => {
           setFinishSubmission(false);
+          props.refresh();
         }}
         onOk={() => {
           setFinishSubmission(false);
+          props.refresh();
         }}></ErrorDialog>
 
       <SubmitBiohubDialog
@@ -281,7 +283,7 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
           setOpenSubmitSurvey(!openSubmitSurvey);
         }}
         onSubmit={async (values: ISurveySubmitForm) => {
-          biohubApi.publish.publishSurvey(
+          await biohubApi.publish.publishSurvey(
             projectWithDetails.id,
             surveyWithDetails.surveyData.survey_details.id,
             values

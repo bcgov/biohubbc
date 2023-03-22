@@ -203,31 +203,17 @@ export interface IGetSpecies {
 }
 
 export interface IGetSurveyAttachment {
-  attachmentData: ISurveyAttachmentData;
-  supplementaryAttachmentData: ISurveySupplementaryAttachmentData | null;
-}
-
-export interface IGetSurveyReportAttachment {
-  attachmentData: ISurveyReportAttachmentData;
-  supplementaryAttachmentData: ISurveySupplementaryReportAttachmentData | null;
-}
-
-export interface ISurveyAttachmentData {
   id: number;
   fileName: string;
   fileType: string;
   lastModified: string;
   size: number;
   revisionCount: number;
+  supplementaryAttachmentData: ISurveySupplementaryAttachmentData | ISurveySupplementaryReportAttachmentData | null;
 }
-export interface ISurveyReportAttachmentData {
-  id: number;
-  fileType: 'Report';
-  fileName: string;
-  lastModified: string;
-  size: number;
-  revisionCount: number;
-}
+
+export type IGetSurveyReportAttachment = IGetSurveyAttachment & { fileType: 'Report' };
+
 export interface ISurveySupplementaryAttachmentData {
   survey_attachment_publish_id: number;
   survey_attachment_id: number;

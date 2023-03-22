@@ -106,8 +106,16 @@ const SubmitSurvey: React.FC<ISubmitSurvey> = (props) => {
 
       <SelectAllButton
         formikData={[
-          { key: 'observations', value: observationDataLoader.data ? [observationDataLoader.data] : [] },
-          { key: 'summary', value: summaryDataLoader.data ? [summaryDataLoader.data] : [] },
+          {
+            key: 'observations',
+            value: observationDataLoader.data?.surveyObservationData
+              ? [observationDataLoader.data.surveyObservationData]
+              : []
+          },
+          {
+            key: 'summary',
+            value: summaryDataLoader.data?.surveySummaryData ? [summaryDataLoader.data.surveySummaryData] : []
+          },
           {
             key: 'reports',
             value:

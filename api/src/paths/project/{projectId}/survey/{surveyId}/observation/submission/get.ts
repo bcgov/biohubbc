@@ -65,6 +65,7 @@ GET.apiDoc = {
           schema: {
             title: 'Survey get response object, for view purposes',
             type: 'object',
+            nullable: true,
             required: ['surveyObservationData', 'surveyObservationSupplementaryData'],
             properties: {
               surveyObservationData: {
@@ -228,7 +229,6 @@ export function getOccurrenceSubmission(): RequestHandler {
       const surveyService = new SurveyService(connection);
       const historyPublishService = new HistoryPublishService(connection);
       const occurrenceSubmission = await surveyService.getLatestSurveyOccurrenceSubmission(Number(req.params.surveyId));
-      console.log('occurrenceSubmission', occurrenceSubmission);
 
       if (!occurrenceSubmission || occurrenceSubmission.delete_timestamp) {
         // Ensure we only retrieve the latest occurrence submission record if it has not been soft deleted
