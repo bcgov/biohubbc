@@ -192,7 +192,10 @@ const SurveySummaryResults = () => {
       label: 'Unexpected formats in the values provided'
     },
     miscellaneous: { type: ['Miscellaneous'], label: 'Miscellaneous errors exist in your file' },
-    system_error: { type: ['Missing Validation Schema'], label: 'Contact your system administrator' }
+    system_error: {
+      type: ['Missing Validation Schema', 'Failed to Get Validation Rules'],
+      label: 'Contact your system administrator'
+    }
   };
 
   type SubmissionErrors = { [key: string]: string[] };
