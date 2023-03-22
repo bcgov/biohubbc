@@ -17,6 +17,15 @@ export const ensureProtocol = (url: string, protocol: 'http://' | 'https://' = '
 };
 
 /**
+ * Generates the <title> tag text for a React route
+ * @param pageName The name of the page, e.g. 'Projects'
+ * @returns The content to be rendered in the <title> tag
+ */
+export const getTitle = (pageName: string) => {
+  return `SIMS - ${pageName}`;
+};
+
+/**
  * Formats a date range into a formatted string.
  *
  * @param {DATE_FORMAT} dateFormat

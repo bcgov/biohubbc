@@ -25,6 +25,7 @@ import { IUploadHandler } from 'components/file-upload/FileUploadItem';
 import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
 import { BioHubSubmittedStatusType } from 'constants/misc';
 import { DialogContext } from 'contexts/dialogContext';
+import { SurveyContext } from 'contexts/surveyContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useInterval } from 'hooks/useInterval';
@@ -35,11 +36,6 @@ import {
   ObservationSubmissionMessageSeverityLabel
 } from 'interfaces/useObservationApi.interface';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
-import { useParams } from 'react-router';
-
-interface ISurveyObservationsProps {
-  refresh: () => void;
-}
 
 const useStyles = makeStyles((theme: Theme) => ({
   alertLink: {
@@ -52,16 +48,24 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }));
 
-const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
+const SurveyObservations: React.FC = () => {
   const biohubApi = useBiohubApi();
-  const urlParams = useParams();
   const dialogContext = useContext(DialogContext);
   const classes = useStyles();
+  const surveyContext = useContext(SurveyContext);
   const [openImportObservations, setOpenImportObservations] = useState(false);
   const [willRefreshOnClose, setWillRefreshOnClose] = useState(false);
 
-  const projectId = Number(urlParams['id']);
-  const surveyId = Number(urlParams['survey_id']);
+  const projectId = surveyContext.projectId as number;
+  const surveyId = surveyContext.surveyId as number;
+
+  const refresh = useCallback(() => {
+    if (projectId && surveyId) {
+      surveyContext.surveyDataLoader.refresh(projectId, surveyId);
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [projectId, surveyId]);
 
   const submissionDataLoader = useDataLoader(() => biohubApi.observation.getObservationSubmission(projectId, surveyId));
 
@@ -117,7 +121,7 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
           }
 
           if (file.type === 'application/x-zip-compressed' || file.type === 'application/zip') {
-            biohubApi.observation.processDWCFile(projectId, result.submissionId).then(props.refresh);
+            biohubApi.observation.processDWCFile(projectId, result.submissionId).then(refresh);
           } else {
             biohubApi.observation.processOccurrences(projectId, result.submissionId, surveyId);
           }
@@ -147,7 +151,7 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
     }
 
     biohubApi.observation.deleteObservationSubmission(projectId, surveyId, occurrenceSubmissionId).then(() => {
-      props.refresh();
+      refresh();
       refreshSubmission();
     });
   }

@@ -1,3 +1,4 @@
+//@ts-nocheck
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import { grey } from '@material-ui/core/colors';
@@ -17,6 +18,7 @@ import { IStaticLayer } from 'components/map/components/StaticLayers';
 import MapContainer from 'components/map/MapContainer';
 import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
 import { EditSurveyStudyAreaI18N } from 'constants/i18n';
+import { SurveyContext } from 'contexts/surveyContext';
 import StudyAreaForm, {
   IStudyAreaForm,
   StudyAreaInitialValues,
@@ -25,17 +27,15 @@ import StudyAreaForm, {
 import { Feature } from 'geojson';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useDeepCompareEffect } from 'hooks/useDeepCompareEffect';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
-import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
 import { LatLngBoundsExpression } from 'leaflet';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useState } from 'react';
 import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
 
 export interface ISurveyStudyAreaProps {
-  surveyForViewData: IGetSurveyForViewResponse;
   projectForViewData: IGetProjectForViewResponse;
   mapLayersForView: { markerLayers: IMarkerLayer[]; staticLayers: IStaticLayer[] };
-  refresh: () => void;
 }
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -72,14 +72,16 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
   const classes = useStyles();
   const biohubApi = useBiohubApi();
 
-  const {
-    projectForViewData,
-    surveyForViewData: {
-      surveyData: { survey_details },
-      surveySupplementaryData: { occurrence_submission }
-    },
-    refresh
-  } = props;
+  const surveyContext = useContext(SurveyContext);
+  console.log('surveyContext', surveyContext);
+  console.log('surveyContext.num', surveyContext.num);
+  const surveyForViewData = surveyContext.surveyDataLoader.data;
+
+  const { projectForViewData } = props;
+
+  const survey_details = surveyForViewData?.surveyData?.survey_details;
+  const occurrence_submission_id =
+    surveyForViewData?.surveySupplementaryData?.occurrence_submission.occurrence_submission_id;
 
   const surveyGeometry = survey_details?.geometry || [];
 
@@ -100,13 +102,16 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
     setBounds(calculateUpdatedMapBounds(surveyGeometry));
   }, [surveyGeometry]);
 
-  useEffect(() => {
+  //TODO: HERE I INFIITELY LOOP
+  useDeepCompareEffect(() => {
+    console.log('surveyGeometry', surveyGeometry);
     const nonEditableGeometriesResult = surveyGeometry.map((geom: Feature) => {
       return { feature: geom };
     });
+    console.log('nonEditableGeometriesResult', nonEditableGeometriesResult);
     zoomToBoundaryExtent();
     setNonEditableGeometries(nonEditableGeometriesResult);
-  }, [surveyGeometry, occurrence_submission.occurrence_submission_id, zoomToBoundaryExtent]);
+  }, [occurrence_submission_id]);
 
   const [errorDialogProps, setErrorDialogProps] = useState<IErrorDialogProps>({
     dialogTitle: EditSurveyStudyAreaI18N.editErrorTitle,
@@ -125,6 +130,10 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
   };
 
   const handleDialogEditOpen = async () => {
+    if (!survey_details) {
+      return;
+    }
+
     let surveyResponseData;
 
     try {
@@ -153,6 +162,10 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
   };
 
   const handleDialogEditSave = async (values: IStudyAreaForm) => {
+    if (!survey_details) {
+      return;
+    }
+
     try {
       const surveyData = {
         location: {
@@ -171,7 +184,7 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
       setOpenEditDialog(false);
     }
 
-    refresh();
+    surveyContext.surveyDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
   };
 
   const handleDialogViewOpen = () => {
@@ -210,7 +223,7 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
             staticLayers={props.mapLayersForView.staticLayers}
           />
         }
-        description={survey_details.survey_area_name}
+        description={survey_details?.survey_area_name}
         layers={<InferredLocationDetails layers={inferredLayersInfo} />}
         backButtonTitle={'Back To Survey'}
         mapTitle={'Study Area'}
@@ -253,7 +266,7 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
             Study Area Name
           </Typography>
           <Divider></Divider>
-          <Typography variant="body1">{survey_details.survey_area_name}</Typography>
+          <Typography variant="body1">{survey_details?.survey_area_name}</Typography>
           <Box mt={3}>
             <InferredLocationDetails layers={inferredLayersInfo} />
           </Box>
