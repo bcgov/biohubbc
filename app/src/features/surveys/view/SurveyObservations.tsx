@@ -157,7 +157,7 @@ const SurveyObservations: React.FC = () => {
     }
 
     biohubApi.observation.deleteObservationSubmission(projectId, surveyId, occurrenceSubmissionId).then(() => {
-      refresh();
+      surveyContext.surveyDataLoader.refresh(projectId, surveyId);
       refreshSubmission();
     });
   }

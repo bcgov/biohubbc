@@ -233,10 +233,10 @@ export class SurveyService extends DBService {
    * Get Occurrence Submission for a given survey id.
    *
    * @param {number} surveyId
-   * @return {*}
+   * @return {*}  {(Promise<{ occurrence_submission_id: number | null }>)}F
    * @memberof SurveyService
    */
-  async getOccurrenceSubmission(surveyId: number) {
+  async getOccurrenceSubmission(surveyId: number): Promise<{ occurrence_submission_id: number | null }> {
     return this.surveyRepository.getOccurrenceSubmission(surveyId);
   }
 
@@ -301,10 +301,10 @@ export class SurveyService extends DBService {
    * Get a survey summary submission record for a given survey id.
    *
    * @param {number} surveyId
-   * @return {*}
+   * @return {*}  {(Promise<{ survey_summary_submission_id: number | null }>)}
    * @memberof SurveyService
    */
-  async getSurveySummarySubmission(surveyId: number) {
+  async getSurveySummarySubmission(surveyId: number): Promise<{ survey_summary_submission_id: number | null }> {
     return this.surveyRepository.getSurveySummarySubmission(surveyId);
   }
 
