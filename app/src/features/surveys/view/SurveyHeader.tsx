@@ -273,9 +273,11 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
         dialogText="Thank you for submitting your survey data to Biohub."
         open={finishSubmission}
         onClose={() => {
+          surveyContext.surveyDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
           setFinishSubmission(false);
         }}
         onOk={() => {
+          surveyContext.surveyDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
           setFinishSubmission(false);
         }}></ErrorDialog>
 

@@ -92,7 +92,7 @@ const SurveyPage: React.FC = () => {
         <Box my={3}>
           <Grid container spacing={3}>
             <Grid item md={12}>
-              <SubmissionAlertBar submitted={false} />
+              <SubmissionAlertBar />
             </Grid>
             <Grid item md={12} lg={4}>
               <Paper elevation={0}>
