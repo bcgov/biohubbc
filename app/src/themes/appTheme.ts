@@ -79,7 +79,7 @@ const appTheme = createMuiTheme({
         color: '#A12622',
         border: '1px solid #ebccd1',
         '& .MuiAlert-icon': {
-          color: '#A12622',
+          color: '#A12622'
         }
       }
     },
@@ -128,7 +128,7 @@ const appTheme = createMuiTheme({
       },
       colorPrimary: {
         color: '#003366',
-        backgroundColor: "#DCEBFB",
+        backgroundColor: '#DCEBFB',
         textTransform: 'uppercase',
         fontSize: '12px',
         '&.colorSuccess': {

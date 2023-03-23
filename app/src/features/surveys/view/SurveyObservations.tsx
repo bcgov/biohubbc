@@ -1,21 +1,27 @@
-import Collapse from '@material-ui/core/Collapse';
 import Box from '@material-ui/core/Box';
 import Chip from '@material-ui/core/Chip';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import Collapse from '@material-ui/core/Collapse';
 import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
+import LinearProgress from '@material-ui/core/LinearProgress';
 import Link from '@material-ui/core/Link';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import Paper from '@material-ui/core/Paper';
-import { makeStyles, createStyles, withStyles, Theme } from '@material-ui/core/styles';
+import { createStyles, makeStyles, Theme, withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Alert from '@material-ui/lab/Alert';
 import AlertTitle from '@material-ui/lab/AlertTitle';
-import LinearProgress from '@material-ui/core/LinearProgress';
 import {
-  mdiAlertCircleOutline, mdiDotsVertical, mdiFileOutline, mdiImport, mdiInformationOutline, mdiTrashCanOutline, mdiTrayArrowDown, mdiFileAlertOutline
+  mdiAlertCircleOutline,
+  mdiDotsVertical,
+  mdiFileAlertOutline,
+  mdiFileOutline,
+  mdiImport,
+  mdiInformationOutline,
+  mdiTrashCanOutline,
+  mdiTrayArrowDown
 } from '@mdi/js';
 import Icon from '@mdi/react';
 import ComponentDialog from 'components/dialog/ComponentDialog';
@@ -45,7 +51,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     '&.error': {
       borderColor: theme.palette.error.main,
       '& .importFile-icon': {
-        color: theme.palette.error.main,
+        color: theme.palette.error.main
       }
     }
   },
@@ -65,21 +71,21 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 const SurveyObservations: React.FC = () => {
-const BorderLinearProgress = withStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      height: 6,
-      borderRadius: 3,
-    },
-    colorPrimary: {
-      backgroundColor: theme.palette.grey[theme.palette.type === 'light' ? 300 : 700],
-    },
-    bar: {
-      borderRadius: 3,
-      backgroundColor: '#1976D2',
-    },
-  }),
-)(LinearProgress);
+  const BorderLinearProgress = withStyles((theme: Theme) =>
+    createStyles({
+      root: {
+        height: 6,
+        borderRadius: 3
+      },
+      colorPrimary: {
+        backgroundColor: theme.palette.grey[theme.palette.type === 'light' ? 300 : 700]
+      },
+      bar: {
+        borderRadius: 3,
+        backgroundColor: '#1976D2'
+      }
+    })
+  )(LinearProgress);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const biohubApi = useBiohubApi();
   const dialogContext = useContext(DialogContext);
@@ -87,6 +93,7 @@ const BorderLinearProgress = withStyles((theme: Theme) =>
   const surveyContext = useContext(SurveyContext);
   const [openImportObservations, setOpenImportObservations] = useState(false);
   const [willRefreshOnClose, setWillRefreshOnClose] = useState(false);
+  const [fileName, setFileName] = useState("");
 
   const projectId = surveyContext.projectId as number;
   const surveyId = surveyContext.surveyId as number;
@@ -107,7 +114,7 @@ const BorderLinearProgress = withStyles((theme: Theme) =>
   const occurrenceSubmission = submissionDataLoader.data;
   const occurrenceSubmissionId = occurrenceSubmission?.id;
   const submissionMessageTypes = occurrenceSubmission?.messageTypes || [];
-  const submissionExists = Boolean(occurrenceSubmission);
+  let submissionExists = Boolean(occurrenceSubmission);
 
   const submissionPollingInterval = useInterval(refreshSubmission, 5000, 60000);
   alphabetizeSubmissionMessages(submissionMessageTypes);
@@ -139,7 +146,6 @@ const BorderLinearProgress = withStyles((theme: Theme) =>
     ...defaultUploadYesNoDialogProps,
     dialogTitle: 'Delete Observations?',
     dialogText: 'Are you sure you want to delete this observation file? This action cannot be undone.'
-    
   };
 
   const importObservations = (): IUploadHandler => {
@@ -160,6 +166,7 @@ const BorderLinearProgress = withStyles((theme: Theme) =>
         .finally(() => {
           setWillRefreshOnClose(true);
           setAnchorEl(null);
+          setFileName(file.name);
         });
     };
   };
@@ -209,7 +216,7 @@ const BorderLinearProgress = withStyles((theme: Theme) =>
       open: true,
       yesButtonProps: { color: 'secondary' },
       yesButtonLabel: 'Delete',
-      noButtonProps: {color: 'default'},
+      noButtonProps: { color: 'default' },
       noButtonLabel: 'Cancel',
       onYes: () => {
         softDeleteSubmission();
@@ -261,10 +268,6 @@ const BorderLinearProgress = withStyles((theme: Theme) =>
         return;
       });
   }, [biohubApi.survey, occurrenceSubmissionId, projectId, surveyId]);
-
-  if (!submissionExists && submissionDataLoader.isLoading) {
-    return <CircularProgress className="pageProgress" size={40} />;
-  }
 
   type AlertSeverityLevel = 'error' | 'info' | 'success' | 'warning';
 
@@ -318,7 +321,6 @@ const BorderLinearProgress = withStyles((theme: Theme) =>
         <Divider />
 
         <Box p={3}>
-
           {!occurrenceSubmission?.isValidating && (
             <>
               {submissionStatusSeverity === 'error' && (
@@ -357,17 +359,15 @@ const BorderLinearProgress = withStyles((theme: Theme) =>
             </>
           )}
 
-          
-          <Box style={{display: 'none'}} mb={3}>
-            <Alert
-              severity="error"
-              icon={<Icon path={mdiAlertCircleOutline} size={1} />}>
+          <Box style={{ display: 'none' }} mb={3}>
+            <Alert severity="error" icon={<Icon path={mdiAlertCircleOutline} size={1} />}>
               <AlertTitle>Failed to import observations</AlertTitle>
               One or more errors occurred while attempting to import your observations file.
-
               <Box mt={3}>
                 <Box component="section">
-                  <Typography variant="body2"><strong>Section Title</strong></Typography>
+                  <Typography variant="body2">
+                    <strong>Section Title</strong>
+                  </Typography>
                   <Box component="ul" mt={1} mb={0} pl={4}>
                     <li>
                       <Typography variant="body2">Error Message</Typography>
@@ -378,10 +378,11 @@ const BorderLinearProgress = withStyles((theme: Theme) =>
                   </Box>
                 </Box>
               </Box>
-
               <Box mt={3}>
                 <Box component="section">
-                  <Typography variant="body2"><strong>Section Title</strong></Typography>
+                  <Typography variant="body2">
+                    <strong>Section Title</strong>
+                  </Typography>
                   <Box component="ul" mt={1} mb={0} pl={4}>
                     <li>
                       <Typography variant="body2">Error Message</Typography>
@@ -392,11 +393,151 @@ const BorderLinearProgress = withStyles((theme: Theme) =>
                   </Box>
                 </Box>
               </Box>
-
             </Alert>
           </Box>
 
-          {!submissionExists ? (
+          {/* No submission exists */}
+          {!submissionExists && !submissionDataLoader.isLoading && (
+            <>
+              <Paper variant="outlined">
+                <Box p={3} textAlign="center">
+                  <Typography data-testid="observations-nodata" variant="body2" color="textSecondary">
+                    No Observation Data. &nbsp;
+                    <Link onClick={handleOpenImportObservations}>Click Here to Import</Link>
+                  </Typography>
+                </Box>
+              </Paper>
+            </>
+          )}
+
+          {/* No submission yet, but data is loading */}
+          {!submissionExists && submissionDataLoader.isLoading && (
+            <>
+              <Paper variant="outlined" className={classes.importFile + ` ` + `${submissionStatusSeverity}`}>
+              <Box className="importFile-icon" flex="0 0 auto" mt={1.2} mr={1.7}>
+                  <Icon path={submissionStatusIcon} size={1} />
+                </Box>
+
+                <Box mr={2} flex="1 1 auto" style={{ overflow: 'hidden' }}>
+                  <Typography
+                    className={classes.observationFileName}
+                    variant="body2"
+                    component="div"
+                    onClick={openFileContents}>
+                    <strong>{fileName}</strong>
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary">
+                      Processing file. Please wait...
+                  </Typography>
+
+                  <Collapse in={submissionDataLoader.isLoading} collapsedHeight="0">
+                    <Box mt={2}>
+                      <BorderLinearProgress />
+                    </Box>
+                  </Collapse>
+                </Box>
+              </Paper>
+            </>
+          )}
+
+          {/* Got a submission, but still loading */}
+          {submissionExists && occurrenceSubmission?.isValidating && (
+            <>
+              <Paper variant="outlined" className={classes.importFile + ` ` + `${submissionStatusSeverity}`}>
+              <Box className="importFile-icon" flex="0 0 auto" mt={1.2} mr={1.7}>
+                  <Icon path={submissionStatusIcon} size={1} />
+                </Box>
+
+                <Box mr={2} flex="1 1 auto" style={{ overflow: 'hidden' }}>
+                  <Typography
+                    className={classes.observationFileName}
+                    variant="body2"
+                    component="div"
+                    onClick={openFileContents}>
+                    <strong>{occurrenceSubmission?.inputFileName}</strong>
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary">
+                    {occurrenceSubmission?.isValidating
+                      ? 'Processing file. Please wait...'
+                      : occurrenceSubmission?.status}
+                  </Typography>
+
+                  <Collapse in={occurrenceSubmission?.isValidating} collapsedHeight="0">
+                    <Box mt={2}>
+                      <BorderLinearProgress />
+                    </Box>
+                  </Collapse>
+                </Box>
+              </Paper>
+            </>
+          )}
+
+          {/* All done */}
+          {submissionExists && !occurrenceSubmission?.isValidating && (
+            <>
+              <Paper variant="outlined" className={classes.importFile + ` ` + `${submissionStatusSeverity}`}>
+              <Box className="importFile-icon" flex="0 0 auto" mt={1.2} mr={1.7}>
+                  <Icon path={submissionStatusIcon} size={1} />
+                </Box>
+
+                <Box mr={2} flex="1 1 auto" style={{ overflow: 'hidden' }}>
+                  <Typography
+                    className={classes.observationFileName}
+                    variant="body2"
+                    component="div"
+                    onClick={openFileContents}>
+                    <strong>{occurrenceSubmission?.inputFileName}</strong>
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary">
+                    {occurrenceSubmission?.status}
+                  </Typography>
+                </Box>
+
+                <Box flex="0 0 auto" display="flex" alignItems="center">
+                  {submissionStatusSeverity === 'info' && (
+                    <Box mr={2}>
+                      <Chip label="Unsubmitted" color="primary" />
+                    </Box>
+                  )}
+
+                  <Box>
+                    <IconButton aria-controls="context-menu" aria-haspopup="true" onClick={openContextMenu}>
+                      <Icon path={mdiDotsVertical} size={1} />
+                    </IconButton>
+                    <Menu
+                      keepMounted
+                      id="context-menu"
+                      anchorEl={anchorEl}
+                      open={Boolean(anchorEl)}
+                      onClose={closeContextMenu}
+                      anchorOrigin={{
+                        vertical: 'top',
+                        horizontal: 'right'
+                      }}
+                      transformOrigin={{
+                        vertical: 'top',
+                        horizontal: 'right'
+                      }}>
+                      <MenuItem onClick={openFileContents}>
+                        <ListItemIcon>
+                          <Icon path={mdiTrayArrowDown} size={1} />
+                        </ListItemIcon>
+                        Download
+                      </MenuItem>
+                      <MenuItem onClick={showDeleteDialog}>
+                        <ListItemIcon>
+                          <Icon path={mdiTrashCanOutline} size={1} />
+                        </ListItemIcon>
+                        Delete
+                      </MenuItem>
+                    </Menu>
+                  </Box>
+                </Box>
+              </Paper>
+            </>
+          )}
+
+          {/* {!submissionExists ? (
             <>
               <Paper variant="outlined">
                 <Box p={3} textAlign="center">
@@ -410,13 +551,16 @@ const BorderLinearProgress = withStyles((theme: Theme) =>
           ) : (
             <>
               <Paper variant="outlined" className={classes.importFile + ` ` + `${submissionStatusSeverity}`}>
-                
                 <Box className="importFile-icon" flex="0 0 auto" mt={1.2} mr={1.7}>
                   <Icon path={submissionStatusIcon} size={1} />
                 </Box>
 
-                <Box mr={2} flex="1 1 auto" style={{overflow: 'hidden'}}>
-                  <Typography className={classes.observationFileName} variant="body2" component="div" onClick={openFileContents}>
+                <Box mr={2} flex="1 1 auto" style={{ overflow: 'hidden' }}>
+                  <Typography
+                    className={classes.observationFileName}
+                    variant="body2"
+                    component="div"
+                    onClick={openFileContents}>
                     <strong>{occurrenceSubmission?.inputFileName}</strong>
                   </Typography>
                   <Typography variant="body2" color="textSecondary">
@@ -434,7 +578,6 @@ const BorderLinearProgress = withStyles((theme: Theme) =>
 
                 {!occurrenceSubmission?.isValidating && (
                   <Box flex="0 0 auto" display="flex" alignItems="center">
-
                     {submissionStatusSeverity === 'info' && (
                       <Box mr={2}>
                         <Chip label="Unsubmitted" color="primary" />
@@ -453,13 +596,12 @@ const BorderLinearProgress = withStyles((theme: Theme) =>
                         onClose={closeContextMenu}
                         anchorOrigin={{
                           vertical: 'top',
-                          horizontal: 'right',
+                          horizontal: 'right'
                         }}
                         transformOrigin={{
                           vertical: 'top',
                           horizontal: 'right'
-                        }}
-                      >
+                        }}>
                         <MenuItem onClick={openFileContents}>
                           <ListItemIcon>
                             <Icon path={mdiTrayArrowDown} size={1} />
@@ -476,10 +618,9 @@ const BorderLinearProgress = withStyles((theme: Theme) =>
                     </Box>
                   </Box>
                 )}
-
               </Paper>
             </>
-          )}
+          )} */}
         </Box>
       </Paper>
 

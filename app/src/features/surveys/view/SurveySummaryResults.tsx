@@ -313,17 +313,15 @@ const SurveySummaryResults = () => {
         <Divider></Divider>
 
         <Box p={3}>
-
-          <Box style={{display: 'none'}} mb={3}>
-            <Alert
-              severity="error"
-              icon={<Icon path={mdiAlertCircleOutline} size={1} />}>
+          <Box style={{ display: 'none' }} mb={3}>
+            <Alert severity="error" icon={<Icon path={mdiAlertCircleOutline} size={1} />}>
               <AlertTitle>Failed to import summary results</AlertTitle>
               One or more errors occurred while attempting to import your summary results.
-
               <Box mt={3}>
                 <Box component="section">
-                  <Typography variant="body2"><strong>Section Title</strong></Typography>
+                  <Typography variant="body2">
+                    <strong>Section Title</strong>
+                  </Typography>
                   <Box component="ul" mt={1} mb={0} pl={4}>
                     <li>
                       <Typography variant="body2">Error Message</Typography>
@@ -334,10 +332,11 @@ const SurveySummaryResults = () => {
                   </Box>
                 </Box>
               </Box>
-
               <Box mt={3}>
                 <Box component="section">
-                  <Typography variant="body2"><strong>Section Title</strong></Typography>
+                  <Typography variant="body2">
+                    <strong>Section Title</strong>
+                  </Typography>
                   <Box component="ul" mt={1} mb={0} pl={4}>
                     <li>
                       <Typography variant="body2">Error Message</Typography>
@@ -348,7 +347,6 @@ const SurveySummaryResults = () => {
                   </Box>
                 </Box>
               </Box>
-
             </Alert>
           </Box>
 
