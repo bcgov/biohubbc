@@ -354,6 +354,7 @@ const SurveySummaryResults = () => {
         onClose={() => {
           setOpenImportSummaryResults(false);
           summaryDataLoader.refresh();
+          surveyContext.surveyDataLoader.refresh(projectId, surveyId);
         }}>
         <FileUpload
           dropZoneProps={{ maxNumFiles: 1, acceptedFileExtensions: '.csv, .xls, .txt, .xlsm, .xlsx' }}

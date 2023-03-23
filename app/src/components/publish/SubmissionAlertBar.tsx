@@ -43,6 +43,17 @@ const SubmissionAlertBar: React.FC = () => {
 
     if (artifacts.attachmentsList.length > 0) {
       artifacts.attachmentsList.forEach((element) => {
+        console.log('element', element);
+        if (!element.supplementaryAttachmentData || !element.supplementaryAttachmentData.event_timestamp) {
+          artifactSubmitted = false;
+          return;
+        }
+      });
+    }
+
+    if (artifacts.reportAttachmentsList.length > 0) {
+      artifacts.reportAttachmentsList.forEach((element) => {
+        console.log('element', element);
         if (!element.supplementaryAttachmentData || !element.supplementaryAttachmentData.event_timestamp) {
           artifactSubmitted = false;
           return;
@@ -84,7 +95,7 @@ const SubmissionAlertBar: React.FC = () => {
   };
 
   const checkSummaryExists = (supplementaryData: SurveySupplementaryData | null | undefined): boolean => {
-    if (supplementaryData?.occurrence_submission.occurrence_submission_id !== null) {
+    if (supplementaryData?.survey_summary_submission.survey_summary_submission_id !== null) {
       return true;
     }
     return false;
@@ -102,7 +113,9 @@ const SubmissionAlertBar: React.FC = () => {
       }
 
       const surveySubmitted = checkSubmissionStatus(surveyData.surveySupplementaryData);
+      console.log('artifactDataLoader.data', artifactDataLoader.data);
       const artifactSubmitted = checkArtifactSubmissionStatus(artifactDataLoader.data);
+      console.log('artifactSubmitted', artifactSubmitted);
       submitted =
         artifactSubmitted === BioHubSubmittedStatusType.SUBMITTED &&
         surveySubmitted === BioHubSubmittedStatusType.SUBMITTED;
