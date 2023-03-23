@@ -102,6 +102,9 @@ const SurveyAttachments: React.FC<ISurveyAttachmentsProps> = () => {
         onClose={() => {
           setOpenUploadAttachments(false);
           getAttachments(true);
+          console.log('getAttachments');
+
+          surveyContext.surveyDataLoader.refresh(projectId, surveyId);
         }}
         uploadHandler={getUploadHandler()}
       />

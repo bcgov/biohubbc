@@ -78,7 +78,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
   useEffect(() => {
     props.getAttachments(true);
 
-    //@react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [surveyContext.surveyDataLoader]);
 
   const handleDownloadFileClick = (attachment: IGetProjectAttachment | IGetSurveyAttachment) => {

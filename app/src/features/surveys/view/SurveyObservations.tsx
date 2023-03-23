@@ -132,6 +132,7 @@ const SurveyObservations: React.FC = () => {
         })
         .finally(() => {
           setWillRefreshOnClose(true);
+
         });
     };
   };
@@ -144,6 +145,7 @@ const SurveyObservations: React.FC = () => {
   function handleCloseImportObservations() {
     if (willRefreshOnClose) {
       refreshSubmission();
+      surveyContext.surveyDataLoader.refresh(projectId, surveyId);
     }
 
     setOpenImportObservations(false);
