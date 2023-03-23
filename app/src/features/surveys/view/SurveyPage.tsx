@@ -5,14 +5,14 @@ import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import { IMarkerLayer } from 'components/map/components/MarkerCluster';
 import { IStaticLayer } from 'components/map/components/StaticLayers';
+import { SurveyContext } from 'contexts/surveyContext';
 import SurveyDetails from 'features/surveys/view/SurveyDetails';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import useDataLoaderError from 'hooks/useDataLoaderError';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
-import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import { parseSpatialDataByType } from 'utils/spatial-utils';
 import SurveyStudyArea from './components/SurveyStudyArea';
@@ -34,14 +34,14 @@ const SurveyPage: React.FC = () => {
   const [isLoadingProject, setIsLoadingProject] = useState(true);
   const [projectWithDetails, setProjectWithDetails] = useState<IGetProjectForViewResponse | null>(null);
 
-  const [isLoadingSurvey, setIsLoadingSurvey] = useState(true);
-  const [surveyWithDetails, setSurveyWithDetails] = useState<IGetSurveyForViewResponse | null>(null);
-
   const [isLoadingCodes, setIsLoadingCodes] = useState(true);
   const [codes, setCodes] = useState<IGetAllCodeSetsResponse>();
 
   const [markerLayers, setMarkerLayers] = useState<IMarkerLayer[]>([]);
   const [staticLayers, setStaticLayers] = useState<IStaticLayer[]>([]);
+
+  const surveyContext = useContext(SurveyContext);
+  const surveyWithDetails = surveyContext.surveyDataLoader.data;
 
   const mapDataLoader = useDataLoader((datasetID: number) => biohubApi.observation.getOccurrencesForView(datasetID));
   useDataLoaderError(mapDataLoader, () => {
@@ -79,23 +79,6 @@ const SurveyPage: React.FC = () => {
     setProjectWithDetails(projectWithDetailsResponse);
   }, [biohubApi.project, urlParams]);
 
-  const getSurvey = useCallback(async () => {
-    const surveyWithDetailsResponse = await biohubApi.survey.getSurveyForView(urlParams['id'], urlParams['survey_id']);
-
-    if (!surveyWithDetailsResponse) {
-      return;
-    }
-    setSurveyWithDetails(surveyWithDetailsResponse);
-
-    const getOccurrences = (occurrenceSubmissionId: number) => {
-      mapDataLoader.refresh(occurrenceSubmissionId);
-    };
-
-    if (surveyWithDetailsResponse.surveySupplementaryData.occurrence_submission.id) {
-      getOccurrences(surveyWithDetailsResponse.surveySupplementaryData.occurrence_submission.id);
-    }
-  }, [biohubApi.survey, urlParams, mapDataLoader]);
-
   useEffect(() => {
     if (mapDataLoader.data) {
       const result = parseSpatialDataByType(mapDataLoader.data);
@@ -112,37 +95,25 @@ const SurveyPage: React.FC = () => {
     }
   }, [isLoadingProject, projectWithDetails, getProject]);
 
-  useEffect(() => {
-    if (isLoadingSurvey && !surveyWithDetails) {
-      getSurvey();
-      setIsLoadingSurvey(false);
-    }
-  }, [isLoadingSurvey, surveyWithDetails, getSurvey]);
-
   if (!projectWithDetails || !surveyWithDetails || !codes) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
   return (
     <>
-      <SurveyHeader projectWithDetails={projectWithDetails} surveyWithDetails={surveyWithDetails} refresh={getSurvey} />
+      <SurveyHeader projectWithDetails={projectWithDetails} />
       <Container maxWidth="xl">
         <Box my={3}>
           <Grid container spacing={3}>
             <Grid item md={12} lg={4}>
               <Paper elevation={0}>
-                <SurveyDetails
-                  projectForViewData={projectWithDetails}
-                  surveyForViewData={surveyWithDetails}
-                  codes={codes}
-                  refresh={getSurvey}
-                />
+                <SurveyDetails projectForViewData={projectWithDetails} codes={codes} />
               </Paper>
             </Grid>
             <Grid item md={12} lg={8}>
               <Box mb={3}>
                 <Paper elevation={0}>
-                  <SurveyObservations refresh={getSurvey} />
+                  <SurveyObservations />
                 </Paper>
               </Box>
               <Box mb={3}>
@@ -152,16 +123,14 @@ const SurveyPage: React.FC = () => {
               </Box>
               <Box mb={3}>
                 <Paper elevation={0}>
-                  <SurveyAttachments projectForViewData={projectWithDetails} surveyForViewData={surveyWithDetails} />
+                  <SurveyAttachments projectForViewData={projectWithDetails} />
                 </Paper>
               </Box>
               <Box mb={3}>
                 <Paper elevation={0}>
                   <SurveyStudyArea
-                    surveyForViewData={surveyWithDetails}
                     projectForViewData={projectWithDetails}
                     mapLayersForView={{ markerLayers: markerLayers, staticLayers: staticLayers }}
-                    refresh={getSurvey}
                   />
                 </Paper>
               </Box>
