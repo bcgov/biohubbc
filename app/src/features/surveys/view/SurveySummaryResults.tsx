@@ -23,11 +23,12 @@ import { IUploadHandler } from 'components/file-upload/FileUploadItem';
 import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
 import { BioHubSubmittedStatusType } from 'constants/misc';
 import { DialogContext } from 'contexts/dialogContext';
+import { SurveyContext } from 'contexts/surveyContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import useDataLoaderError from 'hooks/useDataLoaderError';
 import { ISurveySummarySupplementaryData } from 'interfaces/useSummaryResultsApi.interface';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -57,6 +58,8 @@ const SurveySummaryResults = () => {
   const biohubApi = useBiohubApi();
   const urlParams = useParams();
   const dialogContext = useContext(DialogContext);
+  const surveyContext = useContext(SurveyContext);
+
   const classes = useStyles();
 
   const projectId = urlParams['id'];
@@ -104,6 +107,12 @@ const SurveySummaryResults = () => {
 
   summaryDataLoader.load();
   const summaryData = summaryDataLoader.data?.surveySummaryData;
+
+  //Rerender summary data when the survey data loader changes
+  useEffect(() => {
+    summaryDataLoader.refresh();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [surveyContext.surveyDataLoader]);
 
   const softDeleteSubmission = async () => {
     if (!summaryData?.survey_summary_submission_id) {

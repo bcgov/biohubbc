@@ -394,7 +394,9 @@ export class SurveyRepository extends BaseRepository {
       FROM
         occurrence_submission
       WHERE
-        survey_id = ${surveyId};
+        survey_id = ${surveyId}
+      AND
+        delete_timestamp is null;
     `;
 
     const response = await this.connection.sql<{ occurrence_submission_id: number | null }>(sqlStatement);
@@ -531,7 +533,9 @@ export class SurveyRepository extends BaseRepository {
       FROM
         survey_summary_submission
       WHERE
-        survey_id = ${surveyId};
+        survey_id = ${surveyId}
+      AND
+        delete_timestamp IS NULL;
       `;
 
     const response = await this.connection.sql<{ survey_summary_submission_id: number | null }>(sqlStatement);

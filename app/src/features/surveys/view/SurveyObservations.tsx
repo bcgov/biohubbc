@@ -68,8 +68,12 @@ const SurveyObservations: React.FC = () => {
   }, [projectId, surveyId]);
 
   const submissionDataLoader = useDataLoader(() => biohubApi.observation.getObservationSubmission(projectId, surveyId));
-
   submissionDataLoader.load();
+
+  useEffect(() => {
+    submissionDataLoader.refresh();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [surveyContext.surveyDataLoader]);
 
   const refreshSubmission = submissionDataLoader.refresh;
   const occurrenceSubmission = submissionDataLoader.data?.surveyObservationData;
@@ -200,7 +204,7 @@ const SurveyObservations: React.FC = () => {
     });
   }
 
-  const checkSubmissionStatus = (
+  const getSubmissionStatus = (
     supplementaryData: ISurveySupplementaryData | null | undefined
   ): BioHubSubmittedStatusType => {
     if (supplementaryData?.event_timestamp) {
@@ -211,7 +215,7 @@ const SurveyObservations: React.FC = () => {
 
   const submissionAlertAction = () => (
     <Box>
-      <SubmitStatusChip status={checkSubmissionStatus(occurrenceSupplementaryData)} />
+      <SubmitStatusChip status={getSubmissionStatus(occurrenceSupplementaryData)} />
       <IconButton aria-label="open" color="inherit" onClick={openFileContents}>
         <Icon path={mdiDownload} size={1} />
       </IconButton>

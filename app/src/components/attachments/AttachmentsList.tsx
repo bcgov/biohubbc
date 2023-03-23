@@ -23,12 +23,21 @@ import { AttachmentType } from 'constants/attachments';
 import { AttachmentsI18N, EditReportMetaDataI18N } from 'constants/i18n';
 import { BioHubSubmittedStatusType } from 'constants/misc';
 import { DialogContext } from 'contexts/dialogContext';
+import { SurveyContext } from 'contexts/surveyContext';
 import { IAttachmentType } from 'features/projects/view/ProjectAttachments';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { IGetProjectAttachment } from 'interfaces/useProjectApi.interface';
-import { IGetSurveyAttachment } from 'interfaces/useSurveyApi.interface';
-import React, { useContext, useState } from 'react';
+import {
+  IGetProjectAttachment,
+  IProjectSupplementaryAttachmentData,
+  IProjectSupplementaryReportAttachmentData
+} from 'interfaces/useProjectApi.interface';
+import {
+  IGetSurveyAttachment,
+  ISurveySupplementaryAttachmentData,
+  ISurveySupplementaryReportAttachmentData
+} from 'interfaces/useSurveyApi.interface';
+import React, { useContext, useEffect, useState } from 'react';
 
 const useStyles = makeStyles((theme: Theme) => ({
   attachmentsTable: {
@@ -57,6 +66,7 @@ export interface IAttachmentsListProps {
 const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
   const classes = useStyles();
   const biohubApi = useBiohubApi();
+  const surveyContext = useContext(SurveyContext);
 
   const [rowsPerPage] = useState(10);
   const [page] = useState(0);
@@ -64,6 +74,12 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
   const [showViewFileWithDetailsDialog, setShowViewFileWithDetailsDialog] = useState<boolean>(false);
 
   const [currentAttachment, setCurrentAttachment] = useState<IGetProjectAttachment | IGetSurveyAttachment | null>(null);
+
+  useEffect(() => {
+    props.getAttachments(true);
+
+    //@react-hooks/exhaustive-deps
+  }, [surveyContext.surveyDataLoader]);
 
   const handleDownloadFileClick = (attachment: IGetProjectAttachment | IGetSurveyAttachment) => {
     openAttachment(attachment);
@@ -196,7 +212,14 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
     }
   };
 
-  const checkSubmissionStatus = (supplementaryData: any | null | undefined): BioHubSubmittedStatusType => {
+  const checkSubmissionStatus = (
+    supplementaryData:
+      | ISurveySupplementaryAttachmentData
+      | ISurveySupplementaryReportAttachmentData
+      | IProjectSupplementaryAttachmentData
+      | IProjectSupplementaryReportAttachmentData
+      | null
+  ): BioHubSubmittedStatusType => {
     if (supplementaryData?.event_timestamp) {
       return BioHubSubmittedStatusType.SUBMITTED;
     }

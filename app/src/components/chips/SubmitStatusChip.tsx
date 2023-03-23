@@ -19,7 +19,9 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }));
 
-export const SubmitStatusChip: React.FC<{ status: string; chipProps?: Partial<ChipProps> }> = (props) => {
+export const SubmitStatusChip: React.FC<{ status: BioHubSubmittedStatusType; chipProps?: Partial<ChipProps> }> = (
+  props
+) => {
   const classes = useStyles();
 
   let chipLabel;

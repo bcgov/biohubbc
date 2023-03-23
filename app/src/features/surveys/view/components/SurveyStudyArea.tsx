@@ -106,7 +106,7 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
     }
 
     zoomToBoundaryExtent();
-  }, [surveyGeometry, occurrence_submission_id, setNonEditableGeometries]);
+  }, [surveyGeometry, occurrence_submission_id, setNonEditableGeometries, zoomToBoundaryExtent]);
 
   const [errorDialogProps, setErrorDialogProps] = useState<IErrorDialogProps>({
     dialogTitle: EditSurveyStudyAreaI18N.editErrorTitle,
