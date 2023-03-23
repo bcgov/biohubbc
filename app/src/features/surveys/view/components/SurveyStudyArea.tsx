@@ -1,4 +1,3 @@
-//@ts-nocheck
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import { grey } from '@material-ui/core/colors';
@@ -27,10 +26,9 @@ import StudyAreaForm, {
 import { Feature } from 'geojson';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useDeepCompareEffect } from 'hooks/useDeepCompareEffect';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import { LatLngBoundsExpression } from 'leaflet';
-import React, { useCallback, useContext, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
 
 export interface ISurveyStudyAreaProps {
@@ -72,18 +70,14 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
   const classes = useStyles();
   const biohubApi = useBiohubApi();
 
-  const surveyContext = useContext(SurveyContext);
-  console.log('surveyContext', surveyContext);
-  console.log('surveyContext.num', surveyContext.num);
-  const surveyForViewData = surveyContext.surveyDataLoader.data;
-
   const { projectForViewData } = props;
 
-  const survey_details = surveyForViewData?.surveyData?.survey_details;
-  const occurrence_submission_id =
-    surveyForViewData?.surveySupplementaryData?.occurrence_submission.occurrence_submission_id;
+  const surveyContext = useContext(SurveyContext);
 
+  const survey_details = surveyContext.surveyDataLoader.data?.surveyData?.survey_details;
   const surveyGeometry = survey_details?.geometry || [];
+  const occurrence_submission_id =
+    surveyContext.surveyDataLoader.data?.surveySupplementaryData?.occurrence_submission.occurrence_submission_id;
 
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [studyAreaFormData, setStudyAreaFormData] = useState<IStudyAreaForm>(StudyAreaInitialValues);
@@ -102,16 +96,17 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
     setBounds(calculateUpdatedMapBounds(surveyGeometry));
   }, [surveyGeometry]);
 
-  //TODO: HERE I INFIITELY LOOP
-  useDeepCompareEffect(() => {
-    console.log('surveyGeometry', surveyGeometry);
+  useEffect(() => {
     const nonEditableGeometriesResult = surveyGeometry.map((geom: Feature) => {
       return { feature: geom };
     });
-    console.log('nonEditableGeometriesResult', nonEditableGeometriesResult);
+
+    if (nonEditableGeometriesResult.length) {
+      setNonEditableGeometries(nonEditableGeometriesResult);
+    }
+
     zoomToBoundaryExtent();
-    setNonEditableGeometries(nonEditableGeometriesResult);
-  }, [occurrence_submission_id]);
+  }, [surveyGeometry, occurrence_submission_id, setNonEditableGeometries]);
 
   const [errorDialogProps, setErrorDialogProps] = useState<IErrorDialogProps>({
     dialogTitle: EditSurveyStudyAreaI18N.editErrorTitle,
