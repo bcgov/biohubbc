@@ -410,7 +410,7 @@ const SurveyObservations: React.FC = () => {
             </>
           )}
 
-          {/* No submission yet, but data is loading */}
+          {/* Date is loading/ validating */}
           {submissionDataLoader.isLoading && (
             <>
               <Paper variant="outlined" className={classes.importFile + ` ` + `${submissionStatusSeverity}`}>

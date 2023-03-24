@@ -25,8 +25,8 @@ import { IUploadHandler } from 'components/file-upload/FileUploadItem';
 import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
 import { DialogContext } from 'contexts/dialogContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { IGetSummaryResultsResponse } from 'interfaces/useSummaryResultsApi.interface';
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import useDataLoader from 'hooks/useDataLoader';
+import React, { useContext, useState } from 'react';
 import { useParams } from 'react-router';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -95,66 +95,39 @@ const SurveySummaryResults = () => {
 
   const projectId = urlParams['id'];
   const surveyId = urlParams['survey_id'];
+
   const [openImportSummaryResults, setOpenImportSummaryResults] = useState(false);
+  const [refreshData, setRefreshData] = useState(false);
 
-  const [submission, setSubmission] = useState<IGetSummaryResultsResponse | null>(null);
-  const [hasErrorMessages, setHasErrorMessages] = useState(false);
-
-  const [isLoading, setIsLoading] = useState(true);
-
+  // provide file name for 'loading' ui before submission responds
   const [filName, setFileName] = useState('');
+
+  const summaryDataLoader = useDataLoader(() => biohubApi.survey.getSurveySummarySubmission(projectId, surveyId));
+  summaryDataLoader.load();
+
+  const submission = summaryDataLoader.data;
+  const submissionMessages = summaryDataLoader?.data?.messages || [];
 
   const classes = useStyles();
 
   const importSummaryResults = (): IUploadHandler => {
     return (file, cancelToken, handleFileUploadProgress) => {
-      setFileName(file.name);
-      return biohubApi.survey.uploadSurveySummaryResults(
-        projectId,
-        surveyId,
-        file,
-        cancelToken,
-        handleFileUploadProgress
-      );
+      return biohubApi.survey
+        .uploadSurveySummaryResults(projectId, surveyId, file, cancelToken, handleFileUploadProgress)
+        .finally(() => {
+          setRefreshData(true);
+          setFileName(file.name);
+        });
     };
   };
 
   const dialogContext = useContext(DialogContext);
 
-  const getSummarySubmission = useCallback(async () => {
-    try {
-      const submissionResponse = await biohubApi.survey.getSurveySummarySubmission(projectId, surveyId);
-
-      if (submissionResponse?.messages.length) {
-        setHasErrorMessages(true);
-      } else {
-        setHasErrorMessages(false);
-      }
-
-      setSubmission(() => {
-        setIsLoading(false);
-
-        return submissionResponse;
-      });
-    } catch (error) {
-      return error;
-    }
-  }, [biohubApi.survey, surveyId, projectId]);
-
-  useEffect(() => {
-    if (isLoading) {
-      getSummarySubmission();
-    }
-  }, [biohubApi, projectId, surveyId, isLoading, submission, getSummarySubmission]);
-
   const softDeleteSubmission = async () => {
-    if (!submission?.id) {
-      return;
+    if (submission) {
+      await biohubApi.survey.deleteSummarySubmission(projectId, surveyId, submission.id);
+      summaryDataLoader.refresh();
     }
-
-    await biohubApi.survey.deleteSummarySubmission(projectId, surveyId, submission?.id);
-
-    await getSummarySubmission();
   };
 
   const defaultUploadYesNoDialogProps = {
@@ -175,6 +148,7 @@ const SurveySummaryResults = () => {
   };
 
   const showUploadDialog = () => {
+    setRefreshData(false);
     if (submission) {
       // already have summary data, prompt user to confirm override
       dialogContext.setYesNoDialog({
@@ -250,11 +224,9 @@ const SurveySummaryResults = () => {
   const submissionErrors: SubmissionErrors = {};
   const submissionWarnings: SubmissionWarnings = {};
 
-  const messageList = submission?.messages;
-
-  if (messageList) {
+  if (submissionMessages) {
     Object.entries(messageGrouping).forEach(([key, value]) => {
-      messageList.forEach((message) => {
+      submissionMessages.forEach((message) => {
         if (value.type.includes(message.type)) {
           if (message.class === ClassGrouping.ERROR) {
             if (!submissionErrors[key]) {
@@ -296,16 +268,16 @@ const SurveySummaryResults = () => {
 
   type SeverityLevel = 'error' | 'info' | 'success' | 'warning';
 
-  let submissionStatusIcon = isLoading ? mdiFileOutline : mdiFileOutline;
+  let submissionStatusIcon = summaryDataLoader.isLoading ? mdiFileOutline : mdiFileOutline;
   let submissionStatusSeverity: SeverityLevel = 'info';
 
-  if (messageList?.some((messageType) => messageType.type === 'Error')) {
+  if (submissionMessages?.some((messageType) => messageType.type === 'Error')) {
     submissionStatusIcon = mdiFileAlertOutline;
     submissionStatusSeverity = 'error';
-  } else if (messageList?.some((messageType) => messageType.type === 'Warning')) {
+  } else if (submissionMessages?.some((messageType) => messageType.type === 'Warning')) {
     submissionStatusIcon = mdiFileAlertOutline;
     submissionStatusSeverity = 'warning';
-  } else if (messageList?.some((messageType) => messageType.type === 'Notice')) {
+  } else if (submissionMessages?.some((messageType) => messageType.type === 'Notice')) {
     submissionStatusIcon = mdiInformationOutline;
   }
 
@@ -324,7 +296,7 @@ const SurveySummaryResults = () => {
         </Box>
         <Typography variant="body2">{message}</Typography>
 
-        <Collapse in={isLoading} collapsedHeight="0">
+        <Collapse in={summaryDataLoader.isLoading} collapsedHeight="0">
           <Box mt={2}>
             <BorderLinearProgress />
           </Box>
@@ -407,7 +379,7 @@ const SurveySummaryResults = () => {
           </Box>
 
           {/* No summary */}
-          {!submission && !isLoading && (
+          {!submission && !summaryDataLoader.isLoading && (
             <Paper variant="outlined">
               <Box p={3} textAlign="center">
                 <Typography data-testid="observations-nodata" variant="body2" color="textSecondary">
@@ -421,7 +393,7 @@ const SurveySummaryResults = () => {
           )}
 
           {/* Data is still loading/ validating */}
-          {isLoading && (
+          {summaryDataLoader.isLoading && (
             <>
               <Paper variant="outlined" className={classes.importFile + ` ` + `${submissionStatusSeverity}`}>
                 <Box className="importFile-icon" flex="0 0 auto" mt={1.2} mr={1.7}>
@@ -440,7 +412,7 @@ const SurveySummaryResults = () => {
                     Processing file. Please wait...
                   </Typography>
 
-                  <Collapse in={isLoading} collapsedHeight="0">
+                  <Collapse in={summaryDataLoader.isLoading} collapsedHeight="0">
                     <Box mt={2}>
                       <BorderLinearProgress />
                     </Box>
@@ -451,7 +423,7 @@ const SurveySummaryResults = () => {
           )}
 
           {/* Got a summary with errors */}
-          {submission && hasErrorMessages && (
+          {submission && submissionMessages.length > 0 && (
             <Box>
               {displayAlertBox('error', mdiAlertCircleOutline, submission.fileName, 'Validation Failed')}
               <Box>
@@ -462,7 +434,7 @@ const SurveySummaryResults = () => {
           )}
 
           {/* All done */}
-          {submission && !isLoading && !hasErrorMessages && (
+          {submission && !summaryDataLoader.isLoading && submissionMessages.length <= 0 && (
             <>
               <Paper variant="outlined" className={classes.importFile + ` ` + `${submissionStatusSeverity}`}>
                 <Box className="importFile-icon" flex="0 0 auto" mt={1.2} mr={1.7}>
@@ -491,8 +463,10 @@ const SurveySummaryResults = () => {
         open={openImportSummaryResults}
         dialogTitle="Import Summary Results Data"
         onClose={() => {
+          if (refreshData) {
+            summaryDataLoader.refresh();
+          }
           setOpenImportSummaryResults(false);
-          setIsLoading(true);
         }}>
         <FileUpload
           dropZoneProps={{ maxNumFiles: 1, acceptedFileExtensions: '.csv, .xls, .txt, .xlsm, .xlsx' }}
