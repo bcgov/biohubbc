@@ -112,7 +112,7 @@ const SurveyPage: React.FC = () => {
               </Box>
               <Box mb={3}>
                 <Paper elevation={0}>
-                  <SurveyAttachments projectForViewData={projectDataLoader.data} />
+                  <SurveyAttachments />
                 </Paper>
               </Box>
               <Box mb={3}>

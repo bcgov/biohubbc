@@ -147,6 +147,7 @@ const SurveySummaryResults = () => {
       onYes: () => {
         softDeleteSubmission();
         dialogContext.setYesNoDialog({ open: false });
+        surveyContext.surveyDataLoader.refresh(projectId, surveyId);
       }
     });
   };

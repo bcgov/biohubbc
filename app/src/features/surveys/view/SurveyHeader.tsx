@@ -274,10 +274,12 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
         open={finishSubmission}
         onClose={() => {
           surveyContext.surveyDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+          surveyContext.artifactDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
           setFinishSubmission(false);
         }}
         onOk={() => {
           surveyContext.surveyDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+          surveyContext.artifactDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
           setFinishSubmission(false);
         }}></ErrorDialog>
 

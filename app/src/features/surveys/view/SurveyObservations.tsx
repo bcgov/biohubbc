@@ -132,7 +132,6 @@ const SurveyObservations: React.FC = () => {
         })
         .finally(() => {
           setWillRefreshOnClose(true);
-
         });
     };
   };
@@ -157,7 +156,6 @@ const SurveyObservations: React.FC = () => {
     }
 
     biohubApi.observation.deleteObservationSubmission(projectId, surveyId, occurrenceSubmissionId).then(() => {
-      surveyContext.surveyDataLoader.refresh(projectId, surveyId);
       refreshSubmission();
     });
   }
@@ -184,6 +182,7 @@ const SurveyObservations: React.FC = () => {
       onYes: () => {
         softDeleteSubmission();
         dialogContext.setYesNoDialog({ open: false });
+        surveyContext.surveyDataLoader.refresh(projectId, surveyId);
       }
     });
   }

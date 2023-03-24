@@ -146,7 +146,8 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
       onYes: () => {
         deleteAttachment(attachment);
         dialogContext.setYesNoDialog({ open: false });
-      }
+      },
+      onClose: () => {}
     });
   };
 
@@ -165,6 +166,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
           attachment.id,
           attachment.fileType
         );
+        surveyContext.artifactDataLoader.refresh(props.projectId, props.surveyId);
       }
 
       props.getAttachments(true);

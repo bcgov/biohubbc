@@ -10,21 +10,16 @@ import { IUploadHandler } from 'components/file-upload/FileUploadItem';
 import { H2MenuToolbar } from 'components/toolbar/ActionToolbars';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { IGetProjectForViewResponse, IUploadAttachmentResponse } from 'interfaces/useProjectApi.interface';
 import { IGetSurveyAttachment, IGetSurveyReportAttachment } from 'interfaces/useSurveyApi.interface';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { AttachmentType } from '../../../constants/attachments';
-
-export interface ISurveyAttachmentsProps {
-  projectForViewData: IGetProjectForViewResponse;
-}
 
 /**
  * Survey attachments content.
  *
  * @return {*}
  */
-const SurveyAttachments: React.FC<ISurveyAttachmentsProps> = () => {
+const SurveyAttachments: React.FC = () => {
   const biohubApi = useBiohubApi();
   const surveyContext = useContext(SurveyContext);
   const { projectId, surveyId } = surveyContext;
@@ -70,7 +65,7 @@ const SurveyAttachments: React.FC<ISurveyAttachmentsProps> = () => {
     [biohubApi.survey, projectId, surveyId, attachmentsList.length]
   );
 
-  const getUploadHandler = (): IUploadHandler<IUploadAttachmentResponse> => {
+  const getUploadHandler = (): IUploadHandler => {
     return (file, cancelToken, handleFileUploadProgress) => {
       return biohubApi.survey.uploadSurveyAttachments(projectId, surveyId, file, cancelToken, handleFileUploadProgress);
     };
@@ -103,8 +98,7 @@ const SurveyAttachments: React.FC<ISurveyAttachmentsProps> = () => {
           setOpenUploadAttachments(false);
           getAttachments(true);
           console.log('getAttachments');
-
-          surveyContext.surveyDataLoader.refresh(projectId, surveyId);
+          surveyContext.artifactDataLoader.refresh(projectId, surveyId);
         }}
         uploadHandler={getUploadHandler()}
       />

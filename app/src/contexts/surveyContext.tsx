@@ -1,6 +1,6 @@
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader, { DataLoader } from 'hooks/useDataLoader';
-import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
+import { IGetSurveyAttachmentsResponse, IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
 import React, { createContext, PropsWithChildren, useEffect, useMemo } from 'react';
 import { useParams } from 'react-router';
 
@@ -18,6 +18,14 @@ export interface ISurveyContext {
    * @memberof ISurveyContext
    */
   surveyDataLoader: DataLoader<[project_id: number, survey_id: number], IGetSurveyForViewResponse, unknown>;
+
+  /**
+   * The Data Loader used to load survey data
+   *
+   * @type {DataLoader<[project_id: number, survey_id: number], IGetSurveyAttachmentsResponse, unknown>}
+   * @memberof ISurveyContext
+   */
+  artifactDataLoader: DataLoader<[project_id: number, survey_id: number], IGetSurveyAttachmentsResponse, unknown>;
 
   /**
    * The project ID belonging to the current project
@@ -38,6 +46,7 @@ export interface ISurveyContext {
 
 export const SurveyContext = createContext<ISurveyContext>({
   surveyDataLoader: {} as DataLoader<[project_id: number, survey_id: number], IGetSurveyForViewResponse, unknown>,
+  artifactDataLoader: {} as DataLoader<[project_id: number, survey_id: number], IGetSurveyAttachmentsResponse, unknown>,
   projectId: -1,
   surveyId: -1
 });
@@ -45,6 +54,7 @@ export const SurveyContext = createContext<ISurveyContext>({
 export const SurveyContextProvider = (props: PropsWithChildren<Record<never, any>>) => {
   const biohubApi = useBiohubApi();
   const surveyDataLoader = useDataLoader(biohubApi.survey.getSurveyForView);
+  const artifactDataLoader = useDataLoader(biohubApi.survey.getSurveyAttachments);
   const urlParams = useParams();
 
   if (!urlParams['id']) {
@@ -68,6 +78,7 @@ export const SurveyContextProvider = (props: PropsWithChildren<Record<never, any
   useEffect(() => {
     if (projectId && surveyId) {
       surveyDataLoader.refresh(projectId, surveyId);
+      artifactDataLoader.refresh(projectId, surveyId);
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -76,10 +87,11 @@ export const SurveyContextProvider = (props: PropsWithChildren<Record<never, any
   const surveyContext: ISurveyContext = useMemo(
     () => ({
       surveyDataLoader,
+      artifactDataLoader,
       projectId,
       surveyId
     }),
-    [surveyDataLoader, projectId, surveyId]
+    [surveyDataLoader, artifactDataLoader, projectId, surveyId]
   );
 
   return <SurveyContext.Provider value={surveyContext}>{props.children}</SurveyContext.Provider>;

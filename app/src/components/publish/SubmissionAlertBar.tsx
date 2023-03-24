@@ -2,125 +2,50 @@ import Alert, { AlertProps } from '@material-ui/lab/Alert';
 import AlertTitle from '@material-ui/lab/AlertTitle';
 import { BioHubSubmittedStatusType } from 'constants/misc';
 import { SurveyContext } from 'contexts/surveyContext';
-import { useBiohubApi } from 'hooks/useBioHubApi';
-import useDataLoader from 'hooks/useDataLoader';
-import useDataLoaderError from 'hooks/useDataLoaderError';
-import { IGetSurveyAttachmentsResponse, SurveySupplementaryData } from 'interfaces/useSurveyApi.interface';
+import {
+  IGetSurveyAttachment,
+  IGetSurveyReportAttachment,
+  SurveySupplementaryData
+} from 'interfaces/useSurveyApi.interface';
 import React, { useContext, useState } from 'react';
 
 const SubmissionAlertBar: React.FC = () => {
-  const biohubApi = useBiohubApi();
-
   const surveyContext = useContext(SurveyContext);
-  const { projectId, surveyId, surveyDataLoader } = surveyContext;
+  const { surveyDataLoader, artifactDataLoader } = surveyContext;
 
   const surveyData = surveyDataLoader.data;
+  const artifactData = artifactDataLoader.data;
 
   const [alertOpen, setAlertOpen] = useState(false);
   const [forceAlertClose, setForceAlertClose] = useState(true);
 
-  const artifactDataLoader = useDataLoader(() => biohubApi.survey.getSurveyAttachments(projectId, surveyId));
-  useDataLoaderError(artifactDataLoader, () => {
-    return {
-      dialogTitle: 'Error Loading Survey Artifact Details',
-      dialogText:
-        'An error has occurred while attempting to load artifact details, please try again. If the error persists, please contact your system administrator.'
-    };
-  });
-  artifactDataLoader.load();
-  const artifactData = artifactDataLoader.data;
-
-  let submitted = false;
-
-  const checkArtifactSubmissionStatus = (
-    artifacts: IGetSurveyAttachmentsResponse | null | undefined
-  ): BioHubSubmittedStatusType => {
-    let artifactSubmitted = true;
-
-    if (!artifacts) {
-      return BioHubSubmittedStatusType.UNSUBMITTED;
-    }
-
-    if (artifacts.attachmentsList.length > 0) {
-      artifacts.attachmentsList.forEach((element) => {
-        console.log('element', element);
-        if (!element.supplementaryAttachmentData || !element.supplementaryAttachmentData.event_timestamp) {
-          artifactSubmitted = false;
-          return;
-        }
-      });
-    }
-
-    if (artifacts.reportAttachmentsList.length > 0) {
-      artifacts.reportAttachmentsList.forEach((element) => {
-        console.log('element', element);
-        if (!element.supplementaryAttachmentData || !element.supplementaryAttachmentData.event_timestamp) {
-          artifactSubmitted = false;
-          return;
-        }
-      });
-    }
-    return artifactSubmitted ? BioHubSubmittedStatusType.SUBMITTED : BioHubSubmittedStatusType.UNSUBMITTED;
-  };
-
-  const checkSubmissionStatus = (
-    supplementaryData: SurveySupplementaryData | null | undefined
-  ): BioHubSubmittedStatusType => {
-    if (!supplementaryData) {
-      return BioHubSubmittedStatusType.UNSUBMITTED;
-    }
-
-    if (
-      checkOccurrenceExists(supplementaryData) &&
-      !supplementaryData?.occurrence_submission_publish?.event_timestamp
-    ) {
-      return BioHubSubmittedStatusType.UNSUBMITTED;
-    }
-
-    if (
-      checkSummaryExists(supplementaryData) &&
-      !supplementaryData?.survey_summary_submission_publish?.event_timestamp
-    ) {
-      return BioHubSubmittedStatusType.UNSUBMITTED;
-    }
-
-    return BioHubSubmittedStatusType.SUBMITTED;
-  };
-
-  const checkOccurrenceExists = (supplementaryData: SurveySupplementaryData | null | undefined): boolean => {
-    if (supplementaryData?.occurrence_submission.occurrence_submission_id !== null) {
-      return true;
-    }
-    return false;
-  };
-
-  const checkSummaryExists = (supplementaryData: SurveySupplementaryData | null | undefined): boolean => {
-    if (supplementaryData?.survey_summary_submission.survey_summary_submission_id !== null) {
-      return true;
-    }
-    return false;
-  };
-
-  if (surveyData && artifactData) {
-    if (
-      checkOccurrenceExists(surveyData.surveySupplementaryData) ||
-      checkSummaryExists(surveyData.surveySupplementaryData) ||
-      artifactData.attachmentsList.length > 0 ||
-      artifactData.reportAttachmentsList.length > 0
-    ) {
-      if (alertOpen === false) {
-        setAlertOpen(true);
-      }
-
-      const surveySubmitted = checkSubmissionStatus(surveyData.surveySupplementaryData);
-      console.log('artifactDataLoader.data', artifactDataLoader.data);
-      const artifactSubmitted = checkArtifactSubmissionStatus(artifactDataLoader.data);
-      console.log('artifactSubmitted', artifactSubmitted);
-      submitted =
-        artifactSubmitted === BioHubSubmittedStatusType.SUBMITTED &&
-        surveySubmitted === BioHubSubmittedStatusType.SUBMITTED;
-    }
+  if (!surveyData || !artifactData) {
+    return <></>;
   }
+
+  if (
+    !getOccurrenceExists(surveyData.surveySupplementaryData) &&
+    !getSummaryExists(surveyData.surveySupplementaryData) &&
+    !getArtifactAttachmentsExists(artifactData.attachmentsList) &&
+    !getArtifactAttachmentsExists(artifactData.reportAttachmentsList)
+  ) {
+    return <></>;
+  }
+
+  if (alertOpen === false) {
+    setAlertOpen(true);
+  }
+
+  const surveyOccurrenceSubmissionStatus = getOccurrenceSubmissionStatus(surveyData.surveySupplementaryData);
+  const surveySummarySubmissionStatus = getSummarySubmissionStatus(surveyData.surveySupplementaryData);
+  const attachmentsListSubmissionStatus = getArtifactsSubmissionStatus(artifactData.attachmentsList);
+  const reportAttachmentsListSubmissionStatus = getArtifactsSubmissionStatus(artifactData.reportAttachmentsList);
+
+  const submitted =
+    surveyOccurrenceSubmissionStatus === BioHubSubmittedStatusType.SUBMITTED &&
+    surveySummarySubmissionStatus === BioHubSubmittedStatusType.SUBMITTED &&
+    attachmentsListSubmissionStatus === BioHubSubmittedStatusType.SUBMITTED &&
+    reportAttachmentsListSubmissionStatus === BioHubSubmittedStatusType.SUBMITTED;
 
   const alertProps: AlertProps = {
     severity: submitted ? 'success' : 'info',
@@ -141,6 +66,59 @@ const SubmissionAlertBar: React.FC = () => {
       )}
     </>
   );
+};
+
+const getArtifactsSubmissionStatus = (
+  artifacts: (IGetSurveyAttachment | IGetSurveyReportAttachment)[]
+): BioHubSubmittedStatusType => {
+  let artifactSubmitted = true;
+
+  if (artifacts.length > 0) {
+    artifacts.forEach((element) => {
+      if (!element.supplementaryAttachmentData || !element.supplementaryAttachmentData.event_timestamp) {
+        artifactSubmitted = false;
+        return;
+      }
+    });
+  }
+  return artifactSubmitted ? BioHubSubmittedStatusType.SUBMITTED : BioHubSubmittedStatusType.UNSUBMITTED;
+};
+
+const getArtifactAttachmentsExists = (artifacts: (IGetSurveyAttachment | IGetSurveyReportAttachment)[]): boolean => {
+  if (artifacts.length > 0) {
+    return true;
+  }
+  return false;
+};
+
+const getOccurrenceSubmissionStatus = (supplementaryData: SurveySupplementaryData): BioHubSubmittedStatusType => {
+  if (getOccurrenceExists(supplementaryData) && supplementaryData.occurrence_submission_publish === null) {
+    return BioHubSubmittedStatusType.UNSUBMITTED;
+  }
+
+  return BioHubSubmittedStatusType.SUBMITTED;
+};
+
+const getSummarySubmissionStatus = (supplementaryData: SurveySupplementaryData): BioHubSubmittedStatusType => {
+  if (getSummaryExists(supplementaryData) && supplementaryData.survey_summary_submission_publish === null) {
+    return BioHubSubmittedStatusType.UNSUBMITTED;
+  }
+
+  return BioHubSubmittedStatusType.SUBMITTED;
+};
+
+const getOccurrenceExists = (supplementaryData: SurveySupplementaryData | null | undefined): boolean => {
+  if (supplementaryData?.occurrence_submission.occurrence_submission_id !== null) {
+    return true;
+  }
+  return false;
+};
+
+const getSummaryExists = (supplementaryData: SurveySupplementaryData | null | undefined): boolean => {
+  if (supplementaryData?.survey_summary_submission.survey_summary_submission_id !== null) {
+    return true;
+  }
+  return false;
 };
 
 export default SubmissionAlertBar;
