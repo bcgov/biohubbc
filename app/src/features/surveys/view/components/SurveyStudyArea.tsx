@@ -152,14 +152,6 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
     setOpenEditDialog(true);
   };
 
-  const refresh = useCallback(() => {
-    const { projectId, surveyId } = surveyContext;
-
-    if (projectId && surveyId) {
-      surveyContext.surveyDataLoader.refresh(projectId, surveyId);
-    }
-  }, [surveyContext]);
-
   const handleDialogEditSave = async (values: IStudyAreaForm) => {
     if (!survey_details) {
       return;
