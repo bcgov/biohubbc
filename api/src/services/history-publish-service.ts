@@ -8,7 +8,15 @@ import {
   ISummarySubmissionPublish,
   ISurveyAttachmentPublish,
   ISurveyMetadataPublish,
-  ISurveyReportPublish
+  ISurveyReportPublish,
+  OccurrenceSubmissionPublish,
+  ProjectAttachmentPublish,
+  ProjectMetadataPublish,
+  ProjectReportPublish,
+  SurveyAttachmentPublish,
+  SurveyMetadataPublish,
+  SurveyReportPublish,
+  SurveySummarySubmissionPublish
 } from '../repositories/history-publish-repository';
 import { DBService } from './db-service';
 
@@ -124,5 +132,97 @@ export class HistoryPublishService extends DBService {
     survey_summary_submission_publish_id: number;
   }> {
     return this.historyRepository.insertSurveySummaryPublishRecord(data);
+  }
+
+  /**
+   * Gets a record from `project_metadata_publish` for a given project id, if one exists.
+   *
+   * @param {IProjectMetadataPublish} data
+   * @return {*}  {(Promise<ProjectMetadataPublish | null>)}
+   * @memberof HistoryPublishRepository
+   */
+  async getProjectMetadataPublishRecord(projectId: number): Promise<ProjectMetadataPublish | null> {
+    return this.historyRepository.getProjectMetadataPublishRecord(projectId);
+  }
+
+  /**
+   * Gets a record from `survey_metadata_publish` for a given survey id, if one exists.
+   *
+   * @param {ISurveyMetadataPublish} data
+   * @return {*}  {(Promise<SurveyMetadataPublish | null>)}
+   * @memberof HistoryPublishRepository
+   */
+  async getSurveyMetadataPublishRecord(surveyId: number): Promise<SurveyMetadataPublish | null> {
+    return this.historyRepository.getSurveyMetadataPublishRecord(surveyId);
+  }
+
+  /**
+   * Gets a record from `occurrence_submission_publish` for a given occurrence id, if one exists.
+   *
+   * @param {IOccurrenceSubmissionPublish} data
+   * @return {*}  {(Promise<OccurrenceSubmissionPublish | null>)}
+   * @memberof HistoryPublishRepository
+   */
+  async getOccurrenceSubmissionPublishRecord(
+    occurrenceSubmissionId: number
+  ): Promise<OccurrenceSubmissionPublish | null> {
+    return this.historyRepository.getOccurrenceSubmissionPublishRecord(occurrenceSubmissionId);
+  }
+
+  /**
+   * Gets a record from `project_attachment_publish` for a given artifact and summary id, if one exists.
+   *
+   * @param {IProjectAttachmentPublish} data
+   * @return {*}  {(Promise<ProjectAttachmentPublish | null>)}
+   * @memberof HistoryPublishRepository
+   */
+  async getProjectAttachmentPublishRecord(projectAttachmentId: number): Promise<ProjectAttachmentPublish | null> {
+    return this.historyRepository.getProjectAttachmentPublishRecord(projectAttachmentId);
+  }
+
+  /**
+   * Gets a record from `project_report_publish` for a given project id, if one exists.
+   *
+   * @param {IProjectReportPublish} data
+   * @return {*}  {(Promise<ProjectReportPublish | null>)}
+   * @memberof HistoryPublishRepository
+   */
+  async getProjectReportPublishRecord(projectReportAttachmentId: number): Promise<ProjectReportPublish | null> {
+    return this.historyRepository.getProjectReportPublishRecord(projectReportAttachmentId);
+  }
+
+  /**
+   * Gets a record from `survey_attachment_publish` for a given project id, if one exists.
+   *
+   * @param {ISurveyAttachmentPublish} data
+   * @return {*}  {(Promise<SurveyAttachmentPublish | null>)}
+   * @memberof HistoryPublishRepository
+   */
+  async getSurveyAttachmentPublishRecord(surveyAttachmentId: number): Promise<SurveyAttachmentPublish | null> {
+    return this.historyRepository.getSurveyAttachmentPublishRecord(surveyAttachmentId);
+  }
+
+  /**
+   * Gets a record from `survey_report_publish` for a given survey id, if one exists.
+   *
+   * @param {ISurveyReportPublish} data
+   * @return {*}  {(Promise<SurveyReportPublish | null>)}
+   * @memberof HistoryPublishRepository
+   */
+  async getSurveyReportPublishRecord(surveyReportAttachmentId: number): Promise<SurveyReportPublish | null> {
+    return this.historyRepository.getSurveyReportPublishRecord(surveyReportAttachmentId);
+  }
+
+  /**
+   * Gets a record from `survey_summary_submission_publish` for a given survey id, if one exists.
+   *
+   * @param {number} surveySummarySubmissionId
+   * @return {*}  {(Promise<SurveySummarySubmissionPublish | null>)}
+   * @memberof HistoryPublishService
+   */
+  async getSurveySummarySubmissionPublishRecord(
+    surveySummarySubmissionId: number
+  ): Promise<SurveySummarySubmissionPublish | null> {
+    return this.historyRepository.getSurveySummarySubmissionPublishRecord(surveySummarySubmissionId);
   }
 }
