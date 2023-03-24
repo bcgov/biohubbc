@@ -93,7 +93,7 @@ const SurveyObservations: React.FC = () => {
   const surveyContext = useContext(SurveyContext);
   const [openImportObservations, setOpenImportObservations] = useState(false);
   const [willRefreshOnClose, setWillRefreshOnClose] = useState(false);
-  const [fileName, setFileName] = useState("");
+  const [fileName, setFileName] = useState('');
 
   const projectId = surveyContext.projectId as number;
   const surveyId = surveyContext.surveyId as number;
@@ -114,7 +114,7 @@ const SurveyObservations: React.FC = () => {
   const occurrenceSubmission = submissionDataLoader.data;
   const occurrenceSubmissionId = occurrenceSubmission?.id;
   const submissionMessageTypes = occurrenceSubmission?.messageTypes || [];
-  let submissionExists = Boolean(occurrenceSubmission);
+  const submissionExists = Boolean(occurrenceSubmission);
 
   const submissionPollingInterval = useInterval(refreshSubmission, 5000, 60000);
   alphabetizeSubmissionMessages(submissionMessageTypes);
@@ -411,58 +411,22 @@ const SurveyObservations: React.FC = () => {
           )}
 
           {/* No submission yet, but data is loading */}
-          {!submissionExists && submissionDataLoader.isLoading && (
+          {submissionDataLoader.isLoading && (
             <>
               <Paper variant="outlined" className={classes.importFile + ` ` + `${submissionStatusSeverity}`}>
-              <Box className="importFile-icon" flex="0 0 auto" mt={1.2} mr={1.7}>
+                <Box className="importFile-icon" flex="0 0 auto" mt={1.2} mr={1.7}>
                   <Icon path={submissionStatusIcon} size={1} />
                 </Box>
 
                 <Box mr={2} flex="1 1 auto" style={{ overflow: 'hidden' }}>
-                  <Typography
-                    className={classes.observationFileName}
-                    variant="body2"
-                    component="div"
-                    onClick={openFileContents}>
+                  <Typography className={classes.observationFileName} variant="body2" component="div">
                     <strong>{fileName}</strong>
                   </Typography>
                   <Typography variant="body2" color="textSecondary">
-                      Processing file. Please wait...
+                    Processing file. Please wait...
                   </Typography>
 
                   <Collapse in={submissionDataLoader.isLoading} collapsedHeight="0">
-                    <Box mt={2}>
-                      <BorderLinearProgress />
-                    </Box>
-                  </Collapse>
-                </Box>
-              </Paper>
-            </>
-          )}
-
-          {/* Got a submission, but still loading */}
-          {submissionExists && occurrenceSubmission?.isValidating && (
-            <>
-              <Paper variant="outlined" className={classes.importFile + ` ` + `${submissionStatusSeverity}`}>
-              <Box className="importFile-icon" flex="0 0 auto" mt={1.2} mr={1.7}>
-                  <Icon path={submissionStatusIcon} size={1} />
-                </Box>
-
-                <Box mr={2} flex="1 1 auto" style={{ overflow: 'hidden' }}>
-                  <Typography
-                    className={classes.observationFileName}
-                    variant="body2"
-                    component="div"
-                    onClick={openFileContents}>
-                    <strong>{occurrenceSubmission?.inputFileName}</strong>
-                  </Typography>
-                  <Typography variant="body2" color="textSecondary">
-                    {occurrenceSubmission?.isValidating
-                      ? 'Processing file. Please wait...'
-                      : occurrenceSubmission?.status}
-                  </Typography>
-
-                  <Collapse in={occurrenceSubmission?.isValidating} collapsedHeight="0">
                     <Box mt={2}>
                       <BorderLinearProgress />
                     </Box>
@@ -476,7 +440,7 @@ const SurveyObservations: React.FC = () => {
           {submissionExists && !occurrenceSubmission?.isValidating && (
             <>
               <Paper variant="outlined" className={classes.importFile + ` ` + `${submissionStatusSeverity}`}>
-              <Box className="importFile-icon" flex="0 0 auto" mt={1.2} mr={1.7}>
+                <Box className="importFile-icon" flex="0 0 auto" mt={1.2} mr={1.7}>
                   <Icon path={submissionStatusIcon} size={1} />
                 </Box>
 
@@ -536,91 +500,6 @@ const SurveyObservations: React.FC = () => {
               </Paper>
             </>
           )}
-
-          {/* {!submissionExists ? (
-            <>
-              <Paper variant="outlined">
-                <Box p={3} textAlign="center">
-                  <Typography data-testid="observations-nodata" variant="body2" color="textSecondary">
-                    No Observation Data. &nbsp;
-                    <Link onClick={handleOpenImportObservations}>Click Here to Import</Link>
-                  </Typography>
-                </Box>
-              </Paper>
-            </>
-          ) : (
-            <>
-              <Paper variant="outlined" className={classes.importFile + ` ` + `${submissionStatusSeverity}`}>
-                <Box className="importFile-icon" flex="0 0 auto" mt={1.2} mr={1.7}>
-                  <Icon path={submissionStatusIcon} size={1} />
-                </Box>
-
-                <Box mr={2} flex="1 1 auto" style={{ overflow: 'hidden' }}>
-                  <Typography
-                    className={classes.observationFileName}
-                    variant="body2"
-                    component="div"
-                    onClick={openFileContents}>
-                    <strong>{occurrenceSubmission?.inputFileName}</strong>
-                  </Typography>
-                  <Typography variant="body2" color="textSecondary">
-                    {occurrenceSubmission?.isValidating
-                      ? 'Processing file. Please wait...'
-                      : occurrenceSubmission?.status}
-                  </Typography>
-
-                  <Collapse in={occurrenceSubmission?.isValidating} collapsedHeight="0">
-                    <Box mt={2}>
-                      <BorderLinearProgress />
-                    </Box>
-                  </Collapse>
-                </Box>
-
-                {!occurrenceSubmission?.isValidating && (
-                  <Box flex="0 0 auto" display="flex" alignItems="center">
-                    {submissionStatusSeverity === 'info' && (
-                      <Box mr={2}>
-                        <Chip label="Unsubmitted" color="primary" />
-                      </Box>
-                    )}
-
-                    <Box>
-                      <IconButton aria-controls="context-menu" aria-haspopup="true" onClick={openContextMenu}>
-                        <Icon path={mdiDotsVertical} size={1} />
-                      </IconButton>
-                      <Menu
-                        keepMounted
-                        id="context-menu"
-                        anchorEl={anchorEl}
-                        open={Boolean(anchorEl)}
-                        onClose={closeContextMenu}
-                        anchorOrigin={{
-                          vertical: 'top',
-                          horizontal: 'right'
-                        }}
-                        transformOrigin={{
-                          vertical: 'top',
-                          horizontal: 'right'
-                        }}>
-                        <MenuItem onClick={openFileContents}>
-                          <ListItemIcon>
-                            <Icon path={mdiTrayArrowDown} size={1} />
-                          </ListItemIcon>
-                          Download
-                        </MenuItem>
-                        <MenuItem onClick={showDeleteDialog}>
-                          <ListItemIcon>
-                            <Icon path={mdiTrashCanOutline} size={1} />
-                          </ListItemIcon>
-                          Delete
-                        </MenuItem>
-                      </Menu>
-                    </Box>
-                  </Box>
-                )}
-              </Paper>
-            </>
-          )} */}
         </Box>
       </Paper>
 

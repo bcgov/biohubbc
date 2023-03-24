@@ -1,5 +1,5 @@
+import { Collapse, createStyles, LinearProgress, withStyles } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
 import Link from '@material-ui/core/Link';
@@ -12,6 +12,7 @@ import AlertTitle from '@material-ui/lab/AlertTitle';
 import {
   mdiAlertCircleOutline,
   mdiDownload,
+  mdiFileAlertOutline,
   mdiFileOutline,
   mdiImport,
   mdiInformationOutline,
@@ -29,6 +30,20 @@ import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 
 const useStyles = makeStyles((theme: Theme) => ({
+  importFile: {
+    display: 'flex',
+    padding: theme.spacing(2),
+    overflow: 'hidden',
+    '& .importFile-icon': {
+      color: theme.palette.text.secondary
+    },
+    '&.error': {
+      borderColor: theme.palette.error.main,
+      '& .importFile-icon': {
+        color: theme.palette.error.main
+      }
+    }
+  },
   browseLink: {
     cursor: 'pointer'
   },
@@ -42,6 +57,14 @@ const useStyles = makeStyles((theme: Theme) => ({
     '& > *': {
       marginLeft: theme.spacing(0.5)
     }
+  },
+  summaryFileName: {
+    marginTop: '2px',
+    marginBottom: '4px',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    textDecoration: 'underline',
+    cursor: 'pointer'
   }
 }));
 
@@ -52,6 +75,21 @@ export enum ClassGrouping {
 }
 
 const SurveySummaryResults = () => {
+  const BorderLinearProgress = withStyles((theme: Theme) =>
+    createStyles({
+      root: {
+        height: 6,
+        borderRadius: 3
+      },
+      colorPrimary: {
+        backgroundColor: theme.palette.grey[theme.palette.type === 'light' ? 300 : 700]
+      },
+      bar: {
+        borderRadius: 3,
+        backgroundColor: '#1976D2'
+      }
+    })
+  )(LinearProgress);
   const biohubApi = useBiohubApi();
   const urlParams = useParams();
 
@@ -64,10 +102,13 @@ const SurveySummaryResults = () => {
 
   const [isLoading, setIsLoading] = useState(true);
 
+  const [filName, setFileName] = useState('');
+
   const classes = useStyles();
 
   const importSummaryResults = (): IUploadHandler => {
     return (file, cancelToken, handleFileUploadProgress) => {
+      setFileName(file.name);
       return biohubApi.survey.uploadSurveySummaryResults(
         projectId,
         surveyId,
@@ -253,13 +294,22 @@ const SurveySummaryResults = () => {
     window.open(response);
   };
 
-  if (isLoading) {
-    return <CircularProgress className="pageProgress" size={40} />;
+  type SeverityLevel = 'error' | 'info' | 'success' | 'warning';
+
+  let submissionStatusIcon = isLoading ? mdiFileOutline : mdiFileOutline;
+  let submissionStatusSeverity: SeverityLevel = 'info';
+
+  if (messageList?.some((messageType) => messageType.type === 'Error')) {
+    submissionStatusIcon = mdiFileAlertOutline;
+    submissionStatusSeverity = 'error';
+  } else if (messageList?.some((messageType) => messageType.type === 'Warning')) {
+    submissionStatusIcon = mdiFileAlertOutline;
+    submissionStatusSeverity = 'warning';
+  } else if (messageList?.some((messageType) => messageType.type === 'Notice')) {
+    submissionStatusIcon = mdiInformationOutline;
   }
 
-  type severityLevel = 'error' | 'info' | 'success' | 'warning' | undefined;
-
-  function displayAlertBox(severityLevel: severityLevel, iconName: string, fileName: string, message: string) {
+  function displayAlertBox(severityLevel: SeverityLevel, iconName: string, fileName: string, message: string) {
     return (
       <Alert icon={<Icon path={iconName} size={1} />} severity={severityLevel} action={submissionAlertAction()}>
         <Box display="flex" alignItems="center" m={0}>
@@ -273,6 +323,12 @@ const SurveySummaryResults = () => {
           </Link>
         </Box>
         <Typography variant="body2">{message}</Typography>
+
+        <Collapse in={isLoading} collapsedHeight="0">
+          <Box mt={2}>
+            <BorderLinearProgress />
+          </Box>
+        </Collapse>
       </Alert>
     );
   }
@@ -350,7 +406,8 @@ const SurveySummaryResults = () => {
             </Alert>
           </Box>
 
-          {!submission && (
+          {/* No summary */}
+          {!submission && !isLoading && (
             <Paper variant="outlined">
               <Box p={3} textAlign="center">
                 <Typography data-testid="observations-nodata" variant="body2" color="textSecondary">
@@ -363,6 +420,37 @@ const SurveySummaryResults = () => {
             </Paper>
           )}
 
+          {/* Data is still loading/ validating */}
+          {isLoading && (
+            <>
+              <Paper variant="outlined" className={classes.importFile + ` ` + `${submissionStatusSeverity}`}>
+                <Box className="importFile-icon" flex="0 0 auto" mt={1.2} mr={1.7}>
+                  <Icon path={submissionStatusIcon} size={1} />
+                </Box>
+
+                <Box mr={2} flex="1 1 auto" style={{ overflow: 'hidden' }}>
+                  <Typography
+                    className={classes.summaryFileName}
+                    variant="body2"
+                    component="div"
+                    onClick={viewFileContents}>
+                    <strong>{filName}</strong>
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary">
+                    Processing file. Please wait...
+                  </Typography>
+
+                  <Collapse in={isLoading} collapsedHeight="0">
+                    <Box mt={2}>
+                      <BorderLinearProgress />
+                    </Box>
+                  </Collapse>
+                </Box>
+              </Paper>
+            </>
+          )}
+
+          {/* Got a summary with errors */}
           {submission && hasErrorMessages && (
             <Box>
               {displayAlertBox('error', mdiAlertCircleOutline, submission.fileName, 'Validation Failed')}
@@ -372,8 +460,29 @@ const SurveySummaryResults = () => {
               </Box>
             </Box>
           )}
-          {submission && !hasErrorMessages && (
-            <Box>{displayAlertBox('info', mdiFileOutline, submission?.fileName, '')}</Box>
+
+          {/* All done */}
+          {submission && !isLoading && !hasErrorMessages && (
+            <>
+              <Paper variant="outlined" className={classes.importFile + ` ` + `${submissionStatusSeverity}`}>
+                <Box className="importFile-icon" flex="0 0 auto" mt={1.2} mr={1.7}>
+                  <Icon path={submissionStatusIcon} size={1} />
+                </Box>
+
+                <Box mr={2} flex="1 1 auto" style={{ overflow: 'hidden' }}>
+                  <Typography
+                    className={classes.summaryFileName}
+                    variant="body2"
+                    component="div"
+                    onClick={viewFileContents}>
+                    <strong>{submission.fileName}</strong>
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary">
+                    Results Validated
+                  </Typography>
+                </Box>
+              </Paper>
+            </>
           )}
         </Box>
       </Paper>
