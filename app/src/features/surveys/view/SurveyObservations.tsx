@@ -36,7 +36,6 @@ import { useInterval } from 'hooks/useInterval';
 import {
   IGetObservationSubmissionResponseMessages,
   IUploadObservationSubmissionResponse,
-  ObservationSubmissionMessageSeverityLabel
 } from 'interfaces/useObservationApi.interface';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 
@@ -260,20 +259,6 @@ const SurveyObservations: React.FC = () => {
 
   type AlertSeverityLevel = 'error' | 'info' | 'success' | 'warning';
 
-  const alertSeverityFromSeverityLabel = (severity: ObservationSubmissionMessageSeverityLabel): AlertSeverityLevel => {
-    switch (severity) {
-      case 'Warning':
-        return 'warning';
-
-      case 'Error':
-        return 'error';
-
-      case 'Notice':
-      default:
-        return 'info';
-    }
-  };
-
   let submissionStatusIcon = occurrenceSubmission?.isValidating ? mdiFileOutline : mdiFileOutline;
   let submissionStatusSeverity: AlertSeverityLevel = 'info';
 
@@ -310,27 +295,22 @@ const SurveyObservations: React.FC = () => {
         <Divider />
 
         <Box p={3}>
-          {!occurrenceSubmission?.isValidating && (
-            <>
-              {submissionStatusSeverity === 'error' && (
-                <Box mb={2} mt={3}>
-                  <Typography data-testid="observations-error-details" variant="body1">
-                    Resolve the following errors in your local file and re-import.
-                  </Typography>
-                </Box>
-              )}
 
-              {submissionMessageTypes.length > 0 && (
-                <Box mt={1}>
-                  {
-                    // Alphabetize message types for consistency
-                    submissionMessageTypes.map((messageType) => {
-                      return (
-                        <Box key={messageType.messageTypeLabel}>
-                          <Alert severity={alertSeverityFromSeverityLabel(messageType.severityLabel)}>
-                            {messageType.messageTypeLabel}
-                          </Alert>
-                          <Box component="ul" my={3}>
+          {!occurrenceSubmission?.isValidating && (
+            <Box mb={3}>
+              <Alert severity="error" icon={<Icon path={mdiAlertCircleOutline} size={1} />}>
+                <AlertTitle>Failed to import observations</AlertTitle>
+                One or more errors occurred while attempting to import your observations file.
+                {
+                  // Alphabetize message types for consistency
+                  submissionMessageTypes.map((messageType) => {
+                    return (
+                      <Box mt={3}>
+                        <Box component="section">
+                          <Typography variant="body2">
+                            <strong>{messageType.messageTypeLabel}</strong>
+                          </Typography>
+                          <Box component="ul" mt={1} mb={0} pl={4}>
                             {messageType.messages.map((messageObject: { id: number; message: string }) => {
                               return (
                                 <li key={messageObject.id}>
@@ -340,50 +320,13 @@ const SurveyObservations: React.FC = () => {
                             })}
                           </Box>
                         </Box>
-                      );
-                    })
-                  }
-                </Box>
-              )}
-            </>
+                      </Box>
+                    );
+                  })
+                }
+              </Alert>
+            </Box>
           )}
-
-          <Box style={{ display: 'none' }} mb={3}>
-            <Alert severity="error" icon={<Icon path={mdiAlertCircleOutline} size={1} />}>
-              <AlertTitle>Failed to import observations</AlertTitle>
-              One or more errors occurred while attempting to import your observations file.
-              <Box mt={3}>
-                <Box component="section">
-                  <Typography variant="body2">
-                    <strong>Section Title</strong>
-                  </Typography>
-                  <Box component="ul" mt={1} mb={0} pl={4}>
-                    <li>
-                      <Typography variant="body2">Error Message</Typography>
-                    </li>
-                    <li>
-                      <Typography variant="body2">Error Message</Typography>
-                    </li>
-                  </Box>
-                </Box>
-              </Box>
-              <Box mt={3}>
-                <Box component="section">
-                  <Typography variant="body2">
-                    <strong>Section Title</strong>
-                  </Typography>
-                  <Box component="ul" mt={1} mb={0} pl={4}>
-                    <li>
-                      <Typography variant="body2">Error Message</Typography>
-                    </li>
-                    <li>
-                      <Typography variant="body2">Error Message</Typography>
-                    </li>
-                  </Box>
-                </Box>
-              </Box>
-            </Alert>
-          </Box>
 
           {/* No submission exists */}
           {!submissionExists && !submissionDataLoader.isLoading && (
@@ -412,7 +355,7 @@ const SurveyObservations: React.FC = () => {
                     <strong>{fileName}</strong>
                   </Typography>
                   <Typography variant="body2" color="textSecondary">
-                    Processing file. Please wait...
+                    Importing file. Please wait...
                   </Typography>
 
                   <Collapse in={submissionDataLoader.isLoading} collapsedHeight="0">

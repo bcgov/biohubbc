@@ -144,7 +144,7 @@ const SurveySummaryResults = () => {
   const defaultUploadYesNoDialogProps = {
     dialogTitle: 'Upload Summary Results Data',
     dialogText:
-      'Are you sure you want to import a different data set?  This will overwrite the existing data you have already imported.',
+      'Importing another file will overwrite the existing data. Are you sure you want to proceed?',
     open: false,
     onClose: () => dialogContext.setYesNoDialog({ open: false }),
     onNo: () => dialogContext.setYesNoDialog({ open: false }),
@@ -155,7 +155,7 @@ const SurveySummaryResults = () => {
     ...defaultUploadYesNoDialogProps,
     dialogTitle: 'Delete Summary Results Data',
     dialogText:
-      'Are you sure you want to delete the summary results data? Your summary results will be removed from this survey.'
+      'Are you sure you want to delete the summary results data? This action cannot be undone.'
   };
 
   const showUploadDialog = () => {
@@ -431,7 +431,7 @@ const SurveySummaryResults = () => {
                     <strong>{filName}</strong>
                   </Typography>
                   <Typography variant="body2" color="textSecondary">
-                    Processing file. Please wait...
+                   Importing file. Please wait...
                   </Typography>
 
                   <Collapse in={summaryDataLoader.isLoading} collapsedHeight="0">
@@ -472,7 +472,7 @@ const SurveySummaryResults = () => {
                     <strong>{submission.fileName}</strong>
                   </Typography>
                   <Typography variant="body2" color="textSecondary">
-                    Results Validated
+                    File imported
                   </Typography>
                 </Box>
 
