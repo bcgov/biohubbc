@@ -30,10 +30,10 @@ import FileUpload from 'components/file-upload/FileUpload';
 import { IUploadHandler } from 'components/file-upload/FileUploadItem';
 import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
 import { DialogContext } from 'contexts/dialogContext';
+import { SurveyContext } from 'contexts/surveyContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
-import React, { useContext, useState } from 'react';
-import { useParams } from 'react-router';
+import React, { useContext, useEffect, useState } from 'react';
 
 const useStyles = makeStyles((theme: Theme) => ({
   importFile: {
@@ -97,10 +97,10 @@ const SurveySummaryResults = () => {
     })
   )(LinearProgress);
   const biohubApi = useBiohubApi();
-  const urlParams = useParams();
+  const surveyContext = useContext(SurveyContext);
 
-  const projectId = urlParams['id'];
-  const surveyId = urlParams['survey_id'];
+  const projectId = surveyContext.projectId as number;
+  const surveyId = surveyContext.surveyId as number;
 
   const [openImportSummaryResults, setOpenImportSummaryResults] = useState(false);
   const [refreshData, setRefreshData] = useState(false);
@@ -110,7 +110,10 @@ const SurveySummaryResults = () => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
   const summaryDataLoader = useDataLoader(() => biohubApi.survey.getSurveySummarySubmission(projectId, surveyId));
-  summaryDataLoader.load();
+
+  useEffect(() => {
+    summaryDataLoader.load();
+  }, []);
 
   const submission = summaryDataLoader.data;
   const submissionMessages = summaryDataLoader?.data?.messages || [];
@@ -134,7 +137,7 @@ const SurveySummaryResults = () => {
   const softDeleteSubmission = async () => {
     if (submission) {
       await biohubApi.survey.deleteSummarySubmission(projectId, surveyId, submission.id);
-      summaryDataLoader.refresh();
+      summaryDataLoader.clearData();
     }
   };
 
@@ -398,7 +401,7 @@ const SurveySummaryResults = () => {
           </Box>
 
           {/* No summary */}
-          {!submission && !summaryDataLoader.isLoading && (
+          {!submission && !summaryDataLoader?.isLoading && (
             <Paper variant="outlined">
               <Box p={3} textAlign="center">
                 <Typography data-testid="observations-nodata" variant="body2" color="textSecondary">

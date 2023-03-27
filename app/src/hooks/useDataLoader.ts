@@ -38,7 +38,12 @@ export type DataLoader<AFArgs extends any[], AFResponse = unknown, AFError = unk
   /**
    * Clears any errors caught from a failed `fetchData` call.
    */
-  clear: () => void;
+  clearError: () => void;
+
+  /**
+   * Clears any data as if the loader was just initialized.
+   */
+  clearData: () => void;
 };
 
 /**
@@ -114,9 +119,17 @@ export default function useDataLoader<AFArgs extends any[], AFResponse = unknown
     loadData(...args);
   };
 
-  const clear = () => {
+  const clearError = () => {
     setError(undefined);
   };
 
-  return { data, error, isLoading, isReady, load, refresh, clear };
+  const clearData = () => {
+    setError(undefined);
+    setData(undefined);
+    setIsReady(false);
+    setIsLoading(false);
+    setOneTimeLoad(false);
+  };
+
+  return { data, error, isLoading, isReady, load, refresh, clearError, clearData };
 }

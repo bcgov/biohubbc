@@ -216,7 +216,7 @@ describe('useDataLoader', () => {
 
       act(() => {
         deferred.reset();
-        result.current.clear();
+        result.current.clearError();
       });
       expect(result.current.error).toBeUndefined();
     });
@@ -233,7 +233,7 @@ describe('useDataLoader', () => {
 
       act(() => {
         deferred.reset();
-        result.current.clear();
+        result.current.clearError();
       });
       expect(result.current.isLoading).toBe(false);
       expect(result.current.isReady).toBe(true);
