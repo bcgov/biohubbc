@@ -1,15 +1,17 @@
-import ProjectsLayout from 'features/projects/ProjectsLayout';
+import { SurveyContextProvider } from 'contexts/surveyContext';
 import ProjectPage from 'features/projects/view/ProjectPage';
 import CreateSurveyPage from 'features/surveys/CreateSurveyPage';
 import EditSurveyPage from 'features/surveys/edit/EditSurveyPage';
-import SurveyPage from 'features/surveys/view/SurveyPage';
+import ProjectsLayout from 'layouts/ProjectsLayout';
 import React from 'react';
 import { Redirect, Switch } from 'react-router';
 import AppRoute from 'utils/AppRoute';
-import CreateProjectPage from './create/CreateProjectPage';
-import EditProjectPage from './edit/EditProjectPage';
-import ProjectsListPage from './list/ProjectsListPage';
-import ProjectParticipantsPage from './participants/ProjectParticipantsPage';
+import { getTitle } from 'utils/Utils';
+import CreateProjectPage from '../features/projects/create/CreateProjectPage';
+import EditProjectPage from '../features/projects/edit/EditProjectPage';
+import ProjectsListPage from '../features/projects/list/ProjectsListPage';
+import ProjectParticipantsPage from '../features/projects/participants/ProjectParticipantsPage';
+import SurveyRouter from './SurveyRouter';
 
 /**
  * Router for all `/admin/projects/*` pages.
@@ -57,28 +59,10 @@ const ProjectsRouter: React.FC = () => {
         </ProjectsLayout>
       </AppRoute>
 
-      <AppRoute exact path="/admin/projects/:id/surveys/:survey_id/details" layout={ProjectsLayout}>
-        <ProjectsLayout>
-          <SurveyPage />
-        </ProjectsLayout>
-      </AppRoute>
-
-      <AppRoute exact path="/admin/projects/:id/surveys/:survey_id/attachments" layout={ProjectsLayout}>
-        <ProjectsLayout>
-          <SurveyPage />
-        </ProjectsLayout>
-      </AppRoute>
-
-      <AppRoute exact path="/admin/projects/:id/surveys/:survey_id/observations" layout={ProjectsLayout}>
-        <ProjectsLayout>
-          <SurveyPage />
-        </ProjectsLayout>
-      </AppRoute>
-
-      <AppRoute exact path="/admin/projects/:id/surveys/:survey_id/results" layout={ProjectsLayout}>
-        <ProjectsLayout>
-          <SurveyPage />
-        </ProjectsLayout>
+      <AppRoute path="/admin/projects/:id/surveys/:survey_id" title={getTitle('Surveys')} layout={ProjectsLayout}>
+        <SurveyContextProvider>
+          <SurveyRouter />
+        </SurveyContextProvider>
       </AppRoute>
 
       <AppRoute exact path="/admin/projects/:id/survey/create" layout={ProjectsLayout}>
