@@ -114,7 +114,7 @@ const SurveyObservations: React.FC = () => {
   const occurrenceSubmission = submissionDataLoader.data;
   const occurrenceSubmissionId = occurrenceSubmission?.id;
   const submissionMessageTypes = occurrenceSubmission?.messageTypes || [];
-  const submissionExists = Boolean(occurrenceSubmission);
+  let submissionExists = Boolean(occurrenceSubmission);
 
   const submissionPollingInterval = useInterval(refreshSubmission, 5000, 60000);
   alphabetizeSubmissionMessages(submissionMessageTypes);
@@ -410,8 +410,8 @@ const SurveyObservations: React.FC = () => {
             </>
           )}
 
-          {/* Date is loading/ validating */}
-          {submissionDataLoader.isLoading && (
+          {/* No submission yet, but data is loading */}
+          {!submissionExists && submissionDataLoader.isLoading && (
             <>
               <Paper variant="outlined" className={classes.importFile + ` ` + `${submissionStatusSeverity}`}>
                 <Box className="importFile-icon" flex="0 0 auto" mt={1.2} mr={1.7}>
@@ -427,6 +427,38 @@ const SurveyObservations: React.FC = () => {
                   </Typography>
 
                   <Collapse in={submissionDataLoader.isLoading} collapsedHeight="0">
+                    <Box mt={2}>
+                      <BorderLinearProgress />
+                    </Box>
+                  </Collapse>
+                </Box>
+              </Paper>
+            </>
+          )}
+
+          {/* Got a submission, but still loading */}
+          {submissionExists && occurrenceSubmission?.isValidating && (
+            <>
+              <Paper variant="outlined" className={classes.importFile + ` ` + `${submissionStatusSeverity}`}>
+                <Box className="importFile-icon" flex="0 0 auto" mt={1.2} mr={1.7}>
+                  <Icon path={submissionStatusIcon} size={1} />
+                </Box>
+
+                <Box mr={2} flex="1 1 auto" style={{ overflow: 'hidden' }}>
+                  <Typography
+                    className={classes.observationFileName}
+                    variant="body2"
+                    component="div"
+                    onClick={openFileContents}>
+                    <strong>{occurrenceSubmission?.inputFileName}</strong>
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary">
+                    {occurrenceSubmission?.isValidating
+                      ? 'Processing file. Please wait...'
+                      : occurrenceSubmission?.status}
+                  </Typography>
+
+                  <Collapse in={occurrenceSubmission?.isValidating} collapsedHeight="0">
                     <Box mt={2}>
                       <BorderLinearProgress />
                     </Box>
