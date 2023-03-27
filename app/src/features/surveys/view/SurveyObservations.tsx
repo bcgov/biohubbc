@@ -113,7 +113,7 @@ const SurveyObservations: React.FC = () => {
   const occurrenceSubmission = submissionDataLoader.data;
   const occurrenceSubmissionId = occurrenceSubmission?.id;
   const submissionMessageTypes = occurrenceSubmission?.messageTypes || [];
-  const submissionExists = Boolean(occurrenceSubmission);
+  let submissionExists = Boolean(occurrenceSubmission);
 
   const submissionPollingInterval = useInterval(refreshSubmission, 5000, 60000);
   alphabetizeSubmissionMessages(submissionMessageTypes);
@@ -242,6 +242,17 @@ const SurveyObservations: React.FC = () => {
     });
   }
 
+  // const submissionAlertAction = () => (
+  //   <Box>
+  //     <IconButton aria-label="open" color="inherit" onClick={openFileContents}>
+  //       <Icon path={mdiDownload} size={1} />
+  //     </IconButton>
+  //     <IconButton aria-label="delete" color="inherit" onClick={showDeleteDialog}>
+  //       <Icon path={mdiTrashCanOutline} size={1} />
+  //     </IconButton>
+  //   </Box>
+  // );
+
   const openFileContents = useCallback(() => {
     if (!occurrenceSubmissionId) {
       return;
@@ -297,35 +308,39 @@ const SurveyObservations: React.FC = () => {
         <Box p={3}>
 
           {!occurrenceSubmission?.isValidating && (
-            <Box mb={3}>
-              <Alert severity="error" icon={<Icon path={mdiAlertCircleOutline} size={1} />}>
-                <AlertTitle>Failed to import observations</AlertTitle>
-                One or more errors occurred while attempting to import your observations file.
-                {
-                  // Alphabetize message types for consistency
-                  submissionMessageTypes.map((messageType) => {
-                    return (
-                      <Box mt={3}>
-                        <Box component="section">
-                          <Typography variant="body2">
-                            <strong>{messageType.messageTypeLabel}</strong>
-                          </Typography>
-                          <Box component="ul" mt={1} mb={0} pl={4}>
-                            {messageType.messages.map((messageObject: { id: number; message: string }) => {
-                              return (
-                                <li key={messageObject.id}>
-                                  <Typography variant="body2">{messageObject.message}</Typography>
-                                </li>
-                              );
-                            })}
+            <>
+              {submissionStatusSeverity === 'error' && (
+                <Box mb={3}>
+                  <Alert severity="error" icon={<Icon path={mdiAlertCircleOutline} size={1} />}>
+                    <AlertTitle>Failed to import observations</AlertTitle>
+                    One or more errors occurred while attempting to import your observations file.
+                    {
+                      // Alphabetize message types for consistency
+                      submissionMessageTypes.map((messageType) => {
+                        return (
+                          <Box mt={3}>
+                            <Box component="section">
+                              <Typography variant="body2">
+                                <strong>{messageType.messageTypeLabel}</strong>
+                              </Typography>
+                              <Box component="ul" mt={1} mb={0} pl={4}>
+                                {messageType.messages.map((messageObject: { id: number; message: string }) => {
+                                  return (
+                                    <li key={messageObject.id}>
+                                      <Typography variant="body2">{messageObject.message}</Typography>
+                                    </li>
+                                  );
+                                })}
+                              </Box>
+                            </Box>
                           </Box>
-                        </Box>
-                      </Box>
-                    );
-                  })
-                }
-              </Alert>
-            </Box>
+                        );
+                      })
+                    }
+                  </Alert>
+                </Box>
+              )}
+            </>
           )}
 
           {/* No submission exists */}
