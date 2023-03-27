@@ -4,7 +4,6 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as db from '../../../../database/db';
 import { HTTPError } from '../../../../errors/http-error';
-import { GetAttachmentsData } from '../../../../models/project-survey-attachments';
 import { AttachmentService } from '../../../../services/attachment-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../__mocks__/db';
 import * as list from './list';
@@ -52,7 +51,7 @@ describe('getAttachments', () => {
     const getProjectAttachmentsStub = sinon.stub(AttachmentService.prototype, 'getProjectAttachments').resolves([]);
     sinon.stub(AttachmentService.prototype, 'getProjectReportAttachments').resolves([]);
 
-    const expectedResponse = new GetAttachmentsData([], []);
+    const expectedResponse = { attachmentsList: [], reportAttachmentsList: [] };
 
     const mockReq = {
       keycloak_token: {},

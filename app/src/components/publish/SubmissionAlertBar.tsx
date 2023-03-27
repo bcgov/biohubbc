@@ -77,7 +77,6 @@ const getArtifactsSubmissionStatus = (
     artifacts.forEach((element) => {
       if (!element.supplementaryAttachmentData || !element.supplementaryAttachmentData.event_timestamp) {
         artifactSubmitted = false;
-        return;
       }
     });
   }

@@ -345,7 +345,7 @@ describe('PlatformService', () => {
       const platformService = new PlatformService(mockDBConnection);
 
       const occurrenceSubmissionMock = ({
-        id: 1,
+        occurrence_submission_id: 1,
         output_key: 'occurrenceSubmissionOutputKey'
       } as unknown) as IGetLatestSurveyOccurrenceSubmission;
 
@@ -376,7 +376,7 @@ describe('PlatformService', () => {
       const platformService = new PlatformService(mockDBConnection);
 
       const occurrenceSubmissionMock = ({
-        id: 1,
+        occurrence_submission_id: 1,
         output_key: 'occurrenceSubmissionOutputKey'
       } as unknown) as IGetLatestSurveyOccurrenceSubmission;
 
@@ -480,7 +480,7 @@ describe('PlatformService', () => {
 
       const attachmentsStub = sinon.stub(AttachmentService.prototype, 'getProjectAttachmentsByIds').resolves([
         {
-          id: 1,
+          project_attachment_id: 1,
           uuid: 'test-uuid1',
           file_name: 'test-filename1.txt',
           file_size: '20',
@@ -489,7 +489,7 @@ describe('PlatformService', () => {
           key: 'test-key1'
         },
         {
-          id: 2,
+          project_attachment_id: 2,
           uuid: 'test-uuid2',
           file_name: 'test-filename2.txt',
           file_type: 'Test File',
@@ -574,7 +574,7 @@ describe('PlatformService', () => {
 
       const attachmentsStub = sinon.stub(AttachmentService.prototype, 'getProjectReportAttachmentsByIds').resolves([
         {
-          id: 1,
+          project_report_attachment_id: 1,
           uuid: 'test-uuid1',
           file_name: 'test-filename1.txt',
           file_size: '20',
@@ -583,7 +583,7 @@ describe('PlatformService', () => {
           key: 'test-key1'
         },
         {
-          id: 2,
+          project_report_attachment_id: 2,
           uuid: 'test-uuid2',
           file_name: 'test-filename2.txt',
           file_type: 'Test File',
@@ -668,7 +668,7 @@ describe('PlatformService', () => {
 
       const attachmentsStub = sinon.stub(AttachmentService.prototype, 'getSurveyAttachmentsByIds').resolves([
         {
-          id: 1,
+          survey_attachment_id: 1,
           uuid: 'test-uuid1',
           file_name: 'test-filename1.txt',
           file_size: '20',
@@ -677,7 +677,7 @@ describe('PlatformService', () => {
           key: 'test-key1'
         },
         {
-          id: 2,
+          survey_attachment_id: 2,
           uuid: 'test-uuid2',
           file_name: 'test-filename2.txt',
           file_type: 'Test File',
@@ -762,7 +762,7 @@ describe('PlatformService', () => {
 
       const attachmentsStub = sinon.stub(AttachmentService.prototype, 'getSurveyReportAttachmentsByIds').resolves([
         {
-          id: 1,
+          survey_report_attachment_id: 1,
           uuid: 'test-uuid1',
           file_name: 'test-filename1.txt',
           create_user: 1,
@@ -775,7 +775,7 @@ describe('PlatformService', () => {
           revision_count: 1
         },
         {
-          id: 2,
+          survey_report_attachment_id: 2,
           uuid: 'test-uuid2',
           file_name: 'test-filename2.txt',
           create_user: 1,
@@ -861,7 +861,7 @@ describe('PlatformService', () => {
       const testData = {
         dataPackageId: 'aaaa',
         attachment: {
-          id: 1,
+          project_attachment_id: 1,
           uuid: 'test-uuid',
           file_name: 'test-filename.txt',
           file_size: '20',
@@ -911,7 +911,7 @@ describe('PlatformService', () => {
       } as EmlPackage);
 
       const surveySummarySubmissionMock = ({
-        id: 2,
+        survey_summary_submission_id: 2,
         key: '/key/test.csv'
       } as unknown) as ISurveySummaryDetails;
 
@@ -949,7 +949,7 @@ describe('PlatformService', () => {
       const platformService = new PlatformService(mockDBConnection);
 
       const testData = {
-        id: 1,
+        survey_summary_submission_id: 1,
         key: 'test-key',
         uuid: 'test-uuid',
         file_name: 'test-filename.txt',

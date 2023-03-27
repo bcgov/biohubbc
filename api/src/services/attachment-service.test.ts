@@ -450,7 +450,7 @@ describe('AttachmentService', () => {
           expect(serviceStub3).to.be.calledOnce;
           expect(serviceStub4).to.be.calledOnce;
           expect(response).to.eql({
-            id: 1,
+            project_report_attachment_id: 1,
             revision_count: 1,
             key: 'sims/projects/1/reports/file.test'
           });

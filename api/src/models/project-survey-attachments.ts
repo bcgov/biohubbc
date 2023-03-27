@@ -29,7 +29,7 @@ export class GetAttachmentsData {
 
     const attachmentList: any[] = [];
 
-    await attachmentsData.map(async (attachment: any) => {
+    attachmentsData.map(async (attachment: any) => {
       const supplementaryData = await getSupplementaryData(
         attachment.survey_attachment_id || attachment.survey_report_attachment_id
       );

@@ -30,20 +30,20 @@ describe('SurveyObservations', () => {
   it('renders correctly', async () => {
     const { getByText } = render(
       <MemoryRouter>
-        <SurveyObservations refresh={() => {}} />
+        <SurveyObservations />
       </MemoryRouter>
     );
 
     await waitFor(() => {
       expect(getByText('Observations')).toBeInTheDocument();
-      expect(mockBiohubApi().observation.getObservationSubmission).toHaveBeenCalledTimes(1);
+      expect(mockBiohubApi().observation.getObservationSubmission).toHaveBeenCalledTimes(2);
     });
   });
 
   it('shows circular spinner when observation data not yet loaded', async () => {
     const { asFragment } = render(
       <MemoryRouter>
-        <SurveyObservations refresh={() => {}} />
+        <SurveyObservations />
       </MemoryRouter>
     );
 
