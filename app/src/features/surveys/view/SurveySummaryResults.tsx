@@ -1,8 +1,12 @@
 import { Collapse, createStyles, LinearProgress, withStyles } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
+import Chip from '@material-ui/core/Chip';
 import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
 import Link from '@material-ui/core/Link';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
 import Paper from '@material-ui/core/Paper';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
@@ -11,12 +15,14 @@ import Alert from '@material-ui/lab/Alert';
 import AlertTitle from '@material-ui/lab/AlertTitle';
 import {
   mdiAlertCircleOutline,
+  mdiDotsVertical,
   mdiDownload,
   mdiFileAlertOutline,
   mdiFileOutline,
   mdiImport,
   mdiInformationOutline,
-  mdiTrashCanOutline
+  mdiTrashCanOutline,
+  mdiTrayArrowDown
 } from '@mdi/js';
 import Icon from '@mdi/react';
 import ComponentDialog from 'components/dialog/ComponentDialog';
@@ -101,6 +107,7 @@ const SurveySummaryResults = () => {
 
   // provide file name for 'loading' ui before submission responds
   const [filName, setFileName] = useState('');
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
   const summaryDataLoader = useDataLoader(() => biohubApi.survey.getSurveySummarySubmission(projectId, surveyId));
   summaryDataLoader.load();
@@ -116,6 +123,7 @@ const SurveySummaryResults = () => {
         .uploadSurveySummaryResults(projectId, surveyId, file, cancelToken, handleFileUploadProgress)
         .finally(() => {
           setRefreshData(true);
+          setAnchorEl(null);
           setFileName(file.name);
         });
     };
@@ -329,6 +337,14 @@ const SurveySummaryResults = () => {
     );
   }
 
+  const openContextMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const closeContextMenu = () => {
+    setAnchorEl(null);
+  };
+
   return (
     <>
       <Paper elevation={0}>
@@ -455,6 +471,47 @@ const SurveySummaryResults = () => {
                   <Typography variant="body2" color="textSecondary">
                     Results Validated
                   </Typography>
+                </Box>
+
+                <Box flex="0 0 auto" display="flex" alignItems="center">
+                  {submissionStatusSeverity === 'info' && (
+                    <Box mr={2}>
+                      <Chip label="Unsubmitted" color="primary" />
+                    </Box>
+                  )}
+
+                  <Box>
+                    <IconButton aria-controls="context-menu" aria-haspopup="true" onClick={openContextMenu}>
+                      <Icon path={mdiDotsVertical} size={1} />
+                    </IconButton>
+                    <Menu
+                      keepMounted
+                      id="context-menu"
+                      anchorEl={anchorEl}
+                      open={Boolean(anchorEl)}
+                      onClose={closeContextMenu}
+                      anchorOrigin={{
+                        vertical: 'top',
+                        horizontal: 'right'
+                      }}
+                      transformOrigin={{
+                        vertical: 'top',
+                        horizontal: 'right'
+                      }}>
+                      <MenuItem onClick={viewFileContents}>
+                        <ListItemIcon>
+                          <Icon path={mdiTrayArrowDown} size={1} />
+                        </ListItemIcon>
+                        Download
+                      </MenuItem>
+                      <MenuItem onClick={showDeleteDialog}>
+                        <ListItemIcon>
+                          <Icon path={mdiTrashCanOutline} size={1} />
+                        </ListItemIcon>
+                        Delete
+                      </MenuItem>
+                    </Menu>
+                  </Box>
                 </Box>
               </Paper>
             </>
