@@ -26,11 +26,15 @@ const AttachmentTypeSelector: React.FC<IAttachmentTypeSelectorProps> = (props) =
     return <></>;
   }
 
-  const instanceOfIGetProjectAttachment = (object: any): object is IGetProjectAttachment => {
+  const instanceOfIGetProjectAttachment = (
+    object: IGetProjectAttachment | IGetSurveyAttachment | null
+  ): object is IGetProjectAttachment => {
     return true;
   };
 
-  const instanceOfIGetSurveyAttachment = (object: any): object is IGetSurveyAttachment => {
+  const instanceOfIGetSurveyAttachment = (
+    object: IGetProjectAttachment | IGetSurveyAttachment | null
+  ): object is IGetSurveyAttachment => {
     return true;
   };
 

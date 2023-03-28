@@ -90,10 +90,8 @@ const SurveyPage: React.FC = () => {
       <SurveyHeader projectWithDetails={projectDataLoader.data} />
       <Container maxWidth="xl">
         <Box my={3}>
+          <SubmissionAlertBar />
           <Grid container spacing={3}>
-            <Grid item md={12}>
-              <SubmissionAlertBar />
-            </Grid>
             <Grid item md={12} lg={4}>
               <Paper elevation={0}>
                 <SurveyDetails projectForViewData={projectDataLoader.data} codes={codesDataLoader.data} />

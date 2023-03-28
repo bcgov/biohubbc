@@ -1,6 +1,10 @@
 import { QueryResult } from 'pg';
 import { IDBConnection } from '../database/db';
-import { PostReportAttachmentMetadata, PutReportAttachmentMetadata } from '../models/project-survey-attachments';
+import {
+  GetAttachmentsData,
+  PostReportAttachmentMetadata,
+  PutReportAttachmentMetadata
+} from '../models/project-survey-attachments';
 import {
   AttachmentRepository,
   IProjectAttachment,
@@ -11,6 +15,7 @@ import {
 } from '../repositories/attachment-repository';
 import { generateS3FileKey } from '../utils/file-utils';
 import { DBService } from './db-service';
+import { HistoryPublishService } from './history-publish-service';
 
 export interface IAttachmentType {
   id: number;
@@ -41,6 +46,31 @@ export class AttachmentService extends DBService {
    */
   async getProjectAttachments(projectId: number): Promise<IProjectAttachment[]> {
     return this.attachmentRepository.getProjectAttachments(projectId);
+  }
+
+  /**
+   * Finds all of the project attachments and Supplementary Data for the given project ID.
+   *
+   * @param {number} projectId
+   * @return {*}  {Promise<GetAttachmentsData[]>}
+   * @memberof AttachmentService
+   */
+  async getProjectAttachmentsWithSupplementaryData(projectId: number): Promise<GetAttachmentsData[]> {
+    const historyPublishService = new HistoryPublishService(this.connection);
+
+    const attatchments = await this.attachmentRepository.getProjectAttachments(projectId);
+
+    const attachmentList: any[] = [];
+
+    attatchments.forEach(async (attachment: any) => {
+      const supplementaryData = await historyPublishService.getProjectAttachmentPublishRecord(
+        attachment.project_attachment_id
+      );
+
+      attachmentList.push(new GetAttachmentsData(attachment, supplementaryData));
+    });
+
+    return attachmentList;
   }
 
   /**
@@ -86,6 +116,31 @@ export class AttachmentService extends DBService {
   }
 
   /**
+   * Finds all of the project Report attachments and Supplementary Data for the given project ID.
+   *
+   * @param {number} projectId
+   * @return {*}  {Promise<GetAttachmentsData[]>}
+   * @memberof AttachmentService
+   */
+  async getProjectReportAttachmentsWithSupplementaryData(projectId: number): Promise<GetAttachmentsData[]> {
+    const historyPublishService = new HistoryPublishService(this.connection);
+
+    const attatchments = await this.attachmentRepository.getProjectReportAttachments(projectId);
+
+    const attachmentList: any[] = [];
+
+    attatchments.forEach(async (attachment: any) => {
+      const supplementaryData = await historyPublishService.getProjectReportPublishRecord(
+        attachment.project_report_attachment_id
+      );
+
+      attachmentList.push(new GetAttachmentsData(attachment, supplementaryData));
+    });
+
+    return attachmentList;
+  }
+
+  /**
    * Finds a project report attachment having the given project ID and report attachment ID
    * @param {number} projectId the ID of the project
    * @param {number} reportAttachmentId the ID of the report attachment
@@ -124,6 +179,31 @@ export class AttachmentService extends DBService {
   }
 
   /**
+   * Finds all of the survey attachments and Supplementary Data for the given survey ID.
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<GetAttachmentsData[]>}
+   * @memberof AttachmentService
+   */
+  async getSurveyAttachmentsWithSupplementaryData(surveyId: number): Promise<GetAttachmentsData[]> {
+    const historyPublishService = new HistoryPublishService(this.connection);
+
+    const attatchments = await this.attachmentRepository.getSurveyAttachments(surveyId);
+
+    const attachmentList: any[] = [];
+
+    attatchments.forEach(async (attachment: any) => {
+      const supplementaryData = await historyPublishService.getSurveyAttachmentPublishRecord(
+        attachment.survey_attachment_id
+      );
+
+      attachmentList.push(new GetAttachmentsData(attachment, supplementaryData));
+    });
+
+    return attachmentList;
+  }
+
+  /**
    * Finds all of the survey attachments for the given survey ID and attachment IDs.
    * @param {number} surveyId the ID of the survey
    * @param {number[]} attachmentIds the IDs of the attachments to retreive
@@ -142,6 +222,31 @@ export class AttachmentService extends DBService {
    */
   async getSurveyReportAttachments(surveyId: number): Promise<ISurveyReportAttachment[]> {
     return this.attachmentRepository.getSurveyReportAttachments(surveyId);
+  }
+
+  /**
+   * Finds all of the survey report attachments and Supplementary Data for the given survey ID.
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<GetAttachmentsData[]>}
+   * @memberof AttachmentService
+   */
+  async getSurveyReportAttachmentsWithSupplementaryData(surveyId: number): Promise<GetAttachmentsData[]> {
+    const historyPublishService = new HistoryPublishService(this.connection);
+
+    const attatchments = await this.attachmentRepository.getSurveyReportAttachments(surveyId);
+
+    const attachmentList: any[] = [];
+
+    attatchments.forEach(async (attachment: any) => {
+      const supplementaryData = await historyPublishService.getSurveyReportPublishRecord(
+        attachment.survey_report_attachment_id
+      );
+
+      attachmentList.push(new GetAttachmentsData(attachment, supplementaryData));
+    });
+
+    return attachmentList;
   }
 
   /**

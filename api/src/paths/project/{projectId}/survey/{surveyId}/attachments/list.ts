@@ -2,10 +2,8 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_ROLE, SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
-import { GetAttachmentsData } from '../../../../../../models/project-survey-attachments';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 import { AttachmentService } from '../../../../../../services/attachment-service';
-import { HistoryPublishService } from '../../../../../../services/history-publish-service';
 import { getLogger } from '../../../../../../utils/logger';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/attachments/list');
@@ -260,33 +258,15 @@ export function getSurveyAttachments(): RequestHandler {
       await connection.open();
 
       const attachmentService = new AttachmentService(connection);
-      const historyPublishService = new HistoryPublishService(connection);
 
-      const attachmentsData = await attachmentService.getSurveyAttachments(surveyId);
-      const reportAttachmentsData = await attachmentService.getSurveyReportAttachments(surveyId);
-
-      const getAttachmentsSupplementaryData = async (attachmentId: number): Promise<any> => {
-        return historyPublishService.getSurveyAttachmentPublishRecord(attachmentId);
-      };
-
-      const getReportAttachmentsSupplementaryData = async (attachmentId: number): Promise<any> => {
-        return historyPublishService.getSurveyReportPublishRecord(attachmentId);
-      };
-
-      const getAttachmentsData = await GetAttachmentsData.buildAttachmentsData(
-        attachmentsData,
-        getAttachmentsSupplementaryData
-      );
-      const getReportAttachmentsData = await GetAttachmentsData.buildAttachmentsData(
-        reportAttachmentsData,
-        getReportAttachmentsSupplementaryData
-      );
+      const attachmentsData = await attachmentService.getSurveyAttachmentsWithSupplementaryData(surveyId);
+      const reportAttachmentsData = await attachmentService.getSurveyReportAttachmentsWithSupplementaryData(surveyId);
 
       await connection.commit();
 
       return res.status(200).json({
-        attachmentsList: getAttachmentsData,
-        reportAttachmentsList: getReportAttachmentsData
+        attachmentsList: attachmentsData,
+        reportAttachmentsList: reportAttachmentsData
       });
     } catch (error) {
       defaultLog.error({ label: 'getSurveyAttachments', message: 'error', error });

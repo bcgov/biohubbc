@@ -98,6 +98,7 @@ const AttachmentsList = <T extends IGetProjectAttachment | IGetSurveyAttachment>
             <TableRow>
               <TableCell>Name</TableCell>
               <TableCell>Type</TableCell>
+              <TableCell>Type</TableCell>
               <TableCell width="80px"></TableCell>
             </TableRow>
           </TableHead>

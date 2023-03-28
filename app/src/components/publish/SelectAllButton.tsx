@@ -1,6 +1,5 @@
-import { Box } from '@material-ui/core';
+import { List, ListItem, ListItemIcon, ListItemText } from '@material-ui/core';
 import Checkbox from '@material-ui/core/Checkbox';
-import Typography from '@material-ui/core/Typography';
 import { useFormikContext } from 'formik';
 import React, { useEffect } from 'react';
 
@@ -29,29 +28,28 @@ const SelectAllButton: React.FC<ISelectAllButtonProps> = (props) => {
   };
 
   return (
-    <>
-      <Box display="flex" alignItems="center" pl={2} py={1.5}>
-        <Checkbox
-          edge="start"
-          checked={selected}
-          onChange={() => {
-            if (selected) {
-              resetForm();
-              setSelected(false);
-            } else {
-              handleAll();
-              setSelected(true);
-            }
-          }}
-          name={`select-all`}
-          color="primary"></Checkbox>
-        <Box ml={1}>
-          <Typography variant="body2">
-            <strong>SELECT ALL</strong>
-          </Typography>
-        </Box>
-      </Box>
-    </>
+    <List disablePadding>
+      <ListItem
+        onClick={() => {
+          if (selected) {
+            resetForm();
+            setSelected(false);
+          } else {
+            handleAll();
+            setSelected(true);
+          }
+        }}
+        key={`select-all`}
+        dense
+        divider>
+        <ListItemIcon>
+          <Checkbox edge="start" checked={selected} name={`select-all`} color="primary"></Checkbox>
+        </ListItemIcon>
+        <ListItemText>
+          <strong>SELECT ALL</strong>
+        </ListItemText>
+      </ListItem>
+    </List>
   );
 };
 

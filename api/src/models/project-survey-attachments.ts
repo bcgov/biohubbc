@@ -1,5 +1,6 @@
 import moment from 'moment';
 import { getLogger } from '../utils/logger';
+import { SurveySupplementaryData } from './survey-view';
 
 const defaultLog = getLogger('models/project-survey-attachments');
 
@@ -10,34 +11,28 @@ const defaultLog = getLogger('models/project-survey-attachments');
  * @class GetAttachmentsData
  */
 export class GetAttachmentsData {
-  constructor() {
+  id: number;
+  fileName: string;
+  fileType: string;
+  lastModified: string;
+  size: string;
+  status: string;
+  supplementaryAttachmentData: SurveySupplementaryData;
+
+  constructor(attachment: any, supplementaryData: any) {
     defaultLog.debug({ label: 'GetAttachmentsData', message: 'params' });
-  }
 
-  static async buildAttachmentsData(attachmentsData: any[], getSupplementaryData: (attachmentId: number) => any) {
-    const mapAttachment = (attachment: any, supplementaryData: any) => {
-      return {
-        id: attachment.survey_attachment_id || attachment.survey_report_attachment_id,
-        fileName: attachment.file_name,
-        fileType: attachment.file_type || 'Report',
-        lastModified: moment(attachment.update_date || attachment.create_date).toISOString(),
-        size: attachment.file_size,
-        status: attachment.status,
-        supplementaryAttachmentData: supplementaryData
-      };
-    };
-
-    const attachmentList: any[] = [];
-
-    attachmentsData.map(async (attachment: any) => {
-      const supplementaryData = await getSupplementaryData(
-        attachment.survey_attachment_id || attachment.survey_report_attachment_id
-      );
-
-      attachmentList.push(mapAttachment(attachment, supplementaryData));
-    });
-
-    return attachmentList;
+    this.id =
+      attachment.survey_attachment_id ||
+      attachment.survey_report_attachment_id ||
+      attachment.project_attachment_id ||
+      attachment.project_report_attachment_id;
+    this.fileName = attachment.file_name;
+    this.fileType = attachment.file_type || 'Report';
+    this.lastModified = moment(attachment.update_date || attachment.create_date).toISOString();
+    this.size = attachment.file_size;
+    this.status = attachment.status;
+    this.supplementaryAttachmentData = supplementaryData;
   }
 }
 
