@@ -375,6 +375,31 @@ describe('SummaryRepository', () => {
         );
       }
     });
+
+    it('should run without species specified', async () => {
+      const mockResponse = ({
+        rows: ([
+          {
+            summary_template_species_id: 1,
+            summary_template_id: 1,
+            wldtaxonomic_units_id: 1,
+            validation: 'validation_schema',
+            create_user: 1,
+            revision_count: 1
+          }
+        ] as unknown) as ISummarySubmissionMessagesResponse[]
+      } as any) as Promise<QueryResult<any>>;
+      const dbConnection = getMockDBConnection({ knex: () => mockResponse });
+
+      sinon
+        .stub(SummaryRepository.prototype, 'getSummaryTemplateIdFromNameVersion')
+        .resolves({ summary_template_id: 1 });
+
+      const repo = new SummaryRepository(dbConnection);
+      const response = await repo.getSummaryTemplateSpeciesRecords('templateName', 'templateVersion');
+
+      expect(response).to.be.eql((await mockResponse).rows);
+    });
   });
 
   describe('insertSummarySubmissionMessage', () => {
