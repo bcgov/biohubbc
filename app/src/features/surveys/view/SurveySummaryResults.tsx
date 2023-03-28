@@ -16,7 +16,6 @@ import AlertTitle from '@material-ui/lab/AlertTitle';
 import {
   mdiAlertCircleOutline,
   mdiDotsVertical,
-  mdiDownload,
   mdiFileAlertOutline,
   mdiFileOutline,
   mdiImport,
@@ -38,6 +37,7 @@ import React, { useContext, useEffect, useState } from 'react';
 const useStyles = makeStyles((theme: Theme) => ({
   importFile: {
     display: 'flex',
+    minHeight: '82px',
     padding: theme.spacing(2),
     overflow: 'hidden',
     '& .importFile-icon': {
@@ -113,7 +113,7 @@ const SurveySummaryResults = () => {
 
   useEffect(() => {
     summaryDataLoader.load();
-  }, []);
+  }, [summaryDataLoader]);
 
   const submission = summaryDataLoader.data;
   const submissionMessages = summaryDataLoader?.data?.messages || [];
@@ -143,8 +143,7 @@ const SurveySummaryResults = () => {
 
   const defaultUploadYesNoDialogProps = {
     dialogTitle: 'Upload Summary Results Data',
-    dialogText:
-      'Importing another file will overwrite the existing data. Are you sure you want to proceed?',
+    dialogText: 'Importing another file will overwrite the existing data. Are you sure you want to proceed?',
     open: false,
     onClose: () => dialogContext.setYesNoDialog({ open: false }),
     onNo: () => dialogContext.setYesNoDialog({ open: false }),
@@ -154,8 +153,7 @@ const SurveySummaryResults = () => {
   const defaultDeleteYesNoDialogProps = {
     ...defaultUploadYesNoDialogProps,
     dialogTitle: 'Delete Summary Results Data',
-    dialogText:
-      'Are you sure you want to delete the summary results data? This action cannot be undone.'
+    dialogText: 'Are you sure you want to delete the summary results data? This action cannot be undone.'
   };
 
   const showUploadDialog = () => {
@@ -187,16 +185,16 @@ const SurveySummaryResults = () => {
   };
 
   //Action prop for the Alert MUI component to render the delete icon and associated action
-  const submissionAlertAction = () => (
-    <Box className={classes.alertActions}>
-      <IconButton aria-label="open" color="inherit" onClick={() => viewFileContents()}>
-        <Icon path={mdiDownload} size={1} />
-      </IconButton>
-      <IconButton aria-label="delete" color="inherit" onClick={() => showDeleteDialog()}>
-        <Icon path={mdiTrashCanOutline} size={1} />
-      </IconButton>
-    </Box>
-  );
+  // const submissionAlertAction = () => (
+  //   <Box className={classes.alertActions}>
+  //     <IconButton aria-label="open" color="inherit" onClick={() => viewFileContents()}>
+  //       <Icon path={mdiDownload} size={1} />
+  //     </IconButton>
+  //     <IconButton aria-label="delete" color="inherit" onClick={() => showDeleteDialog()}>
+  //       <Icon path={mdiTrashCanOutline} size={1} />
+  //     </IconButton>
+  //   </Box>
+  // );
 
   type MessageGrouping = { [key: string]: { type: string[]; label: string } };
 
@@ -295,41 +293,45 @@ const SurveySummaryResults = () => {
     submissionStatusIcon = mdiInformationOutline;
   }
 
-  function displayAlertBox(severityLevel: SeverityLevel, iconName: string, fileName: string, message: string) {
-    return (
-      <Alert icon={<Icon path={iconName} size={1} />} severity={severityLevel} action={submissionAlertAction()}>
-        <Box display="flex" alignItems="center" m={0}>
-          <Link
-            className={classes.alertLink}
-            component="button"
-            variant="body2"
-            onClick={() => viewFileContents()}
-            gutterBottom={false}>
-            <strong>{fileName}</strong>
-          </Link>
-        </Box>
-        <Typography variant="body2">{message}</Typography>
+  // function displayAlertBox(severityLevel: SeverityLevel, iconName: string, fileName: string, message: string) {
+  //   return (
+  //     <Alert icon={<Icon path={iconName} size={1} />} severity={severityLevel} action={submissionAlertAction()}>
+  //       <Box display="flex" alignItems="center" m={0}>
+  //         <Link
+  //           className={classes.alertLink}
+  //           component="button"
+  //           variant="body2"
+  //           onClick={() => viewFileContents()}
+  //           gutterBottom={false}>
+  //           <strong>{fileName}</strong>
+  //         </Link>
+  //       </Box>
+  //       <Typography variant="body2">{message}</Typography>
 
-        <Collapse in={summaryDataLoader.isLoading} collapsedHeight="0">
-          <Box mt={2}>
-            <BorderLinearProgress />
-          </Box>
-        </Collapse>
-      </Alert>
-    );
-  }
+  //       <Collapse in={summaryDataLoader.isLoading} collapsedHeight="0">
+  //         <Box mt={2}>
+  //           <BorderLinearProgress />
+  //         </Box>
+  //       </Collapse>
+  //     </Alert>
+  //   );
+  // }
 
   function displayMessages(list: SubmissionErrors | SubmissionWarnings, msgGroup: MessageGrouping, iconName: string) {
     return (
       <Box>
         {Object.entries(list).map(([key, value], index) => (
-          <Box key={index} pl={0.25}>
-            <Alert severity="error">{msgGroup[key].label}</Alert>
-            <Box component="ul" my={3}>
+          <Box mt={3} key={index} pl={0.25}>
+            <Typography variant="body2">
+              <strong>{msgGroup[key].label}</strong>
+            </Typography>
+            <Box component="ul" mt={1} mb={0} pl={4}>
               {value.map((message: string, index2: number) => {
                 return (
                   <li key={`${index}-${index2}`}>
-                    <Typography variant="body2">{message}</Typography>
+                    <Typography variant="body2" component="span">
+                      {message}
+                    </Typography>
                   </li>
                 );
               })}
@@ -363,48 +365,11 @@ const SurveySummaryResults = () => {
         <Divider></Divider>
 
         <Box p={3}>
-          <Box style={{ display: 'none' }} mb={3}>
-            <Alert severity="error" icon={<Icon path={mdiAlertCircleOutline} size={1} />}>
-              <AlertTitle>Failed to import summary results</AlertTitle>
-              One or more errors occurred while attempting to import your summary results.
-              <Box mt={3}>
-                <Box component="section">
-                  <Typography variant="body2">
-                    <strong>Section Title</strong>
-                  </Typography>
-                  <Box component="ul" mt={1} mb={0} pl={4}>
-                    <li>
-                      <Typography variant="body2">Error Message</Typography>
-                    </li>
-                    <li>
-                      <Typography variant="body2">Error Message</Typography>
-                    </li>
-                  </Box>
-                </Box>
-              </Box>
-              <Box mt={3}>
-                <Box component="section">
-                  <Typography variant="body2">
-                    <strong>Section Title</strong>
-                  </Typography>
-                  <Box component="ul" mt={1} mb={0} pl={4}>
-                    <li>
-                      <Typography variant="body2">Error Message</Typography>
-                    </li>
-                    <li>
-                      <Typography variant="body2">Error Message</Typography>
-                    </li>
-                  </Box>
-                </Box>
-              </Box>
-            </Alert>
-          </Box>
-
           {/* No summary */}
           {!submission && !summaryDataLoader?.isLoading && (
-            <Paper variant="outlined">
-              <Box p={3} textAlign="center">
-                <Typography data-testid="observations-nodata" variant="body2" color="textSecondary">
+            <Paper variant="outlined" className={classes.importFile}>
+              <Box display="flex" flex="1 1 auto" alignItems="center" justifyContent="center">
+                <Typography data-testid="observations-nodata" variant="body2" color="textSecondary" component="div">
                   No Summary Results. &nbsp;
                   <Link onClick={() => setOpenImportSummaryResults(true)} className={classes.browseLink}>
                     Click Here to Import
@@ -431,7 +396,7 @@ const SurveySummaryResults = () => {
                     <strong>{filName}</strong>
                   </Typography>
                   <Typography variant="body2" color="textSecondary">
-                   Importing file. Please wait...
+                    Importing file. Please wait...
                   </Typography>
 
                   <Collapse in={summaryDataLoader.isLoading} collapsedHeight="0">
@@ -447,10 +412,64 @@ const SurveySummaryResults = () => {
           {/* Got a summary with errors */}
           {submission && submissionMessages.length > 0 && (
             <Box>
-              {displayAlertBox('error', mdiAlertCircleOutline, submission.fileName, 'Validation Failed')}
-              <Box>
+              <Alert severity="error" icon={<Icon path={mdiAlertCircleOutline} size={1} />}>
+                <AlertTitle>Failed to import observations</AlertTitle>
+                One or more errors occurred while attempting to import your observations file.
                 {displayMessages(submissionErrors, messageGrouping, mdiAlertCircleOutline)}
                 {displayMessages(submissionWarnings, messageGrouping, mdiInformationOutline)}
+              </Alert>
+
+              <Box mt={3}>
+                <Paper variant="outlined" className={classes.importFile + ` ` + `error`}>
+                  <Box display="flex" alignItems="center" flex="1 1 auto" style={{ overflow: 'hidden' }}>
+                    <Box display="flex" alignItems="center" flex="1 1 auto" style={{ overflow: 'hidden' }}>
+                      <Box className="importFile-icon" flex="0 0 auto" mr={2}>
+                        <Icon path={mdiFileAlertOutline} size={1} />
+                      </Box>
+                      <Box mr={2} flex="1 1 auto" style={{ overflow: 'hidden' }}>
+                        <Typography
+                          className={classes.summaryFileName}
+                          variant="body2"
+                          component="div"
+                          onClick={viewFileContents}>
+                          <strong>{submission.fileName}</strong>
+                        </Typography>
+                      </Box>
+                    </Box>
+                    <Box flex="0 0 auto" display="flex" alignItems="center">
+                      <IconButton aria-controls="context-menu" aria-haspopup="true" onClick={openContextMenu}>
+                        <Icon path={mdiDotsVertical} size={1} />
+                      </IconButton>
+                      <Menu
+                        keepMounted
+                        id="context-menu"
+                        anchorEl={anchorEl}
+                        open={Boolean(anchorEl)}
+                        onClose={closeContextMenu}
+                        anchorOrigin={{
+                          vertical: 'top',
+                          horizontal: 'right'
+                        }}
+                        transformOrigin={{
+                          vertical: 'top',
+                          horizontal: 'right'
+                        }}>
+                        <MenuItem onClick={viewFileContents}>
+                          <ListItemIcon>
+                            <Icon path={mdiTrayArrowDown} size={1} />
+                          </ListItemIcon>
+                          Download
+                        </MenuItem>
+                        <MenuItem onClick={showDeleteDialog}>
+                          <ListItemIcon>
+                            <Icon path={mdiTrashCanOutline} size={1} />
+                          </ListItemIcon>
+                          Delete
+                        </MenuItem>
+                      </Menu>
+                    </Box>
+                  </Box>
+                </Paper>
               </Box>
             </Box>
           )}
@@ -459,61 +478,59 @@ const SurveySummaryResults = () => {
           {submission && !summaryDataLoader.isLoading && submissionMessages.length <= 0 && (
             <>
               <Paper variant="outlined" className={classes.importFile + ` ` + `${submissionStatusSeverity}`}>
-                <Box className="importFile-icon" flex="0 0 auto" mt={1.2} mr={1.7}>
-                  <Icon path={submissionStatusIcon} size={1} />
-                </Box>
+                <Box display="flex" alignItems="center" flex="1 1 auto" style={{ overflow: 'hidden' }}>
+                  <Box display="flex" alignItems="center" flex="1 1 auto" style={{ overflow: 'hidden' }}>
+                    <Box display="flex" alignItems="center" flex="0 0 auto" className="importFile-icon" mr={2}>
+                      <Icon path={submissionStatusIcon} size={1} />
+                    </Box>
+                    <Box mr={2} flex="1 1 auto" style={{ overflow: 'hidden' }}>
+                      <Typography
+                        className={classes.summaryFileName}
+                        variant="body2"
+                        component="div"
+                        onClick={viewFileContents}>
+                        <strong>{submission.fileName}</strong>
+                      </Typography>
+                    </Box>
+                  </Box>
 
-                <Box mr={2} flex="1 1 auto" style={{ overflow: 'hidden' }}>
-                  <Typography
-                    className={classes.summaryFileName}
-                    variant="body2"
-                    component="div"
-                    onClick={viewFileContents}>
-                    <strong>{submission.fileName}</strong>
-                  </Typography>
-                  <Typography variant="body2" color="textSecondary">
-                    File imported
-                  </Typography>
-                </Box>
-
-                <Box flex="0 0 auto" display="flex" alignItems="center">
-                  {submissionStatusSeverity === 'info' && (
+                  <Box flex="0 0 auto" display="flex" alignItems="center">
                     <Box mr={2}>
                       <Chip label="Unsubmitted" color="primary" />
                     </Box>
-                  )}
 
-                  <Box>
-                    <IconButton aria-controls="context-menu" aria-haspopup="true" onClick={openContextMenu}>
-                      <Icon path={mdiDotsVertical} size={1} />
-                    </IconButton>
-                    <Menu
-                      keepMounted
-                      id="context-menu"
-                      anchorEl={anchorEl}
-                      open={Boolean(anchorEl)}
-                      onClose={closeContextMenu}
-                      anchorOrigin={{
-                        vertical: 'top',
-                        horizontal: 'right'
-                      }}
-                      transformOrigin={{
-                        vertical: 'top',
-                        horizontal: 'right'
-                      }}>
-                      <MenuItem onClick={viewFileContents}>
-                        <ListItemIcon>
-                          <Icon path={mdiTrayArrowDown} size={1} />
-                        </ListItemIcon>
-                        Download
-                      </MenuItem>
-                      <MenuItem onClick={showDeleteDialog}>
-                        <ListItemIcon>
-                          <Icon path={mdiTrashCanOutline} size={1} />
-                        </ListItemIcon>
-                        Delete
-                      </MenuItem>
-                    </Menu>
+                    <Box>
+                      <IconButton aria-controls="context-menu" aria-haspopup="true" onClick={openContextMenu}>
+                        <Icon path={mdiDotsVertical} size={1} />
+                      </IconButton>
+                      <Menu
+                        keepMounted
+                        id="context-menu"
+                        anchorEl={anchorEl}
+                        open={Boolean(anchorEl)}
+                        onClose={closeContextMenu}
+                        anchorOrigin={{
+                          vertical: 'top',
+                          horizontal: 'right'
+                        }}
+                        transformOrigin={{
+                          vertical: 'top',
+                          horizontal: 'right'
+                        }}>
+                        <MenuItem onClick={viewFileContents}>
+                          <ListItemIcon>
+                            <Icon path={mdiTrayArrowDown} size={1} />
+                          </ListItemIcon>
+                          Download
+                        </MenuItem>
+                        <MenuItem onClick={showDeleteDialog}>
+                          <ListItemIcon>
+                            <Icon path={mdiTrashCanOutline} size={1} />
+                          </ListItemIcon>
+                          Delete
+                        </MenuItem>
+                      </Menu>
+                    </Box>
                   </Box>
                 </Box>
               </Paper>

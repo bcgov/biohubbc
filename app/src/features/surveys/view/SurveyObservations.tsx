@@ -1,6 +1,5 @@
 import Box from '@material-ui/core/Box';
 import Chip from '@material-ui/core/Chip';
-import Collapse from '@material-ui/core/Collapse';
 import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
 import LinearProgress from '@material-ui/core/LinearProgress';
@@ -35,13 +34,14 @@ import useDataLoader from 'hooks/useDataLoader';
 import { useInterval } from 'hooks/useInterval';
 import {
   IGetObservationSubmissionResponseMessages,
-  IUploadObservationSubmissionResponse,
+  IUploadObservationSubmissionResponse
 } from 'interfaces/useObservationApi.interface';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 
 const useStyles = makeStyles((theme: Theme) => ({
   importFile: {
     display: 'flex',
+    minHeight: '82px',
     padding: theme.spacing(2),
     overflow: 'hidden',
     '& .importFile-icon': {
@@ -113,7 +113,7 @@ const SurveyObservations: React.FC = () => {
   const occurrenceSubmission = submissionDataLoader.data;
   const occurrenceSubmissionId = occurrenceSubmission?.id;
   const submissionMessageTypes = occurrenceSubmission?.messageTypes || [];
-  let submissionExists = Boolean(occurrenceSubmission);
+  const submissionExists = Boolean(occurrenceSubmission);
 
   const submissionPollingInterval = useInterval(refreshSubmission, 5000, 60000);
   alphabetizeSubmissionMessages(submissionMessageTypes);
@@ -306,7 +306,6 @@ const SurveyObservations: React.FC = () => {
         <Divider />
 
         <Box p={3}>
-
           {!occurrenceSubmission?.isValidating && (
             <>
               {submissionStatusSeverity === 'error' && (
@@ -327,7 +326,9 @@ const SurveyObservations: React.FC = () => {
                                 {messageType.messages.map((messageObject: { id: number; message: string }) => {
                                   return (
                                     <li key={messageObject.id}>
-                                      <Typography variant="body2">{messageObject.message}</Typography>
+                                      <Typography variant="body2" component="span">
+                                        {messageObject.message}
+                                      </Typography>
                                     </li>
                                   );
                                 })}
@@ -346,8 +347,8 @@ const SurveyObservations: React.FC = () => {
           {/* No submission exists */}
           {!submissionExists && !submissionDataLoader.isLoading && (
             <>
-              <Paper variant="outlined">
-                <Box p={3} textAlign="center">
+              <Paper variant="outlined" className={classes.importFile}>
+                <Box display="flex" flex="1 1 auto" alignItems="center" justifyContent="center">
                   <Typography data-testid="observations-nodata" variant="body2" color="textSecondary">
                     No Observation Data. &nbsp;
                     <Link onClick={handleOpenImportObservations}>Click Here to Import</Link>
@@ -361,23 +362,26 @@ const SurveyObservations: React.FC = () => {
           {!submissionExists && submissionDataLoader.isLoading && (
             <>
               <Paper variant="outlined" className={classes.importFile + ` ` + `${submissionStatusSeverity}`}>
-                <Box className="importFile-icon" flex="0 0 auto" mt={1.2} mr={1.7}>
-                  <Icon path={submissionStatusIcon} size={1} />
-                </Box>
+                <Box flex="1 1 auto" style={{ overflow: 'hidden' }}>
+                  <Box display="flex" alignItems="center" flex="1 1 auto" style={{ overflow: 'hidden' }}>
+                    <Box className="importFile-icon" flex="0 0 auto" mr={2}>
+                      <Icon path={submissionStatusIcon} size={1} />
+                    </Box>
+                    <Box mr={2} flex="1 1 auto" style={{ overflow: 'hidden' }}>
+                      <Typography className={classes.observationFileName} variant="body2" component="div">
+                        <strong>{fileName}</strong>
+                      </Typography>
+                    </Box>
+                  </Box>
 
-                <Box mr={2} flex="1 1 auto" style={{ overflow: 'hidden' }}>
-                  <Typography className={classes.observationFileName} variant="body2" component="div">
-                    <strong>{fileName}</strong>
-                  </Typography>
-                  <Typography variant="body2" color="textSecondary">
-                    Importing file. Please wait...
-                  </Typography>
-
-                  <Collapse in={submissionDataLoader.isLoading} collapsedHeight="0">
-                    <Box mt={2}>
+                  <Box ml={5} mr={1}>
+                    <Typography variant="body2" color="textSecondary" component="div">
+                      Importing file. Please wait...
+                    </Typography>
+                    <Box mt={1.5}>
                       <BorderLinearProgress />
                     </Box>
-                  </Collapse>
+                  </Box>
                 </Box>
               </Paper>
             </>
@@ -387,29 +391,32 @@ const SurveyObservations: React.FC = () => {
           {submissionExists && occurrenceSubmission?.isValidating && (
             <>
               <Paper variant="outlined" className={classes.importFile + ` ` + `${submissionStatusSeverity}`}>
-                <Box className="importFile-icon" flex="0 0 auto" mt={1.2} mr={1.7}>
-                  <Icon path={submissionStatusIcon} size={1} />
-                </Box>
+                <Box flex="1 1 auto" style={{ overflow: 'hidden' }}>
+                  <Box display="flex" alignItems="center" flex="1 1 auto" style={{ overflow: 'hidden' }}>
+                    <Box className="importFile-icon" flex="0 0 auto" mr={2}>
+                      <Icon path={submissionStatusIcon} size={1} />
+                    </Box>
+                    <Box flex="1 1 auto" style={{ overflow: 'hidden' }}>
+                      <Typography
+                        className={classes.observationFileName}
+                        variant="body2"
+                        component="div"
+                        onClick={openFileContents}>
+                        <strong>{occurrenceSubmission?.inputFileName}</strong>
+                      </Typography>
+                    </Box>
+                  </Box>
 
-                <Box mr={2} flex="1 1 auto" style={{ overflow: 'hidden' }}>
-                  <Typography
-                    className={classes.observationFileName}
-                    variant="body2"
-                    component="div"
-                    onClick={openFileContents}>
-                    <strong>{occurrenceSubmission?.inputFileName}</strong>
-                  </Typography>
-                  <Typography variant="body2" color="textSecondary">
-                    {occurrenceSubmission?.isValidating
-                      ? 'Processing file. Please wait...'
-                      : occurrenceSubmission?.status}
-                  </Typography>
-
-                  <Collapse in={occurrenceSubmission?.isValidating} collapsedHeight="0">
-                    <Box mt={2}>
+                  <Box ml={5} mr={1}>
+                    <Typography variant="body2" color="textSecondary" component="div">
+                      {occurrenceSubmission?.isValidating
+                        ? 'Importing file. Please wait...'
+                        : occurrenceSubmission?.status}
+                    </Typography>
+                    <Box mt={1.5}>
                       <BorderLinearProgress />
                     </Box>
-                  </Collapse>
+                  </Box>
                 </Box>
               </Paper>
             </>
@@ -419,61 +426,58 @@ const SurveyObservations: React.FC = () => {
           {submissionExists && !occurrenceSubmission?.isValidating && (
             <>
               <Paper variant="outlined" className={classes.importFile + ` ` + `${submissionStatusSeverity}`}>
-                <Box className="importFile-icon" flex="0 0 auto" mt={1.2} mr={1.7}>
-                  <Icon path={submissionStatusIcon} size={1} />
-                </Box>
+                <Box display="flex" alignItems="center" flex="1 1 auto" style={{ overflow: 'hidden' }}>
+                  <Box display="flex" alignItems="center" flex="1 1 auto" style={{ overflow: 'hidden' }}>
+                    <Box display="flex" alignItems="center" flex="0 0 auto" mr={2} className="importFile-icon">
+                      <Icon path={submissionStatusIcon} size={1} />
+                    </Box>
+                    <Box mr={2} flex="1 1 auto" style={{ overflow: 'hidden' }}>
+                      <Typography
+                        className={classes.observationFileName}
+                        variant="body2"
+                        component="div"
+                        onClick={openFileContents}>
+                        <strong>{occurrenceSubmission?.inputFileName}</strong>
+                      </Typography>
+                    </Box>
+                  </Box>
 
-                <Box mr={2} flex="1 1 auto" style={{ overflow: 'hidden' }}>
-                  <Typography
-                    className={classes.observationFileName}
-                    variant="body2"
-                    component="div"
-                    onClick={openFileContents}>
-                    <strong>{occurrenceSubmission?.inputFileName}</strong>
-                  </Typography>
-                  <Typography variant="body2" color="textSecondary">
-                    {occurrenceSubmission?.status}
-                  </Typography>
-                </Box>
-
-                <Box flex="0 0 auto" display="flex" alignItems="center">
-                  {submissionStatusSeverity === 'info' && (
+                  <Box flex="0 0 auto" display="flex" alignItems="center">
                     <Box mr={2}>
                       <Chip label="Unsubmitted" color="primary" />
                     </Box>
-                  )}
-
-                  <Box>
-                    <IconButton aria-controls="context-menu" aria-haspopup="true" onClick={openContextMenu}>
-                      <Icon path={mdiDotsVertical} size={1} />
-                    </IconButton>
-                    <Menu
-                      keepMounted
-                      id="context-menu"
-                      anchorEl={anchorEl}
-                      open={Boolean(anchorEl)}
-                      onClose={closeContextMenu}
-                      anchorOrigin={{
-                        vertical: 'top',
-                        horizontal: 'right'
-                      }}
-                      transformOrigin={{
-                        vertical: 'top',
-                        horizontal: 'right'
-                      }}>
-                      <MenuItem onClick={openFileContents}>
-                        <ListItemIcon>
-                          <Icon path={mdiTrayArrowDown} size={1} />
-                        </ListItemIcon>
-                        Download
-                      </MenuItem>
-                      <MenuItem onClick={showDeleteDialog}>
-                        <ListItemIcon>
-                          <Icon path={mdiTrashCanOutline} size={1} />
-                        </ListItemIcon>
-                        Delete
-                      </MenuItem>
-                    </Menu>
+                    <Box>
+                      <IconButton aria-controls="context-menu" aria-haspopup="true" onClick={openContextMenu}>
+                        <Icon path={mdiDotsVertical} size={1} />
+                      </IconButton>
+                      <Menu
+                        keepMounted
+                        id="context-menu"
+                        anchorEl={anchorEl}
+                        open={Boolean(anchorEl)}
+                        onClose={closeContextMenu}
+                        anchorOrigin={{
+                          vertical: 'top',
+                          horizontal: 'right'
+                        }}
+                        transformOrigin={{
+                          vertical: 'top',
+                          horizontal: 'right'
+                        }}>
+                        <MenuItem onClick={openFileContents}>
+                          <ListItemIcon>
+                            <Icon path={mdiTrayArrowDown} size={1} />
+                          </ListItemIcon>
+                          Download
+                        </MenuItem>
+                        <MenuItem onClick={showDeleteDialog}>
+                          <ListItemIcon>
+                            <Icon path={mdiTrashCanOutline} size={1} />
+                          </ListItemIcon>
+                          Delete
+                        </MenuItem>
+                      </Menu>
+                    </Box>
                   </Box>
                 </Box>
               </Paper>
