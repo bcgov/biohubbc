@@ -802,14 +802,7 @@ describe('SummaryService', () => {
               col: 'Effort & Effects'
             }
           ],
-          rowErrors: [
-            {
-              errorCode: SUBMISSION_MESSAGE_TYPE.INVALID_VALUE,
-              message: 'Invalid Value',
-              col: 'Block SU',
-              row: 1
-            }
-          ]
+          rowErrors: []
         }
       ];
       const mediaState: IMediaState = {
@@ -822,7 +815,7 @@ describe('SummaryService', () => {
       } catch (error) {
         if (error instanceof SummarySubmissionError) {
           error.summarySubmissionMessages.forEach((e) => {
-            expect(e.type).to.be.eql(SUMMARY_SUBMISSION_MESSAGE_TYPE.INVALID_VALUE);
+            expect(e.type).to.be.eql(SUMMARY_SUBMISSION_MESSAGE_TYPE.MISSING_REQUIRED_HEADER);
           });
         }
       }

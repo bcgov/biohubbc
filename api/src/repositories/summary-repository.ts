@@ -428,6 +428,20 @@ export class SummaryRepository extends BaseRepository {
       throw failedToFindValidationRulesError;
     }
 
+    // check if the species in the survey and the species on the template match
+    if (species) {
+      if (!response.rows.some((row) => species.includes(Number(row.wldtaxonomic_units_id)))) {
+        throw new SummarySubmissionError({
+          messages: [
+            new MessageError(
+              SUMMARY_SUBMISSION_MESSAGE_TYPE.FAILED_GET_VALIDATION_RULES,
+              'The focal species imported from this template does not match the focal species selected for this survey.'
+            )
+          ]
+        });
+      }
+    }
+
     return response.rows;
   }
 
