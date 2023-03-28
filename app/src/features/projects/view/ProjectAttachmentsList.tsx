@@ -1,5 +1,7 @@
 import AttachmentsList from 'components/attachments/list/AttachmentsList';
-import AttachmentTypeSelector from 'components/dialog/attachments/AttachmentTypeSelector';
+import ProjectAttachmentDialog from 'components/dialog/attachments/project/attachment/ProjectAttachmentDialog';
+import ProjectReportAttachmentDialog from 'components/dialog/attachments/project/report/ProjectReportAttachmentDialog';
+import { AttachmentType } from 'constants/attachments';
 import { AttachmentsI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
 import { APIError } from 'hooks/api/useAxios';
@@ -87,12 +89,17 @@ const ProjectAttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
 
   return (
     <>
-      <AttachmentTypeSelector
+      <ProjectReportAttachmentDialog
         projectId={props.projectId}
-        currentAttachment={currentAttachment}
-        open={!!currentAttachment}
-        close={() => setCurrentAttachment(null)}
-        refresh={() => props.getAttachments(true)}
+        attachment={currentAttachment}
+        open={!!currentAttachment && currentAttachment.fileType === AttachmentType.REPORT}
+        onClose={() => setCurrentAttachment(null)}
+      />
+      <ProjectAttachmentDialog
+        projectId={props.projectId}
+        attachment={currentAttachment}
+        open={!!currentAttachment && currentAttachment.fileType === AttachmentType.OTHER}
+        onClose={() => setCurrentAttachment(null)}
       />
       <AttachmentsList<IGetProjectAttachment>
         attachments={props.attachmentsList}

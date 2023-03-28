@@ -1,6 +1,6 @@
 import { DialogTitle } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
-import Dialog, { DialogProps } from '@material-ui/core/Dialog';
+import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import Typography from '@material-ui/core/Typography';
@@ -19,12 +19,9 @@ import ReportAttachmentDetails from './ReportAttachmentDetails';
 
 export interface IProjectReportAttachmentDialogProps {
   projectId: number;
-  attachmentId: number | undefined;
-  currentAttachment: IGetProjectAttachment | null;
+  attachment: IGetProjectAttachment | null;
   open: boolean;
   onClose: () => void;
-  refresh: (id: number, type: string) => void;
-  dialogProps?: DialogProps;
 }
 
 /**
@@ -71,8 +68,8 @@ const ProjectReportAttachmentDialog: React.FC<IProjectReportAttachmentDialogProp
   };
 
   const openAttachmentFromReportMetaDialog = async () => {
-    if (props.currentAttachment) {
-      openAttachment(props.currentAttachment);
+    if (props.attachment) {
+      openAttachment(props.attachment);
     }
   };
 
@@ -100,8 +97,8 @@ const ProjectReportAttachmentDialog: React.FC<IProjectReportAttachmentDialogProp
   };
 
   // Initial load of attachment details
-  if (props.currentAttachment) {
-    reportAttachmentDetailsDataLoader.load(props.currentAttachment.id);
+  if (props.attachment) {
+    reportAttachmentDetailsDataLoader.load(props.attachment.id);
   }
 
   if (!props.open) {
@@ -110,7 +107,7 @@ const ProjectReportAttachmentDialog: React.FC<IProjectReportAttachmentDialogProp
 
   return (
     <>
-      <Dialog open={props.open} onClose={props.onClose} {...props.dialogProps} data-testid="view-meta-dialog">
+      <Dialog open={props.open} onClose={props.onClose} fullWidth={true} maxWidth="lg" data-testid="view-meta-dialog">
         <DialogTitle data-testid="view-meta-dialog-title">
           <Typography variant="body2" color="textSecondary" style={{ fontWeight: 700 }}>
             VIEW DOCUMENT DETAILS
@@ -122,10 +119,8 @@ const ProjectReportAttachmentDialog: React.FC<IProjectReportAttachmentDialogProp
             onFileDownload={openAttachmentFromReportMetaDialog}
             onSave={handleDialogEditSave}
             reportAttachmentDetails={reportAttachmentDetailsDataLoader.data || null}
-            attachmentSize={(props.currentAttachment && getFormattedFileSize(props.currentAttachment.size)) || '0 KB'}
-            refresh={() =>
-              props.currentAttachment?.id && reportAttachmentDetailsDataLoader.refresh(props.currentAttachment.id)
-            }
+            attachmentSize={(props.attachment && getFormattedFileSize(props.attachment.size)) || '0 KB'}
+            refresh={() => props.attachment?.id && reportAttachmentDetailsDataLoader.refresh(props.attachment.id)}
           />
         </DialogContent>
         <DialogActions>

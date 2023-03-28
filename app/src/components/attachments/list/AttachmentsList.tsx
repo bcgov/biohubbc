@@ -13,7 +13,7 @@ import { SubmitStatusChip } from 'components/chips/SubmitStatusChip';
 import { BioHubSubmittedStatusType } from 'constants/misc';
 import { IGetProjectAttachment } from 'interfaces/useProjectApi.interface';
 import { IGetSurveyAttachment } from 'interfaces/useSurveyApi.interface';
-import React, { useState } from 'react';
+import React from 'react';
 import AttachmentsListItemMenuButton from './AttachmentsListItemMenuButton';
 
 const useStyles = makeStyles(() => ({
@@ -42,9 +42,6 @@ const AttachmentsList = <T extends IGetProjectAttachment | IGetSurveyAttachment>
 
   const { attachments, handleDownload, handleDelete, handleViewDetails } = props;
 
-  const [rowsPerPage] = useState(10);
-  const [page] = useState(0);
-
   function getArtifactSubmissionStatus(attachment: T): BioHubSubmittedStatusType {
     if (attachment.supplementaryAttachmentData?.event_timestamp) {
       return BioHubSubmittedStatusType.SUBMITTED;
@@ -56,7 +53,7 @@ const AttachmentsList = <T extends IGetProjectAttachment | IGetSurveyAttachment>
     const { attachment } = props;
 
     return (
-      <TableRow key={`${attachment.fileName}-${attachment.id}`}>
+      <TableRow>
         <TableCell scope="row" className={classes.attachmentNameCol}>
           <Link style={{ fontWeight: 'bold' }} underline="always" onClick={() => handleDownload(attachment)}>
             {attachment.fileName}
@@ -104,8 +101,8 @@ const AttachmentsList = <T extends IGetProjectAttachment | IGetSurveyAttachment>
           </TableHead>
           <TableBody>
             {(attachments.length &&
-              attachments.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                return <AttachmentsTableRow attachment={row} />;
+              attachments.map((row) => {
+                return <AttachmentsTableRow attachment={row} key={`${row.fileName}-${row.id}`} />;
               })) || <></>}
             {(!attachments.length && <NoAttachmentsTableRow />) || <></>}
           </TableBody>
