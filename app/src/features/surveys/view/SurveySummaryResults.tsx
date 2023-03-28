@@ -289,7 +289,7 @@ const SurveySummaryResults = () => {
     return (
       <Box>
         {Object.entries(list).map(([key, value], index) => (
-          <Box mt={3} key={`${key}-${index}`} pl={0.25}>
+          <Box mt={3} key={key} pl={0.25}>
             <Typography variant="body2">
               <strong>{msgGroup[key].label}</strong>
             </Typography>
