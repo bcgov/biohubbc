@@ -519,7 +519,7 @@ const SurveySummaryResults = () => {
           setOpenImportSummaryResults(false);
         }}>
         <FileUpload
-          dropZoneProps={{ maxNumFiles: 1, acceptedFileExtensions: '.csv, .xls, .txt, .xlsm, .xlsx' }}
+          dropZoneProps={{ maxNumFiles: 1, acceptedFileExtensions: '.xls, .xlsm, .xlsx' }}
           uploadHandler={importSummaryResults()}
         />
       </ComponentDialog>

@@ -481,7 +481,7 @@ const SurveyObservations: React.FC = () => {
         dialogTitle="Import Observation Data"
         onClose={handleCloseImportObservations}>
         <FileUpload
-          dropZoneProps={{ maxNumFiles: 1, acceptedFileExtensions: '.csv, .xls, .txt, .zip, .xlsm, .xlsx' }}
+          dropZoneProps={{ maxNumFiles: 1, acceptedFileExtensions: '.xls, .xlsm, .xlsx' }}
           uploadHandler={importObservations()}
         />
       </ComponentDialog>
