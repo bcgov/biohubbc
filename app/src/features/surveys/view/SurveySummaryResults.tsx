@@ -216,8 +216,12 @@ const SurveySummaryResults = () => {
       label: 'Unexpected formats in the values provided'
     },
     miscellaneous: { type: ['Miscellaneous'], label: 'Miscellaneous errors exist in your file' },
+    user_error: {
+      type: ['Failed to Get Validation Rules'],
+      label: 'Failed to get validation rules'
+    },
     system_error: {
-      type: ['Missing Validation Schema', 'Failed to Get Validation Rules'],
+      type: ['Missing Validation Schema'],
       label: 'Contact your system administrator'
     }
   };
