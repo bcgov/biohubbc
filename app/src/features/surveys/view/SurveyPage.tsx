@@ -5,14 +5,13 @@ import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import { IMarkerLayer } from 'components/map/components/MarkerCluster';
 import { IStaticLayer } from 'components/map/components/StaticLayers';
+import SubmissionAlertBar from 'components/publish/SubmissionAlertBar';
 import { SurveyContext } from 'contexts/surveyContext';
 import SurveyDetails from 'features/surveys/view/SurveyDetails';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import useDataLoaderError from 'hooks/useDataLoaderError';
-import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import { parseSpatialDataByType } from 'utils/spatial-utils';
 import SurveyStudyArea from './components/SurveyStudyArea';
@@ -30,20 +29,37 @@ const SurveyPage: React.FC = () => {
   const urlParams = useParams();
 
   const biohubApi = useBiohubApi();
-
-  const [isLoadingProject, setIsLoadingProject] = useState(true);
-  const [projectWithDetails, setProjectWithDetails] = useState<IGetProjectForViewResponse | null>(null);
-
-  const [isLoadingCodes, setIsLoadingCodes] = useState(true);
-  const [codes, setCodes] = useState<IGetAllCodeSetsResponse>();
+  const surveyContext = useContext(SurveyContext);
+  const surveyForViewData = surveyContext.surveyDataLoader.data;
+  const occurrence_submission_id =
+    surveyForViewData?.surveySupplementaryData?.occurrence_submission.occurrence_submission_id;
 
   const [markerLayers, setMarkerLayers] = useState<IMarkerLayer[]>([]);
   const [staticLayers, setStaticLayers] = useState<IStaticLayer[]>([]);
 
-  const surveyContext = useContext(SurveyContext);
-  const surveyWithDetails = surveyContext.surveyDataLoader.data;
+  const codesDataLoader = useDataLoader(() => biohubApi.codes.getAllCodeSets());
+  useDataLoaderError(codesDataLoader, () => {
+    return {
+      dialogTitle: 'Error Loading Codes Details',
+      dialogText:
+        'An error has occurred while attempting to load codes details, please try again. If the error persists, please contact your system administrator.'
+    };
+  });
+  codesDataLoader.load();
 
-  const mapDataLoader = useDataLoader((datasetID: number) => biohubApi.observation.getOccurrencesForView(datasetID));
+  const projectDataLoader = useDataLoader(() => biohubApi.project.getProjectForView(urlParams['id']));
+  useDataLoaderError(projectDataLoader, () => {
+    return {
+      dialogTitle: 'Error Loading Project Details',
+      dialogText:
+        'An error has occurred while attempting to load project details, please try again. If the error persists, please contact your system administrator.'
+    };
+  });
+  projectDataLoader.load();
+
+  const mapDataLoader = useDataLoader((occurrenceSubmissionId: number) =>
+    biohubApi.observation.getOccurrencesForView(occurrenceSubmissionId)
+  );
   useDataLoaderError(mapDataLoader, () => {
     return {
       dialogTitle: 'Error Loading Map Data',
@@ -51,33 +67,6 @@ const SurveyPage: React.FC = () => {
         'An error has occurred while attempting to load map data, please try again. If the error persists, please contact your system administrator.'
     };
   });
-
-  useEffect(() => {
-    const getCodes = async () => {
-      const codesResponse = await biohubApi.codes.getAllCodeSets();
-
-      if (!codesResponse) {
-        return;
-      }
-
-      setCodes(codesResponse);
-    };
-
-    if (isLoadingCodes && !codes) {
-      getCodes();
-      setIsLoadingCodes(false);
-    }
-  }, [urlParams, biohubApi.codes, isLoadingCodes, codes]);
-
-  const getProject = useCallback(async () => {
-    const projectWithDetailsResponse = await biohubApi.project.getProjectForView(urlParams['id']);
-
-    if (!projectWithDetailsResponse) {
-      return;
-    }
-
-    setProjectWithDetails(projectWithDetailsResponse);
-  }, [biohubApi.project, urlParams]);
 
   useEffect(() => {
     if (mapDataLoader.data) {
@@ -88,26 +77,24 @@ const SurveyPage: React.FC = () => {
     }
   }, [mapDataLoader.data]);
 
-  useEffect(() => {
-    if (isLoadingProject && !projectWithDetails) {
-      getProject();
-      setIsLoadingProject(false);
-    }
-  }, [isLoadingProject, projectWithDetails, getProject]);
+  if (occurrence_submission_id) {
+    mapDataLoader.load(occurrence_submission_id);
+  }
 
-  if (!projectWithDetails || !surveyWithDetails || !codes) {
+  if (!projectDataLoader.data || !codesDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
   return (
     <>
-      <SurveyHeader projectWithDetails={projectWithDetails} />
+      <SurveyHeader projectWithDetails={projectDataLoader.data} />
       <Container maxWidth="xl">
         <Box my={3}>
+          <SubmissionAlertBar />
           <Grid container spacing={3}>
             <Grid item md={12} lg={4}>
               <Paper elevation={0}>
-                <SurveyDetails projectForViewData={projectWithDetails} codes={codes} />
+                <SurveyDetails projectForViewData={projectDataLoader.data} codes={codesDataLoader.data} />
               </Paper>
             </Grid>
             <Grid item md={12} lg={8}>
@@ -123,13 +110,13 @@ const SurveyPage: React.FC = () => {
               </Box>
               <Box mb={3}>
                 <Paper elevation={0}>
-                  <SurveyAttachments projectForViewData={projectWithDetails} />
+                  <SurveyAttachments />
                 </Paper>
               </Box>
               <Box mb={3}>
                 <Paper elevation={0}>
                   <SurveyStudyArea
-                    projectForViewData={projectWithDetails}
+                    projectForViewData={projectDataLoader.data}
                     mapLayersForView={{ markerLayers: markerLayers, staticLayers: staticLayers }}
                   />
                 </Paper>

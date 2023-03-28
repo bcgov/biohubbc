@@ -23,7 +23,7 @@ export interface IGetSpeciesData {
 }
 
 export interface IGetLatestSurveyOccurrenceSubmission {
-  id: number;
+  occurrence_submission_id: number;
   survey_id: number;
   source: string;
   delete_timestamp: string;
@@ -394,7 +394,9 @@ export class SurveyRepository extends BaseRepository {
       FROM
         occurrence_submission
       WHERE
-        survey_id = ${surveyId};
+        survey_id = ${surveyId}
+      AND
+        delete_timestamp is null;
     `;
 
     const response = await this.connection.sql<{ occurrence_submission_id: number | null }>(sqlStatement);
@@ -412,7 +414,7 @@ export class SurveyRepository extends BaseRepository {
   async getLatestSurveyOccurrenceSubmission(surveyId: number): Promise<IGetLatestSurveyOccurrenceSubmission | null> {
     const sqlStatement = SQL`
       SELECT
-        os.occurrence_submission_id as id,
+        os.occurrence_submission_id,
         os.survey_id,
         os.source,
         os.delete_timestamp,
@@ -531,7 +533,9 @@ export class SurveyRepository extends BaseRepository {
       FROM
         survey_summary_submission
       WHERE
-        survey_id = ${surveyId};
+        survey_id = ${surveyId}
+      AND
+        delete_timestamp IS NULL;
       `;
 
     const response = await this.connection.sql<{ survey_summary_submission_id: number | null }>(sqlStatement);

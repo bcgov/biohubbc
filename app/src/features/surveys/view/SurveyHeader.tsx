@@ -273,9 +273,13 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
         dialogText="Thank you for submitting your survey data to Biohub."
         open={finishSubmission}
         onClose={() => {
+          surveyContext.surveyDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+          surveyContext.artifactDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
           setFinishSubmission(false);
         }}
         onOk={() => {
+          surveyContext.surveyDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+          surveyContext.artifactDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
           setFinishSubmission(false);
         }}></ErrorDialog>
 
@@ -286,7 +290,7 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
           setOpenSubmitSurvey(!openSubmitSurvey);
         }}
         onSubmit={async (values: ISurveySubmitForm) => {
-          biohubApi.publish.publishSurvey(
+          await biohubApi.publish.publishSurvey(
             projectWithDetails.id,
             surveyWithDetails.surveyData.survey_details.id,
             values

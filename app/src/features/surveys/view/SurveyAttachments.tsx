@@ -3,74 +3,39 @@ import Divider from '@material-ui/core/Divider';
 import Paper from '@material-ui/core/Paper';
 import { mdiTrayArrowUp } from '@mdi/js';
 import Icon from '@mdi/react';
-import AttachmentsList from 'components/attachments/AttachmentsList';
 import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
 import FileUploadWithMetaDialog from 'components/dialog/attachments/FileUploadWithMetaDialog';
 import { IUploadHandler } from 'components/file-upload/FileUploadItem';
 import { H2MenuToolbar } from 'components/toolbar/ActionToolbars';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { IGetProjectForViewResponse, IUploadAttachmentResponse } from 'interfaces/useProjectApi.interface';
-import { IGetSurveyAttachment, IGetSurveyReportAttachment } from 'interfaces/useSurveyApi.interface';
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { AttachmentType } from '../../../constants/attachments';
+import SurveyAttachmentsList from './SurveyAttachmentsList';
 
-export interface ISurveyAttachmentsProps {
-  projectForViewData: IGetProjectForViewResponse;
-}
-
-/**
- * Survey attachments content.
- *
- * @return {*}
- */
-const SurveyAttachments: React.FC<ISurveyAttachmentsProps> = () => {
+const SurveyAttachments: React.FC = () => {
   const biohubApi = useBiohubApi();
+
   const surveyContext = useContext(SurveyContext);
+
   const { projectId, surveyId } = surveyContext;
 
   const [openUploadAttachments, setOpenUploadAttachments] = useState(false);
   const [attachmentType, setAttachmentType] = useState<AttachmentType.REPORT | AttachmentType.OTHER>(
     AttachmentType.OTHER
   );
-  const [attachmentsList, setAttachmentsList] = useState<IGetSurveyAttachment[]>([]);
-  const [reportAttachmentsList, setReportAttachmentsList] = useState<IGetSurveyReportAttachment[]>([]);
-
-  // Tracks which attachment rows have been selected, via the table checkboxes.
 
   const handleUploadReportClick = () => {
     setAttachmentType(AttachmentType.REPORT);
     setOpenUploadAttachments(true);
   };
+
   const handleUploadAttachmentClick = () => {
     setAttachmentType(AttachmentType.OTHER);
     setOpenUploadAttachments(true);
   };
 
-  const getAttachments = useCallback(
-    async (forceFetch: boolean): Promise<IGetSurveyAttachment[] | undefined> => {
-      if (attachmentsList.length && !forceFetch) {
-        return;
-      }
-
-      try {
-        const response = await biohubApi.survey.getSurveyAttachments(projectId, surveyId);
-
-        if (!response?.attachmentsList) {
-          return;
-        }
-
-        setReportAttachmentsList([...response.reportAttachmentsList]);
-        setAttachmentsList([...response.attachmentsList]);
-        return [...response.reportAttachmentsList, ...response.attachmentsList];
-      } catch (error) {
-        return;
-      }
-    },
-    [biohubApi.survey, projectId, surveyId, attachmentsList.length]
-  );
-
-  const getUploadHandler = (): IUploadHandler<IUploadAttachmentResponse> => {
+  const getUploadHandler = (): IUploadHandler => {
     return (file, cancelToken, handleFileUploadProgress) => {
       return biohubApi.survey.uploadSurveyAttachments(projectId, surveyId, file, cancelToken, handleFileUploadProgress);
     };
@@ -86,12 +51,6 @@ const SurveyAttachments: React.FC<ISurveyAttachmentsProps> = () => {
     };
   };
 
-  useEffect(() => {
-    getAttachments(false);
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   return (
     <>
       <FileUploadWithMetaDialog
@@ -101,7 +60,7 @@ const SurveyAttachments: React.FC<ISurveyAttachmentsProps> = () => {
         onFinish={getFinishHandler()}
         onClose={() => {
           setOpenUploadAttachments(false);
-          getAttachments(true);
+          surveyContext.artifactDataLoader.refresh(projectId, surveyId);
         }}
         uploadHandler={getUploadHandler()}
       />
@@ -119,13 +78,7 @@ const SurveyAttachments: React.FC<ISurveyAttachmentsProps> = () => {
         />
         <Divider></Divider>
         <Box px={1}>
-          <AttachmentsList
-            projectId={projectId}
-            surveyId={surveyId}
-            attachmentsList={[...attachmentsList, ...reportAttachmentsList]}
-            selectedAttachments={[]}
-            getAttachments={getAttachments}
-          />
+          <SurveyAttachmentsList />
         </Box>
       </Paper>
     </>

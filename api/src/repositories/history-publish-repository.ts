@@ -382,13 +382,13 @@ export class HistoryPublishRepository extends BaseRepository {
   async getProjectMetadataPublishRecord(projectId: number): Promise<ProjectMetadataPublish | null> {
     // Select 1 record with latest timestamp
     const sqlStatement = SQL`
-      select 
-        * 
+      select
+        *
       from
         project_metadata_publish
-      where 
+      where
         project_id = ${projectId}
-      order by 
+      order by
         event_timestamp desc
       limit 1;
     `;
@@ -408,13 +408,13 @@ export class HistoryPublishRepository extends BaseRepository {
   async getSurveyMetadataPublishRecord(surveyId: number): Promise<SurveyMetadataPublish | null> {
     // Select 1 record with latest timestamp
     const sqlStatement = SQL`
-      select 
-        * 
+      select
+        *
       from
         survey_metadata_publish
-      where 
+      where
         survey_id = ${surveyId}
-      order by 
+      order by
         event_timestamp desc
       limit 1;
     `;
@@ -436,13 +436,13 @@ export class HistoryPublishRepository extends BaseRepository {
   ): Promise<OccurrenceSubmissionPublish | null> {
     // Select 1 record with latest timestamp
     const sqlStatement = SQL`
-      select 
-        * 
+      select
+        *
       from
         occurrence_submission_publish
-      where 
+      where
         occurrence_submission_id = ${occurrenceSubmissionId}
-      order by 
+      order by
         event_timestamp desc
       limit 1;
     `;
@@ -462,13 +462,13 @@ export class HistoryPublishRepository extends BaseRepository {
   async getProjectAttachmentPublishRecord(projectAttachmentId: number): Promise<ProjectAttachmentPublish | null> {
     // Select 1 record with latest timestamp
     const sqlStatement = SQL`
-      select 
-        * 
+      select
+        *
       from
         project_attachment_publish
-      where 
+      where
         project_attachment_id = ${projectAttachmentId}
-      order by 
+      order by
         event_timestamp desc
       limit 1;
     `;
@@ -488,13 +488,13 @@ export class HistoryPublishRepository extends BaseRepository {
   async getProjectReportPublishRecord(projectReportAttachmentId: number): Promise<ProjectReportPublish | null> {
     // Select 1 record with latest timestamp
     const sqlStatement = SQL`
-      select 
-        * 
+      select
+        *
       from
         project_report_publish
-      where 
+      where
         project_report_attachment_id = ${projectReportAttachmentId}
-      order by 
+      order by
         event_timestamp desc
       limit 1;
     `;
@@ -514,13 +514,13 @@ export class HistoryPublishRepository extends BaseRepository {
   async getSurveyAttachmentPublishRecord(surveyAttachmentId: number): Promise<SurveyAttachmentPublish | null> {
     // Select 1 record with latest timestamp
     const sqlStatement = SQL`
-      select 
-        * 
+      select
+        *
       from
         survey_attachment_publish
-      where 
+      where
         survey_attachment_id = ${surveyAttachmentId}
-      order by 
+      order by
         event_timestamp desc
       limit 1;
     `;
@@ -540,13 +540,13 @@ export class HistoryPublishRepository extends BaseRepository {
   async getSurveyReportPublishRecord(surveyReportAttachmentId: number): Promise<SurveyReportPublish | null> {
     // Select 1 record with latest timestamp
     const sqlStatement = SQL`
-      select 
-        * 
+      select
+        *
       from
         survey_report_publish
-      where 
+      where
         survey_report_attachment_id = ${surveyReportAttachmentId}
-      order by 
+      order by
         event_timestamp desc
       limit 1;
     `;
@@ -568,13 +568,13 @@ export class HistoryPublishRepository extends BaseRepository {
   ): Promise<SurveySummarySubmissionPublish | null> {
     // Select 1 record with latest timestamp
     const sqlStatement = SQL`
-      select 
-        * 
+      select
+        *
       from
         survey_summary_submission_publish
-      where 
+      where
         survey_summary_submission_id = ${surveySummarySubmissionId}
-      order by 
+      order by
         event_timestamp desc
       limit 1;
     `;
@@ -582,5 +582,37 @@ export class HistoryPublishRepository extends BaseRepository {
     const response = await this.connection.sql<SurveySummarySubmissionPublish>(sqlStatement);
 
     return (response.rows.length && response.rows[0]) || null;
+  }
+
+  /**
+   * Deletes a record from `survey_attachment_publish` for a given attachment id.
+   *
+   * @param {number} surveyAttachmentId
+   * @return {*}  {Promise<void>}
+   * @memberof HistoryPublishRepository
+   */
+  async deleteSurveyAttachmentPublishRecord(surveyAttachmentId: number): Promise<void> {
+    const sqlStatement = SQL`
+      delete from survey_attachment_publish
+      where survey_attachment_id = ${surveyAttachmentId};
+    `;
+
+    await this.connection.sql(sqlStatement);
+  }
+
+  /**
+   * Deletes a record from `survey_report_publish` for a given attachment id.
+   *
+   * @param {number} surveyAttachmentId
+   * @return {*}  {Promise<void>}
+   * @memberof HistoryPublishRepository
+   */
+  async deleteSurveyReportAttachmentPublishRecord(surveyAttachmentId: number): Promise<void> {
+    const sqlStatement = SQL`
+      delete from survey_report_publish
+      where survey_report_attachment_id = ${surveyAttachmentId};
+    `;
+
+    await this.connection.sql(sqlStatement);
   }
 }

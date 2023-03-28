@@ -159,7 +159,9 @@ export function uploadMedia(): RequestHandler {
 
       await connection.commit();
 
-      return res.status(200).json({ attachmentId: upsertResult.id, revision_count: upsertResult.revision_count });
+      return res
+        .status(200)
+        .json({ attachmentId: upsertResult.project_attachment_id, revision_count: upsertResult.revision_count });
     } catch (error) {
       defaultLog.error({ label: 'uploadMedia', message: 'error', error });
       await connection.rollback();
