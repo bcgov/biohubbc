@@ -1,6 +1,5 @@
 import { createStyles, LinearProgress, withStyles } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
-import Chip from '@material-ui/core/Chip';
 import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
 import Link from '@material-ui/core/Link';
@@ -24,15 +23,19 @@ import {
   mdiTrayArrowDown
 } from '@mdi/js';
 import Icon from '@mdi/react';
+import { SubmitStatusChip } from 'components/chips/SubmitStatusChip';
 import ComponentDialog from 'components/dialog/ComponentDialog';
 import FileUpload from 'components/file-upload/FileUpload';
 import { IUploadHandler } from 'components/file-upload/FileUploadItem';
 import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
+import { BioHubSubmittedStatusType } from 'constants/misc';
 import { DialogContext } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import React, { useContext, useEffect, useState } from 'react';
+import useDataLoaderError from 'hooks/useDataLoaderError';
+import { ISurveySummarySupplementaryData } from 'interfaces/useSummaryResultsApi.interface';
 
 const useStyles = makeStyles((theme: Theme) => ({
   importFile: {
@@ -97,9 +100,13 @@ const SurveySummaryResults = () => {
   )(LinearProgress);
   const biohubApi = useBiohubApi();
   const surveyContext = useContext(SurveyContext);
+  const dialogContext = useContext(DialogContext);
 
   const projectId = surveyContext.projectId as number;
   const surveyId = surveyContext.surveyId as number;
+
+
+  const classes = useStyles();
 
   const [openImportSummaryResults, setOpenImportSummaryResults] = useState(false);
   const [refreshData, setRefreshData] = useState(false);
@@ -107,17 +114,23 @@ const SurveySummaryResults = () => {
   // provide file name for 'loading' ui before submission responds
   const [filName, setFileName] = useState('');
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-
+  
+  //Summary Data Loader and Error Handling
   const summaryDataLoader = useDataLoader(() => biohubApi.survey.getSurveySummarySubmission(projectId, surveyId));
+  useDataLoaderError(summaryDataLoader, () => {
+    return {
+      dialogTitle: 'Error Loading Summary Details',
+      dialogText:
+        'An error has occurred while attempting to load summary details, please try again. If the error persists, please contact your system administrator.'
+    };
+  });
 
   useEffect(() => {
     summaryDataLoader.load();
   }, []); // eslint-disable-line
-
-  const submission = summaryDataLoader.data;
-  const submissionMessages = summaryDataLoader?.data?.messages || [];
-
-  const classes = useStyles();
+  
+  const summaryData = summaryDataLoader.data?.surveySummaryData;
+  const submissionMessages = summaryDataLoader?.data?.surveySummaryData.messages || [];
 
   const importSummaryResults = (): IUploadHandler => {
     return (file, cancelToken, handleFileUploadProgress) => {
@@ -131,11 +144,9 @@ const SurveySummaryResults = () => {
     };
   };
 
-  const dialogContext = useContext(DialogContext);
-
   const softDeleteSubmission = async () => {
-    if (submission) {
-      await biohubApi.survey.deleteSummarySubmission(projectId, surveyId, submission.id);
+    if (summaryData) {
+      await biohubApi.survey.deleteSummarySubmission(projectId, surveyId, summaryData.survey_summary_submission_id);
       summaryDataLoader.clearData();
     }
   };
@@ -156,9 +167,18 @@ const SurveySummaryResults = () => {
     dialogText: 'Are you sure you want to delete this file? This action cannot be undone.'
   };
 
+
+  summaryDataLoader.load();
+
+  //Rerender summary data when the survey data loader changes
+  useEffect(() => {
+    summaryDataLoader.refresh();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [surveyContext.surveyDataLoader]);
+
   const showUploadDialog = () => {
     setRefreshData(false);
-    if (submission) {
+    if (summaryData) {
       // already have summary data, prompt user to confirm override
       dialogContext.setYesNoDialog({
         ...defaultUploadYesNoDialogProps,
@@ -184,8 +204,18 @@ const SurveySummaryResults = () => {
       onYes: () => {
         softDeleteSubmission();
         dialogContext.setYesNoDialog({ open: false });
+        surveyContext.surveyDataLoader.refresh(projectId, surveyId);
       }
     });
+  };
+
+  const checkSubmissionStatus = (
+    supplementaryData: ISurveySummarySupplementaryData | null | undefined
+  ): BioHubSubmittedStatusType => {
+    if (supplementaryData?.event_timestamp) {
+      return BioHubSubmittedStatusType.SUBMITTED;
+    }
+    return BioHubSubmittedStatusType.UNSUBMITTED;
   };
 
   type MessageGrouping = { [key: string]: { type: string[]; label: string } };
@@ -233,6 +263,9 @@ const SurveySummaryResults = () => {
   const submissionWarnings: SubmissionWarnings = {};
 
   if (submissionMessages) {
+  const messageList = summaryData?.messages;
+
+  if (messageList) {
     Object.entries(messageGrouping).forEach(([key, value]) => {
       submissionMessages.forEach((message) => {
         if (value.type.includes(message.type)) {
@@ -255,14 +288,18 @@ const SurveySummaryResults = () => {
     });
   }
   const viewFileContents = async () => {
-    if (!submission) {
+    if (!summaryData) {
       return;
     }
 
     let response;
 
     try {
-      response = await biohubApi.survey.getSummarySubmissionSignedURL(projectId, surveyId, submission?.id);
+      response = await biohubApi.survey.getSummarySubmissionSignedURL(
+        projectId,
+        surveyId,
+        summaryData?.survey_summary_submission_id
+      );
     } catch {
       return;
     }
@@ -338,7 +375,7 @@ const SurveySummaryResults = () => {
 
         <Box p={3}>
           {/* No summary */}
-          {!submission && !summaryDataLoader?.isLoading && (
+          {!summaryData && !summaryDataLoader?.isLoading && (
             <Paper variant="outlined" className={classes.importFile}>
               <Box display="flex" flex="1 1 auto" alignItems="center" justifyContent="center">
                 <Typography data-testid="observations-nodata" variant="body2" color="textSecondary" component="div">
@@ -385,7 +422,7 @@ const SurveySummaryResults = () => {
           )}
 
           {/* Got a summary with errors */}
-          {submission && submissionMessages.length > 0 && (
+          {summaryData && submissionMessages.length > 0 && (
             <Box>
               <Alert severity="error" icon={<Icon path={mdiAlertCircleOutline} size={1} />}>
                 <AlertTitle>Failed to import summary results</AlertTitle>
@@ -407,7 +444,7 @@ const SurveySummaryResults = () => {
                           variant="body2"
                           component="div"
                           onClick={viewFileContents}>
-                          <strong>{submission.fileName}</strong>
+                          <strong>{summaryData.fileName}</strong>
                         </Typography>
                       </Box>
                     </Box>
@@ -450,7 +487,7 @@ const SurveySummaryResults = () => {
           )}
 
           {/* All done */}
-          {submission && !summaryDataLoader.isLoading && submissionMessages.length <= 0 && (
+          {summaryData && !summaryDataLoader.isLoading && submissionMessages.length <= 0 && (
             <>
               <Paper variant="outlined" className={classes.importFile + ` ` + `${submissionStatusSeverity}`}>
                 <Box display="flex" alignItems="center" flex="1 1 auto" style={{ overflow: 'hidden' }}>
@@ -464,14 +501,14 @@ const SurveySummaryResults = () => {
                         variant="body2"
                         component="div"
                         onClick={viewFileContents}>
-                        <strong>{submission.fileName}</strong>
+                        <strong>{summaryData.fileName}</strong>
                       </Typography>
                     </Box>
                   </Box>
 
                   <Box flex="0 0 auto" display="flex" alignItems="center">
                     <Box mr={2}>
-                      <Chip label="Unsubmitted" color="primary" />
+                    <SubmitStatusChip status={checkSubmissionStatus(summaryDataLoader.data?.surveySummarySupplementaryData)} />
                     </Box>
 
                     <Box>
@@ -510,7 +547,6 @@ const SurveySummaryResults = () => {
                 </Box>
               </Paper>
             </>
-          )}
         </Box>
       </Paper>
 
@@ -522,6 +558,8 @@ const SurveySummaryResults = () => {
             summaryDataLoader.refresh();
           }
           setOpenImportSummaryResults(false);
+          summaryDataLoader.refresh();
+          surveyContext.surveyDataLoader.refresh(projectId, surveyId);
         }}>
         <FileUpload
           dropZoneProps={{ maxNumFiles: 1, acceptedFileExtensions: '.xls, .xlsm, .xlsx' }}

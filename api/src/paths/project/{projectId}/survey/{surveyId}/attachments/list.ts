@@ -2,7 +2,6 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_ROLE, SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
-import { GetAttachmentsData } from '../../../../../../models/project-survey-attachments';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 import { AttachmentService } from '../../../../../../services/attachment-service';
 import { getLogger } from '../../../../../../utils/logger';
@@ -63,20 +62,164 @@ GET.apiDoc = {
         'application/json': {
           schema: {
             type: 'object',
-            required: ['attachmentsList'],
+            required: ['attachmentsList', 'reportAttachmentsList'],
             properties: {
               attachmentsList: {
+                description: 'List of attachments.',
                 type: 'array',
                 items: {
+                  description: 'Survey attachment data with supplementary data',
                   type: 'object',
+                  required: ['id', 'fileName', 'fileType', 'lastModified', 'size', 'supplementaryAttachmentData'],
                   properties: {
+                    id: {
+                      description: 'Attachment id',
+                      type: 'number'
+                    },
                     fileName: {
-                      description: 'The file name of the attachment',
+                      description: 'Attachment file name',
+                      type: 'string'
+                    },
+                    fileType: {
+                      description: 'Attachment file type',
                       type: 'string'
                     },
                     lastModified: {
-                      description: 'The date the object was last modified',
+                      description: 'Attachment last modified date',
                       type: 'string'
+                    },
+                    size: {
+                      description: 'Attachment file size',
+                      type: 'number'
+                    },
+                    status: {
+                      description: 'Attachment publish status',
+                      type: 'string'
+                    },
+                    supplementaryAttachmentData: {
+                      description: 'Attachment supplementary data',
+                      type: 'object',
+                      nullable: true,
+                      properties: {
+                        survey_attachment_publish_id: {
+                          description: 'Attachment publish id',
+                          type: 'number'
+                        },
+                        survey_attachment_id: {
+                          description: 'Attachment id',
+                          type: 'number'
+                        },
+                        event_timestamp: {
+                          oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
+                          description: 'ISO 8601 date string for the project start date'
+                        },
+                        artifact_revision_id: {
+                          type: 'integer',
+                          minimum: 1
+                        },
+                        create_date: {
+                          oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
+                          description: 'ISO 8601 date string for the project start date'
+                        },
+                        create_user: {
+                          type: 'integer',
+                          minimum: 1
+                        },
+                        update_date: {
+                          oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
+                          description: 'ISO 8601 date string for the project start date',
+                          nullable: true
+                        },
+                        update_user: {
+                          type: 'integer',
+                          minimum: 1,
+                          nullable: true
+                        },
+                        revision_count: {
+                          type: 'integer',
+                          minimum: 0
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              reportAttachmentsList: {
+                description: 'List of report attachments.',
+                type: 'array',
+                items: {
+                  description: 'Survey attachment data with supplementary data',
+                  type: 'object',
+                  required: ['id', 'fileName', 'fileType', 'lastModified', 'size', 'supplementaryAttachmentData'],
+                  properties: {
+                    id: {
+                      description: 'Attachment id',
+                      type: 'number'
+                    },
+                    fileName: {
+                      description: 'Attachment file name',
+                      type: 'string'
+                    },
+                    fileType: {
+                      description: 'Attachment file type',
+                      type: 'string'
+                    },
+                    lastModified: {
+                      description: 'Attachment last modified date',
+                      type: 'string'
+                    },
+                    size: {
+                      description: 'Attachment file size',
+                      type: 'number'
+                    },
+                    status: {
+                      description: 'Attachment publish status',
+                      type: 'string'
+                    },
+                    supplementaryAttachmentData: {
+                      description: 'Attachment supplementary data',
+                      type: 'object',
+                      nullable: true,
+                      properties: {
+                        survey_report_publish_id: {
+                          description: 'Attachment publish id',
+                          type: 'number'
+                        },
+                        survey_report_attachment_id: {
+                          description: 'Attachment id',
+                          type: 'number'
+                        },
+                        event_timestamp: {
+                          oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
+                          description: 'ISO 8601 date string for the project start date'
+                        },
+                        artifact_revision_id: {
+                          type: 'integer',
+                          minimum: 1
+                        },
+                        create_date: {
+                          oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
+                          description: 'ISO 8601 date string for the project start date'
+                        },
+                        create_user: {
+                          type: 'integer',
+                          minimum: 1
+                        },
+                        update_date: {
+                          oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
+                          description: 'ISO 8601 date string for the project start date',
+                          nullable: true
+                        },
+                        update_user: {
+                          type: 'integer',
+                          minimum: 1,
+                          nullable: true
+                        },
+                        revision_count: {
+                          type: 'integer',
+                          minimum: 0
+                        }
+                      }
                     }
                   }
                 }
@@ -116,14 +259,15 @@ export function getSurveyAttachments(): RequestHandler {
 
       const attachmentService = new AttachmentService(connection);
 
-      const attachmentsData = await attachmentService.getSurveyAttachments(surveyId);
-      const reportAttachmentsData = await attachmentService.getSurveyReportAttachments(surveyId);
+      const attachmentsData = await attachmentService.getSurveyAttachmentsWithSupplementaryData(surveyId);
+      const reportAttachmentsData = await attachmentService.getSurveyReportAttachmentsWithSupplementaryData(surveyId);
 
       await connection.commit();
 
-      const getAttachmentsData = new GetAttachmentsData(attachmentsData, reportAttachmentsData);
-
-      return res.status(200).json(getAttachmentsData);
+      return res.status(200).json({
+        attachmentsList: attachmentsData,
+        reportAttachmentsList: reportAttachmentsData
+      });
     } catch (error) {
       defaultLog.error({ label: 'getSurveyAttachments', message: 'error', error });
       await connection.rollback();

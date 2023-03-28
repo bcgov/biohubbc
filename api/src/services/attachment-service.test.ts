@@ -76,7 +76,7 @@ describe('AttachmentService', () => {
           const dbConnection = getMockDBConnection();
           const service = new AttachmentService(dbConnection);
 
-          const data = { id: 1, revision_count: 1 };
+          const data = { project_attachment_id: 1, revision_count: 1 };
 
           const repoStub = sinon.stub(AttachmentRepository.prototype, 'insertProjectAttachment').resolves(data);
 
@@ -97,7 +97,7 @@ describe('AttachmentService', () => {
           const dbConnection = getMockDBConnection();
           const service = new AttachmentService(dbConnection);
 
-          const data = { id: 1, revision_count: 1 };
+          const data = { project_attachment_id: 1, revision_count: 1 };
 
           const repoStub = sinon.stub(AttachmentRepository.prototype, 'updateProjectAttachment').resolves(data);
 
@@ -135,7 +135,7 @@ describe('AttachmentService', () => {
 
           const serviceStub2 = sinon
             .stub(AttachmentService.prototype, 'updateProjectAttachment')
-            .resolves({ id: 1, revision_count: 1 });
+            .resolves({ project_attachment_id: 1, revision_count: 1 });
 
           const response = await service.upsertProjectAttachment(
             ({ originalname: 'file.test' } as unknown) as Express.Multer.File,
@@ -146,7 +146,7 @@ describe('AttachmentService', () => {
           expect(serviceStub1).to.be.calledOnce;
           expect(serviceStub2).to.be.calledOnce;
           expect(response).to.eql({
-            id: 1,
+            project_attachment_id: 1,
             revision_count: 1,
             key: 'sims/projects/1/file.test'
           });
@@ -162,7 +162,7 @@ describe('AttachmentService', () => {
 
           const serviceStub2 = sinon
             .stub(AttachmentService.prototype, 'insertProjectAttachment')
-            .resolves({ id: 1, revision_count: 1 });
+            .resolves({ project_attachment_id: 1, revision_count: 1 });
 
           const response = await service.upsertProjectAttachment(
             ({ originalname: 'file.test' } as unknown) as Express.Multer.File,
@@ -173,7 +173,7 @@ describe('AttachmentService', () => {
           expect(serviceStub1).to.be.calledOnce;
           expect(serviceStub2).to.be.calledOnce;
           expect(response).to.eql({
-            id: 1,
+            project_attachment_id: 1,
             revision_count: 1,
             key: 'sims/projects/1/file.test'
           });
@@ -287,7 +287,7 @@ describe('AttachmentService', () => {
           const dbConnection = getMockDBConnection();
           const service = new AttachmentService(dbConnection);
 
-          const data = { id: 1, revision_count: 1 };
+          const data = { project_report_attachment_id: 1, revision_count: 1 };
 
           const repoStub = sinon.stub(AttachmentRepository.prototype, 'insertProjectReportAttachment').resolves(data);
 
@@ -309,7 +309,7 @@ describe('AttachmentService', () => {
           const dbConnection = getMockDBConnection();
           const service = new AttachmentService(dbConnection);
 
-          const data = { id: 1, revision_count: 1 };
+          const data = { project_report_attachment_id: 1, revision_count: 1 };
 
           const repoStub = sinon.stub(AttachmentRepository.prototype, 'updateProjectReportAttachment').resolves(data);
 
@@ -386,7 +386,7 @@ describe('AttachmentService', () => {
 
           const serviceStub2 = sinon
             .stub(AttachmentService.prototype, 'updateProjectReportAttachment')
-            .resolves({ id: 1, revision_count: 1 });
+            .resolves({ project_report_attachment_id: 1, revision_count: 1 });
 
           const serviceStub3 = sinon
             .stub(AttachmentService.prototype, 'deleteProjectReportAttachmentAuthors')
@@ -410,7 +410,7 @@ describe('AttachmentService', () => {
           expect(serviceStub3).to.be.calledOnce;
           expect(serviceStub4).to.be.calledOnce;
           expect(response).to.eql({
-            id: 1,
+            project_report_attachment_id: 1,
             revision_count: 1,
             key: 'sims/projects/1/reports/file.test'
           });
@@ -426,7 +426,7 @@ describe('AttachmentService', () => {
 
           const serviceStub2 = sinon
             .stub(AttachmentService.prototype, 'insertProjectReportAttachment')
-            .resolves({ id: 1, revision_count: 1 });
+            .resolves({ project_report_attachment_id: 1, revision_count: 1 });
 
           const serviceStub3 = sinon
             .stub(AttachmentService.prototype, 'deleteProjectReportAttachmentAuthors')
@@ -450,7 +450,7 @@ describe('AttachmentService', () => {
           expect(serviceStub3).to.be.calledOnce;
           expect(serviceStub4).to.be.calledOnce;
           expect(response).to.eql({
-            id: 1,
+            project_report_attachment_id: 1,
             revision_count: 1,
             key: 'sims/projects/1/reports/file.test'
           });
@@ -580,7 +580,7 @@ describe('AttachmentService', () => {
           const dbConnection = getMockDBConnection();
           const service = new AttachmentService(dbConnection);
 
-          const data = { id: 1, revision_count: 1 };
+          const data = { survey_attachment_id: 1, revision_count: 1 };
 
           const repoStub = sinon.stub(AttachmentRepository.prototype, 'updateSurveyAttachment').resolves(data);
 
@@ -596,7 +596,7 @@ describe('AttachmentService', () => {
           const dbConnection = getMockDBConnection();
           const service = new AttachmentService(dbConnection);
 
-          const data = { id: 1, revision_count: 1 };
+          const data = { survey_attachment_id: 1, revision_count: 1 };
 
           const repoStub = sinon.stub(AttachmentRepository.prototype, 'insertSurveyAttachment').resolves(data);
 
@@ -634,7 +634,7 @@ describe('AttachmentService', () => {
 
           const serviceStub2 = sinon
             .stub(AttachmentService.prototype, 'updateSurveyAttachment')
-            .resolves({ id: 1, revision_count: 1 });
+            .resolves({ survey_attachment_id: 1, revision_count: 1 });
 
           const response = await service.upsertSurveyAttachment(
             ({ originalname: 'file.test' } as unknown) as Express.Multer.File,
@@ -646,7 +646,7 @@ describe('AttachmentService', () => {
           expect(serviceStub1).to.be.calledOnce;
           expect(serviceStub2).to.be.calledOnce;
           expect(response).to.eql({
-            id: 1,
+            survey_attachment_id: 1,
             revision_count: 1,
             key: 'sims/projects/1/surveys/1/file.test'
           });
@@ -662,7 +662,7 @@ describe('AttachmentService', () => {
 
           const serviceStub2 = sinon
             .stub(AttachmentService.prototype, 'insertSurveyAttachment')
-            .resolves({ id: 1, revision_count: 1 });
+            .resolves({ survey_attachment_id: 1, revision_count: 1 });
 
           const response = await service.upsertSurveyAttachment(
             ({ originalname: 'file.test' } as unknown) as Express.Multer.File,
@@ -674,7 +674,7 @@ describe('AttachmentService', () => {
           expect(serviceStub1).to.be.calledOnce;
           expect(serviceStub2).to.be.calledOnce;
           expect(response).to.eql({
-            id: 1,
+            survey_attachment_id: 1,
             revision_count: 1,
             key: 'sims/projects/1/surveys/1/file.test'
           });
@@ -754,7 +754,7 @@ describe('AttachmentService', () => {
           const dbConnection = getMockDBConnection();
           const service = new AttachmentService(dbConnection);
 
-          const data = { id: 1, revision_count: 1 };
+          const data = { survey_report_attachment_id: 1, revision_count: 1 };
 
           const repoStub = sinon.stub(AttachmentRepository.prototype, 'insertSurveyReportAttachment').resolves(data);
 
@@ -776,7 +776,7 @@ describe('AttachmentService', () => {
           const dbConnection = getMockDBConnection();
           const service = new AttachmentService(dbConnection);
 
-          const data = { id: 1, revision_count: 1 };
+          const data = { survey_report_attachment_id: 1, revision_count: 1 };
 
           const repoStub = sinon.stub(AttachmentRepository.prototype, 'updateSurveyReportAttachment').resolves(data);
 
@@ -849,7 +849,7 @@ describe('AttachmentService', () => {
 
           const serviceStub2 = sinon
             .stub(AttachmentService.prototype, 'updateSurveyReportAttachment')
-            .resolves({ id: 1, revision_count: 1 });
+            .resolves({ survey_report_attachment_id: 1, revision_count: 1 });
 
           const serviceStub3 = sinon
             .stub(AttachmentService.prototype, 'deleteSurveyReportAttachmentAuthors')
@@ -872,7 +872,7 @@ describe('AttachmentService', () => {
           expect(serviceStub3).to.be.calledOnce;
           expect(serviceStub4).to.be.calledOnce;
           expect(response).to.eql({
-            id: 1,
+            survey_report_attachment_id: 1,
             revision_count: 1,
             key: 'sims/projects/1/surveys/1/reports/file.test'
           });
@@ -888,7 +888,7 @@ describe('AttachmentService', () => {
 
           const serviceStub2 = sinon
             .stub(AttachmentService.prototype, 'insertSurveyReportAttachment')
-            .resolves({ id: 1, revision_count: 1 });
+            .resolves({ survey_report_attachment_id: 1, revision_count: 1 });
 
           const serviceStub3 = sinon
             .stub(AttachmentService.prototype, 'deleteSurveyReportAttachmentAuthors')
@@ -911,7 +911,7 @@ describe('AttachmentService', () => {
           expect(serviceStub3).to.be.calledOnce;
           expect(serviceStub4).to.be.calledOnce;
           expect(response).to.eql({
-            id: 1,
+            survey_report_attachment_id: 1,
             revision_count: 1,
             key: 'sims/projects/1/surveys/1/reports/file.test'
           });

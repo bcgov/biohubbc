@@ -358,7 +358,7 @@ describe('SummaryService', () => {
       const service = mockService();
 
       sinon.stub(SummaryRepository.prototype, 'getLatestSurveySummarySubmission').resolves({
-        id: 30,
+        survey_summary_submission_id: 30,
         file_name: 'file13.xlsx',
         key: 's3_key',
         uuid: 'string',
@@ -373,7 +373,7 @@ describe('SummaryService', () => {
       const result = await service.getLatestSurveySummarySubmission(20);
 
       expect(result).to.be.eql({
-        id: 30,
+        survey_summary_submission_id: 30,
         file_name: 'file13.xlsx',
         key: 's3_key',
         uuid: 'string',
@@ -658,6 +658,7 @@ describe('SummaryService', () => {
         expect(xlsx).to.not.be.empty;
         expect(xlsx).to.be.instanceOf(XLSXCSV);
       } catch (error) {
+        expect(error).to.be.instanceOf(SummarySubmissionError);
         expect(parse).to.be.calledOnce;
       }
     });

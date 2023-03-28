@@ -209,9 +209,34 @@ export interface IGetSurveyAttachment {
   lastModified: string;
   size: number;
   revisionCount: number;
+  supplementaryAttachmentData: ISurveySupplementaryAttachmentData | ISurveySupplementaryReportAttachmentData | null;
 }
 
 export type IGetSurveyReportAttachment = IGetSurveyAttachment & { fileType: 'Report' };
+
+export interface ISurveySupplementaryAttachmentData {
+  survey_attachment_publish_id: number;
+  survey_attachment_id: number;
+  event_timestamp: string;
+  artifact_revision_id: number;
+  create_date: string;
+  create_user: number;
+  update_date: string | null;
+  update_user: number | null;
+  revision_count: number;
+}
+
+export interface ISurveySupplementaryReportAttachmentData {
+  survey_report_publish_id: number;
+  survey_report_attachment_id: number;
+  event_timestamp: string;
+  artifact_revision_id: number;
+  create_date: string;
+  create_user: number;
+  update_date: string | null;
+  update_user: number | null;
+  revision_count: number;
+}
 
 /**
  * Get survey attachments response object.

@@ -65,22 +65,23 @@ const DisplayFiles: React.FC<IDisplayFilesProps> = (props) => {
         render={(arrayHelpers) => (
           <>
             {data.map((item: any, index: number) => (
-              <ListItem key={`${formikName}[${item.id}]`} dense divider>
+              <ListItem
+                onClick={() => {
+                  const currentTarget = values[formikName].findIndex((value: any) => getName(value) === getName(item));
+
+                  if (currentTarget === -1) {
+                    arrayHelpers.push(item);
+                  } else {
+                    arrayHelpers.remove(currentTarget);
+                  }
+                }}
+                key={`${formikName}[${item.id}]`}
+                dense
+                divider>
                 <ListItemIcon>
                   <Checkbox
                     edge="start"
                     checked={!values[formikName].find((value: any) => getName(value) === getName(item)) ? false : true}
-                    onChange={() => {
-                      const currentTarget = values[formikName].findIndex(
-                        (value: any) => getName(value) === getName(item)
-                      );
-
-                      if (currentTarget === -1) {
-                        arrayHelpers.push(item);
-                      } else {
-                        arrayHelpers.remove(currentTarget);
-                      }
-                    }}
                     name={`${formikName}[${index}]`}
                     color="primary"></Checkbox>
                 </ListItemIcon>

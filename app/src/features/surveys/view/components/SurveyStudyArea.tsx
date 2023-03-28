@@ -70,14 +70,14 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
   const classes = useStyles();
   const biohubApi = useBiohubApi();
 
-  const surveyContext = useContext(SurveyContext);
-  const surveyForViewData = surveyContext.surveyDataLoader.data;
-
   const { projectForViewData } = props;
 
-  const survey_details = surveyForViewData?.surveyData?.survey_details;
+  const surveyContext = useContext(SurveyContext);
 
+  const survey_details = surveyContext.surveyDataLoader.data?.surveyData?.survey_details;
   const surveyGeometry = survey_details?.geometry || [];
+  const occurrence_submission_id =
+    surveyContext.surveyDataLoader.data?.surveySupplementaryData?.occurrence_submission.occurrence_submission_id;
 
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [studyAreaFormData, setStudyAreaFormData] = useState<IStudyAreaForm>(StudyAreaInitialValues);
@@ -100,9 +100,13 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
     const nonEditableGeometriesResult = surveyGeometry.map((geom: Feature) => {
       return { feature: geom };
     });
+
+    if (nonEditableGeometriesResult.length) {
+      setNonEditableGeometries(nonEditableGeometriesResult);
+    }
+
     zoomToBoundaryExtent();
-    setNonEditableGeometries(nonEditableGeometriesResult);
-  }, [surveyGeometry, zoomToBoundaryExtent]);
+  }, [surveyGeometry, occurrence_submission_id, setNonEditableGeometries, zoomToBoundaryExtent]);
 
   const [errorDialogProps, setErrorDialogProps] = useState<IErrorDialogProps>({
     dialogTitle: EditSurveyStudyAreaI18N.editErrorTitle,

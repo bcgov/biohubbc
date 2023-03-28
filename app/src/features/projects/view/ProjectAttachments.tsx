@@ -8,7 +8,6 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import { mdiAttachment, mdiChevronDown, mdiFilePdfBox, mdiTrayArrowUp } from '@mdi/js';
 import Icon from '@mdi/react';
-import AttachmentsList from 'components/attachments/AttachmentsList';
 import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
 import FileUploadWithMetaDialog from 'components/dialog/attachments/FileUploadWithMetaDialog';
 import { IUploadHandler } from 'components/file-upload/FileUploadItem';
@@ -22,6 +21,7 @@ import {
 import React, { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import { AttachmentType } from '../../../constants/attachments';
+import AttachmentsList from './ProjectAttachmentsList';
 
 export interface IProjectAttachmentsProps {
   projectForViewData: IGetProjectForViewResponse;
@@ -48,9 +48,6 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
   );
   const [attachmentsList, setAttachmentsList] = useState<IGetProjectAttachment[]>([]);
   const [reportAttachmentsList, setReportAttachmentsList] = useState<IGetProjectReportAttachment[]>([]);
-
-  // Tracks which attachment rows have been selected, via the table checkboxes.
-  const [selectedAttachmentRows, setSelectedAttachmentRows] = useState<IAttachmentType[]>([]);
 
   const handleUploadReportClick = () => {
     setAttachmentType(AttachmentType.REPORT);
@@ -182,18 +179,6 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
           projectId={projectId}
           attachmentsList={[...attachmentsList, ...reportAttachmentsList]}
           getAttachments={getAttachments}
-          selectedAttachments={selectedAttachmentRows}
-          onCheckAllChange={(items) => setSelectedAttachmentRows(items)}
-          onCheckboxChange={(value, add) => {
-            const found = selectedAttachmentRows.findIndex((item) => item.id === value.id && item.type === value.type);
-            const updated = [...selectedAttachmentRows];
-            if (found < 0 && add) {
-              updated.push(value);
-            } else if (found >= 0 && !add) {
-              updated.splice(found, 1);
-            }
-            setSelectedAttachmentRows(updated);
-          }}
         />
       </Box>
     </>

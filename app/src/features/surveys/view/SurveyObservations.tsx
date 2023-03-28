@@ -1,5 +1,4 @@
 import Box from '@material-ui/core/Box';
-import Chip from '@material-ui/core/Chip';
 import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
 import LinearProgress from '@material-ui/core/LinearProgress';
@@ -23,10 +22,12 @@ import {
   mdiTrayArrowDown
 } from '@mdi/js';
 import Icon from '@mdi/react';
+import { SubmitStatusChip } from 'components/chips/SubmitStatusChip';
 import ComponentDialog from 'components/dialog/ComponentDialog';
 import FileUpload from 'components/file-upload/FileUpload';
 import { IUploadHandler } from 'components/file-upload/FileUploadItem';
 import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
+import { BioHubSubmittedStatusType } from 'constants/misc';
 import { DialogContext } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -34,6 +35,7 @@ import useDataLoader from 'hooks/useDataLoader';
 import { useInterval } from 'hooks/useInterval';
 import {
   IGetObservationSubmissionResponseMessages,
+  ISurveySupplementaryData,
   IUploadObservationSubmissionResponse
 } from 'interfaces/useObservationApi.interface';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
@@ -107,12 +109,17 @@ const SurveyObservations: React.FC = () => {
   }, [projectId, surveyId]);
 
   const submissionDataLoader = useDataLoader(() => biohubApi.observation.getObservationSubmission(projectId, surveyId));
-
   submissionDataLoader.load();
 
+  useEffect(() => {
+    submissionDataLoader.refresh();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [surveyContext.surveyDataLoader]);
+
   const refreshSubmission = submissionDataLoader.refresh;
-  const occurrenceSubmission = submissionDataLoader.data;
-  const occurrenceSubmissionId = occurrenceSubmission?.id;
+  const occurrenceSubmission = submissionDataLoader.data?.surveyObservationData;
+  const occurrenceSupplementaryData = submissionDataLoader.data?.surveyObservationSupplementaryData;
+  const occurrenceSubmissionId = occurrenceSubmission?.occurrence_submission_id;
   const submissionMessageTypes = occurrenceSubmission?.messageTypes || [];
   const submissionExists = Boolean(occurrenceSubmission);
 
@@ -178,6 +185,7 @@ const SurveyObservations: React.FC = () => {
   function handleCloseImportObservations() {
     if (willRefreshOnClose) {
       refreshSubmission();
+      surveyContext.surveyDataLoader.refresh(projectId, surveyId);
     }
 
     setOpenImportObservations(false);
@@ -220,6 +228,7 @@ const SurveyObservations: React.FC = () => {
       onYes: () => {
         softDeleteSubmission();
         dialogContext.setYesNoDialog({ open: false });
+        surveyContext.surveyDataLoader.refresh(projectId, surveyId);
       }
     });
   }
@@ -241,6 +250,15 @@ const SurveyObservations: React.FC = () => {
       return 0;
     });
   }
+
+  const getSubmissionStatus = (
+    supplementaryData: ISurveySupplementaryData | null | undefined
+  ): BioHubSubmittedStatusType => {
+    if (supplementaryData?.event_timestamp) {
+      return BioHubSubmittedStatusType.SUBMITTED;
+    }
+    return BioHubSubmittedStatusType.UNSUBMITTED;
+  };
 
   const openFileContents = useCallback(() => {
     if (!occurrenceSubmissionId) {
@@ -433,7 +451,7 @@ const SurveyObservations: React.FC = () => {
 
                   <Box flex="0 0 auto" display="flex" alignItems="center">
                     <Box mr={2}>
-                      <Chip label="Unsubmitted" color="primary" />
+                      <SubmitStatusChip status={getSubmissionStatus(occurrenceSupplementaryData)} />
                     </Box>
                     <Box>
                       <IconButton aria-controls="context-menu" aria-haspopup="true" onClick={openContextMenu}>

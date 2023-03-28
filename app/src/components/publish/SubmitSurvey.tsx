@@ -5,10 +5,10 @@ import { SurveyContext } from 'contexts/surveyContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import useDataLoaderError from 'hooks/useDataLoaderError';
-import { IGetObservationSubmissionResponse } from 'interfaces/useObservationApi.interface';
-import { IGetSummaryResultsResponse } from 'interfaces/useSummaryResultsApi.interface';
+import { IGetObservationSubmissionResponse, ISurveyObservationData } from 'interfaces/useObservationApi.interface';
+import { IGetSummaryResultsResponse, ISurveySummaryData } from 'interfaces/useSummaryResultsApi.interface';
 import { IGetSurveyAttachment, IGetSurveyReportAttachment } from 'interfaces/useSurveyApi.interface';
-import React, { useContext } from 'react';
+import { default as React, useContext } from 'react';
 import yup from 'utils/YupSchema';
 import SelectAllButton from './SelectAllButton';
 import SubmitSection from './SubmitSection';
@@ -106,8 +106,16 @@ const SubmitSurvey: React.FC = () => {
 
       <SelectAllButton
         formikData={[
-          { key: 'observations', value: observationDataLoader.data ? [observationDataLoader.data] : [] },
-          { key: 'summary', value: summaryDataLoader.data ? [summaryDataLoader.data] : [] },
+          {
+            key: 'observations',
+            value: observationDataLoader.data?.surveyObservationData
+              ? [observationDataLoader.data.surveyObservationData]
+              : []
+          },
+          {
+            key: 'summary',
+            value: summaryDataLoader.data?.surveySummaryData ? [summaryDataLoader.data.surveySummaryData] : []
+          },
           {
             key: 'reports',
             value:
@@ -129,8 +137,10 @@ const SubmitSurvey: React.FC = () => {
         <SubmitSection
           subHeader="Observations"
           formikName="observations"
-          data={observationDataLoader.data ? [observationDataLoader.data] : []}
-          getName={(item: IGetObservationSubmissionResponse) => {
+          data={
+            observationDataLoader.data?.surveyObservationData ? [observationDataLoader.data.surveyObservationData] : []
+          }
+          getName={(item: ISurveyObservationData) => {
             return item.inputFileName;
           }}
         />
@@ -140,8 +150,8 @@ const SubmitSurvey: React.FC = () => {
         <SubmitSection
           subHeader="Summary Results"
           formikName="summary"
-          data={summaryDataLoader.data ? [summaryDataLoader.data] : []}
-          getName={(item: IGetSummaryResultsResponse) => {
+          data={summaryDataLoader.data?.surveySummaryData ? [summaryDataLoader.data.surveySummaryData] : []}
+          getName={(item: ISurveySummaryData) => {
             return item.fileName;
           }}
         />

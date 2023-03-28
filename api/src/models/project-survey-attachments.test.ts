@@ -9,48 +9,21 @@ import {
 } from './project-survey-attachments';
 
 describe('GetAttachmentsData', () => {
-  describe('No values provided', () => {
-    let getAttachmentsData: GetAttachmentsData;
+  it('All values provided with only create date', async () => {
+    const attachmentsData = {
+      survey_report_attachment_id: 1,
+      file_name: 'filename',
+      create_date: '2020-04-04',
+      file_size: 24,
+      file_type: 'Video'
+    };
+    const getAttachmentsData = new GetAttachmentsData(attachmentsData, null);
 
-    before(() => {
-      getAttachmentsData = new GetAttachmentsData(null);
-    });
-
-    it('sets attachmentsList', () => {
-      expect(getAttachmentsData.attachmentsList).to.eql([]);
-    });
-  });
-
-  describe('All values provided with only create date', () => {
-    let getAttachmentsData: GetAttachmentsData;
-
-    const attachmentsData = [
-      {
-        id: 1,
-        file_name: 'filename',
-        create_date: '2020/04/04',
-        file_size: 24,
-        file_type: 'Video'
-      }
-    ];
-
-    before(() => {
-      getAttachmentsData = new GetAttachmentsData(attachmentsData);
-    });
-
-    it('sets attachmentsList', () => {
-      expect(getAttachmentsData).to.be.an('object');
-      expect(getAttachmentsData).to.have.property('attachmentsList');
-
-      expect(getAttachmentsData.attachmentsList).to.be.an('array');
-      expect(getAttachmentsData.attachmentsList).to.have.length(1);
-
-      expect(getAttachmentsData.attachmentsList[0].fileName).to.equal('filename');
-      expect(getAttachmentsData.attachmentsList[0].fileType).to.equal('Video');
-      expect(getAttachmentsData.attachmentsList[0].id).to.equal(1);
-      expect(getAttachmentsData.attachmentsList[0].lastModified).to.match(new RegExp('2020-04-04T.*'));
-      expect(getAttachmentsData.attachmentsList[0].size).to.equal(24);
-    });
+    expect(getAttachmentsData.fileName).to.equal('filename');
+    expect(getAttachmentsData.fileType).to.equal('Video');
+    expect(getAttachmentsData.id).to.equal(1);
+    expect(getAttachmentsData.lastModified).to.match(new RegExp('2020-04-04T.*'));
+    expect(getAttachmentsData.size).to.equal(24);
   });
 });
 
