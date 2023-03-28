@@ -43,6 +43,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     display: 'flex',
     minHeight: '82px',
     padding: theme.spacing(2),
+    paddingLeft: '20px',
     overflow: 'hidden',
     '& .importFile-icon': {
       color: theme.palette.text.secondary

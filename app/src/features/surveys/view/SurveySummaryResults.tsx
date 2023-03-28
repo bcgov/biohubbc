@@ -39,6 +39,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     display: 'flex',
     minHeight: '82px',
     padding: theme.spacing(2),
+    paddingLeft: '20px',
     overflow: 'hidden',
     '& .importFile-icon': {
       color: theme.palette.text.secondary
@@ -151,7 +152,7 @@ const SurveySummaryResults = () => {
   const defaultDeleteYesNoDialogProps = {
     ...defaultUploadYesNoDialogProps,
     dialogTitle: 'Delete Summary Results Data',
-    dialogText: 'Are you sure you want to delete the summary results data? This action cannot be undone.'
+    dialogText: 'Are you sure you want to delete the summary results? This action cannot be undone.'
   };
 
   const showUploadDialog = () => {
@@ -175,6 +176,10 @@ const SurveySummaryResults = () => {
     dialogContext.setYesNoDialog({
       ...defaultDeleteYesNoDialogProps,
       open: true,
+      yesButtonProps: { color: 'secondary' },
+      yesButtonLabel: 'Delete',
+      noButtonProps: { color: 'default' },
+      noButtonLabel: 'Cancel',
       onYes: () => {
         softDeleteSubmission();
         dialogContext.setYesNoDialog({ open: false });

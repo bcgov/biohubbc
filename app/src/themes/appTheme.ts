@@ -68,18 +68,32 @@ const appTheme = createMuiTheme({
     },
     MuiAlert: {
       root: {
-        fontSize: '0.9rem'
+        fontSize: '0.9rem',
+        padding: '12px 20px',
+        borderWidth: '1px',
+        borderStyle: 'solid'
       },
       icon: {
-        marginRight: '0.85rem'
+        marginRight: '1rem'
+      },
+      standardInfo: {
+        borderColor: '#a3d4fa',
+        '& .MuiAlert-icon': {
+          color: '#313132'
+        }
       },
       standardError: {
-        paddingTop: '12px',
-        paddingBottom: '12px',
         color: '#A12622',
-        border: '1px solid #ebccd1',
+        borderColor: '#ebccd1',
         '& .MuiAlert-icon': {
           color: '#A12622'
+        }
+      },
+      standardSuccess: {
+        backgroundColor: '#dff0d8',
+        borderColor: '#c0dcb3',
+        '& .MuiAlert-icon': {
+          color: '#2d4821'
         }
       }
     },
