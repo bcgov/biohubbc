@@ -1,3 +1,4 @@
+import Box from '@material-ui/core/Box';
 import Alert, { AlertProps } from '@material-ui/lab/Alert';
 import AlertTitle from '@material-ui/lab/AlertTitle';
 import { BioHubSubmittedStatusType } from 'constants/misc';
@@ -55,14 +56,16 @@ const SubmissionAlertBar: React.FC = () => {
   return (
     <>
       {alertOpen && forceAlertClose && (
-        <Alert {...alertProps}>
-          <AlertTitle>
-            {submitted ? 'All survey data submitted' : 'This survey contains unsubmitted information'}
-          </AlertTitle>
-          {submitted
-            ? 'Thank you for submitting your data to the BioHub Collector System.'
-            : 'Please ensure that any information uploaded to this survey is promptly submitted for review.'}
-        </Alert>
+        <Box mb={3}>
+          <Alert {...alertProps}>
+            <AlertTitle>
+              {submitted ? 'All survey data submitted' : 'This survey contains unsubmitted information'}
+            </AlertTitle>
+            {submitted
+              ? 'Thank you for submitting your data to the BioHub Collector System.'
+              : 'Please ensure that any information uploaded to this survey is promptly submitted for review.'}
+          </Alert>
+        </Box>
       )}
     </>
   );
