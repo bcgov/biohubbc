@@ -13,7 +13,7 @@ import { SubmitStatusChip } from 'components/chips/SubmitStatusChip';
 import { BioHubSubmittedStatusType } from 'constants/misc';
 import { IGetProjectAttachment } from 'interfaces/useProjectApi.interface';
 import { IGetSurveyAttachment } from 'interfaces/useSurveyApi.interface';
-import React from 'react';
+import React, { useState } from 'react';
 import AttachmentsListItemMenuButton from './AttachmentsListItemMenuButton';
 
 const useStyles = makeStyles(() => ({
@@ -42,50 +42,8 @@ const AttachmentsList = <T extends IGetProjectAttachment | IGetSurveyAttachment>
 
   const { attachments, handleDownload, handleDelete, handleViewDetails } = props;
 
-  const getArtifactSubmissionStatus = (attachment: T): BioHubSubmittedStatusType => {
-    if (attachment.supplementaryAttachmentData?.event_timestamp) {
-      return BioHubSubmittedStatusType.SUBMITTED;
-    }
-    return BioHubSubmittedStatusType.UNSUBMITTED;
-  };
-
-  const AttachmentsTableRow = (props: { attachment: T }) => {
-    const { attachment } = props;
-
-    return (
-      <TableRow>
-        <TableCell scope="row" className={classes.attachmentNameCol}>
-          <Link style={{ fontWeight: 'bold' }} underline="always" onClick={() => handleDownload(attachment)}>
-            {attachment.fileName}
-          </Link>
-        </TableCell>
-        <TableCell>{attachment.fileType}</TableCell>
-        <TableCell align="right">
-          <SubmitStatusChip status={getArtifactSubmissionStatus(attachment)} />
-        </TableCell>
-        <TableCell align="right">
-          <AttachmentsListItemMenuButton
-            attachment={attachment}
-            handleDownloadFile={() => handleDownload(attachment)}
-            handleDeleteFile={() => handleDelete(attachment)}
-            handleViewDetails={() => handleViewDetails(attachment)}
-          />
-        </TableCell>
-      </TableRow>
-    );
-  };
-
-  const NoAttachmentsTableRow = () => {
-    return (
-      <TableRow>
-        <TableCell colSpan={3} align="center">
-          <Typography component="strong" color="textSecondary" variant="body2">
-            No Documents
-          </Typography>
-        </TableCell>
-      </TableRow>
-    );
-  };
+  const [rowsPerPage] = useState(10);
+  const [page] = useState(0);
 
   return (
     <Box>
@@ -101,8 +59,15 @@ const AttachmentsList = <T extends IGetProjectAttachment | IGetSurveyAttachment>
           </TableHead>
           <TableBody>
             {(attachments.length &&
-              attachments.map((row) => {
-                return <AttachmentsTableRow attachment={row} key={`${row.fileName}-${row.id}`} />;
+              attachments.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
+                return (
+                  <AttachmentsTableRow
+                    attachment={row}
+                    handleDownload={handleDownload}
+                    handleDelete={handleDelete}
+                    handleViewDetails={handleViewDetails}
+                  />
+                );
               })) || <></>}
             {(!attachments.length && <NoAttachmentsTableRow />) || <></>}
           </TableBody>
@@ -111,5 +76,56 @@ const AttachmentsList = <T extends IGetProjectAttachment | IGetSurveyAttachment>
     </Box>
   );
 };
+
+function AttachmentsTableRow<T extends IGetProjectAttachment | IGetSurveyAttachment>(props: {
+  attachment: T;
+  handleDownload: (attachment: T) => void;
+  handleDelete: (attachment: T) => void;
+  handleViewDetails: (attachment: T) => void;
+}) {
+  const classes = useStyles();
+  const { attachment, handleDownload, handleDelete, handleViewDetails } = props;
+
+  function getArtifactSubmissionStatus(attachment: T): BioHubSubmittedStatusType {
+    if (attachment.supplementaryAttachmentData?.event_timestamp) {
+      return BioHubSubmittedStatusType.SUBMITTED;
+    }
+    return BioHubSubmittedStatusType.UNSUBMITTED;
+  }
+
+  return (
+    <TableRow key={`${attachment.fileName}-${attachment.id}`}>
+      <TableCell scope="row" className={classes.attachmentNameCol}>
+        <Link style={{ fontWeight: 'bold' }} underline="always" onClick={() => handleDownload(attachment)}>
+          {attachment.fileName}
+        </Link>
+      </TableCell>
+      <TableCell>{attachment.fileType}</TableCell>
+      <TableCell align="right">
+        <SubmitStatusChip status={getArtifactSubmissionStatus(attachment)} />
+      </TableCell>
+      <TableCell align="right">
+        <AttachmentsListItemMenuButton
+          attachment={attachment}
+          handleDownloadFile={() => handleDownload(attachment)}
+          handleDeleteFile={() => handleDelete(attachment)}
+          handleViewDetails={() => handleViewDetails(attachment)}
+        />
+      </TableCell>
+    </TableRow>
+  );
+}
+
+function NoAttachmentsTableRow() {
+  return (
+    <TableRow>
+      <TableCell colSpan={3} align="center">
+        <Typography component="strong" color="textSecondary" variant="body2">
+          No Documents
+        </Typography>
+      </TableCell>
+    </TableRow>
+  );
+}
 
 export default AttachmentsList;
