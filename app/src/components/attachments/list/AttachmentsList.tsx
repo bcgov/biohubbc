@@ -62,6 +62,7 @@ const AttachmentsList = <T extends IGetProjectAttachment | IGetSurveyAttachment>
               attachments.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
                 return (
                   <AttachmentsTableRow
+                    key={`${row.fileType}-${row.id}`}
                     attachment={row}
                     handleDownload={handleDownload}
                     handleDelete={handleDelete}
