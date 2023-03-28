@@ -104,7 +104,8 @@ describe('PlatformService', () => {
       try {
         await platformService.submitProjectDwCMetadataToBioHub(1);
         expect.fail();
-      } catch (actualError: any) {
+      } catch (error) {
+        expect((error as Error).message).to.equal('a test error');
         expect(buildProjectEmlPackageStub).to.have.been.calledOnceWith({ projectId: 1 });
         expect(_submitDwCADatasetToBioHubStub).to.be.calledOnceWith(
           sinon.match({
@@ -182,7 +183,8 @@ describe('PlatformService', () => {
       try {
         await platformService.submitSurveyDwCMetadataToBioHub(1);
         expect.fail();
-      } catch (actualError: any) {
+      } catch (error) {
+        expect((error as Error).message).to.equal('a test error');
         expect(buildSurveyEmlPackageStub).to.have.been.calledOnceWith({ surveyId: 1 });
         expect(_submitDwCADatasetToBioHubStub).to.be.calledOnceWith(
           sinon.match({

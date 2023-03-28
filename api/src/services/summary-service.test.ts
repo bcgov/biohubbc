@@ -658,6 +658,7 @@ describe('SummaryService', () => {
         expect(xlsx).to.not.be.empty;
         expect(xlsx).to.be.instanceOf(XLSXCSV);
       } catch (error) {
+        expect(error).to.be.instanceOf(SummarySubmissionError);
         expect(parse).to.be.calledOnce;
       }
     });
