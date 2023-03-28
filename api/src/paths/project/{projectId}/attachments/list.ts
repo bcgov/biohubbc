@@ -105,9 +105,7 @@ export function getAttachments(): RequestHandler {
       const attachmentService = new AttachmentService(connection);
 
       const attachmentsData = await attachmentService.getProjectAttachmentsWithSupplementaryData(projectId);
-      console.log('attachmentsData', attachmentsData);
       const reportAttachmentsData = await attachmentService.getProjectReportAttachmentsWithSupplementaryData(projectId);
-      console.log('reportAttachmentsData', reportAttachmentsData);
 
       await connection.commit();
 
