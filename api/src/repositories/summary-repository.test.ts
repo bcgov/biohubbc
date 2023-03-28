@@ -352,10 +352,12 @@ describe('SummaryRepository', () => {
 
     it('should throw Submission error `Failed to find validation rules` when no species is found', async () => {
       const mockResponse = ({
-        rowCount: 1, 
-        rows: [{
-          wldtaxonomic_units_id: null
-        }]
+        rowCount: 1,
+        rows: [
+          {
+            wldtaxonomic_units_id: null
+          }
+        ]
       } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({ knex: () => mockResponse });
 
