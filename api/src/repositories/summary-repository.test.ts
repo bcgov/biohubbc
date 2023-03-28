@@ -349,6 +349,32 @@ describe('SummaryRepository', () => {
         );
       }
     });
+
+    it('should throw Submission error `Failed to find validation rules` when no species is found', async () => {
+      const mockResponse = ({
+        rowCount: 1, 
+        rows: [{
+          wldtaxonomic_units_id: null
+        }]
+      } as any) as Promise<QueryResult<any>>;
+      const dbConnection = getMockDBConnection({ knex: () => mockResponse });
+
+      sinon
+        .stub(SummaryRepository.prototype, 'getSummaryTemplateIdFromNameVersion')
+        .resolves({ summary_template_id: 1 });
+
+      const repo = new SummaryRepository(dbConnection);
+
+      try {
+        await repo.getSummaryTemplateSpeciesRecords('templateName', 'templateVersion', [1, 2]);
+        expect.fail();
+      } catch (error) {
+        expect(error).to.be.instanceOf(SummarySubmissionError);
+        expect((error as SummarySubmissionError).summarySubmissionMessages[0].description).to.be.eql(
+          `The focal species imported from this template does not match the focal species selected for this survey.`
+        );
+      }
+    });
   });
 
   describe('insertSummarySubmissionMessage', () => {
