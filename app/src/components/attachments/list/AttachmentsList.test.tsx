@@ -1,7 +1,7 @@
 import { cleanup, fireEvent, render, waitFor } from '@testing-library/react';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import React from 'react';
-import { AttachmentType } from '../../constants/attachments';
+import { AttachmentType } from '../../../constants/attachments';
 import AttachmentsList from './AttachmentsList';
 
 jest.mock('../../hooks/useBioHubApi');

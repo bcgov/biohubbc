@@ -128,6 +128,9 @@ export function getAttachments(): RequestHandler {
       );
       await connection.commit();
 
+      console.log(getAttachmentsData);
+      console.log(getReportAttachmentsData);
+
       return res.status(200).json({
         attachmentsList: getAttachmentsData,
         reportAttachmentsList: getReportAttachmentsData
