@@ -1,6 +1,5 @@
 import AttachmentsList from 'components/attachments/list/AttachmentsList';
-import ProjectAttachmentDialog from 'components/dialog/attachments/project/attachment/ProjectAttachmentDialog';
-import ProjectReportAttachmentDialog from 'components/dialog/attachments/project/report/ProjectReportAttachmentDialog';
+import ProjectReportAttachmentDialog from 'components/dialog/attachments/project/ProjectReportAttachmentDialog';
 import { AttachmentType } from 'constants/attachments';
 import { AttachmentsI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
@@ -93,12 +92,6 @@ const ProjectAttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
         projectId={props.projectId}
         attachment={currentAttachment}
         open={!!currentAttachment && currentAttachment.fileType === AttachmentType.REPORT}
-        onClose={() => setCurrentAttachment(null)}
-      />
-      <ProjectAttachmentDialog
-        projectId={props.projectId}
-        attachment={currentAttachment}
-        open={!!currentAttachment && currentAttachment.fileType === AttachmentType.OTHER}
         onClose={() => setCurrentAttachment(null)}
       />
       <AttachmentsList<IGetProjectAttachment>

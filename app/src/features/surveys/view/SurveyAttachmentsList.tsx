@@ -1,5 +1,4 @@
 import AttachmentsList from 'components/attachments/list/AttachmentsList';
-import SurveyAttachmentDialog from 'components/dialog/attachments/survey/SurveyAttachmentDialog';
 import SurveyReportAttachmentDialog from 'components/dialog/attachments/survey/SurveyReportAttachmentDialog';
 import { AttachmentType } from 'constants/attachments';
 import { AttachmentsI18N } from 'constants/i18n';
@@ -101,13 +100,6 @@ const SurveyAttachmentsList: React.FC = () => {
         surveyId={surveyContext.surveyId}
         attachment={currentAttachment}
         open={!!currentAttachment && currentAttachment.fileType === AttachmentType.REPORT}
-        onClose={() => setCurrentAttachment(null)}
-      />
-      <SurveyAttachmentDialog
-        projectId={surveyContext.projectId}
-        surveyId={surveyContext.surveyId}
-        attachment={currentAttachment}
-        open={!!currentAttachment && currentAttachment.fileType === AttachmentType.OTHER}
         onClose={() => setCurrentAttachment(null)}
       />
       <AttachmentsList<IGetSurveyAttachment>

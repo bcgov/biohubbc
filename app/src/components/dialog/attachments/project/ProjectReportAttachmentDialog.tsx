@@ -4,18 +4,20 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import Typography from '@material-ui/core/Typography';
+import { IEditReportMetaForm } from 'components/attachments/EditReportMetaForm';
 import { AttachmentsI18N } from 'constants/i18n';
 import { defaultErrorDialogProps, DialogContext } from 'contexts/dialogContext';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { IGetProjectAttachment } from 'interfaces/useProjectApi.interface';
-import { default as React, useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { getFormattedFileSize } from 'utils/Utils';
-import { IErrorDialogProps } from '../../../ErrorDialog';
-import AttachmentDetails from './../attachment/AttachmentDetails';
+import { AttachmentType } from '../../../../constants/attachments';
+import { IErrorDialogProps } from '../../ErrorDialog';
+import ReportAttachmentDetails from '../ReportAttachmentDetails';
 
-export interface IProjectAttachmentDialogProps {
+export interface IProjectReportAttachmentDialogProps {
   projectId: number;
   attachment: IGetProjectAttachment | null;
   open: boolean;
@@ -27,12 +29,15 @@ export interface IProjectAttachmentDialogProps {
  *
  * @return {*}
  */
-const ProjectAttachmentDialog: React.FC<IProjectAttachmentDialogProps> = (props) => {
+const ProjectReportAttachmentDialog: React.FC<IProjectReportAttachmentDialogProps> = (props) => {
   const biohubApi = useBiohubApi();
+
   const dialogContext = useContext(DialogContext);
 
-  const attachmentDetailsDataLoader = useDataLoader((attachmentId: number) =>
-    biohubApi.project.getProjectAttachmentDetails(props.projectId, attachmentId)
+  const attachmentId = props.attachment?.id;
+
+  const reportAttachmentDetailsDataLoader = useDataLoader((_attachmentId: number) =>
+    biohubApi.project.getProjectReportDetails(props.projectId, _attachmentId)
   );
 
   const showErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
@@ -70,10 +75,38 @@ const ProjectAttachmentDialog: React.FC<IProjectAttachmentDialogProps> = (props)
     }
   };
 
-  // Initial load of attachment details
-  if (props.attachment) {
-    attachmentDetailsDataLoader.load(props.attachment.id);
-  }
+  const handleDialogEditSave = async (values: IEditReportMetaForm) => {
+    if (!reportAttachmentDetailsDataLoader.data || !reportAttachmentDetailsDataLoader.data.metadata) {
+      return;
+    }
+
+    const fileMeta = values;
+
+    try {
+      if (reportAttachmentDetailsDataLoader.data.metadata.project_report_attachment_id) {
+        await biohubApi.project.updateProjectReportMetadata(
+          props.projectId,
+          reportAttachmentDetailsDataLoader.data.metadata.project_report_attachment_id,
+          AttachmentType.REPORT,
+          fileMeta,
+          reportAttachmentDetailsDataLoader.data.metadata.revision_count
+        );
+      }
+    } catch (error) {
+      const apiError = error as APIError;
+      showErrorDialog({ dialogText: apiError.message, dialogErrorDetails: apiError.errors, open: true });
+    }
+  };
+
+  useEffect(() => {
+    // Load attachment details if attachmentId exists or has changed
+    if (!attachmentId) {
+      return;
+    }
+
+    reportAttachmentDetailsDataLoader.refresh(attachmentId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [attachmentId]);
 
   if (!props.open) {
     return <></>;
@@ -81,17 +114,20 @@ const ProjectAttachmentDialog: React.FC<IProjectAttachmentDialogProps> = (props)
 
   return (
     <>
-      <Dialog open={props.open} onClose={props.onClose} fullScreen={true} maxWidth="lg" data-testid="view-meta-dialog">
+      <Dialog open={props.open} onClose={props.onClose} fullWidth={true} maxWidth="lg" data-testid="view-meta-dialog">
         <DialogTitle data-testid="view-meta-dialog-title">
           <Typography variant="body2" color="textSecondary" style={{ fontWeight: 700 }}>
             VIEW DOCUMENT DETAILS
           </Typography>
         </DialogTitle>
         <DialogContent>
-          <AttachmentDetails
-            title={props.attachment?.fileName || ''}
-            attachmentSize={(props.attachment && getFormattedFileSize(props.attachment.size)) || '0 KB'}
+          <ReportAttachmentDetails
+            title={reportAttachmentDetailsDataLoader.data?.metadata?.title || ''}
             onFileDownload={openAttachmentFromReportMetaDialog}
+            onSave={handleDialogEditSave}
+            reportAttachmentDetails={reportAttachmentDetailsDataLoader.data || null}
+            attachmentSize={(props.attachment && getFormattedFileSize(props.attachment.size)) || '0 KB'}
+            refresh={() => props.attachment?.id && reportAttachmentDetailsDataLoader.refresh(props.attachment.id)}
           />
         </DialogContent>
         <DialogActions>
@@ -104,4 +140,4 @@ const ProjectAttachmentDialog: React.FC<IProjectAttachmentDialogProps> = (props)
   );
 };
 
-export default ProjectAttachmentDialog;
+export default ProjectReportAttachmentDialog;
