@@ -420,8 +420,8 @@ const SurveySummaryResults = () => {
           {submission && submissionMessages.length > 0 && (
             <Box>
               <Alert severity="error" icon={<Icon path={mdiAlertCircleOutline} size={1} />}>
-                <AlertTitle>Failed to import observations</AlertTitle>
-                One or more errors occurred while attempting to import your observations file.
+                <AlertTitle>Failed to import summary results</AlertTitle>
+                One or more errors occurred while attempting to import your summary results file.
                 {displayMessages(submissionErrors, messageGrouping, mdiAlertCircleOutline)}
                 {displayMessages(submissionWarnings, messageGrouping, mdiInformationOutline)}
               </Alert>
@@ -502,6 +502,7 @@ const SurveySummaryResults = () => {
                   </Box>
 
                   <Box flex="0 0 auto" display="flex" alignItems="center">
+                    
                     <Box mr={2}>
                       <Chip label="Unsubmitted" color="primary" />
                     </Box>
