@@ -112,7 +112,7 @@ const SurveySummaryResults = () => {
 
   useEffect(() => {
     summaryDataLoader.load();
-  }, []);
+  }, [summaryDataLoader]);
 
   const submission = summaryDataLoader.data;
   const submissionMessages = summaryDataLoader?.data?.messages || [];
@@ -142,7 +142,8 @@ const SurveySummaryResults = () => {
 
   const defaultUploadYesNoDialogProps = {
     dialogTitle: 'Import New Summary Results Data',
-    dialogText: 'Importing a new file will overwrite the existing summary results data. Are you sure you want to proceed?',
+    dialogText:
+      'Importing a new file will overwrite the existing summary results data. Are you sure you want to proceed?',
     open: false,
     onClose: () => dialogContext.setYesNoDialog({ open: false }),
     onNo: () => dialogContext.setYesNoDialog({ open: false }),
