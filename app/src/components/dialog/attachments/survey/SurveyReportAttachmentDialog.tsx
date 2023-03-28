@@ -15,7 +15,7 @@ import { default as React, useContext, useEffect } from 'react';
 import { getFormattedFileSize } from 'utils/Utils';
 import { AttachmentType } from '../../../../constants/attachments';
 import { IErrorDialogProps } from '../../ErrorDialog';
-import ReportAttachmentDetails from '../project/report/ReportAttachmentDetails';
+import ReportAttachmentDetails from '../ReportAttachmentDetails';
 
 export interface ISurveyReportAttachmentDialogProps {
   projectId: number;
