@@ -112,7 +112,7 @@ const SurveySummaryResults = () => {
 
   useEffect(() => {
     summaryDataLoader.load();
-  }, [summaryDataLoader]);
+  }, []); // eslint-disable-line
 
   const submission = summaryDataLoader.data;
   const submissionMessages = summaryDataLoader?.data?.messages || [];
@@ -272,7 +272,7 @@ const SurveySummaryResults = () => {
 
   type SeverityLevel = 'error' | 'info' | 'success' | 'warning';
 
-  let submissionStatusIcon = summaryDataLoader.isLoading ? mdiFileOutline : mdiFileOutline;
+  let submissionStatusIcon = mdiFileOutline;
   let submissionStatusSeverity: SeverityLevel = 'info';
 
   if (submissionMessages?.some((messageType) => messageType.type === 'Error')) {
@@ -289,7 +289,7 @@ const SurveySummaryResults = () => {
     return (
       <Box>
         {Object.entries(list).map(([key, value], index) => (
-          <Box mt={3} key={index} pl={0.25}>
+          <Box mt={3} key={`${key}-${index}`} pl={0.25}>
             <Typography variant="body2">
               <strong>{msgGroup[key].label}</strong>
             </Typography>

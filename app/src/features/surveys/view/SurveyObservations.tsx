@@ -259,7 +259,7 @@ const SurveyObservations: React.FC = () => {
 
   type AlertSeverityLevel = 'error' | 'info' | 'success' | 'warning';
 
-  let submissionStatusIcon = occurrenceSubmission?.isValidating ? mdiFileOutline : mdiFileOutline;
+  let submissionStatusIcon = mdiFileOutline;
   let submissionStatusSeverity: AlertSeverityLevel = 'info';
 
   if (submissionMessageTypes.some((messageType) => messageType.severityLabel === 'Error')) {
@@ -306,7 +306,7 @@ const SurveyObservations: React.FC = () => {
                       // Alphabetize message types for consistency
                       submissionMessageTypes.map((messageType) => {
                         return (
-                          <Box mt={3}>
+                          <Box key={messageType.messageTypeLabel} mt={3}>
                             <Box component="section">
                               <Typography variant="body2">
                                 <strong>{messageType.messageTypeLabel}</strong>
