@@ -1,4 +1,4 @@
-import { Collapse, createStyles, LinearProgress, withStyles } from '@material-ui/core';
+import { createStyles, LinearProgress, withStyles } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
 import Chip from '@material-ui/core/Chip';
 import Divider from '@material-ui/core/Divider';
@@ -65,8 +65,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
   },
   summaryFileName: {
-    marginTop: '2px',
-    marginBottom: '4px',
     overflow: 'hidden',
     textOverflow: 'ellipsis',
     textDecoration: 'underline',
@@ -383,27 +381,31 @@ const SurveySummaryResults = () => {
           {summaryDataLoader.isLoading && (
             <>
               <Paper variant="outlined" className={classes.importFile + ` ` + `${submissionStatusSeverity}`}>
-                <Box className="importFile-icon" flex="0 0 auto" mt={1.2} mr={1.7}>
-                  <Icon path={submissionStatusIcon} size={1} />
-                </Box>
+                <Box flex="1 1 auto" style={{ overflow: 'hidden' }}>
+                  <Box display="flex" alignItems="center" flex="1 1 auto" style={{ overflow: 'hidden' }}>
+                    <Box className="importFile-icon" flex="0 0 auto" mr={2}>
+                      <Icon path={submissionStatusIcon} size={1} />
+                    </Box>
+                    <Box mr={2} flex="1 1 auto" style={{ overflow: 'hidden' }}>
+                      <Typography
+                        className={classes.summaryFileName}
+                        variant="body2"
+                        component="div"
+                        onClick={viewFileContents}>
+                        <strong>{filName}</strong>
+                      </Typography>
+                    </Box>
+                  </Box>
 
-                <Box mr={2} flex="1 1 auto" style={{ overflow: 'hidden' }}>
-                  <Typography
-                    className={classes.summaryFileName}
-                    variant="body2"
-                    component="div"
-                    onClick={viewFileContents}>
-                    <strong>{filName}</strong>
-                  </Typography>
-                  <Typography variant="body2" color="textSecondary">
-                    Importing file. Please wait...
-                  </Typography>
-
-                  <Collapse in={summaryDataLoader.isLoading} collapsedHeight="0">
-                    <Box mt={2}>
+                  <Box ml={5} mr={1}>
+                    <Typography variant="body2" color="textSecondary">
+                      Importing file. Please wait...
+                    </Typography>
+                    <Box mt={1.5}>
                       <BorderLinearProgress />
                     </Box>
-                  </Collapse>
+                  </Box>
+
                 </Box>
               </Paper>
             </>
@@ -423,7 +425,7 @@ const SurveySummaryResults = () => {
                 <Paper variant="outlined" className={classes.importFile + ` ` + `error`}>
                   <Box display="flex" alignItems="center" flex="1 1 auto" style={{ overflow: 'hidden' }}>
                     <Box display="flex" alignItems="center" flex="1 1 auto" style={{ overflow: 'hidden' }}>
-                      <Box className="importFile-icon" flex="0 0 auto" mr={2}>
+                      <Box display="flex" alignItems="center" flex="0 0 auto" className="importFile-icon" mr={2}>
                         <Icon path={mdiFileAlertOutline} size={1} />
                       </Box>
                       <Box mr={2} flex="1 1 auto" style={{ overflow: 'hidden' }}>
