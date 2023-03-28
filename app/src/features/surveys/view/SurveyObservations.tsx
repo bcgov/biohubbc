@@ -243,17 +243,6 @@ const SurveyObservations: React.FC = () => {
     });
   }
 
-  // const submissionAlertAction = () => (
-  //   <Box>
-  //     <IconButton aria-label="open" color="inherit" onClick={openFileContents}>
-  //       <Icon path={mdiDownload} size={1} />
-  //     </IconButton>
-  //     <IconButton aria-label="delete" color="inherit" onClick={showDeleteDialog}>
-  //       <Icon path={mdiTrashCanOutline} size={1} />
-  //     </IconButton>
-  //   </Box>
-  // );
-
   const openFileContents = useCallback(() => {
     if (!occurrenceSubmissionId) {
       return;

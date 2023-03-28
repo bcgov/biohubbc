@@ -112,7 +112,7 @@ const SurveySummaryResults = () => {
 
   useEffect(() => {
     summaryDataLoader.load();
-  }, [summaryDataLoader]);
+  }, []);
 
   const submission = summaryDataLoader.data;
   const submissionMessages = summaryDataLoader?.data?.messages || [];
@@ -186,18 +186,6 @@ const SurveySummaryResults = () => {
       }
     });
   };
-
-  //Action prop for the Alert MUI component to render the delete icon and associated action
-  // const submissionAlertAction = () => (
-  //   <Box className={classes.alertActions}>
-  //     <IconButton aria-label="open" color="inherit" onClick={() => viewFileContents()}>
-  //       <Icon path={mdiDownload} size={1} />
-  //     </IconButton>
-  //     <IconButton aria-label="delete" color="inherit" onClick={() => showDeleteDialog()}>
-  //       <Icon path={mdiTrashCanOutline} size={1} />
-  //     </IconButton>
-  //   </Box>
-  // );
 
   type MessageGrouping = { [key: string]: { type: string[]; label: string } };
 
@@ -296,30 +284,6 @@ const SurveySummaryResults = () => {
     submissionStatusIcon = mdiInformationOutline;
   }
 
-  // function displayAlertBox(severityLevel: SeverityLevel, iconName: string, fileName: string, message: string) {
-  //   return (
-  //     <Alert icon={<Icon path={iconName} size={1} />} severity={severityLevel} action={submissionAlertAction()}>
-  //       <Box display="flex" alignItems="center" m={0}>
-  //         <Link
-  //           className={classes.alertLink}
-  //           component="button"
-  //           variant="body2"
-  //           onClick={() => viewFileContents()}
-  //           gutterBottom={false}>
-  //           <strong>{fileName}</strong>
-  //         </Link>
-  //       </Box>
-  //       <Typography variant="body2">{message}</Typography>
-
-  //       <Collapse in={summaryDataLoader.isLoading} collapsedHeight="0">
-  //         <Box mt={2}>
-  //           <BorderLinearProgress />
-  //         </Box>
-  //       </Collapse>
-  //     </Alert>
-  //   );
-  // }
-
   function displayMessages(list: SubmissionErrors | SubmissionWarnings, msgGroup: MessageGrouping, iconName: string) {
     return (
       <Box>
@@ -410,7 +374,6 @@ const SurveySummaryResults = () => {
                       <BorderLinearProgress />
                     </Box>
                   </Box>
-
                 </Box>
               </Paper>
             </>
@@ -502,7 +465,6 @@ const SurveySummaryResults = () => {
                   </Box>
 
                   <Box flex="0 0 auto" display="flex" alignItems="center">
-                    
                     <Box mr={2}>
                       <Chip label="Unsubmitted" color="primary" />
                     </Box>
