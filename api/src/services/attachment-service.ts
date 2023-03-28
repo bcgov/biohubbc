@@ -62,7 +62,7 @@ export class AttachmentService extends DBService {
 
     const attachmentList: any[] = [];
 
-    attatchments.map(async (attachment: any) => {
+    attatchments.forEach(async (attachment: any) => {
       const supplementaryData = await historyPublishService.getProjectAttachmentPublishRecord(
         attachment.project_attachment_id
       );
@@ -129,7 +129,7 @@ export class AttachmentService extends DBService {
 
     const attachmentList: any[] = [];
 
-    attatchments.map(async (attachment: any) => {
+    attatchments.forEach(async (attachment: any) => {
       const supplementaryData = await historyPublishService.getProjectReportPublishRecord(
         attachment.project_report_attachment_id
       );
@@ -192,7 +192,7 @@ export class AttachmentService extends DBService {
 
     const attachmentList: any[] = [];
 
-    attatchments.map(async (attachment: any) => {
+    attatchments.forEach(async (attachment: any) => {
       const supplementaryData = await historyPublishService.getSurveyAttachmentPublishRecord(
         attachment.survey_attachment_id
       );
@@ -238,7 +238,7 @@ export class AttachmentService extends DBService {
 
     const attachmentList: any[] = [];
 
-    attatchments.map(async (attachment: any) => {
+    attatchments.forEach(async (attachment: any) => {
       const supplementaryData = await historyPublishService.getSurveyReportPublishRecord(
         attachment.survey_report_attachment_id
       );
