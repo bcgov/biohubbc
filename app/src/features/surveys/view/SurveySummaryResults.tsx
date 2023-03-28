@@ -141,8 +141,8 @@ const SurveySummaryResults = () => {
   };
 
   const defaultUploadYesNoDialogProps = {
-    dialogTitle: 'Upload Summary Results Data',
-    dialogText: 'Importing another file will overwrite the existing summary results data. Are you sure you want to proceed?',
+    dialogTitle: 'Import New Summary Results Data',
+    dialogText: 'Importing a new file will overwrite the existing summary results data. Are you sure you want to proceed?',
     open: false,
     onClose: () => dialogContext.setYesNoDialog({ open: false }),
     onNo: () => dialogContext.setYesNoDialog({ open: false }),

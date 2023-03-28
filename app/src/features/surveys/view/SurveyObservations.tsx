@@ -133,9 +133,9 @@ const SurveyObservations: React.FC = () => {
   }, [occurrenceSubmission, submissionPollingInterval]);
 
   const defaultUploadYesNoDialogProps = {
-    dialogTitle: 'Import Observation Data',
+    dialogTitle: 'Import New Observation Data',
     dialogText:
-      'Importing another file will overwrite the existing observations data. Are you sure you want to proceed?',
+      'Importing a new file will overwrite the existing observations data. Are you sure you want to proceed?',
     open: false,
     onClose: () => dialogContext.setYesNoDialog({ open: false }),
     onNo: () => dialogContext.setYesNoDialog({ open: false }),
