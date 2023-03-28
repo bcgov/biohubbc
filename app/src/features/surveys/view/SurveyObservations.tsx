@@ -135,7 +135,7 @@ const SurveyObservations: React.FC = () => {
   const defaultUploadYesNoDialogProps = {
     dialogTitle: 'Import Observation Data',
     dialogText:
-      'Are you sure you want to import a different file for observations? This will overwrite the existing observations file.',
+      'Importing another file will overwrite the existing observations data. Are you sure you want to proceed?',
     open: false,
     onClose: () => dialogContext.setYesNoDialog({ open: false }),
     onNo: () => dialogContext.setYesNoDialog({ open: false }),
@@ -145,7 +145,7 @@ const SurveyObservations: React.FC = () => {
   const defaultDeleteYesNoDialogProps = {
     ...defaultUploadYesNoDialogProps,
     dialogTitle: 'Delete Observations?',
-    dialogText: 'Are you sure you want to delete this observation file? This action cannot be undone.'
+    dialogText: 'Are you sure you want to delete this file? This action cannot be undone.'
   };
 
   const importObservations = (): IUploadHandler => {

@@ -142,7 +142,7 @@ const SurveySummaryResults = () => {
 
   const defaultUploadYesNoDialogProps = {
     dialogTitle: 'Upload Summary Results Data',
-    dialogText: 'Importing another file will overwrite the existing data. Are you sure you want to proceed?',
+    dialogText: 'Importing another file will overwrite the existing summary results data. Are you sure you want to proceed?',
     open: false,
     onClose: () => dialogContext.setYesNoDialog({ open: false }),
     onNo: () => dialogContext.setYesNoDialog({ open: false }),
@@ -152,7 +152,7 @@ const SurveySummaryResults = () => {
   const defaultDeleteYesNoDialogProps = {
     ...defaultUploadYesNoDialogProps,
     dialogTitle: 'Delete Summary Results Data',
-    dialogText: 'Are you sure you want to delete the summary results? This action cannot be undone.'
+    dialogText: 'Are you sure you want to delete this file? This action cannot be undone.'
   };
 
   const showUploadDialog = () => {
