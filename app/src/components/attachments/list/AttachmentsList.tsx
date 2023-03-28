@@ -42,14 +42,14 @@ const AttachmentsList = <T extends IGetProjectAttachment | IGetSurveyAttachment>
 
   const { attachments, handleDownload, handleDelete, handleViewDetails } = props;
 
-  function getArtifactSubmissionStatus(attachment: T): BioHubSubmittedStatusType {
+  const getArtifactSubmissionStatus = (attachment: T): BioHubSubmittedStatusType => {
     if (attachment.supplementaryAttachmentData?.event_timestamp) {
       return BioHubSubmittedStatusType.SUBMITTED;
     }
     return BioHubSubmittedStatusType.UNSUBMITTED;
-  }
+  };
 
-  function AttachmentsTableRow(props: { attachment: T }) {
+  const AttachmentsTableRow = (props: { attachment: T }) => {
     const { attachment } = props;
 
     return (
@@ -73,9 +73,9 @@ const AttachmentsList = <T extends IGetProjectAttachment | IGetSurveyAttachment>
         </TableCell>
       </TableRow>
     );
-  }
+  };
 
-  function NoAttachmentsTableRow() {
+  const NoAttachmentsTableRow = () => {
     return (
       <TableRow>
         <TableCell colSpan={3} align="center">
@@ -85,7 +85,7 @@ const AttachmentsList = <T extends IGetProjectAttachment | IGetSurveyAttachment>
         </TableCell>
       </TableRow>
     );
-  }
+  };
 
   return (
     <Box>
