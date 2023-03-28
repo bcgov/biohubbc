@@ -78,7 +78,7 @@ GET.apiDoc = {
                 ],
                 properties: {
                   project_report_attachment_id: {
-                    description: 'Report metadata attachment project_report_attachment_id',
+                    description: 'Report metadata attachment id',
                     type: 'number'
                   },
                   title: {
