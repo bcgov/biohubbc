@@ -1,6 +1,6 @@
 import { DialogTitle } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
-import Dialog, { DialogProps } from '@material-ui/core/Dialog';
+import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import Typography from '@material-ui/core/Typography';
@@ -18,12 +18,9 @@ import AttachmentDetails from '../project/attachment/AttachmentDetails';
 export interface ISurveyAttachmentDialogProps {
   projectId: number;
   surveyId: number;
-  attachmentId: number | undefined;
-  currentAttachment: IGetSurveyAttachment | null;
+  attachment: IGetSurveyAttachment | null;
   open: boolean;
   onClose: () => void;
-  refresh: (id: number, type: string) => void;
-  dialogProps?: DialogProps;
 }
 
 /**
@@ -71,14 +68,14 @@ const SurveyAttachmentDialog: React.FC<ISurveyAttachmentDialogProps> = (props) =
   };
 
   const openAttachmentFromReportMetaDialog = async () => {
-    if (props.currentAttachment) {
-      openAttachment(props.currentAttachment);
+    if (props.attachment) {
+      openAttachment(props.attachment);
     }
   };
 
   // Initial load of attachment details
-  if (props.currentAttachment) {
-    attachmentDetailsDataLoader.load(props.currentAttachment.id);
+  if (props.attachment) {
+    attachmentDetailsDataLoader.load(props.attachment.id);
   }
 
   if (!props.open) {
@@ -87,7 +84,7 @@ const SurveyAttachmentDialog: React.FC<ISurveyAttachmentDialogProps> = (props) =
 
   return (
     <>
-      <Dialog open={props.open} onClose={props.onClose} {...props.dialogProps} data-testid="view-meta-dialog">
+      <Dialog open={props.open} onClose={props.onClose} fullScreen={true} maxWidth="lg" data-testid="view-meta-dialog">
         <DialogTitle data-testid="view-meta-dialog-title">
           <Typography variant="body2" color="textSecondary" style={{ fontWeight: 700 }}>
             VIEW DOCUMENT DETAILS
@@ -95,8 +92,8 @@ const SurveyAttachmentDialog: React.FC<ISurveyAttachmentDialogProps> = (props) =
         </DialogTitle>
         <DialogContent>
           <AttachmentDetails
-            title={props.currentAttachment?.fileName || ''}
-            attachmentSize={(props.currentAttachment && getFormattedFileSize(props.currentAttachment.size)) || '0 KB'}
+            title={props.attachment?.fileName || ''}
+            attachmentSize={(props.attachment && getFormattedFileSize(props.attachment.size)) || '0 KB'}
             onFileDownload={openAttachmentFromReportMetaDialog}
           />
         </DialogContent>

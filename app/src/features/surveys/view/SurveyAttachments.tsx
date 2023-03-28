@@ -25,8 +25,6 @@ const SurveyAttachments: React.FC = () => {
     AttachmentType.OTHER
   );
 
-  surveyContext.artifactDataLoader.load(projectId, surveyId);
-
   const handleUploadReportClick = () => {
     setAttachmentType(AttachmentType.REPORT);
     setOpenUploadAttachments(true);

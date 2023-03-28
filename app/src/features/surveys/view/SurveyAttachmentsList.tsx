@@ -1,12 +1,14 @@
 import AttachmentsList from 'components/attachments/list/AttachmentsList';
-import AttachmentTypeSelector from 'components/dialog/attachments/AttachmentTypeSelector';
+import SurveyAttachmentDialog from 'components/dialog/attachments/survey/SurveyAttachmentDialog';
+import SurveyReportAttachmentDialog from 'components/dialog/attachments/survey/SurveyReportAttachmentDialog';
+import { AttachmentType } from 'constants/attachments';
 import { AttachmentsI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetSurveyAttachment } from 'interfaces/useSurveyApi.interface';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 
 const SurveyAttachmentsList: React.FC = () => {
   const biohubApi = useBiohubApi();
@@ -16,8 +18,10 @@ const SurveyAttachmentsList: React.FC = () => {
 
   const [currentAttachment, setCurrentAttachment] = useState<null | IGetSurveyAttachment>(null);
 
-  // Load survey artifacts
-  surveyContext.artifactDataLoader.load(surveyContext.projectId, surveyContext.surveyId);
+  // Load survey attachments
+  useEffect(() => {
+    surveyContext.artifactDataLoader.load(surveyContext.projectId, surveyContext.surveyId);
+  }, [surveyContext.artifactDataLoader, surveyContext.projectId, surveyContext.surveyId]);
 
   const handleDownload = async (attachment: IGetSurveyAttachment) => {
     try {
@@ -92,13 +96,19 @@ const SurveyAttachmentsList: React.FC = () => {
 
   return (
     <>
-      <AttachmentTypeSelector
+      <SurveyReportAttachmentDialog
         projectId={surveyContext.projectId}
         surveyId={surveyContext.surveyId}
-        currentAttachment={currentAttachment}
-        open={!!currentAttachment}
-        close={() => setCurrentAttachment(null)}
-        refresh={() => surveyContext.artifactDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId)}
+        attachment={currentAttachment}
+        open={!!currentAttachment && currentAttachment.fileType === AttachmentType.REPORT}
+        onClose={() => setCurrentAttachment(null)}
+      />
+      <SurveyAttachmentDialog
+        projectId={surveyContext.projectId}
+        surveyId={surveyContext.surveyId}
+        attachment={currentAttachment}
+        open={!!currentAttachment && currentAttachment.fileType === AttachmentType.OTHER}
+        onClose={() => setCurrentAttachment(null)}
       />
       <AttachmentsList<IGetSurveyAttachment>
         attachments={[
