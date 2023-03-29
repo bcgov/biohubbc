@@ -1,23 +1,28 @@
 import Box from '@material-ui/core/Box';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
+import LinearProgress from '@material-ui/core/LinearProgress';
 import Link from '@material-ui/core/Link';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
 import Paper from '@material-ui/core/Paper';
-import { Theme } from '@material-ui/core/styles/createMuiTheme';
-import makeStyles from '@material-ui/core/styles/makeStyles';
+import { createStyles, makeStyles, Theme, withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Alert from '@material-ui/lab/Alert';
+import AlertTitle from '@material-ui/lab/AlertTitle';
 import {
   mdiAlertCircleOutline,
-  mdiClockOutline,
-  mdiDownload,
+  mdiDotsVertical,
+  mdiFileAlertOutline,
   mdiFileOutline,
   mdiImport,
   mdiInformationOutline,
-  mdiTrashCanOutline
+  mdiTrashCanOutline,
+  mdiTrayArrowDown
 } from '@mdi/js';
 import Icon from '@mdi/react';
+import clsx from 'clsx';
 import { SubmitStatusChip } from 'components/chips/SubmitStatusChip';
 import ComponentDialog from 'components/dialog/ComponentDialog';
 import FileUpload from 'components/file-upload/FileUpload';
@@ -32,29 +37,66 @@ import { useInterval } from 'hooks/useInterval';
 import {
   IGetObservationSubmissionResponseMessages,
   ISurveySupplementaryData,
-  IUploadObservationSubmissionResponse,
-  ObservationSubmissionMessageSeverityLabel
+  IUploadObservationSubmissionResponse
 } from 'interfaces/useObservationApi.interface';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 
 const useStyles = makeStyles((theme: Theme) => ({
-  alertLink: {
-    color: 'inherit'
+  importFile: {
+    display: 'flex',
+    minHeight: '82px',
+    padding: theme.spacing(2),
+    paddingLeft: '20px',
+    overflow: 'hidden',
+    '& .importFile-icon': {
+      color: theme.palette.text.secondary
+    },
+    '&.error': {
+      borderColor: theme.palette.error.main,
+      '& .importFile-icon': {
+        color: theme.palette.error.main
+      }
+    }
   },
   alertActions: {
     '& > *': {
       marginLeft: theme.spacing(2)
     }
+  },
+  observationFileName: {
+    marginTop: '2px',
+    marginBottom: '4px',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    textDecoration: 'underline',
+    cursor: 'pointer'
   }
 }));
 
 const SurveyObservations: React.FC = () => {
+  const BorderLinearProgress = withStyles((theme: Theme) =>
+    createStyles({
+      root: {
+        height: 6,
+        borderRadius: 3
+      },
+      colorPrimary: {
+        backgroundColor: theme.palette.grey[theme.palette.type === 'light' ? 300 : 700]
+      },
+      bar: {
+        borderRadius: 3,
+        backgroundColor: '#1976D2'
+      }
+    })
+  )(LinearProgress);
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const biohubApi = useBiohubApi();
   const dialogContext = useContext(DialogContext);
   const classes = useStyles();
   const surveyContext = useContext(SurveyContext);
   const [openImportObservations, setOpenImportObservations] = useState(false);
   const [willRefreshOnClose, setWillRefreshOnClose] = useState(false);
+  const [fileName, setFileName] = useState('');
 
   const projectId = surveyContext.projectId as number;
   const surveyId = surveyContext.surveyId as number;
@@ -99,9 +141,8 @@ const SurveyObservations: React.FC = () => {
   }, [occurrenceSubmission, submissionPollingInterval]);
 
   const defaultUploadYesNoDialogProps = {
-    dialogTitle: 'Upload Observation Data',
-    dialogText:
-      'Are you sure you want to import a different data set?  This will overwrite the existing data you have already imported.',
+    dialogTitle: 'Import New Observation Data',
+    dialogText: 'Importing a new file will overwrite the existing observations data. Are you sure you want to proceed?',
     open: false,
     onClose: () => dialogContext.setYesNoDialog({ open: false }),
     onNo: () => dialogContext.setYesNoDialog({ open: false }),
@@ -110,9 +151,8 @@ const SurveyObservations: React.FC = () => {
 
   const defaultDeleteYesNoDialogProps = {
     ...defaultUploadYesNoDialogProps,
-    dialogTitle: 'Delete Observation',
-    dialogText:
-      'Are you sure you want to delete the current observation data? Your observation will be removed from this survey.'
+    dialogTitle: 'Delete Observations?',
+    dialogText: 'Are you sure you want to delete this file? This action cannot be undone.'
   };
 
   const importObservations = (): IUploadHandler => {
@@ -132,6 +172,8 @@ const SurveyObservations: React.FC = () => {
         })
         .finally(() => {
           setWillRefreshOnClose(true);
+          setAnchorEl(null);
+          setFileName(file.name);
         });
     };
   };
@@ -156,6 +198,7 @@ const SurveyObservations: React.FC = () => {
     }
 
     biohubApi.observation.deleteObservationSubmission(projectId, surveyId, occurrenceSubmissionId).then(() => {
+      refresh();
       refreshSubmission();
     });
   }
@@ -179,6 +222,10 @@ const SurveyObservations: React.FC = () => {
     dialogContext.setYesNoDialog({
       ...defaultDeleteYesNoDialogProps,
       open: true,
+      yesButtonProps: { color: 'secondary' },
+      yesButtonLabel: 'Delete',
+      noButtonProps: { color: 'default' },
+      noButtonLabel: 'Cancel',
       onYes: () => {
         softDeleteSubmission();
         dialogContext.setYesNoDialog({ open: false });
@@ -214,18 +261,6 @@ const SurveyObservations: React.FC = () => {
     return BioHubSubmittedStatusType.UNSUBMITTED;
   };
 
-  const submissionAlertAction = () => (
-    <Box>
-      <SubmitStatusChip status={getSubmissionStatus(occurrenceSupplementaryData)} />
-      <IconButton aria-label="open" color="inherit" onClick={openFileContents}>
-        <Icon path={mdiDownload} size={1} />
-      </IconButton>
-      <IconButton aria-label="delete" color="inherit" onClick={showDeleteDialog}>
-        <Icon path={mdiTrashCanOutline} size={1} />
-      </IconButton>
-    </Box>
-  );
-
   const openFileContents = useCallback(() => {
     if (!occurrenceSubmissionId) {
       return;
@@ -241,38 +276,28 @@ const SurveyObservations: React.FC = () => {
       });
   }, [biohubApi.survey, occurrenceSubmissionId, projectId, surveyId]);
 
-  if (!submissionExists && submissionDataLoader.isLoading) {
-    return <CircularProgress className="pageProgress" size={40} />;
-  }
-
   type AlertSeverityLevel = 'error' | 'info' | 'success' | 'warning';
 
-  const alertSeverityFromSeverityLabel = (severity: ObservationSubmissionMessageSeverityLabel): AlertSeverityLevel => {
-    switch (severity) {
-      case 'Warning':
-        return 'warning';
-
-      case 'Error':
-        return 'error';
-
-      case 'Notice':
-      default:
-        return 'info';
-    }
-  };
-
-  let submissionStatusIcon = occurrenceSubmission?.isValidating ? mdiClockOutline : mdiFileOutline;
+  let submissionStatusIcon = mdiFileOutline;
   let submissionStatusSeverity: AlertSeverityLevel = 'info';
 
   if (submissionMessageTypes.some((messageType) => messageType.severityLabel === 'Error')) {
-    submissionStatusIcon = mdiAlertCircleOutline;
+    submissionStatusIcon = mdiFileAlertOutline;
     submissionStatusSeverity = 'error';
   } else if (submissionMessageTypes.some((messageType) => messageType.severityLabel === 'Warning')) {
-    submissionStatusIcon = mdiAlertCircleOutline;
+    submissionStatusIcon = mdiFileAlertOutline;
     submissionStatusSeverity = 'warning';
   } else if (submissionMessageTypes.some((messageType) => messageType.severityLabel === 'Notice')) {
     submissionStatusIcon = mdiInformationOutline;
   }
+
+  const openContextMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const closeContextMenu = () => {
+    setAnchorEl(null);
+  };
 
   return (
     <>
@@ -289,70 +314,178 @@ const SurveyObservations: React.FC = () => {
         <Divider />
 
         <Box p={3}>
-          {!submissionExists ? (
+          {!occurrenceSubmission?.isValidating && (
             <>
-              <Box textAlign="center">
-                <Typography data-testid="observations-nodata" variant="body2" color="textSecondary">
-                  No Observation Data. &nbsp;
-                  <Link onClick={handleOpenImportObservations}>Click Here to Import</Link>
-                </Typography>
-              </Box>
-            </>
-          ) : (
-            <>
-              <Alert
-                icon={<Icon path={submissionStatusIcon} size={1} />}
-                severity={submissionStatusSeverity}
-                action={submissionAlertAction()}>
-                <Box display="flex" alignItems="center" m={0}>
-                  <Link className={classes.alertLink} component="button" variant="body2" onClick={openFileContents}>
-                    <strong>{occurrenceSubmission?.inputFileName}</strong>
-                  </Link>
+              {submissionStatusSeverity === 'error' && (
+                <Box mb={3}>
+                  <Alert severity="error" icon={<Icon path={mdiAlertCircleOutline} size={1} />}>
+                    <AlertTitle>Failed to import observations</AlertTitle>
+                    One or more errors occurred while attempting to import your observations file.
+                    {submissionMessageTypes.map((messageType) => {
+                      return (
+                        <Box key={messageType.messageTypeLabel} mt={3}>
+                          <Box component="section">
+                            <Typography variant="body2">
+                              <strong>{messageType.messageTypeLabel}</strong>
+                            </Typography>
+                            <Box component="ul" mt={1} mb={0} pl={4}>
+                              {messageType.messages.map((messageObject: { id: number; message: string }) => {
+                                return (
+                                  <li key={messageObject.id}>
+                                    <Typography variant="body2" component="span">
+                                      {messageObject.message}
+                                    </Typography>
+                                  </li>
+                                );
+                              })}
+                            </Box>
+                          </Box>
+                        </Box>
+                      );
+                    })}
+                  </Alert>
                 </Box>
-                <Typography variant="body2">
-                  {occurrenceSubmission?.isValidating
-                    ? 'Validating observation data. Please wait...'
-                    : occurrenceSubmission?.status}
-                </Typography>
-              </Alert>
+              )}
+            </>
+          )}
 
-              {!occurrenceSubmission?.isValidating && (
-                <>
-                  {submissionStatusSeverity === 'error' && (
-                    <Box mb={2} mt={3}>
-                      <Typography data-testid="observations-error-details" variant="body1">
-                        Resolve the following errors in your local file and re-import.
+          {/* No submission exists */}
+          {!submissionExists && !submissionDataLoader.isLoading && (
+            <>
+              <Paper variant="outlined" className={classes.importFile}>
+                <Box display="flex" flex="1 1 auto" alignItems="center" justifyContent="center">
+                  <Typography data-testid="observations-nodata" variant="body2" color="textSecondary">
+                    No Observation Data. &nbsp;
+                    <Link onClick={handleOpenImportObservations}>Click Here to Import</Link>
+                  </Typography>
+                </Box>
+              </Paper>
+            </>
+          )}
+
+          {/* No submission yet, but data is loading */}
+          {!submissionExists && submissionDataLoader.isLoading && (
+            <>
+              <Paper variant="outlined" className={clsx(classes.importFile, submissionStatusSeverity)}>
+                <Box flex="1 1 auto" style={{ overflow: 'hidden' }}>
+                  <Box display="flex" alignItems="center" flex="1 1 auto" style={{ overflow: 'hidden' }}>
+                    <Box className="importFile-icon" flex="0 0 auto" mr={2}>
+                      <Icon path={submissionStatusIcon} size={1} />
+                    </Box>
+                    <Box mr={2} flex="1 1 auto" style={{ overflow: 'hidden' }}>
+                      <Typography className={classes.observationFileName} variant="body2" component="div">
+                        <strong>{fileName}</strong>
                       </Typography>
                     </Box>
-                  )}
+                  </Box>
 
-                  {submissionMessageTypes.length > 0 && (
-                    <Box mt={1}>
-                      {
-                        // Alphabetize message types for consistency
-                        submissionMessageTypes.map((messageType) => {
-                          return (
-                            <Box key={messageType.messageTypeLabel}>
-                              <Alert severity={alertSeverityFromSeverityLabel(messageType.severityLabel)}>
-                                {messageType.messageTypeLabel}
-                              </Alert>
-                              <Box component="ul" my={3}>
-                                {messageType.messages.map((messageObject: { id: number; message: string }) => {
-                                  return (
-                                    <li key={messageObject.id}>
-                                      <Typography variant="body2">{messageObject.message}</Typography>
-                                    </li>
-                                  );
-                                })}
-                              </Box>
-                            </Box>
-                          );
-                        })
-                      }
+                  <Box ml={5} mr={1}>
+                    <Typography variant="body2" color="textSecondary" component="div">
+                      Importing file. Please wait...
+                    </Typography>
+                    <Box mt={1.5}>
+                      <BorderLinearProgress />
                     </Box>
-                  )}
-                </>
-              )}
+                  </Box>
+                </Box>
+              </Paper>
+            </>
+          )}
+
+          {/* Got a submission, but still loading */}
+          {submissionExists && occurrenceSubmission?.isValidating && (
+            <>
+              <Paper variant="outlined" className={clsx(classes.importFile, submissionStatusSeverity)}>
+                <Box flex="1 1 auto" style={{ overflow: 'hidden' }}>
+                  <Box display="flex" alignItems="center" flex="1 1 auto" style={{ overflow: 'hidden' }}>
+                    <Box className="importFile-icon" flex="0 0 auto" mr={2}>
+                      <Icon path={submissionStatusIcon} size={1} />
+                    </Box>
+                    <Box flex="1 1 auto" style={{ overflow: 'hidden' }}>
+                      <Typography
+                        className={classes.observationFileName}
+                        variant="body2"
+                        component="div"
+                        onClick={openFileContents}>
+                        <strong>{occurrenceSubmission?.inputFileName}</strong>
+                      </Typography>
+                    </Box>
+                  </Box>
+
+                  <Box ml={5} mr={1}>
+                    <Typography variant="body2" color="textSecondary" component="div">
+                      {occurrenceSubmission?.isValidating
+                        ? 'Importing file. Please wait...'
+                        : occurrenceSubmission?.status}
+                    </Typography>
+                    <Box mt={1.5}>
+                      <BorderLinearProgress />
+                    </Box>
+                  </Box>
+                </Box>
+              </Paper>
+            </>
+          )}
+
+          {/* All done */}
+          {submissionExists && !occurrenceSubmission?.isValidating && (
+            <>
+              <Paper variant="outlined" className={clsx(classes.importFile, submissionStatusSeverity)}>
+                <Box display="flex" alignItems="center" flex="1 1 auto" style={{ overflow: 'hidden' }}>
+                  <Box display="flex" alignItems="center" flex="1 1 auto" style={{ overflow: 'hidden' }}>
+                    <Box display="flex" alignItems="center" flex="0 0 auto" mr={2} className="importFile-icon">
+                      <Icon path={submissionStatusIcon} size={1} />
+                    </Box>
+                    <Box mr={2} flex="1 1 auto" style={{ overflow: 'hidden' }}>
+                      <Typography
+                        className={classes.observationFileName}
+                        variant="body2"
+                        component="div"
+                        onClick={openFileContents}>
+                        <strong>{occurrenceSubmission?.inputFileName}</strong>
+                      </Typography>
+                    </Box>
+                  </Box>
+
+                  <Box flex="0 0 auto" display="flex" alignItems="center">
+                    <Box mr={2}>
+                      <SubmitStatusChip status={getSubmissionStatus(occurrenceSupplementaryData)} />
+                    </Box>
+                    <Box>
+                      <IconButton aria-controls="context-menu" aria-haspopup="true" onClick={openContextMenu}>
+                        <Icon path={mdiDotsVertical} size={1} />
+                      </IconButton>
+                      <Menu
+                        keepMounted
+                        id="context-menu"
+                        anchorEl={anchorEl}
+                        open={Boolean(anchorEl)}
+                        onClose={closeContextMenu}
+                        anchorOrigin={{
+                          vertical: 'top',
+                          horizontal: 'right'
+                        }}
+                        transformOrigin={{
+                          vertical: 'top',
+                          horizontal: 'right'
+                        }}>
+                        <MenuItem onClick={openFileContents}>
+                          <ListItemIcon>
+                            <Icon path={mdiTrayArrowDown} size={1} />
+                          </ListItemIcon>
+                          Download
+                        </MenuItem>
+                        <MenuItem onClick={showDeleteDialog}>
+                          <ListItemIcon>
+                            <Icon path={mdiTrashCanOutline} size={1} />
+                          </ListItemIcon>
+                          Delete
+                        </MenuItem>
+                      </Menu>
+                    </Box>
+                  </Box>
+                </Box>
+              </Paper>
             </>
           )}
         </Box>
@@ -363,7 +496,7 @@ const SurveyObservations: React.FC = () => {
         dialogTitle="Import Observation Data"
         onClose={handleCloseImportObservations}>
         <FileUpload
-          dropZoneProps={{ maxNumFiles: 1, acceptedFileExtensions: '.csv, .xls, .txt, .zip, .xlsm, .xlsx' }}
+          dropZoneProps={{ maxNumFiles: 1, acceptedFileExtensions: '.xls, .xlsm, .xlsx' }}
           uploadHandler={importObservations()}
         />
       </ComponentDialog>

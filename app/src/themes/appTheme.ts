@@ -61,6 +61,45 @@ const appTheme = createMuiTheme({
       },
       h6: {
         fontWeight: 700
+      },
+      body2: {
+        fontSize: '0.9rem'
+      }
+    },
+    MuiAlert: {
+      root: {
+        fontSize: '0.9rem',
+        padding: '12px 20px',
+        borderWidth: '1px',
+        borderStyle: 'solid'
+      },
+      icon: {
+        marginRight: '1rem'
+      },
+      standardInfo: {
+        borderColor: '#a3d4fa',
+        '& .MuiAlert-icon': {
+          color: '#313132'
+        }
+      },
+      standardError: {
+        color: '#A12622',
+        borderColor: '#ebccd1',
+        '& .MuiAlert-icon': {
+          color: '#A12622'
+        }
+      },
+      standardSuccess: {
+        backgroundColor: '#dff0d8',
+        borderColor: '#c0dcb3',
+        '& .MuiAlert-icon': {
+          color: '#2d4821'
+        }
+      }
+    },
+    MuiAlertTitle: {
+      root: {
+        fontWeight: 700
       }
     },
     MuiBreadcrumbs: {
@@ -75,7 +114,8 @@ const appTheme = createMuiTheme({
       root: {
         textTransform: 'none',
         borderRadius: '5px',
-        fontWeight: 700
+        fontWeight: 700,
+        fontSize: '0.9rem'
       },
       startIcon: {
         marginTop: '1px',
@@ -97,6 +137,19 @@ const appTheme = createMuiTheme({
       }
     },
     MuiChip: {
+      root: {
+        fontWeight: 700
+      },
+      colorPrimary: {
+        color: '#003366',
+        backgroundColor: '#DCEBFB',
+        textTransform: 'uppercase',
+        fontSize: '12px',
+        '&.colorSuccess': {
+          color: '#2D4821',
+          backgroundColor: '#DFF0D8'
+        }
+      },
       colorSecondary: {
         backgroundColor: 'red'
       }
