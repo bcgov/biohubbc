@@ -3,23 +3,123 @@
 exports[`SurveyObservations shows circular spinner when observation data not yet loaded 1`] = `
 <DocumentFragment>
   <div
-    class="MuiCircularProgress-root pageProgress MuiCircularProgress-colorPrimary MuiCircularProgress-indeterminate"
-    role="progressbar"
-    style="width: 40px; height: 40px;"
+    class="MuiPaper-root MuiPaper-elevation0 MuiPaper-rounded"
   >
-    <svg
-      class="MuiCircularProgress-svg"
-      viewBox="22 22 44 44"
+    <div
+      class="MuiToolbar-root MuiToolbar-regular MuiToolbar-gutters"
+      style="justify-content: space-between;"
     >
-      <circle
-        class="MuiCircularProgress-circle MuiCircularProgress-circleIndeterminate"
-        cx="44"
-        cy="44"
-        fill="none"
-        r="20.2"
-        stroke-width="3.6"
-      />
-    </svg>
+      <h4
+        class="MuiTypography-root MuiTypography-h4 MuiTypography-colorInherit"
+      >
+        Observations
+      </h4>
+      <div
+        class="MuiBox-root MuiBox-root-19"
+      >
+        <button
+          aria-label="Import Observations"
+          class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary"
+          data-testid="h2-button-toolbar-Import"
+          id="h2-button-toolbar-Import"
+          tabindex="0"
+          title="Import Observations"
+          type="button"
+        >
+          <span
+            class="MuiButton-label"
+          >
+            <span
+              class="MuiButton-startIcon MuiButton-iconSizeMedium"
+            >
+              <svg
+                role="presentation"
+                style="width: 1.5rem; height: 1.5rem;"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M14,12L10,8V11H2V13H10V16M20,18V6C20,4.89 19.1,4 18,4H6A2,2 0 0,0 4,6V9H6V6H18V18H6V15H4V18A2,2 0 0,0 6,20H18A2,2 0 0,0 20,18Z"
+                  style="fill: currentColor;"
+                />
+              </svg>
+            </span>
+            Import
+          </span>
+          <span
+            class="MuiTouchRipple-root"
+          />
+        </button>
+      </div>
+    </div>
+    <hr
+      class="MuiDivider-root"
+    />
+    <div
+      class="MuiBox-root MuiBox-root-20"
+    >
+      <div
+        class="MuiPaper-root makeStyles-importFile-1 info MuiPaper-outlined MuiPaper-rounded"
+      >
+        <div
+          class="MuiBox-root MuiBox-root-21"
+          style="overflow: hidden;"
+        >
+          <div
+            class="MuiBox-root MuiBox-root-22"
+            style="overflow: hidden;"
+          >
+            <div
+              class="MuiBox-root MuiBox-root-23 importFile-icon"
+            >
+              <svg
+                role="presentation"
+                style="width: 1.5rem; height: 1.5rem;"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"
+                  style="fill: currentColor;"
+                />
+              </svg>
+            </div>
+            <div
+              class="MuiBox-root MuiBox-root-24"
+              style="overflow: hidden;"
+            >
+              <div
+                class="MuiTypography-root makeStyles-observationFileName-3 MuiTypography-body2"
+              >
+                <strong />
+              </div>
+            </div>
+          </div>
+          <div
+            class="MuiBox-root MuiBox-root-25"
+          >
+            <div
+              class="MuiTypography-root MuiTypography-body2 MuiTypography-colorTextSecondary"
+            >
+              Importing file. Please wait...
+            </div>
+            <div
+              class="MuiBox-root MuiBox-root-26"
+            >
+              <div
+                class="MuiLinearProgress-root WithStyles(ForwardRef(LinearProgress))-root-27 MuiLinearProgress-colorPrimary WithStyles(ForwardRef(LinearProgress))-colorPrimary-28 MuiLinearProgress-indeterminate"
+                role="progressbar"
+              >
+                <div
+                  class="MuiLinearProgress-bar WithStyles(ForwardRef(LinearProgress))-bar-29 MuiLinearProgress-barColorPrimary MuiLinearProgress-bar1Indeterminate"
+                />
+                <div
+                  class="MuiLinearProgress-bar WithStyles(ForwardRef(LinearProgress))-bar-29 MuiLinearProgress-bar2Indeterminate MuiLinearProgress-barColorPrimary"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </DocumentFragment>
 `;

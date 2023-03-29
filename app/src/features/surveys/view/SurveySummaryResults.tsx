@@ -1,21 +1,29 @@
+import { createStyles, LinearProgress, withStyles } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
 import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
 import Link from '@material-ui/core/Link';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
 import Paper from '@material-ui/core/Paper';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
 import Alert from '@material-ui/lab/Alert';
+import AlertTitle from '@material-ui/lab/AlertTitle';
 import {
   mdiAlertCircleOutline,
-  mdiDownload,
+  mdiDotsVertical,
+  mdiFileAlertOutline,
   mdiFileOutline,
   mdiImport,
   mdiInformationOutline,
-  mdiTrashCanOutline
+  mdiTrashCanOutline,
+  mdiTrayArrowDown
 } from '@mdi/js';
 import Icon from '@mdi/react';
+import clsx from 'clsx';
 import { SubmitStatusChip } from 'components/chips/SubmitStatusChip';
 import ComponentDialog from 'components/dialog/ComponentDialog';
 import FileUpload from 'components/file-upload/FileUpload';
@@ -29,9 +37,24 @@ import useDataLoader from 'hooks/useDataLoader';
 import useDataLoaderError from 'hooks/useDataLoaderError';
 import { ISurveySummarySupplementaryData } from 'interfaces/useSummaryResultsApi.interface';
 import React, { useContext, useEffect, useState } from 'react';
-import { useParams } from 'react-router';
 
 const useStyles = makeStyles((theme: Theme) => ({
+  importFile: {
+    display: 'flex',
+    minHeight: '82px',
+    padding: theme.spacing(2),
+    paddingLeft: '20px',
+    overflow: 'hidden',
+    '& .importFile-icon': {
+      color: theme.palette.text.secondary
+    },
+    '&.error': {
+      borderColor: theme.palette.error.main,
+      '& .importFile-icon': {
+        color: theme.palette.error.main
+      }
+    }
+  },
   browseLink: {
     cursor: 'pointer'
   },
@@ -45,6 +68,12 @@ const useStyles = makeStyles((theme: Theme) => ({
     '& > *': {
       marginLeft: theme.spacing(0.5)
     }
+  },
+  summaryFileName: {
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    textDecoration: 'underline',
+    cursor: 'pointer'
   }
 }));
 
@@ -55,45 +84,36 @@ export enum ClassGrouping {
 }
 
 const SurveySummaryResults = () => {
+  const BorderLinearProgress = withStyles((theme: Theme) =>
+    createStyles({
+      root: {
+        height: 6,
+        borderRadius: 3
+      },
+      colorPrimary: {
+        backgroundColor: theme.palette.grey[theme.palette.type === 'light' ? 300 : 700]
+      },
+      bar: {
+        borderRadius: 3,
+        backgroundColor: '#1976D2'
+      }
+    })
+  )(LinearProgress);
   const biohubApi = useBiohubApi();
-  const urlParams = useParams();
-  const dialogContext = useContext(DialogContext);
   const surveyContext = useContext(SurveyContext);
+  const dialogContext = useContext(DialogContext);
+
+  const projectId = surveyContext.projectId as number;
+  const surveyId = surveyContext.surveyId as number;
 
   const classes = useStyles();
 
-  const projectId = urlParams['id'];
-  const surveyId = urlParams['survey_id'];
   const [openImportSummaryResults, setOpenImportSummaryResults] = useState(false);
+  const [refreshData, setRefreshData] = useState(false);
 
-  const importSummaryResults = (): IUploadHandler => {
-    return (file, cancelToken, handleFileUploadProgress) => {
-      return biohubApi.survey.uploadSurveySummaryResults(
-        projectId,
-        surveyId,
-        file,
-        cancelToken,
-        handleFileUploadProgress
-      );
-    };
-  };
-
-  const defaultUploadYesNoDialogProps = {
-    dialogTitle: 'Upload Summary Results Data',
-    dialogText:
-      'Are you sure you want to import a different data set?  This will overwrite the existing data you have already imported.',
-    open: false,
-    onClose: () => dialogContext.setYesNoDialog({ open: false }),
-    onNo: () => dialogContext.setYesNoDialog({ open: false }),
-    onYes: () => dialogContext.setYesNoDialog({ open: false })
-  };
-
-  const defaultDeleteYesNoDialogProps = {
-    ...defaultUploadYesNoDialogProps,
-    dialogTitle: 'Delete Summary Results Data',
-    dialogText:
-      'Are you sure you want to delete the summary results data? Your summary results will be removed from this survey.'
-  };
+  // provide file name for 'loading' ui before submission responds
+  const [fileName, setFileName] = useState('');
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
   //Summary Data Loader and Error Handling
   const summaryDataLoader = useDataLoader(() => biohubApi.survey.getSurveySummarySubmission(projectId, surveyId));
@@ -105,8 +125,45 @@ const SurveySummaryResults = () => {
     };
   });
 
-  summaryDataLoader.load();
   const summaryData = summaryDataLoader.data?.surveySummaryData;
+  const submissionMessages = summaryDataLoader?.data?.surveySummaryData.messages || [];
+
+  const importSummaryResults = (): IUploadHandler => {
+    return (file, cancelToken, handleFileUploadProgress) => {
+      return biohubApi.survey
+        .uploadSurveySummaryResults(projectId, surveyId, file, cancelToken, handleFileUploadProgress)
+        .finally(() => {
+          setRefreshData(true);
+          setAnchorEl(null);
+          setFileName(file.name);
+        });
+    };
+  };
+
+  const softDeleteSubmission = async () => {
+    if (summaryData) {
+      await biohubApi.survey.deleteSummarySubmission(projectId, surveyId, summaryData.survey_summary_submission_id);
+      summaryDataLoader.clearData();
+    }
+  };
+
+  const defaultUploadYesNoDialogProps = {
+    dialogTitle: 'Import New Summary Results Data',
+    dialogText:
+      'Importing a new file will overwrite the existing summary results data. Are you sure you want to proceed?',
+    open: false,
+    onClose: () => dialogContext.setYesNoDialog({ open: false }),
+    onNo: () => dialogContext.setYesNoDialog({ open: false }),
+    onYes: () => dialogContext.setYesNoDialog({ open: false })
+  };
+
+  const defaultDeleteYesNoDialogProps = {
+    ...defaultUploadYesNoDialogProps,
+    dialogTitle: 'Delete Summary Results Data',
+    dialogText: 'Are you sure you want to delete this file? This action cannot be undone.'
+  };
+
+  summaryDataLoader.load();
 
   //Rerender summary data when the survey data loader changes
   useEffect(() => {
@@ -114,17 +171,8 @@ const SurveySummaryResults = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [surveyContext.surveyDataLoader]);
 
-  const softDeleteSubmission = async () => {
-    if (!summaryData?.survey_summary_submission_id) {
-      return;
-    }
-
-    await biohubApi.survey.deleteSummarySubmission(projectId, surveyId, summaryData?.survey_summary_submission_id);
-
-    summaryDataLoader.refresh();
-  };
-
   const showUploadDialog = () => {
+    setRefreshData(false);
     if (summaryData) {
       // already have summary data, prompt user to confirm override
       dialogContext.setYesNoDialog({
@@ -144,6 +192,10 @@ const SurveySummaryResults = () => {
     dialogContext.setYesNoDialog({
       ...defaultDeleteYesNoDialogProps,
       open: true,
+      yesButtonProps: { color: 'secondary' },
+      yesButtonLabel: 'Delete',
+      noButtonProps: { color: 'default' },
+      noButtonLabel: 'Cancel',
       onYes: () => {
         softDeleteSubmission();
         dialogContext.setYesNoDialog({ open: false });
@@ -160,19 +212,6 @@ const SurveySummaryResults = () => {
     }
     return BioHubSubmittedStatusType.UNSUBMITTED;
   };
-
-  //Action prop for the Alert MUI component to render the delete icon and associated action
-  const submissionAlertAction = () => (
-    <Box className={classes.alertActions}>
-      <SubmitStatusChip status={checkSubmissionStatus(summaryDataLoader.data?.surveySummarySupplementaryData)} />
-      <IconButton aria-label="open" color="inherit" onClick={() => viewFileContents()}>
-        <Icon path={mdiDownload} size={1} />
-      </IconButton>
-      <IconButton aria-label="delete" color="inherit" onClick={() => showDeleteDialog()}>
-        <Icon path={mdiTrashCanOutline} size={1} />
-      </IconButton>
-    </Box>
-  );
 
   type MessageGrouping = { [key: string]: { type: string[]; label: string } };
 
@@ -217,12 +256,11 @@ const SurveySummaryResults = () => {
 
   const submissionErrors: SubmissionErrors = {};
   const submissionWarnings: SubmissionWarnings = {};
-
   const messageList = summaryData?.messages;
 
   if (messageList) {
     Object.entries(messageGrouping).forEach(([key, value]) => {
-      messageList.forEach((message) => {
+      submissionMessages.forEach((message) => {
         if (value.type.includes(message.type)) {
           if (message.class === ClassGrouping.ERROR) {
             if (!submissionErrors[key]) {
@@ -266,37 +304,36 @@ const SurveySummaryResults = () => {
     window.open(response);
   };
 
-  type severityLevel = 'error' | 'info' | 'success' | 'warning' | undefined;
+  type SeverityLevel = 'error' | 'info' | 'success' | 'warning';
 
-  function displayAlertBox(severityLevel: severityLevel, iconName: string, fileName: string, message: string) {
-    return (
-      <Alert icon={<Icon path={iconName} size={1} />} severity={severityLevel} action={submissionAlertAction()}>
-        <Box display="flex" alignItems="center" m={0}>
-          <Link
-            className={classes.alertLink}
-            component="button"
-            variant="body2"
-            onClick={() => viewFileContents()}
-            gutterBottom={false}>
-            <strong>{fileName}</strong>
-          </Link>
-        </Box>
-        <Typography variant="body2">{message}</Typography>
-      </Alert>
-    );
+  let submissionStatusIcon = mdiFileOutline;
+  let submissionStatusSeverity: SeverityLevel = 'info';
+
+  if (submissionMessages?.some((messageType) => messageType.type === 'Error')) {
+    submissionStatusIcon = mdiFileAlertOutline;
+    submissionStatusSeverity = 'error';
+  } else if (submissionMessages?.some((messageType) => messageType.type === 'Warning')) {
+    submissionStatusIcon = mdiFileAlertOutline;
+    submissionStatusSeverity = 'warning';
+  } else if (submissionMessages?.some((messageType) => messageType.type === 'Notice')) {
+    submissionStatusIcon = mdiInformationOutline;
   }
 
   function displayMessages(list: SubmissionErrors | SubmissionWarnings, msgGroup: MessageGrouping, iconName: string) {
     return (
       <Box>
         {Object.entries(list).map(([key, value], index) => (
-          <Box key={index} pl={0.25}>
-            <Alert severity="error">{msgGroup[key].label}</Alert>
-            <Box component="ul" my={3}>
+          <Box mt={3} key={key} pl={0.25}>
+            <Typography variant="body2">
+              <strong>{msgGroup[key].label}</strong>
+            </Typography>
+            <Box component="ul" mt={1} mb={0} pl={4}>
               {value.map((message: string, index2: number) => {
                 return (
                   <li key={`${index}-${index2}`}>
-                    <Typography variant="body2">{message}</Typography>
+                    <Typography variant="body2" component="span">
+                      {message}
+                    </Typography>
                   </li>
                 );
               })}
@@ -306,6 +343,14 @@ const SurveySummaryResults = () => {
       </Box>
     );
   }
+
+  const openContextMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const closeContextMenu = () => {
+    setAnchorEl(null);
+  };
 
   return (
     <>
@@ -322,33 +367,181 @@ const SurveySummaryResults = () => {
         <Divider></Divider>
 
         <Box p={3}>
-          {!summaryData && (
-            <Box textAlign="center">
-              <Typography data-testid="observations-nodata" variant="body2" color="textSecondary">
-                No Summary Results. &nbsp;
-                <Link onClick={() => setOpenImportSummaryResults(true)} className={classes.browseLink}>
-                  Click Here to Import
-                </Link>
-              </Typography>
+          {/* No summary */}
+          {!summaryData && !summaryDataLoader?.isLoading && (
+            <Paper variant="outlined" className={classes.importFile}>
+              <Box display="flex" flex="1 1 auto" alignItems="center" justifyContent="center">
+                <Typography data-testid="observations-nodata" variant="body2" color="textSecondary" component="div">
+                  No Summary Results. &nbsp;
+                  <Link onClick={() => setOpenImportSummaryResults(true)} className={classes.browseLink}>
+                    Click Here to Import
+                  </Link>
+                </Typography>
+              </Box>
+            </Paper>
+          )}
+
+          {/* Data is still loading/ validating */}
+          {summaryDataLoader.isLoading && (
+            <>
+              <Paper variant="outlined" className={clsx(classes.importFile, submissionStatusSeverity)}>
+                <Box flex="1 1 auto" style={{ overflow: 'hidden' }}>
+                  <Box display="flex" alignItems="center" flex="1 1 auto" style={{ overflow: 'hidden' }}>
+                    <Box className="importFile-icon" flex="0 0 auto" mr={2}>
+                      <Icon path={submissionStatusIcon} size={1} />
+                    </Box>
+                    <Box mr={2} flex="1 1 auto" style={{ overflow: 'hidden' }}>
+                      <Typography
+                        className={classes.summaryFileName}
+                        variant="body2"
+                        component="div"
+                        onClick={viewFileContents}>
+                        <strong>{fileName}</strong>
+                      </Typography>
+                    </Box>
+                  </Box>
+
+                  <Box ml={5} mr={1}>
+                    <Typography variant="body2" color="textSecondary">
+                      Importing file. Please wait...
+                    </Typography>
+                    <Box mt={1.5}>
+                      <BorderLinearProgress />
+                    </Box>
+                  </Box>
+                </Box>
+              </Paper>
+            </>
+          )}
+
+          {/* Got a summary with errors */}
+          {summaryData && submissionMessages.length > 0 && (
+            <Box>
+              <Alert severity="error" icon={<Icon path={mdiAlertCircleOutline} size={1} />}>
+                <AlertTitle>Failed to import summary results</AlertTitle>
+                One or more errors occurred while attempting to import your summary results file.
+                {displayMessages(submissionErrors, messageGrouping, mdiAlertCircleOutline)}
+                {displayMessages(submissionWarnings, messageGrouping, mdiInformationOutline)}
+              </Alert>
+
+              <Box mt={3}>
+                <Paper variant="outlined" className={clsx(classes.importFile, 'error')}>
+                  <Box display="flex" alignItems="center" flex="1 1 auto" style={{ overflow: 'hidden' }}>
+                    <Box display="flex" alignItems="center" flex="1 1 auto" style={{ overflow: 'hidden' }}>
+                      <Box display="flex" alignItems="center" flex="0 0 auto" className="importFile-icon" mr={2}>
+                        <Icon path={mdiFileAlertOutline} size={1} />
+                      </Box>
+                      <Box mr={2} flex="1 1 auto" style={{ overflow: 'hidden' }}>
+                        <Typography
+                          className={classes.summaryFileName}
+                          variant="body2"
+                          component="div"
+                          onClick={viewFileContents}>
+                          <strong>{summaryData.fileName}</strong>
+                        </Typography>
+                      </Box>
+                    </Box>
+                    <Box flex="0 0 auto" display="flex" alignItems="center">
+                      <IconButton aria-controls="context-menu" aria-haspopup="true" onClick={openContextMenu}>
+                        <Icon path={mdiDotsVertical} size={1} />
+                      </IconButton>
+                      <Menu
+                        keepMounted
+                        id="context-menu"
+                        anchorEl={anchorEl}
+                        open={Boolean(anchorEl)}
+                        onClose={closeContextMenu}
+                        anchorOrigin={{
+                          vertical: 'top',
+                          horizontal: 'right'
+                        }}
+                        transformOrigin={{
+                          vertical: 'top',
+                          horizontal: 'right'
+                        }}>
+                        <MenuItem onClick={viewFileContents}>
+                          <ListItemIcon>
+                            <Icon path={mdiTrayArrowDown} size={1} />
+                          </ListItemIcon>
+                          Download
+                        </MenuItem>
+                        <MenuItem onClick={showDeleteDialog}>
+                          <ListItemIcon>
+                            <Icon path={mdiTrashCanOutline} size={1} />
+                          </ListItemIcon>
+                          Delete
+                        </MenuItem>
+                      </Menu>
+                    </Box>
+                  </Box>
+                </Paper>
+              </Box>
             </Box>
           )}
 
-          {summaryData && !!summaryData.messages.length && (
-            <Box>
-              {displayAlertBox('error', mdiAlertCircleOutline, summaryData.fileName, 'Validation Failed')}
-              <Box my={3}>
-                <Typography data-testid="observations-error-details" variant="body1">
-                  Resolve the following errors in your local file and re-import.
-                </Typography>
-              </Box>
-              <Box>
-                {displayMessages(submissionErrors, messageGrouping, mdiAlertCircleOutline)}
-                {displayMessages(submissionWarnings, messageGrouping, mdiInformationOutline)}
-              </Box>
-            </Box>
-          )}
-          {summaryData && !summaryData.messages.length && (
-            <Box>{displayAlertBox('info', mdiFileOutline, summaryData?.fileName, '')}</Box>
+          {/* All done */}
+          {summaryData && !summaryDataLoader.isLoading && submissionMessages.length <= 0 && (
+            <>
+              <Paper variant="outlined" className={clsx(classes.importFile, submissionStatusSeverity)}>
+                <Box display="flex" alignItems="center" flex="1 1 auto" style={{ overflow: 'hidden' }}>
+                  <Box display="flex" alignItems="center" flex="1 1 auto" style={{ overflow: 'hidden' }}>
+                    <Box display="flex" alignItems="center" flex="0 0 auto" className="importFile-icon" mr={2}>
+                      <Icon path={submissionStatusIcon} size={1} />
+                    </Box>
+                    <Box mr={2} flex="1 1 auto" style={{ overflow: 'hidden' }}>
+                      <Typography
+                        className={classes.summaryFileName}
+                        variant="body2"
+                        component="div"
+                        onClick={viewFileContents}>
+                        <strong>{summaryData.fileName}</strong>
+                      </Typography>
+                    </Box>
+                  </Box>
+
+                  <Box flex="0 0 auto" display="flex" alignItems="center">
+                    <Box mr={2}>
+                      <SubmitStatusChip
+                        status={checkSubmissionStatus(summaryDataLoader.data?.surveySummarySupplementaryData)}
+                      />
+                    </Box>
+
+                    <Box>
+                      <IconButton aria-controls="context-menu" aria-haspopup="true" onClick={openContextMenu}>
+                        <Icon path={mdiDotsVertical} size={1} />
+                      </IconButton>
+                      <Menu
+                        keepMounted
+                        id="context-menu"
+                        anchorEl={anchorEl}
+                        open={Boolean(anchorEl)}
+                        onClose={closeContextMenu}
+                        anchorOrigin={{
+                          vertical: 'top',
+                          horizontal: 'right'
+                        }}
+                        transformOrigin={{
+                          vertical: 'top',
+                          horizontal: 'right'
+                        }}>
+                        <MenuItem onClick={viewFileContents}>
+                          <ListItemIcon>
+                            <Icon path={mdiTrayArrowDown} size={1} />
+                          </ListItemIcon>
+                          Download
+                        </MenuItem>
+                        <MenuItem onClick={showDeleteDialog}>
+                          <ListItemIcon>
+                            <Icon path={mdiTrashCanOutline} size={1} />
+                          </ListItemIcon>
+                          Delete
+                        </MenuItem>
+                      </Menu>
+                    </Box>
+                  </Box>
+                </Box>
+              </Paper>
+            </>
           )}
         </Box>
       </Paper>
@@ -357,12 +550,15 @@ const SurveySummaryResults = () => {
         open={openImportSummaryResults}
         dialogTitle="Import Summary Results Data"
         onClose={() => {
+          if (refreshData) {
+            summaryDataLoader.refresh();
+          }
           setOpenImportSummaryResults(false);
           summaryDataLoader.refresh();
           surveyContext.surveyDataLoader.refresh(projectId, surveyId);
         }}>
         <FileUpload
-          dropZoneProps={{ maxNumFiles: 1, acceptedFileExtensions: '.csv, .xls, .txt, .xlsm, .xlsx' }}
+          dropZoneProps={{ maxNumFiles: 1, acceptedFileExtensions: '.xls, .xlsm, .xlsx' }}
           uploadHandler={importSummaryResults()}
         />
       </ComponentDialog>
