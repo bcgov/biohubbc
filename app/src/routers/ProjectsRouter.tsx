@@ -43,14 +43,12 @@ const ProjectsRouter: React.FC = () => {
       <Redirect exact from="/admin/projects/:id" to="/admin/projects/:id/details" />
 
       <AppRoute path="/admin/projects/:id">
-
         <ProjectContextProvider>
           <AppRoute exact path="/admin/projects/:id/details" layout={ProjectsLayout}>
             <ProjectsLayout>
               <ProjectPage />
             </ProjectsLayout>
           </AppRoute>
-          
 
           <AppRoute exact path="/admin/projects/:id/users" layout={ProjectsLayout}>
             <ProjectsLayout>
