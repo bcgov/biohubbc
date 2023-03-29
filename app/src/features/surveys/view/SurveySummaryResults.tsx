@@ -33,9 +33,9 @@ import { DialogContext } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
-import React, { useContext, useEffect, useState } from 'react';
 import useDataLoaderError from 'hooks/useDataLoaderError';
 import { ISurveySummarySupplementaryData } from 'interfaces/useSummaryResultsApi.interface';
+import React, { useContext, useEffect, useState } from 'react';
 
 const useStyles = makeStyles((theme: Theme) => ({
   importFile: {
@@ -105,7 +105,6 @@ const SurveySummaryResults = () => {
   const projectId = surveyContext.projectId as number;
   const surveyId = surveyContext.surveyId as number;
 
-
   const classes = useStyles();
 
   const [openImportSummaryResults, setOpenImportSummaryResults] = useState(false);
@@ -114,7 +113,7 @@ const SurveySummaryResults = () => {
   // provide file name for 'loading' ui before submission responds
   const [filName, setFileName] = useState('');
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  
+
   //Summary Data Loader and Error Handling
   const summaryDataLoader = useDataLoader(() => biohubApi.survey.getSurveySummarySubmission(projectId, surveyId));
   useDataLoaderError(summaryDataLoader, () => {
@@ -128,7 +127,7 @@ const SurveySummaryResults = () => {
   useEffect(() => {
     summaryDataLoader.load();
   }, []); // eslint-disable-line
-  
+
   const summaryData = summaryDataLoader.data?.surveySummaryData;
   const submissionMessages = summaryDataLoader?.data?.surveySummaryData.messages || [];
 
@@ -166,7 +165,6 @@ const SurveySummaryResults = () => {
     dialogTitle: 'Delete Summary Results Data',
     dialogText: 'Are you sure you want to delete this file? This action cannot be undone.'
   };
-
 
   summaryDataLoader.load();
 
@@ -261,8 +259,6 @@ const SurveySummaryResults = () => {
 
   const submissionErrors: SubmissionErrors = {};
   const submissionWarnings: SubmissionWarnings = {};
-
-  if (submissionMessages) {
   const messageList = summaryData?.messages;
 
   if (messageList) {
@@ -508,7 +504,9 @@ const SurveySummaryResults = () => {
 
                   <Box flex="0 0 auto" display="flex" alignItems="center">
                     <Box mr={2}>
-                    <SubmitStatusChip status={checkSubmissionStatus(summaryDataLoader.data?.surveySummarySupplementaryData)} />
+                      <SubmitStatusChip
+                        status={checkSubmissionStatus(summaryDataLoader.data?.surveySummarySupplementaryData)}
+                      />
                     </Box>
 
                     <Box>
@@ -547,6 +545,7 @@ const SurveySummaryResults = () => {
                 </Box>
               </Paper>
             </>
+          )}
         </Box>
       </Paper>
 
