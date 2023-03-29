@@ -20,6 +20,7 @@ import * as History from 'history';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
+import useDataLoaderError from 'hooks/useDataLoaderError';
 import { useQuery } from 'hooks/useQuery';
 import { ICreateProjectRequest } from 'interfaces/useProjectApi.interface';
 import React, { useContext, useEffect, useRef, useState } from 'react';
@@ -66,7 +67,7 @@ const CreateProjectPage: React.FC = () => {
 
   // Reference to pass to the formik component in order to access its state at any time
   // Used by the draft logic to fetch the values of a step form that has not been validated/completed
-  const formikRef = useRef<FormikProps<ICreateProjectRequest>>(null);
+  const [formikRef] = useState(useRef<FormikProps<ICreateProjectRequest | null>>(null));
 
   // Ability to bypass showing the 'Are you sure you want to cancel' dialog
   const [enableCancelCheck, setEnableCancelCheck] = useState(true);
@@ -76,11 +77,18 @@ const CreateProjectPage: React.FC = () => {
   const codesDataLoader = useDataLoader(() => biohubApi.codes.getAllCodeSets());
   codesDataLoader.load();
 
-  const draftDataLoader = useDataLoader((draftId: number) => biohubApi.draft.getDraft(draftId));
+  const draftDataLoader = useDataLoader(() => {
+    return biohubApi.draft.getDraft(queryParams.draftId);
+  });
 
-  if (queryParams.draftId) {
-    draftDataLoader.load(queryParams.draftId);
-  }
+  useDataLoaderError(draftDataLoader, () => {
+    return {
+      dialogTitle: 'Error Loading Draft Project',
+      dialogText:
+        'An error has occurred while attempting to load the draft project, please try again. If the error persists, please contact your system administrator.'
+    };
+  });
+  draftDataLoader.load();
 
   useEffect(() => {
     const setFormikValues = (data: ICreateProjectRequest) => {
@@ -90,7 +98,7 @@ const CreateProjectPage: React.FC = () => {
     if (draftDataLoader.data?.data) {
       setFormikValues(draftDataLoader.data?.data);
     }
-  }, [draftDataLoader.data]);
+  }, [draftDataLoader.data, formikRef]);
 
   // Whether or not to show the 'Save as draft' dialog
   const [openDraftDialog, setOpenDraftDialog] = useState(false);

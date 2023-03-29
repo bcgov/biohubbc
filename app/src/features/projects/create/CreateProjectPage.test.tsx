@@ -429,7 +429,7 @@ describe('CreateProjectPage', () => {
       });
     });
 
-    it.skip('calls the createDraft/updateDraft functions and closes the dialog on save button click', async () => {
+    it('calls the createDraft/updateDraft functions and closes the dialog on save button click', async () => {
       mockBiohubApi().draft.createDraft.mockResolvedValue({
         id: 1,
         date: '2021-01-20'
@@ -504,8 +504,8 @@ describe('CreateProjectPage', () => {
         expect(mockBiohubApi().draft.createDraft).toHaveBeenCalledWith('draft name', {
           coordinator: {
             first_name: 'draft first name',
-            last_name: '',
-            email_address: '',
+            last_name: 'Draft last name',
+            email_address: 'draftemail@example.com',
             coordinator_agency: '',
             share_contact_details: 'false'
           },
@@ -544,7 +544,7 @@ describe('CreateProjectPage', () => {
           coordinator: {
             first_name: 'draft first name',
             last_name: 'draft last name',
-            email_address: '',
+            email_address: 'draftemail@example.com',
             coordinator_agency: '',
             share_contact_details: 'false'
           },
