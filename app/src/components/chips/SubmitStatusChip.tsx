@@ -6,13 +6,16 @@ import React from 'react';
 
 const useStyles = makeStyles((theme: Theme) => ({
   chip: {
-    color: 'white'
+    fontSize: '12px',
   },
   chipUnSubmitted: {
-    backgroundColor: theme.palette.error.main
+    color: '#003366',
+    backgroundColor: '#DCEBFB',
+    textTransform: 'uppercase',
   },
   chipSubmitted: {
-    backgroundColor: theme.palette.success.main
+    color: '#2D4821',
+    backgroundColor: '#DFF0D8'
   },
   chipRejected: {
     backgroundColor: theme.palette.error.main
@@ -32,11 +35,11 @@ export const SubmitStatusChip: React.FC<{ status: BioHubSubmittedStatusType; chi
     chipStatusClass = classes.chipRejected;
   } else if (props.status === BioHubSubmittedStatusType.SUBMITTED) {
     chipLabel = 'Submitted';
-    chipStatusClass = classes.chipSubmitted;
+    chipStatusClass = "colorSuccess";
   } else {
     chipLabel = 'Unsubmitted';
     chipStatusClass = classes.chipUnSubmitted;
   }
 
-  return <Chip size="small" className={clsx(classes.chip, chipStatusClass)} label={chipLabel} {...props.chipProps} />;
+  return <Chip className={clsx(classes.chip, chipStatusClass)} label={chipLabel} {...props.chipProps} />;
 };
