@@ -40,46 +40,48 @@ const ProjectsRouter: React.FC = () => {
         </ProjectsLayout>
       </AppRoute>
 
-      <Redirect exact from="/admin/projects/:id" to="/admin/projects/:id/details" />
+      <AppRoute path="/admin/projects/:id">
+        <Redirect exact from="/admin/projects/:id" to="/admin/projects/:id/details" />
 
-      <ProjectContextProvider>
-        <AppRoute exact path="/admin/projects/:id/details" layout={ProjectsLayout}>
-          <ProjectsLayout>
+        <ProjectContextProvider>
+          <AppRoute exact path="/admin/projects/:id/details" layout={ProjectsLayout}>
+            <ProjectsLayout>
+              <ProjectPage />
+            </ProjectsLayout>
+          </AppRoute>
+          
+
+          <AppRoute exact path="/admin/projects/:id/users" layout={ProjectsLayout}>
+            <ProjectsLayout>
+              <ProjectParticipantsPage />
+            </ProjectsLayout>
+          </AppRoute>
+
+          <AppRoute exact path="/admin/projects/:id/surveys" layout={ProjectsLayout}>
+            <ProjectsLayout>
+              <ProjectPage />
+            </ProjectsLayout>
+          </AppRoute>
+
+          <AppRoute path="/admin/projects/:id/surveys/:survey_id" title={getTitle('Surveys')} layout={ProjectsLayout}>
+            <SurveyContextProvider>
+              <SurveyRouter />
+            </SurveyContextProvider>
+          </AppRoute>
+
+          <AppRoute exact path="/admin/projects/:id/survey/create" layout={ProjectsLayout}>
+            <CreateSurveyPage />
+          </AppRoute>
+
+          <AppRoute exact path="/admin/projects/:id/survey/edit" layout={ProjectsLayout}>
+            <EditSurveyPage />
+          </AppRoute>
+
+          <AppRoute exact path="/admin/projects/:id/attachments" layout={ProjectsLayout}>
             <ProjectPage />
-          </ProjectsLayout>
-        </AppRoute>
-        
-
-        <AppRoute exact path="/admin/projects/:id/users" layout={ProjectsLayout}>
-          <ProjectsLayout>
-            <ProjectParticipantsPage />
-          </ProjectsLayout>
-        </AppRoute>
-
-        <AppRoute exact path="/admin/projects/:id/surveys" layout={ProjectsLayout}>
-          <ProjectsLayout>
-            <ProjectPage />
-          </ProjectsLayout>
-        </AppRoute>
-
-        <AppRoute path="/admin/projects/:id/surveys/:survey_id" title={getTitle('Surveys')} layout={ProjectsLayout}>
-          <SurveyContextProvider>
-            <SurveyRouter />
-          </SurveyContextProvider>
-        </AppRoute>
-
-        <AppRoute exact path="/admin/projects/:id/survey/create" layout={ProjectsLayout}>
-          <CreateSurveyPage />
-        </AppRoute>
-
-        <AppRoute exact path="/admin/projects/:id/survey/edit" layout={ProjectsLayout}>
-          <EditSurveyPage />
-        </AppRoute>
-
-        <AppRoute exact path="/admin/projects/:id/attachments" layout={ProjectsLayout}>
-          <ProjectPage />
-        </AppRoute>
-      </ProjectContextProvider>
+          </AppRoute>
+        </ProjectContextProvider>
+      </AppRoute>
 
       {/*  Catch any unknown routes, and re-direct to the not found page */}
       <AppRoute path="/admin/projects/*">

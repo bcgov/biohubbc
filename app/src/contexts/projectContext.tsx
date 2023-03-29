@@ -60,7 +60,7 @@ export const ProjectContextProvider = (props: PropsWithChildren<Record<never, an
    * Refreshes the current project object whenever the current project ID changes
    */
   useEffect(() => {
-    if (projectId && projectId) {
+    if (projectId) {
       projectDataLoader.refresh(projectId);
       artifactDataLoader.refresh(projectId);
     }
