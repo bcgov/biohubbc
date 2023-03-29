@@ -22,6 +22,7 @@ import {
   mdiTrayArrowDown
 } from '@mdi/js';
 import Icon from '@mdi/react';
+import clsx from 'clsx';
 import { SubmitStatusChip } from 'components/chips/SubmitStatusChip';
 import ComponentDialog from 'components/dialog/ComponentDialog';
 import FileUpload from 'components/file-upload/FileUpload';
@@ -320,31 +321,28 @@ const SurveyObservations: React.FC = () => {
                   <Alert severity="error" icon={<Icon path={mdiAlertCircleOutline} size={1} />}>
                     <AlertTitle>Failed to import observations</AlertTitle>
                     One or more errors occurred while attempting to import your observations file.
-                    {
-                      // Alphabetize message types for consistency
-                      submissionMessageTypes.map((messageType) => {
-                        return (
-                          <Box key={messageType.messageTypeLabel} mt={3}>
-                            <Box component="section">
-                              <Typography variant="body2">
-                                <strong>{messageType.messageTypeLabel}</strong>
-                              </Typography>
-                              <Box component="ul" mt={1} mb={0} pl={4}>
-                                {messageType.messages.map((messageObject: { id: number; message: string }) => {
-                                  return (
-                                    <li key={messageObject.id}>
-                                      <Typography variant="body2" component="span">
-                                        {messageObject.message}
-                                      </Typography>
-                                    </li>
-                                  );
-                                })}
-                              </Box>
+                    {submissionMessageTypes.map((messageType) => {
+                      return (
+                        <Box key={messageType.messageTypeLabel} mt={3}>
+                          <Box component="section">
+                            <Typography variant="body2">
+                              <strong>{messageType.messageTypeLabel}</strong>
+                            </Typography>
+                            <Box component="ul" mt={1} mb={0} pl={4}>
+                              {messageType.messages.map((messageObject: { id: number; message: string }) => {
+                                return (
+                                  <li key={messageObject.id}>
+                                    <Typography variant="body2" component="span">
+                                      {messageObject.message}
+                                    </Typography>
+                                  </li>
+                                );
+                              })}
                             </Box>
                           </Box>
-                        );
-                      })
-                    }
+                        </Box>
+                      );
+                    })}
                   </Alert>
                 </Box>
               )}
@@ -368,7 +366,7 @@ const SurveyObservations: React.FC = () => {
           {/* No submission yet, but data is loading */}
           {!submissionExists && submissionDataLoader.isLoading && (
             <>
-              <Paper variant="outlined" className={classes.importFile + ` ` + `${submissionStatusSeverity}`}>
+              <Paper variant="outlined" className={clsx(classes.importFile, submissionStatusSeverity)}>
                 <Box flex="1 1 auto" style={{ overflow: 'hidden' }}>
                   <Box display="flex" alignItems="center" flex="1 1 auto" style={{ overflow: 'hidden' }}>
                     <Box className="importFile-icon" flex="0 0 auto" mr={2}>
@@ -397,7 +395,7 @@ const SurveyObservations: React.FC = () => {
           {/* Got a submission, but still loading */}
           {submissionExists && occurrenceSubmission?.isValidating && (
             <>
-              <Paper variant="outlined" className={classes.importFile + ` ` + `${submissionStatusSeverity}`}>
+              <Paper variant="outlined" className={clsx(classes.importFile, submissionStatusSeverity)}>
                 <Box flex="1 1 auto" style={{ overflow: 'hidden' }}>
                   <Box display="flex" alignItems="center" flex="1 1 auto" style={{ overflow: 'hidden' }}>
                     <Box className="importFile-icon" flex="0 0 auto" mr={2}>
@@ -432,7 +430,7 @@ const SurveyObservations: React.FC = () => {
           {/* All done */}
           {submissionExists && !occurrenceSubmission?.isValidating && (
             <>
-              <Paper variant="outlined" className={classes.importFile + ` ` + `${submissionStatusSeverity}`}>
+              <Paper variant="outlined" className={clsx(classes.importFile, submissionStatusSeverity)}>
                 <Box display="flex" alignItems="center" flex="1 1 auto" style={{ overflow: 'hidden' }}>
                   <Box display="flex" alignItems="center" flex="1 1 auto" style={{ overflow: 'hidden' }}>
                     <Box display="flex" alignItems="center" flex="0 0 auto" mr={2} className="importFile-icon">

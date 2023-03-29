@@ -23,6 +23,7 @@ import {
   mdiTrayArrowDown
 } from '@mdi/js';
 import Icon from '@mdi/react';
+import clsx from 'clsx';
 import { SubmitStatusChip } from 'components/chips/SubmitStatusChip';
 import ComponentDialog from 'components/dialog/ComponentDialog';
 import FileUpload from 'components/file-upload/FileUpload';
@@ -111,7 +112,7 @@ const SurveySummaryResults = () => {
   const [refreshData, setRefreshData] = useState(false);
 
   // provide file name for 'loading' ui before submission responds
-  const [filName, setFileName] = useState('');
+  const [fileName, setFileName] = useState('');
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
   //Summary Data Loader and Error Handling
@@ -123,10 +124,6 @@ const SurveySummaryResults = () => {
         'An error has occurred while attempting to load summary details, please try again. If the error persists, please contact your system administrator.'
     };
   });
-
-  useEffect(() => {
-    summaryDataLoader.load();
-  }, []); // eslint-disable-line
 
   const summaryData = summaryDataLoader.data?.surveySummaryData;
   const submissionMessages = summaryDataLoader?.data?.surveySummaryData.messages || [];
@@ -387,7 +384,7 @@ const SurveySummaryResults = () => {
           {/* Data is still loading/ validating */}
           {summaryDataLoader.isLoading && (
             <>
-              <Paper variant="outlined" className={classes.importFile + ` ` + `${submissionStatusSeverity}`}>
+              <Paper variant="outlined" className={clsx(classes.importFile, submissionStatusSeverity)}>
                 <Box flex="1 1 auto" style={{ overflow: 'hidden' }}>
                   <Box display="flex" alignItems="center" flex="1 1 auto" style={{ overflow: 'hidden' }}>
                     <Box className="importFile-icon" flex="0 0 auto" mr={2}>
@@ -399,7 +396,7 @@ const SurveySummaryResults = () => {
                         variant="body2"
                         component="div"
                         onClick={viewFileContents}>
-                        <strong>{filName}</strong>
+                        <strong>{fileName}</strong>
                       </Typography>
                     </Box>
                   </Box>
@@ -428,7 +425,7 @@ const SurveySummaryResults = () => {
               </Alert>
 
               <Box mt={3}>
-                <Paper variant="outlined" className={classes.importFile + ` ` + `error`}>
+                <Paper variant="outlined" className={clsx(classes.importFile, 'error')}>
                   <Box display="flex" alignItems="center" flex="1 1 auto" style={{ overflow: 'hidden' }}>
                     <Box display="flex" alignItems="center" flex="1 1 auto" style={{ overflow: 'hidden' }}>
                       <Box display="flex" alignItems="center" flex="0 0 auto" className="importFile-icon" mr={2}>
@@ -485,7 +482,7 @@ const SurveySummaryResults = () => {
           {/* All done */}
           {summaryData && !summaryDataLoader.isLoading && submissionMessages.length <= 0 && (
             <>
-              <Paper variant="outlined" className={classes.importFile + ` ` + `${submissionStatusSeverity}`}>
+              <Paper variant="outlined" className={clsx(classes.importFile, submissionStatusSeverity)}>
                 <Box display="flex" alignItems="center" flex="1 1 auto" style={{ overflow: 'hidden' }}>
                   <Box display="flex" alignItems="center" flex="1 1 auto" style={{ overflow: 'hidden' }}>
                     <Box display="flex" alignItems="center" flex="0 0 auto" className="importFile-icon" mr={2}>
