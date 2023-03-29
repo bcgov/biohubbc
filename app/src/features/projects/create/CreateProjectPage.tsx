@@ -77,6 +77,8 @@ const CreateProjectPage: React.FC = () => {
   const codesDataLoader = useDataLoader(() => biohubApi.codes.getAllCodeSets());
   codesDataLoader.load();
 
+  const draftFormData = formikRef?.current?.values;
+
   const draftDataLoader = useDataLoader(() => {
     return biohubApi.draft.getDraft(queryParams.draftId);
   });
@@ -98,7 +100,7 @@ const CreateProjectPage: React.FC = () => {
     if (draftDataLoader.data?.data) {
       setFormikValues(draftDataLoader.data.data);
     }
-  }, [draftDataLoader.data, formikRef]);
+  }, [draftDataLoader.data, formikRef, draftFormData]);
 
   // Whether or not to show the 'Save as draft' dialog
   const [openDraftDialog, setOpenDraftDialog] = useState(false);
@@ -173,7 +175,6 @@ const CreateProjectPage: React.FC = () => {
       // Get the form data for all steps
       // Fetch the data from the formikRef for whichever step is the active step
       // Why? WIP changes to the active step will not yet be updated into its respective stepForms[n].stepInitialValues
-      const draftFormData = formikRef?.current?.values;
 
       const draftId = Number(queryParams.draftId) || draft?.id;
 
