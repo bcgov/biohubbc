@@ -107,6 +107,7 @@ const CreateProjectPage: React.FC = () => {
   const [openDeleteDraftDialog, setOpenDeleteDraftDialog] = useState(false);
 
   const [draft, setDraft] = useState({ id: 0, date: '' });
+  const draftId = Number(queryParams.draftId) || draft?.id;
 
   const defaultCancelDialogProps = {
     dialogTitle: CreateProjectI18N.cancelTitle,
@@ -176,8 +177,6 @@ const CreateProjectPage: React.FC = () => {
       // Fetch the data from the formikRef for whichever step is the active step
       // Why? WIP changes to the active step will not yet be updated into its respective stepForms[n].stepInitialValues
 
-      const draftId = Number(queryParams.draftId) || draft?.id;
-
       if (draftId) {
         response = await biohubApi.draft.updateDraft(
           draftId,
@@ -223,8 +222,6 @@ const CreateProjectPage: React.FC = () => {
    * @returns {*}
    */
   const deleteDraft = async () => {
-    const draftId = Number(queryParams.draftId);
-
     if (!draftId) {
       return;
     }

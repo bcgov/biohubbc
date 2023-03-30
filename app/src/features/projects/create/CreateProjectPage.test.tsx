@@ -224,7 +224,7 @@ describe('CreateProjectPage', () => {
         });
       });
 
-      it('dispalys a Delete draft Yes/No Dialog', async () => {
+      it('displays a Delete draft Yes/No Dialog', async () => {
         mockBiohubApi().codes.getAllCodeSets.mockResolvedValue(({
           coordinator_agency: [{ id: 1, name: 'A Rocha Canada' }]
         } as unknown) as IGetAllCodeSetsResponse);
@@ -480,7 +480,7 @@ describe('CreateProjectPage', () => {
 
       const { getByText, findAllByText, getByLabelText, queryByLabelText } = renderContainer();
 
-      // wait for initial page to load
+      //wait for initial page to load
       await waitFor(() => {
         expect(getByText('General Information')).toBeVisible();
       });
@@ -542,7 +542,7 @@ describe('CreateProjectPage', () => {
       await waitFor(() => {
         expect(mockBiohubApi().draft.updateDraft).toHaveBeenCalledWith(1, 'draft name', {
           coordinator: {
-            first_name: 'draft first name',
+            first_name: 'Draft first name',
             last_name: 'draft last name',
             email_address: 'draftemail@example.com',
             coordinator_agency: '',
@@ -562,7 +562,7 @@ describe('CreateProjectPage', () => {
           partnerships: { indigenous_partnerships: [], stakeholder_partnerships: [] }
         });
 
-        expect(queryByLabelText('Draft Name *')).not.toBeInTheDocument();
+        expect(queryByLabelText('draft Name *')).not.toBeInTheDocument();
       });
     });
 

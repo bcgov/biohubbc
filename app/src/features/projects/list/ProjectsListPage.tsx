@@ -159,6 +159,10 @@ const ProjectsListPage: React.FC = () => {
     const getProjects = async () => {
       const projectsResponse = await biohubApi.project.getProjectsList();
 
+      if (!projectsResponse) {
+        return;
+      }
+
       setProjects(() => {
         setIsLoading(false);
         return projectsResponse;
@@ -193,6 +197,8 @@ const ProjectsListPage: React.FC = () => {
     });
   };
 
+  const filterValues = formikRef?.current?.values;
+
   /**
    * Handle filtering project results.
    */
@@ -201,8 +207,10 @@ const ProjectsListPage: React.FC = () => {
       return;
     }
 
+    console.log('values:', formikRef.current.values);
+
     try {
-      const response = await biohubApi.project.getProjectsList(formikRef.current.values);
+      const response = await biohubApi.project.getProjectsList(filterValues);
 
       if (!response) {
         return;
