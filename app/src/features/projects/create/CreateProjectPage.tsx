@@ -20,7 +20,6 @@ import * as History from 'history';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
-//import useDataLoaderError from 'hooks/useDataLoaderError';
 import { useQuery } from 'hooks/useQuery';
 import { ICreateProjectRequest } from 'interfaces/useProjectApi.interface';
 import React, { useContext, useEffect, useRef, useState } from 'react';
