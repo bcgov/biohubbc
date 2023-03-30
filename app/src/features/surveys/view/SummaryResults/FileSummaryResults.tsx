@@ -19,6 +19,7 @@ interface IFileResultsProps {
   downloadFile: () => void;
   showDelete: () => void;
 }
+
 const useStyles = makeStyles((theme: Theme) => ({
   importFile: {
     display: 'flex',

@@ -1,26 +1,9 @@
 import Box from '@material-ui/core/Box';
 import Divider from '@material-ui/core/Divider';
-import IconButton from '@material-ui/core/IconButton';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
 import Paper from '@material-ui/core/Paper';
-import { Theme } from '@material-ui/core/styles/createMuiTheme';
-import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
-import Alert from '@material-ui/lab/Alert';
-import AlertTitle from '@material-ui/lab/AlertTitle';
-import {
-  mdiAlertCircleOutline,
-  mdiDotsVertical,
-  mdiFileAlertOutline,
-  mdiImport,
-  mdiInformationOutline,
-  mdiTrashCanOutline,
-  mdiTrayArrowDown
-} from '@mdi/js';
+import { mdiImport } from '@mdi/js';
 import Icon from '@mdi/react';
-import clsx from 'clsx';
 import ComponentDialog from 'components/dialog/ComponentDialog';
 import FileUpload from 'components/file-upload/FileUpload';
 import { IUploadHandler } from 'components/file-upload/FileUploadItem';
@@ -35,46 +18,47 @@ import { ISurveySummarySupplementaryData } from 'interfaces/useSummaryResultsApi
 import React, { useContext, useEffect, useState } from 'react';
 import FileSummaryResults from './SummaryResults/FileSummaryResults';
 import NoSummaryResults from './SummaryResults/NoSummaryResults';
+import SummaryResultsErrors from './SummaryResults/SummaryResultsErrors';
 import SummaryResultsLoading from './SummaryResults/SummaryResultsLoading';
 
-const useStyles = makeStyles((theme: Theme) => ({
-  importFile: {
-    display: 'flex',
-    minHeight: '82px',
-    padding: theme.spacing(2),
-    paddingLeft: '20px',
-    overflow: 'hidden',
-    '& .importFile-icon': {
-      color: theme.palette.text.secondary
-    },
-    '&.error': {
-      borderColor: theme.palette.error.main,
-      '& .importFile-icon': {
-        color: theme.palette.error.main
-      }
-    }
-  },
-  browseLink: {
-    cursor: 'pointer'
-  },
-  center: {
-    alignSelf: 'center'
-  },
-  alertLink: {
-    color: 'inherit'
-  },
-  alertActions: {
-    '& > *': {
-      marginLeft: theme.spacing(0.5)
-    }
-  },
-  summaryFileName: {
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    textDecoration: 'underline',
-    cursor: 'pointer'
-  }
-}));
+// const useStyles = makeStyles((theme: Theme) => ({
+//   importFile: {
+//     display: 'flex',
+//     minHeight: '82px',
+//     padding: theme.spacing(2),
+//     paddingLeft: '20px',
+//     overflow: 'hidden',
+//     '& .importFile-icon': {
+//       color: theme.palette.text.secondary
+//     },
+//     '&.error': {
+//       borderColor: theme.palette.error.main,
+//       '& .importFile-icon': {
+//         color: theme.palette.error.main
+//       }
+//     }
+//   },
+//   browseLink: {
+//     cursor: 'pointer'
+//   },
+//   center: {
+//     alignSelf: 'center'
+//   },
+//   alertLink: {
+//     color: 'inherit'
+//   },
+//   alertActions: {
+//     '& > *': {
+//       marginLeft: theme.spacing(0.5)
+//     }
+//   },
+//   summaryFileName: {
+//     overflow: 'hidden',
+//     textOverflow: 'ellipsis',
+//     textDecoration: 'underline',
+//     cursor: 'pointer'
+//   }
+// }));
 
 export enum ClassGrouping {
   NOTICE = 'Notice',
@@ -90,14 +74,11 @@ const SurveySummaryResults = () => {
   const projectId = surveyContext.projectId as number;
   const surveyId = surveyContext.surveyId as number;
 
-  const classes = useStyles();
-
   const [openImportSummaryResults, setOpenImportSummaryResults] = useState(false);
   const [refreshData, setRefreshData] = useState(false);
 
   // provide file name for 'loading' ui before submission responds
   const [fileName, setFileName] = useState('');
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
   //Summary Data Loader and Error Handling
   const summaryDataLoader = useDataLoader(() => biohubApi.survey.getSurveySummarySubmission(projectId, surveyId));
@@ -118,7 +99,6 @@ const SurveySummaryResults = () => {
         .uploadSurveySummaryResults(projectId, surveyId, file, cancelToken, handleFileUploadProgress)
         .finally(() => {
           setRefreshData(true);
-          setAnchorEl(null);
           setFileName(file.name);
         });
     };
@@ -313,14 +293,6 @@ const SurveySummaryResults = () => {
     );
   }
 
-  const openContextMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const closeContextMenu = () => {
-    setAnchorEl(null);
-  };
-
   return (
     <>
       <Paper elevation={0}>
@@ -346,67 +318,11 @@ const SurveySummaryResults = () => {
 
           {/* Got a summary with errors */}
           {summaryData && submissionMessages.length > 0 && (
-            <Box>
-              <Alert severity="error" icon={<Icon path={mdiAlertCircleOutline} size={1} />}>
-                <AlertTitle>Failed to import summary results</AlertTitle>
-                One or more errors occurred while attempting to import your summary results file.
-                {displayMessages(submissionErrors, messageGrouping, mdiAlertCircleOutline)}
-                {displayMessages(submissionWarnings, messageGrouping, mdiInformationOutline)}
-              </Alert>
-
-              <Box mt={3}>
-                <Paper variant="outlined" className={clsx(classes.importFile, 'error')}>
-                  <Box display="flex" alignItems="center" flex="1 1 auto" style={{ overflow: 'hidden' }}>
-                    <Box display="flex" alignItems="center" flex="1 1 auto" style={{ overflow: 'hidden' }}>
-                      <Box display="flex" alignItems="center" flex="0 0 auto" className="importFile-icon" mr={2}>
-                        <Icon path={mdiFileAlertOutline} size={1} />
-                      </Box>
-                      <Box mr={2} flex="1 1 auto" style={{ overflow: 'hidden' }}>
-                        <Typography
-                          className={classes.summaryFileName}
-                          variant="body2"
-                          component="div"
-                          onClick={viewFileContents}>
-                          <strong>{summaryData.fileName}</strong>
-                        </Typography>
-                      </Box>
-                    </Box>
-                    <Box flex="0 0 auto" display="flex" alignItems="center">
-                      <IconButton aria-controls="context-menu" aria-haspopup="true" onClick={openContextMenu}>
-                        <Icon path={mdiDotsVertical} size={1} />
-                      </IconButton>
-                      <Menu
-                        keepMounted
-                        id="context-menu"
-                        anchorEl={anchorEl}
-                        open={Boolean(anchorEl)}
-                        onClose={closeContextMenu}
-                        anchorOrigin={{
-                          vertical: 'top',
-                          horizontal: 'right'
-                        }}
-                        transformOrigin={{
-                          vertical: 'top',
-                          horizontal: 'right'
-                        }}>
-                        <MenuItem onClick={viewFileContents}>
-                          <ListItemIcon>
-                            <Icon path={mdiTrayArrowDown} size={1} />
-                          </ListItemIcon>
-                          Download
-                        </MenuItem>
-                        <MenuItem onClick={showDeleteDialog}>
-                          <ListItemIcon>
-                            <Icon path={mdiTrashCanOutline} size={1} />
-                          </ListItemIcon>
-                          Delete
-                        </MenuItem>
-                      </Menu>
-                    </Box>
-                  </Box>
-                </Paper>
-              </Box>
-            </Box>
+            <SummaryResultsErrors
+              fileName={summaryData.fileName}
+              downloadFile={viewFileContents}
+              showDelete={showDeleteDialog}
+            />
           )}
 
           {/* All done */}
