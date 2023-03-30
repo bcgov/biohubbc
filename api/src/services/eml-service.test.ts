@@ -68,7 +68,7 @@ describe('EmlPackage', () => {
         ...mockOrg
       });
 
-      const response = emlPackage.withDataset(emlService._buildEmlDatasetSection(mockPackageId, mockProjectData));
+      const response = emlPackage.withDataset(emlService._buildProjectEmlDatasetSection(mockPackageId, mockProjectData));
 
       expect(response._datasetMetadata).to.eql(emlPackage._datasetMetadata);
       expect(response._datasetMetadata).to.eql({
@@ -1329,7 +1329,7 @@ describe('EmlService', () => {
         ...mockOrg
       });
 
-      const response = emlService._buildEmlDatasetSection(mockPackageId, mockProjectData);
+      const response = emlService._buildProjectEmlDatasetSection(mockPackageId, mockProjectData);
 
       expect(response).to.eql({
         $: { system: '', id: 'aaaabbbb-cccc-dddd-eeee-ffffgggghhhhiiii' },

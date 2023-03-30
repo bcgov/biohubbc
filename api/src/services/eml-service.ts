@@ -322,7 +322,7 @@ export class EmlService extends DBService {
         .withEml(this._buildEmlSection(packageId))
 
         // Build EML->Dataset field
-        .withDataset(this._buildEmlDatasetSection(packageId, projectData))
+        .withDataset(this._buildProjectEmlDatasetSection(packageId, projectData))
 
         // Build EML->Dataset->Project field
         .withProject(this._buildProjectEmlProjectSection(projectData))
@@ -364,7 +364,7 @@ export class EmlService extends DBService {
         .withEml(this._buildEmlSection(packageId))
 
         // Build EML->Dataset field
-        .withDataset(this._buildEmlDatasetSection(packageId, projectData))
+        .withDataset(this._buildSurveyEmlDatasetSection(packageId, surveyData))
 
         // Build EML->Dataset->Project field
         .withProject(await this._buildSurveyEmlProjectSection(surveyData))
@@ -444,23 +444,44 @@ export class EmlService extends DBService {
   }
 
   /**
-   * Builds the EML Dataset section for either a project or a survey
+   * Builds the EML Dataset section for a project
    *
    * @param {IGetProject} projectData
    * @param {string} packageId
    * @return {*}  {Promise<Record<string, any>>}
    * @memberof EmlService
    */
-  _buildEmlDatasetSection(packageId: string, projectData: IGetProject): Record<string, any> {
+  _buildProjectEmlDatasetSection(packageId: string, projectData: IGetProject): Record<string, any> {
     return {
       $: { system: EMPTY_STRING, id: packageId },
       title: projectData.project.project_name,
-      creator: this._getDatasetCreator(projectData),
+      creator: this._getProjectDatasetCreator(projectData),
 
       // EML specification expects short ISO format
       pubDate: this._makeEmlDateString(),
       language: 'English',
       contact: this._getProjectContact(projectData)
+    };
+  }
+
+  /**
+   * Builds the EML Dataset section for a survey
+   *
+   * @param {string} packageId
+   * @param {SurveyObject} surveyData
+   * @return {*}  {Record<string, any>}
+   * @memberof EmlService
+   */
+  _buildSurveyEmlDatasetSection(packageId: string, surveyData: SurveyObject): Record<string, any> {
+    return {
+      $: { system: EMPTY_STRING, id: packageId },
+      title: surveyData.survey_details.survey_name,
+      creator: this._getSurveyContact(surveyData),
+
+      // EML specification expects short ISO format
+      pubDate: this._makeEmlDateString(),
+      language: 'English',
+      contact: this._getSurveyContact(surveyData)
     };
   }
 
@@ -614,7 +635,7 @@ export class EmlService extends DBService {
    * @return {*}  {Record<string, any>}
    * @memberof EmlService
    */
-  _getDatasetCreator(projectData: IGetProject): Record<string, any> {
+  _getProjectDatasetCreator(projectData: IGetProject): Record<string, any> {
     const primaryContact = projectData.coordinator;
 
     if (JSON.parse(primaryContact.share_contact_details)) {
@@ -648,6 +669,23 @@ export class EmlService extends DBService {
     }
 
     return { organizationName: primaryContact.coordinator_agency };
+  }
+
+  /**
+   * Creates an object representing the biologist name for the given survey.
+   *
+   * @param {SurveyObject} surveyData
+   * @return {*}  {Record<string, any>}
+   * @memberof EmlService
+   */
+  _getSurveyContact(surveyData: SurveyObject): Record<string, any> {
+    // return full details of the biologist
+    return {
+      individualName: {
+        givenName: surveyData.survey_details.biologist_first_name,
+        surName: surveyData.survey_details.biologist_last_name
+      }
+    };
   }
 
   /**
