@@ -23,9 +23,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }));
 
-export interface ILoadingObservationsCardProps {}
-
-const LoadingObservationsCard: React.FC<ILoadingObservationsCardProps> = () => {
+const LoadingObservationsCard = () => {
   const classes = useStyles();
 
   return (
