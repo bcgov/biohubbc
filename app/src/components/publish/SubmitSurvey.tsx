@@ -13,6 +13,13 @@ import yup from 'utils/YupSchema';
 import SelectAllButton from './SelectAllButton';
 import SubmitSection from './SubmitSection';
 
+export interface ISubmitSurvey {
+  unSubmittedObservation: (data: IGetObservationSubmissionResponse) => ISurveyObservationData[];
+  unSubmittedSummary: (data: IGetSummaryResultsResponse) => ISurveySummaryData[];
+  unSumittedArtifacts: (
+    data: IGetSurveyAttachment[] | IGetSurveyReportAttachment[]
+  ) => IGetSurveyAttachment[] | IGetSurveyReportAttachment[];
+}
 export interface ISurveySubmitForm {
   observations: IGetObservationSubmissionResponse[];
   summary: IGetSummaryResultsResponse[];
@@ -34,7 +41,9 @@ export const SurveySubmitFormYupSchema = yup.object().shape({
   attachments: yup.array()
 });
 
-const SubmitSurvey: React.FC = () => {
+const SubmitSurvey: React.FC<ISubmitSurvey> = (props) => {
+  const { unSubmittedObservation, unSubmittedSummary, unSumittedArtifacts } = props;
+
   const biohubApi = useBiohubApi();
   const surveyContext = useContext(SurveyContext);
 
@@ -91,7 +100,7 @@ const SubmitSurvey: React.FC = () => {
     );
   }
 
-  if (attachmentAndReportDataLoader.isLoading || observationDataLoader.isLoading || summaryDataLoader.isLoading) {
+  if (!attachmentAndReportDataLoader.data || !observationDataLoader.data || !summaryDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
@@ -108,79 +117,61 @@ const SubmitSurvey: React.FC = () => {
         formikData={[
           {
             key: 'observations',
-            value: observationDataLoader.data?.surveyObservationData
-              ? [observationDataLoader.data.surveyObservationData]
-              : []
+            value: unSubmittedObservation(observationDataLoader.data)
           },
           {
             key: 'summary',
-            value: summaryDataLoader.data?.surveySummaryData ? [summaryDataLoader.data.surveySummaryData] : []
+            value: unSubmittedSummary(summaryDataLoader.data)
           },
           {
             key: 'reports',
-            value:
-              attachmentAndReportDataLoader.data && attachmentAndReportDataLoader.data.reportAttachmentsList
-                ? attachmentAndReportDataLoader.data.reportAttachmentsList
-                : []
+            value: unSumittedArtifacts(attachmentAndReportDataLoader.data.reportAttachmentsList)
           },
           {
             key: 'attachments',
-            value:
-              attachmentAndReportDataLoader.data && attachmentAndReportDataLoader.data.attachmentsList
-                ? attachmentAndReportDataLoader.data.attachmentsList
-                : []
+            value: unSumittedArtifacts(attachmentAndReportDataLoader.data.attachmentsList)
           }
         ]}
       />
 
-      {observationDataLoader.isReady && (
+      {unSubmittedObservation(observationDataLoader.data).length !== 0 && (
         <SubmitSection
           subHeader="Observations"
           formikName="observations"
-          data={
-            observationDataLoader.data?.surveyObservationData ? [observationDataLoader.data.surveyObservationData] : []
-          }
+          data={unSubmittedObservation(observationDataLoader.data)}
           getName={(item: ISurveyObservationData) => {
             return item.inputFileName;
           }}
         />
       )}
 
-      {summaryDataLoader.isReady && (
+      {unSubmittedSummary(summaryDataLoader.data).length !== 0 && (
         <SubmitSection
           subHeader="Summary Results"
           formikName="summary"
-          data={summaryDataLoader.data?.surveySummaryData ? [summaryDataLoader.data.surveySummaryData] : []}
+          data={unSubmittedSummary(summaryDataLoader.data)}
           getName={(item: ISurveySummaryData) => {
             return item.fileName;
           }}
         />
       )}
 
-      {attachmentAndReportDataLoader.isReady && (
+      {unSumittedArtifacts(attachmentAndReportDataLoader.data.reportAttachmentsList).length !== 0 && (
         <SubmitSection
           subHeader="Reports"
           formikName="reports"
-          data={
-            attachmentAndReportDataLoader.data && attachmentAndReportDataLoader.data.reportAttachmentsList
-              ? attachmentAndReportDataLoader.data.reportAttachmentsList
-              : []
-          }
+          data={unSumittedArtifacts(attachmentAndReportDataLoader.data.reportAttachmentsList)}
           getName={(item: IGetSurveyReportAttachment) => {
             return item.fileName;
           }}
         />
       )}
 
-      {attachmentAndReportDataLoader.isReady && (
+      {unSumittedArtifacts(attachmentAndReportDataLoader.data.attachmentsList).length !== 0 && (
         <SubmitSection
           subHeader="Other Documents"
           formikName="attachments"
-          data={
-            attachmentAndReportDataLoader.data && attachmentAndReportDataLoader.data.attachmentsList
-              ? attachmentAndReportDataLoader.data.attachmentsList
-              : []
-          }
+          data={unSumittedArtifacts(attachmentAndReportDataLoader.data.attachmentsList)}
           getName={(item: IGetSurveyAttachment) => {
             return item.fileName;
           }}
