@@ -207,8 +207,6 @@ const ProjectsListPage: React.FC = () => {
       return;
     }
 
-    console.log('values:', formikRef.current.values);
-
     try {
       const response = await biohubApi.project.getProjectsList(filterValues);
 

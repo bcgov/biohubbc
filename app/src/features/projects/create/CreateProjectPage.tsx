@@ -20,7 +20,7 @@ import * as History from 'history';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
-import useDataLoaderError from 'hooks/useDataLoaderError';
+//import useDataLoaderError from 'hooks/useDataLoaderError';
 import { useQuery } from 'hooks/useQuery';
 import { ICreateProjectRequest } from 'interfaces/useProjectApi.interface';
 import React, { useContext, useEffect, useRef, useState } from 'react';
@@ -83,13 +83,13 @@ const CreateProjectPage: React.FC = () => {
     return biohubApi.draft.getDraft(queryParams.draftId);
   });
 
-  useDataLoaderError(draftDataLoader, () => {
-    return {
-      dialogTitle: 'Error Loading Draft Project',
-      dialogText:
-        'An error has occurred while attempting to load the draft project, please try again. If the error persists, please contact your system administrator.'
-    };
-  });
+  // useDataLoaderError(draftDataLoader, () => {
+  //   return {
+  //     dialogTitle: 'Error Loading Draft Project',
+  //     dialogText:
+  //       'An error has occurred while attempting to load the draft project, please try again. If the error persists, please contact your system administrator.'
+  //   };
+  // });
   draftDataLoader.load();
 
   useEffect(() => {
