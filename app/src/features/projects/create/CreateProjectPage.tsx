@@ -83,13 +83,6 @@ const CreateProjectPage: React.FC = () => {
     return biohubApi.draft.getDraft(queryParams.draftId);
   });
 
-  // useDataLoaderError(draftDataLoader, () => {
-  //   return {
-  //     dialogTitle: 'Error Loading Draft Project',
-  //     dialogText:
-  //       'An error has occurred while attempting to load the draft project, please try again. If the error persists, please contact your system administrator.'
-  //   };
-  // });
   draftDataLoader.load();
 
   useEffect(() => {
