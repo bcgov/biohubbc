@@ -1,7 +1,6 @@
 import Box from '@material-ui/core/Box';
 import Divider from '@material-ui/core/Divider';
 import Paper from '@material-ui/core/Paper';
-import Typography from '@material-ui/core/Typography';
 import { mdiImport } from '@mdi/js';
 import Icon from '@mdi/react';
 import ComponentDialog from 'components/dialog/ComponentDialog';
@@ -20,45 +19,6 @@ import FileSummaryResults from './SummaryResults/FileSummaryResults';
 import NoSummaryResults from './SummaryResults/NoSummaryResults';
 import SummaryResultsErrors from './SummaryResults/SummaryResultsErrors';
 import SummaryResultsLoading from './SummaryResults/SummaryResultsLoading';
-
-// const useStyles = makeStyles((theme: Theme) => ({
-//   importFile: {
-//     display: 'flex',
-//     minHeight: '82px',
-//     padding: theme.spacing(2),
-//     paddingLeft: '20px',
-//     overflow: 'hidden',
-//     '& .importFile-icon': {
-//       color: theme.palette.text.secondary
-//     },
-//     '&.error': {
-//       borderColor: theme.palette.error.main,
-//       '& .importFile-icon': {
-//         color: theme.palette.error.main
-//       }
-//     }
-//   },
-//   browseLink: {
-//     cursor: 'pointer'
-//   },
-//   center: {
-//     alignSelf: 'center'
-//   },
-//   alertLink: {
-//     color: 'inherit'
-//   },
-//   alertActions: {
-//     '& > *': {
-//       marginLeft: theme.spacing(0.5)
-//     }
-//   },
-//   summaryFileName: {
-//     overflow: 'hidden',
-//     textOverflow: 'ellipsis',
-//     textDecoration: 'underline',
-//     cursor: 'pointer'
-//   }
-// }));
 
 export enum ClassGrouping {
   NOTICE = 'Notice',
@@ -177,73 +137,6 @@ const SurveySummaryResults = () => {
     return BioHubSubmittedStatusType.UNSUBMITTED;
   };
 
-  type MessageGrouping = { [key: string]: { type: string[]; label: string } };
-
-  const messageGrouping: MessageGrouping = {
-    mandatory: {
-      type: ['Missing Required Field', 'Missing Required Header', 'Duplicate Header'],
-      label: 'Mandatory fields have not been filled out'
-    },
-    recommended: {
-      type: ['Missing Recommended Header'],
-      label: 'Recommended fields have not been filled out'
-    },
-    value_not_from_list: {
-      type: ['Invalid Value'],
-      label: "Values have not been selected from the field's dropdown list"
-    },
-    unsupported_header: {
-      type: ['Unknown Header'],
-      label: 'Column headers are not supported'
-    },
-    out_of_range: {
-      type: ['Out of Range'],
-      label: 'Values are out of range'
-    },
-    formatting_errors: {
-      type: ['Unexpected Format'],
-      label: 'Unexpected formats in the values provided'
-    },
-    miscellaneous: { type: ['Miscellaneous'], label: 'Miscellaneous errors exist in your file' },
-    user_error: {
-      type: ['Failed to Get Validation Rules'],
-      label: 'Failed to get validation rules'
-    },
-    system_error: {
-      type: ['Missing Validation Schema'],
-      label: 'Contact your system administrator'
-    }
-  };
-
-  type SubmissionErrors = { [key: string]: string[] };
-  type SubmissionWarnings = { [key: string]: string[] };
-
-  const submissionErrors: SubmissionErrors = {};
-  const submissionWarnings: SubmissionWarnings = {};
-  const messageList = summaryData?.messages;
-
-  if (messageList) {
-    Object.entries(messageGrouping).forEach(([key, value]) => {
-      submissionMessages.forEach((message) => {
-        if (value.type.includes(message.type)) {
-          if (message.class === ClassGrouping.ERROR) {
-            if (!submissionErrors[key]) {
-              submissionErrors[key] = [];
-            }
-            submissionErrors[key].push(message.message);
-          }
-
-          if (message.class === ClassGrouping.WARNING) {
-            if (!submissionWarnings[key]) {
-              submissionWarnings[key] = [];
-            }
-
-            submissionWarnings[key].push(message.message);
-          }
-        }
-      });
-    });
-  }
   const viewFileContents = async () => {
     if (!summaryData) {
       return;
@@ -267,31 +160,6 @@ const SurveySummaryResults = () => {
 
     window.open(response);
   };
-
-  function displayMessages(list: SubmissionErrors | SubmissionWarnings, msgGroup: MessageGrouping, iconName: string) {
-    return (
-      <Box>
-        {Object.entries(list).map(([key, value], index) => (
-          <Box mt={3} key={key} pl={0.25}>
-            <Typography variant="body2">
-              <strong>{msgGroup[key].label}</strong>
-            </Typography>
-            <Box component="ul" mt={1} mb={0} pl={4}>
-              {value.map((message: string, index2: number) => {
-                return (
-                  <li key={`${index}-${index2}`}>
-                    <Typography variant="body2" component="span">
-                      {message}
-                    </Typography>
-                  </li>
-                );
-              })}
-            </Box>
-          </Box>
-        ))}
-      </Box>
-    );
-  }
 
   return (
     <>
@@ -320,6 +188,7 @@ const SurveySummaryResults = () => {
           {summaryData && submissionMessages.length > 0 && (
             <SummaryResultsErrors
               fileName={summaryData.fileName}
+              messages={summaryData.messages}
               downloadFile={viewFileContents}
               showDelete={showDeleteDialog}
             />

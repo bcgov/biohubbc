@@ -6,11 +6,14 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Paper from '@material-ui/core/Paper';
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import { Alert, AlertTitle } from '@material-ui/lab';
+import Alert from '@material-ui/lab/Alert';
+import AlertTitle from '@material-ui/lab/AlertTitle';
 import { mdiAlertCircle, mdiDotsVertical, mdiFileAlertOutline, mdiTrashCanOutline, mdiTrayArrowDown } from '@mdi/js';
 import Icon from '@mdi/react';
 import clsx from 'clsx';
+import { IGetSummarySubmissionResponseMessages } from 'interfaces/useSummaryResultsApi.interface';
 import React from 'react';
+import { ClassGrouping } from '../SurveySummaryResults';
 
 const useStyles = makeStyles((theme: Theme) => ({
   importFile: {
@@ -42,21 +45,100 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 interface IFileErrorResultsProps {
   fileName: string;
+  messages: IGetSummarySubmissionResponseMessages[];
   downloadFile: () => void;
   showDelete: () => void;
 }
-const SummaryResultsErrors: React.FC<IFileErrorResultsProps> = ({ fileName, downloadFile, showDelete }) => {
+const SummaryResultsErrors: React.FC<IFileErrorResultsProps> = ({ fileName, messages, downloadFile, showDelete }) => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const classes = useStyles();
+  const errorGrouping = new Map<string, IGetSummarySubmissionResponseMessages[]>();
+  const warningGrouping = new Map<string, IGetSummarySubmissionResponseMessages[]>();
+  const noticeGrouping = new Map<string, IGetSummarySubmissionResponseMessages[]>();
+
+  const groupMessages = () => {
+    messages.forEach((item) => {
+      switch (item.class) {
+        case ClassGrouping.ERROR:
+          if (!errorGrouping.has(item.type)) {
+            errorGrouping.set(item.type, [item]);
+          } else {
+            errorGrouping.get(item.type)?.push(item);
+          }
+          break;
+        case ClassGrouping.WARNING:
+          if (!warningGrouping.has(item.type)) {
+            warningGrouping.set(item.type, [item]);
+          } else {
+            warningGrouping.get(item.type)?.push(item);
+          }
+          break;
+        case ClassGrouping.NOTICE:
+          if (!noticeGrouping.has(item.type)) {
+            noticeGrouping.set(item.type, [item]);
+          } else {
+            noticeGrouping.get(item.type)?.push(item);
+          }
+          break;
+        default:
+          break;
+      }
+    });
+  };
+  groupMessages();
+
+  const buildMessages = (group: Map<string, IGetSummarySubmissionResponseMessages[]>) => {
+    return (
+      <Box>
+        {[...group].map((item) => {
+          return (
+            <Box mt={3} pl={0.25}>
+              <Typography variant="body2">
+                <strong>{item[0]}</strong>
+              </Typography>
+              <Box component="ul" mt={1} mb={0} pl={4}>
+                {item[1].map((message) => {
+                  return (
+                    <li key={`${message.id}`}>
+                      <Typography variant="body2" component="span">
+                        {message.message}
+                      </Typography>
+                    </li>
+                  );
+                })}
+              </Box>
+            </Box>
+          );
+        })}
+      </Box>
+    );
+  };
+
   return (
     <>
       <Box>
-        <Alert severity="error" icon={<Icon path={mdiAlertCircle} size={1} />}>
-          <AlertTitle>Failed to import summary results</AlertTitle>
-          One or more errors occurred while attempting to import your summary results file.
-          {/* {displayMessages(submissionErrors, messageGrouping, mdiAlertCircleOutline)} */}
-          {/* {displayMessages(submissionWarnings, messageGrouping, mdiInformationOutline)} */}
-        </Alert>
+        {errorGrouping.size > 0 && (
+          <Alert severity="error" icon={<Icon path={mdiAlertCircle} size={1} />}>
+            <AlertTitle>Failed to import summary results</AlertTitle>
+            One or more errors occurred while attempting to import your summary results file.
+            {buildMessages(errorGrouping)}
+          </Alert>
+        )}
+
+        {/* {warningGrouping.size > 0 && (
+          <Alert severity="warning" icon={<Icon path={mdiAlertCircle} size={1} />}>
+            <AlertTitle>Imported Summary Results</AlertTitle>
+            One or more warnings occurred while attempting to import your summary results file.
+            {buildMessages(warningGrouping)}
+          </Alert>
+        )} */}
+
+        {/* {noticeGrouping.size > 0 && (
+          <Alert severity="info" icon={<Icon path={mdiAlertCircle} size={1} />}>
+            <AlertTitle>Imported Summary Results</AlertTitle>
+            {buildMessages(noticeGrouping)}
+          </Alert>
+        )} */}
 
         <Box mt={3}>
           <Paper variant="outlined" className={clsx(classes.importFile, 'error')}>
