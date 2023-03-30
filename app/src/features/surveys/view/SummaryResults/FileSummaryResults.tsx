@@ -59,7 +59,11 @@ const FileSummaryResults: React.FC<IFileResultsProps> = ({ fileName, fileStatus,
               <Icon path={mdiFileOutline} size={1} />
             </Box>
             <Box mr={2} flex="1 1 auto" style={{ overflow: 'hidden' }}>
-              <Typography className={classes.fileDownload} variant="body2" component="div" onClick={() => downloadFile}>
+              <Typography
+                className={classes.fileDownload}
+                variant="body2"
+                component="div"
+                onClick={() => downloadFile()}>
                 <strong>{fileName}</strong>
               </Typography>
             </Box>
@@ -95,13 +99,13 @@ const FileSummaryResults: React.FC<IFileResultsProps> = ({ fileName, fileStatus,
                   vertical: 'top',
                   horizontal: 'right'
                 }}>
-                <MenuItem onClick={() => downloadFile}>
+                <MenuItem onClick={() => downloadFile()}>
                   <ListItemIcon>
                     <Icon path={mdiTrayArrowDown} size={1} />
                   </ListItemIcon>
                   Download
                 </MenuItem>
-                <MenuItem onClick={() => showDelete}>
+                <MenuItem onClick={() => showDelete()}>
                   <ListItemIcon>
                     <Icon path={mdiTrashCanOutline} size={1} />
                   </ListItemIcon>

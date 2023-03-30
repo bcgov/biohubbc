@@ -37,7 +37,7 @@ const NoSummaryResults: React.FC<INoSummaryResultsProps> = ({ clickToImport }) =
         <Box display="flex" flex="1 1 auto" alignItems="center" justifyContent="center">
           <Typography data-testid="summaries-nodata" variant="body2" color="textSecondary" component="div">
             No Summary Results. &nbsp;
-            <Link onClick={() => clickToImport} className={classes.browseLink}>
+            <Link onClick={() => clickToImport()} className={classes.browseLink}>
               Click Here to Import
             </Link>
           </Typography>

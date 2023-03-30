@@ -412,7 +412,7 @@ const SurveySummaryResults = () => {
           {/* All done */}
           {summaryData && !summaryDataLoader.isLoading && submissionMessages.length <= 0 && (
             <FileSummaryResults
-              fileName={fileName}
+              fileName={summaryData.fileName}
               fileStatus={checkSubmissionStatus(summaryDataLoader.data?.surveySummarySupplementaryData)}
               downloadFile={viewFileContents}
               showDelete={showDeleteDialog}
