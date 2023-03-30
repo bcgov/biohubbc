@@ -56,7 +56,7 @@ describe('EmlPackage', () => {
 
       const emlPackage = new EmlPackage({ packageId: mockPackageId });
 
-      sinon.stub(EmlService.prototype, '_getDatasetCreator').returns(mockOrg);
+      sinon.stub(EmlService.prototype, '_getProjectDatasetCreator').returns(mockOrg);
 
       sinon.stub(EmlService.prototype, '_makeEmlDateString').returns('2023-01-01');
 
@@ -68,7 +68,9 @@ describe('EmlPackage', () => {
         ...mockOrg
       });
 
-      const response = emlPackage.withDataset(emlService._buildProjectEmlDatasetSection(mockPackageId, mockProjectData));
+      const response = emlPackage.withDataset(
+        emlService._buildProjectEmlDatasetSection(mockPackageId, mockProjectData)
+      );
 
       expect(response._datasetMetadata).to.eql(emlPackage._datasetMetadata);
       expect(response._datasetMetadata).to.eql({
@@ -405,7 +407,7 @@ describe('EmlService', () => {
       sinon.stub(SurveyService.prototype, 'getSurveysByProjectId').resolves([]);
 
       sinon.stub(EmlService.prototype, '_buildEmlSection').returns({});
-      sinon.stub(EmlService.prototype, '_buildEmlDatasetSection').resolves({});
+      sinon.stub(EmlService.prototype, '_buildProjectEmlDatasetSection').resolves({});
       sinon.stub(EmlService.prototype, '_buildProjectEmlProjectSection').returns({});
       sinon.stub(EmlService.prototype, '_getProjectAdditionalMetadata').resolves([]);
       sinon.stub(EmlService.prototype, '_getSurveyAdditionalMetadata').returns([]);
@@ -441,7 +443,7 @@ describe('EmlService', () => {
       });
 
       // Build dataset EML section
-      sinon.stub(EmlService.prototype, '_buildEmlDatasetSection').returns({
+      sinon.stub(EmlService.prototype, '_buildProjectEmlDatasetSection').returns({
         $: {
           system: '',
           id: '1116c94a-8cd5-480d-a1f3-dac794e57c05'
@@ -771,7 +773,7 @@ describe('EmlService', () => {
       });
 
       // Build dataset EML section
-      sinon.stub(EmlService.prototype, '_buildEmlDatasetSection').returns({
+      sinon.stub(EmlService.prototype, '_buildProjectEmlDatasetSection').returns({
         $: {
           system: '',
           id: '1116c94a-8cd5-480d-a1f3-dac794e57c05'
@@ -1300,7 +1302,7 @@ describe('EmlService', () => {
     });
   });
 
-  describe('_buildEmlDatasetSection', () => {
+  describe('_buildProjectEmlDatasetSection', () => {
     it('should build an EML dataset section', () => {
       const mockDBConnection = getMockDBConnection();
       const emlService = new EmlService(mockDBConnection);
@@ -1317,7 +1319,7 @@ describe('EmlService', () => {
         }
       } as IGetProject;
 
-      sinon.stub(EmlService.prototype, '_getDatasetCreator').returns(mockOrg);
+      sinon.stub(EmlService.prototype, '_getProjectDatasetCreator').returns(mockOrg);
 
       sinon.stub(EmlService.prototype, '_makeEmlDateString').returns('2023-01-01');
 
@@ -1583,7 +1585,7 @@ describe('EmlService', () => {
     //
   });
 
-  describe('_getDatasetCreator', () => {
+  describe('_getProjectDatasetCreator', () => {
     it('should return the coordinator agency if share_contract_details is false', async () => {
       const mockDBConnection = getMockDBConnection();
       const emlService = new EmlService(mockDBConnection);
@@ -1598,7 +1600,7 @@ describe('EmlService', () => {
         }
       } as IGetProject;
 
-      const response = emlService._getDatasetCreator(mockProjectData);
+      const response = emlService._getProjectDatasetCreator(mockProjectData);
 
       expect(response).to.eql({ organizationName: 'test-agency' });
     });
@@ -1617,7 +1619,7 @@ describe('EmlService', () => {
         }
       } as IGetProject;
 
-      const response = emlService._getDatasetCreator(mockProjectData);
+      const response = emlService._getProjectDatasetCreator(mockProjectData);
 
       expect(response).to.eql({
         organizationName: 'test-agency',
