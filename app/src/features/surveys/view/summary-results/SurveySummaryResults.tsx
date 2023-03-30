@@ -15,10 +15,10 @@ import useDataLoader from 'hooks/useDataLoader';
 import useDataLoaderError from 'hooks/useDataLoaderError';
 import { ISurveySummarySupplementaryData } from 'interfaces/useSummaryResultsApi.interface';
 import React, { useContext, useEffect, useState } from 'react';
-import FileSummaryResults from './summary-results/FileSummaryResults';
-import NoSummaryResults from './summary-results/NoSummaryResults';
-import SummaryResultsErrors from './summary-results/SummaryResultsErrors';
-import SummaryResultsLoading from './summary-results/SummaryResultsLoading';
+import FileSummaryResults from './components/FileSummaryResults';
+import NoSummaryResults from './components/NoSummaryResults';
+import SummaryResultsErrors from './components/SummaryResultsErrors';
+import SummaryResultsLoading from './components/SummaryResultsLoading';
 
 export enum ClassGrouping {
   NOTICE = 'Notice',
