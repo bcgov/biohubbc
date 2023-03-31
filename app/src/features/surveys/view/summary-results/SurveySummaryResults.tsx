@@ -11,8 +11,6 @@ import { BioHubSubmittedStatusType } from 'constants/misc';
 import { DialogContext } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import useDataLoader from 'hooks/useDataLoader';
-import useDataLoaderError from 'hooks/useDataLoaderError';
 import { ISurveySummarySupplementaryData } from 'interfaces/useSummaryResultsApi.interface';
 import React, { useContext, useEffect, useState } from 'react';
 import FileSummaryResults from './components/FileSummaryResults';
@@ -35,72 +33,36 @@ const SurveySummaryResults = () => {
   const surveyId = surveyContext.surveyId as number;
 
   const [openImportSummaryResults, setOpenImportSummaryResults] = useState(false);
-  const [refreshData, setRefreshData] = useState(false);
 
   // provide file name for 'loading' ui before submission responds
   const [fileName, setFileName] = useState('');
 
-  //Summary Data Loader and Error Handling
-  const summaryDataLoader = useDataLoader(() => biohubApi.survey.getSurveySummarySubmission(projectId, surveyId));
-  useDataLoaderError(summaryDataLoader, () => {
-    return {
-      dialogTitle: 'Error Loading Summary Details',
-      dialogText:
-        'An error has occurred while attempting to load summary details, please try again. If the error persists, please contact your system administrator.'
-    };
-  });
+  useEffect(() => {
+    surveyContext.summaryDataLoader.load(projectId, surveyId);
+  }, [surveyContext.surveyDataLoader, projectId, surveyId]);
 
-  const summaryData = summaryDataLoader.data?.surveySummaryData;
-  const submissionMessages = summaryDataLoader?.data?.surveySummaryData.messages || [];
+  const summaryData = surveyContext.summaryDataLoader.data?.surveySummaryData;
 
   const importSummaryResults = (): IUploadHandler => {
     return (file, cancelToken, handleFileUploadProgress) => {
       return biohubApi.survey
         .uploadSurveySummaryResults(projectId, surveyId, file, cancelToken, handleFileUploadProgress)
         .finally(() => {
-          setRefreshData(true);
           setFileName(file.name);
+          surveyContext.summaryDataLoader.refresh(projectId, surveyId);
         });
     };
   };
 
-  const softDeleteSubmission = async () => {
-    if (summaryData) {
-      await biohubApi.survey.deleteSummarySubmission(projectId, surveyId, summaryData.survey_summary_submission_id);
-      summaryDataLoader.clearData();
-    }
-  };
-
-  const defaultUploadYesNoDialogProps = {
-    dialogTitle: 'Import New Summary Results Data',
-    dialogText:
-      'Importing a new file will overwrite the existing summary results data. Are you sure you want to proceed?',
-    open: false,
-    onClose: () => dialogContext.setYesNoDialog({ open: false }),
-    onNo: () => dialogContext.setYesNoDialog({ open: false }),
-    onYes: () => dialogContext.setYesNoDialog({ open: false })
-  };
-
-  const defaultDeleteYesNoDialogProps = {
-    ...defaultUploadYesNoDialogProps,
-    dialogTitle: 'Delete Summary Results Data',
-    dialogText: 'Are you sure you want to delete this file? This action cannot be undone.'
-  };
-
-  summaryDataLoader.load();
-
-  //Rerender summary data when the survey data loader changes
-  useEffect(() => {
-    summaryDataLoader.refresh();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [surveyContext.surveyDataLoader]);
-
   const showUploadDialog = () => {
-    setRefreshData(false);
     if (summaryData) {
       // already have summary data, prompt user to confirm override
       dialogContext.setYesNoDialog({
-        ...defaultUploadYesNoDialogProps,
+        dialogTitle: 'Import New Summary Results Data',
+        dialogText:
+          'Importing a new file will overwrite the existing summary results data. Are you sure you want to proceed?',
+        onClose: () => dialogContext.setYesNoDialog({ open: false }),
+        onNo: () => dialogContext.setYesNoDialog({ open: false }),
         open: true,
         onYes: () => {
           setOpenImportSummaryResults(true);
@@ -113,19 +75,24 @@ const SurveySummaryResults = () => {
   };
 
   const showDeleteDialog = () => {
-    dialogContext.setYesNoDialog({
-      ...defaultDeleteYesNoDialogProps,
-      open: true,
-      yesButtonProps: { color: 'secondary' },
-      yesButtonLabel: 'Delete',
-      noButtonProps: { color: 'default' },
-      noButtonLabel: 'Cancel',
-      onYes: () => {
-        softDeleteSubmission();
-        dialogContext.setYesNoDialog({ open: false });
-        surveyContext.surveyDataLoader.refresh(projectId, surveyId);
-      }
-    });
+    if (summaryData) {
+      dialogContext.setYesNoDialog({
+        dialogTitle: 'Delete Summary Results Data?',
+        dialogText: 'Are you sure you want to delete this file? This action cannot be undone.',
+        yesButtonProps: { color: 'secondary' },
+        yesButtonLabel: 'Delete',
+        noButtonProps: { color: 'default' },
+        noButtonLabel: 'Cancel',
+        open: true,
+        onYes: async () => {
+          await biohubApi.survey.deleteSummarySubmission(projectId, surveyId, summaryData.survey_summary_submission_id);
+          surveyContext.surveyDataLoader.refresh(projectId, surveyId);
+          dialogContext.setYesNoDialog({ open: false });
+        },
+        onClose: () => dialogContext.setYesNoDialog({ open: false }),
+        onNo: () => dialogContext.setYesNoDialog({ open: false })
+      });
+    }
   };
 
   const checkSubmissionStatus = (
@@ -173,19 +140,21 @@ const SurveySummaryResults = () => {
           buttonOnClick={() => showUploadDialog()}
         />
 
-        <Divider></Divider>
+        <Divider />
 
         <Box p={3}>
           {/* No summary */}
-          {!summaryData && !summaryDataLoader?.isLoading && (
+          {!summaryData && surveyContext.summaryDataLoader.isReady && (
             <NoSummaryResults clickToImport={() => setOpenImportSummaryResults(true)} />
           )}
 
           {/* Data is still loading/ validating */}
-          {summaryDataLoader.isLoading && <SummaryResultsLoading fileLoading={fileName} />}
+          {!summaryData && surveyContext.summaryDataLoader.isLoading && (
+            <SummaryResultsLoading fileLoading={fileName} />
+          )}
 
           {/* Got a summary with errors */}
-          {summaryData && submissionMessages.length > 0 && (
+          {summaryData && summaryData.messages.length > 0 && (
             <SummaryResultsErrors
               fileName={summaryData.fileName}
               messages={summaryData.messages}
@@ -195,10 +164,10 @@ const SurveySummaryResults = () => {
           )}
 
           {/* All done */}
-          {summaryData && !summaryDataLoader.isLoading && submissionMessages.length <= 0 && (
+          {summaryData && !surveyContext.summaryDataLoader.isLoading && summaryData.messages.length <= 0 && (
             <FileSummaryResults
               fileName={summaryData.fileName}
-              fileStatus={checkSubmissionStatus(summaryDataLoader.data?.surveySummarySupplementaryData)}
+              fileStatus={checkSubmissionStatus(surveyContext.summaryDataLoader.data?.surveySummarySupplementaryData)}
               downloadFile={viewFileContents}
               showDelete={showDeleteDialog}
             />
@@ -209,14 +178,7 @@ const SurveySummaryResults = () => {
       <ComponentDialog
         open={openImportSummaryResults}
         dialogTitle="Import Summary Results Data"
-        onClose={() => {
-          if (refreshData) {
-            summaryDataLoader.refresh();
-          }
-          setOpenImportSummaryResults(false);
-          summaryDataLoader.refresh();
-          surveyContext.surveyDataLoader.refresh(projectId, surveyId);
-        }}>
+        onClose={() => setOpenImportSummaryResults(false)}>
         <FileUpload
           dropZoneProps={{ maxNumFiles: 1, acceptedFileExtensions: '.xls, .xlsm, .xlsx' }}
           uploadHandler={importSummaryResults()}

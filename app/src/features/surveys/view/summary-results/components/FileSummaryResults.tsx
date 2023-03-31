@@ -100,13 +100,21 @@ const FileSummaryResults: React.FC<IFileResultsProps> = ({ fileName, fileStatus,
                   vertical: 'top',
                   horizontal: 'right'
                 }}>
-                <MenuItem onClick={() => downloadFile()}>
+                <MenuItem
+                  onClick={() => {
+                    downloadFile();
+                    setAnchorEl(null);
+                  }}>
                   <ListItemIcon>
                     <Icon path={mdiTrayArrowDown} size={1} />
                   </ListItemIcon>
                   Download
                 </MenuItem>
-                <MenuItem onClick={() => showDelete()}>
+                <MenuItem
+                  onClick={() => {
+                    showDelete();
+                    setAnchorEl(null);
+                  }}>
                   <ListItemIcon>
                     <Icon path={mdiTrashCanOutline} size={1} />
                   </ListItemIcon>
