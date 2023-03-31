@@ -81,13 +81,15 @@ const ObservationMessagesCard = (props: IObservationMessagesCardProps) => {
     }
 
     return (
-      <Alert severity="error" icon={<Icon path={mdiAlertCircleOutline} size={1} />}>
-        <AlertTitle>Failed to import observations</AlertTitle>
-        One or more errors occurred while attempting to import your observations file.
-        {props.messageTypes.map((messageType) => {
-          return <SubmissionMessageType messageType={messageType} key={messageType.messageTypeLabel} />;
-        })}
-      </Alert>
+      <Box>
+        <Alert severity="error" icon={<Icon path={mdiAlertCircleOutline} size={1} />}>
+          <AlertTitle>Failed to import observations</AlertTitle>
+          One or more errors occurred while attempting to import your observations file.
+          {props.messageTypes.map((messageType) => {
+            return <SubmissionMessageType messageType={messageType} key={messageType.messageTypeLabel} />;
+          })}
+        </Alert>
+      </Box>
     );
   }
 
@@ -97,12 +99,14 @@ const ObservationMessagesCard = (props: IObservationMessagesCardProps) => {
     }
 
     return (
-      <Alert severity="warning" icon={<Icon path={mdiAlertCircleOutline} size={1} />}>
-        <AlertTitle>Warning</AlertTitle>
-        {props.messageTypes.map((messageType) => {
-          return <SubmissionMessageType messageType={messageType} key={messageType.messageTypeLabel} />;
-        })}
-      </Alert>
+      <Box mt={1}>
+        <Alert severity="warning" icon={<Icon path={mdiAlertCircleOutline} size={1} />}>
+          <AlertTitle>Warning</AlertTitle>
+          {props.messageTypes.map((messageType) => {
+            return <SubmissionMessageType messageType={messageType} key={messageType.messageTypeLabel} />;
+          })}
+        </Alert>
+      </Box>
     );
   }
 
@@ -112,26 +116,22 @@ const ObservationMessagesCard = (props: IObservationMessagesCardProps) => {
     }
 
     return (
-      <Alert severity="info" icon={<Icon path={mdiAlertCircleOutline} size={1} />}>
-        <AlertTitle>Notice</AlertTitle>
-        {props.messageTypes.map((messageType) => {
-          return <SubmissionMessageType messageType={messageType} key={messageType.messageTypeLabel} />;
-        })}
-      </Alert>
+      <Box mt={1}>
+        <Alert severity="info" icon={<Icon path={mdiAlertCircleOutline} size={1} />}>
+          <AlertTitle>Notice</AlertTitle>
+          {props.messageTypes.map((messageType) => {
+            return <SubmissionMessageType messageType={messageType} key={messageType.messageTypeLabel} />;
+          })}
+        </Alert>
+      </Box>
     );
   }
 
   return (
     <Box mb={3}>
-      <Box>
-        <ErrorMessages messageTypes={errorMessageTypes} />
-      </Box>
-      <Box mt={1}>
-        <WarningMessages messageTypes={warningMessageTypes} />
-      </Box>
-      <Box mt={1}>
-        <NoticeMessages messageTypes={noticeMessageTypes} />
-      </Box>
+      <ErrorMessages messageTypes={errorMessageTypes} />
+      <WarningMessages messageTypes={warningMessageTypes} />
+      <NoticeMessages messageTypes={noticeMessageTypes} />
     </Box>
   );
 };
