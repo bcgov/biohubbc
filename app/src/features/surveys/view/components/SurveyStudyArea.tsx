@@ -73,7 +73,7 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
   const survey_details = surveyContext.surveyDataLoader.data?.surveyData?.survey_details;
   const surveyGeometry = survey_details?.geometry || [];
   const occurrence_submission_id =
-    surveyContext.surveyDataLoader.data?.surveySupplementaryData?.occurrence_submission.occurrence_submission_id;
+    surveyContext.observationDataLoader.data?.surveyObservationData.occurrence_submission_id;
 
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [studyAreaFormData, setStudyAreaFormData] = useState<IStudyAreaForm>(StudyAreaInitialValues);

@@ -32,7 +32,7 @@ const SurveyPage: React.FC = () => {
   const surveyContext = useContext(SurveyContext);
   const surveyForViewData = surveyContext.surveyDataLoader.data;
   const occurrence_submission_id =
-    surveyForViewData?.surveySupplementaryData?.occurrence_submission.occurrence_submission_id;
+    surveyContext.observationDataLoader.data?.surveyObservationData.occurrence_submission_id;
 
   const [markerLayers, setMarkerLayers] = useState<IMarkerLayer[]>([]);
   const [staticLayers, setStaticLayers] = useState<IStaticLayer[]>([]);
