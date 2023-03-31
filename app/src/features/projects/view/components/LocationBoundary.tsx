@@ -180,11 +180,11 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
     setNonEditableGeometries(nonEditableGeometriesResult);
   }, [location.geometry, zoomToBoundaryExtent]);
 
-  const handleDialogViewOpen = () => {
+  const handleOpenFullScreenMap = () => {
     setShowFullScreenViewMapDialog(true);
   };
 
-  const handleClose = () => {
+  const handleCloseFullScreenMap = () => {
     setShowFullScreenViewMapDialog(false);
   };
 
@@ -203,7 +203,7 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
       />
       <FullScreenViewMapDialog
         open={showFullScreenViewMapDialog}
-        onClose={handleClose}
+        onClose={handleCloseFullScreenMap}
         map={
           <MapContainer
             mapId="project_location_form_map"
@@ -267,7 +267,7 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
           style={{ display: 'none' }}
           color="primary"
           className="sectionHeaderButton"
-          onClick={() => handleDialogViewOpen()}
+          onClick={() => handleOpenFullScreenMap()}
           title="Expand Location"
           aria-label="Show Expanded Location"
           endIcon={<Icon path={mdiChevronRight} size={0.875} />}>

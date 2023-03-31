@@ -13,9 +13,16 @@ describe('SurveyProprietaryData', () => {
 
   it('renders correctly with proprietor data', () => {
     const mockSurveyDataLoader = { data: getSurveyForViewResponse } as DataLoader<any, IGetSurveyForViewResponse, any>;
+    const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
 
     const { getByTestId } = render(
-      <SurveyContext.Provider value={{ projectId: 1, surveyId: 1, surveyDataLoader: mockSurveyDataLoader }}>
+      <SurveyContext.Provider
+        value={{
+          projectId: 1,
+          surveyId: 1,
+          surveyDataLoader: mockSurveyDataLoader,
+          artifactDataLoader: mockArtifactDataLoader
+        }}>
         <SurveyProprietaryData />
       </SurveyContext.Provider>
     );
@@ -29,9 +36,16 @@ describe('SurveyProprietaryData', () => {
     const mockSurveyDataLoader = {
       data: { ...getSurveyForViewResponse, surveyData: { ...getSurveyForViewResponse.surveyData, proprietor: null } }
     } as DataLoader<any, IGetSurveyForViewResponse, any>;
+    const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
 
     const { getByTestId } = render(
-      <SurveyContext.Provider value={{ projectId: 1, surveyId: 1, surveyDataLoader: mockSurveyDataLoader }}>
+      <SurveyContext.Provider
+        value={{
+          projectId: 1,
+          surveyId: 1,
+          surveyDataLoader: mockSurveyDataLoader,
+          artifactDataLoader: mockArtifactDataLoader
+        }}>
         <SurveyProprietaryData />
       </SurveyContext.Provider>
     );
@@ -43,13 +57,15 @@ describe('SurveyProprietaryData', () => {
 
   it('renders an empty fragment if survey data has not loaded or is undefined', () => {
     const mockSurveyDataLoader = { data: undefined } as DataLoader<any, IGetSurveyForViewResponse, any>;
+    const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
 
     const { container } = render(
       <SurveyContext.Provider
         value={{
           projectId: 1,
           surveyId: 1,
-          surveyDataLoader: mockSurveyDataLoader
+          surveyDataLoader: mockSurveyDataLoader,
+          artifactDataLoader: mockArtifactDataLoader
         }}>
         <SurveyProprietaryData />
       </SurveyContext.Provider>

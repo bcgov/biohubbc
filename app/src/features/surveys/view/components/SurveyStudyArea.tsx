@@ -26,15 +26,9 @@ import StudyAreaForm, {
 import { Feature } from 'geojson';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { ProjectViewObject } from 'interfaces/useProjectApi.interface';
 import { LatLngBoundsExpression } from 'leaflet';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
-
-export interface ISurveyStudyAreaProps {
-  projectForViewData: ProjectViewObject;
-  mapLayersForView: { markerLayers: IMarkerLayer[]; staticLayers: IStaticLayer[] };
-}
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -61,6 +55,10 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
+export interface ISurveyStudyAreaProps {
+  mapLayersForView: { markerLayers: IMarkerLayer[]; staticLayers: IStaticLayer[] };
+}
+
 /**
  * Study area content for a survey.
  *
@@ -69,8 +67,6 @@ const useStyles = makeStyles((theme: Theme) =>
 const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
   const classes = useStyles();
   const biohubApi = useBiohubApi();
-
-  const { projectForViewData } = props;
 
   const surveyContext = useContext(SurveyContext);
 
@@ -129,27 +125,10 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
       return;
     }
 
-    let surveyResponseData;
-
-    try {
-      const surveyResponse = await biohubApi.survey.getSurveyForView(projectForViewData.project.id, survey_details?.id);
-
-      if (!surveyResponse) {
-        showErrorDialog({ open: true });
-        return;
-      }
-
-      surveyResponseData = surveyResponse;
-    } catch (error) {
-      const apiError = error as APIError;
-      showErrorDialog({ dialogText: apiError.message, open: true });
-      return;
-    }
-
     setStudyAreaFormData({
       location: {
-        survey_area_name: surveyResponseData.surveyData.survey_details.survey_area_name,
-        geometry: surveyResponseData.surveyData.survey_details.geometry
+        survey_area_name: survey_details.survey_area_name,
+        geometry: survey_details.geometry
       }
     });
 
@@ -170,7 +149,7 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
         }
       };
 
-      await biohubApi.survey.updateSurvey(projectForViewData.project.id, survey_details.id, surveyData);
+      await biohubApi.survey.updateSurvey(surveyContext.projectId, surveyContext.surveyId, surveyData);
     } catch (error) {
       const apiError = error as APIError;
       showErrorDialog({ dialogText: apiError.message, dialogErrorDetails: apiError.errors, open: true });
@@ -182,11 +161,11 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
     surveyContext.surveyDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
   };
 
-  const handleDialogViewOpen = () => {
+  const handleOpenFullScreenMap = () => {
     setShowFullScreenViewMapDialog(true);
   };
 
-  const handleClose = () => {
+  const handleCloseFullScreenMap = () => {
     setShowFullScreenViewMapDialog(false);
   };
 
@@ -206,7 +185,7 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
 
       <FullScreenViewMapDialog
         open={showFullScreenViewMapDialog}
-        onClose={handleClose}
+        onClose={handleCloseFullScreenMap}
         map={
           <MapContainer
             mapId="project_location_form_map"
@@ -273,7 +252,7 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
           variant="text"
           color="primary"
           className="sectionHeaderButton"
-          onClick={() => handleDialogViewOpen()}
+          onClick={() => handleOpenFullScreenMap()}
           title="Expand Location"
           aria-label="Show Expanded Location"
           endIcon={<Icon path={mdiChevronRight} size={0.875} />}>

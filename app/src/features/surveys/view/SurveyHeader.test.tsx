@@ -11,7 +11,6 @@ import { SYSTEM_IDENTITY_SOURCE } from 'hooks/useKeycloakWrapper';
 import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
 import React from 'react';
 import { Router } from 'react-router';
-import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import { getSurveyForViewResponse } from 'test-helpers/survey-helpers';
 
 const history = createMemoryHistory({ initialEntries: ['/admin/projects/1/surveys/1'] });
@@ -28,6 +27,9 @@ const mockSurveyContext: ISurveyContext = {
   surveyDataLoader: {
     data: getSurveyForViewResponse
   } as DataLoader<[project_id: number, survey_id: number], IGetSurveyForViewResponse, unknown>,
+  artifactDataLoader: {
+    data: null
+  } as DataLoader<any, any, any>,
   surveyId: 1,
   projectId: 1
 };
@@ -57,7 +59,6 @@ const defaultAuthState = {
 };
 
 const surveyForView = getSurveyForViewResponse;
-const projectForView = getProjectForViewResponse;
 const refresh = jest.fn();
 
 describe('SurveyHeader', () => {
@@ -78,7 +79,7 @@ describe('SurveyHeader', () => {
         <AuthStateContext.Provider value={authState as IAuthState}>
           <DialogContextProvider>
             <Router history={history}>
-              <SurveyHeader projectWithDetails={projectForView} />
+              <SurveyHeader />
             </Router>
           </DialogContextProvider>
         </AuthStateContext.Provider>

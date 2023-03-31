@@ -14,9 +14,16 @@ describe('SurveyPurposeAndMethodologyData', () => {
 
   it('renders correctly', () => {
     const mockSurveyDataLoader = { data: getSurveyForViewResponse } as DataLoader<any, IGetSurveyForViewResponse, any>;
+    const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
 
     const { getByTestId, getAllByTestId } = render(
-      <SurveyContext.Provider value={{ projectId: 1, surveyId: 1, surveyDataLoader: mockSurveyDataLoader }}>
+      <SurveyContext.Provider
+        value={{
+          projectId: 1,
+          surveyId: 1,
+          surveyDataLoader: mockSurveyDataLoader,
+          artifactDataLoader: mockArtifactDataLoader
+        }}>
         <SurveyPurposeAndMethodologyData codes={codes} />
       </SurveyContext.Provider>
     );
@@ -44,9 +51,16 @@ describe('SurveyPurposeAndMethodologyData', () => {
         }
       }
     } as DataLoader<any, IGetSurveyForViewResponse, any>;
+    const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
 
     const { getByTestId, getAllByTestId } = render(
-      <SurveyContext.Provider value={{ projectId: 1, surveyId: 1, surveyDataLoader: mockSurveyDataLoader }}>
+      <SurveyContext.Provider
+        value={{
+          projectId: 1,
+          surveyId: 1,
+          surveyDataLoader: mockSurveyDataLoader,
+          artifactDataLoader: mockArtifactDataLoader
+        }}>
         <SurveyPurposeAndMethodologyData codes={codes} />
       </SurveyContext.Provider>
     );
@@ -63,13 +77,15 @@ describe('SurveyPurposeAndMethodologyData', () => {
 
   it('renders an empty fragment if survey data has not loaded or is undefined', () => {
     const mockSurveyDataLoader = { data: undefined } as DataLoader<any, IGetSurveyForViewResponse, any>;
+    const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
 
     const { container } = render(
       <SurveyContext.Provider
         value={{
           projectId: 1,
           surveyId: 1,
-          surveyDataLoader: mockSurveyDataLoader
+          surveyDataLoader: mockSurveyDataLoader,
+          artifactDataLoader: mockArtifactDataLoader
         }}>
         <SurveyPurposeAndMethodologyData codes={codes} />
       </SurveyContext.Provider>
