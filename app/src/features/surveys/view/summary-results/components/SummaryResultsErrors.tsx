@@ -59,7 +59,7 @@ const SummaryResultsErrors: React.FC<IFileErrorResultsProps> = ({ messages }) =>
               <Box component="ul" mt={1} mb={0} pl={4}>
                 {item[1].map((message) => {
                   return (
-                    <li key={`${message.id}`}>
+                    <li key={`${message.class}-${message.type}-${message.id}`}>
                       <Typography variant="body2" component="span">
                         {message.message}
                       </Typography>
@@ -87,7 +87,7 @@ const SummaryResultsErrors: React.FC<IFileErrorResultsProps> = ({ messages }) =>
           </Box>
         )}
 
-        {warningGrouping.size > 0 && (
+        {/* {warningGrouping.size > 0 && (
           <Box>
             <Alert severity="warning" icon={<Icon path={mdiAlertCircle} size={1} />}>
               <AlertTitle>Imported Summary Results</AlertTitle>
@@ -95,16 +95,16 @@ const SummaryResultsErrors: React.FC<IFileErrorResultsProps> = ({ messages }) =>
               {buildMessages(warningGrouping)}
             </Alert>
           </Box>
-        )}
+        )} */}
 
-        {noticeGrouping.size > 0 && (
+        {/* {noticeGrouping.size > 0 && (
           <Box>
             <Alert severity="info" icon={<Icon path={mdiAlertCircle} size={1} />}>
               <AlertTitle>Imported Summary Results</AlertTitle>
               {buildMessages(noticeGrouping)}
             </Alert>
           </Box>
-        )}
+        )} */}
       </Box>
     </>
   );

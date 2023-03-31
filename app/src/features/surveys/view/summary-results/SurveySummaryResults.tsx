@@ -34,10 +34,9 @@ const SurveySummaryResults = () => {
 
   // provide file name for 'loading' ui before submission responds
   const [fileName, setFileName] = useState('');
-
   useEffect(() => {
     surveyContext.summaryDataLoader.load(projectId, surveyId);
-  }, [surveyContext.surveyDataLoader, projectId, surveyId]);
+  }, [surveyContext.summaryDataLoader, projectId, surveyId]);
 
   const summaryData = surveyContext.summaryDataLoader.data?.surveySummaryData;
 

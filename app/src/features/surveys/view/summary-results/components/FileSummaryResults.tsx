@@ -68,13 +68,13 @@ const FileSummaryResults: React.FC<IFileResultsProps> = ({ fileData, downloadFil
   let icon: string = mdiFileOutline;
   let severity: 'error' | 'info' | 'success' | 'warning' = 'info';
 
-  if (fileData.surveySummaryData.messages.some((item) => item.class.toUpperCase() == 'ERROR')) {
+  if (fileData.surveySummaryData.messages.some((item) => item.class.toUpperCase() === 'ERROR')) {
     icon = mdiFileAlertOutline;
     severity = 'error';
-  } else if (fileData.surveySummaryData.messages.some((item) => item.class.toUpperCase() == 'WARNING')) {
+  } else if (fileData.surveySummaryData.messages.some((item) => item.class.toUpperCase() === 'WARNING')) {
     icon = mdiFileAlertOutline;
     severity = 'warning';
-  } else if (fileData.surveySummaryData.messages.some((item) => item.class.toUpperCase() == 'INFO')) {
+  } else if (fileData.surveySummaryData.messages.some((item) => item.class.toUpperCase() === 'INFO')) {
     icon = mdiInformationOutline;
     severity = 'info';
   }
