@@ -3,20 +3,22 @@ import { mdiShareAllOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import ComponentDialog from 'components/dialog/ComponentDialog';
 import SubmitBiohubDialog from 'components/dialog/SubmitBiohubDialog';
-import SubmitSurvey, {
+import PublishSurveySections, {
   ISurveySubmitForm,
   SurveySubmitFormInitialValues,
   SurveySubmitFormYupSchema
-} from 'components/publish/SubmitSurvey';
+} from 'components/publish/PublishSurveySections';
 import { SUBMISSION_STATUS_TYPE } from 'constants/submissions';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { IGetObservationSubmissionResponse } from 'interfaces/useObservationApi.interface';
-import { IGetSummaryResultsResponse } from 'interfaces/useSummaryResultsApi.interface';
-import { IGetSurveyAttachment, IGetSurveyReportAttachment } from 'interfaces/useSurveyApi.interface';
+import { IGetObservationSubmissionResponse, ISurveyObservationData } from 'interfaces/useObservationApi.interface';
+import { IGetSummaryResultsResponse, ISurveySummaryData } from 'interfaces/useSummaryResultsApi.interface';
+import {
+  IGetSurveyAttachment,
+  IGetSurveyAttachmentsResponse,
+  IGetSurveyReportAttachment
+} from 'interfaces/useSurveyApi.interface';
 import React, { useContext, useState } from 'react';
-
-export interface IPublishSurveyButton {}
 
 /**
  * Survey header for a single-survey view.
@@ -24,19 +26,38 @@ export interface IPublishSurveyButton {}
  * @param {*} props
  * @return {*}
  */
-const PublishSurveyButton: React.FC<IPublishSurveyButton> = (props) => {
+const PublishSurveyButton: React.FC = (props) => {
   const biohubApi = useBiohubApi();
   const surveyContext = useContext(SurveyContext);
 
-  const surveyWithDetails = surveyContext.surveyDataLoader.data;
+  const surveyDataLoader = surveyContext.surveyDataLoader;
+  const observationDataLoader = surveyContext.observationDataLoader;
+  const artifactDataLoader = surveyContext.artifactDataLoader;
+  const summaryDataLoader = surveyContext.summaryDataLoader;
 
   const [finishSubmission, setFinishSubmission] = useState(false);
   const [noSubmissionData, setNoSubmissionData] = useState(false);
   const [openSubmitSurveyDialog, setOpenSubmitSurveyDialog] = useState(false);
 
-  if (!surveyWithDetails) {
-    return <></>;
-  }
+  const refreshContext = () => {
+    surveyContext.observationDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+    surveyContext.summaryDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+    surveyContext.surveyDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+    surveyContext.artifactDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+  };
+
+  const checkUnsubmittedData = () => {
+    const observation: ISurveyObservationData[] = unSubmittedObservation(observationDataLoader.data);
+    const summary: ISurveySummaryData[] = unSubmittedSummary(summaryDataLoader.data);
+    const reports: IGetSurveyReportAttachment[] = unSubmittedReports(artifactDataLoader.data);
+    const attachments: IGetSurveyAttachment[] = unSubmittedAttachments(artifactDataLoader.data);
+
+    if (observation.length === 0 && summary.length === 0 && reports.length === 0 && attachments.length === 0) {
+      setNoSubmissionData(true);
+      return;
+    }
+    setOpenSubmitSurveyDialog(true);
+  };
 
   return (
     <>
@@ -45,7 +66,7 @@ const PublishSurveyButton: React.FC<IPublishSurveyButton> = (props) => {
         color="primary"
         variant="contained"
         startIcon={<Icon path={mdiShareAllOutline} size={1} />}
-        onClick={() => setOpenSubmitSurveyDialog(!openSubmitSurveyDialog)}
+        onClick={() => checkUnsubmittedData()}
         style={{ minWidth: '7rem' }}>
         Submit Data
       </Button>
@@ -54,10 +75,8 @@ const PublishSurveyButton: React.FC<IPublishSurveyButton> = (props) => {
         dialogTitle="Survey data submitted!"
         open={finishSubmission}
         onClose={() => {
-          surveyContext.surveyDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
-          surveyContext.artifactDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+          refreshContext();
           setFinishSubmission(false);
-          setOpenSubmitSurveyDialog(!openSubmitSurveyDialog);
         }}>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
@@ -70,10 +89,7 @@ const PublishSurveyButton: React.FC<IPublishSurveyButton> = (props) => {
         dialogTitle="No Survey Data to Submit"
         open={noSubmissionData}
         onClose={() => {
-          surveyContext.surveyDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
-          surveyContext.artifactDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
           setNoSubmissionData(false);
-          setOpenSubmitSurveyDialog(!openSubmitSurveyDialog);
         }}>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">Thank you!</DialogContentText>
@@ -85,21 +101,25 @@ const PublishSurveyButton: React.FC<IPublishSurveyButton> = (props) => {
         open={openSubmitSurveyDialog}
         onClose={() => setOpenSubmitSurveyDialog(!openSubmitSurveyDialog)}
         onSubmit={async (values: ISurveySubmitForm) => {
-          await biohubApi.publish.publishSurvey(
-            surveyContext.projectId,
-            surveyWithDetails.surveyData.survey_details.id,
-            values
-          );
+          if (surveyDataLoader.data) {
+            await biohubApi.publish.publishSurvey(
+              surveyContext.projectId,
+              surveyDataLoader.data.surveyData.survey_details.id,
+              values
+            );
+          }
+          refreshContext();
           setFinishSubmission(true);
         }}
         formikProps={{
           initialValues: SurveySubmitFormInitialValues,
           validationSchema: SurveySubmitFormYupSchema
         }}>
-        <SubmitSurvey
-          unSubmittedObservation={unSubmittedObservation}
-          unSubmittedSummary={unSubmittedSummary}
-          unSumittedArtifacts={unSumittedArtifacts}
+        <PublishSurveySections
+          unSubmittedObservation={unSubmittedObservation(observationDataLoader.data)}
+          unSubmittedSummary={unSubmittedSummary(summaryDataLoader.data)}
+          unSubmittedReports={unSubmittedReports(artifactDataLoader.data)}
+          unSubmittedAttachments={unSubmittedAttachments(artifactDataLoader.data)}
         />
       </SubmitBiohubDialog>
     </>
@@ -115,8 +135,11 @@ const idExists = (item: any) => {
   return false;
 };
 
-const unSubmittedObservation = (data: IGetObservationSubmissionResponse) => {
+export const unSubmittedObservation = (
+  data: IGetObservationSubmissionResponse | undefined
+): ISurveyObservationData[] => {
   if (
+    data &&
     data.surveyObservationData &&
     !idExists(data.surveyObservationSupplementaryData?.occurrence_submission_id) &&
     data.surveyObservationData.status === SUBMISSION_STATUS_TYPE.TEMPLATE_TRANSFORMED
@@ -126,8 +149,9 @@ const unSubmittedObservation = (data: IGetObservationSubmissionResponse) => {
   return [];
 };
 
-const unSubmittedSummary = (data: IGetSummaryResultsResponse) => {
+const unSubmittedSummary = (data: IGetSummaryResultsResponse | undefined): ISurveySummaryData[] => {
   if (
+    data &&
     data.surveySummaryData &&
     !idExists(data.surveySummarySupplementaryData?.survey_summary_submission_id) &&
     data.surveySummaryData.messages.length === 0
@@ -137,9 +161,18 @@ const unSubmittedSummary = (data: IGetSummaryResultsResponse) => {
   return [];
 };
 
-const unSumittedArtifacts = (data: IGetSurveyAttachment[] | IGetSurveyReportAttachment[]) => {
+const unSubmittedReports = (data: IGetSurveyAttachmentsResponse | undefined): IGetSurveyReportAttachment[] => {
   if (data) {
-    return data.filter((item) => !idExists(item.supplementaryAttachmentData?.artifact_revision_id));
+    return data.reportAttachmentsList.filter(
+      (item) => !idExists(item.supplementaryAttachmentData?.artifact_revision_id)
+    );
+  }
+  return [];
+};
+
+const unSubmittedAttachments = (data: IGetSurveyAttachmentsResponse | undefined): IGetSurveyAttachment[] => {
+  if (data) {
+    return data.attachmentsList.filter((item) => !idExists(item.supplementaryAttachmentData?.artifact_revision_id));
   }
   return [];
 };

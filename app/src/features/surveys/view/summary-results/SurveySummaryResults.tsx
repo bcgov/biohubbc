@@ -123,7 +123,7 @@ const SurveySummaryResults = () => {
       onYes: () => {
         softDeleteSubmission();
         dialogContext.setYesNoDialog({ open: false });
-        surveyContext.surveyDataLoader.refresh(projectId, surveyId);
+        surveyContext.summaryDataLoader.refresh(projectId, surveyId);
       }
     });
   };
@@ -215,7 +215,7 @@ const SurveySummaryResults = () => {
           }
           setOpenImportSummaryResults(false);
           summaryDataLoader.refresh();
-          surveyContext.surveyDataLoader.refresh(projectId, surveyId);
+          surveyContext.summaryDataLoader.refresh(projectId, surveyId);
         }}>
         <FileUpload
           dropZoneProps={{ maxNumFiles: 1, acceptedFileExtensions: '.xls, .xlsm, .xlsx' }}

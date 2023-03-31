@@ -68,6 +68,7 @@ function getOccurrenceDataSubmissionStatus(observationData?: IGetObservationSubm
 }
 
 function getSummaryDataSubmissionStatus(summaryData?: IGetSummaryResultsResponse) {
+  console.log('summaryData', summaryData);
   if (!summaryData?.surveySummaryData) {
     return 'NO_DATA';
   }
