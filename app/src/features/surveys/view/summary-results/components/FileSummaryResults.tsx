@@ -6,16 +6,23 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Paper from '@material-ui/core/Paper';
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import { mdiDotsVertical, mdiFileOutline, mdiTrashCanOutline, mdiTrayArrowDown } from '@mdi/js';
+import {
+  mdiDotsVertical,
+  mdiFileAlertOutline,
+  mdiFileOutline,
+  mdiInformationOutline,
+  mdiTrashCanOutline,
+  mdiTrayArrowDown
+} from '@mdi/js';
 import Icon from '@mdi/react';
 import clsx from 'clsx';
 import { SubmitStatusChip } from 'components/chips/SubmitStatusChip';
 import { BioHubSubmittedStatusType } from 'constants/misc';
+import { IGetSummaryResultsResponse } from 'interfaces/useSummaryResultsApi.interface';
 import React from 'react';
 
 interface IFileResultsProps {
-  fileName: string;
-  fileStatus: BioHubSubmittedStatusType;
+  fileData: IGetSummaryResultsResponse;
   downloadFile: () => void;
   showDelete: () => void;
 }
@@ -47,17 +54,38 @@ const useStyles = makeStyles((theme: Theme) => ({
     cursor: 'pointer'
   }
 }));
-const FileSummaryResults: React.FC<IFileResultsProps> = ({ fileName, fileStatus, downloadFile, showDelete }) => {
+const FileSummaryResults: React.FC<IFileResultsProps> = ({ fileData, downloadFile, showDelete }) => {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
+  const checkSubmissionStatus = (data: IGetSummaryResultsResponse): BioHubSubmittedStatusType => {
+    if (data.surveySummarySupplementaryData?.event_timestamp) {
+      return BioHubSubmittedStatusType.SUBMITTED;
+    }
+    return BioHubSubmittedStatusType.UNSUBMITTED;
+  };
+
+  let icon: string = mdiFileOutline;
+  let severity: 'error' | 'info' | 'success' | 'warning' = 'info';
+
+  if (fileData.surveySummaryData.messages.some((item) => item.class.toUpperCase() == 'ERROR')) {
+    icon = mdiFileAlertOutline;
+    severity = 'error';
+  } else if (fileData.surveySummaryData.messages.some((item) => item.class.toUpperCase() == 'WARNING')) {
+    icon = mdiFileAlertOutline;
+    severity = 'warning';
+  } else if (fileData.surveySummaryData.messages.some((item) => item.class.toUpperCase() == 'INFO')) {
+    icon = mdiInformationOutline;
+    severity = 'info';
+  }
+
   return (
     <>
-      <Paper variant="outlined" className={clsx(classes.importFile, 'info')}>
+      <Paper variant="outlined" className={clsx(classes.importFile, severity)}>
         <Box display="flex" alignItems="center" flex="1 1 auto" style={{ overflow: 'hidden' }}>
           <Box display="flex" alignItems="center" flex="1 1 auto" style={{ overflow: 'hidden' }}>
             <Box display="flex" alignItems="center" flex="0 0 auto" className="importFile-icon" mr={2}>
-              <Icon path={mdiFileOutline} size={1} />
+              <Icon path={icon} size={1} />
             </Box>
             <Box mr={2} flex="1 1 auto" style={{ overflow: 'hidden' }}>
               <Typography
@@ -65,14 +93,14 @@ const FileSummaryResults: React.FC<IFileResultsProps> = ({ fileName, fileStatus,
                 variant="body2"
                 component="div"
                 onClick={() => downloadFile()}>
-                <strong>{fileName}</strong>
+                <strong>{fileData.surveySummaryData.fileName}</strong>
               </Typography>
             </Box>
           </Box>
 
           <Box flex="0 0 auto" display="flex" alignItems="center">
             <Box mr={2}>
-              <SubmitStatusChip status={fileStatus} />
+              <SubmitStatusChip status={checkSubmissionStatus(fileData)} />
             </Box>
 
             <Box>

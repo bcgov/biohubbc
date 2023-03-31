@@ -7,11 +7,9 @@ import ComponentDialog from 'components/dialog/ComponentDialog';
 import FileUpload from 'components/file-upload/FileUpload';
 import { IUploadHandler } from 'components/file-upload/FileUploadItem';
 import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
-import { BioHubSubmittedStatusType } from 'constants/misc';
 import { DialogContext } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { ISurveySummarySupplementaryData } from 'interfaces/useSummaryResultsApi.interface';
 import React, { useContext, useEffect, useState } from 'react';
 import FileSummaryResults from './components/FileSummaryResults';
 import NoSummaryResults from './components/NoSummaryResults';
@@ -95,15 +93,6 @@ const SurveySummaryResults = () => {
     }
   };
 
-  const checkSubmissionStatus = (
-    supplementaryData: ISurveySummarySupplementaryData | null | undefined
-  ): BioHubSubmittedStatusType => {
-    if (supplementaryData?.event_timestamp) {
-      return BioHubSubmittedStatusType.SUBMITTED;
-    }
-    return BioHubSubmittedStatusType.UNSUBMITTED;
-  };
-
   const viewFileContents = async () => {
     if (!summaryData) {
       return;
@@ -154,20 +143,14 @@ const SurveySummaryResults = () => {
           )}
 
           {/* Got a summary with errors */}
-          {summaryData && summaryData.messages.length > 0 && (
-            <SummaryResultsErrors
-              fileName={summaryData.fileName}
-              messages={summaryData.messages}
-              downloadFile={viewFileContents}
-              showDelete={showDeleteDialog}
-            />
+          {summaryData && !surveyContext.summaryDataLoader.isLoading && summaryData.messages.length > 0 && (
+            <SummaryResultsErrors messages={summaryData.messages} />
           )}
 
           {/* All done */}
-          {summaryData && !surveyContext.summaryDataLoader.isLoading && summaryData.messages.length <= 0 && (
+          {summaryData && surveyContext.summaryDataLoader.data && !surveyContext.summaryDataLoader.isLoading && (
             <FileSummaryResults
-              fileName={summaryData.fileName}
-              fileStatus={checkSubmissionStatus(surveyContext.summaryDataLoader.data?.surveySummarySupplementaryData)}
+              fileData={surveyContext.summaryDataLoader.data}
               downloadFile={viewFileContents}
               showDelete={showDeleteDialog}
             />
