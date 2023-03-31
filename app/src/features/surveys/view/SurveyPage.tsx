@@ -30,7 +30,6 @@ const SurveyPage: React.FC = () => {
 
   const biohubApi = useBiohubApi();
   const surveyContext = useContext(SurveyContext);
-  const surveyForViewData = surveyContext.surveyDataLoader.data;
   const occurrence_submission_id =
     surveyContext.observationDataLoader.data?.surveyObservationData.occurrence_submission_id;
 
