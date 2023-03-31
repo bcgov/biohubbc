@@ -29,7 +29,8 @@ const useStyles = makeStyles((theme: Theme) => ({
 interface INoSummaryResultsProps {
   clickToImport: () => void;
 }
-const NoSummaryResults: React.FC<INoSummaryResultsProps> = ({ clickToImport }) => {
+const NoSummaryResults = (props: INoSummaryResultsProps) => {
+  const { clickToImport } = props;
   const classes = useStyles();
   return (
     <>

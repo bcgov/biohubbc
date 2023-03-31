@@ -40,8 +40,8 @@ interface ILoadingProps {
   fileLoading: string;
 }
 
-// TODO could just be a single loading component between observations/ summary results
-const SummaryResultsLoading: React.FC<ILoadingProps> = ({ fileLoading }) => {
+const SummaryResultsLoading = (props: ILoadingProps) => {
+  const { fileLoading } = props;
   const BorderLinearProgress = withStyles((theme: Theme) =>
     createStyles({
       root: {

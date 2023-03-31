@@ -83,7 +83,7 @@ const SurveySummaryResults = () => {
         open: true,
         onYes: async () => {
           await biohubApi.survey.deleteSummarySubmission(projectId, surveyId, summaryData.survey_summary_submission_id);
-          surveyContext.surveyDataLoader.refresh(projectId, surveyId);
+          surveyContext.summaryDataLoader.refresh(projectId, surveyId);
           dialogContext.setYesNoDialog({ open: false });
         },
         onClose: () => dialogContext.setYesNoDialog({ open: false }),
@@ -131,14 +131,12 @@ const SurveySummaryResults = () => {
         <Divider />
 
         <Box p={3}>
+          {/* Data is still loading/ validating */}
+          {!summaryData && !surveyContext.summaryDataLoader.isReady && <SummaryResultsLoading fileLoading={fileName} />}
+
           {/* No summary */}
           {!summaryData && surveyContext.summaryDataLoader.isReady && (
             <NoSummaryResults clickToImport={() => setOpenImportSummaryResults(true)} />
-          )}
-
-          {/* Data is still loading/ validating */}
-          {!summaryData && surveyContext.summaryDataLoader.isLoading && (
-            <SummaryResultsLoading fileLoading={fileName} />
           )}
 
           {/* Got a summary with errors */}
@@ -147,7 +145,7 @@ const SurveySummaryResults = () => {
           )}
 
           {/* All done */}
-          {summaryData && surveyContext.summaryDataLoader.data && !surveyContext.summaryDataLoader.isLoading && (
+          {surveyContext.summaryDataLoader.data && (
             <FileSummaryResults
               fileData={surveyContext.summaryDataLoader.data}
               downloadFile={viewFileContents}
