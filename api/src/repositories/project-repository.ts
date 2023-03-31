@@ -457,7 +457,7 @@ export class ProjectRepository extends BaseRepository {
   async getProjectData(projectId: number): Promise<GetProjectData> {
     const getProjectSqlStatement = SQL`
       SELECT
-        project.project_id as id,
+        project.project_id,
         project.uuid,
         project.project_type_id as pt_id,
         project_type.name as type,

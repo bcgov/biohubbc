@@ -87,14 +87,14 @@ const SurveyPage: React.FC = () => {
 
   return (
     <>
-      <SurveyHeader projectWithDetails={projectDataLoader.data} />
+      <SurveyHeader />
       <Container maxWidth="xl">
         <Box my={3}>
           <SubmissionAlertBar />
           <Grid container spacing={3}>
             <Grid item md={12} lg={4}>
               <Paper elevation={0}>
-                <SurveyDetails projectForViewData={projectDataLoader.data} codes={codesDataLoader.data} />
+                <SurveyDetails codes={codesDataLoader.data} />
               </Paper>
             </Grid>
             <Grid item md={12} lg={8}>
@@ -115,10 +115,7 @@ const SurveyPage: React.FC = () => {
               </Box>
               <Box mb={3}>
                 <Paper elevation={0}>
-                  <SurveyStudyArea
-                    projectForViewData={projectDataLoader.data}
-                    mapLayersForView={{ markerLayers: markerLayers, staticLayers: staticLayers }}
-                  />
+                  <SurveyStudyArea mapLayersForView={{ markerLayers: markerLayers, staticLayers: staticLayers }} />
                 </Paper>
               </Box>
             </Grid>

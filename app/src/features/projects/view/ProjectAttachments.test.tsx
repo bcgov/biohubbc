@@ -43,7 +43,7 @@ describe.skip('ProjectAttachments', () => {
   it('correctly opens and closes the file upload dialog', async () => {
     const { getByText, queryByText } = render(
       <Router history={history}>
-        <ProjectAttachments projectForViewData={getProjectForViewResponse} />
+        <ProjectAttachments projectForViewData={getProjectForViewResponse.projectData} />
       </Router>
     );
 
@@ -64,7 +64,7 @@ describe.skip('ProjectAttachments', () => {
   it('renders correctly with no attachments', () => {
     const { getByText } = render(
       <Router history={history}>
-        <ProjectAttachments projectForViewData={getProjectForViewResponse} />
+        <ProjectAttachments projectForViewData={getProjectForViewResponse.projectData} />
       </Router>
     );
 
@@ -85,7 +85,7 @@ describe.skip('ProjectAttachments', () => {
 
     const { getByText } = render(
       <Router history={history}>
-        <ProjectAttachments projectForViewData={getProjectForViewResponse} />
+        <ProjectAttachments projectForViewData={getProjectForViewResponse.projectData} />
       </Router>
     );
 
@@ -118,7 +118,7 @@ describe.skip('ProjectAttachments', () => {
     const { baseElement, queryByText, getByTestId, getAllByTestId, queryByTestId } = render(
       <DialogContextProvider>
         <Router history={history}>
-          <ProjectAttachments projectForViewData={getProjectForViewResponse} />
+          <ProjectAttachments projectForViewData={getProjectForViewResponse.projectData} />
         </Router>
       </DialogContextProvider>
     );
@@ -177,7 +177,7 @@ describe.skip('ProjectAttachments', () => {
     const { baseElement, queryByText, getByTestId, queryByTestId, getAllByTestId } = render(
       <DialogContextProvider>
         <Router history={history}>
-          <ProjectAttachments projectForViewData={getProjectForViewResponse} />
+          <ProjectAttachments projectForViewData={getProjectForViewResponse.projectData} />
         </Router>
       </DialogContextProvider>
     );
@@ -225,7 +225,7 @@ describe.skip('ProjectAttachments', () => {
     const { baseElement, queryByText, getAllByRole, queryByTestId, getAllByTestId } = render(
       <DialogContextProvider>
         <Router history={history}>
-          <ProjectAttachments projectForViewData={getProjectForViewResponse} />
+          <ProjectAttachments projectForViewData={getProjectForViewResponse.projectData} />
         </Router>
       </DialogContextProvider>
     );

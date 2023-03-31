@@ -6,8 +6,7 @@ import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
-import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
+import { ProjectViewObject } from 'interfaces/useProjectApi.interface';
 import React from 'react';
 import { getFormattedAmount, getFormattedDateRangeString } from 'utils/Utils';
 
@@ -16,17 +15,16 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 export interface IProjectFundingProps {
-  projectForViewData: IGetProjectForViewResponse;
-  codes: IGetAllCodeSetsResponse;
-  refresh: () => void;
+  projectForViewData: ProjectViewObject;
 }
 
 /**
  * Funding source content for a project.
  *
+ * @param {IProjectFundingProps} props
  * @return {*}
  */
-const FundingSource: React.FC<IProjectFundingProps> = (props) => {
+const FundingSource = (props: IProjectFundingProps) => {
   const classes = useStyles();
   const {
     projectForViewData: { funding }
@@ -38,7 +36,7 @@ const FundingSource: React.FC<IProjectFundingProps> = (props) => {
     <>
       <List disablePadding>
         {hasFundingSources &&
-          funding.fundingSources.map((item: any, index: number) => (
+          funding.fundingSources.map((item: any) => (
             <ListItem disableGutters divider key={item.id}>
               <Box flex="1 1 auto">
                 <Box pb={1.25}>

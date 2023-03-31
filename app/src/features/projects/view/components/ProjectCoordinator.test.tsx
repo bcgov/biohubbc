@@ -2,7 +2,6 @@ import { cleanup, render } from '@testing-library/react';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import React from 'react';
-import { codes } from 'test-helpers/code-helpers';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import ProjectCoordinator from './ProjectCoordinator';
 
@@ -18,12 +17,10 @@ const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBioh
   mockUseBiohubApi
 );
 
-const mockRefresh = jest.fn();
-
 const renderContainer = () => {
   return render(
     <DialogContextProvider>
-      <ProjectCoordinator projectForViewData={getProjectForViewResponse} codes={codes} refresh={mockRefresh} />
+      <ProjectCoordinator projectForViewData={getProjectForViewResponse.projectData} />
     </DialogContextProvider>
   );
 };

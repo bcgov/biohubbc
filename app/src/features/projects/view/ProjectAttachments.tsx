@@ -14,9 +14,9 @@ import { IUploadHandler } from 'components/file-upload/FileUploadItem';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import {
   IGetProjectAttachment,
-  IGetProjectForViewResponse,
   IGetProjectReportAttachment,
-  IUploadAttachmentResponse
+  IUploadAttachmentResponse,
+  ProjectViewObject
 } from 'interfaces/useProjectApi.interface';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
@@ -24,7 +24,7 @@ import { AttachmentType } from '../../../constants/attachments';
 import AttachmentsList from './ProjectAttachmentsList';
 
 export interface IProjectAttachmentsProps {
-  projectForViewData: IGetProjectForViewResponse;
+  projectForViewData: ProjectViewObject;
 }
 
 export interface IAttachmentType {

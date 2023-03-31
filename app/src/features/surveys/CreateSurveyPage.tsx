@@ -22,7 +22,7 @@ import * as History from 'history';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
+import { ProjectViewObject } from 'interfaces/useProjectApi.interface';
 import { ICreateSurveyRequest, ISurveyAvailableFundingSources } from 'interfaces/useSurveyApi.interface';
 import moment from 'moment';
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
@@ -98,7 +98,7 @@ const CreateSurveyPage = () => {
   const history = useHistory();
 
   const [isLoadingProject, setIsLoadingProject] = useState(false);
-  const [projectWithDetails, setProjectWithDetails] = useState<IGetProjectForViewResponse | null>(null);
+  const [projectWithDetails, setProjectWithDetails] = useState<ProjectViewObject | null>(null);
   const [isLoadingCodes, setIsLoadingCodes] = useState(false);
   const [codes, setCodes] = useState<IGetAllCodeSetsResponse>();
   const [surveyFundingSources, setSurveyFundingSources] = useState<ISurveyAvailableFundingSources[]>([]);
@@ -121,7 +121,7 @@ const CreateSurveyPage = () => {
     },
     onYes: () => {
       dialogContext.setYesNoDialog({ open: false });
-      history.push(`/admin/projects/${projectWithDetails?.id}/surveys`);
+      history.push(`/admin/projects/${projectWithDetails?.project.id}/surveys`);
     }
   };
 
@@ -205,7 +205,7 @@ const CreateSurveyPage = () => {
     }
 
     setSurveyFundingSources(surveyFundingSourcesResponse);
-    setProjectWithDetails(projectWithDetailsResponse);
+    setProjectWithDetails(projectWithDetailsResponse.projectData);
   }, [biohubApi.project, biohubApi.survey, urlParams]);
 
   useEffect(() => {
@@ -217,7 +217,7 @@ const CreateSurveyPage = () => {
 
   const handleCancel = () => {
     dialogContext.setYesNoDialog(defaultCancelDialogProps);
-    history.push(`/admin/projects/${projectWithDetails?.id}/surveys`);
+    history.push(`/admin/projects/${projectWithDetails?.project.id}/surveys`);
   };
 
   const showCreateErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
@@ -242,7 +242,7 @@ const CreateSurveyPage = () => {
    */
   const handleSubmit = async (values: ICreateSurveyRequest) => {
     try {
-      const response = await biohubApi.survey.createSurvey(Number(projectWithDetails?.id), values);
+      const response = await biohubApi.survey.createSurvey(Number(projectWithDetails?.project.id), values);
 
       if (!response?.id) {
         showCreateErrorDialog({
@@ -253,7 +253,7 @@ const CreateSurveyPage = () => {
 
       setEnableCancelCheck(false);
 
-      history.push(`/admin/projects/${projectWithDetails?.id}/surveys/${response.id}/details`);
+      history.push(`/admin/projects/${projectWithDetails?.project.id}/surveys/${response.id}/details`);
     } catch (error) {
       const apiError = error as APIError;
       showCreateErrorDialog({

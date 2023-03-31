@@ -3,7 +3,7 @@ import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
+import { ProjectViewObject } from 'interfaces/useProjectApi.interface';
 import React from 'react';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -23,17 +23,17 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 export interface IPartnershipsProps {
-  projectForViewData: IGetProjectForViewResponse;
+  projectForViewData: ProjectViewObject;
   codes: IGetAllCodeSetsResponse;
-  refresh: () => void;
 }
 
 /**
  * Partnerships content for a project.
  *
+ * @param {IPartnershipsProps} props
  * @return {*}
  */
-const Partnerships: React.FC<IPartnershipsProps> = (props) => {
+const Partnerships = (props: IPartnershipsProps) => {
   const classes = useStyles();
   const {
     projectForViewData: {

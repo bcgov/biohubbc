@@ -22,10 +22,7 @@ import { DialogContext } from 'contexts/dialogContext';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { CodeSet, IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import {
-  IGetProjectForViewResponse,
-  IGetProjectParticipantsResponseArrayItem
-} from 'interfaces/useProjectApi.interface';
+import { IGetProjectParticipantsResponseArrayItem, ProjectViewObject } from 'interfaces/useProjectApi.interface';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import ProjectParticipantsHeader from './ProjectParticipantsHeader';
@@ -66,7 +63,7 @@ const ProjectParticipantsPage: React.FC = () => {
   const classes = useStyles();
 
   const [isLoadingProject, setIsLoadingProject] = useState(true);
-  const [projectWithDetails, setProjectWithDetails] = useState<IGetProjectForViewResponse | null>(null);
+  const [projectWithDetails, setProjectWithDetails] = useState<ProjectViewObject | null>(null);
 
   const [codes, setCodes] = useState<IGetAllCodeSetsResponse>();
   const [isLoadingCodes, setIsLoadingCodes] = useState(true);
@@ -113,7 +110,7 @@ const ProjectParticipantsPage: React.FC = () => {
       return;
     }
 
-    setProjectWithDetails(projectWithDetailsResponse);
+    setProjectWithDetails(projectWithDetailsResponse.projectData);
   }, [biohubApi.project, urlParams]);
 
   useEffect(() => {

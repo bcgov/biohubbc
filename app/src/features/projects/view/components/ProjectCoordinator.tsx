@@ -1,22 +1,20 @@
 import Box from '@material-ui/core/Box';
 import Link from '@material-ui/core/Link';
 import Typography from '@material-ui/core/Typography';
-import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
+import { ProjectViewObject } from 'interfaces/useProjectApi.interface';
 import React from 'react';
 
 export interface IProjectCoordinatorProps {
-  projectForViewData: IGetProjectForViewResponse;
-  codes: IGetAllCodeSetsResponse;
-  refresh: () => void;
+  projectForViewData: ProjectViewObject;
 }
 
 /**
  * Project coordinator content for a project.
  *
+ * @param {IProjectCoordinatorProps} props
  * @return {*}
  */
-const ProjectCoordinator: React.FC<IProjectCoordinatorProps> = (props) => {
+const ProjectCoordinator = (props: IProjectCoordinatorProps) => {
   const {
     projectForViewData: { coordinator }
   } = props;

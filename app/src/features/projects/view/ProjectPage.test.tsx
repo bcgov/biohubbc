@@ -119,7 +119,10 @@ describe.skip('ProjectPage', () => {
   it('renders project page when project is loaded (project is completed)', async () => {
     mockBiohubApi().project.getProjectForView.mockResolvedValue({
       ...getProjectForViewResponse,
-      project: { ...getProjectForViewResponse.project, completion_status: 'Completed' }
+      projectData: {
+        ...getProjectForViewResponse.projectData,
+        project: { ...getProjectForViewResponse.projectData.project, completion_status: 'Completed' }
+      }
     });
     mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
       activity: [{ id: 1, name: 'activity 1' }]
@@ -326,10 +329,7 @@ describe.skip('ProjectPage', () => {
     mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
       activity: [{ id: 1, name: 'activity 1' }]
     } as any);
-    mockBiohubApi().project.getProjectForView.mockResolvedValue({
-      ...getProjectForViewResponse,
-      project: { ...getProjectForViewResponse.project }
-    });
+    mockBiohubApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
     mockBiohubApi().project.deleteProject.mockResolvedValue(true);
     mockBiohubApi().external.post.mockResolvedValue({
       features: [
@@ -407,9 +407,12 @@ describe.skip('ProjectPage', () => {
   it('renders correctly with no end date', async () => {
     mockBiohubApi().project.getProjectForView.mockResolvedValue({
       ...getProjectForViewResponse,
-      project: {
-        ...getProjectForViewResponse.project,
-        end_date: (null as unknown) as string
+      projectData: {
+        ...getProjectForViewResponse.projectData,
+        project: {
+          ...getProjectForViewResponse.projectData.project,
+          end_date: (null as unknown) as string
+        }
       }
     });
     mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({

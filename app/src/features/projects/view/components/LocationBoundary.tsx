@@ -27,7 +27,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import {
   IGetProjectForUpdateResponseLocation,
-  IGetProjectForViewResponse,
+  ProjectViewObject,
   UPDATE_GET_ENTITIES
 } from 'interfaces/useProjectApi.interface';
 import { LatLngBoundsExpression } from 'leaflet';
@@ -36,7 +36,7 @@ import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
 import ProjectStepComponents from 'utils/ProjectStepComponents';
 
 export interface ILocationBoundaryProps {
-  projectForViewData: IGetProjectForViewResponse;
+  projectForViewData: ProjectViewObject;
   codes: IGetAllCodeSetsResponse;
   refresh: () => void;
 }
@@ -74,7 +74,10 @@ const useStyles = makeStyles((theme: Theme) =>
  */
 const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
   const {
-    projectForViewData: { location, id },
+    projectForViewData: {
+      project: { id },
+      location
+    },
     codes
   } = props;
 
@@ -177,11 +180,11 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
     setNonEditableGeometries(nonEditableGeometriesResult);
   }, [location.geometry, zoomToBoundaryExtent]);
 
-  const handleDialogViewOpen = () => {
+  const handleOpenFullScreenMap = () => {
     setShowFullScreenViewMapDialog(true);
   };
 
-  const handleClose = () => {
+  const handleCloseFullScreenMap = () => {
     setShowFullScreenViewMapDialog(false);
   };
 
@@ -200,7 +203,7 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
       />
       <FullScreenViewMapDialog
         open={showFullScreenViewMapDialog}
-        onClose={handleClose}
+        onClose={handleCloseFullScreenMap}
         map={
           <MapContainer
             mapId="project_location_form_map"
@@ -264,7 +267,7 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
           style={{ display: 'none' }}
           color="primary"
           className="sectionHeaderButton"
-          onClick={() => handleDialogViewOpen()}
+          onClick={() => handleOpenFullScreenMap()}
           title="Expand Location"
           aria-label="Show Expanded Location"
           endIcon={<Icon path={mdiChevronRight} size={0.875} />}>

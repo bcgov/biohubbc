@@ -87,7 +87,7 @@ describe.skip('CreateSurveyPage', () => {
       permits: [{ id: 1, permit_number: 'abcd1', permit_type: 'Wildlife permit' }]
     });
     mockBiohubApi().survey.getAvailableSurveyFundingSources.mockResolvedValue(
-      getProjectForViewResponse.funding.fundingSources
+      getProjectForViewResponse.projectData.funding.fundingSources
     );
 
     const { getByText } = renderContainer();
@@ -144,7 +144,7 @@ describe.skip('CreateSurveyPage', () => {
 
     mockBiohubApi().survey.getAvailableSurveyFundingSources.mockResolvedValue([
       {
-        ...getProjectForViewResponse.funding.fundingSources[0],
+        ...getProjectForViewResponse.projectData.funding.fundingSources[0],
         funding_amount: 100,
         start_date: '2000-04-09 11:53:53',
         end_date: '2000-05-10 11:53:53',
@@ -176,7 +176,7 @@ describe.skip('CreateSurveyPage', () => {
       });
       mockBiohubApi().survey.getAvailableSurveyFundingSources.mockResolvedValue([
         {
-          ...getProjectForViewResponse.funding.fundingSources[0],
+          ...getProjectForViewResponse.projectData.funding.fundingSources[0],
           funding_amount: 100,
           start_date: '2000-04-09 11:53:53',
           end_date: '2000-05-10 11:53:53',
@@ -230,7 +230,7 @@ describe.skip('CreateSurveyPage', () => {
       });
       mockBiohubApi().survey.getAvailableSurveyFundingSources.mockResolvedValue([
         {
-          ...getProjectForViewResponse.funding.fundingSources[0],
+          ...getProjectForViewResponse.projectData.funding.fundingSources[0],
           funding_amount: 100,
           start_date: '2000-04-09 11:53:53',
           end_date: '2000-05-10 11:53:53',

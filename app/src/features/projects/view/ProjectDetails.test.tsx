@@ -5,7 +5,7 @@ import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import ProjectDetails from './ProjectDetails';
 
 describe('ProjectDetails', () => {
-  getProjectForViewResponse.location.geometry.push({
+  getProjectForViewResponse.projectData.location.geometry.push({
     id: 'myGeo',
     type: 'Feature',
     geometry: {
@@ -19,7 +19,7 @@ describe('ProjectDetails', () => {
 
   jest.spyOn(console, 'debug').mockImplementation(() => {});
 
-  const component = <ProjectDetails projectForViewData={getProjectForViewResponse} codes={codes} refresh={jest.fn()} />;
+  const component = <ProjectDetails projectForViewData={getProjectForViewResponse.projectData} codes={codes} />;
 
   it('renders correctly', async () => {
     const { asFragment } = render(component);

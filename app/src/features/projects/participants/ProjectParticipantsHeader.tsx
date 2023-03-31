@@ -14,7 +14,7 @@ import { DialogContext } from 'contexts/dialogContext';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
+import { ProjectViewObject } from 'interfaces/useProjectApi.interface';
 import React, { useContext, useState } from 'react';
 import { useHistory, useParams } from 'react-router';
 import AddProjectParticipantsForm, {
@@ -44,7 +44,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 export interface IProjectParticipantsHeaderProps {
-  projectWithDetails: IGetProjectForViewResponse;
+  projectWithDetails: ProjectViewObject;
   codes: IGetAllCodeSetsResponse;
   refresh: () => void;
 }
@@ -109,7 +109,7 @@ const ProjectParticipantsHeader: React.FC<IProjectParticipantsHeaderProps> = (pr
             <Button
               color="primary"
               startIcon={<Icon path={mdiArrowLeft} size={0.9} />}
-              onClick={() => history.push(`/admin/projects/${props.projectWithDetails.id}`)}>
+              onClick={() => history.push(`/admin/projects/${props.projectWithDetails.project.id}`)}>
               <strong>Back to Project</strong>
             </Button>
           </Box>

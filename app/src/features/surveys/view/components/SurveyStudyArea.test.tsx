@@ -1,9 +1,10 @@
 import { cleanup, fireEvent, render, waitFor } from '@testing-library/react';
+import { SurveyContext } from 'contexts/surveyContext';
 import { Feature } from 'geojson';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import { DataLoader } from 'hooks/useDataLoader';
 import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
 import React from 'react';
-import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import { getSurveyForViewResponse, surveyObject, surveySupplementaryData } from 'test-helpers/survey-helpers';
 import SurveyStudyArea from './SurveyStudyArea';
 
@@ -24,17 +25,7 @@ const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBioh
 
 const mockRefresh = jest.fn();
 
-const renderContainer = () => {
-  return render(
-    <SurveyStudyArea
-      projectForViewData={getProjectForViewResponse}
-      surveyForViewData={getSurveyForViewResponse}
-      refresh={mockRefresh}
-    />
-  );
-};
-
-describe.skip('SurveyStudyArea', () => {
+describe('SurveyStudyArea', () => {
   beforeEach(() => {
     // clear mocks before each test
     mockBiohubApi().survey.getSurveyForView.mockClear();
@@ -75,7 +66,25 @@ describe.skip('SurveyStudyArea', () => {
   });
 
   it('renders correctly', async () => {
-    const { asFragment } = renderContainer();
+    const mockSurveyDataLoader = { data: null } as DataLoader<any, any, any>;
+    const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
+
+    const { asFragment } = render(
+      <SurveyContext.Provider
+        value={{
+          projectId: 1,
+          surveyId: 1,
+          surveyDataLoader: mockSurveyDataLoader,
+          artifactDataLoader: mockArtifactDataLoader
+        }}>
+        <SurveyStudyArea
+          mapLayersForView={{
+            markerLayers: [],
+            staticLayers: []
+          }}
+        />
+      </SurveyContext.Provider>
+    );
 
     await waitFor(() => {
       expect(asFragment()).toMatchSnapshot();
@@ -83,25 +92,44 @@ describe.skip('SurveyStudyArea', () => {
   });
 
   it('editing the survey details works in the dialog', async () => {
-    mockBiohubApi().survey.getSurveyForView.mockResolvedValue({
-      surveyData: {
-        ...surveyObject,
-        survey_details: {
-          id: 1,
-          survey_name: 'survey name is this',
-          start_date: '1999-09-09',
-          end_date: '2021-01-25',
-          biologist_first_name: 'firstttt',
-          biologist_last_name: 'lastttt',
-          survey_area_name: 'study area is this',
-          geometry,
-          revision_count: 0
-        }
-      },
-      surveySupplementaryData: surveySupplementaryData
-    });
+    const mockSurveyDataLoader = { data: null } as DataLoader<any, any, any>;
+    const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
 
-    const { getByText, queryByText } = renderContainer();
+    // mockBiohubApi().survey.getSurveyForView.mockResolvedValue({
+    //   surveyData: {
+    //     ...surveyObject,
+    //     survey_details: {
+    //       id: 1,
+    //       project_id: 1,
+    //       survey_name: 'survey name is this',
+    //       start_date: '1999-09-09',
+    //       end_date: '2021-01-25',
+    //       biologist_first_name: 'firstttt',
+    //       biologist_last_name: 'lastttt',
+    //       survey_area_name: 'study area is this',
+    //       geometry,
+    //       revision_count: 0
+    //     }
+    //   },
+    //   surveySupplementaryData: surveySupplementaryData
+    // });
+
+    const { getByText, queryByText } = render(
+      <SurveyContext.Provider
+        value={{
+          projectId: 1,
+          surveyId: 1,
+          surveyDataLoader: mockSurveyDataLoader,
+          artifactDataLoader: mockArtifactDataLoader
+        }}>
+        <SurveyStudyArea
+          mapLayersForView={{
+            markerLayers: [],
+            staticLayers: []
+          }}
+        />
+      </SurveyContext.Provider>
+    );
 
     await waitFor(() => {
       expect(getByText('Study Area')).toBeVisible();
@@ -152,9 +180,27 @@ describe.skip('SurveyStudyArea', () => {
   });
 
   it('displays an error dialog when fetching the update data fails', async () => {
+    const mockSurveyDataLoader = { data: null } as DataLoader<any, any, any>;
+    const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
+
     mockBiohubApi().survey.getSurveyForView.mockResolvedValue((null as unknown) as any);
 
-    const { getByText, queryByText } = renderContainer();
+    const { getByText, queryByText } = render(
+      <SurveyContext.Provider
+        value={{
+          projectId: 1,
+          surveyId: 1,
+          surveyDataLoader: mockSurveyDataLoader,
+          artifactDataLoader: mockArtifactDataLoader
+        }}>
+        <SurveyStudyArea
+          mapLayersForView={{
+            markerLayers: [],
+            staticLayers: []
+          }}
+        />
+      </SurveyContext.Provider>
+    );
 
     await waitFor(() => {
       expect(getByText('Study Area')).toBeVisible();
@@ -174,9 +220,27 @@ describe.skip('SurveyStudyArea', () => {
   });
 
   it('shows error dialog with API error message when getting survey data for update fails', async () => {
+    const mockSurveyDataLoader = { data: null } as DataLoader<any, any, any>;
+    const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
+
     mockBiohubApi().survey.getSurveyForView = jest.fn(() => Promise.reject(new Error('API Error is Here')));
 
-    const { getByText, queryByText, getAllByRole } = renderContainer();
+    const { getByText, queryByText, getAllByRole } = render(
+      <SurveyContext.Provider
+        value={{
+          projectId: 1,
+          surveyId: 1,
+          surveyDataLoader: mockSurveyDataLoader,
+          artifactDataLoader: mockArtifactDataLoader
+        }}>
+        <SurveyStudyArea
+          mapLayersForView={{
+            markerLayers: [],
+            staticLayers: []
+          }}
+        />
+      </SurveyContext.Provider>
+    );
 
     await waitFor(() => {
       expect(getByText('Study Area')).toBeVisible();
@@ -198,11 +262,15 @@ describe.skip('SurveyStudyArea', () => {
   });
 
   it('shows error dialog with API error message when updating survey data fails', async () => {
+    const mockSurveyDataLoader = { data: null } as DataLoader<any, any, any>;
+    const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
+
     mockBiohubApi().survey.getSurveyForView.mockResolvedValue({
       surveyData: {
         ...surveyObject,
         survey_details: {
           id: 1,
+          project_id: 1,
           survey_name: 'survey name is this',
           start_date: '1999-09-09',
           end_date: '2021-01-25',
@@ -217,7 +285,22 @@ describe.skip('SurveyStudyArea', () => {
     });
     mockBiohubApi().survey.updateSurvey = jest.fn(() => Promise.reject(new Error('API Error is Here')));
 
-    const { getByText, queryByText } = renderContainer();
+    const { getByText, queryByText } = render(
+      <SurveyContext.Provider
+        value={{
+          projectId: 1,
+          surveyId: 1,
+          surveyDataLoader: mockSurveyDataLoader,
+          artifactDataLoader: mockArtifactDataLoader
+        }}>
+        <SurveyStudyArea
+          mapLayersForView={{
+            markerLayers: [],
+            staticLayers: []
+          }}
+        />
+      </SurveyContext.Provider>
+    );
 
     await waitFor(() => {
       expect(getByText('Study Area')).toBeVisible();

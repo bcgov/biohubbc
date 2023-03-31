@@ -516,7 +516,7 @@ describe('ProjectRepository', () => {
 
   describe('getProjectData', () => {
     it('should return result', async () => {
-      const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
+      const mockResponse = ({ rows: [{ project_id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({ query: () => mockResponse });
 
       const repository = new ProjectRepository(dbConnection);
@@ -524,7 +524,7 @@ describe('ProjectRepository', () => {
       const response = await repository.getProjectData(1);
 
       expect(response).to.not.be.null;
-      expect(response).to.eql(new GetProjectData({ id: 1 }, [{ id: 1 }]));
+      expect(response).to.eql(new GetProjectData({ project_id: 1 }, [{ project_id: 1 }]));
     });
 
     it('should throw an error', async () => {
@@ -544,7 +544,7 @@ describe('ProjectRepository', () => {
 
   describe('getObjectivesData', () => {
     it('should return result', async () => {
-      const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
+      const mockResponse = ({ rows: [{ objectives: 'obj' }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({ query: () => mockResponse });
 
       const repository = new ProjectRepository(dbConnection);
@@ -552,7 +552,7 @@ describe('ProjectRepository', () => {
       const response = await repository.getObjectivesData(1);
 
       expect(response).to.not.be.null;
-      expect(response).to.eql(new GetObjectivesData({ id: 1 }));
+      expect(response).to.eql(new GetObjectivesData({ objectives: 'obj' }));
     });
 
     it('should throw an error', async () => {
@@ -572,7 +572,9 @@ describe('ProjectRepository', () => {
 
   describe('getCoordinatorData', () => {
     it('should return result', async () => {
-      const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
+      const mockResponse = ({ rows: [{ coordinator_first_name: 'name' }], rowCount: 1 } as any) as Promise<
+        QueryResult<any>
+      >;
       const dbConnection = getMockDBConnection({ query: () => mockResponse });
 
       const repository = new ProjectRepository(dbConnection);
@@ -580,7 +582,7 @@ describe('ProjectRepository', () => {
       const response = await repository.getCoordinatorData(1);
 
       expect(response).to.not.be.null;
-      expect(response).to.eql(new GetCoordinatorData({ id: 1 }));
+      expect(response).to.eql(new GetCoordinatorData({ coordinator_first_name: 'name' }));
     });
 
     it('should throw an error', async () => {
@@ -600,7 +602,9 @@ describe('ProjectRepository', () => {
 
   describe('getLocationData', () => {
     it('should return result', async () => {
-      const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
+      const mockResponse = ({ rows: [{ location_description: 'desc' }], rowCount: 1 } as any) as Promise<
+        QueryResult<any>
+      >;
       const dbConnection = getMockDBConnection({ query: () => mockResponse });
 
       const repository = new ProjectRepository(dbConnection);
@@ -608,7 +612,7 @@ describe('ProjectRepository', () => {
       const response = await repository.getLocationData(1);
 
       expect(response).to.not.be.null;
-      expect(response).to.eql(new GetLocationData([{ id: 1 }]));
+      expect(response).to.eql(new GetLocationData([{ location_description: 'desc' }]));
     });
 
     it('should throw an error', async () => {
@@ -628,7 +632,10 @@ describe('ProjectRepository', () => {
 
   describe('getIUCNClassificationData', () => {
     it('should return result', async () => {
-      const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
+      const mockResponse = ({
+        rows: [{ iucn_conservation_action_level_1_classification_id: 1 }],
+        rowCount: 1
+      } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({ query: () => mockResponse });
 
       const repository = new ProjectRepository(dbConnection);
@@ -636,7 +643,9 @@ describe('ProjectRepository', () => {
       const response = await repository.getIUCNClassificationData(1);
 
       expect(response).to.not.be.null;
-      expect(response).to.eql(new GetIUCNClassificationData([{ id: 1 }]));
+      expect(response).to.eql(
+        new GetIUCNClassificationData([{ iucn_conservation_action_level_1_classification_id: 1 }])
+      );
     });
 
     it('should throw an error', async () => {
@@ -712,7 +721,7 @@ describe('ProjectRepository', () => {
 
   describe('getStakeholderPartnershipsRows', () => {
     it('should return result', async () => {
-      const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
+      const mockResponse = ({ rows: [{ partnership_name: 'name' }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({ query: () => mockResponse });
 
       const repository = new ProjectRepository(dbConnection);
@@ -720,7 +729,7 @@ describe('ProjectRepository', () => {
       const response = await repository.getStakeholderPartnershipsRows(1);
 
       expect(response).to.not.be.null;
-      expect(response).to.eql([{ id: 1 }]);
+      expect(response).to.eql([{ partnership_name: 'name' }]);
     });
 
     it('should throw an error', async () => {

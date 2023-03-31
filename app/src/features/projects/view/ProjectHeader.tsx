@@ -28,7 +28,7 @@ import { DialogContext } from 'contexts/dialogContext';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
-import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
+import { ProjectViewObject } from 'interfaces/useProjectApi.interface';
 import React, { useContext } from 'react';
 import { useHistory } from 'react-router';
 import { getFormattedDateRangeString } from 'utils/Utils';
@@ -96,7 +96,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 export interface IProjectHeaderProps {
-  projectWithDetails: IGetProjectForViewResponse;
+  projectWithDetails: ProjectViewObject;
   refresh?: () => void;
 }
 
@@ -159,7 +159,7 @@ const ProjectHeader: React.FC<IProjectHeaderProps> = (props) => {
     }
 
     try {
-      const response = await biohubApi.project.deleteProject(projectWithDetails.id);
+      const response = await biohubApi.project.deleteProject(projectWithDetails.project.id);
 
       if (!response) {
         showDeleteErrorDialog({ open: true });
@@ -270,7 +270,8 @@ const ProjectHeader: React.FC<IProjectHeaderProps> = (props) => {
                   </ListItemIcon>
                   <Typography variant="inherit">Manage Project Team</Typography>
                 </MenuItem>
-                <MenuItem onClick={() => history.push(`/admin/projects/edit?projectId=${projectWithDetails.id}`)}>
+                <MenuItem
+                  onClick={() => history.push(`/admin/projects/edit?projectId=${projectWithDetails.project.id}`)}>
                   <ListItemIcon>
                     <Icon path={mdiPencilOutline} size={0.8} />
                   </ListItemIcon>

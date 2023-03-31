@@ -1,38 +1,17 @@
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
-import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
-import { EditSurveyProprietorI18N } from 'constants/i18n';
 import { SurveyContext } from 'contexts/surveyContext';
-import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
-import React, { useContext, useState } from 'react';
-
-export interface ISurveyProprietaryDataProps {
-  codes: IGetAllCodeSetsResponse;
-  projectForViewData: IGetProjectForViewResponse;
-}
+import React, { useContext } from 'react';
 
 /**
  * Proprietary data content for a survey.
  *
  * @return {*}
  */
-const SurveyProprietaryData: React.FC<ISurveyProprietaryDataProps> = (props) => {
+const SurveyProprietaryData = () => {
   const surveyContext = useContext(SurveyContext);
   const surveyForViewData = surveyContext.surveyDataLoader.data;
-
-  const [errorDialogProps, setErrorDialogProps] = useState<IErrorDialogProps>({
-    dialogTitle: EditSurveyProprietorI18N.editErrorTitle,
-    dialogText: EditSurveyProprietorI18N.editErrorText,
-    open: false,
-    onClose: () => {
-      setErrorDialogProps({ ...errorDialogProps, open: false });
-    },
-    onOk: () => {
-      setErrorDialogProps({ ...errorDialogProps, open: false });
-    }
-  });
 
   if (!surveyForViewData) {
     return <></>;
@@ -49,7 +28,9 @@ const SurveyProprietaryData: React.FC<ISurveyProprietaryDataProps> = (props) => 
           {!proprietor && (
             <Grid container spacing={1}>
               <Grid item>
-                <Typography>The data captured in this survey is not proprietary.</Typography>
+                <Typography data-testid="survey_not_proprietary">
+                  The data captured in this survey is not proprietary.
+                </Typography>
               </Grid>
             </Grid>
           )}
@@ -59,7 +40,7 @@ const SurveyProprietaryData: React.FC<ISurveyProprietaryDataProps> = (props) => 
                 <Typography component="dt" variant="subtitle2" color="textSecondary">
                   Proprietor Name
                 </Typography>
-                <Typography component="dd" variant="body1">
+                <Typography component="dd" variant="body1" data-testid="survey_proprietor_name">
                   {proprietor.proprietor_name}
                 </Typography>
               </Grid>
@@ -67,7 +48,7 @@ const SurveyProprietaryData: React.FC<ISurveyProprietaryDataProps> = (props) => 
                 <Typography component="dt" variant="subtitle2" color="textSecondary">
                   Data Category
                 </Typography>
-                <Typography component="dd" variant="body1">
+                <Typography component="dd" variant="body1" data-testid="survey_proprietor_type_name">
                   {proprietor.proprietor_type_name}
                 </Typography>
               </Grid>
@@ -75,7 +56,9 @@ const SurveyProprietaryData: React.FC<ISurveyProprietaryDataProps> = (props) => 
                 <Typography component="dt" variant="subtitle2" color="textSecondary">
                   Category Rationale
                 </Typography>
-                <Typography style={{ wordBreak: 'break-all' }}>{proprietor.category_rationale}</Typography>
+                <Typography style={{ wordBreak: 'break-all' }} data-testid="survey_category_rationale">
+                  {proprietor.category_rationale}
+                </Typography>
               </Grid>
             </Grid>
           )}

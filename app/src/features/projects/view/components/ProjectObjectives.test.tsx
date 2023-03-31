@@ -2,7 +2,6 @@ import { cleanup, fireEvent, getAllByText, queryByText, render } from '@testing-
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import React from 'react';
-import { codes } from 'test-helpers/code-helpers';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import ProjectObjectives from './ProjectObjectives';
 
@@ -18,12 +17,10 @@ const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBioh
   mockUseBiohubApi
 );
 
-const mockRefresh = jest.fn();
-
 const renderContainer = () => {
   return render(
     <DialogContextProvider>
-      <ProjectObjectives projectForViewData={getProjectForViewResponse} codes={codes} refresh={mockRefresh} />
+      <ProjectObjectives projectForViewData={getProjectForViewResponse.projectData} />
     </DialogContextProvider>
   );
 };
@@ -62,11 +59,9 @@ describe('ProjectObjectives', () => {
     const { asFragment } = render(
       <ProjectObjectives
         projectForViewData={{
-          ...getProjectForViewResponse,
-          objectives: { ...getProjectForViewResponse.objectives, objectives: longData }
+          ...getProjectForViewResponse.projectData,
+          objectives: { ...getProjectForViewResponse.projectData.objectives, objectives: longData }
         }}
-        codes={codes}
-        refresh={mockRefresh}
       />
     );
 
@@ -77,11 +72,9 @@ describe('ProjectObjectives', () => {
     const { asFragment } = render(
       <ProjectObjectives
         projectForViewData={{
-          ...getProjectForViewResponse,
-          objectives: { ...getProjectForViewResponse.objectives, objectives: longData }
+          ...getProjectForViewResponse.projectData,
+          objectives: { ...getProjectForViewResponse.projectData.objectives, objectives: longData }
         }}
-        codes={codes}
-        refresh={mockRefresh}
       />
     );
 
@@ -94,14 +87,12 @@ describe('ProjectObjectives', () => {
     const { asFragment } = render(
       <ProjectObjectives
         projectForViewData={{
-          ...getProjectForViewResponse,
+          ...getProjectForViewResponse.projectData,
           objectives: {
-            ...getProjectForViewResponse.objectives,
+            ...getProjectForViewResponse.projectData.objectives,
             objectives: multilineObjectives
           }
         }}
-        codes={codes}
-        refresh={mockRefresh}
       />
     );
 
@@ -112,11 +103,9 @@ describe('ProjectObjectives', () => {
     const { container } = render(
       <ProjectObjectives
         projectForViewData={{
-          ...getProjectForViewResponse,
-          objectives: { ...getProjectForViewResponse.objectives, objectives: longData }
+          ...getProjectForViewResponse.projectData,
+          objectives: { ...getProjectForViewResponse.projectData.objectives, objectives: longData }
         }}
-        codes={codes}
-        refresh={mockRefresh}
       />
     );
 
@@ -136,11 +125,9 @@ describe('ProjectObjectives', () => {
     const { container } = render(
       <ProjectObjectives
         projectForViewData={{
-          ...getProjectForViewResponse,
-          objectives: { ...getProjectForViewResponse.objectives, objectives: 'a'.repeat(400) }
+          ...getProjectForViewResponse.projectData,
+          objectives: { ...getProjectForViewResponse.projectData.objectives, objectives: 'a'.repeat(400) }
         }}
-        codes={codes}
-        refresh={mockRefresh}
       />
     );
 
@@ -160,11 +147,9 @@ describe('ProjectObjectives', () => {
     const { container } = render(
       <ProjectObjectives
         projectForViewData={{
-          ...getProjectForViewResponse,
-          objectives: { ...getProjectForViewResponse.objectives, objectives: 'short text' }
+          ...getProjectForViewResponse.projectData,
+          objectives: { ...getProjectForViewResponse.projectData.objectives, objectives: 'short text' }
         }}
-        codes={codes}
-        refresh={mockRefresh}
       />
     );
 
@@ -179,11 +164,9 @@ describe('ProjectObjectives', () => {
     const { container } = render(
       <ProjectObjectives
         projectForViewData={{
-          ...getProjectForViewResponse,
-          objectives: { ...getProjectForViewResponse.objectives, objectives: '' }
+          ...getProjectForViewResponse.projectData,
+          objectives: { ...getProjectForViewResponse.projectData.objectives, objectives: '' }
         }}
-        codes={codes}
-        refresh={mockRefresh}
       />
     );
 

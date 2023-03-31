@@ -6,13 +6,13 @@ import SurveysList from 'components/surveys/SurveysList';
 import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
+import { ProjectViewObject } from 'interfaces/useProjectApi.interface';
 import { SurveyViewObject } from 'interfaces/useSurveyApi.interface';
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 
 export interface ISurveysListPageProps {
-  projectForViewData: IGetProjectForViewResponse;
+  projectForViewData: ProjectViewObject;
   codes: IGetAllCodeSetsResponse;
 }
 
@@ -32,7 +32,7 @@ const SurveysListPage: React.FC<ISurveysListPageProps> = (props) => {
 
   useEffect(() => {
     const getSurveys = async () => {
-      const surveysResponse = await biohubApi.survey.getSurveysList(projectForViewData.id);
+      const surveysResponse = await biohubApi.survey.getSurveysList(projectForViewData.project.id);
 
       setSurveys(() => {
         setIsLoading(false);
@@ -43,7 +43,7 @@ const SurveysListPage: React.FC<ISurveysListPageProps> = (props) => {
     if (isLoading) {
       getSurveys();
     }
-  }, [biohubApi, isLoading, projectForViewData.id]);
+  }, [biohubApi, isLoading, projectForViewData.project.id]);
 
   const navigateToCreateSurveyPage = (projectId: number) => {
     history.push(`/admin/projects/${projectId}/survey/create`);
@@ -57,11 +57,11 @@ const SurveysListPage: React.FC<ISurveysListPageProps> = (props) => {
         buttonTitle="Create Survey"
         buttonStartIcon={<Icon path={mdiPlus} size={0.8} />}
         buttonProps={{ variant: 'contained' }}
-        buttonOnClick={() => navigateToCreateSurveyPage(projectForViewData.id)}
+        buttonOnClick={() => navigateToCreateSurveyPage(projectForViewData.project.id)}
       />
       <Divider></Divider>
       <Box px={1}>
-        <SurveysList projectId={projectForViewData.id} surveysList={surveys} codes={codes} />
+        <SurveysList projectId={projectForViewData.project.id} surveysList={surveys} codes={codes} />
       </Box>
     </>
   );

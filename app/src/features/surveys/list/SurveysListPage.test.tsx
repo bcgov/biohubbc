@@ -35,7 +35,7 @@ describe('SurveysListPage', () => {
 
     const { getByText } = render(
       <Router history={history}>
-        <SurveysListPage projectForViewData={getProjectForViewResponse} />
+        <SurveysListPage projectForViewData={getProjectForViewResponse.projectData} />
       </Router>
     );
 
@@ -86,7 +86,7 @@ describe('SurveysListPage', () => {
 
     const { getByText } = render(
       <Router history={history}>
-        <SurveysListPage projectForViewData={getProjectForViewResponse} />
+        <SurveysListPage projectForViewData={getProjectForViewResponse.projectData} />
       </Router>
     );
 
