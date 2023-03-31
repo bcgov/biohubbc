@@ -105,6 +105,24 @@ const useObservationApi = (axios: AxiosInstance) => {
   };
 
   /**
+   * Get observation submission S3 url based on survey and submission ID
+   *
+   * @param {AxiosInstance} axios
+   * @returns {*} {Promise<string>}
+   */
+  const getObservationSubmissionSignedURL = async (
+    projectId: number,
+    surveyId: number,
+    submissionId: number
+  ): Promise<string> => {
+    const { data } = await axios.get(
+      `/api/project/${projectId}/survey/${surveyId}/observation/submission/${submissionId}/getSignedUrl`
+    );
+
+    return data;
+  };
+
+  /**
    * Initiate the transformation process for the submitted observation template.
    *
    * @param {number} projectId
@@ -157,6 +175,7 @@ const useObservationApi = (axios: AxiosInstance) => {
     uploadObservationSubmission,
     getObservationSubmission,
     deleteObservationSubmission,
+    getObservationSubmissionSignedURL,
     initiateXLSXSubmissionTransform,
     getOccurrencesForView,
     processOccurrences,

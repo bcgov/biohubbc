@@ -23,8 +23,8 @@ describe('useObservationApi', () => {
 
     const result = await useObservationApi(axios).getObservationSubmission(projectId, surveyId);
 
-    expect(result.id).toEqual(1);
-    expect(result.inputFileName).toEqual('file.txt');
+    expect(result.surveyObservationData.occurrence_submission_id).toEqual(1);
+    expect(result.surveyObservationData.inputFileName).toEqual('file.txt');
   });
 
   it('deleteObservationSubmission works as expected', async () => {
@@ -93,8 +93,7 @@ describe('useObservationApi', () => {
   });
 
   it('getOccurrencesForView works as expected', async () => {
-    const projectId = 1;
-    const submissionId = 2;
+    const observation_submission_id = 1;
     const data = {
       geometry: null,
       taxonId: 'taxon123',
@@ -109,7 +108,7 @@ describe('useObservationApi', () => {
 
     mock.onPost(`/api/dwc/view-occurrences`).reply(200, data);
 
-    const result = await useObservationApi(axios).getOccurrencesForView(projectId, submissionId);
+    const result = await useObservationApi(axios).getOccurrencesForView(observation_submission_id);
 
     expect(result).toEqual(data);
   });

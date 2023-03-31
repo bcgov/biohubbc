@@ -15,10 +15,10 @@ import React, { useContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import { parseSpatialDataByType } from 'utils/spatial-utils';
 import SurveyStudyArea from './components/SurveyStudyArea';
+import SurveySummaryResults from './summary-results/SurveySummaryResults';
+import SurveyObservations from './survey-observations/SurveyObservations';
 import SurveyAttachments from './SurveyAttachments';
 import SurveyHeader from './SurveyHeader';
-import SurveyObservations from './SurveyObservations';
-import SurveySummaryResults from './SurveySummaryResults';
 
 /**
  * Page to display a single Survey.

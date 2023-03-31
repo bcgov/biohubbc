@@ -2,7 +2,7 @@ import { cleanup, render, waitFor } from '@testing-library/react';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import React from 'react';
 import { MemoryRouter } from 'react-router';
-import SurveyObservations from './SurveyObservations';
+import SurveyObservations from './survey-observations/SurveyObservations';
 
 jest.mock('../../../hooks/useBioHubApi');
 
