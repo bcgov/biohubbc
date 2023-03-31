@@ -46,7 +46,7 @@ describe.skip('SurveyAttachments', () => {
       <Router history={history}>
         <Route path="projects/:id/surveys/:survey_id">
           <SurveyAttachments
-            projectForViewData={getProjectForViewResponse}
+            projectForViewData={getProjectForViewResponse.projectData}
             surveyForViewData={getSurveyForViewResponse}
           />
         </Route>
@@ -76,7 +76,7 @@ describe.skip('SurveyAttachments', () => {
       <Router history={history}>
         <Route path="projects/:id/surveys/:survey_id">
           <SurveyAttachments
-            projectForViewData={getProjectForViewResponse}
+            projectForViewData={getProjectForViewResponse.projectData}
             surveyForViewData={getSurveyForViewResponse}
           />
         </Route>
@@ -102,7 +102,7 @@ describe.skip('SurveyAttachments', () => {
       <Router history={history}>
         <Route path="projects/:id/surveys/:survey_id">
           <SurveyAttachments
-            projectForViewData={getProjectForViewResponse}
+            projectForViewData={getProjectForViewResponse.projectData}
             surveyForViewData={getSurveyForViewResponse}
           />
         </Route>
@@ -140,7 +140,7 @@ describe.skip('SurveyAttachments', () => {
         <Router history={history}>
           <Route path="projects/:id/surveys/:survey_id">
             <SurveyAttachments
-              projectForViewData={getProjectForViewResponse}
+              projectForViewData={getProjectForViewResponse.projectData}
               surveyForViewData={getSurveyForViewResponse}
             />
           </Route>
@@ -204,7 +204,7 @@ describe.skip('SurveyAttachments', () => {
         <Router history={history}>
           <Route path="projects/:id/surveys/:survey_id">
             <SurveyAttachments
-              projectForViewData={getProjectForViewResponse}
+              projectForViewData={getProjectForViewResponse.projectData}
               surveyForViewData={getSurveyForViewResponse}
             />
           </Route>
@@ -256,7 +256,7 @@ describe.skip('SurveyAttachments', () => {
       <DialogContextProvider>
         <Router history={history}>
           <SurveyAttachments
-            projectForViewData={getProjectForViewResponse}
+            projectForViewData={getProjectForViewResponse.projectData}
             surveyForViewData={getSurveyForViewResponse}
           />
         </Router>

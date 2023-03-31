@@ -18,12 +18,10 @@ const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBioh
   mockUseBiohubApi
 );
 
-const mockRefresh = jest.fn();
-
 const renderContainer = () => {
   return render(
     <DialogContextProvider>
-      <IUCNClassification projectForViewData={getProjectForViewResponse} codes={codes} refresh={mockRefresh} />
+      <IUCNClassification projectForViewData={getProjectForViewResponse.projectData} codes={codes} />
     </DialogContextProvider>
   );
 };
@@ -43,13 +41,12 @@ describe('IUCNClassification', () => {
     const { asFragment } = render(
       <IUCNClassification
         projectForViewData={{
-          ...getProjectForViewResponse,
+          ...getProjectForViewResponse.projectData,
           iucn: {
             classificationDetails: []
           }
         }}
         codes={codes}
-        refresh={mockRefresh}
       />
     );
 

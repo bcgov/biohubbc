@@ -17,8 +17,6 @@ const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBioh
   mockUseBiohubApi
 );
 
-const mockRefresh = jest.fn();
-
 describe('Partnerships', () => {
   beforeEach(() => {
     // clear mocks before each test
@@ -34,14 +32,13 @@ describe('Partnerships', () => {
     const { asFragment } = render(
       <Partnerships
         projectForViewData={{
-          ...getProjectForViewResponse,
+          ...getProjectForViewResponse.projectData,
           partnerships: {
             indigenous_partnerships: [],
             stakeholder_partnerships: []
           }
         }}
         codes={codes}
-        refresh={mockRefresh}
       />
     );
 
@@ -52,14 +49,13 @@ describe('Partnerships', () => {
     const { asFragment } = render(
       <Partnerships
         projectForViewData={{
-          ...getProjectForViewResponse,
+          ...getProjectForViewResponse.projectData,
           partnerships: {
             indigenous_partnerships: (null as unknown) as number[],
             stakeholder_partnerships: (null as unknown) as string[]
           }
         }}
         codes={codes}
-        refresh={mockRefresh}
       />
     );
 
@@ -68,7 +64,7 @@ describe('Partnerships', () => {
 
   it('renders correctly with existing partnership values', () => {
     const { asFragment } = render(
-      <Partnerships projectForViewData={getProjectForViewResponse} codes={codes} refresh={mockRefresh} />
+      <Partnerships projectForViewData={getProjectForViewResponse.projectData} codes={codes} />
     );
 
     expect(asFragment()).toMatchSnapshot();

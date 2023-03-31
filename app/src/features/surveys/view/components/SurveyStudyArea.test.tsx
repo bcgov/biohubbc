@@ -27,9 +27,11 @@ const mockRefresh = jest.fn();
 const renderContainer = () => {
   return render(
     <SurveyStudyArea
-      projectForViewData={getProjectForViewResponse}
-      surveyForViewData={getSurveyForViewResponse}
-      refresh={mockRefresh}
+      projectForViewData={getProjectForViewResponse.projectData}
+      mapLayersForView={{
+        markerLayers: [],
+        staticLayers: []
+      }}
     />
   );
 };
@@ -88,6 +90,7 @@ describe.skip('SurveyStudyArea', () => {
         ...surveyObject,
         survey_details: {
           id: 1,
+          project_id: 1,
           survey_name: 'survey name is this',
           start_date: '1999-09-09',
           end_date: '2021-01-25',
@@ -203,6 +206,7 @@ describe.skip('SurveyStudyArea', () => {
         ...surveyObject,
         survey_details: {
           id: 1,
+          project_id: 1,
           survey_name: 'survey name is this',
           start_date: '1999-09-09',
           end_date: '2021-01-25',

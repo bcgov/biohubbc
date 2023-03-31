@@ -3,12 +3,9 @@ import Grid from '@material-ui/core/Grid';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
-import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
-import { EditSurveyPurposeAndMethodologyI18N } from 'constants/i18n';
 import { SurveyContext } from 'contexts/surveyContext';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
-import React, { useContext, useState } from 'react';
+import React, { useContext } from 'react';
 
 const useStyles = makeStyles((theme: Theme) => ({
   vantageCodes: {
@@ -28,7 +25,6 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 export interface ISurveyPurposeAndMethodologyDataProps {
   codes: IGetAllCodeSetsResponse;
-  projectForViewData: IGetProjectForViewResponse;
 }
 
 /**
@@ -36,22 +32,10 @@ export interface ISurveyPurposeAndMethodologyDataProps {
  *
  * @return {*}
  */
-const SurveyPurposeAndMethodologyData: React.FC<ISurveyPurposeAndMethodologyDataProps> = (props) => {
+const SurveyPurposeAndMethodologyData = (props: ISurveyPurposeAndMethodologyDataProps) => {
   const classes = useStyles();
   const surveyContext = useContext(SurveyContext);
   const surveyForViewData = surveyContext.surveyDataLoader.data;
-
-  const [errorDialogProps, setErrorDialogProps] = useState<IErrorDialogProps>({
-    dialogTitle: EditSurveyPurposeAndMethodologyI18N.editErrorTitle,
-    dialogText: EditSurveyPurposeAndMethodologyI18N.editErrorText,
-    open: false,
-    onClose: () => {
-      setErrorDialogProps({ ...errorDialogProps, open: false });
-    },
-    onOk: () => {
-      setErrorDialogProps({ ...errorDialogProps, open: false });
-    }
-  });
 
   if (!surveyForViewData) {
     return <></>;
@@ -66,77 +50,64 @@ const SurveyPurposeAndMethodologyData: React.FC<ISurveyPurposeAndMethodologyData
     <>
       <Box>
         <dl>
-          {!purpose_and_methodology ? (
-            <Grid container spacing={1}>
-              <Grid item>
-                <Typography>
-                  The data captured in this survey does not have the purpose and methodology section.
-                </Typography>
-              </Grid>
+          <Grid container spacing={1}>
+            <Grid item xs={12} sm={6}>
+              <Typography component="dt" variant="subtitle2" color="textSecondary">
+                Intended Outcome
+              </Typography>
+              <Typography component="dd" variant="body1" data-testid="survey_intended_outcome">
+                {Boolean(purpose_and_methodology.intended_outcome_id) &&
+                  codes?.intended_outcomes?.find((item: any) => item.id === purpose_and_methodology.intended_outcome_id)
+                    ?.name}
+              </Typography>
             </Grid>
-          ) : (
-            <Grid container spacing={1}>
-              <Grid item xs={12} sm={6}>
-                <Typography component="dt" variant="subtitle2" color="textSecondary">
-                  Intended Outcome
-                </Typography>
-                <Typography component="dd" variant="body1">
-                  {Boolean(purpose_and_methodology.intended_outcome_id) &&
-                    codes?.intended_outcomes?.find(
-                      (item: any) => item.id === purpose_and_methodology.intended_outcome_id
-                    )?.name}
-                </Typography>
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <Typography component="dt" variant="subtitle2" color="textSecondary">
-                  Field Method
-                </Typography>
-                <Typography component="dd" variant="body1">
-                  {Boolean(purpose_and_methodology.field_method_id) &&
-                    codes?.field_methods?.find((item: any) => item.id === purpose_and_methodology.field_method_id)
-                      ?.name}
-                </Typography>
-                <Typography component="dd" variant="body1"></Typography>
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <Typography component="dt" variant="subtitle2" color="textSecondary">
-                  Ecological Season
-                </Typography>
-                <Typography component="dd" variant="body1">
-                  {Boolean(purpose_and_methodology.ecological_season_id) &&
-                    codes?.ecological_seasons?.find(
-                      (item: any) => item.id === purpose_and_methodology.ecological_season_id
-                    )?.name}
-                </Typography>
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <Typography component="dt" variant="subtitle2" color="textSecondary">
-                  Vantage Code
-                </Typography>
-                {purpose_and_methodology.vantage_code_ids?.map((vc_id: number, index: number) => {
-                  return (
-                    <Typography component="dd" variant="body1" key={index} className={classes.vantageCodes}>
-                      {codes?.vantage_codes?.find((item: any) => item.id === vc_id)?.name}
-                    </Typography>
-                  );
-                })}
-              </Grid>
-              <Grid item xs={12}>
-                <Typography component="dt" variant="subtitle2" color="textSecondary">
-                  Additional Details
-                </Typography>
-                {purpose_and_methodology.additional_details ? (
-                  <Typography component="dd" variant="body1">
-                    {purpose_and_methodology.additional_details}
-                  </Typography>
-                ) : (
-                  <Typography component="dd" variant="body1">
-                    No additional details
-                  </Typography>
-                )}
-              </Grid>
+            <Grid item xs={12} sm={6}>
+              <Typography component="dt" variant="subtitle2" color="textSecondary">
+                Field Method
+              </Typography>
+              <Typography component="dd" variant="body1" data-testid="survey_field_method">
+                {Boolean(purpose_and_methodology.field_method_id) &&
+                  codes?.field_methods?.find((item: any) => item.id === purpose_and_methodology.field_method_id)?.name}
+              </Typography>
+              <Typography component="dd" variant="body1"></Typography>
             </Grid>
-          )}
+            <Grid item xs={12} sm={6}>
+              <Typography component="dt" variant="subtitle2" color="textSecondary">
+                Ecological Season
+              </Typography>
+              <Typography component="dd" variant="body1" data-testid="survey_ecological_season">
+                {Boolean(purpose_and_methodology.ecological_season_id) &&
+                  codes?.ecological_seasons?.find(
+                    (item: any) => item.id === purpose_and_methodology.ecological_season_id
+                  )?.name}
+              </Typography>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <Typography component="dt" variant="subtitle2" color="textSecondary">
+                Vantage Code
+              </Typography>
+              {purpose_and_methodology.vantage_code_ids?.map((vc_id: number, index: number) => {
+                return (
+                  <Typography
+                    component="dd"
+                    variant="body1"
+                    key={index}
+                    className={classes.vantageCodes}
+                    data-testid="survey_vantage_code">
+                    {codes?.vantage_codes?.find((item: any) => item.id === vc_id)?.name}
+                  </Typography>
+                );
+              })}
+            </Grid>
+            <Grid item xs={12}>
+              <Typography component="dt" variant="subtitle2" color="textSecondary">
+                Additional Details
+              </Typography>
+              <Typography component="dd" variant="body1" data-testid="survey_additional_details">
+                {purpose_and_methodology.additional_details || 'No additional details'}
+              </Typography>
+            </Grid>
+          </Grid>
         </dl>
       </Box>
     </>

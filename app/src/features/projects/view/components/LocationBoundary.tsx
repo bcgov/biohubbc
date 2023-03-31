@@ -27,7 +27,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import {
   IGetProjectForUpdateResponseLocation,
-  IGetProjectForViewResponse,
+  ProjectViewObject,
   UPDATE_GET_ENTITIES
 } from 'interfaces/useProjectApi.interface';
 import { LatLngBoundsExpression } from 'leaflet';
@@ -36,7 +36,7 @@ import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
 import ProjectStepComponents from 'utils/ProjectStepComponents';
 
 export interface ILocationBoundaryProps {
-  projectForViewData: IGetProjectForViewResponse;
+  projectForViewData: ProjectViewObject;
   codes: IGetAllCodeSetsResponse;
   refresh: () => void;
 }
@@ -74,7 +74,10 @@ const useStyles = makeStyles((theme: Theme) =>
  */
 const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
   const {
-    projectForViewData: { location, id },
+    projectForViewData: {
+      project: { id },
+      location
+    },
     codes
   } = props;
 

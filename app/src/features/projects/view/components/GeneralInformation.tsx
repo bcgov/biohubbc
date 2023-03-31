@@ -3,22 +3,22 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
+import { ProjectViewObject } from 'interfaces/useProjectApi.interface';
 import React from 'react';
 import { getFormattedDateRangeString } from 'utils/Utils';
 
 export interface IProjectDetailsProps {
-  projectForViewData: IGetProjectForViewResponse;
+  projectForViewData: ProjectViewObject;
   codes: IGetAllCodeSetsResponse;
-  refresh: () => void;
 }
 
 /**
  * General information content for a project.
  *
+ * @param {IProjectDetailsProps} props
  * @return {*}
  */
-const GeneralInformation: React.FC<IProjectDetailsProps> = (props) => {
+const GeneralInformation = (props: IProjectDetailsProps) => {
   const {
     projectForViewData: { project },
     codes

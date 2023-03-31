@@ -3,21 +3,21 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import Typography from '@material-ui/core/Typography';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
+import { ProjectViewObject } from 'interfaces/useProjectApi.interface';
 import React from 'react';
 
 export interface IIUCNClassificationProps {
-  projectForViewData: IGetProjectForViewResponse;
+  projectForViewData: ProjectViewObject;
   codes: IGetAllCodeSetsResponse;
-  refresh: () => void;
 }
 
 /**
  * IUCN Classification content for a project.
  *
+ * @param {IIUCNClassificationProps} props
  * @return {*}
  */
-const IUCNClassification: React.FC<IIUCNClassificationProps> = (props) => {
+const IUCNClassification = (props: IIUCNClassificationProps) => {
   const {
     projectForViewData: { iucn },
     codes

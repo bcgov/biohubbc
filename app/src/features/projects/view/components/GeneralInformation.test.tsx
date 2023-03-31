@@ -18,12 +18,10 @@ const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBioh
   mockUseBiohubApi
 );
 
-const mockRefresh = jest.fn();
-
 const renderContainer = () => {
   return render(
     <DialogContextProvider>
-      <ProjectDetails projectForViewData={getProjectForViewResponse} codes={codes} refresh={mockRefresh} />
+      <ProjectDetails projectForViewData={getProjectForViewResponse.projectData} codes={codes} />
     </DialogContextProvider>
   );
 };
@@ -43,11 +41,10 @@ describe('ProjectDetails', () => {
     const { asFragment } = render(
       <ProjectDetails
         projectForViewData={{
-          ...getProjectForViewResponse,
-          project: { ...getProjectForViewResponse.project, end_date: (null as unknown) as string }
+          ...getProjectForViewResponse.projectData,
+          project: { ...getProjectForViewResponse.projectData.project, end_date: (null as unknown) as string }
         }}
         codes={codes}
-        refresh={mockRefresh}
       />
     );
 
@@ -58,11 +55,10 @@ describe('ProjectDetails', () => {
     const { asFragment } = render(
       <ProjectDetails
         projectForViewData={{
-          ...getProjectForViewResponse,
-          project: { ...getProjectForViewResponse.project, project_activities: [] }
+          ...getProjectForViewResponse.projectData,
+          project: { ...getProjectForViewResponse.projectData.project, project_activities: [] }
         }}
         codes={codes}
-        refresh={mockRefresh}
       />
     );
 

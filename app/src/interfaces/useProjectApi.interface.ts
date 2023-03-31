@@ -225,7 +225,17 @@ export type IUpdateProjectRequest = IGetProjectForUpdateResponse;
  * @interface IGetProjectForViewResponse
  */
 export interface IGetProjectForViewResponse {
-  id: number;
+  projectData: ProjectViewObject;
+  projectSupplementaryData: ProjectSupplementaryData;
+}
+
+/**
+ * An interface for a single instance of project metadata, for view-only use cases.
+ *
+ * @export
+ * @interface ProjectViewObject
+ */
+export interface ProjectViewObject {
   project: IGetProjectForViewResponseDetails;
   objectives: IGetProjectForViewResponseObjectives;
   location: IGetProjectForViewResponseLocation;
@@ -236,6 +246,7 @@ export interface IGetProjectForViewResponse {
 }
 
 export interface IGetProjectForViewResponseDetails {
+  id: number;
   project_name: string;
   project_type: number;
   project_activities: number[];
@@ -290,6 +301,20 @@ export interface IGetProjectForViewResponseFundingData {
 export interface IGetProjectForViewResponsePartnerships {
   indigenous_partnerships: number[];
   stakeholder_partnerships: string[];
+}
+
+export interface ProjectSupplementaryData {
+  project_metadata_publish: {
+    project_metadata_publish_id: number;
+    project_id: number;
+    event_timestamp: string;
+    queue_id: number;
+    create_date: string;
+    create_user: number;
+    update_date: string | null;
+    update_user: number | null;
+    revision_count: number;
+  } | null;
 }
 
 /**

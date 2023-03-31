@@ -74,14 +74,19 @@ const EditSurveyPage = () => {
 
   const codesDataLoader = useDataLoader(() => biohubApi.codes.getAllCodeSets());
   codesDataLoader.load();
+  const codes = codesDataLoader.data;
 
-  const getProjectForViewDL = useDataLoader((projectId: number) => biohubApi.project.getProjectForView(projectId));
-  getProjectForViewDL.load(urlParams['id']);
+  const getProjectForViewDataLoader = useDataLoader((projectId: number) =>
+    biohubApi.project.getProjectForView(projectId)
+  );
+  getProjectForViewDataLoader.load(urlParams['id']);
+  const projectData = getProjectForViewDataLoader.data?.projectData;
 
-  const getSurveyFundingSourcesDL = useDataLoader((projectId: number) =>
+  const getSurveyFundingSourcesDataLoader = useDataLoader((projectId: number) =>
     biohubApi.survey.getAvailableSurveyFundingSources(projectId)
   );
-  getSurveyFundingSourcesDL.load(urlParams['id']);
+  getSurveyFundingSourcesDataLoader.load(urlParams['id']);
+  const fundingSourcesData = getSurveyFundingSourcesDataLoader.data || [];
 
   const editSurveyDL = useDataLoader((projectId: number, surveyId: number) =>
     biohubApi.survey.getSurveyForUpdate(projectId, surveyId)
@@ -114,13 +119,13 @@ const EditSurveyPage = () => {
     },
     onYes: () => {
       dialogContext.setYesNoDialog({ open: false });
-      history.push(`/admin/projects/${getProjectForViewDL.data?.id}/survey/${queryParams.surveyId}`);
+      history.push(`/admin/projects/${projectData?.project.id}/survey/${queryParams.surveyId}`);
     }
   };
 
   const handleCancel = () => {
     dialogContext.setYesNoDialog(defaultCancelDialogProps);
-    history.push(`/admin/projects/${getProjectForViewDL.data?.id}/surveys/${queryParams.surveyId}/details`);
+    history.push(`/admin/projects/${projectData?.project.id}/surveys/${queryParams.surveyId}/details`);
   };
 
   const showEditErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
@@ -160,7 +165,7 @@ const EditSurveyPage = () => {
 
       setEnableCancelCheck(false);
 
-      history.push(`/admin/projects/${getProjectForViewDL.data?.id}/surveys/${response.id}/details`);
+      history.push(`/admin/projects/${projectData?.project.id}/surveys/${response.id}/details`);
     } catch (error) {
       const apiError = error as APIError;
       showEditErrorDialog({
@@ -197,7 +202,7 @@ const EditSurveyPage = () => {
     return true;
   };
 
-  if (!codesDataLoader.data || !getProjectForViewDL.data) {
+  if (!codes || !projectData) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
@@ -228,9 +233,9 @@ const EditSurveyPage = () => {
       <Box my={3}>
         <Container maxWidth="xl">
           <EditSurveyForm
-            codes={codesDataLoader.data}
-            projectData={getProjectForViewDL.data}
-            surveyFundingSources={getSurveyFundingSourcesDL.data || []}
+            codes={codes}
+            projectData={projectData}
+            surveyFundingSources={fundingSourcesData}
             handleSubmit={handleSubmit}
             handleCancel={handleCancel}
             formikRef={formikRef}

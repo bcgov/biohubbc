@@ -9,10 +9,7 @@ import { ScrollToFormikError } from 'components/formik/ScrollToFormikError';
 import { DATE_FORMAT, DATE_LIMIT } from 'constants/dateTimeFormats';
 import { Formik, FormikProps } from 'formik';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import {
-  IGetProjectForUpdateResponseFundingSource,
-  IGetProjectForViewResponse
-} from 'interfaces/useProjectApi.interface';
+import { IGetProjectForUpdateResponseFundingSource, ProjectViewObject } from 'interfaces/useProjectApi.interface';
 import { IEditSurveyRequest } from 'interfaces/useSurveyApi.interface';
 import moment from 'moment';
 import React, { useState } from 'react';
@@ -44,7 +41,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 export interface IEditSurveyForm {
   codes: IGetAllCodeSetsResponse;
-  projectData: IGetProjectForViewResponse;
+  projectData: ProjectViewObject;
   surveyFundingSources: IGetProjectForUpdateResponseFundingSource[];
   handleSubmit: (formikData: IEditSurveyRequest) => void;
   handleCancel: () => void;
@@ -96,7 +93,7 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
       .string()
       .isValidDateString()
       .isAfterDate(
-        props.projectData?.project.start_date,
+        props.projectData.project.start_date,
         DATE_FORMAT.ShortDateFormat,
         `Survey start date cannot be before project start date ${
           props.projectData && getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, props.projectData.project.start_date)
@@ -113,7 +110,7 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
       .isValidDateString()
       .isEndDateSameOrAfterStartDate('start_date')
       .isBeforeDate(
-        props.projectData?.project.end_date,
+        props.projectData.project.end_date,
         DATE_FORMAT.ShortDateFormat,
         `Survey end date cannot be after project end date ${
           props.projectData && getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, props.projectData.project.end_date)

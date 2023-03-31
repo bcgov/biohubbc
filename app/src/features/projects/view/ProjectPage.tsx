@@ -8,7 +8,7 @@ import ProjectAttachments from 'features/projects/view/ProjectAttachments';
 import SurveysListPage from 'features/surveys/list/SurveysListPage';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
+import { ProjectViewObject } from 'interfaces/useProjectApi.interface';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import ProjectDetails from './ProjectDetails';
@@ -25,7 +25,7 @@ const ProjectPage: React.FC = () => {
   const biohubApi = useBiohubApi();
 
   const [isLoadingProject, setIsLoadingProject] = useState(false);
-  const [projectWithDetails, setProjectWithDetails] = useState<IGetProjectForViewResponse | null>(null);
+  const [projectWithDetails, setProjectWithDetails] = useState<ProjectViewObject | null>(null);
 
   const [isLoadingCodes, setIsLoadingCodes] = useState(false);
   const [codes, setCodes] = useState<IGetAllCodeSetsResponse>();
@@ -56,7 +56,7 @@ const ProjectPage: React.FC = () => {
       return;
     }
 
-    setProjectWithDetails(projectWithDetailsResponse);
+    setProjectWithDetails(projectWithDetailsResponse.projectData);
   }, [biohubApi.project, urlParams]);
 
   useEffect(() => {
@@ -79,7 +79,7 @@ const ProjectPage: React.FC = () => {
           <Grid container spacing={3}>
             <Grid item md={12} lg={4}>
               <Paper elevation={0}>
-                <ProjectDetails projectForViewData={projectWithDetails} codes={codes} refresh={getProject} />
+                <ProjectDetails projectForViewData={projectWithDetails} codes={codes} />
               </Paper>
             </Grid>
             <Grid item md={12} lg={8}>

@@ -74,8 +74,11 @@ describe.skip('LocationBoundary', () => {
     const { asFragment } = render(
       <LocationBoundary
         projectForViewData={{
-          ...getProjectForViewResponse,
-          location: { ...getProjectForViewResponse.location, location_description: (null as unknown) as string }
+          ...getProjectForViewResponse.projectData,
+          location: {
+            ...getProjectForViewResponse.projectData.location,
+            location_description: (null as unknown) as string
+          }
         }}
         codes={codes}
         refresh={mockRefresh}
@@ -91,8 +94,8 @@ describe.skip('LocationBoundary', () => {
     const { asFragment } = render(
       <LocationBoundary
         projectForViewData={{
-          ...getProjectForViewResponse,
-          location: { ...getProjectForViewResponse.location, geometry: [] }
+          ...getProjectForViewResponse.projectData,
+          location: { ...getProjectForViewResponse.projectData.location, geometry: [] }
         }}
         codes={codes}
         refresh={mockRefresh}
@@ -108,8 +111,8 @@ describe.skip('LocationBoundary', () => {
     const { asFragment } = render(
       <LocationBoundary
         projectForViewData={{
-          ...getProjectForViewResponse,
-          location: { ...getProjectForViewResponse.location, geometry: sharedGeometry }
+          ...getProjectForViewResponse.projectData,
+          location: { ...getProjectForViewResponse.projectData.location, geometry: sharedGeometry }
         }}
         codes={codes}
         refresh={mockRefresh}
@@ -131,7 +134,11 @@ describe.skip('LocationBoundary', () => {
     });
 
     const { getByText, queryByText } = render(
-      <LocationBoundary projectForViewData={getProjectForViewResponse} codes={codes} refresh={mockRefresh} />
+      <LocationBoundary
+        projectForViewData={getProjectForViewResponse.projectData}
+        codes={codes}
+        refresh={mockRefresh}
+      />
     );
 
     await waitFor(() => {
@@ -141,9 +148,10 @@ describe.skip('LocationBoundary', () => {
     fireEvent.click(getByText('Edit'));
 
     await waitFor(() => {
-      expect(mockBiohubApi().project.getProjectForUpdate).toBeCalledWith(getProjectForViewResponse.id, [
-        UPDATE_GET_ENTITIES.location
-      ]);
+      expect(mockBiohubApi().project.getProjectForUpdate).toBeCalledWith(
+        getProjectForViewResponse.projectData.project.id,
+        [UPDATE_GET_ENTITIES.location]
+      );
     });
 
     await waitFor(() => {
@@ -166,7 +174,7 @@ describe.skip('LocationBoundary', () => {
 
     await waitFor(() => {
       expect(mockBiohubApi().project.updateProject).toHaveBeenCalledTimes(1);
-      expect(mockBiohubApi().project.updateProject).toBeCalledWith(getProjectForViewResponse.id, {
+      expect(mockBiohubApi().project.updateProject).toBeCalledWith(getProjectForViewResponse.projectData.project.id, {
         location: {
           location_description: 'description',
           geometry: sharedGeometry,
@@ -185,7 +193,11 @@ describe.skip('LocationBoundary', () => {
 
     const { getByText, queryByText } = render(
       <DialogContextProvider>
-        <LocationBoundary projectForViewData={getProjectForViewResponse} codes={codes} refresh={mockRefresh} />
+        <LocationBoundary
+          projectForViewData={getProjectForViewResponse.projectData}
+          codes={codes}
+          refresh={mockRefresh}
+        />
       </DialogContextProvider>
     );
 
@@ -211,7 +223,11 @@ describe.skip('LocationBoundary', () => {
 
     const { getByText, queryByText } = render(
       <DialogContextProvider>
-        <LocationBoundary projectForViewData={getProjectForViewResponse} codes={codes} refresh={mockRefresh} />
+        <LocationBoundary
+          projectForViewData={getProjectForViewResponse.projectData}
+          codes={codes}
+          refresh={mockRefresh}
+        />
       </DialogContextProvider>
     );
 
@@ -244,7 +260,11 @@ describe.skip('LocationBoundary', () => {
 
     const { getByText, queryByText, getAllByRole } = render(
       <DialogContextProvider>
-        <LocationBoundary projectForViewData={getProjectForViewResponse} codes={codes} refresh={mockRefresh} />
+        <LocationBoundary
+          projectForViewData={getProjectForViewResponse.projectData}
+          codes={codes}
+          refresh={mockRefresh}
+        />
       </DialogContextProvider>
     );
 
@@ -255,9 +275,10 @@ describe.skip('LocationBoundary', () => {
     fireEvent.click(getByText('Edit'));
 
     await waitFor(() => {
-      expect(mockBiohubApi().project.getProjectForUpdate).toBeCalledWith(getProjectForViewResponse.id, [
-        UPDATE_GET_ENTITIES.location
-      ]);
+      expect(mockBiohubApi().project.getProjectForUpdate).toBeCalledWith(
+        getProjectForViewResponse.projectData.project.id,
+        [UPDATE_GET_ENTITIES.location]
+      );
     });
 
     await waitFor(() => {

@@ -25,7 +25,8 @@ import {
   GetPartnershipsData,
   GetProjectData,
   GetReportAttachmentsData,
-  IGetProject
+  IGetProject,
+  ProjectSupplementaryData
 } from '../models/project-view';
 import { GET_ENTITIES, IUpdateProject } from '../paths/project/{projectId}/update';
 import { ProjectRepository } from '../repositories/project-repository';
@@ -33,6 +34,7 @@ import { deleteFileFromS3 } from '../utils/file-utils';
 import { getLogger } from '../utils/logger';
 import { AttachmentService } from './attachment-service';
 import { DBService } from './db-service';
+import { HistoryPublishService } from './history-publish-service';
 import { PlatformService } from './platform-service';
 import { SurveyService } from './survey-service';
 
@@ -42,12 +44,14 @@ export class ProjectService extends DBService {
   attachmentService: AttachmentService;
   projectRepository: ProjectRepository;
   platformService: PlatformService;
+  historyPublishService: HistoryPublishService;
 
   constructor(connection: IDBConnection) {
     super(connection);
     this.attachmentService = new AttachmentService(connection);
     this.projectRepository = new ProjectRepository(connection);
     this.platformService = new PlatformService(connection);
+    this.historyPublishService = new HistoryPublishService(connection);
   }
 
   /**
@@ -152,7 +156,6 @@ export class ProjectService extends DBService {
     ]);
 
     return {
-      id: projectId,
       project: projectData,
       objectives: objectiveData,
       coordinator: coordinatorData,
@@ -163,12 +166,21 @@ export class ProjectService extends DBService {
     };
   }
 
-  async getProjectEntitiesById(
-    projectId: number,
-    entities: string[]
-  ): Promise<Pick<IGetProject, 'id'> & Partial<Omit<IGetProject, 'id'>>> {
-    const results: Pick<IGetProject, 'id'> & Partial<Omit<IGetProject, 'id'>> = {
-      id: projectId,
+  /**
+   * Get Project supplementary data for a given project ID
+   *
+   * @param {number} projectId
+   * @returns {*} {Promise<ProjectSupplementaryData>}
+   * @memberof ProjectService
+   */
+  async getProjectSupplementaryDataById(projectId: number): Promise<ProjectSupplementaryData> {
+    const projectMetadataPublish = await this.historyPublishService.getProjectMetadataPublishRecord(projectId);
+
+    return { project_metadata_publish: projectMetadataPublish };
+  }
+
+  async getProjectEntitiesById(projectId: number, entities: string[]): Promise<Partial<IGetProject>> {
+    const results: Partial<IGetProject> = {
       coordinator: undefined,
       project: undefined,
       objectives: undefined,

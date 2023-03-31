@@ -26,13 +26,13 @@ import StudyAreaForm, {
 import { Feature } from 'geojson';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
+import { ProjectViewObject } from 'interfaces/useProjectApi.interface';
 import { LatLngBoundsExpression } from 'leaflet';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
 
 export interface ISurveyStudyAreaProps {
-  projectForViewData: IGetProjectForViewResponse;
+  projectForViewData: ProjectViewObject;
   mapLayersForView: { markerLayers: IMarkerLayer[]; staticLayers: IStaticLayer[] };
 }
 
@@ -132,7 +132,7 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
     let surveyResponseData;
 
     try {
-      const surveyResponse = await biohubApi.survey.getSurveyForView(projectForViewData.id, survey_details?.id);
+      const surveyResponse = await biohubApi.survey.getSurveyForView(projectForViewData.project.id, survey_details?.id);
 
       if (!surveyResponse) {
         showErrorDialog({ open: true });
@@ -170,7 +170,7 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
         }
       };
 
-      await biohubApi.survey.updateSurvey(projectForViewData.id, survey_details.id, surveyData);
+      await biohubApi.survey.updateSurvey(projectForViewData.project.id, survey_details.id, surveyData);
     } catch (error) {
       const apiError = error as APIError;
       showErrorDialog({ dialogText: apiError.message, dialogErrorDetails: apiError.errors, open: true });

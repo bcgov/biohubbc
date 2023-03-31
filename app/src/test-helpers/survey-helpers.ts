@@ -49,8 +49,11 @@ export const surveyObject: SurveyViewObject = {
     proprietary_data_category_name: 'proprietor type',
     first_nations_name: 'first nations name',
     category_rationale: 'rationale',
-    proprietor_name: 'prop name',
-    disa_required: true
+    proprietor_name: 'proprietor name',
+    disa_required: true,
+    first_nations_id: 1,
+    proprietor_type_id: 2,
+    proprietor_type_name: 'proprietor type name'
   },
   funding: {
     funding_sources: [

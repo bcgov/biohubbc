@@ -1,20 +1,18 @@
 import ReadMoreField from 'components/fields/ReadMoreField';
-import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
+import { ProjectViewObject } from 'interfaces/useProjectApi.interface';
 import React from 'react';
 
 export interface IProjectObjectivesProps {
-  projectForViewData: IGetProjectForViewResponse;
-  codes: IGetAllCodeSetsResponse;
-  refresh: () => void;
+  projectForViewData: ProjectViewObject;
 }
 
 /**
  * Project objectives content for a project.
  *
+ * @param {IProjectObjectivesProps} props
  * @return {*}
  */
-const ProjectObjectives: React.FC<IProjectObjectivesProps> = (props) => {
+const ProjectObjectives = (props: IProjectObjectivesProps) => {
   const {
     projectForViewData: { objectives }
   } = props;

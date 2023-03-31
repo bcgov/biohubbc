@@ -33,7 +33,7 @@ import { DialogContext } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
+import { ProjectViewObject } from 'interfaces/useProjectApi.interface';
 import React, { useContext, useState } from 'react';
 import { useHistory } from 'react-router';
 import { getFormattedDateRangeString } from 'utils/Utils';
@@ -59,7 +59,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 export interface ISurveyHeaderProps {
-  projectWithDetails: IGetProjectForViewResponse;
+  projectWithDetails: ProjectViewObject;
 }
 
 /**
@@ -125,7 +125,7 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
 
     try {
       const response = await biohubApi.survey.deleteSurvey(
-        projectWithDetails.id,
+        projectWithDetails.project.id,
         surveyWithDetails.surveyData.survey_details.id
       );
 
@@ -134,7 +134,7 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
         return;
       }
 
-      history.push(`/admin/projects/${projectWithDetails.id}/surveys`);
+      history.push(`/admin/projects/${projectWithDetails.project.id}/surveys`);
     } catch (error) {
       const apiError = error as APIError;
       showDeleteErrorDialog({ dialogText: apiError.message, open: true });
@@ -176,7 +176,7 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
               <Button
                 color="primary"
                 startIcon={<Icon path={mdiArrowLeft} size={0.9} />}
-                onClick={() => history.push(`/admin/projects/${projectWithDetails.id}/surveys`)}>
+                onClick={() => history.push(`/admin/projects/${projectWithDetails.project.id}/surveys`)}>
                 <strong>Back to Project</strong>
               </Button>
             </Box>
@@ -242,7 +242,7 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
                   <MenuItem
                     onClick={() =>
                       history.push(
-                        `/admin/projects/${projectWithDetails.id}/survey/edit?surveyId=${surveyWithDetails.surveyData.survey_details.id}`
+                        `/admin/projects/${projectWithDetails.project.id}/survey/edit?surveyId=${surveyWithDetails.surveyData.survey_details.id}`
                       )
                     }>
                     <ListItemIcon>
@@ -291,7 +291,7 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
         }}
         onSubmit={async (values: ISurveySubmitForm) => {
           await biohubApi.publish.publishSurvey(
-            projectWithDetails.id,
+            projectWithDetails.project.id,
             surveyWithDetails.surveyData.survey_details.id,
             values
           );
