@@ -171,15 +171,15 @@ const SurveyObservations: React.FC = () => {
 
         <Box p={3}>
           {/* Submission data is loading */}
-          {!occurrenceSubmission && surveyContext.observationDataLoader.isLoading && <LoadingObservationsCard />}
+          {!occurrenceSubmission && !surveyContext.observationDataLoader.isReady && <LoadingObservationsCard />}
 
           {/* Submission data has finished loading, but is null, no submission to display */}
-          {!occurrenceSubmission && surveyContext.observationDataLoader.isReady && (
+          {!surveyContext.observationDataLoader.data && surveyContext.observationDataLoader.isReady && (
             <NoObservationsCard onImport={handleOpenImportObservations} />
           )}
 
           {/* Submission data exists, validation is running */}
-          {occurrenceSubmission && surveyContext.observationDataLoader.data && occurrenceSubmission?.isValidating && (
+          {surveyContext.observationDataLoader.data && occurrenceSubmission?.isValidating && (
             <ValidatingObservationsCard
               observationRecord={surveyContext.observationDataLoader.data}
               onDownload={handleDownload}
@@ -187,18 +187,20 @@ const SurveyObservations: React.FC = () => {
           )}
 
           {/* Submission data exists, validation has finished */}
-          {occurrenceSubmission && surveyContext.observationDataLoader.data && !occurrenceSubmission.isValidating && (
-            <ObservationMessagesCard observationRecord={surveyContext.observationDataLoader.data} />
-          )}
+          {surveyContext.observationDataLoader.data &&
+            !surveyContext.observationDataLoader.data.surveyObservationData.isValidating && (
+              <ObservationMessagesCard observationRecord={surveyContext.observationDataLoader.data} />
+            )}
 
           {/* Submission data exists, and is not validating */}
-          {occurrenceSubmission && surveyContext.observationDataLoader.data && !occurrenceSubmission.isValidating && (
-            <ObservationFileCard
-              observationRecord={surveyContext.observationDataLoader.data}
-              onDownload={handleDownload}
-              onDelete={handleDelete}
-            />
-          )}
+          {surveyContext.observationDataLoader.data &&
+            !surveyContext.observationDataLoader.data.surveyObservationData.isValidating && (
+              <ObservationFileCard
+                observationRecord={surveyContext.observationDataLoader.data}
+                onDownload={handleDownload}
+                onDelete={handleDelete}
+              />
+            )}
         </Box>
       </Paper>
     </>

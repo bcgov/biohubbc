@@ -135,7 +135,7 @@ const SurveySummaryResults = () => {
           {!summaryData && !surveyContext.summaryDataLoader.isReady && <SummaryResultsLoading fileLoading={fileName} />}
 
           {/* No summary */}
-          {!summaryData && surveyContext.summaryDataLoader.isReady && (
+          {!surveyContext.summaryDataLoader.data && surveyContext.summaryDataLoader.isReady && (
             <NoSummaryResults clickToImport={() => setOpenImportSummaryResults(true)} />
           )}
 
