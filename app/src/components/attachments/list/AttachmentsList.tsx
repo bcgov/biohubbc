@@ -46,35 +46,33 @@ const AttachmentsList = <T extends IGetProjectAttachment | IGetSurveyAttachment>
   const [page] = useState(0);
 
   return (
-    <Box>
-      <TableContainer>
-        <Table className={classes.attachmentsTable} aria-label="attachments-list-table">
-          <TableHead>
-            <TableRow>
-              <TableCell>Name</TableCell>
-              <TableCell width="150">Type</TableCell>
-              <TableCell></TableCell>
-              <TableCell width="80px"></TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {(attachments.length &&
-              attachments.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                return (
-                  <AttachmentsTableRow
-                    key={`${row.fileType}-${row.id}`}
-                    attachment={row}
-                    handleDownload={handleDownload}
-                    handleDelete={handleDelete}
-                    handleViewDetails={handleViewDetails}
-                  />
-                );
-              })) || <></>}
-            {(!attachments.length && <NoAttachmentsTableRow />) || <></>}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </Box>
+    <TableContainer>
+      <Table className={classes.attachmentsTable} aria-label="attachments-list-table">
+        <TableHead>
+          <TableRow>
+            <TableCell>Name</TableCell>
+            <TableCell>Type</TableCell>
+            <TableCell width="140">Status</TableCell>
+            <TableCell width="80"></TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {(attachments.length &&
+            attachments.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
+              return (
+                <AttachmentsTableRow
+                  key={`${row.fileType}-${row.id}`}
+                  attachment={row}
+                  handleDownload={handleDownload}
+                  handleDelete={handleDelete}
+                  handleViewDetails={handleViewDetails}
+                />
+              );
+            })) || <></>}
+          {(!attachments.length && <NoAttachmentsTableRow />) || <></>}
+        </TableBody>
+      </Table>
+    </TableContainer>
   );
 };
 
@@ -102,7 +100,7 @@ function AttachmentsTableRow<T extends IGetProjectAttachment | IGetSurveyAttachm
         </Link>
       </TableCell>
       <TableCell>{attachment.fileType}</TableCell>
-      <TableCell align="right">
+      <TableCell>
         <SubmitStatusChip status={getArtifactSubmissionStatus(attachment)} />
       </TableCell>
       <TableCell align="right">
@@ -120,7 +118,7 @@ function AttachmentsTableRow<T extends IGetProjectAttachment | IGetSurveyAttachm
 function NoAttachmentsTableRow() {
   return (
     <TableRow>
-      <TableCell colSpan={3} align="center">
+      <TableCell colSpan={4} align="center">
         <Typography component="strong" color="textSecondary" variant="body2">
           No Documents
         </Typography>
