@@ -186,6 +186,9 @@ export class PlatformService extends DBService {
 
     const emlService = new EmlService(this.connection);
     const emlPackage = await emlService.buildSurveyEmlPackage({ surveyId });
+    console.log('the eml package created: ', emlPackage);
+
+
     const emlString = emlPackage.toString();
 
     const dwcArchiveZip = new AdmZip();
@@ -240,6 +243,7 @@ export class PlatformService extends DBService {
 
     // Build dataset EML
     const emlPackage = await emlService.buildSurveyEmlPackage({ surveyId });
+    console.log('the eml package created: ', emlPackage);
 
     /**
      * Check for observations, if observations are present, then get file from S3, add to dwcArchiveZip, and submit
