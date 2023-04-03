@@ -66,7 +66,7 @@ const CreateProjectPage: React.FC = () => {
 
   // Reference to pass to the formik component in order to access its state at any time
   // Used by the draft logic to fetch the values of a step form that has not been validated/completed
-  const [formikRef] = useState(useRef<FormikProps<ICreateProjectRequest>>(null));
+  const formikRef = useRef<FormikProps<ICreateProjectRequest>>(null);
 
   // Ability to bypass showing the 'Are you sure you want to cancel' dialog
   const [enableCancelCheck, setEnableCancelCheck] = useState(true);
@@ -86,7 +86,9 @@ const CreateProjectPage: React.FC = () => {
 
   useEffect(() => {
     const setFormikValues = (data: ICreateProjectRequest) => {
-      formikRef.current?.setValues(data);
+      if (formikRef.current) {
+        formikRef.current?.setValues(data);
+      }
     };
 
     if (draftDataLoader.data?.data) {
