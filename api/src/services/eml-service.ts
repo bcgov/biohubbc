@@ -211,7 +211,6 @@ export class EmlPackage {
 
     // Add project metadata to dataset
     if (this._projectMetadata) {
-      console.log('this._projectMetadata:', this._projectMetadata);
       if (!this._datasetMetadata) {
         throw new Error("Can't build Project EML without first building dataset EML.");
       }
@@ -352,13 +351,11 @@ export class EmlService extends DBService {
     await this.loadEmlDbConstants();
 
     const surveyData = await this._surveyService.getSurveyById(surveyId);
-    console.log('surveyData is: ', surveyData);
+
     const packageId = surveyData.survey_details.uuid;
-    console.log('pacakgeId is: ', packageId);
 
     const projectId = surveyData.survey_details.project_id;
     const projectData = await this._projectService.getProjectById(projectId);
-    console.log('projectData is:', projectData);
 
     const emlPackage = new EmlPackage({ packageId });
 
