@@ -186,7 +186,6 @@ export class PlatformService extends DBService {
 
     const emlService = new EmlService(this.connection);
     const emlPackage = await emlService.buildSurveyEmlPackage({ surveyId });
-
     const emlString = emlPackage.toString();
 
     const dwcArchiveZip = new AdmZip();
