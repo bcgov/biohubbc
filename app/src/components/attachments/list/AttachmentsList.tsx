@@ -1,4 +1,3 @@
-import Box from '@material-ui/core/Box';
 import { grey } from '@material-ui/core/colors';
 import Link from '@material-ui/core/Link';
 import makeStyles from '@material-ui/core/styles/makeStyles';
