@@ -91,7 +91,7 @@ const SurveyPurposeAndMethodologyData = (props: ISurveyPurposeAndMethodologyData
                   <Typography
                     component="dd"
                     variant="body1"
-                    key={`${vc_id}-${index}`}
+                    key={`key-${vc_id}`}
                     className={classes.vantageCodes}
                     data-testid="survey_vantage_code">
                     {codes?.vantage_codes?.find((item: any) => item.id === vc_id)?.name}
