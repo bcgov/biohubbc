@@ -109,6 +109,7 @@ const ProjectHeader = () => {
 
   const projectContext = useContext(ProjectContext);
 
+  // Project data must be loaded by a parent before this component is rendered
   assert(projectContext.projectDataLoader.data);
 
   const projectData = projectContext.projectDataLoader.data;

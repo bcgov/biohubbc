@@ -17,7 +17,9 @@ const GeneralInformation = () => {
   const codesContext = useContext(CodesContext);
   const projectContext = useContext(ProjectContext);
 
+  // Codes data must be loaded by a parent before this component is rendered
   assert(codesContext.codesDataLoader.data);
+  // Project data must be loaded by a parent before this component is rendered
   assert(projectContext.projectDataLoader.data);
 
   const codes = codesContext.codesDataLoader.data;
