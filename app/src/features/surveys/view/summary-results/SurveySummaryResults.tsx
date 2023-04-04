@@ -75,7 +75,8 @@ const SurveySummaryResults = () => {
     if (summaryData) {
       dialogContext.setYesNoDialog({
         dialogTitle: 'Delete Summary Results Data?',
-        dialogText: 'Are you sure you want to delete this file? This action cannot be undone.',
+        dialogText:
+          'Are you sure you want to delete the summary results data for this survey? This action cannot be undone.',
         yesButtonProps: { color: 'secondary' },
         yesButtonLabel: 'Delete',
         noButtonProps: { color: 'default' },

@@ -63,9 +63,9 @@ const AttachmentsListItemMenuButton = <T extends IGetProjectAttachment | IGetSur
               }}
               data-testid="attachment-action-menu-download">
               <ListItemIcon>
-                <Icon path={mdiTrayArrowDown} size={0.875} />
+                <Icon path={mdiTrayArrowDown} size={1} />
               </ListItemIcon>
-              Download Document
+              Download
             </MenuItem>
             {props.attachment.fileType === AttachmentType.REPORT && (
               <MenuItem
@@ -75,9 +75,9 @@ const AttachmentsListItemMenuButton = <T extends IGetProjectAttachment | IGetSur
                 }}
                 data-testid="attachment-action-menu-details">
                 <ListItemIcon>
-                  <Icon path={mdiInformationOutline} size={0.8} />
+                  <Icon path={mdiInformationOutline} size={1} />
                 </ListItemIcon>
-                View Document Details
+                View Details
               </MenuItem>
             )}
             <MenuItem
@@ -87,9 +87,9 @@ const AttachmentsListItemMenuButton = <T extends IGetProjectAttachment | IGetSur
               }}
               data-testid="attachment-action-menu-delete">
               <ListItemIcon>
-                <Icon path={mdiTrashCanOutline} size={0.8} />
+                <Icon path={mdiTrashCanOutline} size={1} />
               </ListItemIcon>
-              Delete Document
+              Delete
             </MenuItem>
           </Menu>
         </Box>

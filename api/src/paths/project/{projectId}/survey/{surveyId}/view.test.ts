@@ -6,7 +6,6 @@ import sinonChai from 'sinon-chai';
 import * as db from '../../../../../database/db';
 import { HTTPError } from '../../../../../errors/http-error';
 import { SurveyObject } from '../../../../../models/survey-view';
-import { SurveyMetadataPublish } from '../../../../../repositories/history-publish-repository';
 import { SurveyService } from '../../../../../services/survey-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../__mocks__/db';
 import { GET, getSurvey } from './view';
@@ -165,9 +164,17 @@ describe('survey/{surveyId}/view', () => {
       sinon.stub(SurveyService.prototype, 'getSurveyById').resolves(({ id: 2 } as unknown) as SurveyObject);
 
       sinon.stub(SurveyService.prototype, 'getSurveySupplementaryDataById').resolves({
-        survey_metadata_publish: ({
-          survey_metadata_publish_id: 5
-        } as unknown) as SurveyMetadataPublish
+        survey_metadata_publish: {
+          survey_metadata_publish_id: 1,
+          survey_id: 1,
+          event_timestamp: new Date('2020-04-04'),
+          queue_id: 1,
+          create_date: new Date('2020-04-04'),
+          create_user: 1,
+          update_date: null,
+          update_user: null,
+          revision_count: 1
+        }
       });
 
       const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
@@ -194,7 +201,15 @@ describe('survey/{surveyId}/view', () => {
         },
         surveySupplementaryData: {
           survey_metadata_publish: {
-            survey_metadata_publish_id: 5
+            survey_metadata_publish_id: 1,
+            survey_id: 1,
+            event_timestamp: new Date('2020-04-04'),
+            queue_id: 1,
+            create_date: new Date('2020-04-04'),
+            create_user: 1,
+            update_date: null,
+            update_user: null,
+            revision_count: 1
           }
         }
       });

@@ -53,7 +53,7 @@ const SummaryResultsErrors = (props: IFileErrorResultsProps) => {
       <Box>
         {[...group].map((item) => {
           return (
-            <Box mt={3} pl={0.25}>
+            <Box key={`key-${item[0]}`} mt={3} pl={0.25}>
               <Typography variant="body2">
                 <strong>{item[0]}</strong>
               </Typography>
