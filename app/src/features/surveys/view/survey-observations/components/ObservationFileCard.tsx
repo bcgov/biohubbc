@@ -85,7 +85,6 @@ const ObservationFileCard = (props: IObservationFileCardProps) => {
     )
   ) {
     icon = mdiInformationOutline;
-    severity = 'info';
   }
 
   const status =

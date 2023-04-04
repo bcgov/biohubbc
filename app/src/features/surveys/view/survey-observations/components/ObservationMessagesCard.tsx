@@ -48,85 +48,6 @@ const ObservationMessagesCard = (props: IObservationMessagesCardProps) => {
     return 0;
   }
 
-  function SubmissionMessage(props: { messageObject: { id: number; message: string } }) {
-    return (
-      <li key={props.messageObject.id}>
-        <Typography variant="body2" component="span">
-          {props.messageObject.message}
-        </Typography>
-      </li>
-    );
-  }
-
-  function SubmissionMessageType(props: { messageType: IGetObservationSubmissionResponseMessages }) {
-    return (
-      <Box mt={3}>
-        <Box component="section">
-          <Typography variant="body2">
-            <strong>{props.messageType.messageTypeLabel}</strong>
-          </Typography>
-          <Box component="ul" mt={1} mb={0} pl={4}>
-            {props.messageType.messages.map((messageObject) => (
-              <SubmissionMessage messageObject={messageObject} key={messageObject.id} />
-            ))}
-          </Box>
-        </Box>
-      </Box>
-    );
-  }
-
-  function ErrorMessages(props: { messageTypes: IGetObservationSubmissionResponseMessages[] }) {
-    if (!props.messageTypes.length) {
-      return <></>;
-    }
-
-    return (
-      <Box>
-        <Alert severity="error" icon={<Icon path={mdiAlertCircleOutline} size={1} />}>
-          <AlertTitle>Failed to import observations</AlertTitle>
-          One or more errors occurred while attempting to import your observations file.
-          {props.messageTypes.map((messageType) => {
-            return <SubmissionMessageType messageType={messageType} key={messageType.messageTypeLabel} />;
-          })}
-        </Alert>
-      </Box>
-    );
-  }
-
-  function WarningMessages(props: { messageTypes: IGetObservationSubmissionResponseMessages[] }) {
-    if (!props.messageTypes.length) {
-      return <></>;
-    }
-
-    return (
-      <Box mt={1}>
-        <Alert severity="warning" icon={<Icon path={mdiAlertCircleOutline} size={1} />}>
-          <AlertTitle>Warning</AlertTitle>
-          {props.messageTypes.map((messageType) => {
-            return <SubmissionMessageType messageType={messageType} key={messageType.messageTypeLabel} />;
-          })}
-        </Alert>
-      </Box>
-    );
-  }
-
-  function NoticeMessages(props: { messageTypes: IGetObservationSubmissionResponseMessages[] }) {
-    if (!props.messageTypes.length) {
-      return <></>;
-    }
-
-    return (
-      <Box mt={1}>
-        <Alert severity="info" icon={<Icon path={mdiAlertCircleOutline} size={1} />}>
-          <AlertTitle>Notice</AlertTitle>
-          {props.messageTypes.map((messageType) => {
-            return <SubmissionMessageType messageType={messageType} key={messageType.messageTypeLabel} />;
-          })}
-        </Alert>
-      </Box>
-    );
-  }
-
   return (
     <Box mb={3}>
       <ErrorMessages messageTypes={errorMessageTypes} />
@@ -135,5 +56,84 @@ const ObservationMessagesCard = (props: IObservationMessagesCardProps) => {
     </Box>
   );
 };
+
+function SubmissionMessage(props: { messageObject: { id: number; message: string } }) {
+  return (
+    <li key={props.messageObject.id}>
+      <Typography variant="body2" component="span">
+        {props.messageObject.message}
+      </Typography>
+    </li>
+  );
+}
+
+function SubmissionMessageType(props: { messageType: IGetObservationSubmissionResponseMessages }) {
+  return (
+    <Box mt={3}>
+      <Box component="section">
+        <Typography variant="body2">
+          <strong>{props.messageType.messageTypeLabel}</strong>
+        </Typography>
+        <Box component="ul" mt={1} mb={0} pl={4}>
+          {props.messageType.messages.map((messageObject) => (
+            <SubmissionMessage messageObject={messageObject} key={messageObject.id} />
+          ))}
+        </Box>
+      </Box>
+    </Box>
+  );
+}
+
+function ErrorMessages(props: { messageTypes: IGetObservationSubmissionResponseMessages[] }) {
+  if (!props.messageTypes.length) {
+    return <></>;
+  }
+
+  return (
+    <Box>
+      <Alert severity="error" icon={<Icon path={mdiAlertCircleOutline} size={1} />}>
+        <AlertTitle>Failed to import observations</AlertTitle>
+        One or more errors occurred while attempting to import your observations file.
+        {props.messageTypes.map((messageType) => {
+          return <SubmissionMessageType messageType={messageType} key={messageType.messageTypeLabel} />;
+        })}
+      </Alert>
+    </Box>
+  );
+}
+
+function WarningMessages(props: { messageTypes: IGetObservationSubmissionResponseMessages[] }) {
+  if (!props.messageTypes.length) {
+    return <></>;
+  }
+
+  return (
+    <Box mt={1}>
+      <Alert severity="warning" icon={<Icon path={mdiAlertCircleOutline} size={1} />}>
+        <AlertTitle>Warning</AlertTitle>
+        {props.messageTypes.map((messageType) => {
+          return <SubmissionMessageType messageType={messageType} key={messageType.messageTypeLabel} />;
+        })}
+      </Alert>
+    </Box>
+  );
+}
+
+function NoticeMessages(props: { messageTypes: IGetObservationSubmissionResponseMessages[] }) {
+  if (!props.messageTypes.length) {
+    return <></>;
+  }
+
+  return (
+    <Box mt={1}>
+      <Alert severity="info" icon={<Icon path={mdiAlertCircleOutline} size={1} />}>
+        <AlertTitle>Notice</AlertTitle>
+        {props.messageTypes.map((messageType) => {
+          return <SubmissionMessageType messageType={messageType} key={messageType.messageTypeLabel} />;
+        })}
+      </Alert>
+    </Box>
+  );
+}
 
 export default ObservationMessagesCard;
