@@ -51,9 +51,9 @@ const SummaryResultsErrors = (props: IFileErrorResultsProps) => {
   const buildMessages = (group: Map<string, IGetSummarySubmissionResponseMessages[]>) => {
     return (
       <Box>
-        {[...group].map((item) => {
+        {[...group].map((item, index) => {
           return (
-            <Box mt={3} pl={0.25}>
+            <Box key={`key-${index}`} mt={3} pl={0.25}>
               <Typography variant="body2">
                 <strong>{item[0]}</strong>
               </Typography>

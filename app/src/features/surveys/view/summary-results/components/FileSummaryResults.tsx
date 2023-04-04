@@ -77,7 +77,6 @@ const FileSummaryResults = (props: IFileResultsProps) => {
     severity = 'warning';
   } else if (fileData.surveySummaryData.messages.some((item) => item.class.toUpperCase() === 'INFO')) {
     icon = mdiInformationOutline;
-    severity = 'info';
   }
 
   return (

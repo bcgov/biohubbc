@@ -57,8 +57,8 @@ const SurveyAttachmentsList: React.FC = () => {
   const handleDelete = (attachment: IGetSurveyAttachment) => {
     dialogContext.setYesNoDialog({
       open: true,
-      dialogTitle: 'Delete Document',
-      dialogText: 'Are you sure you want to delete the selected document? This action cannot be undone.',
+      dialogTitle: 'Delete Document?',
+      dialogText: 'Are you sure you want to delete this document? This action cannot be undone.',
       yesButtonProps: { color: 'secondary' },
       onYes: async () => {
         try {

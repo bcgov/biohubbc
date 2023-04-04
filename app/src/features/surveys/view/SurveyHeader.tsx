@@ -9,7 +9,14 @@ import Paper from '@material-ui/core/Paper';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
-import { mdiArrowLeft, mdiCalendarRangeOutline, mdiCogOutline, mdiPencilOutline, mdiTrashCanOutline } from '@mdi/js';
+import {
+  mdiArrowLeft,
+  mdiCalendarRangeOutline,
+  mdiChevronDown,
+  mdiCogOutline,
+  mdiPencilOutline,
+  mdiTrashCanOutline
+} from '@mdi/js';
 import Icon from '@mdi/react';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import PublishSurveyButton from 'components/publish/PublishSurveyButton';
@@ -65,8 +72,8 @@ const SurveyHeader = () => {
   const { keycloakWrapper } = useContext(AuthStateContext);
 
   const defaultYesNoDialogProps = {
-    dialogTitle: 'Delete Survey',
-    dialogText: 'Are you sure you want to delete this survey, its attachments and associated observations?',
+    dialogTitle: 'Delete Survey?',
+    dialogText: 'Are you sure you want to delete this survey? This action cannot be undone.',
     open: false,
     onClose: () => dialogContext.setYesNoDialog({ open: false }),
     onNo: () => dialogContext.setYesNoDialog({ open: false }),
@@ -89,6 +96,10 @@ const SurveyHeader = () => {
     dialogContext.setYesNoDialog({
       ...defaultYesNoDialogProps,
       open: true,
+      yesButtonProps: { color: 'secondary' },
+      yesButtonLabel: 'Delete',
+      noButtonProps: { color: 'primary', variant: 'outlined' },
+      noButtonLabel: 'Cancel',
       onYes: () => {
         deleteSurvey();
         dialogContext.setYesNoDialog({ open: false });
@@ -151,7 +162,7 @@ const SurveyHeader = () => {
       <Paper square={true} elevation={0}>
         <Container maxWidth="xl">
           <Box py={4}>
-            <Box mt={-1} ml={-0.5} mb={1}>
+            <Box mt={-1} ml={-0.5} mb={0.5}>
               <Button
                 color="primary"
                 startIcon={<Icon path={mdiArrowLeft} size={0.9} />}
@@ -185,18 +196,21 @@ const SurveyHeader = () => {
                   <PublishSurveyButton />
                 </SystemRoleGuard>
                 <Button
-                  variant="outlined"
-                  color="primary"
-                  startIcon={<Icon path={mdiCogOutline} size={1} />}
-                  aria-controls="simple-menu"
+                  id="survey_settings_button"
+                  aria-label="Survey Settings"
+                  aria-controls="surveySettingsMenu"
                   aria-haspopup="true"
+                  variant="outlined"
+                  startIcon={<Icon path={mdiCogOutline} size={1} />}
+                  endIcon={<Icon path={mdiChevronDown} size={1} />}
                   onClick={openSurveyMenu}
                   style={{ marginLeft: '0.5rem' }}>
                   Settings
                 </Button>
                 <Menu
+                  id="surveySettingsMenu"
+                  aria-labelledby="survey_settings_button"
                   style={{ marginTop: '8px' }}
-                  id="projectSettingsMenu"
                   anchorEl={anchorEl}
                   getContentAnchorEl={null}
                   anchorOrigin={{
@@ -217,7 +231,7 @@ const SurveyHeader = () => {
                       )
                     }>
                     <ListItemIcon>
-                      <Icon path={mdiPencilOutline} size={0.8} />
+                      <Icon path={mdiPencilOutline} size={1} />
                     </ListItemIcon>
                     <Typography variant="inherit">Edit Survey Details</Typography>
                   </MenuItem>
@@ -227,7 +241,7 @@ const SurveyHeader = () => {
                       onClick={showDeleteSurveyDialog}
                       disabled={!enableDeleteSurveyButton}>
                       <ListItemIcon>
-                        <Icon path={mdiTrashCanOutline} size={0.8} />
+                        <Icon path={mdiTrashCanOutline} size={1} />
                       </ListItemIcon>
                       <Typography variant="inherit">Delete Survey</Typography>
                     </MenuItem>

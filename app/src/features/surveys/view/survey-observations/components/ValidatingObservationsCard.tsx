@@ -2,7 +2,7 @@ import Box from '@material-ui/core/Box';
 import Paper from '@material-ui/core/Paper';
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import { mdiInformationOutline } from '@mdi/js';
+import { mdiFileAlertOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import clsx from 'clsx';
 import { IGetObservationSubmissionResponse } from 'interfaces/useObservationApi.interface';
@@ -46,11 +46,18 @@ const ValidatingObservationsCard = (props: IValidatingObservationsCardProps) => 
 
   return (
     <Paper variant="outlined" className={clsx(classes.importFile, 'info')}>
+      <Box
+        display={'flex'}
+        flex="0 0 auto"
+        style={{ overflow: 'hidden' }}
+        alignItems="center"
+        justifyContent={'center'}>
+        <Box className="importFile-icon" mr={2}>
+          <Icon path={mdiFileAlertOutline} size={1} />
+        </Box>
+      </Box>
       <Box flex="1 1 auto" style={{ overflow: 'hidden' }}>
         <Box display="flex" alignItems="center" flex="1 1 auto" style={{ overflow: 'hidden' }}>
-          <Box className="importFile-icon" flex="0 0 auto" mr={2}>
-            <Icon path={mdiInformationOutline} size={1} />
-          </Box>
           <Box flex="1 1 auto" style={{ overflow: 'hidden' }}>
             <Typography
               className={classes.observationFileName}
@@ -62,7 +69,7 @@ const ValidatingObservationsCard = (props: IValidatingObservationsCardProps) => 
           </Box>
         </Box>
 
-        <Box ml={5} mr={1}>
+        <Box mr={1}>
           <Typography variant="body2" color="textSecondary" component="div">
             {props.observationRecord.surveyObservationData.isValidating
               ? 'Importing file. Please wait...'
