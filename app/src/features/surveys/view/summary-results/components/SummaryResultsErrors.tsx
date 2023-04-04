@@ -11,7 +11,8 @@ import { ClassGrouping } from '../SurveySummaryResults';
 interface IFileErrorResultsProps {
   messages: IGetSummarySubmissionResponseMessages[];
 }
-const SummaryResultsErrors: React.FC<IFileErrorResultsProps> = ({ messages }) => {
+const SummaryResultsErrors = (props: IFileErrorResultsProps) => {
+  const { messages } = props;
   const errorGrouping = new Map<string, IGetSummarySubmissionResponseMessages[]>();
   const warningGrouping = new Map<string, IGetSummarySubmissionResponseMessages[]>();
   const noticeGrouping = new Map<string, IGetSummarySubmissionResponseMessages[]>();

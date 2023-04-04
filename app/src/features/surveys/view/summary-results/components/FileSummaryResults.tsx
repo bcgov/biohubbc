@@ -54,7 +54,8 @@ const useStyles = makeStyles((theme: Theme) => ({
     cursor: 'pointer'
   }
 }));
-const FileSummaryResults: React.FC<IFileResultsProps> = ({ fileData, downloadFile, showDelete }) => {
+const FileSummaryResults = (props: IFileResultsProps) => {
+  const { fileData, downloadFile, showDelete } = props;
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 

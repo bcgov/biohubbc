@@ -298,14 +298,14 @@ export class ValidationSchemaParser {
   }
 
   getFileValidationsJsonPath(fileName: string): string {
-    return `$.files[?(@.name == '${fileName}')].validations`;
+    return `$.files[?(@.name == "${fileName}")].validations`;
   }
   getDefaultFileValidationsJsonPath(): string {
     return `$.defaultFile.validations`;
   }
 
   getColumnNamesJsonpath(fileName: string): string {
-    return `$.files[?(@.name == '${fileName}')].columns[*].name`;
+    return `$.files[?(@.name == "${fileName}")].columns[*].name`;
   }
 
   getDefaultColumnNamesJsonpath(): string {
@@ -313,11 +313,11 @@ export class ValidationSchemaParser {
   }
 
   getColumnValidationsJsonpath(fileName: string, columnName: string): string {
-    return `$.files[?(@.name == '${fileName}')].columns[?(@.name == '${columnName}')].validations`;
+    return `$.files[?(@.name == "${fileName}")].columns[?(@.name == "${columnName}")].validations`;
   }
 
   getDefaultColumnValidationsJsonpath(columnName: string): string {
-    return `$.defaultFile.columns[?(@.name == '${columnName}')].validations`;
+    return `$.defaultFile.columns[?(@.name == "${columnName}")].validations`;
   }
 
   parseJson(json: any): object {
