@@ -523,7 +523,21 @@ export class EmlService extends DBService {
    */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   _getSurveyAdditionalMetadata(_surveysData: SurveyObject[]): AdditionalMetadata[] {
-    return [];
+    const additionalMetadata: AdditionalMetadata[] = [];
+
+    _surveysData.map((item) => {
+      // add this metadata field so biohub is aware if EML is a project or survey
+      additionalMetadata.push({
+        describes: item.survey_details.uuid,
+        metadata: {
+          types: {
+            type: 'SURVEY'
+          }
+        }
+      });
+    });
+
+    return additionalMetadata;
   }
 
   /**
@@ -625,6 +639,16 @@ export class EmlService extends DBService {
         }
       });
     }
+
+    // add this metadata field so biohub is aware if EML is a project or survey
+    additionalMetadata.push({
+      describes: projectData.project.uuid,
+      metadata: {
+        types: {
+          type: 'PROJECT'
+        }
+      }
+    });
 
     return additionalMetadata;
   }
