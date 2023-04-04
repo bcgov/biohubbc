@@ -12,6 +12,7 @@ import {
   GetPartnershipsData,
   GetProjectData
 } from '../models/project-view';
+import { ProjectParticipationRepository } from '../repositories/project-participation-repository';
 import { ProjectRepository } from '../repositories/project-repository';
 import { getMockDBConnection } from '../__mocks__/db';
 import { HistoryPublishService } from './history-publish-service';
@@ -85,7 +86,7 @@ describe('ProjectService', () => {
 
       const data = { id: 1 };
 
-      const repoStub = sinon.stub(ProjectRepository.prototype, 'getProjectParticipant').resolves(data);
+      const repoStub = sinon.stub(ProjectParticipationRepository.prototype, 'getProjectParticipant').resolves(data);
 
       const response = await service.getProjectParticipant(1, 1);
 
@@ -101,7 +102,7 @@ describe('ProjectService', () => {
 
       const data = [{ id: 1 }];
 
-      const repoStub = sinon.stub(ProjectRepository.prototype, 'getProjectParticipants').resolves(data);
+      const repoStub = sinon.stub(ProjectParticipationRepository.prototype, 'getProjectParticipants').resolves(data);
 
       const response = await service.getProjectParticipants(1);
 
@@ -115,7 +116,7 @@ describe('ProjectService', () => {
       const dbConnection = getMockDBConnection();
       const service = new ProjectService(dbConnection);
 
-      const repoStub = sinon.stub(ProjectRepository.prototype, 'addProjectParticipant').resolves();
+      const repoStub = sinon.stub(ProjectParticipationRepository.prototype, 'addProjectParticipant').resolves();
 
       const response = await service.addProjectParticipant(1, 1, 1);
 

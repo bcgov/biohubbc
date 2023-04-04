@@ -128,7 +128,23 @@ const ProjectParticipantsPage: React.FC = () => {
     }
   };
 
-  if (!codesContext.codesDataLoader.data || !projectParticipantsDataLoader.data) {
+  function alphabetizeParticipants(
+    participantA: IGetProjectParticipantsResponseArrayItem,
+    participantB: IGetProjectParticipantsResponseArrayItem
+  ) {
+    // Message A is sorted before B
+    if (participantA.user_identifier < participantB.user_identifier) {
+      return -1;
+    }
+    // Message B is sorted before A
+    if (participantA.user_identifier > participantB.user_identifier) {
+      return 1;
+    }
+    // Items are already in order
+    return 0;
+  }
+
+  if (!codesContext.codesDataLoader.data || !projectParticipantsDataLoader.hasLoaded) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
@@ -154,6 +170,7 @@ const ProjectParticipantsPage: React.FC = () => {
                 <TableHead>
                   <TableRow>
                     <TableCell>Username</TableCell>
+                    <TableCell>Type</TableCell>
                     <TableCell>Project Role</TableCell>
                     <TableCell width="150px" align="center">
                       Actions
@@ -162,9 +179,10 @@ const ProjectParticipantsPage: React.FC = () => {
                 </TableHead>
                 <TableBody>
                   {projectParticipantsDataLoader.data &&
-                    projectParticipantsDataLoader.data.participants.map((participant) => (
+                    projectParticipantsDataLoader.data.participants.sort(alphabetizeParticipants).map((participant) => (
                       <TableRow key={participant.project_participation_id}>
                         <TableCell scope="row">{participant.user_identifier}</TableCell>
+                        <TableCell scope="row">{participant.user_identity_source_id}</TableCell>
                         <TableCell>
                           <Box my={-1}>
                             <ProjectParticipantsRoleMenu
@@ -174,6 +192,7 @@ const ProjectParticipantsPage: React.FC = () => {
                             />
                           </Box>
                         </TableCell>
+
                         <TableCell align="center">
                           <Box my={-1}>
                             <IconButton

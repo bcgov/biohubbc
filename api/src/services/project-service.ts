@@ -29,6 +29,7 @@ import {
   ProjectSupplementaryData
 } from '../models/project-view';
 import { GET_ENTITIES, IUpdateProject } from '../paths/project/{projectId}/update';
+import { ProjectParticipationRepository } from '../repositories/project-participation-repository';
 import { ProjectRepository } from '../repositories/project-repository';
 import { deleteFileFromS3 } from '../utils/file-utils';
 import { getLogger } from '../utils/logger';
@@ -43,6 +44,7 @@ const defaultLog = getLogger('services/project-service');
 export class ProjectService extends DBService {
   attachmentService: AttachmentService;
   projectRepository: ProjectRepository;
+  projectParticipationRepository: ProjectParticipationRepository;
   platformService: PlatformService;
   historyPublishService: HistoryPublishService;
 
@@ -50,6 +52,7 @@ export class ProjectService extends DBService {
     super(connection);
     this.attachmentService = new AttachmentService(connection);
     this.projectRepository = new ProjectRepository(connection);
+    this.projectParticipationRepository = new ProjectParticipationRepository(connection);
     this.platformService = new PlatformService(connection);
     this.historyPublishService = new HistoryPublishService(connection);
   }
@@ -87,7 +90,7 @@ export class ProjectService extends DBService {
    * @memberof ProjectService
    */
   async getProjectParticipant(projectId: number, systemUserId: number): Promise<any> {
-    return this.projectRepository.getProjectParticipant(projectId, systemUserId);
+    return this.projectParticipationRepository.getProjectParticipant(projectId, systemUserId);
   }
 
   /**
@@ -98,7 +101,7 @@ export class ProjectService extends DBService {
    * @memberof ProjectService
    */
   async getProjectParticipants(projectId: number): Promise<object[]> {
-    return this.projectRepository.getProjectParticipants(projectId);
+    return this.projectParticipationRepository.getProjectParticipants(projectId);
   }
 
   /**
@@ -117,7 +120,7 @@ export class ProjectService extends DBService {
     systemUserId: number,
     projectParticipantRoleId: number
   ): Promise<void> {
-    return this.projectRepository.addProjectParticipant(projectId, systemUserId, projectParticipantRoleId);
+    return this.projectParticipationRepository.addProjectParticipant(projectId, systemUserId, projectParticipantRoleId);
   }
 
   async getProjectList(isUserAdmin: boolean, systemUserId: number | null, filterFields: any): Promise<any> {
@@ -410,7 +413,7 @@ export class ProjectService extends DBService {
   }
 
   async insertParticipantRole(projectId: number, projectParticipantRole: string): Promise<void> {
-    return this.projectRepository.insertParticipantRole(projectId, projectParticipantRole);
+    return this.projectParticipationRepository.insertParticipantRole(projectId, projectParticipantRole);
   }
 
   /**
@@ -664,6 +667,6 @@ export class ProjectService extends DBService {
   }
 
   async deleteProjectParticipationRecord(projectParticipationId: number): Promise<any> {
-    return this.projectRepository.deleteProjectParticipationRecord(projectParticipationId);
+    return this.projectParticipationRepository.deleteProjectParticipationRecord(projectParticipationId);
   }
 }
