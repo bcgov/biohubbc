@@ -159,8 +159,9 @@ const SurveySummaryResults = () => {
 
   const defaultDeleteYesNoDialogProps = {
     ...defaultUploadYesNoDialogProps,
-    dialogTitle: 'Delete Summary Results Data',
-    dialogText: 'Are you sure you want to delete this file? This action cannot be undone.'
+    dialogTitle: 'Delete Summary Results Data?',
+    dialogText:
+      'Are you sure you want to delete the summary results data for this survey? This action cannot be undone.'
   };
 
   summaryDataLoader.load();

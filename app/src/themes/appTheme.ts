@@ -119,8 +119,7 @@ const appTheme = createMuiTheme({
       },
       startIcon: {
         marginTop: '1px',
-        marginBottom: '1px',
-        marginRight: '12px'
+        marginBottom: '1px'
       },
       sizeLarge: {
         fontSize: '1rem'
