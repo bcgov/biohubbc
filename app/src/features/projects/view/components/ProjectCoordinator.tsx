@@ -1,34 +1,32 @@
 import Box from '@material-ui/core/Box';
 import Link from '@material-ui/core/Link';
 import Typography from '@material-ui/core/Typography';
-import { ProjectViewObject } from 'interfaces/useProjectApi.interface';
-import React from 'react';
-
-export interface IProjectCoordinatorProps {
-  projectForViewData: ProjectViewObject;
-}
+import assert from 'assert';
+import { ProjectContext } from 'contexts/projectContext';
+import React, { useContext } from 'react';
 
 /**
  * Project coordinator content for a project.
  *
- * @param {IProjectCoordinatorProps} props
  * @return {*}
  */
-const ProjectCoordinator = (props: IProjectCoordinatorProps) => {
-  const {
-    projectForViewData: { coordinator }
-  } = props;
+const ProjectCoordinator = () => {
+  const projectContext = useContext(ProjectContext);
+
+  assert(projectContext.projectDataLoader.data);
+
+  const projectData = projectContext.projectDataLoader.data.projectData;
 
   return (
     <Box>
       <Typography component="div">
-        {coordinator.first_name} {coordinator.last_name}
+        {projectData.coordinator.first_name} {projectData.coordinator.last_name}
       </Typography>
       <Typography component="div" color="textSecondary">
-        {coordinator.coordinator_agency}
+        {projectData.coordinator.coordinator_agency}
       </Typography>
       <Typography component="div">
-        <Link href={'mailto:' + coordinator.email_address}>{coordinator.email_address}</Link>
+        <Link href={'mailto:' + projectData.coordinator.email_address}>{projectData.coordinator.email_address}</Link>
       </Typography>
     </Box>
   );

@@ -3,15 +3,12 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
+import { CodesContext } from 'contexts/codesContext';
 import { ProjectContext } from 'contexts/projectContext';
-import LocationBoundary from 'features/projects/view/components/LocationBoundary';
 import ProjectAttachments from 'features/projects/view/ProjectAttachments';
 import SurveysListPage from 'features/surveys/list/SurveysListPage';
-import { useBiohubApi } from 'hooks/useBioHubApi';
-import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import { ProjectViewObject } from 'interfaces/useProjectApi.interface';
-import React, { useCallback, useContext, useEffect, useState } from 'react';
-import { useParams } from 'react-router';
+import React, { useContext, useEffect } from 'react';
+import LocationBoundary from './components/LocationBoundary';
 import ProjectDetails from './ProjectDetails';
 import ProjectHeader from './ProjectHeader';
 
@@ -20,87 +17,47 @@ import ProjectHeader from './ProjectHeader';
  *
  * @return {*}
  */
-const ProjectPage: React.FC = () => {
-  const urlParams = useParams();
-
-  const biohubApi = useBiohubApi();
-
-  const [isLoadingProject, setIsLoadingProject] = useState(false);
-  const [projectWithDetails, setProjectWithDetails] = useState<ProjectViewObject | null>(null);
-
-  const [isLoadingCodes, setIsLoadingCodes] = useState(false);
-  const [codes, setCodes] = useState<IGetAllCodeSetsResponse>();
-
+const ProjectPage = () => {
+  const codesContext = useContext(CodesContext);
   const projectContext = useContext(ProjectContext);
 
-  console.log({ projectContext });
+  useEffect(() => codesContext.codesDataLoader.load(), [codesContext.codesDataLoader]);
 
-  useEffect(() => {
-    const getCodes = async () => {
-      const codesResponse = await biohubApi.codes.getAllCodeSets();
+  useEffect(() => projectContext.projectDataLoader.load(projectContext.projectId), [
+    projectContext.projectDataLoader,
+    projectContext.projectId
+  ]);
 
-      if (!codesResponse) {
-        // TODO error handling/messaging
-        return;
-      }
-
-      setCodes(codesResponse);
-    };
-
-    if (!isLoadingCodes && !codes) {
-      getCodes();
-      setIsLoadingCodes(true);
-    }
-  }, [urlParams, biohubApi.codes, isLoadingCodes, codes]);
-
-  const getProject = useCallback(async () => {
-    const projectWithDetailsResponse = await biohubApi.project.getProjectForView(urlParams['id']);
-
-    if (!projectWithDetailsResponse) {
-      // TODO error handling/messaging
-      return;
-    }
-
-    setProjectWithDetails(projectWithDetailsResponse.projectData);
-  }, [biohubApi.project, urlParams]);
-
-  useEffect(() => {
-    if (!isLoadingProject && !projectWithDetails) {
-      getProject();
-      setIsLoadingProject(true);
-    }
-  }, [isLoadingProject, projectWithDetails, getProject]);
-
-  if (!codes || !projectWithDetails) {
+  if (!codesContext.codesDataLoader.data || !projectContext.projectDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
   return (
     <>
-      <ProjectHeader projectWithDetails={projectWithDetails} refresh={getProject} />
+      <ProjectHeader />
 
       <Container maxWidth="xl">
         <Box py={3}>
           <Grid container spacing={3}>
             <Grid item md={12} lg={4}>
               <Paper elevation={0}>
-                <ProjectDetails projectForViewData={projectWithDetails} codes={codes} />
+                <ProjectDetails />
               </Paper>
             </Grid>
             <Grid item md={12} lg={8}>
               <Box mb={3}>
                 <Paper elevation={0}>
-                  <SurveysListPage projectForViewData={projectWithDetails} codes={codes} />
+                  <SurveysListPage />
                 </Paper>
               </Box>
               <Box mb={3}>
                 <Paper elevation={0}>
-                  <ProjectAttachments projectForViewData={projectWithDetails} />
+                  <ProjectAttachments />
                 </Paper>
               </Box>
               <Box>
                 <Paper elevation={0}>
-                  <LocationBoundary projectForViewData={projectWithDetails} codes={codes} refresh={getProject} />
+                  <LocationBoundary />
                 </Paper>
               </Box>
             </Grid>

@@ -1,5 +1,6 @@
-import { Button } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
+import Button from '@material-ui/core/Button';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import Container from '@material-ui/core/Container';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import Menu from '@material-ui/core/Menu';
@@ -142,7 +143,7 @@ const SurveyHeader = () => {
   };
 
   if (!surveyWithDetails) {
-    return <></>;
+    return <CircularProgress className="pageProgress" size={40} />;
   }
 
   return (

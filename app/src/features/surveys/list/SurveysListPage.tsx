@@ -2,48 +2,37 @@ import Box from '@material-ui/core/Box';
 import Divider from '@material-ui/core/Divider';
 import { mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
+import assert from 'assert';
 import SurveysList from 'components/surveys/SurveysList';
 import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
+import { CodesContext } from 'contexts/codesContext';
+import { ProjectContext } from 'contexts/projectContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import { ProjectViewObject } from 'interfaces/useProjectApi.interface';
-import { SurveyViewObject } from 'interfaces/useSurveyApi.interface';
-import React, { useEffect, useState } from 'react';
+import useDataLoader from 'hooks/useDataLoader';
+import React, { useContext, useEffect } from 'react';
 import { useHistory } from 'react-router';
 
-export interface ISurveysListPageProps {
-  projectForViewData: ProjectViewObject;
-  codes: IGetAllCodeSetsResponse;
-}
-
 /**
- * Project surveys content for a project.
+ * List of Surveys belonging to a Project.
  *
  * @return {*}
  */
-const SurveysListPage: React.FC<ISurveysListPageProps> = (props) => {
+const SurveysListPage = () => {
   const history = useHistory();
   const biohubApi = useBiohubApi();
 
-  const { projectForViewData, codes } = props;
+  const codesContext = useContext(CodesContext);
+  const projectContext = useContext(ProjectContext);
 
-  const [surveys, setSurveys] = useState<SurveyViewObject[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  assert(codesContext.codesDataLoader.data);
+
+  const codes = codesContext.codesDataLoader.data;
+
+  const surveysListDataLoader = useDataLoader((projectId: number) => biohubApi.survey.getSurveysList(projectId));
 
   useEffect(() => {
-    const getSurveys = async () => {
-      const surveysResponse = await biohubApi.survey.getSurveysList(projectForViewData.project.id);
-
-      setSurveys(() => {
-        setIsLoading(false);
-        return surveysResponse;
-      });
-    };
-
-    if (isLoading) {
-      getSurveys();
-    }
-  }, [biohubApi, isLoading, projectForViewData.project.id]);
+    surveysListDataLoader.load(projectContext.projectId);
+  }, [surveysListDataLoader, projectContext.projectId]);
 
   const navigateToCreateSurveyPage = (projectId: number) => {
     history.push(`/admin/projects/${projectId}/survey/create`);
@@ -57,11 +46,15 @@ const SurveysListPage: React.FC<ISurveysListPageProps> = (props) => {
         buttonTitle="Create Survey"
         buttonStartIcon={<Icon path={mdiPlus} size={0.8} />}
         buttonProps={{ variant: 'contained' }}
-        buttonOnClick={() => navigateToCreateSurveyPage(projectForViewData.project.id)}
+        buttonOnClick={() => navigateToCreateSurveyPage(projectContext.projectId)}
       />
       <Divider></Divider>
       <Box px={1}>
-        <SurveysList projectId={projectForViewData.project.id} surveysList={surveys} codes={codes} />
+        <SurveysList
+          projectId={projectContext.projectId}
+          surveysList={surveysListDataLoader.data || []}
+          codes={codes}
+        />
       </Box>
     </>
   );

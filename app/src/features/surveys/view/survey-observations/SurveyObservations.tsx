@@ -179,7 +179,7 @@ const SurveyObservations: React.FC = () => {
           )}
 
           {/* Submission data exists, validation is running */}
-          {occurrenceSubmission && surveyContext.observationDataLoader.data && occurrenceSubmission?.isValidating && (
+          {occurrenceSubmission && surveyContext.observationDataLoader.data && occurrenceSubmission.isValidating && (
             <ValidatingObservationsCard
               observationRecord={surveyContext.observationDataLoader.data}
               onDownload={handleDownload}

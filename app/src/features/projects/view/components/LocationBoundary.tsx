@@ -8,6 +8,7 @@ import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import Typography from '@material-ui/core/Typography';
 import { mdiChevronRight, mdiPencilOutline, mdiRefresh } from '@mdi/js';
 import Icon from '@mdi/react';
+import assert from 'assert';
 import FullScreenViewMapDialog from 'components/boundary/FullScreenViewMapDialog';
 import InferredLocationDetails, { IInferredLayers } from 'components/boundary/InferredLocationDetails';
 import EditDialog from 'components/dialog/EditDialog';
@@ -15,7 +16,9 @@ import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import MapContainer from 'components/map/MapContainer';
 import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
 import { EditLocationBoundaryI18N } from 'constants/i18n';
+import { CodesContext } from 'contexts/codesContext';
 import { DialogContext } from 'contexts/dialogContext';
+import { ProjectContext } from 'contexts/projectContext';
 import {
   IProjectLocationForm,
   ProjectLocationFormInitialValues,
@@ -24,22 +27,11 @@ import {
 import { Feature } from 'geojson';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import {
-  IGetProjectForUpdateResponseLocation,
-  ProjectViewObject,
-  UPDATE_GET_ENTITIES
-} from 'interfaces/useProjectApi.interface';
+import { IGetProjectForUpdateResponseLocation, UPDATE_GET_ENTITIES } from 'interfaces/useProjectApi.interface';
 import { LatLngBoundsExpression } from 'leaflet';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
 import ProjectStepComponents from 'utils/ProjectStepComponents';
-
-export interface ILocationBoundaryProps {
-  projectForViewData: ProjectViewObject;
-  codes: IGetAllCodeSetsResponse;
-  refresh: () => void;
-}
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -72,35 +64,35 @@ const useStyles = makeStyles((theme: Theme) =>
  *
  * @return {*}
  */
-const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
-  const {
-    projectForViewData: {
-      project: { id },
-      location
-    },
-    codes
-  } = props;
-
+const LocationBoundary = () => {
   const classes = useStyles();
 
   const biohubApi = useBiohubApi();
 
+  const codesContext = useContext(CodesContext);
+  const projectContext = useContext(ProjectContext);
+
+  assert(codesContext.codesDataLoader.data);
+  assert(projectContext.projectDataLoader.data);
+
+  const codes = codesContext.codesDataLoader.data;
+  const projectData = projectContext.projectDataLoader.data.projectData;
+
   const dialogContext = useContext(DialogContext);
 
-  const defaultErrorDialogProps = {
-    dialogTitle: EditLocationBoundaryI18N.editErrorTitle,
-    dialogText: EditLocationBoundaryI18N.editErrorText,
-    open: false,
-    onClose: () => {
-      dialogContext.setErrorDialog({ open: false });
-    },
-    onOk: () => {
-      dialogContext.setErrorDialog({ open: false });
-    }
-  };
-
   const showErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
-    dialogContext.setErrorDialog({ ...defaultErrorDialogProps, ...textDialogProps, open: true });
+    dialogContext.setErrorDialog({
+      dialogTitle: EditLocationBoundaryI18N.editErrorTitle,
+      dialogText: EditLocationBoundaryI18N.editErrorText,
+      open: true,
+      onClose: () => {
+        dialogContext.setErrorDialog({ open: false });
+      },
+      onOk: () => {
+        dialogContext.setErrorDialog({ open: false });
+      },
+      ...textDialogProps
+    });
   };
 
   const [openEditDialog, setOpenEditDialog] = useState(false);
@@ -120,17 +112,19 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
     let locationResponseData;
 
     try {
-      const response = await biohubApi.project.getProjectForUpdate(id, [UPDATE_GET_ENTITIES.location]);
+      const response = await biohubApi.project.getProjectForUpdate(projectContext.projectId, [
+        UPDATE_GET_ENTITIES.location
+      ]);
 
       if (!response?.location) {
-        showErrorDialog({ open: true });
+        showErrorDialog();
         return;
       }
 
       locationResponseData = response.location;
     } catch (error) {
       const apiError = error as APIError;
-      showErrorDialog({ dialogText: apiError.message, open: true });
+      showErrorDialog({ dialogText: apiError.message });
       return;
     }
 
@@ -155,30 +149,30 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
     const projectData = { location: projectLocationData };
 
     try {
-      await biohubApi.project.updateProject(id, projectData);
+      await biohubApi.project.updateProject(projectContext.projectId, projectData);
     } catch (error) {
       const apiError = error as APIError;
-      showErrorDialog({ dialogText: apiError.message, open: true });
+      showErrorDialog({ dialogText: apiError.message });
       return;
     } finally {
       setOpenEditDialog(false);
     }
 
-    props.refresh();
+    projectContext.projectDataLoader.refresh(projectContext.projectId);
   };
 
   const zoomToBoundaryExtent = useCallback(() => {
-    setBounds(calculateUpdatedMapBounds(location.geometry));
-  }, [location.geometry]);
+    setBounds(calculateUpdatedMapBounds(projectData.location.geometry));
+  }, [projectData.location.geometry]);
 
   useEffect(() => {
-    const nonEditableGeometriesResult = location.geometry.map((geom: Feature) => {
+    const nonEditableGeometriesResult = projectData.location.geometry.map((geom: Feature) => {
       return { feature: geom };
     });
 
     zoomToBoundaryExtent();
     setNonEditableGeometries(nonEditableGeometriesResult);
-  }, [location.geometry, zoomToBoundaryExtent]);
+  }, [projectData.location.geometry, zoomToBoundaryExtent]);
 
   const handleOpenFullScreenMap = () => {
     setShowFullScreenViewMapDialog(true);
@@ -205,7 +199,7 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
         open={showFullScreenViewMapDialog}
         onClose={handleCloseFullScreenMap}
         map={
-          <MapContainer
+          <MemoizedMapContainer
             mapId="project_location_form_map"
             scrollWheelZoom={true}
             nonEditableGeometries={nonEditableGeometries}
@@ -213,7 +207,7 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
             setInferredLayersInfo={setInferredLayersInfo}
           />
         }
-        description={location.location_description}
+        description={projectData.location.location_description}
         layers={<InferredLocationDetails layers={inferredLayersInfo} />}
         backButtonTitle={'Back To Project'}
         mapTitle={'Project Location'}
@@ -230,13 +224,13 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
 
       <Box px={3} pb={3}>
         <Box height={500} position="relative">
-          <MapContainer
+          <MemoizedMapContainer
             mapId="project_location_form_map"
             nonEditableGeometries={nonEditableGeometries}
             bounds={bounds}
             setInferredLayersInfo={setInferredLayersInfo}
           />
-          {location.geometry && location.geometry.length > 0 && (
+          {projectData.location.geometry && projectData.location.geometry.length && (
             <Box position="absolute" top="126px" left="10px" zIndex="999">
               <IconButton
                 aria-label="zoom to initial extent"
@@ -255,7 +249,11 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
           </Typography>
           <Divider></Divider>
           <Typography variant="body1">
-            {location.location_description ? <>{location.location_description}</> : 'No description provided'}
+            {projectData.location.location_description ? (
+              <>{projectData.location.location_description}</>
+            ) : (
+              'No description provided'
+            )}
           </Typography>
           <Box mt={3}>
             <InferredLocationDetails layers={inferredLayersInfo} />
@@ -277,5 +275,14 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
     </>
   );
 };
+
+/**
+ * Memoized wrapper of `MapContainer` to ensure the map only re-renders if specificF props change.
+ *
+ * @return {*}
+ */
+const MemoizedMapContainer = React.memo(MapContainer, (prevProps, nextProps) => {
+  return prevProps.nonEditableGeometries === nextProps.nonEditableGeometries && prevProps.bounds === nextProps.bounds;
+});
 
 export default LocationBoundary;

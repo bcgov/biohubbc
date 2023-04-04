@@ -1,24 +1,26 @@
+import assert from 'assert';
 import ReadMoreField from 'components/fields/ReadMoreField';
-import { ProjectViewObject } from 'interfaces/useProjectApi.interface';
-import React from 'react';
-
-export interface IProjectObjectivesProps {
-  projectForViewData: ProjectViewObject;
-}
+import { ProjectContext } from 'contexts/projectContext';
+import React, { useContext } from 'react';
 
 /**
  * Project objectives content for a project.
  *
- * @param {IProjectObjectivesProps} props
  * @return {*}
  */
-const ProjectObjectives = (props: IProjectObjectivesProps) => {
-  const {
-    projectForViewData: { objectives }
-  } = props;
+const ProjectObjectives = () => {
+  const projectContext = useContext(ProjectContext);
+
+  assert(projectContext.projectDataLoader.data);
+
+  const projectData = projectContext.projectDataLoader.data.projectData;
 
   return (
-    <ReadMoreField text={objectives.objectives} maxCharLength={200} TypographyProps={{ color: 'textSecondary' }} />
+    <ReadMoreField
+      text={projectData.objectives.objectives}
+      maxCharLength={200}
+      TypographyProps={{ color: 'textSecondary' }}
+    />
   );
 };
 

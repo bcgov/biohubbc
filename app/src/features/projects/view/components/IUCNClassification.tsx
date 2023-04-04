@@ -2,51 +2,51 @@ import Box from '@material-ui/core/Box';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import Typography from '@material-ui/core/Typography';
-import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import { ProjectViewObject } from 'interfaces/useProjectApi.interface';
-import React from 'react';
-
-export interface IIUCNClassificationProps {
-  projectForViewData: ProjectViewObject;
-  codes: IGetAllCodeSetsResponse;
-}
+import assert from 'assert';
+import { CodesContext } from 'contexts/codesContext';
+import { ProjectContext } from 'contexts/projectContext';
+import React, { useContext } from 'react';
 
 /**
  * IUCN Classification content for a project.
  *
- * @param {IIUCNClassificationProps} props
  * @return {*}
  */
-const IUCNClassification = (props: IIUCNClassificationProps) => {
-  const {
-    projectForViewData: { iucn },
-    codes
-  } = props;
+const IUCNClassification = () => {
+  const codesContext = useContext(CodesContext);
+  const projectContext = useContext(ProjectContext);
 
-  const hasIucnClassifications = iucn.classificationDetails && iucn.classificationDetails.length > 0;
+  assert(codesContext.codesDataLoader.data);
+  assert(projectContext.projectDataLoader.data);
+
+  const codes = codesContext.codesDataLoader.data;
+  const projectData = projectContext.projectDataLoader.data.projectData;
+
+  const hasIucnClassifications =
+    projectData.iucn.classificationDetails && projectData.iucn.classificationDetails.length;
 
   return (
     <>
       {hasIucnClassifications && (
         <List disablePadding>
-          {iucn.classificationDetails.map((classificationDetail: any, index: number) => {
+          {projectData.iucn.classificationDetails.map((classificationDetail: any, index: number) => {
             return (
               <ListItem key={index} divider disableGutters>
                 <Typography>
                   {`${
-                    codes?.iucn_conservation_action_level_1_classification?.find(
+                    codes.iucn_conservation_action_level_1_classification.find(
                       (item: any) => item.id === classificationDetail.classification
                     )?.name
                   } `}
                   <span>{'>'}</span>
                   {` ${
-                    codes?.iucn_conservation_action_level_2_subclassification?.find(
+                    codes.iucn_conservation_action_level_2_subclassification.find(
                       (item: any) => item.id === classificationDetail.subClassification1
                     )?.name
                   } `}
                   <span>{'>'}</span>
                   {` ${
-                    codes?.iucn_conservation_action_level_3_subclassification?.find(
+                    codes.iucn_conservation_action_level_3_subclassification.find(
                       (item: any) => item.id === classificationDetail.subClassification2
                     )?.name
                   }`}
