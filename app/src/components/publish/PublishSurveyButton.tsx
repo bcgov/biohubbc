@@ -39,11 +39,18 @@ const PublishSurveyButton: React.FC = (props) => {
   const [noSubmissionData, setNoSubmissionData] = useState(false);
   const [openSubmitSurveyDialog, setOpenSubmitSurveyDialog] = useState(false);
 
-  const refreshContext = () => {
-    surveyContext.observationDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
-    surveyContext.summaryDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+  const refreshContext = (values: ISurveySubmitForm) => {
+    // we only want the data loaders with changes to refresh
+    if (values.observations.length > 0) {
+      surveyContext.observationDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+    }
+    if (values.summary.length > 0) {
+      surveyContext.summaryDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+    }
+    if (values.attachments.length > 0 || values.reports.length > 0) {
+      surveyContext.artifactDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+    }
     surveyContext.surveyDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
-    surveyContext.artifactDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
   };
 
   const checkUnsubmittedData = () => {
@@ -75,7 +82,6 @@ const PublishSurveyButton: React.FC = (props) => {
         dialogTitle="Survey data submitted!"
         open={finishSubmission}
         onClose={() => {
-          refreshContext();
           setFinishSubmission(false);
         }}>
         <DialogContent>
@@ -108,7 +114,7 @@ const PublishSurveyButton: React.FC = (props) => {
               values
             );
           }
-          refreshContext();
+          refreshContext(values);
           setFinishSubmission(true);
         }}
         formikProps={{
