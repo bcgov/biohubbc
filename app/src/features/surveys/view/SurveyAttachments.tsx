@@ -1,7 +1,7 @@
 import Box from '@material-ui/core/Box';
 import Divider from '@material-ui/core/Divider';
 import Paper from '@material-ui/core/Paper';
-import { mdiTrayArrowUp } from '@mdi/js';
+import { mdiAttachment, mdiChevronDown, mdiFilePdfBox, mdiTrayArrowUp } from '@mdi/js';
 import Icon from '@mdi/react';
 import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
 import FileUploadWithMetaDialog from 'components/dialog/attachments/FileUploadWithMetaDialog';
@@ -55,7 +55,7 @@ const SurveyAttachments: React.FC = () => {
     <>
       <FileUploadWithMetaDialog
         open={openUploadAttachments}
-        dialogTitle={attachmentType === 'Report' ? 'Upload Report' : 'Upload Attachment'}
+        dialogTitle={attachmentType === 'Report' ? 'Upload Report' : 'Upload Attachments'}
         attachmentType={attachmentType}
         onFinish={getFinishHandler()}
         onClose={() => {
@@ -71,14 +71,25 @@ const SurveyAttachments: React.FC = () => {
           buttonTitle="Upload Documents"
           buttonProps={{ variant: 'contained' }}
           buttonStartIcon={<Icon path={mdiTrayArrowUp} size={1} />}
+          buttonEndIcon={<Icon path={mdiChevronDown} size={1} />}
           menuItems={[
-            { menuLabel: 'Add Report', menuOnClick: handleUploadReportClick },
-            { menuLabel: 'Add Attachments', menuOnClick: handleUploadAttachmentClick }
+            {
+              menuLabel: 'Upload a Report',
+              menuIcon: <Icon path={mdiFilePdfBox} size={1} />,
+              menuOnClick: handleUploadReportClick
+            },
+            {
+              menuLabel: 'Upload Attachments',
+              menuIcon: <Icon path={mdiAttachment} size={1} />,
+              menuOnClick: handleUploadAttachmentClick
+            }
           ]}
         />
         <Divider></Divider>
-        <Box px={1}>
-          <SurveyAttachmentsList />
+        <Box p={3}>
+          <Paper variant="outlined">
+            <SurveyAttachmentsList />
+          </Paper>
         </Box>
       </Paper>
     </>
