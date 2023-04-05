@@ -177,4 +177,115 @@ export class ProjectParticipationRepository extends BaseRepository {
       ]);
     }
   }
+
+  /**
+   * Fetches the project participants for all projects that the given system user is a member of.
+   *
+   * @param {number} systemUserId
+   * @return {*}  {Promise<
+   *     {
+   *       project_id: number;
+   *       name: string;
+   *       system_user_id: number;
+   *       project_role_id: number;
+   *       project_participation_id: number;
+   *     }[]
+   *   >}
+   * @memberof UserRepository
+   */
+  async getParticipantsFromAllProjectsBySystemUserId(
+    systemUserId: number
+  ): Promise<
+    {
+      project_id: number;
+      name: string;
+      system_user_id: number;
+      project_role_id: number;
+      project_participation_id: number;
+    }[]
+  > {
+    const sqlStatement = SQL`
+      SELECT
+        pp.project_participation_id,
+        pp.project_id,
+        pp.system_user_id,
+        pp.project_role_id,
+        pr.name project_role_name
+      FROM
+        project_participation pp
+      LEFT JOIN
+        project p
+      ON
+        pp.project_id = p.project_id
+      LEFT JOIN
+        project_role pr
+      ON
+        pr.project_role_id = pp.project_role_id
+      WHERE
+        pp.project_id in (
+          SELECT
+            p.project_id
+          FROM
+            project_participation pp
+          LEFT JOIN
+            project p
+          ON
+            pp.project_id = p.project_id
+          WHERE
+            pp.system_user_id = ${systemUserId}
+        );
+    `;
+
+    const response = await this.connection.sql(sqlStatement);
+
+    return response.rows;
+  }
+
+  /**
+   * Fetches all projects for the given system user.
+   *
+   * @param {number} systemUserId
+   * @return {*}  {Promise<
+   *     {
+   *       project_id: number;
+   *       name: string;
+   *       system_user_id: number;
+   *       project_role_id: number;
+   *       project_participation_id: number;
+   *     }[]
+   *   >}
+   * @memberof UserRepository
+   */
+  async getProjectsBySystemUserId(
+    systemUserId: number
+  ): Promise<
+    {
+      project_id: number;
+      name: string;
+      system_user_id: number;
+      project_role_id: number;
+      project_participation_id: number;
+    }[]
+  > {
+    const sqlStatement = SQL`
+      SELECT
+        p.project_id,
+        p.name,
+        pp.system_user_id,
+        pp.project_role_id,
+        pp.project_participation_id
+      FROM
+        project_participation pp
+      LEFT JOIN
+        project p
+      ON
+        pp.project_id = p.project_id
+      WHERE
+        pp.system_user_id = ${systemUserId};
+    `;
+
+    const response = await this.connection.sql(sqlStatement);
+
+    return response.rows;
+  }
 }

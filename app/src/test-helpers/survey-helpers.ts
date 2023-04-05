@@ -3,6 +3,7 @@ import {
   SurveySupplementaryData,
   SurveyViewObject
 } from 'interfaces/useSurveyApi.interface';
+import { geoJsonFeature } from './spatial-helpers';
 
 export const surveyObject: SurveyViewObject = {
   survey_details: {
@@ -14,27 +15,7 @@ export const surveyObject: SurveyViewObject = {
     biologist_first_name: 'first',
     biologist_last_name: 'last',
     survey_area_name: 'study area',
-    geometry: [
-      {
-        type: 'Feature',
-        id: 'myGeo',
-        geometry: {
-          type: 'Polygon',
-          coordinates: [
-            [
-              [-128, 55],
-              [-128, 55.5],
-              [-128, 56],
-              [-126, 58],
-              [-128, 55]
-            ]
-          ]
-        },
-        properties: {
-          name: 'Biohub Islands'
-        }
-      }
-    ],
+    geometry: [geoJsonFeature],
     revision_count: 0
   },
   purpose_and_methodology: {
