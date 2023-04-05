@@ -220,7 +220,12 @@ export function updateDraft(): RequestHandler {
         throw new HTTP400('Missing required param data');
       }
 
-      const putDraftSQLStatement = queries.project.draft.putDraftSQL(req.body.id, req.body.name, req.body.data);
+      const putDraftSQLStatement = queries.project.draft.putDraftSQL(
+        systemUserId,
+        req.body.id,
+        req.body.name,
+        req.body.data
+      );
 
       if (!putDraftSQLStatement) {
         throw new HTTP400('Failed to build SQL update statement');

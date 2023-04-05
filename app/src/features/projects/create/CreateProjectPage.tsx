@@ -104,7 +104,7 @@ const CreateProjectPage: React.FC = () => {
     if (draftDataLoader.data?.data) {
       setFormikValues(draftDataLoader.data.data);
     }
-  }, [draftDataLoader.data, formikRef, formData]);
+  }, [draftDataLoader.data, formikRef]);
 
   // Whether or not to show the 'Save as draft' dialog
   const [openDraftDialog, setOpenDraftDialog] = useState(false);
@@ -179,13 +179,9 @@ const CreateProjectPage: React.FC = () => {
       // Why? WIP changes to the active step will not yet be updated into its respective stepForms[n].stepInitialValues
 
       if (draftId) {
-        response = await biohubApi.draft.updateDraft(
-          draftId,
-          formData?.project?.project_name || values.draft_name,
-          formData
-        );
+        response = await biohubApi.draft.updateDraft(draftId, values.draft_name, formData);
       } else {
-        response = await biohubApi.draft.createDraft(formData?.project?.project_name || values.draft_name, formData);
+        response = await biohubApi.draft.createDraft(values.draft_name, formData);
       }
 
       setOpenDraftDialog(false);
@@ -302,7 +298,7 @@ const CreateProjectPage: React.FC = () => {
         component={{
           element: <ProjectDraftForm />,
           initialValues: {
-            draft_name: formikRef.current?.values.project.project_name || ''
+            draft_name: formikRef.current?.values.project.project_name || draftDataLoader.data?.name || ''
           },
           validationSchema: ProjectDraftFormYupSchema
         }}
