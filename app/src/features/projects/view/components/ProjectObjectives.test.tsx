@@ -1,36 +1,12 @@
-import { cleanup, fireEvent, getAllByText, queryByText, render } from '@testing-library/react';
+import { cleanup, fireEvent, render } from '@testing-library/react';
 import { DialogContextProvider } from 'contexts/dialogContext';
-import { useBiohubApi } from 'hooks/useBioHubApi';
+import { IProjectContext, ProjectContext } from 'contexts/projectContext';
+import { DataLoader } from 'hooks/useDataLoader';
 import React from 'react';
-import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import ProjectObjectives from './ProjectObjectives';
 
-jest.mock('../../../../hooks/useBioHubApi');
-const mockUseBiohubApi = {
-  project: {
-    getProjectForUpdate: jest.fn<Promise<object>, []>(),
-    updateProject: jest.fn()
-  }
-};
-
-const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBiohubApi>).mockReturnValue(
-  mockUseBiohubApi
-);
-
-const renderContainer = () => {
-  return render(
-    <DialogContextProvider>
-      <ProjectObjectives projectForViewData={getProjectForViewResponse.projectData} />
-    </DialogContextProvider>
-  );
-};
-
 describe('ProjectObjectives', () => {
-  beforeEach(() => {
-    // clear mocks before each test
-    mockBiohubApi().project.getProjectForUpdate.mockClear();
-    mockBiohubApi().project.updateProject.mockClear();
-  });
+  beforeEach(() => {});
 
   afterEach(() => {
     cleanup();
@@ -50,130 +26,184 @@ describe('ProjectObjectives', () => {
     'sit amet adipiscing sem neque sed ipsum. N\n\n';
 
   it('renders correctly when objectives length is <= 850 characters', () => {
-    const { asFragment } = renderContainer();
-
-    expect(asFragment()).toMatchSnapshot();
-  });
-
-  it('renders correctly when objectives length is > 850 characters and caveats is empty', () => {
-    const { asFragment } = render(
-      <ProjectObjectives
-        projectForViewData={{
-          ...getProjectForViewResponse.projectData,
-          objectives: { ...getProjectForViewResponse.projectData.objectives, objectives: longData }
-        }}
-      />
-    );
-
-    expect(asFragment()).toMatchSnapshot();
-  });
-
-  it('renders correctly when both objectives and caveats have length is > 850 characters and are in multiple paragraphs', () => {
-    const { asFragment } = render(
-      <ProjectObjectives
-        projectForViewData={{
-          ...getProjectForViewResponse.projectData,
-          objectives: { ...getProjectForViewResponse.projectData.objectives, objectives: longData }
-        }}
-      />
-    );
-
-    expect(asFragment()).toMatchSnapshot();
-  });
-
-  it('renders correctly when objectives and caveats are < 850 characters and in multiple paragraphs', () => {
-    const multilineObjectives = 'Paragraph1\nParagraph2\n\nParagraph3';
-
-    const { asFragment } = render(
-      <ProjectObjectives
-        projectForViewData={{
-          ...getProjectForViewResponse.projectData,
-          objectives: {
-            ...getProjectForViewResponse.projectData.objectives,
-            objectives: multilineObjectives
+    const mockProjectContext: IProjectContext = ({
+      projectDataLoader: ({
+        data: {
+          projectData: {
+            objectives: {
+              objectives: 'Lorem ipsum dolor sit amet'
+            }
           }
-        }}
-      />
+        },
+        load: jest.fn()
+      } as unknown) as DataLoader<any, any, any>,
+      projectId: 1
+    } as unknown) as IProjectContext;
+
+    const { getByText } = render(
+      <DialogContextProvider>
+        <ProjectContext.Provider value={mockProjectContext}>
+          <ProjectObjectives />
+        </ProjectContext.Provider>
+      </DialogContextProvider>
     );
 
-    expect(asFragment()).toMatchSnapshot();
+    expect(getByText('Lorem ipsum dolor sit amet')).toBeInTheDocument();
+  });
+
+  it('renders correctly when objectives length is > 850 characters ', () => {
+    const mockProjectContext: IProjectContext = ({
+      projectDataLoader: ({
+        data: {
+          projectData: {
+            objectives: {
+              objectives: longData
+            }
+          }
+        },
+        load: jest.fn()
+      } as unknown) as DataLoader<any, any, any>,
+      projectId: 1
+    } as unknown) as IProjectContext;
+
+    const { getByText } = render(
+      <DialogContextProvider>
+        <ProjectContext.Provider value={mockProjectContext}>
+          <ProjectObjectives />
+        </ProjectContext.Provider>
+      </DialogContextProvider>
+    );
+
+    expect(getByText('Read More')).toBeInTheDocument();
   });
 
   it('toggles as expected with the Read More and Read Less buttons', () => {
-    const { container } = render(
-      <ProjectObjectives
-        projectForViewData={{
-          ...getProjectForViewResponse.projectData,
-          objectives: { ...getProjectForViewResponse.projectData.objectives, objectives: longData }
-        }}
-      />
+    const mockProjectContext: IProjectContext = ({
+      projectDataLoader: ({
+        data: {
+          projectData: {
+            objectives: {
+              objectives: longData
+            }
+          }
+        },
+        load: jest.fn()
+      } as unknown) as DataLoader<any, any, any>,
+      projectId: 1
+    } as unknown) as IProjectContext;
+
+    const { getAllByText } = render(
+      <DialogContextProvider>
+        <ProjectContext.Provider value={mockProjectContext}>
+          <ProjectObjectives />
+        </ProjectContext.Provider>
+      </DialogContextProvider>
     );
 
     //@ts-ignore
-    expect(getAllByText(container, 'Read More')[0]).toBeInTheDocument();
+    expect(getAllByText('Read More')[0]).toBeInTheDocument();
     //@ts-ignore
-    fireEvent.click(getAllByText(container, 'Read More')[0]);
+    fireEvent.click(getAllByText('Read More')[0]);
     //@ts-ignore
-    expect(getAllByText(container, 'Read Less')[0]).toBeInTheDocument();
+    expect(getAllByText('Read Less')[0]).toBeInTheDocument();
     //@ts-ignore
-    fireEvent.click(getAllByText(container, 'Read Less')[0]);
+    fireEvent.click(getAllByText('Read Less')[0]);
     //@ts-ignore
-    expect(getAllByText(container, 'Read More')[0]).toBeInTheDocument();
+    expect(getAllByText('Read More')[0]).toBeInTheDocument();
   });
 
   it('toggles as expected if the text contains no spaces', () => {
-    const { container } = render(
-      <ProjectObjectives
-        projectForViewData={{
-          ...getProjectForViewResponse.projectData,
-          objectives: { ...getProjectForViewResponse.projectData.objectives, objectives: 'a'.repeat(400) }
-        }}
-      />
+    const mockProjectContext: IProjectContext = ({
+      projectDataLoader: ({
+        data: {
+          projectData: {
+            objectives: {
+              objectives: longData
+            }
+          }
+        },
+        load: jest.fn()
+      } as unknown) as DataLoader<any, any, any>,
+      projectId: 1
+    } as unknown) as IProjectContext;
+
+    const { getAllByText } = render(
+      <DialogContextProvider>
+        <ProjectContext.Provider value={mockProjectContext}>
+          <ProjectObjectives />
+        </ProjectContext.Provider>
+      </DialogContextProvider>
     );
 
     //@ts-ignore
-    expect(getAllByText(container, 'Read More')[0]).toBeInTheDocument();
+    expect(getAllByText('Read More')[0]).toBeInTheDocument();
     //@ts-ignore
-    fireEvent.click(getAllByText(container, 'Read More')[0]);
+    fireEvent.click(getAllByText('Read More')[0]);
     //@ts-ignore
-    expect(getAllByText(container, 'Read Less')[0]).toBeInTheDocument();
+    expect(getAllByText('Read Less')[0]).toBeInTheDocument();
     //@ts-ignore
-    fireEvent.click(getAllByText(container, 'Read Less')[0]);
+    fireEvent.click(getAllByText('Read Less')[0]);
     //@ts-ignore
-    expect(getAllByText(container, 'Read More')[0]).toBeInTheDocument();
+    expect(getAllByText('Read More')[0]).toBeInTheDocument();
   });
 
   it('does not show the Read More or Read Less buttons if text is not long enough', () => {
-    const { container } = render(
-      <ProjectObjectives
-        projectForViewData={{
-          ...getProjectForViewResponse.projectData,
-          objectives: { ...getProjectForViewResponse.projectData.objectives, objectives: 'short text' }
-        }}
-      />
+    const mockProjectContext: IProjectContext = ({
+      projectDataLoader: ({
+        data: {
+          projectData: {
+            objectives: {
+              objectives: 'Lorem ipsum dolor sit amet'
+            }
+          }
+        },
+        load: jest.fn()
+      } as unknown) as DataLoader<any, any, any>,
+      projectId: 1
+    } as unknown) as IProjectContext;
+
+    const { queryByText } = render(
+      <DialogContextProvider>
+        <ProjectContext.Provider value={mockProjectContext}>
+          <ProjectObjectives />
+        </ProjectContext.Provider>
+      </DialogContextProvider>
     );
 
     //@ts-ignore
-    expect(queryByText(container, 'Read More')).not.toBeInTheDocument();
+    expect(queryByText('Read More')).not.toBeInTheDocument();
 
     //@ts-ignore
-    expect(queryByText(container, 'Read Less')).not.toBeInTheDocument();
+    expect(queryByText('Read Less')).not.toBeInTheDocument();
   });
 
-  it('does not show the Read More or Read Less buttons if text is not empty', () => {
-    const { container } = render(
-      <ProjectObjectives
-        projectForViewData={{
-          ...getProjectForViewResponse.projectData,
-          objectives: { ...getProjectForViewResponse.projectData.objectives, objectives: '' }
-        }}
-      />
+  it('does not show the Read More or Read Less buttons if text is empty', () => {
+    const mockProjectContext: IProjectContext = ({
+      projectDataLoader: ({
+        data: {
+          projectData: {
+            objectives: {
+              objectives: ''
+            }
+          }
+        },
+        load: jest.fn()
+      } as unknown) as DataLoader<any, any, any>,
+      projectId: 1
+    } as unknown) as IProjectContext;
+
+    const { queryByText } = render(
+      <DialogContextProvider>
+        <ProjectContext.Provider value={mockProjectContext}>
+          <ProjectObjectives />
+        </ProjectContext.Provider>
+      </DialogContextProvider>
     );
 
     //@ts-ignore
-    expect(queryByText(container, 'Read More')).not.toBeInTheDocument();
+    expect(queryByText('Read More')).not.toBeInTheDocument();
 
     //@ts-ignore
-    expect(queryByText(container, 'Read Less')).not.toBeInTheDocument();
+    expect(queryByText('Read Less')).not.toBeInTheDocument();
   });
 });

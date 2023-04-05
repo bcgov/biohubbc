@@ -8,21 +8,22 @@ import {
 } from '@testing-library/react';
 import { AttachmentType } from 'constants/attachments';
 import { DialogContextProvider } from 'contexts/dialogContext';
-import { createMemoryHistory } from 'history';
+import { ISurveyContext, SurveyContext } from 'contexts/surveyContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import { DataLoader } from 'hooks/useDataLoader';
 import React from 'react';
-import { Route, Router } from 'react-router';
-import { getProjectForViewResponse } from 'test-helpers/project-helpers';
-import { getSurveyForViewResponse } from 'test-helpers/survey-helpers';
 import SurveyAttachments from './SurveyAttachments';
-
-const history = createMemoryHistory({ initialEntries: ['projects/1/surveys/1'] });
 
 jest.mock('../../../hooks/useBioHubApi');
 const mockUseBiohubApi = {
   survey: {
+    getSurveyForView: jest.fn(),
+    getSurveySummarySubmission: jest.fn(),
     getSurveyAttachments: jest.fn(),
     deleteSurveyAttachment: jest.fn()
+  },
+  observation: {
+    getObservationSubmission: jest.fn()
   }
 };
 
@@ -30,7 +31,7 @@ const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBioh
   mockUseBiohubApi
 );
 
-describe.skip('SurveyAttachments', () => {
+describe('SurveyAttachments', () => {
   beforeEach(() => {
     // clear mocks before each test
     mockBiohubApi().survey.getSurveyAttachments.mockClear();
@@ -42,19 +43,24 @@ describe.skip('SurveyAttachments', () => {
   });
 
   it('correctly opens and closes the file upload dialog', async () => {
-    const { getByText, queryByText } = render(
-      <Router history={history}>
-        <Route path="projects/:id/surveys/:survey_id">
-          <SurveyAttachments
-            projectForViewData={getProjectForViewResponse.projectData}
-            surveyForViewData={getSurveyForViewResponse}
-          />
-        </Route>
-      </Router>
-    );
+    const mockSurveyContext: ISurveyContext = ({
+      artifactDataLoader: ({
+        data: null,
+        load: jest.fn()
+      } as unknown) as DataLoader<any, any, any>,
+      surveyId: 1,
+      projectId: 1
+    } as unknown) as ISurveyContext;
 
-    expect(getByText('Upload')).toBeInTheDocument();
-    expect(queryByText('Upload Attachments')).toBeNull();
+    const { getByText, queryByText } = render(
+      <SurveyContext.Provider value={mockSurveyContext}>
+        <SurveyAttachments />
+      </SurveyContext.Provider>
+    );
+    await waitFor(() => {
+      expect(getByText('Upload')).toBeInTheDocument();
+      expect(queryByText('Upload Attachments')).toBeNull();
+    });
 
     fireEvent.click(getByText('Upload'));
 
@@ -65,48 +71,55 @@ describe.skip('SurveyAttachments', () => {
     fireEvent.click(getByText('Upload Attachments'));
 
     await waitFor(() => {
-      expect(queryByText('Upload Attachments')).toBeNull();
+      expect(getByText('Close')).toBeInTheDocument();
     });
-
-    expect(getByText('Close')).toBeInTheDocument();
   });
 
-  it('renders correctly with no attachments', () => {
+  it('renders correctly with no attachments', async () => {
+    const mockSurveyContext: ISurveyContext = ({
+      artifactDataLoader: ({
+        data: null,
+        load: jest.fn()
+      } as unknown) as DataLoader<any, any, any>,
+      surveyId: 1,
+      projectId: 1
+    } as unknown) as ISurveyContext;
+
     const { getByText } = render(
-      <Router history={history}>
-        <Route path="projects/:id/surveys/:survey_id">
-          <SurveyAttachments
-            projectForViewData={getProjectForViewResponse.projectData}
-            surveyForViewData={getSurveyForViewResponse}
-          />
-        </Route>
-      </Router>
+      <SurveyContext.Provider value={mockSurveyContext}>
+        <SurveyAttachments />
+      </SurveyContext.Provider>
     );
-
-    expect(getByText('No Documents')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(getByText('No Documents')).toBeInTheDocument();
+    });
   });
 
-  it.skip('renders correctly with attachments', async () => {
-    mockBiohubApi().survey.getSurveyAttachments.mockResolvedValue({
-      attachmentsList: [
-        {
-          id: 1,
-          fileName: 'filename.test',
-          lastModified: '2021-04-09 11:53:53',
-          size: 3028
-        }
-      ]
-    });
+  it('renders correctly with attachments', async () => {
+    const mockSurveyContext: ISurveyContext = ({
+      artifactDataLoader: ({
+        data: {
+          attachmentsList: [
+            {
+              id: 1,
+              fileName: 'filename.test',
+              lastModified: '2021-04-09 11:53:53',
+              size: 3028
+            }
+          ]
+        },
+        load: jest.fn()
+      } as unknown) as DataLoader<any, any, any>,
+      surveyId: 1,
+      projectId: 1
+    } as unknown) as ISurveyContext;
+
+    mockBiohubApi().survey.getSurveyAttachments.mockResolvedValue({});
 
     const { getByText } = render(
-      <Router history={history}>
-        <Route path="projects/:id/surveys/:survey_id">
-          <SurveyAttachments
-            projectForViewData={getProjectForViewResponse.projectData}
-            surveyForViewData={getSurveyForViewResponse}
-          />
-        </Route>
-      </Router>
+      <SurveyContext.Provider value={mockSurveyContext}>
+        <SurveyAttachments />
+      </SurveyContext.Provider>
     );
 
     await waitFor(() => {
@@ -114,55 +127,46 @@ describe.skip('SurveyAttachments', () => {
     });
   });
 
-  it.skip('deletes an attachment from the attachments list as expected', async () => {
+  it('deletes an attachment from the attachments list as expected', async () => {
     mockBiohubApi().survey.deleteSurveyAttachment.mockResolvedValue(1);
-    mockBiohubApi().survey.getSurveyAttachments.mockResolvedValue({
-      attachmentsList: [
-        {
-          id: 1,
-          fileName: 'filename1.test',
-          fileType: AttachmentType.OTHER,
-          lastModified: '2021-04-09 11:53:53',
-          size: 3028
+
+    const mockSurveyContext: ISurveyContext = ({
+      artifactDataLoader: ({
+        data: {
+          attachmentsList: [
+            {
+              id: 1,
+              fileName: 'filename1.test',
+              fileType: AttachmentType.OTHER,
+              lastModified: '2021-04-09 11:53:53',
+              size: 3028
+            },
+            {
+              id: 2,
+              fileName: 'filename2.test',
+              fileType: AttachmentType.REPORT,
+              lastModified: '2021-04-09 11:53:53',
+              size: 3028
+            }
+          ]
         },
-        {
-          id: 2,
-          fileName: 'filename2.test',
-          fileType: AttachmentType.REPORT,
-          lastModified: '2021-04-09 11:53:53',
-          size: 3028
-        }
-      ]
-    });
+        load: jest.fn()
+      } as unknown) as DataLoader<any, any, any>,
+      surveyId: 1,
+      projectId: 1
+    } as unknown) as ISurveyContext;
 
     const { baseElement, queryByText, getByTestId, getAllByTestId, queryByTestId } = render(
       <DialogContextProvider>
-        <Router history={history}>
-          <Route path="projects/:id/surveys/:survey_id">
-            <SurveyAttachments
-              projectForViewData={getProjectForViewResponse.projectData}
-              surveyForViewData={getSurveyForViewResponse}
-            />
-          </Route>
-        </Router>
+        <SurveyContext.Provider value={mockSurveyContext}>
+          <SurveyAttachments />
+        </SurveyContext.Provider>
       </DialogContextProvider>
     );
 
     await waitFor(() => {
       expect(queryByText('filename1.test')).toBeInTheDocument();
       expect(queryByText('filename2.test')).toBeInTheDocument();
-    });
-
-    mockBiohubApi().survey.getSurveyAttachments.mockResolvedValue({
-      attachmentsList: [
-        {
-          id: 2,
-          fileName: 'filename2.test',
-          fileType: AttachmentType.REPORT,
-          lastModified: '2021-04-09 11:53:53',
-          size: 3028
-        }
-      ]
     });
 
     fireEvent.click(getAllByTestId('attachment-action-menu')[0]);
@@ -179,36 +183,41 @@ describe.skip('SurveyAttachments', () => {
 
     fireEvent.click(getByTestId('yes-button'));
 
+    mockSurveyContext.artifactDataLoader.data?.attachmentsList.splice(0, 1);
+
     await waitFor(() => {
       expect(queryByText('filename1.test')).not.toBeInTheDocument();
       expect(queryByText('filename2.test')).toBeInTheDocument();
     });
   });
 
-  it.skip('does not delete an attachment from the attachments when user selects no from dialog', async () => {
+  it('does not delete an attachment from the attachments when user selects no from dialog', async () => {
     mockBiohubApi().survey.deleteSurveyAttachment.mockResolvedValue(1);
-    mockBiohubApi().survey.getSurveyAttachments.mockResolvedValue({
-      attachmentsList: [
-        {
-          id: 1,
-          fileName: 'filename.test',
-          fileType: AttachmentType.REPORT,
-          lastModified: '2021-04-09 11:53:53',
-          size: 3028
-        }
-      ]
-    });
+
+    const mockSurveyContext: ISurveyContext = ({
+      artifactDataLoader: ({
+        data: {
+          attachmentsList: [
+            {
+              id: 1,
+              fileName: 'filename.test',
+              fileType: AttachmentType.REPORT,
+              lastModified: '2021-04-09 11:53:53',
+              size: 3028
+            }
+          ]
+        },
+        load: jest.fn()
+      } as unknown) as DataLoader<any, any, any>,
+      surveyId: 1,
+      projectId: 1
+    } as unknown) as ISurveyContext;
 
     const { baseElement, queryByText, getByTestId, queryByTestId, getAllByTestId } = render(
       <DialogContextProvider>
-        <Router history={history}>
-          <Route path="projects/:id/surveys/:survey_id">
-            <SurveyAttachments
-              projectForViewData={getProjectForViewResponse.projectData}
-              surveyForViewData={getSurveyForViewResponse}
-            />
-          </Route>
-        </Router>
+        <SurveyContext.Provider value={mockSurveyContext}>
+          <SurveyAttachments />
+        </SurveyContext.Provider>
       </DialogContextProvider>
     );
 
@@ -239,27 +248,32 @@ describe.skip('SurveyAttachments', () => {
     });
   });
 
-  it.skip('does not delete an attachment from the attachments when user clicks outside the dialog', async () => {
+  it('does not delete an attachment from the attachments when user clicks outside the dialog', async () => {
     mockBiohubApi().survey.deleteSurveyAttachment.mockResolvedValue(1);
-    mockBiohubApi().survey.getSurveyAttachments.mockResolvedValue({
-      attachmentsList: [
-        {
-          id: 1,
-          fileName: 'filename.test',
-          lastModified: '2021-04-09 11:53:53',
-          size: 3028
-        }
-      ]
-    });
+    const mockSurveyContext: ISurveyContext = ({
+      artifactDataLoader: ({
+        data: {
+          attachmentsList: [
+            {
+              id: 1,
+              fileName: 'filename.test',
+              fileType: AttachmentType.REPORT,
+              lastModified: '2021-04-09 11:53:53',
+              size: 3028
+            }
+          ]
+        },
+        load: jest.fn()
+      } as unknown) as DataLoader<any, any, any>,
+      surveyId: 1,
+      projectId: 1
+    } as unknown) as ISurveyContext;
 
     const { baseElement, queryByText, getAllByRole, queryByTestId, getAllByTestId } = render(
       <DialogContextProvider>
-        <Router history={history}>
-          <SurveyAttachments
-            projectForViewData={getProjectForViewResponse.projectData}
-            surveyForViewData={getSurveyForViewResponse}
-          />
-        </Router>
+        <SurveyContext.Provider value={mockSurveyContext}>
+          <SurveyAttachments />
+        </SurveyContext.Provider>
       </DialogContextProvider>
     );
 

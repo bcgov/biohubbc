@@ -30,6 +30,12 @@ const mockSurveyContext: ISurveyContext = {
   artifactDataLoader: {
     data: null
   } as DataLoader<any, any, any>,
+  summaryDataLoader: {
+    data: null
+  } as DataLoader<any, any, any>,
+  observationDataLoader: {
+    data: null
+  } as DataLoader<any, any, any>,
   surveyId: 1,
   projectId: 1
 };
