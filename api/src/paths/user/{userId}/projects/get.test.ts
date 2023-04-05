@@ -44,7 +44,7 @@ describe('projects', () => {
     });
 
     it('catches error, calls rollback, and re-throws error', async () => {
-      const dbConnectionObj = getMockDBConnection();
+      const dbConnectionObj = getMockDBConnection({ release: sinon.stub() });
       sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
       const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
@@ -55,9 +55,7 @@ describe('projects', () => {
 
       const getProjectsBySystemUserIdStub = sinon
         .stub(ProjectParticipationService.prototype, 'getProjectsBySystemUserId')
-        .resolves([
-          { project_id: 123, name: 'test', system_user_id: 12, project_role_id: 42, project_participation_id: 88 }
-        ]);
+        .rejects(new Error('a test error'));
 
       const requestHandler = projects.getAllUserProjects();
 
@@ -66,7 +64,7 @@ describe('projects', () => {
         expect.fail();
       } catch (actualError) {
         expect(dbConnectionObj.release).to.have.been.called;
-        expect(getProjectsBySystemUserIdStub).not.to.have.been.called;
+        expect(getProjectsBySystemUserIdStub).to.have.been.calledOnceWith(1);
 
         expect((actualError as HTTPError).message).to.equal('a test error');
       }
