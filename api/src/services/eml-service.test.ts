@@ -747,7 +747,7 @@ describe('EmlService', () => {
     });
   });
 
-  describe.only('buildSurveyEmlPackage', () => {
+  describe('buildSurveyEmlPackage', () => {
     it('should build an EML package for a survey successfully', async () => {
       const mockDBConnection = getMockDBConnection();
       const emlService = new EmlService(mockDBConnection);
