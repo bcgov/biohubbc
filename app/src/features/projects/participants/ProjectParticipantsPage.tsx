@@ -12,44 +12,23 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
-import { mdiChevronDown, mdiTrashCanOutline } from '@mdi/js';
+import { mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
-import { IYesNoDialogProps } from 'components/dialog/YesNoDialog';
-import { CustomMenuButton } from 'components/toolbar/ActionToolbars';
 import { ProjectParticipantsI18N } from 'constants/i18n';
+import { CodesContext } from 'contexts/codesContext';
 import { DialogContext } from 'contexts/dialogContext';
+import { ProjectContext } from 'contexts/projectContext';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { CodeSet, IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import {
-  IGetProjectForViewResponse,
-  IGetProjectParticipantsResponseArrayItem
-} from 'interfaces/useProjectApi.interface';
-import React, { useCallback, useContext, useEffect, useState } from 'react';
-import { useParams } from 'react-router';
+import useDataLoader from 'hooks/useDataLoader';
+import useDataLoaderError from 'hooks/useDataLoaderError';
+import { IGetProjectParticipantsResponseArrayItem } from 'interfaces/useProjectApi.interface';
+import React, { useCallback, useContext, useEffect } from 'react';
 import ProjectParticipantsHeader from './ProjectParticipantsHeader';
+import ProjectParticipantsRoleMenu from './ProjectParticipantsRoleMenu';
 
-const useStyles = makeStyles((theme) => ({
-  projectTitleContainer: {
-    maxWidth: '170ch',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis'
-  },
-  projectTitle: {
-    display: '-webkit-box',
-    '-webkit-line-clamp': 2,
-    '-webkit-box-orient': 'vertical',
-    paddingTop: theme.spacing(0.5),
-    paddingBottom: theme.spacing(0.5),
-    overflow: 'hidden'
-  },
-  actionButton: {
-    minWidth: '6rem',
-    '& + button': {
-      marginLeft: '0.5rem'
-    }
-  },
+const useStyles = makeStyles(() => ({
   teamMembersTable: {
     tableLayout: 'fixed',
     '& td': {
@@ -59,123 +38,77 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const ProjectParticipantsPage: React.FC = () => {
-  const urlParams = useParams();
-  const dialogContext = useContext(DialogContext);
-  const biohubApi = useBiohubApi();
-
   const classes = useStyles();
 
-  const [isLoadingProject, setIsLoadingProject] = useState(true);
-  const [projectWithDetails, setProjectWithDetails] = useState<IGetProjectForViewResponse | null>(null);
+  const codesContext = useContext(CodesContext);
+  const projectContext = useContext(ProjectContext);
 
-  const [codes, setCodes] = useState<IGetAllCodeSetsResponse>();
-  const [isLoadingCodes, setIsLoadingCodes] = useState(true);
+  const dialogContext = useContext(DialogContext);
 
-  const [projectParticipants, setProjectParticipants] = useState<IGetProjectParticipantsResponseArrayItem[] | null>(
-    null
+  const biohubApi = useBiohubApi();
+
+  const projectParticipantsDataLoader = useDataLoader(() =>
+    biohubApi.project.getProjectParticipants(projectContext.projectId)
   );
 
-  const projectId = urlParams['id'];
+  useDataLoaderError(projectParticipantsDataLoader, (dataLoader) => {
+    return {
+      dialogTitle: ProjectParticipantsI18N.getParticipantsErrorTitle,
+      dialogText: ProjectParticipantsI18N.getParticipantsErrorText,
+      dialogError: (dataLoader.error as APIError).message
+    };
+  });
 
-  const defaultErrorDialogProps: Partial<IErrorDialogProps> = {
-    onClose: () => dialogContext.setErrorDialog({ open: false }),
-    onOk: () => dialogContext.setErrorDialog({ open: false })
-  };
+  useEffect(() => codesContext.codesDataLoader.load(), [codesContext.codesDataLoader]);
+
+  useEffect(() => projectParticipantsDataLoader.load(), [projectParticipantsDataLoader]);
 
   const openErrorDialog = useCallback(
     (errorDialogProps?: Partial<IErrorDialogProps>) => {
       dialogContext.setErrorDialog({
-        ...defaultErrorDialogProps,
-        ...errorDialogProps,
-        open: true
+        open: true,
+        onClose: () => dialogContext.setErrorDialog({ open: false }),
+        onOk: () => dialogContext.setErrorDialog({ open: false }),
+        ...errorDialogProps
       });
     },
-    [defaultErrorDialogProps, dialogContext]
+    [dialogContext]
   );
 
-  const defaultYesNoDialogProps: Partial<IYesNoDialogProps> = {
-    onClose: () => dialogContext.setYesNoDialog({ open: false }),
-    onNo: () => dialogContext.setYesNoDialog({ open: false })
-  };
-
-  const openYesNoDialog = (yesNoDialogProps?: Partial<IYesNoDialogProps>) => {
+  const handleDialogRemoveParticipantOpen = (participant: IGetProjectParticipantsResponseArrayItem) => {
     dialogContext.setYesNoDialog({
-      ...defaultYesNoDialogProps,
-      ...yesNoDialogProps,
-      open: true
+      dialogTitle: ProjectParticipantsI18N.removeParticipantTitle,
+      dialogContent: (
+        <Typography variant="body1" component="div" color="textSecondary">
+          Removing user <strong>{participant.user_identifier}</strong> will revoke their access to project. Are you sure
+          you want to proceed?
+        </Typography>
+      ),
+      yesButtonProps: { color: 'secondary' },
+      open: true,
+      onYes: () => {
+        handleRemoveProjectParticipant(participant.project_participation_id);
+        dialogContext.setYesNoDialog({ open: false });
+        dialogContext.setSnackbar({
+          open: true,
+          snackbarMessage: (
+            <Typography variant="body2" component="div">
+              User <strong>{participant.user_identifier}</strong> removed from project.
+            </Typography>
+          )
+        });
+      },
+      onClose: () => dialogContext.setYesNoDialog({ open: false }),
+      onNo: () => dialogContext.setYesNoDialog({ open: false })
     });
   };
 
-  const getProject = useCallback(async () => {
-    const projectWithDetailsResponse = await biohubApi.project.getProjectForView(urlParams['id']);
-
-    if (!projectWithDetailsResponse) {
-      return;
-    }
-
-    setProjectWithDetails(projectWithDetailsResponse);
-  }, [biohubApi.project, urlParams]);
-
-  useEffect(() => {
-    if (isLoadingProject && !projectWithDetails) {
-      getProject();
-      setIsLoadingProject(false);
-    }
-  }, [isLoadingProject, projectWithDetails, getProject]);
-
-  useEffect(() => {
-    const getCodes = async () => {
-      const codesResponse = await biohubApi.codes.getAllCodeSets();
-
-      if (!codesResponse) {
-        return;
-      }
-
-      setCodes(codesResponse);
-    };
-
-    if (isLoadingCodes && !codes) {
-      getCodes();
-      setIsLoadingCodes(false);
-    }
-  }, [urlParams, biohubApi.codes, isLoadingCodes, codes]);
-
-  const getProjectParticipants = useCallback(async () => {
-    try {
-      const response = await biohubApi.project.getProjectParticipants(projectId);
-
-      if (!response) {
-        openErrorDialog({
-          dialogTitle: ProjectParticipantsI18N.getParticipantsErrorTitle,
-          dialogText: ProjectParticipantsI18N.getParticipantsErrorText
-        });
-        setProjectParticipants([]);
-        return;
-      }
-
-      setProjectParticipants(response.participants);
-    } catch (error) {
-      openErrorDialog({
-        dialogTitle: ProjectParticipantsI18N.getParticipantsErrorTitle,
-        dialogText: ProjectParticipantsI18N.getParticipantsErrorText,
-        dialogError: (error as APIError).message
-      });
-      setProjectParticipants([]);
-      return;
-    }
-  }, [biohubApi.project, openErrorDialog, projectId]);
-
-  useEffect(() => {
-    if (projectParticipants) {
-      return;
-    }
-
-    getProjectParticipants();
-  }, [biohubApi, projectId, projectParticipants, getProjectParticipants]);
-
   const handleRemoveProjectParticipant = async (projectParticipationId: number) => {
     try {
-      const response = await biohubApi.project.removeProjectParticipant(projectId, projectParticipationId);
+      const response = await biohubApi.project.removeProjectParticipant(
+        projectContext.projectId,
+        projectParticipationId
+      );
 
       if (!response) {
         openErrorDialog({
@@ -185,7 +118,7 @@ const ProjectParticipantsPage: React.FC = () => {
         return;
       }
 
-      getProjectParticipants();
+      projectParticipantsDataLoader.refresh();
     } catch (error) {
       openErrorDialog({
         dialogTitle: ProjectParticipantsI18N.removeParticipantErrorTitle,
@@ -195,19 +128,31 @@ const ProjectParticipantsPage: React.FC = () => {
     }
   };
 
-  const hasProjectParticipants = !!(projectParticipants && projectParticipants.length);
+  function alphabetizeParticipants(
+    participantA: IGetProjectParticipantsResponseArrayItem,
+    participantB: IGetProjectParticipantsResponseArrayItem
+  ) {
+    // Message A is sorted before B
+    if (participantA.user_identifier < participantB.user_identifier) {
+      return -1;
+    }
+    // Message B is sorted before A
+    if (participantA.user_identifier > participantB.user_identifier) {
+      return 1;
+    }
+    // Items are already in order
+    return 0;
+  }
 
-  if (!codes || !projectParticipants || !projectWithDetails) {
+  if (!codesContext.codesDataLoader.data || !projectParticipantsDataLoader.hasLoaded) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
+  const codes = codesContext.codesDataLoader.data;
+
   return (
     <>
-      <ProjectParticipantsHeader
-        projectWithDetails={projectWithDetails}
-        codes={codes}
-        refresh={getProjectParticipants}
-      />
+      <ProjectParticipantsHeader refresh={projectParticipantsDataLoader.refresh} />
 
       <Container maxWidth="xl">
         <Box my={3}>
@@ -225,6 +170,7 @@ const ProjectParticipantsPage: React.FC = () => {
                 <TableHead>
                   <TableRow>
                     <TableCell>Username</TableCell>
+                    <TableCell>Type</TableCell>
                     <TableCell>Project Role</TableCell>
                     <TableCell width="150px" align="center">
                       Actions
@@ -232,55 +178,35 @@ const ProjectParticipantsPage: React.FC = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {hasProjectParticipants &&
-                    projectParticipants?.map((row) => (
-                      <TableRow key={row.project_participation_id}>
-                        <TableCell scope="row">{row.user_identifier}</TableCell>
+                  {projectParticipantsDataLoader.data &&
+                    projectParticipantsDataLoader.data.participants.sort(alphabetizeParticipants).map((participant) => (
+                      <TableRow key={participant.project_participation_id}>
+                        <TableCell scope="row">{participant.user_identifier}</TableCell>
+                        <TableCell scope="row">{participant.user_identity_source_id}</TableCell>
                         <TableCell>
                           <Box my={-1}>
-                            <ChangeProjectRoleMenu
-                              row={row}
+                            <ProjectParticipantsRoleMenu
+                              participant={participant}
                               projectRoleCodes={codes.project_roles}
-                              refresh={getProjectParticipants}
+                              refresh={projectParticipantsDataLoader.refresh}
                             />
                           </Box>
                         </TableCell>
+
                         <TableCell align="center">
                           <Box my={-1}>
                             <IconButton
                               title="Remove Team Member"
                               data-testid={'remove-project-participant-button'}
-                              onClick={() =>
-                                openYesNoDialog({
-                                  dialogTitle: ProjectParticipantsI18N.removeParticipantTitle,
-                                  dialogContent: (
-                                    <Typography variant="body1" component="div" color="textSecondary">
-                                      Removing user <strong>{row.user_identifier}</strong> will revoke their access to
-                                      project. Are you sure you want to proceed?
-                                    </Typography>
-                                  ),
-                                  yesButtonProps: { color: 'secondary' },
-                                  onYes: () => {
-                                    handleRemoveProjectParticipant(row.project_participation_id);
-                                    dialogContext.setYesNoDialog({ open: false });
-                                    dialogContext.setSnackbar({
-                                      open: true,
-                                      snackbarMessage: (
-                                        <Typography variant="body2" component="div">
-                                          User <strong>{row.user_identifier}</strong> removed from project.
-                                        </Typography>
-                                      )
-                                    });
-                                  }
-                                })
-                              }>
+                              onClick={() => handleDialogRemoveParticipantOpen(participant)}>
                               <Icon path={mdiTrashCanOutline} size={1} />
                             </IconButton>
                           </Box>
                         </TableCell>
                       </TableRow>
                     ))}
-                  {!hasProjectParticipants && (
+
+                  {!projectParticipantsDataLoader.data && (
                     <TableRow>
                       <TableCell colSpan={3}>
                         <Box display="flex" justifyContent="center">
@@ -300,115 +226,3 @@ const ProjectParticipantsPage: React.FC = () => {
 };
 
 export default ProjectParticipantsPage;
-
-export interface IChangeProjectRoleMenuProps {
-  row: IGetProjectParticipantsResponseArrayItem;
-  projectRoleCodes: CodeSet;
-  refresh: () => void;
-}
-
-const ChangeProjectRoleMenu: React.FC<IChangeProjectRoleMenuProps> = (props) => {
-  const { row, projectRoleCodes, refresh } = props;
-
-  const dialogContext = useContext(DialogContext);
-  const biohubApi = useBiohubApi();
-
-  const defaultErrorDialogProps = {
-    dialogTitle: ProjectParticipantsI18N.updateParticipantRoleErrorTitle,
-    dialogText: ProjectParticipantsI18N.updateParticipantRoleErrorText,
-    open: false,
-    onClose: () => {
-      dialogContext.setErrorDialog({ open: false });
-    },
-    onOk: () => {
-      dialogContext.setErrorDialog({ open: false });
-    }
-  };
-
-  const showErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
-    dialogContext.setErrorDialog({ ...defaultErrorDialogProps, ...textDialogProps, open: true });
-  };
-
-  const handleChangeUserPermissionsClick = (
-    item: IGetProjectParticipantsResponseArrayItem,
-    newRole: string,
-    newRoleId: number
-  ) => {
-    dialogContext.setYesNoDialog({
-      dialogTitle: 'Change Project Role?',
-      dialogContent: (
-        <Typography variant="body1" color="textSecondary">
-          Change user <strong>{item.user_identifier}</strong>'s role to <strong>{newRole}</strong>?
-        </Typography>
-      ),
-      yesButtonLabel: 'Change Role',
-      noButtonLabel: 'Cancel',
-      yesButtonProps: { color: 'primary' },
-      open: true,
-      onClose: () => {
-        dialogContext.setYesNoDialog({ open: false });
-      },
-      onNo: () => {
-        dialogContext.setYesNoDialog({ open: false });
-      },
-      onYes: () => {
-        changeProjectParticipantRole(item, newRole, newRoleId);
-        dialogContext.setYesNoDialog({ open: false });
-      }
-    });
-  };
-
-  const changeProjectParticipantRole = async (
-    item: IGetProjectParticipantsResponseArrayItem,
-    newRole: string,
-    newRoleId: number
-  ) => {
-    if (!item?.project_participation_id) {
-      return;
-    }
-
-    try {
-      const status = await biohubApi.project.updateProjectParticipantRole(
-        item.project_id,
-        item.project_participation_id,
-        newRoleId
-      );
-
-      if (!status) {
-        showErrorDialog();
-        return;
-      }
-
-      dialogContext.setSnackbar({
-        open: true,
-        snackbarMessage: (
-          <Typography variant="body2" component="div">
-            User <strong>{item.user_identifier}</strong>'s role changed to <strong>{newRole}</strong>.
-          </Typography>
-        )
-      });
-
-      refresh();
-    } catch (error) {
-      const apiError = error as APIError;
-      showErrorDialog({ dialogError: apiError.message, dialogErrorDetails: apiError.errors });
-    }
-  };
-
-  const currentProjectRoleName = projectRoleCodes.find((item) => item.id === row.project_role_id)?.name;
-
-  return (
-    <CustomMenuButton
-      buttonLabel={currentProjectRoleName}
-      buttonTitle={'Change Project Role'}
-      buttonProps={{ variant: 'outlined', size: 'small', color: 'default' }}
-      menuItems={projectRoleCodes.map((roleCode) => {
-        return {
-          menuLabel: roleCode.name,
-          menuOnClick: () => handleChangeUserPermissionsClick(row, roleCode.name, roleCode.id)
-        };
-      })}
-      buttonEndIcon={<Icon path={mdiChevronDown} size={0.8} />}
-    />
-  );
-};

@@ -9,10 +9,10 @@ exports[`FundingSource renders correctly 1`] = `
       class="MuiListItem-root MuiListItem-divider"
     >
       <div
-        class="MuiBox-root MuiBox-root-2"
+        class="MuiBox-root MuiBox-root-1"
       >
         <div
-          class="MuiBox-root MuiBox-root-3"
+          class="MuiBox-root MuiBox-root-2"
         >
           <span
             class="MuiTypography-root MuiTypography-body1"
@@ -26,7 +26,7 @@ exports[`FundingSource renders correctly 1`] = `
           </span>
         </div>
         <dl
-          class="MuiBox-root MuiBox-root-4 makeStyles-fundingSourceMeta-1"
+          class="MuiBox-root MuiBox-root-3"
         >
           <div
             class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-1"
