@@ -1,4 +1,5 @@
 import { cleanup, render } from '@testing-library/react';
+import { CodesContext, ICodesContext } from 'contexts/codesContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { DataLoader } from 'hooks/useDataLoader';
 import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
@@ -13,19 +14,31 @@ describe('SurveyPurposeAndMethodologyData', () => {
   });
 
   it('renders correctly', () => {
-    const mockSurveyDataLoader = { data: getSurveyForViewResponse } as DataLoader<any, IGetSurveyForViewResponse, any>;
+    const mockCodesContext: ICodesContext = {
+      codesDataLoader: {
+        data: codes
+      } as DataLoader<any, any, any>
+    };
+
+    const mockSurveyDataLoader = { data: getSurveyForViewResponse } as DataLoader<any, any, any>;
     const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
+    const mockObservationsDataLoader = { data: null } as DataLoader<any, any, any>;
+    const mockSummaryDataLoader = { data: null } as DataLoader<any, any, any>;
 
     const { getByTestId, getAllByTestId } = render(
-      <SurveyContext.Provider
-        value={{
-          projectId: 1,
-          surveyId: 1,
-          surveyDataLoader: mockSurveyDataLoader,
-          artifactDataLoader: mockArtifactDataLoader
-        }}>
-        <SurveyPurposeAndMethodologyData codes={codes} />
-      </SurveyContext.Provider>
+      <CodesContext.Provider value={mockCodesContext}>
+        <SurveyContext.Provider
+          value={{
+            projectId: 1,
+            surveyId: 1,
+            surveyDataLoader: mockSurveyDataLoader,
+            artifactDataLoader: mockArtifactDataLoader,
+            observationDataLoader: mockObservationsDataLoader,
+            summaryDataLoader: mockSummaryDataLoader
+          }}>
+          <SurveyPurposeAndMethodologyData />
+        </SurveyContext.Provider>
+      </CodesContext.Provider>
     );
 
     expect(getByTestId('survey_intended_outcome').textContent).toEqual('Intended Outcome 1');
@@ -39,6 +52,12 @@ describe('SurveyPurposeAndMethodologyData', () => {
   });
 
   it('renders correctly with no additional details', () => {
+    const mockCodesContext: ICodesContext = {
+      codesDataLoader: {
+        data: codes
+      } as DataLoader<any, any, any>
+    };
+
     const mockSurveyDataLoader = {
       data: {
         ...getSurveyForViewResponse,
@@ -52,17 +71,23 @@ describe('SurveyPurposeAndMethodologyData', () => {
       }
     } as DataLoader<any, IGetSurveyForViewResponse, any>;
     const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
+    const mockObservationsDataLoader = { data: null } as DataLoader<any, any, any>;
+    const mockSummaryDataLoader = { data: null } as DataLoader<any, any, any>;
 
     const { getByTestId, getAllByTestId } = render(
-      <SurveyContext.Provider
-        value={{
-          projectId: 1,
-          surveyId: 1,
-          surveyDataLoader: mockSurveyDataLoader,
-          artifactDataLoader: mockArtifactDataLoader
-        }}>
-        <SurveyPurposeAndMethodologyData codes={codes} />
-      </SurveyContext.Provider>
+      <CodesContext.Provider value={mockCodesContext}>
+        <SurveyContext.Provider
+          value={{
+            projectId: 1,
+            surveyId: 1,
+            surveyDataLoader: mockSurveyDataLoader,
+            artifactDataLoader: mockArtifactDataLoader,
+            observationDataLoader: mockObservationsDataLoader,
+            summaryDataLoader: mockSummaryDataLoader
+          }}>
+          <SurveyPurposeAndMethodologyData />
+        </SurveyContext.Provider>
+      </CodesContext.Provider>
     );
 
     expect(getByTestId('survey_intended_outcome').textContent).toEqual('Intended Outcome 1');
@@ -73,24 +98,5 @@ describe('SurveyPurposeAndMethodologyData', () => {
       'Vantage Code 2'
     ]);
     expect(getByTestId('survey_additional_details').textContent).toEqual('No additional details');
-  });
-
-  it('renders an empty fragment if survey data has not loaded or is undefined', () => {
-    const mockSurveyDataLoader = { data: undefined } as DataLoader<any, IGetSurveyForViewResponse, any>;
-    const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
-
-    const { container } = render(
-      <SurveyContext.Provider
-        value={{
-          projectId: 1,
-          surveyId: 1,
-          surveyDataLoader: mockSurveyDataLoader,
-          artifactDataLoader: mockArtifactDataLoader
-        }}>
-        <SurveyPurposeAndMethodologyData codes={codes} />
-      </SurveyContext.Provider>
-    );
-
-    expect(container.childElementCount).toEqual(0);
   });
 });

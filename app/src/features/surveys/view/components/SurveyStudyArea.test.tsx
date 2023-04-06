@@ -44,7 +44,7 @@ describe('SurveyStudyArea', () => {
   });
 
   it('renders correctly with no data', async () => {
-    const mockSurveyDataLoader = { data: null } as DataLoader<any, any, any>;
+    const mockSurveyDataLoader = { data: getSurveyForViewResponse } as DataLoader<any, any, any>;
     const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockObservationsDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockSummaryDataLoader = { data: null } as DataLoader<any, any, any>;
@@ -68,14 +68,22 @@ describe('SurveyStudyArea', () => {
     });
   });
 
-  describe('zoom to initial extent button', async () => {
+  describe('zoom to initial extent button', () => {
     it('is not rendered if there are no geometries on the map', async () => {
-      const mockSurveyDataLoader = { data: null } as DataLoader<any, any, any>;
+      const mockSurveyDataLoader = {
+        data: {
+          ...getSurveyForViewResponse,
+          surveyData: {
+            ...getSurveyForViewResponse.surveyData,
+            survey_details: { ...getSurveyForViewResponse.surveyData.survey_details, geometry: [] }
+          }
+        }
+      } as DataLoader<any, any, any>;
       const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
       const mockObservationsDataLoader = { data: null } as DataLoader<any, any, any>;
       const mockSummaryDataLoader = { data: null } as DataLoader<any, any, any>;
 
-      const { container, getByTestId } = render(
+      const { container, queryByTestId } = render(
         <SurveyContext.Provider
           value={{
             projectId: 1,
@@ -91,12 +99,12 @@ describe('SurveyStudyArea', () => {
 
       await waitFor(() => {
         expect(container).toBeVisible();
-        expect(getByTestId('survey_map_center_button')).not.toBeInTheDocument();
+        expect(queryByTestId('survey_map_center_button')).not.toBeInTheDocument();
       });
     });
 
     it('is rendered if there are geometries on the map', async () => {
-      const mockSurveyDataLoader = { data: null } as DataLoader<any, any, any>;
+      const mockSurveyDataLoader = { data: getSurveyForViewResponse } as DataLoader<any, any, any>;
       const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
       const mockObservationsDataLoader = { data: null } as DataLoader<any, any, any>;
       const mockSummaryDataLoader = { data: null } as DataLoader<any, any, any>;
@@ -123,7 +131,7 @@ describe('SurveyStudyArea', () => {
   });
 
   it.skip('does not display the zoom to initial extent button if there are not geometries', async () => {
-    const mockSurveyDataLoader = { data: null } as DataLoader<any, any, any>;
+    const mockSurveyDataLoader = { data: getSurveyForViewResponse } as DataLoader<any, any, any>;
     const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockObservationsDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockSummaryDataLoader = { data: null } as DataLoader<any, any, any>;
@@ -191,7 +199,7 @@ describe('SurveyStudyArea', () => {
   });
 
   it.skip('displays an error dialog when fetching the update data fails', async () => {
-    const mockSurveyDataLoader = { data: null } as DataLoader<any, any, any>;
+    const mockSurveyDataLoader = { data: getSurveyForViewResponse } as DataLoader<any, any, any>;
     const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockObservationsDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockSummaryDataLoader = { data: null } as DataLoader<any, any, any>;
@@ -230,7 +238,7 @@ describe('SurveyStudyArea', () => {
   });
 
   it.skip('shows error dialog with API error message when getting survey data for update fails', async () => {
-    const mockSurveyDataLoader = { data: null } as DataLoader<any, any, any>;
+    const mockSurveyDataLoader = { data: getSurveyForViewResponse } as DataLoader<any, any, any>;
     const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockObservationsDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockSummaryDataLoader = { data: null } as DataLoader<any, any, any>;
@@ -271,7 +279,7 @@ describe('SurveyStudyArea', () => {
   });
 
   it.skip('shows error dialog with API error message when updating survey data fails', async () => {
-    const mockSurveyDataLoader = { data: null } as DataLoader<any, any, any>;
+    const mockSurveyDataLoader = { data: getSurveyForViewResponse } as DataLoader<any, any, any>;
     const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockObservationsDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockSummaryDataLoader = { data: null } as DataLoader<any, any, any>;

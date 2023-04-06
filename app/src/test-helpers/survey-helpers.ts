@@ -1,3 +1,4 @@
+import { IGetObservationSubmissionResponse } from 'interfaces/useObservationApi.interface';
 import {
   IGetSurveyForViewResponse,
   SurveySupplementaryData,
@@ -100,4 +101,25 @@ export const surveySupplementaryData: SurveySupplementaryData = {
 export const getSurveyForViewResponse: IGetSurveyForViewResponse = {
   surveyData: surveyObject,
   surveySupplementaryData: surveySupplementaryData
+};
+
+export const getObservationSubmissionResponse: IGetObservationSubmissionResponse = {
+  surveyObservationData: {
+    occurrence_submission_id: 1,
+    inputFileName: 'input_file_name.txt',
+    status: 'status',
+    isValidating: false,
+    messageTypes: []
+  },
+  surveyObservationSupplementaryData: {
+    occurrence_submission_publish_id: 1,
+    occurrence_submission_id: 2,
+    event_timestamp: '2022-02-15',
+    queue_id: 3,
+    create_date: '2022-02-15',
+    create_user: 4,
+    update_date: null,
+    update_user: null,
+    revision_count: 0
+  }
 };

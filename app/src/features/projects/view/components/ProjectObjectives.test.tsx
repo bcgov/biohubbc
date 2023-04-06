@@ -6,8 +6,6 @@ import React from 'react';
 import ProjectObjectives from './ProjectObjectives';
 
 describe('ProjectObjectives', () => {
-  beforeEach(() => {});
-
   afterEach(() => {
     cleanup();
   });

@@ -79,7 +79,7 @@ describe('SurveyHeader', () => {
     cleanup();
   });
 
-  const renderComponent = (authState: any, surveyData: IGetSurveyForViewResponse) => {
+  const renderComponent = (authState: any) => {
     return render(
       <SurveyContext.Provider value={mockSurveyContext}>
         <AuthStateContext.Provider value={authState as IAuthState}>
@@ -104,7 +104,7 @@ describe('SurveyHeader', () => {
       }
     };
 
-    const { getByTestId, findByText, getByText } = renderComponent(authState, surveyForView);
+    const { getByTestId, findByText, getByText } = renderComponent(authState);
 
     const surveyHeaderText = await findByText('survey name', { selector: 'h1 span' });
     expect(surveyHeaderText).toBeVisible();
@@ -135,7 +135,7 @@ describe('SurveyHeader', () => {
       }
     };
 
-    const { queryByTestId, findByText } = renderComponent(authState, surveyForView);
+    const { queryByTestId, findByText } = renderComponent(authState);
 
     const surveyHeaderText = await findByText('survey name', { selector: 'h1 span' });
     expect(surveyHeaderText).toBeVisible();

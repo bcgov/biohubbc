@@ -1,5 +1,7 @@
 import { cleanup, render } from '@testing-library/react';
+import { IProjectContext, ProjectContext } from 'contexts/projectContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import { DataLoader } from 'hooks/useDataLoader';
 import React from 'react';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import FundingSource from './FundingSource';
@@ -32,7 +34,17 @@ describe('FundingSource', () => {
   });
 
   it('renders correctly', () => {
-    const { asFragment } = render(<FundingSource projectForViewData={getProjectForViewResponse.projectData} />);
+    const mockProjectContext: IProjectContext = {
+      projectDataLoader: { data: getProjectForViewResponse } as DataLoader<any, any, any>,
+      artifactDataLoader: { data: null } as DataLoader<any, any, any>,
+      projectId: 1
+    };
+
+    const { asFragment } = render(
+      <ProjectContext.Provider value={mockProjectContext}>
+        <FundingSource />
+      </ProjectContext.Provider>
+    );
 
     expect(asFragment()).toMatchSnapshot();
   });
