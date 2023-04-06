@@ -1,28 +1,42 @@
-import { render, waitFor } from '@testing-library/react';
+import { cleanup, render, waitFor } from '@testing-library/react';
+import { CodesContext, ICodesContext } from 'contexts/codesContext';
+import { IProjectContext, ProjectContext } from 'contexts/projectContext';
+import { DataLoader } from 'hooks/useDataLoader';
 import React from 'react';
 import { codes } from 'test-helpers/code-helpers';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import ProjectDetails from './ProjectDetails';
 
 describe('ProjectDetails', () => {
-  getProjectForViewResponse.projectData.location.geometry.push({
-    id: 'myGeo',
-    type: 'Feature',
-    geometry: {
-      type: 'Point',
-      coordinates: [125.6, 10.1]
-    },
-    properties: {
-      name: 'Dinagat Islands'
-    }
+  afterEach(() => {
+    cleanup();
   });
 
-  jest.spyOn(console, 'debug').mockImplementation(() => {});
-
-  const component = <ProjectDetails projectForViewData={getProjectForViewResponse.projectData} codes={codes} />;
-
   it('renders correctly', async () => {
-    const { asFragment } = render(component);
+    const mockCodesContext: ICodesContext = {
+      codesDataLoader: {
+        data: codes
+      } as DataLoader<any, any, any>
+    };
+
+    const mockProjectContext: IProjectContext = ({
+      projectDataLoader: {
+        data: getProjectForViewResponse
+      } as DataLoader<any, any, any>,
+      artifactDataLoader: ({
+        data: null,
+        load: jest.fn()
+      } as unknown) as DataLoader<any, any, any>,
+      projectId: 1
+    } as unknown) as IProjectContext;
+
+    const { asFragment } = render(
+      <CodesContext.Provider value={mockCodesContext}>
+        <ProjectContext.Provider value={mockProjectContext}>
+          <ProjectDetails />
+        </ProjectContext.Provider>
+      </CodesContext.Provider>
+    );
 
     await waitFor(() => {
       expect(asFragment()).toMatchSnapshot();

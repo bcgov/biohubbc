@@ -3,8 +3,9 @@ import Grid from '@material-ui/core/Grid';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
+import assert from 'assert';
+import { CodesContext } from 'contexts/codesContext';
 import { SurveyContext } from 'contexts/surveyContext';
-import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import React, { useContext } from 'react';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -23,28 +24,24 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }));
 
-export interface ISurveyPurposeAndMethodologyDataProps {
-  codes: IGetAllCodeSetsResponse;
-}
-
 /**
  * Purpose and Methodology data content for a survey.
  *
  * @return {*}
  */
-const SurveyPurposeAndMethodologyData = (props: ISurveyPurposeAndMethodologyDataProps) => {
+const SurveyPurposeAndMethodologyData = () => {
   const classes = useStyles();
+
+  const codesContext = useContext(CodesContext);
   const surveyContext = useContext(SurveyContext);
-  const surveyForViewData = surveyContext.surveyDataLoader.data;
 
-  if (!surveyForViewData) {
-    return <></>;
-  }
+  // Codes data must be loaded by the parent before this component is rendered
+  assert(codesContext.codesDataLoader.data);
+  // Survey data must be loaded by the parent before this component is rendered
+  assert(surveyContext.surveyDataLoader.data);
 
-  const {
-    surveyData: { purpose_and_methodology }
-  } = surveyForViewData;
-  const { codes } = props;
+  const codes = codesContext.codesDataLoader.data;
+  const surveyData = surveyContext.surveyDataLoader.data.surveyData;
 
   return (
     <>
@@ -56,9 +53,10 @@ const SurveyPurposeAndMethodologyData = (props: ISurveyPurposeAndMethodologyData
                 Intended Outcome
               </Typography>
               <Typography component="dd" variant="body1" data-testid="survey_intended_outcome">
-                {Boolean(purpose_and_methodology.intended_outcome_id) &&
-                  codes?.intended_outcomes?.find((item: any) => item.id === purpose_and_methodology.intended_outcome_id)
-                    ?.name}
+                {Boolean(surveyData.purpose_and_methodology.intended_outcome_id) &&
+                  codes?.intended_outcomes?.find(
+                    (item: any) => item.id === surveyData.purpose_and_methodology.intended_outcome_id
+                  )?.name}
               </Typography>
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -66,8 +64,10 @@ const SurveyPurposeAndMethodologyData = (props: ISurveyPurposeAndMethodologyData
                 Field Method
               </Typography>
               <Typography component="dd" variant="body1" data-testid="survey_field_method">
-                {Boolean(purpose_and_methodology.field_method_id) &&
-                  codes?.field_methods?.find((item: any) => item.id === purpose_and_methodology.field_method_id)?.name}
+                {Boolean(surveyData.purpose_and_methodology.field_method_id) &&
+                  codes?.field_methods?.find(
+                    (item: any) => item.id === surveyData.purpose_and_methodology.field_method_id
+                  )?.name}
               </Typography>
               <Typography component="dd" variant="body1"></Typography>
             </Grid>
@@ -76,9 +76,9 @@ const SurveyPurposeAndMethodologyData = (props: ISurveyPurposeAndMethodologyData
                 Ecological Season
               </Typography>
               <Typography component="dd" variant="body1" data-testid="survey_ecological_season">
-                {Boolean(purpose_and_methodology.ecological_season_id) &&
+                {Boolean(surveyData.purpose_and_methodology.ecological_season_id) &&
                   codes?.ecological_seasons?.find(
-                    (item: any) => item.id === purpose_and_methodology.ecological_season_id
+                    (item: any) => item.id === surveyData.purpose_and_methodology.ecological_season_id
                   )?.name}
               </Typography>
             </Grid>
@@ -86,7 +86,7 @@ const SurveyPurposeAndMethodologyData = (props: ISurveyPurposeAndMethodologyData
               <Typography component="dt" variant="subtitle2" color="textSecondary">
                 Vantage Code
               </Typography>
-              {purpose_and_methodology.vantage_code_ids?.map((vc_id: number, index: number) => {
+              {surveyData.purpose_and_methodology.vantage_code_ids?.map((vc_id: number, index: number) => {
                 return (
                   <Typography
                     component="dd"
@@ -104,7 +104,7 @@ const SurveyPurposeAndMethodologyData = (props: ISurveyPurposeAndMethodologyData
                 Additional Details
               </Typography>
               <Typography component="dd" variant="body1" data-testid="survey_additional_details">
-                {purpose_and_methodology.additional_details || 'No additional details'}
+                {surveyData.purpose_and_methodology.additional_details || 'No additional details'}
               </Typography>
             </Grid>
           </Grid>

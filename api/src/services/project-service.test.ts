@@ -25,6 +25,7 @@ describe('ProjectService', () => {
   afterEach(() => {
     sinon.restore();
   });
+
   describe('ensureProjectParticipant', () => {
     afterEach(() => {
       sinon.restore();

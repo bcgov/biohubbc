@@ -1,11 +1,14 @@
 import { cleanup, fireEvent, render, waitFor } from '@testing-library/react';
+import { CodesContext, ICodesContext } from 'contexts/codesContext';
 import { DialogContextProvider } from 'contexts/dialogContext';
-import { Feature } from 'geojson';
+import { IProjectContext, ProjectContext } from 'contexts/projectContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import { DataLoader } from 'hooks/useDataLoader';
 import { UPDATE_GET_ENTITIES } from 'interfaces/useProjectApi.interface';
 import React from 'react';
 import { codes } from 'test-helpers/code-helpers';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
+import { geoJsonFeature } from 'test-helpers/spatial-helpers';
 import LocationBoundary from './LocationBoundary';
 
 jest.mock('../../../../hooks/useBioHubApi');
@@ -41,28 +44,6 @@ describe.skip('LocationBoundary', () => {
     cleanup();
   });
 
-  const sharedGeometry: Feature[] = [
-    {
-      type: 'Feature',
-      id: 'myGeo',
-      geometry: {
-        type: 'Polygon',
-        coordinates: [
-          [
-            [-128, 55],
-            [-128, 55.5],
-            [-128, 56],
-            [-126, 58],
-            [-128, 55]
-          ]
-        ]
-      },
-      properties: {
-        name: 'Biohub Islands'
-      }
-    }
-  ];
-
   mockBiohubApi().external.get.mockResolvedValue({
     features: []
   });
@@ -70,36 +51,32 @@ describe.skip('LocationBoundary', () => {
     features: []
   });
 
-  test('matches the snapshot when there is no location description', async () => {
-    const { asFragment } = render(
-      <LocationBoundary
-        projectForViewData={{
+  it('matches the snapshot when there is no location description', async () => {
+    const mockCodesContext: ICodesContext = {
+      codesDataLoader: {
+        data: codes
+      } as DataLoader<any, any, any>
+    };
+    const mockProjectContext: IProjectContext = {
+      projectDataLoader: {
+        data: {
           ...getProjectForViewResponse.projectData,
           location: {
             ...getProjectForViewResponse.projectData.location,
             location_description: (null as unknown) as string
           }
-        }}
-        codes={codes}
-        refresh={mockRefresh}
-      />
-    );
+        }
+      } as DataLoader<any, any, any>,
+      artifactDataLoader: { data: null } as DataLoader<any, any, any>,
+      projectId: 1
+    };
 
-    await waitFor(() => {
-      expect(asFragment()).toMatchSnapshot();
-    });
-  });
-
-  test('matches the snapshot when there is no geometry', async () => {
     const { asFragment } = render(
-      <LocationBoundary
-        projectForViewData={{
-          ...getProjectForViewResponse.projectData,
-          location: { ...getProjectForViewResponse.projectData.location, geometry: [] }
-        }}
-        codes={codes}
-        refresh={mockRefresh}
-      />
+      <CodesContext.Provider value={mockCodesContext}>
+        <ProjectContext.Provider value={mockProjectContext}>
+          <LocationBoundary />
+        </ProjectContext.Provider>
+      </CodesContext.Provider>
     );
 
     await waitFor(() => {
@@ -107,16 +84,32 @@ describe.skip('LocationBoundary', () => {
     });
   });
 
-  test('matches the snapshot when the geometry is a single polygon in valid GeoJSON format', async () => {
+  it('matches the snapshot when there is no geometry', async () => {
+    const mockCodesContext: ICodesContext = {
+      codesDataLoader: {
+        data: codes
+      } as DataLoader<any, any, any>
+    };
+    const mockProjectContext: IProjectContext = {
+      projectDataLoader: {
+        data: {
+          ...getProjectForViewResponse,
+          projectData: {
+            ...getProjectForViewResponse.projectData,
+            location: { ...getProjectForViewResponse.projectData.location, geometry: [] }
+          }
+        }
+      } as DataLoader<any, any, any>,
+      artifactDataLoader: { data: null } as DataLoader<any, any, any>,
+      projectId: 1
+    };
+
     const { asFragment } = render(
-      <LocationBoundary
-        projectForViewData={{
-          ...getProjectForViewResponse.projectData,
-          location: { ...getProjectForViewResponse.projectData.location, geometry: sharedGeometry }
-        }}
-        codes={codes}
-        refresh={mockRefresh}
-      />
+      <CodesContext.Provider value={mockCodesContext}>
+        <ProjectContext.Provider value={mockProjectContext}>
+          <LocationBoundary />
+        </ProjectContext.Provider>
+      </CodesContext.Provider>
     );
 
     await waitFor(() => {
@@ -124,21 +117,67 @@ describe.skip('LocationBoundary', () => {
     });
   });
 
-  test('editing the location boundary works in the dialog', async () => {
+  it('matches the snapshot when the geometry is a single polygon in valid GeoJSON format', async () => {
+    const mockCodesContext: ICodesContext = {
+      codesDataLoader: {
+        data: codes
+      } as DataLoader<any, any, any>
+    };
+    const mockProjectContext: IProjectContext = {
+      projectDataLoader: {
+        data: {
+          ...getProjectForViewResponse,
+          projectData: {
+            ...getProjectForViewResponse.projectData,
+            location: { ...getProjectForViewResponse.projectData.location, geometry: geoJsonFeature }
+          }
+        }
+      } as DataLoader<any, any, any>,
+      artifactDataLoader: { data: null } as DataLoader<any, any, any>,
+      projectId: 1
+    };
+
+    const { asFragment } = render(
+      <CodesContext.Provider value={mockCodesContext}>
+        <ProjectContext.Provider value={mockProjectContext}>
+          <LocationBoundary />
+        </ProjectContext.Provider>
+      </CodesContext.Provider>
+    );
+
+    await waitFor(() => {
+      expect(asFragment()).toMatchSnapshot();
+    });
+  });
+
+  it('editing the location boundary works in the dialog', async () => {
+    const mockCodesContext: ICodesContext = {
+      codesDataLoader: {
+        data: codes
+      } as DataLoader<any, any, any>
+    };
+    const mockProjectContext: IProjectContext = {
+      projectDataLoader: {
+        data: getProjectForViewResponse
+      } as DataLoader<any, any, any>,
+      artifactDataLoader: { data: null } as DataLoader<any, any, any>,
+      projectId: 1
+    };
+
     mockBiohubApi().project.getProjectForUpdate.mockResolvedValue({
       location: {
         location_description: 'description',
-        geometry: sharedGeometry,
+        geometry: geoJsonFeature,
         revision_count: 1
       }
     });
 
     const { getByText, queryByText } = render(
-      <LocationBoundary
-        projectForViewData={getProjectForViewResponse.projectData}
-        codes={codes}
-        refresh={mockRefresh}
-      />
+      <CodesContext.Provider value={mockCodesContext}>
+        <ProjectContext.Provider value={mockProjectContext}>
+          <LocationBoundary />
+        </ProjectContext.Provider>
+      </CodesContext.Provider>
     );
 
     await waitFor(() => {
@@ -177,7 +216,7 @@ describe.skip('LocationBoundary', () => {
       expect(mockBiohubApi().project.updateProject).toBeCalledWith(getProjectForViewResponse.projectData.project.id, {
         location: {
           location_description: 'description',
-          geometry: sharedGeometry,
+          geometry: geoJsonFeature,
           revision_count: 1
         }
       });
@@ -187,17 +226,30 @@ describe.skip('LocationBoundary', () => {
   });
 
   it('displays an error dialog when fetching the update data fails', async () => {
+    const mockCodesContext: ICodesContext = {
+      codesDataLoader: {
+        data: codes
+      } as DataLoader<any, any, any>
+    };
+    const mockProjectContext: IProjectContext = {
+      projectDataLoader: {
+        data: getProjectForViewResponse
+      } as DataLoader<any, any, any>,
+      artifactDataLoader: { data: null } as DataLoader<any, any, any>,
+      projectId: 1
+    };
+
     mockBiohubApi().project.getProjectForUpdate.mockResolvedValue({
       location: null
     });
 
     const { getByText, queryByText } = render(
       <DialogContextProvider>
-        <LocationBoundary
-          projectForViewData={getProjectForViewResponse.projectData}
-          codes={codes}
-          refresh={mockRefresh}
-        />
+        <CodesContext.Provider value={mockCodesContext}>
+          <ProjectContext.Provider value={mockProjectContext}>
+            <LocationBoundary />
+          </ProjectContext.Provider>
+        </CodesContext.Provider>
       </DialogContextProvider>
     );
 
@@ -219,15 +271,28 @@ describe.skip('LocationBoundary', () => {
   });
 
   it('shows error dialog with API error message when getting location data for update fails', async () => {
+    const mockCodesContext: ICodesContext = {
+      codesDataLoader: {
+        data: codes
+      } as DataLoader<any, any, any>
+    };
+    const mockProjectContext: IProjectContext = {
+      projectDataLoader: {
+        data: getProjectForViewResponse
+      } as DataLoader<any, any, any>,
+      artifactDataLoader: { data: null } as DataLoader<any, any, any>,
+      projectId: 1
+    };
+
     mockBiohubApi().project.getProjectForUpdate = jest.fn(() => Promise.reject(new Error('API Error is Here')));
 
     const { getByText, queryByText } = render(
       <DialogContextProvider>
-        <LocationBoundary
-          projectForViewData={getProjectForViewResponse.projectData}
-          codes={codes}
-          refresh={mockRefresh}
-        />
+        <CodesContext.Provider value={mockCodesContext}>
+          <ProjectContext.Provider value={mockProjectContext}>
+            <LocationBoundary />
+          </ProjectContext.Provider>
+        </CodesContext.Provider>
       </DialogContextProvider>
     );
 
@@ -249,10 +314,23 @@ describe.skip('LocationBoundary', () => {
   });
 
   it('shows error dialog with API error message when updating location data fails', async () => {
+    const mockCodesContext: ICodesContext = {
+      codesDataLoader: {
+        data: codes
+      } as DataLoader<any, any, any>
+    };
+    const mockProjectContext: IProjectContext = {
+      projectDataLoader: {
+        data: getProjectForViewResponse
+      } as DataLoader<any, any, any>,
+      artifactDataLoader: { data: null } as DataLoader<any, any, any>,
+      projectId: 1
+    };
+
     mockBiohubApi().project.getProjectForUpdate.mockResolvedValue({
       location: {
         location_description: 'description',
-        geometry: sharedGeometry,
+        geometry: geoJsonFeature,
         revision_count: 1
       }
     });
@@ -260,11 +338,11 @@ describe.skip('LocationBoundary', () => {
 
     const { getByText, queryByText, getAllByRole } = render(
       <DialogContextProvider>
-        <LocationBoundary
-          projectForViewData={getProjectForViewResponse.projectData}
-          codes={codes}
-          refresh={mockRefresh}
-        />
+        <CodesContext.Provider value={mockCodesContext}>
+          <ProjectContext.Provider value={mockProjectContext}>
+            <LocationBoundary />
+          </ProjectContext.Provider>
+        </CodesContext.Provider>
       </DialogContextProvider>
     );
 

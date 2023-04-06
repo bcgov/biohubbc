@@ -1,7 +1,10 @@
 import { cleanup, fireEvent, render, waitFor } from '@testing-library/react';
+import { CodesContext, ICodesContext } from 'contexts/codesContext';
 import { DialogContextProvider } from 'contexts/dialogContext';
+import { IProjectContext, ProjectContext } from 'contexts/projectContext';
 import { createMemoryHistory } from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import { DataLoader } from 'hooks/useDataLoader';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import {
@@ -53,10 +56,27 @@ const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBioh
 );
 
 const renderContainer = () => {
+  const mockCodesContext: ICodesContext = {
+    codesDataLoader: {
+      data: codes
+    } as DataLoader<any, any, any>
+  };
+  const mockProjectContext: IProjectContext = {
+    projectDataLoader: {
+      data: getProjectForViewResponse
+    } as DataLoader<any, any, any>,
+    artifactDataLoader: { data: null } as DataLoader<any, any, any>,
+    projectId: 1
+  };
+
   return render(
     <DialogContextProvider>
       <Router history={history}>
-        <CreateSurveyPage />
+        <CodesContext.Provider value={mockCodesContext}>
+          <ProjectContext.Provider value={mockProjectContext}>
+            <CreateSurveyPage />
+          </ProjectContext.Provider>
+        </CodesContext.Provider>
       </Router>
     </DialogContextProvider>
   );

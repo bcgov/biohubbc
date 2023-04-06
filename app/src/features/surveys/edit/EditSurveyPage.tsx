@@ -7,7 +7,9 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { EditSurveyI18N } from 'constants/i18n';
+import { CodesContext } from 'contexts/codesContext';
 import { DialogContext } from 'contexts/dialogContext';
+import { ProjectContext } from 'contexts/projectContext';
 import { FormikProps } from 'formik';
 import * as History from 'history';
 import { APIError } from 'hooks/api/useAxios';
@@ -16,7 +18,7 @@ import useDataLoader from 'hooks/useDataLoader';
 import { useQuery } from 'hooks/useQuery';
 import { IEditSurveyRequest, SurveyUpdateObject } from 'interfaces/useSurveyApi.interface';
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { Prompt, useHistory, useParams } from 'react-router';
+import { Prompt, useHistory } from 'react-router';
 import EditSurveyForm from './EditSurveyForm';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -59,7 +61,6 @@ const useStyles = makeStyles((theme: Theme) => ({
  * @return {*}
  */
 const EditSurveyPage = () => {
-  const urlParams = useParams();
   const classes = useStyles();
   const biohubApi = useBiohubApi();
   const history = useHistory();
@@ -72,20 +73,21 @@ const EditSurveyPage = () => {
 
   const dialogContext = useContext(DialogContext);
 
-  const codesDataLoader = useDataLoader(() => biohubApi.codes.getAllCodeSets());
-  codesDataLoader.load();
-  const codes = codesDataLoader.data;
+  const codesContext = useContext(CodesContext);
+  useEffect(() => codesContext.codesDataLoader.load(), [codesContext.codesDataLoader]);
+  const codes = codesContext.codesDataLoader.data;
 
-  const getProjectForViewDataLoader = useDataLoader((projectId: number) =>
-    biohubApi.project.getProjectForView(projectId)
-  );
-  getProjectForViewDataLoader.load(urlParams['id']);
-  const projectData = getProjectForViewDataLoader.data?.projectData;
+  const projectContext = useContext(ProjectContext);
+  useEffect(() => projectContext.projectDataLoader.load(projectContext.projectId), [
+    projectContext.projectDataLoader,
+    projectContext.projectId
+  ]);
+  const projectData = projectContext.projectDataLoader.data?.projectData;
 
-  const getSurveyFundingSourcesDataLoader = useDataLoader((projectId: number) =>
-    biohubApi.survey.getAvailableSurveyFundingSources(projectId)
+  const getSurveyFundingSourcesDataLoader = useDataLoader(() =>
+    biohubApi.survey.getAvailableSurveyFundingSources(projectContext.projectId)
   );
-  getSurveyFundingSourcesDataLoader.load(urlParams['id']);
+  getSurveyFundingSourcesDataLoader.load();
   const fundingSourcesData = getSurveyFundingSourcesDataLoader.data || [];
 
   const editSurveyDL = useDataLoader((projectId: number, surveyId: number) =>
@@ -93,7 +95,7 @@ const EditSurveyPage = () => {
   );
 
   if (!editSurveyDL.data && queryParams.surveyId) {
-    editSurveyDL.load(urlParams['id'], queryParams.surveyId);
+    editSurveyDL.load(projectContext.projectId, queryParams.surveyId);
   }
 
   useEffect(() => {
@@ -119,13 +121,13 @@ const EditSurveyPage = () => {
     },
     onYes: () => {
       dialogContext.setYesNoDialog({ open: false });
-      history.push(`/admin/projects/${projectData?.project.id}/survey/${queryParams.surveyId}`);
+      history.push(`/admin/projects/${projectContext.projectId}/survey/${queryParams.surveyId}`);
     }
   };
 
   const handleCancel = () => {
     dialogContext.setYesNoDialog(defaultCancelDialogProps);
-    history.push(`/admin/projects/${projectData?.project.id}/surveys/${queryParams.surveyId}/details`);
+    history.push(`/admin/projects/${projectContext.projectId}/surveys/${queryParams.surveyId}/details`);
   };
 
   const showEditErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
@@ -151,7 +153,7 @@ const EditSurveyPage = () => {
   const handleSubmit = async (values: IEditSurveyRequest) => {
     try {
       const response = await biohubApi.survey.updateSurvey(
-        urlParams['id'],
+        projectContext.projectId,
         Number(queryParams.surveyId),
         (values as unknown) as SurveyUpdateObject
       );

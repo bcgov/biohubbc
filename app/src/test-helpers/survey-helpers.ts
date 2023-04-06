@@ -1,8 +1,10 @@
+import { IGetObservationSubmissionResponse } from 'interfaces/useObservationApi.interface';
 import {
   IGetSurveyForViewResponse,
   SurveySupplementaryData,
   SurveyViewObject
 } from 'interfaces/useSurveyApi.interface';
+import { geoJsonFeature } from './spatial-helpers';
 
 export const surveyObject: SurveyViewObject = {
   survey_details: {
@@ -14,27 +16,7 @@ export const surveyObject: SurveyViewObject = {
     biologist_first_name: 'first',
     biologist_last_name: 'last',
     survey_area_name: 'study area',
-    geometry: [
-      {
-        type: 'Feature',
-        id: 'myGeo',
-        geometry: {
-          type: 'Polygon',
-          coordinates: [
-            [
-              [-128, 55],
-              [-128, 55.5],
-              [-128, 56],
-              [-126, 58],
-              [-128, 55]
-            ]
-          ]
-        },
-        properties: {
-          name: 'Biohub Islands'
-        }
-      }
-    ],
+    geometry: [geoJsonFeature],
     revision_count: 0
   },
   purpose_and_methodology: {
@@ -119,4 +101,25 @@ export const surveySupplementaryData: SurveySupplementaryData = {
 export const getSurveyForViewResponse: IGetSurveyForViewResponse = {
   surveyData: surveyObject,
   surveySupplementaryData: surveySupplementaryData
+};
+
+export const getObservationSubmissionResponse: IGetObservationSubmissionResponse = {
+  surveyObservationData: {
+    occurrence_submission_id: 1,
+    inputFileName: 'input_file_name.txt',
+    status: 'status',
+    isValidating: false,
+    messageTypes: []
+  },
+  surveyObservationSupplementaryData: {
+    occurrence_submission_publish_id: 1,
+    occurrence_submission_id: 2,
+    event_timestamp: '2022-02-15',
+    queue_id: 3,
+    create_date: '2022-02-15',
+    create_user: 4,
+    update_date: null,
+    update_user: null,
+    revision_count: 0
+  }
 };
