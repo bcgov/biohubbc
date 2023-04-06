@@ -240,17 +240,20 @@ const ProjectHeader: React.FC<IProjectHeaderProps> = (props) => {
             </Box>
             <Box flex="0 0 auto" className={classes.titleActions}>
               <Button
+                id="project_settings-button"
                 variant="outlined"
-                startIcon={<Icon path={mdiCogOutline} size={0.8} />}
-                endIcon={<Icon path={mdiChevronDown} size={0.8} />}
-                aria-controls="simple-menu"
+                startIcon={<Icon path={mdiCogOutline} size={1} />}
+                endIcon={<Icon path={mdiChevronDown} size={1} />}
+                aria-label="Project Settings"
+                aria-controls="projectSettingsMenu"
                 aria-haspopup="true"
                 onClick={handleClick}>
-                Project Settings
+                Settings
               </Button>
               <Menu
-                style={{ marginTop: '8px' }}
                 id="projectSettingsMenu"
+                aria-labelledby="project_settings_button"
+                style={{ marginTop: '8px' }}
                 anchorEl={anchorEl}
                 getContentAnchorEl={null}
                 anchorOrigin={{
@@ -266,20 +269,20 @@ const ProjectHeader: React.FC<IProjectHeaderProps> = (props) => {
                 onClose={handleClose}>
                 <MenuItem onClick={() => history.push('users')}>
                   <ListItemIcon>
-                    <Icon path={mdiAccountMultipleOutline} size={0.8} />
+                    <Icon path={mdiAccountMultipleOutline} size={1} />
                   </ListItemIcon>
                   <Typography variant="inherit">Manage Project Team</Typography>
                 </MenuItem>
                 <MenuItem onClick={() => history.push(`/admin/projects/edit?projectId=${projectWithDetails.id}`)}>
                   <ListItemIcon>
-                    <Icon path={mdiPencilOutline} size={0.8} />
+                    <Icon path={mdiPencilOutline} size={1} />
                   </ListItemIcon>
                   <Typography variant="inherit">Edit Project Details</Typography>
                 </MenuItem>
                 {showDeleteProjectButton && (
                   <MenuItem onClick={showDeleteProjectDialog} data-testid={'delete-project-button'}>
                     <ListItemIcon>
-                      <Icon path={mdiTrashCanOutline} size={0.8} />
+                      <Icon path={mdiTrashCanOutline} size={1} />
                     </ListItemIcon>
                     <Typography variant="inherit">Delete Project</Typography>
                   </MenuItem>
