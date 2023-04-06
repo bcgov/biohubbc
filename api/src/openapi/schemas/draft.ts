@@ -4,18 +4,25 @@
 export const draftResponseObject = {
   title: 'Draft Response Object',
   type: 'object',
-  required: ['id', 'name', 'date'],
+  required: ['webform_draft_id', 'name', 'create_date', 'update_date'],
   properties: {
-    id: {
+    webform_draft_id: {
       type: 'number'
     },
     name: {
       type: 'string',
       description: 'The name of the draft'
     },
-    date: {
-      description: 'The date this draft was last updated or created',
-      oneOf: [{ type: 'string', format: 'date' }, { type: 'object' }]
+    create_date: {
+      oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
+      description: 'ISO 8601 date string for the date the draft was created'
+    },
+    update_date: {
+      oneOf: [
+        { type: 'object', nullable: true },
+        { type: 'string', format: 'date' }
+      ],
+      description: 'ISO 8601 date string for the date the draft was updated'
     }
   }
 };

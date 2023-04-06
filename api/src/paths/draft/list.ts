@@ -1,13 +1,12 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { getDBConnection } from '../database/db';
-import { HTTP400 } from '../errors/http-error';
-import { draftResponseObject } from '../openapi/schemas/draft';
-import { queries } from '../queries/queries';
-import { authorizeRequestHandler } from '../request-handlers/security/authorization';
-import { getLogger } from '../utils/logger';
+import { getDBConnection } from '../../database/db';
+import { draftResponseObject } from '../../openapi/schemas/draft';
+import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
+import { DraftService } from '../../services/draft-service';
+import { getLogger } from '../../utils/logger';
 
-const defaultLog = getLogger('paths/drafts');
+const defaultLog = getLogger('paths/draft/list');
 
 export const GET: Operation = [
   authorizeRequestHandler(() => {
@@ -76,34 +75,13 @@ export function getDraftList(): RequestHandler {
 
       const systemUserId = connection.systemUserId();
 
-      if (!systemUserId) {
-        throw new HTTP400('Failed to identify system user ID');
-      }
+      const draftService = new DraftService(connection);
 
-      const getDraftsSQLStatement = queries.project.draft.getDraftsSQL(systemUserId);
-
-      if (!getDraftsSQLStatement) {
-        throw new HTTP400('Failed to build SQL get statement');
-      }
-
-      const getDraftsResponse = await connection.query(getDraftsSQLStatement.text, getDraftsSQLStatement.values);
-
-      const draftResult: { name: string; id: string; update_date: string; create_date: string }[] | null =
-        (getDraftsResponse && getDraftsResponse.rows) || null;
-
-      if (!draftResult) {
-        throw new HTTP400('Failed to get drafts');
-      }
+      const drafts = await draftService.getDraftList(systemUserId);
 
       await connection.commit();
 
-      return res.status(200).json(
-        draftResult.map((result) => ({
-          id: result.id,
-          name: result.name,
-          date: result.update_date || result.create_date
-        }))
-      );
+      return res.status(200).json(drafts);
     } catch (error) {
       defaultLog.error({ label: 'getDraftsList', message: 'error', error });
       await connection.rollback();
