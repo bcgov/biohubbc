@@ -38,8 +38,8 @@ const generalInformationFilledValues: IGeneralInformationForm = {
   permit: {
     permits: [
       {
-        permit_number: '123',
-        permit_type: '123 - Scientific'
+        permit_number: '12345',
+        permit_type: 'Park Use Permit'
       }
     ]
   },

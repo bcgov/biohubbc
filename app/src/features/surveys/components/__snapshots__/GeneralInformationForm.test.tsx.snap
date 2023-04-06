@@ -1241,7 +1241,7 @@ exports[`General Information Form renders correctly the filled component correct
                             name="permit.permits.[0].permit_number"
                             required=""
                             type="text"
-                            value="123"
+                            value="12345"
                           />
                           <fieldset
                             aria-hidden="true"
@@ -1289,9 +1289,7 @@ exports[`General Information Form renders correctly the filled component correct
                             role="button"
                             tabindex="0"
                           >
-                            <span>
-                              ​
-                            </span>
+                            Park Use Permit
                           </div>
                           <input
                             aria-hidden="true"
@@ -1299,7 +1297,7 @@ exports[`General Information Form renders correctly the filled component correct
                             name="permit.permits.[0].permit_type"
                             required=""
                             tabindex="-1"
-                            value="123 - Scientific"
+                            value="Park Use Permit"
                           />
                           <svg
                             aria-hidden="true"
@@ -2134,7 +2132,7 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
                             name="permit.permits.[0].permit_number"
                             required=""
                             type="text"
-                            value="123"
+                            value="12345"
                           />
                           <fieldset
                             aria-hidden="true"
@@ -2182,9 +2180,7 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
                             role="button"
                             tabindex="0"
                           >
-                            <span>
-                              ​
-                            </span>
+                            Park Use Permit
                           </div>
                           <input
                             aria-hidden="true"
@@ -2192,7 +2188,7 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
                             name="permit.permits.[0].permit_type"
                             required=""
                             tabindex="-1"
-                            value="123 - Scientific"
+                            value="Park Use Permit"
                           />
                           <svg
                             aria-hidden="true"
