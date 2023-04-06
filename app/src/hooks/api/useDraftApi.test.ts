@@ -38,7 +38,7 @@ describe('useDraftApi', () => {
   });
 
   it('getDraftsList works as expected', async () => {
-    mock.onGet('/api/drafts').reply(200, [
+    mock.onGet('/api/draft/list').reply(200, [
       {
         id: 1,
         name: 'draft 1'

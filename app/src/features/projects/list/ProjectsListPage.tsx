@@ -172,6 +172,8 @@ const ProjectsListPage: React.FC = () => {
     const getDrafts = async () => {
       const draftsResponse = await biohubApi.draft.getDraftsList();
 
+      console.log('draftsResponse: ', draftsResponse);
+
       setDrafts(() => {
         setIsLoading(false);
         return draftsResponse;
@@ -287,14 +289,14 @@ const ProjectsListPage: React.FC = () => {
             </TableHead>
             <TableBody data-testid="project-table">
               {drafts?.map((row) => (
-                <TableRow key={row.id}>
+                <TableRow key={row.webform_draft_id}>
                   <TableCell>
                     <Link
                       className={classes.linkButton}
                       data-testid={row.name}
                       underline="always"
                       component="button"
-                      onClick={() => navigateToCreateProjectPage(row.id)}>
+                      onClick={() => navigateToCreateProjectPage(row.webform_draft_id)}>
                       {row.name}
                     </Link>
                   </TableCell>

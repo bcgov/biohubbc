@@ -18,7 +18,7 @@ export interface IDraftResponse {
  * @interface IGetDraftsListResponse
  */
 export interface IGetDraftsListResponse {
-  id: number;
+  webform_draft_id: number;
   name: string;
 }
 

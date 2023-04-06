@@ -45,7 +45,7 @@ const useDraftApi = (axios: AxiosInstance) => {
    * @return {*}  {Promise<IGetDraftsListResponse[]>}
    */
   const getDraftsList = async (): Promise<IGetDraftsListResponse[]> => {
-    const { data } = await axios.get(`/api/drafts`);
+    const { data } = await axios.get(`/api/draft/list`);
 
     return data;
   };

@@ -207,7 +207,7 @@ describe('ProjectsListPage', () => {
   test('navigating to the create project page works on draft projects', async () => {
     mockBiohubApi().draft.getDraftsList.mockResolvedValue([
       {
-        id: 1,
+        webform_draft_id: 1,
         name: 'Draft 1'
       }
     ]);
