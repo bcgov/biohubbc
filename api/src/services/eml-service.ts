@@ -525,7 +525,7 @@ export class EmlService extends DBService {
   _getSurveyAdditionalMetadata(_surveysData: SurveyObject[]): AdditionalMetadata[] {
     const additionalMetadata: AdditionalMetadata[] = [];
 
-    _surveysData.map((item) => {
+    _surveysData.forEach((item) => {
       // add this metadata field so biohub is aware if EML is a project or survey
       additionalMetadata.push({
         describes: item.survey_details.uuid,
