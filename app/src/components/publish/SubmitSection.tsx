@@ -58,6 +58,10 @@ const DisplayFiles: React.FC<IDisplayFilesProps> = (props) => {
     );
   }
 
+  const isChecked = (item: any) => {
+    return values[formikName].find((value: any) => getName(value) === getName(item)) ? true : false;
+  };
+
   return (
     <List disablePadding>
       <FieldArray
@@ -81,7 +85,7 @@ const DisplayFiles: React.FC<IDisplayFilesProps> = (props) => {
                 <ListItemIcon>
                   <Checkbox
                     edge="start"
-                    checked={!values[formikName].find((value: any) => getName(value) === getName(item)) ? false : true}
+                    checked={isChecked(item)}
                     name={`${formikName}[${index}]`}
                     color="primary"></Checkbox>
                 </ListItemIcon>

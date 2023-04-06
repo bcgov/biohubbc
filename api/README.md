@@ -155,3 +155,12 @@ See [Mocha](https://mochajs.org) for documentation on writing tests.
 # Keycloak
 
 This project uses [Keycloak](https://www.keycloak.org/) to handle authentication.
+
+# Troubleshooting and Known Issues
+
+### Observations validation
+
+There is a known issue with `JSONPath from 'jsonpath-plus'` upgraded from 'jsonpath'. The issue is due to the difference between qoutation marks ["", ''] during the validation schema parser. The issue may be resolved and is updated to using "" in all locations.
+
+- `api\src\utils\media\validation\validation-schema-parser.ts`
+- https://github.com/JSONPath-Plus/JSONPath/issues/160

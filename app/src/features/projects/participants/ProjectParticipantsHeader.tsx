@@ -7,16 +7,17 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
 import { mdiArrowLeft, mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
+import assert from 'assert';
 import EditDialog from 'components/dialog/EditDialog';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { ProjectParticipantsI18N } from 'constants/i18n';
+import { CodesContext } from 'contexts/codesContext';
 import { DialogContext } from 'contexts/dialogContext';
+import { ProjectContext } from 'contexts/projectContext';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import React, { useContext, useState } from 'react';
-import { useHistory, useParams } from 'react-router';
+import { useHistory } from 'react-router';
 import AddProjectParticipantsForm, {
   AddProjectParticipantsFormInitialValues,
   AddProjectParticipantsFormYupSchema,
@@ -44,27 +45,32 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 export interface IProjectParticipantsHeaderProps {
-  projectWithDetails: IGetProjectForViewResponse;
-  codes: IGetAllCodeSetsResponse;
   refresh: () => void;
 }
 
 /**
- * Survey header for a single-survey view.
+ * Project participants page header.
  *
- * @param {*} props
+ * @param {IProjectParticipantsHeaderProps} props
  * @return {*}
  */
-const ProjectParticipantsHeader: React.FC<IProjectParticipantsHeaderProps> = (props) => {
+const ProjectParticipantsHeader = (props: IProjectParticipantsHeaderProps) => {
   const classes = useStyles();
   const history = useHistory();
-  const urlParams = useParams();
+
+  const codesContext = useContext(CodesContext);
+  const projectContext = useContext(ProjectContext);
+
+  // Codes data must be loaded by a parent before this component is rendered
+  assert(codesContext.codesDataLoader.data);
+
+  const codes = codesContext.codesDataLoader.data;
+
   const dialogContext = useContext(DialogContext);
+
   const biohubApi = useBiohubApi();
 
   const [openAddParticipantsDialog, setOpenAddParticipantsDialog] = useState(false);
-
-  const projectId = urlParams['id'];
 
   const defaultErrorDialogProps: Partial<IErrorDialogProps> = {
     onClose: () => dialogContext.setErrorDialog({ open: false }),
@@ -81,7 +87,7 @@ const ProjectParticipantsHeader: React.FC<IProjectParticipantsHeaderProps> = (pr
 
   const handleAddProjectParticipantsSave = async (values: IAddProjectParticipantsForm) => {
     try {
-      const response = await biohubApi.project.addProjectParticipants(projectId, values.participants);
+      const response = await biohubApi.project.addProjectParticipants(projectContext.projectId, values.participants);
 
       if (!response) {
         openErrorDialog({
@@ -109,7 +115,7 @@ const ProjectParticipantsHeader: React.FC<IProjectParticipantsHeaderProps> = (pr
             <Button
               color="primary"
               startIcon={<Icon path={mdiArrowLeft} size={0.9} />}
-              onClick={() => history.push(`/admin/projects/${props.projectWithDetails.id}`)}>
+              onClick={() => history.push(`/admin/projects/${projectContext.projectId}`)}>
               <strong>Back to Project</strong>
             </Button>
           </Box>
@@ -145,7 +151,7 @@ const ProjectParticipantsHeader: React.FC<IProjectParticipantsHeaderProps> = (pr
           element: (
             <AddProjectParticipantsForm
               project_roles={
-                props.codes?.project_roles?.map((item) => {
+                codes.project_roles?.map((item) => {
                   return { value: item.id, label: item.name };
                 }) || []
               }

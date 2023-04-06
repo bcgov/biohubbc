@@ -1,4 +1,4 @@
-interface IGetSummarySubmissionResponseMessages {
+export interface IGetSummarySubmissionResponseMessages {
   id: number;
   class: string;
   type: string;

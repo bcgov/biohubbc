@@ -8,18 +8,16 @@ import {
 } from '@testing-library/react';
 import { AttachmentType } from 'constants/attachments';
 import { DialogContextProvider } from 'contexts/dialogContext';
-import { createMemoryHistory } from 'history';
+import { IProjectContext, ProjectContext } from 'contexts/projectContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import { DataLoader } from 'hooks/useDataLoader';
 import React from 'react';
-import { Router } from 'react-router';
-import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import ProjectAttachments from './ProjectAttachments';
-
-const history = createMemoryHistory();
 
 jest.mock('../../../hooks/useBioHubApi');
 const mockUseBiohubApi = {
   project: {
+    getProjectForView: jest.fn(),
     getProjectAttachments: jest.fn(),
     deleteProjectAttachment: jest.fn()
   }
@@ -29,7 +27,7 @@ const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBioh
   mockUseBiohubApi
 );
 
-describe.skip('ProjectAttachments', () => {
+describe('ProjectAttachments', () => {
   beforeEach(() => {
     // clear mocks before each test
     mockBiohubApi().project.getProjectAttachments.mockClear();
@@ -41,52 +39,77 @@ describe.skip('ProjectAttachments', () => {
   });
 
   it('correctly opens and closes the file upload dialog', async () => {
+    const mockProjectContext: IProjectContext = ({
+      artifactDataLoader: ({
+        data: null,
+        load: jest.fn()
+      } as unknown) as DataLoader<any, any, any>,
+      projectId: 1
+    } as unknown) as IProjectContext;
+
     const { getByText, queryByText } = render(
-      <Router history={history}>
-        <ProjectAttachments projectForViewData={getProjectForViewResponse} />
-      </Router>
+      <ProjectContext.Provider value={mockProjectContext}>
+        <ProjectAttachments />
+      </ProjectContext.Provider>
     );
 
-    expect(getByText('Submit Documents')).toBeInTheDocument();
-    expect(queryByText('Upload Attachment')).toBeNull();
-
-    fireEvent.click(getByText('Submit Documents'));
-
     await waitFor(() => {
-      expect(getByText('Submit Attachments')).toBeInTheDocument();
+      expect(getByText('Add Documents')).toBeInTheDocument();
+      expect(queryByText('Upload Attachment')).toBeNull();
     });
 
-    fireEvent.click(getByText('Submit Attachments'));
+    fireEvent.click(getByText('Add Documents'));
+
+    await waitFor(() => {
+      expect(getByText('Add Attachments')).toBeInTheDocument();
+    });
+
+    fireEvent.click(getByText('Add Attachments'));
 
     expect(getByText('Close')).toBeInTheDocument();
   });
 
-  it('renders correctly with no attachments', () => {
-    const { getByText } = render(
-      <Router history={history}>
-        <ProjectAttachments projectForViewData={getProjectForViewResponse} />
-      </Router>
-    );
+  it('renders correctly with no attachments', async () => {
+    const mockProjectContext: IProjectContext = ({
+      artifactDataLoader: ({
+        data: null,
+        load: jest.fn()
+      } as unknown) as DataLoader<any, any, any>,
+      projectId: 1
+    } as unknown) as IProjectContext;
 
-    expect(getByText('No Documents')).toBeInTheDocument();
+    const { getByText } = render(
+      <ProjectContext.Provider value={mockProjectContext}>
+        <ProjectAttachments />
+      </ProjectContext.Provider>
+    );
+    await waitFor(() => {
+      expect(getByText('No Documents')).toBeInTheDocument();
+    });
   });
 
-  it.skip('renders correctly with attachments', async () => {
-    mockBiohubApi().project.getProjectAttachments.mockResolvedValue({
-      attachmentsList: [
-        {
-          id: 1,
-          fileName: 'filename.test',
-          lastModified: '2021-04-09 11:53:53',
-          size: 3028
-        }
-      ]
-    });
+  it('renders correctly with attachments', async () => {
+    const mockProjectContext: IProjectContext = ({
+      artifactDataLoader: ({
+        data: {
+          attachmentsList: [
+            {
+              id: 1,
+              fileName: 'filename.test',
+              lastModified: '2021-04-09 11:53:53',
+              size: 3028
+            }
+          ]
+        },
+        load: jest.fn()
+      } as unknown) as DataLoader<any, any, any>,
+      projectId: 1
+    } as unknown) as IProjectContext;
 
     const { getByText } = render(
-      <Router history={history}>
-        <ProjectAttachments projectForViewData={getProjectForViewResponse} />
-      </Router>
+      <ProjectContext.Provider value={mockProjectContext}>
+        <ProjectAttachments />
+      </ProjectContext.Provider>
     );
 
     await waitFor(() => {
@@ -94,50 +117,45 @@ describe.skip('ProjectAttachments', () => {
     });
   });
 
-  it.skip('deletes an attachment from the attachments list as expected', async () => {
-    mockBiohubApi().project.deleteProjectAttachment.mockResolvedValue(1);
-    mockBiohubApi().project.getProjectAttachments.mockResolvedValue({
-      attachmentsList: [
-        {
-          id: 1,
-          fileName: 'filename1.test',
-          fileType: AttachmentType.OTHER,
-          lastModified: '2021-04-09 11:53:53',
-          size: 3028
+  it('deletes an attachment from the attachments list as expected', async () => {
+    const deleteProjectAttachmentStub = mockBiohubApi().project.deleteProjectAttachment.mockResolvedValue(1);
+    const mockProjectContext: IProjectContext = ({
+      artifactDataLoader: ({
+        data: {
+          attachmentsList: [
+            {
+              id: 1,
+              fileName: 'filename1.test',
+              fileType: AttachmentType.OTHER,
+              lastModified: '2021-04-09 11:53:53',
+              size: 3028
+            },
+            {
+              id: 2,
+              fileName: 'filename2.test',
+              fileType: AttachmentType.REPORT,
+              lastModified: '2021-04-09 11:53:53',
+              size: 3028
+            }
+          ]
         },
-        {
-          id: 2,
-          fileName: 'filename2.test',
-          fileType: AttachmentType.REPORT,
-          lastModified: '2021-04-09 11:53:53',
-          size: 3028
-        }
-      ]
-    });
+        load: jest.fn(),
+        refresh: jest.fn()
+      } as unknown) as DataLoader<any, any, any>,
+      projectId: 1
+    } as unknown) as IProjectContext;
 
     const { baseElement, queryByText, getByTestId, getAllByTestId, queryByTestId } = render(
       <DialogContextProvider>
-        <Router history={history}>
-          <ProjectAttachments projectForViewData={getProjectForViewResponse} />
-        </Router>
+        <ProjectContext.Provider value={mockProjectContext}>
+          <ProjectAttachments />
+        </ProjectContext.Provider>
       </DialogContextProvider>
     );
 
     await waitFor(() => {
       expect(queryByText('filename1.test')).toBeInTheDocument();
       expect(queryByText('filename2.test')).toBeInTheDocument();
-    });
-
-    mockBiohubApi().project.getProjectAttachments.mockResolvedValue({
-      attachmentsList: [
-        {
-          id: 2,
-          fileName: 'filename2.test',
-          fileType: AttachmentType.REPORT,
-          lastModified: '2021-04-09 11:53:53',
-          size: 3028
-        }
-      ]
     });
 
     fireEvent.click(getAllByTestId('attachment-action-menu')[0]);
@@ -155,30 +173,35 @@ describe.skip('ProjectAttachments', () => {
     fireEvent.click(getByTestId('yes-button'));
 
     await waitFor(() => {
-      expect(queryByText('filename1.test')).not.toBeInTheDocument();
       expect(queryByText('filename2.test')).toBeInTheDocument();
+      expect(deleteProjectAttachmentStub).toBeCalledTimes(1);
     });
   });
 
-  it.skip('does not delete an attachment from the attachments when user selects no from dialog', async () => {
+  it('does not delete an attachment from the attachments when user selects no from dialog', async () => {
     mockBiohubApi().project.deleteProjectAttachment.mockResolvedValue(1);
-    mockBiohubApi().project.getProjectAttachments.mockResolvedValue({
-      attachmentsList: [
-        {
-          id: 1,
-          fileName: 'filename.test',
-          fileType: AttachmentType.REPORT,
-          lastModified: '2021-04-09 11:53:53',
-          size: 3028
-        }
-      ]
-    });
+    const mockProjectContext: IProjectContext = ({
+      artifactDataLoader: ({
+        data: {
+          attachmentsList: [
+            {
+              id: 1,
+              fileName: 'filename.test',
+              lastModified: '2021-04-09 11:53:53',
+              size: 3028
+            }
+          ]
+        },
+        load: jest.fn()
+      } as unknown) as DataLoader<any, any, any>,
+      projectId: 1
+    } as unknown) as IProjectContext;
 
     const { baseElement, queryByText, getByTestId, queryByTestId, getAllByTestId } = render(
       <DialogContextProvider>
-        <Router history={history}>
-          <ProjectAttachments projectForViewData={getProjectForViewResponse} />
-        </Router>
+        <ProjectContext.Provider value={mockProjectContext}>
+          <ProjectAttachments />
+        </ProjectContext.Provider>
       </DialogContextProvider>
     );
 
@@ -209,24 +232,30 @@ describe.skip('ProjectAttachments', () => {
     });
   });
 
-  it.skip('does not delete an attachment from the attachments when user clicks outside the dialog', async () => {
+  it('does not delete an attachment from the attachments when user clicks outside the dialog', async () => {
     mockBiohubApi().project.deleteProjectAttachment.mockResolvedValue(1);
-    mockBiohubApi().project.getProjectAttachments.mockResolvedValue({
-      attachmentsList: [
-        {
-          id: 1,
-          fileName: 'filename.test',
-          lastModified: '2021-04-09 11:53:53',
-          size: 3028
-        }
-      ]
-    });
+    const mockProjectContext: IProjectContext = ({
+      artifactDataLoader: ({
+        data: {
+          attachmentsList: [
+            {
+              id: 1,
+              fileName: 'filename.test',
+              lastModified: '2021-04-09 11:53:53',
+              size: 3028
+            }
+          ]
+        },
+        load: jest.fn()
+      } as unknown) as DataLoader<any, any, any>,
+      projectId: 1
+    } as unknown) as IProjectContext;
 
     const { baseElement, queryByText, getAllByRole, queryByTestId, getAllByTestId } = render(
       <DialogContextProvider>
-        <Router history={history}>
-          <ProjectAttachments projectForViewData={getProjectForViewResponse} />
-        </Router>
+        <ProjectContext.Provider value={mockProjectContext}>
+          <ProjectAttachments />
+        </ProjectContext.Provider>
       </DialogContextProvider>
     );
 
