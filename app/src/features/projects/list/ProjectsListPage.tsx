@@ -172,8 +172,6 @@ const ProjectsListPage: React.FC = () => {
     const getDrafts = async () => {
       const draftsResponse = await biohubApi.draft.getDraftsList();
 
-      console.log('draftsResponse: ', draftsResponse);
-
       setDrafts(() => {
         setIsLoading(false);
         return draftsResponse;
