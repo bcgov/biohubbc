@@ -1,7 +1,6 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { getDBConnection } from '../../database/db';
-import { draftResponseObject } from '../../openapi/schemas/draft';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
 import { DraftService } from '../../services/draft-service';
 import { getLogger } from '../../utils/logger';
@@ -37,7 +36,29 @@ GET.apiDoc = {
           schema: {
             type: 'array',
             items: {
-              ...(draftResponseObject as object)
+              title: 'Draft Response Object',
+              type: 'object',
+              required: ['webform_draft_id', 'name', 'create_date', 'update_date'],
+              properties: {
+                webform_draft_id: {
+                  type: 'number'
+                },
+                name: {
+                  type: 'string',
+                  description: 'The name of the draft'
+                },
+                create_date: {
+                  oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
+                  description: 'ISO 8601 date string for the date the draft was created'
+                },
+                update_date: {
+                  oneOf: [
+                    { type: 'object', nullable: true },
+                    { type: 'string', format: 'date' }
+                  ],
+                  description: 'ISO 8601 date string for the date the draft was updated'
+                }
+              }
             }
           }
         }

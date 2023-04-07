@@ -5,7 +5,7 @@ import { getDBConnection } from '../../../database/db';
 import { HTTP400 } from '../../../errors/http-error';
 import { draftGetResponseObject } from '../../../openapi/schemas/draft';
 import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
-import { ProjectService } from '../../../services/project-service';
+import { DraftService } from '../../../services/draft-service';
 import { getLogger } from '../../../utils/logger';
 
 const defaultLog = getLogger('paths/draft/{draftId}');
@@ -85,9 +85,9 @@ export function getSingleDraft(): RequestHandler {
     try {
       await connection.open();
 
-      const projectService = new ProjectService(connection);
+      const draftService = new DraftService(connection);
 
-      const draftObject = await projectService.getSingleDraft(draftId);
+      const draftObject = await draftService.getSingleDraft(draftId);
 
       if (!draftObject) {
         throw new HTTP400('Failed to get draft');

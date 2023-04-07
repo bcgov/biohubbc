@@ -219,3 +219,15 @@ export class PostPartnershipsData {
     this.stakeholder_partnerships = (obj?.stakeholder_partnerships.length && obj.stakeholder_partnerships) || [];
   }
 }
+
+export class PostDraftData {
+  name: string;
+  data: object;
+
+  constructor(obj?: any) {
+    defaultLog.debug({ label: 'PostDraftData', message: 'params', obj });
+
+    this.name = obj?.name || null;
+    this.data = (obj?.data && obj.data) || {};
+  }
+}

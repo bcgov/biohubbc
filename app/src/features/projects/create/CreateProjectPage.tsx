@@ -182,11 +182,12 @@ const CreateProjectPage: React.FC = () => {
         response = await biohubApi.draft.updateDraft(draftId, values.draft_name, formData);
       } else {
         response = await biohubApi.draft.createDraft(values.draft_name, formData);
+        console.log('create response: ', response);
       }
 
       setOpenDraftDialog(false);
 
-      if (!response?.id) {
+      if (!response?.webform_draft_id) {
         showCreateErrorDialog({
           dialogError: 'The response from the server was null, or did not contain a draft project ID.'
         });

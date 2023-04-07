@@ -16,7 +16,7 @@ const useDraftApi = (axios: AxiosInstance) => {
    * @return {*}  {Promise<IDraftResponse>}
    */
   const createDraft = async (draftName: string, draftData: unknown): Promise<IDraftResponse> => {
-    const { data } = await axios.post('/api/draft', { name: draftName, data: draftData });
+    const { data } = await axios.post('/api/draft/create', { name: draftName, data: draftData });
 
     return data;
   };

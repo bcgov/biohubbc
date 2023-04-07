@@ -8,7 +8,7 @@ import * as db from '../database/db';
 import { HTTPError } from '../errors/http-error';
 import draft_queries from '../queries/project/draft';
 import { getMockDBConnection } from '../__mocks__/db';
-import * as draft from './draft';
+import * as draft from './draft/{draftId}/update';
 
 chai.use(sinonChai);
 

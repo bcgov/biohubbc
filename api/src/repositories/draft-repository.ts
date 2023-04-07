@@ -78,4 +78,28 @@ export class DraftRepository extends BaseRepository {
 
     return response.rows || [];
   }
+
+  async createDraft(systemUserId: number, name: string, data: any): Promise<WebformDraftList> {
+    console.log('system_user_id:', systemUserId);
+    console.log('name is: ', name);
+    console.log('data is: ', data);
+    const sqlStatement = SQL`
+    INSERT INTO webform_draft (
+      system_user_id,
+      name,
+      data
+    ) VALUES (
+      ${systemUserId},
+      ${name},
+      ${data}
+    )
+    RETURNING *
+  `;
+
+    const response = await this.connection.sql(sqlStatement, WebformDraftList);
+    console.log('DB response');
+    console.log(response.rows[0]);
+
+    return response.rows[0] || null;
+  }
 }

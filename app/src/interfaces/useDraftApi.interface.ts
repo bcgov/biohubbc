@@ -7,8 +7,9 @@ import { ICreateProjectRequest } from './useProjectApi.interface';
  * @interface IDraftResponse
  */
 export interface IDraftResponse {
-  id: number;
-  date: string;
+  webform_draft_id: number;
+  create_date: string;
+  update_date: string;
 }
 
 /**
