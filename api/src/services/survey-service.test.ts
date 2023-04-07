@@ -209,84 +209,18 @@ describe('SurveyService', () => {
       sinon.restore();
     });
 
-    describe('when there are no occurrence submission or summary submission records', () => {
-      it('does not fetch occurrence submission or summary submission publish records', async () => {
-        const getOccurrenceSubmissionStub = sinon
-          .stub(SurveyService.prototype, 'getOccurrenceSubmission')
-          .resolves(({ occurrence_submission_id: null } as unknown) as any);
-
-        const getSurveySummarySubmissionStub = sinon
-          .stub(SurveyService.prototype, 'getSurveySummarySubmission')
-          .resolves(({ survey_summary_submission_id: null } as unknown) as any);
-
-        const getSurveyMetadataPublishRecordStub = sinon
-          .stub(HistoryPublishService.prototype, 'getSurveyMetadataPublishRecord')
-          .resolves(({ survey_metadata_publish_id: 5 } as unknown) as any);
-
-        const getOccurrenceSubmissionPublishRecordStub = sinon
-          .stub(HistoryPublishService.prototype, 'getOccurrenceSubmissionPublishRecord')
-          .throws(new Error('getOccurrenceSubmissionPublishRecord should not have been called'));
-
-        const getSurveySummarySubmissionPublishRecordStub = sinon
-          .stub(HistoryPublishService.prototype, 'getSurveySummarySubmissionPublishRecord')
-          .throws(new Error('getSurveySummarySubmissionPublishRecord should not have been called'));
-
-        const surveyService = new SurveyService(getMockDBConnection());
-
-        const response = await surveyService.getSurveySupplementaryDataById(1);
-
-        expect(getOccurrenceSubmissionStub).to.be.calledOnce;
-        expect(getSurveySummarySubmissionStub).to.be.calledOnce;
-        expect(getSurveyMetadataPublishRecordStub).to.be.calledOnce;
-        expect(getOccurrenceSubmissionPublishRecordStub).not.to.be.called;
-        expect(getSurveySummarySubmissionPublishRecordStub).not.to.be.called;
-
-        expect(response).to.eql({
-          occurrence_submission: { occurrence_submission_id: null },
-          occurrence_submission_publish: null,
-          survey_summary_submission: { survey_summary_submission_id: null },
-          survey_summary_submission_publish: null,
-          survey_metadata_publish: { survey_metadata_publish_id: 5 }
-        });
-      });
-    });
-
     it('fetches and returns all supplementary data', async () => {
-      const getOccurrenceSubmissionStub = sinon
-        .stub(SurveyService.prototype, 'getOccurrenceSubmission')
-        .resolves(({ occurrence_submission_id: 1 } as unknown) as any);
-
-      const getSurveySummarySubmissionStub = sinon
-        .stub(SurveyService.prototype, 'getSurveySummarySubmission')
-        .resolves(({ survey_summary_submission_id: 3 } as unknown) as any);
-
       const getSurveyMetadataPublishRecordStub = sinon
         .stub(HistoryPublishService.prototype, 'getSurveyMetadataPublishRecord')
         .resolves(({ survey_metadata_publish_id: 5 } as unknown) as any);
-
-      const getOccurrenceSubmissionPublishRecordStub = sinon
-        .stub(HistoryPublishService.prototype, 'getOccurrenceSubmissionPublishRecord')
-        .resolves(({ occurrence_submission_publish_id: 2 } as unknown) as any);
-
-      const getSurveySummarySubmissionPublishRecordStub = sinon
-        .stub(HistoryPublishService.prototype, 'getSurveySummarySubmissionPublishRecord')
-        .resolves(({ survey_summary_submission_publish_id: 4 } as unknown) as any);
 
       const surveyService = new SurveyService(getMockDBConnection());
 
       const response = await surveyService.getSurveySupplementaryDataById(1);
 
-      expect(getOccurrenceSubmissionStub).to.be.calledOnce;
-      expect(getSurveySummarySubmissionStub).to.be.calledOnce;
       expect(getSurveyMetadataPublishRecordStub).to.be.calledOnce;
-      expect(getOccurrenceSubmissionPublishRecordStub).to.be.calledOnce;
-      expect(getSurveySummarySubmissionPublishRecordStub).to.be.calledOnce;
 
       expect(response).to.eql({
-        occurrence_submission: { occurrence_submission_id: 1 },
-        occurrence_submission_publish: { occurrence_submission_publish_id: 2 },
-        survey_summary_submission: { survey_summary_submission_id: 3 },
-        survey_summary_submission_publish: { survey_summary_submission_publish_id: 4 },
         survey_metadata_publish: { survey_metadata_publish_id: 5 }
       });
     });

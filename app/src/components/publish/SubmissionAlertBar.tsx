@@ -1,126 +1,97 @@
 import Box from '@material-ui/core/Box';
-import Alert, { AlertProps } from '@material-ui/lab/Alert';
+import Alert from '@material-ui/lab/Alert';
 import AlertTitle from '@material-ui/lab/AlertTitle';
-import { BioHubSubmittedStatusType } from 'constants/misc';
 import { SurveyContext } from 'contexts/surveyContext';
-import {
-  IGetSurveyAttachment,
-  IGetSurveyReportAttachment,
-  SurveySupplementaryData
-} from 'interfaces/useSurveyApi.interface';
+import { IGetObservationSubmissionResponse } from 'interfaces/useObservationApi.interface';
+import { IGetSummaryResultsResponse } from 'interfaces/useSummaryResultsApi.interface';
+import { IGetSurveyAttachmentsResponse } from 'interfaces/useSurveyApi.interface';
 import React, { useContext, useState } from 'react';
 
-const SubmissionAlertBar: React.FC = () => {
+const SubmissionAlertBar = () => {
   const surveyContext = useContext(SurveyContext);
-  const { surveyDataLoader, artifactDataLoader } = surveyContext;
 
-  const surveyData = surveyDataLoader.data;
-  const artifactData = artifactDataLoader.data;
+  const [forceAlertClose, setForceAlertClose] = useState(false);
 
-  const [alertOpen, setAlertOpen] = useState(false);
-  const [forceAlertClose, setForceAlertClose] = useState(true);
-
-  if (!surveyData || !artifactData) {
+  if (forceAlertClose) {
+    // User has manually closed the banner
     return <></>;
   }
 
-  if (
-    !getOccurrenceExists(surveyData.surveySupplementaryData) &&
-    !getSummaryExists(surveyData.surveySupplementaryData) &&
-    !getArtifactAttachmentsExists(artifactData.attachmentsList) &&
-    !getArtifactAttachmentsExists(artifactData.reportAttachmentsList)
-  ) {
+  const observationData = surveyContext.observationDataLoader.data;
+  const summaryData = surveyContext.summaryDataLoader.data;
+  const attachmentData = surveyContext.artifactDataLoader.data;
+
+  const submissionStatuses: ('NO_DATA' | 'SUBMITTED' | 'UNSUBMITTED')[] = [
+    getOccurrenceDataSubmissionStatus(observationData),
+    getSummaryDataSubmissionStatus(summaryData),
+    getAttachmentDataSubmissionStatus(attachmentData)
+  ];
+
+  const hasData = submissionStatuses.some((status) => status !== 'NO_DATA');
+
+  if (!hasData) {
+    // Survey has no data (neither submitted nor unsubmitted), don't show the banner
     return <></>;
   }
 
-  if (alertOpen === false) {
-    setAlertOpen(true);
-  }
+  const hasUnsubmittedData = submissionStatuses.some((status) => status === 'UNSUBMITTED');
 
-  const surveyOccurrenceSubmissionStatus = getOccurrenceSubmissionStatus(surveyData.surveySupplementaryData);
-  const surveySummarySubmissionStatus = getSummarySubmissionStatus(surveyData.surveySupplementaryData);
-  const attachmentsListSubmissionStatus = getArtifactsSubmissionStatus(artifactData.attachmentsList);
-  const reportAttachmentsListSubmissionStatus = getArtifactsSubmissionStatus(artifactData.reportAttachmentsList);
+  const alertSeverity = hasUnsubmittedData ? 'info' : 'success';
+  const alertTitle = hasUnsubmittedData
+    ? 'This survey contains unsubmitted information'
+    : 'All survey information submitted';
+  const alertText = hasUnsubmittedData
+    ? 'Please ensure that any information uploaded to this survey is promptly submitted for review.'
+    : 'Thank you for submitting your survey information to the BioHub Collector System.';
 
-  const submitted =
-    surveyOccurrenceSubmissionStatus === BioHubSubmittedStatusType.SUBMITTED &&
-    surveySummarySubmissionStatus === BioHubSubmittedStatusType.SUBMITTED &&
-    attachmentsListSubmissionStatus === BioHubSubmittedStatusType.SUBMITTED &&
-    reportAttachmentsListSubmissionStatus === BioHubSubmittedStatusType.SUBMITTED;
-
-  const alertProps: AlertProps = {
-    severity: submitted ? 'success' : 'info',
-    onClose: () => setForceAlertClose(false)
-  };
-
+  // Survey has data, and some of it is unsubmitted, show the banner
   return (
-    <>
-      {alertOpen && forceAlertClose && (
-        <Box mb={3}>
-          <Alert {...alertProps}>
-            <AlertTitle>
-              {submitted ? 'All survey data submitted' : 'This survey contains unsubmitted information'}
-            </AlertTitle>
-            {submitted
-              ? 'Thank you for submitting your data to the BioHub Collector System.'
-              : 'Please ensure that any information uploaded to this survey is promptly submitted for review.'}
-          </Alert>
-        </Box>
-      )}
-    </>
+    <Box mb={3}>
+      <Alert severity={alertSeverity} onClose={() => setForceAlertClose(true)}>
+        <AlertTitle>{alertTitle}</AlertTitle>
+        {alertText}
+      </Alert>
+    </Box>
   );
 };
 
-const getArtifactsSubmissionStatus = (
-  artifacts: (IGetSurveyAttachment | IGetSurveyReportAttachment)[]
-): BioHubSubmittedStatusType => {
-  let artifactSubmitted = true;
-
-  if (artifacts.length > 0) {
-    artifacts.forEach((element) => {
-      if (!element.supplementaryAttachmentData || !element.supplementaryAttachmentData.event_timestamp) {
-        artifactSubmitted = false;
-      }
-    });
-  }
-  return artifactSubmitted ? BioHubSubmittedStatusType.SUBMITTED : BioHubSubmittedStatusType.UNSUBMITTED;
-};
-
-const getArtifactAttachmentsExists = (artifacts: (IGetSurveyAttachment | IGetSurveyReportAttachment)[]): boolean => {
-  if (artifacts.length > 0) {
-    return true;
-  }
-  return false;
-};
-
-const getOccurrenceSubmissionStatus = (supplementaryData: SurveySupplementaryData): BioHubSubmittedStatusType => {
-  if (getOccurrenceExists(supplementaryData) && supplementaryData.occurrence_submission_publish === null) {
-    return BioHubSubmittedStatusType.UNSUBMITTED;
+function getOccurrenceDataSubmissionStatus(observationData?: IGetObservationSubmissionResponse) {
+  if (!observationData?.surveyObservationData) {
+    return 'NO_DATA';
   }
 
-  return BioHubSubmittedStatusType.SUBMITTED;
-};
-
-const getSummarySubmissionStatus = (supplementaryData: SurveySupplementaryData): BioHubSubmittedStatusType => {
-  if (getSummaryExists(supplementaryData) && supplementaryData.survey_summary_submission_publish === null) {
-    return BioHubSubmittedStatusType.UNSUBMITTED;
+  if (observationData.surveyObservationSupplementaryData?.occurrence_submission_publish_id) {
+    return 'SUBMITTED';
   }
 
-  return BioHubSubmittedStatusType.SUBMITTED;
-};
+  return 'UNSUBMITTED';
+}
 
-const getOccurrenceExists = (supplementaryData: SurveySupplementaryData | null | undefined): boolean => {
-  if (supplementaryData?.occurrence_submission.occurrence_submission_id !== null) {
-    return true;
+function getSummaryDataSubmissionStatus(summaryData?: IGetSummaryResultsResponse) {
+  if (!summaryData?.surveySummaryData) {
+    return 'NO_DATA';
   }
-  return false;
-};
 
-const getSummaryExists = (supplementaryData: SurveySupplementaryData | null | undefined): boolean => {
-  if (supplementaryData?.survey_summary_submission.survey_summary_submission_id !== null) {
-    return true;
+  if (summaryData.surveySummarySupplementaryData?.survey_summary_submission_publish_id) {
+    return 'SUBMITTED';
   }
-  return false;
-};
+
+  return 'UNSUBMITTED';
+}
+
+function getAttachmentDataSubmissionStatus(surveyAttachmentsData?: IGetSurveyAttachmentsResponse) {
+  if (!surveyAttachmentsData?.attachmentsList.length && !surveyAttachmentsData?.reportAttachmentsList.length) {
+    return 'NO_DATA';
+  }
+
+  if (
+    surveyAttachmentsData.reportAttachmentsList.every((item) => item.supplementaryAttachmentData?.event_timestamp) &&
+    surveyAttachmentsData.attachmentsList.every((item) => item.supplementaryAttachmentData?.event_timestamp)
+  ) {
+    return 'SUBMITTED';
+  }
+
+  return 'UNSUBMITTED';
+}
 
 export default SubmissionAlertBar;

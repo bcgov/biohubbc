@@ -21,6 +21,10 @@ describe('GetProjectData', () => {
       data = new GetProjectData();
     });
 
+    it('sets id', () => {
+      expect(data.id).to.equal(null);
+    });
+
     it('sets name', () => {
       expect(data.project_name).to.equal('');
     });
@@ -48,6 +52,7 @@ describe('GetProjectData', () => {
 
   describe('all values provided', () => {
     const projectData = {
+      project_id: 1,
       name: 'project name',
       pt_id: 4,
       start_date: '2020-04-20T07:00:00.000Z',
@@ -61,6 +66,10 @@ describe('GetProjectData', () => {
 
     before(() => {
       data = new GetProjectData(projectData, activityData);
+    });
+
+    it('sets id', () => {
+      expect(data.id).to.equal(projectData.project_id);
     });
 
     it('sets name', () => {

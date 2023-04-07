@@ -6,11 +6,6 @@ import sinonChai from 'sinon-chai';
 import * as db from '../../../../../database/db';
 import { HTTPError } from '../../../../../errors/http-error';
 import { SurveyObject } from '../../../../../models/survey-view';
-import {
-  OccurrenceSubmissionPublish,
-  SurveyMetadataPublish,
-  SurveySummarySubmissionPublish
-} from '../../../../../repositories/history-publish-repository';
 import { SurveyService } from '../../../../../services/survey-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../__mocks__/db';
 import { GET, getSurvey } from './view';
@@ -78,34 +73,6 @@ describe('survey/{surveyId}/view', () => {
             }
           },
           surveySupplementaryData: {
-            occurrence_submission: {
-              occurrence_submission_id: 1
-            },
-            occurrence_submission_publish: {
-              occurrence_submission_publish_id: 1,
-              occurrence_submission_id: 1,
-              event_timestamp: new Date(),
-              queue_id: 1,
-              create_date: new Date(),
-              create_user: 1,
-              update_date: null,
-              update_user: null,
-              revision_count: 0
-            },
-            survey_summary_submission: {
-              survey_summary_submission_id: 2
-            },
-            survey_summary_submission_publish: {
-              survey_summary_submission_publish_id: 1,
-              survey_summary_submission_id: 1,
-              event_timestamp: new Date(),
-              artifact_revision_id: 1,
-              create_date: new Date(),
-              create_user: 1,
-              update_date: new Date(),
-              update_user: 1,
-              revision_count: 2
-            },
             survey_metadata_publish: {
               survey_metadata_publish_id: 1,
               survey_id: 1,
@@ -173,14 +140,6 @@ describe('survey/{surveyId}/view', () => {
             }
           },
           surveySupplementaryData: {
-            occurrence_submission: {
-              occurrence_submission_id: null
-            },
-            occurrence_submission_publish: null,
-            survey_summary_submission: {
-              survey_summary_submission_id: null
-            },
-            survey_summary_submission_publish: null,
             survey_metadata_publish: null
           }
         };
@@ -205,21 +164,17 @@ describe('survey/{surveyId}/view', () => {
       sinon.stub(SurveyService.prototype, 'getSurveyById').resolves(({ id: 2 } as unknown) as SurveyObject);
 
       sinon.stub(SurveyService.prototype, 'getSurveySupplementaryDataById').resolves({
-        occurrence_submission: {
-          occurrence_submission_id: 1
-        },
-        occurrence_submission_publish: ({
-          occurrence_submission_publish_id: 3
-        } as unknown) as OccurrenceSubmissionPublish,
-        survey_summary_submission: {
-          survey_summary_submission_id: 2
-        },
-        survey_summary_submission_publish: ({
-          survey_summary_submission_publish_id: 4
-        } as unknown) as SurveySummarySubmissionPublish,
-        survey_metadata_publish: ({
-          survey_metadata_publish_id: 5
-        } as unknown) as SurveyMetadataPublish
+        survey_metadata_publish: {
+          survey_metadata_publish_id: 1,
+          survey_id: 1,
+          event_timestamp: new Date('2020-04-04'),
+          queue_id: 1,
+          create_date: new Date('2020-04-04'),
+          create_user: 1,
+          update_date: null,
+          update_user: null,
+          revision_count: 1
+        }
       });
 
       const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
@@ -245,20 +200,16 @@ describe('survey/{surveyId}/view', () => {
           id: 2
         },
         surveySupplementaryData: {
-          occurrence_submission: {
-            occurrence_submission_id: 1
-          },
-          occurrence_submission_publish: {
-            occurrence_submission_publish_id: 3
-          },
-          survey_summary_submission: {
-            survey_summary_submission_id: 2
-          },
-          survey_summary_submission_publish: {
-            survey_summary_submission_publish_id: 4
-          },
           survey_metadata_publish: {
-            survey_metadata_publish_id: 5
+            survey_metadata_publish_id: 1,
+            survey_id: 1,
+            event_timestamp: new Date('2020-04-04'),
+            queue_id: 1,
+            create_date: new Date('2020-04-04'),
+            create_user: 1,
+            update_date: null,
+            update_user: null,
+            revision_count: 1
           }
         }
       });

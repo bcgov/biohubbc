@@ -16,17 +16,18 @@ import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormC
 import { ScrollToFormikError } from 'components/formik/ScrollToFormikError';
 import { DATE_FORMAT, DATE_LIMIT } from 'constants/dateTimeFormats';
 import { CreateSurveyI18N } from 'constants/i18n';
+import { CodesContext } from 'contexts/codesContext';
 import { DialogContext } from 'contexts/dialogContext';
+import { ProjectContext } from 'contexts/projectContext';
 import { Formik, FormikProps } from 'formik';
 import * as History from 'history';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
-import { ICreateSurveyRequest, ISurveyAvailableFundingSources } from 'interfaces/useSurveyApi.interface';
+import useDataLoader from 'hooks/useDataLoader';
+import { ICreateSurveyRequest } from 'interfaces/useSurveyApi.interface';
 import moment from 'moment';
-import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
-import { Prompt, useHistory, useParams } from 'react-router';
+import React, { useContext, useEffect, useRef, useState } from 'react';
+import { Prompt, useHistory } from 'react-router';
 import { getFormattedAmount, getFormattedDate, getFormattedDateRangeString } from 'utils/Utils';
 import yup from 'utils/YupSchema';
 import AgreementsForm, { AgreementsInitialValues, AgreementsYupSchema } from './components/AgreementsForm';
@@ -92,16 +93,29 @@ const useStyles = makeStyles((theme: Theme) => ({
  * @return {*}
  */
 const CreateSurveyPage = () => {
-  const urlParams = useParams();
   const classes = useStyles();
   const biohubApi = useBiohubApi();
   const history = useHistory();
 
-  const [isLoadingProject, setIsLoadingProject] = useState(false);
-  const [projectWithDetails, setProjectWithDetails] = useState<IGetProjectForViewResponse | null>(null);
-  const [isLoadingCodes, setIsLoadingCodes] = useState(false);
-  const [codes, setCodes] = useState<IGetAllCodeSetsResponse>();
-  const [surveyFundingSources, setSurveyFundingSources] = useState<ISurveyAvailableFundingSources[]>([]);
+  const codesContext = useContext(CodesContext);
+  useEffect(() => codesContext.codesDataLoader.load(), [codesContext.codesDataLoader]);
+  const codes = codesContext.codesDataLoader.data;
+
+  const projectContext = useContext(ProjectContext);
+  useEffect(() => projectContext.projectDataLoader.load(projectContext.projectId), [
+    projectContext.projectDataLoader,
+    projectContext.projectId
+  ]);
+  const projectData = projectContext.projectDataLoader.data?.projectData;
+
+  const getSurveyFundingSourcesDataLoader = useDataLoader(() =>
+    biohubApi.survey.getAvailableSurveyFundingSources(projectContext.projectId)
+  );
+  useEffect(() => {
+    getSurveyFundingSourcesDataLoader.load();
+  }, [getSurveyFundingSourcesDataLoader, projectContext.projectId]);
+  const fundingSourcesData = getSurveyFundingSourcesDataLoader.data || [];
+
   const [formikRef] = useState(useRef<FormikProps<any>>(null));
 
   // Ability to bypass showing the 'Are you sure you want to cancel' dialog
@@ -121,7 +135,7 @@ const CreateSurveyPage = () => {
     },
     onYes: () => {
       dialogContext.setYesNoDialog({ open: false });
-      history.push(`/admin/projects/${projectWithDetails?.id}/surveys`);
+      history.push(`/admin/projects/${projectData?.project.id}/surveys`);
     }
   };
 
@@ -140,11 +154,10 @@ const CreateSurveyPage = () => {
       .string()
       .isValidDateString()
       .isAfterDate(
-        projectWithDetails?.project.start_date,
+        projectData?.project.start_date,
         DATE_FORMAT.ShortDateFormat,
         `Survey start date cannot be before project start date ${
-          projectWithDetails &&
-          getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, projectWithDetails.project.start_date)
+          projectData && getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, projectData.project.start_date)
         }`
       )
       .isAfterDate(
@@ -158,10 +171,10 @@ const CreateSurveyPage = () => {
       .isValidDateString()
       .isEndDateSameOrAfterStartDate('start_date')
       .isBeforeDate(
-        projectWithDetails?.project.end_date,
+        projectData?.project.end_date,
         DATE_FORMAT.ShortDateFormat,
         `Survey end date cannot be after project end date ${
-          projectWithDetails && getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, projectWithDetails.project.end_date)
+          projectData && getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, projectData.project.end_date)
         }`
       )
       .isBeforeDate(
@@ -175,49 +188,9 @@ const CreateSurveyPage = () => {
     .concat(ProprietaryDataYupSchema)
     .concat(AgreementsYupSchema);
 
-  useEffect(() => {
-    const getCodes = async () => {
-      const codesResponse = await biohubApi.codes.getAllCodeSets();
-
-      if (!codesResponse) {
-        // TODO error handling/messaging
-        return;
-      }
-
-      setCodes(codesResponse);
-    };
-
-    if (!isLoadingCodes && !codes) {
-      getCodes();
-      setIsLoadingCodes(true);
-    }
-  }, [urlParams, biohubApi.codes, isLoadingCodes, codes]);
-
-  const getProject = useCallback(async () => {
-    const [projectWithDetailsResponse, surveyFundingSourcesResponse] = await Promise.all([
-      biohubApi.project.getProjectForView(urlParams['id']),
-      biohubApi.survey.getAvailableSurveyFundingSources(urlParams['id'])
-    ]);
-
-    if (!projectWithDetailsResponse || !surveyFundingSourcesResponse) {
-      // TODO error handling/messaging
-      return;
-    }
-
-    setSurveyFundingSources(surveyFundingSourcesResponse);
-    setProjectWithDetails(projectWithDetailsResponse);
-  }, [biohubApi.project, biohubApi.survey, urlParams]);
-
-  useEffect(() => {
-    if (!isLoadingProject && !projectWithDetails) {
-      getProject();
-      setIsLoadingProject(true);
-    }
-  }, [isLoadingProject, projectWithDetails, getProject]);
-
   const handleCancel = () => {
     dialogContext.setYesNoDialog(defaultCancelDialogProps);
-    history.push(`/admin/projects/${projectWithDetails?.id}/surveys`);
+    history.push(`/admin/projects/${projectData?.project.id}/surveys`);
   };
 
   const showCreateErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
@@ -242,7 +215,7 @@ const CreateSurveyPage = () => {
    */
   const handleSubmit = async (values: ICreateSurveyRequest) => {
     try {
-      const response = await biohubApi.survey.createSurvey(Number(projectWithDetails?.id), values);
+      const response = await biohubApi.survey.createSurvey(Number(projectData?.project.id), values);
 
       if (!response?.id) {
         showCreateErrorDialog({
@@ -253,7 +226,7 @@ const CreateSurveyPage = () => {
 
       setEnableCancelCheck(false);
 
-      history.push(`/admin/projects/${projectWithDetails?.id}/surveys/${response.id}/details`);
+      history.push(`/admin/projects/${projectData?.project.id}/surveys/${response.id}/details`);
     } catch (error) {
       const apiError = error as APIError;
       showCreateErrorDialog({
@@ -290,7 +263,7 @@ const CreateSurveyPage = () => {
     return true;
   };
 
-  if (!codes || !projectWithDetails) {
+  if (!codes || !projectData) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
@@ -309,7 +282,7 @@ const CreateSurveyPage = () => {
                 </Link>
                 <Link color="primary" onClick={handleCancel} aria-current="page">
                   <Typography variant="body1" component="span">
-                    {projectWithDetails.project.project_name}
+                    {projectData.project.project_name}
                   </Typography>
                 </Link>
                 <Typography variant="body1" component="span">
@@ -356,7 +329,7 @@ const CreateSurveyPage = () => {
                   component={
                     <GeneralInformationForm
                       funding_sources={
-                        surveyFundingSources?.map((item) => {
+                        fundingSourcesData?.map((item) => {
                           return {
                             value: item.id,
                             label: `${
@@ -369,8 +342,8 @@ const CreateSurveyPage = () => {
                           };
                         }) || []
                       }
-                      projectStartDate={projectWithDetails.project.start_date}
-                      projectEndDate={projectWithDetails.project.end_date}
+                      projectStartDate={projectData.project.start_date}
+                      projectEndDate={projectData.project.end_date}
                     />
                   }></HorizontalSplitFormComponent>
 

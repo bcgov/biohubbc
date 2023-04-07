@@ -1,4 +1,4 @@
-import jsonpath from 'jsonpath';
+import { JSONPath } from 'jsonpath-plus';
 import { CSVValidator, WorkBookValidator } from '../csv/csv-file';
 import {
   getDuplicateHeadersValidator,
@@ -230,15 +230,16 @@ export class ValidationSchemaParser {
   }
 
   getSubmissionValidationSchemas(): object[] {
-    return jsonpath.query(this.validationSchema, this.getSubmissionValidationsJsonPath())?.[0] || [];
+    return JSONPath({ json: this.validationSchema, path: this.getSubmissionValidationsJsonPath() })?.[0] || [];
   }
 
   getWorkbookValidationSchemas(): object[] {
-    return jsonpath.query(this.validationSchema, this.getWorkbookValidationsJsonPath())?.[0] || [];
+    return JSONPath({ json: this.validationSchema, path: this.getWorkbookValidationsJsonPath() })?.[0] || [];
   }
 
   getFileValidationSchemas(fileName: string): object[] {
-    let validationSchemas = jsonpath.query(this.validationSchema, this.getFileValidationsJsonPath(fileName))?.[0] || [];
+    let validationSchemas =
+      JSONPath({ json: this.validationSchema, path: this.getFileValidationsJsonPath(fileName) })?.[0] || [];
 
     if (!validationSchemas.length) {
       validationSchemas = this.getDefaultFileValidationSchemas();
@@ -247,12 +248,12 @@ export class ValidationSchemaParser {
   }
 
   getDefaultFileValidationSchemas(): object[] {
-    return jsonpath.query(this.validationSchema, this.getDefaultFileValidationsJsonPath())?.[0] || [];
+    return JSONPath({ json: this.validationSchema, path: this.getDefaultFileValidationsJsonPath() })?.[0] || [];
   }
 
   getColumnValidationSchemas(fileName: string, columnName: string): object[] {
     const filevalidationSchemas =
-      jsonpath.query(this.validationSchema, this.getFileValidationsJsonPath(fileName))?.[0] || [];
+      JSONPath({ json: this.validationSchema, path: this.getFileValidationsJsonPath(fileName) })?.[0] || [];
 
     let columnValidationSchemas;
 
@@ -260,26 +261,29 @@ export class ValidationSchemaParser {
       columnValidationSchemas = this.getDefaultColumnValidationSchemas(columnName);
     } else {
       columnValidationSchemas =
-        jsonpath.query(this.validationSchema, this.getColumnValidationsJsonpath(fileName, columnName))?.[0] || [];
+        JSONPath({ json: this.validationSchema, path: this.getColumnValidationsJsonpath(fileName, columnName) })?.[0] ||
+        [];
     }
 
     return columnValidationSchemas;
   }
 
   getDefaultColumnValidationSchemas(columnName: string): object[] {
-    return jsonpath.query(this.validationSchema, this.getDefaultColumnValidationsJsonpath(columnName))?.[0] || [];
+    return (
+      JSONPath({ json: this.validationSchema, path: this.getDefaultColumnValidationsJsonpath(columnName) })?.[0] || []
+    );
   }
 
   getColumnNames(fileName: string): string[] {
     let columnNames;
 
     const filevalidationSchemas =
-      jsonpath.query(this.validationSchema, this.getFileValidationsJsonPath(fileName))?.[0] || [];
+      JSONPath({ json: this.validationSchema, path: this.getFileValidationsJsonPath(fileName) })?.[0] || [];
 
     if (!filevalidationSchemas.length) {
-      columnNames = jsonpath.query(this.validationSchema, this.getDefaultColumnNamesJsonpath());
+      columnNames = JSONPath({ json: this.validationSchema, path: this.getDefaultColumnNamesJsonpath() });
     } else {
-      columnNames = jsonpath.query(this.validationSchema, this.getColumnNamesJsonpath(fileName));
+      columnNames = JSONPath({ json: this.validationSchema, path: this.getColumnNamesJsonpath(fileName) });
     }
 
     return columnNames;
@@ -294,14 +298,14 @@ export class ValidationSchemaParser {
   }
 
   getFileValidationsJsonPath(fileName: string): string {
-    return `$.files[?(@.name == '${fileName}')].validations`;
+    return `$.files[?(@.name == "${fileName}")].validations`;
   }
   getDefaultFileValidationsJsonPath(): string {
     return `$.defaultFile.validations`;
   }
 
   getColumnNamesJsonpath(fileName: string): string {
-    return `$.files[?(@.name == '${fileName}')].columns[*].name`;
+    return `$.files[?(@.name == "${fileName}")].columns[*].name`;
   }
 
   getDefaultColumnNamesJsonpath(): string {
@@ -309,11 +313,11 @@ export class ValidationSchemaParser {
   }
 
   getColumnValidationsJsonpath(fileName: string, columnName: string): string {
-    return `$.files[?(@.name == '${fileName}')].columns[?(@.name == '${columnName}')].validations`;
+    return `$.files[?(@.name == "${fileName}")].columns[?(@.name == "${columnName}")].validations`;
   }
 
   getDefaultColumnValidationsJsonpath(columnName: string): string {
-    return `$.defaultFile.columns[?(@.name == '${columnName}')].validations`;
+    return `$.defaultFile.columns[?(@.name == "${columnName}")].validations`;
   }
 
   parseJson(json: any): object {

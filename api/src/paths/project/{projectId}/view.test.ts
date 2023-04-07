@@ -5,6 +5,7 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as db from '../../../database/db';
 import { HTTPError } from '../../../errors/http-error';
+import { IGetProject } from '../../../models/project-view';
 import { ProjectService } from '../../../services/project-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../__mocks__/db';
 import { GET, viewProject } from './view';
@@ -30,9 +31,11 @@ describe('project/{projectId}/view', () => {
 
       sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-      const viewProjectResult = { id: 1 };
+      const viewProjectResult = { project: { id: 1 } } as IGetProject;
+      const supplementaryProjectData = { project_metadata_publish: null };
 
-      sinon.stub(ProjectService.prototype, 'getProjectById').resolves(viewProjectResult as any);
+      sinon.stub(ProjectService.prototype, 'getProjectById').resolves(viewProjectResult);
+      sinon.stub(ProjectService.prototype, 'getProjectSupplementaryDataById').resolves(supplementaryProjectData);
 
       const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
@@ -45,7 +48,10 @@ describe('project/{projectId}/view', () => {
       }
 
       expect(mockRes.statusValue).to.equal(200);
-      expect(mockRes.jsonValue).to.eql(viewProjectResult);
+      expect(mockRes.jsonValue).to.eql({
+        projectData: viewProjectResult,
+        projectSupplementaryData: supplementaryProjectData
+      });
     });
 
     it('catches and re-throws error', async () => {

@@ -3,6 +3,7 @@ import { createMemoryHistory } from 'history';
 import { SurveyViewObject } from 'interfaces/useSurveyApi.interface';
 import React from 'react';
 import { Router } from 'react-router';
+import { codes } from 'test-helpers/code-helpers';
 import { surveyObject } from 'test-helpers/survey-helpers';
 import SurveysList from './SurveysList';
 
@@ -45,7 +46,7 @@ describe('SurveysList', () => {
 
     const { getByText, queryByText } = render(
       <Router history={history}>
-        <SurveysList projectId={1} surveysList={surveysList} />
+        <SurveysList projectId={1} surveysList={surveysList} codes={codes} />
       </Router>
     );
 
@@ -57,7 +58,7 @@ describe('SurveysList', () => {
   it('renders correctly with no surveys', () => {
     const { getByText } = render(
       <Router history={history}>
-        <SurveysList projectId={1} surveysList={[]} />
+        <SurveysList projectId={1} surveysList={[]} codes={codes} />
       </Router>
     );
 

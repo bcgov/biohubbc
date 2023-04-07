@@ -1,5 +1,5 @@
 import { AxiosInstance } from 'axios';
-import { ISurveySubmitForm } from 'components/publish/SubmitSurvey';
+import { ISurveySubmitForm } from 'components/publish/PublishSurveySections';
 
 /**
  * Returns a list of all resources
