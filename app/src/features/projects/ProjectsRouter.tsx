@@ -8,11 +8,11 @@ import React from 'react';
 import { Redirect, Switch } from 'react-router';
 import AppRoute from 'utils/AppRoute';
 import { getTitle } from 'utils/Utils';
-import CreateProjectPage from '../features/projects/create/CreateProjectPage';
-import EditProjectPage from '../features/projects/edit/EditProjectPage';
-import ProjectsListPage from '../features/projects/list/ProjectsListPage';
-import ProjectParticipantsPage from '../features/projects/participants/ProjectParticipantsPage';
-import SurveyRouter from './SurveyRouter';
+import CreateProjectPage from './create/CreateProjectPage';
+import EditProjectPage from './edit/EditProjectPage';
+import ProjectsListPage from './list/ProjectsListPage';
+import ProjectParticipantsPage from './participants/ProjectParticipantsPage';
+import SurveyRouter from '../../routers/SurveyRouter';
 
 /**
  * Router for all `/admin/projects/*` pages.

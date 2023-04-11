@@ -17,7 +17,7 @@ import { LandingPage } from 'pages/landing/LandingPage';
 import LogOutPage from 'pages/logout/LogOutPage';
 import React from 'react';
 import { Redirect, Switch, useLocation } from 'react-router-dom';
-import ProjectsRouter from 'routers/ProjectsRouter';
+import ProjectsRouter from 'features/projects/ProjectsRouter';
 import AppRoute from 'utils/AppRoute';
 import { getTitle } from 'utils/Utils';
 
