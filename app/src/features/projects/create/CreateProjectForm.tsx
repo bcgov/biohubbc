@@ -45,6 +45,7 @@ export interface ICreateProjectForm {
   codes: IGetAllCodeSetsResponse;
   handleSubmit: (formikData: ICreateProjectRequest) => void;
   formikRef: React.RefObject<FormikProps<ICreateProjectRequest>>;
+  initialValues?: ICreateProjectRequest;
 }
 
 export const initialProjectFieldData: ICreateProjectRequest = {
@@ -80,7 +81,7 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
   return (
     <Formik
       innerRef={formikRef}
-      initialValues={initialProjectFieldData}
+      initialValues={props.initialValues || initialProjectFieldData}
       validationSchema={validationProjectYupSchema}
       validateOnBlur={true}
       validateOnChange={false}

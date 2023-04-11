@@ -22,7 +22,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useQuery } from 'hooks/useQuery';
 import { ICreateProjectRequest } from 'interfaces/useProjectApi.interface';
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useRef, useState } from 'react';
 import { useHistory } from 'react-router';
 import { Prompt } from 'react-router-dom';
 import CreateProjectForm from './CreateProjectForm';
@@ -84,8 +84,6 @@ const CreateProjectPage: React.FC = () => {
 
   const draftId = Number(queryParams.draftId);
 
-  const formData = formikRef?.current?.values;
-
   const draftDataLoader = useDataLoader(() => {
     return biohubApi.draft.getDraft(draftId);
   });
@@ -93,18 +91,6 @@ const CreateProjectPage: React.FC = () => {
   if (draftId) {
     draftDataLoader.load();
   }
-
-  useEffect(() => {
-    const setFormikValues = (data: ICreateProjectRequest) => {
-      if (formikRef.current) {
-        formikRef.current?.setValues(data);
-      }
-    };
-
-    if (draftDataLoader.data?.data) {
-      setFormikValues(draftDataLoader.data.data);
-    }
-  }, [draftDataLoader.data, formikRef]);
 
   // Whether or not to show the 'Save as draft' dialog
   const [openDraftDialog, setOpenDraftDialog] = useState(false);
@@ -179,9 +165,9 @@ const CreateProjectPage: React.FC = () => {
       // Why? WIP changes to the active step will not yet be updated into its respective stepForms[n].stepInitialValues
 
       if (draftId) {
-        response = await biohubApi.draft.updateDraft(draftId, values.draft_name, formData);
+        response = await biohubApi.draft.updateDraft(draftId, values.draft_name, formikRef.current?.values);
       } else {
-        response = await biohubApi.draft.createDraft(values.draft_name, formData);
+        response = await biohubApi.draft.createDraft(values.draft_name, formikRef.current?.values);
       }
 
       setOpenDraftDialog(false);
@@ -332,7 +318,7 @@ const CreateProjectPage: React.FC = () => {
               <Button color="primary" variant="contained" onClick={() => setOpenDraftDialog(true)}>
                 Save Draft
               </Button>
-              {queryParams.draftId && (
+              {draftId && (
                 <Button color="primary" variant="outlined" onClick={() => setOpenDeleteDraftDialog(true)}>
                   Delete Draft
                 </Button>
@@ -349,7 +335,12 @@ const CreateProjectPage: React.FC = () => {
         <Box py={3}>
           <Paper elevation={0}>
             <Box p={5}>
-              <CreateProjectForm handleSubmit={createProject} codes={codesDataLoader.data} formikRef={formikRef} />
+              <CreateProjectForm
+                handleSubmit={createProject}
+                codes={codesDataLoader.data}
+                formikRef={formikRef}
+                initialValues={draftDataLoader.data?.data}
+              />
               <Box mt={4} display="flex" justifyContent="flex-end">
                 <Button
                   type="submit"
