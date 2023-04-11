@@ -1,4 +1,4 @@
-import { Button, DialogContent, DialogContentText } from '@material-ui/core';
+import { Button, DialogContentText } from '@material-ui/core';
 import { mdiShareAllOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import ComponentDialog from 'components/dialog/ComponentDialog';
@@ -84,22 +84,20 @@ const PublishSurveyButton: React.FC = (props) => {
         onClose={() => {
           setFinishSubmission(false);
         }}>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            Thank you for submitting your survey data to Biohub.
-          </DialogContentText>
-        </DialogContent>
+        <DialogContentText id="alert-dialog-description">
+          Thank you for submitting your survey data to Biohub.
+        </DialogContentText>
       </ComponentDialog>
 
       <ComponentDialog
-        dialogTitle="No Survey Data to Submit"
+        dialogTitle="Submit Survey Information"
         open={noSubmissionData}
         onClose={() => {
           setNoSubmissionData(false);
         }}>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">Thank you!</DialogContentText>
-        </DialogContent>
+        <DialogContentText id="alert-dialog-description">
+          You have not imported or uploaded any information to this survey to submit.
+        </DialogContentText>
       </ComponentDialog>
 
       <SubmitBiohubDialog

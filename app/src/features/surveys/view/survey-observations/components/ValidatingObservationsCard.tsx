@@ -2,7 +2,7 @@ import Box from '@material-ui/core/Box';
 import Paper from '@material-ui/core/Paper';
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import { mdiFileAlertOutline } from '@mdi/js';
+import { mdiFileOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import clsx from 'clsx';
 import { IGetObservationSubmissionResponse } from 'interfaces/useObservationApi.interface';
@@ -12,12 +12,14 @@ import BorderLinearProgress from './BorderLinearProgress';
 const useStyles = makeStyles((theme: Theme) => ({
   importFile: {
     display: 'flex',
-    minHeight: '82px',
-    padding: theme.spacing(2),
+    flexDirection: 'column',
+    paddingTop: theme.spacing(1),
+    paddingBottom: theme.spacing(1),
+    paddingRight: theme.spacing(2),
     paddingLeft: '20px',
     overflow: 'hidden',
     '& .importFile-icon': {
-      color: theme.palette.text.secondary
+      color: '#1a5a96'
     },
     '&.error': {
       borderColor: theme.palette.error.main,
@@ -46,38 +48,28 @@ const ValidatingObservationsCard = (props: IValidatingObservationsCardProps) => 
 
   return (
     <Paper variant="outlined" className={clsx(classes.importFile, 'info')}>
-      <Box
-        display={'flex'}
-        flex="0 0 auto"
-        style={{ overflow: 'hidden' }}
-        alignItems="center"
-        justifyContent={'center'}>
-        <Box className="importFile-icon" mr={2}>
-          <Icon path={mdiFileAlertOutline} size={1} />
+      <Box display="flex" alignItems="center" flex="1 1 auto" style={{ overflow: 'hidden', minHeight: '48px' }}>
+        <Box display="flex" alignItems="center" flex="0 0 auto" mr={2} className="importFile-icon">
+          <Icon path={mdiFileOutline} size={1} />
+        </Box>
+        <Box flex="1 1 auto" style={{ overflow: 'hidden' }}>
+          <Typography
+            className={classes.observationFileName}
+            variant="body2"
+            component="div"
+            onClick={props.onDownload}>
+            <strong>{props.observationRecord.surveyObservationData.inputFileName}</strong>
+          </Typography>
         </Box>
       </Box>
-      <Box flex="1 1 auto" style={{ overflow: 'hidden' }}>
-        <Box display="flex" alignItems="center" flex="1 1 auto" style={{ overflow: 'hidden' }}>
-          <Box flex="1 1 auto" style={{ overflow: 'hidden' }}>
-            <Typography
-              className={classes.observationFileName}
-              variant="body2"
-              component="div"
-              onClick={props.onDownload}>
-              <strong>{props.observationRecord.surveyObservationData.inputFileName}</strong>
-            </Typography>
-          </Box>
-        </Box>
-
-        <Box mr={1}>
-          <Typography variant="body2" color="textSecondary" component="div">
-            {props.observationRecord.surveyObservationData.isValidating
-              ? 'Importing file. Please wait...'
-              : props.observationRecord.surveyObservationData.status}
-          </Typography>
-          <Box mt={1.5}>
-            <BorderLinearProgress />
-          </Box>
+      <Box mt={-1} mr={1} mb={1.75} ml={5}>
+        <Typography variant="body2" color="textSecondary" component="div">
+          {props.observationRecord.surveyObservationData.isValidating
+            ? 'Importing file. Please wait...'
+            : props.observationRecord.surveyObservationData.status}
+        </Typography>
+        <Box mt={1.5}>
+          <BorderLinearProgress />
         </Box>
       </Box>
     </Paper>
