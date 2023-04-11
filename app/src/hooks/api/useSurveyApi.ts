@@ -295,24 +295,6 @@ const useSurveyApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Get observation submission S3 url based on survey and submission ID
-   *
-   * @param {AxiosInstance} axios
-   * @returns {*} {Promise<string>}
-   */
-  const getObservationSubmissionSignedURL = async (
-    projectId: number,
-    surveyId: number,
-    submissionId: number
-  ): Promise<string> => {
-    const { data } = await axios.get(
-      `/api/project/${projectId}/survey/${surveyId}/observation/submission/${submissionId}/getSignedUrl`
-    );
-
-    return data;
-  };
-
-  /**
    * Get summary submission S3 url based on survey and summary ID
    *
    * @param {AxiosInstance} axios
@@ -436,19 +418,6 @@ const useSurveyApi = (axios: AxiosInstance) => {
     return data;
   };
 
-  /**
-   * Upload Survey/Project/Observation data to BioHub
-   *
-   * @param {number} projectId
-   * @param {number} surveyId
-   * @return {*}  {Promise<boolean>}
-   */
-  const uploadSurveyDataToBioHub = async (projectId: number, surveyId: number): Promise<boolean> => {
-    const response = await axios.post(`/api/project/${projectId}/survey/${surveyId}/upload`);
-
-    return response.data;
-  };
-
   return {
     createSurvey,
     getSurveyForView,
@@ -465,12 +434,10 @@ const useSurveyApi = (axios: AxiosInstance) => {
     getSurveyAttachments,
     deleteSurveyAttachment,
     getSurveyAttachmentSignedURL,
-    getObservationSubmissionSignedURL,
     deleteSurvey,
     getAvailableSurveyFundingSources,
     getSummarySubmissionSignedURL,
-    deleteSummarySubmission,
-    uploadSurveyDataToBioHub
+    deleteSummarySubmission
   };
 };
 

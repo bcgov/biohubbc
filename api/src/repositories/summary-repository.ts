@@ -5,6 +5,7 @@ import { ApiExecuteSQLError } from '../errors/api-error';
 import { HTTP400 } from '../errors/http-error';
 import { PostSummaryDetails } from '../models/summaryresults-create';
 import { getLogger } from '../utils/logger';
+import { MessageError, SummarySubmissionError } from '../utils/submission-error';
 import { BaseRepository } from './base-repository';
 
 export interface ISummaryTemplateSpeciesData {
@@ -19,7 +20,7 @@ export interface ISummaryTemplateSpeciesData {
 }
 
 export interface ISurveySummaryDetails {
-  id: number;
+  survey_summary_submission_id: number;
   key: string;
   uuid: string;
   file_name: string;
@@ -90,7 +91,7 @@ export class SummaryRepository extends BaseRepository {
   async getLatestSurveySummarySubmission(surveyId: number): Promise<ISurveySummaryDetails> {
     const sqlStatement = SQL`
       SELECT
-        sss.survey_summary_submission_id as id,
+        sss.survey_summary_submission_id,
         sss.key,
         sss.file_name,
         sss.uuid,
@@ -117,7 +118,7 @@ export class SummaryRepository extends BaseRepository {
       WHERE
         sss.survey_id = ${surveyId}
       ORDER BY
-        sss.event_timestamp DESC
+        sss.event_timestamp DESC, sssm.event_timestamp DESC
       LIMIT 1;
     `;
 
@@ -306,7 +307,7 @@ export class SummaryRepository extends BaseRepository {
   }
 
   /**
-   * Retreives the list of messages for a summary submission.
+   * Retrieves the list of messages for a summary submission.
    *
    * @param {number} summarySubmissionId the ID of the summary submission.
    * @returns {Promise<ISummarySubmissionMessagesResponse[]>} all messages for the given summary submission.
@@ -351,7 +352,7 @@ export class SummaryRepository extends BaseRepository {
   }
 
   /**
-   * Retreives the ID of a summary template based on its name and version number.
+   * Retrieves the ID of a summary template based on its name and version number.
    * @param templateName
    * @param templateVersion
    * @returns
@@ -385,7 +386,7 @@ export class SummaryRepository extends BaseRepository {
   }
 
   /**
-   * Reetrieves all summary template species records that are constrained by the given
+   * Retrieves all summary template species records that are constrained by the given
    * template name, version and survey focal species.
    * @param {number} templateName The name of the template.
    * @param {number} templateVersion The version of the template.
@@ -399,6 +400,19 @@ export class SummaryRepository extends BaseRepository {
   ): Promise<ISummaryTemplateSpeciesData[]> {
     const templateRow = await this.getSummaryTemplateIdFromNameVersion(templateName, templateVersion);
 
+    const failedToFindValidationRulesError = new SummarySubmissionError({
+      messages: [
+        new MessageError(
+          SUMMARY_SUBMISSION_MESSAGE_TYPE.FAILED_GET_VALIDATION_RULES,
+          `Could not find any validation schema associated with Template Name "${templateName}" and Template Version "${templateVersion}".`
+        )
+      ]
+    });
+
+    if (!templateRow) {
+      throw failedToFindValidationRulesError;
+    }
+
     const queryBuilder = getKnex()
       .select()
       .fromRaw('summary_template_species sts')
@@ -411,7 +425,21 @@ export class SummaryRepository extends BaseRepository {
     const response = await this.connection.knex<ISummaryTemplateSpeciesData>(queryBuilder);
 
     if (!response) {
-      throw new HTTP400('Failed to query summary template species table');
+      throw failedToFindValidationRulesError;
+    }
+
+    // check if the species in the survey and the species on the template match
+    if (species) {
+      if (!response.rows.some((row) => species.includes(Number(row.wldtaxonomic_units_id)))) {
+        throw new SummarySubmissionError({
+          messages: [
+            new MessageError(
+              SUMMARY_SUBMISSION_MESSAGE_TYPE.FAILED_GET_VALIDATION_RULES,
+              'The focal species imported from this template does not match the focal species selected for this survey.'
+            )
+          ]
+        });
+      }
     }
 
     return response.rows;

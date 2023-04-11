@@ -27,6 +27,7 @@ import {
 } from '../repositories/survey-repository';
 import { getLogger } from '../utils/logger';
 import { DBService } from './db-service';
+import { HistoryPublishService } from './history-publish-service';
 import { PermitService } from './permit-service';
 import { PlatformService } from './platform-service';
 import { TaxonomyService } from './taxonomy-service';
@@ -44,6 +45,7 @@ export class SurveyService extends DBService {
   attachmentRepository: AttachmentRepository;
   surveyRepository: SurveyRepository;
   platformService: PlatformService;
+  historyPublishService: HistoryPublishService;
 
   constructor(connection: IDBConnection) {
     super(connection);
@@ -51,6 +53,7 @@ export class SurveyService extends DBService {
     this.attachmentRepository = new AttachmentRepository(connection);
     this.surveyRepository = new SurveyRepository(connection);
     this.platformService = new PlatformService(connection);
+    this.historyPublishService = new HistoryPublishService(connection);
   }
 
   /**
@@ -109,15 +112,9 @@ export class SurveyService extends DBService {
    * @memberof SurveyService
    */
   async getSurveySupplementaryDataById(surveyId: number): Promise<SurveySupplementaryData> {
-    const [submissionId, summaryResultId] = await Promise.all([
-      this.getOccurrenceSubmissionId(surveyId),
-      this.getSummaryResultId(surveyId)
-    ]);
+    const surveyMetadataPublish = await this.historyPublishService.getSurveyMetadataPublishRecord(surveyId);
 
-    return {
-      occurrence_submission: submissionId,
-      summary_result: summaryResultId
-    };
+    return { survey_metadata_publish: surveyMetadataPublish };
   }
 
   /**
@@ -212,14 +209,14 @@ export class SurveyService extends DBService {
   }
 
   /**
-   * Get Occurrence Submission Id for a given survey ID
+   * Get Occurrence Submission for a given survey id.
    *
-   * @param {number} surveyID
-   * @returns {*} {Promise<number>}
+   * @param {number} surveyId
+   * @return {*}  {(Promise<{ occurrence_submission_id: number | null }>)}F
    * @memberof SurveyService
    */
-  async getOccurrenceSubmissionId(surveyId: number): Promise<number> {
-    return this.surveyRepository.getOccurrenceSubmissionId(surveyId);
+  async getOccurrenceSubmission(surveyId: number): Promise<{ occurrence_submission_id: number | null }> {
+    return this.surveyRepository.getOccurrenceSubmission(surveyId);
   }
 
   /**
@@ -279,8 +276,15 @@ export class SurveyService extends DBService {
     }, []);
   }
 
-  async getSummaryResultId(surveyId: number): Promise<number> {
-    return this.surveyRepository.getSummaryResultId(surveyId);
+  /**
+   * Get a survey summary submission record for a given survey id.
+   *
+   * @param {number} surveyId
+   * @return {*}  {(Promise<{ survey_summary_submission_id: number | null }>)}
+   * @memberof SurveyService
+   */
+  async getSurveySummarySubmission(surveyId: number): Promise<{ survey_summary_submission_id: number | null }> {
+    return this.surveyRepository.getSurveySummarySubmission(surveyId);
   }
 
   /**
@@ -315,11 +319,14 @@ export class SurveyService extends DBService {
    * @return {*}  {Promise<number>}
    * @memberof SurveyService
    */
-  async createSurveyAndUploadToBiohub(projectId: number, postSurveyData: PostSurveyObject): Promise<number> {
+  async createSurveyAndUploadMetadataToBioHub(projectId: number, postSurveyData: PostSurveyObject): Promise<number> {
     const surveyId = await this.createSurvey(projectId, postSurveyData);
 
-    //Update Eml to biohub and publish record
-    await this.platformService.submitAndPublishDwcAMetadata(projectId, surveyId);
+    try {
+      await this.platformService.submitSurveyDwCMetadataToBioHub(surveyId);
+    } catch (error) {
+      defaultLog.warn({ label: 'createSurveyAndUploadMetadataToBioHub', message: 'error', error });
+    }
 
     return surveyId;
   }
@@ -514,16 +521,19 @@ export class SurveyService extends DBService {
    * @returns {*} {Promise<void>}
    * @memberof SurveyService
    */
-  async updateSurveyAndUploadToBiohub(surveyId: number, putSurveyData: PutSurveyObject): Promise<void> {
-    const surveyData = await this.updateSurvey(surveyId, putSurveyData);
+  async updateSurveyAndUploadMetadataToBiohub(surveyId: number, putSurveyData: PutSurveyObject): Promise<void> {
+    await this.updateSurvey(surveyId, putSurveyData);
 
-    // Update Eml to biohub and publish record
-    return await this.platformService.submitAndPublishDwcAMetadata(surveyData.survey_details.project_id, surveyId);
+    try {
+      await this.platformService.submitSurveyDwCMetadataToBioHub(surveyId);
+    } catch (error) {
+      defaultLog.warn({ label: 'updateSurveyAndUploadMetadataToBiohub', message: 'error', error });
+    }
   }
 
   /**
    * Updates provided survey information and submits to BioHub
-   *
+   *˝
    * @param {number} surveyId
    * @param {PutSurveyObject} putSurveyData
    * @returns {*} {Promise<void>}

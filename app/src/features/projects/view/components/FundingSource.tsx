@@ -2,43 +2,33 @@ import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
-import { Theme } from '@material-ui/core/styles/createMuiTheme';
-import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
+import assert from 'assert';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
-import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
-import React from 'react';
+import { ProjectContext } from 'contexts/projectContext';
+import React, { useContext } from 'react';
 import { getFormattedAmount, getFormattedDateRangeString } from 'utils/Utils';
-
-const useStyles = makeStyles((theme: Theme) => ({
-  fundingSourceMeta: {}
-}));
-
-export interface IProjectFundingProps {
-  projectForViewData: IGetProjectForViewResponse;
-  codes: IGetAllCodeSetsResponse;
-  refresh: () => void;
-}
 
 /**
  * Funding source content for a project.
  *
  * @return {*}
  */
-const FundingSource: React.FC<IProjectFundingProps> = (props) => {
-  const classes = useStyles();
-  const {
-    projectForViewData: { funding }
-  } = props;
+const FundingSource = () => {
+  const projectContext = useContext(ProjectContext);
 
-  const hasFundingSources = funding.fundingSources && funding.fundingSources.length > 0;
+  // Project data must be loaded by a parent before this component is rendered
+  assert(projectContext.projectDataLoader.data);
+
+  const projectData = projectContext.projectDataLoader.data.projectData;
+
+  const hasFundingSources = projectData.funding.fundingSources && projectData.funding.fundingSources.length;
 
   return (
     <>
       <List disablePadding>
         {hasFundingSources &&
-          funding.fundingSources.map((item: any, index: number) => (
+          projectData.funding.fundingSources.map((item: any) => (
             <ListItem disableGutters divider key={item.id}>
               <Box flex="1 1 auto">
                 <Box pb={1.25}>
@@ -49,7 +39,7 @@ const FundingSource: React.FC<IProjectFundingProps> = (props) => {
                     )}
                   </Typography>
                 </Box>
-                <Box component="dl" m={0} className={classes.fundingSourceMeta}>
+                <Box component="dl" m={0}>
                   <Grid container spacing={1}>
                     <Grid item sm={6}>
                       <Typography component="dt" variant="subtitle2" color="textSecondary">

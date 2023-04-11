@@ -15,9 +15,34 @@ export interface IGetProjectAttachment {
   lastModified: string;
   size: number;
   revisionCount: number;
+  supplementaryAttachmentData: IProjectSupplementaryAttachmentData | IProjectSupplementaryReportAttachmentData | null;
 }
 
 export type IGetProjectReportAttachment = IGetProjectAttachment & { fileType: 'Report' };
+
+export interface IProjectSupplementaryAttachmentData {
+  project_attachment_publish_id: number;
+  project_attachment_id: number;
+  event_timestamp: string;
+  artifact_revision_id: number;
+  create_date: string;
+  create_user: number;
+  update_date: string | null;
+  update_user: number | null;
+  revision_count: number;
+}
+
+export interface IProjectSupplementaryReportAttachmentData {
+  project_report_publish_id: number;
+  project_report_attachment_id: number;
+  event_timestamp: string;
+  artifact_revision_id: number;
+  create_date: string;
+  create_user: number;
+  update_date: string | null;
+  update_user: number | null;
+  revision_count: number;
+}
 
 /**
  * An interface for an instance of filter fields for project advanced filter search
@@ -201,7 +226,17 @@ export type IUpdateProjectRequest = IGetProjectForUpdateResponse;
  * @interface IGetProjectForViewResponse
  */
 export interface IGetProjectForViewResponse {
-  id: number;
+  projectData: ProjectViewObject;
+  projectSupplementaryData: ProjectSupplementaryData;
+}
+
+/**
+ * An interface for a single instance of project metadata, for view-only use cases.
+ *
+ * @export
+ * @interface ProjectViewObject
+ */
+export interface ProjectViewObject {
   project: IGetProjectForViewResponseDetails;
   objectives: IGetProjectForViewResponseObjectives;
   location: IGetProjectForViewResponseLocation;
@@ -212,6 +247,7 @@ export interface IGetProjectForViewResponse {
 }
 
 export interface IGetProjectForViewResponseDetails {
+  id: number;
   project_name: string;
   project_type: number;
   project_activities: number[];
@@ -268,6 +304,20 @@ export interface IGetProjectForViewResponsePartnerships {
   stakeholder_partnerships: string[];
 }
 
+export interface ProjectSupplementaryData {
+  project_metadata_publish: {
+    project_metadata_publish_id: number;
+    project_id: number;
+    event_timestamp: string;
+    queue_id: number;
+    create_date: string;
+    create_user: number;
+    update_date: string | null;
+    update_user: number | null;
+    revision_count: number;
+  } | null;
+}
+
 /**
  * A single media item.
  *
@@ -301,7 +351,8 @@ export interface IGetAttachmentDetails {
 }
 
 export interface IGetReportMetadata {
-  id: number;
+  project_report_attachment_id?: number;
+  survey_report_attachment_id?: number;
   title: string;
   year_published: number;
   description: string;

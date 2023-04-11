@@ -277,8 +277,21 @@ GET.apiDoc = {
                     }
                   }
                 },
-                docs_to_be_reviewed: {
-                  type: 'number'
+                location: {
+                  description: 'Survey location Details',
+                  type: 'object',
+                  required: ['survey_area_name', 'geometry'],
+                  properties: {
+                    survey_area_name: {
+                      type: 'string'
+                    },
+                    geometry: {
+                      type: 'array',
+                      items: {
+                        ...(geoJsonFeature as object)
+                      }
+                    }
+                  }
                 }
               }
             }

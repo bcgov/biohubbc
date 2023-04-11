@@ -35,11 +35,11 @@ export default function useDataLoaderError<AFArgs extends any[], AFResponse = un
       dialogError: (dataLoader.error as APIError).message,
       dialogErrorDetails: (dataLoader.error as APIError).errors,
       onOk: () => {
-        dataLoader.clear();
+        dataLoader.clearError();
         dialogContext.setErrorDialog({ open: false });
       },
       onClose: () => {
-        dataLoader.clear();
+        dataLoader.clearError();
         dialogContext.setErrorDialog({ open: false });
       },
       ...getErrorDialogProps(dataLoader)

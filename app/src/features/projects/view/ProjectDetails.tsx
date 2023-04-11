@@ -11,20 +11,9 @@ import IUCNClassification from 'features/projects/view/components/IUCNClassifica
 import Partnerships from 'features/projects/view/components/Partnerships';
 import ProjectCoordinator from 'features/projects/view/components/ProjectCoordinator';
 import ProjectObjectives from 'features/projects/view/components/ProjectObjectives';
-import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import React from 'react';
 
-export interface IProjectDetailsProps {
-  projectForViewData: IGetProjectForViewResponse;
-  codes: IGetAllCodeSetsResponse;
-  refresh: () => void;
-}
-
 const useStyles = makeStyles((theme: Theme) => ({
-  projectTitle: {
-    fontWeight: 400
-  },
   projectMetadata: {
     '& section + section': {
       marginTop: theme.spacing(4)
@@ -56,12 +45,6 @@ const useStyles = makeStyles((theme: Theme) => ({
       marginTop: theme.spacing(1.5),
       marginBottom: theme.spacing(1.5)
     }
-  },
-  projectMetaObjectives: {
-    display: '-webkit-box',
-    '-webkit-line-clamp': 4,
-    '-webkit-box-orient': 'vertical',
-    overflow: 'hidden'
   }
 }));
 
@@ -70,8 +53,7 @@ const useStyles = makeStyles((theme: Theme) => ({
  *
  * @return {*}
  */
-const ProjectDetails: React.FC<IProjectDetailsProps> = (props) => {
-  const { projectForViewData, codes, refresh } = props;
+const ProjectDetails = () => {
   const classes = useStyles();
 
   return (
@@ -88,7 +70,7 @@ const ProjectDetails: React.FC<IProjectDetailsProps> = (props) => {
             Project Objectives
           </Typography>
           <Divider></Divider>
-          <ProjectObjectives projectForViewData={projectForViewData} codes={codes} refresh={refresh} />
+          <ProjectObjectives />
         </Box>
 
         <Box component="section">
@@ -96,7 +78,7 @@ const ProjectDetails: React.FC<IProjectDetailsProps> = (props) => {
             General Information
           </Typography>
           <Divider></Divider>
-          <GeneralInformation projectForViewData={projectForViewData} codes={codes} refresh={refresh} />
+          <GeneralInformation />
         </Box>
 
         <Box component="section">
@@ -104,7 +86,7 @@ const ProjectDetails: React.FC<IProjectDetailsProps> = (props) => {
             Project Coordinator
           </Typography>
           <Divider></Divider>
-          <ProjectCoordinator projectForViewData={projectForViewData} codes={codes} refresh={refresh} />
+          <ProjectCoordinator />
         </Box>
 
         <Box component="section">
@@ -112,7 +94,7 @@ const ProjectDetails: React.FC<IProjectDetailsProps> = (props) => {
             Funding Sources
           </Typography>
           <Divider></Divider>
-          <FundingSource projectForViewData={projectForViewData} codes={codes} refresh={refresh} />
+          <FundingSource />
         </Box>
 
         <Box component="section">
@@ -120,9 +102,7 @@ const ProjectDetails: React.FC<IProjectDetailsProps> = (props) => {
             Partnerships
           </Typography>
           <Divider></Divider>
-          <Box>
-            <Partnerships projectForViewData={projectForViewData} codes={codes} refresh={refresh} />
-          </Box>
+          <Partnerships />
         </Box>
 
         <Box component="section" mb={0}>
@@ -130,7 +110,7 @@ const ProjectDetails: React.FC<IProjectDetailsProps> = (props) => {
             IUCN Classification
           </Typography>
           <Divider></Divider>
-          <IUCNClassification projectForViewData={projectForViewData} codes={codes} refresh={refresh} />
+          <IUCNClassification />
         </Box>
       </Box>
     </Box>

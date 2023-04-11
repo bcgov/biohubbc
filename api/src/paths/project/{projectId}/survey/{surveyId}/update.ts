@@ -289,13 +289,13 @@ export function updateSurvey(): RequestHandler {
 
       const surveyService = new SurveyService(connection);
 
-      await surveyService.updateSurveyAndUploadToBiohub(surveyId, sanitizedPutSurveyData);
+      await surveyService.updateSurveyAndUploadMetadataToBiohub(surveyId, sanitizedPutSurveyData);
 
       await connection.commit();
 
       return res.status(200).json({ id: surveyId });
     } catch (error) {
-      defaultLog.error({ label: 'updateProject', message: 'error', error });
+      defaultLog.error({ label: 'updateSurvey', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

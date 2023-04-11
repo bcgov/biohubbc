@@ -1,8 +1,8 @@
-import ProjectsLayout from 'features/projects/ProjectsLayout';
 import ProjectPage from 'features/projects/view/ProjectPage';
 import CreateSurveyPage from 'features/surveys/CreateSurveyPage';
 import EditSurveyPage from 'features/surveys/edit/EditSurveyPage';
 import SurveyPage from 'features/surveys/view/SurveyPage';
+import ProjectsLayout from 'layouts/ProjectsLayout';
 import React from 'react';
 import { Redirect, Switch } from 'react-router';
 import AppRoute from 'utils/AppRoute';

@@ -5,7 +5,7 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as db from '../../../../../database/db';
 import { HTTPError } from '../../../../../errors/http-error';
-import { IProjectAttachment } from '../../../../../repositories/attachment-repository';
+import { ISurveyAttachment } from '../../../../../repositories/attachment-repository';
 import { AttachmentService } from '../../../../../services/attachment-service';
 import { PlatformService } from '../../../../../services/platform-service';
 import { SurveyService } from '../../../../../services/survey-service';
@@ -61,7 +61,7 @@ describe('deleteSurvey', () => {
 
     const getSurveyAttachmentsStub = sinon
       .stub(AttachmentService.prototype, 'getSurveyAttachments')
-      .resolves([({ key: 'key' } as unknown) as IProjectAttachment]);
+      .resolves([({ key: 'key' } as unknown) as ISurveyAttachment]);
 
     const deleteSurveyStub = sinon.stub(SurveyService.prototype, 'deleteSurvey').resolves();
 
@@ -104,7 +104,7 @@ describe('deleteSurvey', () => {
 
     const getSurveyAttachmentsStub = sinon
       .stub(AttachmentService.prototype, 'getSurveyAttachments')
-      .resolves([({ key: 'key' } as unknown) as IProjectAttachment]);
+      .resolves([({ key: 'key' } as unknown) as ISurveyAttachment]);
 
     const deleteSurveyStub = sinon.stub(SurveyService.prototype, 'deleteSurvey').resolves();
 
@@ -112,7 +112,9 @@ describe('deleteSurvey', () => {
       .stub(file_utils, 'deleteFileFromS3')
       .resolves((true as unknown) as S3.DeleteObjectOutput);
 
-    const submitDwCAMetadataPackageStub = sinon.stub(PlatformService.prototype, 'submitDwCAMetadataPackage').resolves();
+    const submitDwCAMetadataPackageStub = sinon
+      .stub(PlatformService.prototype, 'submitProjectDwCMetadataToBioHub')
+      .resolves();
 
     let actualResult: any = null;
     const sampleRes = {

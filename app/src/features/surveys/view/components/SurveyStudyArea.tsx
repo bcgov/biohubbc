@@ -8,6 +8,7 @@ import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import Typography from '@material-ui/core/Typography';
 import { mdiChevronRight, mdiPencilOutline, mdiRefresh } from '@mdi/js';
 import Icon from '@mdi/react';
+import assert from 'assert';
 import FullScreenViewMapDialog from 'components/boundary/FullScreenViewMapDialog';
 import InferredLocationDetails, { IInferredLayers } from 'components/boundary/InferredLocationDetails';
 import EditDialog from 'components/dialog/EditDialog';
@@ -17,6 +18,7 @@ import { IStaticLayer } from 'components/map/components/StaticLayers';
 import MapContainer from 'components/map/MapContainer';
 import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
 import { EditSurveyStudyAreaI18N } from 'constants/i18n';
+import { SurveyContext } from 'contexts/surveyContext';
 import StudyAreaForm, {
   IStudyAreaForm,
   StudyAreaInitialValues,
@@ -25,18 +27,12 @@ import StudyAreaForm, {
 import { Feature } from 'geojson';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
-import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
+import useDataLoader from 'hooks/useDataLoader';
+import useDataLoaderError from 'hooks/useDataLoaderError';
 import { LatLngBoundsExpression } from 'leaflet';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
-
-export interface ISurveyStudyAreaProps {
-  surveyForViewData: IGetSurveyForViewResponse;
-  projectForViewData: IGetProjectForViewResponse;
-  mapLayersForView: { markerLayers: IMarkerLayer[]; staticLayers: IStaticLayer[] };
-  refresh: () => void;
-}
+import { parseSpatialDataByType } from 'utils/spatial-utils';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -68,19 +64,22 @@ const useStyles = makeStyles((theme: Theme) =>
  *
  * @return {*}
  */
-const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
+const SurveyStudyArea = () => {
   const classes = useStyles();
   const biohubApi = useBiohubApi();
 
-  const {
-    projectForViewData,
-    surveyForViewData: {
-      surveyData: { survey_details },
-      surveySupplementaryData: { occurrence_submission }
-    },
-    refresh
-  } = props;
+  const surveyContext = useContext(SurveyContext);
 
+  // Survey data must be loaded by the parent before this component is rendered
+  assert(surveyContext.surveyDataLoader.data);
+
+  const occurrence_submission_id =
+    surveyContext.observationDataLoader.data?.surveyObservationData.occurrence_submission_id;
+
+  const [markerLayers, setMarkerLayers] = useState<IMarkerLayer[]>([]);
+  const [staticLayers, setStaticLayers] = useState<IStaticLayer[]>([]);
+
+  const survey_details = surveyContext.surveyDataLoader.data?.surveyData?.survey_details;
   const surveyGeometry = survey_details?.geometry || [];
 
   const [openEditDialog, setOpenEditDialog] = useState(false);
@@ -96,6 +95,32 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
     wmu: []
   });
 
+  const mapDataLoader = useDataLoader((occurrenceSubmissionId: number) =>
+    biohubApi.observation.getOccurrencesForView(occurrenceSubmissionId)
+  );
+  useDataLoaderError(mapDataLoader, () => {
+    return {
+      dialogTitle: 'Error Loading Map Data',
+      dialogText:
+        'An error has occurred while attempting to load map data, please try again. If the error persists, please contact your system administrator.'
+    };
+  });
+
+  useEffect(() => {
+    if (mapDataLoader.data) {
+      const result = parseSpatialDataByType(mapDataLoader.data);
+
+      setMarkerLayers(result.markerLayers);
+      setStaticLayers(result.staticLayers);
+    }
+  }, [mapDataLoader.data]);
+
+  useEffect(() => {
+    if (occurrence_submission_id) {
+      mapDataLoader.load(occurrence_submission_id);
+    }
+  }, [mapDataLoader, occurrence_submission_id]);
+
   const zoomToBoundaryExtent = useCallback(() => {
     setBounds(calculateUpdatedMapBounds(surveyGeometry));
   }, [surveyGeometry]);
@@ -104,9 +129,13 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
     const nonEditableGeometriesResult = surveyGeometry.map((geom: Feature) => {
       return { feature: geom };
     });
+
+    if (nonEditableGeometriesResult.length) {
+      setNonEditableGeometries(nonEditableGeometriesResult);
+    }
+
     zoomToBoundaryExtent();
-    setNonEditableGeometries(nonEditableGeometriesResult);
-  }, [surveyGeometry, occurrence_submission.id, zoomToBoundaryExtent]);
+  }, [surveyGeometry, occurrence_submission_id, setNonEditableGeometries, zoomToBoundaryExtent]);
 
   const [errorDialogProps, setErrorDialogProps] = useState<IErrorDialogProps>({
     dialogTitle: EditSurveyStudyAreaI18N.editErrorTitle,
@@ -124,28 +153,15 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
     setErrorDialogProps({ ...errorDialogProps, ...textDialogProps, open: true });
   };
 
-  const handleDialogEditOpen = async () => {
-    let surveyResponseData;
-
-    try {
-      const surveyResponse = await biohubApi.survey.getSurveyForView(projectForViewData.id, survey_details?.id);
-
-      if (!surveyResponse) {
-        showErrorDialog({ open: true });
-        return;
-      }
-
-      surveyResponseData = surveyResponse;
-    } catch (error) {
-      const apiError = error as APIError;
-      showErrorDialog({ dialogText: apiError.message, open: true });
+  const handleDialogEditOpen = () => {
+    if (!survey_details) {
       return;
     }
 
     setStudyAreaFormData({
       location: {
-        survey_area_name: surveyResponseData.surveyData.survey_details.survey_area_name,
-        geometry: surveyResponseData.surveyData.survey_details.geometry
+        survey_area_name: survey_details.survey_area_name,
+        geometry: survey_details.geometry
       }
     });
 
@@ -153,6 +169,10 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
   };
 
   const handleDialogEditSave = async (values: IStudyAreaForm) => {
+    if (!survey_details) {
+      return;
+    }
+
     try {
       const surveyData = {
         location: {
@@ -162,7 +182,7 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
         }
       };
 
-      await biohubApi.survey.updateSurvey(projectForViewData.id, survey_details.id, surveyData);
+      await biohubApi.survey.updateSurvey(surveyContext.projectId, surveyContext.surveyId, surveyData);
     } catch (error) {
       const apiError = error as APIError;
       showErrorDialog({ dialogText: apiError.message, dialogErrorDetails: apiError.errors, open: true });
@@ -171,14 +191,14 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
       setOpenEditDialog(false);
     }
 
-    refresh();
+    surveyContext.surveyDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
   };
 
-  const handleDialogViewOpen = () => {
+  const handleOpenFullScreenMap = () => {
     setShowFullScreenViewMapDialog(true);
   };
 
-  const handleClose = () => {
+  const handleCloseFullScreenMap = () => {
     setShowFullScreenViewMapDialog(false);
   };
 
@@ -198,7 +218,7 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
 
       <FullScreenViewMapDialog
         open={showFullScreenViewMapDialog}
-        onClose={handleClose}
+        onClose={handleCloseFullScreenMap}
         map={
           <MapContainer
             mapId="project_location_form_map"
@@ -206,11 +226,11 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
             bounds={bounds}
             nonEditableGeometries={nonEditableGeometries}
             setInferredLayersInfo={setInferredLayersInfo}
-            markerLayers={props.mapLayersForView.markerLayers}
-            staticLayers={props.mapLayersForView.staticLayers}
+            markerLayers={markerLayers}
+            staticLayers={staticLayers}
           />
         }
-        description={survey_details.survey_area_name}
+        description={survey_details?.survey_area_name}
         layers={<InferredLocationDetails layers={inferredLayersInfo} />}
         backButtonTitle={'Back To Survey'}
         mapTitle={'Study Area'}
@@ -228,13 +248,13 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
 
       <Box px={3} pb={3}>
         <Box height={500} position="relative">
-          <MapContainer
+          <MemoizedMapContainer
             mapId="survey_study_area_map"
             bounds={bounds}
             nonEditableGeometries={nonEditableGeometries}
             setInferredLayersInfo={setInferredLayersInfo}
-            markerLayers={props.mapLayersForView.markerLayers}
-            staticLayers={props.mapLayersForView.staticLayers}
+            markerLayers={markerLayers}
+            staticLayers={staticLayers}
           />
           {surveyGeometry.length > 0 && (
             <Box position="absolute" top="126px" left="10px" zIndex="999">
@@ -242,7 +262,8 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
                 aria-label="zoom to initial extent"
                 title="Zoom to initial extent"
                 className={classes.zoomToBoundaryExtentBtn}
-                onClick={() => zoomToBoundaryExtent()}>
+                onClick={() => zoomToBoundaryExtent()}
+                data-testid="survey_map_center_button">
                 <Icon size={1} path={mdiRefresh} />
               </IconButton>
             </Box>
@@ -253,7 +274,7 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
             Study Area Name
           </Typography>
           <Divider></Divider>
-          <Typography variant="body1">{survey_details.survey_area_name}</Typography>
+          <Typography variant="body1">{survey_details?.survey_area_name}</Typography>
           <Box mt={3}>
             <InferredLocationDetails layers={inferredLayersInfo} />
           </Box>
@@ -265,15 +286,30 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
           variant="text"
           color="primary"
           className="sectionHeaderButton"
-          onClick={() => handleDialogViewOpen()}
+          onClick={() => handleOpenFullScreenMap()}
           title="Expand Location"
           aria-label="Show Expanded Location"
-          endIcon={<Icon path={mdiChevronRight} size={0.875} />}>
+          endIcon={<Icon path={mdiChevronRight} size={0.875} />}
+          data-testid="survey_map_full_screen_button">
           Show More
         </Button>
       </Box>
     </>
   );
 };
+
+/**
+ * Memoized wrapper of `MapContainer` to ensure the map only re-renders if specificF props change.
+ *
+ * @return {*}
+ */
+const MemoizedMapContainer = React.memo(MapContainer, (prevProps, nextProps) => {
+  return (
+    prevProps.nonEditableGeometries === nextProps.nonEditableGeometries &&
+    prevProps.bounds === nextProps.bounds &&
+    prevProps.markerLayers === nextProps.markerLayers &&
+    prevProps.staticLayers === nextProps.staticLayers
+  );
+});
 
 export default SurveyStudyArea;

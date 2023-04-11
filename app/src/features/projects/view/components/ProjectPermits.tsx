@@ -22,18 +22,16 @@ import ProjectPermitForm, {
 } from 'features/surveys/SurveyPermitForm';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetNonSamplingPermit } from 'interfaces/usePermitApi.interface';
 import {
   IGetProjectForUpdateResponseCoordinator,
-  IGetProjectForViewResponse,
+  ProjectViewObject,
   UPDATE_GET_ENTITIES
 } from 'interfaces/useProjectApi.interface';
 import React, { useContext, useState } from 'react';
 
 export interface IProjectPermitsProps {
-  projectForViewData: IGetProjectForViewResponse;
-  codes: IGetAllCodeSetsResponse;
+  projectForViewData: ProjectViewObject;
   refresh: () => void;
 }
 
@@ -44,7 +42,10 @@ export interface IProjectPermitsProps {
  */
 const ProjectPermits: React.FC<IProjectPermitsProps> = (props) => {
   const {
-    projectForViewData: { permit, id }
+    projectForViewData: {
+      project: { id },
+      permit
+    }
   } = props;
 
   const biohubApi = useBiohubApi();

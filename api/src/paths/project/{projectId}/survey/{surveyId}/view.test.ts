@@ -73,11 +73,16 @@ describe('survey/{surveyId}/view', () => {
             }
           },
           surveySupplementaryData: {
-            occurrence_submission: {
-              id: 1
-            },
-            summary_result: {
-              id: 2
+            survey_metadata_publish: {
+              survey_metadata_publish_id: 1,
+              survey_id: 1,
+              event_timestamp: new Date(),
+              queue_id: 1,
+              create_date: new Date(),
+              create_user: 1,
+              update_date: new Date(),
+              update_user: 1,
+              revision_count: 1
             }
           }
         };
@@ -135,8 +140,7 @@ describe('survey/{surveyId}/view', () => {
             }
           },
           surveySupplementaryData: {
-            occurrence_submission: null,
-            summary_result: null
+            survey_metadata_publish: null
           }
         };
 
@@ -158,9 +162,20 @@ describe('survey/{surveyId}/view', () => {
       sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
       sinon.stub(SurveyService.prototype, 'getSurveyById').resolves(({ id: 2 } as unknown) as SurveyObject);
-      sinon
-        .stub(SurveyService.prototype, 'getSurveySupplementaryDataById')
-        .resolves({ occurrence_submission: 1, summary_result: 2 });
+
+      sinon.stub(SurveyService.prototype, 'getSurveySupplementaryDataById').resolves({
+        survey_metadata_publish: {
+          survey_metadata_publish_id: 1,
+          survey_id: 1,
+          event_timestamp: new Date('2020-04-04'),
+          queue_id: 1,
+          create_date: new Date('2020-04-04'),
+          create_user: 1,
+          update_date: null,
+          update_user: null,
+          revision_count: 1
+        }
+      });
 
       const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
@@ -181,8 +196,22 @@ describe('survey/{surveyId}/view', () => {
 
       expect(mockRes.statusValue).to.equal(200);
       expect(mockRes.jsonValue).to.eql({
-        surveyData: { id: 2 },
-        surveySupplementaryData: { occurrence_submission: 1, summary_result: 2 }
+        surveyData: {
+          id: 2
+        },
+        surveySupplementaryData: {
+          survey_metadata_publish: {
+            survey_metadata_publish_id: 1,
+            survey_id: 1,
+            event_timestamp: new Date('2020-04-04'),
+            queue_id: 1,
+            create_date: new Date('2020-04-04'),
+            create_user: 1,
+            update_date: null,
+            update_user: null,
+            revision_count: 1
+          }
+        }
       });
     });
 
