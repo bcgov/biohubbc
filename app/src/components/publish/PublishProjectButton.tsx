@@ -101,12 +101,10 @@ export default PublishProjectButton;
 
 const unSubmittedReports = (data: IGetProjectAttachmentsResponse | undefined): IGetProjectReportAttachment[] => {
   return data
-    ? data.reportAttachmentsList.filter((item) => !Boolean(item.supplementaryAttachmentData?.artifact_revision_id))
+    ? data.reportAttachmentsList.filter((item) => !item.supplementaryAttachmentData?.artifact_revision_id)
     : [];
 };
 
 const unSubmittedAttachments = (data: IGetProjectAttachmentsResponse | undefined): IGetProjectAttachment[] => {
-  return data
-    ? data.attachmentsList.filter((item) => !Boolean(item.supplementaryAttachmentData?.artifact_revision_id))
-    : [];
+  return data ? data.attachmentsList.filter((item) => !item.supplementaryAttachmentData?.artifact_revision_id) : [];
 };
