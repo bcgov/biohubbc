@@ -1,7 +1,6 @@
-import { Button, DialogContent, DialogContentText } from '@material-ui/core';
+import { Button } from '@material-ui/core';
 import { mdiShareAllOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import ComponentDialog from 'components/dialog/ComponentDialog';
 import SubmitBiohubDialog from 'components/dialog/SubmitBiohubDialog';
 import PublishSurveySections, {
   ISurveySubmitForm,
@@ -19,11 +18,11 @@ import {
   IGetSurveyReportAttachment
 } from 'interfaces/useSurveyApi.interface';
 import React, { useContext, useState } from 'react';
+import PublishDialogs from './PublishDialogs';
 
 /**
- * Survey header for a single-survey view.
+ * Survey Publish button.
  *
- * @param {*} props
  * @return {*}
  */
 const PublishSurveyButton: React.FC = (props) => {
@@ -78,29 +77,14 @@ const PublishSurveyButton: React.FC = (props) => {
         Submit Data
       </Button>
 
-      <ComponentDialog
-        dialogTitle="Survey data submitted!"
-        open={finishSubmission}
-        onClose={() => {
-          setFinishSubmission(false);
-        }}>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            Thank you for submitting your survey data to Biohub.
-          </DialogContentText>
-        </DialogContent>
-      </ComponentDialog>
-
-      <ComponentDialog
-        dialogTitle="No Survey Data to Submit"
-        open={noSubmissionData}
-        onClose={() => {
-          setNoSubmissionData(false);
-        }}>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">Thank you!</DialogContentText>
-        </DialogContent>
-      </ComponentDialog>
+      <PublishDialogs
+        finishSubmissionMessage="Thank you for submitting your survey data to Biohub."
+        finishSubmissionTitle="Survey data submitted!"
+        finishSubmission={finishSubmission}
+        setFinishSubmission={setFinishSubmission}
+        noSubmissionData={noSubmissionData}
+        setNoSubmissionData={setNoSubmissionData}
+      />
 
       <SubmitBiohubDialog
         dialogTitle="Submit Survey Information"
