@@ -1,5 +1,6 @@
-import { Button } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
+import Button from '@material-ui/core/Button';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import Container from '@material-ui/core/Container';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import Menu from '@material-ui/core/Menu';
@@ -14,17 +15,11 @@ import {
   mdiChevronDown,
   mdiCogOutline,
   mdiPencilOutline,
-  mdiShareAllOutline,
   mdiTrashCanOutline
 } from '@mdi/js';
 import Icon from '@mdi/react';
-import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
-import SubmitBiohubDialog from 'components/dialog/SubmitBiohubDialog';
-import SubmitSurvey, {
-  ISurveySubmitForm,
-  SurveySubmitFormInitialValues,
-  SurveySubmitFormYupSchema
-} from 'components/publish/SubmitSurvey';
+import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
+import PublishSurveyButton from 'components/publish/PublishSurveyButton';
 import { SystemRoleGuard } from 'components/security/Guards';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { DeleteSurveyI18N } from 'constants/i18n';
@@ -34,8 +29,7 @@ import { DialogContext } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
-import React, { useContext, useState } from 'react';
+import React, { useContext } from 'react';
 import { useHistory } from 'react-router';
 import { getFormattedDateRangeString } from 'utils/Utils';
 
@@ -59,19 +53,12 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }));
 
-export interface ISurveyHeaderProps {
-  projectWithDetails: IGetProjectForViewResponse;
-}
-
 /**
  * Survey header for a single-survey view.
  *
- * @param {*} props
  * @return {*}
  */
-const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
-  const { projectWithDetails } = props;
-
+const SurveyHeader = () => {
   const surveyContext = useContext(SurveyContext);
   const surveyWithDetails = surveyContext.surveyDataLoader.data;
 
@@ -83,9 +70,6 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
   const dialogContext = useContext(DialogContext);
 
   const { keycloakWrapper } = useContext(AuthStateContext);
-
-  const [openSubmitSurvey, setOpenSubmitSurvey] = useState(false);
-  const [finishSubmission, setFinishSubmission] = useState(false);
 
   const defaultYesNoDialogProps = {
     dialogTitle: 'Delete Survey?',
@@ -124,13 +108,13 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
   };
 
   const deleteSurvey = async () => {
-    if (!projectWithDetails || !surveyWithDetails) {
+    if (!surveyWithDetails) {
       return <></>;
     }
 
     try {
       const response = await biohubApi.survey.deleteSurvey(
-        projectWithDetails.id,
+        surveyContext.projectId,
         surveyWithDetails.surveyData.survey_details.id
       );
 
@@ -139,7 +123,7 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
         return;
       }
 
-      history.push(`/admin/projects/${projectWithDetails.id}/surveys`);
+      history.push(`/admin/projects/${surveyContext.projectId}/surveys`);
     } catch (error) {
       const apiError = error as APIError;
       showDeleteErrorDialog({ dialogText: apiError.message, open: true });
@@ -154,6 +138,7 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
   // Enable delete button if you a system admin or a project admin
   const enableDeleteSurveyButton = keycloakWrapper?.hasSystemRole([
     SYSTEM_ROLE.SYSTEM_ADMIN,
+    SYSTEM_ROLE.DATA_ADMINISTRATOR,
     SYSTEM_ROLE.PROJECT_CREATOR
   ]);
 
@@ -169,7 +154,7 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
   };
 
   if (!surveyWithDetails) {
-    return <></>;
+    return <CircularProgress className="pageProgress" size={40} />;
   }
 
   return (
@@ -181,7 +166,7 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
               <Button
                 color="primary"
                 startIcon={<Icon path={mdiArrowLeft} size={0.9} />}
-                onClick={() => history.push(`/admin/projects/${projectWithDetails.id}/surveys`)}>
+                onClick={() => history.push(`/admin/projects/${surveyContext.projectId}/surveys`)}>
                 <strong>Back to Project</strong>
               </Button>
             </Box>
@@ -208,15 +193,7 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
               </Box>
               <Box display="flex" alignItems="flex-start" flex="0 0 auto" className={classes.pageTitleActions}>
                 <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-                  <Button
-                    aria-label="Submit Survey Data and Documents"
-                    color="primary"
-                    variant="contained"
-                    startIcon={<Icon path={mdiShareAllOutline} size={1} />}
-                    onClick={() => setOpenSubmitSurvey(!openSubmitSurvey)}
-                    style={{ minWidth: '7rem' }}>
-                    Submit Data
-                  </Button>
+                  <PublishSurveyButton />
                 </SystemRoleGuard>
                 <Button
                   id="survey_settings_button"
@@ -250,7 +227,7 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
                   <MenuItem
                     onClick={() =>
                       history.push(
-                        `/admin/projects/${projectWithDetails.id}/survey/edit?surveyId=${surveyWithDetails.surveyData.survey_details.id}`
+                        `/admin/projects/${surveyContext.projectId}/survey/edit?surveyId=${surveyWithDetails.surveyData.survey_details.id}`
                       )
                     }>
                     <ListItemIcon>
@@ -275,42 +252,6 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
           </Box>
         </Container>
       </Paper>
-
-      <ErrorDialog
-        dialogTitle="Survey data submitted!"
-        dialogText="Thank you for submitting your survey data to Biohub."
-        open={finishSubmission}
-        onClose={() => {
-          surveyContext.surveyDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
-          surveyContext.artifactDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
-          setFinishSubmission(false);
-        }}
-        onOk={() => {
-          surveyContext.surveyDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
-          surveyContext.artifactDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
-          setFinishSubmission(false);
-        }}></ErrorDialog>
-
-      <SubmitBiohubDialog
-        dialogTitle="Submit Survey Information"
-        open={openSubmitSurvey}
-        onClose={() => {
-          setOpenSubmitSurvey(!openSubmitSurvey);
-        }}
-        onSubmit={async (values: ISurveySubmitForm) => {
-          await biohubApi.publish.publishSurvey(
-            projectWithDetails.id,
-            surveyWithDetails.surveyData.survey_details.id,
-            values
-          );
-          setFinishSubmission(true);
-        }}
-        formikProps={{
-          initialValues: SurveySubmitFormInitialValues,
-          validationSchema: SurveySubmitFormYupSchema
-        }}>
-        <SubmitSurvey />
-      </SubmitBiohubDialog>
     </>
   );
 };

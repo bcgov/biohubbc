@@ -6,22 +6,15 @@ import ListItem from '@material-ui/core/ListItem';
 import Typography from '@material-ui/core/Typography';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { SurveyContext } from 'contexts/surveyContext';
-import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import React, { useContext } from 'react';
 import { getFormattedAmount, getFormattedDateRangeString } from 'utils/Utils';
-
-export interface ISurveyGeneralInformationProps {
-  codes: IGetAllCodeSetsResponse;
-  projectForViewData: IGetProjectForViewResponse;
-}
 
 /**
  * General information content for a survey.
  *
  * @return {*}
  */
-const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (props) => {
+const SurveyGeneralInformation = () => {
   const surveyContext = useContext(SurveyContext);
   const surveyForViewData = surveyContext.surveyDataLoader.data;
 
@@ -52,7 +45,7 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
               <Typography component="dt" color="textSecondary" variant="subtitle2">
                 Timeline
               </Typography>
-              <Typography component="dd">
+              <Typography component="dd" data-testid="survey_timeline">
                 {survey_details.end_date ? (
                   <>
                     {getFormattedDateRangeString(

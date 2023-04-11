@@ -68,14 +68,13 @@ export const ProjectContextProvider = (props: PropsWithChildren<Record<never, an
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [projectId]);
 
-  const projectContext: IProjectContext = useMemo(
-    () => ({
+  const projectContext: IProjectContext = useMemo(() => {
+    return {
       projectDataLoader,
       artifactDataLoader,
       projectId
-    }),
-    [projectDataLoader, artifactDataLoader, projectId]
-  );
+    };
+  }, [projectDataLoader, artifactDataLoader, projectId]);
 
   return <ProjectContext.Provider value={projectContext}>{props.children}</ProjectContext.Provider>;
 };

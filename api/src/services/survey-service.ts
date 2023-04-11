@@ -112,30 +112,9 @@ export class SurveyService extends DBService {
    * @memberof SurveyService
    */
   async getSurveySupplementaryDataById(surveyId: number): Promise<SurveySupplementaryData> {
-    const [occurrenceSubmission, surveySummarySubmission, surveyMetadataPublish] = await Promise.all([
-      this.getOccurrenceSubmission(surveyId),
-      this.getSurveySummarySubmission(surveyId),
-      this.historyPublishService.getSurveyMetadataPublishRecord(surveyId)
-    ]);
+    const surveyMetadataPublish = await this.historyPublishService.getSurveyMetadataPublishRecord(surveyId);
 
-    const [occurrenceSubmissionPublish, surveySummarySubmissionPublish] = await Promise.all([
-      occurrenceSubmission?.occurrence_submission_id
-        ? this.historyPublishService.getOccurrenceSubmissionPublishRecord(occurrenceSubmission.occurrence_submission_id)
-        : Promise.resolve(null),
-      surveySummarySubmission?.survey_summary_submission_id
-        ? this.historyPublishService.getSurveySummarySubmissionPublishRecord(
-            surveySummarySubmission.survey_summary_submission_id
-          )
-        : Promise.resolve(null)
-    ]);
-
-    return {
-      occurrence_submission: occurrenceSubmission,
-      occurrence_submission_publish: occurrenceSubmissionPublish,
-      survey_summary_submission: surveySummarySubmission,
-      survey_summary_submission_publish: surveySummarySubmissionPublish,
-      survey_metadata_publish: surveyMetadataPublish
-    };
+    return { survey_metadata_publish: surveyMetadataPublish };
   }
 
   /**

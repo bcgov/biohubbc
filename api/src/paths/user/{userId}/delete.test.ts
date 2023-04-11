@@ -2,11 +2,10 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import SQL from 'sql-template-strings';
 import * as db from '../../../database/db';
 import { HTTPError } from '../../../errors/http-error';
-import project_participation_queries from '../../../queries/project-participation';
 import user_queries from '../../../queries/users';
+import { ProjectParticipationService } from '../../../services/project-participation-service';
 import { UserService } from '../../../services/user-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../__mocks__/db';
 import * as delete_endpoint from './delete';
@@ -35,72 +34,43 @@ describe('removeSystemUser', () => {
     }
   });
 
-  it('should throw a 400 error when no sql statement returned from `getParticipantsFromAllSystemUsersProjectsSQL`', async () => {
-    const dbConnectionObj = getMockDBConnection();
-
-    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
-
-    mockReq.params = { userId: '1' };
-    mockReq.body = { roles: [1, 2] };
-
-    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
-
-    sinon.stub(project_participation_queries, 'getParticipantsFromAllSystemUsersProjectsSQL').returns(null);
-
-    try {
-      const requestHandler = delete_endpoint.removeSystemUser();
-
-      await requestHandler(mockReq, mockRes, mockNext);
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal('Failed to build SQL get statement');
-    }
-  });
-
   it('should throw a 400 error if the user is the only Project Lead role on one or more projects', async () => {
     const dbConnectionObj = getMockDBConnection();
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
+    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
+
     mockReq.params = { userId: '33' };
     mockReq.body = { roles: [1, 2] };
 
-    const mockQuery = sinon.stub();
+    const mockResponse = [
+      {
+        project_participation_id: 47,
+        project_id: 3,
+        system_user_id: 33,
+        project_role_id: 1,
+        project_role_name: 'Project Lead'
+      },
+      {
+        project_participation_id: 57,
+        project_id: 1,
+        system_user_id: 33,
+        project_role_id: 3,
+        project_role_name: 'Viewer'
+      },
+      {
+        project_participation_id: 40,
+        project_id: 1,
+        system_user_id: 27,
+        project_role_id: 1,
+        project_role_name: 'Project Lead'
+      }
+    ];
 
-    mockQuery.resolves({
-      rowCount: 2,
-      rows: [
-        {
-          project_participation_id: 47,
-          project_id: 3,
-          system_user_id: 33,
-          project_role_id: 1,
-          project_role_name: 'Project Lead'
-        },
-        {
-          project_participation_id: 57,
-          project_id: 1,
-          system_user_id: 33,
-          project_role_id: 3,
-          project_role_name: 'Viewer'
-        },
-        {
-          project_participation_id: 40,
-          project_id: 1,
-          system_user_id: 27,
-          project_role_id: 1,
-          project_role_name: 'Project Lead'
-        }
-      ]
-    });
-
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      query: mockQuery
-    });
-
-    sinon.stub(project_participation_queries, 'getParticipantsFromAllSystemUsersProjectsSQL').returns(SQL`some query`);
+    sinon
+      .stub(ProjectParticipationService.prototype, 'getParticipantsFromAllProjectsBySystemUserId')
+      .resolves(mockResponse);
 
     try {
       const requestHandler = delete_endpoint.removeSystemUser();

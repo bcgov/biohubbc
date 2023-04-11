@@ -1,5 +1,8 @@
 import { cleanup, render } from '@testing-library/react';
+import { CodesContext, ICodesContext } from 'contexts/codesContext';
+import { IProjectContext, ProjectContext } from 'contexts/projectContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import { DataLoader } from 'hooks/useDataLoader';
 import React from 'react';
 import { codes } from 'test-helpers/code-helpers';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
@@ -17,8 +20,6 @@ const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBioh
   mockUseBiohubApi
 );
 
-const mockRefresh = jest.fn();
-
 describe('Partnerships', () => {
   beforeEach(() => {
     // clear mocks before each test
@@ -31,44 +32,93 @@ describe('Partnerships', () => {
   });
 
   it('renders correctly with default empty values', () => {
-    const { asFragment } = render(
-      <Partnerships
-        projectForViewData={{
+    const mockCodesContext: ICodesContext = {
+      codesDataLoader: {
+        data: codes
+      } as DataLoader<any, any, any>
+    };
+    const mockProjectContext: IProjectContext = {
+      projectDataLoader: {
+        data: {
           ...getProjectForViewResponse,
-          partnerships: {
-            indigenous_partnerships: [],
-            stakeholder_partnerships: []
+          projectData: {
+            ...getProjectForViewResponse.projectData,
+            partnerships: {
+              indigenous_partnerships: [],
+              stakeholder_partnerships: []
+            }
           }
-        }}
-        codes={codes}
-        refresh={mockRefresh}
-      />
+        }
+      } as DataLoader<any, any, any>,
+      artifactDataLoader: { data: null } as DataLoader<any, any, any>,
+      projectId: 1
+    };
+
+    const { asFragment } = render(
+      <CodesContext.Provider value={mockCodesContext}>
+        <ProjectContext.Provider value={mockProjectContext}>
+          <Partnerships />
+        </ProjectContext.Provider>
+      </CodesContext.Provider>
     );
 
     expect(asFragment()).toMatchSnapshot();
   });
 
   it('renders correctly with invalid null values', () => {
-    const { asFragment } = render(
-      <Partnerships
-        projectForViewData={{
+    const mockCodesContext: ICodesContext = {
+      codesDataLoader: {
+        data: codes
+      } as DataLoader<any, any, any>
+    };
+    const mockProjectContext: IProjectContext = {
+      projectDataLoader: {
+        data: {
           ...getProjectForViewResponse,
-          partnerships: {
-            indigenous_partnerships: (null as unknown) as number[],
-            stakeholder_partnerships: (null as unknown) as string[]
+          projectData: {
+            ...getProjectForViewResponse.projectData,
+            partnerships: {
+              indigenous_partnerships: (null as unknown) as number[],
+              stakeholder_partnerships: (null as unknown) as string[]
+            }
           }
-        }}
-        codes={codes}
-        refresh={mockRefresh}
-      />
+        }
+      } as DataLoader<any, any, any>,
+      artifactDataLoader: { data: null } as DataLoader<any, any, any>,
+      projectId: 1
+    };
+
+    const { asFragment } = render(
+      <CodesContext.Provider value={mockCodesContext}>
+        <ProjectContext.Provider value={mockProjectContext}>
+          <Partnerships />
+        </ProjectContext.Provider>
+      </CodesContext.Provider>
     );
 
     expect(asFragment()).toMatchSnapshot();
   });
 
   it('renders correctly with existing partnership values', () => {
+    const mockCodesContext: ICodesContext = {
+      codesDataLoader: {
+        data: codes
+      } as DataLoader<any, any, any>
+    };
+    const mockProjectContext: IProjectContext = {
+      projectDataLoader: {
+        data: getProjectForViewResponse
+      } as DataLoader<any, any, any>,
+      artifactDataLoader: { data: null } as DataLoader<any, any, any>,
+      projectId: 1
+    };
+
     const { asFragment } = render(
-      <Partnerships projectForViewData={getProjectForViewResponse} codes={codes} refresh={mockRefresh} />
+      <CodesContext.Provider value={mockCodesContext}>
+        <ProjectContext.Provider value={mockProjectContext}>
+          <Partnerships />
+        </ProjectContext.Provider>
+      </CodesContext.Provider>
     );
 
     expect(asFragment()).toMatchSnapshot();

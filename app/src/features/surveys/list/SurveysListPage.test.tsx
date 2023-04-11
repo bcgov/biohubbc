@@ -1,9 +1,13 @@
 import { cleanup, render, waitFor } from '@testing-library/react';
+import { CodesContext, ICodesContext } from 'contexts/codesContext';
+import { IProjectContext, ProjectContext } from 'contexts/projectContext';
 import { createMemoryHistory } from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import { DataLoader } from 'hooks/useDataLoader';
 import { SurveyViewObject } from 'interfaces/useSurveyApi.interface';
 import React from 'react';
 import { Router } from 'react-router';
+import { codes } from 'test-helpers/code-helpers';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import { surveyObject } from 'test-helpers/survey-helpers';
 import SurveysListPage from './SurveysListPage';
@@ -31,11 +35,28 @@ describe('SurveysListPage', () => {
   });
 
   it('renders correctly with an empty list of surveys', async () => {
+    const mockCodesContext: ICodesContext = {
+      codesDataLoader: {
+        data: codes
+      } as DataLoader<any, any, any>
+    };
+    const mockProjectContext: IProjectContext = {
+      projectDataLoader: {
+        data: getProjectForViewResponse
+      } as DataLoader<any, any, any>,
+      artifactDataLoader: { data: null } as DataLoader<any, any, any>,
+      projectId: 1
+    };
+
     mockBiohubApi().survey.getSurveysList.mockResolvedValue([]);
 
     const { getByText } = render(
       <Router history={history}>
-        <SurveysListPage projectForViewData={getProjectForViewResponse} />
+        <CodesContext.Provider value={mockCodesContext}>
+          <ProjectContext.Provider value={mockProjectContext}>
+            <SurveysListPage />
+          </ProjectContext.Provider>
+        </CodesContext.Provider>
       </Router>
     );
 
@@ -47,6 +68,19 @@ describe('SurveysListPage', () => {
   });
 
   it('renders correctly with a populated list of surveys', async () => {
+    const mockCodesContext: ICodesContext = {
+      codesDataLoader: {
+        data: codes
+      } as DataLoader<any, any, any>
+    };
+    const mockProjectContext: IProjectContext = {
+      projectDataLoader: {
+        data: getProjectForViewResponse
+      } as DataLoader<any, any, any>,
+      artifactDataLoader: { data: null } as DataLoader<any, any, any>,
+      projectId: 1
+    };
+
     const surveysList: SurveyViewObject[] = [
       {
         ...surveyObject,
@@ -86,7 +120,11 @@ describe('SurveysListPage', () => {
 
     const { getByText } = render(
       <Router history={history}>
-        <SurveysListPage projectForViewData={getProjectForViewResponse} />
+        <CodesContext.Provider value={mockCodesContext}>
+          <ProjectContext.Provider value={mockProjectContext}>
+            <SurveysListPage />
+          </ProjectContext.Provider>
+        </CodesContext.Provider>
       </Router>
     );
 

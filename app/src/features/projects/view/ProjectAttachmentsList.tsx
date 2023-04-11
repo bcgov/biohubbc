@@ -3,19 +3,16 @@ import ProjectReportAttachmentDialog from 'components/dialog/attachments/project
 import { AttachmentType } from 'constants/attachments';
 import { AttachmentsI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
+import { ProjectContext } from 'contexts/projectContext';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetProjectAttachment } from 'interfaces/useProjectApi.interface';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useMemo, useState } from 'react';
 
-export interface IAttachmentsListProps {
-  projectId: number;
-  attachmentsList: IGetProjectAttachment[];
-  getAttachments: (forceFetch: boolean) => Promise<IGetProjectAttachment[] | undefined>;
-}
-
-const ProjectAttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
+const ProjectAttachmentsList = () => {
   const biohubApi = useBiohubApi();
+
+  const projectContext = useContext(ProjectContext);
 
   const dialogContext = useContext(DialogContext);
 
@@ -24,7 +21,7 @@ const ProjectAttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
   const handleDownload = async (attachment: IGetProjectAttachment) => {
     try {
       const response = await biohubApi.project.getAttachmentSignedURL(
-        props.projectId,
+        projectContext.projectId,
         attachment.id,
         attachment.fileType
       );
@@ -48,8 +45,12 @@ const ProjectAttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
     }
   };
 
-  const handleViewDetails = (attachment: IGetProjectAttachment) => {
+  const handleViewDetailsOpen = (attachment: IGetProjectAttachment) => {
     setCurrentAttachment(attachment);
+  };
+
+  const handleViewDetailsClose = () => {
+    setCurrentAttachment(null);
   };
 
   const handleDelete = (attachment: IGetProjectAttachment) => {
@@ -61,10 +62,10 @@ const ProjectAttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
       onYes: async () => {
         try {
           // Delete attachment
-          await biohubApi.project.deleteProjectAttachment(props.projectId, attachment.id, attachment.fileType);
+          await biohubApi.project.deleteProjectAttachment(projectContext.projectId, attachment.id, attachment.fileType);
 
           // Refresh attachments list
-          props.getAttachments(true);
+          projectContext.artifactDataLoader.refresh(projectContext.projectId);
         } catch (error) {
           const apiError = error as APIError;
           // Show error dialog
@@ -86,19 +87,26 @@ const ProjectAttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
     });
   };
 
+  const attachmentsList = useMemo(() => {
+    return [
+      ...(projectContext.artifactDataLoader.data?.attachmentsList || []),
+      ...(projectContext.artifactDataLoader.data?.reportAttachmentsList || [])
+    ];
+  }, [projectContext.artifactDataLoader.data]);
+
   return (
     <>
       <ProjectReportAttachmentDialog
-        projectId={props.projectId}
+        projectId={projectContext.projectId}
         attachment={currentAttachment}
-        open={!!currentAttachment && currentAttachment.fileType === AttachmentType.REPORT}
-        onClose={() => setCurrentAttachment(null)}
+        open={!!currentAttachment && currentAttachment?.fileType === AttachmentType.REPORT}
+        onClose={handleViewDetailsClose}
       />
       <AttachmentsList<IGetProjectAttachment>
-        attachments={props.attachmentsList}
+        attachments={attachmentsList}
         handleDownload={handleDownload}
         handleDelete={handleDelete}
-        handleViewDetails={handleViewDetails}
+        handleViewDetails={handleViewDetailsOpen}
       />
     </>
   );

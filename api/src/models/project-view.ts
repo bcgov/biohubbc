@@ -1,9 +1,9 @@
 import { Feature } from 'geojson';
 import moment from 'moment';
 import { COMPLETION_STATUS } from '../constants/status';
+import { ProjectMetadataPublish } from '../repositories/history-publish-repository';
 
 export interface IGetProject {
-  id: number;
   coordinator: GetCoordinatorData;
   project: GetProjectData;
   objectives: GetObjectivesData;
@@ -20,6 +20,7 @@ export interface IGetProject {
  * @class GetProjectData
  */
 export class GetProjectData {
+  id: number;
   uuid: string;
   project_name: string;
   project_type: number;
@@ -31,6 +32,7 @@ export class GetProjectData {
   revision_count: number;
 
   constructor(projectData?: any, activityData?: any[]) {
+    this.id = projectData?.project_id || null;
     this.uuid = projectData?.uuid || '';
     this.project_name = projectData?.name || '';
     this.project_type = projectData?.pt_id || -1;
@@ -193,6 +195,10 @@ export class GetPartnershipsData {
       (stakeholder_partnerships?.length && stakeholder_partnerships.map((item: any) => item.partnership_name)) || [];
   }
 }
+
+export type ProjectSupplementaryData = {
+  project_metadata_publish: ProjectMetadataPublish | null;
+};
 
 interface IGetAttachmentsSource {
   file_name: string;

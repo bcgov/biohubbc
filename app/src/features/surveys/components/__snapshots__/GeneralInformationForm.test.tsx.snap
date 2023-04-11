@@ -1191,9 +1191,180 @@ exports[`General Information Form renders correctly the filled component correct
     >
       <ul
         class="MuiList-root makeStyles-permitList-22 MuiList-dense"
-      />
+      >
+        <li
+          class="MuiListItem-container"
+        >
+          <div
+            class="MuiListItem-root MuiListItem-dense MuiListItem-secondaryAction"
+          >
+            <div
+              class="MuiListItemText-root MuiListItemText-dense"
+            >
+              <span
+                class="MuiTypography-root MuiListItemText-primary MuiTypography-body2 MuiTypography-displayBlock"
+              >
+                <div
+                  class="MuiBox-root MuiBox-root-23"
+                >
+                  <div
+                    class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
+                  >
+                    <div
+                      class="MuiGrid-root MuiGrid-item MuiGrid-grid-sm-6"
+                    >
+                      <div
+                        class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+                        data-testid="permit.permits.[0].permit_number"
+                      >
+                        <label
+                          class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
+                          data-shrink="true"
+                          for="permit.permits.[0].permit_number"
+                          id="permit.permits.[0].permit_number-label"
+                        >
+                          Permit Number
+                          <span
+                            aria-hidden="true"
+                            class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
+                          >
+                             *
+                          </span>
+                        </label>
+                        <div
+                          class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl"
+                        >
+                          <input
+                            aria-invalid="false"
+                            class="MuiInputBase-input MuiOutlinedInput-input"
+                            id="permit.permits.[0].permit_number"
+                            name="permit.permits.[0].permit_number"
+                            required=""
+                            type="text"
+                            value="12345"
+                          />
+                          <fieldset
+                            aria-hidden="true"
+                            class="PrivateNotchedOutline-root-13 MuiOutlinedInput-notchedOutline"
+                          >
+                            <legend
+                              class="PrivateNotchedOutline-legendLabelled-15 PrivateNotchedOutline-legendNotched-16"
+                            >
+                              <span>
+                                Permit Number *
+                              </span>
+                            </legend>
+                          </fieldset>
+                        </div>
+                      </div>
+                    </div>
+                    <div
+                      class="MuiGrid-root MuiGrid-item MuiGrid-grid-sm-6"
+                    >
+                      <div
+                        class="MuiFormControl-root MuiFormControl-fullWidth"
+                      >
+                        <label
+                          class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
+                          data-shrink="true"
+                          id="permit_type"
+                        >
+                          Permit Type
+                          <span
+                            aria-hidden="true"
+                            class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
+                          >
+                             *
+                          </span>
+                        </label>
+                        <div
+                          class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
+                        >
+                          <div
+                            aria-haspopup="listbox"
+                            aria-label="Permit Type"
+                            aria-labelledby="permit_type permit.permits.[0].permit_type"
+                            class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
+                            id="permit.permits.[0].permit_type"
+                            role="button"
+                            tabindex="0"
+                          >
+                            Park Use Permit
+                          </div>
+                          <input
+                            aria-hidden="true"
+                            class="MuiSelect-nativeInput"
+                            name="permit.permits.[0].permit_type"
+                            required=""
+                            tabindex="-1"
+                            value="Park Use Permit"
+                          />
+                          <svg
+                            aria-hidden="true"
+                            class="MuiSvgIcon-root MuiSelect-icon MuiSelect-iconOutlined"
+                            focusable="false"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              d="M7 10l5 5 5-5z"
+                            />
+                          </svg>
+                          <fieldset
+                            aria-hidden="true"
+                            class="PrivateNotchedOutline-root-13 MuiOutlinedInput-notchedOutline"
+                          >
+                            <legend
+                              class="PrivateNotchedOutline-legendLabelled-15 PrivateNotchedOutline-legendNotched-16"
+                            >
+                              <span>
+                                Permit Type
+                              </span>
+                            </legend>
+                          </fieldset>
+                        </div>
+                        <p
+                          class="MuiFormHelperText-root MuiFormHelperText-contained MuiFormHelperText-filled Mui-required"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </span>
+            </div>
+          </div>
+          <div
+            class="MuiListItemSecondaryAction-root"
+          >
+            <button
+              aria-label="remove permit"
+              class="MuiButtonBase-root MuiIconButton-root"
+              data-testid="delete-icon"
+              tabindex="0"
+              type="button"
+            >
+              <span
+                class="MuiIconButton-label"
+              >
+                <svg
+                  role="presentation"
+                  style="width: 1.5rem; height: 1.5rem;"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M9,3V4H4V6H5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V6H20V4H15V3H9M7,6H17V19H7V6M9,8V17H11V8H9M13,8V17H15V8H13Z"
+                    style="fill: currentColor;"
+                  />
+                </svg>
+              </span>
+              <span
+                class="MuiTouchRipple-root"
+              />
+            </button>
+          </div>
+        </li>
+      </ul>
       <div
-        class="MuiBox-root MuiBox-root-23"
+        class="MuiBox-root MuiBox-root-24"
       >
         <button
           aria-label="add permit"
@@ -1228,7 +1399,7 @@ exports[`General Information Form renders correctly the filled component correct
     </div>
   </fieldset>
   <fieldset
-    class="MuiBox-root MuiBox-root-24"
+    class="MuiBox-root MuiBox-root-25"
   >
     <legend
       class="MuiTypography-root MuiTypography-h5"
@@ -1403,10 +1574,10 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
           />
           <fieldset
             aria-hidden="true"
-            class="PrivateNotchedOutline-root-25 MuiOutlinedInput-notchedOutline"
+            class="PrivateNotchedOutline-root-26 MuiOutlinedInput-notchedOutline"
           >
             <legend
-              class="PrivateNotchedOutline-legendLabelled-27 PrivateNotchedOutline-legendNotched-28"
+              class="PrivateNotchedOutline-legendLabelled-28 PrivateNotchedOutline-legendNotched-29"
             >
               <span>
                 Survey Name *
@@ -1466,10 +1637,10 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
               />
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-25 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-26 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-27 PrivateNotchedOutline-legendNotched-28"
+                  class="PrivateNotchedOutline-legendLabelled-28 PrivateNotchedOutline-legendNotched-29"
                 >
                   <span>
                     Start Date *
@@ -1516,10 +1687,10 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
               />
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-25 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-26 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-27 PrivateNotchedOutline-legendNotched-28"
+                  class="PrivateNotchedOutline-legendLabelled-28 PrivateNotchedOutline-legendNotched-29"
                 >
                   <span>
                     End Date
@@ -1539,7 +1710,7 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
     </div>
   </div>
   <fieldset
-    class="MuiBox-root MuiBox-root-29"
+    class="MuiBox-root MuiBox-root-30"
   >
     <legend
       class="MuiTypography-root MuiTypography-h5"
@@ -1648,10 +1819,10 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-25 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-26 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-27"
+                  class="PrivateNotchedOutline-legendLabelled-28"
                 >
                   <span>
                     Focal Species *
@@ -1759,10 +1930,10 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-25 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-26 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-27"
+                  class="PrivateNotchedOutline-legendLabelled-28"
                 >
                   <span>
                     Ancillary Species
@@ -1776,7 +1947,7 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
     </div>
   </fieldset>
   <fieldset
-    class="MuiBox-root MuiBox-root-31"
+    class="MuiBox-root MuiBox-root-32"
   >
     <legend
       class="MuiTypography-root MuiTypography-h5"
@@ -1822,10 +1993,10 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
             />
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-25 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-26 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-27 PrivateNotchedOutline-legendNotched-28"
+                class="PrivateNotchedOutline-legendLabelled-28 PrivateNotchedOutline-legendNotched-29"
               >
                 <span>
                   First Name *
@@ -1877,10 +2048,10 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
             />
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-25 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-26 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-27 PrivateNotchedOutline-legendNotched-28"
+                class="PrivateNotchedOutline-legendLabelled-28 PrivateNotchedOutline-legendNotched-29"
               >
                 <span>
                   Last Name *
@@ -1899,7 +2070,7 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
     </div>
   </fieldset>
   <fieldset
-    class="MuiBox-root MuiBox-root-32"
+    class="MuiBox-root MuiBox-root-33"
   >
     <legend
       class="MuiTypography-root MuiTypography-h5"
@@ -1907,13 +2078,184 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
       Permits
     </legend>
     <div
-      class="MuiBox-root MuiBox-root-33"
+      class="MuiBox-root MuiBox-root-34"
     >
       <ul
-        class="MuiList-root makeStyles-permitList-34 MuiList-dense"
-      />
+        class="MuiList-root makeStyles-permitList-35 MuiList-dense"
+      >
+        <li
+          class="MuiListItem-container"
+        >
+          <div
+            class="MuiListItem-root MuiListItem-dense MuiListItem-secondaryAction"
+          >
+            <div
+              class="MuiListItemText-root MuiListItemText-dense"
+            >
+              <span
+                class="MuiTypography-root MuiListItemText-primary MuiTypography-body2 MuiTypography-displayBlock"
+              >
+                <div
+                  class="MuiBox-root MuiBox-root-36"
+                >
+                  <div
+                    class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
+                  >
+                    <div
+                      class="MuiGrid-root MuiGrid-item MuiGrid-grid-sm-6"
+                    >
+                      <div
+                        class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+                        data-testid="permit.permits.[0].permit_number"
+                      >
+                        <label
+                          class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
+                          data-shrink="true"
+                          for="permit.permits.[0].permit_number"
+                          id="permit.permits.[0].permit_number-label"
+                        >
+                          Permit Number
+                          <span
+                            aria-hidden="true"
+                            class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
+                          >
+                             *
+                          </span>
+                        </label>
+                        <div
+                          class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl"
+                        >
+                          <input
+                            aria-invalid="false"
+                            class="MuiInputBase-input MuiOutlinedInput-input"
+                            id="permit.permits.[0].permit_number"
+                            name="permit.permits.[0].permit_number"
+                            required=""
+                            type="text"
+                            value="12345"
+                          />
+                          <fieldset
+                            aria-hidden="true"
+                            class="PrivateNotchedOutline-root-26 MuiOutlinedInput-notchedOutline"
+                          >
+                            <legend
+                              class="PrivateNotchedOutline-legendLabelled-28 PrivateNotchedOutline-legendNotched-29"
+                            >
+                              <span>
+                                Permit Number *
+                              </span>
+                            </legend>
+                          </fieldset>
+                        </div>
+                      </div>
+                    </div>
+                    <div
+                      class="MuiGrid-root MuiGrid-item MuiGrid-grid-sm-6"
+                    >
+                      <div
+                        class="MuiFormControl-root MuiFormControl-fullWidth"
+                      >
+                        <label
+                          class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
+                          data-shrink="true"
+                          id="permit_type"
+                        >
+                          Permit Type
+                          <span
+                            aria-hidden="true"
+                            class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
+                          >
+                             *
+                          </span>
+                        </label>
+                        <div
+                          class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
+                        >
+                          <div
+                            aria-haspopup="listbox"
+                            aria-label="Permit Type"
+                            aria-labelledby="permit_type permit.permits.[0].permit_type"
+                            class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
+                            id="permit.permits.[0].permit_type"
+                            role="button"
+                            tabindex="0"
+                          >
+                            Park Use Permit
+                          </div>
+                          <input
+                            aria-hidden="true"
+                            class="MuiSelect-nativeInput"
+                            name="permit.permits.[0].permit_type"
+                            required=""
+                            tabindex="-1"
+                            value="Park Use Permit"
+                          />
+                          <svg
+                            aria-hidden="true"
+                            class="MuiSvgIcon-root MuiSelect-icon MuiSelect-iconOutlined"
+                            focusable="false"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              d="M7 10l5 5 5-5z"
+                            />
+                          </svg>
+                          <fieldset
+                            aria-hidden="true"
+                            class="PrivateNotchedOutline-root-26 MuiOutlinedInput-notchedOutline"
+                          >
+                            <legend
+                              class="PrivateNotchedOutline-legendLabelled-28 PrivateNotchedOutline-legendNotched-29"
+                            >
+                              <span>
+                                Permit Type
+                              </span>
+                            </legend>
+                          </fieldset>
+                        </div>
+                        <p
+                          class="MuiFormHelperText-root MuiFormHelperText-contained MuiFormHelperText-filled Mui-required"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </span>
+            </div>
+          </div>
+          <div
+            class="MuiListItemSecondaryAction-root"
+          >
+            <button
+              aria-label="remove permit"
+              class="MuiButtonBase-root MuiIconButton-root"
+              data-testid="delete-icon"
+              tabindex="0"
+              type="button"
+            >
+              <span
+                class="MuiIconButton-label"
+              >
+                <svg
+                  role="presentation"
+                  style="width: 1.5rem; height: 1.5rem;"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M9,3V4H4V6H5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V6H20V4H15V3H9M7,6H17V19H7V6M9,8V17H11V8H9M13,8V17H15V8H13Z"
+                    style="fill: currentColor;"
+                  />
+                </svg>
+              </span>
+              <span
+                class="MuiTouchRipple-root"
+              />
+            </button>
+          </div>
+        </li>
+      </ul>
       <div
-        class="MuiBox-root MuiBox-root-35"
+        class="MuiBox-root MuiBox-root-37"
       >
         <button
           aria-label="add permit"
@@ -1948,7 +2290,7 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
     </div>
   </fieldset>
   <fieldset
-    class="MuiBox-root MuiBox-root-36"
+    class="MuiBox-root MuiBox-root-38"
   >
     <legend
       class="MuiTypography-root MuiTypography-h5"
@@ -2065,10 +2407,10 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
           </div>
           <fieldset
             aria-hidden="true"
-            class="PrivateNotchedOutline-root-25 MuiOutlinedInput-notchedOutline"
+            class="PrivateNotchedOutline-root-26 MuiOutlinedInput-notchedOutline"
           >
             <legend
-              class="PrivateNotchedOutline-legendLabelled-27 PrivateNotchedOutline-legendNotched-28"
+              class="PrivateNotchedOutline-legendLabelled-28 PrivateNotchedOutline-legendNotched-29"
             >
               <span>
                 Select Funding Sources

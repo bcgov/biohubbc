@@ -5,6 +5,7 @@ import { getDBConnection, IDBConnection } from '../../../database/db';
 import { HTTP400 } from '../../../errors/http-error';
 import { queries } from '../../../queries/queries';
 import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
+import { ProjectParticipationService } from '../../../services/project-participation-service';
 import { UserService } from '../../../services/user-service';
 import { getLogger } from '../../../utils/logger';
 
@@ -113,7 +114,11 @@ export function removeSystemUser(): RequestHandler {
 }
 
 export const checkIfUserIsOnlyProjectLeadOnAnyProject = async (userId: number, connection: IDBConnection) => {
-  const getAllParticipantsResponse = await getAllParticipantsFromSystemUsersProjects(userId, connection);
+  const projectParticipationService = new ProjectParticipationService(connection);
+
+  const getAllParticipantsResponse = await projectParticipationService.getParticipantsFromAllProjectsBySystemUserId(
+    userId
+  );
 
   // No projects associated to user, skip Project Lead role check
   if (!getAllParticipantsResponse.length) {
@@ -135,33 +140,6 @@ export const deleteAllProjectRoles = async (userId: number, connection: IDBConne
   }
 
   connection.query(sqlStatement.text, sqlStatement.values);
-};
-
-/**
- * collect all participants associated with user across all projects.
- *
- * @param {number} userId
- * @param {IDBConnection} connection
- * @return {*}  {Promise<any[]>}
- */
-export const getAllParticipantsFromSystemUsersProjects = async (
-  userId: number,
-  connection: IDBConnection
-): Promise<any[]> => {
-  const getParticipantsFromAllSystemUsersProjectsSQLStatment = queries.projectParticipation.getParticipantsFromAllSystemUsersProjectsSQL(
-    userId
-  );
-
-  if (!getParticipantsFromAllSystemUsersProjectsSQLStatment) {
-    throw new HTTP400('Failed to build SQL get statement');
-  }
-
-  const response = await connection.query(
-    getParticipantsFromAllSystemUsersProjectsSQLStatment.text,
-    getParticipantsFromAllSystemUsersProjectsSQLStatment.values
-  );
-
-  return response.rows || [];
 };
 
 /**

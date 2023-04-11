@@ -7,8 +7,6 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import SurveyProprietaryData from 'features/surveys/view/components/SurveyProprietaryData';
 import SurveyPurposeAndMethodologyData from 'features/surveys/view/components/SurveyPurposeAndMethodologyData';
-import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import React from 'react';
 import SurveyGeneralInformation from './components/SurveyGeneralInformation';
 
@@ -47,19 +45,13 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }));
 
-export interface ISurveyDetailsProps {
-  codes: IGetAllCodeSetsResponse;
-  projectForViewData: IGetProjectForViewResponse;
-}
-
 /**
  * Survey details content for a survey.
  *
  * @return {*}
  */
-const SurveyDetails: React.FC<ISurveyDetailsProps> = (props) => {
+const SurveyDetails = () => {
   const classes = useStyles();
-  const { codes, projectForViewData } = props;
 
   return (
     <Box className={classes.surveyMetadataContainer}>
@@ -70,16 +62,16 @@ const SurveyDetails: React.FC<ISurveyDetailsProps> = (props) => {
       </Toolbar>
       <Divider></Divider>
       <Box p={3}>
-        <SurveyGeneralInformation projectForViewData={projectForViewData} codes={codes} />
+        <SurveyGeneralInformation />
         <Box component="section">
           <Typography component="h4">Purpose and Methodology</Typography>
           <Divider></Divider>
-          <SurveyPurposeAndMethodologyData projectForViewData={projectForViewData} codes={codes} />
+          <SurveyPurposeAndMethodologyData />
         </Box>
         <Box component="section">
           <Typography component="h4">Proprietary Information</Typography>
           <Divider></Divider>
-          <SurveyProprietaryData projectForViewData={projectForViewData} codes={codes} />
+          <SurveyProprietaryData />
         </Box>
       </Box>
     </Box>

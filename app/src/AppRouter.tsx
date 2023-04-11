@@ -4,6 +4,7 @@ import {
   UnAuthenticatedRouteGuard
 } from 'components/security/RouteGuards';
 import { SYSTEM_ROLE } from 'constants/roles';
+import { CodesContextProvider } from 'contexts/codesContext';
 import AdminUsersRouter from 'features/admin/AdminUsersRouter';
 import ResourcesPage from 'features/resources/ResourcesPage';
 import SearchPage from 'features/search/SearchPage';
@@ -49,7 +50,9 @@ const AppRouter: React.FC = () => {
 
       <AppRoute path="/admin/projects" title={getTitle('Projects')} layout={BaseLayout}>
         <AuthenticatedRouteGuard>
-          <ProjectsRouter />
+          <CodesContextProvider>
+            <ProjectsRouter />
+          </CodesContextProvider>
         </AuthenticatedRouteGuard>
       </AppRoute>
 

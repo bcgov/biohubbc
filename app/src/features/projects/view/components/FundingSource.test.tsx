@@ -1,11 +1,11 @@
 import { cleanup, render } from '@testing-library/react';
+import { IProjectContext, ProjectContext } from 'contexts/projectContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import { DataLoader } from 'hooks/useDataLoader';
 import React from 'react';
-import { codes } from 'test-helpers/code-helpers';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import FundingSource from './FundingSource';
 jest.mock('../../../../hooks/useBioHubApi');
-const mockRefresh = jest.fn();
 
 jest.mock('../../../../hooks/useBioHubApi');
 const mockUseBiohubApi = {
@@ -34,8 +34,16 @@ describe('FundingSource', () => {
   });
 
   it('renders correctly', () => {
+    const mockProjectContext: IProjectContext = {
+      projectDataLoader: { data: getProjectForViewResponse } as DataLoader<any, any, any>,
+      artifactDataLoader: { data: null } as DataLoader<any, any, any>,
+      projectId: 1
+    };
+
     const { asFragment } = render(
-      <FundingSource projectForViewData={getProjectForViewResponse} codes={codes} refresh={mockRefresh} />
+      <ProjectContext.Provider value={mockProjectContext}>
+        <FundingSource />
+      </ProjectContext.Provider>
     );
 
     expect(asFragment()).toMatchSnapshot();
