@@ -542,9 +542,9 @@ describe('CreateProjectPage', () => {
       await waitFor(() => {
         expect(mockBiohubApi().draft.updateDraft).toHaveBeenCalledWith(1, 'draft name', {
           coordinator: {
-            first_name: 'Draft first name',
+            first_name: 'draft first name',
             last_name: 'draft last name',
-            email_address: 'draftemail@example.com',
+            email_address: '',
             coordinator_agency: '',
             share_contact_details: 'false'
           },
