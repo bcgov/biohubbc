@@ -125,9 +125,6 @@ export function createDraft(): RequestHandler {
 
       const systemUserId = connection.systemUserId();
 
-      console.log('systemUserId:', systemUserId);
-      console.log(draftService);
-
       const draft = await draftService.createDraft(systemUserId, sanitizedDraft);
 
       console.log('draft in the endpoint: ', draft);

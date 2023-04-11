@@ -9,11 +9,12 @@ import { getLogger } from '../../../utils/logger';
 const defaultLog = getLogger('/api/draft/{draftId}/delete');
 
 export const DELETE: Operation = [
-  authorizeRequestHandler(() => {
+  authorizeRequestHandler((req) => {
     return {
       and: [
         {
           validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_CREATOR, SYSTEM_ROLE.DATA_ADMINISTRATOR],
+          draftId: Number(req.params.draftId),
           discriminator: 'SystemRole'
         }
       ]

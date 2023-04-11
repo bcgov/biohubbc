@@ -30,9 +30,12 @@ export class DraftService extends DBService {
   }
 
   async createDraft(systemUserId: number, postDraftObjectData: PostDraftObject): Promise<any> {
-    console.log('inside draftservice - system user id: ', systemUserId, postDraftObjectData);
-    console.log('inside draftservice: - postdraftobject', systemUserId, postDraftObjectData);
-
+    defaultLog.debug({ label: 'createDraft' });
     return this.draftRepository.createDraft(systemUserId, postDraftObjectData.name, postDraftObjectData.data);
+  }
+
+  async updateDraft(draftId: number, postDraftObjectData: PostDraftObject): Promise<any> {
+    defaultLog.debug({ label: 'updateDraft' });
+    return this.draftRepository.updateDraft(draftId, postDraftObjectData.name, postDraftObjectData.data);
   }
 }

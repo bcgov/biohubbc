@@ -2,19 +2,20 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../../constants/roles';
 import { getDBConnection } from '../../../database/db';
-import { HTTP400 } from '../../../errors/http-error';
-import { queries } from '../../../queries/queries';
+import { PostDraftObject } from '../../../models/draft-create';
 import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
+import { DraftService } from '../../../services/draft-service';
 import { getLogger } from '../../../utils/logger';
 
 const defaultLog = getLogger('paths/draft');
 
 export const PUT: Operation = [
-  authorizeRequestHandler(() => {
+  authorizeRequestHandler((req) => {
     return {
       and: [
         {
           validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_CREATOR, SYSTEM_ROLE.DATA_ADMINISTRATOR],
+          draftId: Number(req.params.draftId),
           discriminator: 'SystemRole'
         }
       ]
@@ -81,6 +82,17 @@ PUT.apiDoc = {
       Bearer: []
     }
   ],
+  parameters: [
+    {
+      in: 'path',
+      name: 'draftId',
+      schema: {
+        type: 'integer',
+        minimum: 1
+      },
+      required: true
+    }
+  ],
   requestBody: {
     description: 'Draft put request object.',
     content: {
@@ -90,10 +102,6 @@ PUT.apiDoc = {
           type: 'object',
           required: ['name', 'data'],
           properties: {
-            id: {
-              title: 'Draft record ID',
-              type: 'number'
-            },
             name: {
               title: 'Draft name',
               type: 'string'
@@ -121,43 +129,24 @@ export function updateDraft(): RequestHandler {
   return async (req, res) => {
     const connection = getDBConnection(req['keycloak_token']);
 
+    const sanitizedDraft = new PostDraftObject(req.body);
+
+    console.log('draftId', req.params.draftId);
+
+    console.log('request:', req.body);
+
     try {
-      if (!req.body.id) {
-        throw new HTTP400('Missing required param id');
-      }
-
-      if (!req.body.name) {
-        throw new HTTP400('Missing required param name');
-      }
-
-      if (!req.body.data) {
-        throw new HTTP400('Missing required param data');
-      }
-
-      const putDraftSQLStatement = queries.project.draft.putDraftSQL(req.body.id, req.body.name, req.body.data);
-
-      if (!putDraftSQLStatement) {
-        throw new HTTP400('Failed to build SQL update statement');
-      }
-
       await connection.open();
 
-      const updateDraftResponse = await connection.query(putDraftSQLStatement.text, putDraftSQLStatement.values);
+      const draftService = new DraftService(connection);
 
-      const draftResult = (updateDraftResponse && updateDraftResponse.rows && updateDraftResponse.rows[0]) || null;
-      if (!draftResult || !draftResult.id) {
-        throw new HTTP400('Failed to update draft');
-      }
+      const draft = await draftService.updateDraft(Number(req.params.draftId), sanitizedDraft);
 
       await connection.commit();
 
-      return res.status(200).json({
-        id: draftResult.id,
-        name: draftResult.name,
-        date: draftResult.update_date || draftResult.create_date
-      });
+      return res.status(200).json(draft);
     } catch (error) {
-      defaultLog.error({ label: 'createProject', message: 'error', error });
+      defaultLog.error({ label: 'updateDraft', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

@@ -287,8 +287,6 @@ const CreateProjectPage: React.FC = () => {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
-  console.log('values in the CreateProjectPage: ', formikRef?.current?.values);
-
   return (
     <>
       <Prompt when={enableCancelCheck} message={handleLocationChange} />
