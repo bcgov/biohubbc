@@ -44,7 +44,7 @@ POST.apiDoc = {
           required: ['projectId', 'data'],
           properties: {
             projectId: {
-              type: 'number'
+              type: 'integer'
             },
 
             data: {

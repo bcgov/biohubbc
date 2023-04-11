@@ -118,20 +118,13 @@ const PublishSurveyButton: React.FC = (props) => {
 
 export default PublishSurveyButton;
 
-const idExists = (item: any) => {
-  if (item) {
-    return true;
-  }
-  return false;
-};
-
 export const unSubmittedObservation = (
   data: IGetObservationSubmissionResponse | undefined
 ): ISurveyObservationData[] => {
   if (
     data &&
     data.surveyObservationData &&
-    !idExists(data.surveyObservationSupplementaryData?.occurrence_submission_id) &&
+    !Boolean(data.surveyObservationSupplementaryData?.occurrence_submission_id) &&
     data.surveyObservationData.status === SUBMISSION_STATUS_TYPE.TEMPLATE_TRANSFORMED
   ) {
     return [data.surveyObservationData];
@@ -143,7 +136,7 @@ const unSubmittedSummary = (data: IGetSummaryResultsResponse | undefined): ISurv
   if (
     data &&
     data.surveySummaryData &&
-    !idExists(data.surveySummarySupplementaryData?.survey_summary_submission_id) &&
+    !Boolean(data.surveySummarySupplementaryData?.survey_summary_submission_id) &&
     data.surveySummaryData.messages.length === 0
   ) {
     return [data.surveySummaryData];
@@ -152,17 +145,13 @@ const unSubmittedSummary = (data: IGetSummaryResultsResponse | undefined): ISurv
 };
 
 const unSubmittedReports = (data: IGetSurveyAttachmentsResponse | undefined): IGetSurveyReportAttachment[] => {
-  if (data) {
-    return data.reportAttachmentsList.filter(
-      (item) => !idExists(item.supplementaryAttachmentData?.artifact_revision_id)
-    );
-  }
-  return [];
+  return data
+    ? data.reportAttachmentsList.filter((item) => !Boolean(item.supplementaryAttachmentData?.artifact_revision_id))
+    : [];
 };
 
 const unSubmittedAttachments = (data: IGetSurveyAttachmentsResponse | undefined): IGetSurveyAttachment[] => {
-  if (data) {
-    return data.attachmentsList.filter((item) => !idExists(item.supplementaryAttachmentData?.artifact_revision_id));
-  }
-  return [];
+  return data
+    ? data.attachmentsList.filter((item) => !Boolean(item.supplementaryAttachmentData?.artifact_revision_id))
+    : [];
 };

@@ -6,9 +6,9 @@ export interface IPublishDialogs {
   finishSubmissionTitle: string;
   finishSubmissionMessage: string;
   finishSubmission: boolean;
-  setFinishSubmission: (value: boolean) => void;
+  setFinishSubmission: (isEmpty: boolean) => void;
   noSubmissionData: boolean;
-  setNoSubmissionData: (value: boolean) => void;
+  setNoSubmissionData: (isFinished: boolean) => void;
 }
 
 /**

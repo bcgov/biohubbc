@@ -99,25 +99,14 @@ const PublishProjectButton: React.FC = () => {
 
 export default PublishProjectButton;
 
-const idExists = (item: any) => {
-  if (item) {
-    return true;
-  }
-  return false;
-};
-
 const unSubmittedReports = (data: IGetProjectAttachmentsResponse | undefined): IGetProjectReportAttachment[] => {
-  if (data) {
-    return data.reportAttachmentsList.filter(
-      (item) => !idExists(item.supplementaryAttachmentData?.artifact_revision_id)
-    );
-  }
-  return [];
+  return data
+    ? data.reportAttachmentsList.filter((item) => !Boolean(item.supplementaryAttachmentData?.artifact_revision_id))
+    : [];
 };
 
 const unSubmittedAttachments = (data: IGetProjectAttachmentsResponse | undefined): IGetProjectAttachment[] => {
-  if (data) {
-    return data.attachmentsList.filter((item) => !idExists(item.supplementaryAttachmentData?.artifact_revision_id));
-  }
-  return [];
+  return data
+    ? data.attachmentsList.filter((item) => !Boolean(item.supplementaryAttachmentData?.artifact_revision_id))
+    : [];
 };
