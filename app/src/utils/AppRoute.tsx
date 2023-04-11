@@ -1,8 +1,7 @@
 import React, { PropsWithChildren } from 'react';
-import { RouteComponentProps, StaticContext } from 'react-router';
 import { Route, RouteProps } from 'react-router-dom';
 
-export interface IAppRouteProps extends RouteProps {
+export type IAppRouteProps = RouteProps & {
   /**
    * The title for the browser window/tab.
    *
@@ -10,33 +9,45 @@ export interface IAppRouteProps extends RouteProps {
    */
   title?: string;
   /**
-   * If specified, the `component` will be rendered as a child of the `layout`.
+   * If specified, the `children` will be rendered as a child of the `layout`.
    *
    * @type {React.ComponentType<any>}
    */
   layout?: React.ComponentType<any>;
 };
 
-const AppRoute = (props: IAppRouteProps) => {
-  const { layout, component, children, title, ...rest } = props;
-
-  const LayoutComponent = layout === undefined
-    ? (props: PropsWithChildren<any>) => <>{props.children}</>
-    : layout;
-
-  const Component = component || React.Fragment;
+/**
+ * HOC for react-router Routes that provides a Layout wrapper and sets the document title.
+ *
+ * @param {*}
+ * @return {*}
+ */
+const AppRoute: React.FC<IAppRouteProps> = ({ component: Component, children, layout, title, ...rest }) => {
+  const Layout = layout === undefined ? (props: PropsWithChildren<any>) => <>{props.children}</> : layout;
 
   if (title) {
     document.title = title;
   }
 
+  if (React.Children.count(children) > 0 && Component) {
+    throw new Error(
+      '<AppRoute> component cannot have both a `component` prop and child components at the same time. You can either remove the `component` prop and only use child components, or you can remove the child components and only use the `component` prop.'
+    );
+  }
+
   return (
     <Route
       {...rest}
-      render={(routerProps: RouteComponentProps<any, StaticContext, unknown>) => (
-        <LayoutComponent>
-          <Component {...routerProps} />
-        </LayoutComponent>
+      render={(routeProps) => (
+        <Layout>
+          {Component ? (
+            <Component {...routeProps} />
+          ) : (
+            React.Children.map(children, (child: any) => {
+              return React.cloneElement(child, routeProps);
+            })
+          )}
+        </Layout>
       )}
     />
   );
