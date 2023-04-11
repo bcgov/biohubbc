@@ -5,30 +5,26 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import Typography from '@material-ui/core/Typography';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
-import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
-import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
-import React from 'react';
+import { SurveyContext } from 'contexts/surveyContext';
+import React, { useContext } from 'react';
 import { getFormattedAmount, getFormattedDateRangeString } from 'utils/Utils';
-
-export interface ISurveyGeneralInformationProps {
-  surveyForViewData: IGetSurveyForViewResponse;
-  codes: IGetAllCodeSetsResponse;
-  projectForViewData: IGetProjectForViewResponse;
-  refresh: () => void;
-}
 
 /**
  * General information content for a survey.
  *
  * @return {*}
  */
-const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (props) => {
+const SurveyGeneralInformation = () => {
+  const surveyContext = useContext(SurveyContext);
+  const surveyForViewData = surveyContext.surveyDataLoader.data;
+
+  if (!surveyForViewData) {
+    return <></>;
+  }
+
   const {
-    surveyForViewData: {
-      surveyData: { survey_details, species, funding, permit }
-    }
-  } = props;
+    surveyData: { survey_details, species, funding, permit }
+  } = surveyForViewData;
 
   return (
     <>
@@ -49,7 +45,7 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
               <Typography component="dt" color="textSecondary" variant="subtitle2">
                 Timeline
               </Typography>
-              <Typography component="dd">
+              <Typography component="dd" data-testid="survey_timeline">
                 {survey_details.end_date ? (
                   <>
                     {getFormattedDateRangeString(

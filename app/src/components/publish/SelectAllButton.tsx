@@ -1,27 +1,13 @@
-import { Box, makeStyles, Theme } from '@material-ui/core';
+import { List, ListItem, ListItemIcon, ListItemText } from '@material-ui/core';
 import Checkbox from '@material-ui/core/Checkbox';
 import { useFormikContext } from 'formik';
 import React, { useEffect } from 'react';
-
-const useStyles = makeStyles((theme: Theme) => ({
-  subHeader: {
-    width: '100%',
-    backgroundColor: '#dadada',
-    opacity: '.5'
-  },
-  results: {
-    width: '100%',
-    textTransform: 'uppercase'
-  }
-}));
 
 export interface ISelectAllButtonProps {
   formikData: { key: string; value: any }[];
 }
 
 const SelectAllButton: React.FC<ISelectAllButtonProps> = (props) => {
-  const classes = useStyles();
-
   const [selected, setSelected] = React.useState(false);
 
   const { formikData } = props;
@@ -42,24 +28,28 @@ const SelectAllButton: React.FC<ISelectAllButtonProps> = (props) => {
   };
 
   return (
-    <>
-      <Box className={classes.results} pl={2} py={2}>
-        <Checkbox
-          checked={selected}
-          onChange={() => {
-            if (selected) {
-              resetForm();
-              setSelected(false);
-            } else {
-              handleAll();
-              setSelected(true);
-            }
-          }}
-          name={`select-all`}
-          color="primary"></Checkbox>
-        Select All
-      </Box>
-    </>
+    <List disablePadding>
+      <ListItem
+        onClick={() => {
+          if (selected) {
+            resetForm();
+            setSelected(false);
+          } else {
+            handleAll();
+            setSelected(true);
+          }
+        }}
+        key={`select-all`}
+        dense
+        divider>
+        <ListItemIcon>
+          <Checkbox edge="start" checked={selected} name={`select-all`} color="primary"></Checkbox>
+        </ListItemIcon>
+        <ListItemText>
+          <strong>SELECT ALL</strong>
+        </ListItemText>
+      </ListItem>
+    </List>
   );
 };
 

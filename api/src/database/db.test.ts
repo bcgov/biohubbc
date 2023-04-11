@@ -378,11 +378,19 @@ describe('db', () => {
     });
   });
 
+  describe('getKnexQueryBuilder', () => {
+    it('returns a Knex query builder', () => {
+      const queryBuilder = db.getKnexQueryBuilder();
+
+      expect(queryBuilder.client.config).to.eql({ client: db.DB_CLIENT });
+    });
+  });
+
   describe('getKnex', () => {
     it('returns a Knex instance', () => {
       const knex = getKnex();
 
-      expect(knex.queryBuilder().client.config).to.eql({ client: 'pg' });
+      expect(knex.client.config).to.eql({ client: db.DB_CLIENT });
     });
   });
 });

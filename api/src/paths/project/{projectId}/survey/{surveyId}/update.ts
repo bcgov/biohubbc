@@ -295,7 +295,7 @@ export function updateSurvey(): RequestHandler {
 
       return res.status(200).json({ id: surveyId });
     } catch (error) {
-      defaultLog.error({ label: 'updateProject', message: 'error', error });
+      defaultLog.error({ label: 'updateSurvey', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

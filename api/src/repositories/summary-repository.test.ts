@@ -6,6 +6,7 @@ import sinonChai from 'sinon-chai';
 import { SUMMARY_SUBMISSION_MESSAGE_TYPE } from '../constants/status';
 import { HTTP400 } from '../errors/http-error';
 import { PostSummaryDetails } from '../models/summaryresults-create';
+import { SummarySubmissionError } from '../utils/submission-error';
 import { getMockDBConnection } from '../__mocks__/db';
 import { ISummarySubmissionMessagesResponse, SummaryRepository } from './summary-repository';
 
@@ -328,7 +329,7 @@ describe('SummaryRepository', () => {
 
       expect(response).to.be.eql((await mockResponse).rows);
     });
-    it('should throw a HTTP400 error when the query fails', async () => {
+    it('should throw a Submission error `Failed to find validation rules` when the query fails', async () => {
       const mockResponse = (undefined as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({ knex: () => mockResponse });
 
@@ -342,8 +343,64 @@ describe('SummaryRepository', () => {
         await repo.getSummaryTemplateSpeciesRecords('templateName', 'templateVersion', [1, 2]);
         expect.fail();
       } catch (error) {
-        expect((error as HTTP400).message).to.be.eql('Failed to query summary template species table');
+        expect(error).to.be.instanceOf(SummarySubmissionError);
+        expect((error as SummarySubmissionError).summarySubmissionMessages[0].description).to.be.eql(
+          `Could not find any validation schema associated with Template Name "templateName" and Template Version "templateVersion".`
+        );
       }
+    });
+
+    it('should throw Submission error `Failed to find validation rules` when no species is found', async () => {
+      const mockResponse = ({
+        rowCount: 1,
+        rows: [
+          {
+            wldtaxonomic_units_id: null
+          }
+        ]
+      } as any) as Promise<QueryResult<any>>;
+      const dbConnection = getMockDBConnection({ knex: () => mockResponse });
+
+      sinon
+        .stub(SummaryRepository.prototype, 'getSummaryTemplateIdFromNameVersion')
+        .resolves({ summary_template_id: 1 });
+
+      const repo = new SummaryRepository(dbConnection);
+
+      try {
+        await repo.getSummaryTemplateSpeciesRecords('templateName', 'templateVersion', [1, 2]);
+        expect.fail();
+      } catch (error) {
+        expect(error).to.be.instanceOf(SummarySubmissionError);
+        expect((error as SummarySubmissionError).summarySubmissionMessages[0].description).to.be.eql(
+          `The focal species imported from this template does not match the focal species selected for this survey.`
+        );
+      }
+    });
+
+    it('should run without species specified', async () => {
+      const mockResponse = ({
+        rows: ([
+          {
+            summary_template_species_id: 1,
+            summary_template_id: 1,
+            wldtaxonomic_units_id: 1,
+            validation: 'validation_schema',
+            create_user: 1,
+            revision_count: 1
+          }
+        ] as unknown) as ISummarySubmissionMessagesResponse[]
+      } as any) as Promise<QueryResult<any>>;
+      const dbConnection = getMockDBConnection({ knex: () => mockResponse });
+
+      sinon
+        .stub(SummaryRepository.prototype, 'getSummaryTemplateIdFromNameVersion')
+        .resolves({ summary_template_id: 1 });
+
+      const repo = new SummaryRepository(dbConnection);
+      const response = await repo.getSummaryTemplateSpeciesRecords('templateName', 'templateVersion');
+
+      expect(response).to.be.eql((await mockResponse).rows);
     });
   });
 

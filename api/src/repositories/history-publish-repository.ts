@@ -1,4 +1,5 @@
 import SQL from 'sql-template-strings';
+import { z } from 'zod';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { BaseRepository } from './base-repository';
 
@@ -41,6 +42,118 @@ export interface ISurveyReportPublish {
   survey_report_attachment_id: number;
   artifact_id: number;
 }
+
+export const ProjectMetadataPublish = z.object({
+  project_metadata_publish_id: z.number(),
+  project_id: z.number(),
+  event_timestamp: z.date(),
+  queue_id: z.number(),
+  create_date: z.date(),
+  create_user: z.number(),
+  update_date: z.date().nullable(),
+  update_user: z.number().nullable(),
+  revision_count: z.number()
+});
+
+export type ProjectMetadataPublish = z.infer<typeof ProjectMetadataPublish>;
+
+export const SurveyMetadataPublish = z.object({
+  survey_metadata_publish_id: z.number(),
+  survey_id: z.number(),
+  event_timestamp: z.date(),
+  queue_id: z.number(),
+  create_date: z.date(),
+  create_user: z.number(),
+  update_date: z.date().nullable(),
+  update_user: z.number().nullable(),
+  revision_count: z.number()
+});
+
+export type SurveyMetadataPublish = z.infer<typeof SurveyMetadataPublish>;
+
+export const OccurrenceSubmissionPublish = z.object({
+  occurrence_submission_publish_id: z.number(),
+  occurrence_submission_id: z.number(),
+  event_timestamp: z.date(),
+  queue_id: z.number(),
+  create_date: z.date(),
+  create_user: z.number(),
+  update_date: z.date().nullable(),
+  update_user: z.number().nullable(),
+  revision_count: z.number()
+});
+
+export type OccurrenceSubmissionPublish = z.infer<typeof OccurrenceSubmissionPublish>;
+
+export const ProjectReportPublish = z.object({
+  project_report_publish_id: z.number(),
+  project_report_attachment_id: z.number(),
+  event_timestamp: z.date(),
+  artifact_revision_id: z.number(),
+  create_date: z.date(),
+  create_user: z.number(),
+  update_date: z.date().nullable(),
+  update_user: z.number().nullable(),
+  revision_count: z.number()
+});
+
+export type ProjectReportPublish = z.infer<typeof ProjectReportPublish>;
+
+export const ProjectAttachmentPublish = z.object({
+  project_attachment_publish_id: z.number(),
+  project_attachment_id: z.number(),
+  event_timestamp: z.date(),
+  artifact_revision_id: z.number(),
+  create_date: z.date(),
+  create_user: z.number(),
+  update_date: z.date().nullable(),
+  update_user: z.number().nullable(),
+  revision_count: z.number()
+});
+
+export type ProjectAttachmentPublish = z.infer<typeof ProjectAttachmentPublish>;
+
+export const SurveyReportPublish = z.object({
+  survey_report_publish_id: z.number(),
+  survey_report_attachment_id: z.number(),
+  event_timestamp: z.date(),
+  artifact_revision_id: z.number(),
+  create_date: z.date(),
+  create_user: z.number(),
+  update_date: z.date().nullable(),
+  update_user: z.number().nullable(),
+  revision_count: z.number()
+});
+
+export type SurveyReportPublish = z.infer<typeof SurveyReportPublish>;
+
+export const SurveyAttachmentPublish = z.object({
+  survey_attachment_publish_id: z.number(),
+  survey_attachment_id: z.number(),
+  event_timestamp: z.date(),
+  artifact_revision_id: z.number(),
+  create_date: z.date(),
+  create_user: z.number(),
+  update_date: z.date().nullable(),
+  update_user: z.number().nullable(),
+  revision_count: z.number()
+});
+
+export type SurveyAttachmentPublish = z.infer<typeof SurveyAttachmentPublish>;
+
+export const SurveySummarySubmissionPublish = z.object({
+  survey_summary_submission_publish_id: z.number(),
+  survey_summary_submission_id: z.number(),
+  event_timestamp: z.date(),
+  artifact_revision_id: z.number(),
+  create_date: z.date(),
+  create_user: z.number(),
+  update_date: z.date().nullable(),
+  update_user: z.number().nullable(),
+  revision_count: z.number()
+});
+
+export type SurveySummarySubmissionPublish = z.infer<typeof SurveySummarySubmissionPublish>;
 
 export class HistoryPublishRepository extends BaseRepository {
   /**
@@ -257,5 +370,249 @@ export class HistoryPublishRepository extends BaseRepository {
     }
 
     return response.rows[0];
+  }
+
+  /**
+   * Gets a record from `project_metadata_publish` for a given project id.
+   *
+   * @param {number} projectId
+   * @return {*}  {Promise<(ProjectMetadataPublish | null)>}
+   * @memberof HistoryPublishRepository
+   */
+  async getProjectMetadataPublishRecord(projectId: number): Promise<ProjectMetadataPublish | null> {
+    // Select 1 record with latest timestamp
+    const sqlStatement = SQL`
+      select
+        *
+      from
+        project_metadata_publish
+      where
+        project_id = ${projectId}
+      order by
+        event_timestamp desc
+      limit 1;
+    `;
+
+    const response = await this.connection.sql<ProjectMetadataPublish>(sqlStatement);
+
+    return (response.rows.length && response.rows[0]) || null;
+  }
+
+  /**
+   * Gets a record from `survey_metadata_publish` for a given survey id.
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<(SurveyMetadataPublish | null)>}
+   * @memberof HistoryPublishRepository
+   */
+  async getSurveyMetadataPublishRecord(surveyId: number): Promise<SurveyMetadataPublish | null> {
+    // Select 1 record with latest timestamp
+    const sqlStatement = SQL`
+      select
+        *
+      from
+        survey_metadata_publish
+      where
+        survey_id = ${surveyId}
+      order by
+        event_timestamp desc
+      limit 1;
+    `;
+
+    const response = await this.connection.sql<SurveyMetadataPublish>(sqlStatement);
+
+    return (response.rows.length && response.rows[0]) || null;
+  }
+
+  /**
+   * Gets a record from `occurrence_submission_publish` for a given occurrence id.
+   *
+   * @param {number} occurrenceSubmissionId
+   * @return {*}  {Promise<(OccurrenceSubmissionPublish | null)>}
+   * @memberof HistoryPublishRepository
+   */
+  async getOccurrenceSubmissionPublishRecord(
+    occurrenceSubmissionId: number
+  ): Promise<OccurrenceSubmissionPublish | null> {
+    // Select 1 record with latest timestamp
+    const sqlStatement = SQL`
+      select
+        *
+      from
+        occurrence_submission_publish
+      where
+        occurrence_submission_id = ${occurrenceSubmissionId}
+      order by
+        event_timestamp desc
+      limit 1;
+    `;
+
+    const response = await this.connection.sql<OccurrenceSubmissionPublish>(sqlStatement);
+
+    return (response.rows.length && response.rows[0]) || null;
+  }
+
+  /**
+   * Gets a record from `project_attachment_publish` for a given project id.
+   *
+   * @param {number} projectAttachmentId
+   * @return {*}  {Promise<(ProjectAttachmentPublish | null)>}
+   * @memberof HistoryPublishRepository
+   */
+  async getProjectAttachmentPublishRecord(projectAttachmentId: number): Promise<ProjectAttachmentPublish | null> {
+    // Select 1 record with latest timestamp
+    const sqlStatement = SQL`
+      select
+        *
+      from
+        project_attachment_publish
+      where
+        project_attachment_id = ${projectAttachmentId}
+      order by
+        event_timestamp desc
+      limit 1;
+    `;
+
+    const response = await this.connection.sql<ProjectAttachmentPublish>(sqlStatement);
+
+    return (response.rows.length && response.rows[0]) || null;
+  }
+
+  /**
+   * Gets a record from `project_report_publish` for a given project id.
+   *
+   * @param {number} projectReportAttachmentId
+   * @return {*}  {Promise<(ProjectReportPublish | null)>}
+   * @memberof HistoryPublishRepository
+   */
+  async getProjectReportPublishRecord(projectReportAttachmentId: number): Promise<ProjectReportPublish | null> {
+    // Select 1 record with latest timestamp
+    const sqlStatement = SQL`
+      select
+        *
+      from
+        project_report_publish
+      where
+        project_report_attachment_id = ${projectReportAttachmentId}
+      order by
+        event_timestamp desc
+      limit 1;
+    `;
+
+    const response = await this.connection.sql<ProjectReportPublish>(sqlStatement);
+
+    return (response.rows.length && response.rows[0]) || null;
+  }
+
+  /**
+   * Gets a record from `survey_attachment_publish` for a given survey id.
+   *
+   * @param {number} surveyAttachmentId
+   * @return {*}  {Promise<(SurveyAttachmentPublish | null)>}
+   * @memberof HistoryPublishRepository
+   */
+  async getSurveyAttachmentPublishRecord(surveyAttachmentId: number): Promise<SurveyAttachmentPublish | null> {
+    // Select 1 record with latest timestamp
+    const sqlStatement = SQL`
+      select
+        *
+      from
+        survey_attachment_publish
+      where
+        survey_attachment_id = ${surveyAttachmentId}
+      order by
+        event_timestamp desc
+      limit 1;
+    `;
+
+    const response = await this.connection.sql<SurveyAttachmentPublish>(sqlStatement);
+
+    return (response.rows.length && response.rows[0]) || null;
+  }
+
+  /**
+   * Gets a record from `survey_report_publish` for a given survey id.
+   *
+   * @param {number} surveyReportAttachmentId
+   * @return {*}  {Promise<(SurveyReportPublish | null)>}
+   * @memberof HistoryPublishRepository
+   */
+  async getSurveyReportPublishRecord(surveyReportAttachmentId: number): Promise<SurveyReportPublish | null> {
+    // Select 1 record with latest timestamp
+    const sqlStatement = SQL`
+      select
+        *
+      from
+        survey_report_publish
+      where
+        survey_report_attachment_id = ${surveyReportAttachmentId}
+      order by
+        event_timestamp desc
+      limit 1;
+    `;
+
+    const response = await this.connection.sql<SurveyReportPublish>(sqlStatement);
+
+    return (response.rows.length && response.rows[0]) || null;
+  }
+
+  /**
+   * Gets a record from `survey_summary_submission_publish` for a given artifact and summary id.
+   *
+   * @param {number} surveySummarySubmissionId
+   * @return {*}  {Promise<(SurveySummarySubmissionPublish | null)>}
+   * @memberof HistoryPublishRepository
+   */
+  async getSurveySummarySubmissionPublishRecord(
+    surveySummarySubmissionId: number
+  ): Promise<SurveySummarySubmissionPublish | null> {
+    // Select 1 record with latest timestamp
+    const sqlStatement = SQL`
+      select
+        *
+      from
+        survey_summary_submission_publish
+      where
+        survey_summary_submission_id = ${surveySummarySubmissionId}
+      order by
+        event_timestamp desc
+      limit 1;
+    `;
+
+    const response = await this.connection.sql<SurveySummarySubmissionPublish>(sqlStatement);
+
+    return (response.rows.length && response.rows[0]) || null;
+  }
+
+  /**
+   * Deletes a record from `survey_attachment_publish` for a given attachment id.
+   *
+   * @param {number} surveyAttachmentId
+   * @return {*}  {Promise<void>}
+   * @memberof HistoryPublishRepository
+   */
+  async deleteSurveyAttachmentPublishRecord(surveyAttachmentId: number): Promise<void> {
+    const sqlStatement = SQL`
+      delete from survey_attachment_publish
+      where survey_attachment_id = ${surveyAttachmentId};
+    `;
+
+    await this.connection.sql(sqlStatement);
+  }
+
+  /**
+   * Deletes a record from `survey_report_publish` for a given attachment id.
+   *
+   * @param {number} surveyAttachmentId
+   * @return {*}  {Promise<void>}
+   * @memberof HistoryPublishRepository
+   */
+  async deleteSurveyReportAttachmentPublishRecord(surveyAttachmentId: number): Promise<void> {
+    const sqlStatement = SQL`
+      delete from survey_report_publish
+      where survey_report_attachment_id = ${surveyAttachmentId};
+    `;
+
+    await this.connection.sql(sqlStatement);
   }
 }

@@ -4,7 +4,6 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as db from '../../../../database/db';
 import { HTTPError } from '../../../../errors/http-error';
-import { GetAttachmentsData } from '../../../../models/project-survey-attachments';
 import { AttachmentService } from '../../../../services/attachment-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../__mocks__/db';
 import * as list from './list';
@@ -28,7 +27,7 @@ describe('getAttachments', () => {
 
     const expectedError = new Error('cannot process request');
 
-    sinon.stub(AttachmentService.prototype, 'getProjectAttachments').rejects(expectedError);
+    sinon.stub(AttachmentService.prototype, 'getProjectAttachmentsWithSupplementaryData').rejects(expectedError);
 
     try {
       const result = list.getAttachments();
@@ -49,10 +48,12 @@ describe('getAttachments', () => {
       }
     });
 
-    const getProjectAttachmentsStub = sinon.stub(AttachmentService.prototype, 'getProjectAttachments').resolves([]);
-    sinon.stub(AttachmentService.prototype, 'getProjectReportAttachments').resolves([]);
+    const getProjectAttachmentsStub = sinon
+      .stub(AttachmentService.prototype, 'getProjectAttachmentsWithSupplementaryData')
+      .resolves([]);
+    sinon.stub(AttachmentService.prototype, 'getProjectReportAttachmentsWithSupplementaryData').resolves([]);
 
-    const expectedResponse = new GetAttachmentsData([], []);
+    const expectedResponse = { attachmentsList: [], reportAttachmentsList: [] };
 
     const mockReq = {
       keycloak_token: {},

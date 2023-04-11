@@ -45,6 +45,7 @@ exports[`IUCNClassification renders correctly with classification details 1`] = 
 
 exports[`IUCNClassification renders correctly with no classification details 1`] = `
 <DocumentFragment>
+  0
   <ul
     class="MuiBox-root MuiBox-root-1 listNoBullets"
   >

@@ -151,7 +151,7 @@ const SubmitBiohubDialog: React.FC<ISubmitBiohubDialogProps> = (props) => {
                     onClick={formikProps.submitForm}
                     color="primary"
                     variant="contained"
-                    disabled={formikProps.values === initialValues}>
+                    disabled={formikProps.values === initialValues || isFinishing}>
                     <strong>Submit</strong>
                   </Button>
                   {isFinishing && <CircularProgress size={24} className={classes.buttonProgress} />}

@@ -22,6 +22,10 @@ describe('useDataLoader', () => {
     it('should mount and not be ready', () => {
       expect(result.current.isReady).toEqual(false);
     });
+
+    it('should mount and not have loaded', () => {
+      expect(result.current.hasLoaded).toEqual(false);
+    });
   });
 
   describe('load', () => {
@@ -48,6 +52,7 @@ describe('useDataLoader', () => {
         expect(result.current.data).toBeUndefined();
         expect(result.current.isLoading).toEqual(false);
         expect(result.current.isReady).toEqual(true);
+        expect(result.current.hasLoaded).toEqual(true);
       });
     });
 
@@ -74,6 +79,7 @@ describe('useDataLoader', () => {
         expect(result.current.error).toBeUndefined();
         expect(result.current.isLoading).toEqual(false);
         expect(result.current.isReady).toEqual(true);
+        expect(result.current.hasLoaded).toEqual(true);
       });
     });
   });
@@ -146,6 +152,7 @@ describe('useDataLoader', () => {
         expect(result.current.error).toBeUndefined();
         expect(result.current.isLoading).toBe(false);
         expect(result.current.isReady).toBe(true);
+        expect(result.current.hasLoaded).toBe(true);
 
         act(() => {
           deferred.reset();
@@ -157,6 +164,7 @@ describe('useDataLoader', () => {
         expect(result.current.error).toBeUndefined();
         expect(result.current.isLoading).toBe(false);
         expect(result.current.isReady).toBe(true);
+        expect(result.current.hasLoaded).toBe(true);
       });
     });
 
@@ -189,6 +197,7 @@ describe('useDataLoader', () => {
         expect(result.current.error).toBeUndefined();
         expect(result.current.isLoading).toBe(false);
         expect(result.current.isReady).toBe(true);
+        expect(result.current.hasLoaded).toBe(true);
 
         act(() => {
           deferred.reset();
@@ -200,11 +209,12 @@ describe('useDataLoader', () => {
         expect(result.current.error).toEqual('reject2');
         expect(result.current.isLoading).toBe(false);
         expect(result.current.isReady).toBe(true);
+        expect(result.current.hasLoaded).toBe(true);
       });
     });
   });
 
-  describe('clear', () => {
+  describe('clearError', () => {
     it('should clear errors when clear is called', async () => {
       const deferred = new Deferred<string, string>();
       const { result, waitForValueToChange } = renderHook(() => useDataLoader(() => deferred.promise));
@@ -216,7 +226,7 @@ describe('useDataLoader', () => {
 
       act(() => {
         deferred.reset();
-        result.current.clear();
+        result.current.clearError();
       });
       expect(result.current.error).toBeUndefined();
     });
@@ -230,13 +240,15 @@ describe('useDataLoader', () => {
       await waitForValueToChange(() => result.current.error);
       expect(result.current.isLoading).toBe(false);
       expect(result.current.isReady).toBe(true);
+      expect(result.current.hasLoaded).toBe(true);
 
       act(() => {
         deferred.reset();
-        result.current.clear();
+        result.current.clearError();
       });
       expect(result.current.isLoading).toBe(false);
       expect(result.current.isReady).toBe(true);
+      expect(result.current.hasLoaded).toBe(true);
     });
   });
 });

@@ -26,6 +26,7 @@ import {
   SurveyRepository
 } from '../repositories/survey-repository';
 import { getMockDBConnection } from '../__mocks__/db';
+import { HistoryPublishService } from './history-publish-service';
 import { PermitService } from './permit-service';
 import { PlatformService } from './platform-service';
 import { SurveyService } from './survey-service';
@@ -208,25 +209,20 @@ describe('SurveyService', () => {
       sinon.restore();
     });
 
-    it('Gets data if no errors', async () => {
-      const getOccurrenceSubmissionIdStub = sinon
-        .stub(SurveyService.prototype, 'getOccurrenceSubmissionId')
-        .resolves(({ occurrence_submission: 1 } as unknown) as any);
-
-      const getSummaryResultIdStub = sinon
-        .stub(SurveyService.prototype, 'getSummaryResultId')
-        .resolves(({ survey_summary_submission: 1 } as unknown) as any);
+    it('fetches and returns all supplementary data', async () => {
+      const getSurveyMetadataPublishRecordStub = sinon
+        .stub(HistoryPublishService.prototype, 'getSurveyMetadataPublishRecord')
+        .resolves(({ survey_metadata_publish_id: 5 } as unknown) as any);
 
       const surveyService = new SurveyService(getMockDBConnection());
 
       const response = await surveyService.getSurveySupplementaryDataById(1);
 
+      expect(getSurveyMetadataPublishRecordStub).to.be.calledOnce;
+
       expect(response).to.eql({
-        occurrence_submission: { occurrence_submission: 1 },
-        summary_result: { survey_summary_submission: 1 }
+        survey_metadata_publish: { survey_metadata_publish_id: 5 }
       });
-      expect(getOccurrenceSubmissionIdStub).to.be.calledOnce;
-      expect(getSummaryResultIdStub).to.be.calledOnce;
     });
   });
 
@@ -368,16 +364,16 @@ describe('SurveyService', () => {
     });
   });
 
-  describe('getOccurrenceSubmissionId', () => {
+  describe('getOccurrenceSubmission', () => {
     it('returns the first row on success', async () => {
       const dbConnection = getMockDBConnection();
       const service = new SurveyService(dbConnection);
 
-      const data = 1;
+      const data = { occurrence_submission_id: 1 };
 
-      const repoStub = sinon.stub(SurveyRepository.prototype, 'getOccurrenceSubmissionId').resolves(data);
+      const repoStub = sinon.stub(SurveyRepository.prototype, 'getOccurrenceSubmission').resolves(data);
 
-      const response = await service.getOccurrenceSubmissionId(1);
+      const response = await service.getOccurrenceSubmission(1);
 
       expect(repoStub).to.be.calledOnce;
       expect(response).to.eql(data);
@@ -400,16 +396,16 @@ describe('SurveyService', () => {
     });
   });
 
-  describe('getSummaryResultId', () => {
+  describe('getSurveySummarySubmission', () => {
     it('returns the first row on success', async () => {
       const dbConnection = getMockDBConnection();
       const service = new SurveyService(dbConnection);
 
-      const data = 1;
+      const data = { survey_summary_submission_id: 1 };
 
-      const repoStub = sinon.stub(SurveyRepository.prototype, 'getSummaryResultId').resolves(data);
+      const repoStub = sinon.stub(SurveyRepository.prototype, 'getSurveySummarySubmission').resolves(data);
 
-      const response = await service.getSummaryResultId(1);
+      const response = await service.getSurveySummarySubmission(1);
 
       expect(repoStub).to.be.calledOnce;
       expect(response).to.eql(data);
