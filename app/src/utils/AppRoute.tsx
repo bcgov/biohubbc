@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
+import { RouteComponentProps, StaticContext } from 'react-router';
 import { Route, RouteProps } from 'react-router-dom';
 
-export type IAppRouteProps = RouteProps & {
+export interface IAppRouteProps extends RouteProps {
   /**
    * The title for the browser window/tab.
    *
@@ -16,8 +17,14 @@ export type IAppRouteProps = RouteProps & {
   layout?: React.ComponentType<any>;
 };
 
-const AppRoute: React.FC<IAppRouteProps> = ({ component: Component, children, layout, title, ...rest }) => {
-  const Layout = layout === undefined ? (props: any) => <>{props.children}</> : layout;
+const AppRoute = (props: IAppRouteProps) => {
+  const { layout, component, children, title, ...rest } = props;
+
+  const LayoutComponent = layout === undefined
+    ? (props: PropsWithChildren<any>) => <>{props.children}</>
+    : layout;
+
+  const Component = component || React.Fragment;
 
   if (title) {
     document.title = title;
@@ -26,12 +33,10 @@ const AppRoute: React.FC<IAppRouteProps> = ({ component: Component, children, la
   return (
     <Route
       {...rest}
-      render={(props) => (
-        <Layout>
-          {React.Children.map(children, (child: any) => {
-            return React.cloneElement(child, props);
-          })}
-        </Layout>
+      render={(routerProps: RouteComponentProps<any, StaticContext, unknown>) => (
+        <LayoutComponent>
+          <Component {...routerProps} />
+        </LayoutComponent>
       )}
     />
   );
