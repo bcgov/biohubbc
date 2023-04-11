@@ -318,11 +318,11 @@ const CreateProjectPage: React.FC = () => {
               <Button color="primary" variant="contained" onClick={() => setOpenDraftDialog(true)}>
                 Save Draft
               </Button>
-              {draftId && (
+              {draftId ? (
                 <Button color="primary" variant="outlined" onClick={() => setOpenDeleteDraftDialog(true)}>
                   Delete Draft
                 </Button>
-              )}
+              ) : null}
               <Button color="primary" variant="outlined" onClick={handleCancel}>
                 Cancel
               </Button>
