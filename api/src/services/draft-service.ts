@@ -1,6 +1,6 @@
 import { QueryResult } from 'pg';
 import { IDBConnection } from '../database/db';
-import { PostDraftObject } from '../models/draft-create';
+import { PostPutDraftObject } from '../models/draft-create';
 import { DraftRepository } from '../repositories/draft-repository';
 import { getLogger } from '../utils/logger';
 import { DBService } from './db-service';
@@ -29,12 +29,12 @@ export class DraftService extends DBService {
     return this.draftRepository.getDraftList(systemUserId);
   }
 
-  async createDraft(systemUserId: number, postDraftObjectData: PostDraftObject): Promise<any> {
+  async createDraft(systemUserId: number, postDraftObjectData: PostPutDraftObject): Promise<any> {
     defaultLog.debug({ label: 'createDraft' });
     return this.draftRepository.createDraft(systemUserId, postDraftObjectData.name, postDraftObjectData.data);
   }
 
-  async updateDraft(draftId: number, postDraftObjectData: PostDraftObject): Promise<any> {
+  async updateDraft(draftId: number, postDraftObjectData: PostPutDraftObject): Promise<any> {
     defaultLog.debug({ label: 'updateDraft' });
     return this.draftRepository.updateDraft(draftId, postDraftObjectData.name, postDraftObjectData.data);
   }

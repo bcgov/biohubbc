@@ -2,7 +2,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../../constants/roles';
 import { getDBConnection } from '../../../database/db';
-import { PostDraftObject } from '../../../models/draft-create';
+import { PostPutDraftObject } from '../../../models/draft-create';
 import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
 import { DraftService } from '../../../services/draft-service';
 import { getLogger } from '../../../utils/logger';
@@ -129,7 +129,7 @@ export function updateDraft(): RequestHandler {
   return async (req, res) => {
     const connection = getDBConnection(req['keycloak_token']);
 
-    const sanitizedDraft = new PostDraftObject(req.body);
+    const sanitizedDraft = new PostPutDraftObject(req.body);
 
     console.log('draftId', req.params.draftId);
 
