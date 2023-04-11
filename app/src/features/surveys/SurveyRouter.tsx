@@ -13,27 +13,19 @@ const SurveyRouter: React.FC = () => {
   return (
     <Switch>
       <AppRoute exact path="/admin/projects/:id/surveys/:survey_id/details" layout={ProjectsLayout}>
-        <ProjectsLayout>
-          <SurveyPage />
-        </ProjectsLayout>
+        <SurveyPage />
       </AppRoute>
 
       <AppRoute exact path="/admin/projects/:id/surveys/:survey_id/attachments" layout={ProjectsLayout}>
-        <ProjectsLayout>
-          <SurveyPage />
-        </ProjectsLayout>
+        <SurveyPage />
       </AppRoute>
 
       <AppRoute exact path="/admin/projects/:id/surveys/:survey_id/observations" layout={ProjectsLayout}>
-        <ProjectsLayout>
-          <SurveyPage />
-        </ProjectsLayout>
+        <SurveyPage />
       </AppRoute>
 
       <AppRoute exact path="/admin/projects/:id/surveys/:survey_id/results" layout={ProjectsLayout}>
-        <ProjectsLayout>
-          <SurveyPage />
-        </ProjectsLayout>
+        <SurveyPage />
       </AppRoute>
     </Switch>
   );
