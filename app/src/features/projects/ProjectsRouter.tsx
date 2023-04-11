@@ -3,6 +3,7 @@ import { SurveyContextProvider } from 'contexts/surveyContext';
 import ProjectPage from 'features/projects/view/ProjectPage';
 import CreateSurveyPage from 'features/surveys/CreateSurveyPage';
 import EditSurveyPage from 'features/surveys/edit/EditSurveyPage';
+import SurveyRouter from 'features/surveys/SurveyRouter';
 import ProjectsLayout from 'layouts/ProjectsLayout';
 import React from 'react';
 import { Redirect, Switch } from 'react-router';
@@ -12,7 +13,6 @@ import CreateProjectPage from './create/CreateProjectPage';
 import EditProjectPage from './edit/EditProjectPage';
 import ProjectsListPage from './list/ProjectsListPage';
 import ProjectParticipantsPage from './participants/ProjectParticipantsPage';
-import SurveyRouter from 'features/surveys/SurveyRouter';
 
 /**
  * Router for all `/admin/projects/*` pages.

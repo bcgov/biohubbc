@@ -111,11 +111,7 @@ const DatasetPopup: React.FC<React.PropsWithChildren<{ submissionSpatialComponen
           <ModalContentWrapper>
             <Collapse in={isReady}>
               <MetadataHeader title={datasetTitle} />
-              <Link
-                color="primary"
-                to={`/datasets/${datasetID}/details`}
-                component={RouterLink}
-              >
+              <Link color="primary" to={`/datasets/${datasetID}/details`} component={RouterLink}>
                 Go to Dataset
               </Link>
             </Collapse>

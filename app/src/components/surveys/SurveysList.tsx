@@ -51,8 +51,7 @@ const SurveysList: React.FC<ISurveysListProps> = (props) => {
                       style={{ fontWeight: 'bold' }}
                       underline="always"
                       to={`/admin/projects/${props.projectId}/surveys/${row.survey_details.id}/details`}
-                      component={RouterLink}
-                      >
+                      component={RouterLink}>
                       {row.survey_details.survey_name}
                     </Link>
                   </TableCell>

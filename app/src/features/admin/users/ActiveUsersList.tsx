@@ -294,8 +294,7 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
                           className={classes.linkButton}
                           underline="always"
                           to={`/admin/users/${row.id}`}
-                          component={RouterLink}
-                        >
+                          component={RouterLink}>
                           {row.user_identifier || 'No identifier'}
                         </Link>
                       </TableCell>

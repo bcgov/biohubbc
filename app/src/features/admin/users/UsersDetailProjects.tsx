@@ -201,8 +201,7 @@ const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
                       color="primary"
                       component={RouterLink}
                       to={`/admin/projects/${row.project_id}/details`}
-                      aria-current="page"
-                    >
+                      aria-current="page">
                       <Typography variant="body2">
                         <strong>{row.name}</strong>
                       </Typography>

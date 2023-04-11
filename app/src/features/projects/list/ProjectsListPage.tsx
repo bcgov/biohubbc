@@ -274,8 +274,7 @@ const ProjectsListPage: React.FC = () => {
                       data-testid={draft.name}
                       underline="always"
                       component={RouterLink}
-                      to={`/admin/projects/create?draftId=${draft.id}`}
-                    >
+                      to={`/admin/projects/create?draftId=${draft.id}`}>
                       {draft.name}
                     </Link>
                   </TableCell>
@@ -294,8 +293,7 @@ const ProjectsListPage: React.FC = () => {
                       data-testid={project.name}
                       underline="always"
                       component={RouterLink}
-                      to={`/admin/projects/${project.id}`}
-                    >
+                      to={`/admin/projects/${project.id}`}>
                       {project.name}
                     </Link>
                   </TableCell>
@@ -344,8 +342,7 @@ const ProjectsListPage: React.FC = () => {
                     color="primary"
                     startIcon={<Icon path={mdiPlus} size={1} />}
                     component={RouterLink}
-                    to={'/admin/projects/create'}
-                  >
+                    to={'/admin/projects/create'}>
                     Create Project
                   </Button>
                 </SystemRoleGuard>
