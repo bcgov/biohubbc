@@ -2,6 +2,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../../constants/roles';
 import { getDBConnection } from '../../../database/db';
+import { HTTP400 } from '../../../errors/http-error';
 import { draftGetResponseObject } from '../../../openapi/schemas/draft';
 import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
 import { ProjectService } from '../../../services/project-service';
@@ -79,17 +80,22 @@ GET.apiDoc = {
 export function getSingleDraft(): RequestHandler {
   return async (req, res) => {
     const connection = getDBConnection(req['keycloak_token']);
+    const draftId = Number(req.params.draftId);
 
     try {
       await connection.open();
 
       const projectService = new ProjectService(connection);
 
-      const response = await projectService.getSingleDraft(Number(req.params.draftId));
+      const draftObject = await projectService.getSingleDraft(draftId);
+
+      if (!draftObject) {
+        throw new HTTP400('Failed to get draft');
+      }
 
       await connection.commit();
 
-      return res.status(200).json(response);
+      return res.status(200).json(draftObject);
     } catch (error) {
       defaultLog.error({ label: 'getSingleDraft', message: 'error', error });
       throw error;

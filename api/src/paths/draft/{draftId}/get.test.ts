@@ -5,7 +5,7 @@ import sinonChai from 'sinon-chai';
 import * as db from '../../../database/db';
 import { HTTPError } from '../../../errors/http-error';
 import { ProjectService } from '../../../services/project-service';
-import { getMockDBConnection } from '../../../__mocks__/db';
+import { getMockDBConnection, getRequestHandlerMocks } from '../../../__mocks__/db';
 import * as get from './get';
 
 chai.use(sinonChai);
@@ -14,7 +14,6 @@ describe('getRules', () => {
   afterEach(() => {
     sinon.restore();
   });
-
   it('should throw an error when a failure occurs', async () => {
     const dbConnectionObj = getMockDBConnection();
     sinon.stub(db, 'getDBConnection').returns({
@@ -86,5 +85,24 @@ describe('getRules', () => {
     await result(sampleReq, (sampleRes as unknown) as any, (null as unknown) as any);
     expect(actualResult).to.eql(expectedResponse);
     expect(getSingleDraftStub).to.be.calledOnce;
+  });
+
+  it('should throw a 400 error when there is no draftObject', async () => {
+    const dbConnectionObj = getMockDBConnection();
+
+    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+    mockReq.params = { draftId: '1' };
+
+    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
+    sinon.stub(ProjectService.prototype, 'getSingleDraft').rejects;
+
+    try {
+      const requestHandler = get.getSingleDraft();
+      await requestHandler(mockReq, mockRes, mockNext);
+      expect.fail();
+    } catch (actualError) {
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to get draft');
+    }
   });
 });
