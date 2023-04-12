@@ -172,7 +172,15 @@ const CheckIfAuthenticatedUser: React.FC = ({ children }) => {
     } else {
       // The user does not have a pending access request, restrict them to the access-request, request-submitted or logout pages
       if (!['/access-request', '/request-submitted', '/logout'].includes(location.pathname)) {
-        // User attempted to go to restricted page
+        /**
+         * User attempted to go to restricted page. If the request to fetch user data fails, the user
+         * can never navigate away from the forbidden page unless they refetch the user data by refreshing
+         * the browser. We can preemptively re-attempt to load the user data again each time they attempt to navigate
+         * away from the forbidden page.
+         */
+        keycloakWrapper?.refresh();
+
+        // Redirect to forbidden page
         return <Redirect to="/forbidden" />;
       }
     }

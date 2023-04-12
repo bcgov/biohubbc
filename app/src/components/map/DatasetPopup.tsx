@@ -9,7 +9,7 @@ import { Feature } from 'geojson';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import React from 'react';
-import { useHistory } from 'react-router';
+import { Link as RouterLink } from 'react-router-dom';
 
 export type BoundaryCentroidFeature = Feature & { properties: BoundaryCentroidFeatureProperties };
 
@@ -52,7 +52,6 @@ const DatasetPopup: React.FC<React.PropsWithChildren<{ submissionSpatialComponen
 }) => {
   const classes = useStyles();
   const api = useBiohubApi();
-  const history = useHistory();
 
   const dataLoader = useDataLoader(() => {
     return api.observation.getSpatialMetadata(submissionSpatialComponentIds);
@@ -112,7 +111,7 @@ const DatasetPopup: React.FC<React.PropsWithChildren<{ submissionSpatialComponen
           <ModalContentWrapper>
             <Collapse in={isReady}>
               <MetadataHeader title={datasetTitle} />
-              <Link color="primary" onClick={() => history.push(`/datasets/${datasetID}/details`)}>
+              <Link color="primary" to={`/datasets/${datasetID}/details`} component={RouterLink}>
                 Go to Dataset
               </Link>
             </Collapse>
