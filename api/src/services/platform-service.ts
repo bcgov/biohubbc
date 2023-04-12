@@ -210,6 +210,52 @@ export class PlatformService extends DBService {
   }
 
   /**
+   * Submit Project data to Biohub Backbone.
+   *
+   * @param {number} projectId
+   * @param {{
+   *       reports: IGetSurveyReportAttachment[];
+   *       attachments: IGetSurveyAttachment[];
+   *     }} data
+   * @return {*}  {Promise<{ uuid: string }>}
+   * @memberof PlatformService
+   */
+  async submitProjectDataToBioHub(
+    projectId: number,
+    data: {
+      reports: IGetSurveyReportAttachment[];
+      attachments: IGetSurveyAttachment[];
+    }
+  ): Promise<{ uuid: string }> {
+    if (!getBackboneIntakeEnabled()) {
+      throw new ApiGeneralError('BioHub intake is not enabled');
+    }
+
+    const emlService = new EmlService(this.connection);
+
+    // Build dataset EML
+    const emlPackage = await emlService.buildProjectEmlPackage({ projectId });
+
+    /**
+     * Check for report, if report are present, then submit all reports to BioHub as an artifact
+     */
+    if (data.reports.length !== 0) {
+      const reportIds = data.reports.map((report) => report.id);
+      await this.submitProjectReportAttachmentsToBioHub(emlPackage.packageId, projectId, reportIds);
+    }
+
+    /**
+     * Check for attachments, if attachments are present, then submit all attachments to BioHub as an artifact
+     */
+    if (data.attachments.length !== 0) {
+      const attachmentIds = data.attachments.map((attachment) => attachment.id);
+      await this.submitProjectAttachmentsToBioHub(emlPackage.packageId, projectId, attachmentIds);
+    }
+
+    return { uuid: emlPackage.packageId };
+  }
+
+  /**
    * Submit survey data to BioHub.
    *
    * @param {number} surveyId

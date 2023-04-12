@@ -15,7 +15,8 @@ import Typography from '@material-ui/core/Typography';
 import { mdiChevronDown, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
-import { useHistory, useParams } from 'react-router';
+import { useParams } from 'react-router';
+import { Link as RouterLink } from 'react-router-dom';
 import { IErrorDialogProps } from '../../../components/dialog/ErrorDialog';
 import { IYesNoDialogProps } from '../../../components/dialog/YesNoDialog';
 import { CustomMenuButton } from '../../../components/toolbar/ActionToolbars';
@@ -63,7 +64,6 @@ const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
   const urlParams = useParams();
   const biohubApi = useBiohubApi();
   const dialogContext = useContext(DialogContext);
-  const history = useHistory();
   const classes = useStyles();
 
   const [codes, setCodes] = useState<IGetAllCodeSetsResponse>();
@@ -199,7 +199,8 @@ const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
                   <TableCell scope="row">
                     <Link
                       color="primary"
-                      onClick={() => history.push(`/admin/projects/${row.project_id}/details`)}
+                      component={RouterLink}
+                      to={`/admin/projects/${row.project_id}/details`}
                       aria-current="page">
                       <Typography variant="body2">
                         <strong>{row.name}</strong>
