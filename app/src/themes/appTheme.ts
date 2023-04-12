@@ -32,6 +32,9 @@ const appTheme = createMuiTheme({
     text: {
       primary: '#313132',
       secondary: '#757575'
+    },
+    error: {
+      main: '#A12622'
     }
   },
   typography: {
@@ -61,14 +64,10 @@ const appTheme = createMuiTheme({
       },
       h6: {
         fontWeight: 700
-      },
-      body2: {
-        fontSize: '0.9rem'
       }
     },
     MuiAlert: {
       root: {
-        fontSize: '0.9rem',
         padding: '12px 20px',
         borderWidth: '1px',
         borderStyle: 'solid'
@@ -77,14 +76,14 @@ const appTheme = createMuiTheme({
         marginRight: '1rem'
       },
       standardInfo: {
-        borderColor: '#a3d4fa',
+        borderColor: '#afd3ee',
         '& .MuiAlert-icon': {
           color: '#313132'
         }
       },
       standardError: {
-        color: '#A12622',
         borderColor: '#ebccd1',
+        color: '#A12622',
         '& .MuiAlert-icon': {
           color: '#A12622'
         }
@@ -102,6 +101,11 @@ const appTheme = createMuiTheme({
         fontWeight: 700
       }
     },
+    MuiAutocomplete: {
+      tag: {
+        fontWeight: 400
+      }
+    },
     MuiBreadcrumbs: {
       li: {
         maxWidth: '40ch',
@@ -114,7 +118,6 @@ const appTheme = createMuiTheme({
       root: {
         textTransform: 'none',
         borderRadius: '5px',
-        fontWeight: 700,
         fontSize: '0.9rem'
       },
       startIcon: {
@@ -125,6 +128,9 @@ const appTheme = createMuiTheme({
         fontSize: '1rem'
       },
       containedPrimary: {
+        fontWeight: 700
+      },
+      containedSecondary: {
         fontWeight: 700
       },
       outlinedPrimary: {
@@ -216,7 +222,9 @@ const appTheme = createMuiTheme({
       root: {
         '& th': {
           letterSpacing: '0.02rem',
-          textTransform: 'uppercase'
+          textTransform: 'uppercase',
+          paddingTop: '12px',
+          paddingBottom: '12px'
         },
         '& tr:last-of-type td': {
           borderBottom: 'none'
@@ -228,9 +236,6 @@ const appTheme = createMuiTheme({
       }
     },
     MuiTableCell: {
-      root: {
-        fontSize: '0.9rem'
-      },
       head: {
         fontSize: '0.875rem',
         fontWeight: 700,
@@ -243,6 +248,11 @@ const appTheme = createMuiTheme({
         minWidth: '100px !important',
         fontWeight: 700
       }
+    }
+  },
+  props: {
+    MuiButtonBase: {
+      disableRipple: true
     }
   }
 });
