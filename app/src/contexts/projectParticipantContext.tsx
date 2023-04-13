@@ -1,8 +1,8 @@
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader, { DataLoader } from 'hooks/useDataLoader';
 import { IGetUserProjectParticipantResponse } from 'interfaces/useProjectApi.interface';
-import React from 'react';
-import { useParams } from 'react-router';
+import React, { useContext } from 'react';
+import { ProjectContext } from './projectContext';
 
 export interface IProjectParticipantContext {
   participantDataLoader: DataLoader<[projectId: number], IGetUserProjectParticipantResponse, unknown>;
@@ -16,19 +16,20 @@ export const ProjectParticipantContext = React.createContext<IProjectParticipant
 
 export const ProjectParticipantContextProvider: React.FC = (props) => {
   const biohubApi = useBiohubApi();
-  const urlParams = useParams();
-
+  const projectContext = useContext(ProjectContext);
+  
   const participantDataLoader = useDataLoader((projectId: number) => biohubApi.project.getUserProjectParticipant(projectId))
+  const { projectId } = projectContext;
 
   React.useEffect(() => {
-    participantDataLoader.refresh(Number(urlParams['id']));
-  }, [urlParams]);
+    participantDataLoader.refresh(projectId);
+  }, [projectId]);
 
   return (
     <ProjectParticipantContext.Provider
       value={{
         participantDataLoader,
-        projectId: urlParams['id']
+        projectId
       }}>
       {props.children}
     </ProjectParticipantContext.Provider>
