@@ -89,7 +89,7 @@ describe('ProjectsListPage', () => {
     });
   });
 
-  test.only('renders with a proper list of projects when completed', async () => {
+  test('renders with a proper list of projects when completed', async () => {
     const authState = ({
       keycloakWrapper: {
         hasLoadedAllUserInfo: true,
@@ -136,7 +136,7 @@ describe('ProjectsListPage', () => {
     });
   });
 
-  test.only('renders with a proper list of projects when active', async () => {
+  test('renders with a proper list of projects when active', async () => {
     const authState = ({
       keycloakWrapper: {
         hasLoadedAllUserInfo: true,
