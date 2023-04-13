@@ -66,8 +66,8 @@ const SurveysList: React.FC<ISurveysListProps> = (props) => {
                   </TableCell>
                   <TableCell>
                     {[
-                      ...row.surveyData.species?.focal_species_names,
-                      ...row.surveyData.species?.ancillary_species_names
+                      ...row.surveyData.species.focal_species_names,
+                      ...row.surveyData.species.ancillary_species_names
                     ].join(', ')}
                   </TableCell>
                   <TableCell>

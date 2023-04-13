@@ -4,7 +4,7 @@ import { IProjectContext, ProjectContext } from 'contexts/projectContext';
 import { createMemoryHistory } from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { DataLoader } from 'hooks/useDataLoader';
-import { SurveyViewObject } from 'interfaces/useSurveyApi.interface';
+import { IGetSurveyForViewResponse, SurveySupplementaryData } from 'interfaces/useSurveyApi.interface';
 import React from 'react';
 import { Router } from 'react-router';
 import { codes } from 'test-helpers/code-helpers';
@@ -44,6 +44,7 @@ describe('SurveysListPage', () => {
       projectDataLoader: {
         data: getProjectForViewResponse
       } as DataLoader<any, any, any>,
+      surveysListDataLoader: { data: [] } as DataLoader<any, any, any>,
       artifactDataLoader: { data: null } as DataLoader<any, any, any>,
       projectId: 1
     };
@@ -73,50 +74,58 @@ describe('SurveysListPage', () => {
         data: codes
       } as DataLoader<any, any, any>
     };
+
+    const surveysList: IGetSurveyForViewResponse[] = [
+      {
+        surveyData: {
+          ...surveyObject,
+          survey_details: {
+            ...surveyObject.survey_details,
+            survey_name: 'Moose Survey 1',
+            start_date: '2021-04-09 11:53:53',
+            end_date: '2021-05-09 11:53:53'
+          },
+          species: {
+            focal_species: [1],
+            focal_species_names: ['species 1'],
+            ancillary_species: [2],
+            ancillary_species_names: ['species 2']
+          }
+        },
+        surveySupplementaryData: ({
+          survey_metadata_publish: null
+        } as unknown) as SurveySupplementaryData
+      },
+      {
+        surveyData: {
+          ...surveyObject,
+          survey_details: {
+            ...surveyObject.survey_details,
+            survey_name: 'Moose Survey 2',
+            start_date: '2021-04-09 11:53:53',
+            end_date: '2021-06-10 11:53:53'
+          },
+          species: {
+            focal_species: [3],
+            focal_species_names: ['species 3'],
+            ancillary_species: [4],
+            ancillary_species_names: ['species 4']
+          }
+        },
+        surveySupplementaryData: ({
+          survey_metadata_publish: null
+        } as unknown) as SurveySupplementaryData
+      }
+    ];
+
     const mockProjectContext: IProjectContext = {
       projectDataLoader: {
         data: getProjectForViewResponse
       } as DataLoader<any, any, any>,
+      surveysListDataLoader: { data: surveysList } as DataLoader<any, any, any>,
       artifactDataLoader: { data: null } as DataLoader<any, any, any>,
       projectId: 1
     };
-
-    const surveysList: SurveyViewObject[] = [
-      {
-        ...surveyObject,
-        survey_details: {
-          ...surveyObject.survey_details,
-          id: 1,
-          survey_name: 'Moose Survey 1',
-          start_date: '2021-04-09 11:53:53',
-          end_date: '2021-05-09 11:53:53'
-        },
-        species: {
-          focal_species: [1],
-          focal_species_names: ['Moose'],
-          ancillary_species: [2],
-          ancillary_species_names: ['Elk']
-        }
-      },
-      {
-        ...surveyObject,
-        survey_details: {
-          ...surveyObject.survey_details,
-          id: 2,
-          survey_name: 'Moose Survey 2',
-          start_date: '2021-04-09 11:53:53',
-          end_date: '2021-06-10 11:53:53'
-        },
-        species: {
-          focal_species: [1],
-          focal_species_names: ['Moose'],
-          ancillary_species: [2],
-          ancillary_species_names: ['Elk']
-        }
-      }
-    ];
-
-    mockBiohubApi().survey.getSurveysList.mockResolvedValue(surveysList);
 
     const { getByText } = render(
       <Router history={history}>
