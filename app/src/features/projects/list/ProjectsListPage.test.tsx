@@ -89,7 +89,26 @@ describe('ProjectsListPage', () => {
     });
   });
 
-  test('renders with a proper list of projects when completed', async () => {
+  test.only('renders with a proper list of projects when completed', async () => {
+    const authState = ({
+      keycloakWrapper: {
+        hasLoadedAllUserInfo: true,
+        systemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN],
+        hasAccessRequest: false,
+        hasSystemRole: () => true,
+
+        keycloak: {},
+        getUserIdentifier: jest.fn(),
+        getIdentitySource: jest.fn(),
+        username: 'testusername',
+        displayName: 'testdisplayname',
+        email: 'test@email.com',
+        firstName: 'testfirst',
+        lastName: 'testlast',
+        refresh: () => {}
+      }
+    } as unknown) as IAuthState;
+
     mockBiohubApi().project.getProjectsList.mockResolvedValue([
       {
         id: 1,
@@ -104,9 +123,11 @@ describe('ProjectsListPage', () => {
     ]);
 
     const { getByText, getByTestId } = render(
-      <MemoryRouter>
-        <ProjectsListPage />
-      </MemoryRouter>
+      <AuthStateContext.Provider value={authState}>
+        <MemoryRouter>
+          <ProjectsListPage />
+        </MemoryRouter>
+      </AuthStateContext.Provider>
     );
 
     await waitFor(() => {
@@ -115,7 +136,26 @@ describe('ProjectsListPage', () => {
     });
   });
 
-  test('renders with a proper list of projects when active', async () => {
+  test.only('renders with a proper list of projects when active', async () => {
+    const authState = ({
+      keycloakWrapper: {
+        hasLoadedAllUserInfo: true,
+        systemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN],
+        hasAccessRequest: false,
+        hasSystemRole: () => true,
+
+        keycloak: {},
+        getUserIdentifier: jest.fn(),
+        getIdentitySource: jest.fn(),
+        username: 'testusername',
+        displayName: 'testdisplayname',
+        email: 'test@email.com',
+        firstName: 'testfirst',
+        lastName: 'testlast',
+        refresh: () => {}
+      }
+    } as unknown) as IAuthState;
+
     mockBiohubApi().project.getProjectsList.mockResolvedValue([
       {
         id: 1,
@@ -130,9 +170,11 @@ describe('ProjectsListPage', () => {
     ]);
 
     const { getByText, getByTestId } = render(
-      <MemoryRouter>
-        <ProjectsListPage />
-      </MemoryRouter>
+      <AuthStateContext.Provider value={authState}>
+        <MemoryRouter>
+          <ProjectsListPage />
+        </MemoryRouter>
+      </AuthStateContext.Provider>
     );
 
     await waitFor(() => {
