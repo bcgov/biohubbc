@@ -102,7 +102,7 @@ const SurveyGeneralInformation = () => {
           {!permit.permits.length && (
             <List disablePadding>
               <ListItem divider disableGutters>
-                No Permits
+                <Typography variant="body1">No Permits</Typography>
               </ListItem>
             </List>
           )}

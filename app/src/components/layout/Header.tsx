@@ -26,8 +26,11 @@ import { Link as RouterLink } from 'react-router-dom';
 import { getFormattedIdentitySource } from 'utils/Utils';
 
 const useStyles = makeStyles((theme: Theme) => ({
+  govHeader: {
+    backgroundColor: '#003366'
+  },
   govHeaderToolbar: {
-    height: '70px'
+    height: '80px'
   },
   brand: {
     display: 'flex',
@@ -38,10 +41,11 @@ const useStyles = makeStyles((theme: Theme) => ({
     fontSize: '1.25rem',
     fontWeight: 700,
     '& img': {
-      verticalAlign: 'middle'
+      verticalAlign: 'middle',
+      marginBottom: '4px'
     },
     '& picture': {
-      marginRight: '1.25rem'
+      marginRight: '1.5rem'
     },
     '&:hover': {
       textDecoration: 'none'
@@ -181,7 +185,7 @@ const Header: React.FC = () => {
 
   return (
     <>
-      <AppBar position="sticky" elevation={0}>
+      <AppBar position="relative" elevation={0} className={classes.govHeader}>
         <Toolbar disableGutters className={classes.govHeaderToolbar}>
           <Container maxWidth="xl">
             <Box display="flex" justifyContent="space-between" width="100%">

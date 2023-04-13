@@ -8,7 +8,7 @@ import React from 'react';
 const useStyles = makeStyles((theme: Theme) => ({
   importFile: {
     display: 'flex',
-    minHeight: '82px',
+    minHeight: '66px',
     padding: theme.spacing(2),
     paddingLeft: '20px',
     overflow: 'hidden',

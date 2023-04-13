@@ -105,6 +105,7 @@ const SurveyHeader = () => {
         dialogContext.setYesNoDialog({ open: false });
       }
     });
+    setAnchorEl(null);
   };
 
   const deleteSurvey = async () => {
@@ -201,6 +202,7 @@ const SurveyHeader = () => {
                   aria-controls="surveySettingsMenu"
                   aria-haspopup="true"
                   variant="outlined"
+                  color="primary"
                   startIcon={<Icon path={mdiCogOutline} size={1} />}
                   endIcon={<Icon path={mdiChevronDown} size={1} />}
                   onClick={openSurveyMenu}
@@ -211,8 +213,6 @@ const SurveyHeader = () => {
                   id="surveySettingsMenu"
                   aria-labelledby="survey_settings_button"
                   style={{ marginTop: '8px' }}
-                  anchorEl={anchorEl}
-                  getContentAnchorEl={null}
                   anchorOrigin={{
                     vertical: 'bottom',
                     horizontal: 'right'
@@ -222,14 +222,16 @@ const SurveyHeader = () => {
                     horizontal: 'right'
                   }}
                   keepMounted
+                  anchorEl={anchorEl}
+                  getContentAnchorEl={null}
                   open={Boolean(anchorEl)}
                   onClose={closeSurveyMenu}>
                   <MenuItem
-                    onClick={() =>
+                    onClick={() => {
                       history.push(
                         `/admin/projects/${surveyContext.projectId}/survey/edit?surveyId=${surveyWithDetails.surveyData.survey_details.id}`
-                      )
-                    }>
+                      );
+                    }}>
                     <ListItemIcon>
                       <Icon path={mdiPencilOutline} size={1} />
                     </ListItemIcon>

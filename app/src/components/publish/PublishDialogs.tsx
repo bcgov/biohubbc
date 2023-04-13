@@ -1,4 +1,4 @@
-import { DialogContent, DialogContentText } from '@material-ui/core';
+import { DialogContentText } from '@material-ui/core';
 import ComponentDialog from 'components/dialog/ComponentDialog';
 import React from 'react';
 
@@ -34,20 +34,18 @@ const PublishDialogs: React.FC<IPublishDialogs> = (props) => {
         onClose={() => {
           setFinishSubmission(false);
         }}>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">{finishSubmissionMessage}</DialogContentText>
-        </DialogContent>
+        <DialogContentText id="alert-dialog-description">{finishSubmissionMessage}</DialogContentText>
       </ComponentDialog>
 
       <ComponentDialog
-        dialogTitle="No Data to Submit"
+        dialogTitle="Submit Survey Information"
         open={noSubmissionData}
         onClose={() => {
           setNoSubmissionData(false);
         }}>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">Thank you!</DialogContentText>
-        </DialogContent>
+        <DialogContentText id="alert-dialog-description">
+          You have not imported or uploaded any information to this survey to submit.
+        </DialogContentText>
       </ComponentDialog>
     </>
   );
