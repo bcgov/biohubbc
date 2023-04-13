@@ -1,0 +1,82 @@
+import Box from '@material-ui/core/Box';
+import Alert from '@material-ui/lab/Alert';
+import AlertTitle from '@material-ui/lab/AlertTitle';
+import { ProjectContext } from 'contexts/projectContext';
+import { IGetProjectAttachmentsResponse } from 'interfaces/useProjectApi.interface';
+import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
+import React, { useContext, useState } from 'react';
+
+const ProjectSubmissionAlertBar = () => {
+  const projectContext = useContext(ProjectContext);
+
+  const [forceAlertClose, setForceAlertClose] = useState(false);
+
+  if (forceAlertClose) {
+    // User has manually closed the banner
+    return <></>;
+  }
+
+  const surveyData = projectContext.surveysListDataLoader.data;
+  const attachmentData = projectContext.artifactDataLoader.data;
+
+  const submissionStatuses: ('NO_DATA' | 'SUBMITTED' | 'UNSUBMITTED')[] = [
+    getAttachmentDataSubmissionStatus(attachmentData),
+    getSurveyDataSubmissionStatus(surveyData)
+  ];
+
+  const hasData = submissionStatuses.some((status) => status !== 'NO_DATA');
+
+  if (!hasData) {
+    // Project has no data (neither submitted nor unsubmitted), don't show the banner
+    return <></>;
+  }
+
+  const hasUnsubmittedData = submissionStatuses.some((status) => status === 'UNSUBMITTED');
+
+  const alertSeverity = hasUnsubmittedData ? 'info' : 'success';
+  const alertTitle = hasUnsubmittedData
+    ? 'This project contains unsubmitted information'
+    : 'All project information submitted';
+  const alertText = hasUnsubmittedData
+    ? 'Please ensure that any information uploaded to this project is promptly submitted for review.'
+    : 'Thank you for submitting your project information to the BioHub Collector System.';
+
+  // Project has data, and some of it is unsubmitted, show the banner
+  return (
+    <Box mb={3}>
+      <Alert severity={alertSeverity} onClose={() => setForceAlertClose(true)}>
+        <AlertTitle>{alertTitle}</AlertTitle>
+        {alertText}
+      </Alert>
+    </Box>
+  );
+};
+
+function getSurveyDataSubmissionStatus(surveyData?: IGetSurveyForViewResponse[]) {
+  if (!surveyData?.length) {
+    return 'NO_DATA';
+  }
+
+  if (surveyData.every((item) => item.surveySupplementaryData?.survey_metadata_publish?.survey_metadata_publish_id)) {
+    return 'SUBMITTED';
+  }
+
+  return 'UNSUBMITTED';
+}
+
+function getAttachmentDataSubmissionStatus(projectAttachmentsData?: IGetProjectAttachmentsResponse) {
+  if (!projectAttachmentsData?.attachmentsList.length && !projectAttachmentsData?.reportAttachmentsList.length) {
+    return 'NO_DATA';
+  }
+
+  if (
+    projectAttachmentsData.reportAttachmentsList.every((item) => item.supplementaryAttachmentData?.event_timestamp) &&
+    projectAttachmentsData.attachmentsList.every((item) => item.supplementaryAttachmentData?.event_timestamp)
+  ) {
+    return 'SUBMITTED';
+  }
+
+  return 'UNSUBMITTED';
+}
+
+export default ProjectSubmissionAlertBar;

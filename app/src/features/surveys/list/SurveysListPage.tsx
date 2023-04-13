@@ -7,9 +7,7 @@ import SurveysList from 'components/surveys/SurveysList';
 import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
 import { CodesContext } from 'contexts/codesContext';
 import { ProjectContext } from 'contexts/projectContext';
-import { useBiohubApi } from 'hooks/useBioHubApi';
-import useDataLoader from 'hooks/useDataLoader';
-import React, { useContext, useEffect } from 'react';
+import React, { useContext } from 'react';
 import { useHistory } from 'react-router';
 
 /**
@@ -19,20 +17,15 @@ import { useHistory } from 'react-router';
  */
 const SurveysListPage = () => {
   const history = useHistory();
-  const biohubApi = useBiohubApi();
 
   const codesContext = useContext(CodesContext);
   const projectContext = useContext(ProjectContext);
 
   assert(codesContext.codesDataLoader.data);
+  assert(projectContext.surveysListDataLoader.data);
 
   const codes = codesContext.codesDataLoader.data;
-
-  const surveysListDataLoader = useDataLoader((projectId: number) => biohubApi.survey.getSurveysList(projectId));
-
-  useEffect(() => {
-    surveysListDataLoader.load(projectContext.projectId);
-  }, [surveysListDataLoader, projectContext.projectId]);
+  const surveys = projectContext.surveysListDataLoader.data;
 
   const navigateToCreateSurveyPage = (projectId: number) => {
     history.push(`/admin/projects/${projectId}/survey/create`);
@@ -50,11 +43,7 @@ const SurveysListPage = () => {
       />
       <Divider></Divider>
       <Box px={1}>
-        <SurveysList
-          projectId={projectContext.projectId}
-          surveysList={surveysListDataLoader.data || []}
-          codes={codes}
-        />
+        <SurveysList projectId={projectContext.projectId} surveysList={surveys || []} codes={codes} />
       </Box>
     </>
   );
