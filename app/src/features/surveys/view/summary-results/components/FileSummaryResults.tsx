@@ -17,9 +17,13 @@ import {
 import Icon from '@mdi/react';
 import clsx from 'clsx';
 import { SubmitStatusChip } from 'components/chips/SubmitStatusChip';
+import { SystemRoleGuard } from 'components/security/Guards';
 import { BioHubSubmittedStatusType } from 'constants/misc';
+import { SYSTEM_ROLE } from 'constants/roles';
 import { IGetSummaryResultsResponse } from 'interfaces/useSummaryResultsApi.interface';
 import React from 'react';
+
+//TODO: PRODUCTION_BANDAGE: Remove <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
 
 interface IFileResultsProps {
   fileData: IGetSummaryResultsResponse;
@@ -100,9 +104,10 @@ const FileSummaryResults = (props: IFileResultsProps) => {
 
           <Box flex="0 0 auto" display="flex" alignItems="center">
             <Box mr={2}>
-              <SubmitStatusChip status={checkSubmissionStatus(fileData)} />
+              <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
+                <SubmitStatusChip status={checkSubmissionStatus(fileData)} />
+              </SystemRoleGuard>
             </Box>
-
             <Box>
               <IconButton
                 aria-controls="context-menu"
