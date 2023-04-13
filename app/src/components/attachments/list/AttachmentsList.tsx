@@ -1,6 +1,7 @@
+import Box from '@material-ui/core/Box';
 import { grey } from '@material-ui/core/colors';
 import Link from '@material-ui/core/Link';
-import makeStyles from '@material-ui/core/styles/makeStyles';
+import { makeStyles, Theme } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -8,6 +9,8 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
+import { mdiFileOutline } from '@mdi/js';
+import Icon from '@mdi/react';
 import { SubmitStatusChip } from 'components/chips/SubmitStatusChip';
 import { SystemRoleGuard } from 'components/security/Guards';
 import { BioHubSubmittedStatusType } from 'constants/misc';
@@ -19,7 +22,7 @@ import AttachmentsListItemMenuButton from './AttachmentsListItemMenuButton';
 
 //TODO: PRODUCTION_BANDAGE: Remove <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme: Theme) => ({
   attachmentsTable: {
     tableLayout: 'fixed'
   },
@@ -30,6 +33,11 @@ const useStyles = makeStyles(() => ({
   attachmentNameCol: {
     overflow: 'hidden',
     textOverflow: 'ellipsis'
+  },
+  fileIcon: {
+    marginRight: theme.spacing(2),
+    marginLeft: theme.spacing(3),
+    color: '#1a5a96'
   }
 }));
 
@@ -54,11 +62,12 @@ const AttachmentsList = <T extends IGetProjectAttachment | IGetSurveyAttachment>
         <TableHead>
           <TableRow>
             <TableCell>Name</TableCell>
-            <TableCell>Type</TableCell>
-            <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
-              <TableCell width="140">Status</TableCell>
-            </SystemRoleGuard>
             <TableCell width="80"></TableCell>
+            <TableCell width="130">Type</TableCell>
+            <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
+              <TableCell width="130">Status</TableCell>
+            </SystemRoleGuard>
+            <TableCell width="75"></TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -100,9 +109,21 @@ function AttachmentsTableRow<T extends IGetProjectAttachment | IGetSurveyAttachm
   return (
     <TableRow key={`${attachment.fileName}-${attachment.id}`}>
       <TableCell scope="row" className={classes.attachmentNameCol}>
-        <Link style={{ fontWeight: 'bold' }} underline="always" onClick={() => handleDownload(attachment)}>
-          {attachment.fileName}
-        </Link>
+        <Box display="flex" alignItems="center">
+          <Icon
+            path={mdiFileOutline}
+            size={1}
+            className={classes.fileIcon}
+            style={{ marginRight: '16px', marginLeft: '4px' }}
+          />
+          <Link
+            style={{ fontWeight: 'bold' }}
+            underline="always"
+            onClick={() => handleDownload(attachment)}
+            tabIndex={0}>
+            {attachment.fileName}
+          </Link>
+        </Box>
       </TableCell>
       <TableCell>{attachment.fileType}</TableCell>
       <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>

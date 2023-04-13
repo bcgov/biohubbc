@@ -64,7 +64,7 @@ const SurveyAttachments: React.FC = () => {
         }}
         uploadHandler={getUploadHandler()}
       />
-      <Paper elevation={0}>
+      <Box>
         <H2MenuToolbar
           label="Documents"
           buttonLabel="Upload"
@@ -91,7 +91,7 @@ const SurveyAttachments: React.FC = () => {
             <SurveyAttachmentsList />
           </Paper>
         </Box>
-      </Paper>
+      </Box>
     </>
   );
 };

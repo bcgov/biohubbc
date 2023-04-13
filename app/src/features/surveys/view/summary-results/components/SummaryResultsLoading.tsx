@@ -11,8 +11,9 @@ import React from 'react';
 const useStyles = makeStyles((theme: Theme) => ({
   importFile: {
     display: 'flex',
-    minHeight: '82px',
-    padding: theme.spacing(2),
+    paddingTop: theme.spacing(1),
+    paddingBottom: theme.spacing(1),
+    paddingRight: theme.spacing(2),
     paddingLeft: '20px',
     overflow: 'hidden',
     '& .importFile-icon': {
@@ -74,7 +75,7 @@ const SummaryResultsLoading = (props: ILoadingProps) => {
             </Box>
           </Box>
 
-          <Box ml={5} mr={1}>
+          <Box mt={-1} mr={1} mb={1.75} ml={5}>
             <Typography variant="body2" color="textSecondary">
               Importing file. Please wait...
             </Typography>

@@ -60,6 +60,8 @@ const SurveyAttachmentsList: React.FC = () => {
       dialogTitle: 'Delete Document?',
       dialogText: 'Are you sure you want to delete this document? This action cannot be undone.',
       yesButtonProps: { color: 'secondary' },
+      yesButtonLabel: 'Delete',
+      noButtonLabel: 'Cancel',
       onYes: async () => {
         try {
           // Delete attachment
