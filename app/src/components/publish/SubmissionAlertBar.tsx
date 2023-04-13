@@ -1,6 +1,8 @@
 import Box from '@material-ui/core/Box';
 import Alert from '@material-ui/lab/Alert';
 import AlertTitle from '@material-ui/lab/AlertTitle';
+import { mdiInformationOutline } from '@mdi/js';
+import Icon from '@mdi/react';
 import { SurveyContext } from 'contexts/surveyContext';
 import { IGetObservationSubmissionResponse } from 'interfaces/useObservationApi.interface';
 import { IGetSummaryResultsResponse } from 'interfaces/useSummaryResultsApi.interface';
@@ -47,7 +49,10 @@ const SubmissionAlertBar = () => {
   // Survey has data, and some of it is unsubmitted, show the banner
   return (
     <Box mb={3}>
-      <Alert severity={alertSeverity} onClose={() => setForceAlertClose(true)}>
+      <Alert
+        severity={alertSeverity}
+        icon={<Icon path={mdiInformationOutline} size={1} />}
+        onClose={() => setForceAlertClose(true)}>
         <AlertTitle>{alertTitle}</AlertTitle>
         {alertText}
       </Alert>

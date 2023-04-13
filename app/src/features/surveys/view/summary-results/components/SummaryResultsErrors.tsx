@@ -2,7 +2,7 @@ import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import Alert from '@material-ui/lab/Alert';
 import AlertTitle from '@material-ui/lab/AlertTitle';
-import { mdiAlertCircle } from '@mdi/js';
+import { mdiAlertCircleOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import { IGetSummarySubmissionResponseMessages } from 'interfaces/useSummaryResultsApi.interface';
 import React from 'react';
@@ -80,32 +80,13 @@ const SummaryResultsErrors = (props: IFileErrorResultsProps) => {
       <Box mb={3}>
         {errorGrouping.size > 0 && (
           <Box>
-            <Alert severity="error" icon={<Icon path={mdiAlertCircle} size={1} />}>
+            <Alert severity="error" icon={<Icon path={mdiAlertCircleOutline} size={1} />}>
               <AlertTitle>Failed to import summary results</AlertTitle>
               One or more errors occurred while attempting to import your summary results file.
               {buildMessages(errorGrouping)}
             </Alert>
           </Box>
         )}
-
-        {/* {warningGrouping.size > 0 && (
-          <Box>
-            <Alert severity="warning" icon={<Icon path={mdiAlertCircle} size={1} />}>
-              <AlertTitle>Imported Summary Results</AlertTitle>
-              One or more warnings occurred while attempting to import your summary results file.
-              {buildMessages(warningGrouping)}
-            </Alert>
-          </Box>
-        )} */}
-
-        {/* {noticeGrouping.size > 0 && (
-          <Box>
-            <Alert severity="info" icon={<Icon path={mdiAlertCircle} size={1} />}>
-              <AlertTitle>Imported Summary Results</AlertTitle>
-              {buildMessages(noticeGrouping)}
-            </Alert>
-          </Box>
-        )} */}
       </Box>
     </>
   );

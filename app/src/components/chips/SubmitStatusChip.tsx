@@ -6,7 +6,7 @@ import React from 'react';
 
 const useStyles = makeStyles((theme: Theme) => ({
   chip: {
-    fontSize: '12px',
+    fontSize: '11px',
     textTransform: 'uppercase'
   },
   chipUnSubmitted: {

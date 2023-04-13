@@ -1,11 +1,11 @@
 import Box from '@material-ui/core/Box';
 import IconButton from '@material-ui/core/IconButton';
+import Link from '@material-ui/core/Link';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import Paper from '@material-ui/core/Paper';
 import { makeStyles, Theme } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
 import {
   mdiDotsVertical,
   mdiFileAlertOutline,
@@ -30,17 +30,24 @@ interface IFileResultsProps {
 const useStyles = makeStyles((theme: Theme) => ({
   importFile: {
     display: 'flex',
-    minHeight: '82px',
-    padding: theme.spacing(2),
+    paddingTop: theme.spacing(1),
+    paddingBottom: theme.spacing(1),
+    paddingRight: theme.spacing(2),
     paddingLeft: '20px',
     overflow: 'hidden',
     '& .importFile-icon': {
-      color: theme.palette.text.secondary
+      color: '#1a5a96'
     },
     '&.error': {
-      borderColor: theme.palette.error.main,
+      borderColor: '#ebccd1',
       '& .importFile-icon': {
         color: theme.palette.error.main
+      },
+      '& .MuiLink-root': {
+        color: theme.palette.error.main
+      },
+      '& .MuiChip-root': {
+        display: 'none'
       }
     }
   },
@@ -88,13 +95,9 @@ const FileSummaryResults = (props: IFileResultsProps) => {
               <Icon path={icon} size={1} />
             </Box>
             <Box mr={2} flex="1 1 auto" style={{ overflow: 'hidden' }}>
-              <Typography
-                className={classes.fileDownload}
-                variant="body2"
-                component="div"
-                onClick={() => downloadFile()}>
+              <Link className={classes.fileDownload} variant="body2" onClick={() => downloadFile()}>
                 <strong>{fileData.surveySummaryData.fileName}</strong>
-              </Typography>
+              </Link>
             </Box>
           </Box>
 

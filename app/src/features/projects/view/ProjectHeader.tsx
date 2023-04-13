@@ -20,6 +20,8 @@ import {
 import Icon from '@mdi/react';
 import assert from 'assert';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
+import PublishProjectButton from 'components/publish/PublishProjectButton';
+import { SystemRoleGuard } from 'components/security/Guards';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { DeleteProjectI18N } from 'constants/i18n';
 import { SYSTEM_ROLE } from 'constants/roles';
@@ -219,14 +221,19 @@ const ProjectHeader = () => {
               </Box>
             </Box>
             <Box flex="0 0 auto" className={classes.titleActions}>
+              <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+                <PublishProjectButton />
+              </SystemRoleGuard>
               <Button
                 id="project_settings-button"
                 variant="outlined"
+                color="primary"
                 startIcon={<Icon path={mdiCogOutline} size={1} />}
                 endIcon={<Icon path={mdiChevronDown} size={1} />}
                 aria-label="Project Settings"
                 aria-controls="projectSettingsMenu"
                 aria-haspopup="true"
+                style={{ marginLeft: '0.5rem' }}
                 onClick={handleClick}>
                 Settings
               </Button>

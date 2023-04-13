@@ -11,6 +11,7 @@ import Typography from '@material-ui/core/Typography';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { SurveyViewObject } from 'interfaces/useSurveyApi.interface';
 import React, { useState } from 'react';
+import { Link as RouterLink } from 'react-router-dom';
 
 const useStyles = makeStyles((theme: Theme) => ({
   surveyTable: {
@@ -49,7 +50,8 @@ const SurveysList: React.FC<ISurveysListProps> = (props) => {
                     <Link
                       style={{ fontWeight: 'bold' }}
                       underline="always"
-                      href={`/admin/projects/${props.projectId}/surveys/${row.survey_details.id}/details`}>
+                      to={`/admin/projects/${props.projectId}/surveys/${row.survey_details.id}/details`}
+                      component={RouterLink}>
                       {row.survey_details.survey_name}
                     </Link>
                   </TableCell>
