@@ -227,6 +227,7 @@ const ProjectHeader = () => {
               <Button
                 id="project_settings-button"
                 variant="outlined"
+                color="primary"
                 startIcon={<Icon path={mdiCogOutline} size={1} />}
                 endIcon={<Icon path={mdiChevronDown} size={1} />}
                 aria-label="Project Settings"

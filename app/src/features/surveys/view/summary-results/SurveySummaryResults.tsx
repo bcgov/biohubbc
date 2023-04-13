@@ -79,7 +79,7 @@ const SurveySummaryResults = () => {
           'Are you sure you want to delete the summary results data for this survey? This action cannot be undone.',
         yesButtonProps: { color: 'secondary' },
         yesButtonLabel: 'Delete',
-        noButtonProps: { color: 'default' },
+        noButtonProps: { color: 'primary' },
         noButtonLabel: 'Cancel',
         open: true,
         onYes: async () => {
