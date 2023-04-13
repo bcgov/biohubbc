@@ -90,10 +90,6 @@ export class ProjectParticipationRepository extends BaseRepository {
         project_role pr
       ON
         pr.project_role_id = pp.project_role_id
-      LEFT JOIN
-        project_role pr
-      ON
-        pr.project_role_id = pp.project_role_id
       WHERE
         pp.project_id = ${projectId};
     `;
