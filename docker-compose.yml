@@ -53,6 +53,7 @@ services:
       - DB_PORT=5432
       - DB_DATABASE=${DB_DATABASE}
       - DB_SCHEMA=${DB_SCHEMA}
+      - PROJECT_SEEDER_USER_IDENTIFIER=${PROJECT_SEEDER_USER_IDENTIFIER}
       - KEYCLOAK_HOST=${KEYCLOAK_HOST}
       - KEYCLOAK_REALM=${KEYCLOAK_REALM}
       - KEYCLOAK_ADMIN_USERNAME=${KEYCLOAK_ADMIN_USERNAME}
@@ -148,6 +149,7 @@ services:
       - DB_USER_API=${DB_USER_API}
       - DB_USER_API_PASS=${DB_USER_API_PASS}
       - DB_SCHEMA_DAPI_V1=${DB_SCHEMA_DAPI_V1}
+      - PROJECT_SEEDER_USER_IDENTIFIER=${PROJECT_SEEDER_USER_IDENTIFIER}
     volumes:
       - /opt/app-root/src/node_modules # prevents local node_modules overriding container node_modules
     networks:
@@ -175,6 +177,7 @@ services:
       - DB_USER_API=${DB_USER_API}
       - DB_USER_API_PASS=${DB_USER_API_PASS}
       - DB_SCHEMA_DAPI_V1=${DB_SCHEMA_DAPI_V1}
+      - PROJECT_SEEDER_USER_IDENTIFIER=${PROJECT_SEEDER_USER_IDENTIFIER}
     volumes:
       - /opt/app-root/src/node_modules # prevents local node_modules overriding container node_modules
     networks:
@@ -202,6 +205,7 @@ services:
       - DB_USER_API=${DB_USER_API}
       - DB_USER_API_PASS=${DB_USER_API_PASS}
       - DB_SCHEMA_DAPI_V1=${DB_SCHEMA_DAPI_V1}
+      - PROJECT_SEEDER_USER_IDENTIFIER=${PROJECT_SEEDER_USER_IDENTIFIER}
     volumes:
       - /opt/app-root/src/node_modules # prevents local node_modules overriding container node_modules
     networks:

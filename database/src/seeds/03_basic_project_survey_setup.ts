@@ -2,6 +2,9 @@ import { Knex } from 'knex';
 
 const DB_SCHEMA = process.env.DB_SCHEMA;
 const DB_SCHEMA_DAPI_V1 = process.env.DB_SCHEMA_DAPI_V1;
+const PROJECT_SEEDER_USER_IDENTIFIER = process.env.PROJECT_SEEDER_USER_IDENTIFIER;
+
+console.log(process.env)
 
 /**
  * Add spatial transform
@@ -204,7 +207,20 @@ const insertProjectParticipationData = () => `
   INSERT into project_participation
     ( project_id, system_user_id, project_role_id )
   VALUES
-    ( 1, 8, 1 )
+    (
+      1,
+      (
+        SELECT COALESCE((
+          SELECT
+            system_user_id
+          FROM
+            system_user su
+          WHERE
+            su.user_identifier = '${PROJECT_SEEDER_USER_IDENTIFIER}'
+        ), 1)
+      ),
+      1
+    )
   ;
 `;
 

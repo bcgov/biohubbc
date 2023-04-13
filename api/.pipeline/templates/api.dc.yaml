@@ -218,6 +218,8 @@ objects:
                       name: ${DB_SERVICE_NAME}
                 - name: DB_PORT
                   value: '5432'
+                - name: PROJECT_SEEDER_USER_IDENTIFIER
+                  value: ${PROJECT_SEEDER_USER_IDENTIFIER}
                 - name: KEYCLOAK_HOST
                   value: ${KEYCLOAK_HOST}
                 - name: KEYCLOAK_API_HOST
