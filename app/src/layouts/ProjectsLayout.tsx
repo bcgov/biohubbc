@@ -1,6 +1,5 @@
 import Box from '@material-ui/core/Box';
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import { ProjectParticipantGuardContextProvider } from 'contexts/projectParticipantGuardContext';
 import React from 'react';
 
 const useStyles = makeStyles(() => ({
@@ -26,11 +25,9 @@ const ProjectsLayout: React.FC = (props) => {
   const classes = useStyles();
 
   return (
-    <ProjectParticipantGuardContextProvider>
-      <Box className={classes.projectsLayoutRoot}>
-        <Box className={classes.projectsContainer}>{props.children}</Box>
-      </Box>
-    </ProjectParticipantGuardContextProvider>
+    <Box className={classes.projectsLayoutRoot}>
+      <Box className={classes.projectsContainer}>{props.children}</Box>
+    </Box>
   );
 };
 
