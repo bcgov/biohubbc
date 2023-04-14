@@ -158,7 +158,7 @@ const SurveyHeader = () => {
     ]);
 
     setEnableDeleteButton(hasSystemRole || hasProjectRole);
-  }, [roleDataLoader.data]);
+  }, [keycloakWrapper, roleDataLoader.data]);
 
   // Show/Hide Project Settings Menu
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);

@@ -119,7 +119,7 @@ const SurveyStudyArea = () => {
     if (occurrence_submission_id) {
       mapDataLoader.load(surveyContext.projectId, occurrence_submission_id);
     }
-  }, [mapDataLoader, occurrence_submission_id]);
+  }, [mapDataLoader, occurrence_submission_id, surveyContext.projectId]);
 
   const zoomToBoundaryExtent = useCallback(() => {
     setBounds(calculateUpdatedMapBounds(surveyGeometry));
