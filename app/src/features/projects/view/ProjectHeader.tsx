@@ -251,12 +251,14 @@ const ProjectHeader = () => {
                 <ProjectRoleGuard
                   validProjectRoles={[PROJECT_ROLE.PROJECT_LEAD]}
                   validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-                  <MenuItem onClick={() => history.push('users')}>
-                    <ListItemIcon>
-                      <Icon path={mdiAccountMultipleOutline} size={1} />
-                    </ListItemIcon>
-                    <Typography variant="inherit">Manage Project Team</Typography>
-                  </MenuItem>
+                  <>
+                    <MenuItem onClick={() => history.push('users')}>
+                      <ListItemIcon>
+                        <Icon path={mdiAccountMultipleOutline} size={1} />
+                      </ListItemIcon>
+                      <Typography variant="inherit">Manage Project Team</Typography>
+                    </MenuItem>
+                  </>
                 </ProjectRoleGuard>
                 <MenuItem onClick={() => history.push('edit')}>
                   <ListItemIcon>

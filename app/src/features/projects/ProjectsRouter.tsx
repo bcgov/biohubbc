@@ -12,7 +12,7 @@ import CreateProjectPage from './create/CreateProjectPage';
 import EditProjectPage from './edit/EditProjectPage';
 import ProjectsListPage from './list/ProjectsListPage';
 import ProjectParticipantsPage from './participants/ProjectParticipantsPage';
-import { ProjectAuthStateContextProvider } from 'contexts/projectAuthStateContext';
+// import { ProjectAuthStateContextProvider } from 'contexts/projectAuthStateContext';
 import { ProjectRoleRouteGuard } from 'components/security/RouteGuards';
 import { PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
 
@@ -34,62 +34,58 @@ const ProjectsRouter: React.FC = () => {
 
       <Redirect exact from="/admin/projects/:id" to="/admin/projects/:id/details" />
 
-      <AppRoute path="/admin/projects/:id">
-        <ProjectAuthStateContextProvider>
-          <ProjectContextProvider>
-              
-            
-            <AppRoute exact path="/admin/projects/:id/details" layout={ProjectsLayout}>
-              <ProjectRoleRouteGuard
-                validProjectRoles={[PROJECT_ROLE.PROJECT_EDITOR, PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_VIEWER]}
-                validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-                <ProjectPage />
-              </ProjectRoleRouteGuard>
-            </AppRoute>
+      <AppRoute path="/admin/projects/:id" strict>
+        <ProjectContextProvider>
+          <AppRoute exact path="/admin/projects/:id/details" layout={ProjectsLayout}>
+            <ProjectRoleRouteGuard
+              validProjectRoles={[PROJECT_ROLE.PROJECT_EDITOR, PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_VIEWER]}
+              validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+              <ProjectPage />
+            </ProjectRoleRouteGuard>
+          </AppRoute>
 
-            <AppRoute exact path="/admin/projects/:id/edit" layout={ProjectsLayout}>
-              <ProjectRoleRouteGuard
-                validProjectRoles={[PROJECT_ROLE.PROJECT_EDITOR, PROJECT_ROLE.PROJECT_LEAD]}
-                validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-                <EditProjectPage />
-              </ProjectRoleRouteGuard>
-            </AppRoute>
-            
-            <AppRoute exact path="/admin/projects/:id/users" layout={ProjectsLayout}>
-              <ProjectRoleRouteGuard
-                validProjectRoles={[PROJECT_ROLE.PROJECT_LEAD]}
-                validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-                <ProjectParticipantsPage />
-              </ProjectRoleRouteGuard>
-            </AppRoute>
+          <AppRoute exact path="/admin/projects/:id/edit" layout={ProjectsLayout}>
+            <ProjectRoleRouteGuard
+              validProjectRoles={[PROJECT_ROLE.PROJECT_EDITOR, PROJECT_ROLE.PROJECT_LEAD]}
+              validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+              <EditProjectPage />
+            </ProjectRoleRouteGuard>
+          </AppRoute>
+          
+          <AppRoute exact path="/admin/projects/:id/users" layout={ProjectsLayout}>
+            <ProjectRoleRouteGuard
+              validProjectRoles={[PROJECT_ROLE.PROJECT_LEAD]}
+              validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+              <ProjectParticipantsPage />
+            </ProjectRoleRouteGuard>
+          </AppRoute>
 
-            <AppRoute exact path="/admin/projects/:id/surveys" layout={ProjectsLayout}>
-              <ProjectRoleRouteGuard
-                validProjectRoles={[PROJECT_ROLE.PROJECT_EDITOR, PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_VIEWER]}
-                validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-                <ProjectPage />
-              </ProjectRoleRouteGuard>
-            </AppRoute>
+          <AppRoute exact path="/admin/projects/:id/surveys" layout={ProjectsLayout}>
+            <ProjectRoleRouteGuard
+              validProjectRoles={[PROJECT_ROLE.PROJECT_EDITOR, PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_VIEWER]}
+              validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+              <ProjectPage />
+            </ProjectRoleRouteGuard>
+          </AppRoute>
 
-            <AppRoute path="/admin/projects/:id/surveys/:survey_id" title={getTitle('Surveys')} layout={ProjectsLayout}>
-              <ProjectRoleRouteGuard
-                validProjectRoles={[PROJECT_ROLE.PROJECT_EDITOR, PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_VIEWER]}
-                validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-                <SurveyContextProvider>
-                  <SurveyRouter />
-                </SurveyContextProvider>
-              </ProjectRoleRouteGuard>
-            </AppRoute>
+          <AppRoute path="/admin/projects/:id/surveys/:survey_id" title={getTitle('Surveys')} layout={ProjectsLayout}>
+            <ProjectRoleRouteGuard
+              validProjectRoles={[PROJECT_ROLE.PROJECT_EDITOR, PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_VIEWER]}
+              validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+              <SurveyContextProvider>
+                <SurveyRouter />
+              </SurveyContextProvider>
+            </ProjectRoleRouteGuard>
+          </AppRoute>
 
-            <AppRoute exact path="/admin/projects/:id/survey/create" layout={ProjectsLayout}>
-              <ProjectRoleRouteGuard
-                validProjectRoles={[PROJECT_ROLE.PROJECT_EDITOR, PROJECT_ROLE.PROJECT_LEAD]}
-                validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-                <CreateSurveyPage />
-              </ProjectRoleRouteGuard>
-            </AppRoute>
-          </ProjectContextProvider>
-        </ProjectAuthStateContextProvider>
+          <AppRoute exact path="/admin/projects/:id/survey/create" layout={ProjectsLayout}>
+            <ProjectRoleRouteGuard
+              validProjectRoles={[PROJECT_ROLE.PROJECT_EDITOR, PROJECT_ROLE.PROJECT_LEAD]}
+              validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+              <CreateSurveyPage />
+            </ProjectRoleRouteGuard>
+          </AppRoute>
+        </ProjectContextProvider>
       </AppRoute>
 
       {/*  Catch any unknown routes, and re-direct to the not found page */}

@@ -102,7 +102,7 @@ export function getUserRoles(): RequestHandler {
 
     const connection = getDBConnection(req['keycloak_token']);
 
-    await new Promise(r => setTimeout(r, 5000));
+    await new Promise(r => setTimeout(r, 2000));
 
     try {
       const projectId = Number(req.params.projectId);

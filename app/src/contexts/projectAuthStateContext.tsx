@@ -2,7 +2,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { IGetUserProjectParticipantResponse } from 'interfaces/useProjectApi.interface';
 import React, { useCallback, useContext } from 'react';
-import { useParams } from 'react-router';
+import { matchPath, useLocation } from 'react-router';
 import { AuthStateContext } from './authStateContext';
 
 export interface IProjectAuthStateContext {
@@ -23,14 +23,21 @@ export const ProjectAuthStateContext = React.createContext<IProjectAuthStateCont
 
 export const ProjectAuthStateContextProvider: React.FC = (props) => {
   const biohubApi = useBiohubApi();
-  const urlParams = useParams();
+  const participantDataLoader = useDataLoader((projectId: number) => biohubApi.project.getUserProjectParticipant(projectId))
   const { keycloakWrapper } = useContext(AuthStateContext);
   
-  const participantDataLoader = useDataLoader((projectId: number) => biohubApi.project.getUserProjectParticipant(projectId))
+  const location = useLocation();
+  const match = matchPath(location.pathname, {
+    path: '/admin/projects/:id',
+    exact: false,
+    strict: false
+  });
+
+  const projectId: string | number | null = match?.params['id'];
 
   const getProjectId = useCallback(() => {
-    return Number(urlParams['id']);
-  }, [urlParams]);
+    return Number(projectId);
+  }, [projectId]);
 
   const getProjectParticipant = () => {
     return participantDataLoader.data?.participant || null;
@@ -42,13 +49,12 @@ export const ProjectAuthStateContextProvider: React.FC = (props) => {
     }
 
     const participant = getProjectParticipant();
-    const projectId = getProjectId();
 
     if (!participant) {
       return false;
     }
 
-    return participant?.project_id === projectId
+    return participant?.project_id === getProjectId()
       && participant?.project_role_names.some((roleName) => validProjectRoles.includes(roleName));
   };
 
@@ -61,8 +67,13 @@ export const ProjectAuthStateContextProvider: React.FC = (props) => {
   }
 
   React.useEffect(() => {
+    // If perceived projectId does not differ from the currently loaded participant, skip refresh
+    if (!projectId || projectId === participantDataLoader.data?.participant?.project_id) {
+      return;
+    }
+
     participantDataLoader.refresh(getProjectId());
-  }, [getProjectId]);
+  }, [projectId]);
 
   return (
     <ProjectAuthStateContext.Provider
