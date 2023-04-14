@@ -49,6 +49,11 @@ POST.apiDoc = {
               description: 'A survey occurrence submission ID',
               type: 'integer',
               minimum: 1
+            },
+            project_id: {
+              description: 'Project ID that occurrence submission is associated with',
+              type: 'integer',
+              minimum: 1
             }
           }
         }

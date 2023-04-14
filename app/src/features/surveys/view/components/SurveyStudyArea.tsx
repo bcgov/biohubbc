@@ -95,8 +95,8 @@ const SurveyStudyArea = () => {
     wmu: []
   });
 
-  const mapDataLoader = useDataLoader((occurrenceSubmissionId: number) =>
-    biohubApi.observation.getOccurrencesForView(occurrenceSubmissionId)
+  const mapDataLoader = useDataLoader((projectId: number, occurrenceSubmissionId: number) =>
+    biohubApi.observation.getOccurrencesForView(projectId, occurrenceSubmissionId)
   );
   useDataLoaderError(mapDataLoader, () => {
     return {
@@ -117,7 +117,7 @@ const SurveyStudyArea = () => {
 
   useEffect(() => {
     if (occurrence_submission_id) {
-      mapDataLoader.load(occurrence_submission_id);
+      mapDataLoader.load(surveyContext.projectId, occurrence_submission_id);
     }
   }, [mapDataLoader, occurrence_submission_id]);
 
