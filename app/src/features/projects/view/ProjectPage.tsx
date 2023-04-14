@@ -35,7 +35,6 @@ const ProjectPage = () => {
   return (
     <>
       <ProjectHeader />
-
       <Container maxWidth="xl">
         <Box py={3}>
           <Grid container spacing={3}>
