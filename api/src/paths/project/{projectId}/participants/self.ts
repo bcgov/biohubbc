@@ -102,6 +102,8 @@ export function getUserRoles(): RequestHandler {
 
     const connection = getDBConnection(req['keycloak_token']);
 
+    await new Promise(r => setTimeout(r, 5000));
+
     try {
       const projectId = Number(req.params.projectId);
 
@@ -116,8 +118,6 @@ export function getUserRoles(): RequestHandler {
       const result = await projectService.getProjectParticipant(projectId, systemUserId);
 
       await connection.commit();
-
-      // await new Promise(r => setTimeout(r, 5000));
 
       return res.status(200).json({
         participant: result ? new ProjectUserObject(result) : null

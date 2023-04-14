@@ -25,7 +25,6 @@ import { ProjectRoleGuard, SystemRoleGuard } from 'components/security/Guards';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { DeleteProjectI18N } from 'constants/i18n';
 import { PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
-import { AuthStateContext } from 'contexts/authStateContext';
 import { DialogContext } from 'contexts/dialogContext';
 import { ProjectAuthStateContext } from 'contexts/projectAuthStateContext';
 import { ProjectContext } from 'contexts/projectContext';
@@ -109,8 +108,7 @@ const ProjectHeader = () => {
   const biohubApi = useBiohubApi();
 
   const projectContext = useContext(ProjectContext);
-  const { keycloakWrapper } = useContext(AuthStateContext);
-  const { hasProjectRole } = useContext(ProjectAuthStateContext);
+  const { hasProjectRole, hasSystemRole } = useContext(ProjectAuthStateContext);
 
   // Project data must be loaded by a parent before this component is rendered
   assert(projectContext.projectDataLoader.data);
@@ -230,7 +228,7 @@ const ProjectHeader = () => {
                 style={{ marginLeft: '0.5rem' }}
                 onClick={handleClick}
                 disabled={!hasProjectRole([PROJECT_ROLE.PROJECT_EDITOR, PROJECT_ROLE.PROJECT_LEAD])
-                  && !keycloakWrapper?.hasSystemRole([SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR])}>
+                  && !hasSystemRole([SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR])}>
                 Settings
               </Button>
               <Menu

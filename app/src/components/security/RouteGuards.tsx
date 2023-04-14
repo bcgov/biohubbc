@@ -18,13 +18,21 @@ export interface ISystemRoleRouteGuardProps extends RouteProps {
 
 export interface IProjectRoleRouteGuardProps extends RouteProps {
   /**
-   * Indicates the sufficient roles needed to access this route, if any.
+   * Indicates the sufficient project roles needed to access this route, if any.
    *
    * Note: The user only needs 1 of the valid roles, when multiple are specified.
    *
    * @type {string[]}
    */
-  validRoles?: string[];
+  validProjectRoles?: string[];
+  /**
+   * Indicates the sufficient system roles that will grant access to this route, if any.
+   *
+   * Note: The user only needs 1 of the valid roles, when multiple are specified.
+   *
+   * @type {string[]}
+   */
+    validSystemRoles?: string[];
 };
 
 /**
@@ -35,7 +43,9 @@ export interface IProjectRoleRouteGuardProps extends RouteProps {
  * @param {*} { children, validRoles, ...rest }
  * @return {*}
  */
-export const SystemRoleRouteGuard: React.FC<ISystemRoleRouteGuardProps> = ({ children, validRoles, ...rest }) => {
+export const SystemRoleRouteGuard = (props: ISystemRoleRouteGuardProps) => {
+  const { validRoles, children, ...rest } = props;
+
   return (
     <WaitForKeycloakToLoadUserInfo>
       <CheckIfUserHasSystemRole validRoles={validRoles}>
@@ -64,10 +74,12 @@ export const SystemRoleRouteGuard: React.FC<ISystemRoleRouteGuardProps> = ({ chi
  * @param {*} { children, validRoles, ...rest }
  * @return {*}
  */
-export const ProjectRoleRouteGuard: React.FC<IProjectRoleRouteGuardProps> = ({ children, validRoles, ...rest }) => {
+export const ProjectRoleRouteGuard = (props: IProjectRoleRouteGuardProps) => {
+  const { validSystemRoles, validProjectRoles, children, ...rest } = props;
+
   return (
     <WaitForProjectParticipantInfo>
-      <CheckIfUserHasProjectRole validRoles={validRoles}>
+      <CheckIfUserHasProjectRole {...{ validSystemRoles, validProjectRoles}}>
         <Route
           {...rest}
           render={(props) => {
@@ -91,7 +103,9 @@ export const ProjectRoleRouteGuard: React.FC<IProjectRoleRouteGuardProps> = ({ c
  * @param {*} { children, ...rest }
  * @return {*}
  */
-export const AuthenticatedRouteGuard: React.FC<RouteProps> = ({ children, ...rest }) => {
+export const AuthenticatedRouteGuard = (props: RouteProps) => {
+  const { children, ...rest } = props;
+
   return (
     <CheckForAuthLoginParam>
       <WaitForKeycloakToLoadUserInfo>
@@ -293,12 +307,13 @@ const CheckIfUserHasSystemRole: React.FC<{ validRoles?: string[] }> = ({ childre
  * @param {*} { children, validRoles }
  * @return {*}
  */
-const CheckIfUserHasProjectRole: React.FC<{ validRoles?: string[] }> = ({ children, validRoles }) => {
-  const projectAuthStateContext = useContext(ProjectAuthStateContext);
+const CheckIfUserHasProjectRole = (props: IProjectRoleRouteGuardProps) => {
+  const { validProjectRoles, validSystemRoles, children } = props;
+  const { hasProjectRole, hasSystemRole } = useContext(ProjectAuthStateContext);
 
-  if (!projectAuthStateContext.hasProjectRole(validRoles)) {
-    return <Redirect to="/forbidden" />;
+  if (hasProjectRole(validProjectRoles) || hasSystemRole(validSystemRoles)) {
+    return <>{children}</>;
   }
 
-  return <>{children}</>;
+  return <Redirect to="/forbidden" />;
 };

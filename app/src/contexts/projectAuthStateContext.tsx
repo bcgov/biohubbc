@@ -1,19 +1,22 @@
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { IGetUserProjectParticipantResponse } from 'interfaces/useProjectApi.interface';
-import React, { useCallback } from 'react';
+import React, { useCallback, useContext } from 'react';
 import { useParams } from 'react-router';
+import { AuthStateContext } from './authStateContext';
 
 export interface IProjectAuthStateContext {
   getProjectParticipant: () => IGetUserProjectParticipantResponse['participant'];
   hasProjectRole: (validProjectRoles?: string[]) => boolean;
+  hasSystemRole: (validSystemRoles?: string[]) => boolean;
   getProjectId: () => number;
   hasLoadedParticipantInfo: boolean;
 }
 
 export const ProjectAuthStateContext = React.createContext<IProjectAuthStateContext>({
   getProjectParticipant: () => null,
-  hasProjectRole: (validProjectRoles?: string[]) => false,
+  hasProjectRole: () => false,
+  hasSystemRole: () => false,
   getProjectId: () => -1,
   hasLoadedParticipantInfo: false
 });
@@ -21,6 +24,7 @@ export const ProjectAuthStateContext = React.createContext<IProjectAuthStateCont
 export const ProjectAuthStateContextProvider: React.FC = (props) => {
   const biohubApi = useBiohubApi();
   const urlParams = useParams();
+  const { keycloakWrapper } = useContext(AuthStateContext);
   
   const participantDataLoader = useDataLoader((projectId: number) => biohubApi.project.getUserProjectParticipant(projectId))
 
@@ -32,7 +36,7 @@ export const ProjectAuthStateContextProvider: React.FC = (props) => {
     return participantDataLoader.data?.participant || null;
   }
 
-  const hasProjectRole = (validProjectRoles?: string[]) => {
+  const hasProjectRole = (validProjectRoles?: string[]): boolean => {
     if (!validProjectRoles || !validProjectRoles.length) {
       return true;
     }
@@ -48,6 +52,14 @@ export const ProjectAuthStateContextProvider: React.FC = (props) => {
       && participant?.project_role_names.some((roleName) => validProjectRoles.includes(roleName));
   };
 
+  const hasSystemRole = (validSystemRoles?: string[]): boolean => {
+    if (!validSystemRoles || !validSystemRoles.length) {
+      return true;
+    }
+
+    return !!keycloakWrapper && keycloakWrapper.hasSystemRole(validSystemRoles);
+  }
+
   React.useEffect(() => {
     participantDataLoader.refresh(getProjectId());
   }, [getProjectId]);
@@ -56,6 +68,7 @@ export const ProjectAuthStateContextProvider: React.FC = (props) => {
     <ProjectAuthStateContext.Provider
       value={{
         hasProjectRole,
+        hasSystemRole,
         getProjectParticipant,
         getProjectId,
         hasLoadedParticipantInfo: participantDataLoader.isReady || Boolean(
