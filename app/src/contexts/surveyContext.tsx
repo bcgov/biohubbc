@@ -102,11 +102,19 @@ export const SurveyContextProvider = (props: PropsWithChildren<Record<never, any
   const projectId = Number(urlParams['id']);
   const surveyId = Number(urlParams['survey_id']);
 
+  surveyDataLoader.load(projectId, surveyId);
+  observationDataLoader.load(projectId, surveyId);
+  summaryDataLoader.load(projectId, surveyId);
+  artifactDataLoader.load(projectId, surveyId);
+
   /**
    * Refreshes the current survey object whenever the current survey ID changes
    */
   useEffect(() => {
-    if (projectId && surveyId) {
+    if (projectId && surveyId && (
+      projectId !== surveyDataLoader.data?.surveyData.survey_details.project_id
+      || surveyId !== surveyDataLoader.data?.surveyData.survey_details.id)
+    ) {
       surveyDataLoader.refresh(projectId, surveyId);
       observationDataLoader.refresh(projectId, surveyId);
       summaryDataLoader.refresh(projectId, surveyId);

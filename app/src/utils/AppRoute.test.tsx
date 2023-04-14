@@ -2,15 +2,15 @@ import { render, screen } from '@testing-library/react';
 import { createMemoryHistory } from 'history';
 import React from 'react';
 import { Router } from 'react-router';
-import AppRoute from './AppRoute';
+import RouteWithTitle from './RouteWithTitle';
 
 const history = createMemoryHistory();
 
-describe('AppRoute component', () => {
+describe('RouteWithTitle component', () => {
   it('should render a route that can be navigated to', () => {
     render(
       <Router history={history}>
-        <AppRoute path="/" component={() => <div>Test</div>}></AppRoute>
+        <RouteWithTitle title={'Test-Title'} path="/" component={() => <div>Test</div>}></RouteWithTitle>
       </Router>
     );
 
@@ -20,7 +20,7 @@ describe('AppRoute component', () => {
   it('should render a route without a Layout prop', () => {
     render(
       <Router history={history}>
-        <AppRoute path="/" component={() => <div>Test</div>} />
+        <RouteWithTitle path="/" component={() => <div>Test</div>} title={'Test-Title'} />
       </Router>
     );
 
@@ -28,11 +28,9 @@ describe('AppRoute component', () => {
   });
 
   it('should render a route with a Layout prop', () => {
-    const Layout = ({ children }: { children: React.ReactNode }) => <div data-testid="test-layout">{children}</div>;
-
     render(
       <Router history={history}>
-        <AppRoute path="/" component={() => <div>Test</div>} layout={Layout} />
+        <RouteWithTitle title={'Test-Title'} path="/" component={() => <div>Test</div>} />
       </Router>
     );
 
@@ -43,10 +41,10 @@ describe('AppRoute component', () => {
   it('should render an array of children', () => {
     render(
       <Router history={history}>
-        <AppRoute path="/">
+        <RouteWithTitle path="/" title={'Test-Title'}>
           <div>Test1</div>
           <div>Test2</div>
-        </AppRoute>
+        </RouteWithTitle>
       </Router>
     );
 
@@ -58,10 +56,10 @@ describe('AppRoute component', () => {
     const renderRoute = () =>
       render(
         <Router history={history}>
-          <AppRoute path="/" component={() => <div>Test3</div>}>
+          <RouteWithTitle path="/" title={'Test-Title'} component={() => <div>Test3</div>}>
             <div>Test1</div>
             <div>Test2</div>
-          </AppRoute>
+          </RouteWithTitle>
         </Router>
       );
 
@@ -71,7 +69,7 @@ describe('AppRoute component', () => {
   it('should update the document title if a title prop is provided', () => {
     render(
       <Router history={history}>
-        <AppRoute path="/" component={() => <div>Test</div>} title="Test Title" />
+        <RouteWithTitle path="/" component={() => <div>Test</div>} title="Test Title" />
       </Router>
     );
 

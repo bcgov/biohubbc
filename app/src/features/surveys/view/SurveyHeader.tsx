@@ -31,6 +31,7 @@ import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import React, { useContext } from 'react';
 import { useHistory } from 'react-router';
+import { Link } from 'react-router-dom';
 import { getFormattedDateRangeString } from 'utils/Utils';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -165,9 +166,10 @@ const SurveyHeader = () => {
           <Box py={4}>
             <Box mt={-1} ml={-0.5} mb={0.5}>
               <Button
+                component={Link}
+                to={`/admin/projects/${surveyContext.projectId}/surveys`}
                 color="primary"
-                startIcon={<Icon path={mdiArrowLeft} size={0.9} />}
-                onClick={() => history.push(`/admin/projects/${surveyContext.projectId}/surveys`)}>
+                startIcon={<Icon path={mdiArrowLeft} size={0.9} />}>
                 <strong>Back to Project</strong>
               </Button>
             </Box>

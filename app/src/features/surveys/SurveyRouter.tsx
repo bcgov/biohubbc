@@ -1,8 +1,7 @@
 import SurveyPage from 'features/surveys/view/SurveyPage';
 import ProjectsLayout from 'layouts/ProjectsLayout';
 import React from 'react';
-import { Switch } from 'react-router';
-import AppRoute from 'utils/AppRoute';
+import { Route, Switch } from 'react-router';
 import EditSurveyPage from './edit/EditSurveyPage';
 
 /**
@@ -13,25 +12,17 @@ import EditSurveyPage from './edit/EditSurveyPage';
 const SurveyRouter: React.FC = () => {
   return (
     <Switch>
-      <AppRoute exact path="/admin/projects/:id/surveys/:survey_id/details" layout={ProjectsLayout}>
-        <SurveyPage />
-      </AppRoute>
+      <Route exact path="/admin/projects/:id/surveys/:survey_id/details">
+        <ProjectsLayout>
+          <SurveyPage />
+        </ProjectsLayout>
+      </Route>
 
-      <AppRoute exact path="/admin/projects/:id/surveys/:survey_id/edit" layout={ProjectsLayout}>
-        <EditSurveyPage />
-      </AppRoute>
-
-      <AppRoute exact path="/admin/projects/:id/surveys/:survey_id/attachments" layout={ProjectsLayout}>
-        <SurveyPage />
-      </AppRoute>
-
-      <AppRoute exact path="/admin/projects/:id/surveys/:survey_id/observations" layout={ProjectsLayout}>
-        <SurveyPage />
-      </AppRoute>
-
-      <AppRoute exact path="/admin/projects/:id/surveys/:survey_id/results" layout={ProjectsLayout}>
-        <SurveyPage />
-      </AppRoute>
+      <Route exact path="/admin/projects/:id/surveys/:survey_id/edit">
+        <ProjectsLayout>
+          <EditSurveyPage />
+        </ProjectsLayout>
+      </Route>
     </Switch>
   );
 };

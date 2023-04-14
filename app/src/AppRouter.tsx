@@ -18,7 +18,7 @@ import { LandingPage } from 'pages/landing/LandingPage';
 import LogOutPage from 'pages/logout/LogOutPage';
 import React from 'react';
 import { Redirect, Switch, useLocation } from 'react-router-dom';
-import AppRoute from 'utils/AppRoute';
+import RouteWithTitle from 'utils/RouteWithTitle';
 import { getTitle } from 'utils/Utils';
 
 const AppRouter: React.FC = () => {
@@ -28,69 +28,87 @@ const AppRouter: React.FC = () => {
     <Switch>
       <Redirect from="/:url*(/+)" to={{ ...location, pathname: location.pathname.slice(0, -1) }} />
 
-      <AppRoute path="/page-not-found" title={getTitle('Page Not Found')} layout={BaseLayout}>
-        <NotFoundPage />
-      </AppRoute>
+      <RouteWithTitle path="/page-not-found" title={getTitle('Page Not Found')}>
+        <BaseLayout>
+          <NotFoundPage />
+        </BaseLayout>
+      </RouteWithTitle>
 
-      <AppRoute path="/forbidden" title={getTitle('Forbidden')} layout={BaseLayout}>
-        <AccessDenied />
-      </AppRoute>
+      <RouteWithTitle path="/forbidden" title={getTitle('Forbidden')}>
+        <BaseLayout>
+          <AccessDenied />
+        </BaseLayout>
+      </RouteWithTitle>
 
-      <AppRoute path="/access-request" title={getTitle('Access Request')} layout={BaseLayout}>
-        <AccessRequestPage />
-      </AppRoute>
+      <RouteWithTitle path="/access-request" title={getTitle('Access Request')}>
+        <BaseLayout>
+          <AccessRequestPage />
+        </BaseLayout>
+      </RouteWithTitle>
 
-      <AppRoute path="/request-submitted" title={getTitle('Request submitted')} layout={BaseLayout}>
-        <AuthenticatedRouteGuard>
-          <RequestSubmitted />
-        </AuthenticatedRouteGuard>
-      </AppRoute>
+      <RouteWithTitle path="/request-submitted" title={getTitle('Request submitted')}>
+        <BaseLayout>
+          <AuthenticatedRouteGuard>
+            <RequestSubmitted />
+          </AuthenticatedRouteGuard>
+        </BaseLayout>
+      </RouteWithTitle>
 
       <Redirect exact from="/admin" to="/admin/projects" />
 
-      <AppRoute path="/admin/projects" title={getTitle('Projects')} layout={BaseLayout}>
-        <AuthenticatedRouteGuard>
-          <CodesContextProvider>
-            <ProjectsRouter />
-          </CodesContextProvider>
-        </AuthenticatedRouteGuard>
-      </AppRoute>
+      <RouteWithTitle path="/admin/projects" title={getTitle('Projects')}>
+        <BaseLayout>
+          <AuthenticatedRouteGuard>
+            <CodesContextProvider>
+              <ProjectsRouter />
+            </CodesContextProvider>
+          </AuthenticatedRouteGuard>
+        </BaseLayout>
+      </RouteWithTitle>
 
-      <AppRoute path="/admin/users" title={getTitle('Users')} layout={BaseLayout}>
-        <AuthenticatedRouteGuard>
-          <SystemRoleRouteGuard validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-            <AdminUsersRouter />
-          </SystemRoleRouteGuard>
-        </AuthenticatedRouteGuard>
-      </AppRoute>
+      <RouteWithTitle path="/admin/users" title={getTitle('Users')}>
+        <BaseLayout>
+          <AuthenticatedRouteGuard>
+            <SystemRoleRouteGuard validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+              <AdminUsersRouter />
+            </SystemRoleRouteGuard>
+          </AuthenticatedRouteGuard>
+        </BaseLayout>
+      </RouteWithTitle>
 
-      <AppRoute path="/admin/search" title={getTitle('Search')} layout={BaseLayout}>
-        <AuthenticatedRouteGuard>
-          <SearchPage />
-        </AuthenticatedRouteGuard>
-      </AppRoute>
+      <RouteWithTitle path="/admin/search" title={getTitle('Search')}>
+        <BaseLayout>
+          <AuthenticatedRouteGuard>
+            <SearchPage />
+          </AuthenticatedRouteGuard>
+        </BaseLayout>
+      </RouteWithTitle>
 
-      <AppRoute path="/admin/resources" title={getTitle('Resources')} layout={BaseLayout}>
-        <AuthenticatedRouteGuard>
-          <ResourcesPage />
-        </AuthenticatedRouteGuard>
-      </AppRoute>
+      <RouteWithTitle path="/admin/resources" title={getTitle('Resources')}>
+        <BaseLayout>
+          <AuthenticatedRouteGuard>
+            <ResourcesPage />
+          </AuthenticatedRouteGuard>
+        </BaseLayout>
+      </RouteWithTitle>
 
-      <AppRoute path="/logout" title={getTitle('Logout')} layout={BaseLayout}>
-        <AuthenticatedRouteGuard>
-          <LogOutPage />
-        </AuthenticatedRouteGuard>
-      </AppRoute>
+      <RouteWithTitle path="/logout" title={getTitle('Logout')}>
+        <BaseLayout>
+          <AuthenticatedRouteGuard>
+            <LogOutPage />
+          </AuthenticatedRouteGuard>
+        </BaseLayout>
+      </RouteWithTitle>
 
-      <AppRoute title="*" path="*">
+      <RouteWithTitle title={getTitle()} path="*">
         <UnAuthenticatedRouteGuard>
           <LandingPage originalPath={''} />
         </UnAuthenticatedRouteGuard>
-      </AppRoute>
+      </RouteWithTitle>
 
-      <AppRoute title="*" path="*">
+      <RouteWithTitle title={getTitle()} path="*">
         <Redirect to="/page-not-found" />
-      </AppRoute>
+      </RouteWithTitle>
     </Switch>
   );
 };
