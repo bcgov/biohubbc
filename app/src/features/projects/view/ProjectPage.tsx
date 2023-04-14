@@ -20,9 +20,6 @@ import ProjectHeader from './ProjectHeader';
 const ProjectPage = () => {
   const codesContext = useContext(CodesContext);
   const projectContext = useContext(ProjectContext);
-  // const participantGuardContext = useContext(ProjectParticipantGuardContext);
-
-  // const biohubApi = useBiohubApi();
   
   useEffect(() => codesContext.codesDataLoader.load(), [codesContext.codesDataLoader]);
 

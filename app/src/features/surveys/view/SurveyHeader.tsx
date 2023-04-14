@@ -226,12 +226,7 @@ const SurveyHeader = () => {
                   getContentAnchorEl={null}
                   open={Boolean(anchorEl)}
                   onClose={closeSurveyMenu}>
-                  <MenuItem
-                    onClick={() => {
-                      history.push(
-                        `/admin/projects/${surveyContext.projectId}/survey/edit?surveyId=${surveyWithDetails.surveyData.survey_details.id}`
-                      );
-                    }}>
+                  <MenuItem onClick={() => history.push('edit')}>
                     <ListItemIcon>
                       <Icon path={mdiPencilOutline} size={1} />
                     </ListItemIcon>

@@ -1,10 +1,22 @@
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { AuthStateContext } from 'contexts/authStateContext';
+import { ProjectAuthStateContext } from 'contexts/projectAuthStateContext';
 import qs from 'qs';
 import React, { useContext } from 'react';
 import { Redirect, Route, RouteProps, useLocation } from 'react-router';
 
-export type ISystemRoleRouteGuardProps = RouteProps & {
+export interface ISystemRoleRouteGuardProps extends RouteProps {
+  /**
+   * Indicates the sufficient roles needed to access this route, if any.
+   *
+   * Note: The user only needs 1 of the valid roles, when multiple are specified.
+   *
+   * @type {string[]}
+   */
+  validRoles?: string[];
+};
+
+export interface IProjectRoleRouteGuardProps extends RouteProps {
   /**
    * Indicates the sufficient roles needed to access this route, if any.
    *
@@ -41,6 +53,35 @@ export const SystemRoleRouteGuard: React.FC<ISystemRoleRouteGuardProps> = ({ chi
         />
       </CheckIfUserHasSystemRole>
     </WaitForKeycloakToLoadUserInfo>
+  );
+};
+
+/**
+ * Route guard that requires the user to have at least 1 of the specified project roles.
+ *
+ * Note: Does not check if they are already authenticated.
+ *
+ * @param {*} { children, validRoles, ...rest }
+ * @return {*}
+ */
+export const ProjectRoleRouteGuard: React.FC<IProjectRoleRouteGuardProps> = ({ children, validRoles, ...rest }) => {
+  return (
+    <WaitForProjectParticipantInfo>
+      <CheckIfUserHasProjectRole validRoles={validRoles}>
+        <Route
+          {...rest}
+          render={(props) => {
+            return (
+              <>
+                {React.Children.map(children, (child: any) => {
+                  return React.cloneElement(child, props);
+                })}
+              </>
+            );
+          }}
+        />
+      </CheckIfUserHasProjectRole>
+    </WaitForProjectParticipantInfo>
   );
 };
 
@@ -150,6 +191,25 @@ const WaitForKeycloakToLoadUserInfo: React.FC = ({ children }) => {
 };
 
 /**
+ * Waits for the projectAuthStateContext to finish loading project participant info.
+ *
+ * Renders a spinner or the `children`.
+ *
+ * @param {*} { children }
+ * @return {*}
+ */
+const WaitForProjectParticipantInfo: React.FC = ({ children }) => {
+  const projectAuthStateContext = useContext(ProjectAuthStateContext);
+
+  if (!projectAuthStateContext.hasLoadedParticipantInfo) {
+    // Participant data has not been loaded, can not yet determine if user has sufficient roles
+    return <CircularProgress className="pageProgress" />;
+  }
+
+  return <>{children}</>;
+};
+
+/**
  * Checks if the user is a registered user or has a pending access request.
  *
  * Redirects the user as appropriate, or renders the `children`.
@@ -219,6 +279,24 @@ const CheckIfUserHasSystemRole: React.FC<{ validRoles?: string[] }> = ({ childre
   const { keycloakWrapper } = useContext(AuthStateContext);
 
   if (!keycloakWrapper?.hasSystemRole(validRoles)) {
+    return <Redirect to="/forbidden" />;
+  }
+
+  return <>{children}</>;
+};
+
+/**
+ * Checks if a user has at least 1 of the specified `validRoles`.
+ *
+ * Redirects the user as appropriate, or renders the `children`.
+ *
+ * @param {*} { children, validRoles }
+ * @return {*}
+ */
+const CheckIfUserHasProjectRole: React.FC<{ validRoles?: string[] }> = ({ children, validRoles }) => {
+  const projectAuthStateContext = useContext(ProjectAuthStateContext);
+
+  if (!projectAuthStateContext.hasProjectRole(validRoles)) {
     return <Redirect to="/forbidden" />;
   }
 

@@ -3,6 +3,7 @@ import ProjectsLayout from 'layouts/ProjectsLayout';
 import React from 'react';
 import { Switch } from 'react-router';
 import AppRoute from 'utils/AppRoute';
+import EditSurveyPage from './edit/EditSurveyPage';
 
 /**
  * Router for all `/admin/projects/:id/surveys/:survey_id/*` pages.
@@ -14,6 +15,10 @@ const SurveyRouter: React.FC = () => {
     <Switch>
       <AppRoute exact path="/admin/projects/:id/surveys/:survey_id/details" layout={ProjectsLayout}>
         <SurveyPage />
+      </AppRoute>
+
+      <AppRoute exact path="/admin/projects/:id/surveys/:survey_id/edit" layout={ProjectsLayout}>
+        <EditSurveyPage />
       </AppRoute>
 
       <AppRoute exact path="/admin/projects/:id/surveys/:survey_id/attachments" layout={ProjectsLayout}>

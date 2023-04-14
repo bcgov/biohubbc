@@ -1,6 +1,6 @@
 import { PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
 import { AuthStateContext } from 'contexts/authStateContext';
-import { ProjectParticipantContext } from 'contexts/projectParticipantContext';
+import { ProjectAuthStateContext } from 'contexts/projectAuthStateContext';
 import React, { PropsWithChildren, ReactElement, useContext } from 'react';
 import { isAuthenticated } from 'utils/authUtils';
 
@@ -73,25 +73,20 @@ export const SystemRoleGuard = (props: PropsWithChildren<ISystemRoleGuardProps>)
 export const ProjectRoleGuard = (props: PropsWithChildren<IProjectRoleGuardProps>) => {
   const { validProjectRoles, validSystemRoles } = props
   const { keycloakWrapper } = useContext(AuthStateContext);
-  const { participantDataLoader, projectId } = useContext(ProjectParticipantContext);
+  const projectAuthStateContext = useContext(ProjectAuthStateContext);
 
-  const hasSystemRole = validSystemRoles && keycloakWrapper?.hasSystemRole(validSystemRoles);
+  const hasSystemRole = !!keycloakWrapper && keycloakWrapper.hasSystemRole(validSystemRoles);
+  const hasProjectRole = projectAuthStateContext.hasProjectRole(validProjectRoles);
 
-  const participant = participantDataLoader.data
-
-  const hasProjectRole = Boolean(participant)
-    && participant?.participant?.project_id === projectId
-    && participant?.participant?.project_role_names.some((roleName) => validProjectRoles.includes(roleName));
-
-  if (!hasSystemRole && (!hasProjectRole || !participantDataLoader.isReady)) {
-    if (props.fallback) {
-      return <>{props.fallback}</>;
-    } else {
-      return <></>;
-    }
+  if (hasSystemRole || hasProjectRole) {
+    return <>{props.children}</>;
   }
 
-  return <>{props.children}</>;
+  if (props.fallback) {
+    return <>{props.fallback}</>;
+  }  
+  
+  return <></>;  
 };
 
 /**

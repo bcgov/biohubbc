@@ -13,10 +13,9 @@ import { FormikProps } from 'formik';
 import * as History from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
-import { useQuery } from 'hooks/useQuery';
 import { IUpdateProjectRequest, UPDATE_GET_ENTITIES } from 'interfaces/useProjectApi.interface';
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { useHistory } from 'react-router';
+import { useHistory, useParams } from 'react-router';
 import { Prompt } from 'react-router-dom';
 import EditProjectForm from './EditProjectForm';
 
@@ -55,7 +54,8 @@ const EditProjectPage: React.FC = (props) => {
 
   const biohubApi = useBiohubApi();
 
-  const queryParams = useQuery();
+  const urlParams = useParams();
+  const projectId = Number(urlParams['id']);
 
   // Reference to pass to the formik component in order to access its state at any time
   // Used by the draft logic to fetch the values of a step form that has not been validated/completed
@@ -81,8 +81,8 @@ const EditProjectPage: React.FC = (props) => {
     ])
   );
 
-  if (queryParams.projectId) {
-    editProjectDataLoader.load(queryParams.projectId);
+  if (projectId) {
+    editProjectDataLoader.load(projectId);
   }
 
   useEffect(() => {
@@ -107,7 +107,7 @@ const EditProjectPage: React.FC = (props) => {
     },
     onYes: () => {
       dialogContext.setYesNoDialog({ open: false });
-      history.push(`/admin/projects/${queryParams.projectId}`);
+      history.push(`/admin/projects/${projectId}`);
     }
   };
 
@@ -132,7 +132,7 @@ const EditProjectPage: React.FC = (props) => {
 
   const handleCancel = () => {
     dialogContext.setYesNoDialog(defaultCancelDialogProps);
-    history.push(`/admin/projects/${queryParams.projectId}`);
+    history.push(`/admin/projects/${projectId}`);
   };
 
   /**
@@ -142,7 +142,7 @@ const EditProjectPage: React.FC = (props) => {
    * @return {*}
    */
   const updateProject = async (projectPostObject: IUpdateProjectRequest) => {
-    const response = await biohubApi.project.updateProject(queryParams.projectId, projectPostObject);
+    const response = await biohubApi.project.updateProject(projectId, projectPostObject);
 
     if (!response?.id) {
       showCreateErrorDialog({ dialogError: 'The response from the server was null, or did not contain a project ID.' });
