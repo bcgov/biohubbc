@@ -37,6 +37,8 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { getFormattedDate } from 'utils/Utils';
 
+//TODO: PRODUCTION_BANDAGE: Remove <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
+
 const useStyles = makeStyles((theme: Theme) => ({
   pageTitleContainer: {
     maxWidth: '170ch',
@@ -266,7 +268,9 @@ const ProjectsListPage: React.FC = () => {
                 <TableCell>Name</TableCell>
                 <TableCell>Contact Agency</TableCell>
                 <TableCell width={150}>Type</TableCell>
-                <TableCell width={150}>Status</TableCell>
+                <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
+                  <TableCell width={150}>Status</TableCell>
+                </SystemRoleGuard>
                 <TableCell width={150}>Start Date</TableCell>
                 <TableCell width={150}>End Date</TableCell>
               </TableRow>
@@ -305,7 +309,9 @@ const ProjectsListPage: React.FC = () => {
                   </TableCell>
                   <TableCell>{project.coordinator_agency}</TableCell>
                   <TableCell>{project.project_type}</TableCell>
-                  <TableCell>{getChipIcon(project.completion_status)}</TableCell>
+                  <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
+                    <TableCell>{getChipIcon(project.completion_status)}</TableCell>
+                  </SystemRoleGuard>
                   <TableCell>{getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, project.start_date)}</TableCell>
                   <TableCell>{getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, project.end_date)}</TableCell>
                 </TableRow>

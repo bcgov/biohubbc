@@ -17,9 +17,13 @@ import {
 import Icon from '@mdi/react';
 import clsx from 'clsx';
 import { SubmitStatusChip } from 'components/chips/SubmitStatusChip';
+import { SystemRoleGuard } from 'components/security/Guards';
 import { BioHubSubmittedStatusType } from 'constants/misc';
+import { SYSTEM_ROLE } from 'constants/roles';
 import { IGetObservationSubmissionResponse } from 'interfaces/useObservationApi.interface';
 import React from 'react';
+
+//TODO: PRODUCTION_BANDAGE: Remove <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
 
 const useStyles = makeStyles((theme: Theme) => ({
   importFile: {
@@ -115,7 +119,9 @@ const ObservationFileCard = (props: IObservationFileCardProps) => {
 
         <Box flex="0 0 auto" display="flex" alignItems="center">
           <Box mr={2}>
-            <SubmitStatusChip status={status} />
+            <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
+              <SubmitStatusChip status={status} />
+            </SystemRoleGuard>
           </Box>
           <Box>
             <IconButton aria-controls="context-menu" aria-haspopup="true" onClick={handleOpenContextMenu}>
