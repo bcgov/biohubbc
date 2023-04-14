@@ -1,27 +1,14 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { PROJECT_ROLE } from '../../../../constants/roles';
 import { getDBConnection } from '../../../../database/db';
 import { HTTP400 } from '../../../../errors/http-error';
 import { ProjectUserObject } from '../../../../models/user';
-import { authorizeRequestHandler } from '../../../../request-handlers/security/authorization';
 import { ProjectService } from '../../../../services/project-service';
 import { getLogger } from '../../../../utils/logger';
 
 const defaultLog = getLogger('paths/project/{projectId}/participants/self');
 
 export const GET: Operation = [
-  authorizeRequestHandler((req) => {
-    return {
-      and: [
-        {
-          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD],
-          projectId: Number(req.params.projectId),
-          discriminator: 'ProjectRole'
-        }
-      ]
-    };
-  }),
   getUserRoles()
 ];
 

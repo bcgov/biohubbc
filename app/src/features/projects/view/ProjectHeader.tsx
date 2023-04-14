@@ -25,7 +25,9 @@ import { ProjectRoleGuard, SystemRoleGuard } from 'components/security/Guards';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { DeleteProjectI18N } from 'constants/i18n';
 import { PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
+import { AuthStateContext } from 'contexts/authStateContext';
 import { DialogContext } from 'contexts/dialogContext';
+import { ProjectAuthStateContext } from 'contexts/projectAuthStateContext';
 import { ProjectContext } from 'contexts/projectContext';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -107,6 +109,8 @@ const ProjectHeader = () => {
   const biohubApi = useBiohubApi();
 
   const projectContext = useContext(ProjectContext);
+  const { keycloakWrapper } = useContext(AuthStateContext);
+  const { hasProjectRole } = useContext(ProjectAuthStateContext);
 
   // Project data must be loaded by a parent before this component is rendered
   assert(projectContext.projectDataLoader.data);
@@ -214,69 +218,65 @@ const ProjectHeader = () => {
               <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
                 <PublishProjectButton />
               </SystemRoleGuard>
-              <ProjectRoleGuard
-                  validProjectRoles={[PROJECT_ROLE.PROJECT_EDITOR, PROJECT_ROLE.PROJECT_LEAD]}
+              <Button
+                id="project_settings-button"
+                variant="outlined"
+                color="primary"
+                startIcon={<Icon path={mdiCogOutline} size={1} />}
+                endIcon={<Icon path={mdiChevronDown} size={1} />}
+                aria-label="Project Settings"
+                aria-controls="projectSettingsMenu"
+                aria-haspopup="true"
+                style={{ marginLeft: '0.5rem' }}
+                onClick={handleClick}
+                disabled={!hasProjectRole([PROJECT_ROLE.PROJECT_EDITOR, PROJECT_ROLE.PROJECT_LEAD])
+                  && !keycloakWrapper?.hasSystemRole([SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR])}>
+                Settings
+              </Button>
+              <Menu
+                id="projectSettingsMenu"
+                aria-labelledby="project_settings_button"
+                style={{ marginTop: '8px' }}
+                anchorEl={anchorEl}
+                getContentAnchorEl={null}
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'right'
+                }}
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right'
+                }}
+                keepMounted
+                open={Boolean(anchorEl)}
+                onClose={handleClose}>
+                <ProjectRoleGuard
+                  validProjectRoles={[PROJECT_ROLE.PROJECT_LEAD]}
                   validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-                <>
-                  <Button
-                    id="project_settings-button"
-                    variant="outlined"
-                    color="primary"
-                    startIcon={<Icon path={mdiCogOutline} size={1} />}
-                    endIcon={<Icon path={mdiChevronDown} size={1} />}
-                    aria-label="Project Settings"
-                    aria-controls="projectSettingsMenu"
-                    aria-haspopup="true"
-                    style={{ marginLeft: '0.5rem' }}
-                    onClick={handleClick}>
-                    Settings
-                  </Button>
-                  <Menu
-                    id="projectSettingsMenu"
-                    aria-labelledby="project_settings_button"
-                    style={{ marginTop: '8px' }}
-                    anchorEl={anchorEl}
-                    getContentAnchorEl={null}
-                    anchorOrigin={{
-                      vertical: 'bottom',
-                      horizontal: 'right'
-                    }}
-                    transformOrigin={{
-                      vertical: 'top',
-                      horizontal: 'right'
-                    }}
-                    keepMounted
-                    open={Boolean(anchorEl)}
-                    onClose={handleClose}>
-                    <ProjectRoleGuard
-                      validProjectRoles={[PROJECT_ROLE.PROJECT_LEAD]}
-                      validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-                      <MenuItem onClick={() => history.push('users')}>
-                        <ListItemIcon>
-                          <Icon path={mdiAccountMultipleOutline} size={1} />
-                        </ListItemIcon>
-                        <Typography variant="inherit">Manage Project Team</Typography>
-                      </MenuItem>
-                    </ProjectRoleGuard>
-                    <MenuItem onClick={() => history.push('edit')}>
-                      <ListItemIcon>
-                        <Icon path={mdiPencilOutline} size={1} />
-                      </ListItemIcon>
-                      <Typography variant="inherit">Edit Project Details</Typography>
-                    </MenuItem>
-                    <ProjectRoleGuard
-                      validProjectRoles={[PROJECT_ROLE.PROJECT_LEAD]}
-                      validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-                      <MenuItem onClick={showDeleteProjectDialog} data-testid={'delete-project-button'}>
-                        <ListItemIcon>
-                          <Icon path={mdiTrashCanOutline} size={1} />
-                        </ListItemIcon>
-                        <Typography variant="inherit">Delete Project</Typography>
-                      </MenuItem>
-                    </ProjectRoleGuard>
-                  </Menu>
-                </>
-              </ProjectRoleGuard>
+                  <MenuItem onClick={() => history.push('users')}>
+                    <ListItemIcon>
+                      <Icon path={mdiAccountMultipleOutline} size={1} />
+                    </ListItemIcon>
+                    <Typography variant="inherit">Manage Project Team</Typography>
+                  </MenuItem>
+                </ProjectRoleGuard>
+                <MenuItem onClick={() => history.push('edit')}>
+                  <ListItemIcon>
+                    <Icon path={mdiPencilOutline} size={1} />
+                  </ListItemIcon>
+                  <Typography variant="inherit">Edit Project Details</Typography>
+                </MenuItem>
+                <ProjectRoleGuard
+                  validProjectRoles={[PROJECT_ROLE.PROJECT_LEAD]}
+                  validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+                  <MenuItem onClick={showDeleteProjectDialog} data-testid={'delete-project-button'}>
+                    <ListItemIcon>
+                      <Icon path={mdiTrashCanOutline} size={1} />
+                    </ListItemIcon>
+                    <Typography variant="inherit">Delete Project</Typography>
+                  </MenuItem>
+                </ProjectRoleGuard>
+              </Menu>
             </Box>
           </Box>
         </Box>

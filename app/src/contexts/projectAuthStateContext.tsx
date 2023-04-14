@@ -1,7 +1,7 @@
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { IGetUserProjectParticipantResponse } from 'interfaces/useProjectApi.interface';
-import React from 'react';
+import React, { useCallback } from 'react';
 import { useParams } from 'react-router';
 
 export interface IProjectAuthStateContext {
@@ -24,9 +24,9 @@ export const ProjectAuthStateContextProvider: React.FC = (props) => {
   
   const participantDataLoader = useDataLoader((projectId: number) => biohubApi.project.getUserProjectParticipant(projectId))
 
-  const getProjectId = () => {
+  const getProjectId = useCallback(() => {
     return Number(urlParams['id']);
-  }
+  }, [urlParams]);
 
   const getProjectParticipant = () => {
     return participantDataLoader.data?.participant || null;
