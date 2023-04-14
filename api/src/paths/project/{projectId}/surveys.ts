@@ -3,7 +3,6 @@ import { Operation } from 'express-openapi';
 import { PROJECT_ROLE, SYSTEM_ROLE } from '../../../constants/roles';
 import { getDBConnection } from '../../../database/db';
 import { HTTP400 } from '../../../errors/http-error';
-import { SurveySupplementaryData } from '../../../models/survey-view';
 import { geoJsonFeature } from '../../../openapi/schemas/geoJson';
 import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
 import { SurveyService } from '../../../services/survey-service';
@@ -305,65 +304,11 @@ GET.apiDoc = {
                   }
                 },
                 surveySupplementaryData: {
-                  description: 'Survey supplementary data',
                   type: 'object',
-                  required: ['survey_metadata_publish'],
+                  required: ['has_unpublished_content'],
                   properties: {
-                    survey_metadata_publish: {
-                      description: 'Survey metadata publish record',
-                      type: 'object',
-                      nullable: true,
-                      required: [
-                        'survey_metadata_publish_id',
-                        'survey_id',
-                        'event_timestamp',
-                        'queue_id',
-                        'create_date',
-                        'create_user',
-                        'update_date',
-                        'update_user',
-                        'revision_count'
-                      ],
-                      properties: {
-                        survey_metadata_publish_id: {
-                          type: 'integer',
-                          minimum: 1
-                        },
-                        survey_id: {
-                          type: 'integer',
-                          minimum: 1
-                        },
-                        event_timestamp: {
-                          oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
-                          description: 'ISO 8601 date string for the project start date'
-                        },
-                        queue_id: {
-                          type: 'integer',
-                          minimum: 1
-                        },
-                        create_date: {
-                          oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
-                          description: 'ISO 8601 date string for the project start date'
-                        },
-                        create_user: {
-                          type: 'integer',
-                          minimum: 1
-                        },
-                        update_date: {
-                          oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
-                          description: 'ISO 8601 date string for the project start date',
-                          nullable: true
-                        },
-                        update_user: {
-                          type: 'integer',
-                          minimum: 1,
-                          nullable: true
-                        },
-                        revision_count: {
-                          type: 'integer',
-                          minimum: 0
-                        }
-                      }
+                    has_unpublished_content: {
+                      type: 'boolean'
                     }
                   }
                 }
@@ -415,23 +360,18 @@ export function getSurveyList(): RequestHandler {
       const surveys = await Promise.all(
         surveyIds.map(async (surveyId) => {
           const survey = await surveyService.getSurveyById(surveyId);
-          const supplementaryData = ({ survey_metadata_publish: null } as unknown) as SurveySupplementaryData; //hard coded null for testing
 
-          // const supplementaryData = ({
-          //   survey_metadata_publish: {
-          //     survey_metadata_publish_id: 1,
-          //     survey_id: 1,
-          //     event_timestamp: '2021-01-01',
-          //     queue_id: 1,
-          //     create_date: '2021-01-01',
-          //     create_user: 1,
-          //     update_date: '2021-01-01',
-          //     update_user: 1,
-          //     revision_count: 1
-          //   }
-          // } as unknown) as SurveySupplementaryData; //Hard coded for now
+          console.log('--------- start print out ------------');
 
-          return { surveyData: survey, surveySupplementaryData: supplementaryData };
+          const surveyPublishStatus = await surveyService.getSurveyHasUnpublishedContent(surveyId);
+          console.log('in the end point surveyPublishStatus: ', surveyPublishStatus);
+
+          console.log('--------- end print out ------------');
+
+          return {
+            surveyData: survey,
+            surveySupplementaryData: { has_unpublished_content: surveyPublishStatus }
+          };
         })
       );
 

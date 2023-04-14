@@ -178,6 +178,9 @@ export class AttachmentService extends DBService {
     return this.attachmentRepository.getSurveyAttachments(surveyId);
   }
 
+  //TODO:  Check that this actually works ... I don't think it does
+  //problably need to use a Promises.a;l apprach with a map instead of for each .. because of the async inside the foreach
+
   /**
    * Finds all of the survey attachments and Supplementary Data for the given survey ID.
    *

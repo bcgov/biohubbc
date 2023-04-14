@@ -247,4 +247,18 @@ export class HistoryPublishService extends DBService {
   async deleteSurveyReportAttachmentPublishRecord(surveyReportAttachmentId: number): Promise<void> {
     return this.historyRepository.deleteSurveyReportAttachmentPublishRecord(surveyReportAttachmentId);
   }
+
+  async hasUnpublishedSurveyAttachments(surveyId: number): Promise<boolean> {
+    const count_unpublished_attachments = (await this.historyRepository.getCountSurveyUnpublishedAttachments(surveyId))
+      .rows[0].count;
+
+    return count_unpublished_attachments > 0 ? true : false;
+  }
+
+  async hasUnpublishedSurveyReports(surveyId: number): Promise<boolean> {
+    const count_unpublished_reports = (await this.historyRepository.getCountSurveyUnpublishedReports(surveyId)).rows[0]
+      .count;
+
+    return count_unpublished_reports > 0 ? true : false;
+  }
 }
