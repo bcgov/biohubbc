@@ -3,7 +3,7 @@ import Alert from '@material-ui/lab/Alert';
 import AlertTitle from '@material-ui/lab/AlertTitle';
 import { ProjectContext } from 'contexts/projectContext';
 import { IGetProjectAttachmentsResponse } from 'interfaces/useProjectApi.interface';
-import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
+import { IGetSurveyForListResponse } from 'interfaces/useSurveyApi.interface';
 import React, { useContext, useState } from 'react';
 
 const ProjectSubmissionAlertBar = () => {
@@ -52,16 +52,16 @@ const ProjectSubmissionAlertBar = () => {
   );
 };
 
-function getSurveyDataSubmissionStatus(surveyData?: IGetSurveyForViewResponse[]) {
+function getSurveyDataSubmissionStatus(surveyData?: IGetSurveyForListResponse[]) {
   if (!surveyData?.length) {
     return 'NO_DATA';
   }
 
-  if (surveyData.every((item) => item.surveySupplementaryData?.survey_metadata_publish?.survey_metadata_publish_id)) {
-    return 'SUBMITTED';
+  if (surveyData.every((item) => item.surveySupplementaryData?.has_unpublished_content)) {
+    return 'UNSUBMITTED';
   }
 
-  return 'UNSUBMITTED';
+  return 'SUBMITTED';
 }
 
 function getAttachmentDataSubmissionStatus(projectAttachmentsData?: IGetProjectAttachmentsResponse) {

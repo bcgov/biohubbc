@@ -11,6 +11,7 @@ import {
   ICreateSurveyRequest,
   ICreateSurveyResponse,
   IGetSurveyAttachmentsResponse,
+  IGetSurveyForListResponse,
   IGetSurveyForUpdateResponse,
   IGetSurveyForViewResponse,
   ISurveyAvailableFundingSources,
@@ -69,7 +70,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
    * @param {number} projectId
    * @return {*}  {Promise<IGetSurveysListResponse[]>}
    */
-  const getSurveysList = async (projectId: number): Promise<IGetSurveyForViewResponse[]> => {
+  const getSurveysList = async (projectId: number): Promise<IGetSurveyForListResponse[]> => {
     const { data } = await axios.get(`/api/project/${projectId}/surveys`);
 
     return data;

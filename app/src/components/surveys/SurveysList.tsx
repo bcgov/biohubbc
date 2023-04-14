@@ -10,7 +10,7 @@ import Typography from '@material-ui/core/Typography';
 import { SubmitStatusChip } from 'components/chips/SubmitStatusChip';
 import { BioHubSubmittedStatusType } from 'constants/misc';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
+import { IGetSurveyForListResponse } from 'interfaces/useSurveyApi.interface';
 import React, { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 
@@ -21,7 +21,7 @@ const useStyles = makeStyles(() => ({
 }));
 
 export interface ISurveysListProps {
-  surveysList: IGetSurveyForViewResponse[];
+  surveysList: IGetSurveyForListResponse[];
   projectId: number;
   codes: IGetAllCodeSetsResponse;
 }
@@ -32,11 +32,11 @@ const SurveysList: React.FC<ISurveysListProps> = (props) => {
   const [rowsPerPage] = useState(5);
   const [page] = useState(0);
 
-  function getSurveySubmissionStatus(survey: IGetSurveyForViewResponse): BioHubSubmittedStatusType {
-    if (survey.surveySupplementaryData.survey_metadata_publish?.survey_metadata_publish_id) {
-      return BioHubSubmittedStatusType.SUBMITTED;
+  function getSurveySubmissionStatus(survey: IGetSurveyForListResponse): BioHubSubmittedStatusType {
+    if (survey.surveySupplementaryData.has_unpublished_content) {
+      return BioHubSubmittedStatusType.UNSUBMITTED;
     }
-    return BioHubSubmittedStatusType.UNSUBMITTED;
+    return BioHubSubmittedStatusType.SUBMITTED;
   }
 
   return (
