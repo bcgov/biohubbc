@@ -117,8 +117,6 @@ export function getUserRoles(): RequestHandler {
 
       await connection.commit();
 
-      // await new Promise(r => setTimeout(r, 5000));
-
       return res.status(200).json({
         participant: result ? new ProjectUserObject(result) : null
       });
