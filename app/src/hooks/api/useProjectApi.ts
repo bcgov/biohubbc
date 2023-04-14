@@ -402,6 +402,19 @@ const useProjectApi = (axios: AxiosInstance) => {
     return status === 200;
   };
 
+   /**
+   * Gets the Project Roles for a user on a given project
+   *
+   * @param {number} projectId
+   * @return {*}  {Promise<any>}
+   */
+   const getUserProjectRoles = async (
+    projectId: number
+  ): Promise<any> => {
+    const data = await axios.get(`/api/project/${projectId}/participants/self`);
+    return data;
+  };
+
   return {
     getAllUserProjectsForView,
     getProjectsList,
@@ -423,7 +436,8 @@ const useProjectApi = (axios: AxiosInstance) => {
     removeProjectParticipant,
     updateProjectParticipantRole,
     deleteFundingSource,
-    addFundingSource
+    addFundingSource,
+    getUserProjectRoles
   };
 };
 
