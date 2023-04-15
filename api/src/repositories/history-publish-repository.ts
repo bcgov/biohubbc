@@ -635,8 +635,6 @@ export class HistoryPublishRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement);
 
-    console.log('response from DB', response);
-
     return response;
   }
 
@@ -658,7 +656,45 @@ export class HistoryPublishRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement);
 
-    console.log('response from DB', response);
+    return response;
+  }
+
+  async getConfirmationLatestObservationPublished(surveyId: number): Promise<QueryResult> {
+    const sqlStatement = SQL`
+  select
+   osp.occurrence_submission_publish_id
+          from
+            occurrence_submission os
+          left join
+            occurrence_submission_publish osp
+          on
+            os.occurrence_submission_id = osp.occurrence_submission_id
+          where
+            os.survey_id = ${surveyId}
+          order by
+            os.occurrence_submission_id desc
+          limit 1;
+`;
+
+    const response = await this.connection.sql(sqlStatement);
+    //console.log('db response for observations: ', response);
+
+    return response;
+  }
+
+  async getConfirmationLatestSummaryResultsPublished(surveyId: number): Promise<QueryResult> {
+    const sqlStatement = SQL`
+    select sssp.survey_summary_submission_publish_id  from survey_summary_submission sss
+    left join survey_summary_submission_publish sssp
+    on sss.survey_summary_submission_id = sssp.survey_summary_submission_id
+    where sss.survey_id = ${surveyId}
+    order by
+       sss.survey_summary_submission_id  desc
+    limit 1;
+  `;
+
+    const response = await this.connection.sql(sqlStatement);
+    //console.log('db response for summary results: ', response);
 
     return response;
   }

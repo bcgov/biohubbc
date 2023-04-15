@@ -250,15 +250,33 @@ export class HistoryPublishService extends DBService {
 
   async hasUnpublishedSurveyAttachments(surveyId: number): Promise<boolean> {
     const count_unpublished_attachments = (await this.historyRepository.getCountSurveyUnpublishedAttachments(surveyId))
-      .rows[0].count;
+      .rows[0]?.count;
 
     return count_unpublished_attachments > 0 ? true : false;
   }
 
   async hasUnpublishedSurveyReports(surveyId: number): Promise<boolean> {
     const count_unpublished_reports = (await this.historyRepository.getCountSurveyUnpublishedReports(surveyId)).rows[0]
-      .count;
+      ?.count;
 
     return count_unpublished_reports > 0 ? true : false;
+  }
+
+  async getConfirmationLatestObservationPublished(surveyId: number): Promise<boolean> {
+    const publish_record_exists = (await this.historyRepository.getConfirmationLatestObservationPublished(surveyId))
+      .rows[0];
+
+    console.log('observation publish record exists? : ', publish_record_exists);
+
+    return publish_record_exists === null ? true : false;
+  }
+
+  async getConfirmationLatestSummaryResultsPublished(surveyId: number): Promise<boolean> {
+    const publish_record_exists = (await this.historyRepository.getConfirmationLatestSummaryResultsPublished(surveyId))
+      .rows[0];
+
+    console.log('summary publish record exists? : ', publish_record_exists);
+
+    return publish_record_exists === null ? true : false;
   }
 }
