@@ -37,7 +37,7 @@ export const H3ButtonToolbar: React.FC<IButtonToolbarProps> = (props) => {
     onClick: () => props.buttonOnClick(),
     children: props.buttonLabel
   }
-  console.log('props.renderButton:', Boolean(props.renderButton))
+
   return (
     <ActionToolbar label={props.label} labelProps={{ variant: 'h3' }} toolbarProps={props.toolbarProps}>
       {props.renderButton ? props.renderButton(buttonProps) : <Button {...buttonProps} />}
@@ -47,21 +47,23 @@ export const H3ButtonToolbar: React.FC<IButtonToolbarProps> = (props) => {
 
 export const H2ButtonToolbar: React.FC<IButtonToolbarProps> = (props) => {
   const id = `h2-button-toolbar-${props.buttonLabel.replace(/\s/g, '')}`;
+  
+  const buttonProps: Partial<ButtonProps> & { 'data-testid'?: string } = {
+    ...props.buttonProps,
+    id,
+    'data-testid': id,
+    color: "primary",
+    title: props.buttonTitle,
+    'aria-label': props.buttonTitle,
+    startIcon: props.buttonStartIcon,
+    endIcon: props.buttonEndIcon,
+    onClick: () => props.buttonOnClick(),
+    children: props.buttonLabel
+  }
 
   return (
     <ActionToolbar label={props.label} labelProps={{ variant: 'h2' }} toolbarProps={props.toolbarProps}>
-      <Button
-        id={id}
-        data-testid={id}
-        color="primary"
-        title={props.buttonTitle}
-        aria-label={props.buttonTitle}
-        startIcon={props.buttonStartIcon}
-        endIcon={props.buttonEndIcon}
-        onClick={() => props.buttonOnClick()}
-        {...props.buttonProps}>
-        {props.buttonLabel}
-      </Button>
+      {props.renderButton ? props.renderButton(buttonProps) : <Button {...buttonProps} />}
     </ActionToolbar>
   );
 };
@@ -89,6 +91,7 @@ export interface ICustomMenuButtonProps {
   buttonEndIcon?: ReactNode;
   buttonVariant?: string;
   buttonProps?: Partial<ButtonProps> & { 'data-testid'?: string };
+  renderButton?: (buttonProps: Partial<ButtonProps>) => React.ReactNode
   menuItems: IMenuToolbarItem[];
 }
 
@@ -112,23 +115,25 @@ export const CustomMenuButton: React.FC<ICustomMenuButtonProps> = (props) => {
     menuItemOnClick();
   };
 
+  const buttonProps: Partial<ButtonProps> & {'data-testid'?: string } = {
+    ...props.buttonProps,
+    id: buttonId,
+    'data-testid': buttonId,
+    title: props.buttonTitle,
+    color: "primary",
+    variant: "outlined",
+    'aria-controls': "basic-menu",
+    'aria-haspopup': "true",
+    'aria-expanded': open ? 'true' : undefined,
+    startIcon: props.buttonStartIcon,
+    endIcon: props.buttonEndIcon,
+    onClick: handleClick,
+    children: props.buttonLabel
+  }
+
   return (
     <>
-      <Button
-        id={buttonId}
-        data-testid={buttonId}
-        title={props.buttonTitle}
-        color="primary"
-        variant="outlined"
-        aria-controls="basic-menu"
-        aria-haspopup="true"
-        aria-expanded={open ? 'true' : undefined}
-        startIcon={props.buttonStartIcon}
-        endIcon={props.buttonEndIcon}
-        onClick={handleClick}
-        {...props.buttonProps}>
-        {props.buttonLabel}
-      </Button>
+      {props.renderButton ? props.renderButton(buttonProps) : <Button {...buttonProps} />}
       <Menu
         style={{ marginTop: '8px' }}
         open={open}

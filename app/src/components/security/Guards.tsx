@@ -72,10 +72,9 @@ export const SystemRoleGuard = (props: PropsWithChildren<ISystemRoleGuardProps>)
  */
 export const ProjectRoleGuard = (props: PropsWithChildren<IProjectRoleGuardProps>) => {
   const { validProjectRoles, validSystemRoles } = props
-  const { keycloakWrapper } = useContext(AuthStateContext);
   const projectAuthStateContext = useContext(ProjectAuthStateContext);
 
-  const hasSystemRole = !!keycloakWrapper && keycloakWrapper.hasSystemRole(validSystemRoles);
+  const hasSystemRole = projectAuthStateContext.hasSystemRole(validSystemRoles);
   const hasProjectRole = projectAuthStateContext.hasProjectRole(validProjectRoles);
 
   if (hasSystemRole || hasProjectRole) {

@@ -17,6 +17,8 @@ import { IUploadAttachmentResponse } from 'interfaces/useProjectApi.interface';
 import React, { useContext, useEffect, useState } from 'react';
 import { AttachmentType } from '../../../constants/attachments';
 import ProjectAttachmentsList from './ProjectAttachmentsList';
+import { ProjectRoleGuard } from 'components/security/Guards';
+import { PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
 
 /**
  * Project attachments content for a project.
@@ -101,16 +103,21 @@ const ProjectAttachments = () => {
           Documents
         </Typography>
         <Box>
-          <Button
-            color="primary"
-            variant="contained"
-            endIcon={<Icon path={mdiChevronDown} size={1} />}
-            aria-controls="simple-menu"
-            aria-haspopup="true"
-            startIcon={<Icon path={mdiTrayArrowUp} size={1} />}
-            onClick={handleClick}>
-            Add Documents
-          </Button>
+          <ProjectRoleGuard
+            validProjectRoles={[PROJECT_ROLE.PROJECT_EDITOR, PROJECT_ROLE.PROJECT_LEAD]}
+            validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}
+          >
+            <Button
+              color="primary"
+              variant="contained"
+              endIcon={<Icon path={mdiChevronDown} size={1} />}
+              aria-controls="simple-menu"
+              aria-haspopup="true"
+              startIcon={<Icon path={mdiTrayArrowUp} size={1} />}
+              onClick={handleClick}>
+              Add Documents
+            </Button>
+          </ProjectRoleGuard>
           <Menu
             style={{ marginTop: '8px' }}
             id="attachmentsMenu"

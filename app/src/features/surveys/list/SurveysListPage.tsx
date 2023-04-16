@@ -52,8 +52,8 @@ const SurveysListPage = () => {
         buttonOnClick={() => navigateToCreateSurveyPage(projectContext.projectId)}
         renderButton={(buttonProps) => (
           <ProjectRoleGuard
-            validProjectRoles={[PROJECT_ROLE.PROJECT_VIEWER, PROJECT_ROLE.PROJECT_EDITOR]}
-            validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN + '0' as SYSTEM_ROLE]}
+            validProjectRoles={[PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR]}
+            validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}
           >
             <Button {...buttonProps} />
           </ProjectRoleGuard>
