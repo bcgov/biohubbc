@@ -24,7 +24,6 @@ export const H3ButtonToolbar: React.FC<IButtonToolbarProps> = (props) => {
   const id = `h3-button-toolbar-${props.buttonLabel.replace(/\s/g, '')}`;
 
   const buttonProps: Partial<ButtonProps> & { 'data-testid'?: string } = {
-    ...props.buttonProps,
     id,
     'data-testid': id,
     variant: 'text',
@@ -35,7 +34,8 @@ export const H3ButtonToolbar: React.FC<IButtonToolbarProps> = (props) => {
     startIcon: props.buttonStartIcon,
     endIcon: props.buttonEndIcon,
     onClick: () => props.buttonOnClick(),
-    children: props.buttonLabel
+    children: props.buttonLabel,
+    ...props.buttonProps
   }
 
   return (
@@ -49,7 +49,6 @@ export const H2ButtonToolbar: React.FC<IButtonToolbarProps> = (props) => {
   const id = `h2-button-toolbar-${props.buttonLabel.replace(/\s/g, '')}`;
   
   const buttonProps: Partial<ButtonProps> & { 'data-testid'?: string } = {
-    ...props.buttonProps,
     id,
     'data-testid': id,
     color: "primary",
@@ -58,7 +57,8 @@ export const H2ButtonToolbar: React.FC<IButtonToolbarProps> = (props) => {
     startIcon: props.buttonStartIcon,
     endIcon: props.buttonEndIcon,
     onClick: () => props.buttonOnClick(),
-    children: props.buttonLabel
+    children: props.buttonLabel,
+    ...props.buttonProps
   }
 
   return (
@@ -116,7 +116,6 @@ export const CustomMenuButton: React.FC<ICustomMenuButtonProps> = (props) => {
   };
 
   const buttonProps: Partial<ButtonProps> & {'data-testid'?: string } = {
-    ...props.buttonProps,
     id: buttonId,
     'data-testid': buttonId,
     title: props.buttonTitle,
@@ -128,7 +127,8 @@ export const CustomMenuButton: React.FC<ICustomMenuButtonProps> = (props) => {
     startIcon: props.buttonStartIcon,
     endIcon: props.buttonEndIcon,
     onClick: handleClick,
-    children: props.buttonLabel
+    children: props.buttonLabel,
+    ...props.buttonProps
   }
 
   return (

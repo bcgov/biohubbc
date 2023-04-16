@@ -16,8 +16,10 @@ import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { IMarkerLayer } from 'components/map/components/MarkerCluster';
 import { IStaticLayer } from 'components/map/components/StaticLayers';
 import MapContainer from 'components/map/MapContainer';
+import { ProjectRoleGuard } from 'components/security/Guards';
 import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
 import { EditSurveyStudyAreaI18N } from 'constants/i18n';
+import { PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
 import { SurveyContext } from 'contexts/surveyContext';
 import StudyAreaForm, {
   IStudyAreaForm,
@@ -244,6 +246,14 @@ const SurveyStudyArea = () => {
         buttonStartIcon={<Icon path={mdiPencilOutline} size={0.8} />}
         buttonOnClick={() => handleDialogEditOpen()}
         buttonProps={{ variant: 'text' }}
+        renderButton={(buttonProps) => (
+          <ProjectRoleGuard
+            validProjectRoles={[PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR]}
+            validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}
+          >
+            <Button {...buttonProps} />
+          </ProjectRoleGuard>
+        )}
       />
 
       <Box px={3} pb={3}>

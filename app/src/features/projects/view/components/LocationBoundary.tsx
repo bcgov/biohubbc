@@ -219,7 +219,7 @@ const LocationBoundary = () => {
 
       <H2ButtonToolbar
         label="Project Location"
-        buttonLabel="Edit"
+        buttonLabel="Edit Project Location"
         buttonTitle="Edit Project Location"
         buttonStartIcon={<Icon path={mdiPencilOutline} size={0.8} />}
         buttonOnClick={() => handleDialogEditOpen()}

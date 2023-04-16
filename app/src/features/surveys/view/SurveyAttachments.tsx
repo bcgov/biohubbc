@@ -1,4 +1,5 @@
 import Box from '@material-ui/core/Box';
+import Button from '@material-ui/core/Button';
 import Divider from '@material-ui/core/Divider';
 import Paper from '@material-ui/core/Paper';
 import { mdiAttachment, mdiChevronDown, mdiFilePdfBox, mdiTrayArrowUp } from '@mdi/js';
@@ -12,6 +13,8 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import React, { useContext, useState } from 'react';
 import { AttachmentType } from '../../../constants/attachments';
 import SurveyAttachmentsList from './SurveyAttachmentsList';
+import { ProjectRoleGuard } from 'components/security/Guards';
+import { PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
 
 const SurveyAttachments: React.FC = () => {
   const biohubApi = useBiohubApi();
@@ -84,6 +87,14 @@ const SurveyAttachments: React.FC = () => {
               menuOnClick: handleUploadAttachmentClick
             }
           ]}
+          renderButton={(buttonProps) => (
+            <ProjectRoleGuard
+              validProjectRoles={[PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR]}
+              validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}
+            >
+              <Button {...buttonProps} />
+            </ProjectRoleGuard>
+          )}
         />
         <Divider></Divider>
         <Box p={3}>

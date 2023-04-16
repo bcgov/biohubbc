@@ -17,9 +17,9 @@ import {
 import Icon from '@mdi/react';
 import clsx from 'clsx';
 import { SubmitStatusChip } from 'components/chips/SubmitStatusChip';
-import { SystemRoleGuard } from 'components/security/Guards';
+import { ProjectRoleGuard, SystemRoleGuard } from 'components/security/Guards';
 import { BioHubSubmittedStatusType } from 'constants/misc';
-import { SYSTEM_ROLE } from 'constants/roles';
+import { PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
 import { IGetSummaryResultsResponse } from 'interfaces/useSummaryResultsApi.interface';
 import React from 'react';
 
@@ -146,16 +146,21 @@ const FileSummaryResults = (props: IFileResultsProps) => {
                   </ListItemIcon>
                   Download
                 </MenuItem>
-                <MenuItem
-                  onClick={() => {
-                    showDelete();
-                    setAnchorEl(null);
-                  }}>
-                  <ListItemIcon>
-                    <Icon path={mdiTrashCanOutline} size={1} />
-                  </ListItemIcon>
-                  Delete
-                </MenuItem>
+                <ProjectRoleGuard
+                  validProjectRoles={[PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR]}
+                  validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}
+                >
+                  <MenuItem
+                    onClick={() => {
+                      showDelete();
+                      setAnchorEl(null);
+                    }}>
+                    <ListItemIcon>
+                      <Icon path={mdiTrashCanOutline} size={1} />
+                    </ListItemIcon>
+                    Delete
+                  </MenuItem>
+                </ProjectRoleGuard> 
               </Menu>
             </Box>
           </Box>
