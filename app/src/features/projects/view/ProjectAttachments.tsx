@@ -11,14 +11,14 @@ import Icon from '@mdi/react';
 import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
 import FileUploadWithMetaDialog from 'components/dialog/attachments/FileUploadWithMetaDialog';
 import { IUploadHandler } from 'components/file-upload/FileUploadItem';
+import { ProjectRoleGuard } from 'components/security/Guards';
+import { PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
 import { ProjectContext } from 'contexts/projectContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IUploadAttachmentResponse } from 'interfaces/useProjectApi.interface';
 import React, { useContext, useEffect, useState } from 'react';
 import { AttachmentType } from '../../../constants/attachments';
 import ProjectAttachmentsList from './ProjectAttachmentsList';
-import { ProjectRoleGuard } from 'components/security/Guards';
-import { PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
 
 /**
  * Project attachments content for a project.
@@ -105,8 +105,7 @@ const ProjectAttachments = () => {
         <Box>
           <ProjectRoleGuard
             validProjectRoles={[PROJECT_ROLE.PROJECT_EDITOR, PROJECT_ROLE.PROJECT_LEAD]}
-            validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}
-          >
+            validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
             <Button
               color="primary"
               variant="contained"

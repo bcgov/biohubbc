@@ -148,8 +148,7 @@ const FileSummaryResults = (props: IFileResultsProps) => {
                 </MenuItem>
                 <ProjectRoleGuard
                   validProjectRoles={[PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR]}
-                  validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}
-                >
+                  validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
                   <MenuItem
                     onClick={() => {
                       showDelete();
@@ -160,7 +159,7 @@ const FileSummaryResults = (props: IFileResultsProps) => {
                     </ListItemIcon>
                     Delete
                   </MenuItem>
-                </ProjectRoleGuard> 
+                </ProjectRoleGuard>
               </Menu>
             </Box>
           </Box>

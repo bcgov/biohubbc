@@ -41,7 +41,6 @@ export interface IProjectRoleGuardProps extends IGuardProps {
   validSystemRoles?: SYSTEM_ROLE[];
 }
 
-
 /**
  * Renders `props.children` only if the user is authenticated and has at least 1 of the specified valid system roles.
  *
@@ -71,7 +70,7 @@ export const SystemRoleGuard = (props: PropsWithChildren<ISystemRoleGuardProps>)
  * @return {*}
  */
 export const ProjectRoleGuard = (props: PropsWithChildren<IProjectRoleGuardProps>) => {
-  const { validProjectRoles, validSystemRoles } = props
+  const { validProjectRoles, validSystemRoles } = props;
   const projectAuthStateContext = useContext(ProjectAuthStateContext);
 
   const hasSystemRole = projectAuthStateContext.hasSystemRole(validSystemRoles);
@@ -83,9 +82,9 @@ export const ProjectRoleGuard = (props: PropsWithChildren<IProjectRoleGuardProps
 
   if (props.fallback) {
     return <>{props.fallback}</>;
-  }  
-  
-  return <></>;  
+  }
+
+  return <></>;
 };
 
 /**

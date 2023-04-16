@@ -7,7 +7,9 @@ import Icon from '@mdi/react';
 import ComponentDialog from 'components/dialog/ComponentDialog';
 import FileUpload from 'components/file-upload/FileUpload';
 import { IUploadHandler } from 'components/file-upload/FileUploadItem';
+import { ProjectRoleGuard } from 'components/security/Guards';
 import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
+import { PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
 import { DialogContext } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -16,8 +18,6 @@ import FileSummaryResults from './components/FileSummaryResults';
 import NoSummaryResults from './components/NoSummaryResults';
 import SummaryResultsErrors from './components/SummaryResultsErrors';
 import SummaryResultsLoading from './components/SummaryResultsLoading';
-import { PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
-import { ProjectRoleGuard } from 'components/security/Guards';
 
 export enum ClassGrouping {
   NOTICE = 'Notice',
@@ -133,8 +133,7 @@ const SurveySummaryResults = () => {
           renderButton={(buttonProps) => (
             <ProjectRoleGuard
               validProjectRoles={[PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR]}
-              validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}
-            >
+              validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
               <Button {...buttonProps} />
             </ProjectRoleGuard>
           )}

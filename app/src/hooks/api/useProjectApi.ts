@@ -406,8 +406,8 @@ const useProjectApi = (axios: AxiosInstance) => {
   const getUserProjectParticipant = async (projectId: number): Promise<IGetUserProjectParticipantResponse> => {
     const { data } = await axios.get<IGetUserProjectParticipantResponse>(`/api/project/${projectId}/participants/self`);
 
-    return data
-  }
+    return data;
+  };
 
   return {
     getAllUserProjectsForView,

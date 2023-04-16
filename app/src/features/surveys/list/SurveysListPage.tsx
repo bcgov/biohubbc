@@ -3,11 +3,11 @@ import Button from '@material-ui/core/Button';
 import Divider from '@material-ui/core/Divider';
 import { mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
-import { ProjectRoleGuard } from 'components/security/Guards';
-import { PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
 import assert from 'assert';
+import { ProjectRoleGuard } from 'components/security/Guards';
 import SurveysList from 'components/surveys/SurveysList';
 import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
+import { PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
 import { CodesContext } from 'contexts/codesContext';
 import { ProjectContext } from 'contexts/projectContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -53,8 +53,7 @@ const SurveysListPage = () => {
         renderButton={(buttonProps) => (
           <ProjectRoleGuard
             validProjectRoles={[PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR]}
-            validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}
-          >
+            validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
             <Button {...buttonProps} />
           </ProjectRoleGuard>
         )}

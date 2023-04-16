@@ -8,9 +8,7 @@ import { getLogger } from '../../../../utils/logger';
 
 const defaultLog = getLogger('paths/project/{projectId}/participants/self');
 
-export const GET: Operation = [
-  getUserRoles()
-];
+export const GET: Operation = [getUserRoles()];
 
 GET.apiDoc = {
   description: "Get the user's participant record for the given project.",
@@ -102,7 +100,7 @@ export function getUserRoles(): RequestHandler {
 
     const connection = getDBConnection(req['keycloak_token']);
 
-    await new Promise(r => setTimeout(r, 2000));
+    await new Promise((r) => setTimeout(r, 2000));
 
     try {
       const projectId = Number(req.params.projectId);
@@ -122,7 +120,6 @@ export function getUserRoles(): RequestHandler {
       return res.status(200).json({
         participant: result ? new ProjectUserObject(result) : null
       });
-
     } catch (error) {
       defaultLog.error({ label: 'getAllProjectParticipantsSQL', message: 'error', error });
       throw error;

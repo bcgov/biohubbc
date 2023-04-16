@@ -20,7 +20,7 @@ import ProjectHeader from './ProjectHeader';
 const ProjectPage = () => {
   const codesContext = useContext(CodesContext);
   const projectContext = useContext(ProjectContext);
-  
+
   useEffect(() => codesContext.codesDataLoader.load(), [codesContext.codesDataLoader]);
 
   useEffect(() => projectContext.projectDataLoader.load(projectContext.projectId), [

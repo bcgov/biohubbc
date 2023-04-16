@@ -15,7 +15,7 @@ export interface ICustomButtonProps {
   buttonStartIcon: ReactNode;
   buttonEndIcon?: ReactNode;
   buttonProps?: Partial<ButtonProps> & { 'data-testid'?: string };
-  renderButton?: (buttonProps: Partial<ButtonProps>) => React.ReactNode
+  renderButton?: (buttonProps: Partial<ButtonProps>) => React.ReactNode;
 }
 
 export interface IButtonToolbarProps extends ICustomButtonProps, IActionToolbarProps {}
@@ -36,7 +36,7 @@ export const H3ButtonToolbar: React.FC<IButtonToolbarProps> = (props) => {
     onClick: () => props.buttonOnClick(),
     children: props.buttonLabel,
     ...props.buttonProps
-  }
+  };
 
   return (
     <ActionToolbar label={props.label} labelProps={{ variant: 'h3' }} toolbarProps={props.toolbarProps}>
@@ -47,11 +47,11 @@ export const H3ButtonToolbar: React.FC<IButtonToolbarProps> = (props) => {
 
 export const H2ButtonToolbar: React.FC<IButtonToolbarProps> = (props) => {
   const id = `h2-button-toolbar-${props.buttonLabel.replace(/\s/g, '')}`;
-  
+
   const buttonProps: Partial<ButtonProps> & { 'data-testid'?: string } = {
     id,
     'data-testid': id,
-    color: "primary",
+    color: 'primary',
     title: props.buttonTitle,
     'aria-label': props.buttonTitle,
     startIcon: props.buttonStartIcon,
@@ -59,7 +59,7 @@ export const H2ButtonToolbar: React.FC<IButtonToolbarProps> = (props) => {
     onClick: () => props.buttonOnClick(),
     children: props.buttonLabel,
     ...props.buttonProps
-  }
+  };
 
   return (
     <ActionToolbar label={props.label} labelProps={{ variant: 'h2' }} toolbarProps={props.toolbarProps}>
@@ -91,7 +91,7 @@ export interface ICustomMenuButtonProps {
   buttonEndIcon?: ReactNode;
   buttonVariant?: string;
   buttonProps?: Partial<ButtonProps> & { 'data-testid'?: string };
-  renderButton?: (buttonProps: Partial<ButtonProps>) => React.ReactNode
+  renderButton?: (buttonProps: Partial<ButtonProps>) => React.ReactNode;
   menuItems: IMenuToolbarItem[];
 }
 
@@ -115,21 +115,21 @@ export const CustomMenuButton: React.FC<ICustomMenuButtonProps> = (props) => {
     menuItemOnClick();
   };
 
-  const buttonProps: Partial<ButtonProps> & {'data-testid'?: string } = {
+  const buttonProps: Partial<ButtonProps> & { 'data-testid'?: string } = {
     id: buttonId,
     'data-testid': buttonId,
     title: props.buttonTitle,
-    color: "primary",
-    variant: "outlined",
-    'aria-controls': "basic-menu",
-    'aria-haspopup': "true",
+    color: 'primary',
+    variant: 'outlined',
+    'aria-controls': 'basic-menu',
+    'aria-haspopup': 'true',
     'aria-expanded': open ? 'true' : undefined,
     startIcon: props.buttonStartIcon,
     endIcon: props.buttonEndIcon,
     onClick: handleClick,
     children: props.buttonLabel,
     ...props.buttonProps
-  }
+  };
 
   return (
     <>

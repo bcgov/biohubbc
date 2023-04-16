@@ -227,8 +227,10 @@ const ProjectHeader = () => {
                 aria-haspopup="true"
                 style={{ marginLeft: '0.5rem' }}
                 onClick={handleClick}
-                disabled={!hasProjectRole([PROJECT_ROLE.PROJECT_EDITOR, PROJECT_ROLE.PROJECT_LEAD])
-                  && !hasSystemRole([SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR])}>
+                disabled={
+                  !hasProjectRole([PROJECT_ROLE.PROJECT_EDITOR, PROJECT_ROLE.PROJECT_LEAD]) &&
+                  !hasSystemRole([SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR])
+                }>
                 Settings
               </Button>
               <Menu

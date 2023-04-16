@@ -211,8 +211,10 @@ const SurveyHeader = () => {
                   endIcon={<Icon path={mdiChevronDown} size={1} />}
                   onClick={openSurveyMenu}
                   style={{ marginLeft: '0.5rem' }}
-                  disabled={!hasProjectRole([PROJECT_ROLE.PROJECT_EDITOR, PROJECT_ROLE.PROJECT_LEAD])
-                    && !hasSystemRole([SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR])}>
+                  disabled={
+                    !hasProjectRole([PROJECT_ROLE.PROJECT_EDITOR, PROJECT_ROLE.PROJECT_LEAD]) &&
+                    !hasSystemRole([SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR])
+                  }>
                   Settings
                 </Button>
                 <Menu

@@ -1,3 +1,6 @@
+import { ProjectRoleRouteGuard } from 'components/security/RouteGuards';
+import { PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
+import { ProjectAuthStateContextProvider } from 'contexts/projectAuthStateContext';
 import { ProjectContextProvider } from 'contexts/projectContext';
 import { SurveyContextProvider } from 'contexts/surveyContext';
 import ProjectPage from 'features/projects/view/ProjectPage';
@@ -12,9 +15,6 @@ import CreateProjectPage from './create/CreateProjectPage';
 import EditProjectPage from './edit/EditProjectPage';
 import ProjectsListPage from './list/ProjectsListPage';
 import ProjectParticipantsPage from './participants/ProjectParticipantsPage';
-import { ProjectRoleRouteGuard } from 'components/security/RouteGuards';
-import { PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
-import { ProjectAuthStateContextProvider } from 'contexts/projectAuthStateContext';
 
 /**
  * Router for all `/admin/projects/*` pages.
@@ -44,7 +44,11 @@ const ProjectsRouter: React.FC = () => {
             <RouteWithTitle exact path="/admin/projects/:id/details" title={getTitle('Surveys')}>
               <ProjectsLayout>
                 <ProjectRoleRouteGuard
-                  validProjectRoles={[PROJECT_ROLE.PROJECT_EDITOR, PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_VIEWER]}
+                  validProjectRoles={[
+                    PROJECT_ROLE.PROJECT_EDITOR,
+                    PROJECT_ROLE.PROJECT_LEAD,
+                    PROJECT_ROLE.PROJECT_VIEWER
+                  ]}
                   validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
                   <ProjectPage />
                 </ProjectRoleRouteGuard>
@@ -60,7 +64,7 @@ const ProjectsRouter: React.FC = () => {
                 </ProjectRoleRouteGuard>
               </ProjectsLayout>
             </RouteWithTitle>
-            
+
             <RouteWithTitle exact path="/admin/projects/:id/users" title={getTitle('Project Team')}>
               <ProjectsLayout>
                 <ProjectRoleRouteGuard
@@ -74,7 +78,11 @@ const ProjectsRouter: React.FC = () => {
             <RouteWithTitle exact path="/admin/projects/:id/surveys" title={getTitle('Surveys')}>
               <ProjectsLayout>
                 <ProjectRoleRouteGuard
-                  validProjectRoles={[PROJECT_ROLE.PROJECT_EDITOR, PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_VIEWER]}
+                  validProjectRoles={[
+                    PROJECT_ROLE.PROJECT_EDITOR,
+                    PROJECT_ROLE.PROJECT_LEAD,
+                    PROJECT_ROLE.PROJECT_VIEWER
+                  ]}
                   validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
                   <ProjectPage />
                 </ProjectRoleRouteGuard>
@@ -84,7 +92,11 @@ const ProjectsRouter: React.FC = () => {
             <RouteWithTitle path="/admin/projects/:id/surveys/:survey_id" title={getTitle('Surveys')}>
               <ProjectsLayout>
                 <ProjectRoleRouteGuard
-                  validProjectRoles={[PROJECT_ROLE.PROJECT_EDITOR, PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_VIEWER]}
+                  validProjectRoles={[
+                    PROJECT_ROLE.PROJECT_EDITOR,
+                    PROJECT_ROLE.PROJECT_LEAD,
+                    PROJECT_ROLE.PROJECT_VIEWER
+                  ]}
                   validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
                   <SurveyContextProvider>
                     <SurveyRouter />

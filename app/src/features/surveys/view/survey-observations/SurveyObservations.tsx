@@ -7,7 +7,9 @@ import Icon from '@mdi/react';
 import ComponentDialog from 'components/dialog/ComponentDialog';
 import FileUpload from 'components/file-upload/FileUpload';
 import { IUploadHandler } from 'components/file-upload/FileUploadItem';
+import { ProjectRoleGuard } from 'components/security/Guards';
 import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
+import { PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
 import { DialogContext } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -19,8 +21,6 @@ import NoObservationsCard from './components/NoObservationsCard';
 import ObservationFileCard from './components/ObservationFileCard';
 import ObservationMessagesCard from './components/ObservationMessagesCard';
 import ValidatingObservationsCard from './components/ValidatingObservationsCard';
-import { ProjectRoleGuard } from 'components/security/Guards';
-import { PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
 
 const SurveyObservations: React.FC = () => {
   const biohubApi = useBiohubApi();
@@ -171,8 +171,7 @@ const SurveyObservations: React.FC = () => {
           renderButton={(buttonProps) => (
             <ProjectRoleGuard
               validProjectRoles={[PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR]}
-              validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}
-            >
+              validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
               <Button {...buttonProps} />
             </ProjectRoleGuard>
           )}

@@ -23,9 +23,7 @@ const RouteWithTitle = (props: IRouteWithTitleProps) => {
     document.title = title;
   }
 
-  return (
-    <Route {...rest}>{children}</Route>
-  );
+  return <Route {...rest}>{children}</Route>;
 };
 
 export default RouteWithTitle;

@@ -2,9 +2,9 @@ import AdminUsersLayout from 'features/admin/AdminUsersLayout';
 import React from 'react';
 import { Redirect, Route, Switch } from 'react-router';
 import RouteWithTitle from 'utils/RouteWithTitle';
+import { getTitle } from 'utils/Utils';
 import ManageUsersPage from './users/ManageUsersPage';
 import UsersDetailPage from './users/UsersDetailPage';
-import { getTitle } from 'utils/Utils';
 
 /**
  * Router for all `/admin/users/*` pages.

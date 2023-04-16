@@ -153,8 +153,7 @@ const ObservationFileCard = (props: IObservationFileCardProps) => {
               </MenuItem>
               <ProjectRoleGuard
                 validProjectRoles={[PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR]}
-                validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}
-              >
+                validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
                 <MenuItem
                   onClick={() => {
                     props.onDelete();

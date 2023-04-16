@@ -14,7 +14,7 @@ export interface ISystemRoleRouteGuardProps extends RouteProps {
    * @type {string[]}
    */
   validRoles?: string[];
-};
+}
 
 export interface IProjectRoleRouteGuardProps extends RouteProps {
   /**
@@ -32,8 +32,8 @@ export interface IProjectRoleRouteGuardProps extends RouteProps {
    *
    * @type {string[]}
    */
-    validSystemRoles?: string[];
-};
+  validSystemRoles?: string[];
+}
 
 /**
  * Route guard that requires the user to have at least 1 of the specified system roles.
@@ -68,7 +68,7 @@ export const ProjectRoleRouteGuard = (props: IProjectRoleRouteGuardProps) => {
 
   return (
     <WaitForProjectParticipantInfo>
-      <CheckIfUserHasProjectRole {...{ validSystemRoles, validProjectRoles}}>
+      <CheckIfUserHasProjectRole {...{ validSystemRoles, validProjectRoles }}>
         <Route {...rest}>{children}</Route>
       </CheckIfUserHasProjectRole>
     </WaitForProjectParticipantInfo>

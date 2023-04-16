@@ -7,14 +7,14 @@ import Icon from '@mdi/react';
 import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
 import FileUploadWithMetaDialog from 'components/dialog/attachments/FileUploadWithMetaDialog';
 import { IUploadHandler } from 'components/file-upload/FileUploadItem';
+import { ProjectRoleGuard } from 'components/security/Guards';
 import { H2MenuToolbar } from 'components/toolbar/ActionToolbars';
+import { PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import React, { useContext, useState } from 'react';
 import { AttachmentType } from '../../../constants/attachments';
 import SurveyAttachmentsList from './SurveyAttachmentsList';
-import { ProjectRoleGuard } from 'components/security/Guards';
-import { PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
 
 const SurveyAttachments: React.FC = () => {
   const biohubApi = useBiohubApi();
@@ -90,8 +90,7 @@ const SurveyAttachments: React.FC = () => {
           renderButton={(buttonProps) => (
             <ProjectRoleGuard
               validProjectRoles={[PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR]}
-              validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}
-            >
+              validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
               <Button {...buttonProps} />
             </ProjectRoleGuard>
           )}
