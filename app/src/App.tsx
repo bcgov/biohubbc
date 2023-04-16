@@ -6,7 +6,6 @@ import { KeycloakProvider } from '@react-keycloak/web';
 import AppRouter from 'AppRouter';
 import { AuthStateContextProvider } from 'contexts/authStateContext';
 import { ConfigContext, ConfigContextProvider } from 'contexts/configContext';
-import { ProjectAuthStateContextProvider } from 'contexts/projectAuthStateContext';
 import Keycloak from 'keycloak-js';
 import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
@@ -31,9 +30,7 @@ const App: React.FC = () => {
                 LoadingComponent={<CircularProgress className="pageProgress" size={40} />}>
                 <AuthStateContextProvider>
                   <BrowserRouter>
-                    <ProjectAuthStateContextProvider>
-                      <AppRouter />
-                    </ProjectAuthStateContextProvider>
+                    <AppRouter />
                   </BrowserRouter>
                 </AuthStateContextProvider>
               </KeycloakProvider>
