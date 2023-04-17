@@ -178,9 +178,6 @@ export class AttachmentService extends DBService {
     return this.attachmentRepository.getSurveyAttachments(surveyId);
   }
 
-  //TODO:  Check that this actually works ... I don't think it does
-  //problably need to use a Promises.a;l apprach with a map instead of for each .. because of the async inside the foreach
-
   /**
    * Finds all of the survey attachments and Supplementary Data for the given survey ID.
    *
@@ -191,19 +188,17 @@ export class AttachmentService extends DBService {
   async getSurveyAttachmentsWithSupplementaryData(surveyId: number): Promise<GetAttachmentsData[]> {
     const historyPublishService = new HistoryPublishService(this.connection);
 
-    const attatchments = await this.attachmentRepository.getSurveyAttachments(surveyId);
+    const attachment = await this.attachmentRepository.getSurveyAttachments(surveyId);
 
-    const attachmentList: any[] = [];
+    return Promise.all(
+      attachment.map(async (attachment: any) => {
+        const supplementaryData = await historyPublishService.getSurveyAttachmentPublishRecord(
+          attachment.survey_attachment_id
+        );
 
-    attatchments.forEach(async (attachment: any) => {
-      const supplementaryData = await historyPublishService.getSurveyAttachmentPublishRecord(
-        attachment.survey_attachment_id
-      );
-
-      attachmentList.push(new GetAttachmentsData(attachment, supplementaryData));
-    });
-
-    return attachmentList;
+        return new GetAttachmentsData(attachment, supplementaryData);
+      })
+    );
   }
 
   /**
@@ -237,19 +232,17 @@ export class AttachmentService extends DBService {
   async getSurveyReportAttachmentsWithSupplementaryData(surveyId: number): Promise<GetAttachmentsData[]> {
     const historyPublishService = new HistoryPublishService(this.connection);
 
-    const attatchments = await this.attachmentRepository.getSurveyReportAttachments(surveyId);
+    const attachment = await this.attachmentRepository.getSurveyReportAttachments(surveyId);
 
-    const attachmentList: any[] = [];
+    return Promise.all(
+      attachment.map(async (attachment: any) => {
+        const supplementaryData = await historyPublishService.getSurveyReportPublishRecord(
+          attachment.survey_attachment_id
+        );
 
-    attatchments.forEach(async (attachment: any) => {
-      const supplementaryData = await historyPublishService.getSurveyReportPublishRecord(
-        attachment.survey_report_attachment_id
-      );
-
-      attachmentList.push(new GetAttachmentsData(attachment, supplementaryData));
-    });
-
-    return attachmentList;
+        return new GetAttachmentsData(attachment, supplementaryData);
+      })
+    );
   }
 
   /**
