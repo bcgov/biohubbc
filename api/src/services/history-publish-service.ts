@@ -262,13 +262,36 @@ export class HistoryPublishService extends DBService {
     return count_unpublished_reports > 0 ? true : false;
   }
 
-  async getConfirmationLatestObservationPublished(surveyId: number): Promise<boolean> {
-    const publish_record_exists = (await this.historyRepository.getConfirmationLatestObservationPublished(surveyId))
-      .rows[0];
+  async hasUnpublishedObservation(surveyId: number): Promise<boolean> {
+    //step 1: grab the latest, undeleted record
 
-    console.log('observation publish record exists? : ', publish_record_exists);
+    const latestUndeletedObservationRecordId = (
+      await this.historyRepository.getLatestUndeletedObservationRecordId(surveyId)
+    ).rows[0]?.occurrence_submission_id;
 
-    return publish_record_exists === null ? true : false;
+    //console.log('latestUndeletedObservationRecord:', latestUndeletedObservationRecordId);
+
+    if (!latestUndeletedObservationRecordId) {
+      return false;
+    }
+
+    // if not, there is nothing to publish
+
+    // if exists - check publish table
+    // if exists in the publish table - there is again nothing to publish
+    // if not in the publish table - there is something to publish
+
+    const publish_record_exists = (
+      await this.historyRepository.getConfirmationLatestObservationPublished(latestUndeletedObservationRecordId)
+    ).rows[0]?.queue_id;
+
+    if (publish_record_exists) {
+      return false;
+    }
+
+    //console.log('observation publish record exists? : ', publish_record_exists);
+
+    return true;
   }
 
   async getConfirmationLatestSummaryResultsPublished(surveyId: number): Promise<boolean> {

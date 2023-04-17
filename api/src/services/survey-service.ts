@@ -826,22 +826,20 @@ export class SurveyService extends DBService {
     const has_unpublished_reports = await this.historyPublishService.hasUnpublishedSurveyReports(surveyId);
     console.log('has_unpublished_reports', has_unpublished_reports);
 
-    const has_unpublished_observations = await this.historyPublishService.getConfirmationLatestObservationPublished(surveyId);
+    const has_unpublished_observations = await this.historyPublishService.hasUnpublishedObservation(surveyId);
     console.log('has_unpublished_observations', has_unpublished_observations);
 
-    const has_unpublished_summary_results = await this.historyPublishService.getConfirmationLatestSummaryResultsPublished(
-      surveyId
-    );
-    console.log('has_unpublished_summary_results', has_unpublished_summary_results);
+    // const has_unpublished_summary_results = await this.historyPublishService.getConfirmationLatestSummaryResultsPublished(
+    //   surveyId
+    // );
+    //console.log('has_unpublished_summary_results', has_unpublished_summary_results);
 
     // Is true when survey have unpulished attachments or reports or observations or summary results
 
     const surveyHasUnpublishedContent: boolean =
-      has_unpublished_attachments ||
-      has_unpublished_reports ||
-      has_unpublished_observations ||
-      has_unpublished_summary_results;
-
+      has_unpublished_attachments || has_unpublished_reports || has_unpublished_observations;
+    // ||
+    // has_unpublished_summary_results
     return surveyHasUnpublishedContent;
   }
 }

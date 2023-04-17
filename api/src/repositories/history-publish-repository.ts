@@ -659,25 +659,35 @@ export class HistoryPublishRepository extends BaseRepository {
     return response;
   }
 
-  async getConfirmationLatestObservationPublished(surveyId: number): Promise<QueryResult> {
+  async getLatestUndeletedObservationRecordId(surveyId: number): Promise<QueryResult> {
     const sqlStatement = SQL`
-  select
-   osp.occurrence_submission_publish_id
-          from
-            occurrence_submission os
-          left join
-            occurrence_submission_publish osp
-          on
-            os.occurrence_submission_id = osp.occurrence_submission_id
-          where
-            os.survey_id = ${surveyId}
-          order by
-            os.occurrence_submission_id desc
-          limit 1;
+    select
+      occurrence_submission_id
+    from
+      occurrence_submission os
+    where
+      os.survey_id = ${surveyId}
+    and
+      os.delete_timestamp is null
+    order by
+      event_timestamp desc
+    limit 1;`;
+    const response = await this.connection.sql(sqlStatement);
+
+    return response;
+  }
+
+  async getConfirmationLatestObservationPublished(occurrenceSubmissionId: number): Promise<QueryResult> {
+    const sqlStatement = SQL`
+    select
+      *
+    from
+      occurrence_submission_publish osp
+    where
+      osp.occurrence_submission_id = ${occurrenceSubmissionId};
 `;
 
     const response = await this.connection.sql(sqlStatement);
-    //console.log('db response for observations: ', response);
 
     return response;
   }
