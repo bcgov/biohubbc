@@ -1,7 +1,7 @@
 import SQL from 'sql-template-strings';
 import { ApiExecuteSQLError } from '../errors/api-error';
-import { BaseRepository } from './base-repository';
 import { ProjectUserObject } from '../models/user';
+import { BaseRepository } from './base-repository';
 
 /**
  * A repository class for accessing project participants data.

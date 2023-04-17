@@ -28,6 +28,7 @@ import {
   IGetProject,
   ProjectSupplementaryData
 } from '../models/project-view';
+import { ProjectUserObject } from '../models/user';
 import { GET_ENTITIES, IUpdateProject } from '../paths/project/{projectId}/update';
 import { ProjectRepository } from '../repositories/project-repository';
 import { deleteFileFromS3 } from '../utils/file-utils';
@@ -38,7 +39,6 @@ import { HistoryPublishService } from './history-publish-service';
 import { PlatformService } from './platform-service';
 import { ProjectParticipationService } from './project-participation-service';
 import { SurveyService } from './survey-service';
-import { ProjectUserObject } from '../models/user';
 
 const defaultLog = getLogger('services/project-service');
 

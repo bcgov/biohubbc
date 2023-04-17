@@ -6,10 +6,10 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as db from '../../../../database/db';
 import { HTTPError } from '../../../../errors/http-error';
+import { ProjectUserObject } from '../../../../models/user';
+import { ProjectService } from '../../../../services/project-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../__mocks__/db';
 import { GET, getUserRolesForProject } from './self';
-import { ProjectService } from '../../../../services/project-service';
-import { ProjectUserObject } from '../../../../models/user';
 
 chai.use(sinonChai);
 
@@ -20,7 +20,7 @@ describe('getUserRolesForProject', () => {
 
   describe('openApiSchema', () => {
     describe('request validation', () => {
-      const requestValidator = new OpenAPIRequestValidator(GET.apiDoc as unknown as OpenAPIRequestValidatorArgs);
+      const requestValidator = new OpenAPIRequestValidator((GET.apiDoc as unknown) as OpenAPIRequestValidatorArgs);
 
       describe('should throw an error when', () => {
         describe('projectId', () => {
@@ -38,7 +38,7 @@ describe('getUserRolesForProject', () => {
 
           it('is missing', async () => {
             const request = {
-              params: { }
+              params: {}
             };
 
             const response = requestValidator.validateRequest(request);
@@ -64,13 +64,13 @@ describe('getUserRolesForProject', () => {
     });
 
     describe('response validation', () => {
-      const responseValidator = new OpenAPIResponseValidator(GET.apiDoc as unknown as OpenAPIResponseValidatorArgs);
+      const responseValidator = new OpenAPIResponseValidator((GET.apiDoc as unknown) as OpenAPIResponseValidatorArgs);
       const mockParticipantRecord: ProjectUserObject = {
         project_id: 1,
         system_user_id: 20,
         project_role_ids: [1, 2],
         project_role_names: ['RoleA', 'RoleB']
-      }
+      };
 
       describe('should throw an error when', () => {
         it('returns a null response', async () => {
@@ -125,12 +125,11 @@ describe('getUserRolesForProject', () => {
             expect(response.errors[0].message).to.equal('must be integer');
           });
         });
-
       });
 
       describe('should succeed when', () => {
         it('required values are valid', async () => {
-          const apiResponse = mockParticipantRecord
+          const apiResponse = mockParticipantRecord;
 
           const response = responseValidator.validateResponse(200, apiResponse);
           expect(response).to.equal(undefined);
@@ -168,7 +167,7 @@ describe('getUserRolesForProject', () => {
     const dbConnectionObj = getMockDBConnection();
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
-      systemUserId: () => null as unknown as number
+      systemUserId: () => (null as unknown) as number
     });
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
@@ -192,9 +191,7 @@ describe('getUserRolesForProject', () => {
       systemUserId: () => 20
     });
 
-    const projectServiceStub = sinon
-      .stub(ProjectService.prototype, 'getProjectParticipant')
-      .resolves(null);
+    const projectServiceStub = sinon.stub(ProjectService.prototype, 'getProjectParticipant').resolves(null);
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
@@ -216,14 +213,12 @@ describe('getUserRolesForProject', () => {
       systemUserId: () => 20
     });
 
-    const projectServiceStub = sinon
-      .stub(ProjectService.prototype, 'getProjectParticipant')
-      .resolves({
-        project_id: 1,
-        system_user_id: 20,
-        project_role_ids: [1],
-        project_role_names: ['Test-Role-A']
-      });
+    const projectServiceStub = sinon.stub(ProjectService.prototype, 'getProjectParticipant').resolves({
+      project_id: 1,
+      system_user_id: 20,
+      project_role_ids: [1],
+      project_role_names: ['Test-Role-A']
+    });
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
@@ -245,7 +240,6 @@ describe('getUserRolesForProject', () => {
     });
   });
 
-  
   it('should return a participant record with more than one role', async () => {
     const dbConnectionObj = getMockDBConnection();
     sinon.stub(db, 'getDBConnection').returns({
@@ -253,14 +247,12 @@ describe('getUserRolesForProject', () => {
       systemUserId: () => 20
     });
 
-    const projectServiceStub = sinon
-      .stub(ProjectService.prototype, 'getProjectParticipant')
-      .resolves({
-        project_id: 1,
-        system_user_id: 20,
-        project_role_ids: [1, 2],
-        project_role_names: ['Test-Role-A', 'Test-Role-B']
-      });
+    const projectServiceStub = sinon.stub(ProjectService.prototype, 'getProjectParticipant').resolves({
+      project_id: 1,
+      system_user_id: 20,
+      project_role_ids: [1, 2],
+      project_role_names: ['Test-Role-A', 'Test-Role-B']
+    });
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
@@ -288,7 +280,7 @@ describe('getUserRolesForProject', () => {
       ...dbConnectionObj,
       systemUserId: () => 20
     });
-    
+
     sinon.stub(ProjectService.prototype, 'getProjectParticipant').rejects(new Error('a test error'));
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();

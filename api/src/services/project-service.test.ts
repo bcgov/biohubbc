@@ -12,13 +12,13 @@ import {
   GetPartnershipsData,
   GetProjectData
 } from '../models/project-view';
+import { ProjectUserObject } from '../models/user';
 import { ProjectParticipationRepository } from '../repositories/project-participation-repository';
 import { ProjectRepository } from '../repositories/project-repository';
 import { getMockDBConnection } from '../__mocks__/db';
 import { HistoryPublishService } from './history-publish-service';
 import { PlatformService } from './platform-service';
 import { ProjectService } from './project-service';
-import { ProjectUserObject } from '../models/user';
 
 chai.use(sinonChai);
 
