@@ -10,6 +10,7 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import { mdiFilterOutline, mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
+import ProjectsSubmissionAlertBar from 'components/publish/ProjectsSubmissionAlertBar';
 import { IProjectAdvancedFilters } from 'components/search-filter/ProjectAdvancedFilters';
 import { SystemRoleGuard } from 'components/security/Guards';
 import { SYSTEM_ROLE } from 'constants/roles';
@@ -101,13 +102,9 @@ const ProjectsListPage: React.FC = () => {
             <Box display="flex" justifyContent="space-between">
               <Box className={classes.pageTitleContainer}>
                 <Typography variant="h1" className={classes.pageTitle}>
+                  <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR]}>My </SystemRoleGuard>
                   Projects
                 </Typography>
-                {/* <Box mt={1} display="flex" alignItems="center">
-                  <Typography component="span" variant="subtitle1" color="textSecondary" style={{ display: 'flex', alignItems: 'center' }}>
-                    You have&nbsp;<strong>11 documents</strong>&nbsp;to review
-                  </Typography>
-                </Box> */}
               </Box>
               <Box flex="0 0 auto" className={classes.pageTitleActions}>
                 <SystemRoleGuard
@@ -132,6 +129,9 @@ const ProjectsListPage: React.FC = () => {
       </Paper>
       <Container maxWidth="xl">
         <Box py={3}>
+          <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
+            <ProjectsSubmissionAlertBar projects={projectsDataLoader.data} />
+          </SystemRoleGuard>
           <Paper elevation={0}>
             <Toolbar style={{ display: 'flex', justifyContent: 'space-between' }}>
               <Typography variant="h4" component="h2">
