@@ -89,13 +89,7 @@ export const ProjectAuthStateContextProvider: React.FC = (props) => {
       getProjectId,
       hasLoadedParticipantInfo: participantDataLoader.isReady
     }),
-    [
-      hasProjectRole,
-      hasSystemRole,
-      getProjectParticipant,
-      getProjectId,
-      participantDataLoader.isReady
-    ]
+    [hasProjectRole, hasSystemRole, getProjectParticipant, getProjectId, participantDataLoader.isReady]
   );
 
   return (

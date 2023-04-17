@@ -9,6 +9,7 @@ import Typography from '@material-ui/core/Typography';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { EditProjectI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
+import { ProjectContext } from 'contexts/projectContext';
 import { FormikProps } from 'formik';
 import * as History from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -18,7 +19,6 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router';
 import { Prompt } from 'react-router-dom';
 import EditProjectForm from './EditProjectForm';
-import { ProjectContext } from 'contexts/projectContext';
 
 const useStyles = makeStyles((theme: Theme) => ({
   pageTitleContainer: {

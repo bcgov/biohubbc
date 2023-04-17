@@ -263,7 +263,7 @@ describe('useProjectApi', () => {
   });
 
   it('getUserProjectParticipant works as expected', async () => {
-    const mockResponse = { 
+    const mockResponse = {
       participant: {
         project_id: 1,
         system_user_id: 1,
