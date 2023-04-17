@@ -1,3 +1,4 @@
+import { QueryResult } from 'pg';
 import SQL from 'sql-template-strings';
 import { z } from 'zod';
 import { ApiExecuteSQLError } from '../errors/api-error';
@@ -614,5 +615,51 @@ export class HistoryPublishRepository extends BaseRepository {
     `;
 
     await this.connection.sql(sqlStatement);
+  }
+
+  async getCountSurveyUnpublishedAttachments(surveyId: number): Promise<QueryResult> {
+    const sqlStatement = SQL`
+    SELECT
+      count(*)
+    from
+      survey_attachment sa
+    left join
+      survey_attachment_publish sap
+    on
+      sa.survey_attachment_id = sap.survey_attachment_id
+    where
+      sa.survey_id =${surveyId}
+    and
+      sap.survey_attachment_publish_id is null;
+  `;
+
+    const response = await this.connection.sql(sqlStatement);
+
+    console.log('response from DB', response);
+
+    return response;
+  }
+
+  async getCountSurveyUnpublishedReports(surveyId: number): Promise<QueryResult> {
+    const sqlStatement = SQL`
+    SELECT
+      count(*)
+    from
+      survey_report_attachment sra
+    left join
+      survey_report_publish srp
+    on
+      sra.survey_report_attachment_id = srp.survey_report_attachment_id
+    where
+      sra.survey_id =${surveyId}
+    and
+      srp.survey_report_publish_id is null;
+  `;
+
+    const response = await this.connection.sql(sqlStatement);
+
+    console.log('response from DB', response);
+
+    return response;
   }
 }

@@ -3,6 +3,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
+import ProjectSubmissionAlertBar from 'components/publish/ProjectSubmissionAlertBar';
 import { CodesContext } from 'contexts/codesContext';
 import { ProjectContext } from 'contexts/projectContext';
 import ProjectAttachments from 'features/projects/view/ProjectAttachments';
@@ -28,7 +29,11 @@ const ProjectPage = () => {
     projectContext.projectId
   ]);
 
-  if (!codesContext.codesDataLoader.data || !projectContext.projectDataLoader.data) {
+  if (
+    !codesContext.codesDataLoader.data ||
+    !projectContext.projectDataLoader.data ||
+    !projectContext.surveysListDataLoader.data
+  ) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
@@ -37,6 +42,7 @@ const ProjectPage = () => {
       <ProjectHeader />
       <Container maxWidth="xl">
         <Box py={3}>
+          <ProjectSubmissionAlertBar />
           <Grid container spacing={3}>
             <Grid item md={12} lg={4}>
               <Paper elevation={0}>

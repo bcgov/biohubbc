@@ -57,239 +57,258 @@ GET.apiDoc = {
             items: {
               title: 'Survey get response object, for view purposes',
               type: 'object',
-              required: ['survey_details', 'species', 'permit', 'funding', 'purpose_and_methodology', 'proprietor'],
+              required: ['surveyData', 'surveySupplementaryData'],
               properties: {
-                survey_details: {
-                  description: 'Survey Details',
+                surveyData: {
                   type: 'object',
                   required: [
-                    'id',
-                    'biologist_first_name',
-                    'biologist_last_name',
-                    'start_date',
-                    'geometry',
-                    'survey_area_name',
-                    'survey_name',
-                    'revision_count'
+                    'survey_details',
+                    'species',
+                    'permit',
+                    'funding',
+                    'proprietor',
+                    'purpose_and_methodology',
+                    'location'
                   ],
                   properties: {
-                    id: {
-                      description: 'Survey id',
-                      type: 'number'
-                    },
-                    biologist_first_name: {
-                      type: 'string'
-                    },
-                    biologist_last_name: {
-                      type: 'string'
-                    },
-                    start_date: {
-                      oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
-                      description: 'ISO 8601 date string for the funding end_date'
-                    },
-                    end_date: {
-                      oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
-                      nullable: true,
-                      description: 'ISO 8601 date string for the funding end_date'
-                    },
-                    geometry: {
-                      type: 'array',
-                      items: {
-                        ...(geoJsonFeature as object)
+                    survey_details: {
+                      description: 'Survey Details',
+                      type: 'object',
+                      required: [
+                        'survey_name',
+                        'start_date',
+                        'biologist_first_name',
+                        'biologist_last_name',
+                        'revision_count'
+                      ],
+                      properties: {
+                        survey_name: {
+                          type: 'string'
+                        },
+                        start_date: {
+                          oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
+                          description: 'ISO 8601 date string for the funding end_date'
+                        },
+                        end_date: {
+                          oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
+                          nullable: true,
+                          description: 'ISO 8601 date string for the funding end_date'
+                        },
+                        biologist_first_name: {
+                          type: 'string'
+                        },
+                        biologist_last_name: {
+                          type: 'string'
+                        },
+                        revision_count: {
+                          type: 'number'
+                        }
                       }
                     },
-                    survey_area_name: {
-                      type: 'string'
-                    },
-                    survey_name: {
-                      type: 'string'
-                    },
-                    revision_count: {
-                      type: 'number'
-                    }
-                  }
-                },
-                species: {
-                  description: 'Survey Species',
-                  type: 'object',
-                  required: ['focal_species', 'focal_species_names', 'ancillary_species', 'ancillary_species_names'],
-                  properties: {
-                    ancillary_species: {
-                      nullable: true,
-                      type: 'array',
-                      items: {
-                        type: 'number'
-                      }
-                    },
-                    ancillary_species_names: {
-                      nullable: true,
-                      type: 'array',
-                      items: {
-                        type: 'string'
-                      }
-                    },
-                    focal_species: {
-                      type: 'array',
-                      items: {
-                        type: 'number'
-                      }
-                    },
-                    focal_species_names: {
-                      type: 'array',
-                      items: {
-                        type: 'string'
-                      }
-                    }
-                  }
-                },
-                permit: {
-                  type: 'object',
-                  description: 'Survey Permit Information',
-                  properties: {
-                    permits: {
-                      description: 'Survey Permits',
-                      type: 'array',
-                      items: {
-                        required: ['permit_id', 'permit_number', 'permit_type'],
-                        properties: {
-                          permit_id: {
-                            type: 'number',
-                            minimum: 1
-                          },
-                          permit_number: {
+                    species: {
+                      description: 'Survey Species',
+                      type: 'object',
+                      required: [
+                        'focal_species',
+                        'focal_species_names',
+                        'ancillary_species',
+                        'ancillary_species_names'
+                      ],
+                      properties: {
+                        ancillary_species: {
+                          nullable: true,
+                          type: 'array',
+                          items: {
+                            type: 'number'
+                          }
+                        },
+                        ancillary_species_names: {
+                          nullable: true,
+                          type: 'array',
+                          items: {
                             type: 'string'
-                          },
-                          permit_type: {
+                          }
+                        },
+                        focal_species: {
+                          type: 'array',
+                          items: {
+                            type: 'number'
+                          }
+                        },
+                        focal_species_names: {
+                          type: 'array',
+                          items: {
                             type: 'string'
+                          }
+                        }
+                      }
+                    },
+                    permit: {
+                      description: 'Survey Permit',
+                      type: 'object',
+                      properties: {
+                        permits: {
+                          type: 'array',
+                          items: {
+                            type: 'object',
+                            required: ['permit_id', 'permit_number', 'permit_type'],
+                            properties: {
+                              permit_id: {
+                                type: 'number',
+                                minimum: 1
+                              },
+                              permit_number: {
+                                type: 'string'
+                              },
+                              permit_type: {
+                                type: 'string'
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    funding: {
+                      description: 'Survey Funding Sources',
+                      type: 'object',
+                      properties: {
+                        funding_sources: {
+                          type: 'array',
+                          items: {
+                            type: 'object',
+                            required: [
+                              'pfs_id',
+                              'agency_name',
+                              'funding_amount',
+                              'funding_start_date',
+                              'funding_end_date'
+                            ],
+                            properties: {
+                              pfs_id: {
+                                type: 'number',
+                                nullable: true
+                              },
+                              agency_name: {
+                                type: 'string',
+                                nullable: true
+                              },
+                              funding_amount: {
+                                type: 'number',
+                                nullable: true
+                              },
+                              funding_start_date: {
+                                type: 'string',
+                                nullable: true,
+                                description: 'ISO 8601 date string'
+                              },
+                              funding_end_date: {
+                                type: 'string',
+                                nullable: true,
+                                description: 'ISO 8601 date string'
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    purpose_and_methodology: {
+                      description: 'Survey Details',
+                      type: 'object',
+                      required: [
+                        'field_method_id',
+                        'additional_details',
+                        'intended_outcome_id',
+                        'ecological_season_id',
+                        'vantage_code_ids',
+                        'revision_count'
+                      ],
+                      properties: {
+                        field_method_id: {
+                          type: 'number'
+                        },
+                        additional_details: {
+                          type: 'string',
+                          nullable: true
+                        },
+                        intended_outcome_id: {
+                          type: 'number',
+                          nullable: true
+                        },
+                        ecological_season_id: {
+                          type: 'number',
+                          nullable: true
+                        },
+                        vantage_code_ids: {
+                          type: 'array',
+                          items: {
+                            type: 'number'
+                          }
+                        }
+                      }
+                    },
+                    proprietor: {
+                      description: 'Survey Proprietor Details',
+                      type: 'object',
+                      nullable: true,
+                      required: [
+                        'category_rationale',
+                        'disa_required',
+                        'first_nations_id',
+                        'first_nations_name',
+                        'proprietor_name',
+                        'proprietor_type_id',
+                        'proprietor_type_name'
+                      ],
+                      properties: {
+                        category_rationale: {
+                          type: 'string'
+                        },
+                        disa_required: {
+                          type: 'boolean'
+                        },
+                        first_nations_id: {
+                          type: 'number',
+                          nullable: true
+                        },
+                        first_nations_name: {
+                          type: 'string',
+                          nullable: true
+                        },
+                        proprietor_name: {
+                          type: 'string'
+                        },
+                        proprietor_type_id: {
+                          type: 'number'
+                        },
+                        proprietor_type_name: {
+                          type: 'string'
+                        }
+                      }
+                    },
+                    location: {
+                      description: 'Survey location Details',
+                      type: 'object',
+                      required: ['survey_area_name', 'geometry'],
+                      properties: {
+                        survey_area_name: {
+                          type: 'string'
+                        },
+                        geometry: {
+                          type: 'array',
+                          items: {
+                            ...(geoJsonFeature as object)
                           }
                         }
                       }
                     }
                   }
                 },
-                funding: {
-                  description: 'Survey Funding Sources',
+                surveySupplementaryData: {
                   type: 'object',
+                  required: ['has_unpublished_content'],
                   properties: {
-                    funding_sources: {
-                      type: 'array',
-                      items: {
-                        type: 'object',
-                        required: ['pfs_id', 'agency_name', 'funding_amount', 'funding_start_date', 'funding_end_date'],
-                        properties: {
-                          pfs_id: {
-                            type: 'number',
-                            nullable: true
-                          },
-                          agency_name: {
-                            type: 'string',
-                            nullable: true
-                          },
-                          funding_amount: {
-                            type: 'number',
-                            nullable: true
-                          },
-                          funding_start_date: {
-                            type: 'string',
-                            nullable: true,
-                            description: 'ISO 8601 date string'
-                          },
-                          funding_end_date: {
-                            type: 'string',
-                            nullable: true,
-                            description: 'ISO 8601 date string'
-                          }
-                        }
-                      }
-                    }
-                  }
-                },
-                purpose_and_methodology: {
-                  description: 'Survey Details',
-                  type: 'object',
-                  required: [
-                    'field_method_id',
-                    'additional_details',
-                    'intended_outcome_id',
-                    'ecological_season_id',
-                    'vantage_code_ids'
-                  ],
-                  properties: {
-                    field_method_id: {
-                      type: 'number'
-                    },
-                    additional_details: {
-                      type: 'string',
-                      nullable: true
-                    },
-                    intended_outcome_id: {
-                      type: 'number',
-                      nullable: true
-                    },
-                    ecological_season_id: {
-                      type: 'number',
-                      nullable: true
-                    },
-                    vantage_code_ids: {
-                      type: 'array',
-                      items: {
-                        type: 'number'
-                      }
-                    }
-                  }
-                },
-                proprietor: {
-                  description: 'Survey Proprietor Details',
-                  type: 'object',
-                  nullable: true,
-                  required: [
-                    'category_rationale',
-                    'disa_required',
-                    'first_nations_id',
-                    'first_nations_name',
-                    'proprietor_name',
-                    'proprietor_type_id',
-                    'proprietor_type_name'
-                  ],
-                  properties: {
-                    category_rationale: {
-                      type: 'string'
-                    },
-                    disa_required: {
+                    has_unpublished_content: {
                       type: 'boolean'
-                    },
-                    first_nations_id: {
-                      type: 'number',
-                      nullable: true
-                    },
-                    first_nations_name: {
-                      type: 'string',
-                      nullable: true
-                    },
-                    proprietor_name: {
-                      type: 'string'
-                    },
-                    proprietor_type_id: {
-                      type: 'number'
-                    },
-                    proprietor_type_name: {
-                      type: 'string'
-                    }
-                  }
-                },
-                location: {
-                  description: 'Survey location Details',
-                  type: 'object',
-                  required: ['survey_area_name', 'geometry'],
-                  properties: {
-                    survey_area_name: {
-                      type: 'string'
-                    },
-                    geometry: {
-                      type: 'array',
-                      items: {
-                        ...(geoJsonFeature as object)
-                      }
                     }
                   }
                 }
@@ -338,7 +357,23 @@ export function getSurveyList(): RequestHandler {
 
       const surveyIds = surveyIdsResponse.map((item: { id: any }) => item.id);
 
-      const surveys = await surveyService.getSurveysByIds(surveyIds);
+      const surveys = await Promise.all(
+        surveyIds.map(async (surveyId) => {
+          const survey = await surveyService.getSurveyById(surveyId);
+
+          console.log('--------- start print out ------------');
+
+          const surveyPublishStatus = await surveyService.getSurveyHasUnpublishedContent(surveyId);
+          console.log('in the end point surveyPublishStatus: ', surveyPublishStatus);
+
+          console.log('--------- end print out ------------');
+
+          return {
+            surveyData: survey,
+            surveySupplementaryData: { has_unpublished_content: surveyPublishStatus }
+          };
+        })
+      );
 
       await connection.commit();
 

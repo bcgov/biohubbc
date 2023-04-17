@@ -176,6 +176,11 @@ export interface SurveySupplementaryData {
   } | null;
 }
 
+export interface IGetSurveyForListResponse {
+  surveyData: SurveyViewObject;
+  surveySupplementaryData: { has_unpublished_content: boolean };
+}
+
 /**
  * An interface for a single instance of survey metadata, for view-only use cases.
  *

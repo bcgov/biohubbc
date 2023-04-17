@@ -816,4 +816,21 @@ export class SurveyService extends DBService {
   async deleteOccurrenceSubmission(submissionId: number): Promise<number> {
     return this.surveyRepository.deleteOccurrenceSubmission(submissionId);
   }
+
+  async getSurveyHasUnpublishedContent(surveyId: number): Promise<boolean> {
+    console.log('surveyId: ', surveyId);
+
+    const has_unpublished_attachments = await this.historyPublishService.hasUnpublishedSurveyAttachments(surveyId);
+    console.log('has_unpublished_attachments', has_unpublished_attachments);
+
+    const has_unpublished_reports = await this.historyPublishService.hasUnpublishedSurveyReports(surveyId);
+    console.log('has_unpublished_reports', has_unpublished_reports);
+
+    //const has_unpublished_observations = await this.
+    // Is true when survey have unpulished attachments or reports or observations or summary results
+
+    const surveyHasUnpublishedContent: boolean = has_unpublished_attachments || has_unpublished_reports;
+
+    return surveyHasUnpublishedContent;
+  }
 }

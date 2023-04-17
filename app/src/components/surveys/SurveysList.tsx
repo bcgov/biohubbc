@@ -1,5 +1,4 @@
 import Link from '@material-ui/core/Link';
-import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -8,19 +7,21 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
+import { SubmitStatusChip } from 'components/chips/SubmitStatusChip';
+import { BioHubSubmittedStatusType } from 'constants/misc';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import { SurveyViewObject } from 'interfaces/useSurveyApi.interface';
+import { IGetSurveyForListResponse } from 'interfaces/useSurveyApi.interface';
 import React, { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles(() => ({
   surveyTable: {
     tableLayout: 'fixed'
   }
 }));
 
 export interface ISurveysListProps {
-  surveysList: SurveyViewObject[];
+  surveysList: IGetSurveyForListResponse[];
   projectId: number;
   codes: IGetAllCodeSetsResponse;
 }
@@ -31,6 +32,13 @@ const SurveysList: React.FC<ISurveysListProps> = (props) => {
   const [rowsPerPage] = useState(5);
   const [page] = useState(0);
 
+  function getSurveySubmissionStatus(survey: IGetSurveyForListResponse): BioHubSubmittedStatusType {
+    if (survey.surveySupplementaryData.has_unpublished_content) {
+      return BioHubSubmittedStatusType.UNSUBMITTED;
+    }
+    return BioHubSubmittedStatusType.SUBMITTED;
+  }
+
   return (
     <>
       <TableContainer>
@@ -40,6 +48,7 @@ const SurveysList: React.FC<ISurveysListProps> = (props) => {
               <TableCell>Name</TableCell>
               <TableCell>Species</TableCell>
               <TableCell>Purpose</TableCell>
+              <TableCell width="140">Status</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -50,19 +59,25 @@ const SurveysList: React.FC<ISurveysListProps> = (props) => {
                     <Link
                       style={{ fontWeight: 'bold' }}
                       underline="always"
-                      to={`/admin/projects/${props.projectId}/surveys/${row.survey_details.id}/details`}
+                      to={`/admin/projects/${props.projectId}/surveys/${row.surveyData.survey_details.id}/details`}
                       component={RouterLink}>
-                      {row.survey_details.survey_name}
+                      {row.surveyData.survey_details.survey_name}
                     </Link>
                   </TableCell>
                   <TableCell>
-                    {[...row.species?.focal_species_names, ...row.species?.ancillary_species_names].join(', ')}
+                    {[
+                      ...row.surveyData.species.focal_species_names,
+                      ...row.surveyData.species.ancillary_species_names
+                    ].join(', ')}
                   </TableCell>
                   <TableCell>
-                    {row.purpose_and_methodology.intended_outcome_id &&
+                    {row.surveyData.purpose_and_methodology.intended_outcome_id &&
                       props.codes?.intended_outcomes?.find(
-                        (item: any) => item.id === row.purpose_and_methodology.intended_outcome_id
+                        (item: any) => item.id === row.surveyData.purpose_and_methodology.intended_outcome_id
                       )?.name}
+                  </TableCell>
+                  <TableCell>
+                    <SubmitStatusChip status={getSurveySubmissionStatus(row)} />
                   </TableCell>
                 </TableRow>
               ))}

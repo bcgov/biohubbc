@@ -3,9 +3,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
-import SubmissionAlertBar from 'components/publish/SubmissionAlertBar';
-import { SystemRoleGuard } from 'components/security/Guards';
-import { SYSTEM_ROLE } from 'constants/roles';
+import SurveySubmissionAlertBar from 'components/publish/SurveySubmissionAlertBar';
 import { CodesContext } from 'contexts/codesContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import SurveyDetails from 'features/surveys/view/SurveyDetails';
@@ -43,9 +41,7 @@ const SurveyPage: React.FC = () => {
       <SurveyHeader />
       <Container maxWidth="xl">
         <Box my={3}>
-          <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
-            <SubmissionAlertBar />
-          </SystemRoleGuard>
+          <SurveySubmissionAlertBar />
           <Grid container spacing={3}>
             <Grid item md={12} lg={4}>
               <Paper elevation={0}>

@@ -70,8 +70,8 @@ describe('surveys', () => {
       .resolves([{ id: 1 }]);
 
     const getSurveysByIdsStub = sinon
-      .stub(SurveyService.prototype, 'getSurveysByIds')
-      .resolves([({ survey_details: { id: 1 } } as unknown) as SurveyObject]);
+      .stub(SurveyService.prototype, 'getSurveyById')
+      .resolves(({ survey_details: { id: 1 } } as unknown) as SurveyObject);
 
     const sampleReq = {
       keycloak_token: {},
@@ -81,7 +81,9 @@ describe('surveys', () => {
       }
     } as any;
 
-    const expectedResponse = [{ survey_details: { id: 1 } }];
+    const expectedResponse = [
+      { surveyData: { survey_details: { id: 1 } }, surveySupplementaryData: { survey_metadata_publish: null } }
+    ];
 
     let actualResult: any = null;
     const sampleRes = {
