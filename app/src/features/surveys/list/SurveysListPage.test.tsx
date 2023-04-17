@@ -1,5 +1,6 @@
 import { cleanup, render, waitFor } from '@testing-library/react';
 import { CodesContext, ICodesContext } from 'contexts/codesContext';
+import { IProjectAuthStateContext, ProjectAuthStateContext } from 'contexts/projectAuthStateContext';
 import { IProjectContext, ProjectContext } from 'contexts/projectContext';
 import { createMemoryHistory } from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -11,7 +12,6 @@ import { codes } from 'test-helpers/code-helpers';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import { surveyObject } from 'test-helpers/survey-helpers';
 import SurveysListPage from './SurveysListPage';
-import { IProjectAuthStateContext, ProjectAuthStateContext } from 'contexts/projectAuthStateContext';
 
 const history = createMemoryHistory();
 
@@ -52,7 +52,7 @@ describe('SurveysListPage', () => {
     const mockProjectAuthStateContext: IProjectAuthStateContext = {
       getProjectParticipant: () => null,
       hasProjectRole: () => true,
-      hasSystemRole: () =>  true,
+      hasSystemRole: () => true,
       getProjectId: () => 1,
       hasLoadedParticipantInfo: true
     };
@@ -95,7 +95,7 @@ describe('SurveysListPage', () => {
     const mockProjectAuthStateContext: IProjectAuthStateContext = {
       getProjectParticipant: () => null,
       hasProjectRole: () => true,
-      hasSystemRole: () =>  true,
+      hasSystemRole: () => true,
       getProjectId: () => 1,
       hasLoadedParticipantInfo: true
     };

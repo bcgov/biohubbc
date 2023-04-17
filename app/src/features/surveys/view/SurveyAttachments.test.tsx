@@ -8,12 +8,12 @@ import {
 } from '@testing-library/react';
 import { AttachmentType } from 'constants/attachments';
 import { DialogContextProvider } from 'contexts/dialogContext';
+import { IProjectAuthStateContext, ProjectAuthStateContext } from 'contexts/projectAuthStateContext';
 import { ISurveyContext, SurveyContext } from 'contexts/surveyContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { DataLoader } from 'hooks/useDataLoader';
 import React from 'react';
 import SurveyAttachments from './SurveyAttachments';
-import { IProjectAuthStateContext, ProjectAuthStateContext } from 'contexts/projectAuthStateContext';
 
 jest.mock('../../../hooks/useBioHubApi');
 const mockUseBiohubApi = {
@@ -56,7 +56,7 @@ describe('SurveyAttachments', () => {
     const mockProjectAuthStateContext: IProjectAuthStateContext = {
       getProjectParticipant: () => null,
       hasProjectRole: () => true,
-      hasSystemRole: () =>  true,
+      hasSystemRole: () => true,
       getProjectId: () => 1,
       hasLoadedParticipantInfo: true
     };
@@ -99,7 +99,7 @@ describe('SurveyAttachments', () => {
     const mockProjectAuthStateContext: IProjectAuthStateContext = {
       getProjectParticipant: () => null,
       hasProjectRole: () => true,
-      hasSystemRole: () =>  true,
+      hasSystemRole: () => true,
       getProjectId: () => 1,
       hasLoadedParticipantInfo: true
     };
@@ -138,7 +138,7 @@ describe('SurveyAttachments', () => {
     const mockProjectAuthStateContext: IProjectAuthStateContext = {
       getProjectParticipant: () => null,
       hasProjectRole: () => true,
-      hasSystemRole: () =>  true,
+      hasSystemRole: () => true,
       getProjectId: () => 1,
       hasLoadedParticipantInfo: true
     };
@@ -190,7 +190,7 @@ describe('SurveyAttachments', () => {
     const mockProjectAuthStateContext: IProjectAuthStateContext = {
       getProjectParticipant: () => null,
       hasProjectRole: () => true,
-      hasSystemRole: () =>  true,
+      hasSystemRole: () => true,
       getProjectId: () => 1,
       hasLoadedParticipantInfo: true
     };
@@ -257,7 +257,7 @@ describe('SurveyAttachments', () => {
     const mockProjectAuthStateContext: IProjectAuthStateContext = {
       getProjectParticipant: () => null,
       hasProjectRole: () => true,
-      hasSystemRole: () =>  true,
+      hasSystemRole: () => true,
       getProjectId: () => 1,
       hasLoadedParticipantInfo: true
     };
@@ -323,7 +323,7 @@ describe('SurveyAttachments', () => {
     const mockProjectAuthStateContext: IProjectAuthStateContext = {
       getProjectParticipant: () => null,
       hasProjectRole: () => true,
-      hasSystemRole: () =>  true,
+      hasSystemRole: () => true,
       getProjectId: () => 1,
       hasLoadedParticipantInfo: true
     };

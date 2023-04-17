@@ -83,6 +83,8 @@ export const ProjectAuthStateContextProvider: React.FC = (props) => {
     }
 
     participantDataLoader.refresh(getProjectId());
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [getProjectId]);
 
   const projectAuthStateContext: IProjectAuthStateContext = useMemo(
