@@ -83,7 +83,7 @@ export const ProjectAuthStateContextProvider: React.FC = (props) => {
     }
 
     participantDataLoader.refresh(getProjectId());
-  }, [getProjectId, participantDataLoader, projectId]);
+  }, [getProjectId]);
 
   const projectAuthStateContext: IProjectAuthStateContext = useMemo(
     () => ({
