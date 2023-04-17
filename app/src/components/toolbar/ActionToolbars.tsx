@@ -18,6 +18,16 @@ export interface ICustomButtonProps {
   renderButton?: (buttonProps: Partial<ButtonProps>) => React.ReactNode;
 }
 
+const defaultButtonProps = (props: ICustomButtonProps): Partial<ButtonProps> => ({
+  color: 'primary',
+  title: props.buttonTitle,
+  'aria-label': props.buttonTitle,
+  startIcon: props.buttonStartIcon,
+  endIcon: props.buttonEndIcon,
+  onClick: () => props.buttonOnClick(),
+  children: props.buttonLabel
+});
+
 export interface IButtonToolbarProps extends ICustomButtonProps, IActionToolbarProps {}
 
 export const H3ButtonToolbar: React.FC<IButtonToolbarProps> = (props) => {
@@ -26,15 +36,9 @@ export const H3ButtonToolbar: React.FC<IButtonToolbarProps> = (props) => {
   const buttonProps: Partial<ButtonProps> & { 'data-testid'?: string } = {
     id,
     'data-testid': id,
-    variant: 'text',
-    color: 'primary',
     className: 'sectionHeaderButton',
-    title: props.buttonTitle,
-    'aria-label': props.buttonTitle,
-    startIcon: props.buttonStartIcon,
-    endIcon: props.buttonEndIcon,
-    onClick: () => props.buttonOnClick(),
-    children: props.buttonLabel,
+    variant: 'text',
+    ...defaultButtonProps(props),
     ...props.buttonProps
   };
 
@@ -51,13 +55,7 @@ export const H2ButtonToolbar: React.FC<IButtonToolbarProps> = (props) => {
   const buttonProps: Partial<ButtonProps> & { 'data-testid'?: string } = {
     id,
     'data-testid': id,
-    color: 'primary',
-    title: props.buttonTitle,
-    'aria-label': props.buttonTitle,
-    startIcon: props.buttonStartIcon,
-    endIcon: props.buttonEndIcon,
-    onClick: () => props.buttonOnClick(),
-    children: props.buttonLabel,
+    ...defaultButtonProps(props),
     ...props.buttonProps
   };
 
