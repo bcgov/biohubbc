@@ -239,9 +239,9 @@ const insertProjectFundingData = () => `
  */
 const insertProjectFundingDataFirstNations = () => `
   INSERT into project_funding_source
-    ( first_nations_id, project_id, funding_source_project_id, funding_start_date, funding_end_date )
+    ( first_nations_id, project_id, funding_start_date, funding_end_date )
   VALUES
-    ( 1, 1, 'AGENCY PROJECT ID', '2023-01-02', '2023-01-30' )
+    ( 1, 1, '2023-01-02', '2023-01-30' )
   ;
 `;
 
