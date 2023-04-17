@@ -38,6 +38,7 @@ import { HistoryPublishService } from './history-publish-service';
 import { PlatformService } from './platform-service';
 import { ProjectParticipationService } from './project-participation-service';
 import { SurveyService } from './survey-service';
+import { ProjectUserObject } from '../models/user';
 
 const defaultLog = getLogger('services/project-service');
 
@@ -89,7 +90,7 @@ export class ProjectService extends DBService {
    * @return {*}  {Promise<any>}
    * @memberof ProjectService
    */
-  async getProjectParticipant(projectId: number, systemUserId: number): Promise<any> {
+  async getProjectParticipant(projectId: number, systemUserId: number): Promise<ProjectUserObject | null> {
     return this.projectParticipationService.getProjectParticipant(projectId, systemUserId);
   }
 

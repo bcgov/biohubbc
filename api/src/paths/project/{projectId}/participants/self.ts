@@ -8,7 +8,7 @@ import { getLogger } from '../../../../utils/logger';
 
 const defaultLog = getLogger('paths/project/{projectId}/participants/self');
 
-export const GET: Operation = [getUserRoles()];
+export const GET: Operation = [getUserRolesForProject()];
 
 GET.apiDoc = {
   description: "Get the user's participant record for the given project.",
@@ -40,6 +40,7 @@ GET.apiDoc = {
               participant: {
                 type: 'object',
                 nullable: true,
+                required: ['project_id', 'system_user_id', 'project_role_ids', 'project_role_names'],
                 properties: {
                   project_id: {
                     type: 'integer',
@@ -92,10 +93,10 @@ GET.apiDoc = {
  *
  * @returns {RequestHandler}
  */
-export function getUserRoles(): RequestHandler {
+export function getUserRolesForProject(): RequestHandler {
   return async (req, res) => {
     if (!req.params.projectId) {
-      throw new HTTP400('Missing required param `projectId`');
+      throw new HTTP400("Missing required param 'projectId'");
     }
 
     const connection = getDBConnection(req['keycloak_token']);

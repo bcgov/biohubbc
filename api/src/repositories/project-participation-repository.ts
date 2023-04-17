@@ -1,6 +1,7 @@
 import SQL from 'sql-template-strings';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { BaseRepository } from './base-repository';
+import { ProjectUserObject } from '../models/user';
 
 /**
  * A repository class for accessing project participants data.
@@ -32,7 +33,7 @@ export class ProjectParticipationRepository extends BaseRepository {
     return response.rows[0];
   }
 
-  async getProjectParticipant(projectId: number, systemUserId: number): Promise<any> {
+  async getProjectParticipant(projectId: number, systemUserId: number): Promise<ProjectUserObject | null> {
     const sqlStatement = SQL`
       SELECT
         pp.project_id,

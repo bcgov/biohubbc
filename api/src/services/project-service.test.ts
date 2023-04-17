@@ -18,6 +18,7 @@ import { getMockDBConnection } from '../__mocks__/db';
 import { HistoryPublishService } from './history-publish-service';
 import { PlatformService } from './platform-service';
 import { ProjectService } from './project-service';
+import { ProjectUserObject } from '../models/user';
 
 chai.use(sinonChai);
 
@@ -36,7 +37,7 @@ describe('ProjectService', () => {
 
       const getProjectParticipantStub = sinon
         .stub(ProjectService.prototype, 'getProjectParticipant')
-        .resolves('existing participant');
+        .resolves({} as ProjectUserObject);
 
       const addProjectParticipantStub = sinon.stub(ProjectService.prototype, 'addProjectParticipant');
 
@@ -85,7 +86,7 @@ describe('ProjectService', () => {
       const dbConnection = getMockDBConnection();
       const service = new ProjectService(dbConnection);
 
-      const data = { id: 1 };
+      const data = { project_id: 1 } as ProjectUserObject;
 
       const repoStub = sinon.stub(ProjectParticipationRepository.prototype, 'getProjectParticipant').resolves(data);
 
