@@ -108,7 +108,7 @@ export const SurveyContextProvider = (props: PropsWithChildren<Record<never, any
   artifactDataLoader.load(projectId, surveyId);
 
   /**
-   * Refreshes the current survey object whenever the current survey ID changes
+   * Refreshes the current survey object whenever the current survey ID changes from the currently loaded survey.
    */
   useEffect(() => {
     if (

@@ -15,9 +15,10 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { IUpdateProjectRequest, UPDATE_GET_ENTITIES } from 'interfaces/useProjectApi.interface';
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { useHistory, useParams } from 'react-router';
+import { useHistory } from 'react-router';
 import { Prompt } from 'react-router-dom';
 import EditProjectForm from './EditProjectForm';
+import { ProjectContext } from 'contexts/projectContext';
 
 const useStyles = makeStyles((theme: Theme) => ({
   pageTitleContainer: {
@@ -54,8 +55,7 @@ const EditProjectPage: React.FC = (props) => {
 
   const biohubApi = useBiohubApi();
 
-  const urlParams = useParams();
-  const projectId = Number(urlParams['id']);
+  const { projectId } = useContext(ProjectContext);
 
   // Reference to pass to the formik component in order to access its state at any time
   // Used by the draft logic to fetch the values of a step form that has not been validated/completed
