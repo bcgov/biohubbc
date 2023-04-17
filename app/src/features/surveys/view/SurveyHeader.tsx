@@ -23,14 +23,13 @@ import PublishSurveyButton from 'components/publish/PublishSurveyButton';
 import { SystemRoleGuard } from 'components/security/Guards';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { DeleteSurveyI18N } from 'constants/i18n';
-import { PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
+import { SYSTEM_ROLE } from 'constants/roles';
 import { AuthStateContext } from 'contexts/authStateContext';
 import { DialogContext } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import useDataLoader from 'hooks/useDataLoader';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext } from 'react';
 import { useHistory } from 'react-router';
 import { getFormattedDateRangeString } from 'utils/Utils';
 
@@ -67,11 +66,6 @@ const SurveyHeader = () => {
   const history = useHistory();
 
   const biohubApi = useBiohubApi();
-
-  const [enableDeleteButton, setEnableDeleteButton] = useState(false);
-
-  const roleDataLoader = useDataLoader((id: number) => biohubApi.project.getUserProjectRoles(id));
-  roleDataLoader.load(surveyContext.projectId);
 
   const dialogContext = useContext(DialogContext);
 
@@ -142,23 +136,12 @@ const SurveyHeader = () => {
     dialogContext.setErrorDialog({ ...deleteErrorDialogProps, ...textDialogProps, open: true });
   };
 
-  // Enable delete button if you a system admin or a project admin or have an editor role
-  useEffect(() => {
-    let hasProjectRole = false;
-    if (roleDataLoader.data) {
-      hasProjectRole = roleDataLoader.data.data.participant.project_role_names.some((item: any) =>
-        [PROJECT_ROLE.PROJECT_EDITOR].includes(item)
-      );
-    }
-
-    const hasSystemRole = keycloakWrapper?.hasSystemRole([
-      SYSTEM_ROLE.SYSTEM_ADMIN,
-      SYSTEM_ROLE.DATA_ADMINISTRATOR,
-      SYSTEM_ROLE.PROJECT_CREATOR
-    ]);
-
-    setEnableDeleteButton(hasSystemRole || hasProjectRole);
-  }, [keycloakWrapper, roleDataLoader.data]);
+  // Enable delete button if you a system admin or a project admin
+  const enableDeleteSurveyButton = keycloakWrapper?.hasSystemRole([
+    SYSTEM_ROLE.SYSTEM_ADMIN,
+    SYSTEM_ROLE.DATA_ADMINISTRATOR,
+    SYSTEM_ROLE.PROJECT_CREATOR
+  ]);
 
   // Show/Hide Project Settings Menu
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -254,11 +237,11 @@ const SurveyHeader = () => {
                     </ListItemIcon>
                     <Typography variant="inherit">Edit Survey Details</Typography>
                   </MenuItem>
-                  {enableDeleteButton && (
+                  {enableDeleteSurveyButton && (
                     <MenuItem
                       data-testid="delete-survey-button"
                       onClick={showDeleteSurveyDialog}
-                      disabled={!enableDeleteButton}>
+                      disabled={!enableDeleteSurveyButton}>
                       <ListItemIcon>
                         <Icon path={mdiTrashCanOutline} size={1} />
                       </ListItemIcon>
