@@ -19,7 +19,7 @@ const OccurrenceFeatureGroup: React.FC<IOccurrenceFeatureGroupProps> = (props) =
   const isMounted = useIsMounted();
 
   const getOccurrences = async () => {
-    const occurrencesResponse = await biohubApi.observation.getOccurrencesForView(props.projectId);
+    const occurrencesResponse = await biohubApi.observation.getOccurrencesForView(props.projectId, props.occurrenceSubmissionId);
 
     if (!occurrencesResponse || !occurrencesResponse.length) {
       // TODO: Handle error
