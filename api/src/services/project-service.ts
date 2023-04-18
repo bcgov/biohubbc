@@ -47,6 +47,7 @@ export class ProjectService extends DBService {
   projectParticipationService: ProjectParticipationService;
   platformService: PlatformService;
   historyPublishService: HistoryPublishService;
+  surveyService: SurveyService;
 
   constructor(connection: IDBConnection) {
     super(connection);
@@ -55,6 +56,7 @@ export class ProjectService extends DBService {
     this.projectParticipationService = new ProjectParticipationService(connection);
     this.platformService = new PlatformService(connection);
     this.historyPublishService = new HistoryPublishService(connection);
+    this.surveyService = new SurveyService(connection);
   }
 
   /**
@@ -670,22 +672,31 @@ export class ProjectService extends DBService {
     return this.projectParticipationService.deleteProjectParticipationRecord(projectParticipationId);
   }
 
-  async getProjectHasUnpublishedContent(surveyId: number): Promise<boolean> {
-    const has_unpublished_attachments = await this.historyPublishService.hasUnpublishedSurveyAttachments(surveyId);
+  async getProjectHasUnpublishedContent(projectId: number): Promise<boolean> {
+    const has_unpublished_attachments = await this.historyPublishService.hasUnpublishedProjectAttachments(projectId);
 
-    const has_unpublished_reports = await this.historyPublishService.hasUnpublishedSurveyReports(surveyId);
+    const has_unpublished_reports = await this.historyPublishService.hasUnpublishedSurveyReports(projectId);
 
-    const has_unpublished_observations = await this.historyPublishService.hasUnpublishedObservation(surveyId);
-
-    const has_unpublished_summary_results = await this.historyPublishService.hasUnpublishedSummaryResults(surveyId);
+    const has_unpublished_surveys = await this.hasUnpublishedSurveys(projectId);
 
     // Is true when survey have unpulished attachments or reports or observations or summary results
 
     const surveyHasUnpublishedContent: boolean =
-      has_unpublished_attachments ||
-      has_unpublished_reports ||
-      has_unpublished_observations ||
-      has_unpublished_summary_results;
+      has_unpublished_attachments || has_unpublished_reports || has_unpublished_surveys;
     return surveyHasUnpublishedContent;
+  }
+
+  async hasUnpublishedSurveys(projectId: number): Promise<boolean> {
+    const surveyIds = (await this.surveyService.getSurveyIdsByProjectId(projectId)).map((item: { id: any }) => item.id);
+
+    const surveyStatusArray = await Promise.all(
+      surveyIds.map(async (surveyId) => {
+        const surveyPublishStatus = await this.surveyService.getSurveyHasUnpublishedContent(surveyId);
+
+        return surveyPublishStatus;
+      })
+    );
+
+    return surveyStatusArray.some(Boolean);
   }
 }

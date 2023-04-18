@@ -310,4 +310,18 @@ export class HistoryPublishService extends DBService {
 
     return true;
   }
+
+  async hasUnpublishedProjectAttachments(projectId: number): Promise<boolean> {
+    const count_unpublished_attachments = (
+      await this.historyRepository.getCountProjectUnpublishedAttachments(projectId)
+    ).rows[0]?.count;
+
+    return count_unpublished_attachments > 0 ? true : false;
+  }
+  async hasUnpublishedProjectReports(surveyId: number): Promise<boolean> {
+    const count_unpublished_reports = (await this.historyRepository.getCountProjectUnpublishedReports(surveyId)).rows[0]
+      ?.count;
+
+    return count_unpublished_reports > 0 ? true : false;
+  }
 }

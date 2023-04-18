@@ -731,4 +731,46 @@ export class HistoryPublishRepository extends BaseRepository {
 
     return response;
   }
+
+  async getCountProjectUnpublishedAttachments(projectId: number): Promise<QueryResult> {
+    const sqlStatement = SQL`
+    SELECT
+      count(*)
+    from
+      project_attachment pa
+    left join
+      project_attachment_publish pap
+    on
+      pa.project_attachment_id = pap.project_attachment_id
+    where
+      pa.project_id =${projectId}
+    and
+      pap.project_attachment_publish_id is null;
+  `;
+
+    const response = await this.connection.sql(sqlStatement);
+
+    return response;
+  }
+
+  async getCountProjectUnpublishedReports(projectId: number): Promise<QueryResult> {
+    const sqlStatement = SQL`
+    SELECT
+      count(*)
+    from
+      project_report_attachment pra
+    left join
+      project_report_publish prp
+    on
+      pra.project_report_attachment_id = prp.project_report_attachment_id
+    where
+      pra.project_id =${projectId}
+    and
+      prp.project_report_publish_id is null;
+  `;
+
+    const response = await this.connection.sql(sqlStatement);
+
+    return response;
+  }
 }
