@@ -360,13 +360,7 @@ export function getSurveyList(): RequestHandler {
       const surveys = await Promise.all(
         surveyIds.map(async (surveyId) => {
           const survey = await surveyService.getSurveyById(surveyId);
-
-          console.log('--------- start print out ------------');
-
           const surveyPublishStatus = await surveyService.getSurveyHasUnpublishedContent(surveyId);
-          console.log('in the end point surveyPublishStatus: ', surveyPublishStatus);
-
-          console.log('--------- end print out ------------');
 
           return {
             surveyData: survey,

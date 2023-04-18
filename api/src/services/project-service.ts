@@ -675,12 +675,11 @@ export class ProjectService extends DBService {
   async getProjectHasUnpublishedContent(projectId: number): Promise<boolean> {
     const has_unpublished_attachments = await this.historyPublishService.hasUnpublishedProjectAttachments(projectId);
 
-    const has_unpublished_reports = await this.historyPublishService.hasUnpublishedSurveyReports(projectId);
+    const has_unpublished_reports = await this.historyPublishService.hasUnpublishedProjectReports(projectId);
 
     const has_unpublished_surveys = await this.hasUnpublishedSurveys(projectId);
 
-    // Is true when survey have unpulished attachments or reports or observations or summary results
-
+    // Returns true when one or more surveys have unpublished attachments, reports, observations or summary results
     const surveyHasUnpublishedContent: boolean =
       has_unpublished_attachments || has_unpublished_reports || has_unpublished_surveys;
     return surveyHasUnpublishedContent;
