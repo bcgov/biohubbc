@@ -90,6 +90,11 @@ export interface IGetUserProjectsListResponse {
  * @interface IGetProjectsListResponse
  */
 export interface IGetProjectsListResponse {
+  projectData: IProjectsListData;
+  projectSupplementaryData: { has_unpublished_content: boolean };
+}
+
+export interface IProjectsListData {
   id: number;
   name: string;
   start_date: string;

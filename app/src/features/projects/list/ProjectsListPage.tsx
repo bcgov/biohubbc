@@ -10,7 +10,7 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import { mdiFilterOutline, mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
-import ProjectsSubmissionAlertBar from 'components/publish/ProjectsSubmissionAlertBar';
+import ProjectsSubmissionAlertBar from 'components/publish/ProjectListSubmissionAlertBar';
 import { IProjectAdvancedFilters } from 'components/search-filter/ProjectAdvancedFilters';
 import { SystemRoleGuard } from 'components/security/Guards';
 import { SYSTEM_ROLE } from 'constants/roles';

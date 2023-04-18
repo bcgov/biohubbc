@@ -8,7 +8,7 @@ export interface IProjectsSubmissionAlertBarProps {
   projects: IGetProjectsListResponse[];
 }
 
-const ProjectsSubmissionAlertBar: React.FC<IProjectsSubmissionAlertBarProps> = (props) => {
+const ProjectListSubmissionAlertBar: React.FC<IProjectsSubmissionAlertBarProps> = (props) => {
   const { projects } = props;
   const [forceAlertClose, setForceAlertClose] = useState(false);
 
@@ -52,11 +52,11 @@ function getProjectsDataSubmissionStatus(projectsData?: IGetProjectsListResponse
     return 'NO_DATA';
   }
 
-  if (projectsData.every((item) => item.completion_status === 'Completed')) {
-    return 'SUBMITTED';
+  if (projectsData.every((item) => item.projectSupplementaryData.has_unpublished_content)) {
+    return 'UNSUBMITTED';
   }
 
-  return 'UNSUBMITTED';
+  return 'SUBMITTED';
 }
 
-export default ProjectsSubmissionAlertBar;
+export default ProjectListSubmissionAlertBar;

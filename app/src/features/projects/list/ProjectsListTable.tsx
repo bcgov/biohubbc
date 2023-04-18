@@ -130,22 +130,26 @@ const ProjectsListTable: React.FC<IProjectsListTableProps> = (props) => {
               </TableRow>
             ))}
             {projects?.map((project: IGetProjectsListResponse) => (
-              <TableRow key={project.id}>
+              <TableRow key={project.projectData.id}>
                 <TableCell>
                   <Link
                     className={classes.linkButton}
-                    data-testid={project.name}
+                    data-testid={project.projectData.name}
                     underline="always"
                     component={RouterLink}
-                    to={`/admin/projects/${project.id}`}>
-                    {project.name}
+                    to={`/admin/projects/${project.projectData.id}`}>
+                    {project.projectData.name}
                   </Link>
                 </TableCell>
-                <TableCell>{project.coordinator_agency}</TableCell>
-                <TableCell>{project.project_type}</TableCell>
-                <TableCell>{getChipIcon(project.completion_status)}</TableCell>
-                <TableCell>{getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, project.start_date)}</TableCell>
-                <TableCell>{getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, project.end_date)}</TableCell>
+                <TableCell>{project.projectData.coordinator_agency}</TableCell>
+                <TableCell>{project.projectData.project_type}</TableCell>
+                <TableCell>{getChipIcon(project.projectData.completion_status)}</TableCell>
+                <TableCell>
+                  {getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, project.projectData.start_date)}
+                </TableCell>
+                <TableCell>
+                  {getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, project.projectData.end_date)}
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
