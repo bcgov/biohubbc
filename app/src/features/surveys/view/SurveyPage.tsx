@@ -14,6 +14,8 @@ import SurveyObservations from './survey-observations/SurveyObservations';
 import SurveyAttachments from './SurveyAttachments';
 import SurveyHeader from './SurveyHeader';
 
+//TODO: PRODUCTION_BANDAGE: Remove <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
+
 /**
  * Page to display a single Survey.
  *

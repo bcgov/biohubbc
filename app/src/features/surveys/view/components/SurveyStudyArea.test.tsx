@@ -23,7 +23,6 @@ const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBioh
   mockUseBiohubApi
 );
 
-const mockRefresh = jest.fn();
 
 describe('SurveyStudyArea', () => {
   beforeEach(() => {
@@ -130,8 +129,11 @@ describe('SurveyStudyArea', () => {
     });
   });
 
-  it.skip('does not display the zoom to initial extent button if there are not geometries', async () => {
-    const mockSurveyDataLoader = { data: getSurveyForViewResponse } as DataLoader<any, any, any>;
+  it('does not display the zoom to initial extent button if there are not geometries', async () => {
+    const mockSurveyDataLoader = {
+      data: getSurveyForViewResponse,
+      refresh: (jest.fn() as unknown) as any
+    } as DataLoader<any, any, any>;
     const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockObservationsDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockSummaryDataLoader = { data: null } as DataLoader<any, any, any>;
@@ -154,14 +156,7 @@ describe('SurveyStudyArea', () => {
       expect(getByText('Study Area')).toBeVisible();
     });
 
-    fireEvent.click(getByText('Edit'));
-
-    await waitFor(() => {
-      expect(mockBiohubApi().survey.getSurveyForView).toBeCalledWith(
-        1,
-        getSurveyForViewResponse.surveyData.survey_details.id
-      );
-    });
+    fireEvent.click(getByText('Edit Study Area'));
 
     await waitFor(() => {
       expect(getByText('Edit Survey Study Area')).toBeVisible();
@@ -173,7 +168,7 @@ describe('SurveyStudyArea', () => {
       expect(queryByText('Edit Survey Study Area')).not.toBeInTheDocument();
     });
 
-    fireEvent.click(getByText('Edit'));
+    fireEvent.click(getByText('Edit Study Area'));
 
     await waitFor(() => {
       expect(getByText('Edit Survey Study Area')).toBeVisible();
@@ -187,98 +182,36 @@ describe('SurveyStudyArea', () => {
         getSurveyForViewResponse.surveyData.survey_details.id,
         {
           location: {
-            survey_area_name: 'study area is this',
-            geoJsonFeature,
-            revision_count: 0
+            geometry: [
+              {
+                geometry: {
+                  coordinates: [
+                    [
+                      [-128, 55],
+                      [-128, 55.5],
+                      [-128, 56],
+                      [-126, 58],
+                      [-128, 55]
+                    ]
+                  ],
+                  type: 'Polygon'
+                },
+                id: 'myGeo',
+                properties: {
+                  name: 'Biohub Islands'
+                },
+                type: 'Feature'
+              }
+            ],
+            revision_count: 0,
+            survey_area_name: 'study area'
           }
         }
       );
-
-      expect(mockRefresh).toBeCalledTimes(1);
     });
   });
 
-  it.skip('displays an error dialog when fetching the update data fails', async () => {
-    const mockSurveyDataLoader = { data: getSurveyForViewResponse } as DataLoader<any, any, any>;
-    const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
-    const mockObservationsDataLoader = { data: null } as DataLoader<any, any, any>;
-    const mockSummaryDataLoader = { data: null } as DataLoader<any, any, any>;
-
-    mockBiohubApi().survey.getSurveyForView.mockResolvedValue((null as unknown) as any);
-
-    const { getByText, queryByText } = render(
-      <SurveyContext.Provider
-        value={{
-          projectId: 1,
-          surveyId: 1,
-          surveyDataLoader: mockSurveyDataLoader,
-          artifactDataLoader: mockArtifactDataLoader,
-          observationDataLoader: mockObservationsDataLoader,
-          summaryDataLoader: mockSummaryDataLoader
-        }}>
-        <SurveyStudyArea />
-      </SurveyContext.Provider>
-    );
-
-    await waitFor(() => {
-      expect(getByText('Study Area')).toBeVisible();
-    });
-
-    fireEvent.click(getByText('Edit'));
-
-    await waitFor(() => {
-      expect(getByText('Error Editing Survey Study Area')).toBeVisible();
-    });
-
-    fireEvent.click(getByText('Ok'));
-
-    await waitFor(() => {
-      expect(queryByText('Error Editing Survey Study Area')).not.toBeInTheDocument();
-    });
-  });
-
-  it.skip('shows error dialog with API error message when getting survey data for update fails', async () => {
-    const mockSurveyDataLoader = { data: getSurveyForViewResponse } as DataLoader<any, any, any>;
-    const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
-    const mockObservationsDataLoader = { data: null } as DataLoader<any, any, any>;
-    const mockSummaryDataLoader = { data: null } as DataLoader<any, any, any>;
-
-    mockBiohubApi().survey.getSurveyForView = jest.fn(() => Promise.reject(new Error('API Error is Here')));
-
-    const { getByText, queryByText, getAllByRole } = render(
-      <SurveyContext.Provider
-        value={{
-          projectId: 1,
-          surveyId: 1,
-          surveyDataLoader: mockSurveyDataLoader,
-          artifactDataLoader: mockArtifactDataLoader,
-          observationDataLoader: mockObservationsDataLoader,
-          summaryDataLoader: mockSummaryDataLoader
-        }}>
-        <SurveyStudyArea />
-      </SurveyContext.Provider>
-    );
-
-    await waitFor(() => {
-      expect(getByText('Study Area')).toBeVisible();
-    });
-
-    fireEvent.click(getByText('Edit'));
-
-    await waitFor(() => {
-      expect(queryByText('API Error is Here')).toBeInTheDocument();
-    });
-
-    // Get the backdrop, then get the firstChild because this is where the event listener is attached
-    //@ts-ignore
-    fireEvent.click(getAllByRole('presentation')[0].firstChild);
-
-    await waitFor(() => {
-      expect(queryByText('API Error is Here')).toBeNull();
-    });
-  });
-
-  it.skip('shows error dialog with API error message when updating survey data fails', async () => {
+  it('shows error dialog with API error message when updating survey data fails', async () => {
     const mockSurveyDataLoader = { data: getSurveyForViewResponse } as DataLoader<any, any, any>;
     const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockObservationsDataLoader = { data: null } as DataLoader<any, any, any>;
@@ -322,14 +255,7 @@ describe('SurveyStudyArea', () => {
       expect(getByText('Study Area')).toBeVisible();
     });
 
-    fireEvent.click(getByText('Edit'));
-
-    await waitFor(() => {
-      expect(mockBiohubApi().survey.getSurveyForView).toBeCalledWith(
-        1,
-        getSurveyForViewResponse.surveyData.survey_details.id
-      );
-    });
+    fireEvent.click(getByText('Edit Study Area'));
 
     await waitFor(() => {
       expect(getByText('Edit Survey Study Area')).toBeVisible();

@@ -40,7 +40,6 @@ const ProjectPage = () => {
   return (
     <>
       <ProjectHeader />
-
       <Container maxWidth="xl">
         <Box py={3}>
           <ProjectSubmissionAlertBar />
