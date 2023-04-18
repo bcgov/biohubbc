@@ -252,14 +252,14 @@ export class HistoryPublishService extends DBService {
     const count_unpublished_attachments = (await this.historyRepository.getCountSurveyUnpublishedAttachments(surveyId))
       .rows[0]?.count;
 
-    return count_unpublished_attachments > 0 ? true : false;
+    return count_unpublished_attachments > 0;
   }
 
   async hasUnpublishedSurveyReports(surveyId: number): Promise<boolean> {
     const count_unpublished_reports = (await this.historyRepository.getCountSurveyUnpublishedReports(surveyId)).rows[0]
       ?.count;
 
-    return count_unpublished_reports > 0 ? true : false;
+    return count_unpublished_reports > 0;
   }
 
   /**
@@ -316,13 +316,13 @@ export class HistoryPublishService extends DBService {
       await this.historyRepository.getCountProjectUnpublishedAttachments(projectId)
     ).rows[0]?.count;
 
-    return count_unpublished_attachments > 0 ? true : false;
+    return count_unpublished_attachments > 0;
   }
 
   async hasUnpublishedProjectReports(projectId: number): Promise<boolean> {
     const count_unpublished_reports = (await this.historyRepository.getCountProjectUnpublishedReports(projectId))
       .rows[0]?.count;
 
-    return count_unpublished_reports > 0 ? true : false;
+    return count_unpublished_reports > 0;
   }
 }
