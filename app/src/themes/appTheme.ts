@@ -68,27 +68,29 @@ const appTheme = createMuiTheme({
     },
     MuiAlert: {
       root: {
-        padding: '12px 20px',
-        borderWidth: '1px',
-        borderStyle: 'solid'
+        padding: '12px 16px',
+        fontSize: '1rem'
       },
       icon: {
         marginRight: '1rem'
       },
-      standardInfo: {
+      outlinedInfo: {
+        color: '#313132',
         borderColor: '#afd3ee',
+        backgroundColor: 'rgb(232, 244, 253)',
         '& .MuiAlert-icon': {
-          color: '#313132'
+          color: 'inherit'
         }
       },
       standardError: {
+        color: '#a12622',
         borderColor: '#ebccd1',
-        color: '#A12622',
         '& .MuiAlert-icon': {
-          color: '#A12622'
+          color: '#a12622'
         }
       },
       standardSuccess: {
+        color: '#2d4821',
         backgroundColor: '#dff0d8',
         borderColor: '#c0dcb3',
         '& .MuiAlert-icon': {
@@ -121,7 +123,6 @@ const appTheme = createMuiTheme({
         fontSize: '0.9rem'
       },
       startIcon: {
-        marginTop: '1px',
         marginBottom: '1px'
       },
       sizeLarge: {
@@ -143,20 +144,8 @@ const appTheme = createMuiTheme({
     },
     MuiChip: {
       root: {
+        minWidth: '6rem',
         fontWeight: 700
-      },
-      colorPrimary: {
-        color: '#003366',
-        backgroundColor: '#DCEBFB',
-        textTransform: 'uppercase',
-        fontSize: '12px',
-        '&.colorSuccess': {
-          color: '#2D4821',
-          backgroundColor: '#DFF0D8'
-        }
-      },
-      colorSecondary: {
-        backgroundColor: 'red'
       }
     },
     MuiContainer: {
@@ -251,6 +240,9 @@ const appTheme = createMuiTheme({
     }
   },
   props: {
+    MuiButton: {
+      disableElevation: true
+    },
     MuiButtonBase: {
       disableRipple: true
     }

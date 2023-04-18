@@ -8,7 +8,6 @@ import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import Typography from '@material-ui/core/Typography';
 import { mdiFileOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import { SubmitStatusChip } from 'components/chips/SubmitStatusChip';
@@ -38,6 +37,11 @@ const useStyles = makeStyles((theme: Theme) => ({
     marginRight: theme.spacing(2),
     marginLeft: theme.spacing(3),
     color: '#1a5a96'
+  },
+  noDocuments: {
+    height: '66px',
+    color: theme.palette.text.secondary,
+    fontWeight: 700
   }
 }));
 
@@ -143,12 +147,11 @@ function AttachmentsTableRow<T extends IGetProjectAttachment | IGetSurveyAttachm
 }
 
 function NoAttachmentsTableRow() {
+  const classes = useStyles();
   return (
     <TableRow>
-      <TableCell colSpan={4} align="center">
-        <Typography component="strong" color="textSecondary" variant="body2">
-          No Documents
-        </Typography>
+      <TableCell colSpan={4} align="center" className={classes.noDocuments}>
+        <span>No Documents</span>
       </TableCell>
     </TableRow>
   );

@@ -17,7 +17,7 @@ export const POST: Operation = [
           discriminator: 'SystemRole'
         },
         {
-          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD],
+          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR],
           projectId: Number(req.body.projectId),
           discriminator: 'ProjectRole'
         }

@@ -95,8 +95,8 @@ const SurveyStudyArea = () => {
     wmu: []
   });
 
-  const mapDataLoader = useDataLoader((occurrenceSubmissionId: number) =>
-    biohubApi.observation.getOccurrencesForView(occurrenceSubmissionId)
+  const mapDataLoader = useDataLoader((projectId: number, occurrenceSubmissionId: number) =>
+    biohubApi.observation.getOccurrencesForView(projectId, occurrenceSubmissionId)
   );
   useDataLoaderError(mapDataLoader, () => {
     return {
@@ -117,9 +117,9 @@ const SurveyStudyArea = () => {
 
   useEffect(() => {
     if (occurrence_submission_id) {
-      mapDataLoader.load(occurrence_submission_id);
+      mapDataLoader.load(surveyContext.projectId, occurrence_submission_id);
     }
-  }, [mapDataLoader, occurrence_submission_id]);
+  }, [mapDataLoader, occurrence_submission_id, surveyContext.projectId]);
 
   const zoomToBoundaryExtent = useCallback(() => {
     setBounds(calculateUpdatedMapBounds(surveyGeometry));
@@ -239,11 +239,11 @@ const SurveyStudyArea = () => {
 
       <H2ButtonToolbar
         label="Study Area"
-        buttonLabel="Edit Study Area"
+        buttonLabel="Edit"
         buttonTitle="Edit Study Area"
-        buttonStartIcon={<Icon path={mdiPencilOutline} size={0.8} />}
+        buttonStartIcon={<Icon path={mdiPencilOutline} size={1} />}
         buttonOnClick={() => handleDialogEditOpen()}
-        buttonProps={{ variant: 'text' }}
+        buttonProps={{ variant: 'outlined' }}
       />
 
       <Box px={3} pb={3}>

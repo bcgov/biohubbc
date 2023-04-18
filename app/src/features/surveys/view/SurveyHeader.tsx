@@ -166,9 +166,9 @@ const SurveyHeader = () => {
             <Box mt={-1} ml={-0.5} mb={0.5}>
               <Button
                 color="primary"
-                startIcon={<Icon path={mdiArrowLeft} size={0.9} />}
+                startIcon={<Icon path={mdiArrowLeft} size={0.8} />}
                 onClick={() => history.push(`/admin/projects/${surveyContext.projectId}/surveys`)}>
-                <strong>Back to Project</strong>
+                Back to Project
               </Button>
             </Box>
             <Box display="flex" justifyContent="space-between">

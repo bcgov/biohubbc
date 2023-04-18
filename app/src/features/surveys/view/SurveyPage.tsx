@@ -50,10 +50,14 @@ const SurveyPage: React.FC = () => {
             </Grid>
             <Grid item md={12} lg={8}>
               <Box mb={3}>
-                <SurveyObservations />
+                <Paper elevation={0}>
+                  <SurveyObservations />
+                </Paper>
               </Box>
               <Box mb={3}>
-                <SurveySummaryResults />
+                <Paper elevation={0}>
+                  <SurveySummaryResults />
+                </Paper>
               </Box>
               <Box mb={3}>
                 <Paper elevation={0}>

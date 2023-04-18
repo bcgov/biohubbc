@@ -224,9 +224,11 @@ const Header: React.FC = () => {
                 <RouterLink to="/admin/projects" id="menu_projects">
                   Projects
                 </RouterLink>
-                <RouterLink to="/admin/search" id="menu_search">
-                  Map
-                </RouterLink>
+                <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
+                  <RouterLink to="/admin/search" id="menu_search">
+                    Map
+                  </RouterLink>
+                </SystemRoleGuard>
                 <RouterLink to="/admin/resources" id="menu_resources">
                   Resources
                 </RouterLink>

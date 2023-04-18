@@ -37,8 +37,8 @@ const SurveysListPage = () => {
         label="Surveys"
         buttonLabel="Create Survey"
         buttonTitle="Create Survey"
-        buttonStartIcon={<Icon path={mdiPlus} size={0.8} />}
-        buttonProps={{ variant: 'contained' }}
+        buttonStartIcon={<Icon path={mdiPlus} size={1} />}
+        buttonProps={{ variant: 'contained', disableElevation: true }}
         buttonOnClick={() => navigateToCreateSurveyPage(projectContext.projectId)}
       />
       <Divider></Divider>
