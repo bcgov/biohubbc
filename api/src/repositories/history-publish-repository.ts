@@ -594,8 +594,11 @@ export class HistoryPublishRepository extends BaseRepository {
    */
   async deleteSurveyAttachmentPublishRecord(surveyAttachmentId: number): Promise<void> {
     const sqlStatement = SQL`
-      delete from survey_attachment_publish
-      where survey_attachment_id = ${surveyAttachmentId};
+      delete
+      from
+        survey_attachment_publish
+      where
+        survey_attachment_id = ${surveyAttachmentId};
     `;
 
     await this.connection.sql(sqlStatement);
@@ -610,8 +613,11 @@ export class HistoryPublishRepository extends BaseRepository {
    */
   async deleteSurveyReportAttachmentPublishRecord(surveyAttachmentId: number): Promise<void> {
     const sqlStatement = SQL`
-      delete from survey_report_publish
-      where survey_report_attachment_id = ${surveyAttachmentId};
+      delete
+      from
+        survey_report_publish
+      where
+        survey_report_attachment_id = ${surveyAttachmentId};
     `;
 
     await this.connection.sql(sqlStatement);
@@ -692,19 +698,36 @@ export class HistoryPublishRepository extends BaseRepository {
     return response;
   }
 
-  async getConfirmationLatestSummaryResultsPublished(surveyId: number): Promise<QueryResult> {
+  async getLatestUndeletedSummaryResultsId(surveyId: number): Promise<QueryResult> {
     const sqlStatement = SQL`
-    select sssp.survey_summary_submission_publish_id  from survey_summary_submission sss
-    left join survey_summary_submission_publish sssp
-    on sss.survey_summary_submission_id = sssp.survey_summary_submission_id
-    where sss.survey_id = ${surveyId}
+    select
+      survey_summary_submission_id
+    from
+      survey_summary_submission sss
+    where
+      sss.survey_id = ${surveyId}
+    and
+      sss.delete_timestamp is null
     order by
-       sss.survey_summary_submission_id  desc
+      event_timestamp desc
     limit 1;
+    `;
+    const response = await this.connection.sql(sqlStatement);
+
+    return response;
+  }
+
+  async getConfirmationLatestSummaryResultsPublished(summarySubmissionId: number): Promise<QueryResult> {
+    const sqlStatement = SQL`
+    select
+      *
+    from
+      survey_summary_submission_publish sssp
+    where
+      sssp.survey_summary_submission_id = ${summarySubmissionId};
   `;
 
     const response = await this.connection.sql(sqlStatement);
-    //console.log('db response for summary results: ', response);
 
     return response;
   }

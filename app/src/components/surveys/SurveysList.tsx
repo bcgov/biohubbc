@@ -29,7 +29,7 @@ export interface ISurveysListProps {
 const SurveysList: React.FC<ISurveysListProps> = (props) => {
   const classes = useStyles();
 
-  const [rowsPerPage] = useState(5);
+  const [rowsPerPage] = useState(30);
   const [page] = useState(0);
 
   function getSurveySubmissionStatus(survey: IGetSurveyForListResponse): BioHubSubmittedStatusType {

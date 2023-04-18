@@ -262,24 +262,24 @@ export class HistoryPublishService extends DBService {
     return count_unpublished_reports > 0 ? true : false;
   }
 
+  /**
+   * Determines if a survey has unsubmitted observations
+   * 1) Gets the latest observation occurrence record that may be unpublished
+   * 2) Determines if a publishing record exists
+   * Returns true if survey has unsubmitted observations
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<boolean>}
+   * @memberof HistoryPublishService
+   */
   async hasUnpublishedObservation(surveyId: number): Promise<boolean> {
-    //step 1: grab the latest, undeleted record
-
     const latestUndeletedObservationRecordId = (
       await this.historyRepository.getLatestUndeletedObservationRecordId(surveyId)
     ).rows[0]?.occurrence_submission_id;
 
-    //console.log('latestUndeletedObservationRecord:', latestUndeletedObservationRecordId);
-
     if (!latestUndeletedObservationRecordId) {
       return false;
     }
-
-    // if not, there is nothing to publish
-
-    // if exists - check publish table
-    // if exists in the publish table - there is again nothing to publish
-    // if not in the publish table - there is something to publish
 
     const publish_record_exists = (
       await this.historyRepository.getConfirmationLatestObservationPublished(latestUndeletedObservationRecordId)
@@ -289,17 +289,25 @@ export class HistoryPublishService extends DBService {
       return false;
     }
 
-    //console.log('observation publish record exists? : ', publish_record_exists);
-
     return true;
   }
 
-  async getConfirmationLatestSummaryResultsPublished(surveyId: number): Promise<boolean> {
-    const publish_record_exists = (await this.historyRepository.getConfirmationLatestSummaryResultsPublished(surveyId))
-      .rows[0];
+  async hasUnpublishedSummaryResults(surveyId: number): Promise<boolean> {
+    const latestUndeletedSummaryResultId = (await this.historyRepository.getLatestUndeletedSummaryResultsId(surveyId))
+      .rows[0]?.survey_summary_submission_id;
 
-    console.log('summary publish record exists? : ', publish_record_exists);
+    if (!latestUndeletedSummaryResultId) {
+      return false;
+    }
 
-    return publish_record_exists === null ? true : false;
+    const publish_record_exists = (
+      await this.historyRepository.getConfirmationLatestSummaryResultsPublished(latestUndeletedSummaryResultId)
+    ).rows[0]?.survey_summary_submission_publish_id;
+
+    if (publish_record_exists) {
+      return false;
+    }
+
+    return true;
   }
 }
