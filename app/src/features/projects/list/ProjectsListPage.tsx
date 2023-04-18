@@ -90,6 +90,7 @@ const ProjectsListPage: React.FC = () => {
   if (!codesContext.codesDataLoader.data || !projectsDataLoader.data || !draftsDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
+  console.log('projectsDataLoader.data', projectsDataLoader.data);
 
   /**
    * Displays project list.
