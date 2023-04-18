@@ -318,6 +318,7 @@ export class HistoryPublishService extends DBService {
 
     return count_unpublished_attachments > 0;
   }
+
   async hasUnpublishedProjectReports(projectId: number): Promise<boolean> {
     const count_unpublished_reports = (await this.historyRepository.getCountProjectUnpublishedReports(projectId))
       .rows[0]?.count;

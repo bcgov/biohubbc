@@ -52,11 +52,11 @@ function getProjectsDataSubmissionStatus(projectsData?: IGetProjectsListResponse
     return 'NO_DATA';
   }
 
-  if (projectsData.every((item) => item.projectSupplementaryData.has_unpublished_content)) {
-    return 'UNSUBMITTED';
+  if (projectsData.every((item) => !item.projectSupplementaryData.has_unpublished_content)) {
+    return 'SUBMITTED';
   }
 
-  return 'SUBMITTED';
+  return 'UNSUBMITTED';
 }
 
 export default ProjectListSubmissionAlertBar;
