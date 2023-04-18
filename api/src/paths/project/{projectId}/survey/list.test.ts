@@ -11,7 +11,7 @@ import * as surveys from './list';
 
 chai.use(sinonChai);
 
-describe('surveys', () => {
+describe('survey list', () => {
   afterEach(() => {
     sinon.restore();
   });
@@ -73,6 +73,8 @@ describe('surveys', () => {
       .stub(SurveyService.prototype, 'getSurveyById')
       .resolves(({ survey_details: { id: 1 } } as unknown) as SurveyObject);
 
+    const getSurveysPublishStub = sinon.stub(SurveyService.prototype, 'getSurveyHasUnpublishedContent').resolves(true);
+
     const sampleReq = {
       keycloak_token: {},
       body: {},
@@ -82,7 +84,10 @@ describe('surveys', () => {
     } as any;
 
     const expectedResponse = [
-      { surveyData: { survey_details: { id: 1 } }, surveySupplementaryData: { survey_metadata_publish: null } }
+      {
+        surveyData: { survey_details: { id: 1 } },
+        surveySupplementaryData: { has_unpublished_content: true }
+      }
     ];
 
     let actualResult: any = null;
@@ -103,5 +108,6 @@ describe('surveys', () => {
     expect(actualResult).to.eql(expectedResponse);
     expect(getSurveyIdsByProjectIdStub).to.be.calledOnce;
     expect(getSurveysByIdsStub).to.be.calledOnce;
+    expect(getSurveysPublishStub).to.be.calledOnce;
   });
 });
