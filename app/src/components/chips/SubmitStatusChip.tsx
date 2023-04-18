@@ -39,7 +39,7 @@ export const SubmitStatusChip: React.FC<{ status: BioHubSubmittedStatusType; chi
     chipStatusClass = classes.chipSubmitted;
   } else {
     chipLabel = 'Unsubmitted';
-    chipStatusClass = classes.chipSubmitted;
+    chipStatusClass = classes.chipUnSubmitted;
   }
 
   return (
