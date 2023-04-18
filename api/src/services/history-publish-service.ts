@@ -283,7 +283,7 @@ export class HistoryPublishService extends DBService {
 
     const publish_record_exists = (
       await this.historyRepository.getConfirmationLatestObservationPublished(latestUndeletedObservationRecordId)
-    ).rows[0]?.queue_id;
+    ).rows[0]?.occurrence_submission_publish_id;
 
     if (publish_record_exists) {
       return false;

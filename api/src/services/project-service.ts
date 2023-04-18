@@ -669,4 +669,23 @@ export class ProjectService extends DBService {
   async deleteProjectParticipationRecord(projectParticipationId: number): Promise<any> {
     return this.projectParticipationService.deleteProjectParticipationRecord(projectParticipationId);
   }
+
+  async getProjectHasUnpublishedContent(surveyId: number): Promise<boolean> {
+    const has_unpublished_attachments = await this.historyPublishService.hasUnpublishedSurveyAttachments(surveyId);
+
+    const has_unpublished_reports = await this.historyPublishService.hasUnpublishedSurveyReports(surveyId);
+
+    const has_unpublished_observations = await this.historyPublishService.hasUnpublishedObservation(surveyId);
+
+    const has_unpublished_summary_results = await this.historyPublishService.hasUnpublishedSummaryResults(surveyId);
+
+    // Is true when survey have unpulished attachments or reports or observations or summary results
+
+    const surveyHasUnpublishedContent: boolean =
+      has_unpublished_attachments ||
+      has_unpublished_reports ||
+      has_unpublished_observations ||
+      has_unpublished_summary_results;
+    return surveyHasUnpublishedContent;
+  }
 }
