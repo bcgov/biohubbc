@@ -2,12 +2,12 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import * as db from '../../../database/db';
-import { HTTPError } from '../../../errors/http-error';
-import { SurveyObject } from '../../../models/survey-view';
-import { SurveyService } from '../../../services/survey-service';
-import { getMockDBConnection } from '../../../__mocks__/db';
-import * as surveys from './surveys';
+import * as db from '../../../../database/db';
+import { HTTPError } from '../../../../errors/http-error';
+import { SurveyObject } from '../../../../models/survey-view';
+import { SurveyService } from '../../../../services/survey-service';
+import { getMockDBConnection } from '../../../../__mocks__/db';
+import * as surveys from './list';
 
 chai.use(sinonChai);
 

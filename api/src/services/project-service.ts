@@ -672,7 +672,7 @@ export class ProjectService extends DBService {
     return this.projectParticipationService.deleteProjectParticipationRecord(projectParticipationId);
   }
 
-  async getProjectHasUnpublishedContent(projectId: number): Promise<boolean> {
+  async hasUnpublishedContent(projectId: number): Promise<boolean> {
     const has_unpublished_attachments = await this.historyPublishService.hasUnpublishedProjectAttachments(projectId);
 
     const has_unpublished_reports = await this.historyPublishService.hasUnpublishedProjectReports(projectId);
