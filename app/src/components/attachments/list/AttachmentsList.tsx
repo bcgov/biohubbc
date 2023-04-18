@@ -12,11 +12,15 @@ import Typography from '@material-ui/core/Typography';
 import { mdiFileOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import { SubmitStatusChip } from 'components/chips/SubmitStatusChip';
+import { SystemRoleGuard } from 'components/security/Guards';
 import { BioHubSubmittedStatusType } from 'constants/misc';
+import { SYSTEM_ROLE } from 'constants/roles';
 import { IGetProjectAttachment } from 'interfaces/useProjectApi.interface';
 import { IGetSurveyAttachment } from 'interfaces/useSurveyApi.interface';
 import React, { useState } from 'react';
 import AttachmentsListItemMenuButton from './AttachmentsListItemMenuButton';
+
+//TODO: PRODUCTION_BANDAGE: Remove <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
 
 const useStyles = makeStyles((theme: Theme) => ({
   attachmentsTable: {
@@ -59,7 +63,9 @@ const AttachmentsList = <T extends IGetProjectAttachment | IGetSurveyAttachment>
           <TableRow>
             <TableCell>Name</TableCell>
             <TableCell width="130">Type</TableCell>
-            <TableCell width="130">Status</TableCell>
+            <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
+              <TableCell width="130">Status</TableCell>
+            </SystemRoleGuard>
             <TableCell width="75"></TableCell>
           </TableRow>
         </TableHead>
@@ -119,9 +125,11 @@ function AttachmentsTableRow<T extends IGetProjectAttachment | IGetSurveyAttachm
         </Box>
       </TableCell>
       <TableCell>{attachment.fileType}</TableCell>
-      <TableCell>
-        <SubmitStatusChip status={getArtifactSubmissionStatus(attachment)} />
-      </TableCell>
+      <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
+        <TableCell>
+          <SubmitStatusChip status={getArtifactSubmissionStatus(attachment)} />
+        </TableCell>
+      </SystemRoleGuard>
       <TableCell align="right">
         <AttachmentsListItemMenuButton
           attachment={attachment}

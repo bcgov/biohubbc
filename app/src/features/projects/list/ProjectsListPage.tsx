@@ -1,41 +1,28 @@
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
-import Chip from '@material-ui/core/Chip';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import Container from '@material-ui/core/Container';
 import Divider from '@material-ui/core/Divider';
-import Link from '@material-ui/core/Link';
 import Paper from '@material-ui/core/Paper';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import { mdiFilterOutline, mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
-import clsx from 'clsx';
-import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
-import ProjectAdvancedFilters, {
-  ProjectAdvancedFiltersInitialValues
-} from 'components/search-filter/ProjectAdvancedFilters';
+import ProjectsSubmissionAlertBar from 'components/publish/ProjectListSubmissionAlertBar';
+import { IProjectAdvancedFilters } from 'components/search-filter/ProjectAdvancedFilters';
 import { SystemRoleGuard } from 'components/security/Guards';
-import { DATE_FORMAT } from 'constants/dateTimeFormats';
-import { ProjectStatusType } from 'constants/misc';
 import { SYSTEM_ROLE } from 'constants/roles';
-import { DialogContext } from 'contexts/dialogContext';
-import { Formik, FormikProps } from 'formik';
-import { APIError } from 'hooks/api/useAxios';
+import { CodesContext } from 'contexts/codesContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import { IGetDraftsListResponse } from 'interfaces/useDraftApi.interface';
-import { IGetProjectsListResponse } from 'interfaces/useProjectApi.interface';
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import useDataLoader from 'hooks/useDataLoader';
+import React, { useContext, useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import { getFormattedDate } from 'utils/Utils';
+import ProjectsListFilterForm from './ProjectsListFilterForm';
+import ProjectsListTable from './ProjectsListTable';
+
+//TODO: PRODUCTION_BANDAGE: Remove <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
 
 const useStyles = makeStyles((theme: Theme) => ({
   pageTitleContainer: {
@@ -59,30 +46,11 @@ const useStyles = makeStyles((theme: Theme) => ({
     marginLeft: theme.spacing(1),
     minWidth: '6rem'
   },
-  projectsTable: {
-    tableLayout: 'fixed'
-  },
   toolbarCount: {
     fontWeight: 400
   },
-  linkButton: {
-    textAlign: 'left',
-    fontWeight: 700
-  },
   filtersBox: {
     background: '#f7f8fa'
-  },
-  chip: {
-    color: 'white'
-  },
-  chipActive: {
-    backgroundColor: theme.palette.success.main
-  },
-  chipCompleted: {
-    backgroundColor: theme.palette.success.main
-  },
-  chipDraft: {
-    backgroundColor: theme.palette.info.main
   }
 }));
 
@@ -95,227 +63,33 @@ const ProjectsListPage: React.FC = () => {
   const classes = useStyles();
   const biohubApi = useBiohubApi();
 
-  const [projects, setProjects] = useState<IGetProjectsListResponse[]>([]);
-  const [drafts, setDrafts] = useState<IGetDraftsListResponse[]>([]);
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
-  const [formikRef] = useState(useRef<FormikProps<any>>(null));
-  const [codes, setCodes] = useState<IGetAllCodeSetsResponse>();
-  const [isLoadingCodes, setIsLoadingCodes] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
 
-  const dialogContext = useContext(DialogContext);
-  const projectCount = projects.length;
+  const codesContext = useContext(CodesContext);
+  useEffect(() => codesContext.codesDataLoader.load(), [codesContext.codesDataLoader]);
 
-  const getChipIcon = (status_name: string) => {
-    let chipLabel;
-    let chipStatusClass;
+  const projectsDataLoader = useDataLoader((filter?: IProjectAdvancedFilters) =>
+    biohubApi.project.getProjectsList(filter)
+  );
+  projectsDataLoader.load();
 
-    if (ProjectStatusType.ACTIVE === status_name) {
-      chipLabel = 'Active';
-      chipStatusClass = classes.chipActive;
-    } else if (ProjectStatusType.COMPLETED === status_name) {
-      chipLabel = 'Completed';
-      chipStatusClass = classes.chipCompleted;
-    } else if (ProjectStatusType.DRAFT === status_name) {
-      chipLabel = 'Draft';
-      chipStatusClass = classes.chipDraft;
-    }
-
-    return <Chip size="small" className={clsx(classes.chip, chipStatusClass)} label={chipLabel} />;
-  };
-
-  useEffect(() => {
-    const getCodes = async () => {
-      const codesResponse = await biohubApi.codes.getAllCodeSets();
-
-      if (!codesResponse) {
-        return;
-      }
-
-      setCodes(codesResponse);
-    };
-
-    if (!isLoadingCodes && !codes) {
-      getCodes();
-      setIsLoadingCodes(true);
-    }
-  }, [biohubApi.codes, isLoadingCodes, codes]);
-
-  useEffect(() => {
-    const getProjects = async () => {
-      const projectsResponse = await biohubApi.project.getProjectsList();
-
-      if (!projectsResponse) {
-        return;
-      }
-
-      setProjects(() => {
-        setIsLoading(false);
-        return projectsResponse;
-      });
-    };
-
-    const getDrafts = async () => {
-      const draftsResponse = await biohubApi.draft.getDraftsList();
-
-      setDrafts(() => {
-        setIsLoading(false);
-        return draftsResponse;
-      });
-    };
-
-    if (isLoading) {
-      getProjects();
-      getDrafts();
-    }
-  }, [biohubApi, isLoading]);
-
-  const showFilterErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
-    dialogContext.setErrorDialog({
-      onClose: () => {
-        dialogContext.setErrorDialog({ open: false });
-      },
-      onOk: () => {
-        dialogContext.setErrorDialog({ open: false });
-      },
-      ...textDialogProps,
-      open: true
-    });
-  };
-
-  const filterValues = formikRef?.current?.values;
+  const draftsDataLoader = useDataLoader(() => biohubApi.draft.getDraftsList());
+  draftsDataLoader.load();
 
   /**
    * Handle filtering project results.
    */
-  const handleSubmit = async () => {
-    if (!formikRef?.current) {
-      return;
-    }
-
-    try {
-      const response = await biohubApi.project.getProjectsList(filterValues);
-
-      if (!response) {
-        return;
-      }
-
-      setProjects(() => {
-        setIsLoading(false);
-        return response;
-      });
-    } catch (error) {
-      const apiError = error as APIError;
-      showFilterErrorDialog({
-        dialogTitle: 'Error Filtering Projects',
-        dialogError: apiError?.message,
-        dialogErrorDetails: apiError?.errors
-      });
-    }
+  const handleSubmit = async (filterValues: IProjectAdvancedFilters) => {
+    projectsDataLoader.refresh(filterValues);
   };
 
   const handleReset = async () => {
-    if (!formikRef?.current) {
-      return;
-    }
-
-    formikRef.current.handleReset();
-
-    setProjects(() => {
-      setIsLoading(true);
-      return [];
-    });
+    projectsDataLoader.refresh();
   };
 
-  const getProjectsTableData = () => {
-    const hasProjects = projects?.length > 0;
-    const hasDrafts = drafts?.length > 0;
-
-    if (!hasProjects && !hasDrafts) {
-      return (
-        <TableContainer>
-          <Table className={classes.projectsTable}>
-            <TableHead>
-              <TableRow>
-                <TableCell>Name</TableCell>
-                <TableCell>Type</TableCell>
-                <TableCell>Contact Agency</TableCell>
-                <TableCell>Status</TableCell>
-                <TableCell>Start Date</TableCell>
-                <TableCell>End Date</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              <TableRow>
-                <TableCell colSpan={6}>
-                  <Box display="flex" justifyContent="center">
-                    No Results
-                  </Box>
-                </TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
-        </TableContainer>
-      );
-    } else {
-      return (
-        <TableContainer>
-          <Table className={classes.projectsTable}>
-            <TableHead>
-              <TableRow>
-                <TableCell>Name</TableCell>
-                <TableCell>Contact Agency</TableCell>
-                <TableCell width={150}>Type</TableCell>
-                <TableCell width={150}>Status</TableCell>
-                <TableCell width={150}>Start Date</TableCell>
-                <TableCell width={150}>End Date</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody data-testid="project-table">
-              {drafts?.map((draft: IGetDraftsListResponse) => (
-                <TableRow key={draft.id}>
-                  <TableCell>
-                    <Link
-                      className={classes.linkButton}
-                      data-testid={draft.name}
-                      underline="always"
-                      component={RouterLink}
-                      to={`/admin/projects/create?draftId=${draft.id}`}>
-                      {draft.name}
-                    </Link>
-                  </TableCell>
-                  <TableCell />
-                  <TableCell />
-                  <TableCell>{getChipIcon('Draft')}</TableCell>
-                  <TableCell />
-                  <TableCell />
-                </TableRow>
-              ))}
-              {projects?.map((project: IGetProjectsListResponse) => (
-                <TableRow key={project.id}>
-                  <TableCell>
-                    <Link
-                      className={classes.linkButton}
-                      data-testid={project.name}
-                      underline="always"
-                      component={RouterLink}
-                      to={`/admin/projects/${project.id}`}>
-                      {project.name}
-                    </Link>
-                  </TableCell>
-                  <TableCell>{project.coordinator_agency}</TableCell>
-                  <TableCell>{project.project_type}</TableCell>
-                  <TableCell>{getChipIcon(project.completion_status)}</TableCell>
-                  <TableCell>{getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, project.start_date)}</TableCell>
-                  <TableCell>{getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, project.end_date)}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      );
-    }
-  };
+  if (!codesContext.codesDataLoader.data || !projectsDataLoader.data || !draftsDataLoader.data) {
+    return <CircularProgress className="pageProgress" size={40} />;
+  }
 
   /**
    * Displays project list.
@@ -328,13 +102,9 @@ const ProjectsListPage: React.FC = () => {
             <Box display="flex" justifyContent="space-between">
               <Box className={classes.pageTitleContainer}>
                 <Typography variant="h1" className={classes.pageTitle}>
+                  <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR]}>My </SystemRoleGuard>
                   Projects
                 </Typography>
-                {/* <Box mt={1} display="flex" alignItems="center">
-                  <Typography component="span" variant="subtitle1" color="textSecondary" style={{ display: 'flex', alignItems: 'center' }}>
-                    You have&nbsp;<strong>11 documents</strong>&nbsp;to review
-                  </Typography>
-                </Box> */}
               </Box>
               <Box flex="0 0 auto" className={classes.pageTitleActions}>
                 <SystemRoleGuard
@@ -359,63 +129,30 @@ const ProjectsListPage: React.FC = () => {
       </Paper>
       <Container maxWidth="xl">
         <Box py={3}>
+          <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
+            <ProjectsSubmissionAlertBar projects={projectsDataLoader.data} />
+          </SystemRoleGuard>
           <Paper elevation={0}>
             <Toolbar style={{ display: 'flex', justifyContent: 'space-between' }}>
               <Typography variant="h4" component="h2">
                 Projects found{' '}
                 <Typography className={classes.toolbarCount} component="span" variant="inherit" color="textSecondary">
-                  ({projectCount})
+                  ({projectsDataLoader.data?.length || 0})
                 </Typography>
               </Typography>
-              {codes && (
-                <Button
-                  variant="text"
-                  color="primary"
-                  startIcon={<Icon path={mdiFilterOutline} size={0.8} />}
-                  onClick={() => setIsFiltersOpen(!isFiltersOpen)}>
-                  {!isFiltersOpen ? `Show Filters` : `Hide Filters`}
-                </Button>
-              )}
+              <Button
+                variant="text"
+                color="primary"
+                startIcon={<Icon path={mdiFilterOutline} size={0.8} />}
+                onClick={() => setIsFiltersOpen(!isFiltersOpen)}>
+                {!isFiltersOpen ? `Show Filters` : `Hide Filters`}
+              </Button>
             </Toolbar>
             <Divider></Divider>
-            {isFiltersOpen && (
-              <Box className={classes.filtersBox}>
-                <Box px={2} py={4}>
-                  <Formik
-                    innerRef={formikRef}
-                    initialValues={ProjectAdvancedFiltersInitialValues}
-                    onSubmit={handleSubmit}>
-                    <ProjectAdvancedFilters
-                      coordinator_agency={
-                        codes?.coordinator_agency?.map((item: any) => {
-                          return item.name;
-                        }) || []
-                      }
-                      funding_sources={
-                        codes?.funding_source?.map((item) => {
-                          return { value: item.id, label: item.name };
-                        }) || []
-                      }
-                    />
-                  </Formik>
-                  <Box mt={4} display="flex" alignItems="center" justifyContent="flex-end">
-                    <Button
-                      className={classes.actionButton}
-                      type="submit"
-                      variant="contained"
-                      color="primary"
-                      onClick={handleSubmit}>
-                      Search
-                    </Button>
-                    <Button className={classes.actionButton} variant="outlined" color="primary" onClick={handleReset}>
-                      Clear
-                    </Button>
-                  </Box>
-                </Box>
-                <Divider></Divider>
-              </Box>
-            )}
-            <Box px={1}>{getProjectsTableData()}</Box>
+            {isFiltersOpen && <ProjectsListFilterForm handleSubmit={handleSubmit} handleReset={handleReset} />}
+            <Box px={1}>
+              <ProjectsListTable projects={projectsDataLoader.data} drafts={draftsDataLoader.data} />
+            </Box>
           </Paper>
         </Box>
       </Container>
