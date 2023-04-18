@@ -239,11 +239,11 @@ const SurveyStudyArea = () => {
 
       <H2ButtonToolbar
         label="Study Area"
-        buttonLabel="Edit Study Area"
+        buttonLabel="Edit"
         buttonTitle="Edit Study Area"
-        buttonStartIcon={<Icon path={mdiPencilOutline} size={0.8} />}
+        buttonStartIcon={<Icon path={mdiPencilOutline} size={1} />}
         buttonOnClick={() => handleDialogEditOpen()}
-        buttonProps={{ variant: 'text' }}
+        buttonProps={{ variant: 'outlined' }}
       />
 
       <Box px={3} pb={3}>

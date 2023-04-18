@@ -71,7 +71,7 @@ exports[`ComponentDialog matches snapshot when open 1`] = `
             <span
               class="MuiButton-label"
             >
-              Close
+              Ok
             </span>
             <span
               class="MuiTouchRipple-root"

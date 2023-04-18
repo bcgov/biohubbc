@@ -1,6 +1,5 @@
 import Box from '@material-ui/core/Box';
 import Divider from '@material-ui/core/Divider';
-import Paper from '@material-ui/core/Paper';
 import { mdiImport } from '@mdi/js';
 import Icon from '@mdi/react';
 import ComponentDialog from 'components/dialog/ComponentDialog';
@@ -119,42 +118,40 @@ const SurveySummaryResults = () => {
 
   return (
     <>
-      <Paper elevation={0}>
-        <H2ButtonToolbar
-          label="Summary Results"
-          buttonProps={{ variant: 'contained', color: 'primary' }}
-          buttonLabel="Import"
-          buttonTitle="Import Summary Results"
-          buttonStartIcon={<Icon path={mdiImport} size={1} />}
-          buttonOnClick={() => showUploadDialog()}
-        />
+      <H2ButtonToolbar
+        label="Summary Results"
+        buttonProps={{ variant: 'contained', color: 'primary' }}
+        buttonLabel="Import"
+        buttonTitle="Import Summary Results"
+        buttonStartIcon={<Icon path={mdiImport} size={1} />}
+        buttonOnClick={() => showUploadDialog()}
+      />
 
-        <Divider />
+      <Divider />
 
-        <Box p={3}>
-          {/* Data is still loading/ validating */}
-          {!summaryData && !surveyContext.summaryDataLoader.isReady && <SummaryResultsLoading fileLoading={fileName} />}
+      <Box p={3}>
+        {/* Data is still loading/ validating */}
+        {!summaryData && !surveyContext.summaryDataLoader.isReady && <SummaryResultsLoading fileLoading={fileName} />}
 
-          {/* No summary */}
-          {!surveyContext.summaryDataLoader.data && surveyContext.summaryDataLoader.isReady && (
-            <NoSummaryResults clickToImport={() => setOpenImportSummaryResults(true)} />
-          )}
+        {/* No summary */}
+        {!surveyContext.summaryDataLoader.data && surveyContext.summaryDataLoader.isReady && (
+          <NoSummaryResults clickToImport={() => setOpenImportSummaryResults(true)} />
+        )}
 
-          {/* Got a summary with errors */}
-          {summaryData && !surveyContext.summaryDataLoader.isLoading && summaryData.messages.length > 0 && (
-            <SummaryResultsErrors messages={summaryData.messages} />
-          )}
+        {/* Got a summary with errors */}
+        {summaryData && !surveyContext.summaryDataLoader.isLoading && summaryData.messages.length > 0 && (
+          <SummaryResultsErrors messages={summaryData.messages} />
+        )}
 
-          {/* All done */}
-          {surveyContext.summaryDataLoader.data && (
-            <FileSummaryResults
-              fileData={surveyContext.summaryDataLoader.data}
-              downloadFile={viewFileContents}
-              showDelete={showDeleteDialog}
-            />
-          )}
-        </Box>
-      </Paper>
+        {/* All done */}
+        {surveyContext.summaryDataLoader.data && (
+          <FileSummaryResults
+            fileData={surveyContext.summaryDataLoader.data}
+            downloadFile={viewFileContents}
+            showDelete={showDeleteDialog}
+          />
+        )}
+      </Box>
 
       <ComponentDialog
         open={openImportSummaryResults}
