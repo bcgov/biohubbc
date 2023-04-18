@@ -122,6 +122,10 @@ const ProjectHeader = () => {
     dialogContext.setYesNoDialog({
       dialogTitle: DeleteProjectI18N.deleteTitle,
       dialogText: DeleteProjectI18N.deleteText,
+      yesButtonProps: { color: 'secondary' },
+      yesButtonLabel: 'Delete',
+      noButtonProps: { color: 'primary', variant: 'outlined' },
+      noButtonLabel: 'Cancel',
       open: true,
       onYes: () => {
         deleteProject();

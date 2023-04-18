@@ -200,23 +200,23 @@ export const AccessDenialDispatchI18N = {
 export const ReviewAccessRequestI18N = {
   reviewErrorTitle: 'Error reviewing access request',
   reviewErrorText:
-    'An error has occurred while attempting to review this access request, please try again. If the error persists, please contact your system administrator.'
+    'An error has occurred while attempting to review this access request. Please try again. If the error persists, please contact a system administrator.'
 };
 
 export const DeleteProjectI18N = {
-  deleteTitle: 'Delete Project',
-  deleteText: 'Are you sure you want to delete this project, its attachments and associated surveys/observations?',
+  deleteTitle: 'Delete Project?',
+  deleteText: 'Deleting this project will remove all attachments and related surveys. This action cannot be undone.',
   deleteErrorTitle: 'Error Deleting Project',
   deleteErrorText:
-    'An error has occurred while attempting to delete this project, its attachments and associated surveys/observations, please try again. If the error persists, please contact your system administrator.'
+    'An error has occurred while attempting to delete this project. Please try again. If the error persists, please contact your system administrator.'
 };
 
 export const DeleteSurveyI18N = {
-  deleteTitle: 'Delete Survey',
-  deleteText: 'Are you sure you want to delete this survey, its attachments and associated observations?',
+  deleteTitle: 'Delete Survey?',
+  deleteText: 'Deleting this survey will remove all attachments and related data. This action cannot be undone.',
   deleteErrorTitle: 'Error Deleting Project',
   deleteErrorText:
-    'An error has occurred while attempting to delete this project, its attachments and associated surveys/observations, please try again. If the error persists, please contact your system administrator.'
+    'An error has occurred while attempting to delete this survey. If the error persists, please contact your system administrator.'
 };
 
 export const EditReportMetaDataI18N = {

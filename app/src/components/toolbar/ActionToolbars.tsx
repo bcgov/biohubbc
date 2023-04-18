@@ -4,9 +4,19 @@ import IconButton, { IconButtonProps } from '@material-ui/core/IconButton';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
+import { Theme } from '@material-ui/core/styles/createMuiTheme';
+import makeStyles from '@material-ui/core/styles/makeStyles';
 import Toolbar, { ToolbarProps } from '@material-ui/core/Toolbar';
 import Typography, { TypographyProps } from '@material-ui/core/Typography';
 import React, { ReactNode, useState } from 'react';
+
+const useStyles = makeStyles((theme: Theme) => ({
+  actionBarButton: {
+    fontSize: '12px',
+    textTransform: 'uppercase',
+    letterSpacing: '0.02rem'
+  }
+}));
 
 export interface ICustomButtonProps {
   buttonLabel: string;
@@ -20,16 +30,17 @@ export interface ICustomButtonProps {
 export interface IButtonToolbarProps extends ICustomButtonProps, IActionToolbarProps {}
 
 export const H3ButtonToolbar: React.FC<IButtonToolbarProps> = (props) => {
+  const classes = useStyles();
   const id = `h3-button-toolbar-${props.buttonLabel.replace(/\s/g, '')}`;
 
   return (
     <ActionToolbar label={props.label} labelProps={{ variant: 'h3' }} toolbarProps={props.toolbarProps}>
       <Button
+        className={classes.actionBarButton}
         id={id}
         data-testid={id}
         variant="text"
         color="primary"
-        className="sectionHeaderButton"
         title={props.buttonTitle}
         aria-label={props.buttonTitle}
         startIcon={props.buttonStartIcon}
@@ -43,11 +54,13 @@ export const H3ButtonToolbar: React.FC<IButtonToolbarProps> = (props) => {
 };
 
 export const H2ButtonToolbar: React.FC<IButtonToolbarProps> = (props) => {
+  const classes = useStyles();
   const id = `h2-button-toolbar-${props.buttonLabel.replace(/\s/g, '')}`;
 
   return (
     <ActionToolbar label={props.label} labelProps={{ variant: 'h2' }} toolbarProps={props.toolbarProps}>
       <Button
+        className={classes.actionBarButton}
         id={id}
         data-testid={id}
         color="primary"
@@ -90,6 +103,8 @@ export interface ICustomMenuButtonProps {
 }
 
 export const CustomMenuButton: React.FC<ICustomMenuButtonProps> = (props) => {
+  const classes = useStyles();
+
   const [anchorEl, setAnchorEl] = useState(null);
 
   const open = Boolean(anchorEl);
@@ -112,6 +127,7 @@ export const CustomMenuButton: React.FC<ICustomMenuButtonProps> = (props) => {
   return (
     <>
       <Button
+        className={classes.actionBarButton}
         id={buttonId}
         data-testid={buttonId}
         title={props.buttonTitle}

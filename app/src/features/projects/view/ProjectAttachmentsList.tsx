@@ -56,8 +56,8 @@ const ProjectAttachmentsList = () => {
   const handleDelete = (attachment: IGetProjectAttachment) => {
     dialogContext.setYesNoDialog({
       open: true,
-      dialogTitle: 'Delete Document',
-      dialogText: 'Are you sure you want to delete the selected document? This action cannot be undone.',
+      dialogTitle: 'Delete Document?',
+      dialogText: 'Are you sure you want to permanently delete this document? This action cannot be undone.',
       yesButtonProps: { color: 'secondary' },
       onYes: async () => {
         try {

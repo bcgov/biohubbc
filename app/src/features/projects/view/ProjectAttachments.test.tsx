@@ -54,17 +54,17 @@ describe('ProjectAttachments', () => {
     );
 
     await waitFor(() => {
-      expect(getByText('Add Documents')).toBeInTheDocument();
+      expect(getByText('Upload')).toBeInTheDocument();
       expect(queryByText('Upload Attachment')).toBeNull();
     });
 
-    fireEvent.click(getByText('Add Documents'));
+    fireEvent.click(getByText('Upload'));
 
     await waitFor(() => {
-      expect(getByText('Add Attachments')).toBeInTheDocument();
+      expect(getByText('Upload Attachments')).toBeInTheDocument();
     });
 
-    fireEvent.click(getByText('Add Attachments'));
+    fireEvent.click(getByText('Upload Attachments'));
 
     expect(getByText('Close')).toBeInTheDocument();
   });
