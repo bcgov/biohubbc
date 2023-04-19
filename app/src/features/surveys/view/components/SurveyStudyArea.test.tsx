@@ -155,7 +155,7 @@ describe('SurveyStudyArea', () => {
       expect(getByText('Study Area')).toBeVisible();
     });
 
-    fireEvent.click(getByText('Edit Study Area'));
+    fireEvent.click(getByText('Edit'));
 
     await waitFor(() => {
       expect(getByText('Edit Survey Study Area')).toBeVisible();
@@ -167,7 +167,7 @@ describe('SurveyStudyArea', () => {
       expect(queryByText('Edit Survey Study Area')).not.toBeInTheDocument();
     });
 
-    fireEvent.click(getByText('Edit Study Area'));
+    fireEvent.click(getByText('Edit'));
 
     await waitFor(() => {
       expect(getByText('Edit Survey Study Area')).toBeVisible();
@@ -254,7 +254,7 @@ describe('SurveyStudyArea', () => {
       expect(getByText('Study Area')).toBeVisible();
     });
 
-    fireEvent.click(getByText('Edit Study Area'));
+    fireEvent.click(getByText('Edit'));
 
     await waitFor(() => {
       expect(getByText('Edit Survey Study Area')).toBeVisible();
