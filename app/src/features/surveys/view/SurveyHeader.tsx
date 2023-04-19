@@ -124,7 +124,7 @@ const SurveyHeader = () => {
         return;
       }
 
-      history.push(`/admin/projects/${surveyContext.projectId}/survey/lits`);
+      history.push(`/admin/projects/${surveyContext.projectId}/surveys`);
     } catch (error) {
       const apiError = error as APIError;
       showDeleteErrorDialog({ dialogText: apiError.message, open: true });

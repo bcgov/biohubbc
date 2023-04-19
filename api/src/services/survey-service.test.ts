@@ -1113,4 +1113,66 @@ describe('SurveyService', () => {
       expect(response).to.eql(undefined);
     });
   });
+
+  describe('getSurveyHasUnpublishedContent', () => {
+    it('returns false when survey has no content or when everything is published', async () => {
+      const dbConnection = getMockDBConnection();
+      //const history_service = new HistoryPublishService(dbConnection);
+      const survey_service = new SurveyService(dbConnection);
+
+      const hasUnpublishedAttachmentsStub = sinon
+        .stub(HistoryPublishService.prototype, 'hasUnpublishedSurveyAttachments')
+        .resolves(false);
+
+      const hasUnpublishedReportsStub = sinon
+        .stub(HistoryPublishService.prototype, 'hasUnpublishedSurveyReports')
+        .resolves(false);
+
+      const hasUnpublishedObservationStub = sinon
+        .stub(HistoryPublishService.prototype, 'hasUnpublishedObservation')
+        .resolves(false);
+
+      const hasUnpublishedSummaryResultsStub = sinon
+        .stub(HistoryPublishService.prototype, 'hasUnpublishedSummaryResults')
+        .resolves(false);
+
+      const response = await survey_service.getSurveyHasUnpublishedContent(1);
+
+      expect(hasUnpublishedAttachmentsStub).to.be.calledOnce;
+      expect(hasUnpublishedReportsStub).to.be.calledOnce;
+      expect(hasUnpublishedObservationStub).to.be.calledOnce;
+      expect(hasUnpublishedSummaryResultsStub).to.be.calledOnce;
+      expect(response).to.eql(false);
+    });
+
+    it('returns true when survey any content (observation, summary result, attachment or report) is unsubmitted ', async () => {
+      const dbConnection = getMockDBConnection();
+      //const history_service = new HistoryPublishService(dbConnection);
+      const survey_service = new SurveyService(dbConnection);
+
+      const hasUnpublishedAttachmentsStub = sinon
+        .stub(HistoryPublishService.prototype, 'hasUnpublishedSurveyAttachments')
+        .resolves(false);
+
+      const hasUnpublishedReportsStub = sinon
+        .stub(HistoryPublishService.prototype, 'hasUnpublishedSurveyReports')
+        .resolves(false);
+
+      const hasUnpublishedObservationStub = sinon
+        .stub(HistoryPublishService.prototype, 'hasUnpublishedObservation')
+        .resolves(false);
+
+      const hasUnpublishedSummaryResultsStub = sinon
+        .stub(HistoryPublishService.prototype, 'hasUnpublishedSummaryResults')
+        .resolves(true);
+
+      const response = await survey_service.getSurveyHasUnpublishedContent(1);
+
+      expect(hasUnpublishedAttachmentsStub).to.be.calledOnce;
+      expect(hasUnpublishedReportsStub).to.be.calledOnce;
+      expect(hasUnpublishedObservationStub).to.be.calledOnce;
+      expect(hasUnpublishedSummaryResultsStub).to.be.calledOnce;
+      expect(response).to.eql(true);
+    });
+  });
 });
