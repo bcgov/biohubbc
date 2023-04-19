@@ -51,7 +51,7 @@ export const H3ButtonToolbar: React.FC<IButtonToolbarProps> = (props) => {
     variant: 'text',
     ...defaultButtonProps(props),
     ...props.buttonProps,
-    className: clsx(classes.actionBarButton, props.buttonProps?.className),
+    className: clsx(classes.actionBarButton, props.buttonProps?.className)
   };
 
   return (
@@ -70,7 +70,7 @@ export const H2ButtonToolbar: React.FC<IButtonToolbarProps> = (props) => {
     'data-testid': id,
     ...defaultButtonProps(props),
     ...props.buttonProps,
-    className: clsx(classes.actionBarButton, props.buttonProps?.className),
+    className: clsx(classes.actionBarButton, props.buttonProps?.className)
   };
 
   return (

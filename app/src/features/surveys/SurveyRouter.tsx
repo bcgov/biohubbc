@@ -1,10 +1,10 @@
+import { ProjectRoleRouteGuard } from 'components/security/RouteGuards';
+import { PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
 import SurveyPage from 'features/surveys/view/SurveyPage';
 import ProjectsLayout from 'layouts/ProjectsLayout';
 import React from 'react';
 import { Route, Switch } from 'react-router';
 import EditSurveyPage from './edit/EditSurveyPage';
-import { PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
-import { ProjectRoleRouteGuard } from 'components/security/RouteGuards';
 
 /**
  * Router for all `/admin/projects/:id/surveys/:survey_id/*` pages.
