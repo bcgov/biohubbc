@@ -623,6 +623,13 @@ export class HistoryPublishRepository extends BaseRepository {
     await this.connection.sql(sqlStatement);
   }
 
+  /**
+   * Gets the count of unpublished survey attachments
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<QueryResult>}
+   * @memberof HistoryPublishRepository
+   */
   async getCountSurveyUnpublishedAttachments(surveyId: number): Promise<QueryResult> {
     const sqlStatement = SQL`
     SELECT
@@ -644,6 +651,13 @@ export class HistoryPublishRepository extends BaseRepository {
     return response;
   }
 
+  /**
+   * Gets the count of unpublished survey reports
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<QueryResult>}
+   * @memberof HistoryPublishRepository
+   */
   async getCountSurveyUnpublishedReports(surveyId: number): Promise<QueryResult> {
     const sqlStatement = SQL`
     SELECT
@@ -665,7 +679,15 @@ export class HistoryPublishRepository extends BaseRepository {
     return response;
   }
 
+  /**
+   * Gets the latest survey observation that wasn't deleted
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<QueryResult>}
+   * @memberof HistoryPublishRepository
+   */
   async getLatestUndeletedObservationRecordId(surveyId: number): Promise<QueryResult> {
+    surveyId = 12;
     const sqlStatement = SQL`
     select
       occurrence_submission_id
@@ -680,9 +702,18 @@ export class HistoryPublishRepository extends BaseRepository {
     limit 1;`;
     const response = await this.connection.sql(sqlStatement);
 
+    console.log('response: ', response);
+
     return response;
   }
 
+  /**
+   * Gets a publication record for an observation occurrence submission
+   *
+   * @param {number} occurrenceSubmissionId
+   * @return {*}  {Promise<QueryResult>}
+   * @memberof HistoryPublishRepository
+   */
   async getConfirmationLatestObservationPublished(occurrenceSubmissionId: number): Promise<QueryResult> {
     const sqlStatement = SQL`
     select
@@ -698,6 +729,13 @@ export class HistoryPublishRepository extends BaseRepository {
     return response;
   }
 
+  /**
+   * Gets the latest summary result that wasn't deleted
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<QueryResult>}
+   * @memberof HistoryPublishRepository
+   */
   async getLatestUndeletedSummaryResultsId(surveyId: number): Promise<QueryResult> {
     const sqlStatement = SQL`
     select
@@ -717,6 +755,13 @@ export class HistoryPublishRepository extends BaseRepository {
     return response;
   }
 
+  /**
+   * Gets a publication record for a summary result submission
+   *
+   * @param {number} summarySubmissionId
+   * @return {*}  {Promise<QueryResult>}
+   * @memberof HistoryPublishRepository
+   */
   async getConfirmationLatestSummaryResultsPublished(summarySubmissionId: number): Promise<QueryResult> {
     const sqlStatement = SQL`
     select
@@ -731,7 +776,13 @@ export class HistoryPublishRepository extends BaseRepository {
 
     return response;
   }
-
+  /**
+   * Gets the count of unpublished project attachments
+   *
+   * @param {number} projectId
+   * @return {*}  {Promise<QueryResult>}
+   * @memberof HistoryPublishRepository
+   */
   async getCountProjectUnpublishedAttachments(projectId: number): Promise<QueryResult> {
     const sqlStatement = SQL`
     SELECT
@@ -753,6 +804,13 @@ export class HistoryPublishRepository extends BaseRepository {
     return response;
   }
 
+  /**
+   * Gets the count of unpublished project reports
+   *
+   * @param {number} projectId
+   * @return {*}  {Promise<QueryResult>}
+   * @memberof HistoryPublishRepository
+   */
   async getCountProjectUnpublishedReports(projectId: number): Promise<QueryResult> {
     const sqlStatement = SQL`
     SELECT
