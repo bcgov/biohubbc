@@ -20,13 +20,12 @@ import {
 import Icon from '@mdi/react';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import PublishSurveyButton from 'components/publish/PublishSurveyButton';
-import { SystemRoleGuard } from 'components/security/Guards';
+import { ProjectRoleGuard, SystemRoleGuard } from 'components/security/Guards';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { DeleteSurveyI18N } from 'constants/i18n';
 import { PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
 import { AuthStateContext } from 'contexts/authStateContext';
 import { DialogContext } from 'contexts/dialogContext';
-import { ProjectAuthStateContext } from 'contexts/projectAuthStateContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -61,7 +60,6 @@ const useStyles = makeStyles((theme: Theme) => ({
  * @return {*}
  */
 const SurveyHeader = () => {
-  const { hasProjectRole, hasSystemRole } = useContext(ProjectAuthStateContext);
   const surveyContext = useContext(SurveyContext);
   const surveyWithDetails = surveyContext.surveyDataLoader.data;
 
@@ -200,23 +198,23 @@ const SurveyHeader = () => {
                 <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
                   <PublishSurveyButton />
                 </SystemRoleGuard>
-                <Button
-                  id="survey_settings_button"
-                  aria-label="Survey Settings"
-                  aria-controls="surveySettingsMenu"
-                  aria-haspopup="true"
-                  variant="outlined"
-                  color="primary"
-                  startIcon={<Icon path={mdiCogOutline} size={1} />}
-                  endIcon={<Icon path={mdiChevronDown} size={1} />}
-                  onClick={openSurveyMenu}
-                  style={{ marginLeft: '0.5rem' }}
-                  disabled={
-                    !hasProjectRole([PROJECT_ROLE.PROJECT_EDITOR, PROJECT_ROLE.PROJECT_LEAD]) &&
-                    !hasSystemRole([SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR])
-                  }>
-                  Settings
-                </Button>
+                <ProjectRoleGuard
+                  validProjectRoles={[PROJECT_ROLE.PROJECT_EDITOR, PROJECT_ROLE.PROJECT_LEAD]}
+                  validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+                  <Button
+                    id="survey_settings_button"
+                    aria-label="Survey Settings"
+                    aria-controls="surveySettingsMenu"
+                    aria-haspopup="true"
+                    variant="outlined"
+                    color="primary"
+                    startIcon={<Icon path={mdiCogOutline} size={1} />}
+                    endIcon={<Icon path={mdiChevronDown} size={1} />}
+                    onClick={openSurveyMenu}
+                    style={{ marginLeft: '0.5rem' }}>
+                    Settings
+                  </Button>
+                </ProjectRoleGuard>
                 <Menu
                   id="surveySettingsMenu"
                   aria-labelledby="survey_settings_button"

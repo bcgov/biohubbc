@@ -26,7 +26,6 @@ import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { DeleteProjectI18N } from 'constants/i18n';
 import { PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
 import { DialogContext } from 'contexts/dialogContext';
-import { ProjectAuthStateContext } from 'contexts/projectAuthStateContext';
 import { ProjectContext } from 'contexts/projectContext';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -108,7 +107,6 @@ const ProjectHeader = () => {
   const biohubApi = useBiohubApi();
 
   const projectContext = useContext(ProjectContext);
-  const { hasProjectRole, hasSystemRole } = useContext(ProjectAuthStateContext);
 
   // Project data must be loaded by a parent before this component is rendered
   assert(projectContext.projectDataLoader.data);
@@ -220,23 +218,23 @@ const ProjectHeader = () => {
               <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
                 <PublishProjectButton />
               </SystemRoleGuard>
-              <Button
-                id="project_settings-button"
-                variant="outlined"
-                color="primary"
-                startIcon={<Icon path={mdiCogOutline} size={1} />}
-                endIcon={<Icon path={mdiChevronDown} size={1} />}
-                aria-label="Project Settings"
-                aria-controls="projectSettingsMenu"
-                aria-haspopup="true"
-                style={{ marginLeft: '0.5rem' }}
-                onClick={handleClick}
-                disabled={
-                  !hasProjectRole([PROJECT_ROLE.PROJECT_EDITOR, PROJECT_ROLE.PROJECT_LEAD]) &&
-                  !hasSystemRole([SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR])
-                }>
-                Settings
-              </Button>
+              <ProjectRoleGuard
+                validProjectRoles={[PROJECT_ROLE.PROJECT_EDITOR, PROJECT_ROLE.PROJECT_LEAD]}
+                validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+                <Button
+                  id="project_settings-button"
+                  variant="outlined"
+                  color="primary"
+                  startIcon={<Icon path={mdiCogOutline} size={1} />}
+                  endIcon={<Icon path={mdiChevronDown} size={1} />}
+                  aria-label="Project Settings"
+                  aria-controls="projectSettingsMenu"
+                  aria-haspopup="true"
+                  style={{ marginLeft: '0.5rem' }}
+                  onClick={handleClick}>
+                  Settings
+                </Button>
+              </ProjectRoleGuard>
               <Menu
                 id="projectSettingsMenu"
                 aria-labelledby="project_settings_button"
