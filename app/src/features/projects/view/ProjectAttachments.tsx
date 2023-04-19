@@ -1,3 +1,4 @@
+import { Button } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
 import Divider from '@material-ui/core/Divider';
 import Paper from '@material-ui/core/Paper';
@@ -6,7 +7,9 @@ import Icon from '@mdi/react';
 import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
 import FileUploadWithMetaDialog from 'components/dialog/attachments/FileUploadWithMetaDialog';
 import { IUploadHandler } from 'components/file-upload/FileUploadItem';
+import { ProjectRoleGuard } from 'components/security/Guards';
 import { H2MenuToolbar } from 'components/toolbar/ActionToolbars';
+import { PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
 import { ProjectContext } from 'contexts/projectContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IUploadAttachmentResponse } from 'interfaces/useProjectApi.interface';
@@ -96,6 +99,13 @@ const ProjectAttachments = () => {
             menuOnClick: handleUploadAttachmentClick
           }
         ]}
+        renderButton={(buttonProps) => (
+          <ProjectRoleGuard
+            validProjectRoles={[PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR]}
+            validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+            <Button {...buttonProps} />
+          </ProjectRoleGuard>
+        )}
       />
       <Divider></Divider>
       <Box p={3}>
