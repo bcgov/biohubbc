@@ -1,6 +1,7 @@
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Divider from '@material-ui/core/Divider';
+import Paper from '@material-ui/core/Paper';
 import { mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
 import assert from 'assert';
@@ -47,8 +48,8 @@ const SurveysListPage = () => {
         label="Surveys"
         buttonLabel="Create Survey"
         buttonTitle="Create Survey"
-        buttonStartIcon={<Icon path={mdiPlus} size={0.8} />}
-        buttonProps={{ variant: 'contained' }}
+        buttonStartIcon={<Icon path={mdiPlus} size={1} />}
+        buttonProps={{ variant: 'contained', disableElevation: true }}
         buttonOnClick={() => navigateToCreateSurveyPage(projectContext.projectId)}
         renderButton={(buttonProps) => (
           <ProjectRoleGuard
@@ -59,12 +60,14 @@ const SurveysListPage = () => {
         )}
       />
       <Divider></Divider>
-      <Box px={1}>
-        <SurveysList
-          projectId={projectContext.projectId}
-          surveysList={surveysListDataLoader.data || []}
-          codes={codes}
-        />
+      <Box p={3}>
+        <Paper variant="outlined">
+          <SurveysList
+            projectId={projectContext.projectId}
+            surveysList={surveysListDataLoader.data || []}
+            codes={codes}
+          />
+        </Paper>
       </Box>
     </>
   );

@@ -241,11 +241,11 @@ const SurveyStudyArea = () => {
 
       <H2ButtonToolbar
         label="Study Area"
-        buttonLabel="Edit Study Area"
+        buttonLabel="Edit"
         buttonTitle="Edit Study Area"
-        buttonStartIcon={<Icon path={mdiPencilOutline} size={0.8} />}
+        buttonStartIcon={<Icon path={mdiPencilOutline} size={1} />}
         buttonOnClick={() => handleDialogEditOpen()}
-        buttonProps={{ variant: 'text' }}
+        buttonProps={{ variant: 'outlined' }}
         renderButton={(buttonProps) => (
           <ProjectRoleGuard
             validProjectRoles={[PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR]}

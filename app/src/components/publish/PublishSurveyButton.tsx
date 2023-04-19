@@ -1,6 +1,4 @@
 import { Button } from '@material-ui/core';
-import { mdiShareAllOutline } from '@mdi/js';
-import Icon from '@mdi/react';
 import SubmitBiohubDialog from 'components/dialog/SubmitBiohubDialog';
 import PublishSurveySections, {
   ISurveySubmitForm,
@@ -71,17 +69,18 @@ const PublishSurveyButton: React.FC = (props) => {
         title="Submit Survey Data and Documents"
         color="primary"
         variant="contained"
-        startIcon={<Icon path={mdiShareAllOutline} size={1} />}
         onClick={() => checkUnsubmittedData()}
-        style={{ minWidth: '7rem' }}>
-        Submit Data
+        style={{ minWidth: '8rem' }}>
+        <strong>Submit</strong>
       </Button>
 
       <PublishDialogs
         finishSubmissionMessage="Thank you for submitting your survey data to Biohub."
-        finishSubmissionTitle="Survey data submitted!"
+        finishSubmissionTitle="Survey data submitted"
         finishSubmission={finishSubmission}
         setFinishSubmission={setFinishSubmission}
+        noSubmissionTitle="No survey data to submit"
+        noSubmissionMessage="No new data or information has been added to this survey to submit."
         noSubmissionData={noSubmissionData}
         setNoSubmissionData={setNoSubmissionData}
       />

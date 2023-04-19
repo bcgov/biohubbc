@@ -2,7 +2,7 @@ import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Divider from '@material-ui/core/Divider';
 import Paper from '@material-ui/core/Paper';
-import { mdiAttachment, mdiChevronDown, mdiFilePdfBox, mdiTrayArrowUp } from '@mdi/js';
+import { mdiAttachment, mdiFilePdfBox, mdiTrayArrowUp } from '@mdi/js';
 import Icon from '@mdi/react';
 import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
 import FileUploadWithMetaDialog from 'components/dialog/attachments/FileUploadWithMetaDialog';
@@ -72,9 +72,8 @@ const SurveyAttachments: React.FC = () => {
           label="Documents"
           buttonLabel="Upload"
           buttonTitle="Upload Documents"
-          buttonProps={{ variant: 'contained' }}
+          buttonProps={{ variant: 'contained', disableElevation: true }}
           buttonStartIcon={<Icon path={mdiTrayArrowUp} size={1} />}
-          buttonEndIcon={<Icon path={mdiChevronDown} size={1} />}
           menuItems={[
             {
               menuLabel: 'Upload a Report',

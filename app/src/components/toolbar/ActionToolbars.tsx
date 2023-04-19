@@ -4,9 +4,20 @@ import IconButton, { IconButtonProps } from '@material-ui/core/IconButton';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
+import { Theme } from '@material-ui/core/styles/createMuiTheme';
+import makeStyles from '@material-ui/core/styles/makeStyles';
 import Toolbar, { ToolbarProps } from '@material-ui/core/Toolbar';
 import Typography, { TypographyProps } from '@material-ui/core/Typography';
+import clsx from 'clsx';
 import React, { ReactNode, useState } from 'react';
+
+const useStyles = makeStyles((theme: Theme) => ({
+  actionBarButton: {
+    fontSize: '12px',
+    textTransform: 'uppercase',
+    letterSpacing: '0.02rem'
+  }
+}));
 
 export interface ICustomButtonProps {
   buttonLabel: string;
@@ -31,15 +42,16 @@ const defaultButtonProps = (props: ICustomButtonProps): Partial<ButtonProps> => 
 export interface IButtonToolbarProps extends ICustomButtonProps, IActionToolbarProps {}
 
 export const H3ButtonToolbar: React.FC<IButtonToolbarProps> = (props) => {
+  const classes = useStyles();
   const id = `h3-button-toolbar-${props.buttonLabel.replace(/\s/g, '')}`;
 
   const buttonProps: Partial<ButtonProps> & { 'data-testid'?: string } = {
     id,
     'data-testid': id,
-    className: 'sectionHeaderButton',
     variant: 'text',
     ...defaultButtonProps(props),
-    ...props.buttonProps
+    ...props.buttonProps,
+    className: clsx(classes.actionBarButton, props.buttonProps?.className),
   };
 
   return (
@@ -50,13 +62,15 @@ export const H3ButtonToolbar: React.FC<IButtonToolbarProps> = (props) => {
 };
 
 export const H2ButtonToolbar: React.FC<IButtonToolbarProps> = (props) => {
+  const classes = useStyles();
   const id = `h2-button-toolbar-${props.buttonLabel.replace(/\s/g, '')}`;
 
   const buttonProps: Partial<ButtonProps> & { 'data-testid'?: string } = {
     id,
     'data-testid': id,
     ...defaultButtonProps(props),
-    ...props.buttonProps
+    ...props.buttonProps,
+    className: clsx(classes.actionBarButton, props.buttonProps?.className),
   };
 
   return (
@@ -94,6 +108,8 @@ export interface ICustomMenuButtonProps {
 }
 
 export const CustomMenuButton: React.FC<ICustomMenuButtonProps> = (props) => {
+  const classes = useStyles();
+
   const [anchorEl, setAnchorEl] = useState(null);
 
   const open = Boolean(anchorEl);
@@ -126,7 +142,8 @@ export const CustomMenuButton: React.FC<ICustomMenuButtonProps> = (props) => {
     endIcon: props.buttonEndIcon,
     onClick: handleClick,
     children: props.buttonLabel,
-    ...props.buttonProps
+    ...props.buttonProps,
+    className: clsx(classes.actionBarButton, props.buttonProps?.className)
   };
 
   return (

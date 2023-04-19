@@ -171,7 +171,7 @@ const SurveyHeader = () => {
                 component={Link}
                 to={`/admin/projects/${surveyContext.projectId}/surveys`}
                 color="primary"
-                startIcon={<Icon path={mdiArrowLeft} size={0.9} />}>
+                startIcon={<Icon path={mdiArrowLeft} size={0.8} />}>
                 <strong>Back to Project</strong>
               </Button>
             </Box>

@@ -119,7 +119,7 @@ exports[`ProjectDetails renders correctly 1`] = `
             Amanda Christensen
           </div>
           <div
-            class="MuiTypography-root MuiTypography-body1 MuiTypography-colorTextSecondary"
+            class="MuiTypography-root MuiTypography-body1"
           >
             Amanda and associates
           </div>

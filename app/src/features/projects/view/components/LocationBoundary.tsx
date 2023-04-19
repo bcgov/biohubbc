@@ -221,9 +221,9 @@ const LocationBoundary = () => {
         label="Project Location"
         buttonLabel="Edit Project Location"
         buttonTitle="Edit Project Location"
-        buttonStartIcon={<Icon path={mdiPencilOutline} size={0.8} />}
+        buttonStartIcon={<Icon path={mdiPencilOutline} size={1} />}
         buttonOnClick={() => handleDialogEditOpen()}
-        buttonProps={{ variant: 'text' }}
+        buttonProps={{ variant: 'outlined' }}
         renderButton={(buttonProps) => (
           <ProjectRoleGuard
             validProjectRoles={[PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR]}

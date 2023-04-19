@@ -1,4 +1,5 @@
 import Box from '@material-ui/core/Box';
+import Link from '@material-ui/core/Link';
 import Paper from '@material-ui/core/Paper';
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
@@ -53,13 +54,9 @@ const ValidatingObservationsCard = (props: IValidatingObservationsCardProps) => 
           <Icon path={mdiFileOutline} size={1} />
         </Box>
         <Box flex="1 1 auto" style={{ overflow: 'hidden' }}>
-          <Typography
-            className={classes.observationFileName}
-            variant="body2"
-            component="div"
-            onClick={props.onDownload}>
+          <Link className={classes.observationFileName} variant="body2" onClick={props.onDownload}>
             <strong>{props.observationRecord.surveyObservationData.inputFileName}</strong>
-          </Typography>
+          </Link>
         </Box>
       </Box>
       <Box mt={-1} mr={1} mb={1.75} ml={5}>

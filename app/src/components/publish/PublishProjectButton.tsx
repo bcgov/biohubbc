@@ -1,6 +1,4 @@
 import { Button } from '@material-ui/core';
-import { mdiShareAllOutline } from '@mdi/js';
-import Icon from '@mdi/react';
 import SubmitBiohubDialog from 'components/dialog/SubmitBiohubDialog';
 import { ProjectContext } from 'contexts/projectContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -55,20 +53,21 @@ const PublishProjectButton: React.FC = () => {
   return (
     <>
       <Button
-        title="Submit Project Data and Documents"
+        title="Submit Project Documents"
         color="primary"
         variant="contained"
-        startIcon={<Icon path={mdiShareAllOutline} size={1} />}
         onClick={() => checkUnsubmittedData()}
-        style={{ minWidth: '7rem' }}>
-        Submit Data
+        style={{ minWidth: '8rem' }}>
+        <strong>Submit</strong>
       </Button>
 
       <PublishDialogs
         finishSubmissionMessage="Thank you for submitting your project data to Biohub."
-        finishSubmissionTitle="Project Data Submitted"
+        finishSubmissionTitle="Project documents submitted"
         finishSubmission={finishSubmission}
         setFinishSubmission={setFinishSubmission}
+        noSubmissionTitle="No documents to submit"
+        noSubmissionMessage="No new documents have been added to this project to submit."
         noSubmissionData={noSubmissionData}
         setNoSubmissionData={setNoSubmissionData}
       />
