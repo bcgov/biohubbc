@@ -1,11 +1,14 @@
 import Box from '@material-ui/core/Box';
+import Button from '@material-ui/core/Button';
 import Divider from '@material-ui/core/Divider';
 import { mdiImport } from '@mdi/js';
 import Icon from '@mdi/react';
 import ComponentDialog from 'components/dialog/ComponentDialog';
 import FileUpload from 'components/file-upload/FileUpload';
 import { IUploadHandler } from 'components/file-upload/FileUploadItem';
+import { ProjectRoleGuard } from 'components/security/Guards';
 import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
+import { PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
 import { DialogContext } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -125,6 +128,13 @@ const SurveySummaryResults = () => {
         buttonTitle="Import Summary Results"
         buttonStartIcon={<Icon path={mdiImport} size={1} />}
         buttonOnClick={() => showUploadDialog()}
+        renderButton={(buttonProps) => (
+          <ProjectRoleGuard
+            validProjectRoles={[PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR]}
+            validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+            <Button {...buttonProps} />
+          </ProjectRoleGuard>
+        )}
       />
 
       <Divider />

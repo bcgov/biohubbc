@@ -8,6 +8,7 @@ import {
 } from '@testing-library/react';
 import { AttachmentType } from 'constants/attachments';
 import { DialogContextProvider } from 'contexts/dialogContext';
+import { IProjectAuthStateContext, ProjectAuthStateContext } from 'contexts/projectAuthStateContext';
 import { ISurveyContext, SurveyContext } from 'contexts/surveyContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { DataLoader } from 'hooks/useDataLoader';
@@ -52,10 +53,20 @@ describe('SurveyAttachments', () => {
       projectId: 1
     } as unknown) as ISurveyContext;
 
+    const mockProjectAuthStateContext: IProjectAuthStateContext = {
+      getProjectParticipant: () => null,
+      hasProjectRole: () => true,
+      hasSystemRole: () => true,
+      getProjectId: () => 1,
+      hasLoadedParticipantInfo: true
+    };
+
     const { getByText, queryByText } = render(
-      <SurveyContext.Provider value={mockSurveyContext}>
-        <SurveyAttachments />
-      </SurveyContext.Provider>
+      <ProjectAuthStateContext.Provider value={mockProjectAuthStateContext}>
+        <SurveyContext.Provider value={mockSurveyContext}>
+          <SurveyAttachments />
+        </SurveyContext.Provider>
+      </ProjectAuthStateContext.Provider>
     );
     await waitFor(() => {
       expect(getByText('Upload')).toBeInTheDocument();
@@ -85,10 +96,20 @@ describe('SurveyAttachments', () => {
       projectId: 1
     } as unknown) as ISurveyContext;
 
+    const mockProjectAuthStateContext: IProjectAuthStateContext = {
+      getProjectParticipant: () => null,
+      hasProjectRole: () => true,
+      hasSystemRole: () => true,
+      getProjectId: () => 1,
+      hasLoadedParticipantInfo: true
+    };
+
     const { getByText } = render(
-      <SurveyContext.Provider value={mockSurveyContext}>
-        <SurveyAttachments />
-      </SurveyContext.Provider>
+      <ProjectAuthStateContext.Provider value={mockProjectAuthStateContext}>
+        <SurveyContext.Provider value={mockSurveyContext}>
+          <SurveyAttachments />
+        </SurveyContext.Provider>
+      </ProjectAuthStateContext.Provider>
     );
     await waitFor(() => {
       expect(getByText('No Documents')).toBeInTheDocument();
@@ -114,12 +135,22 @@ describe('SurveyAttachments', () => {
       projectId: 1
     } as unknown) as ISurveyContext;
 
+    const mockProjectAuthStateContext: IProjectAuthStateContext = {
+      getProjectParticipant: () => null,
+      hasProjectRole: () => true,
+      hasSystemRole: () => true,
+      getProjectId: () => 1,
+      hasLoadedParticipantInfo: true
+    };
+
     mockBiohubApi().survey.getSurveyAttachments.mockResolvedValue({});
 
     const { getByText } = render(
-      <SurveyContext.Provider value={mockSurveyContext}>
-        <SurveyAttachments />
-      </SurveyContext.Provider>
+      <ProjectAuthStateContext.Provider value={mockProjectAuthStateContext}>
+        <SurveyContext.Provider value={mockSurveyContext}>
+          <SurveyAttachments />
+        </SurveyContext.Provider>
+      </ProjectAuthStateContext.Provider>
     );
 
     await waitFor(() => {
@@ -156,12 +187,22 @@ describe('SurveyAttachments', () => {
       projectId: 1
     } as unknown) as ISurveyContext;
 
+    const mockProjectAuthStateContext: IProjectAuthStateContext = {
+      getProjectParticipant: () => null,
+      hasProjectRole: () => true,
+      hasSystemRole: () => true,
+      getProjectId: () => 1,
+      hasLoadedParticipantInfo: true
+    };
+
     const { baseElement, queryByText, getByTestId, getAllByTestId, queryByTestId } = render(
-      <DialogContextProvider>
-        <SurveyContext.Provider value={mockSurveyContext}>
-          <SurveyAttachments />
-        </SurveyContext.Provider>
-      </DialogContextProvider>
+      <ProjectAuthStateContext.Provider value={mockProjectAuthStateContext}>
+        <DialogContextProvider>
+          <SurveyContext.Provider value={mockSurveyContext}>
+            <SurveyAttachments />
+          </SurveyContext.Provider>
+        </DialogContextProvider>
+      </ProjectAuthStateContext.Provider>
     );
 
     await waitFor(() => {
@@ -213,12 +254,22 @@ describe('SurveyAttachments', () => {
       projectId: 1
     } as unknown) as ISurveyContext;
 
+    const mockProjectAuthStateContext: IProjectAuthStateContext = {
+      getProjectParticipant: () => null,
+      hasProjectRole: () => true,
+      hasSystemRole: () => true,
+      getProjectId: () => 1,
+      hasLoadedParticipantInfo: true
+    };
+
     const { baseElement, queryByText, getByTestId, queryByTestId, getAllByTestId } = render(
-      <DialogContextProvider>
-        <SurveyContext.Provider value={mockSurveyContext}>
-          <SurveyAttachments />
-        </SurveyContext.Provider>
-      </DialogContextProvider>
+      <ProjectAuthStateContext.Provider value={mockProjectAuthStateContext}>
+        <DialogContextProvider>
+          <SurveyContext.Provider value={mockSurveyContext}>
+            <SurveyAttachments />
+          </SurveyContext.Provider>
+        </DialogContextProvider>
+      </ProjectAuthStateContext.Provider>
     );
 
     await waitFor(() => {
@@ -269,12 +320,22 @@ describe('SurveyAttachments', () => {
       projectId: 1
     } as unknown) as ISurveyContext;
 
+    const mockProjectAuthStateContext: IProjectAuthStateContext = {
+      getProjectParticipant: () => null,
+      hasProjectRole: () => true,
+      hasSystemRole: () => true,
+      getProjectId: () => 1,
+      hasLoadedParticipantInfo: true
+    };
+
     const { baseElement, queryByText, getAllByRole, queryByTestId, getAllByTestId } = render(
-      <DialogContextProvider>
-        <SurveyContext.Provider value={mockSurveyContext}>
-          <SurveyAttachments />
-        </SurveyContext.Provider>
-      </DialogContextProvider>
+      <ProjectAuthStateContext.Provider value={mockProjectAuthStateContext}>
+        <DialogContextProvider>
+          <SurveyContext.Provider value={mockSurveyContext}>
+            <SurveyAttachments />
+          </SurveyContext.Provider>
+        </DialogContextProvider>
+      </ProjectAuthStateContext.Provider>
     );
 
     await waitFor(() => {

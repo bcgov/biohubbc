@@ -12,6 +12,7 @@ import {
   GetPartnershipsData,
   GetProjectData
 } from '../models/project-view';
+import { ProjectUserObject } from '../models/user';
 import { ProjectParticipationRepository } from '../repositories/project-participation-repository';
 import { ProjectRepository } from '../repositories/project-repository';
 import { getMockDBConnection } from '../__mocks__/db';
@@ -36,7 +37,7 @@ describe('ProjectService', () => {
 
       const getProjectParticipantStub = sinon
         .stub(ProjectService.prototype, 'getProjectParticipant')
-        .resolves('existing participant');
+        .resolves({} as ProjectUserObject);
 
       const addProjectParticipantStub = sinon.stub(ProjectService.prototype, 'addProjectParticipant');
 
@@ -85,7 +86,7 @@ describe('ProjectService', () => {
       const dbConnection = getMockDBConnection();
       const service = new ProjectService(dbConnection);
 
-      const data = { id: 1 };
+      const data = { project_id: 1 } as ProjectUserObject;
 
       const repoStub = sinon.stub(ProjectParticipationRepository.prototype, 'getProjectParticipant').resolves(data);
 

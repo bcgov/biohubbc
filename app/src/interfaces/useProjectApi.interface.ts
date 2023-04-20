@@ -1,3 +1,4 @@
+import { PROJECT_ROLE } from 'constants/roles';
 import { IProjectCoordinatorForm } from 'features/projects/components/ProjectCoordinatorForm';
 import { IProjectDetailsForm } from 'features/projects/components/ProjectDetailsForm';
 import { IProjectFundingForm } from 'features/projects/components/ProjectFundingForm';
@@ -378,6 +379,7 @@ export interface IGetProjectParticipantsResponseArrayItem {
   user_identifier: string;
   user_identity_source_id: number;
 }
+
 export interface IGetProjectParticipantsResponse {
   participants: IGetProjectParticipantsResponseArrayItem[];
 }
@@ -386,4 +388,13 @@ export interface IAddProjectParticipant {
   userIdentifier: string;
   identitySource: string;
   roleId: number;
+}
+
+export interface IGetUserProjectParticipantResponse {
+  participant: {
+    project_id: number;
+    system_user_id: number;
+    project_role_ids: number[];
+    project_role_names: PROJECT_ROLE[];
+  } | null;
 }

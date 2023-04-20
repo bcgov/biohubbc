@@ -1,10 +1,11 @@
 import { cleanup, render, waitFor } from '@testing-library/react';
 import { CodesContext, ICodesContext } from 'contexts/codesContext';
+import { IProjectAuthStateContext, ProjectAuthStateContext } from 'contexts/projectAuthStateContext';
 import { IProjectContext, ProjectContext } from 'contexts/projectContext';
 import { createMemoryHistory } from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { DataLoader } from 'hooks/useDataLoader';
-import { IGetSurveyForViewResponse, SurveySupplementaryData } from 'interfaces/useSurveyApi.interface';
+import { IGetSurveyForListResponse } from 'interfaces/useSurveyApi.interface';
 import React from 'react';
 import { Router } from 'react-router';
 import { codes } from 'test-helpers/code-helpers';
@@ -49,15 +50,25 @@ describe('SurveysListPage', () => {
       projectId: 1
     };
 
+    const mockProjectAuthStateContext: IProjectAuthStateContext = {
+      getProjectParticipant: () => null,
+      hasProjectRole: () => true,
+      hasSystemRole: () => true,
+      getProjectId: () => 1,
+      hasLoadedParticipantInfo: true
+    };
+
     mockBiohubApi().survey.getSurveysList.mockResolvedValue([]);
 
     const { getByText } = render(
       <Router history={history}>
-        <CodesContext.Provider value={mockCodesContext}>
-          <ProjectContext.Provider value={mockProjectContext}>
-            <SurveysListPage />
-          </ProjectContext.Provider>
-        </CodesContext.Provider>
+        <ProjectAuthStateContext.Provider value={mockProjectAuthStateContext}>
+          <CodesContext.Provider value={mockCodesContext}>
+            <ProjectContext.Provider value={mockProjectContext}>
+              <SurveysListPage />
+            </ProjectContext.Provider>
+          </CodesContext.Provider>
+        </ProjectAuthStateContext.Provider>
       </Router>
     );
 
@@ -75,7 +86,15 @@ describe('SurveysListPage', () => {
       } as DataLoader<any, any, any>
     };
 
-    const surveysList: IGetSurveyForViewResponse[] = [
+    const mockProjectAuthStateContext: IProjectAuthStateContext = {
+      getProjectParticipant: () => null,
+      hasProjectRole: () => true,
+      hasSystemRole: () => true,
+      getProjectId: () => 1,
+      hasLoadedParticipantInfo: true
+    };
+
+    const surveysList: IGetSurveyForListResponse[] = [
       {
         surveyData: {
           ...surveyObject,
@@ -92,9 +111,9 @@ describe('SurveysListPage', () => {
             ancillary_species_names: ['species 2']
           }
         },
-        surveySupplementaryData: ({
-          survey_metadata_publish: null
-        } as unknown) as SurveySupplementaryData
+        surveySupplementaryData: {
+          has_unpublished_content: false
+        }
       },
       {
         surveyData: {
@@ -112,9 +131,9 @@ describe('SurveysListPage', () => {
             ancillary_species_names: ['species 4']
           }
         },
-        surveySupplementaryData: ({
-          survey_metadata_publish: null
-        } as unknown) as SurveySupplementaryData
+        surveySupplementaryData: {
+          has_unpublished_content: false
+        }
       }
     ];
 
@@ -129,11 +148,13 @@ describe('SurveysListPage', () => {
 
     const { getByText } = render(
       <Router history={history}>
-        <CodesContext.Provider value={mockCodesContext}>
-          <ProjectContext.Provider value={mockProjectContext}>
-            <SurveysListPage />
-          </ProjectContext.Provider>
-        </CodesContext.Provider>
+        <ProjectAuthStateContext.Provider value={mockProjectAuthStateContext}>
+          <CodesContext.Provider value={mockCodesContext}>
+            <ProjectContext.Provider value={mockProjectContext}>
+              <SurveysListPage />
+            </ProjectContext.Provider>
+          </CodesContext.Provider>
+        </ProjectAuthStateContext.Provider>
       </Router>
     );
 

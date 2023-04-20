@@ -7,7 +7,7 @@ import SurveySubmissionAlertBar from 'components/publish/SurveySubmissionAlertBa
 import { CodesContext } from 'contexts/codesContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import SurveyDetails from 'features/surveys/view/SurveyDetails';
-import React, { useContext, useEffect } from 'react';
+import React, { useContext } from 'react';
 import SurveyStudyArea from './components/SurveyStudyArea';
 import SurveySummaryResults from './summary-results/SurveySummaryResults';
 import SurveyObservations from './survey-observations/SurveyObservations';
@@ -25,12 +25,7 @@ const SurveyPage: React.FC = () => {
   const codesContext = useContext(CodesContext);
   const surveyContext = useContext(SurveyContext);
 
-  useEffect(() => codesContext.codesDataLoader.load(), [codesContext.codesDataLoader]);
-  useEffect(() => surveyContext.surveyDataLoader.load(surveyContext.projectId, surveyContext.surveyId), [
-    surveyContext.surveyDataLoader,
-    surveyContext.projectId,
-    surveyContext.surveyId
-  ]);
+  codesContext.codesDataLoader.load();
 
   if (!codesContext.codesDataLoader.data || !surveyContext.surveyDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;

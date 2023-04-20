@@ -14,8 +14,10 @@ import InferredLocationDetails, { IInferredLayers } from 'components/boundary/In
 import EditDialog from 'components/dialog/EditDialog';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import MapContainer from 'components/map/MapContainer';
+import { ProjectRoleGuard } from 'components/security/Guards';
 import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
 import { EditLocationBoundaryI18N } from 'constants/i18n';
+import { PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
 import { CodesContext } from 'contexts/codesContext';
 import { DialogContext } from 'contexts/dialogContext';
 import { ProjectContext } from 'contexts/projectContext';
@@ -217,11 +219,18 @@ const LocationBoundary = () => {
 
       <H2ButtonToolbar
         label="Project Location"
-        buttonLabel="Edit"
+        buttonLabel="Edit Project Location"
         buttonTitle="Edit Project Location"
         buttonStartIcon={<Icon path={mdiPencilOutline} size={1} />}
         buttonOnClick={() => handleDialogEditOpen()}
         buttonProps={{ variant: 'outlined' }}
+        renderButton={(buttonProps) => (
+          <ProjectRoleGuard
+            validProjectRoles={[PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR]}
+            validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+            <Button {...buttonProps} />
+          </ProjectRoleGuard>
+        )}
       />
 
       <Box px={3} pb={3}>

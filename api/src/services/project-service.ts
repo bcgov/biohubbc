@@ -28,6 +28,7 @@ import {
   IGetProject,
   ProjectSupplementaryData
 } from '../models/project-view';
+import { ProjectUserObject } from '../models/user';
 import { GET_ENTITIES, IUpdateProject } from '../paths/project/{projectId}/update';
 import { ProjectRepository } from '../repositories/project-repository';
 import { deleteFileFromS3 } from '../utils/file-utils';
@@ -91,7 +92,7 @@ export class ProjectService extends DBService {
    * @return {*}  {Promise<any>}
    * @memberof ProjectService
    */
-  async getProjectParticipant(projectId: number, systemUserId: number): Promise<any> {
+  async getProjectParticipant(projectId: number, systemUserId: number): Promise<ProjectUserObject | null> {
     return this.projectParticipationService.getProjectParticipant(projectId, systemUserId);
   }
 

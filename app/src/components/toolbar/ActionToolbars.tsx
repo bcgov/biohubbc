@@ -8,6 +8,7 @@ import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Toolbar, { ToolbarProps } from '@material-ui/core/Toolbar';
 import Typography, { TypographyProps } from '@material-ui/core/Typography';
+import clsx from 'clsx';
 import React, { ReactNode, useState } from 'react';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -25,7 +26,18 @@ export interface ICustomButtonProps {
   buttonStartIcon: ReactNode;
   buttonEndIcon?: ReactNode;
   buttonProps?: Partial<ButtonProps> & { 'data-testid'?: string };
+  renderButton?: (buttonProps: Partial<ButtonProps>) => React.ReactNode;
 }
+
+const defaultButtonProps = (props: ICustomButtonProps): Partial<ButtonProps> => ({
+  color: 'primary',
+  title: props.buttonTitle,
+  'aria-label': props.buttonTitle,
+  startIcon: props.buttonStartIcon,
+  endIcon: props.buttonEndIcon,
+  onClick: () => props.buttonOnClick(),
+  children: props.buttonLabel
+});
 
 export interface IButtonToolbarProps extends ICustomButtonProps, IActionToolbarProps {}
 
@@ -33,22 +45,18 @@ export const H3ButtonToolbar: React.FC<IButtonToolbarProps> = (props) => {
   const classes = useStyles();
   const id = `h3-button-toolbar-${props.buttonLabel.replace(/\s/g, '')}`;
 
+  const buttonProps: Partial<ButtonProps> & { 'data-testid'?: string } = {
+    id,
+    'data-testid': id,
+    variant: 'text',
+    ...defaultButtonProps(props),
+    ...props.buttonProps,
+    className: clsx(classes.actionBarButton, props.buttonProps?.className)
+  };
+
   return (
     <ActionToolbar label={props.label} labelProps={{ variant: 'h3' }} toolbarProps={props.toolbarProps}>
-      <Button
-        className={classes.actionBarButton}
-        id={id}
-        data-testid={id}
-        variant="text"
-        color="primary"
-        title={props.buttonTitle}
-        aria-label={props.buttonTitle}
-        startIcon={props.buttonStartIcon}
-        endIcon={props.buttonEndIcon}
-        onClick={() => props.buttonOnClick()}
-        {...props.buttonProps}>
-        {props.buttonLabel}
-      </Button>
+      {props.renderButton ? props.renderButton(buttonProps) : <Button {...buttonProps} />}
     </ActionToolbar>
   );
 };
@@ -57,21 +65,17 @@ export const H2ButtonToolbar: React.FC<IButtonToolbarProps> = (props) => {
   const classes = useStyles();
   const id = `h2-button-toolbar-${props.buttonLabel.replace(/\s/g, '')}`;
 
+  const buttonProps: Partial<ButtonProps> & { 'data-testid'?: string } = {
+    id,
+    'data-testid': id,
+    ...defaultButtonProps(props),
+    ...props.buttonProps,
+    className: clsx(classes.actionBarButton, props.buttonProps?.className)
+  };
+
   return (
     <ActionToolbar label={props.label} labelProps={{ variant: 'h2' }} toolbarProps={props.toolbarProps}>
-      <Button
-        className={classes.actionBarButton}
-        id={id}
-        data-testid={id}
-        color="primary"
-        title={props.buttonTitle}
-        aria-label={props.buttonTitle}
-        startIcon={props.buttonStartIcon}
-        endIcon={props.buttonEndIcon}
-        onClick={() => props.buttonOnClick()}
-        {...props.buttonProps}>
-        {props.buttonLabel}
-      </Button>
+      {props.renderButton ? props.renderButton(buttonProps) : <Button {...buttonProps} />}
     </ActionToolbar>
   );
 };
@@ -99,6 +103,7 @@ export interface ICustomMenuButtonProps {
   buttonEndIcon?: ReactNode;
   buttonVariant?: string;
   buttonProps?: Partial<ButtonProps> & { 'data-testid'?: string };
+  renderButton?: (buttonProps: Partial<ButtonProps>) => React.ReactNode;
   menuItems: IMenuToolbarItem[];
 }
 
@@ -124,24 +129,26 @@ export const CustomMenuButton: React.FC<ICustomMenuButtonProps> = (props) => {
     menuItemOnClick();
   };
 
+  const buttonProps: Partial<ButtonProps> & { 'data-testid'?: string } = {
+    id: buttonId,
+    'data-testid': buttonId,
+    title: props.buttonTitle,
+    color: 'primary',
+    variant: 'outlined',
+    'aria-controls': 'basic-menu',
+    'aria-haspopup': 'true',
+    'aria-expanded': open ? 'true' : undefined,
+    startIcon: props.buttonStartIcon,
+    endIcon: props.buttonEndIcon,
+    onClick: handleClick,
+    children: props.buttonLabel,
+    ...props.buttonProps,
+    className: clsx(classes.actionBarButton, props.buttonProps?.className)
+  };
+
   return (
     <>
-      <Button
-        className={classes.actionBarButton}
-        id={buttonId}
-        data-testid={buttonId}
-        title={props.buttonTitle}
-        color="primary"
-        variant="outlined"
-        aria-controls="basic-menu"
-        aria-haspopup="true"
-        aria-expanded={open ? 'true' : undefined}
-        startIcon={props.buttonStartIcon}
-        endIcon={props.buttonEndIcon}
-        onClick={handleClick}
-        {...props.buttonProps}>
-        {props.buttonLabel}
-      </Button>
+      {props.renderButton ? props.renderButton(buttonProps) : <Button {...buttonProps} />}
       <Menu
         style={{ marginTop: '8px' }}
         open={open}

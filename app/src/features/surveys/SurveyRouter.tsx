@@ -1,8 +1,10 @@
+import { ProjectRoleRouteGuard } from 'components/security/RouteGuards';
+import { PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
 import SurveyPage from 'features/surveys/view/SurveyPage';
 import ProjectsLayout from 'layouts/ProjectsLayout';
 import React from 'react';
-import { Switch } from 'react-router';
-import AppRoute from 'utils/AppRoute';
+import { Route, Switch } from 'react-router';
+import EditSurveyPage from './edit/EditSurveyPage';
 
 /**
  * Router for all `/admin/projects/:id/surveys/:survey_id/*` pages.
@@ -12,21 +14,21 @@ import AppRoute from 'utils/AppRoute';
 const SurveyRouter: React.FC = () => {
   return (
     <Switch>
-      <AppRoute exact path="/admin/projects/:id/surveys/:survey_id/details" layout={ProjectsLayout}>
-        <SurveyPage />
-      </AppRoute>
+      <Route exact path="/admin/projects/:id/surveys/:survey_id/details">
+        <ProjectsLayout>
+          <SurveyPage />
+        </ProjectsLayout>
+      </Route>
 
-      <AppRoute exact path="/admin/projects/:id/surveys/:survey_id/attachments" layout={ProjectsLayout}>
-        <SurveyPage />
-      </AppRoute>
-
-      <AppRoute exact path="/admin/projects/:id/surveys/:survey_id/observations" layout={ProjectsLayout}>
-        <SurveyPage />
-      </AppRoute>
-
-      <AppRoute exact path="/admin/projects/:id/surveys/:survey_id/results" layout={ProjectsLayout}>
-        <SurveyPage />
-      </AppRoute>
+      <Route exact path="/admin/projects/:id/surveys/:survey_id/edit">
+        <ProjectsLayout>
+          <ProjectRoleRouteGuard
+            validProjectRoles={[PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR]}
+            validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+            <EditSurveyPage />
+          </ProjectRoleRouteGuard>
+        </ProjectsLayout>
+      </Route>
     </Switch>
   );
 };
