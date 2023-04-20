@@ -12,8 +12,8 @@ import { mdiFilterOutline, mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
 import ProjectsSubmissionAlertBar from 'components/publish/ProjectListSubmissionAlertBar';
 import { IProjectAdvancedFilters } from 'components/search-filter/ProjectAdvancedFilters';
-import { SystemRoleGuard } from 'components/security/Guards';
-import { SYSTEM_ROLE } from 'constants/roles';
+import { ProjectRoleGuard, SystemRoleGuard } from 'components/security/Guards';
+import { PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
 import { CodesContext } from 'contexts/codesContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
@@ -102,6 +102,14 @@ const ProjectsListPage: React.FC = () => {
             <Box display="flex" justifyContent="space-between">
               <Box className={classes.pageTitleContainer}>
                 <Typography variant="h1" className={classes.pageTitle}>
+                  <ProjectRoleGuard
+                    validProjectRoles={[
+                      PROJECT_ROLE.PROJECT_LEAD,
+                      PROJECT_ROLE.PROJECT_EDITOR,
+                      PROJECT_ROLE.PROJECT_VIEWER
+                    ]}>
+                    My{' '}
+                  </ProjectRoleGuard>
                   Projects
                 </Typography>
               </Box>

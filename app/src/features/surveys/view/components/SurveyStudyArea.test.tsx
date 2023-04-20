@@ -1,4 +1,5 @@
 import { cleanup, fireEvent, render, waitFor } from '@testing-library/react';
+import { IProjectAuthStateContext, ProjectAuthStateContext } from 'contexts/projectAuthStateContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { DataLoader } from 'hooks/useDataLoader';
@@ -137,18 +138,28 @@ describe('SurveyStudyArea', () => {
     const mockObservationsDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockSummaryDataLoader = { data: null } as DataLoader<any, any, any>;
 
+    const mockProjectAuthStateContext: IProjectAuthStateContext = {
+      getProjectParticipant: () => null,
+      hasProjectRole: () => true,
+      hasSystemRole: () => true,
+      getProjectId: () => 1,
+      hasLoadedParticipantInfo: true
+    };
+
     const { getByText, queryByText } = render(
-      <SurveyContext.Provider
-        value={{
-          projectId: 1,
-          surveyId: 1,
-          surveyDataLoader: mockSurveyDataLoader,
-          artifactDataLoader: mockArtifactDataLoader,
-          observationDataLoader: mockObservationsDataLoader,
-          summaryDataLoader: mockSummaryDataLoader
-        }}>
-        <SurveyStudyArea />
-      </SurveyContext.Provider>
+      <ProjectAuthStateContext.Provider value={mockProjectAuthStateContext}>
+        <SurveyContext.Provider
+          value={{
+            projectId: 1,
+            surveyId: 1,
+            surveyDataLoader: mockSurveyDataLoader,
+            artifactDataLoader: mockArtifactDataLoader,
+            observationDataLoader: mockObservationsDataLoader,
+            summaryDataLoader: mockSummaryDataLoader
+          }}>
+          <SurveyStudyArea />
+        </SurveyContext.Provider>
+      </ProjectAuthStateContext.Provider>
     );
 
     await waitFor(() => {
@@ -236,18 +247,28 @@ describe('SurveyStudyArea', () => {
     });
     mockBiohubApi().survey.updateSurvey = jest.fn(() => Promise.reject(new Error('API Error is Here')));
 
+    const mockProjectAuthStateContext: IProjectAuthStateContext = {
+      getProjectParticipant: () => null,
+      hasProjectRole: () => true,
+      hasSystemRole: () => true,
+      getProjectId: () => 1,
+      hasLoadedParticipantInfo: true
+    };
+
     const { getByText, queryByText } = render(
-      <SurveyContext.Provider
-        value={{
-          projectId: 1,
-          surveyId: 1,
-          surveyDataLoader: mockSurveyDataLoader,
-          artifactDataLoader: mockArtifactDataLoader,
-          observationDataLoader: mockObservationsDataLoader,
-          summaryDataLoader: mockSummaryDataLoader
-        }}>
-        <SurveyStudyArea />
-      </SurveyContext.Provider>
+      <ProjectAuthStateContext.Provider value={mockProjectAuthStateContext}>
+        <SurveyContext.Provider
+          value={{
+            projectId: 1,
+            surveyId: 1,
+            surveyDataLoader: mockSurveyDataLoader,
+            artifactDataLoader: mockArtifactDataLoader,
+            observationDataLoader: mockObservationsDataLoader,
+            summaryDataLoader: mockSummaryDataLoader
+          }}>
+          <SurveyStudyArea />
+        </SurveyContext.Provider>
+      </ProjectAuthStateContext.Provider>
     );
 
     await waitFor(() => {

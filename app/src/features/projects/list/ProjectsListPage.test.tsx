@@ -251,9 +251,11 @@ describe('ProjectsListPage', () => {
           permits_list: '1, 2, 3',
           completion_status: 'Completed'
         },
-        projectSupplementalData: { has_unpublished_content: false }
+        projectSupplementaryData: { has_unpublished_content: false }
       }
     ]);
+
+    mockBiohubApi().draft.getDraftsList.mockResolvedValue([]);
 
     const mockCodesContext: ICodesContext = ({
       codesDataLoader: ({

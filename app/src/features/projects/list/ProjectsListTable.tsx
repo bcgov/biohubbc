@@ -11,7 +11,7 @@ import TableRow from '@material-ui/core/TableRow';
 import clsx from 'clsx';
 import { SubmitStatusChip } from 'components/chips/SubmitStatusChip';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
-import { BioHubSubmittedStatusType, ProjectStatusType } from 'constants/misc';
+import { BioHubSubmittedStatusType } from 'constants/misc';
 import { IGetDraftsListResponse } from 'interfaces/useDraftApi.interface';
 import { IGetProjectsListResponse } from 'interfaces/useProjectApi.interface';
 import React from 'react';
@@ -27,16 +27,13 @@ const useStyles = makeStyles((theme: Theme) => ({
     fontWeight: 700
   },
   chip: {
-    color: 'white'
-  },
-  chipActive: {
-    backgroundColor: theme.palette.success.main
-  },
-  chipCompleted: {
-    backgroundColor: theme.palette.success.main
+    minWidth: '7rem',
+    fontSize: '11px',
+    textTransform: 'uppercase'
   },
   chipDraft: {
-    backgroundColor: theme.palette.info.main
+    borderColor: '#afd3ee',
+    backgroundColor: 'rgb(232, 244, 253)'
   }
 }));
 
@@ -51,24 +48,6 @@ const ProjectsListTable: React.FC<IProjectsListTableProps> = (props) => {
   const { projects, drafts } = props;
   const hasProjects = projects.length > 0;
   const hasDrafts = drafts?.length > 0;
-
-  const getChipIcon = (status_name: string) => {
-    let chipLabel;
-    let chipStatusClass;
-
-    if (ProjectStatusType.ACTIVE === status_name) {
-      chipLabel = 'Active';
-      chipStatusClass = classes.chipActive;
-    } else if (ProjectStatusType.COMPLETED === status_name) {
-      chipLabel = 'Completed';
-      chipStatusClass = classes.chipCompleted;
-    } else if (ProjectStatusType.DRAFT === status_name) {
-      chipLabel = 'Draft';
-      chipStatusClass = classes.chipDraft;
-    }
-
-    return <Chip size="small" className={clsx(classes.chip, chipStatusClass)} label={chipLabel} />;
-  };
 
   function getProjectSubmissionStatus(project: IGetProjectsListResponse): BioHubSubmittedStatusType {
     if (project.projectSupplementaryData.has_unpublished_content) {
@@ -130,8 +109,9 @@ const ProjectsListTable: React.FC<IProjectsListTableProps> = (props) => {
                   </Link>
                 </TableCell>
                 <TableCell />
-                <TableCell />
-                <TableCell>{getChipIcon('Draft')}</TableCell>
+                <TableCell>
+                  <Chip variant="outlined" className={clsx(classes.chip, classes.chipDraft)} label={'Draft'} />
+                </TableCell>
                 <TableCell />
                 <TableCell />
               </TableRow>
