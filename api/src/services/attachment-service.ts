@@ -49,29 +49,6 @@ export class AttachmentService extends DBService {
   }
 
   /**
-   * Finds all of the project attachments and Supplementary Data for the given project ID.
-   *
-   * @param {number} projectId
-   * @return {*}  {Promise<GetAttachmentsData[]>}
-   * @memberof AttachmentService
-   */
-  async getProjectAttachmentsWithSupplementaryData(projectId: number): Promise<GetAttachmentsWithSupplementalData[]> {
-    const historyPublishService = new HistoryPublishService(this.connection);
-
-    const attachments = await this.attachmentRepository.getProjectAttachments(projectId);
-
-    return await Promise.all(
-      attachments.map(async (attachment: any) => {
-        const supplementaryData = await historyPublishService.getProjectAttachmentPublishRecord(
-          attachment.project_attachment_id
-        );
-
-        return new GetAttachmentsWithSupplementalData(attachment, supplementaryData);
-      })
-    );
-  }
-
-  /**
    * Finds a project attachment having the given project ID and attachment ID
    * @param {number} projectId the ID of the project
    * @param {number} attachmentId the ID of the attachment
@@ -111,6 +88,29 @@ export class AttachmentService extends DBService {
    */
   async getProjectReportAttachments(projectId: number): Promise<IProjectReportAttachment[]> {
     return this.attachmentRepository.getProjectReportAttachments(projectId);
+  }
+
+  /**
+   * Finds all of the project attachments and Supplementary Data for the given project ID.
+   *
+   * @param {number} projectId
+   * @return {*}  {Promise<GetAttachmentsData[]>}
+   * @memberof AttachmentService
+   */
+  async getProjectAttachmentsWithSupplementaryData(projectId: number): Promise<GetAttachmentsWithSupplementalData[]> {
+    const historyPublishService = new HistoryPublishService(this.connection);
+
+    const attachments = await this.attachmentRepository.getProjectAttachments(projectId);
+
+    return await Promise.all(
+      attachments.map(async (attachment: any) => {
+        const supplementaryData = await historyPublishService.getProjectAttachmentPublishRecord(
+          attachment.project_attachment_id
+        );
+
+        return new GetAttachmentsWithSupplementalData(attachment, supplementaryData);
+      })
+    );
   }
 
   /**
