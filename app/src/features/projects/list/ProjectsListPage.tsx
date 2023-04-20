@@ -102,7 +102,6 @@ const ProjectsListPage: React.FC = () => {
             <Box display="flex" justifyContent="space-between">
               <Box className={classes.pageTitleContainer}>
                 <Typography variant="h1" className={classes.pageTitle}>
-                  <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR]}>My </SystemRoleGuard>
                   Projects
                 </Typography>
               </Box>
