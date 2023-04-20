@@ -687,7 +687,6 @@ export class HistoryPublishRepository extends BaseRepository {
    * @memberof HistoryPublishRepository
    */
   async getLatestUndeletedObservationRecordId(surveyId: number): Promise<QueryResult> {
-    surveyId = 12;
     const sqlStatement = SQL`
     select
       occurrence_submission_id

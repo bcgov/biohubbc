@@ -10,7 +10,7 @@ const defaultLog = getLogger('models/project-survey-attachments');
  * @export
  * @class GetAttachmentsData
  */
-export class GetAttachmentsData {
+export class GetAttachmentsWithSupplementalData {
   id: number;
   fileName: string;
   fileType: string;
@@ -20,7 +20,7 @@ export class GetAttachmentsData {
   supplementaryAttachmentData: SurveySupplementaryData;
 
   constructor(attachment: any, supplementaryData: any) {
-    defaultLog.debug({ label: 'GetAttachmentsData', message: 'params' });
+    defaultLog.debug({ label: 'GetAttachmentsWithSupplementalData', message: 'params' });
 
     this.id =
       attachment.survey_attachment_id ||
