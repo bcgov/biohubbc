@@ -9,8 +9,9 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import clsx from 'clsx';
+import { SubmitStatusChip } from 'components/chips/SubmitStatusChip';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
-import { ProjectStatusType } from 'constants/misc';
+import { BioHubSubmittedStatusType, ProjectStatusType } from 'constants/misc';
 import { IGetDraftsListResponse } from 'interfaces/useDraftApi.interface';
 import { IGetProjectsListResponse } from 'interfaces/useProjectApi.interface';
 import React from 'react';
@@ -69,6 +70,13 @@ const ProjectsListTable: React.FC<IProjectsListTableProps> = (props) => {
     return <Chip size="small" className={clsx(classes.chip, chipStatusClass)} label={chipLabel} />;
   };
 
+  function getProjectSubmissionStatus(project: IGetProjectsListResponse): BioHubSubmittedStatusType {
+    if (project.projectSupplementaryData.has_unpublished_content) {
+      return BioHubSubmittedStatusType.UNSUBMITTED;
+    }
+    return BioHubSubmittedStatusType.SUBMITTED;
+  }
+
   if (!hasProjects && !hasDrafts) {
     return (
       <TableContainer>
@@ -102,8 +110,7 @@ const ProjectsListTable: React.FC<IProjectsListTableProps> = (props) => {
           <TableHead>
             <TableRow>
               <TableCell>Name</TableCell>
-              <TableCell>Contact Agency</TableCell>
-              <TableCell width={150}>Type</TableCell>
+              <TableCell>Type</TableCell>
               <TableCell width={150}>Status</TableCell>
               <TableCell width={150}>Start Date</TableCell>
               <TableCell width={150}>End Date</TableCell>
@@ -141,9 +148,10 @@ const ProjectsListTable: React.FC<IProjectsListTableProps> = (props) => {
                     {project.projectData.name}
                   </Link>
                 </TableCell>
-                <TableCell>{project.projectData.coordinator_agency}</TableCell>
                 <TableCell>{project.projectData.project_type}</TableCell>
-                <TableCell>{getChipIcon(project.projectData.completion_status)}</TableCell>
+                <TableCell>
+                  <SubmitStatusChip status={getProjectSubmissionStatus(project)} />
+                </TableCell>
                 <TableCell>
                   {getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, project.projectData.start_date)}
                 </TableCell>
