@@ -176,9 +176,25 @@ export interface SurveySupplementaryData {
   } | null;
 }
 
+/**
+ * An interface describing Survey Publish Data
+ * 
+ * @export
+ * @interface ISurveySupplementaryData
+ */
+export interface ISurveySupplementaryData {
+  has_unpublished_content: boolean;
+}
+
+/**
+ * Get Survey list response object.
+ *
+ * @export
+ * @interface IGetSurveyForListResponse
+ */
 export interface IGetSurveyForListResponse {
   surveyData: SurveyViewObject;
-  surveySupplementaryData: { has_unpublished_content: boolean };
+  surveySupplementaryData: ISurveySupplementaryData;
 }
 
 /**

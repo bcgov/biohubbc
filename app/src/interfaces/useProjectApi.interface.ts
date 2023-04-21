@@ -85,6 +85,15 @@ export interface IGetUserProjectsListResponse {
 }
 
 /**
+ * An interface that describes project supplementary data
+ * @export
+ * @interface IProjectSupplementaryData
+ */
+export interface IProjectSupplementaryData {
+  has_unpublished_content: boolean
+}
+
+/**
  * Get projects list response object.
  *
  * @export
@@ -92,7 +101,7 @@ export interface IGetUserProjectsListResponse {
  */
 export interface IGetProjectsListResponse {
   projectData: IProjectsListData;
-  projectSupplementaryData: { has_unpublished_content: boolean };
+  projectSupplementaryData: IProjectSupplementaryData;
 }
 
 export interface IProjectsListData {
