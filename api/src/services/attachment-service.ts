@@ -235,9 +235,9 @@ export class AttachmentService extends DBService {
     const attachment = await this.attachmentRepository.getSurveyReportAttachments(surveyId);
 
     return Promise.all(
-      attachment.map(async (attachment: any) => {
+      attachment.map(async (attachment: ISurveyReportAttachment) => {
         const supplementaryData = await historyPublishService.getSurveyReportPublishRecord(
-          attachment.survey_attachment_id
+          attachment.survey_report_attachment_id
         );
 
         return new GetAttachmentsWithSupplementalData(attachment, supplementaryData);
