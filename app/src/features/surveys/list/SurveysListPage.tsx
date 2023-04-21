@@ -8,7 +8,6 @@ import { ProjectRoleGuard } from 'components/security/Guards';
 import SurveysList from 'components/surveys/SurveysList';
 import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
 import { PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
-import { CodesContext } from 'contexts/codesContext';
 import { ProjectContext } from 'contexts/projectContext';
 import React, { useContext } from 'react';
 import { useHistory } from 'react-router';
@@ -21,13 +20,10 @@ import { useHistory } from 'react-router';
 const SurveysListPage = () => {
   const history = useHistory();
 
-  const codesContext = useContext(CodesContext);
   const projectContext = useContext(ProjectContext);
 
-  assert(codesContext.codesDataLoader.data);
   assert(projectContext.surveysListDataLoader.data);
 
-  const codes = codesContext.codesDataLoader.data;
   const surveys = projectContext.surveysListDataLoader.data;
 
   const navigateToCreateSurveyPage = (projectId: number) => {
