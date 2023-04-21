@@ -82,69 +82,67 @@ const ProjectsListTable: React.FC<IProjectsListTableProps> = (props) => {
         </Table>
       </TableContainer>
     );
-  } else {
-    return (
-      <TableContainer>
-        <Table className={classes.projectsTable}>
-          <TableHead>
-            <TableRow>
-              <TableCell>Name</TableCell>
-              <TableCell>Type</TableCell>
-              <TableCell width={150}>Status</TableCell>
-              <TableCell width={150}>Start Date</TableCell>
-              <TableCell width={150}>End Date</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody data-testid="project-table">
-            {drafts?.map((draft: IGetDraftsListResponse) => (
-              <TableRow key={draft.id}>
-                <TableCell>
-                  <Link
-                    className={classes.linkButton}
-                    data-testid={draft.name}
-                    underline="always"
-                    component={RouterLink}
-                    to={`/admin/projects/create?draftId=${draft.id}`}>
-                    {draft.name}
-                  </Link>
-                </TableCell>
-                <TableCell />
-                <TableCell>
-                  <Chip variant="outlined" className={clsx(classes.chip, classes.chipDraft)} label={'Draft'} />
-                </TableCell>
-                <TableCell />
-                <TableCell />
-              </TableRow>
-            ))}
-            {projects?.map((project: IGetProjectsListResponse) => (
-              <TableRow key={project.projectData.id}>
-                <TableCell>
-                  <Link
-                    className={classes.linkButton}
-                    data-testid={project.projectData.name}
-                    underline="always"
-                    component={RouterLink}
-                    to={`/admin/projects/${project.projectData.id}`}>
-                    {project.projectData.name}
-                  </Link>
-                </TableCell>
-                <TableCell>{project.projectData.project_type}</TableCell>
-                <TableCell>
-                  <SubmitStatusChip status={getProjectSubmissionStatus(project)} />
-                </TableCell>
-                <TableCell>
-                  {getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, project.projectData.start_date)}
-                </TableCell>
-                <TableCell>
-                  {getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, project.projectData.end_date)}
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    );
   }
+
+  return (
+    <TableContainer>
+      <Table className={classes.projectsTable}>
+        <TableHead>
+          <TableRow>
+            <TableCell>Name</TableCell>
+            <TableCell>Type</TableCell>
+            <TableCell width={150}>Status</TableCell>
+            <TableCell width={150}>Start Date</TableCell>
+            <TableCell width={150}>End Date</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody data-testid="project-table">
+          {drafts?.map((draft: IGetDraftsListResponse) => (
+            <TableRow key={draft.id}>
+              <TableCell>
+                <Link
+                  className={classes.linkButton}
+                  data-testid={draft.name}
+                  underline="always"
+                  component={RouterLink}
+                  to={`/admin/projects/create?draftId=${draft.id}`}>
+                  {draft.name}
+                </Link>
+              </TableCell>
+              <TableCell />
+              <TableCell>
+                <Chip variant="outlined" className={clsx(classes.chip, classes.chipDraft)} label={'Draft'} />
+              </TableCell>
+              <TableCell />
+              <TableCell />
+            </TableRow>
+          ))}
+          {projects?.map((project: IGetProjectsListResponse) => (
+            <TableRow key={project.projectData.id}>
+              <TableCell>
+                <Link
+                  className={classes.linkButton}
+                  data-testid={project.projectData.name}
+                  underline="always"
+                  component={RouterLink}
+                  to={`/admin/projects/${project.projectData.id}`}>
+                  {project.projectData.name}
+                </Link>
+              </TableCell>
+              <TableCell>{project.projectData.project_type}</TableCell>
+              <TableCell>
+                <SubmitStatusChip status={getProjectSubmissionStatus(project)} />
+              </TableCell>
+              <TableCell>
+                {getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, project.projectData.start_date)}
+              </TableCell>
+              <TableCell>{getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, project.projectData.end_date)}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
+  );
 };
 
 export default ProjectsListTable;
