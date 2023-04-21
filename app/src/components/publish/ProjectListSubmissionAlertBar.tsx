@@ -30,7 +30,7 @@ const ProjectListSubmissionAlertBar: React.FC<IProjectsSubmissionAlertBarProps> 
 
   const alertSeverity = hasUnsubmittedData ? 'info' : 'success';
   const alertTitle = hasUnsubmittedData
-    ? 'One or more projects contains unsubmitted information'
+    ? 'One or more projects contain unsubmitted information'
     : 'All projects information submitted';
   const alertText = hasUnsubmittedData
     ? 'Please ensure that any information that has been uploaded is promptly submitted for review.'

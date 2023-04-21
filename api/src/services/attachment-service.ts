@@ -102,7 +102,7 @@ export class AttachmentService extends DBService {
 
     const attachments = await this.attachmentRepository.getProjectAttachments(projectId);
 
-    return await Promise.all(
+    return Promise.all(
       attachments.map(async (attachment: any) => {
         const supplementaryData = await historyPublishService.getProjectAttachmentPublishRecord(
           attachment.project_attachment_id
@@ -126,9 +126,8 @@ export class AttachmentService extends DBService {
     const historyPublishService = new HistoryPublishService(this.connection);
 
     const attachments = await this.attachmentRepository.getProjectReportAttachments(projectId);
-    console.log('attachments: ', attachments);
 
-    return await Promise.all(
+    return Promise.all(
       attachments.map(async (attachment: any) => {
         const supplementaryData = await historyPublishService.getProjectReportPublishRecord(
           attachment.project_report_attachment_id
@@ -189,7 +188,7 @@ export class AttachmentService extends DBService {
 
     const attachment = await this.attachmentRepository.getSurveyAttachments(surveyId);
 
-    return await Promise.all(
+    return Promise.all(
       attachment.map(async (attachment: any) => {
         const supplementaryData = await historyPublishService.getSurveyAttachmentPublishRecord(
           attachment.survey_attachment_id
@@ -235,7 +234,7 @@ export class AttachmentService extends DBService {
 
     const attachment = await this.attachmentRepository.getSurveyReportAttachments(surveyId);
 
-    return await Promise.all(
+    return Promise.all(
       attachment.map(async (attachment: any) => {
         const supplementaryData = await historyPublishService.getSurveyReportPublishRecord(
           attachment.survey_attachment_id

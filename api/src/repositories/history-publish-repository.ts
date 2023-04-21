@@ -701,8 +701,6 @@ export class HistoryPublishRepository extends BaseRepository {
     limit 1;`;
     const response = await this.connection.sql(sqlStatement);
 
-    console.log('response: ', response);
-
     return response;
   }
 

@@ -817,6 +817,13 @@ export class SurveyService extends DBService {
     return this.surveyRepository.deleteOccurrenceSubmission(submissionId);
   }
 
+  /**
+   * Returns true if the survey contains unpulished attachments or reports or observations or summary results
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<boolean>}
+   * @memberof SurveyService
+   */
   async getSurveyHasUnpublishedContent(surveyId: number): Promise<boolean> {
     const has_unpublished_attachments = await this.historyPublishService.hasUnpublishedSurveyAttachments(surveyId);
 
@@ -825,8 +832,6 @@ export class SurveyService extends DBService {
     const has_unpublished_observations = await this.historyPublishService.hasUnpublishedObservation(surveyId);
 
     const has_unpublished_summary_results = await this.historyPublishService.hasUnpublishedSummaryResults(surveyId);
-
-    // Is true when survey have unpulished attachments or reports or observations or summary results
 
     const surveyHasUnpublishedContent: boolean =
       has_unpublished_attachments ||
