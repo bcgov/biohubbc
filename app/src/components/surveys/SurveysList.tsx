@@ -43,7 +43,7 @@ const SurveysList: React.FC = () => {
     }
     return BioHubSubmittedStatusType.SUBMITTED;
   }
-
+  console.log(`Testing:: Got Surveys: ${surveys.length}`);
   return (
     <>
       <TableContainer>
@@ -86,7 +86,7 @@ const SurveysList: React.FC = () => {
                   </TableCell>
                 </TableRow>
               ))}
-            {surveys.length && (
+            {!surveys.length && (
               <TableRow>
                 <TableCell colSpan={3} align="center">
                   <Typography component="strong" color="textSecondary" variant="body2">

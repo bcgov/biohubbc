@@ -1,15 +1,23 @@
-import { render } from '@testing-library/react';
+import { cleanup, render } from '@testing-library/react';
+import { CodesContext, ICodesContext } from 'contexts/codesContext';
+import { IProjectContext, ProjectContext } from 'contexts/projectContext';
 import { createMemoryHistory } from 'history';
+import { DataLoader } from 'hooks/useDataLoader';
 import { IGetSurveyForViewResponse, SurveySupplementaryData } from 'interfaces/useSurveyApi.interface';
 import React from 'react';
 import { Router } from 'react-router';
 import { codes } from 'test-helpers/code-helpers';
+import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import { surveyObject } from 'test-helpers/survey-helpers';
 import SurveysList from './SurveysList';
 
 const history = createMemoryHistory();
 
 describe('SurveysList', () => {
+  afterEach(() => {
+    cleanup();
+  });
+
   it('renders correctly with surveys', () => {
     const surveysList: IGetSurveyForViewResponse[] = [
       {
@@ -54,9 +62,27 @@ describe('SurveysList', () => {
       }
     ];
 
+    const mockCodesContext: ICodesContext = {
+      codesDataLoader: {
+        data: codes
+      } as DataLoader<any, any, any>
+    };
+    const mockProjectContext: IProjectContext = {
+      projectDataLoader: {
+        data: getProjectForViewResponse
+      } as DataLoader<any, any, any>,
+      surveysListDataLoader: { data: surveysList } as DataLoader<any, any, any>,
+      artifactDataLoader: { data: null } as DataLoader<any, any, any>,
+      projectId: 1
+    };
+
     const { getByText, queryByText } = render(
       <Router history={history}>
-        <SurveysList projectId={1} surveysList={surveysList} codes={codes} />
+        <CodesContext.Provider value={mockCodesContext}>
+          <ProjectContext.Provider value={mockProjectContext}>
+            <SurveysList />
+          </ProjectContext.Provider>
+        </CodesContext.Provider>
       </Router>
     );
 
@@ -66,9 +92,27 @@ describe('SurveysList', () => {
   });
 
   it('renders correctly with no surveys', () => {
+    const mockCodesContext: ICodesContext = {
+      codesDataLoader: {
+        data: codes
+      } as DataLoader<any, any, any>
+    };
+    const mockProjectContext: IProjectContext = {
+      projectDataLoader: {
+        data: getProjectForViewResponse
+      } as DataLoader<any, any, any>,
+      surveysListDataLoader: { data: [] } as DataLoader<any, any, any>,
+      artifactDataLoader: { data: null } as DataLoader<any, any, any>,
+      projectId: 1
+    };
+
     const { getByText } = render(
       <Router history={history}>
-        <SurveysList projectId={1} surveysList={[]} codes={codes} />
+        <CodesContext.Provider value={mockCodesContext}>
+          <ProjectContext.Provider value={mockProjectContext}>
+            <SurveysList />
+          </ProjectContext.Provider>
+        </CodesContext.Provider>
       </Router>
     );
 
