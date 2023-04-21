@@ -704,33 +704,6 @@ export class HistoryPublishRepository extends BaseRepository {
     return response;
   }
 
-
-  /**
-   * Gets the latest summary result that wasn't deleted
-   *
-   * @param {number} surveyId
-   * @return {*}  {Promise<QueryResult>}
-   * @memberof HistoryPublishRepository
-   */
-  async getLatestUndeletedSummaryResultsId(surveyId: number): Promise<QueryResult> {
-    const sqlStatement = SQL`
-    select
-      survey_summary_submission_id
-    from
-      survey_summary_submission sss
-    where
-      sss.survey_id = ${surveyId}
-    and
-      sss.delete_timestamp is null
-    order by
-      event_timestamp desc
-    limit 1;
-    `;
-    const response = await this.connection.sql(sqlStatement);
-
-    return response;
-  }
-
   /**
    * Gets the count of unpublished project attachments
    *

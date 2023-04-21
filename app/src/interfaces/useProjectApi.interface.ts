@@ -90,7 +90,7 @@ export interface IGetUserProjectsListResponse {
  * @interface IProjectSupplementaryData
  */
 export interface IProjectSupplementaryData {
-  has_unpublished_content: boolean
+  has_unpublished_content: boolean;
 }
 
 /**

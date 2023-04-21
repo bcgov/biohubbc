@@ -178,7 +178,7 @@ export interface SurveySupplementaryData {
 
 /**
  * An interface describing Survey Publish Data
- * 
+ *
  * @export
  * @interface ISurveySupplementaryData
  */

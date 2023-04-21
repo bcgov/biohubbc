@@ -23,12 +23,10 @@ import { SummaryService } from './summary-service';
 
 export class HistoryPublishService extends DBService {
   historyRepository: HistoryPublishRepository;
-  summaryService: SummaryService;
 
   constructor(connection: IDBConnection) {
     super(connection);
     this.historyRepository = new HistoryPublishRepository(connection);
-    this.summaryService = new SummaryService(connection);
   }
 
   /**
@@ -285,7 +283,9 @@ export class HistoryPublishService extends DBService {
       return false;
     }
 
-    const publish_record = await this.historyRepository.getOccurrenceSubmissionPublishRecord(latestUndeletedObservationRecordId);
+    const publish_record = await this.historyRepository.getOccurrenceSubmissionPublishRecord(
+      latestUndeletedObservationRecordId
+    );
     if (publish_record !== null) {
       return false;
     }
@@ -294,14 +294,16 @@ export class HistoryPublishService extends DBService {
   }
 
   async hasUnpublishedSummaryResults(surveyId: number): Promise<boolean> {
-    const latestUndeletedSummaryResultId = (await this.historyRepository.getLatestUndeletedSummaryResultsId(surveyId))
-      .rows[0]?.survey_summary_submission_id;
+    const service = new SummaryService(this.connection);
+    const latest_summary = await service.getLatestSurveySummarySubmission(surveyId);
 
-    if (!latestUndeletedSummaryResultId) {
+    if (!latest_summary) {
       return false;
     }
-      
-    const publish_record = this.historyRepository.getSurveySummarySubmissionPublishRecord(latestUndeletedSummaryResultId);
+
+    const publish_record = this.historyRepository.getSurveySummarySubmissionPublishRecord(
+      latest_summary.survey_summary_submission_id
+    );
     if (publish_record !== null) {
       return false;
     }
