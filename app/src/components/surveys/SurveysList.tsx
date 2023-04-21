@@ -7,11 +7,12 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
+import assert from 'assert';
 import { SubmitStatusChip } from 'components/chips/SubmitStatusChip';
 import { BioHubSubmittedStatusType } from 'constants/misc';
-import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
+import { CodesContext } from 'contexts/codesContext';
 import { IGetSurveyForListResponse } from 'interfaces/useSurveyApi.interface';
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 
 const useStyles = makeStyles(() => ({
@@ -23,11 +24,14 @@ const useStyles = makeStyles(() => ({
 export interface ISurveysListProps {
   surveysList: IGetSurveyForListResponse[];
   projectId: number;
-  codes: IGetAllCodeSetsResponse;
 }
 
 const SurveysList: React.FC<ISurveysListProps> = (props) => {
   const classes = useStyles();
+
+  const codesContext = useContext(CodesContext);
+  assert(codesContext.codesDataLoader.data);
+  const codes = codesContext.codesDataLoader.data;
 
   const [rowsPerPage] = useState(30);
   const [page] = useState(0);
@@ -72,7 +76,7 @@ const SurveysList: React.FC<ISurveysListProps> = (props) => {
                   </TableCell>
                   <TableCell>
                     {row.surveyData.purpose_and_methodology.intended_outcome_id &&
-                      props.codes?.intended_outcomes?.find(
+                      codes?.intended_outcomes?.find(
                         (item: any) => item.id === row.surveyData.purpose_and_methodology.intended_outcome_id
                       )?.name}
                   </TableCell>

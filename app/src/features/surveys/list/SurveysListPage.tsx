@@ -53,7 +53,7 @@ const SurveysListPage = () => {
       />
       <Divider></Divider>
       <Box px={1}>
-        <SurveysList projectId={projectContext.projectId} surveysList={surveys || []} codes={codes} />
+        <SurveysList projectId={projectContext.projectId} surveysList={surveys || []} />
       </Box>
     </>
   );
