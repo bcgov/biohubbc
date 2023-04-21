@@ -818,13 +818,13 @@ export class SurveyService extends DBService {
   }
 
   /**
-   * Returns true if the survey contains unpulished attachments or reports or observations or summary results
+   * Returns true if the survey contains unpublished attachments or reports or observations or summary results
    *
    * @param {number} surveyId
    * @return {*}  {Promise<boolean>}
    * @memberof SurveyService
    */
-  async getSurveyHasUnpublishedContent(surveyId: number): Promise<boolean> {
+  async doesSurveyHaveUnpublishedContent(surveyId: number): Promise<boolean> {
     const has_unpublished_attachments = await this.historyPublishService.hasUnpublishedSurveyAttachments(surveyId);
 
     const has_unpublished_reports = await this.historyPublishService.hasUnpublishedSurveyReports(surveyId);

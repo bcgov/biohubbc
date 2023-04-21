@@ -250,6 +250,13 @@ export class HistoryPublishService extends DBService {
     return this.historyRepository.deleteSurveyReportAttachmentPublishRecord(surveyReportAttachmentId);
   }
 
+  /**
+   *
+   *
+   *
+   * @param {number} surveyId
+   * @returns {*} {Promise<boolean>}
+   */
   async hasUnpublishedSurveyAttachments(surveyId: number): Promise<boolean> {
     const count_unpublished_attachments = (await this.historyRepository.getCountSurveyUnpublishedAttachments(surveyId))
       .rows[0]?.count;

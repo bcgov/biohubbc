@@ -24,8 +24,6 @@ const SurveysListPage = () => {
 
   assert(projectContext.surveysListDataLoader.data);
 
-  const surveys = projectContext.surveysListDataLoader.data;
-
   const navigateToCreateSurveyPage = (projectId: number) => {
     history.push(`/admin/projects/${projectId}/survey/create`);
   };
@@ -49,7 +47,7 @@ const SurveysListPage = () => {
       />
       <Divider></Divider>
       <Box px={1}>
-        <SurveysList projectId={projectContext.projectId} surveysList={surveys || []} />
+        <SurveysList />
       </Box>
     </>
   );

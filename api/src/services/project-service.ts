@@ -673,7 +673,13 @@ export class ProjectService extends DBService {
     return this.projectParticipationService.deleteProjectParticipationRecord(projectParticipationId);
   }
 
-  async hasUnpublishedContent(projectId: number): Promise<boolean> {
+  /**
+   * Returns true if a given project has unpublished content or false if everything in the project is published
+   *
+   * @param {number} projectId
+   * @returns {*} {Promise<boolean>}
+   */
+  async doesProjectHaveUnpublishedContent(projectId: number): Promise<boolean> {
     const has_unpublished_attachments = await this.historyPublishService.hasUnpublishedProjectAttachments(projectId);
 
     const has_unpublished_reports = await this.historyPublishService.hasUnpublishedProjectReports(projectId);
@@ -686,12 +692,18 @@ export class ProjectService extends DBService {
     return surveyHasUnpublishedContent;
   }
 
+  /**
+   * Returns true if any surveys for a given project have unpublished data or false if all survey under a project are published
+   *
+   * @param projectId
+   * @returns {*} {Promise<boolean>}
+   */
   async hasUnpublishedSurveys(projectId: number): Promise<boolean> {
     const surveyIds = (await this.surveyService.getSurveyIdsByProjectId(projectId)).map((item: { id: any }) => item.id);
 
     const surveyStatusArray = await Promise.all(
       surveyIds.map(async (surveyId) => {
-        const surveyPublishStatus = await this.surveyService.getSurveyHasUnpublishedContent(surveyId);
+        const surveyPublishStatus = await this.surveyService.doesSurveyHaveUnpublishedContent(surveyId);
 
         return surveyPublishStatus;
       })

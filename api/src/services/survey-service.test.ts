@@ -1136,7 +1136,7 @@ describe('SurveyService', () => {
         .stub(HistoryPublishService.prototype, 'hasUnpublishedSummaryResults')
         .resolves(false);
 
-      const response = await survey_service.getSurveyHasUnpublishedContent(1);
+      const response = await survey_service.doesSurveyHaveUnpublishedContent(1);
 
       expect(hasUnpublishedAttachmentsStub).to.be.calledOnce;
       expect(hasUnpublishedReportsStub).to.be.calledOnce;
@@ -1166,7 +1166,7 @@ describe('SurveyService', () => {
         .stub(HistoryPublishService.prototype, 'hasUnpublishedSummaryResults')
         .resolves(true);
 
-      const response = await survey_service.getSurveyHasUnpublishedContent(1);
+      const response = await survey_service.doesSurveyHaveUnpublishedContent(1);
 
       expect(hasUnpublishedAttachmentsStub).to.be.calledOnce;
       expect(hasUnpublishedReportsStub).to.be.calledOnce;

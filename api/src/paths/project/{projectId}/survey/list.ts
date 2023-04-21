@@ -360,7 +360,7 @@ export function getSurveyList(): RequestHandler {
       const surveys = await Promise.all(
         surveyIds.map(async (surveyId) => {
           const survey = await surveyService.getSurveyById(surveyId);
-          const surveyPublishStatus = await surveyService.getSurveyHasUnpublishedContent(surveyId);
+          const surveyPublishStatus = await surveyService.doesSurveyHaveUnpublishedContent(surveyId);
 
           return {
             surveyData: survey,

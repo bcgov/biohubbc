@@ -11,6 +11,7 @@ import assert from 'assert';
 import { SubmitStatusChip } from 'components/chips/SubmitStatusChip';
 import { BioHubSubmittedStatusType } from 'constants/misc';
 import { CodesContext } from 'contexts/codesContext';
+import { ProjectContext } from 'contexts/projectContext';
 import { IGetSurveyForListResponse } from 'interfaces/useSurveyApi.interface';
 import React, { useContext, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
@@ -21,17 +22,17 @@ const useStyles = makeStyles(() => ({
   }
 }));
 
-export interface ISurveysListProps {
-  surveysList: IGetSurveyForListResponse[];
-  projectId: number;
-}
-
-const SurveysList: React.FC<ISurveysListProps> = (props) => {
+const SurveysList: React.FC = () => {
   const classes = useStyles();
 
   const codesContext = useContext(CodesContext);
-  assert(codesContext.codesDataLoader.data);
+  const projectContext = useContext(ProjectContext);
+
+  const surveys = projectContext.surveysListDataLoader.data || [];
   const codes = codesContext.codesDataLoader.data;
+
+  assert(projectContext.surveysListDataLoader.data);
+  assert(codesContext.codesDataLoader.data);
 
   const [rowsPerPage] = useState(30);
   const [page] = useState(0);
@@ -56,14 +57,14 @@ const SurveysList: React.FC<ISurveysListProps> = (props) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {props.surveysList.length > 0 &&
-              props.surveysList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => (
+            {surveys.length > 0 &&
+              surveys.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => (
                 <TableRow key={index}>
                   <TableCell scope="row">
                     <Link
                       style={{ fontWeight: 'bold' }}
                       underline="always"
-                      to={`/admin/projects/${props.projectId}/surveys/${row.surveyData.survey_details.id}/details`}
+                      to={`/admin/projects/${projectContext.projectId}/surveys/${row.surveyData.survey_details.id}/details`}
                       component={RouterLink}>
                       {row.surveyData.survey_details.survey_name}
                     </Link>
@@ -85,7 +86,7 @@ const SurveysList: React.FC<ISurveysListProps> = (props) => {
                   </TableCell>
                 </TableRow>
               ))}
-            {!props.surveysList.length && (
+            {surveys.length && (
               <TableRow>
                 <TableCell colSpan={3} align="center">
                   <Typography component="strong" color="textSecondary" variant="body2">
