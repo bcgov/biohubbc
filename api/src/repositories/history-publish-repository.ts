@@ -704,27 +704,6 @@ export class HistoryPublishRepository extends BaseRepository {
     return response;
   }
 
-  /**
-   * Gets a publication record for an observation occurrence submission
-   *
-   * @param {number} occurrenceSubmissionId
-   * @return {*}  {Promise<QueryResult>}
-   * @memberof HistoryPublishRepository
-   */
-  async getConfirmationLatestObservationPublished(occurrenceSubmissionId: number): Promise<QueryResult> {
-    const sqlStatement = SQL`
-    select
-      *
-    from
-      occurrence_submission_publish osp
-    where
-      osp.occurrence_submission_id = ${occurrenceSubmissionId};
-`;
-
-    const response = await this.connection.sql(sqlStatement);
-
-    return response;
-  }
 
   /**
    * Gets the latest summary result that wasn't deleted
@@ -752,27 +731,6 @@ export class HistoryPublishRepository extends BaseRepository {
     return response;
   }
 
-  /**
-   * Gets a publication record for a summary result submission
-   *
-   * @param {number} summarySubmissionId
-   * @return {*}  {Promise<QueryResult>}
-   * @memberof HistoryPublishRepository
-   */
-  async getConfirmationLatestSummaryResultsPublished(summarySubmissionId: number): Promise<QueryResult> {
-    const sqlStatement = SQL`
-    select
-      *
-    from
-      survey_summary_submission_publish sssp
-    where
-      sssp.survey_summary_submission_id = ${summarySubmissionId};
-  `;
-
-    const response = await this.connection.sql(sqlStatement);
-
-    return response;
-  }
   /**
    * Gets the count of unpublished project attachments
    *
