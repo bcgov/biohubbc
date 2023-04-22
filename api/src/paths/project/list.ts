@@ -183,7 +183,7 @@ export function getProjectList(): RequestHandler {
 
       const projectListWithStatus = await Promise.all(
         projects.map(async (project: any) => {
-          const status = await projectService.hasUnpublishedContent(project.id);
+          const status = await projectService.doesProjectHaveUnpublishedContent(project.id);
 
           return {
             projectData: project,

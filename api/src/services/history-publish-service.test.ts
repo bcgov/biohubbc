@@ -16,6 +16,8 @@ import {
 } from '../repositories/history-publish-repository';
 import { getMockDBConnection } from '../__mocks__/db';
 import { HistoryPublishService } from './history-publish-service';
+import { SummaryService } from './summary-service';
+import { ISurveySummaryDetails } from '../repositories/summary-repository';
 
 chai.use(sinonChai);
 
@@ -406,8 +408,8 @@ describe('HistoryPublishService', () => {
         .resolves(({ rows: [{ occurrence_submission_id: 2 }], rowCount: 1 } as unknown) as QueryResult);
 
       const observationPublishStub = sinon
-        .stub(HistoryPublishRepository.prototype, 'getConfirmationLatestObservationPublished')
-        .resolves(({ rows: [{ occurrence_submission_publish_id: 4 }], rowCount: 1 } as unknown) as QueryResult);
+        .stub(HistoryPublishRepository.prototype, 'getOccurrenceSubmissionPublishRecord')
+        .resolves(({ rows: [{ occurrence_submission_publish_id: 4 }], rowCount: 1 } as unknown) as OccurrenceSubmissionPublish);
 
       const response = await service.hasUnpublishedObservation(20);
 
@@ -442,8 +444,8 @@ describe('HistoryPublishService', () => {
         .resolves(({ rows: [{ occurrence_submission_id: 2 }], rowCount: 1 } as unknown) as QueryResult);
 
       const observationPublishStub = sinon
-        .stub(HistoryPublishRepository.prototype, 'getConfirmationLatestObservationPublished')
-        .resolves(({ rows: [], rowCount: 0 } as unknown) as QueryResult);
+        .stub(HistoryPublishRepository.prototype, 'getOccurrenceSubmissionPublishRecord')
+        .resolves(({ rows: [], rowCount: 0 } as unknown) as OccurrenceSubmissionPublish);
 
       const response = await service.hasUnpublishedObservation(20);
 
@@ -460,18 +462,31 @@ describe('HistoryPublishService', () => {
       const dbConnection = getMockDBConnection();
       const service = new HistoryPublishService(dbConnection);
 
-      const sumamryStub = sinon
-        .stub(HistoryPublishRepository.prototype, 'getLatestUndeletedSummaryResultsId')
-        .resolves(({ rows: [{ survey_summary_submission_id: 2 }], rowCount: 1 } as unknown) as QueryResult);
+      const summaryStub = sinon
+        .stub(SummaryService.prototype, 'getLatestSurveySummarySubmission')
+        .resolves(({ rows: [
+          {
+            survey_summary_submission_id: 4,
+            key: 1,
+            uuid: 1,
+            file_name: "",
+            delete_timestamp: null,
+            submission_message_type_id: 1,
+            message: "",
+            submission_message_type_name: "",
+            summary_submission_message_class_id: 1,
+            submission_message_class_name: "",
+          }
+        ], rowCount: 1 } as unknown) as ISurveySummaryDetails);
 
       const summaryPublishStub = sinon
-        .stub(HistoryPublishRepository.prototype, 'getConfirmationLatestSummaryResultsPublished')
-        .resolves(({ rows: [{ survey_summary_submission_publish_id: 4 }], rowCount: 1 } as unknown) as QueryResult);
+        .stub(HistoryPublishRepository.prototype, 'getSurveySummarySubmissionPublishRecord')
+        .resolves(({ rows: [{ survey_summary_submission_publish_id: 4 }], rowCount: 1 } as unknown) as SurveySummarySubmissionPublish);
 
       const response = await service.hasUnpublishedSummaryResults(20);
 
-      expect(sumamryStub).to.be.calledOnce;
-      expect(sumamryStub).to.be.calledWith(20);
+      expect(summaryStub).to.be.calledOnce;
+      expect(summaryStub).to.be.calledWith(20);
       expect(summaryPublishStub).to.be.calledOnce;
       expect(summaryPublishStub).to.be.calledWith(2);
       expect(response).to.eql(false);
@@ -482,8 +497,8 @@ describe('HistoryPublishService', () => {
       const service = new HistoryPublishService(dbConnection);
 
       const sumamryStub = sinon
-        .stub(HistoryPublishRepository.prototype, 'getLatestUndeletedSummaryResultsId')
-        .resolves(({ rows: [], rowCount: 0 } as unknown) as QueryResult);
+        .stub(HistoryPublishRepository.prototype, 'getSurveySummarySubmissionPublishRecord')
+        .resolves(({ rows: [], rowCount: 0 } as unknown) as SurveySummarySubmissionPublish);
 
       const response = await service.hasUnpublishedSummaryResults(20);
 
@@ -497,12 +512,35 @@ describe('HistoryPublishService', () => {
       const service = new HistoryPublishService(dbConnection);
 
       const sumamryStub = sinon
-        .stub(HistoryPublishRepository.prototype, 'getLatestUndeletedSummaryResultsId')
-        .resolves(({ rows: [{ survey_summary_submission_id: 2 }], rowCount: 1 } as unknown) as QueryResult);
+        .stub(SummaryService.prototype, 'getLatestSurveySummarySubmission')
+        .resolves(({ rows: [
+          {
+            survey_summary_submission_id: 1,
+            key: 1,
+            uuid: 1,
+            file_name: "",
+            delete_timestamp: null,
+            submission_message_type_id: 1,
+            message: "",
+            submission_message_type_name: "",
+            summary_submission_message_class_id: 1,
+            submission_message_class_name: "",
+          }
+        ], rowCount: 1 } as unknown) as ISurveySummaryDetails);
 
       const summaryPublishStub = sinon
-        .stub(HistoryPublishRepository.prototype, 'getConfirmationLatestSummaryResultsPublished')
-        .resolves(({ rows: [], rowCount: 0 } as unknown) as QueryResult);
+        .stub(HistoryPublishRepository.prototype, 'getSurveySummarySubmissionPublishRecord')
+        .resolves(({ rows: [{
+          survey_summary_submission_publish_id: 1,
+          survey_summary_submission_id: 1,
+          event_timestamp: 1,
+          artifact_revision_id: 1,
+          create_date: "",
+          create_user: 1,
+          update_date: "",
+          update_user: 1,
+          revision_count: 1,
+        }], rowCount: 0 } as unknown) as SurveySummarySubmissionPublish);
 
       const response = await service.hasUnpublishedSummaryResults(20);
 

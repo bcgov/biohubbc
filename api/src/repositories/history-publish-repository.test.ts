@@ -9,7 +9,7 @@ import { HistoryPublishRepository } from './history-publish-repository';
 
 chai.use(sinonChai);
 
-describe('HistoryPublishRepository', () => {
+describe.only('HistoryPublishRepository', () => {
   afterEach(() => {
     sinon.restore();
   });
@@ -603,7 +603,7 @@ describe('HistoryPublishRepository', () => {
     });
   });
 
-  describe('getConfirmationLatestObservationPublished', () => {
+  describe('getOccurrenceSubmissionPublishRecord', () => {
     it('should return a history publish record if one exists', async () => {
       const mockConnection = getMockDBConnection({
         sql: async () =>
@@ -613,9 +613,9 @@ describe('HistoryPublishRepository', () => {
       const repository = new HistoryPublishRepository(mockConnection);
 
       const occurrenceSubmissionId = 1;
-      const response = await repository.getConfirmationLatestObservationPublished(occurrenceSubmissionId);
+      const response = await repository.getOccurrenceSubmissionPublishRecord(occurrenceSubmissionId);
 
-      expect(response.rows[0]).to.be.eql({ occurrence_submission_publish_id: 1 });
+      expect(response).to.be.eql({ occurrence_submission_publish_id: 1 });
     });
 
     it('should return undefined if no history publish record exists', async () => {
@@ -628,13 +628,13 @@ describe('HistoryPublishRepository', () => {
       const repository = new HistoryPublishRepository(mockConnection);
 
       const occurrenceSubmissionId = 1;
-      const response = await repository.getConfirmationLatestObservationPublished(occurrenceSubmissionId);
+      const response = await repository.getOccurrenceSubmissionPublishRecord(occurrenceSubmissionId);
 
-      expect(response.rows[0]).to.be.undefined;
+      expect(response).to.be.null;
     });
   });
 
-  describe('getLatestUndeletedSummaryResultsId', () => {
+  describe('getSurveySummarySubmissionPublishRecord', () => {
     it('should return an survey_summary_submission id ', async () => {
       const mockConnection = getMockDBConnection({
         sql: async () =>
@@ -644,9 +644,9 @@ describe('HistoryPublishRepository', () => {
       const repository = new HistoryPublishRepository(mockConnection);
 
       const surveyId = 1;
-      const response = await repository.getLatestUndeletedSummaryResultsId(surveyId);
+      const response = await repository.getSurveySummarySubmissionPublishRecord(surveyId);
 
-      expect(response.rows[0]).to.be.eql({ survey_summary_submission_id: 1 });
+      expect(response).to.be.eql({ survey_summary_submission_id: 1 });
     });
 
     it('should return [] if no undeleted survey_summary_submission record exists', async () => {
@@ -657,9 +657,9 @@ describe('HistoryPublishRepository', () => {
       const repository = new HistoryPublishRepository(mockConnection);
 
       const surveyId = 1;
-      const response = await repository.getLatestUndeletedSummaryResultsId(surveyId);
+      const response = await repository.getSurveySummarySubmissionPublishRecord(surveyId);
 
-      expect(response.rows[0]).to.be.eql(undefined);
+      expect(response).to.be.eql(null);
     });
   });
 
@@ -667,30 +667,40 @@ describe('HistoryPublishRepository', () => {
     it('should return a history publish record if one exists', async () => {
       const mockConnection = getMockDBConnection({
         sql: async () =>
-          (({ rowCount: 1, rows: [{ survey_summary_submission_publish_id: 1 }] } as any) as Promise<QueryResult<any>>)
+          (({ rowCount: 1, rows: [{ 
+            survey_summary_submission_publish_id: 1,
+            survey_summary_submission_id: 1,
+            event_timestamp: 1,
+            artifact_revision_id: 1,
+            create_date: "",
+            create_user: 1,
+            update_date: "",
+            update_user: 1,
+            revision_count: 1
+           }] } as any) as Promise<QueryResult<any>>)
       });
 
       const repository = new HistoryPublishRepository(mockConnection);
 
       const surveySummaryId = 1;
-      const response = await repository.getConfirmationLatestSummaryResultsPublished(surveySummaryId);
+      const response = await repository.getSurveySummarySubmissionPublishRecord(surveySummaryId);
 
-      expect(response.rows[0]).to.be.eql({ survey_summary_submission_publish_id: 1 });
+      expect(response).to.be.eql({ survey_summary_submission_publish_id: 1 });
     });
 
-    it('should return undefined if no history publish record exists', async () => {
+    it('should return null if no history publish record exists', async () => {
       const mockConnection = getMockDBConnection({
         sql: async () => {
-          return ({ rowCount: 0, rows: [] } as any) as Promise<QueryResult<any>>;
+          return (null as any) as Promise<QueryResult<any>>;
         }
       });
 
       const repository = new HistoryPublishRepository(mockConnection);
 
       const surveySummaryId = 1;
-      const response = await repository.getConfirmationLatestSummaryResultsPublished(surveySummaryId);
+      const response = await repository.getSurveySummarySubmissionPublishRecord(surveySummaryId);
 
-      expect(response.rows[0]).to.be.undefined;
+      expect(response).to.be.null;
     });
   });
   //-----------------------

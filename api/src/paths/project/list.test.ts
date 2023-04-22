@@ -92,7 +92,7 @@ describe('list', () => {
         .stub(ProjectService.prototype, 'getProjectList')
         .resolves([expectedResponse1[0].projectData]);
       const getSurveyHasUnpublishedContentStub = sinon
-        .stub(ProjectService.prototype, 'hasUnpublishedContent')
+        .stub(ProjectService.prototype, 'doesProjectHaveUnpublishedContent')
         .resolves(expectedResponse1[0].projectSupplementaryData.has_unpublished_content);
 
       const result = list.getProjectList();
