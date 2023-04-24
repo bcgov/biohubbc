@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   govHeaderToolbar: {
     height: '80px',
     '& a:focus': {
-      outline: '3px solid #3B99FC',
+      outline: '3px solid #3B99FC'
     }
   },
   brand: {
@@ -121,7 +121,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
     '& a:first-child': {
       marginLeft: theme.spacing(-2)
-    },
+    }
   }
 }));
 
@@ -260,7 +260,11 @@ const Header: React.FC = () => {
         <DialogContent>
           <Typography variant="body1" component="div" color="textSecondary">
             For technical support or questions about this application, please email&nbsp;
-            <a href="mailto:biohub@gov.bc.ca?subject=Support Request - Species Inventory Management System"> biohub@gov.bc.ca</a>.
+            <a href="mailto:biohub@gov.bc.ca?subject=Support Request - Species Inventory Management System">
+              {' '}
+              biohub@gov.bc.ca
+            </a>
+            .
           </Typography>
         </DialogContent>
         <DialogActions>

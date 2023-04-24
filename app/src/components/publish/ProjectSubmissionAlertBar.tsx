@@ -47,7 +47,10 @@ const ProjectSubmissionAlertBar = () => {
   // Project has data, and some of it is unsubmitted, show the banner
   return (
     <Box mb={3}>
-      <Alert variant="outlined" severity={alertSeverity} onClose={() => setForceAlertClose(true)}
+      <Alert
+        variant="outlined"
+        severity={alertSeverity}
+        onClose={() => setForceAlertClose(true)}
         action={
           <IconButton color="primary" onClick={() => setForceAlertClose(true)}>
             <Icon path={mdiClose} size={1} />

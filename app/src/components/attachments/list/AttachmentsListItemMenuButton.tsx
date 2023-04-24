@@ -38,7 +38,11 @@ const AttachmentsListItemMenuButton = <T extends IGetProjectAttachment | IGetSur
     <>
       <Box my={-1}>
         <Box>
-          <IconButton aria-label="Document actions" onClick={handleClick} data-testid="attachment-action-menu" tabIndex={0}>
+          <IconButton
+            aria-label="Document actions"
+            onClick={handleClick}
+            data-testid="attachment-action-menu"
+            tabIndex={0}>
             <Icon path={mdiDotsVertical} size={1} />
           </IconButton>
           <Menu

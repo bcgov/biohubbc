@@ -2,8 +2,8 @@ import Box from '@material-ui/core/Box';
 import IconButton from '@material-ui/core/IconButton';
 import Alert from '@material-ui/lab/Alert';
 import AlertTitle from '@material-ui/lab/AlertTitle';
-import Icon from '@mdi/react';
 import { mdiClose } from '@mdi/js';
+import Icon from '@mdi/react';
 import { IGetProjectsListResponse } from 'interfaces/useProjectApi.interface';
 import React, { useState } from 'react';
 
@@ -42,12 +42,15 @@ const ProjectListSubmissionAlertBar: React.FC<IProjectsSubmissionAlertBarProps> 
   // Project has data, and some of it is unsubmitted, show the banner
   return (
     <Box mb={3}>
-      <Alert variant="outlined" severity={alertSeverity} onClose={() => setForceAlertClose(true)}
-      action={
-        <IconButton color="primary" onClick={() => setForceAlertClose(true)}>
-          <Icon path={mdiClose} size={1} />
-        </IconButton>
-      }>
+      <Alert
+        variant="outlined"
+        severity={alertSeverity}
+        onClose={() => setForceAlertClose(true)}
+        action={
+          <IconButton color="primary" onClick={() => setForceAlertClose(true)}>
+            <Icon path={mdiClose} size={1} />
+          </IconButton>
+        }>
         <AlertTitle>{alertTitle}</AlertTitle>
         {alertText}
       </Alert>
