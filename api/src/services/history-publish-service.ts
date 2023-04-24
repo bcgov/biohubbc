@@ -318,8 +318,7 @@ export class HistoryPublishService extends DBService {
     if (!latest_summary) {
       return false;
     }
-
-    const publish_record = this.historyRepository.getSurveySummarySubmissionPublishRecord(
+    const publish_record = await this.historyRepository.getSurveySummarySubmissionPublishRecord(
       latest_summary.survey_summary_submission_id
     );
     if (publish_record !== null) {

@@ -9,7 +9,7 @@ import { HistoryPublishRepository } from './history-publish-repository';
 
 chai.use(sinonChai);
 
-describe.only('HistoryPublishRepository', () => {
+describe('HistoryPublishRepository', () => {
   afterEach(() => {
     sinon.restore();
   });
@@ -685,13 +685,13 @@ describe.only('HistoryPublishRepository', () => {
       const surveySummaryId = 1;
       const response = await repository.getSurveySummarySubmissionPublishRecord(surveySummaryId);
 
-      expect(response).to.be.eql({ survey_summary_submission_publish_id: 1 });
+      expect(response).to.be.contain({ survey_summary_submission_publish_id: 1 });
     });
 
     it('should return null if no history publish record exists', async () => {
       const mockConnection = getMockDBConnection({
         sql: async () => {
-          return (null as any) as Promise<QueryResult<any>>;
+          return (({ rowCount: 0, rows: [] } as any) as Promise<QueryResult<any>>);
         }
       });
 

@@ -445,7 +445,7 @@ describe('HistoryPublishService', () => {
 
       const observationPublishStub = sinon
         .stub(HistoryPublishRepository.prototype, 'getOccurrenceSubmissionPublishRecord')
-        .resolves(({ rows: [], rowCount: 0 } as unknown) as OccurrenceSubmissionPublish);
+        .resolves(null);
 
       const response = await service.hasUnpublishedObservation(20);
 
@@ -464,31 +464,29 @@ describe('HistoryPublishService', () => {
 
       const summaryStub = sinon
         .stub(SummaryService.prototype, 'getLatestSurveySummarySubmission')
-        .resolves(({ rows: [
-          {
-            survey_summary_submission_id: 4,
-            key: 1,
-            uuid: 1,
-            file_name: "",
-            delete_timestamp: null,
-            submission_message_type_id: 1,
-            message: "",
-            submission_message_type_name: "",
-            summary_submission_message_class_id: 1,
-            submission_message_class_name: "",
-          }
-        ], rowCount: 1 } as unknown) as ISurveySummaryDetails);
+        .resolves({
+          survey_summary_submission_id: 4,
+          key: "1",
+          uuid: "",
+          file_name: "",
+          delete_timestamp: null,
+          submission_message_type_id: 1,
+          message: "",
+          submission_message_type_name: "",
+          summary_submission_message_class_id: 1,
+          submission_message_class_name: "",
+        } as unknown as ISurveySummaryDetails);
 
       const summaryPublishStub = sinon
         .stub(HistoryPublishRepository.prototype, 'getSurveySummarySubmissionPublishRecord')
-        .resolves(({ rows: [{ survey_summary_submission_publish_id: 4 }], rowCount: 1 } as unknown) as SurveySummarySubmissionPublish);
+        .resolves(({ survey_summary_submission_publish_id: 4 } as unknown) as SurveySummarySubmissionPublish);
 
       const response = await service.hasUnpublishedSummaryResults(20);
 
       expect(summaryStub).to.be.calledOnce;
       expect(summaryStub).to.be.calledWith(20);
       expect(summaryPublishStub).to.be.calledOnce;
-      expect(summaryPublishStub).to.be.calledWith(2);
+      expect(summaryPublishStub).to.be.calledWith(4);
       expect(response).to.eql(false);
     });
 
@@ -496,14 +494,14 @@ describe('HistoryPublishService', () => {
       const dbConnection = getMockDBConnection();
       const service = new HistoryPublishService(dbConnection);
 
-      const sumamryStub = sinon
-        .stub(HistoryPublishRepository.prototype, 'getSurveySummarySubmissionPublishRecord')
-        .resolves(({ rows: [], rowCount: 0 } as unknown) as SurveySummarySubmissionPublish);
+      const summaryStub = sinon
+      .stub(SummaryService.prototype, 'getLatestSurveySummarySubmission')
+      .resolves(undefined);
 
       const response = await service.hasUnpublishedSummaryResults(20);
 
-      expect(sumamryStub).to.be.calledOnce;
-      expect(sumamryStub).to.be.calledWith(20);
+      expect(summaryStub).to.be.calledOnce;
+      expect(summaryStub).to.be.calledWith(20);
       expect(response).to.eql(false);
     });
 
@@ -511,9 +509,9 @@ describe('HistoryPublishService', () => {
       const dbConnection = getMockDBConnection();
       const service = new HistoryPublishService(dbConnection);
 
-      const sumamryStub = sinon
+      const summaryStub = sinon
         .stub(SummaryService.prototype, 'getLatestSurveySummarySubmission')
-        .resolves(({ rows: [
+        .resolves((
           {
             survey_summary_submission_id: 1,
             key: 1,
@@ -525,29 +523,18 @@ describe('HistoryPublishService', () => {
             submission_message_type_name: "",
             summary_submission_message_class_id: 1,
             submission_message_class_name: "",
-          }
-        ], rowCount: 1 } as unknown) as ISurveySummaryDetails);
+          } as unknown) as ISurveySummaryDetails);
 
       const summaryPublishStub = sinon
         .stub(HistoryPublishRepository.prototype, 'getSurveySummarySubmissionPublishRecord')
-        .resolves(({ rows: [{
-          survey_summary_submission_publish_id: 1,
-          survey_summary_submission_id: 1,
-          event_timestamp: 1,
-          artifact_revision_id: 1,
-          create_date: "",
-          create_user: 1,
-          update_date: "",
-          update_user: 1,
-          revision_count: 1,
-        }], rowCount: 0 } as unknown) as SurveySummarySubmissionPublish);
+        .resolves(null);
 
       const response = await service.hasUnpublishedSummaryResults(20);
 
-      expect(sumamryStub).to.be.calledOnce;
-      expect(sumamryStub).to.be.calledWith(20);
+      expect(summaryStub).to.be.calledOnce;
+      expect(summaryStub).to.be.calledWith(20);
       expect(summaryPublishStub).to.be.calledOnce;
-      expect(summaryPublishStub).to.be.calledWith(2);
+      expect(summaryPublishStub).to.be.calledWith(1);
       expect(response).to.eql(true);
     });
   });
