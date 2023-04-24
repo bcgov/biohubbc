@@ -149,7 +149,7 @@ const Header: React.FC = () => {
             <Icon path={mdiAccountCircle} size={1.12} />
             <Box ml={1}>{formattedUsername}</Box>
           </Box>
-          <Box px={1.5}>
+          <Box pl={1.5} pr={0.5}>
             <Divider orientation="vertical" />
           </Box>
           <RouterLink to="/logout" data-testid="menu_log_out">
