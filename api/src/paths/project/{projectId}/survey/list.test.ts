@@ -73,7 +73,9 @@ describe('survey list', () => {
       .stub(SurveyService.prototype, 'getSurveyById')
       .resolves(({ survey_details: { id: 1 } } as unknown) as SurveyObject);
 
-    const getSurveysPublishStub = sinon.stub(SurveyService.prototype, 'doesSurveyHaveUnpublishedContent').resolves(true);
+    const getSurveysPublishStub = sinon
+      .stub(SurveyService.prototype, 'doesSurveyHaveUnpublishedContent')
+      .resolves(true);
 
     const sampleReq = {
       keycloak_token: {},

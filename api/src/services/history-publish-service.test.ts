@@ -14,10 +14,10 @@ import {
   SurveyReportPublish,
   SurveySummarySubmissionPublish
 } from '../repositories/history-publish-repository';
+import { ISurveySummaryDetails } from '../repositories/summary-repository';
 import { getMockDBConnection } from '../__mocks__/db';
 import { HistoryPublishService } from './history-publish-service';
 import { SummaryService } from './summary-service';
-import { ISurveySummaryDetails } from '../repositories/summary-repository';
 
 chai.use(sinonChai);
 
@@ -409,7 +409,10 @@ describe('HistoryPublishService', () => {
 
       const observationPublishStub = sinon
         .stub(HistoryPublishRepository.prototype, 'getOccurrenceSubmissionPublishRecord')
-        .resolves(({ rows: [{ occurrence_submission_publish_id: 4 }], rowCount: 1 } as unknown) as OccurrenceSubmissionPublish);
+        .resolves(({
+          rows: [{ occurrence_submission_publish_id: 4 }],
+          rowCount: 1
+        } as unknown) as OccurrenceSubmissionPublish);
 
       const response = await service.hasUnpublishedObservation(20);
 
@@ -462,26 +465,30 @@ describe('HistoryPublishService', () => {
       const dbConnection = getMockDBConnection();
       const service = new HistoryPublishService(dbConnection);
 
-      const summaryStub = sinon
-        .stub(SummaryService.prototype, 'getLatestSurveySummarySubmission')
-        .resolves(({ rows: [
+      const summaryStub = sinon.stub(SummaryService.prototype, 'getLatestSurveySummarySubmission').resolves(({
+        rows: [
           {
             survey_summary_submission_id: 4,
             key: 1,
             uuid: 1,
-            file_name: "",
+            file_name: '',
             delete_timestamp: null,
             submission_message_type_id: 1,
-            message: "",
-            submission_message_type_name: "",
+            message: '',
+            submission_message_type_name: '',
             summary_submission_message_class_id: 1,
-            submission_message_class_name: "",
+            submission_message_class_name: ''
           }
-        ], rowCount: 1 } as unknown) as ISurveySummaryDetails);
+        ],
+        rowCount: 1
+      } as unknown) as ISurveySummaryDetails);
 
       const summaryPublishStub = sinon
         .stub(HistoryPublishRepository.prototype, 'getSurveySummarySubmissionPublishRecord')
-        .resolves(({ rows: [{ survey_summary_submission_publish_id: 4 }], rowCount: 1 } as unknown) as SurveySummarySubmissionPublish);
+        .resolves(({
+          rows: [{ survey_summary_submission_publish_id: 4 }],
+          rowCount: 1
+        } as unknown) as SurveySummarySubmissionPublish);
 
       const response = await service.hasUnpublishedSummaryResults(20);
 
@@ -511,36 +518,42 @@ describe('HistoryPublishService', () => {
       const dbConnection = getMockDBConnection();
       const service = new HistoryPublishService(dbConnection);
 
-      const sumamryStub = sinon
-        .stub(SummaryService.prototype, 'getLatestSurveySummarySubmission')
-        .resolves(({ rows: [
+      const sumamryStub = sinon.stub(SummaryService.prototype, 'getLatestSurveySummarySubmission').resolves(({
+        rows: [
           {
             survey_summary_submission_id: 1,
             key: 1,
             uuid: 1,
-            file_name: "",
+            file_name: '',
             delete_timestamp: null,
             submission_message_type_id: 1,
-            message: "",
-            submission_message_type_name: "",
+            message: '',
+            submission_message_type_name: '',
             summary_submission_message_class_id: 1,
-            submission_message_class_name: "",
+            submission_message_class_name: ''
           }
-        ], rowCount: 1 } as unknown) as ISurveySummaryDetails);
+        ],
+        rowCount: 1
+      } as unknown) as ISurveySummaryDetails);
 
       const summaryPublishStub = sinon
         .stub(HistoryPublishRepository.prototype, 'getSurveySummarySubmissionPublishRecord')
-        .resolves(({ rows: [{
-          survey_summary_submission_publish_id: 1,
-          survey_summary_submission_id: 1,
-          event_timestamp: 1,
-          artifact_revision_id: 1,
-          create_date: "",
-          create_user: 1,
-          update_date: "",
-          update_user: 1,
-          revision_count: 1,
-        }], rowCount: 0 } as unknown) as SurveySummarySubmissionPublish);
+        .resolves(({
+          rows: [
+            {
+              survey_summary_submission_publish_id: 1,
+              survey_summary_submission_id: 1,
+              event_timestamp: 1,
+              artifact_revision_id: 1,
+              create_date: '',
+              create_user: 1,
+              update_date: '',
+              update_user: 1,
+              revision_count: 1
+            }
+          ],
+          rowCount: 0
+        } as unknown) as SurveySummarySubmissionPublish);
 
       const response = await service.hasUnpublishedSummaryResults(20);
 
