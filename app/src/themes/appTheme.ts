@@ -120,7 +120,11 @@ const appTheme = createMuiTheme({
       root: {
         textTransform: 'none',
         borderRadius: '5px',
-        fontSize: '0.9rem'
+        fontSize: '0.9rem',
+        '&:focus': {
+          outline: '3px solid #3B99FC',
+          outlineOffset: '-1px'
+        }
       },
       startIcon: {
         marginBottom: '1px'
@@ -177,11 +181,24 @@ const appTheme = createMuiTheme({
         fontSize: '0.875rem'
       }
     },
+    MuiIconButton: {
+      root: {
+        '&:focus': {
+          outline: '3px solid #3B99FC',
+          outlineOffset: '-3px'
+        }
+      }
+    },
     MuiLink: {
       root: {
         textAlign: 'left',
         color: '#1a5a96',
-        cursor: 'pointer'
+        borderRadius: '1px',
+        cursor: 'pointer',
+        '&:focus': {
+          outline: '2px solid #3B99FC',
+          outlineOffset: '2px'
+        }
       }
     },
     MuiLinearProgress: {

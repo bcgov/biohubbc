@@ -1,3 +1,5 @@
+import Box from '@material-ui/core/Box';
+import Typography from '@material-ui/core/Typography';
 import { Button } from '@material-ui/core';
 import SubmitBiohubDialog from 'components/dialog/SubmitBiohubDialog';
 import { ProjectContext } from 'contexts/projectContext';
@@ -87,6 +89,14 @@ const PublishProjectButton: React.FC = () => {
           initialValues: ProjectSubmitFormInitialValues,
           validationSchema: ProjectSubmitFormYupSchema
         }}>
+
+      <Box mb={2}>
+        <Typography variant="body1" color="textSecondary">
+          <strong>Please Note:</strong> Submitted data cannot be modified. You will need to contact an administrator if
+          you need to modify submitted information.
+        </Typography>
+      </Box>
+
         <PublishProjectSections
           unSubmittedReports={unSubmittedReports(artifactDataLoader.data)}
           unSubmittedAttachments={unSubmittedAttachments(artifactDataLoader.data)}

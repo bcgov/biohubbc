@@ -53,7 +53,7 @@ const SurveysList: React.FC = () => {
               <TableCell>Name</TableCell>
               <TableCell>Species</TableCell>
               <TableCell>Purpose</TableCell>
-              <TableCell width="140">Status</TableCell>
+              <TableCell width="200">Status</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
