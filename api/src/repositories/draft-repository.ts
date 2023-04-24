@@ -23,6 +23,13 @@ export type WebformDraft = z.infer<typeof WebformDraft>;
  * @extends {BaseRepository}
  */
 export class DraftRepository extends BaseRepository {
+  /**
+   * Deletes a draft
+   *
+   * @param {number} draftId
+   * @return {*}  {Promise<QueryResult>}
+   * @memberof DraftRepository
+   */
   async deleteDraft(draftId: number): Promise<QueryResult> {
     const sqlStatement = SQL`
       DELETE from webform_draft
@@ -40,8 +47,14 @@ export class DraftRepository extends BaseRepository {
 
     return response;
   }
-
-  async getSingleDraft(draftId: number): Promise<WebformDraft> {
+  /**
+   * Gets a draft
+   *
+   * @param {number} draftId
+   * @return {*}  {Promise<WebformDraft>}
+   * @memberof DraftRepository
+   */
+  async getDraft(draftId: number): Promise<WebformDraft> {
     const sqlStatement: SQLStatement = SQL`
       SELECT
         *
@@ -63,6 +76,13 @@ export class DraftRepository extends BaseRepository {
     return response.rows[0] || null;
   }
 
+  /**
+   * Gets a list of drafts
+   *
+   * @param {(number | null)} systemUserId
+   * @return {*}  {Promise<WebformDraft[]>}
+   * @memberof DraftRepository
+   */
   async getDraftList(systemUserId: number | null): Promise<WebformDraft[]> {
     const sqlStatement = SQL`
     SELECT
@@ -78,6 +98,15 @@ export class DraftRepository extends BaseRepository {
     return response.rows || [];
   }
 
+  /**
+   * Creates a draft
+   *
+   * @param {number} systemUserId
+   * @param {string} name
+   * @param {*} data
+   * @return {*}  {Promise<WebformDraft>}
+   * @memberof DraftRepository
+   */
   async createDraft(systemUserId: number, name: string, data: any): Promise<WebformDraft> {
     const sqlStatement = SQL`
     INSERT INTO webform_draft (
@@ -94,11 +123,18 @@ export class DraftRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement, WebformDraft);
 
-    console.log('webdraft form:', response);
-
     return response.rows[0] || null;
   }
 
+  /**
+   * Updates a draft
+   *
+   * @param {number} draftId
+   * @param {string} name
+   * @param {*} data
+   * @return {*}  {Promise<WebformDraft>}
+   * @memberof DraftRepository
+   */
   async updateDraft(draftId: number, name: string, data: any): Promise<WebformDraft> {
     const sqlStatement = SQL`
     UPDATE

@@ -23,7 +23,7 @@ export class DraftService extends DBService {
 
   async getSingleDraft(draftId: number): Promise<WebformDraft> {
     defaultLog.debug({ label: 'getSingleDraft' });
-    return this.draftRepository.getSingleDraft(draftId);
+    return this.draftRepository.getDraft(draftId);
   }
 
   async getDraftList(systemUserId: number | null): Promise<WebformDraft[]> {
