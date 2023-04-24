@@ -11,11 +11,11 @@ import {
   ICreateSurveyRequest,
   ICreateSurveyResponse,
   IGetSurveyAttachmentsResponse,
+  IGetSurveyForListResponse,
   IGetSurveyForUpdateResponse,
   IGetSurveyForViewResponse,
   ISurveyAvailableFundingSources,
-  SurveyUpdateObject,
-  SurveyViewObject
+  SurveyUpdateObject
 } from 'interfaces/useSurveyApi.interface';
 import qs from 'qs';
 
@@ -70,8 +70,8 @@ const useSurveyApi = (axios: AxiosInstance) => {
    * @param {number} projectId
    * @return {*}  {Promise<IGetSurveysListResponse[]>}
    */
-  const getSurveysList = async (projectId: number): Promise<SurveyViewObject[]> => {
-    const { data } = await axios.get(`/api/project/${projectId}/surveys`);
+  const getSurveysList = async (projectId: number): Promise<IGetSurveyForListResponse[]> => {
+    const { data } = await axios.get(`/api/project/${projectId}/survey/list`);
 
     return data;
   };

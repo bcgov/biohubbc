@@ -150,7 +150,7 @@ export class SummaryService extends DBService {
    * @param {number} surveyId
    * @returns {Promise<ISurveySummaryDetails>}
    */
-  async getLatestSurveySummarySubmission(surveyId: number): Promise<ISurveySummaryDetails> {
+  async getLatestSurveySummarySubmission(surveyId: number): Promise<ISurveySummaryDetails | undefined> {
     return this.summaryRepository.getLatestSurveySummarySubmission(surveyId);
   }
 

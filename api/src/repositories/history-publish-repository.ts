@@ -1,3 +1,4 @@
+import { QueryResult } from 'pg';
 import SQL from 'sql-template-strings';
 import { z } from 'zod';
 import { ApiExecuteSQLError } from '../errors/api-error';
@@ -593,8 +594,11 @@ export class HistoryPublishRepository extends BaseRepository {
    */
   async deleteSurveyAttachmentPublishRecord(surveyAttachmentId: number): Promise<void> {
     const sqlStatement = SQL`
-      delete from survey_attachment_publish
-      where survey_attachment_id = ${surveyAttachmentId};
+      delete
+      from
+        survey_attachment_publish
+      where
+        survey_attachment_id = ${surveyAttachmentId};
     `;
 
     await this.connection.sql(sqlStatement);
@@ -609,10 +613,150 @@ export class HistoryPublishRepository extends BaseRepository {
    */
   async deleteSurveyReportAttachmentPublishRecord(surveyAttachmentId: number): Promise<void> {
     const sqlStatement = SQL`
-      delete from survey_report_publish
-      where survey_report_attachment_id = ${surveyAttachmentId};
+      delete
+      from
+        survey_report_publish
+      where
+        survey_report_attachment_id = ${surveyAttachmentId};
     `;
 
     await this.connection.sql(sqlStatement);
+  }
+
+  /**
+   * Gets the count of unpublished survey attachments
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<QueryResult>}
+   * @memberof HistoryPublishRepository
+   */
+  async getCountSurveyUnpublishedAttachments(surveyId: number): Promise<QueryResult> {
+    const sqlStatement = SQL`
+    SELECT
+      count(*)
+    from
+      survey_attachment sa
+    left join
+      survey_attachment_publish sap
+    on
+      sa.survey_attachment_id = sap.survey_attachment_id
+    where
+      sa.survey_id =${surveyId}
+    and
+      sap.survey_attachment_publish_id is null;
+  `;
+
+    const response = await this.connection.sql(sqlStatement);
+
+    return response;
+  }
+
+  /**
+   * Gets the count of unpublished survey reports
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<QueryResult>}
+   * @memberof HistoryPublishRepository
+   */
+  async getCountSurveyUnpublishedReports(surveyId: number): Promise<QueryResult> {
+    const sqlStatement = SQL`
+    SELECT
+      count(*)
+    from
+      survey_report_attachment sra
+    left join
+      survey_report_publish srp
+    on
+      sra.survey_report_attachment_id = srp.survey_report_attachment_id
+    where
+      sra.survey_id =${surveyId}
+    and
+      srp.survey_report_publish_id is null;
+  `;
+
+    const response = await this.connection.sql(sqlStatement);
+
+    return response;
+  }
+
+  /**
+   * Gets the latest survey observation that wasn't deleted
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<QueryResult>}
+   * @memberof HistoryPublishRepository
+   */
+  async getLatestUndeletedObservationRecordId(surveyId: number): Promise<QueryResult> {
+    const sqlStatement = SQL`
+    select
+      occurrence_submission_id
+    from
+      occurrence_submission os
+    where
+      os.survey_id = ${surveyId}
+    and
+      os.delete_timestamp is null
+    order by
+      event_timestamp desc
+    limit 1;`;
+    const response = await this.connection.sql(sqlStatement);
+
+    return response;
+  }
+
+  /**
+   * Gets the count of unpublished project attachments
+   *
+   * @param {number} projectId
+   * @return {*}  {Promise<QueryResult>}
+   * @memberof HistoryPublishRepository
+   */
+  async getCountProjectUnpublishedAttachments(projectId: number): Promise<QueryResult> {
+    const sqlStatement = SQL`
+    SELECT
+      count(*)
+    from
+      project_attachment pa
+    left join
+      project_attachment_publish pap
+    on
+      pa.project_attachment_id = pap.project_attachment_id
+    where
+      pa.project_id =${projectId}
+    and
+      pap.project_attachment_publish_id is null;
+  `;
+
+    const response = await this.connection.sql(sqlStatement);
+
+    return response;
+  }
+
+  /**
+   * Gets the count of unpublished project reports
+   *
+   * @param {number} projectId
+   * @return {*}  {Promise<QueryResult>}
+   * @memberof HistoryPublishRepository
+   */
+  async getCountProjectUnpublishedReports(projectId: number): Promise<QueryResult> {
+    const sqlStatement = SQL`
+    SELECT
+      count(*)
+    from
+      project_report_attachment pra
+    left join
+      project_report_publish prp
+    on
+      pra.project_report_attachment_id = prp.project_report_attachment_id
+    where
+      pra.project_id =${projectId}
+    and
+      prp.project_report_publish_id is null;
+  `;
+
+    const response = await this.connection.sql(sqlStatement);
+
+    return response;
   }
 }

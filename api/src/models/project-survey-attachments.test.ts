@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
 import {
-  GetAttachmentsData,
+  GetAttachmentsWithSupplementalData,
   GetReportAttachmentAuthor,
   GetReportAttachmentMetadata,
   PostReportAttachmentMetadata,
@@ -17,7 +17,7 @@ describe('GetAttachmentsData', () => {
       file_size: 24,
       file_type: 'Video'
     };
-    const getAttachmentsData = new GetAttachmentsData(attachmentsData, null);
+    const getAttachmentsData = new GetAttachmentsWithSupplementalData(attachmentsData, null);
 
     expect(getAttachmentsData.fileName).to.equal('filename');
     expect(getAttachmentsData.fileType).to.equal('Video');

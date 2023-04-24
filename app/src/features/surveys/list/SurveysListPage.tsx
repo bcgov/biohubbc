@@ -1,7 +1,6 @@
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Divider from '@material-ui/core/Divider';
-import Paper from '@material-ui/core/Paper';
 import { mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
 import assert from 'assert';
@@ -9,11 +8,8 @@ import { ProjectRoleGuard } from 'components/security/Guards';
 import SurveysList from 'components/surveys/SurveysList';
 import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
 import { PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
-import { CodesContext } from 'contexts/codesContext';
 import { ProjectContext } from 'contexts/projectContext';
-import { useBiohubApi } from 'hooks/useBioHubApi';
-import useDataLoader from 'hooks/useDataLoader';
-import React, { useContext, useEffect } from 'react';
+import React, { useContext } from 'react';
 import { useHistory } from 'react-router';
 
 /**
@@ -23,20 +19,10 @@ import { useHistory } from 'react-router';
  */
 const SurveysListPage = () => {
   const history = useHistory();
-  const biohubApi = useBiohubApi();
 
-  const codesContext = useContext(CodesContext);
   const projectContext = useContext(ProjectContext);
 
-  assert(codesContext.codesDataLoader.data);
-
-  const codes = codesContext.codesDataLoader.data;
-
-  const surveysListDataLoader = useDataLoader((projectId: number) => biohubApi.survey.getSurveysList(projectId));
-
-  useEffect(() => {
-    surveysListDataLoader.load(projectContext.projectId);
-  }, [surveysListDataLoader, projectContext.projectId]);
+  assert(projectContext.surveysListDataLoader.data);
 
   const navigateToCreateSurveyPage = (projectId: number) => {
     history.push(`/admin/projects/${projectId}/survey/create`);
@@ -60,14 +46,8 @@ const SurveysListPage = () => {
         )}
       />
       <Divider></Divider>
-      <Box p={3}>
-        <Paper variant="outlined">
-          <SurveysList
-            projectId={projectContext.projectId}
-            surveysList={surveysListDataLoader.data || []}
-            codes={codes}
-          />
-        </Paper>
+      <Box px={1}>
+        <SurveysList />
       </Box>
     </>
   );

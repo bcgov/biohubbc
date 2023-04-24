@@ -48,6 +48,7 @@ export class ProjectService extends DBService {
   projectParticipationService: ProjectParticipationService;
   platformService: PlatformService;
   historyPublishService: HistoryPublishService;
+  surveyService: SurveyService;
 
   constructor(connection: IDBConnection) {
     super(connection);
@@ -56,6 +57,7 @@ export class ProjectService extends DBService {
     this.projectParticipationService = new ProjectParticipationService(connection);
     this.platformService = new PlatformService(connection);
     this.historyPublishService = new HistoryPublishService(connection);
+    this.surveyService = new SurveyService(connection);
   }
 
   /**
@@ -669,5 +671,44 @@ export class ProjectService extends DBService {
 
   async deleteProjectParticipationRecord(projectParticipationId: number): Promise<any> {
     return this.projectParticipationService.deleteProjectParticipationRecord(projectParticipationId);
+  }
+
+  /**
+   * Returns true if a given project has unpublished content or false if everything in the project is published
+   *
+   * @param {number} projectId
+   * @returns {*} {Promise<boolean>}
+   */
+  async doesProjectHaveUnpublishedContent(projectId: number): Promise<boolean> {
+    const has_unpublished_attachments = await this.historyPublishService.hasUnpublishedProjectAttachments(projectId);
+
+    const has_unpublished_reports = await this.historyPublishService.hasUnpublishedProjectReports(projectId);
+
+    const has_unpublished_surveys = await this.hasUnpublishedSurveys(projectId);
+
+    // Returns true when one or more surveys have unpublished attachments, reports, observations or summary results
+    const surveyHasUnpublishedContent: boolean =
+      has_unpublished_attachments || has_unpublished_reports || has_unpublished_surveys;
+    return surveyHasUnpublishedContent;
+  }
+
+  /**
+   * Returns true if any surveys for a given project have unpublished data or false if all survey under a project are published
+   *
+   * @param projectId
+   * @returns {*} {Promise<boolean>}
+   */
+  async hasUnpublishedSurveys(projectId: number): Promise<boolean> {
+    const surveyIds = (await this.surveyService.getSurveyIdsByProjectId(projectId)).map((item: { id: any }) => item.id);
+
+    const surveyStatusArray = await Promise.all(
+      surveyIds.map(async (surveyId) => {
+        const surveyPublishStatus = await this.surveyService.doesSurveyHaveUnpublishedContent(surveyId);
+
+        return surveyPublishStatus;
+      })
+    );
+
+    return surveyStatusArray.some(Boolean);
   }
 }
