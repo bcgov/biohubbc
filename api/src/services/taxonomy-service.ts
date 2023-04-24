@@ -29,13 +29,15 @@ export interface IEnrichedTaxonomyData {
 }
 
 /**
+ * Service for retrieving and processing taxonomic data from Elasticsearch.
  *
- * Service for retreiving and processing taxonomic data from Elasticsearch.
+ * @export
+ * @class TaxonomyService
  */
 export class TaxonomyService {
   /**
-   *
    * Performs a query in Elasticsearch based on the given search criteria
+   *
    * @param {SearchRequest} searchRequest The Elastic search request object
    * @returns {Promise<SearchResponse<ITaxonomySource, Record<string, AggregationsAggregate>> | undefined>}
    * Promise resolving the search results from Elasticsearch
@@ -56,8 +58,8 @@ export class TaxonomyService {
   }
 
   /**
-   *
    * Sanitizes species data retrieved from Elasticsearch.
+   *
    * @param {SearchHit<ITaxonomySource>[]} data The data response from ElasticSearch
    * @returns {{ id: string, label: string }[]} An ID and label pair for each taxonomic code
    * @memberof TaxonomyService
@@ -84,8 +86,8 @@ export class TaxonomyService {
   };
 
   /**
-   *
    * Searches the taxonomy Elasticsearch index by taxonomic code IDs
+   *
    * @param {string[] | number[]} ids The array of taxonomic code IDs
    * @return {Promise<SearchHit<ITaxonomySource>[]>} The response from Elasticsearch
    * @memberof TaxonomyService
@@ -109,8 +111,8 @@ export class TaxonomyService {
   }
 
   /**
-   *
    * Searches the taxonomy Elasticsearch index by taxonomic code IDs and santizes the response
+   *
    * @param {string[] | number[]} ids The array of taxonomic code IDs
    * @returns {Promise<{ id: string, label: string}[]>} Promise resolving an ID and label pair for each taxonomic code
    * @memberof TaxonomyService
@@ -128,7 +130,6 @@ export class TaxonomyService {
   }
 
   /**
-   *
    * Maps a taxonomic search term to an Elasticsearch query, then performs the query and sanitizes the response.
    * The query also includes a boolean match to only include records whose `end_date` field is either
    * undefined/null or is a date that hasn't occurred yet. This filtering is not done on similar ES queries,
@@ -143,7 +144,7 @@ export class TaxonomyService {
 
     const splitTerms = term.split(' ');
 
-    splitTerms.forEach((item: string) => {
+    splitTerms.forEach((item) => {
       searchConfig.push({
         wildcard: {
           english_name: { value: `*${item}*`, boost: 4.0, case_insensitive: true }

@@ -2,7 +2,7 @@ apiVersion: template.openshift.io/v1
 kind: Template
 parameters:
   - name: NAME
-    value: biohub-platform-db-setup
+    value: biohubbc-db-setup
 objects:
   - apiVersion: image.openshift.io/v1
     kind: ImageStream

@@ -111,10 +111,6 @@ export function updateSystemRolesHandler(): RequestHandler {
 
       const userObject = await userService.getUserById(userId);
 
-      if (!userObject) {
-        throw new HTTP400('Failed to get system user');
-      }
-
       if (userObject.role_ids.length) {
         await userService.deleteUserSystemRoles(userId);
       }

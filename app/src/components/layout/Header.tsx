@@ -168,7 +168,7 @@ const Header: React.FC = () => {
           Contact Support
         </Button>
         <Button
-          onClick={() => keycloakWrapper?.keycloak?.login()}
+          onClick={() => keycloakWrapper?.keycloak.login()}
           type="submit"
           variant="contained"
           color="primary"

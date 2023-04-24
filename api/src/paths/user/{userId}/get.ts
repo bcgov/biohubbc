@@ -126,10 +126,6 @@ export function getUserById(): RequestHandler {
 
       const userObject = await userService.getUserById(userId);
 
-      if (!userObject) {
-        throw new HTTP400('Failed to get system user');
-      }
-
       await connection.commit();
 
       return res.status(200).json(userObject);

@@ -8,7 +8,7 @@ export const LandingPage: React.FC<ILandingPageProps> = ({ originalPath }) => {
   const { keycloakWrapper } = useContext(AuthStateContext);
 
   useEffect(() => {
-    keycloakWrapper?.keycloak?.login();
+    keycloakWrapper?.keycloak.login();
   });
 
   return null;

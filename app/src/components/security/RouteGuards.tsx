@@ -124,7 +124,7 @@ const CheckForAuthLoginParam = (props: PropsWithChildren<Record<never, unknown>>
 
   const location = useLocation();
 
-  if (!keycloakWrapper?.keycloak?.authenticated) {
+  if (!keycloakWrapper?.keycloak.authenticated) {
     const urlParams = qs.parse(location.search.replace('?', ''));
     const authLoginUrlParam = urlParams.authLogin;
 
@@ -135,7 +135,7 @@ const CheckForAuthLoginParam = (props: PropsWithChildren<Record<never, unknown>>
       const redirectUri = `${window.location.origin}${location.pathname}?${redirectUrlParams}`;
 
       // Trigger login
-      keycloakWrapper?.keycloak?.login({ redirectUri: redirectUri });
+      keycloakWrapper?.keycloak.login({ redirectUri: redirectUri });
     }
 
     return <Redirect to="/" />;
@@ -233,7 +233,7 @@ const CheckIfAuthenticatedUser = (props: PropsWithChildren<Record<never, unknown
 const CheckIfNotAuthenticatedUser = (props: PropsWithChildren<Record<never, unknown>>) => {
   const { keycloakWrapper } = useContext(AuthStateContext);
 
-  if (keycloakWrapper?.keycloak?.authenticated) {
+  if (keycloakWrapper?.keycloak.authenticated) {
     return <Redirect to="/admin/" />;
   }
 
