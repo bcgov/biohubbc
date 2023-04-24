@@ -31,6 +31,7 @@ describe('version', () => {
 
       expect(actualResult).to.eql({
         version: process.env.VERSION,
+        change_version: process.env.CHANGE_VERSION,
         environment: process.env.NODE_ENV,
         timezone: process.env.TZ
       });

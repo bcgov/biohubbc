@@ -1,4 +1,3 @@
-import { Client } from '@elastic/elasticsearch';
 import {
   AggregationsAggregate,
   QueryDslBoolQuery,
@@ -7,6 +6,7 @@ import {
   SearchResponse
 } from '@elastic/elasticsearch/lib/api/types';
 import { getLogger } from '../utils/logger';
+import { ElasticSearchIndices, ESService } from './es-service';
 
 const defaultLog = getLogger('services/taxonomy-service');
 
@@ -21,6 +21,8 @@ export interface ITaxonomySource {
   english_name: string;
   note: string | null;
   end_date: string | null;
+  parent_id: number | null;
+  parent_hierarchy: { id: number; level: string }[];
 }
 
 export interface IEnrichedTaxonomyData {
@@ -33,23 +35,25 @@ export interface IEnrichedTaxonomyData {
  *
  * @export
  * @class TaxonomyService
+ * @extends {ESService}
  */
-export class TaxonomyService {
+export class TaxonomyService extends ESService {
   /**
    * Performs a query in Elasticsearch based on the given search criteria
    *
    * @param {SearchRequest} searchRequest The Elastic search request object
-   * @returns {Promise<SearchResponse<ITaxonomySource, Record<string, AggregationsAggregate>> | undefined>}
+   * @return {*}  {(Promise<SearchResponse<ITaxonomySource, Record<string, AggregationsAggregate>> | undefined>)}
    * Promise resolving the search results from Elasticsearch
+   * @memberof TaxonomyService
    */
-  async _elasticSearch(
+  async elasticSearch(
     searchRequest: SearchRequest
   ): Promise<SearchResponse<ITaxonomySource, Record<string, AggregationsAggregate>> | undefined> {
     try {
-      const client = new Client({ node: process.env.ELASTICSEARCH_URL });
+      const esClient = await this.getEsClient();
 
-      return client.search({
-        index: process.env.ELASTICSEARCH_TAXONOMY_INDEX,
+      return esClient.search({
+        index: ElasticSearchIndices.TAXONOMY,
         ...searchRequest
       });
     } catch (error) {
@@ -61,7 +65,7 @@ export class TaxonomyService {
    * Sanitizes species data retrieved from Elasticsearch.
    *
    * @param {SearchHit<ITaxonomySource>[]} data The data response from ElasticSearch
-   * @returns {{ id: string, label: string }[]} An ID and label pair for each taxonomic code
+   * @return {*}  {{ id: string; label: string }[]} An ID and label pair for each taxonomic code
    * @memberof TaxonomyService
    */
   _sanitizeSpeciesData = (data: SearchHit<ITaxonomySource>[]): { id: string; label: string }[] => {
@@ -95,7 +99,7 @@ export class TaxonomyService {
   async getTaxonomyFromIds(ids: string[] | number[]): Promise<SearchHit<ITaxonomySource>[]> {
     defaultLog.debug({ label: 'getTaxonomyFromIds' });
 
-    const response = await this._elasticSearch({
+    const response = await this.elasticSearch({
       query: {
         terms: {
           _id: ids
@@ -118,7 +122,7 @@ export class TaxonomyService {
    * @memberof TaxonomyService
    */
   async getSpeciesFromIds(ids: string[] | number[]): Promise<{ id: string; label: string }[]> {
-    const response = await this._elasticSearch({
+    const response = await this.elasticSearch({
       query: {
         terms: {
           _id: ids
@@ -165,7 +169,7 @@ export class TaxonomyService {
       });
     });
 
-    const response = await this._elasticSearch({
+    const response = await this.elasticSearch({
       query: {
         bool: {
           must: [
@@ -221,7 +225,7 @@ export class TaxonomyService {
    * @memberof TaxonomyService
    */
   async getEnrichedDataForSpeciesCode(taxonCode: string): Promise<IEnrichedTaxonomyData | null> {
-    const response = await this._elasticSearch({
+    const response = await this.elasticSearch({
       query: {
         bool: {
           must: [
