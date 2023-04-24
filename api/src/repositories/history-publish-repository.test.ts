@@ -667,17 +667,22 @@ describe('HistoryPublishRepository', () => {
     it('should return a history publish record if one exists', async () => {
       const mockConnection = getMockDBConnection({
         sql: async () =>
-          (({ rowCount: 1, rows: [{ 
-            survey_summary_submission_publish_id: 1,
-            survey_summary_submission_id: 1,
-            event_timestamp: 1,
-            artifact_revision_id: 1,
-            create_date: "",
-            create_user: 1,
-            update_date: "",
-            update_user: 1,
-            revision_count: 1
-           }] } as any) as Promise<QueryResult<any>>)
+          (({
+            rowCount: 1,
+            rows: [
+              {
+                survey_summary_submission_publish_id: 1,
+                survey_summary_submission_id: 1,
+                event_timestamp: 1,
+                artifact_revision_id: 1,
+                create_date: '',
+                create_user: 1,
+                update_date: '',
+                update_user: 1,
+                revision_count: 1
+              }
+            ]
+          } as any) as Promise<QueryResult<any>>)
       });
 
       const repository = new HistoryPublishRepository(mockConnection);

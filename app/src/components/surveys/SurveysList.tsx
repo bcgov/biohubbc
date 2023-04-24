@@ -43,7 +43,7 @@ const SurveysList: React.FC = () => {
     }
     return BioHubSubmittedStatusType.SUBMITTED;
   }
-  console.log(`Testing:: Got Surveys: ${surveys.length}`);
+
   return (
     <>
       <TableContainer>

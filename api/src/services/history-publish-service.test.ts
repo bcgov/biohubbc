@@ -14,10 +14,10 @@ import {
   SurveyReportPublish,
   SurveySummarySubmissionPublish
 } from '../repositories/history-publish-repository';
+import { ISurveySummaryDetails } from '../repositories/summary-repository';
 import { getMockDBConnection } from '../__mocks__/db';
 import { HistoryPublishService } from './history-publish-service';
 import { SummaryService } from './summary-service';
-import { ISurveySummaryDetails } from '../repositories/summary-repository';
 
 chai.use(sinonChai);
 
@@ -409,7 +409,10 @@ describe('HistoryPublishService', () => {
 
       const observationPublishStub = sinon
         .stub(HistoryPublishRepository.prototype, 'getOccurrenceSubmissionPublishRecord')
-        .resolves(({ rows: [{ occurrence_submission_publish_id: 4 }], rowCount: 1 } as unknown) as OccurrenceSubmissionPublish);
+        .resolves(({
+          rows: [{ occurrence_submission_publish_id: 4 }],
+          rowCount: 1
+        } as unknown) as OccurrenceSubmissionPublish);
 
       const response = await service.hasUnpublishedObservation(20);
 
@@ -516,11 +519,11 @@ describe('HistoryPublishService', () => {
             survey_summary_submission_id: 1,
             key: 1,
             uuid: 1,
-            file_name: "",
+            file_name: '',
             delete_timestamp: null,
             submission_message_type_id: 1,
-            message: "",
-            submission_message_type_name: "",
+            message: '',
+            submission_message_type_name: '',
             summary_submission_message_class_id: 1,
             submission_message_class_name: "",
           } as unknown) as ISurveySummaryDetails);
