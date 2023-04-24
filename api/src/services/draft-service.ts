@@ -1,7 +1,7 @@
 import { QueryResult } from 'pg';
 import { IDBConnection } from '../database/db';
 import { PostPutDraftObject } from '../models/draft-create';
-import { DraftRepository } from '../repositories/draft-repository';
+import { DraftRepository, WebformDraft } from '../repositories/draft-repository';
 import { getLogger } from '../utils/logger';
 import { DBService } from './db-service';
 
@@ -17,24 +17,26 @@ export class DraftService extends DBService {
   }
 
   async deleteDraft(draftId: number): Promise<QueryResult> {
+    defaultLog.debug({ label: 'deleteDraft' });
     return this.draftRepository.deleteDraft(draftId);
   }
 
-  async getSingleDraft(draftId: number): Promise<{ id: number; name: string; data: any }> {
+  async getSingleDraft(draftId: number): Promise<WebformDraft> {
+    defaultLog.debug({ label: 'getSingleDraft' });
     return this.draftRepository.getSingleDraft(draftId);
   }
 
-  async getDraftList(systemUserId: number | null): Promise<any> {
+  async getDraftList(systemUserId: number | null): Promise<WebformDraft[]> {
     defaultLog.debug({ label: 'getDraftList' });
     return this.draftRepository.getDraftList(systemUserId);
   }
 
-  async createDraft(systemUserId: number, postDraftObjectData: PostPutDraftObject): Promise<any> {
+  async createDraft(systemUserId: number, postDraftObjectData: PostPutDraftObject): Promise<WebformDraft> {
     defaultLog.debug({ label: 'createDraft' });
     return this.draftRepository.createDraft(systemUserId, postDraftObjectData.name, postDraftObjectData.data);
   }
 
-  async updateDraft(draftId: number, postDraftObjectData: PostPutDraftObject): Promise<any> {
+  async updateDraft(draftId: number, postDraftObjectData: PostPutDraftObject): Promise<WebformDraft> {
     defaultLog.debug({ label: 'updateDraft' });
     return this.draftRepository.updateDraft(draftId, postDraftObjectData.name, postDraftObjectData.data);
   }

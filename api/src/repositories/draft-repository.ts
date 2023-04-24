@@ -2,13 +2,13 @@ import { QueryResult } from 'pg';
 import SQL, { SQLStatement } from 'sql-template-strings';
 import { z } from 'zod';
 import { ApiExecuteSQLError } from '../errors/api-error';
+import { jsonSchema } from '../zod-schema/json';
 import { BaseRepository } from './base-repository';
 
 export const WebformDraft = z.object({
   webform_draft_id: z.number(),
   name: z.string(),
-  //TODO:  ideally this should be a z.object() that allows an unknown structure
-  data: z.any(),
+  data: jsonSchema,
   create_date: z.date(),
   update_date: z.date().nullable()
 });
@@ -41,19 +41,17 @@ export class DraftRepository extends BaseRepository {
     return response;
   }
 
-  async getSingleDraft(draftId: number): Promise<{ id: number; name: string; data: any }> {
+  async getSingleDraft(draftId: number): Promise<WebformDraft> {
     const sqlStatement: SQLStatement = SQL`
       SELECT
-        webform_draft_id as id,
-        name,
-        data
+        *
       FROM
         webform_draft
       WHERE
         webform_draft_id = ${draftId};
     `;
 
-    const response = await this.connection.sql<{ id: number; name: string; data: any }>(sqlStatement);
+    const response = await this.connection.sql(sqlStatement, WebformDraft);
 
     if (!response || !response?.rows?.[0]) {
       throw new ApiExecuteSQLError('Failed to get draft', [
@@ -62,7 +60,7 @@ export class DraftRepository extends BaseRepository {
       ]);
     }
 
-    return response?.rows?.[0];
+    return response.rows[0] || null;
   }
 
   async getDraftList(systemUserId: number | null): Promise<WebformDraft[]> {
@@ -95,6 +93,8 @@ export class DraftRepository extends BaseRepository {
   `;
 
     const response = await this.connection.sql(sqlStatement, WebformDraft);
+
+    console.log('webdraft form:', response);
 
     return response.rows[0] || null;
   }

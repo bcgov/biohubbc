@@ -2,8 +2,6 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../../constants/roles';
 import { getDBConnection } from '../../../database/db';
-import { HTTP400 } from '../../../errors/http-error';
-import { draftGetResponseObject } from '../../../openapi/schemas/draft';
 import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
 import { DraftService } from '../../../services/draft-service';
 import { getLogger } from '../../../utils/logger';
@@ -46,11 +44,33 @@ GET.apiDoc = {
   ],
   responses: {
     200: {
-      description: 'Draft with matching draftId.',
+      description: 'Draft post response object.',
       content: {
         'application/json': {
           schema: {
-            ...(draftGetResponseObject as object)
+            title: 'Draft Response Object',
+            type: 'object',
+            required: ['webform_draft_id', 'name', 'create_date', 'update_date'],
+            properties: {
+              webform_draft_id: {
+                type: 'number'
+              },
+              name: {
+                type: 'string',
+                description: 'The name of the draft'
+              },
+              create_date: {
+                oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
+                description: 'ISO 8601 date string for the date the draft was created'
+              },
+              update_date: {
+                oneOf: [
+                  { type: 'object', nullable: true },
+                  { type: 'string', format: 'date' }
+                ],
+                description: 'ISO 8601 date string for the date the draft was updated'
+              }
+            }
           }
         }
       }
@@ -62,7 +82,7 @@ GET.apiDoc = {
       $ref: '#/components/responses/401'
     },
     403: {
-      $ref: '#/components/responses/403'
+      $ref: '#/components/responses/401'
     },
     500: {
       $ref: '#/components/responses/500'
@@ -89,10 +109,6 @@ export function getSingleDraft(): RequestHandler {
       const draftService = new DraftService(connection);
 
       const draftObject = await draftService.getSingleDraft(draftId);
-
-      if (!draftObject) {
-        throw new HTTP400('Failed to get draft');
-      }
 
       await connection.commit();
 
