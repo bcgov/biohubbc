@@ -696,7 +696,7 @@ describe('HistoryPublishRepository', () => {
     it('should return null if no history publish record exists', async () => {
       const mockConnection = getMockDBConnection({
         sql: async () => {
-          return (({ rowCount: 0, rows: [] } as any) as Promise<QueryResult<any>>);
+          return ({ rowCount: 0, rows: [] } as any) as Promise<QueryResult<any>>;
         }
       });
 

@@ -465,20 +465,18 @@ describe('HistoryPublishService', () => {
       const dbConnection = getMockDBConnection();
       const service = new HistoryPublishService(dbConnection);
 
-      const summaryStub = sinon
-        .stub(SummaryService.prototype, 'getLatestSurveySummarySubmission')
-        .resolves({
-          survey_summary_submission_id: 4,
-          key: "1",
-          uuid: "",
-          file_name: "",
-          delete_timestamp: null,
-          submission_message_type_id: 1,
-          message: "",
-          submission_message_type_name: "",
-          summary_submission_message_class_id: 1,
-          submission_message_class_name: "",
-        } as unknown as ISurveySummaryDetails);
+      const summaryStub = sinon.stub(SummaryService.prototype, 'getLatestSurveySummarySubmission').resolves(({
+        survey_summary_submission_id: 4,
+        key: '1',
+        uuid: '',
+        file_name: '',
+        delete_timestamp: null,
+        submission_message_type_id: 1,
+        message: '',
+        submission_message_type_name: '',
+        summary_submission_message_class_id: 1,
+        submission_message_class_name: ''
+      } as unknown) as ISurveySummaryDetails);
 
       const summaryPublishStub = sinon
         .stub(HistoryPublishRepository.prototype, 'getSurveySummarySubmissionPublishRecord')
@@ -497,9 +495,7 @@ describe('HistoryPublishService', () => {
       const dbConnection = getMockDBConnection();
       const service = new HistoryPublishService(dbConnection);
 
-      const summaryStub = sinon
-      .stub(SummaryService.prototype, 'getLatestSurveySummarySubmission')
-      .resolves(undefined);
+      const summaryStub = sinon.stub(SummaryService.prototype, 'getLatestSurveySummarySubmission').resolves(undefined);
 
       const response = await service.hasUnpublishedSummaryResults(20);
 
@@ -512,21 +508,18 @@ describe('HistoryPublishService', () => {
       const dbConnection = getMockDBConnection();
       const service = new HistoryPublishService(dbConnection);
 
-      const summaryStub = sinon
-        .stub(SummaryService.prototype, 'getLatestSurveySummarySubmission')
-        .resolves((
-          {
-            survey_summary_submission_id: 1,
-            key: 1,
-            uuid: 1,
-            file_name: '',
-            delete_timestamp: null,
-            submission_message_type_id: 1,
-            message: '',
-            submission_message_type_name: '',
-            summary_submission_message_class_id: 1,
-            submission_message_class_name: "",
-          } as unknown) as ISurveySummaryDetails);
+      const summaryStub = sinon.stub(SummaryService.prototype, 'getLatestSurveySummarySubmission').resolves(({
+        survey_summary_submission_id: 1,
+        key: 1,
+        uuid: 1,
+        file_name: '',
+        delete_timestamp: null,
+        submission_message_type_id: 1,
+        message: '',
+        submission_message_type_name: '',
+        summary_submission_message_class_id: 1,
+        submission_message_class_name: ''
+      } as unknown) as ISurveySummaryDetails);
 
       const summaryPublishStub = sinon
         .stub(HistoryPublishRepository.prototype, 'getSurveySummarySubmissionPublishRecord')
