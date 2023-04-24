@@ -153,15 +153,13 @@ describe('TaxonomyService', () => {
         }
       });
 
-      const sanitizeSpeciesDataStub = sinon
-        .stub(taxonomyService, '_sanitizeSpeciesData')
-        .returns([{ id: '1', label: 'string' }]);
+      const sanitizeSpeciesDataStub = sinon.spy(taxonomyService, '_sanitizeSpeciesData');
 
       const response = await taxonomyService.getSpeciesFromIds(['1']);
 
       expect(elasticSearchStub).to.be.calledOnce;
       expect(sanitizeSpeciesDataStub).to.be.calledOnce;
-      expect(response).to.eql([{ id: '1', label: 'string' }]);
+      expect(response).to.eql([{ id: '1', label: 'D: kingdom name, A B C, animal' }]);
     });
   });
 

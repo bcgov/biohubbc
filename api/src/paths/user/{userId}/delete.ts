@@ -38,7 +38,8 @@ DELETE.apiDoc = {
       in: 'path',
       name: 'userId',
       schema: {
-        type: 'number'
+        type: 'integer',
+        minimum: 1
       },
       required: true
     }
@@ -69,11 +70,7 @@ export function removeSystemUser(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({ label: 'removeSystemUser', message: 'params', req_params: req.params });
 
-    const userId = (req.params && Number(req.params.userId)) || null;
-
-    if (!userId) {
-      throw new HTTP400('Missing required path param: userId');
-    }
+    const userId = req.params && Number(req.params.userId);
 
     const connection = getDBConnection(req['keycloak_token']);
 
