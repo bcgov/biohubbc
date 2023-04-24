@@ -10,7 +10,7 @@ import { IGetSummaryResultsResponse } from 'interfaces/useSummaryResultsApi.inte
 import { IGetSurveyAttachmentsResponse } from 'interfaces/useSurveyApi.interface';
 import React, { useContext, useState } from 'react';
 
-const SubmissionAlertBar = () => {
+const SurveySubmissionAlertBar = () => {
   const surveyContext = useContext(SurveyContext);
 
   const [forceAlertClose, setForceAlertClose] = useState(false);
@@ -106,4 +106,4 @@ function getAttachmentDataSubmissionStatus(surveyAttachmentsData?: IGetSurveyAtt
   return 'UNSUBMITTED';
 }
 
-export default SubmissionAlertBar;
+export default SurveySubmissionAlertBar;

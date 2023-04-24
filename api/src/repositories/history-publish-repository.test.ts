@@ -517,4 +517,251 @@ describe('HistoryPublishRepository', () => {
       expect(response).to.be.null;
     });
   });
+
+  describe('getCountSurveyUnpublishedAttachments', () => {
+    it('should return a positive count of unpublished survey attachments if exists', async () => {
+      const mockConnection = getMockDBConnection({
+        sql: async () => (({ rowCount: 1, rows: [{ count: 1 }] } as any) as Promise<QueryResult<any>>)
+      });
+
+      const repository = new HistoryPublishRepository(mockConnection);
+
+      const surveyId = 1;
+      const response = await repository.getCountSurveyUnpublishedAttachments(surveyId);
+
+      expect(response.rows[0]).to.be.eql({ count: 1 });
+    });
+
+    it('should return a count of 0 if no unpublished survey_attachment record exists', async () => {
+      const mockConnection = getMockDBConnection({
+        sql: async () => (({ rowCount: 0, rows: [{ count: 0 }] } as any) as Promise<QueryResult<any>>)
+      });
+
+      const repository = new HistoryPublishRepository(mockConnection);
+
+      const surveyId = 1;
+      const response = await repository.getCountSurveyUnpublishedAttachments(surveyId);
+
+      expect(response.rows[0]).to.be.eql({ count: 0 });
+    });
+  });
+
+  describe('getCountSurveyUnpublishedReports', () => {
+    it('should return a positive count of unpublished survey reports if exists', async () => {
+      const mockConnection = getMockDBConnection({
+        sql: async () => (({ rowCount: 1, rows: [{ count: 1 }] } as any) as Promise<QueryResult<any>>)
+      });
+
+      const repository = new HistoryPublishRepository(mockConnection);
+
+      const surveyId = 1;
+      const response = await repository.getCountSurveyUnpublishedReports(surveyId);
+
+      expect(response.rows[0]).to.be.eql({ count: 1 });
+    });
+
+    it('should return a count of 0 if no unpublished survey_report_attachment record exists', async () => {
+      const mockConnection = getMockDBConnection({
+        sql: async () => (({ rowCount: 0, rows: [{ count: 0 }] } as any) as Promise<QueryResult<any>>)
+      });
+
+      const repository = new HistoryPublishRepository(mockConnection);
+
+      const surveyId = 1;
+      const response = await repository.getCountSurveyUnpublishedReports(surveyId);
+
+      expect(response.rows[0]).to.be.eql({ count: 0 });
+    });
+  });
+
+  describe('getLatestUndeletedObservationRecordId', () => {
+    it('should return an occurrence submission id ', async () => {
+      const mockConnection = getMockDBConnection({
+        sql: async () =>
+          (({ rowCount: 1, rows: [{ occurrence_submission_id: 1 }] } as any) as Promise<QueryResult<any>>)
+      });
+
+      const repository = new HistoryPublishRepository(mockConnection);
+
+      const surveyId = 1;
+      const response = await repository.getLatestUndeletedObservationRecordId(surveyId);
+
+      expect(response.rows[0]).to.be.eql({ occurrence_submission_id: 1 });
+    });
+
+    it('should return [] if no undeleted observation record exists', async () => {
+      const mockConnection = getMockDBConnection({
+        sql: async () => (({ rowCount: 0, rows: [] } as any) as Promise<QueryResult<any>>)
+      });
+
+      const repository = new HistoryPublishRepository(mockConnection);
+
+      const surveyId = 1;
+      const response = await repository.getLatestUndeletedObservationRecordId(surveyId);
+
+      expect(response.rows[0]).to.be.eql(undefined);
+    });
+  });
+
+  describe('getOccurrenceSubmissionPublishRecord', () => {
+    it('should return a history publish record if one exists', async () => {
+      const mockConnection = getMockDBConnection({
+        sql: async () =>
+          (({ rowCount: 1, rows: [{ occurrence_submission_publish_id: 1 }] } as any) as Promise<QueryResult<any>>)
+      });
+
+      const repository = new HistoryPublishRepository(mockConnection);
+
+      const occurrenceSubmissionId = 1;
+      const response = await repository.getOccurrenceSubmissionPublishRecord(occurrenceSubmissionId);
+
+      expect(response).to.be.eql({ occurrence_submission_publish_id: 1 });
+    });
+
+    it('should return undefined if no history publish record exists', async () => {
+      const mockConnection = getMockDBConnection({
+        sql: async () => {
+          return ({ rowCount: 0, rows: [] } as any) as Promise<QueryResult<any>>;
+        }
+      });
+
+      const repository = new HistoryPublishRepository(mockConnection);
+
+      const occurrenceSubmissionId = 1;
+      const response = await repository.getOccurrenceSubmissionPublishRecord(occurrenceSubmissionId);
+
+      expect(response).to.be.null;
+    });
+  });
+
+  describe('getSurveySummarySubmissionPublishRecord', () => {
+    it('should return an survey_summary_submission id ', async () => {
+      const mockConnection = getMockDBConnection({
+        sql: async () =>
+          (({ rowCount: 1, rows: [{ survey_summary_submission_id: 1 }] } as any) as Promise<QueryResult<any>>)
+      });
+
+      const repository = new HistoryPublishRepository(mockConnection);
+
+      const surveyId = 1;
+      const response = await repository.getSurveySummarySubmissionPublishRecord(surveyId);
+
+      expect(response).to.be.eql({ survey_summary_submission_id: 1 });
+    });
+
+    it('should return [] if no undeleted survey_summary_submission record exists', async () => {
+      const mockConnection = getMockDBConnection({
+        sql: async () => (({ rowCount: 0, rows: [] } as any) as Promise<QueryResult<any>>)
+      });
+
+      const repository = new HistoryPublishRepository(mockConnection);
+
+      const surveyId = 1;
+      const response = await repository.getSurveySummarySubmissionPublishRecord(surveyId);
+
+      expect(response).to.be.eql(null);
+    });
+  });
+
+  describe('getConfirmationLatestSummaryResultsPublished', () => {
+    it('should return a history publish record if one exists', async () => {
+      const mockConnection = getMockDBConnection({
+        sql: async () =>
+          (({
+            rowCount: 1,
+            rows: [
+              {
+                survey_summary_submission_publish_id: 1,
+                survey_summary_submission_id: 1,
+                event_timestamp: 1,
+                artifact_revision_id: 1,
+                create_date: '',
+                create_user: 1,
+                update_date: '',
+                update_user: 1,
+                revision_count: 1
+              }
+            ]
+          } as any) as Promise<QueryResult<any>>)
+      });
+
+      const repository = new HistoryPublishRepository(mockConnection);
+
+      const surveySummaryId = 1;
+      const response = await repository.getSurveySummarySubmissionPublishRecord(surveySummaryId);
+
+      expect(response).to.be.contain({ survey_summary_submission_publish_id: 1 });
+    });
+
+    it('should return null if no history publish record exists', async () => {
+      const mockConnection = getMockDBConnection({
+        sql: async () => {
+          return ({ rowCount: 0, rows: [] } as any) as Promise<QueryResult<any>>;
+        }
+      });
+
+      const repository = new HistoryPublishRepository(mockConnection);
+
+      const surveySummaryId = 1;
+      const response = await repository.getSurveySummarySubmissionPublishRecord(surveySummaryId);
+
+      expect(response).to.be.null;
+    });
+  });
+
+  describe('getCountProjectUnpublishedAttachments', () => {
+    it('should return a positive count of unpublished survey attachments if exists', async () => {
+      const mockConnection = getMockDBConnection({
+        sql: async () => (({ rowCount: 1, rows: [{ count: 1 }] } as any) as Promise<QueryResult<any>>)
+      });
+
+      const repository = new HistoryPublishRepository(mockConnection);
+
+      const projectId = 1;
+      const response = await repository.getCountProjectUnpublishedAttachments(projectId);
+
+      expect(response.rows[0]).to.be.eql({ count: 1 });
+    });
+
+    it('should return a count of 0 if no unpublished project_attachment record exists', async () => {
+      const mockConnection = getMockDBConnection({
+        sql: async () => (({ rowCount: 0, rows: [{ count: 0 }] } as any) as Promise<QueryResult<any>>)
+      });
+
+      const repository = new HistoryPublishRepository(mockConnection);
+
+      const projectId = 1;
+      const response = await repository.getCountProjectUnpublishedAttachments(projectId);
+
+      expect(response.rows[0]).to.be.eql({ count: 0 });
+    });
+  });
+
+  describe('getCountProjectUnpublishedReports', () => {
+    it('should return a positive count of unpublished project reports if exists', async () => {
+      const mockConnection = getMockDBConnection({
+        sql: async () => (({ rowCount: 1, rows: [{ count: 1 }] } as any) as Promise<QueryResult<any>>)
+      });
+
+      const repository = new HistoryPublishRepository(mockConnection);
+
+      const projectId = 1;
+      const response = await repository.getCountProjectUnpublishedReports(projectId);
+
+      expect(response.rows[0]).to.be.eql({ count: 1 });
+    });
+
+    it('should return a count of 0 if no unpublished survey_report_attachment record exists', async () => {
+      const mockConnection = getMockDBConnection({
+        sql: async () => (({ rowCount: 0, rows: [{ count: 0 }] } as any) as Promise<QueryResult<any>>)
+      });
+
+      const repository = new HistoryPublishRepository(mockConnection);
+
+      const projectId = 1;
+      const response = await repository.getCountProjectUnpublishedReports(projectId);
+
+      expect(response.rows[0]).to.be.eql({ count: 0 });
+    });
+  });
 });

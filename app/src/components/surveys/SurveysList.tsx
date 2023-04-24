@@ -1,5 +1,4 @@
 import Link from '@material-ui/core/Link';
-import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -8,28 +7,42 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
-import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import { SurveyViewObject } from 'interfaces/useSurveyApi.interface';
-import React, { useState } from 'react';
+import assert from 'assert';
+import { SubmitStatusChip } from 'components/chips/SubmitStatusChip';
+import { BioHubSubmittedStatusType } from 'constants/misc';
+import { CodesContext } from 'contexts/codesContext';
+import { ProjectContext } from 'contexts/projectContext';
+import { IGetSurveyForListResponse } from 'interfaces/useSurveyApi.interface';
+import React, { useContext, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles(() => ({
   surveyTable: {
     tableLayout: 'fixed'
   }
 }));
 
-export interface ISurveysListProps {
-  surveysList: SurveyViewObject[];
-  projectId: number;
-  codes: IGetAllCodeSetsResponse;
-}
-
-const SurveysList: React.FC<ISurveysListProps> = (props) => {
+const SurveysList: React.FC = () => {
   const classes = useStyles();
 
-  const [rowsPerPage] = useState(5);
+  const codesContext = useContext(CodesContext);
+  const projectContext = useContext(ProjectContext);
+
+  const surveys = projectContext.surveysListDataLoader.data || [];
+  const codes = codesContext.codesDataLoader.data;
+
+  assert(projectContext.surveysListDataLoader.data);
+  assert(codesContext.codesDataLoader.data);
+
+  const [rowsPerPage] = useState(30);
   const [page] = useState(0);
+
+  function getSurveySubmissionStatus(survey: IGetSurveyForListResponse): BioHubSubmittedStatusType {
+    if (survey.surveySupplementaryData.has_unpublished_content) {
+      return BioHubSubmittedStatusType.UNSUBMITTED;
+    }
+    return BioHubSubmittedStatusType.SUBMITTED;
+  }
 
   return (
     <>
@@ -40,33 +53,40 @@ const SurveysList: React.FC<ISurveysListProps> = (props) => {
               <TableCell>Name</TableCell>
               <TableCell>Species</TableCell>
               <TableCell>Purpose</TableCell>
+              <TableCell width="140">Status</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {props.surveysList.length > 0 &&
-              props.surveysList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => (
+            {surveys.length > 0 &&
+              surveys.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => (
                 <TableRow key={index}>
                   <TableCell scope="row">
                     <Link
                       style={{ fontWeight: 'bold' }}
                       underline="always"
-                      to={`/admin/projects/${props.projectId}/surveys/${row.survey_details.id}/details`}
+                      to={`/admin/projects/${projectContext.projectId}/surveys/${row.surveyData.survey_details.id}/details`}
                       component={RouterLink}>
-                      {row.survey_details.survey_name}
+                      {row.surveyData.survey_details.survey_name}
                     </Link>
                   </TableCell>
                   <TableCell>
-                    {[...row.species?.focal_species_names, ...row.species?.ancillary_species_names].join(', ')}
+                    {[
+                      ...row.surveyData.species.focal_species_names,
+                      ...row.surveyData.species.ancillary_species_names
+                    ].join(', ')}
                   </TableCell>
                   <TableCell>
-                    {row.purpose_and_methodology.intended_outcome_id &&
-                      props.codes?.intended_outcomes?.find(
-                        (item: any) => item.id === row.purpose_and_methodology.intended_outcome_id
+                    {row.surveyData.purpose_and_methodology.intended_outcome_id &&
+                      codes?.intended_outcomes?.find(
+                        (item: any) => item.id === row.surveyData.purpose_and_methodology.intended_outcome_id
                       )?.name}
+                  </TableCell>
+                  <TableCell>
+                    <SubmitStatusChip status={getSurveySubmissionStatus(row)} />
                   </TableCell>
                 </TableRow>
               ))}
-            {!props.surveysList.length && (
+            {!surveys.length && (
               <TableRow>
                 <TableCell colSpan={3} align="center">
                   <Typography component="strong" color="textSecondary" variant="body2">

@@ -1,6 +1,7 @@
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader, { DataLoader } from 'hooks/useDataLoader';
 import { IGetProjectAttachmentsResponse, IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
+import { IGetSurveyForListResponse } from 'interfaces/useSurveyApi.interface';
 import React, { createContext, PropsWithChildren, useEffect, useMemo } from 'react';
 import { useParams } from 'react-router';
 
@@ -14,10 +15,18 @@ export interface IProjectContext {
   /**
    * The Data Loader used to load project data
    *
-   * @type {DataLoader<[project_id: number, project_id: number], IGetProjectForViewResponse, unknown>}
+   * @type {DataLoader<[project_id: number], IGetProjectForViewResponse, unknown>}
    * @memberof IProjectContext
    */
   projectDataLoader: DataLoader<[project_id: number], IGetProjectForViewResponse, unknown>;
+
+  /**
+   * The Data Loader used to load project data
+   *
+   * @type {DataLoader<[project_id: number], IGetSurveyForListResponse[], unknown>}
+   * @memberof IProjectContext
+   */
+  surveysListDataLoader: DataLoader<[project_id: number], IGetSurveyForListResponse[], unknown>;
 
   /**
    * The Data Loader used to load project data
@@ -38,6 +47,7 @@ export interface IProjectContext {
 
 export const ProjectContext = createContext<IProjectContext>({
   projectDataLoader: {} as DataLoader<[project_id: number], IGetProjectForViewResponse, unknown>,
+  surveysListDataLoader: {} as DataLoader<[project_id: number], IGetSurveyForListResponse[], unknown>,
   artifactDataLoader: {} as DataLoader<[project_id: number], IGetProjectAttachmentsResponse, unknown>,
   projectId: -1
 });
@@ -45,6 +55,7 @@ export const ProjectContext = createContext<IProjectContext>({
 export const ProjectContextProvider = (props: PropsWithChildren<Record<never, any>>) => {
   const biohubApi = useBiohubApi();
   const projectDataLoader = useDataLoader(biohubApi.project.getProjectForView);
+  const surveysListDataLoader = useDataLoader(biohubApi.survey.getSurveysList);
   const artifactDataLoader = useDataLoader(biohubApi.project.getProjectAttachments);
   const urlParams = useParams();
 
@@ -62,6 +73,7 @@ export const ProjectContextProvider = (props: PropsWithChildren<Record<never, an
   useEffect(() => {
     if (projectId) {
       projectDataLoader.refresh(projectId);
+      surveysListDataLoader.refresh(projectId);
       artifactDataLoader.refresh(projectId);
     }
 
@@ -71,10 +83,11 @@ export const ProjectContextProvider = (props: PropsWithChildren<Record<never, an
   const projectContext: IProjectContext = useMemo(() => {
     return {
       projectDataLoader,
+      surveysListDataLoader,
       artifactDataLoader,
       projectId
     };
-  }, [projectDataLoader, artifactDataLoader, projectId]);
+  }, [projectDataLoader, surveysListDataLoader, artifactDataLoader, projectId]);
 
   return <ProjectContext.Provider value={projectContext}>{props.children}</ProjectContext.Provider>;
 };

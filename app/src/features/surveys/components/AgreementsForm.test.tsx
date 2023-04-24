@@ -11,12 +11,12 @@ const handleSaveAndNext = jest.fn();
 
 const agreementsFilledValues: IAgreementsForm = {
   agreements: {
-    sedis_procedures_accepted: true,
-    foippa_requirements_accepted: true
+    sedis_procedures_accepted: 'true',
+    foippa_requirements_accepted: 'true'
   }
 };
 
-describe.skip('Agreements Form', () => {
+describe('Agreements Form', () => {
   it('renders correctly the empty component correctly', () => {
     const { asFragment } = render(
       <Formik

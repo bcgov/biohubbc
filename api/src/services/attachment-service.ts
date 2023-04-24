@@ -1,7 +1,7 @@
 import { QueryResult } from 'pg';
 import { IDBConnection } from '../database/db';
 import {
-  GetAttachmentsData,
+  GetAttachmentsWithSupplementalData,
   PostReportAttachmentMetadata,
   PutReportAttachmentMetadata
 } from '../models/project-survey-attachments';
@@ -49,31 +49,6 @@ export class AttachmentService extends DBService {
   }
 
   /**
-   * Finds all of the project attachments and Supplementary Data for the given project ID.
-   *
-   * @param {number} projectId
-   * @return {*}  {Promise<GetAttachmentsData[]>}
-   * @memberof AttachmentService
-   */
-  async getProjectAttachmentsWithSupplementaryData(projectId: number): Promise<GetAttachmentsData[]> {
-    const historyPublishService = new HistoryPublishService(this.connection);
-
-    const attatchments = await this.attachmentRepository.getProjectAttachments(projectId);
-
-    const attachmentList: any[] = [];
-
-    attatchments.forEach(async (attachment: any) => {
-      const supplementaryData = await historyPublishService.getProjectAttachmentPublishRecord(
-        attachment.project_attachment_id
-      );
-
-      attachmentList.push(new GetAttachmentsData(attachment, supplementaryData));
-    });
-
-    return attachmentList;
-  }
-
-  /**
    * Finds a project attachment having the given project ID and attachment ID
    * @param {number} projectId the ID of the project
    * @param {number} attachmentId the ID of the attachment
@@ -116,28 +91,51 @@ export class AttachmentService extends DBService {
   }
 
   /**
+   * Finds all of the project attachments and Supplementary Data for the given project ID.
+   *
+   * @param {number} projectId
+   * @return {*}  {Promise<GetAttachmentsData[]>}
+   * @memberof AttachmentService
+   */
+  async getProjectAttachmentsWithSupplementaryData(projectId: number): Promise<GetAttachmentsWithSupplementalData[]> {
+    const historyPublishService = new HistoryPublishService(this.connection);
+
+    const attachments = await this.attachmentRepository.getProjectAttachments(projectId);
+
+    return Promise.all(
+      attachments.map(async (attachment: any) => {
+        const supplementaryData = await historyPublishService.getProjectAttachmentPublishRecord(
+          attachment.project_attachment_id
+        );
+
+        return new GetAttachmentsWithSupplementalData(attachment, supplementaryData);
+      })
+    );
+  }
+
+  /**
    * Finds all of the project Report attachments and Supplementary Data for the given project ID.
    *
    * @param {number} projectId
    * @return {*}  {Promise<GetAttachmentsData[]>}
    * @memberof AttachmentService
    */
-  async getProjectReportAttachmentsWithSupplementaryData(projectId: number): Promise<GetAttachmentsData[]> {
+  async getProjectReportAttachmentsWithSupplementaryData(
+    projectId: number
+  ): Promise<GetAttachmentsWithSupplementalData[]> {
     const historyPublishService = new HistoryPublishService(this.connection);
 
-    const attatchments = await this.attachmentRepository.getProjectReportAttachments(projectId);
+    const attachments = await this.attachmentRepository.getProjectReportAttachments(projectId);
 
-    const attachmentList: any[] = [];
+    return Promise.all(
+      attachments.map(async (attachment: any) => {
+        const supplementaryData = await historyPublishService.getProjectReportPublishRecord(
+          attachment.project_report_attachment_id
+        );
 
-    attatchments.forEach(async (attachment: any) => {
-      const supplementaryData = await historyPublishService.getProjectReportPublishRecord(
-        attachment.project_report_attachment_id
-      );
-
-      attachmentList.push(new GetAttachmentsData(attachment, supplementaryData));
-    });
-
-    return attachmentList;
+        return new GetAttachmentsWithSupplementalData(attachment, supplementaryData);
+      })
+    );
   }
 
   /**
@@ -185,22 +183,20 @@ export class AttachmentService extends DBService {
    * @return {*}  {Promise<GetAttachmentsData[]>}
    * @memberof AttachmentService
    */
-  async getSurveyAttachmentsWithSupplementaryData(surveyId: number): Promise<GetAttachmentsData[]> {
+  async getSurveyAttachmentsWithSupplementaryData(surveyId: number): Promise<GetAttachmentsWithSupplementalData[]> {
     const historyPublishService = new HistoryPublishService(this.connection);
 
-    const attatchments = await this.attachmentRepository.getSurveyAttachments(surveyId);
+    const attachment = await this.attachmentRepository.getSurveyAttachments(surveyId);
 
-    const attachmentList: any[] = [];
+    return Promise.all(
+      attachment.map(async (attachment: any) => {
+        const supplementaryData = await historyPublishService.getSurveyAttachmentPublishRecord(
+          attachment.survey_attachment_id
+        );
 
-    attatchments.forEach(async (attachment: any) => {
-      const supplementaryData = await historyPublishService.getSurveyAttachmentPublishRecord(
-        attachment.survey_attachment_id
-      );
-
-      attachmentList.push(new GetAttachmentsData(attachment, supplementaryData));
-    });
-
-    return attachmentList;
+        return new GetAttachmentsWithSupplementalData(attachment, supplementaryData);
+      })
+    );
   }
 
   /**
@@ -231,22 +227,22 @@ export class AttachmentService extends DBService {
    * @return {*}  {Promise<GetAttachmentsData[]>}
    * @memberof AttachmentService
    */
-  async getSurveyReportAttachmentsWithSupplementaryData(surveyId: number): Promise<GetAttachmentsData[]> {
+  async getSurveyReportAttachmentsWithSupplementaryData(
+    surveyId: number
+  ): Promise<GetAttachmentsWithSupplementalData[]> {
     const historyPublishService = new HistoryPublishService(this.connection);
 
-    const attatchments = await this.attachmentRepository.getSurveyReportAttachments(surveyId);
+    const attachment = await this.attachmentRepository.getSurveyReportAttachments(surveyId);
 
-    const attachmentList: any[] = [];
+    return Promise.all(
+      attachment.map(async (attachment: ISurveyReportAttachment) => {
+        const supplementaryData = await historyPublishService.getSurveyReportPublishRecord(
+          attachment.survey_report_attachment_id
+        );
 
-    attatchments.forEach(async (attachment: any) => {
-      const supplementaryData = await historyPublishService.getSurveyReportPublishRecord(
-        attachment.survey_report_attachment_id
-      );
-
-      attachmentList.push(new GetAttachmentsData(attachment, supplementaryData));
-    });
-
-    return attachmentList;
+        return new GetAttachmentsWithSupplementalData(attachment, supplementaryData);
+      })
+    );
   }
 
   /**
