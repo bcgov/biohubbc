@@ -1,6 +1,7 @@
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Divider from '@material-ui/core/Divider';
+import Paper from '@material-ui/core/Paper';
 import { mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
 import assert from 'assert';
@@ -46,8 +47,10 @@ const SurveysListPage = () => {
         )}
       />
       <Divider></Divider>
-      <Box px={1}>
-        <SurveysList />
+      <Box p={3}>
+        <Paper variant="outlined">
+          <SurveysList />
+        </Paper>
       </Box>
     </>
   );
