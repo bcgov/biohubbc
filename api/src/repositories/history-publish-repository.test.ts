@@ -708,7 +708,6 @@ describe('HistoryPublishRepository', () => {
       expect(response).to.be.null;
     });
   });
-  //-----------------------
 
   describe('getCountProjectUnpublishedAttachments', () => {
     it('should return a positive count of unpublished survey attachments if exists', async () => {
