@@ -104,7 +104,7 @@ export function getDraftList(): RequestHandler {
 
       return res.status(200).json(drafts);
     } catch (error) {
-      defaultLog.error({ label: 'getDraftsList', message: 'error', error });
+      defaultLog.error({ label: 'getDraftList', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

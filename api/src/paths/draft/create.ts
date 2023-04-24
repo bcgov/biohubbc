@@ -62,7 +62,7 @@ POST.apiDoc = {
           schema: {
             title: 'Draft Response Object',
             type: 'object',
-            //required: ['webform_draft_id', 'name', 'create_date', 'update_date'],
+            required: ['webform_draft_id', 'name', 'create_date', 'update_date'],
             properties: {
               webform_draft_id: {
                 type: 'number'

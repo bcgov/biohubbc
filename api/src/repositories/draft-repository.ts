@@ -4,15 +4,16 @@ import { z } from 'zod';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { BaseRepository } from './base-repository';
 
-export const WebformDraftList = z.object({
+export const WebformDraft = z.object({
   webform_draft_id: z.number(),
   name: z.string(),
-  data: z.object({}),
+  //TODO:  ideally this should be a z.object() that allows an unknown structure
+  data: z.any(),
   create_date: z.date(),
   update_date: z.date().nullable()
 });
 
-export type WebformDraftList = z.infer<typeof WebformDraftList>;
+export type WebformDraft = z.infer<typeof WebformDraft>;
 
 /**
  * A repository class for accessing draft data.
@@ -64,7 +65,7 @@ export class DraftRepository extends BaseRepository {
     return response?.rows?.[0];
   }
 
-  async getDraftList(systemUserId: number | null): Promise<any[]> {
+  async getDraftList(systemUserId: number | null): Promise<WebformDraft[]> {
     const sqlStatement = SQL`
     SELECT
       *
@@ -74,12 +75,12 @@ export class DraftRepository extends BaseRepository {
       system_user_id = ${systemUserId};
     `;
 
-    const response = await this.connection.sql(sqlStatement, WebformDraftList);
+    const response = await this.connection.sql(sqlStatement, WebformDraft);
 
     return response.rows || [];
   }
 
-  async createDraft(systemUserId: number, name: string, data: any): Promise<WebformDraftList> {
+  async createDraft(systemUserId: number, name: string, data: any): Promise<WebformDraft> {
     const sqlStatement = SQL`
     INSERT INTO webform_draft (
       system_user_id,
@@ -93,12 +94,12 @@ export class DraftRepository extends BaseRepository {
     RETURNING *
   `;
 
-    const response = await this.connection.sql(sqlStatement, WebformDraftList);
+    const response = await this.connection.sql(sqlStatement, WebformDraft);
 
     return response.rows[0] || null;
   }
 
-  async updateDraft(draftId: number, name: string, data: any): Promise<WebformDraftList> {
+  async updateDraft(draftId: number, name: string, data: any): Promise<WebformDraft> {
     const sqlStatement = SQL`
     UPDATE
       webform_draft
@@ -110,7 +111,7 @@ export class DraftRepository extends BaseRepository {
     RETURNING *;
   `;
 
-    const response = await this.connection.sql(sqlStatement, WebformDraftList);
+    const response = await this.connection.sql(sqlStatement, WebformDraft);
 
     return response.rows[0] || null;
   }
