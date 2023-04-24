@@ -1,6 +1,9 @@
 import Box from '@material-ui/core/Box';
+import IconButton from '@material-ui/core/IconButton';
 import Alert from '@material-ui/lab/Alert';
 import AlertTitle from '@material-ui/lab/AlertTitle';
+import { mdiClose, mdiInformationOutline } from '@mdi/js';
+import Icon from '@mdi/react';
 import { SurveyContext } from 'contexts/surveyContext';
 import { IGetObservationSubmissionResponse } from 'interfaces/useObservationApi.interface';
 import { IGetSummaryResultsResponse } from 'interfaces/useSummaryResultsApi.interface';
@@ -41,13 +44,22 @@ const SubmissionAlertBar = () => {
     ? 'This survey contains unsubmitted information'
     : 'All survey information submitted';
   const alertText = hasUnsubmittedData
-    ? 'Please ensure that any information uploaded to this survey is promptly submitted for review.'
-    : 'Thank you for submitting your survey information to the BioHub Collector System.';
+    ? 'Please ensure that any information uploaded to this survey is promptly submitted for security review.'
+    : 'All information for this survey has been submitted for security review by an administrator.';
 
   // Survey has data, and some of it is unsubmitted, show the banner
   return (
     <Box mb={3}>
-      <Alert severity={alertSeverity} onClose={() => setForceAlertClose(true)}>
+      <Alert
+        variant="outlined"
+        severity={alertSeverity}
+        icon={<Icon path={mdiInformationOutline} size={1} />}
+        onClose={() => setForceAlertClose(true)}
+        action={
+          <IconButton color="primary" onClick={() => setForceAlertClose(true)}>
+            <Icon path={mdiClose} size={1} />
+          </IconButton>
+        }>
         <AlertTitle>{alertTitle}</AlertTitle>
         {alertText}
       </Alert>

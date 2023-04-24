@@ -32,6 +32,9 @@ const appTheme = createMuiTheme({
     text: {
       primary: '#313132',
       secondary: '#757575'
+    },
+    error: {
+      main: '#A12622'
     }
   },
   typography: {
@@ -61,35 +64,33 @@ const appTheme = createMuiTheme({
       },
       h6: {
         fontWeight: 700
-      },
-      body2: {
-        fontSize: '0.9rem'
       }
     },
     MuiAlert: {
       root: {
-        fontSize: '0.9rem',
-        padding: '12px 20px',
-        borderWidth: '1px',
-        borderStyle: 'solid'
+        padding: '12px 16px',
+        fontSize: '1rem'
       },
       icon: {
         marginRight: '1rem'
       },
-      standardInfo: {
-        borderColor: '#a3d4fa',
+      outlinedInfo: {
+        color: '#313132',
+        borderColor: '#afd3ee',
+        backgroundColor: 'rgb(232, 244, 253)',
         '& .MuiAlert-icon': {
-          color: '#313132'
+          color: 'inherit'
         }
       },
       standardError: {
-        color: '#A12622',
+        color: '#a12622',
         borderColor: '#ebccd1',
         '& .MuiAlert-icon': {
-          color: '#A12622'
+          color: '#a12622'
         }
       },
       standardSuccess: {
+        color: '#2d4821',
         backgroundColor: '#dff0d8',
         borderColor: '#c0dcb3',
         '& .MuiAlert-icon': {
@@ -100,6 +101,11 @@ const appTheme = createMuiTheme({
     MuiAlertTitle: {
       root: {
         fontWeight: 700
+      }
+    },
+    MuiAutocomplete: {
+      tag: {
+        fontWeight: 400
       }
     },
     MuiBreadcrumbs: {
@@ -114,17 +120,18 @@ const appTheme = createMuiTheme({
       root: {
         textTransform: 'none',
         borderRadius: '5px',
-        fontWeight: 700,
         fontSize: '0.9rem'
       },
       startIcon: {
-        marginTop: '1px',
         marginBottom: '1px'
       },
       sizeLarge: {
         fontSize: '1rem'
       },
       containedPrimary: {
+        fontWeight: 700
+      },
+      containedSecondary: {
         fontWeight: 700
       },
       outlinedPrimary: {
@@ -137,20 +144,8 @@ const appTheme = createMuiTheme({
     },
     MuiChip: {
       root: {
+        minWidth: '6rem',
         fontWeight: 700
-      },
-      colorPrimary: {
-        color: '#003366',
-        backgroundColor: '#DCEBFB',
-        textTransform: 'uppercase',
-        fontSize: '12px',
-        '&.colorSuccess': {
-          color: '#2D4821',
-          backgroundColor: '#DFF0D8'
-        }
-      },
-      colorSecondary: {
-        backgroundColor: 'red'
       }
     },
     MuiContainer: {
@@ -216,7 +211,9 @@ const appTheme = createMuiTheme({
       root: {
         '& th': {
           letterSpacing: '0.02rem',
-          textTransform: 'uppercase'
+          textTransform: 'uppercase',
+          paddingTop: '12px',
+          paddingBottom: '12px'
         },
         '& tr:last-of-type td': {
           borderBottom: 'none'
@@ -228,9 +225,6 @@ const appTheme = createMuiTheme({
       }
     },
     MuiTableCell: {
-      root: {
-        fontSize: '0.9rem'
-      },
       head: {
         fontSize: '0.875rem',
         fontWeight: 700,
@@ -243,6 +237,14 @@ const appTheme = createMuiTheme({
         minWidth: '100px !important',
         fontWeight: 700
       }
+    }
+  },
+  props: {
+    MuiButton: {
+      disableElevation: true
+    },
+    MuiButtonBase: {
+      disableRipple: true
     }
   }
 });

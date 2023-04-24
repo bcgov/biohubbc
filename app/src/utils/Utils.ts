@@ -6,14 +6,30 @@ import { LatLngBounds } from 'leaflet';
 import moment from 'moment';
 
 /**
- * Checks if a url string starts with an `http(s)://` protocol, and adds `https://` if it does not.
+ * Checks if a url string starts with an `http[s]://` protocol, and adds `https://` if it does not. If the url
+ * begins with `localhost`, the `http` protocol is used.
  *
  * @param {string} url
  * @param {('http://' | 'https://')} [protocol='https://'] The protocol to add, if necessary. Defaults to `https://`.
  * @return {*}  {string} the url which is guaranteed to have an `http(s)://` protocol.
  */
 export const ensureProtocol = (url: string, protocol: 'http://' | 'https://' = 'https://'): string => {
-  return ((url.startsWith('http://') || url.startsWith('https://')) && url) || `${protocol}${url}`;
+  if (url.startsWith('localhost')) {
+    return `${'http://'}${url}`;
+  }
+
+  if (url.startsWith('https://') || url.startsWith('http://localhost')) {
+    return url;
+  }
+
+  if (url.startsWith('http://')) {
+    // If protocol is HTTPS, upgrade the URL
+    if (protocol === 'https://') {
+      return `${'https://'}${url.slice(7)}`;
+    }
+  }
+
+  return `${protocol}${url}`;
 };
 
 /**
@@ -21,8 +37,8 @@ export const ensureProtocol = (url: string, protocol: 'http://' | 'https://' = '
  * @param pageName The name of the page, e.g. 'Projects'
  * @returns The content to be rendered in the <title> tag
  */
-export const getTitle = (pageName: string) => {
-  return `SIMS - ${pageName}`;
+export const getTitle = (pageName?: string) => {
+  return pageName ? `SIMS - ${pageName}` : 'SIMS';
 };
 
 /**

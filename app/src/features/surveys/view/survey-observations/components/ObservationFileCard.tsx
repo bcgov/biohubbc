@@ -1,11 +1,11 @@
 import Box from '@material-ui/core/Box';
 import IconButton from '@material-ui/core/IconButton';
+import Link from '@material-ui/core/Link';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import Paper from '@material-ui/core/Paper';
 import { makeStyles, Theme } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
 import {
   mdiDotsVertical,
   mdiFileAlertOutline,
@@ -17,24 +17,35 @@ import {
 import Icon from '@mdi/react';
 import clsx from 'clsx';
 import { SubmitStatusChip } from 'components/chips/SubmitStatusChip';
+import { ProjectRoleGuard, SystemRoleGuard } from 'components/security/Guards';
 import { BioHubSubmittedStatusType } from 'constants/misc';
+import { PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
 import { IGetObservationSubmissionResponse } from 'interfaces/useObservationApi.interface';
 import React from 'react';
+
+//TODO: PRODUCTION_BANDAGE: Remove <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
 
 const useStyles = makeStyles((theme: Theme) => ({
   importFile: {
     display: 'flex',
-    minHeight: '82px',
-    padding: theme.spacing(2),
+    paddingTop: theme.spacing(1),
+    paddingBottom: theme.spacing(1),
+    paddingRight: theme.spacing(2),
     paddingLeft: '20px',
     overflow: 'hidden',
     '& .importFile-icon': {
-      color: theme.palette.text.secondary
+      color: '#1a5a96'
     },
     '&.error': {
-      borderColor: theme.palette.error.main,
+      borderColor: '#ebccd1',
       '& .importFile-icon': {
         color: theme.palette.error.main
+      },
+      '& .MuiLink-root': {
+        color: theme.palette.error.main
+      },
+      '& .MuiChip-root': {
+        display: 'none'
       }
     }
   },
@@ -100,19 +111,17 @@ const ObservationFileCard = (props: IObservationFileCardProps) => {
             <Icon path={icon} size={1} />
           </Box>
           <Box mr={2} flex="1 1 auto" style={{ overflow: 'hidden' }}>
-            <Typography
-              className={classes.observationFileName}
-              variant="body2"
-              component="div"
-              onClick={props.onDownload}>
+            <Link className={classes.observationFileName} variant="body2" onClick={props.onDownload}>
               <strong>{props.observationRecord.surveyObservationData.inputFileName}</strong>
-            </Typography>
+            </Link>
           </Box>
         </Box>
 
         <Box flex="0 0 auto" display="flex" alignItems="center">
           <Box mr={2}>
-            <SubmitStatusChip status={status} />
+            <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
+              <SubmitStatusChip status={status} />
+            </SystemRoleGuard>
           </Box>
           <Box>
             <IconButton aria-controls="context-menu" aria-haspopup="true" onClick={handleOpenContextMenu}>
@@ -142,16 +151,20 @@ const ObservationFileCard = (props: IObservationFileCardProps) => {
                 </ListItemIcon>
                 Download
               </MenuItem>
-              <MenuItem
-                onClick={() => {
-                  props.onDelete();
-                  handleCloseContextMenu();
-                }}>
-                <ListItemIcon>
-                  <Icon path={mdiTrashCanOutline} size={1} />
-                </ListItemIcon>
-                Delete
-              </MenuItem>
+              <ProjectRoleGuard
+                validProjectRoles={[PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR]}
+                validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+                <MenuItem
+                  onClick={() => {
+                    props.onDelete();
+                    handleCloseContextMenu();
+                  }}>
+                  <ListItemIcon>
+                    <Icon path={mdiTrashCanOutline} size={1} />
+                  </ListItemIcon>
+                  Delete
+                </MenuItem>
+              </ProjectRoleGuard>
             </Menu>
           </Box>
         </Box>

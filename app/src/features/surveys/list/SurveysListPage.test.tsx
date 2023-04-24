@@ -1,5 +1,6 @@
 import { cleanup, render, waitFor } from '@testing-library/react';
 import { CodesContext, ICodesContext } from 'contexts/codesContext';
+import { IProjectAuthStateContext, ProjectAuthStateContext } from 'contexts/projectAuthStateContext';
 import { IProjectContext, ProjectContext } from 'contexts/projectContext';
 import { createMemoryHistory } from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -48,15 +49,25 @@ describe('SurveysListPage', () => {
       projectId: 1
     };
 
+    const mockProjectAuthStateContext: IProjectAuthStateContext = {
+      getProjectParticipant: () => null,
+      hasProjectRole: () => true,
+      hasSystemRole: () => true,
+      getProjectId: () => 1,
+      hasLoadedParticipantInfo: true
+    };
+
     mockBiohubApi().survey.getSurveysList.mockResolvedValue([]);
 
     const { getByText } = render(
       <Router history={history}>
-        <CodesContext.Provider value={mockCodesContext}>
-          <ProjectContext.Provider value={mockProjectContext}>
-            <SurveysListPage />
-          </ProjectContext.Provider>
-        </CodesContext.Provider>
+        <ProjectAuthStateContext.Provider value={mockProjectAuthStateContext}>
+          <CodesContext.Provider value={mockCodesContext}>
+            <ProjectContext.Provider value={mockProjectContext}>
+              <SurveysListPage />
+            </ProjectContext.Provider>
+          </CodesContext.Provider>
+        </ProjectAuthStateContext.Provider>
       </Router>
     );
 
@@ -79,6 +90,14 @@ describe('SurveysListPage', () => {
       } as DataLoader<any, any, any>,
       artifactDataLoader: { data: null } as DataLoader<any, any, any>,
       projectId: 1
+    };
+
+    const mockProjectAuthStateContext: IProjectAuthStateContext = {
+      getProjectParticipant: () => null,
+      hasProjectRole: () => true,
+      hasSystemRole: () => true,
+      getProjectId: () => 1,
+      hasLoadedParticipantInfo: true
     };
 
     const surveysList: SurveyViewObject[] = [
@@ -120,11 +139,13 @@ describe('SurveysListPage', () => {
 
     const { getByText } = render(
       <Router history={history}>
-        <CodesContext.Provider value={mockCodesContext}>
-          <ProjectContext.Provider value={mockProjectContext}>
-            <SurveysListPage />
-          </ProjectContext.Provider>
-        </CodesContext.Provider>
+        <ProjectAuthStateContext.Provider value={mockProjectAuthStateContext}>
+          <CodesContext.Provider value={mockCodesContext}>
+            <ProjectContext.Provider value={mockProjectContext}>
+              <SurveysListPage />
+            </ProjectContext.Provider>
+          </CodesContext.Provider>
+        </ProjectAuthStateContext.Provider>
       </Router>
     );
 

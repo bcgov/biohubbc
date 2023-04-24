@@ -15,10 +15,9 @@ import * as History from 'history';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
-import { useQuery } from 'hooks/useQuery';
 import { IEditSurveyRequest, SurveyUpdateObject } from 'interfaces/useSurveyApi.interface';
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { Prompt, useHistory } from 'react-router';
+import { Prompt, useHistory, useParams } from 'react-router';
 import EditSurveyForm from './EditSurveyForm';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -64,7 +63,9 @@ const EditSurveyPage = () => {
   const classes = useStyles();
   const biohubApi = useBiohubApi();
   const history = useHistory();
-  const queryParams = useQuery();
+  const urlParams = useParams();
+
+  const surveyId = Number(urlParams['survey_id']);
 
   const [formikRef] = useState(useRef<FormikProps<IEditSurveyRequest>>(null));
 
@@ -94,8 +95,8 @@ const EditSurveyPage = () => {
     biohubApi.survey.getSurveyForUpdate(projectId, surveyId)
   );
 
-  if (!editSurveyDL.data && queryParams.surveyId) {
-    editSurveyDL.load(projectContext.projectId, queryParams.surveyId);
+  if (!editSurveyDL.data && surveyId) {
+    editSurveyDL.load(projectContext.projectId, surveyId);
   }
 
   useEffect(() => {
@@ -121,13 +122,13 @@ const EditSurveyPage = () => {
     },
     onYes: () => {
       dialogContext.setYesNoDialog({ open: false });
-      history.push(`/admin/projects/${projectContext.projectId}/survey/${queryParams.surveyId}`);
+      history.push('details');
     }
   };
 
   const handleCancel = () => {
     dialogContext.setYesNoDialog(defaultCancelDialogProps);
-    history.push(`/admin/projects/${projectContext.projectId}/surveys/${queryParams.surveyId}/details`);
+    history.push('details');
   };
 
   const showEditErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
@@ -154,7 +155,7 @@ const EditSurveyPage = () => {
     try {
       const response = await biohubApi.survey.updateSurvey(
         projectContext.projectId,
-        Number(queryParams.surveyId),
+        surveyId,
         (values as unknown) as SurveyUpdateObject
       );
 

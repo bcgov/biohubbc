@@ -1,5 +1,6 @@
 import SQL from 'sql-template-strings';
 import { ApiExecuteSQLError } from '../errors/api-error';
+import { ProjectUserObject } from '../models/user';
 import { BaseRepository } from './base-repository';
 
 /**
@@ -32,7 +33,7 @@ export class ProjectParticipationRepository extends BaseRepository {
     return response.rows[0];
   }
 
-  async getProjectParticipant(projectId: number, systemUserId: number): Promise<any> {
+  async getProjectParticipant(projectId: number, systemUserId: number): Promise<ProjectUserObject | null> {
     const sqlStatement = SQL`
       SELECT
         pp.project_id,
@@ -86,10 +87,6 @@ export class ProjectParticipationRepository extends BaseRepository {
         system_user su
       ON
         pp.system_user_id = su.system_user_id
-      LEFT JOIN
-        project_role pr
-      ON
-        pr.project_role_id = pp.project_role_id
       LEFT JOIN
         project_role pr
       ON

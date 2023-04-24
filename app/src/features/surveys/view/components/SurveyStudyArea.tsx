@@ -16,8 +16,10 @@ import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { IMarkerLayer } from 'components/map/components/MarkerCluster';
 import { IStaticLayer } from 'components/map/components/StaticLayers';
 import MapContainer from 'components/map/MapContainer';
+import { ProjectRoleGuard } from 'components/security/Guards';
 import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
 import { EditSurveyStudyAreaI18N } from 'constants/i18n';
+import { PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
 import { SurveyContext } from 'contexts/surveyContext';
 import StudyAreaForm, {
   IStudyAreaForm,
@@ -95,8 +97,8 @@ const SurveyStudyArea = () => {
     wmu: []
   });
 
-  const mapDataLoader = useDataLoader((occurrenceSubmissionId: number) =>
-    biohubApi.observation.getOccurrencesForView(occurrenceSubmissionId)
+  const mapDataLoader = useDataLoader((projectId: number, occurrenceSubmissionId: number) =>
+    biohubApi.observation.getOccurrencesForView(projectId, occurrenceSubmissionId)
   );
   useDataLoaderError(mapDataLoader, () => {
     return {
@@ -117,9 +119,9 @@ const SurveyStudyArea = () => {
 
   useEffect(() => {
     if (occurrence_submission_id) {
-      mapDataLoader.load(occurrence_submission_id);
+      mapDataLoader.load(surveyContext.projectId, occurrence_submission_id);
     }
-  }, [mapDataLoader, occurrence_submission_id]);
+  }, [mapDataLoader, occurrence_submission_id, surveyContext.projectId]);
 
   const zoomToBoundaryExtent = useCallback(() => {
     setBounds(calculateUpdatedMapBounds(surveyGeometry));
@@ -239,11 +241,18 @@ const SurveyStudyArea = () => {
 
       <H2ButtonToolbar
         label="Study Area"
-        buttonLabel="Edit Study Area"
+        buttonLabel="Edit"
         buttonTitle="Edit Study Area"
-        buttonStartIcon={<Icon path={mdiPencilOutline} size={0.8} />}
+        buttonStartIcon={<Icon path={mdiPencilOutline} size={1} />}
         buttonOnClick={() => handleDialogEditOpen()}
-        buttonProps={{ variant: 'text' }}
+        buttonProps={{ variant: 'outlined' }}
+        renderButton={(buttonProps) => (
+          <ProjectRoleGuard
+            validProjectRoles={[PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR]}
+            validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+            <Button {...buttonProps} />
+          </ProjectRoleGuard>
+        )}
       />
 
       <Box px={3} pb={3}>

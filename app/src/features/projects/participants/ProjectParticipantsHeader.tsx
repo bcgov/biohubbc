@@ -17,7 +17,7 @@ import { ProjectContext } from 'contexts/projectContext';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import React, { useContext, useState } from 'react';
-import { useHistory } from 'react-router';
+import { Link } from 'react-router-dom';
 import AddProjectParticipantsForm, {
   AddProjectParticipantsFormInitialValues,
   AddProjectParticipantsFormYupSchema,
@@ -56,7 +56,6 @@ export interface IProjectParticipantsHeaderProps {
  */
 const ProjectParticipantsHeader = (props: IProjectParticipantsHeaderProps) => {
   const classes = useStyles();
-  const history = useHistory();
 
   const codesContext = useContext(CodesContext);
   const projectContext = useContext(ProjectContext);
@@ -113,9 +112,10 @@ const ProjectParticipantsHeader = (props: IProjectParticipantsHeaderProps) => {
         <Box py={4}>
           <Box mt={-1} ml={-0.5} mb={1}>
             <Button
+              component={Link}
+              to={`/admin/projects/${projectContext.projectId}`}
               color="primary"
-              startIcon={<Icon path={mdiArrowLeft} size={0.9} />}
-              onClick={() => history.push(`/admin/projects/${projectContext.projectId}`)}>
+              startIcon={<Icon path={mdiArrowLeft} size={0.9} />}>
               <strong>Back to Project</strong>
             </Button>
           </Box>

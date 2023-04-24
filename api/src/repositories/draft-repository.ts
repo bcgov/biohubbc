@@ -80,7 +80,6 @@ export class DraftRepository extends BaseRepository {
   }
 
   async createDraft(systemUserId: number, name: string, data: any): Promise<WebformDraftList> {
-
     const sqlStatement = SQL`
     INSERT INTO webform_draft (
       system_user_id,
@@ -96,12 +95,10 @@ export class DraftRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement, WebformDraftList);
 
-
     return response.rows[0] || null;
   }
 
   async updateDraft(draftId: number, name: string, data: any): Promise<WebformDraftList> {
-
     const sqlStatement = SQL`
     UPDATE
       webform_draft
@@ -114,7 +111,6 @@ export class DraftRepository extends BaseRepository {
   `;
 
     const response = await this.connection.sql(sqlStatement, WebformDraftList);
-
 
     return response.rows[0] || null;
   }

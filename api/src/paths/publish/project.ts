@@ -6,7 +6,7 @@ import { authorizeRequestHandler } from '../../request-handlers/security/authori
 import { PlatformService } from '../../services/platform-service';
 import { getLogger } from '../../utils/logger';
 
-const defaultLog = getLogger('/api/publish/survey');
+const defaultLog = getLogger('/api/publish/project');
 
 export const POST: Operation = [
   authorizeRequestHandler((req) => {
@@ -24,50 +24,34 @@ export const POST: Operation = [
       ]
     };
   }),
-  publishSurvey()
+  publishProject()
 ];
 
 POST.apiDoc = {
-  description: 'Publish Survey data to Biohub.',
-  tags: ['survey', 'dwca', 'biohub'],
+  description: 'Publish Project data to Biohub.',
+  tags: ['project', 'dwca', 'biohub'],
   security: [
     {
       Bearer: []
     }
   ],
   requestBody: {
-    description: 'Survey observation submission file to upload',
+    description: 'Project observation submission file to upload',
     content: {
       'application/json': {
         schema: {
           type: 'object',
-          required: ['projectId', 'surveyId', 'data'],
+          required: ['projectId', 'data'],
           properties: {
             projectId: {
-              type: 'number'
+              type: 'integer'
             },
-            surveyId: {
-              type: 'number'
-            },
+
             data: {
-              description: 'All survey data to upload',
+              description: 'All project data to upload',
               type: 'object',
-              required: ['observations', 'summary', 'reports', 'attachments'],
+              required: ['reports', 'attachments'],
               properties: {
-                observations: {
-                  type: 'array',
-                  items: {
-                    type: 'object',
-                    properties: {}
-                  }
-                },
-                summary: {
-                  type: 'array',
-                  items: {
-                    type: 'object',
-                    properties: {}
-                  }
-                },
                 reports: {
                   type: 'array',
                   items: {
@@ -125,27 +109,27 @@ POST.apiDoc = {
 };
 
 /**
- * Publish survey data to Biohub.
+ * Publish project data to Biohub.
  *
  * @return {*}  {RequestHandler}
  */
-export function publishSurvey(): RequestHandler {
+export function publishProject(): RequestHandler {
   return async (req, res) => {
     const connection = getDBConnection(req['keycloak_token']);
 
-    const { surveyId, data } = req.body;
+    const { projectId, data } = req.body;
 
     try {
       await connection.open();
 
       const platformService = new PlatformService(connection);
-      const response = await platformService.submitSurveyDataToBioHub(surveyId, data);
+      const response = await platformService.submitProjectDataToBioHub(projectId, data);
 
       await connection.commit();
 
       return res.status(200).json(response);
     } catch (error) {
-      defaultLog.error({ label: 'publishSurvey', message: 'error', error });
+      defaultLog.error({ label: 'publishProject', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

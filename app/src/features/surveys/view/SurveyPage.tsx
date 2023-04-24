@@ -4,15 +4,19 @@ import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import SubmissionAlertBar from 'components/publish/SubmissionAlertBar';
+import { SystemRoleGuard } from 'components/security/Guards';
+import { SYSTEM_ROLE } from 'constants/roles';
 import { CodesContext } from 'contexts/codesContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import SurveyDetails from 'features/surveys/view/SurveyDetails';
-import React, { useContext, useEffect } from 'react';
+import React, { useContext } from 'react';
 import SurveyStudyArea from './components/SurveyStudyArea';
 import SurveySummaryResults from './summary-results/SurveySummaryResults';
 import SurveyObservations from './survey-observations/SurveyObservations';
 import SurveyAttachments from './SurveyAttachments';
 import SurveyHeader from './SurveyHeader';
+
+//TODO: PRODUCTION_BANDAGE: Remove <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
 
 /**
  * Page to display a single Survey.
@@ -23,12 +27,7 @@ const SurveyPage: React.FC = () => {
   const codesContext = useContext(CodesContext);
   const surveyContext = useContext(SurveyContext);
 
-  useEffect(() => codesContext.codesDataLoader.load(), [codesContext.codesDataLoader]);
-  useEffect(() => surveyContext.surveyDataLoader.load(surveyContext.projectId, surveyContext.surveyId), [
-    surveyContext.surveyDataLoader,
-    surveyContext.projectId,
-    surveyContext.surveyId
-  ]);
+  codesContext.codesDataLoader.load();
 
   if (!codesContext.codesDataLoader.data || !surveyContext.surveyDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
@@ -39,7 +38,9 @@ const SurveyPage: React.FC = () => {
       <SurveyHeader />
       <Container maxWidth="xl">
         <Box my={3}>
-          <SubmissionAlertBar />
+          <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
+            <SubmissionAlertBar />
+          </SystemRoleGuard>
           <Grid container spacing={3}>
             <Grid item md={12} lg={4}>
               <Paper elevation={0}>

@@ -34,8 +34,10 @@ import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetDraftsListResponse } from 'interfaces/useDraftApi.interface';
 import { IGetProjectsListResponse } from 'interfaces/useProjectApi.interface';
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { useHistory } from 'react-router';
+import { Link as RouterLink } from 'react-router-dom';
 import { getFormattedDate } from 'utils/Utils';
+
+//TODO: PRODUCTION_BANDAGE: Remove <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
 
 const useStyles = makeStyles((theme: Theme) => ({
   pageTitleContainer: {
@@ -92,7 +94,6 @@ const useStyles = makeStyles((theme: Theme) => ({
  * @return {*}
  */
 const ProjectsListPage: React.FC = () => {
-  const history = useHistory();
   const classes = useStyles();
   const biohubApi = useBiohubApi();
 
@@ -123,19 +124,6 @@ const ProjectsListPage: React.FC = () => {
     }
 
     return <Chip size="small" className={clsx(classes.chip, chipStatusClass)} label={chipLabel} />;
-  };
-
-  const navigateToCreateProjectPage = (draftId?: number) => {
-    if (draftId) {
-      history.push(`/admin/projects/create?draftId=${draftId}`);
-      return;
-    }
-
-    history.push('/admin/projects/create');
-  };
-
-  const navigateToProjectPage = (id: number) => {
-    history.push(`/admin/projects/${id}`);
   };
 
   useEffect(() => {
@@ -280,22 +268,24 @@ const ProjectsListPage: React.FC = () => {
                 <TableCell>Name</TableCell>
                 <TableCell>Contact Agency</TableCell>
                 <TableCell width={150}>Type</TableCell>
-                <TableCell width={150}>Status</TableCell>
+                <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
+                  <TableCell width={150}>Status</TableCell>
+                </SystemRoleGuard>
                 <TableCell width={150}>Start Date</TableCell>
                 <TableCell width={150}>End Date</TableCell>
               </TableRow>
             </TableHead>
             <TableBody data-testid="project-table">
-              {drafts?.map((row) => (
-                <TableRow key={row.webform_draft_id}>
+              {drafts?.map((draft: IGetDraftsListResponse) => (
+                <TableRow key={draft.webform_draft_id}>
                   <TableCell>
                     <Link
                       className={classes.linkButton}
-                      data-testid={row.name}
+                      data-testid={draft.name}
                       underline="always"
-                      component="button"
-                      onClick={() => navigateToCreateProjectPage(row.webform_draft_id)}>
-                      {row.name}
+                      component={RouterLink}
+                      to={`/admin/projects/create?draftId=${draft.webform_draft_id}`}>
+                      {draft.name}
                     </Link>
                   </TableCell>
                   <TableCell />
@@ -305,23 +295,25 @@ const ProjectsListPage: React.FC = () => {
                   <TableCell />
                 </TableRow>
               ))}
-              {projects?.map((row) => (
-                <TableRow key={row.id}>
+              {projects?.map((project: IGetProjectsListResponse) => (
+                <TableRow key={project.id}>
                   <TableCell>
                     <Link
                       className={classes.linkButton}
-                      data-testid={row.name}
+                      data-testid={project.name}
                       underline="always"
-                      component="button"
-                      onClick={() => navigateToProjectPage(row.id)}>
-                      {row.name}
+                      component={RouterLink}
+                      to={`/admin/projects/${project.id}`}>
+                      {project.name}
                     </Link>
                   </TableCell>
-                  <TableCell>{row.coordinator_agency}</TableCell>
-                  <TableCell>{row.project_type}</TableCell>
-                  <TableCell>{getChipIcon(row.completion_status)}</TableCell>
-                  <TableCell>{getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, row.start_date)}</TableCell>
-                  <TableCell>{getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, row.end_date)}</TableCell>
+                  <TableCell>{project.coordinator_agency}</TableCell>
+                  <TableCell>{project.project_type}</TableCell>
+                  <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
+                    <TableCell>{getChipIcon(project.completion_status)}</TableCell>
+                  </SystemRoleGuard>
+                  <TableCell>{getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, project.start_date)}</TableCell>
+                  <TableCell>{getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, project.end_date)}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -361,7 +353,8 @@ const ProjectsListPage: React.FC = () => {
                     variant="contained"
                     color="primary"
                     startIcon={<Icon path={mdiPlus} size={1} />}
-                    onClick={() => navigateToCreateProjectPage()}>
+                    component={RouterLink}
+                    to={'/admin/projects/create'}>
                     Create Project
                   </Button>
                 </SystemRoleGuard>

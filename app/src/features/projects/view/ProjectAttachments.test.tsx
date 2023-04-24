@@ -8,6 +8,7 @@ import {
 } from '@testing-library/react';
 import { AttachmentType } from 'constants/attachments';
 import { DialogContextProvider } from 'contexts/dialogContext';
+import { IProjectAuthStateContext, ProjectAuthStateContext } from 'contexts/projectAuthStateContext';
 import { IProjectContext, ProjectContext } from 'contexts/projectContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { DataLoader } from 'hooks/useDataLoader';
@@ -47,24 +48,34 @@ describe('ProjectAttachments', () => {
       projectId: 1
     } as unknown) as IProjectContext;
 
+    const mockProjectAuthStateContext: IProjectAuthStateContext = {
+      getProjectParticipant: () => null,
+      hasProjectRole: () => true,
+      hasSystemRole: () => true,
+      getProjectId: () => 1,
+      hasLoadedParticipantInfo: true
+    };
+
     const { getByText, queryByText } = render(
-      <ProjectContext.Provider value={mockProjectContext}>
-        <ProjectAttachments />
-      </ProjectContext.Provider>
+      <ProjectAuthStateContext.Provider value={mockProjectAuthStateContext}>
+        <ProjectContext.Provider value={mockProjectContext}>
+          <ProjectAttachments />
+        </ProjectContext.Provider>
+      </ProjectAuthStateContext.Provider>
     );
 
     await waitFor(() => {
-      expect(getByText('Add Documents')).toBeInTheDocument();
+      expect(getByText('Upload')).toBeInTheDocument();
       expect(queryByText('Upload Attachment')).toBeNull();
     });
 
-    fireEvent.click(getByText('Add Documents'));
+    fireEvent.click(getByText('Upload'));
 
     await waitFor(() => {
-      expect(getByText('Add Attachments')).toBeInTheDocument();
+      expect(getByText('Upload Attachments')).toBeInTheDocument();
     });
 
-    fireEvent.click(getByText('Add Attachments'));
+    fireEvent.click(getByText('Upload Attachments'));
 
     expect(getByText('Close')).toBeInTheDocument();
   });
@@ -78,10 +89,20 @@ describe('ProjectAttachments', () => {
       projectId: 1
     } as unknown) as IProjectContext;
 
+    const mockProjectAuthStateContext: IProjectAuthStateContext = {
+      getProjectParticipant: () => null,
+      hasProjectRole: () => true,
+      hasSystemRole: () => true,
+      getProjectId: () => 1,
+      hasLoadedParticipantInfo: true
+    };
+
     const { getByText } = render(
-      <ProjectContext.Provider value={mockProjectContext}>
-        <ProjectAttachments />
-      </ProjectContext.Provider>
+      <ProjectAuthStateContext.Provider value={mockProjectAuthStateContext}>
+        <ProjectContext.Provider value={mockProjectContext}>
+          <ProjectAttachments />
+        </ProjectContext.Provider>
+      </ProjectAuthStateContext.Provider>
     );
     await waitFor(() => {
       expect(getByText('No Documents')).toBeInTheDocument();
@@ -106,10 +127,20 @@ describe('ProjectAttachments', () => {
       projectId: 1
     } as unknown) as IProjectContext;
 
+    const mockProjectAuthStateContext: IProjectAuthStateContext = {
+      getProjectParticipant: () => null,
+      hasProjectRole: () => true,
+      hasSystemRole: () => true,
+      getProjectId: () => 1,
+      hasLoadedParticipantInfo: true
+    };
+
     const { getByText } = render(
-      <ProjectContext.Provider value={mockProjectContext}>
-        <ProjectAttachments />
-      </ProjectContext.Provider>
+      <ProjectAuthStateContext.Provider value={mockProjectAuthStateContext}>
+        <ProjectContext.Provider value={mockProjectContext}>
+          <ProjectAttachments />
+        </ProjectContext.Provider>
+      </ProjectAuthStateContext.Provider>
     );
 
     await waitFor(() => {
@@ -145,12 +176,22 @@ describe('ProjectAttachments', () => {
       projectId: 1
     } as unknown) as IProjectContext;
 
+    const mockProjectAuthStateContext: IProjectAuthStateContext = {
+      getProjectParticipant: () => null,
+      hasProjectRole: () => true,
+      hasSystemRole: () => true,
+      getProjectId: () => 1,
+      hasLoadedParticipantInfo: true
+    };
+
     const { baseElement, queryByText, getByTestId, getAllByTestId, queryByTestId } = render(
-      <DialogContextProvider>
-        <ProjectContext.Provider value={mockProjectContext}>
-          <ProjectAttachments />
-        </ProjectContext.Provider>
-      </DialogContextProvider>
+      <ProjectAuthStateContext.Provider value={mockProjectAuthStateContext}>
+        <DialogContextProvider>
+          <ProjectContext.Provider value={mockProjectContext}>
+            <ProjectAttachments />
+          </ProjectContext.Provider>
+        </DialogContextProvider>
+      </ProjectAuthStateContext.Provider>
     );
 
     await waitFor(() => {
@@ -197,12 +238,22 @@ describe('ProjectAttachments', () => {
       projectId: 1
     } as unknown) as IProjectContext;
 
+    const mockProjectAuthStateContext: IProjectAuthStateContext = {
+      getProjectParticipant: () => null,
+      hasProjectRole: () => true,
+      hasSystemRole: () => true,
+      getProjectId: () => 1,
+      hasLoadedParticipantInfo: true
+    };
+
     const { baseElement, queryByText, getByTestId, queryByTestId, getAllByTestId } = render(
-      <DialogContextProvider>
-        <ProjectContext.Provider value={mockProjectContext}>
-          <ProjectAttachments />
-        </ProjectContext.Provider>
-      </DialogContextProvider>
+      <ProjectAuthStateContext.Provider value={mockProjectAuthStateContext}>
+        <DialogContextProvider>
+          <ProjectContext.Provider value={mockProjectContext}>
+            <ProjectAttachments />
+          </ProjectContext.Provider>
+        </DialogContextProvider>
+      </ProjectAuthStateContext.Provider>
     );
 
     await waitFor(() => {
@@ -251,12 +302,22 @@ describe('ProjectAttachments', () => {
       projectId: 1
     } as unknown) as IProjectContext;
 
+    const mockProjectAuthStateContext: IProjectAuthStateContext = {
+      getProjectParticipant: () => null,
+      hasProjectRole: () => true,
+      hasSystemRole: () => true,
+      getProjectId: () => 1,
+      hasLoadedParticipantInfo: true
+    };
+
     const { baseElement, queryByText, getAllByRole, queryByTestId, getAllByTestId } = render(
-      <DialogContextProvider>
-        <ProjectContext.Provider value={mockProjectContext}>
-          <ProjectAttachments />
-        </ProjectContext.Provider>
-      </DialogContextProvider>
+      <ProjectAuthStateContext.Provider value={mockProjectAuthStateContext}>
+        <DialogContextProvider>
+          <ProjectContext.Provider value={mockProjectContext}>
+            <ProjectAttachments />
+          </ProjectContext.Provider>
+        </DialogContextProvider>
+      </ProjectAuthStateContext.Provider>
     );
 
     await waitFor(() => {
