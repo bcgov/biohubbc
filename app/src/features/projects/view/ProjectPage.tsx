@@ -4,6 +4,8 @@ import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import ProjectSubmissionAlertBar from 'components/publish/ProjectSubmissionAlertBar';
+import { SystemRoleGuard } from 'components/security/Guards';
+import { SYSTEM_ROLE } from 'constants/roles';
 import { CodesContext } from 'contexts/codesContext';
 import { ProjectContext } from 'contexts/projectContext';
 import ProjectAttachments from 'features/projects/view/ProjectAttachments';
@@ -12,6 +14,8 @@ import React, { useContext, useEffect } from 'react';
 import LocationBoundary from './components/LocationBoundary';
 import ProjectDetails from './ProjectDetails';
 import ProjectHeader from './ProjectHeader';
+
+//TODO: PRODUCTION_BANDAGE: Remove <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
 
 /**
  * Page to display a single Project.
@@ -42,7 +46,9 @@ const ProjectPage = () => {
       <ProjectHeader />
       <Container maxWidth="xl">
         <Box py={3}>
-          <ProjectSubmissionAlertBar />
+          <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
+            <ProjectSubmissionAlertBar />
+          </SystemRoleGuard>
           <Grid container spacing={3}>
             <Grid item md={12} lg={4}>
               <Paper elevation={0}>

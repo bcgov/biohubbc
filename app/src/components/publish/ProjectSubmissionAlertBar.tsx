@@ -52,7 +52,7 @@ const ProjectSubmissionAlertBar = () => {
         severity={alertSeverity}
         onClose={() => setForceAlertClose(true)}
         action={
-          <IconButton color="primary" onClick={() => setForceAlertClose(true)}>
+          <IconButton color="inherit" onClick={() => setForceAlertClose(true)}>
             <Icon path={mdiClose} size={1} />
           </IconButton>
         }>
@@ -68,11 +68,11 @@ function getSurveyDataSubmissionStatus(surveyData?: IGetSurveyForListResponse[])
     return 'NO_DATA';
   }
 
-  if (surveyData.every((item) => item.surveySupplementaryData?.has_unpublished_content)) {
-    return 'UNSUBMITTED';
+  if (surveyData.every((item) => !item.surveySupplementaryData?.has_unpublished_content)) {
+    return 'SUBMITTED';
   }
 
-  return 'SUBMITTED';
+  return 'UNSUBMITTED';
 }
 
 function getAttachmentDataSubmissionStatus(projectAttachmentsData?: IGetProjectAttachmentsResponse) {

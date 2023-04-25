@@ -1,3 +1,4 @@
+import { Box, Paper } from '@material-ui/core';
 import Link from '@material-ui/core/Link';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Table from '@material-ui/core/Table';
@@ -9,18 +10,28 @@ import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
 import assert from 'assert';
 import { SubmitStatusChip } from 'components/chips/SubmitStatusChip';
+import { SystemRoleGuard } from 'components/security/Guards';
 import { BioHubSubmittedStatusType } from 'constants/misc';
+import { SYSTEM_ROLE } from 'constants/roles';
 import { CodesContext } from 'contexts/codesContext';
 import { ProjectContext } from 'contexts/projectContext';
 import { IGetSurveyForListResponse } from 'interfaces/useSurveyApi.interface';
 import React, { useContext, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
   surveyTable: {
     tableLayout: 'fixed'
+  },
+  importFile: {
+    display: 'flex',
+    minHeight: '66px',
+    fontWeight: 700,
+    color: theme.palette.text.secondary
   }
 }));
+
+//TODO: PRODUCTION_BANDAGE: Remove <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
 
 const SurveysList: React.FC = () => {
   const classes = useStyles();
@@ -44,6 +55,10 @@ const SurveysList: React.FC = () => {
     return BioHubSubmittedStatusType.SUBMITTED;
   }
 
+  if (!surveys.length) {
+    return <NoSurveys />;
+  }
+
   return (
     <>
       <TableContainer>
@@ -53,7 +68,9 @@ const SurveysList: React.FC = () => {
               <TableCell>Name</TableCell>
               <TableCell>Species</TableCell>
               <TableCell>Purpose</TableCell>
-              <TableCell width="200">Status</TableCell>
+              <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
+                <TableCell width="200">Status</TableCell>
+              </SystemRoleGuard>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -81,9 +98,11 @@ const SurveysList: React.FC = () => {
                         (item: any) => item.id === row.surveyData.purpose_and_methodology.intended_outcome_id
                       )?.name}
                   </TableCell>
-                  <TableCell>
-                    <SubmitStatusChip status={getSurveySubmissionStatus(row)} />
-                  </TableCell>
+                  <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
+                    <TableCell>
+                      <SubmitStatusChip status={getSurveySubmissionStatus(row)} />
+                    </TableCell>
+                  </SystemRoleGuard>
                 </TableRow>
               ))}
             {!surveys.length && (
@@ -93,6 +112,7 @@ const SurveysList: React.FC = () => {
                     No Surveys
                   </Typography>
                 </TableCell>
+                <TableCell />
               </TableRow>
             )}
           </TableBody>
@@ -101,5 +121,16 @@ const SurveysList: React.FC = () => {
     </>
   );
 };
+
+function NoSurveys() {
+  const classes = useStyles();
+  return (
+    <Paper variant="outlined" className={classes.importFile}>
+      <Box display="flex" flex="1 1 auto" alignItems="center" justifyContent="center" p={2}>
+        <span data-testid="observations-nodata">No Surveys</span>
+      </Box>
+    </Paper>
+  );
+}
 
 export default SurveysList;
