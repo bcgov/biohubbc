@@ -1,3 +1,4 @@
+import { Paper } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
 import { grey } from '@material-ui/core/colors';
 import Link from '@material-ui/core/Link';
@@ -42,6 +43,12 @@ const useStyles = makeStyles((theme: Theme) => ({
     height: '66px',
     color: theme.palette.text.secondary,
     fontWeight: 700
+  },
+  importFile: {
+    display: 'flex',
+    minHeight: '66px',
+    fontWeight: 700,
+    color: theme.palette.text.secondary
   }
 }));
 
@@ -60,6 +67,10 @@ const AttachmentsList = <T extends IGetProjectAttachment | IGetSurveyAttachment>
   const [rowsPerPage] = useState(10);
   const [page] = useState(0);
 
+  if (!attachments.length) {
+    return <NoAttachments />;
+  }
+
   return (
     <TableContainer>
       <Table className={classes.attachmentsTable} aria-label="attachments-list-table">
@@ -74,19 +85,17 @@ const AttachmentsList = <T extends IGetProjectAttachment | IGetSurveyAttachment>
           </TableRow>
         </TableHead>
         <TableBody>
-          {(attachments.length &&
-            attachments.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-              return (
-                <AttachmentsTableRow
-                  key={`${row.fileType}-${row.id}`}
-                  attachment={row}
-                  handleDownload={handleDownload}
-                  handleDelete={handleDelete}
-                  handleViewDetails={handleViewDetails}
-                />
-              );
-            })) || <></>}
-          {(!attachments.length && <NoAttachmentsTableRow />) || <></>}
+          {attachments.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
+            return (
+              <AttachmentsTableRow
+                key={`${row.fileType}-${row.id}`}
+                attachment={row}
+                handleDownload={handleDownload}
+                handleDelete={handleDelete}
+                handleViewDetails={handleViewDetails}
+              />
+            );
+          })}
         </TableBody>
       </Table>
     </TableContainer>
@@ -146,14 +155,14 @@ function AttachmentsTableRow<T extends IGetProjectAttachment | IGetSurveyAttachm
   );
 }
 
-function NoAttachmentsTableRow() {
+function NoAttachments() {
   const classes = useStyles();
   return (
-    <TableRow>
-      <TableCell colSpan={4} align="center" className={classes.noDocuments}>
-        <span>No Documents</span>
-      </TableCell>
-    </TableRow>
+    <Paper variant="outlined" className={classes.importFile}>
+      <Box display="flex" flex="1 1 auto" alignItems="center" justifyContent="center" p={2}>
+        <span data-testid="observations-nodata">No Documents</span>
+      </Box>
+    </Paper>
   );
 }
 

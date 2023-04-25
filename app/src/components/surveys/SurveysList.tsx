@@ -1,3 +1,4 @@
+import { Box, Paper } from '@material-ui/core';
 import Link from '@material-ui/core/Link';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Table from '@material-ui/core/Table';
@@ -18,9 +19,15 @@ import { IGetSurveyForListResponse } from 'interfaces/useSurveyApi.interface';
 import React, { useContext, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
   surveyTable: {
     tableLayout: 'fixed'
+  },
+  importFile: {
+    display: 'flex',
+    minHeight: '66px',
+    fontWeight: 700,
+    color: theme.palette.text.secondary
   }
 }));
 
@@ -46,6 +53,10 @@ const SurveysList: React.FC = () => {
       return BioHubSubmittedStatusType.UNSUBMITTED;
     }
     return BioHubSubmittedStatusType.SUBMITTED;
+  }
+
+  if (!surveys.length) {
+    return <NoSurveys />;
   }
 
   return (
@@ -101,6 +112,7 @@ const SurveysList: React.FC = () => {
                     No Surveys
                   </Typography>
                 </TableCell>
+                <TableCell />
               </TableRow>
             )}
           </TableBody>
@@ -109,5 +121,16 @@ const SurveysList: React.FC = () => {
     </>
   );
 };
+
+function NoSurveys() {
+  const classes = useStyles();
+  return (
+    <Paper variant="outlined" className={classes.importFile}>
+      <Box display="flex" flex="1 1 auto" alignItems="center" justifyContent="center" p={2}>
+        <span data-testid="observations-nodata">No Surveys</span>
+      </Box>
+    </Paper>
+  );
+}
 
 export default SurveysList;

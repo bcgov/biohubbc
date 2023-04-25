@@ -95,7 +95,12 @@ const ProjectsListTable: React.FC<IProjectsListTableProps> = (props) => {
           <TableRow>
             <TableCell>Name</TableCell>
             <TableCell>Type</TableCell>
-            <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
+            <SystemRoleGuard
+              validSystemRoles={[
+                SYSTEM_ROLE.DATA_ADMINISTRATOR,
+                SYSTEM_ROLE.SYSTEM_ADMIN,
+                SYSTEM_ROLE.PROJECT_CREATOR
+              ]}>
               <TableCell width={150}>Status</TableCell>
             </SystemRoleGuard>
             <TableCell width={150}>Start Date</TableCell>
