@@ -9,7 +9,9 @@ import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
 import assert from 'assert';
 import { SubmitStatusChip } from 'components/chips/SubmitStatusChip';
+import { SystemRoleGuard } from 'components/security/Guards';
 import { BioHubSubmittedStatusType } from 'constants/misc';
+import { SYSTEM_ROLE } from 'constants/roles';
 import { CodesContext } from 'contexts/codesContext';
 import { ProjectContext } from 'contexts/projectContext';
 import { IGetSurveyForListResponse } from 'interfaces/useSurveyApi.interface';
@@ -21,6 +23,8 @@ const useStyles = makeStyles(() => ({
     tableLayout: 'fixed'
   }
 }));
+
+//TODO: PRODUCTION_BANDAGE: Remove <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
 
 const SurveysList: React.FC = () => {
   const classes = useStyles();
@@ -53,7 +57,9 @@ const SurveysList: React.FC = () => {
               <TableCell>Name</TableCell>
               <TableCell>Species</TableCell>
               <TableCell>Purpose</TableCell>
-              <TableCell width="200">Status</TableCell>
+              <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
+                <TableCell width="200">Status</TableCell>
+              </SystemRoleGuard>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -81,9 +87,11 @@ const SurveysList: React.FC = () => {
                         (item: any) => item.id === row.surveyData.purpose_and_methodology.intended_outcome_id
                       )?.name}
                   </TableCell>
-                  <TableCell>
-                    <SubmitStatusChip status={getSurveySubmissionStatus(row)} />
-                  </TableCell>
+                  <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
+                    <TableCell>
+                      <SubmitStatusChip status={getSurveySubmissionStatus(row)} />
+                    </TableCell>
+                  </SystemRoleGuard>
                 </TableRow>
               ))}
             {!surveys.length && (
