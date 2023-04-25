@@ -11,7 +11,7 @@ import * as create from './create';
 
 chai.use(sinonChai);
 
-describe('draft (create)', () => {
+describe('paths/draft/create', () => {
   describe('openapi schema', () => {
     const ajv = new Ajv();
 

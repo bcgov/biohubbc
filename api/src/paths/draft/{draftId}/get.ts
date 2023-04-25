@@ -20,7 +20,7 @@ export const GET: Operation = [
       ]
     };
   }),
-  getSingleDraft()
+  getDraft()
 ];
 
 GET.apiDoc = {
@@ -98,7 +98,7 @@ GET.apiDoc = {
  *
  * @returns {RequestHandler}
  */
-export function getSingleDraft(): RequestHandler {
+export function getDraft(): RequestHandler {
   return async (req, res) => {
     const connection = getDBConnection(req['keycloak_token']);
     const draftId = Number(req.params.draftId);
@@ -108,7 +108,7 @@ export function getSingleDraft(): RequestHandler {
 
       const draftService = new DraftService(connection);
 
-      const draftObject = await draftService.getSingleDraft(draftId);
+      const draftObject = await draftService.getDraft(draftId);
 
       await connection.commit();
 

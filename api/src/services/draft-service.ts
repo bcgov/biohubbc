@@ -21,8 +21,8 @@ export class DraftService extends DBService {
     return this.draftRepository.deleteDraft(draftId);
   }
 
-  async getSingleDraft(draftId: number): Promise<WebformDraft> {
-    defaultLog.debug({ label: 'getSingleDraft' });
+  async getDraft(draftId: number): Promise<WebformDraft> {
+    defaultLog.debug({ label: 'getDraft' });
     return this.draftRepository.getDraft(draftId);
   }
 
