@@ -219,11 +219,11 @@ const LocationBoundary = () => {
 
       <H2ButtonToolbar
         label="Project Location"
-        buttonLabel="Edit Project Location"
+        buttonLabel="Edit"
         buttonTitle="Edit Project Location"
         buttonStartIcon={<Icon path={mdiPencilOutline} size={1} />}
         buttonOnClick={() => handleDialogEditOpen()}
-        buttonProps={{ variant: 'outlined' }}
+        buttonProps={{ variant: 'text' }}
         renderButton={(buttonProps) => (
           <ProjectRoleGuard
             validProjectRoles={[PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR]}

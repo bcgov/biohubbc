@@ -1,5 +1,3 @@
-import Box from '@material-ui/core/Box';
-import Typography from '@material-ui/core/Typography';
 import { IGetProjectAttachment, IGetProjectReportAttachment } from 'interfaces/useProjectApi.interface';
 import { default as React } from 'react';
 import yup from 'utils/YupSchema';
@@ -30,13 +28,6 @@ const PublishProjectSections: React.FC<ISubmitProject> = (props) => {
 
   return (
     <>
-      <Box mb={2}>
-        <Typography variant="body1" color="textSecondary">
-          <strong>Please Note:</strong> Submitted data cannot be modified. You will need to contact an administrator if
-          you need to modify submitted information.
-        </Typography>
-      </Box>
-
       <SelectAllButton
         formikData={[
           {

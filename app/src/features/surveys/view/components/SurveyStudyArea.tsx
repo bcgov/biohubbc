@@ -245,7 +245,7 @@ const SurveyStudyArea = () => {
         buttonTitle="Edit Study Area"
         buttonStartIcon={<Icon path={mdiPencilOutline} size={1} />}
         buttonOnClick={() => handleDialogEditOpen()}
-        buttonProps={{ variant: 'outlined' }}
+        buttonProps={{ variant: 'text' }}
         renderButton={(buttonProps) => (
           <ProjectRoleGuard
             validProjectRoles={[PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR]}
