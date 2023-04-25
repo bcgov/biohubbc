@@ -52,7 +52,7 @@ const ProjectSubmissionAlertBar = () => {
         severity={alertSeverity}
         onClose={() => setForceAlertClose(true)}
         action={
-          <IconButton color="primary" onClick={() => setForceAlertClose(true)}>
+          <IconButton color="inherit" onClick={() => setForceAlertClose(true)}>
             <Icon path={mdiClose} size={1} />
           </IconButton>
         }>
