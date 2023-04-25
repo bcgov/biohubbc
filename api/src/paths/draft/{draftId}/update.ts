@@ -131,10 +131,6 @@ export function updateDraft(): RequestHandler {
 
     const sanitizedDraft = new PostPutDraftObject(req.body);
 
-    console.log('draftId', req.params.draftId);
-
-    console.log('request:', req.body);
-
     try {
       await connection.open();
 
