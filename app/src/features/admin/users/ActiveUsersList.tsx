@@ -25,6 +25,7 @@ import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetUserResponse } from 'interfaces/useUserApi.interface';
 import React, { useContext, useState } from 'react';
 import { useHistory } from 'react-router';
+import { Link as RouterLink } from 'react-router-dom';
 import { handleChangePage, handleChangeRowsPerPage } from 'utils/tablePaginationUtils';
 import AddSystemUsersForm, {
   AddSystemUsersFormInitialValues,
@@ -289,7 +290,11 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
                   activeUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => (
                     <TableRow data-testid={`active-user-row-${index}`} key={row.id}>
                       <TableCell>
-                        <Link className={classes.linkButton} underline="always" href={`/admin/users/${row.id}`}>
+                        <Link
+                          className={classes.linkButton}
+                          underline="always"
+                          to={`/admin/users/${row.id}`}
+                          component={RouterLink}>
                           {row.user_identifier || 'No identifier'}
                         </Link>
                       </TableCell>

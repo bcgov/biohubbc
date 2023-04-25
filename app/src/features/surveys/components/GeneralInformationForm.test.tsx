@@ -36,8 +36,12 @@ const generalInformationFilledValues: IGeneralInformationForm = {
     ancillary_species: [2]
   },
   permit: {
-    permit_number: '123',
-    permit_type: '123 - Scientific'
+    permits: [
+      {
+        permit_number: '12345',
+        permit_type: 'Park Use Permit'
+      }
+    ]
   },
   funding: {
     funding_sources: [1]
@@ -62,18 +66,14 @@ describe('General Information Form', () => {
         }}>
         {() => (
           <GeneralInformationForm
-            permit_numbers={[
-              { value: '123', label: '123 - Scientific' },
-              { value: '456', label: '123 - Wildlife' }
-            ]}
             funding_sources={[
               {
                 value: 1,
                 label: 'agency | $ 100 | 2000/04/09 - 2000/05/10'
               }
             ]}
-            projectStartDate={getProjectForViewResponse.project.start_date}
-            projectEndDate={getProjectForViewResponse.project.end_date}
+            projectStartDate={getProjectForViewResponse.projectData.project.start_date}
+            projectEndDate={getProjectForViewResponse.projectData.project.end_date}
           />
         )}
       </Formik>
@@ -95,18 +95,14 @@ describe('General Information Form', () => {
         }}>
         {() => (
           <GeneralInformationForm
-            permit_numbers={[
-              { value: '123', label: '123 - Scientific' },
-              { value: '456', label: '123 - Wildlife' }
-            ]}
             funding_sources={[
               {
                 value: 1,
                 label: 'agency | $ 100 | 2000/04/09 - 2000/05/10'
               }
             ]}
-            projectStartDate={getProjectForViewResponse.project.start_date}
-            projectEndDate={getProjectForViewResponse.project.end_date}
+            projectStartDate={getProjectForViewResponse.projectData.project.start_date}
+            projectEndDate={getProjectForViewResponse.projectData.project.end_date}
           />
         )}
       </Formik>
@@ -153,18 +149,14 @@ describe('General Information Form', () => {
         }}>
         {() => (
           <GeneralInformationForm
-            permit_numbers={[
-              { value: '123', label: '123 - Scientific' },
-              { value: '456', label: '123 - Wildlife' }
-            ]}
             funding_sources={[
               {
                 value: 1,
                 label: 'agency | $ 100 | 2000/04/09 - 2000/05/10'
               }
             ]}
-            projectStartDate={getProjectForViewResponse.project.start_date}
-            projectEndDate={getProjectForViewResponse.project.end_date}
+            projectStartDate={getProjectForViewResponse.projectData.project.start_date}
+            projectEndDate={getProjectForViewResponse.projectData.project.end_date}
           />
         )}
       </Formik>

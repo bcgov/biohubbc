@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { PROJECT_ROLE } from '../../../../../constants/roles';
+import { PROJECT_ROLE, SYSTEM_ROLE } from '../../../../../constants/roles';
 import { getDBConnection } from '../../../../../database/db';
 import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
 import { AttachmentService } from '../../../../../services/attachment-service';
@@ -14,11 +14,15 @@ const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/delete'
 export const DELETE: Operation = [
   authorizeRequestHandler((req) => {
     return {
-      and: [
+      or: [
         {
-          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD],
+          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR],
           projectId: Number(req.params.projectId),
           discriminator: 'ProjectRole'
+        },
+        {
+          validSystemRoles: [SYSTEM_ROLE.DATA_ADMINISTRATOR],
+          discriminator: 'SystemRole'
         }
       ]
     };
@@ -113,9 +117,8 @@ export function deleteSurvey(): RequestHandler {
 
       try {
         const platformService = new PlatformService(connection);
-        await platformService.submitDwCAMetadataPackage(projectId);
+        await platformService.submitProjectDwCMetadataToBioHub(projectId);
       } catch (error) {
-        // Don't fail the rest of the endpoint if submitting metadata fails
         defaultLog.error({ label: 'deleteSurvey->submitDwCAMetadataPackage', message: 'error', error });
       }
 

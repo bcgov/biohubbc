@@ -214,7 +214,7 @@ describe('ValidationSchemaParser', () => {
 
       const jsonPath = validationSchemaParser.getFileValidationsJsonPath('testName');
 
-      expect(jsonPath).to.equal("$.files[?(@.name == 'testName')].validations");
+      expect(jsonPath).to.equal('$.files[?(@.name == "testName")].validations');
     });
   });
 
@@ -224,7 +224,7 @@ describe('ValidationSchemaParser', () => {
 
       const jsonPath = validationSchemaParser.getColumnNamesJsonpath('testName');
 
-      expect(jsonPath).to.equal("$.files[?(@.name == 'testName')].columns[*].name");
+      expect(jsonPath).to.equal('$.files[?(@.name == "testName")].columns[*].name');
     });
   });
 
@@ -234,7 +234,7 @@ describe('ValidationSchemaParser', () => {
 
       const jsonPath = validationSchemaParser.getColumnValidationsJsonpath('testName', 'columnName');
 
-      expect(jsonPath).to.equal("$.files[?(@.name == 'testName')].columns[?(@.name == 'columnName')].validations");
+      expect(jsonPath).to.equal('$.files[?(@.name == "testName")].columns[?(@.name == "columnName")].validations');
     });
   });
 

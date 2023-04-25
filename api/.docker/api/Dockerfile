@@ -22,4 +22,4 @@ COPY . ./
 VOLUME ${HOME}
 
 # start api with live reload
-CMD ["npm", "run", "start:reload"]
+CMD ["npm", "run", "start-reload"]

@@ -3,99 +3,72 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
-import LocationBoundary from 'features/projects/view/components/LocationBoundary';
+import ProjectSubmissionAlertBar from 'components/publish/ProjectSubmissionAlertBar';
+import { SystemRoleGuard } from 'components/security/Guards';
+import { SYSTEM_ROLE } from 'constants/roles';
+import { CodesContext } from 'contexts/codesContext';
+import { ProjectContext } from 'contexts/projectContext';
 import ProjectAttachments from 'features/projects/view/ProjectAttachments';
 import SurveysListPage from 'features/surveys/list/SurveysListPage';
-import { useBiohubApi } from 'hooks/useBioHubApi';
-import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
-import React, { useCallback, useEffect, useState } from 'react';
-import { useParams } from 'react-router';
+import React, { useContext, useEffect } from 'react';
+import LocationBoundary from './components/LocationBoundary';
 import ProjectDetails from './ProjectDetails';
 import ProjectHeader from './ProjectHeader';
+
+//TODO: PRODUCTION_BANDAGE: Remove <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
 
 /**
  * Page to display a single Project.
  *
  * @return {*}
  */
-const ProjectPage: React.FC = () => {
-  const urlParams = useParams();
+const ProjectPage = () => {
+  const codesContext = useContext(CodesContext);
+  const projectContext = useContext(ProjectContext);
 
-  const biohubApi = useBiohubApi();
+  useEffect(() => codesContext.codesDataLoader.load(), [codesContext.codesDataLoader]);
 
-  const [isLoadingProject, setIsLoadingProject] = useState(false);
-  const [projectWithDetails, setProjectWithDetails] = useState<IGetProjectForViewResponse | null>(null);
+  useEffect(() => projectContext.projectDataLoader.load(projectContext.projectId), [
+    projectContext.projectDataLoader,
+    projectContext.projectId
+  ]);
 
-  const [isLoadingCodes, setIsLoadingCodes] = useState(false);
-  const [codes, setCodes] = useState<IGetAllCodeSetsResponse>();
-
-  useEffect(() => {
-    const getCodes = async () => {
-      const codesResponse = await biohubApi.codes.getAllCodeSets();
-
-      if (!codesResponse) {
-        // TODO error handling/messaging
-        return;
-      }
-
-      setCodes(codesResponse);
-    };
-
-    if (!isLoadingCodes && !codes) {
-      getCodes();
-      setIsLoadingCodes(true);
-    }
-  }, [urlParams, biohubApi.codes, isLoadingCodes, codes]);
-
-  const getProject = useCallback(async () => {
-    const projectWithDetailsResponse = await biohubApi.project.getProjectForView(urlParams['id']);
-
-    if (!projectWithDetailsResponse) {
-      // TODO error handling/messaging
-      return;
-    }
-
-    setProjectWithDetails(projectWithDetailsResponse);
-  }, [biohubApi.project, urlParams]);
-
-  useEffect(() => {
-    if (!isLoadingProject && !projectWithDetails) {
-      getProject();
-      setIsLoadingProject(true);
-    }
-  }, [isLoadingProject, projectWithDetails, getProject]);
-
-  if (!codes || !projectWithDetails) {
+  if (
+    !codesContext.codesDataLoader.data ||
+    !projectContext.projectDataLoader.data ||
+    !projectContext.surveysListDataLoader.data
+  ) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
   return (
     <>
-      <ProjectHeader projectWithDetails={projectWithDetails} refresh={getProject} />
-
+      <ProjectHeader />
       <Container maxWidth="xl">
         <Box py={3}>
+          <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
+            <ProjectSubmissionAlertBar />
+          </SystemRoleGuard>
           <Grid container spacing={3}>
             <Grid item md={12} lg={4}>
               <Paper elevation={0}>
-                <ProjectDetails projectForViewData={projectWithDetails} codes={codes} refresh={getProject} />
+                <ProjectDetails />
               </Paper>
             </Grid>
             <Grid item md={12} lg={8}>
               <Box mb={3}>
                 <Paper elevation={0}>
-                  <SurveysListPage projectForViewData={projectWithDetails} codes={codes} />
+                  <SurveysListPage />
                 </Paper>
               </Box>
               <Box mb={3}>
                 <Paper elevation={0}>
-                  <ProjectAttachments projectForViewData={projectWithDetails} />
+                  <ProjectAttachments />
                 </Paper>
               </Box>
               <Box>
                 <Paper elevation={0}>
-                  <LocationBoundary projectForViewData={projectWithDetails} codes={codes} refresh={getProject} />
+                  <LocationBoundary />
                 </Paper>
               </Box>
             </Grid>

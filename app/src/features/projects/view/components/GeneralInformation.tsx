@@ -1,33 +1,34 @@
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
+import assert from 'assert';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
-import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
-import React from 'react';
+import { CodesContext } from 'contexts/codesContext';
+import { ProjectContext } from 'contexts/projectContext';
+import React, { useContext } from 'react';
 import { getFormattedDateRangeString } from 'utils/Utils';
-
-export interface IProjectDetailsProps {
-  projectForViewData: IGetProjectForViewResponse;
-  codes: IGetAllCodeSetsResponse;
-  refresh: () => void;
-}
 
 /**
  * General information content for a project.
  *
  * @return {*}
  */
-const GeneralInformation: React.FC<IProjectDetailsProps> = (props) => {
-  const {
-    projectForViewData: { project },
-    codes
-  } = props;
+const GeneralInformation = () => {
+  const codesContext = useContext(CodesContext);
+  const projectContext = useContext(ProjectContext);
+
+  // Codes data must be loaded by a parent before this component is rendered
+  assert(codesContext.codesDataLoader.data);
+  // Project data must be loaded by a parent before this component is rendered
+  assert(projectContext.projectDataLoader.data);
+
+  const codes = codesContext.codesDataLoader.data;
+  const projectData = projectContext.projectDataLoader.data.projectData;
 
   const projectActivities =
-    codes?.activity
-      ?.filter((item) => project.project_activities.includes(item.id))
-      ?.map((item) => item.name)
+    codes.activity
+      .filter((code) => projectData.project.project_activities.includes(code.id))
+      .map((code) => code.name)
       .join(', ') || '';
 
   return (
@@ -38,7 +39,7 @@ const GeneralInformation: React.FC<IProjectDetailsProps> = (props) => {
             Type
           </Typography>
           <Typography component="dd">
-            {codes?.project_type?.find((item: any) => item.id === project.project_type)?.name}
+            {codes.project_type.find((item: any) => item.id === projectData.project.project_type)?.name}
           </Typography>
         </Grid>
         <Grid item sm={6}>
@@ -46,14 +47,18 @@ const GeneralInformation: React.FC<IProjectDetailsProps> = (props) => {
             Timeline
           </Typography>
           <Typography component="dd">
-            {project.end_date ? (
+            {projectData.project.end_date ? (
               <>
-                {getFormattedDateRangeString(DATE_FORMAT.ShortMediumDateFormat, project.start_date, project.end_date)}
+                {getFormattedDateRangeString(
+                  DATE_FORMAT.ShortMediumDateFormat,
+                  projectData.project.start_date,
+                  projectData.project.end_date
+                )}
               </>
             ) : (
               <>
                 <span>Start Date:</span>{' '}
-                {getFormattedDateRangeString(DATE_FORMAT.ShortMediumDateFormat, project.start_date)}
+                {getFormattedDateRangeString(DATE_FORMAT.ShortMediumDateFormat, projectData.project.start_date)}
               </>
             )}
           </Typography>

@@ -8,6 +8,12 @@ export enum AdministrativeActivityStatusType {
   REJECTED = 'Rejected'
 }
 
+export enum BioHubSubmittedStatusType {
+  UNSUBMITTED = 'Unsubmitted',
+  SUBMITTED = 'Submitted',
+  REJECTED = 'Rejected'
+}
+
 export enum ProjectStatusType {
   COMPLETED = 'Completed',
   ACTIVE = 'Active',

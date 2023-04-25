@@ -2,14 +2,15 @@ import { cleanup, fireEvent, render, waitFor } from '@testing-library/react';
 import { SYSTEM_ROLE } from 'constants/roles';
 import { AuthStateContext, IAuthState } from 'contexts/authStateContext';
 import { DialogContextProvider } from 'contexts/dialogContext';
+import { ISurveyContext, SurveyContext } from 'contexts/surveyContext';
 import SurveyHeader from 'features/surveys/view/SurveyHeader';
 import { createMemoryHistory } from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import { DataLoader } from 'hooks/useDataLoader';
 import { SYSTEM_IDENTITY_SOURCE } from 'hooks/useKeycloakWrapper';
 import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
 import React from 'react';
 import { Router } from 'react-router';
-import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import { getSurveyForViewResponse } from 'test-helpers/survey-helpers';
 
 const history = createMemoryHistory({ initialEntries: ['/admin/projects/1/surveys/1'] });
@@ -20,6 +21,23 @@ const mockUseBiohubApi = {
     publishSurvey: jest.fn(),
     deleteSurvey: jest.fn()
   }
+};
+
+const mockSurveyContext: ISurveyContext = {
+  surveyDataLoader: {
+    data: getSurveyForViewResponse
+  } as DataLoader<[project_id: number, survey_id: number], IGetSurveyForViewResponse, unknown>,
+  artifactDataLoader: {
+    data: null
+  } as DataLoader<any, any, any>,
+  summaryDataLoader: {
+    data: null
+  } as DataLoader<any, any, any>,
+  observationDataLoader: {
+    data: null
+  } as DataLoader<any, any, any>,
+  surveyId: 1,
+  projectId: 1
 };
 
 const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBiohubApi>).mockReturnValue(
@@ -47,32 +65,31 @@ const defaultAuthState = {
 };
 
 const surveyForView = getSurveyForViewResponse;
-const projectForView = getProjectForViewResponse;
 const refresh = jest.fn();
 
-describe('SurveyPage', () => {
+describe('SurveyHeader', () => {
   beforeEach(() => {
     // clear mocks before each test
     mockBiohubApi().survey.publishSurvey.mockClear();
     mockBiohubApi().survey.deleteSurvey.mockClear();
     refresh.mockClear();
-
-    // jest.spyOn(console, 'debug').mockImplementation(() => {});
   });
 
   afterEach(() => {
     cleanup();
   });
 
-  const renderComponent = (authState: any, surveyData: IGetSurveyForViewResponse) => {
+  const renderComponent = (authState: any) => {
     return render(
-      <AuthStateContext.Provider value={authState as IAuthState}>
-        <DialogContextProvider>
-          <Router history={history}>
-            <SurveyHeader projectWithDetails={projectForView} surveyWithDetails={surveyData} refresh={refresh} />
-          </Router>
-        </DialogContextProvider>
-      </AuthStateContext.Provider>
+      <SurveyContext.Provider value={mockSurveyContext}>
+        <AuthStateContext.Provider value={authState as IAuthState}>
+          <DialogContextProvider>
+            <Router history={history}>
+              <SurveyHeader />
+            </Router>
+          </DialogContextProvider>
+        </AuthStateContext.Provider>
+      </SurveyContext.Provider>
     );
   };
 
@@ -87,7 +104,7 @@ describe('SurveyPage', () => {
       }
     };
 
-    const { getByTestId, findByText, getByText } = renderComponent(authState, surveyForView);
+    const { getByTestId, findByText, getByText } = renderComponent(authState);
 
     const surveyHeaderText = await findByText('survey name', { selector: 'h1 span' });
     expect(surveyHeaderText).toBeVisible();
@@ -96,7 +113,7 @@ describe('SurveyPage', () => {
 
     await waitFor(() => {
       expect(
-        getByText('Are you sure you want to delete this survey, its attachments and associated observations?')
+        getByText('Are you sure you want to delete this survey? This action cannot be undone.')
       ).toBeInTheDocument();
     });
 
@@ -118,7 +135,7 @@ describe('SurveyPage', () => {
       }
     };
 
-    const { queryByTestId, findByText } = renderComponent(authState, surveyForView);
+    const { queryByTestId, findByText } = renderComponent(authState);
 
     const surveyHeaderText = await findByText('survey name', { selector: 'h1 span' });
     expect(surveyHeaderText).toBeVisible();

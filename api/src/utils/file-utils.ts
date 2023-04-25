@@ -8,7 +8,6 @@ import {
   Metadata
 } from 'aws-sdk/clients/s3';
 import clamd from 'clamdjs';
-import { S3_ROLE } from '../constants/roles';
 import { SUBMISSION_MESSAGE_TYPE } from '../constants/status';
 import { SubmissionErrorFromMessageType } from './submission-error';
 
@@ -76,6 +75,15 @@ export const getS3HostUrl = (key?: string): string => {
 };
 
 /**
+ * Local getter for retrieving the S3 key prefix.
+ *
+ * @returns {*} {string} The S3 key prefix
+ */
+export const _getS3KeyPrefix = (): string => {
+  return process.env.S3_KEY_PREFIX || 'sims';
+};
+
+/**
  * Delete a file from S3, based on its key.
  *
  * For potential future reference, for deleting the delete marker of a file in S3:
@@ -97,8 +105,6 @@ export async function deleteFileFromS3(key: string): Promise<DeleteObjectOutput 
 /**
  * Upload a file to S3.
  *
- * Note: Assigns the `authenticated-read` permission.
- *
  * @export
  * @param {Express.Multer.File} file an object containing information about a single piece of media
  * @param {string} key the path where S3 will store the file
@@ -118,7 +124,6 @@ export async function uploadFileToS3(
       Body: file.buffer,
       ContentType: file.mimetype,
       Key: key,
-      ACL: S3_ROLE.AUTH_READ,
       Metadata: metadata
     })
     .promise();
@@ -138,7 +143,6 @@ export async function uploadBufferToS3(
       Body: buffer,
       ContentType: mimetype,
       Key: key,
-      ACL: S3_ROLE.AUTH_READ,
       Metadata: metadata
     })
     .promise()
@@ -227,7 +231,7 @@ export interface IS3FileKey {
 }
 
 export function generateS3FileKey(options: IS3FileKey): string {
-  const keyParts: (string | number)[] = [];
+  const keyParts: (string | number)[] = [_getS3KeyPrefix()];
 
   if (options.projectId) {
     keyParts.push('projects');
@@ -257,7 +261,7 @@ export function generateS3FileKey(options: IS3FileKey): string {
     keyParts.push(options.fileName);
   }
 
-  return keyParts.join('/');
+  return keyParts.filter(Boolean).join('/');
 }
 
 export async function scanFileForVirus(file: Express.Multer.File): Promise<boolean> {

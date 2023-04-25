@@ -150,7 +150,7 @@ export class SummaryService extends DBService {
    * @param {number} surveyId
    * @returns {Promise<ISurveySummaryDetails>}
    */
-  async getLatestSurveySummarySubmission(surveyId: number): Promise<ISurveySummaryDetails> {
+  async getLatestSurveySummarySubmission(surveyId: number): Promise<ISurveySummaryDetails | undefined> {
     return this.summaryRepository.getLatestSurveySummarySubmission(surveyId);
   }
 
@@ -338,7 +338,7 @@ export class SummaryService extends DBService {
       csvStateItem.headerErrors?.forEach((headerError) => {
         errors.push(
           new MessageError(
-            SUMMARY_SUBMISSION_MESSAGE_TYPE.INVALID_VALUE,
+            SUMMARY_SUBMISSION_MESSAGE_TYPE.MISSING_REQUIRED_HEADER,
             this.generateHeaderErrorMessage(csvStateItem.fileName, headerError),
             headerError.errorCode
           )

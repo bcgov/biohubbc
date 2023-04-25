@@ -3,6 +3,11 @@
 const { OpenShiftClientX } = require('pipeline-cli');
 const path = require('path');
 
+/**
+ * Build the app image.
+ *
+ * @param {*} settings
+ */
 const appBuild = (settings) => {
   const phases = settings.phases;
   const options = settings.options;
@@ -31,7 +36,6 @@ const appBuild = (settings) => {
   );
 
   oc.applyRecommendedLabels(objects, phases[phase].name, phase, phases[phase].changeId, phases[phase].instance);
-  console.log(`${JSON.stringify(objects, null, 2)}`);
   oc.applyAndBuild(objects);
 };
 

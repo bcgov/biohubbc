@@ -1,5 +1,6 @@
-import { Button } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
+import Button from '@material-ui/core/Button';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import Container from '@material-ui/core/Container';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import Menu from '@material-ui/core/Menu';
@@ -18,37 +19,22 @@ import {
 } from '@mdi/js';
 import Icon from '@mdi/react';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
-import { SystemRoleGuard } from 'components/security/Guards';
+import PublishSurveyButton from 'components/publish/PublishSurveyButton';
+import { ProjectRoleGuard, SystemRoleGuard } from 'components/security/Guards';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { DeleteSurveyI18N } from 'constants/i18n';
-import { SYSTEM_ROLE } from 'constants/roles';
+import { PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
 import { AuthStateContext } from 'contexts/authStateContext';
 import { DialogContext } from 'contexts/dialogContext';
+import { SurveyContext } from 'contexts/surveyContext';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
-import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
 import React, { useContext } from 'react';
 import { useHistory } from 'react-router';
+import { BrowserRouter, Link } from 'react-router-dom';
 import { getFormattedDateRangeString } from 'utils/Utils';
 
 const useStyles = makeStyles((theme: Theme) => ({
-  projectNav: {
-    minWidth: '15rem',
-    '& a': {
-      color: theme.palette.text.secondary,
-      '&:hover': {
-        background: 'rgba(0, 51, 102, 0.05)'
-      }
-    },
-    '& a.active': {
-      color: theme.palette.primary.main,
-      background: 'rgba(0, 51, 102, 0.05)',
-      '& svg': {
-        color: theme.palette.primary.main
-      }
-    }
-  },
   pageTitleContainer: {
     maxWidth: '150ch',
     overflow: 'hidden',
@@ -65,49 +51,17 @@ const useStyles = makeStyles((theme: Theme) => ({
   pageTitleActions: {
     paddingTop: theme.spacing(0.75),
     paddingBottom: theme.spacing(0.75)
-  },
-  chip: {
-    color: '#ffffff'
-  },
-  chipActive: {
-    backgroundColor: theme.palette.success.main
-  },
-  chipCompleted: {
-    backgroundColor: theme.palette.primary.main
-  },
-  projectMeta: {
-    marginTop: theme.spacing(3),
-    marginBottom: 0,
-    '& dd': {
-      flex: '0 0 200px',
-      color: theme.palette.text.secondary
-    },
-    '& dt': {
-      flex: '1 1 auto'
-    }
-  },
-  projectMetaRow: {
-    display: 'flex',
-    '& + div': {
-      marginTop: theme.spacing(0.25)
-    }
   }
 }));
-
-export interface ISurveyHeaderProps {
-  projectWithDetails: IGetProjectForViewResponse;
-  surveyWithDetails: IGetSurveyForViewResponse;
-  refresh?: () => void;
-}
 
 /**
  * Survey header for a single-survey view.
  *
- * @param {*} props
  * @return {*}
  */
-const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
-  const { projectWithDetails, surveyWithDetails } = props;
+const SurveyHeader = () => {
+  const surveyContext = useContext(SurveyContext);
+  const surveyWithDetails = surveyContext.surveyDataLoader.data;
 
   const classes = useStyles();
   const history = useHistory();
@@ -119,8 +73,8 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
   const { keycloakWrapper } = useContext(AuthStateContext);
 
   const defaultYesNoDialogProps = {
-    dialogTitle: 'Delete Survey',
-    dialogText: 'Are you sure you want to delete this survey, its attachments and associated observations?',
+    dialogTitle: 'Delete Survey?',
+    dialogText: 'Are you sure you want to delete this survey? This action cannot be undone.',
     open: false,
     onClose: () => dialogContext.setYesNoDialog({ open: false }),
     onNo: () => dialogContext.setYesNoDialog({ open: false }),
@@ -143,59 +97,26 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
     dialogContext.setYesNoDialog({
       ...defaultYesNoDialogProps,
       open: true,
+      yesButtonProps: { color: 'secondary' },
+      yesButtonLabel: 'Delete',
+      noButtonProps: { color: 'primary', variant: 'outlined' },
+      noButtonLabel: 'Cancel',
       onYes: () => {
         deleteSurvey();
         dialogContext.setYesNoDialog({ open: false });
       }
     });
-  };
-
-  const showUploadSurveyDialog = () => {
-    dialogContext.setYesNoDialog({
-      dialogTitle: 'Upload Survey to BioHub',
-      dialogText: 'Are you sure you want to upload this survey, its attachments and associated observations?',
-      onClose: () => dialogContext.setYesNoDialog({ open: false }),
-      onNo: () => dialogContext.setYesNoDialog({ open: false }),
-      open: true,
-      onYes: () => {
-        uploadSurvey();
-        dialogContext.setYesNoDialog({ open: false });
-      }
-    });
-  };
-
-  const uploadSurvey = async () => {
-    if (!projectWithDetails || !surveyWithDetails) {
-      return;
-    }
-
-    try {
-      await biohubApi.survey.uploadSurveyDataToBioHub(
-        projectWithDetails.id,
-        surveyWithDetails.surveyData.survey_details.id
-      );
-    } catch (error) {
-      const apiError = error as APIError;
-      dialogContext.setErrorDialog({
-        open: true,
-        dialogTitle: 'Failed to Upload to BioHub',
-        dialogText: 'Failed to Upload to BioHub',
-        dialogError: apiError.message,
-        onClose: () => dialogContext.setErrorDialog({ open: false }),
-        onOk: () => dialogContext.setErrorDialog({ open: false })
-      });
-      return error;
-    }
+    setAnchorEl(null);
   };
 
   const deleteSurvey = async () => {
-    if (!projectWithDetails || !surveyWithDetails) {
-      return;
+    if (!surveyWithDetails) {
+      return <></>;
     }
 
     try {
       const response = await biohubApi.survey.deleteSurvey(
-        projectWithDetails.id,
+        surveyContext.projectId,
         surveyWithDetails.surveyData.survey_details.id
       );
 
@@ -204,7 +125,7 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
         return;
       }
 
-      history.push(`/admin/projects/${projectWithDetails.id}/surveys`);
+      history.push(`/admin/projects/${surveyContext.projectId}/surveys`);
     } catch (error) {
       const apiError = error as APIError;
       showDeleteErrorDialog({ dialogText: apiError.message, open: true });
@@ -219,6 +140,7 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
   // Enable delete button if you a system admin or a project admin
   const enableDeleteSurveyButton = keycloakWrapper?.hasSystemRole([
     SYSTEM_ROLE.SYSTEM_ADMIN,
+    SYSTEM_ROLE.DATA_ADMINISTRATOR,
     SYSTEM_ROLE.PROJECT_CREATOR
   ]);
 
@@ -233,18 +155,25 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
     setAnchorEl(null);
   };
 
+  if (!surveyWithDetails) {
+    return <CircularProgress className="pageProgress" size={40} />;
+  }
+
   return (
     <>
       <Paper square={true} elevation={0}>
         <Container maxWidth="xl">
           <Box py={4}>
-            <Box mt={-1} ml={-0.5} mb={1}>
-              <Button
-                color="primary"
-                startIcon={<Icon path={mdiArrowLeft} size={0.9} />}
-                onClick={() => history.push(`/admin/projects/${projectWithDetails.id}/surveys`)}>
-                <strong>Back to Project</strong>
-              </Button>
+            <Box mt={-1} ml={-0.5} mb={0.5}>
+              <BrowserRouter forceRefresh={true}>
+                <Button
+                  component={Link}
+                  to={`/admin/projects/${surveyContext.projectId}/details`}
+                  color="primary"
+                  startIcon={<Icon path={mdiArrowLeft} size={0.8} />}>
+                  <strong>Back to Project</strong>
+                </Button>
+              </BrowserRouter>
             </Box>
             <Box display="flex" justifyContent="space-between">
               <Box className={classes.pageTitleContainer}>
@@ -268,26 +197,30 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
                 </Box>
               </Box>
               <Box display="flex" alignItems="flex-start" flex="0 0 auto" className={classes.pageTitleActions}>
-                <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN]}>
-                  <Button color="primary" variant="contained" onClick={showUploadSurveyDialog}>
-                    Submit Data
-                  </Button>
+                <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+                  <PublishSurveyButton />
                 </SystemRoleGuard>
-                <Button
-                  variant="outlined"
-                  startIcon={<Icon path={mdiCogOutline} size={0.8} />}
-                  endIcon={<Icon path={mdiChevronDown} size={0.8} />}
-                  aria-controls="simple-menu"
-                  aria-haspopup="true"
-                  onClick={openSurveyMenu}
-                  style={{ marginLeft: '0.5rem' }}>
-                  Survey Settings
-                </Button>
+                <ProjectRoleGuard
+                  validProjectRoles={[PROJECT_ROLE.PROJECT_EDITOR, PROJECT_ROLE.PROJECT_LEAD]}
+                  validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+                  <Button
+                    id="survey_settings_button"
+                    aria-label="Survey Settings"
+                    aria-controls="surveySettingsMenu"
+                    aria-haspopup="true"
+                    variant="outlined"
+                    color="primary"
+                    startIcon={<Icon path={mdiCogOutline} size={1} />}
+                    endIcon={<Icon path={mdiChevronDown} size={1} />}
+                    onClick={openSurveyMenu}
+                    style={{ marginLeft: '0.5rem' }}>
+                    Settings
+                  </Button>
+                </ProjectRoleGuard>
                 <Menu
+                  id="surveySettingsMenu"
+                  aria-labelledby="survey_settings_button"
                   style={{ marginTop: '8px' }}
-                  id="projectSettingsMenu"
-                  anchorEl={anchorEl}
-                  getContentAnchorEl={null}
                   anchorOrigin={{
                     vertical: 'bottom',
                     horizontal: 'right'
@@ -297,16 +230,13 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
                     horizontal: 'right'
                   }}
                   keepMounted
+                  anchorEl={anchorEl}
+                  getContentAnchorEl={null}
                   open={Boolean(anchorEl)}
                   onClose={closeSurveyMenu}>
-                  <MenuItem
-                    onClick={() =>
-                      history.push(
-                        `/admin/projects/${projectWithDetails.id}/survey/edit?surveyId=${surveyWithDetails.surveyData.survey_details.id}`
-                      )
-                    }>
+                  <MenuItem onClick={() => history.push('edit')}>
                     <ListItemIcon>
-                      <Icon path={mdiPencilOutline} size={0.8} />
+                      <Icon path={mdiPencilOutline} size={1} />
                     </ListItemIcon>
                     <Typography variant="inherit">Edit Survey Details</Typography>
                   </MenuItem>
@@ -316,7 +246,7 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
                       onClick={showDeleteSurveyDialog}
                       disabled={!enableDeleteSurveyButton}>
                       <ListItemIcon>
-                        <Icon path={mdiTrashCanOutline} size={0.8} />
+                        <Icon path={mdiTrashCanOutline} size={1} />
                       </ListItemIcon>
                       <Typography variant="inherit">Delete Survey</Typography>
                     </MenuItem>

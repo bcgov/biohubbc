@@ -23,6 +23,11 @@ export interface ITaxonomySource {
   end_date: string | null;
 }
 
+export interface IEnrichedTaxonomyData {
+  scientificName: string;
+  englishName: string;
+}
+
 /**
  *
  * Service for retreiving and processing taxonomic data from Elasticsearch.
@@ -82,10 +87,12 @@ export class TaxonomyService {
    *
    * Searches the taxonomy Elasticsearch index by taxonomic code IDs
    * @param {string[] | number[]} ids The array of taxonomic code IDs
-   * @return {Promise<(ITaxonomySource | undefined)[]>} The source of the response from Elasticsearch
+   * @return {Promise<SearchHit<ITaxonomySource>[]>} The response from Elasticsearch
    * @memberof TaxonomyService
    */
-  async getTaxonomyFromIds(ids: string[] | number[]) {
+  async getTaxonomyFromIds(ids: string[] | number[]): Promise<SearchHit<ITaxonomySource>[]> {
+    defaultLog.debug({ label: 'getTaxonomyFromIds' });
+
     const response = await this._elasticSearch({
       query: {
         terms: {
@@ -94,7 +101,11 @@ export class TaxonomyService {
       }
     });
 
-    return (response && response.hits.hits.map((item) => item._source)) || [];
+    if (!response) {
+      return [];
+    }
+
+    return response.hits.hits;
   }
 
   /**
@@ -193,7 +204,7 @@ export class TaxonomyService {
     return response ? this._sanitizeSpeciesData(response.hits.hits) : [];
   }
 
-  _formatEnrichedData = (data: SearchHit<ITaxonomySource>): { scientificName: string; englishName: string } => {
+  _formatEnrichedData = (data: SearchHit<ITaxonomySource>): IEnrichedTaxonomyData => {
     const scientificName =
       [data._source?.unit_name1, data._source?.unit_name2, data._source?.unit_name3].filter(Boolean).join(' ') || '';
     const englishName = data._source?.english_name || '';
@@ -205,12 +216,10 @@ export class TaxonomyService {
    * Fetch formatted taxonomy information for a specific taxon code.
    *
    * @param {string} taxonCode
-   * @return {*}  {(Promise<{ scientificName: string; englishName: string } | null>)}
+   * @return {*}  {(Promise<IEnrichedTaxonomyData | null>)}
    * @memberof TaxonomyService
    */
-  async getEnrichedDataForSpeciesCode(
-    taxonCode: string
-  ): Promise<{ scientificName: string; englishName: string } | null> {
+  async getEnrichedDataForSpeciesCode(taxonCode: string): Promise<IEnrichedTaxonomyData | null> {
     const response = await this._elasticSearch({
       query: {
         bool: {
@@ -241,6 +250,6 @@ export class TaxonomyService {
       }
     });
 
-    return response ? this._formatEnrichedData(response.hits.hits[0]) : null;
+    return response && response.hits.hits.length ? this._formatEnrichedData(response.hits.hits[0]) : null;
   }
 }

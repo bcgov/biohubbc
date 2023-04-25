@@ -1,7 +1,5 @@
 'use strict';
 
-let process = require('process');
-
 let options = require('pipeline-cli').Util.parseArguments();
 
 // The root config for common values
@@ -82,11 +80,13 @@ const phases = {
     host: (isStaticDeployment && staticUrlsAPI.dev) || `${name}-${changeId}-af2668-dev.apps.silver.devops.gov.bc.ca`,
     appHost: (isStaticDeployment && staticUrls.dev) || `${appName}-${changeId}-af2668-dev.apps.silver.devops.gov.bc.ca`,
     backboneApiHost: 'https://api-dev-biohub-platform.apps.silver.devops.gov.bc.ca',
-    backboneIntakePath: '/api/dwc/submission/intake',
+    backboneIntakePath: '/api/dwc/submission/queue',
+    backboneArtifactIntakePath: '/api/artifact/intake',
     backboneIntakeEnabled: true,
     env: 'dev',
-    elasticsearchURL: 'http://es01:9200',
-    elasticsearchTaxonomyIndex: 'taxonomy_2.0.0',
+    elasticsearchURL: 'http://es01.a0ec71-dev:9200',
+    elasticsearchTaxonomyIndex: 'taxonomy_3.0.0',
+    s3KeyPrefix: (isStaticDeployment && 'sims') || `local/${deployChangeId}/sims`,
     tz: config.timezone.api,
     sso: config.sso.dev,
     logLevel: 'debug',
@@ -110,11 +110,13 @@ const phases = {
     host: staticUrlsAPI.test,
     appHost: staticUrls.test,
     backboneApiHost: 'https://api-test-biohub-platform.apps.silver.devops.gov.bc.ca',
-    backboneIntakePath: '/api/dwc/submission/intake',
-    backboneIntakeEnabled: false,
+    backboneIntakePath: '/api/dwc/submission/queue',
+    backboneArtifactIntakePath: '/api/artifact/intake',
+    backboneIntakeEnabled: true,
     env: 'test',
-    elasticsearchURL: 'http://es01:9200',
-    elasticsearchTaxonomyIndex: 'taxonomy_2.0.0',
+    elasticsearchURL: 'http://es01.a0ec71-dev:9200',
+    elasticsearchTaxonomyIndex: 'taxonomy_3.0.0',
+    s3KeyPrefix: 'sims',
     tz: config.timezone.api,
     sso: config.sso.test,
     logLevel: 'info',
@@ -122,7 +124,7 @@ const phases = {
     cpuLimit: '1000m',
     memoryRequest: '512Mi',
     memoryLimit: '3Gi',
-    replicas: '3',
+    replicas: '2',
     replicasMax: '5'
   },
   prod: {
@@ -138,11 +140,13 @@ const phases = {
     host: staticUrlsAPI.prod,
     appHost: staticUrls.prod,
     backboneApiHost: 'https://api-biohub-platform.apps.silver.devops.gov.bc.ca',
-    backboneIntakePath: '/api/dwc/submission/intake',
+    backboneIntakePath: '/api/dwc/submission/queue',
+    backboneArtifactIntakePath: '/api/artifact/intake',
     backboneIntakeEnabled: false,
     env: 'prod',
-    elasticsearchURL: 'http://es01:9200',
-    elasticsearchTaxonomyIndex: 'taxonomy_2.0.0',
+    elasticsearchURL: 'http://es01.a0ec71-prod:9200',
+    elasticsearchTaxonomyIndex: 'taxonomy_3.0.0',
+    s3KeyPrefix: 'sims',
     tz: config.timezone.api,
     sso: config.sso.prod,
     logLevel: 'info',
@@ -150,15 +154,9 @@ const phases = {
     cpuLimit: '1000m',
     memoryRequest: '512Mi',
     memoryLimit: '3Gi',
-    replicas: '5',
-    replicasMax: '8'
+    replicas: '2',
+    replicasMax: '5'
   }
 };
-
-// This callback forces the node process to exit as failure.
-process.on('unhandledRejection', (reason, promise) => {
-  console.log('Unhandled Rejection at:', promise, 'reason:', reason);
-  process.exit(1);
-});
 
 module.exports = exports = { phases, options };

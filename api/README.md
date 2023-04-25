@@ -2,10 +2,10 @@
 
 ## Technologies Used
 
-| Technology | Version | Website                              | Description          |
-| ---------- | ------- | ------------------------------------ | -------------------- |
-| node       | 14.x.x  | https://nodejs.org/en/               | JavaScript Runtime   |
-| npm        | 6.x.x   | https://www.npmjs.com/               | Node Package Manager |
+| Technology | Version | Website                | Description          |
+| ---------- | ------- | ---------------------- | -------------------- |
+| node       | 14.x.x  | https://nodejs.org/en/ | JavaScript Runtime   |
+| npm        | 6.x.x   | https://www.npmjs.com/ | Node Package Manager |
 
 <br />
 
@@ -50,24 +50,24 @@ Linting and formatting is handled by a combiation of `ESlint` and `Prettier`. Th
 - EditorConfig
   - .editorconfig
 
-## Run Linters
+## Linting and Formatting
 
-- Lint the `*.ts` files using `ESLint`.
+### Run the Linter and Formatter
 
 ```
 npm run lint
+npm run format
 ```
 
-## Run Linters + Formatters
+### Run the Linter and Formatter in Fix mode (will attempt to automatically fix issues)
 
-_Note: In the worst case scenario, where linting/formatting has been neglected, then these `lint:fix` commands have the potential to create 100's of file changes. In this case, it is recommended to only run these commands as part of a separate commit._
+_Note: In the worst case scenario, where linting/formatting has been neglected, then these `lint-fix` commands have the potential to create 100's of file changes. In this case, it is recommended to only run these commands as part of a separate commit._
 
-_Note: Not all linting/formatting errors can be automatically fixed, and will require human intervention._
-
-- Lint and fix the `*.ts` files using `ESLint` + `Prettier`.
+_Note: Not all linting/formatting errors can be automatically fixed, and some will require human intervention._
 
 ```
-npm run lint:fix
+npm run lint-fix
+npm run format-fix
 ```
 
 <br />
@@ -122,8 +122,6 @@ Supported log properties:
 
 - [Mocha](https://www.npmjs.com/package/mocha) - Unit test framework
 - [Chai](https://www.npmjs.com/package/chai) - Assertion library
-- [SuperTest](https://www.npmjs.com/package/supertest) - API testing library
-- [Nock](https://www.npmjs.com/package/nock) - HTTP mocking library
 
 ## Running Tests
 
@@ -136,7 +134,7 @@ Supported log properties:
 - Run the unit tests in watch mode (will re-run the tests on code changes).
 
   ```
-  npm run test:watch
+  npm run test-watch
   ```
 
 - Run the unit test coverage report
@@ -157,3 +155,12 @@ See [Mocha](https://mochajs.org) for documentation on writing tests.
 # Keycloak
 
 This project uses [Keycloak](https://www.keycloak.org/) to handle authentication.
+
+# Troubleshooting and Known Issues
+
+### Observations validation
+
+There is a known issue with `JSONPath from 'jsonpath-plus'` upgraded from 'jsonpath'. The issue is due to the difference between qoutation marks ["", ''] during the validation schema parser. The issue may be resolved and is updated to using "" in all locations.
+
+- `api\src\utils\media\validation\validation-schema-parser.ts`
+- https://github.com/JSONPath-Plus/JSONPath/issues/160

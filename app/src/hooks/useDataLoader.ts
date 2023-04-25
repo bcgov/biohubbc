@@ -28,6 +28,12 @@ export type DataLoader<AFArgs extends any[], AFResponse = unknown, AFError = unk
    */
   isReady: boolean;
   /**
+   * `true` if the `fetchData` function has been called at least one time.
+   *
+   * @type {boolean}
+   */
+  hasLoaded: boolean;
+  /**
    * Executes the `fetchData` function once, only if it has never been called before. Does nothing if called again.
    */
   load: (...args: AFArgs) => void;
@@ -38,7 +44,12 @@ export type DataLoader<AFArgs extends any[], AFResponse = unknown, AFError = unk
   /**
    * Clears any errors caught from a failed `fetchData` call.
    */
-  clear: () => void;
+  clearError: () => void;
+
+  /**
+   * Clears any data as if the loader was just initialized.
+   */
+  clearData: () => void;
 };
 
 /**
@@ -67,7 +78,8 @@ export default function useDataLoader<AFArgs extends any[], AFResponse = unknown
   const [error, setError] = useState<AFError | unknown>();
   const [isLoading, setIsLoading] = useState(false);
   const [isReady, setIsReady] = useState(false);
-  const [isOneTimeLoad, setOneTimeLoad] = useState(false);
+  const [hasLoaded, setHasLoaded] = useState(false);
+  const [oneTimeLoad, setOneTimeLoad] = useState(false);
 
   const isMounted = useIsMounted();
 
@@ -95,11 +107,12 @@ export default function useDataLoader<AFArgs extends any[], AFResponse = unknown
     } finally {
       setIsLoading(false);
       setIsReady(true);
+      !hasLoaded && setHasLoaded(true);
     }
   };
 
   const load = (...args: AFArgs) => {
-    if (isOneTimeLoad) {
+    if (oneTimeLoad) {
       return;
     }
 
@@ -108,15 +121,25 @@ export default function useDataLoader<AFArgs extends any[], AFResponse = unknown
   };
 
   const refresh = (...args: AFArgs) => {
-    setError(undefined);
-    setIsLoading(false);
-    setIsReady(false);
+    error && setError(undefined);
+    isLoading && setIsLoading(false);
+    isReady && setIsReady(false);
+    !hasLoaded && setHasLoaded(true);
     loadData(...args);
   };
 
-  const clear = () => {
+  const clearError = () => {
     setError(undefined);
   };
 
-  return { data, error, isLoading, isReady, load, refresh, clear };
+  const clearData = () => {
+    setData(undefined);
+    error && setError(undefined);
+    isLoading && setIsLoading(false);
+    isReady && setIsReady(false);
+    hasLoaded && setHasLoaded(false);
+    oneTimeLoad && setOneTimeLoad(false);
+  };
+
+  return { data, error, isLoading, isReady, hasLoaded, load, refresh, clearError, clearData };
 }

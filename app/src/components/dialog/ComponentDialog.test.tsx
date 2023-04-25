@@ -40,7 +40,7 @@ describe('ComponentDialog', () => {
   it('calls the onClose prop when `Close` button is clicked', async () => {
     const { findByText } = renderContainer({ dialogTitle: 'this is a test' });
 
-    const CloseButton = await findByText('Close', { exact: false });
+    const CloseButton = await findByText('Ok', { exact: false });
 
     fireEvent.click(CloseButton);
 

@@ -23,13 +23,11 @@ env: | setup ## Copies the default ./env_config/env.docker to ./.env
 
 postgres: | close build-postgres run-postgres ## Performs all commands necessary to run the postgres project (db) in docker
 backend: | close build-backend run-backend ## Performs all commands necessary to run all backend projects (db, api) in docker
-web: | close build-web run-web ## Performs all commands necessary to run all backend+web projects (db, api, app, n8n) in docker
+web: | close build-web run-web ## Performs all commands necessary to run all backend+web projects (db, api, app) in docker
 
 db-setup: | build-db-setup run-db-setup ## Performs all commands necessary to run the database migrations and seeding
 db-migrate: | build-db-migrate run-db-migrate ## Performs all commands necessary to run the database migrations
 db-rollback: | build-db-rollback run-db-rollback ## Performs all commands necessary to rollback the latest database migrations
-n8n-setup: | build-n8n-setup run-n8n-setup ## Performs all commands necessary to run the n8n setup
-n8n-export: | build-n8n-export run-n8n-export ## Performs all commands necessary to export the latest n8n credentials and workflows
 clamav: | build-clamav run-clamav ## Performs all commands necessary to run clamav
 
 fix: | lint-fix format-fix ## Performs both lint-fix and format-fix commands
@@ -99,7 +97,7 @@ run-backend: ## Runs all backend containers
 
 ## ------------------------------------------------------------------------------
 ## Build/Run Backend+Web Commands (backend + web frontend)
-## - Builds all of the SIMS backend+web projects (db, db_setup, api, app, n8n, n8n_nginx, n8n_setup)
+## - Builds all of the SIMS backend+web projects (db, db_setup, api, app)
 ## ------------------------------------------------------------------------------
 
 build-web: ## Builds all backend+web containers
@@ -107,16 +105,12 @@ build-web: ## Builds all backend+web containers
 	@echo "Make: build-web - building web images"
 	@echo "==============================================="
 	@docker-compose -f docker-compose.yml build db db_setup api app
-## @docker-compose -f docker-compose.yml build db db_setup api app n8n n8n_nginx n8n_setup
 
 run-web: ## Runs all backend+web containers
 	@echo "==============================================="
 	@echo "Make: run-web - running web images"
 	@echo "==============================================="
 	@docker-compose -f docker-compose.yml up -d db db_setup api app
-## @docker-compose -f docker-compose.yml up -d db db_setup api app n8n n8n_nginx n8n_setup
-  ## Restart n8n as a workaround to resolve this known issue: https://github.com/n8n-io/n8n/issues/2155
-## @docker-compose restart n8n
 
 ## ------------------------------------------------------------------------------
 ## Commands to shell into the target container
@@ -140,12 +134,6 @@ api-container: ## Executes into the api container.
 	@echo "Shelling into api container"
 	@echo "==============================================="
 	@docker-compose exec api bash
-
-n8n-container: ## Executes into the n8n container.
-	@echo "==============================================="
-	@echo "Shelling into n8n container"
-	@echo "==============================================="
-	@docker-compose exec n8n sh
 
 ## ------------------------------------------------------------------------------
 ## Database migration commands
@@ -186,34 +174,6 @@ run-db-rollback: ## Rollback the latest database migrations
 	@echo "Make: run-db-rollback - rolling back the latest database migrations"
 	@echo "==============================================="
 	@docker-compose -f docker-compose.yml up db_rollback
-
-## ------------------------------------------------------------------------------
-## n8n commands
-## ------------------------------------------------------------------------------
-
-build-n8n-setup: ## Build the n8n setup image
-	@echo "==============================================="
-	@echo "Make: build-n8n-setup - building n8n setup image"
-	@echo "==============================================="
-	@docker-compose -f docker-compose.yml build n8n_setup
-
-run-n8n-setup: ## Run the n8n setup
-	@echo "==============================================="
-	@echo "Make: run-n8n-setup - running n8n setup"
-	@echo "==============================================="
-	@docker-compose -f docker-compose.yml up n8n_setup
-
-build-n8n-export: ## Build the n8n export image
-	@echo "==============================================="
-	@echo "Make: build-n8n-export - building n8n export image"
-	@echo "==============================================="
-	@docker-compose -f docker-compose.yml build n8n_export
-
-run-n8n-export: ## Run the n8n export
-	@echo "==============================================="
-	@echo "Make: run-n8n-export - exporting the n8n credentials and workflows"
-	@echo "==============================================="
-	@docker-compose -f docker-compose.yml up n8n_export
 
 ## ------------------------------------------------------------------------------
 ## clamav commands
@@ -279,19 +239,19 @@ lint: ## Runs `npm lint` for all projects
 	@echo "==============================================="
 	@cd database && npm run lint && cd ..
 
-lint-fix: ## Runs `npm run lint:fix ` for all projects
+lint-fix: ## Runs `npm run lint-fix ` for all projects
 	@echo "==============================================="
-	@echo "Running /api lint:fix"
+	@echo "Running /api lint-fix"
 	@echo "==============================================="
-	@cd api && npm run lint:fix && cd ..
+	@cd api && npm run lint-fix && cd ..
 	@echo "==============================================="
-	@echo "Running /app lint:fix"
+	@echo "Running /app lint-fix"
 	@echo "==============================================="
-	@cd app && npm run lint:fix && cd ..
+	@cd app && npm run lint-fix && cd ..
 	@echo "==============================================="
-	@echo "Running /database lint:fix"
+	@echo "Running /database lint-fix"
 	@echo "==============================================="
-	@cd database && npm run lint:fix && cd ..
+	@cd database && npm run lint-fix && cd ..
 
 format: ## Runs `npm run format` for all projects
 	@echo "==============================================="
@@ -307,19 +267,19 @@ format: ## Runs `npm run format` for all projects
 	@echo "==============================================="
 	@cd database && npm run format && cd ..
 
-format-fix: ## Runs `npm run format:fix` for all projects
+format-fix: ## Runs `npm run format-fix` for all projects
 	@echo "==============================================="
-	@echo "Running /api format:fix"
+	@echo "Running /api format-fix"
 	@echo "==============================================="
-	@cd api && npm run format:fix && cd ..
+	@cd api && npm run format-fix && cd ..
 	@echo "==============================================="
-	@echo "Running /app format:fix"
+	@echo "Running /app format-fix"
 	@echo "==============================================="
-	@cd app && npm run format:fix && cd ..
+	@cd app && npm run format-fix && cd ..
 	@echo "==============================================="
-	@echo "Running /database format:fix"
+	@echo "Running /database format-fix"
 	@echo "==============================================="
-	@cd database && npm run format:fix && cd ..
+	@cd database && npm run format-fix && cd ..
 
 ## ------------------------------------------------------------------------------
 ## Run `npm` commands for all projects ./.pipeline
@@ -366,24 +326,6 @@ log-db-setup: ## Runs `docker logs <container> -f` for the database setup contai
 	@echo "Running docker logs for the db-setup container"
 	@echo "==============================================="
 	@docker logs $(DOCKER_PROJECT_NAME)-db-setup-$(DOCKER_NAMESPACE)-container -f $(args)
-
-log-n8n: ## Runs `docker logs <container> -f` for the n8n container
-	@echo "==============================================="
-	@echo "Running docker logs for the n8n container"
-	@echo "==============================================="
-	@docker logs $(DOCKER_PROJECT_NAME)-n8n-$(DOCKER_NAMESPACE)-container -f $(args)
-
-log-n8n-setup: ## Runs `docker logs <container> -f` for the n8n setup container
-	@echo "==============================================="
-	@echo "Running docker logs for the n8n-setup container"
-	@echo "==============================================="
-	@docker logs $(DOCKER_PROJECT_NAME)-n8n-setup-$(DOCKER_NAMESPACE)-container -f $(args)
-
-log-n8n-nginx: ## Runs `docker logs <container> -f` for the n8n nginx container
-	@echo "==============================================="
-	@echo "Running docker logs for the n8n-nginx container"
-	@echo "==============================================="
-	@docker logs $(DOCKER_PROJECT_NAME)-n8n-nginx-$(DOCKER_NAMESPACE)-container -f $(args)
 
 ## ------------------------------------------------------------------------------
 ## Help

@@ -10,10 +10,12 @@ import {
   SUBMISSION_STATUS_TYPE
 } from '../../../../../../../constants/status';
 import * as db from '../../../../../../../database/db';
+import { OccurrenceSubmissionPublish } from '../../../../../../../repositories/history-publish-repository';
 import {
   IGetLatestSurveyOccurrenceSubmission,
   SurveyRepository
 } from '../../../../../../../repositories/survey-repository';
+import { HistoryPublishService } from '../../../../../../../services/history-publish-service';
 import { SurveyService } from '../../../../../../../services/survey-service';
 import { getMockDBConnection } from '../../../../../../../__mocks__/db';
 import * as observationSubmission from './get';
@@ -219,551 +221,926 @@ describe('getObservationSubmission', () => {
           expect(response.errors[0].message).to.equal('must be object,null');
         });
 
-        describe('id', () => {
+        describe('surveyObservationData', () => {
           it('is missing', () => {
             const apiResponse = {
-              inputFileName: 'filename.xlsx',
-              status: 'validation-status',
-              isValidating: false,
-              messageTypes: []
+              surveyObservationSupplementaryData: {
+                occurrence_submission_publish_id: 1,
+                occurrence_submission_id: 1,
+                event_timestamp: '2019-01-01T00:00:00.000Z',
+                queue_id: 1,
+                create_date: '2019-01-01T00:00:00.000Z',
+                create_user: 1,
+                update_date: '2019-01-01T00:00:00.000Z',
+                update_user: 1,
+                revision_count: 1
+              }
             };
 
             const response = responseValidator.validateResponse(200, apiResponse);
             expect(response.message).to.equal('The response was not valid.');
             expect(response.errors.length).to.equal(1);
             expect(response.errors[0].path).to.equal('response');
-            expect(response.errors[0].message).to.equal("must have required property 'id'");
+            expect(response.errors[0].message).to.equal("must have required property 'surveyObservationData'");
           });
 
-          it('is null', () => {
-            const apiResponse = {
-              id: null,
-              inputFileName: 'filename.xlsx',
-              status: 'validation-status',
-              isValidating: false,
-              messageTypes: []
-            };
-
-            const response = responseValidator.validateResponse(200, apiResponse);
-            expect(response.message).to.equal('The response was not valid.');
-            expect(response.errors[0].path).to.equal('id');
-            expect(response.errors[0].message).to.equal('must be number');
-          });
-
-          it('is not a number', () => {
-            const apiResponse = {
-              id: '12',
-              inputFileName: 'filename.xlsx',
-              status: 'validation-status',
-              isValidating: false,
-              messageTypes: []
-            };
-
-            const response = responseValidator.validateResponse(200, apiResponse);
-            expect(response.message).to.equal('The response was not valid.');
-            expect(response.errors[0].path).to.equal('id');
-            expect(response.errors[0].message).to.equal('must be number');
-          });
-
-          it('is less than 1', () => {
-            const apiResponse = {
-              id: 0,
-              inputFileName: 'filename.xlsx',
-              status: 'validation-status',
-              isValidating: false,
-              messageTypes: []
-            };
-
-            const response = responseValidator.validateResponse(200, apiResponse);
-            expect(response.message).to.equal('The response was not valid.');
-            expect(response.errors[0].path).to.equal('id');
-            expect(response.errors[0].message).to.equal('must be >= 1');
-          });
-        });
-
-        describe('inputFileName', () => {
-          it('is missing', () => {
-            const apiResponse = {
-              id: 1,
-              status: 'validation-status',
-              isValidating: false,
-              messageTypes: []
-            };
-
-            const response = responseValidator.validateResponse(200, apiResponse);
-            expect(response.message).to.equal('The response was not valid.');
-            expect(response.errors.length).to.equal(1);
-            expect(response.errors[0].path).to.equal('response');
-            expect(response.errors[0].message).to.equal("must have required property 'inputFileName'");
-          });
-
-          it('is null', () => {
-            const apiResponse = {
-              id: 1,
-              inputFileName: null,
-              status: 'validation-status',
-              isValidating: false,
-              messageTypes: []
-            };
-
-            const response = responseValidator.validateResponse(200, apiResponse);
-            expect(response.message).to.equal('The response was not valid.');
-            expect(response.errors.length).to.equal(1);
-            expect(response.errors[0].path).to.equal('inputFileName');
-            expect(response.errors[0].message).to.equal('must be string');
-          });
-
-          it('is not a string', () => {
-            const apiResponse = {
-              id: 1,
-              inputFileName: { filename: 'filename' },
-              status: 'validation-status',
-              isValidating: false,
-              messageTypes: []
-            };
-
-            const response = responseValidator.validateResponse(200, apiResponse);
-            expect(response.message).to.equal('The response was not valid.');
-            expect(response.errors.length).to.equal(1);
-            expect(response.errors[0].path).to.equal('inputFileName');
-            expect(response.errors[0].message).to.equal('must be string');
-          });
-        });
-
-        describe('status', () => {
-          it('is missing', () => {
-            const apiResponse = {
-              id: 1,
-              inputFileName: 'filename.xlsx',
-              isValidating: false,
-              messageTypes: []
-            };
-
-            const response = responseValidator.validateResponse(200, apiResponse);
-            expect(response.message).to.equal('The response was not valid.');
-            expect(response.errors.length).to.equal(1);
-            expect(response.errors[0].path).to.equal('response');
-            expect(response.errors[0].message).to.equal("must have required property 'status'");
-          });
-
-          it('is not a string', () => {
-            const apiResponse = {
-              id: 1,
-              inputFileName: 'filename.xlsx',
-              status: { status: 'status' },
-              isValidating: false,
-              messageTypes: []
-            };
-
-            const response = responseValidator.validateResponse(200, apiResponse);
-            expect(response.message).to.equal('The response was not valid.');
-            expect(response.errors.length).to.equal(1);
-            expect(response.errors[0].path).to.equal('status');
-            expect(response.errors[0].message).to.equal('must be string,null');
-          });
-        });
-
-        describe('isValidating', () => {
-          it('is missing', () => {
-            const apiResponse = {
-              id: 1,
-              inputFileName: 'filename.xlsx',
-              status: 'validation-status',
-              messageTypes: []
-            };
-
-            const response = responseValidator.validateResponse(200, apiResponse);
-            expect(response.message).to.equal('The response was not valid.');
-            expect(response.errors.length).to.equal(1);
-            expect(response.errors[0].path).to.equal('response');
-            expect(response.errors[0].message).to.equal("must have required property 'isValidating'");
-          });
-
-          it('is not a bool', () => {
-            const apiResponse = {
-              id: 1,
-              inputFileName: 'filename.xlsx',
-              status: 'validation-status',
-              isValidating: 'true',
-              messageTypes: []
-            };
-
-            const response = responseValidator.validateResponse(200, apiResponse);
-            expect(response.message).to.equal('The response was not valid.');
-            expect(response.errors.length).to.equal(1);
-            expect(response.errors[0].path).to.equal('isValidating');
-            expect(response.errors[0].message).to.equal('must be boolean');
-          });
-        });
-
-        describe('messageTypes', () => {
-          it('is missing', () => {
-            const apiResponse = {
-              id: 1,
-              inputFileName: 'filename.xlsx',
-              isValidating: false,
-              status: 'validation-status'
-            };
-
-            const response = responseValidator.validateResponse(200, apiResponse);
-            expect(response.message).to.equal('The response was not valid.');
-            expect(response.errors.length).to.equal(1);
-            expect(response.errors[0].path).to.equal('response');
-            expect(response.errors[0].message).to.equal("must have required property 'messageTypes'");
-          });
-
-          it('is not an array', () => {
-            const apiResponse = {
-              id: 1,
-              inputFileName: 'filename.xlsx',
-              status: 'validation-status',
-              isValidating: false,
-              messageTypes: 'message-types'
-            };
-
-            const response = responseValidator.validateResponse(200, apiResponse);
-            expect(response.message).to.equal('The response was not valid.');
-            expect(response.errors.length).to.equal(1);
-            expect(response.errors[0].path).to.equal('messageTypes');
-            expect(response.errors[0].message).to.equal('must be array');
-          });
-
-          describe('messageType', () => {
-            it('is not an object', () => {
+          describe('occurrence_submission_id', () => {
+            it('is missing', () => {
               const apiResponse = {
-                id: 1,
-                inputFileName: 'filename.xlsx',
-                status: 'validation-status',
-                isValidating: false,
-                messageTypes: ['message-type']
+                surveyObservationData: {
+                  inputFileName: 'filename.xlsx',
+                  status: 'validation-status',
+                  isValidating: false,
+                  messageTypes: []
+                },
+                surveyObservationSupplementaryData: {
+                  occurrence_submission_publish_id: 1,
+                  occurrence_submission_id: 1,
+                  event_timestamp: '2019-01-01T00:00:00.000Z',
+                  queue_id: 1,
+                  create_date: '2019-01-01T00:00:00.000Z',
+                  create_user: 1,
+                  update_date: '2019-01-01T00:00:00.000Z',
+                  update_user: 1,
+                  revision_count: 1
+                }
               };
 
               const response = responseValidator.validateResponse(200, apiResponse);
               expect(response.message).to.equal('The response was not valid.');
               expect(response.errors.length).to.equal(1);
-              expect(response.errors[0].path).to.equal('messageTypes/0');
-              expect(response.errors[0].message).to.equal('must be object');
+              expect(response.errors[0].path).to.equal('surveyObservationData');
+              expect(response.errors[0].message).to.equal("must have required property 'occurrence_submission_id'");
             });
 
-            describe('severityLabel', () => {
-              it('is missing', () => {
-                const apiResponse = {
-                  id: 1,
+            it('is null', () => {
+              const apiResponse = {
+                surveyObservationData: {
+                  occurrence_submission_id: null,
                   inputFileName: 'filename.xlsx',
                   status: 'validation-status',
                   isValidating: false,
-                  messageTypes: [
-                    {
-                      messageTypeLabel: 'type-label',
-                      messageStatus: 'message-status',
-                      messages: []
-                    }
-                  ]
-                };
+                  messageTypes: []
+                },
+                surveyObservationSupplementaryData: {
+                  occurrence_submission_publish_id: 1,
+                  occurrence_submission_id: 1,
+                  event_timestamp: '2019-01-01T00:00:00.000Z',
+                  queue_id: 1,
+                  create_date: '2019-01-01T00:00:00.000Z',
+                  create_user: 1,
+                  update_date: '2019-01-01T00:00:00.000Z',
+                  update_user: 1,
+                  revision_count: 1
+                }
+              };
 
-                const response = responseValidator.validateResponse(200, apiResponse);
-                expect(response.message).to.equal('The response was not valid.');
-                expect(response.errors.length).to.equal(1);
-                expect(response.errors[0].path).to.equal('messageTypes/0');
-                expect(response.errors[0].message).to.equal("must have required property 'severityLabel'");
-              });
-
-              it('is not a string', () => {
-                const apiResponse = {
-                  id: 1,
-                  inputFileName: 'filename.xlsx',
-                  status: 'validation-status',
-                  isValidating: false,
-                  messageTypes: [
-                    {
-                      severityLabel: { label: 'label ' },
-                      messageTypeLabel: 'type-label',
-                      messageStatus: 'message-status',
-                      messages: []
-                    }
-                  ]
-                };
-
-                const response = responseValidator.validateResponse(200, apiResponse);
-                expect(response.message).to.equal('The response was not valid.');
-                expect(response.errors.length).to.equal(1);
-                expect(response.errors[0].path).to.equal('messageTypes/0/severityLabel');
-                expect(response.errors[0].message).to.equal('must be string');
-              });
+              const response = responseValidator.validateResponse(200, apiResponse);
+              expect(response.message).to.equal('The response was not valid.');
+              expect(response.errors[0].path).to.equal('surveyObservationData/occurrence_submission_id');
+              expect(response.errors[0].message).to.equal('must be number');
             });
 
-            describe('messageStatus', () => {
-              it('is missing', () => {
-                const apiResponse = {
-                  id: 1,
+            it('is not a number', () => {
+              const apiResponse = {
+                surveyObservationData: {
+                  occurrence_submission_id: '12',
                   inputFileName: 'filename.xlsx',
                   status: 'validation-status',
                   isValidating: false,
-                  messageTypes: [
-                    {
-                      severityLabel: 'severity-label',
-                      messageStatus: 'message-status',
-                      messages: []
-                    }
-                  ]
-                };
+                  messageTypes: []
+                },
+                surveyObservationSupplementaryData: {
+                  occurrence_submission_publish_id: 1,
+                  occurrence_submission_id: 1,
+                  event_timestamp: '2019-01-01T00:00:00.000Z',
+                  queue_id: 1,
+                  create_date: '2019-01-01T00:00:00.000Z',
+                  create_user: 1,
+                  update_date: '2019-01-01T00:00:00.000Z',
+                  update_user: 1,
+                  revision_count: 1
+                }
+              };
 
-                const response = responseValidator.validateResponse(200, apiResponse);
-                expect(response.message).to.equal('The response was not valid.');
-                expect(response.errors.length).to.equal(1);
-                expect(response.errors[0].path).to.equal('messageTypes/0');
-                expect(response.errors[0].message).to.equal("must have required property 'messageTypeLabel'");
-              });
-
-              it('is not a string', () => {
-                const apiResponse = {
-                  id: 1,
-                  inputFileName: 'filename.xlsx',
-                  status: 'validation-status',
-                  isValidating: false,
-                  messageTypes: [
-                    {
-                      severityLabel: 'severity-label',
-                      messageTypeLabel: { label: 'label ' },
-                      messageStatus: 'message-status',
-                      messages: []
-                    }
-                  ]
-                };
-
-                const response = responseValidator.validateResponse(200, apiResponse);
-                expect(response.message).to.equal('The response was not valid.');
-                expect(response.errors.length).to.equal(1);
-                expect(response.errors[0].path).to.equal('messageTypes/0/messageTypeLabel');
-                expect(response.errors[0].message).to.equal('must be string');
-              });
+              const response = responseValidator.validateResponse(200, apiResponse);
+              expect(response.message).to.equal('The response was not valid.');
+              expect(response.errors[0].path).to.equal('surveyObservationData/occurrence_submission_id');
+              expect(response.errors[0].message).to.equal('must be number');
             });
 
-            describe('messageStatus', () => {
-              it('is missing', () => {
-                const apiResponse = {
-                  id: 1,
+            it('is less than 1', () => {
+              const apiResponse = {
+                surveyObservationData: {
+                  occurrence_submission_id: 0,
                   inputFileName: 'filename.xlsx',
                   status: 'validation-status',
                   isValidating: false,
-                  messageTypes: [
-                    {
-                      severityLabel: 'severity-label',
-                      messageTypeLabel: 'type-label',
-                      messages: []
-                    }
-                  ]
-                };
+                  messageTypes: []
+                },
+                surveyObservationSupplementaryData: {
+                  occurrence_submission_publish_id: 1,
+                  occurrence_submission_id: 1,
+                  event_timestamp: '2019-01-01T00:00:00.000Z',
+                  queue_id: 1,
+                  create_date: '2019-01-01T00:00:00.000Z',
+                  create_user: 1,
+                  update_date: '2019-01-01T00:00:00.000Z',
+                  update_user: 1,
+                  revision_count: 1
+                }
+              };
 
-                const response = responseValidator.validateResponse(200, apiResponse);
-                expect(response.message).to.equal('The response was not valid.');
-                expect(response.errors.length).to.equal(1);
-                expect(response.errors[0].path).to.equal('messageTypes/0');
-                expect(response.errors[0].message).to.equal("must have required property 'messageStatus'");
-              });
+              const response = responseValidator.validateResponse(200, apiResponse);
+              expect(response.message).to.equal('The response was not valid.');
+              expect(response.errors[0].path).to.equal('surveyObservationData/occurrence_submission_id');
+              expect(response.errors[0].message).to.equal('must be >= 1');
+            });
+          });
 
-              it('is not a string', () => {
-                const apiResponse = {
-                  id: 1,
-                  inputFileName: 'filename.xlsx',
+          describe('inputFileName', () => {
+            it('is missing', () => {
+              const apiResponse = {
+                surveyObservationData: {
+                  occurrence_submission_id: 1,
                   status: 'validation-status',
                   isValidating: false,
-                  messageTypes: [
-                    {
-                      severityLabel: 'severity-label',
-                      messageTypeLabel: 'type-label',
-                      messageStatus: { status: 'status' },
-                      messages: []
-                    }
-                  ]
-                };
+                  messageTypes: []
+                },
+                surveyObservationSupplementaryData: {
+                  occurrence_submission_publish_id: 1,
+                  occurrence_submission_id: 1,
+                  event_timestamp: '2019-01-01T00:00:00.000Z',
+                  queue_id: 1,
+                  create_date: '2019-01-01T00:00:00.000Z',
+                  create_user: 1,
+                  update_date: '2019-01-01T00:00:00.000Z',
+                  update_user: 1,
+                  revision_count: 1
+                }
+              };
 
-                const response = responseValidator.validateResponse(200, apiResponse);
-                expect(response.message).to.equal('The response was not valid.');
-                expect(response.errors.length).to.equal(1);
-                expect(response.errors[0].path).to.equal('messageTypes/0/messageStatus');
-                expect(response.errors[0].message).to.equal('must be string');
-              });
+              const response = responseValidator.validateResponse(200, apiResponse);
+              expect(response.message).to.equal('The response was not valid.');
+              expect(response.errors.length).to.equal(1);
+              expect(response.errors[0].path).to.equal('surveyObservationData');
+              expect(response.errors[0].message).to.equal("must have required property 'inputFileName'");
             });
 
-            describe('messages', () => {
-              it('is missing', () => {
-                const apiResponse = {
-                  id: 1,
+            it('is null', () => {
+              const apiResponse = {
+                surveyObservationData: {
+                  occurrence_submission_id: 1,
+                  inputFileName: null,
+                  status: 'validation-status',
+                  isValidating: false,
+                  messageTypes: []
+                },
+                surveyObservationSupplementaryData: {
+                  occurrence_submission_publish_id: 1,
+                  occurrence_submission_id: 1,
+                  event_timestamp: '2019-01-01T00:00:00.000Z',
+                  queue_id: 1,
+                  create_date: '2019-01-01T00:00:00.000Z',
+                  create_user: 1,
+                  update_date: '2019-01-01T00:00:00.000Z',
+                  update_user: 1,
+                  revision_count: 1
+                }
+              };
+
+              const response = responseValidator.validateResponse(200, apiResponse);
+              expect(response.message).to.equal('The response was not valid.');
+              expect(response.errors.length).to.equal(1);
+              expect(response.errors[0].path).to.equal('surveyObservationData/inputFileName');
+              expect(response.errors[0].message).to.equal('must be string');
+            });
+
+            it('is not a string', () => {
+              const apiResponse = {
+                surveyObservationData: {
+                  occurrence_submission_id: 1,
+                  inputFileName: { filename: 'filename' },
+                  status: 'validation-status',
+                  isValidating: false,
+                  messageTypes: []
+                },
+                surveyObservationSupplementaryData: {
+                  occurrence_submission_publish_id: 1,
+                  occurrence_submission_id: 1,
+                  event_timestamp: '2019-01-01T00:00:00.000Z',
+                  queue_id: 1,
+                  create_date: '2019-01-01T00:00:00.000Z',
+                  create_user: 1,
+                  update_date: '2019-01-01T00:00:00.000Z',
+                  update_user: 1,
+                  revision_count: 1
+                }
+              };
+
+              const response = responseValidator.validateResponse(200, apiResponse);
+              expect(response.message).to.equal('The response was not valid.');
+              expect(response.errors.length).to.equal(1);
+              expect(response.errors[0].path).to.equal('surveyObservationData/inputFileName');
+              expect(response.errors[0].message).to.equal('must be string');
+            });
+          });
+
+          describe('status', () => {
+            it('is missing', () => {
+              const apiResponse = {
+                surveyObservationData: {
+                  occurrence_submission_id: 1,
+                  inputFileName: 'filename.xlsx',
+                  isValidating: false,
+                  messageTypes: []
+                },
+                surveyObservationSupplementaryData: {
+                  occurrence_submission_publish_id: 1,
+                  occurrence_submission_id: 1,
+                  event_timestamp: '2019-01-01T00:00:00.000Z',
+                  queue_id: 1,
+                  create_date: '2019-01-01T00:00:00.000Z',
+                  create_user: 1,
+                  update_date: '2019-01-01T00:00:00.000Z',
+                  update_user: 1,
+                  revision_count: 1
+                }
+              };
+
+              const response = responseValidator.validateResponse(200, apiResponse);
+              expect(response.message).to.equal('The response was not valid.');
+              expect(response.errors.length).to.equal(1);
+              expect(response.errors[0].path).to.equal('surveyObservationData');
+              expect(response.errors[0].message).to.equal("must have required property 'status'");
+            });
+
+            it('is not a string', () => {
+              const apiResponse = {
+                surveyObservationData: {
+                  occurrence_submission_id: 1,
+                  inputFileName: 'filename.xlsx',
+                  status: { status: 'status' },
+                  isValidating: false,
+                  messageTypes: []
+                },
+                surveyObservationSupplementaryData: {
+                  occurrence_submission_publish_id: 1,
+                  occurrence_submission_id: 1,
+                  event_timestamp: '2019-01-01T00:00:00.000Z',
+                  queue_id: 1,
+                  create_date: '2019-01-01T00:00:00.000Z',
+                  create_user: 1,
+                  update_date: '2019-01-01T00:00:00.000Z',
+                  update_user: 1,
+                  revision_count: 1
+                }
+              };
+
+              const response = responseValidator.validateResponse(200, apiResponse);
+              expect(response.message).to.equal('The response was not valid.');
+              expect(response.errors.length).to.equal(1);
+              expect(response.errors[0].path).to.equal('surveyObservationData/status');
+              expect(response.errors[0].message).to.equal('must be string,null');
+            });
+          });
+
+          describe('isValidating', () => {
+            it('is missing', () => {
+              const apiResponse = {
+                surveyObservationData: {
+                  occurrence_submission_id: 1,
+                  inputFileName: 'filename.xlsx',
+                  status: 'validation-status',
+                  messageTypes: []
+                },
+                surveyObservationSupplementaryData: {
+                  occurrence_submission_publish_id: 1,
+                  occurrence_submission_id: 1,
+                  event_timestamp: '2019-01-01T00:00:00.000Z',
+                  queue_id: 1,
+                  create_date: '2019-01-01T00:00:00.000Z',
+                  create_user: 1,
+                  update_date: '2019-01-01T00:00:00.000Z',
+                  update_user: 1,
+                  revision_count: 1
+                }
+              };
+
+              const response = responseValidator.validateResponse(200, apiResponse);
+              expect(response.message).to.equal('The response was not valid.');
+              expect(response.errors.length).to.equal(1);
+              expect(response.errors[0].path).to.equal('surveyObservationData');
+              expect(response.errors[0].message).to.equal("must have required property 'isValidating'");
+            });
+
+            it('is not a bool', () => {
+              const apiResponse = {
+                surveyObservationData: {
+                  occurrence_submission_id: 1,
+                  inputFileName: 'filename.xlsx',
+                  status: 'validation-status',
+                  isValidating: 'true',
+                  messageTypes: []
+                },
+                surveyObservationSupplementaryData: {
+                  occurrence_submission_publish_id: 1,
+                  occurrence_submission_id: 1,
+                  event_timestamp: '2019-01-01T00:00:00.000Z',
+                  queue_id: 1,
+                  create_date: '2019-01-01T00:00:00.000Z',
+                  create_user: 1,
+                  update_date: '2019-01-01T00:00:00.000Z',
+                  update_user: 1,
+                  revision_count: 1
+                }
+              };
+
+              const response = responseValidator.validateResponse(200, apiResponse);
+              expect(response.message).to.equal('The response was not valid.');
+              expect(response.errors.length).to.equal(1);
+              expect(response.errors[0].path).to.equal('surveyObservationData/isValidating');
+              expect(response.errors[0].message).to.equal('must be boolean');
+            });
+          });
+
+          describe('messageTypes', () => {
+            it('is missing', () => {
+              const apiResponse = {
+                surveyObservationData: {
+                  occurrence_submission_id: 1,
+                  inputFileName: 'filename.xlsx',
+                  isValidating: false,
+                  status: 'validation-status'
+                },
+                surveyObservationSupplementaryData: {
+                  occurrence_submission_publish_id: 1,
+                  occurrence_submission_id: 1,
+                  event_timestamp: '2019-01-01T00:00:00.000Z',
+                  queue_id: 1,
+                  create_date: '2019-01-01T00:00:00.000Z',
+                  create_user: 1,
+                  update_date: '2019-01-01T00:00:00.000Z',
+                  update_user: 1,
+                  revision_count: 1
+                }
+              };
+
+              const response = responseValidator.validateResponse(200, apiResponse);
+              expect(response.message).to.equal('The response was not valid.');
+              expect(response.errors.length).to.equal(1);
+              expect(response.errors[0].path).to.equal('surveyObservationData');
+              expect(response.errors[0].message).to.equal("must have required property 'messageTypes'");
+            });
+
+            it('is not an array', () => {
+              const apiResponse = {
+                surveyObservationData: {
+                  occurrence_submission_id: 1,
                   inputFileName: 'filename.xlsx',
                   status: 'validation-status',
                   isValidating: false,
-                  messageTypes: [
-                    {
-                      severityLabel: 'severity-label',
-                      messageTypeLabel: 'type-label',
-                      messageStatus: 'message-status'
-                    }
-                  ]
+                  messageTypes: 'message-types'
+                },
+                surveyObservationSupplementaryData: {
+                  occurrence_submission_publish_id: 1,
+                  occurrence_submission_id: 1,
+                  event_timestamp: '2019-01-01T00:00:00.000Z',
+                  queue_id: 1,
+                  create_date: '2019-01-01T00:00:00.000Z',
+                  create_user: 1,
+                  update_date: '2019-01-01T00:00:00.000Z',
+                  update_user: 1,
+                  revision_count: 1
+                }
+              };
+
+              const response = responseValidator.validateResponse(200, apiResponse);
+              expect(response.message).to.equal('The response was not valid.');
+              expect(response.errors.length).to.equal(1);
+              expect(response.errors[0].path).to.equal('surveyObservationData/messageTypes');
+              expect(response.errors[0].message).to.equal('must be array');
+            });
+
+            describe('messageType', () => {
+              it('is not an object', () => {
+                const apiResponse = {
+                  surveyObservationData: {
+                    occurrence_submission_id: 1,
+                    inputFileName: 'filename.xlsx',
+                    status: 'validation-status',
+                    isValidating: false,
+                    messageTypes: ['message-type']
+                  },
+                  surveyObservationSupplementaryData: {
+                    occurrence_submission_publish_id: 1,
+                    occurrence_submission_id: 1,
+                    event_timestamp: '2019-01-01T00:00:00.000Z',
+                    queue_id: 1,
+                    create_date: '2019-01-01T00:00:00.000Z',
+                    create_user: 1,
+                    update_date: '2019-01-01T00:00:00.000Z',
+                    update_user: 1,
+                    revision_count: 1
+                  }
                 };
 
                 const response = responseValidator.validateResponse(200, apiResponse);
                 expect(response.message).to.equal('The response was not valid.');
                 expect(response.errors.length).to.equal(1);
-                expect(response.errors[0].path).to.equal('messageTypes/0');
-                expect(response.errors[0].message).to.equal("must have required property 'messages'");
+                expect(response.errors[0].path).to.equal('surveyObservationData/messageTypes/0');
+                expect(response.errors[0].message).to.equal('must be object');
               });
 
-              it('is not an array', () => {
-                const apiResponse = {
-                  id: 1,
-                  inputFileName: 'filename.xlsx',
-                  status: 'validation-status',
-                  isValidating: false,
-                  messageTypes: [
-                    {
-                      severityLabel: 'severity-label',
-                      messageTypeLabel: 'type-label',
-                      messageStatus: 'message-status',
-                      messages: 'messages'
+              describe('severityLabel', () => {
+                it('is missing', () => {
+                  const apiResponse = {
+                    surveyObservationData: {
+                      occurrence_submission_id: 1,
+                      inputFileName: 'filename.xlsx',
+                      status: 'validation-status',
+                      isValidating: false,
+                      messageTypes: [
+                        {
+                          messageTypeLabel: 'type-label',
+                          messageStatus: 'message-status',
+                          messages: []
+                        }
+                      ]
+                    },
+                    surveyObservationSupplementaryData: {
+                      occurrence_submission_publish_id: 1,
+                      occurrence_submission_id: 1,
+                      event_timestamp: '2019-01-01T00:00:00.000Z',
+                      queue_id: 1,
+                      create_date: '2019-01-01T00:00:00.000Z',
+                      create_user: 1,
+                      update_date: '2019-01-01T00:00:00.000Z',
+                      update_user: 1,
+                      revision_count: 1
                     }
-                  ]
-                };
-
-                const response = responseValidator.validateResponse(200, apiResponse);
-                expect(response.message).to.equal('The response was not valid.');
-                expect(response.errors.length).to.equal(1);
-                expect(response.errors[0].path).to.equal('messageTypes/0/messages');
-                expect(response.errors[0].message).to.equal('must be array');
-              });
-
-              describe('message', () => {
-                it('is not an object', () => {
-                  const apiResponse = {
-                    id: 1,
-                    inputFileName: 'filename.xlsx',
-                    status: 'validation-status',
-                    isValidating: false,
-                    messageTypes: [
-                      {
-                        severityLabel: 'severity-label',
-                        messageTypeLabel: 'type-label',
-                        messageStatus: 'message-status',
-                        messages: ['messages']
-                      }
-                    ]
                   };
 
                   const response = responseValidator.validateResponse(200, apiResponse);
                   expect(response.message).to.equal('The response was not valid.');
                   expect(response.errors.length).to.equal(1);
-                  expect(response.errors[0].path).to.equal('messageTypes/0/messages/0');
-                  expect(response.errors[0].message).to.equal('must be object');
+                  expect(response.errors[0].path).to.equal('surveyObservationData/messageTypes/0');
+                  expect(response.errors[0].message).to.equal("must have required property 'severityLabel'");
                 });
 
-                it('id is missing', () => {
+                it('is not a string', () => {
                   const apiResponse = {
-                    id: 1,
-                    inputFileName: 'filename.xlsx',
-                    status: 'validation-status',
-                    isValidating: false,
-                    messageTypes: [
-                      {
-                        severityLabel: 'severity-label',
-                        messageTypeLabel: 'type-label',
-                        messageStatus: 'message-status',
-                        messages: [
-                          {
-                            message: 'test-message'
-                          }
-                        ]
-                      }
-                    ]
+                    surveyObservationData: {
+                      occurrence_submission_id: 1,
+                      inputFileName: 'filename.xlsx',
+                      status: 'validation-status',
+                      isValidating: false,
+                      messageTypes: [
+                        {
+                          severityLabel: { label: 'label ' },
+                          messageTypeLabel: 'type-label',
+                          messageStatus: 'message-status',
+                          messages: []
+                        }
+                      ]
+                    },
+                    surveyObservationSupplementaryData: {
+                      occurrence_submission_publish_id: 1,
+                      occurrence_submission_id: 1,
+                      event_timestamp: '2019-01-01T00:00:00.000Z',
+                      queue_id: 1,
+                      create_date: '2019-01-01T00:00:00.000Z',
+                      create_user: 1,
+                      update_date: '2019-01-01T00:00:00.000Z',
+                      update_user: 1,
+                      revision_count: 1
+                    }
                   };
 
                   const response = responseValidator.validateResponse(200, apiResponse);
                   expect(response.message).to.equal('The response was not valid.');
                   expect(response.errors.length).to.equal(1);
-                  expect(response.errors[0].path).to.equal('messageTypes/0/messages/0');
-                  expect(response.errors[0].message).to.equal("must have required property 'id'");
-                });
-
-                it('id is not number', () => {
-                  const apiResponse = {
-                    id: 1,
-                    inputFileName: 'filename.xlsx',
-                    status: 'validation-status',
-                    isValidating: false,
-                    messageTypes: [
-                      {
-                        severityLabel: 'severity-label',
-                        messageTypeLabel: 'type-label',
-                        messageStatus: 'message-status',
-                        messages: [
-                          {
-                            id: '12',
-                            message: 'test-message'
-                          }
-                        ]
-                      }
-                    ]
-                  };
-
-                  const response = responseValidator.validateResponse(200, apiResponse);
-                  expect(response.message).to.equal('The response was not valid.');
-                  expect(response.errors.length).to.equal(1);
-                  expect(response.errors[0].path).to.equal('messageTypes/0/messages/0/id');
-                  expect(response.errors[0].message).to.equal('must be number');
-                });
-
-                it('message is missing', () => {
-                  const apiResponse = {
-                    id: 1,
-                    inputFileName: 'filename.xlsx',
-                    status: 'validation-status',
-                    isValidating: false,
-                    messageTypes: [
-                      {
-                        severityLabel: 'severity-label',
-                        messageTypeLabel: 'type-label',
-                        messageStatus: 'message-status',
-                        messages: [
-                          {
-                            id: 1
-                          }
-                        ]
-                      }
-                    ]
-                  };
-
-                  const response = responseValidator.validateResponse(200, apiResponse);
-                  expect(response.message).to.equal('The response was not valid.');
-                  expect(response.errors.length).to.equal(1);
-                  expect(response.errors[0].path).to.equal('messageTypes/0/messages/0');
-                  expect(response.errors[0].message).to.equal("must have required property 'message'");
-                });
-
-                it('message is not string', () => {
-                  const apiResponse = {
-                    id: 1,
-                    inputFileName: 'filename.xlsx',
-                    status: 'validation-status',
-                    isValidating: false,
-                    messageTypes: [
-                      {
-                        severityLabel: 'severity-label',
-                        messageTypeLabel: 'type-label',
-                        messageStatus: 'message-status',
-                        messages: [
-                          {
-                            id: 1,
-                            message: { test: 'test-message' }
-                          }
-                        ]
-                      }
-                    ]
-                  };
-
-                  const response = responseValidator.validateResponse(200, apiResponse);
-                  expect(response.message).to.equal('The response was not valid.');
-                  expect(response.errors.length).to.equal(1);
-                  expect(response.errors[0].path).to.equal('messageTypes/0/messages/0/message');
+                  expect(response.errors[0].path).to.equal('surveyObservationData/messageTypes/0/severityLabel');
                   expect(response.errors[0].message).to.equal('must be string');
+                });
+              });
+
+              describe('messageStatus', () => {
+                it('is missing', () => {
+                  const apiResponse = {
+                    surveyObservationData: {
+                      occurrence_submission_id: 1,
+                      inputFileName: 'filename.xlsx',
+                      status: 'validation-status',
+                      isValidating: false,
+                      messageTypes: [
+                        {
+                          severityLabel: 'severity-label',
+                          messageStatus: 'message-status',
+                          messages: []
+                        }
+                      ]
+                    },
+                    surveyObservationSupplementaryData: {
+                      occurrence_submission_publish_id: 1,
+                      occurrence_submission_id: 1,
+                      event_timestamp: '2019-01-01T00:00:00.000Z',
+                      queue_id: 1,
+                      create_date: '2019-01-01T00:00:00.000Z',
+                      create_user: 1,
+                      update_date: '2019-01-01T00:00:00.000Z',
+                      update_user: 1,
+                      revision_count: 1
+                    }
+                  };
+
+                  const response = responseValidator.validateResponse(200, apiResponse);
+                  expect(response.message).to.equal('The response was not valid.');
+                  expect(response.errors.length).to.equal(1);
+                  expect(response.errors[0].path).to.equal('surveyObservationData/messageTypes/0');
+                  expect(response.errors[0].message).to.equal("must have required property 'messageTypeLabel'");
+                });
+
+                it('is not a string', () => {
+                  const apiResponse = {
+                    surveyObservationData: {
+                      occurrence_submission_id: 1,
+                      inputFileName: 'filename.xlsx',
+                      status: 'validation-status',
+                      isValidating: false,
+                      messageTypes: [
+                        {
+                          severityLabel: 'severity-label',
+                          messageTypeLabel: { label: 'label ' },
+                          messageStatus: 'message-status',
+                          messages: []
+                        }
+                      ]
+                    },
+                    surveyObservationSupplementaryData: {
+                      occurrence_submission_publish_id: 1,
+                      occurrence_submission_id: 1,
+                      event_timestamp: '2019-01-01T00:00:00.000Z',
+                      queue_id: 1,
+                      create_date: '2019-01-01T00:00:00.000Z',
+                      create_user: 1,
+                      update_date: '2019-01-01T00:00:00.000Z',
+                      update_user: 1,
+                      revision_count: 1
+                    }
+                  };
+
+                  const response = responseValidator.validateResponse(200, apiResponse);
+                  expect(response.message).to.equal('The response was not valid.');
+                  expect(response.errors.length).to.equal(1);
+                  expect(response.errors[0].path).to.equal('surveyObservationData/messageTypes/0/messageTypeLabel');
+                  expect(response.errors[0].message).to.equal('must be string');
+                });
+              });
+
+              describe('messageStatus', () => {
+                it('is missing', () => {
+                  const apiResponse = {
+                    surveyObservationData: {
+                      occurrence_submission_id: 1,
+                      inputFileName: 'filename.xlsx',
+                      status: 'validation-status',
+                      isValidating: false,
+                      messageTypes: [
+                        {
+                          severityLabel: 'severity-label',
+                          messageTypeLabel: 'type-label',
+                          messages: []
+                        }
+                      ]
+                    },
+                    surveyObservationSupplementaryData: {
+                      occurrence_submission_publish_id: 1,
+                      occurrence_submission_id: 1,
+                      event_timestamp: '2019-01-01T00:00:00.000Z',
+                      queue_id: 1,
+                      create_date: '2019-01-01T00:00:00.000Z',
+                      create_user: 1,
+                      update_date: '2019-01-01T00:00:00.000Z',
+                      update_user: 1,
+                      revision_count: 1
+                    }
+                  };
+
+                  const response = responseValidator.validateResponse(200, apiResponse);
+                  expect(response.message).to.equal('The response was not valid.');
+                  expect(response.errors.length).to.equal(1);
+                  expect(response.errors[0].path).to.equal('surveyObservationData/messageTypes/0');
+                  expect(response.errors[0].message).to.equal("must have required property 'messageStatus'");
+                });
+
+                it('is not a string', () => {
+                  const apiResponse = {
+                    surveyObservationData: {
+                      occurrence_submission_id: 1,
+                      inputFileName: 'filename.xlsx',
+                      status: 'validation-status',
+                      isValidating: false,
+                      messageTypes: [
+                        {
+                          severityLabel: 'severity-label',
+                          messageTypeLabel: 'type-label',
+                          messageStatus: { status: 'status' },
+                          messages: []
+                        }
+                      ]
+                    },
+                    surveyObservationSupplementaryData: {
+                      occurrence_submission_publish_id: 1,
+                      occurrence_submission_id: 1,
+                      event_timestamp: '2019-01-01T00:00:00.000Z',
+                      queue_id: 1,
+                      create_date: '2019-01-01T00:00:00.000Z',
+                      create_user: 1,
+                      update_date: '2019-01-01T00:00:00.000Z',
+                      update_user: 1,
+                      revision_count: 1
+                    }
+                  };
+
+                  const response = responseValidator.validateResponse(200, apiResponse);
+                  expect(response.message).to.equal('The response was not valid.');
+                  expect(response.errors.length).to.equal(1);
+                  expect(response.errors[0].path).to.equal('surveyObservationData/messageTypes/0/messageStatus');
+                  expect(response.errors[0].message).to.equal('must be string');
+                });
+              });
+
+              describe('messages', () => {
+                it('is missing', () => {
+                  const apiResponse = {
+                    surveyObservationData: {
+                      occurrence_submission_id: 1,
+                      inputFileName: 'filename.xlsx',
+                      status: 'validation-status',
+                      isValidating: false,
+                      messageTypes: [
+                        {
+                          severityLabel: 'severity-label',
+                          messageTypeLabel: 'type-label',
+                          messageStatus: 'message-status'
+                        }
+                      ]
+                    },
+                    surveyObservationSupplementaryData: {
+                      occurrence_submission_publish_id: 1,
+                      occurrence_submission_id: 1,
+                      event_timestamp: '2019-01-01T00:00:00.000Z',
+                      queue_id: 1,
+                      create_date: '2019-01-01T00:00:00.000Z',
+                      create_user: 1,
+                      update_date: '2019-01-01T00:00:00.000Z',
+                      update_user: 1,
+                      revision_count: 1
+                    }
+                  };
+
+                  const response = responseValidator.validateResponse(200, apiResponse);
+                  expect(response.message).to.equal('The response was not valid.');
+                  expect(response.errors.length).to.equal(1);
+                  expect(response.errors[0].path).to.equal('surveyObservationData/messageTypes/0');
+                  expect(response.errors[0].message).to.equal("must have required property 'messages'");
+                });
+
+                it('is not an array', () => {
+                  const apiResponse = {
+                    surveyObservationData: {
+                      occurrence_submission_id: 1,
+                      inputFileName: 'filename.xlsx',
+                      status: 'validation-status',
+                      isValidating: false,
+                      messageTypes: [
+                        {
+                          severityLabel: 'severity-label',
+                          messageTypeLabel: 'type-label',
+                          messageStatus: 'message-status',
+                          messages: 'messages'
+                        }
+                      ]
+                    },
+                    surveyObservationSupplementaryData: {
+                      occurrence_submission_publish_id: 1,
+                      occurrence_submission_id: 1,
+                      event_timestamp: '2019-01-01T00:00:00.000Z',
+                      queue_id: 1,
+                      create_date: '2019-01-01T00:00:00.000Z',
+                      create_user: 1,
+                      update_date: '2019-01-01T00:00:00.000Z',
+                      update_user: 1,
+                      revision_count: 1
+                    }
+                  };
+
+                  const response = responseValidator.validateResponse(200, apiResponse);
+                  expect(response.message).to.equal('The response was not valid.');
+                  expect(response.errors.length).to.equal(1);
+                  expect(response.errors[0].path).to.equal('surveyObservationData/messageTypes/0/messages');
+                  expect(response.errors[0].message).to.equal('must be array');
+                });
+
+                describe('message', () => {
+                  it('is not an object', () => {
+                    const apiResponse = {
+                      surveyObservationData: {
+                        occurrence_submission_id: 1,
+                        inputFileName: 'filename.xlsx',
+                        status: 'validation-status',
+                        isValidating: false,
+                        messageTypes: [
+                          {
+                            severityLabel: 'severity-label',
+                            messageTypeLabel: 'type-label',
+                            messageStatus: 'message-status',
+                            messages: ['messages']
+                          }
+                        ]
+                      },
+                      surveyObservationSupplementaryData: {
+                        occurrence_submission_publish_id: 1,
+                        occurrence_submission_id: 1,
+                        event_timestamp: '2019-01-01T00:00:00.000Z',
+                        queue_id: 1,
+                        create_date: '2019-01-01T00:00:00.000Z',
+                        create_user: 1,
+                        update_date: '2019-01-01T00:00:00.000Z',
+                        update_user: 1,
+                        revision_count: 1
+                      }
+                    };
+
+                    const response = responseValidator.validateResponse(200, apiResponse);
+                    expect(response.message).to.equal('The response was not valid.');
+                    expect(response.errors.length).to.equal(1);
+                    expect(response.errors[0].path).to.equal('surveyObservationData/messageTypes/0/messages/0');
+                    expect(response.errors[0].message).to.equal('must be object');
+                  });
+
+                  it('occurrence_submission_id is missing', () => {
+                    const apiResponse = {
+                      surveyObservationData: {
+                        occurrence_submission_id: 1,
+                        inputFileName: 'filename.xlsx',
+                        status: 'validation-status',
+                        isValidating: false,
+                        messageTypes: [
+                          {
+                            severityLabel: 'severity-label',
+                            messageTypeLabel: 'type-label',
+                            messageStatus: 'message-status',
+                            messages: [
+                              {
+                                message: 'test-message'
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      surveyObservationSupplementaryData: {
+                        occurrence_submission_publish_id: 1,
+                        occurrence_submission_id: 1,
+                        event_timestamp: '2019-01-01T00:00:00.000Z',
+                        queue_id: 1,
+                        create_date: '2019-01-01T00:00:00.000Z',
+                        create_user: 1,
+                        update_date: '2019-01-01T00:00:00.000Z',
+                        update_user: 1,
+                        revision_count: 1
+                      }
+                    };
+
+                    const response = responseValidator.validateResponse(200, apiResponse);
+                    expect(response.message).to.equal('The response was not valid.');
+                    expect(response.errors.length).to.equal(1);
+                    expect(response.errors[0].path).to.equal('surveyObservationData/messageTypes/0/messages/0');
+                    expect(response.errors[0].message).to.equal("must have required property 'id'");
+                  });
+
+                  it('id is not number', () => {
+                    const apiResponse = {
+                      surveyObservationData: {
+                        occurrence_submission_id: 1,
+                        inputFileName: 'filename.xlsx',
+                        status: 'validation-status',
+                        isValidating: false,
+                        messageTypes: [
+                          {
+                            severityLabel: 'severity-label',
+                            messageTypeLabel: 'type-label',
+                            messageStatus: 'message-status',
+                            messages: [
+                              {
+                                id: '12',
+                                message: 'test-message'
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      surveyObservationSupplementaryData: {
+                        occurrence_submission_publish_id: 1,
+                        occurrence_submission_id: 1,
+                        event_timestamp: '2019-01-01T00:00:00.000Z',
+                        queue_id: 1,
+                        create_date: '2019-01-01T00:00:00.000Z',
+                        create_user: 1,
+                        update_date: '2019-01-01T00:00:00.000Z',
+                        update_user: 1,
+                        revision_count: 1
+                      }
+                    };
+
+                    const response = responseValidator.validateResponse(200, apiResponse);
+                    expect(response.message).to.equal('The response was not valid.');
+                    expect(response.errors.length).to.equal(1);
+                    expect(response.errors[0].path).to.equal('surveyObservationData/messageTypes/0/messages/0/id');
+                    expect(response.errors[0].message).to.equal('must be number');
+                  });
+
+                  it('message is missing', () => {
+                    const apiResponse = {
+                      surveyObservationData: {
+                        occurrence_submission_id: 1,
+                        inputFileName: 'filename.xlsx',
+                        status: 'validation-status',
+                        isValidating: false,
+                        messageTypes: [
+                          {
+                            severityLabel: 'severity-label',
+                            messageTypeLabel: 'type-label',
+                            messageStatus: 'message-status',
+                            messages: [
+                              {
+                                id: 1
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      surveyObservationSupplementaryData: {
+                        occurrence_submission_publish_id: 1,
+                        occurrence_submission_id: 1,
+                        event_timestamp: '2019-01-01T00:00:00.000Z',
+                        queue_id: 1,
+                        create_date: '2019-01-01T00:00:00.000Z',
+                        create_user: 1,
+                        update_date: '2019-01-01T00:00:00.000Z',
+                        update_user: 1,
+                        revision_count: 1
+                      }
+                    };
+
+                    const response = responseValidator.validateResponse(200, apiResponse);
+                    expect(response.message).to.equal('The response was not valid.');
+                    expect(response.errors.length).to.equal(1);
+                    expect(response.errors[0].path).to.equal('surveyObservationData/messageTypes/0/messages/0');
+                    expect(response.errors[0].message).to.equal("must have required property 'message'");
+                  });
+
+                  it('message is not string', () => {
+                    const apiResponse = {
+                      surveyObservationData: {
+                        occurrence_submission_id: 1,
+                        inputFileName: 'filename.xlsx',
+                        status: 'validation-status',
+                        isValidating: false,
+                        messageTypes: [
+                          {
+                            severityLabel: 'severity-label',
+                            messageTypeLabel: 'type-label',
+                            messageStatus: 'message-status',
+                            messages: [
+                              {
+                                id: 1,
+                                message: { test: 'test-message' }
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      surveyObservationSupplementaryData: {
+                        occurrence_submission_publish_id: 1,
+                        occurrence_submission_id: 1,
+                        event_timestamp: '2019-01-01T00:00:00.000Z',
+                        queue_id: 1,
+                        create_date: '2019-01-01T00:00:00.000Z',
+                        create_user: 1,
+                        update_date: '2019-01-01T00:00:00.000Z',
+                        update_user: 1,
+                        revision_count: 1
+                      }
+                    };
+
+                    const response = responseValidator.validateResponse(200, apiResponse);
+                    expect(response.message).to.equal('The response was not valid.');
+                    expect(response.errors.length).to.equal(1);
+                    expect(response.errors[0].path).to.equal('surveyObservationData/messageTypes/0/messages/0/message');
+                    expect(response.errors[0].message).to.equal('must be string');
+                  });
                 });
               });
             });
@@ -779,38 +1156,38 @@ describe('getObservationSubmission', () => {
           expect(response).to.equal(undefined);
         });
 
-        it('status is null', () => {
-          const apiResponse = {
-            id: 1,
-            status: null,
-            inputFileName: 'filename.xlsx',
-            isValidating: false,
-            messageTypes: []
-          };
-
-          const response = responseValidator.validateResponse(200, apiResponse);
-          expect(response).to.equal(undefined);
-        });
-
         it('has valid response values', () => {
           const apiResponse = {
-            id: 1,
-            inputFileName: 'filename.xlsx',
-            status: 'validation-status',
-            isValidating: false,
-            messageTypes: [
-              {
-                severityLabel: 'severity-label',
-                messageTypeLabel: 'type-label',
-                messageStatus: 'message-status',
-                messages: [
-                  {
-                    id: 1,
-                    message: 'test-message'
-                  }
-                ]
-              }
-            ]
+            surveyObservationData: {
+              occurrence_submission_id: 1,
+              inputFileName: 'filename.xlsx',
+              status: 'validation-status',
+              isValidating: false,
+              messageTypes: [
+                {
+                  severityLabel: 'severity-label',
+                  messageTypeLabel: 'type-label',
+                  messageStatus: 'message-status',
+                  messages: [
+                    {
+                      id: 1,
+                      message: 'test-message'
+                    }
+                  ]
+                }
+              ]
+            },
+            surveyObservationSupplementaryData: {
+              occurrence_submission_publish_id: 1,
+              occurrence_submission_id: 1,
+              event_timestamp: '2019-01-01T00:00:00.000Z',
+              queue_id: 1,
+              create_date: '2019-01-01T00:00:00.000Z',
+              create_user: 1,
+              update_date: '2019-01-01T00:00:00.000Z',
+              update_user: 1,
+              revision_count: 1
+            }
           };
 
           const response = responseValidator.validateResponse(200, apiResponse);
@@ -829,21 +1206,30 @@ describe('getObservationSubmission', () => {
     });
 
     sinon.stub(SurveyService.prototype, 'getLatestSurveyOccurrenceSubmission').resolves(({
-      id: 13,
+      occurrence_submission_id: 13,
       input_file_name: 'dwca_moose.zip',
       submission_status_type_name: 'Darwin Core Validated'
     } as unknown) as IGetLatestSurveyOccurrenceSubmission);
+
+    sinon
+      .stub(HistoryPublishService.prototype, 'getOccurrenceSubmissionPublishRecord')
+      .resolves(({ event_timestamp: '2020-01-01' } as unknown) as OccurrenceSubmissionPublish);
 
     const result = observationSubmission.getOccurrenceSubmission();
 
     await result(sampleReq, sampleRes as any, (null as unknown) as any);
 
     expect(actualResult).to.be.eql({
-      id: 13,
-      inputFileName: 'dwca_moose.zip',
-      status: 'Darwin Core Validated',
-      isValidating: false,
-      messageTypes: []
+      surveyObservationData: {
+        occurrence_submission_id: 13,
+        inputFileName: 'dwca_moose.zip',
+        status: 'Darwin Core Validated',
+        isValidating: false,
+        messageTypes: []
+      },
+      surveyObservationSupplementaryData: {
+        event_timestamp: '2020-01-01'
+      }
     });
   });
 
@@ -856,10 +1242,14 @@ describe('getObservationSubmission', () => {
     });
 
     sinon.stub(SurveyService.prototype, 'getLatestSurveyOccurrenceSubmission').resolves(({
-      id: 13,
+      occurrence_submission_id: 13,
       input_file_name: 'dwca_moose.zip',
       submission_status_type_name: 'Rejected'
     } as unknown) as IGetLatestSurveyOccurrenceSubmission);
+
+    sinon
+      .stub(HistoryPublishService.prototype, 'getOccurrenceSubmissionPublishRecord')
+      .resolves(({ event_timestamp: '2020-01-01' } as unknown) as OccurrenceSubmissionPublish);
 
     sinon.stub(SurveyRepository.prototype, 'getOccurrenceSubmissionMessages').resolves([
       {
@@ -883,27 +1273,32 @@ describe('getObservationSubmission', () => {
     await result(sampleReq, sampleRes as any, (null as unknown) as any);
 
     expect(actualResult).to.be.eql({
-      id: 13,
-      inputFileName: 'dwca_moose.zip',
-      status: 'Rejected',
-      isValidating: false,
-      messageTypes: [
-        {
-          severityLabel: 'Error',
-          messageTypeLabel: 'Missing Required Header',
-          messageStatus: 'Rejected',
-          messages: [
-            {
-              id: 1,
-              message: 'occurrence.txt - Missing Required Header - associatedTaxa - Missing required header'
-            },
-            {
-              id: 2,
-              message: 'occurrence.txt - Missing Required Header - associatedTaxa - Missing required header'
-            }
-          ]
-        }
-      ]
+      surveyObservationData: {
+        occurrence_submission_id: 13,
+        inputFileName: 'dwca_moose.zip',
+        status: 'Rejected',
+        isValidating: false,
+        messageTypes: [
+          {
+            severityLabel: 'Error',
+            messageTypeLabel: 'Missing Required Header',
+            messageStatus: 'Rejected',
+            messages: [
+              {
+                id: 1,
+                message: 'occurrence.txt - Missing Required Header - associatedTaxa - Missing required header'
+              },
+              {
+                id: 2,
+                message: 'occurrence.txt - Missing Required Header - associatedTaxa - Missing required header'
+              }
+            ]
+          }
+        ]
+      },
+      surveyObservationSupplementaryData: {
+        event_timestamp: '2020-01-01'
+      }
     });
   });
 

@@ -17,14 +17,15 @@ describe('useObservationApi', () => {
   const surveyId = 2;
 
   it('getObservationSubmission works as expected', async () => {
-    mock
-      .onGet(`/api/project/${projectId}/survey/${surveyId}/observation/submission/get`)
-      .reply(200, { id: 1, inputFileName: 'file.txt' });
+    mock.onGet(`/api/project/${projectId}/survey/${surveyId}/observation/submission/get`).reply(200, {
+      surveyObservationData: { occurrence_submission_id: 1, inputFileName: 'file.txt' },
+      surveyObservationSupplementaryData: null
+    });
 
     const result = await useObservationApi(axios).getObservationSubmission(projectId, surveyId);
 
-    expect(result.id).toEqual(1);
-    expect(result.inputFileName).toEqual('file.txt');
+    expect(result.surveyObservationData.occurrence_submission_id).toEqual(1);
+    expect(result.surveyObservationData.inputFileName).toEqual('file.txt');
   });
 
   it('deleteObservationSubmission works as expected', async () => {
@@ -93,8 +94,7 @@ describe('useObservationApi', () => {
   });
 
   it('getOccurrencesForView works as expected', async () => {
-    const projectId = 1;
-    const submissionId = 2;
+    const observation_submission_id = 1;
     const data = {
       geometry: null,
       taxonId: 'taxon123',
@@ -109,10 +109,11 @@ describe('useObservationApi', () => {
 
     mock.onPost(`/api/dwc/view-occurrences`).reply(200, data);
 
-    const result = await useObservationApi(axios).getOccurrencesForView(projectId, submissionId);
+    const result = await useObservationApi(axios).getOccurrencesForView(observation_submission_id);
 
     expect(result).toEqual(data);
   });
+
   it('processOccurrences works as expected', async () => {
     const projectId = 1;
     const submissionId = 2;
@@ -121,6 +122,17 @@ describe('useObservationApi', () => {
     mock.onPost(`/api/xlsx/process`).reply(200, true);
 
     const result = await useObservationApi(axios).processOccurrences(projectId, submissionId, surveyId);
+
+    expect(result).toEqual(true);
+  });
+
+  it('processDWCFile works as expected', async () => {
+    const projectId = 1;
+    const submissionId = 2;
+
+    mock.onPost(`api/dwc/process`).reply(200, true);
+
+    const result = await useObservationApi(axios).processDWCFile(projectId, submissionId);
 
     expect(result).toEqual(true);
   });

@@ -5,7 +5,9 @@ import sinonChai from 'sinon-chai';
 import { MESSAGE_CLASS_NAME } from '../../../../../../../constants/status';
 import * as db from '../../../../../../../database/db';
 import { HTTPError } from '../../../../../../../errors/http-error';
+import { SurveySummarySubmissionPublish } from '../../../../../../../repositories/history-publish-repository';
 import { ISummarySubmissionMessagesResponse } from '../../../../../../../repositories/summary-repository';
+import { HistoryPublishService } from '../../../../../../../services/history-publish-service';
 import { SummaryService } from '../../../../../../../services/summary-service';
 import { getMockDBConnection } from '../../../../../../../__mocks__/db';
 import * as summarySubmission from './get';
@@ -94,9 +96,10 @@ describe('getSummarySubmission', () => {
     ];
 
     const submission = {
-      id: 13,
+      survey_summary_submission_id: 13,
       file_name: 'file13.xlsx',
       key: 's3_key',
+      uuid: 's3_uuid',
       delete_timestamp: null,
       submission_message_type_id: 1,
       message: 'another error message',
@@ -108,14 +111,21 @@ describe('getSummarySubmission', () => {
     sinon.stub(SummaryService.prototype, 'getLatestSurveySummarySubmission').resolves(submission);
     sinon.stub(SummaryService.prototype, 'getSummarySubmissionMessages').resolves(messages);
 
+    sinon
+      .stub(HistoryPublishService.prototype, 'getSurveySummarySubmissionPublishRecord')
+      .resolves(({ artifact_revision_id: 1 } as unknown) as SurveySummarySubmissionPublish);
+
     const result = summarySubmission.getSurveySummarySubmission();
 
     await result(sampleReq, sampleRes as any, (null as unknown) as any);
 
     expect(actualResult).to.be.eql({
-      id: 13,
-      fileName: 'file13.xlsx',
-      messages
+      surveySummaryData: {
+        survey_summary_submission_id: submission.survey_summary_submission_id,
+        fileName: submission.file_name,
+        messages: messages
+      },
+      surveySummarySupplementaryData: { artifact_revision_id: 1 }
     });
   });
 

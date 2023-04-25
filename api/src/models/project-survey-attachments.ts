@@ -1,5 +1,6 @@
 import moment from 'moment';
 import { getLogger } from '../utils/logger';
+import { SurveySupplementaryData } from './survey-view';
 
 const defaultLog = getLogger('models/project-survey-attachments');
 
@@ -9,26 +10,29 @@ const defaultLog = getLogger('models/project-survey-attachments');
  * @export
  * @class GetAttachmentsData
  */
-export class GetAttachmentsData {
-  attachmentsList: any[];
-  reportAttachmentsList: any[];
+export class GetAttachmentsWithSupplementalData {
+  id: number;
+  fileName: string;
+  fileType: string;
+  lastModified: string;
+  size: string;
+  status: string;
+  supplementaryAttachmentData: SurveySupplementaryData;
 
-  constructor(attachmentsData?: any, reportAttachmentsData?: any) {
-    defaultLog.debug({ label: 'GetAttachmentsData', message: 'params', attachmentsData });
+  constructor(attachment: any, supplementaryData: any) {
+    defaultLog.debug({ label: 'GetAttachmentsWithSupplementalData', message: 'params' });
 
-    const mapAttachment = (item: any) => {
-      return {
-        id: item.id,
-        fileName: item.file_name,
-        fileType: item.file_type || 'Report',
-        lastModified: moment(item.update_date || item.create_date).toISOString(),
-        size: item.file_size,
-        status: item.status
-      };
-    };
-
-    this.attachmentsList = (attachmentsData?.length && attachmentsData.map(mapAttachment)) || [];
-    this.reportAttachmentsList = (reportAttachmentsData?.length && reportAttachmentsData.map(mapAttachment)) || [];
+    this.id =
+      attachment.survey_attachment_id ||
+      attachment.survey_report_attachment_id ||
+      attachment.project_attachment_id ||
+      attachment.project_report_attachment_id;
+    this.fileName = attachment.file_name;
+    this.fileType = attachment.file_type || 'Report';
+    this.lastModified = moment(attachment.update_date || attachment.create_date).toISOString();
+    this.size = attachment.file_size;
+    this.status = attachment.status;
+    this.supplementaryAttachmentData = supplementaryData;
   }
 }
 
