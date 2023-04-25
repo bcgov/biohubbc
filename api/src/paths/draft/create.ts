@@ -2,6 +2,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection } from '../../database/db';
+import { HTTP400 } from '../../errors/http-error';
 import { PostPutDraftObject } from '../../models/draft-create';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
 import { DraftService } from '../../services/draft-service';
@@ -116,8 +117,6 @@ export function createDraft(): RequestHandler {
 
     const sanitizedDraft = new PostPutDraftObject(req.body);
 
-    console.log('sanitized data: ', sanitizedDraft);
-
     try {
       await connection.open();
 
@@ -125,9 +124,11 @@ export function createDraft(): RequestHandler {
 
       const systemUserId = connection.systemUserId();
 
-      const draft = await draftService.createDraft(systemUserId, sanitizedDraft);
+      if (!systemUserId) {
+        throw new HTTP400('Failed to identify system user ID');
+      }
 
-      console.log('draft in the endpoint: ', draft);
+      const draft = await draftService.createDraft(systemUserId, sanitizedDraft);
 
       await connection.commit();
 
