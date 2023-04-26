@@ -1,4 +1,3 @@
-import { Paper } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
 import { grey } from '@material-ui/core/colors';
 import Link from '@material-ui/core/Link';
@@ -158,11 +157,15 @@ function AttachmentsTableRow<T extends IGetProjectAttachment | IGetSurveyAttachm
 function NoAttachments() {
   const classes = useStyles();
   return (
-    <Paper variant="outlined" className={classes.importFile}>
-      <Box display="flex" flex="1 1 auto" alignItems="center" justifyContent="center" p={2}>
-        <span data-testid="observations-nodata">No Documents</span>
-      </Box>
-    </Paper>
+    <Box
+      display="flex"
+      flex="1 1 auto"
+      alignItems="center"
+      justifyContent="center"
+      p={2}
+      className={classes.importFile}>
+      <span data-testid="observations-nodata">No Documents</span>
+    </Box>
   );
 }
 
