@@ -126,6 +126,11 @@ const EditProjectForm: React.FC<IEditProjectForm> = (props) => {
             summary="Provide the Project Coordinator's contact and agency information."
             component={
               <ProjectCoordinatorForm
+                first_nations={
+                  codes?.first_nations?.map((item) => {
+                    return item.name;
+                  }) || []
+                }
                 coordinator_agency={
                   codes?.coordinator_agency?.map((item) => {
                     return item.name;

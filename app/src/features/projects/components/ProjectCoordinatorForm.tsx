@@ -53,6 +53,7 @@ export const ProjectCoordinatorYupSchema = yup.object().shape({
 
 export interface IProjectCoordinatorFormProps {
   coordinator_agency: string[];
+  first_nations: string[];
 }
 
 /**
@@ -98,7 +99,7 @@ const ProjectCoordinatorForm: React.FC<IProjectCoordinatorFormProps> = (props) =
             id="coordinator_agency"
             name="coordinator.coordinator_agency"
             label="Contact Agency"
-            options={props.coordinator_agency}
+            options={[...props.coordinator_agency, ...props.first_nations].sort()}
             required={true}
           />
         </Grid>
