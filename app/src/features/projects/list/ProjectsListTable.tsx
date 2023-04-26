@@ -10,8 +10,10 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import clsx from 'clsx';
 import { SubmitStatusChip } from 'components/chips/SubmitStatusChip';
+import { SystemRoleGuard } from 'components/security/Guards';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { BioHubSubmittedStatusType } from 'constants/misc';
+import { SYSTEM_ROLE } from 'constants/roles';
 import { IGetDraftsListResponse } from 'interfaces/useDraftApi.interface';
 import { IGetProjectsListResponse } from 'interfaces/useProjectApi.interface';
 import React from 'react';
@@ -42,6 +44,8 @@ export interface IProjectsListTableProps {
   drafts: IGetDraftsListResponse[];
 }
 
+//TODO: PRODUCTION_BANDAGE: Remove <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
+
 const ProjectsListTable: React.FC<IProjectsListTableProps> = (props) => {
   const classes = useStyles();
 
@@ -64,15 +68,21 @@ const ProjectsListTable: React.FC<IProjectsListTableProps> = (props) => {
             <TableRow>
               <TableCell>Name</TableCell>
               <TableCell>Type</TableCell>
-              <TableCell>Contact Agency</TableCell>
-              <TableCell>Status</TableCell>
-              <TableCell>Start Date</TableCell>
-              <TableCell>End Date</TableCell>
+              <SystemRoleGuard
+                validSystemRoles={[
+                  SYSTEM_ROLE.DATA_ADMINISTRATOR,
+                  SYSTEM_ROLE.SYSTEM_ADMIN,
+                  SYSTEM_ROLE.PROJECT_CREATOR
+                ]}>
+                <TableCell width={150}>Status</TableCell>
+              </SystemRoleGuard>
+              <TableCell width={150}>Start Date</TableCell>
+              <TableCell width={150}>End Date</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             <TableRow>
-              <TableCell colSpan={6}>
+              <TableCell colSpan={5}>
                 <Box display="flex" justifyContent="center">
                   No Results
                 </Box>
@@ -91,7 +101,14 @@ const ProjectsListTable: React.FC<IProjectsListTableProps> = (props) => {
           <TableRow>
             <TableCell>Name</TableCell>
             <TableCell>Type</TableCell>
-            <TableCell width={150}>Status</TableCell>
+            <SystemRoleGuard
+              validSystemRoles={[
+                SYSTEM_ROLE.DATA_ADMINISTRATOR,
+                SYSTEM_ROLE.SYSTEM_ADMIN,
+                SYSTEM_ROLE.PROJECT_CREATOR
+              ]}>
+              <TableCell width={150}>Status</TableCell>
+            </SystemRoleGuard>
             <TableCell width={150}>Start Date</TableCell>
             <TableCell width={150}>End Date</TableCell>
           </TableRow>
@@ -130,9 +147,11 @@ const ProjectsListTable: React.FC<IProjectsListTableProps> = (props) => {
                 </Link>
               </TableCell>
               <TableCell>{project.projectData.project_type}</TableCell>
-              <TableCell>
-                <SubmitStatusChip status={getProjectSubmissionStatus(project)} />
-              </TableCell>
+              <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
+                <TableCell>
+                  <SubmitStatusChip status={getProjectSubmissionStatus(project)} />
+                </TableCell>
+              </SystemRoleGuard>
               <TableCell>
                 {getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, project.projectData.start_date)}
               </TableCell>

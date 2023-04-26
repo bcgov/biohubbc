@@ -12,11 +12,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }));
 
-export interface INoObservationsCardProps {
-  onImport: () => void;
-}
-
-const NoObservationsCard: React.FC<INoObservationsCardProps> = (props) => {
+const NoObservationsCard: React.FC = () => {
   const classes = useStyles();
 
   return (

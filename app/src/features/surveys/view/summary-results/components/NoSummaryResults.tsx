@@ -12,10 +12,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }));
 
-interface INoSummaryResultsProps {
-  clickToImport: () => void;
-}
-const NoSummaryResults = (props: INoSummaryResultsProps) => {
+const NoSummaryResults = () => {
   const classes = useStyles();
   return (
     <>
