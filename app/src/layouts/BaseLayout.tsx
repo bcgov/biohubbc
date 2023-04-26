@@ -1,12 +1,26 @@
 import Box from '@material-ui/core/Box';
 import CssBaseline from '@material-ui/core/CssBaseline';
+import { makeStyles, Theme } from '@material-ui/core/styles';
 import Alert from '@material-ui/lab/Alert';
+import clsx from 'clsx';
 import Footer from 'components/layout/Footer';
 import Header from 'components/layout/Header';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import React, { PropsWithChildren } from 'react';
 
-const BaseLayout = (props: PropsWithChildren<Record<never, unknown>>) => {
+interface IBaseLayoutProps {
+  className?: string
+}
+
+const useStyles = makeStyles((theme: Theme) => ({
+  baseLayoutContainer: {
+    height: "100vh",
+    display: "flex",
+    flexDirection: "column"
+  }
+}));
+
+const BaseLayout = (props: PropsWithChildren<IBaseLayoutProps>) => {
   function isSupportedBrowser() {
     if (
       navigator.userAgent.indexOf('Chrome') !== -1 ||
@@ -20,8 +34,10 @@ const BaseLayout = (props: PropsWithChildren<Record<never, unknown>>) => {
     return false;
   }
 
+  const classes = useStyles();
+
   return (
-    <Box height="100vh" display="flex" flexDirection="column">
+    <Box className={clsx(classes.baseLayoutContainer, props.className)}>
       <CssBaseline />
       <DialogContextProvider>
         {!isSupportedBrowser() && (

@@ -86,11 +86,9 @@ const AppRouter: React.FC = () => {
         </BaseLayout>
       </RouteWithTitle>
 
-      <RouteWithTitle path="/admin/resources" title={getTitle('Resources')}>
+      <RouteWithTitle path="/resources" title={getTitle('Resources')}>
         <BaseLayout>
-          <AuthenticatedRouteGuard>
-            <ResourcesPage />
-          </AuthenticatedRouteGuard>
+          <ResourcesPage />
         </BaseLayout>
       </RouteWithTitle>
 

@@ -127,8 +127,6 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 const Header: React.FC = () => {
   const classes = useStyles();
-  // const config = useContext(ConfigContext);
-
   const { keycloakWrapper } = useContext(AuthStateContext);
 
   // Authenticated view
@@ -224,35 +222,40 @@ const Header: React.FC = () => {
           </Container>
         </Toolbar>
 
-        <AuthGuard>
-          <Box className={classes.mainNav}>
-            <Container maxWidth="xl">
-              <Toolbar
-                variant="dense"
-                disableGutters
-                className={classes.mainNavToolbar}
-                role="navigation"
-                aria-label="Main Navigation">
+        <Box className={classes.mainNav}>
+          <Container maxWidth="xl">
+            <Toolbar
+              variant="dense"
+              disableGutters
+              className={classes.mainNavToolbar}
+              role="navigation"
+              aria-label="Main Navigation">
+              <UnAuthGuard>
+                <RouterLink to="/" id="menu_home">
+                  Home
+                </RouterLink>
+              </UnAuthGuard>
+              <AuthGuard>
                 <RouterLink to="/admin/projects" id="menu_projects">
                   Projects
                 </RouterLink>
-                <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
-                  <RouterLink to="/admin/search" id="menu_search">
-                    Map
-                  </RouterLink>
-                </SystemRoleGuard>
-                <RouterLink to="/admin/resources" id="menu_resources">
-                  Resources
+              </AuthGuard>
+              <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
+                <RouterLink to="/admin/search" id="menu_search">
+                  Map
                 </RouterLink>
-                <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-                  <RouterLink to="/admin/users" id="menu_admin_users">
-                    Manage Users
-                  </RouterLink>
-                </SystemRoleGuard>
-              </Toolbar>
-            </Container>
-          </Box>
-        </AuthGuard>
+              </SystemRoleGuard>
+              <RouterLink to="/resources" id="menu_resources">
+                Resources
+              </RouterLink>
+              <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+                <RouterLink to="/admin/users" id="menu_admin_users">
+                  Manage Users
+                </RouterLink>
+              </SystemRoleGuard>
+            </Toolbar>
+          </Container>
+        </Box>
       </AppBar>
 
       <Dialog open={open}>
