@@ -18,23 +18,36 @@ const useStyles = makeStyles((theme: Theme) => ({
     backgroundColor: 'blue',
     minHeight: '100vh',
     background: `url('/assets/hero.jpg')`,
-    backgroundPosition: '',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
+    backgroundZize: 'cover',
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
-    height: '30rem'
+    height: '30rem',
+    '& > main': {
+      display: 'flex'
+    }
   },
   heroHeader: {
-    mt: -4,
+    // mt: -4,
     fontSize: '3rem',
     letterSpacing: '-0.03rem'
   },
   heroSubheader: {
-    mt: 3,
-    mb: 6,
+    marginTop: '3rem',
+    marginBottom: '6rem',
     maxWidth: '45ch',
-    fontSize: '1.75rem',
-    lineHeight: '1.25'
+    fontSize: '1.25rem',
+    lineHeight: '1.5'
+  },
+  heroButton: {
+    color: '#003366',
+    fontWeight: 700,
+    backgroundColor: '#fcba19'
+  },
+  actionsContainer: {
+    maxWidth: '45ch',
   }
 }));
 
@@ -49,22 +62,18 @@ export const LandingPage: React.FC<ILandingPageProps> = ({ originalPath }) => {
 
   return (
     <BaseLayout className={classes.baseLayoutContainer}>
-      <Container maxWidth="md" className={''}>
+      <Container maxWidth="sm" className={''}>
         <Typography variant="h1" className={classes.heroHeader}>
           Species Inventory Management System
         </Typography>
-        <Typography
-          variant="body1"
-          color="textSecondary"
-          className={classes.heroSubheader}
-        >
+        <Typography variant="body1" className={classes.heroSubheader}>
           Upload and submit your species inventory project data to help understand how we can better protect and preserve biodiversity in British Columbia.
         </Typography>
-        <Box>
+        <Box className={classes.actionsContainer}>
           <p>
             To access this application, you must use a valid BC government-issued IDIR or BCeID account credentia
           </p>
-          <Button onClick={() => handleLogin()} color='secondary' size='large'>Log In</Button>
+          <Button onClick={() => handleLogin()} variant='contained' className={classes.heroButton} size='large'>Log In</Button>
           <p>Don't have an account? <a href='/'>Register here.</a></p>
         </Box>
       </Container>
