@@ -68,15 +68,21 @@ const ProjectsListTable: React.FC<IProjectsListTableProps> = (props) => {
             <TableRow>
               <TableCell>Name</TableCell>
               <TableCell>Type</TableCell>
-              <TableCell>Contact Agency</TableCell>
-              <TableCell>Status</TableCell>
-              <TableCell>Start Date</TableCell>
-              <TableCell>End Date</TableCell>
+              <SystemRoleGuard
+                validSystemRoles={[
+                  SYSTEM_ROLE.DATA_ADMINISTRATOR,
+                  SYSTEM_ROLE.SYSTEM_ADMIN,
+                  SYSTEM_ROLE.PROJECT_CREATOR
+                ]}>
+                <TableCell width={150}>Status</TableCell>
+              </SystemRoleGuard>
+              <TableCell width={150}>Start Date</TableCell>
+              <TableCell width={150}>End Date</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             <TableRow>
-              <TableCell colSpan={6}>
+              <TableCell colSpan={5}>
                 <Box display="flex" justifyContent="center">
                   No Results
                 </Box>
