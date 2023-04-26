@@ -67,17 +67,15 @@ export const validationProjectYupSchema = ProjectCoordinatorYupSchema.concat(Pro
 
 //Fuction to get the list of coordinator agencies from the codeset
 export const getCoordinatorAgencyOptions = (codes: IGetAllCodeSetsResponse) => {
-  const agencyOptions: string[] = [];
-
-  codes?.coordinator_agency?.forEach((item) => {
-    agencyOptions.push(item.name);
+  const coordinatorAgency = codes?.coordinator_agency?.map((item) => {
+    return item.name;
   });
 
-  codes?.first_nations?.forEach((item) => {
-    agencyOptions.push(item.name);
+  const firstNations = codes?.first_nations?.map((item) => {
+    return item.name;
   });
 
-  return agencyOptions.sort();
+  return [...coordinatorAgency, ...firstNations].sort();
 };
 
 /**
