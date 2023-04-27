@@ -58,8 +58,32 @@ export const ProjectFundingFormArrayItemYupSchema = yup.object().shape({
   end_date: yup.string().isValidDateString().required('Required').isEndDateAfterStartDate('start_date')
 });
 
-export interface IProjectFundingItemFormProps {
+/*
+  Ok so what should I be doing here? I think I'll just need to... ummm uhhh
+  ok so this should just take a single array of items plus the nonsense actions
+  the items will need the id, label and a type (duh)
+
+  1. modify the items to add type
+  2. Add the first nations names to the list
+  3. Add special consideration when selecting a first nations name
+  4. modify the save to account for the changes
+  5. Modify the fetch to account for any changes in the model
+  
+*/
+export interface IProjectFundingItemFormProps1 {
   funding_sources: IMultiAutocompleteFieldOption[];
+  investment_action_category: IInvestmentActionCategoryOption[];
+}
+
+export enum FundingSourceType {
+  FUNDING_SOURCE,
+  FIRST_NATIONS
+}
+export interface IMultiAutocompleteFieldOptionWithType extends IMultiAutocompleteFieldOption {
+  type: FundingSourceType;
+}
+export interface IProjectFundingItemFormProps {
+  sources: IMultiAutocompleteFieldOptionWithType[];
   investment_action_category: IInvestmentActionCategoryOption[];
 }
 
@@ -71,10 +95,9 @@ export interface IProjectFundingItemFormProps {
  * @param {*} props
  * @return {*}
  */
-
 const ProjectFundingItemForm: React.FC<IProjectFundingItemFormProps> = (props) => {
   const formikProps = useFormikContext<IProjectFundingFormArrayItem>();
-
+  console.log(props.sources);
   const { values, touched, errors, handleChange, handleSubmit, setFieldValue } = formikProps;
 
   // Only show investment_action_category if certain agency_id values are selected
@@ -118,7 +141,7 @@ const ProjectFundingItemForm: React.FC<IProjectFundingItemFormProps> = (props) =
                 error={touched.agency_id && Boolean(errors.agency_id)}
                 displayEmpty
                 inputProps={{ 'aria-label': 'Agency Name', 'data-testid': 'agency-id' }}>
-                {props.funding_sources.map((item) => (
+                {props.sources.map((item) => (
                   <MenuItem key={item.value} value={item.value}>
                     {item.label}
                   </MenuItem>

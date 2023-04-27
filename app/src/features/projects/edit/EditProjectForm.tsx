@@ -9,6 +9,7 @@ import React from 'react';
 import ProjectCoordinatorForm from '../components/ProjectCoordinatorForm';
 import ProjectDetailsForm from '../components/ProjectDetailsForm';
 import ProjectFundingForm from '../components/ProjectFundingForm';
+import { FundingSourceType } from '../components/ProjectFundingItemForm';
 import ProjectIUCNForm from '../components/ProjectIUCNForm';
 import ProjectLocationForm from '../components/ProjectLocationForm';
 import ProjectObjectivesForm from '../components/ProjectObjectivesForm';
@@ -153,7 +154,7 @@ const EditProjectForm: React.FC<IEditProjectForm> = (props) => {
                     <ProjectFundingForm
                       funding_sources={
                         codes?.funding_source?.map((item) => {
-                          return { value: item.id, label: item.name };
+                          return { value: item.id, label: item.name, type: FundingSourceType.FUNDING_SOURCE };
                         }) || []
                       }
                       investment_action_category={
@@ -161,6 +162,7 @@ const EditProjectForm: React.FC<IEditProjectForm> = (props) => {
                           return { value: item.id, fs_id: item.fs_id, label: item.name };
                         }) || []
                       }
+                      first_nations={[]}
                     />
                   </Box>
                 </Box>

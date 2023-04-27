@@ -22,6 +22,7 @@ import React, { useState } from 'react';
 import { getFormattedAmount, getFormattedDateRangeString } from 'utils/Utils';
 import yup from 'utils/YupSchema';
 import ProjectFundingItemForm, {
+  IMultiAutocompleteFieldOptionWithType,
   IProjectFundingFormArrayItem,
   ProjectFundingFormArrayItemInitialValues,
   ProjectFundingFormArrayItemYupSchema
@@ -46,8 +47,9 @@ export interface IInvestmentActionCategoryOption extends IMultiAutocompleteField
 }
 
 export interface IProjectFundingFormProps {
-  funding_sources: IMultiAutocompleteFieldOption[];
+  funding_sources: IMultiAutocompleteFieldOptionWithType[];
   investment_action_category: IInvestmentActionCategoryOption[];
+  first_nations: IMultiAutocompleteFieldOptionWithType[];
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -78,6 +80,10 @@ const useStyles = makeStyles((theme: Theme) => ({
  * @return {*}
  */
 const ProjectFundingForm: React.FC<IProjectFundingFormProps> = (props) => {
+  /*
+    Look into Not applicable table keys
+
+  */
   const classes = useStyles();
 
   const formikProps = useFormikContext<ICreateProjectRequest>();
@@ -121,7 +127,7 @@ const ProjectFundingForm: React.FC<IProjectFundingFormProps> = (props) => {
                   component={{
                     element: (
                       <ProjectFundingItemForm
-                        funding_sources={props.funding_sources}
+                        sources={[...props.funding_sources, ...props.first_nations]}
                         investment_action_category={props.investment_action_category}
                       />
                     ),
@@ -152,7 +158,7 @@ const ProjectFundingForm: React.FC<IProjectFundingFormProps> = (props) => {
                     const investment_action_category_value = props.investment_action_category.filter(
                       (item) => item.value === fundingSource.investment_action_category
                     )?.[0]?.label;
-
+                    console.log(investment_action_category_value);
                     return (
                       <ListItem disableGutters className={classes.fundingListItem} key={index}>
                         <Paper variant="outlined">

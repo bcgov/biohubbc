@@ -19,6 +19,7 @@ import ProjectFundingForm, {
   ProjectFundingFormInitialValues,
   ProjectFundingFormYupSchema
 } from '../components/ProjectFundingForm';
+import { FundingSourceType } from '../components/ProjectFundingItemForm';
 import ProjectIUCNForm, { ProjectIUCNFormInitialValues, ProjectIUCNFormYupSchema } from '../components/ProjectIUCNForm';
 import ProjectLocationForm, {
   ProjectLocationFormInitialValues,
@@ -176,12 +177,17 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
                   <ProjectFundingForm
                     funding_sources={
                       codes?.funding_source?.map((item) => {
-                        return { value: item.id, label: item.name };
+                        return { value: item.id, label: item.name, type: FundingSourceType.FUNDING_SOURCE };
                       }) || []
                     }
                     investment_action_category={
                       codes?.investment_action_category?.map((item) => {
                         return { value: item.id, fs_id: item.fs_id, label: item.name };
+                      }) || []
+                    }
+                    first_nations={
+                      codes.first_nations?.map((item) => {
+                        return { value: item.id, label: item.name, type: FundingSourceType.FIRST_NATIONS };
                       }) || []
                     }
                   />

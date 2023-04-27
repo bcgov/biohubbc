@@ -1,6 +1,7 @@
 import ProjectCoordinatorForm from 'features/projects/components/ProjectCoordinatorForm';
 import ProjectDetailsForm from 'features/projects/components/ProjectDetailsForm';
 import ProjectFundingForm from 'features/projects/components/ProjectFundingForm';
+import { FundingSourceType } from 'features/projects/components/ProjectFundingItemForm';
 import ProjectIUCNForm from 'features/projects/components/ProjectIUCNForm';
 import ProjectLocationForm from 'features/projects/components/ProjectLocationForm';
 import ProjectObjectivesForm from 'features/projects/components/ProjectObjectivesForm';
@@ -74,9 +75,10 @@ const ProjectStepComponents: React.FC<IProjectStepComponentsProps> = (props) => 
 
       {component === 'ProjectFunding' && (
         <ProjectFundingForm
+          first_nations={[]}
           funding_sources={
             codes?.funding_source?.map((item) => {
-              return { value: item.id, label: item.name };
+              return { value: item.id, label: item.name, type: FundingSourceType.FUNDING_SOURCE };
             }) || []
           }
           investment_action_category={
