@@ -1032,26 +1032,6 @@ describe('ValidationService', () => {
       expect(response.media_state.fileErrors).is.empty;
     });
 
-    // it('should throw Media is invalid error', async () => {
-    //   const service = mockService();
-    //   const mockMediaState = {
-    //     fileName: 'test file',
-    //     isValid: false
-    //   } as IMediaState;
-    //   const xlsx = new XLSXCSV(buildFile('test file', {}));
-    //   const parser = new ValidationSchemaParser({});
-
-    //   sinon.stub(XLSXCSV.prototype, 'getMediaState').returns(mockMediaState);
-
-    //   try {
-    //     await service.validateXLSX_occurrence(xlsx, parser);
-    //     expect.fail();
-    //   } catch (error) {
-    //     expect(error).to.be.instanceOf(SubmissionError);
-    //     expect((error as SubmissionError).submissionMessages[0].type).to.be.eql(SUBMISSION_MESSAGE_TYPE.INVALID_MEDIA);
-    //   }
-    // });
-
     it('should return valid state object with content errors', async () => {
       const service = mockService();
       const mockState = {

@@ -304,7 +304,6 @@ export class ValidationService extends DBService {
 
     // not sure how to trigger these through testing
     if (!(parsedMedia instanceof MediaFile)) {
-      console.log('!parsedMedia instanceof MediaFile');
       throw SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.INVALID_MEDIA);
     }
 
