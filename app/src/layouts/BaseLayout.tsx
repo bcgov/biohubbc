@@ -17,6 +17,13 @@ const useStyles = makeStyles((theme: Theme) => ({
     height: "100vh",
     display: "flex",
     flexDirection: "column"
+  },
+  alert: {
+    borderRadius: 0,
+  },
+  globalAlert: {
+    color: theme.palette.primary.main,
+    backgroundColor: '#fcba19',
   }
 }));
 
@@ -41,7 +48,9 @@ const BaseLayout = (props: PropsWithChildren<IBaseLayoutProps>) => {
       <CssBaseline />
       <DialogContextProvider>
         {!isSupportedBrowser() && (
-          <Alert severity="error">This is an unsupported browser. Some functionality may not work as expected.</Alert>
+          <Alert severity="error" className={classes.alert}>
+            This is an unsupported browser. Some functionality may not work as expected.
+          </Alert>
         )}
 
         <Header />

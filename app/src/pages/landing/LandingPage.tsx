@@ -50,8 +50,8 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   heroButton: {
     color: theme.palette.primary.main,
-    fontWeight: 700,
     backgroundColor: '#fcba19',
+    fontWeight: 700,
     padding: '12px 44px'
   },
   loginButton: {

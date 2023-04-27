@@ -35,7 +35,8 @@ describe('Header', () => {
         username: 'testusername',
         displayName: 'IDID / testusername',
         email: 'test@email',
-        refresh: () => {}
+        refresh: () => {},
+        getLoginUrl: () => '/login'
       }
     };
 
@@ -47,7 +48,7 @@ describe('Header', () => {
       </AuthStateContext.Provider>
     );
 
-    expect(getByText('Projects')).toBeVisible();
+    expect(getByText('My Projects')).toBeVisible();
     expect(getByText('Map')).toBeVisible();
     expect(getByText('Manage Users')).toBeVisible();
   });
@@ -79,7 +80,8 @@ describe('Header', () => {
         email: 'test@email.com',
         firstName: 'testfirst',
         lastName: 'testlast',
-        refresh: () => {}
+        refresh: () => {},
+        getLoginUrl: () => '/login'
       }
     };
 
@@ -91,7 +93,7 @@ describe('Header', () => {
       </AuthStateContext.Provider>
     );
 
-    expect(getByText('Projects')).toBeVisible();
+    expect(getByText('My Projects')).toBeVisible();
     expect(getByText('Map')).toBeVisible();
     expect(getByText('Manage Users')).toBeVisible();
     expect(getByText('Resources')).toBeVisible();
@@ -116,7 +118,8 @@ describe('Header', () => {
         email: 'test@email.com',
         firstName: 'testfirst',
         lastName: 'testlast',
-        refresh: () => {}
+        refresh: () => {},
+        getLoginUrl: () => '/login'
       }
     };
 
@@ -153,7 +156,8 @@ describe('Header', () => {
           email: 'test@email.com',
           firstName: 'testfirst',
           lastName: 'testlast',
-          refresh: () => {}
+          refresh: () => {},
+          getLoginUrl: () => '/login'
         }
       };
 
