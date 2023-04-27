@@ -59,15 +59,13 @@ export const ProjectFundingFormArrayItemYupSchema = yup.object().shape({
 });
 
 /*
-  Ok so what should I be doing here? I think I'll just need to... ummm uhhh
-  ok so this should just take a single array of items plus the nonsense actions
-  the items will need the id, label and a type (duh)
 
   1. modify the items to add type
   2. Add the first nations names to the list
   3. Add special consideration when selecting a first nations name
   4. modify the save to account for the changes
   5. Modify the fetch to account for any changes in the model
+  6. create an enum or type to account for the text on the 'action' items
   
 */
 export interface IProjectFundingItemFormProps1 {
@@ -141,8 +139,8 @@ const ProjectFundingItemForm: React.FC<IProjectFundingItemFormProps> = (props) =
                 error={touched.agency_id && Boolean(errors.agency_id)}
                 displayEmpty
                 inputProps={{ 'aria-label': 'Agency Name', 'data-testid': 'agency-id' }}>
-                {props.sources.map((item) => (
-                  <MenuItem key={item.value} value={item.value}>
+                {props.sources.alphabetizeObjects('label').map((item) => (
+                  <MenuItem key={`${item.type}-${item.value}`} value={item.value}>
                     {item.label}
                   </MenuItem>
                 ))}
