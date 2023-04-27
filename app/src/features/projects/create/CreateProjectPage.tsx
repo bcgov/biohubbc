@@ -6,10 +6,12 @@ import Paper from '@material-ui/core/Paper';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
+import assert from 'assert';
 import EditDialog from 'components/dialog/EditDialog';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import YesNoDialog from 'components/dialog/YesNoDialog';
 import { CreateProjectDraftI18N, CreateProjectI18N, DeleteProjectDraftI18N } from 'constants/i18n';
+import { CodesContext } from 'contexts/codesContext';
 import { DialogContext } from 'contexts/dialogContext';
 import ProjectDraftForm, {
   IProjectDraftForm,
@@ -78,9 +80,10 @@ const CreateProjectPage: React.FC = () => {
   const [enableCancelCheck, setEnableCancelCheck] = useState(true);
 
   const dialogContext = useContext(DialogContext);
+  const codesContext = useContext(CodesContext);
 
-  const codesDataLoader = useDataLoader(() => biohubApi.codes.getAllCodeSets());
-  codesDataLoader.load();
+  const codes = codesContext.codesDataLoader.data;
+  assert(codesContext.codesDataLoader.data);
 
   const draftId = Number(queryParams.draftId);
 
@@ -268,7 +271,7 @@ const CreateProjectPage: React.FC = () => {
     history.push(`/admin/projects/`);
   };
 
-  if (!codesDataLoader.data || (draftId && !draftDataLoader.data)) {
+  if (!codes || (draftId && !draftDataLoader.data)) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
@@ -337,7 +340,7 @@ const CreateProjectPage: React.FC = () => {
             <Box p={5}>
               <CreateProjectForm
                 handleSubmit={createProject}
-                codes={codesDataLoader.data}
+                codes={codes}
                 formikRef={formikRef}
                 initialValues={draftDataLoader.data?.data}
               />
