@@ -133,7 +133,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 const Header: React.FC = () => {
   const classes = useStyles();
   const { keycloakWrapper } = useContext(AuthStateContext);
-  const loginUrl = useMemo(() => keycloakWrapper?.keycloak?.createLoginUrl() || '/login', []);
+  const loginUrl = useMemo(() => keycloakWrapper?.getLoginUrl(), []);
 
   // Authenticated view
   const LoggedInUser = () => {
@@ -207,7 +207,7 @@ const Header: React.FC = () => {
         <Toolbar disableGutters className={classes.govHeaderToolbar}>
           <Container maxWidth="xl">
             <Box display="flex" justifyContent="space-between" width="100%">
-              <RouterLink to="/projects" className={classes.brand} aria-label="Go to SIMS Home">
+              <RouterLink to="/" className={classes.brand} aria-label="Go to SIMS Home">
                 <picture>
                   <source srcSet={headerImageLarge} media="(min-width: 1200px)"></source>
                   <source srcSet={headerImageSmall} media="(min-width: 600px)"></source>
@@ -270,9 +270,8 @@ const Header: React.FC = () => {
         <DialogTitle>Contact Support</DialogTitle>
         <DialogContent>
           <Typography variant="body1" component="div" color="textSecondary">
-            For technical support or questions about this application, please email&nbsp;
+            For technical support or questions about this application, please email &zwnj;
             <a href="mailto:biohub@gov.bc.ca?subject=Support Request - Species Inventory Management System">
-              {' '}
               biohub@gov.bc.ca
             </a>
             .
