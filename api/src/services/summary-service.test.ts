@@ -601,7 +601,7 @@ describe('SummaryService', () => {
       }
     });
 
-    it('should throw INVALID_MEDIA error if validateXLSX fails with invalid media', async () => {
+    it('should1 throw INVALID_MEDIA error if validateXLSX fails with invalid media', async () => {
       const service = mockService();
       const file = new MediaFile('test.txt', 'text/plain', Buffer.of(0));
       const xlsxCsv = new XLSXCSV(file);
