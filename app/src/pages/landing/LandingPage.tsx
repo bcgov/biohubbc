@@ -6,21 +6,21 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import { AuthStateContext } from 'contexts/authStateContext';
 import BaseLayout from 'layouts/BaseLayout';
-import { ensureProtocol } from 'utils/Utils';
-
-interface ILandingPageProps {
-  originalPath: string;
-}
 
 const useStyles = makeStyles((theme: Theme) => ({
-  baseLayoutContainer: {
-    backgroundColor: '#00438A', // Contingency background-color pending hero image load
-    color: 'white',
-    minHeight: '100vh',
-    background: `url('/assets/hero.jpg')`,
+  baseLayoutContainer: {  
+    backgroundImage: `url('/assets/hero.jpg')`,
     backgroundPosition: 'center',
     backgroundRepeat: 'no-repeat',
     backgroundSize: 'cover',
+    
+    // Contingency background-color pending hero image load
+    background: '#00438A linear-gradient(to bottom, #00438A, #00274D)',
+    // backgroundColor: '', 
+    
+    color: theme.palette.primary.contrastText,
+    minHeight: '100vh',
+    
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
@@ -45,7 +45,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   heroButton: {
     textTransform: 'uppercase',
-    color: '#003366',
+    color: theme.palette.primary.main,
     fontWeight: 700,
     backgroundColor: '#fcba19',
     padding: '12px 44px'
@@ -63,11 +63,11 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }));
 
-export const LandingPage: React.FC<ILandingPageProps> = ({ originalPath }) => {
+export const LandingPage = () => {
   const { keycloakWrapper } = useContext(AuthStateContext);
   const classes = useStyles();
 
-  const loginUrl = useMemo(() => ensureProtocol(keycloakWrapper?.keycloak?.createLoginUrl() || ''), []);
+  const loginUrl = useMemo(() => keycloakWrapper?.keycloak?.createLoginUrl() || '/login', []);
 
   return (
     <BaseLayout className={classes.baseLayoutContainer}>

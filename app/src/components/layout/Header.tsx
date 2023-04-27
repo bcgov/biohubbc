@@ -19,7 +19,7 @@ import { AuthGuard, SystemRoleGuard, UnAuthGuard } from 'components/security/Gua
 import { SYSTEM_ROLE } from 'constants/roles';
 import { AuthStateContext } from 'contexts/authStateContext';
 import { SYSTEM_IDENTITY_SOURCE } from 'hooks/useKeycloakWrapper';
-import React, { useContext } from 'react';
+import React, { useContext, useMemo } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { getFormattedIdentitySource } from 'utils/Utils';
 
@@ -96,6 +96,11 @@ const useStyles = makeStyles((theme: Theme) => ({
       outlineOffset: '-1px'
     }
   },
+  loginButton: {
+    '&:hover': {
+      textDecoration: 'none !important'
+    }
+  },
   supportButton: {
     color: '#ffffff',
     fontSize: '14px'
@@ -128,6 +133,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 const Header: React.FC = () => {
   const classes = useStyles();
   const { keycloakWrapper } = useContext(AuthStateContext);
+  const loginUrl = useMemo(() => keycloakWrapper?.keycloak?.createLoginUrl() || '/login', []);
 
   // Authenticated view
   const LoggedInUser = () => {
@@ -166,7 +172,9 @@ const Header: React.FC = () => {
           Contact Support
         </Button>
         <Button
-          onClick={() => keycloakWrapper?.keycloak?.login()}
+          component='a'
+          href={loginUrl}
+          className={classes.loginButton}
           type="submit"
           variant="contained"
           color="primary"
