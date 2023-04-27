@@ -1,4 +1,4 @@
-import { KeycloakProvider } from '@react-keycloak/web';
+import { ReactKeycloakProvider } from '@react-keycloak/web';
 import { cleanup, renderHook } from '@testing-library/react-hooks';
 import Keycloak, { KeycloakPromise } from 'keycloak-js';
 import React, { PropsWithChildren } from 'react';
@@ -36,7 +36,7 @@ const getMockTestWrapper = (userInfo?: any) => {
 
   return {
     wrapper: (props: PropsWithChildren<void>) => (
-      <KeycloakProvider keycloak={keycloak}>{props.children}</KeycloakProvider>
+      <ReactKeycloakProvider keycloak={keycloak}>{props.children}</ReactKeycloakProvider>
     ),
     mockLoadUserInfo
   };

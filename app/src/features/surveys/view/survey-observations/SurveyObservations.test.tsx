@@ -1,8 +1,10 @@
 import { cleanup, render, waitFor } from '@testing-library/react';
+import { AuthStateContext } from 'contexts/authStateContext';
 import { ISurveyContext, SurveyContext } from 'contexts/surveyContext';
 import { DataLoader } from 'hooks/useDataLoader';
 import React from 'react';
 import { MemoryRouter } from 'react-router';
+import { getMockAuthState, SystemAdminAuthState } from 'test-helpers/auth-helpers';
 import { getObservationSubmissionResponse } from 'test-helpers/survey-helpers';
 import SurveyObservations from './SurveyObservations';
 
@@ -13,6 +15,8 @@ describe('SurveyObservations', () => {
   });
 
   it('renders correctly', async () => {
+    const authState = getMockAuthState({ base: SystemAdminAuthState });
+
     const mockSurveyContext: ISurveyContext = ({
       observationDataLoader: ({
         data: getObservationSubmissionResponse,
@@ -24,11 +28,13 @@ describe('SurveyObservations', () => {
     } as unknown) as ISurveyContext;
 
     const { getByText } = render(
-      <MemoryRouter>
-        <SurveyContext.Provider value={mockSurveyContext}>
-          <SurveyObservations />
-        </SurveyContext.Provider>
-      </MemoryRouter>
+      <AuthStateContext.Provider value={authState}>
+        <MemoryRouter>
+          <SurveyContext.Provider value={mockSurveyContext}>
+            <SurveyObservations />
+          </SurveyContext.Provider>
+        </MemoryRouter>
+      </AuthStateContext.Provider>
     );
 
     await waitFor(() => {

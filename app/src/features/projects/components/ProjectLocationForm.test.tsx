@@ -1,6 +1,8 @@
 import { render, waitFor } from '@testing-library/react';
+import { AuthStateContext } from 'contexts/authStateContext';
 import { Formik } from 'formik';
 import React from 'react';
+import { getMockAuthState, SystemAdminAuthState } from 'test-helpers/auth-helpers';
 import ProjectLocationForm, {
   IProjectLocationForm,
   ProjectLocationFormInitialValues,
@@ -47,15 +49,19 @@ describe('ProjectLocationForm', () => {
       }
     };
 
+    const authState = getMockAuthState({ base: SystemAdminAuthState });
+
     const { getByLabelText, getByText } = render(
-      <Formik
-        initialValues={existingFormValues}
-        validationSchema={ProjectLocationFormYupSchema}
-        validateOnBlur={true}
-        validateOnChange={false}
-        onSubmit={async () => {}}>
-        {() => <ProjectLocationForm />}
-      </Formik>
+      <AuthStateContext.Provider value={authState}>
+        <Formik
+          initialValues={existingFormValues}
+          validationSchema={ProjectLocationFormYupSchema}
+          validateOnBlur={true}
+          validateOnChange={false}
+          onSubmit={async () => {}}>
+          {() => <ProjectLocationForm />}
+        </Formik>
+      </AuthStateContext.Provider>
     );
 
     await waitFor(() => {

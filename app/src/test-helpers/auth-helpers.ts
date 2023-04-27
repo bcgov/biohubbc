@@ -1,7 +1,8 @@
+import { SYSTEM_ROLE } from 'constants/roles';
 import { IAuthState } from 'contexts/authStateContext';
 import Keycloak from 'keycloak-js';
 
-const SystemUserAuthState: IAuthState = {
+export const SystemUserAuthState: IAuthState = {
   keycloakWrapper: {
     keycloak: ({
       authenticated: true
@@ -23,15 +24,36 @@ const SystemUserAuthState: IAuthState = {
   }
 };
 
+export const SystemAdminAuthState: IAuthState = {
+  keycloakWrapper: {
+    keycloak: ({
+      authenticated: true
+    } as unknown) as Keycloak,
+    hasLoadedAllUserInfo: true,
+    systemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN],
+    isSystemUser: () => true,
+    hasSystemRole: () => true,
+    hasAccessRequest: false,
+    getUserIdentifier: () => 'admin-username',
+    getIdentitySource: () => 'idir',
+    getUserGuid: () => '123-456-789',
+    username: 'admin-username',
+    displayName: 'admin-displayname',
+    email: 'admin@email.com',
+    refresh: () => {
+      // do nothing
+    }
+  }
+};
+
 // Same effect as `Partial` but applies to all levels of a nested object
 type Subset<T> = {
   [P in keyof T]?: T[P] extends Record<any, any> | undefined ? Subset<T[P]> : T[P];
 };
 
-export const getMockAuthState = (
-  overrides?: Subset<IAuthState>,
-  base: IAuthState = SystemUserAuthState
-): IAuthState => {
+export const getMockAuthState = (options: { base: IAuthState; overrides?: Subset<IAuthState> }): IAuthState => {
+  const { base, overrides } = options;
+
   return ({
     ...base,
     ...overrides,
