@@ -1,7 +1,7 @@
 import Chip, { ChipProps } from '@material-ui/core/Chip';
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import clsx from 'clsx';
-import { BioHubSubmittedStatusType } from 'constants/misc';
+import { PublishStatus } from 'constants/attachments';
 import React from 'react';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -18,23 +18,21 @@ const useStyles = makeStyles((theme: Theme) => ({
     color: '#2D4821',
     backgroundColor: '#DFF0D8'
   },
-  chipRejected: {
-    backgroundColor: theme.palette.error.main
+  chipNoData: {
+    backgroundColor: theme.palette.grey[300]
   }
 }));
 
-export const SubmitStatusChip: React.FC<{ status: BioHubSubmittedStatusType; chipProps?: Partial<ChipProps> }> = (
-  props
-) => {
+export const SubmitStatusChip: React.FC<{ status: PublishStatus; chipProps?: Partial<ChipProps> }> = (props) => {
   const classes = useStyles();
 
   let chipLabel;
   let chipStatusClass;
 
-  if (props.status === BioHubSubmittedStatusType.REJECTED) {
-    chipLabel = 'Rejected';
-    chipStatusClass = classes.chipRejected;
-  } else if (props.status === BioHubSubmittedStatusType.SUBMITTED) {
+  if (props.status === PublishStatus.NO_DATA) {
+    chipLabel = 'No Data';
+    chipStatusClass = classes.chipNoData;
+  } else if (props.status === PublishStatus.SUBMITTED) {
     chipLabel = 'Submitted';
     chipStatusClass = classes.chipSubmitted;
   } else {

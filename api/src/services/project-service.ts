@@ -30,6 +30,7 @@ import {
 } from '../models/project-view';
 import { ProjectUserObject } from '../models/user';
 import { GET_ENTITIES, IUpdateProject } from '../paths/project/{projectId}/update';
+import { PublishStatus } from '../repositories/history-publish-repository';
 import { ProjectRepository } from '../repositories/project-repository';
 import { deleteFileFromS3 } from '../utils/file-utils';
 import { getLogger } from '../utils/logger';
@@ -679,36 +680,55 @@ export class ProjectService extends DBService {
    * @param {number} projectId
    * @returns {*} {Promise<boolean>}
    */
-  async doesProjectHaveUnpublishedContent(projectId: number): Promise<boolean> {
-    const has_unpublished_attachments = await this.historyPublishService.hasUnpublishedProjectAttachments(projectId);
+  async projectPublishStatus(projectId: number): Promise<PublishStatus> {
+    const attachmentsPublishStatus = await this.historyPublishService.projectAttachmentsPublishStatus(projectId);
 
-    const has_unpublished_reports = await this.historyPublishService.hasUnpublishedProjectReports(projectId);
+    const reportsPublishStatus = await this.historyPublishService.projectReportsPublishStatus(projectId);
 
-    const has_unpublished_surveys = await this.hasUnpublishedSurveys(projectId);
+    const surveysPublishStatus = await this.hasUnpublishedSurveys(projectId);
 
-    // Returns true when one or more surveys have unpublished attachments, reports, observations or summary results
-    const surveyHasUnpublishedContent: boolean =
-      has_unpublished_attachments || has_unpublished_reports || has_unpublished_surveys;
-    return surveyHasUnpublishedContent;
+    if (
+      attachmentsPublishStatus === PublishStatus.NO_DATA &&
+      reportsPublishStatus === PublishStatus.NO_DATA &&
+      surveysPublishStatus === PublishStatus.NO_DATA
+    ) {
+      return PublishStatus.NO_DATA;
+    }
+
+    if (
+      attachmentsPublishStatus === PublishStatus.UNSUBMITTED ||
+      reportsPublishStatus === PublishStatus.UNSUBMITTED ||
+      surveysPublishStatus === PublishStatus.UNSUBMITTED
+    ) {
+      return PublishStatus.UNSUBMITTED;
+    }
+
+    return PublishStatus.SUBMITTED;
   }
 
   /**
-   * Returns true if any surveys for a given project have unpublished data or false if all survey under a project are published
+   * Returns publish status of a given project
    *
    * @param projectId
    * @returns {*} {Promise<boolean>}
    */
-  async hasUnpublishedSurveys(projectId: number): Promise<boolean> {
+  async hasUnpublishedSurveys(projectId: number): Promise<PublishStatus> {
     const surveyIds = (await this.surveyService.getSurveyIdsByProjectId(projectId)).map((item: { id: any }) => item.id);
 
     const surveyStatusArray = await Promise.all(
       surveyIds.map(async (surveyId) => {
-        const surveyPublishStatus = await this.surveyService.doesSurveyHaveUnpublishedContent(surveyId);
-
-        return surveyPublishStatus;
+        return this.surveyService.surveyPublishStatus(surveyId);
       })
     );
 
-    return surveyStatusArray.some(Boolean);
+    if (surveyStatusArray.length === 0 || surveyStatusArray.every((status) => status === PublishStatus.NO_DATA)) {
+      return PublishStatus.NO_DATA;
+    }
+
+    if (surveyStatusArray.some((status) => status === PublishStatus.UNSUBMITTED)) {
+      return PublishStatus.UNSUBMITTED;
+    }
+
+    return PublishStatus.SUBMITTED;
   }
 }

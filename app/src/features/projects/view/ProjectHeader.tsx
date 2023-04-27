@@ -252,34 +252,28 @@ const ProjectHeader = () => {
                 keepMounted
                 open={Boolean(anchorEl)}
                 onClose={handleClose}>
-                <ProjectRoleGuard
-                  validProjectRoles={[PROJECT_ROLE.PROJECT_LEAD]}
-                  validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-                  <>
+                  <MenuItem onClick={() => history.push('edit')}>
+                    <ListItemIcon>
+                      <Icon path={mdiPencilOutline} size={1} />
+                    </ListItemIcon>
+                    <Typography variant="inherit">Edit Project Details</Typography>
+                  </MenuItem>
+                  <ProjectRoleGuard
+                    validProjectRoles={[PROJECT_ROLE.PROJECT_LEAD]}
+                    validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
                     <MenuItem onClick={() => history.push('users')}>
                       <ListItemIcon>
                         <Icon path={mdiAccountMultipleOutline} size={1} />
                       </ListItemIcon>
                       <Typography variant="inherit">Manage Project Team</Typography>
                     </MenuItem>
-                  </>
-                </ProjectRoleGuard>
-                <MenuItem onClick={() => history.push('edit')}>
-                  <ListItemIcon>
-                    <Icon path={mdiPencilOutline} size={1} />
-                  </ListItemIcon>
-                  <Typography variant="inherit">Edit Project Details</Typography>
-                </MenuItem>
-                <ProjectRoleGuard
-                  validProjectRoles={[PROJECT_ROLE.PROJECT_LEAD]}
-                  validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-                  <MenuItem onClick={showDeleteProjectDialog} data-testid={'delete-project-button'}>
-                    <ListItemIcon>
-                      <Icon path={mdiTrashCanOutline} size={1} />
-                    </ListItemIcon>
-                    <Typography variant="inherit">Delete Project</Typography>
-                  </MenuItem>
-                </ProjectRoleGuard>
+                    <MenuItem onClick={showDeleteProjectDialog} data-testid={'delete-project-button'}>
+                      <ListItemIcon>
+                        <Icon path={mdiTrashCanOutline} size={1} />
+                      </ListItemIcon>
+                      <Typography variant="inherit">Delete Project</Typography>
+                    </MenuItem>
+                  </ProjectRoleGuard>
               </Menu>
             </Box>
           </Box>

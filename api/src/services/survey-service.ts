@@ -17,6 +17,7 @@ import {
   SurveySupplementaryData
 } from '../models/survey-view';
 import { AttachmentRepository } from '../repositories/attachment-repository';
+import { PublishStatus } from '../repositories/history-publish-repository';
 import {
   IGetLatestSurveyOccurrenceSubmission,
   IObservationSubmissionInsertDetails,
@@ -818,26 +819,39 @@ export class SurveyService extends DBService {
   }
 
   /**
-   * Returns true if the survey contains unpublished attachments or reports or observations or summary results
+   * Publish status for a given survey id
    *
    * @param {number} surveyId
-   * @return {*}  {Promise<boolean>}
+   * @return {*}  {Promise<PublishStatus>}
    * @memberof SurveyService
    */
-  async doesSurveyHaveUnpublishedContent(surveyId: number): Promise<boolean> {
-    const has_unpublished_attachments = await this.historyPublishService.hasUnpublishedSurveyAttachments(surveyId);
+  async surveyPublishStatus(surveyId: number): Promise<PublishStatus> {
+    const surveyAttachmentsPublishStatus = await this.historyPublishService.surveyAttachmentsPublishStatus(surveyId);
 
-    const has_unpublished_reports = await this.historyPublishService.hasUnpublishedSurveyReports(surveyId);
+    const surveyReportsPublishStatus = await this.historyPublishService.surveyReportsPublishStatus(surveyId);
 
-    const has_unpublished_observations = await this.historyPublishService.hasUnpublishedObservation(surveyId);
+    const observationPublishStatus = await this.historyPublishService.observationPublishStatus(surveyId);
 
-    const has_unpublished_summary_results = await this.historyPublishService.hasUnpublishedSummaryResults(surveyId);
+    const summaryPublishStatus = await this.historyPublishService.summaryPublishStatus(surveyId);
 
-    const surveyHasUnpublishedContent: boolean =
-      has_unpublished_attachments ||
-      has_unpublished_reports ||
-      has_unpublished_observations ||
-      has_unpublished_summary_results;
-    return surveyHasUnpublishedContent;
+    if (
+      surveyAttachmentsPublishStatus === PublishStatus.NO_DATA &&
+      surveyReportsPublishStatus === PublishStatus.NO_DATA &&
+      observationPublishStatus === PublishStatus.NO_DATA &&
+      summaryPublishStatus === PublishStatus.NO_DATA
+    ) {
+      return PublishStatus.NO_DATA;
+    }
+
+    if (
+      surveyAttachmentsPublishStatus === PublishStatus.UNSUBMITTED ||
+      surveyReportsPublishStatus === PublishStatus.UNSUBMITTED ||
+      observationPublishStatus === PublishStatus.UNSUBMITTED ||
+      summaryPublishStatus === PublishStatus.UNSUBMITTED
+    ) {
+      return PublishStatus.UNSUBMITTED;
+    }
+
+    return PublishStatus.SUBMITTED;
   }
 }

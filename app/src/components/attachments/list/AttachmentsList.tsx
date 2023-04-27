@@ -8,11 +8,11 @@ import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import { mdiFileOutline } from '@mdi/js';
+import { mdiFileOutline, mdiLockOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import { SubmitStatusChip } from 'components/chips/SubmitStatusChip';
 import { SystemRoleGuard } from 'components/security/Guards';
-import { BioHubSubmittedStatusType } from 'constants/misc';
+import { PublishStatus } from 'constants/attachments';
 import { SYSTEM_ROLE } from 'constants/roles';
 import { IGetProjectAttachment } from 'interfaces/useProjectApi.interface';
 import { IGetSurveyAttachment } from 'interfaces/useSurveyApi.interface';
@@ -110,23 +110,20 @@ function AttachmentsTableRow<T extends IGetProjectAttachment | IGetSurveyAttachm
   const classes = useStyles();
   const { attachment, handleDownload, handleDelete, handleViewDetails } = props;
 
-  function getArtifactSubmissionStatus(attachment: T): BioHubSubmittedStatusType {
-    if (attachment.supplementaryAttachmentData?.event_timestamp) {
-      return BioHubSubmittedStatusType.SUBMITTED;
-    }
-    return BioHubSubmittedStatusType.UNSUBMITTED;
+  const status =
+    (attachment.supplementaryAttachmentData?.event_timestamp && PublishStatus.SUBMITTED) || PublishStatus.UNSUBMITTED;
+
+  let icon: string = mdiFileOutline;
+
+  if (status === PublishStatus.SUBMITTED) {
+    icon = mdiLockOutline;
   }
 
   return (
     <TableRow key={`${attachment.fileName}-${attachment.id}`}>
       <TableCell scope="row" className={classes.attachmentNameCol}>
         <Box display="flex" alignItems="center">
-          <Icon
-            path={mdiFileOutline}
-            size={1}
-            className={classes.fileIcon}
-            style={{ marginRight: '16px', marginLeft: '4px' }}
-          />
+          <Icon path={icon} size={1} className={classes.fileIcon} style={{ marginRight: '16px', marginLeft: '4px' }} />
           <Link
             style={{ fontWeight: 'bold' }}
             underline="always"
@@ -139,7 +136,7 @@ function AttachmentsTableRow<T extends IGetProjectAttachment | IGetSurveyAttachm
       <TableCell>{attachment.fileType}</TableCell>
       <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
         <TableCell>
-          <SubmitStatusChip status={getArtifactSubmissionStatus(attachment)} />
+          <SubmitStatusChip status={status} />
         </TableCell>
       </SystemRoleGuard>
       <TableCell align="right">

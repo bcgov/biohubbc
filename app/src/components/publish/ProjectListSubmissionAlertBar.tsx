@@ -59,15 +59,18 @@ const ProjectListSubmissionAlertBar: React.FC<IProjectsSubmissionAlertBarProps> 
 };
 
 function getProjectsDataSubmissionStatus(projectsData?: IGetProjectsListResponse[]) {
-  if (!projectsData?.length) {
+  if (
+    !projectsData?.length ||
+    projectsData.every((item) => item.projectSupplementaryData.publishStatus === 'NO_DATA')
+  ) {
     return 'NO_DATA';
   }
 
-  if (projectsData.every((item) => !item.projectSupplementaryData.has_unpublished_content)) {
-    return 'SUBMITTED';
+  if (projectsData.some((item) => item.projectSupplementaryData.publishStatus === 'UNSUBMITTED')) {
+    return 'UNSUBMITTED';
   }
 
-  return 'UNSUBMITTED';
+  return 'SUBMITTED';
 }
 
 export default ProjectListSubmissionAlertBar;
