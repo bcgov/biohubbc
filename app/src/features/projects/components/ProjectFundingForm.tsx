@@ -22,7 +22,7 @@ import React, { useState } from 'react';
 import { getFormattedAmount, getFormattedDateRangeString } from 'utils/Utils';
 import yup from 'utils/YupSchema';
 import ProjectFundingItemForm, {
-  IMultiAutocompleteFieldOptionWithType,
+  IFundingSourceAutocompleteField,
   IProjectFundingFormArrayItem,
   ProjectFundingFormArrayItemInitialValues,
   ProjectFundingFormArrayItemYupSchema
@@ -47,9 +47,9 @@ export interface IInvestmentActionCategoryOption extends IMultiAutocompleteField
 }
 
 export interface IProjectFundingFormProps {
-  funding_sources: IMultiAutocompleteFieldOptionWithType[];
+  funding_sources: IFundingSourceAutocompleteField[];
   investment_action_category: IInvestmentActionCategoryOption[];
-  first_nations: IMultiAutocompleteFieldOptionWithType[];
+  first_nations: IFundingSourceAutocompleteField[];
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -136,6 +136,7 @@ const ProjectFundingForm: React.FC<IProjectFundingFormProps> = (props) => {
                   }}
                   onCancel={() => setIsModalOpen(false)}
                   onSave={(projectFundingItemValues) => {
+                    console.log('projectFundingItemValues', projectFundingItemValues);
                     if (currentProjectFundingFormArrayItem.index < values.funding.fundingSources.length) {
                       // Update an existing item
                       arrayHelpers.replace(currentProjectFundingFormArrayItem.index, projectFundingItemValues);
@@ -154,7 +155,7 @@ const ProjectFundingForm: React.FC<IProjectFundingFormProps> = (props) => {
                       (fundingSource.agency_id === 1 && 'Investment Action') ||
                       (fundingSource.agency_id === 2 && 'Investment Category') ||
                       null;
-
+                    console.log(`Label: ${investment_action_category_label}`);
                     const investment_action_category_value = props.investment_action_category.filter(
                       (item) => item.value === fundingSource.investment_action_category
                     )?.[0]?.label;
@@ -164,7 +165,7 @@ const ProjectFundingForm: React.FC<IProjectFundingFormProps> = (props) => {
                         <Paper variant="outlined">
                           <Toolbar>
                             <Typography className={classes.title}>
-                              {getCodeValueNameByID(props.funding_sources, fundingSource.agency_id)}
+                              {getCodeValueNameByID(props.funding_sources, fundingSource?.agency_id)}
                               {investment_action_category_label && (
                                 <span className={classes.titleDesc}>({investment_action_category_value})</span>
                               )}

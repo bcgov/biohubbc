@@ -7,6 +7,7 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import Typography from '@material-ui/core/Typography';
+import AutocompleteFieldWithType from 'components/fields/AutocompleteFieldWithType';
 import CustomTextField from 'components/fields/CustomTextField';
 import DollarAmountField from 'components/fields/DollarAmountField';
 import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteFieldVariableSize';
@@ -18,14 +19,15 @@ import { IInvestmentActionCategoryOption } from './ProjectFundingForm';
 
 export interface IProjectFundingFormArrayItem {
   id: number;
-  agency_id: number;
+  agency_id?: number;
   investment_action_category: number;
   investment_action_category_name: string;
   agency_project_id: string;
-  funding_amount: number;
+  funding_amount?: number;
   start_date: string;
   end_date: string;
   revision_count: number;
+  first_nations_id?: number;
 }
 
 export const ProjectFundingFormArrayItemInitialValues: IProjectFundingFormArrayItem = {
@@ -66,6 +68,10 @@ export const ProjectFundingFormArrayItemYupSchema = yup.object().shape({
   4. modify the save to account for the changes
   5. Modify the fetch to account for any changes in the model
   6. create an enum or type to account for the text on the 'action' items
+
+
+  Q's
+  1. Does the agency name still make sense?
   
 */
 export interface IProjectFundingItemFormProps1 {
@@ -77,11 +83,13 @@ export enum FundingSourceType {
   FUNDING_SOURCE,
   FIRST_NATIONS
 }
-export interface IMultiAutocompleteFieldOptionWithType extends IMultiAutocompleteFieldOption {
+export interface IFundingSourceAutocompleteField {
+  value: number;
+  label: string;
   type: FundingSourceType;
 }
 export interface IProjectFundingItemFormProps {
-  sources: IMultiAutocompleteFieldOptionWithType[];
+  sources: IFundingSourceAutocompleteField[];
   investment_action_category: IInvestmentActionCategoryOption[];
 }
 
@@ -97,6 +105,7 @@ const ProjectFundingItemForm: React.FC<IProjectFundingItemFormProps> = (props) =
   const formikProps = useFormikContext<IProjectFundingFormArrayItem>();
   console.log(props.sources);
   const { values, touched, errors, handleChange, handleSubmit, setFieldValue } = formikProps;
+  console.log('values', values);
 
   // Only show investment_action_category if certain agency_id values are selected
   // Toggle investment_action_category label and dropdown values based on chosen agency_id
@@ -112,7 +121,15 @@ const ProjectFundingItemForm: React.FC<IProjectFundingItemFormProps> = (props) =
         <Grid container spacing={3}>
           <Grid item xs={12}>
             <FormControl variant="outlined" required={true} style={{ width: '100%' }}>
-              <InputLabel id="agency_id-label">Agency Name</InputLabel>
+              <Box>
+                <AutocompleteFieldWithType
+                  id="agency_id"
+                  name="agency_name"
+                  label={'Agency Name'}
+                  options={props.sources}
+                />
+              </Box>
+              {/* <InputLabel id="agency_id-label">Agency Name</InputLabel> */}
               <Select
                 id="agency_id"
                 name="agency_id"
@@ -120,6 +137,9 @@ const ProjectFundingItemForm: React.FC<IProjectFundingItemFormProps> = (props) =
                 label="Agency Name"
                 value={values.agency_id}
                 onChange={(event) => {
+                  // I think this will all need to change here...
+                  console.log(values);
+                  console.log(event);
                   handleChange(event);
                   // investment_action_category is dependent on agency_id, so reset it if agency_id changes
                   setFieldValue(
@@ -130,6 +150,7 @@ const ProjectFundingItemForm: React.FC<IProjectFundingItemFormProps> = (props) =
                   // If an agency_id with a `Not Applicable` investment_action_category is chosen, auto select
                   // it for the user.
                   if (event.target.value !== 1 && event.target.value !== 2) {
+                    console.log('LOOK AT THIS THING FIND ALL THIS STUFF MAYBE...');
                     setFieldValue(
                       'investment_action_category',
                       props.investment_action_category.find((item) => item.fs_id === event.target.value)?.value || 0
