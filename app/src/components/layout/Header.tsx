@@ -245,7 +245,7 @@ const Header: React.FC = () => {
               </UnAuthGuard>
               <AuthGuard>
                 <RouterLink to="/admin/projects" id="menu_projects">
-                  Projects
+                  My Projects
                 </RouterLink>
               </AuthGuard>
               <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>

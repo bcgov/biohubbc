@@ -39,11 +39,14 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   heroSubheader: {
     maxWidth: '45ch',
-    marginTop: '3rem',
-    marginBottom: '3rem',
+    margin: '2rem 0 4rem',
     fontSize: '1.325rem',
     lineHeight: '1.5',
     textShadow: '0px 0px 10px rgba(0,13,26,1)'
+  },
+  greeting: {
+    fontSize: '1.125rem',
+    lineHeight: '1.5'
   },
   heroButton: {
     color: theme.palette.primary.main,
@@ -58,7 +61,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     maxWidth: '45ch',
 
     '& p': {
-      margin: '1.5rem 0'
+      margin: '1.5rem 0 1rem'
     }
   },
   actions: {
@@ -120,14 +123,13 @@ export const LandingPage = () => {
             </>
           </UnAuthGuard>
           <AuthGuard>
-            <Typography variant="body1" className={classes.heroSubheader}>
+            <Typography variant="body1" className={classes.greeting}>
               <span>Welcome&nbsp;back</span>
               {userIdentifier && (
                 <span>,&nbsp;<strong className={classes.username}>{userIdentifier}</strong></span>
               )}
             </Typography>
             <Box className={classes.actions}>
-            
               <Button
                 component={Link}
                 to='/admin/projects'
