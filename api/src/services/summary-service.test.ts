@@ -490,7 +490,7 @@ describe('SummaryService', () => {
         ]);
 
       const getRules = sinon.stub(service, 'getValidationRules').resolves('');
-      const validate = sinon.stub(service, 'validateXLSX').resolves({});
+      const validate = sinon.stub(service, 'validateXLSX_summary').resolves({});
       const persistResults = sinon.stub(service, 'persistSummaryValidationResults').resolves();
 
       const logFoundValidation = sinon.stub(SummaryRepository.prototype, 'insertSummarySubmissionMessage').resolves();
@@ -520,7 +520,7 @@ describe('SummaryService', () => {
         .stub(service, 'getSummaryTemplateSpeciesRecords')
         .resolves([makeMockTemplateSpeciesRecord(1)]);
       const getRules = sinon.stub(service, 'getValidationRules').resolves('');
-      const validate = sinon.stub(service, 'validateXLSX').resolves({});
+      const validate = sinon.stub(service, 'validateXLSX_summary').resolves({});
       const persistResults = sinon.stub(service, 'persistSummaryValidationResults').resolves();
 
       await service.summaryTemplateValidation(xlsxCsv, 1);
@@ -541,7 +541,7 @@ describe('SummaryService', () => {
 
       const getValidation = sinon.stub(service, 'getSummaryTemplateSpeciesRecords').resolves(templateSpeciesRecords);
       const getRules = sinon.stub(service, 'getValidationRules').resolves('');
-      const validate = sinon.stub(service, 'validateXLSX').resolves({});
+      const validate = sinon.stub(service, 'validateXLSX_summary').resolves({});
       const persistResults = sinon.stub(service, 'persistSummaryValidationResults').resolves();
 
       await service.summaryTemplateValidation(xlsxCsv, 1);
@@ -776,7 +776,7 @@ describe('SummaryService', () => {
       const service = mockService();
       const xlsx = new XLSXCSV(buildFile('test file', {}));
       const parser = new ValidationSchemaParser({});
-      const response = await service.validateXLSX(xlsx, parser);
+      const response = await service.validateXLSX_summary(xlsx, parser);
 
       expect(response.media_state.isValid).to.be.true;
       expect(response.media_state.fileErrors).is.empty;

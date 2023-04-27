@@ -118,6 +118,7 @@ export const submissionValidationSchema = {
       title: 'File/Sheet Validation',
       description: 'The validators that can be applied against a file/sheet within a submission file.',
       anyOf: [
+        //below: column header validator
         {
           $ref: '#/$defs/file_required_columns_validator'
         },
@@ -130,6 +131,7 @@ export const submissionValidationSchema = {
         {
           $ref: '#/$defs/file_valid_columns_validator'
         },
+        //below: column cell validator
         {
           $ref: '#/$defs/file_column_unique_validator'
         }
@@ -334,6 +336,7 @@ export const submissionValidationSchema = {
       },
       additionalProperties: false
     },
+    //for the cell to have a certain rule, pairs with format/range, etc
     column_required_validator: {
       description: 'Validates that this column value is not empty',
       type: 'object',

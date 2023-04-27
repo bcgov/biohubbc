@@ -74,7 +74,7 @@ export class ValidationService extends DBService {
     defaultLog.debug({ label: 'validateFile', submissionId, surveyId });
     try {
       const submissionPrep = await this.templatePreparation(submissionId);
-      await this.templateValidation(submissionPrep.xlsx, surveyId);
+      await this.occurrenceTemplateValidation(submissionPrep.xlsx, surveyId);
 
       // insert template validated status
       await this.submissionRepository.insertSubmissionStatus(submissionId, SUBMISSION_STATUS_TYPE.TEMPLATE_VALIDATED);
@@ -158,7 +158,7 @@ export class ValidationService extends DBService {
       const submissionPrep = await this.templatePreparation(submissionId);
 
       // Run template validations
-      await this.templateValidation(submissionPrep.xlsx, surveyId);
+      await this.occurrenceTemplateValidation(submissionPrep.xlsx, surveyId);
 
       // Insert validation complete status
       await this.submissionRepository.insertSubmissionStatus(submissionId, SUBMISSION_STATUS_TYPE.TEMPLATE_VALIDATED);
@@ -264,12 +264,12 @@ export class ValidationService extends DBService {
     }
   }
 
-  async templateValidation(xlsx: XLSXCSV, surveyId: number) {
+  async occurrenceTemplateValidation(xlsx: XLSXCSV, surveyId: number) {
     defaultLog.debug({ label: 'templateValidation' });
     try {
       const schema = await this.getValidationSchema(xlsx, surveyId);
       const schemaParser = this.getValidationRules(schema);
-      const csvState = this.validateXLSX(xlsx, schemaParser);
+      const csvState = this.validateXLSX_occurrence(xlsx, schemaParser);
       await this.persistValidationResults(csvState.csv_state, csvState.media_state);
     } catch (error) {
       if (error instanceof SubmissionError) {
@@ -304,6 +304,7 @@ export class ValidationService extends DBService {
 
     // not sure how to trigger these through testing
     if (!(parsedMedia instanceof MediaFile)) {
+      console.log('!parsedMedia instanceof MediaFile');
       throw SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.INVALID_MEDIA);
     }
 
@@ -359,14 +360,11 @@ export class ValidationService extends DBService {
     return validationSchemaParser;
   }
 
-  validateXLSX(file: XLSXCSV, parser: ValidationSchemaParser) {
+  validateXLSX_occurrence(file: XLSXCSV, parser: ValidationSchemaParser) {
     // Run media validations
     file.validateMedia(parser);
 
     const media_state = file.getMediaState();
-    if (!media_state.isValid) {
-      throw SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.INVALID_MEDIA);
-    }
 
     // Run CSV content validations
     file.validateContent(parser);

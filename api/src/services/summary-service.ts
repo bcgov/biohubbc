@@ -211,7 +211,7 @@ export class SummaryService extends DBService {
       }
 
       const schemaParser = this.getValidationRules(validationSchema);
-      const csvState = this.validateXLSX(xlsx, schemaParser);
+      const csvState = this.validateXLSX_summary(xlsx, schemaParser);
       await this.persistSummaryValidationResults(csvState.csv_state, csvState.media_state);
     } catch (error) {
       if (error instanceof SubmissionError) {
@@ -300,7 +300,7 @@ export class SummaryService extends DBService {
    * @param {ValidationSchemaParser} parser
    * @returns {ICsvMediaState}
    */
-  validateXLSX(file: XLSXCSV, parser: ValidationSchemaParser): ICsvMediaState {
+  validateXLSX_summary(file: XLSXCSV, parser: ValidationSchemaParser): ICsvMediaState {
     defaultLog.debug({ label: 'validateXLSX' });
 
     // Run media validations
