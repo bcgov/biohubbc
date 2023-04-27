@@ -2,6 +2,7 @@ import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { IConfig } from 'contexts/configContext';
 import { SYSTEM_IDENTITY_SOURCE } from 'hooks/useKeycloakWrapper';
 import {
+  buildUrl,
   ensureProtocol,
   getFormattedAmount,
   getFormattedDate,
@@ -51,6 +52,44 @@ describe('ensureProtocol', () => {
     expect(urlWithProtocol).toEqual(`http://${url}`);
   });
 });
+
+describe('buildUrl', () => {
+  it('should build a basic URL', () => {
+    const url = buildUrl('a', 'b', 'c', 'd');
+
+    expect(url).toEqual('a/b/c/d');
+  });
+
+  it('should build a URL to the app root', () => {
+    const url = buildUrl('/');
+
+    expect(url).toEqual('/');
+  });
+
+  it('should filter out falsey url parts', () => {
+    const url = buildUrl('a', 'b', null as unknown as string, 'd', undefined, 'f');
+
+    expect(url).toEqual('a/b/d/f');
+  });
+
+  it('should filter out double slashes', () => {
+    const url = buildUrl('a', "\/\/", 'b', '/c', '/d/', '/f/');
+
+    expect(url).toEqual('a/b/c/d/f/');
+  });
+
+  it('should filter out whitespace', () => {
+    const url = buildUrl('a', '     ', '   c  ', ' /d ', '/e/ ', ' /f');
+
+    expect(url).toEqual('a/c/d/e/f');
+  });
+
+  it('should respect HTTP(S) protocol', () => {
+    const url = buildUrl('http://a', '/b', 'c', '/d/');
+
+    expect(url).toEqual('http://a/b/c/d/');
+  });
+})
 
 describe('getFormattedAmount', () => {
   it('returns a valid amount string when amount is valid', () => {

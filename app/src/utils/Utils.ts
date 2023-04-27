@@ -39,7 +39,7 @@ export const ensureProtocol = (url: string, protocol: 'http://' | 'https://' = '
  * @param {(string | undefined)[]} urlParts The parts of the URL
  * @returns The built URL
  */
-export const buildUrl = (urlParts: (string | undefined)[]): string => {
+export const buildUrl = (...urlParts: (string | undefined)[]): string => {
   return urlParts
     .filter((urlPart): urlPart is string => Boolean(urlPart))
     .map((urlPart) => String(urlPart).trim()) // Trim leading and trailing whitespace

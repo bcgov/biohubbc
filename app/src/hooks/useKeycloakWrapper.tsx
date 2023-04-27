@@ -279,9 +279,8 @@ function useKeycloakWrapper(): IKeycloakWrapper {
   };
 
   const getLoginUrl = (redirectUri: string = '/admin/projects'): string => {
-    return keycloak?.createLoginUrl({
-      redirectUri: redirectUri ? buildUrl([window.location.origin, redirectUri]) : undefined
-    }) || '/login';
+    return keycloak?.createLoginUrl({ redirectUri: buildUrl(window.location.origin, redirectUri) })
+      || '/login';
   }
 
   return {
