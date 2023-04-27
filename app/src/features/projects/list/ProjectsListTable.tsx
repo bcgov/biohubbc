@@ -147,11 +147,11 @@ const ProjectsListTable: React.FC<IProjectsListTableProps> = (props) => {
                 </Link>
               </TableCell>
               <TableCell>{project.projectData.project_type}</TableCell>
-              <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
-                <TableCell>
+              <TableCell>
+                <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
                   <SubmitStatusChip status={getProjectSubmissionStatus(project)} />
-                </TableCell>
-              </SystemRoleGuard>
+                </SystemRoleGuard>
+              </TableCell>
               <TableCell>
                 {getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, project.projectData.start_date)}
               </TableCell>
