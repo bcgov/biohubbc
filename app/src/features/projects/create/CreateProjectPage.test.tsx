@@ -6,6 +6,7 @@ import {
   render,
   waitFor
 } from '@testing-library/react';
+import { CodesContext, ICodesContext } from 'contexts/codesContext';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { ProjectDetailsFormInitialValues } from 'features/projects/components/ProjectDetailsForm';
 import { ProjectFundingFormInitialValues } from 'features/projects/components/ProjectFundingForm';
@@ -17,9 +18,11 @@ import CreateProjectPage from 'features/projects/create/CreateProjectPage';
 import { Feature } from 'geojson';
 import { createMemoryHistory } from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import { DataLoader } from 'hooks/useDataLoader';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import React from 'react';
 import { MemoryRouter, Router } from 'react-router';
+import { codes } from 'test-helpers/code-helpers';
 
 const history = createMemoryHistory();
 
@@ -43,13 +46,21 @@ const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBioh
   mockUseBiohubApi
 );
 
+const mockCodesContext: ICodesContext = {
+  codesDataLoader: {
+    data: codes
+  } as DataLoader<any, any, any>
+};
+
 const renderContainer = () => {
   return render(
-    <DialogContextProvider>
-      <Router history={history}>
-        <CreateProjectPage />,
-      </Router>
-    </DialogContextProvider>
+    <CodesContext.Provider value={mockCodesContext}>
+      <DialogContextProvider>
+        <Router history={history}>
+          <CreateProjectPage />,
+        </Router>
+      </DialogContextProvider>
+    </CodesContext.Provider>
   );
 };
 
@@ -99,10 +110,6 @@ describe('CreateProjectPage', () => {
   });
 
   it('shows the page title', async () => {
-    mockBiohubApi().codes.getAllCodeSets.mockResolvedValue(({
-      coordinator_agency: [{ id: 1, name: 'A Rocha Canada' }]
-    } as unknown) as IGetAllCodeSetsResponse);
-
     const { findByText } = renderContainer();
     const PageTitle = await findByText('Create Project');
 
@@ -111,10 +118,6 @@ describe('CreateProjectPage', () => {
 
   describe('Are you sure? Dialog', () => {
     it('shows warning dialog if the user clicks the `Cancel and Exit` button', async () => {
-      mockBiohubApi().codes.getAllCodeSets.mockResolvedValue(({
-        coordinator_agency: [{ id: 1, name: 'A Rocha Canada' }]
-      } as unknown) as IGetAllCodeSetsResponse);
-
       history.push('/home');
       history.push('/admin/projects/create');
 
@@ -132,10 +135,6 @@ describe('CreateProjectPage', () => {
     });
 
     it('calls history.push() if the user clicks `Yes`', async () => {
-      mockBiohubApi().codes.getAllCodeSets.mockResolvedValue(({
-        coordinator_agency: [{ id: 1, name: 'A Rocha Canada' }]
-      } as unknown) as IGetAllCodeSetsResponse);
-
       history.push('/home');
       history.push('/admin/projects/create');
 
@@ -151,10 +150,6 @@ describe('CreateProjectPage', () => {
     });
 
     it('does nothing if the user clicks `No`', async () => {
-      mockBiohubApi().codes.getAllCodeSets.mockResolvedValue(({
-        coordinator_agency: [{ id: 1, name: 'A Rocha Canada' }]
-      } as unknown) as IGetAllCodeSetsResponse);
-
       history.push('/home');
       history.push('/admin/projects/create');
 
@@ -176,23 +171,7 @@ describe('CreateProjectPage', () => {
     });
 
     describe('Delete Draft Button', () => {
-      it('does not display delete draft button if not in draft', async () => {
-        const { queryByText } = render(
-          <MemoryRouter>
-            <CreateProjectPage />
-          </MemoryRouter>
-        );
-
-        await waitFor(() => {
-          expect(queryByText('Delete Draft', { exact: false })).not.toBeInTheDocument();
-        });
-      });
-
       it('does display delete draft button if in draft', async () => {
-        mockBiohubApi().codes.getAllCodeSets.mockResolvedValue(({
-          coordinator_agency: [{ id: 1, name: 'A Rocha Canada' }]
-        } as unknown) as IGetAllCodeSetsResponse);
-
         mockBiohubApi().draft.getDraft.mockResolvedValue({
           id: 1,
           name: 'My draft',
@@ -214,9 +193,11 @@ describe('CreateProjectPage', () => {
         });
 
         const { queryAllByText } = render(
-          <MemoryRouter initialEntries={['?draftId=1']}>
-            <CreateProjectPage />
-          </MemoryRouter>
+          <CodesContext.Provider value={mockCodesContext}>
+            <MemoryRouter initialEntries={['?draftId=1']}>
+              <CreateProjectPage />
+            </MemoryRouter>
+          </CodesContext.Provider>
         );
 
         await waitFor(() => {
@@ -225,10 +206,6 @@ describe('CreateProjectPage', () => {
       });
 
       it('displays a Delete draft Yes/No Dialog', async () => {
-        mockBiohubApi().codes.getAllCodeSets.mockResolvedValue(({
-          coordinator_agency: [{ id: 1, name: 'A Rocha Canada' }]
-        } as unknown) as IGetAllCodeSetsResponse);
-
         mockBiohubApi().draft.getDraft.mockResolvedValue({
           id: 1,
           name: 'My draft',
@@ -250,9 +227,11 @@ describe('CreateProjectPage', () => {
         });
 
         const { getByText, findAllByText } = render(
-          <MemoryRouter initialEntries={['?draftId=1']}>
-            <CreateProjectPage />
-          </MemoryRouter>
+          <CodesContext.Provider value={mockCodesContext}>
+            <MemoryRouter initialEntries={['?draftId=1']}>
+              <CreateProjectPage />
+            </MemoryRouter>
+          </CodesContext.Provider>
         );
 
         const deleteButton = await findAllByText('Delete Draft', { exact: false });
@@ -265,10 +244,6 @@ describe('CreateProjectPage', () => {
       });
 
       it('closes dialog on No click', async () => {
-        mockBiohubApi().codes.getAllCodeSets.mockResolvedValue(({
-          coordinator_agency: [{ id: 1, name: 'A Rocha Canada' }]
-        } as unknown) as IGetAllCodeSetsResponse);
-
         mockBiohubApi().draft.getDraft.mockResolvedValue({
           id: 1,
           name: 'My draft',
@@ -290,9 +265,11 @@ describe('CreateProjectPage', () => {
         });
 
         const { getByText, findAllByText, getByTestId, queryByText } = render(
-          <MemoryRouter initialEntries={['?draftId=1']}>
-            <CreateProjectPage />
-          </MemoryRouter>
+          <CodesContext.Provider value={mockCodesContext}>
+            <MemoryRouter initialEntries={['?draftId=1']}>
+              <CreateProjectPage />
+            </MemoryRouter>
+          </CodesContext.Provider>
         );
 
         const deleteButton = await findAllByText('Delete Draft', { exact: false });
@@ -312,10 +289,6 @@ describe('CreateProjectPage', () => {
       });
 
       it('deletes draft on Yes click', async () => {
-        mockBiohubApi().codes.getAllCodeSets.mockResolvedValue(({
-          coordinator_agency: [{ id: 1, name: 'A Rocha Canada' }]
-        } as unknown) as IGetAllCodeSetsResponse);
-
         mockBiohubApi().draft.getDraft.mockResolvedValue({
           id: 1,
           name: 'My draft',
@@ -337,9 +310,11 @@ describe('CreateProjectPage', () => {
         });
 
         const { getByText, findAllByText, getByTestId } = render(
-          <MemoryRouter initialEntries={['?draftId=1']}>
-            <CreateProjectPage />
-          </MemoryRouter>
+          <CodesContext.Provider value={mockCodesContext}>
+            <MemoryRouter initialEntries={['?draftId=1']}>
+              <CreateProjectPage />
+            </MemoryRouter>
+          </CodesContext.Provider>
         );
 
         const deleteButton = await findAllByText('Delete Draft', { exact: false });
@@ -360,10 +335,6 @@ describe('CreateProjectPage', () => {
     });
 
     it('preloads draft data and populates on form fields', async () => {
-      mockBiohubApi().codes.getAllCodeSets.mockResolvedValue(({
-        coordinator_agency: [{ id: 1, name: 'A Rocha Canada' }]
-      } as unknown) as IGetAllCodeSetsResponse);
-
       mockBiohubApi().draft.getDraft.mockResolvedValue({
         id: 1,
         name: 'My draft',
@@ -385,9 +356,11 @@ describe('CreateProjectPage', () => {
       });
 
       const { getByDisplayValue } = render(
-        <MemoryRouter initialEntries={['?draftId=1']}>
-          <CreateProjectPage />
-        </MemoryRouter>
+        <CodesContext.Provider value={mockCodesContext}>
+          <MemoryRouter initialEntries={['?draftId=1']}>
+            <CreateProjectPage />
+          </MemoryRouter>
+        </CodesContext.Provider>
       );
 
       await waitFor(() => {

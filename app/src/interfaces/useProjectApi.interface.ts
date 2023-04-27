@@ -1,3 +1,4 @@
+import { PROJECT_ROLE } from 'constants/roles';
 import { IProjectCoordinatorForm } from 'features/projects/components/ProjectCoordinatorForm';
 import { IProjectDetailsForm } from 'features/projects/components/ProjectDetailsForm';
 import { IProjectFundingForm } from 'features/projects/components/ProjectFundingForm';
@@ -84,12 +85,26 @@ export interface IGetUserProjectsListResponse {
 }
 
 /**
+ * An interface that describes project supplementary data
+ * @export
+ * @interface IProjectSupplementaryData
+ */
+export interface IProjectSupplementaryData {
+  has_unpublished_content: boolean;
+}
+
+/**
  * Get projects list response object.
  *
  * @export
  * @interface IGetProjectsListResponse
  */
 export interface IGetProjectsListResponse {
+  projectData: IProjectsListData;
+  projectSupplementaryData: IProjectSupplementaryData;
+}
+
+export interface IProjectsListData {
   id: number;
   name: string;
   start_date: string;
@@ -373,6 +388,7 @@ export interface IGetProjectParticipantsResponseArrayItem {
   user_identifier: string;
   user_identity_source_id: number;
 }
+
 export interface IGetProjectParticipantsResponse {
   participants: IGetProjectParticipantsResponseArrayItem[];
 }
@@ -381,4 +397,13 @@ export interface IAddProjectParticipant {
   userIdentifier: string;
   identitySource: string;
   roleId: number;
+}
+
+export interface IGetUserProjectParticipantResponse {
+  participant: {
+    project_id: number;
+    system_user_id: number;
+    project_role_ids: number[];
+    project_role_names: PROJECT_ROLE[];
+  } | null;
 }

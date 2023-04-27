@@ -14,7 +14,11 @@ import ProjectIUCNForm from '../components/ProjectIUCNForm';
 import ProjectLocationForm from '../components/ProjectLocationForm';
 import ProjectObjectivesForm from '../components/ProjectObjectivesForm';
 import ProjectPartnershipsForm from '../components/ProjectPartnershipsForm';
-import { initialProjectFieldData, validationProjectYupSchema } from '../create/CreateProjectForm';
+import {
+  getCoordinatorAgencyOptions,
+  initialProjectFieldData,
+  validationProjectYupSchema
+} from '../create/CreateProjectForm';
 
 const useStyles = makeStyles((theme: Theme) => ({
   actionButton: {
@@ -126,13 +130,7 @@ const EditProjectForm: React.FC<IEditProjectForm> = (props) => {
             title="Project Coordinator"
             summary="Provide the Project Coordinator's contact and agency information."
             component={
-              <ProjectCoordinatorForm
-                coordinator_agency={
-                  codes?.coordinator_agency?.map((item) => {
-                    return item.name;
-                  }) || []
-                }
-              />
+              <ProjectCoordinatorForm coordinator_agency={getCoordinatorAgencyOptions(codes)} />
             }></HorizontalSplitFormComponent>
 
           <Divider className={classes.sectionDivider} />

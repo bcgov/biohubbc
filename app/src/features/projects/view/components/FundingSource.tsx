@@ -22,7 +22,7 @@ const FundingSource = () => {
 
   const projectData = projectContext.projectDataLoader.data.projectData;
 
-  const hasFundingSources = projectData.funding.fundingSources && projectData.funding.fundingSources.length;
+  const hasFundingSources = projectData.funding.fundingSources && projectData.funding.fundingSources.length > 0;
 
   return (
     <>

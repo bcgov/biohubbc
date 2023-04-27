@@ -4,9 +4,9 @@ import Alert from '@material-ui/lab/Alert';
 import Footer from 'components/layout/Footer';
 import Header from 'components/layout/Header';
 import { DialogContextProvider } from 'contexts/dialogContext';
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 
-const BaseLayout: React.FC = (props) => {
+const BaseLayout = (props: PropsWithChildren<Record<never, unknown>>) => {
   function isSupportedBrowser() {
     if (
       navigator.userAgent.indexOf('Chrome') !== -1 ||
@@ -31,9 +31,7 @@ const BaseLayout: React.FC = (props) => {
         <Header />
 
         <Box component="main" flex="1 1 auto">
-          {React.Children.map(props.children, (child: any) => {
-            return React.cloneElement(child);
-          })}
+          {props.children}
         </Box>
 
         <Footer />

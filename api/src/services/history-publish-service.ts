@@ -19,9 +19,11 @@ import {
   SurveySummarySubmissionPublish
 } from '../repositories/history-publish-repository';
 import { DBService } from './db-service';
+import { SummaryService } from './summary-service';
 
 export class HistoryPublishService extends DBService {
   historyRepository: HistoryPublishRepository;
+
   constructor(connection: IDBConnection) {
     super(connection);
     this.historyRepository = new HistoryPublishRepository(connection);
@@ -246,5 +248,110 @@ export class HistoryPublishService extends DBService {
    */
   async deleteSurveyReportAttachmentPublishRecord(surveyReportAttachmentId: number): Promise<void> {
     return this.historyRepository.deleteSurveyReportAttachmentPublishRecord(surveyReportAttachmentId);
+  }
+
+  /**
+   *  Returns true if a given survey has any unpublished attachments and false if no unpublished attachments are found
+   *
+   * @param {number} surveyId
+   * @returns {*} {Promise<boolean>}
+   */
+  async hasUnpublishedSurveyAttachments(surveyId: number): Promise<boolean> {
+    const count_unpublished_attachments = (await this.historyRepository.getCountSurveyUnpublishedAttachments(surveyId))
+      .rows[0]?.count;
+
+    return count_unpublished_attachments > 0;
+  }
+
+  /**
+   *  Returns true if a given survey has any unpublished reports and false if no unpublished reports are found
+   *
+   * @param {number} surveyId
+   * @returns {*} {Promise<boolean>}
+   */
+  async hasUnpublishedSurveyReports(surveyId: number): Promise<boolean> {
+    const count_unpublished_reports = (await this.historyRepository.getCountSurveyUnpublishedReports(surveyId)).rows[0]
+      ?.count;
+
+    return count_unpublished_reports > 0;
+  }
+
+  /**
+   * Determines if a survey has unsubmitted observations
+   * 1) Gets the latest observation occurrence record that may be unpublished
+   * 2) Determines if a publishing record exists
+   * Returns true if survey has unsubmitted observations
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<boolean>}
+   * @memberof HistoryPublishService
+   */
+  async hasUnpublishedObservation(surveyId: number): Promise<boolean> {
+    const latestUndeletedObservationRecordId = (
+      await this.historyRepository.getLatestUndeletedObservationRecordId(surveyId)
+    ).rows[0]?.occurrence_submission_id;
+
+    if (!latestUndeletedObservationRecordId) {
+      return false;
+    }
+
+    const publish_record = await this.historyRepository.getOccurrenceSubmissionPublishRecord(
+      latestUndeletedObservationRecordId
+    );
+    if (publish_record !== null) {
+      return false;
+    }
+
+    return true;
+  }
+
+  /**
+   *  Returns true if a given survey has any unpublished summary results and false if no unpublished summary results are found
+   *
+   * @param {number} surveyId
+   * @returns {*} {Promise<boolean>}
+   */
+  async hasUnpublishedSummaryResults(surveyId: number): Promise<boolean> {
+    const service = new SummaryService(this.connection);
+    const latest_summary = await service.getLatestSurveySummarySubmission(surveyId);
+
+    if (!latest_summary) {
+      return false;
+    }
+    const publish_record = await this.historyRepository.getSurveySummarySubmissionPublishRecord(
+      latest_summary.survey_summary_submission_id
+    );
+    if (publish_record !== null) {
+      return false;
+    }
+
+    return true;
+  }
+
+  /**
+   *  Returns true if a given project has any unpublished attachments and false if no unpublished attachments are found
+   *
+   * @param {number} projectId
+   * @returns {*} {Promise<boolean>}
+   */
+  async hasUnpublishedProjectAttachments(projectId: number): Promise<boolean> {
+    const count_unpublished_attachments = (
+      await this.historyRepository.getCountProjectUnpublishedAttachments(projectId)
+    ).rows[0]?.count;
+
+    return count_unpublished_attachments > 0;
+  }
+
+  /**
+   *  Returns true if a given project has any unpublished reports and false if no unpublished reports are found
+   *
+   * @param {number} projectId
+   * @returns {*} {Promise<boolean>}
+   */
+  async hasUnpublishedProjectReports(projectId: number): Promise<boolean> {
+    const count_unpublished_reports = (await this.historyRepository.getCountProjectUnpublishedReports(projectId))
+      .rows[0]?.count;
+
+    return count_unpublished_reports > 0;
   }
 }

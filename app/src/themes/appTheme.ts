@@ -68,27 +68,37 @@ const appTheme = createMuiTheme({
     },
     MuiAlert: {
       root: {
-        padding: '12px 20px',
-        borderWidth: '1px',
-        borderStyle: 'solid'
+        padding: '12px 16px',
+        fontSize: '1rem'
       },
       icon: {
         marginRight: '1rem'
       },
-      standardInfo: {
+      outlinedInfo: {
+        color: '#313132',
         borderColor: '#afd3ee',
+        backgroundColor: 'rgb(232, 244, 253)',
         '& .MuiAlert-icon': {
-          color: '#313132'
+          color: 'inherit'
+        }
+      },
+      outlinedSuccess: {
+        color: '#1e4620',
+        borderColor: '#4caf50',
+        backgroundColor: 'rgb(223 240 216)',
+        '& .MuiAlert-icon': {
+          color: 'inherit'
         }
       },
       standardError: {
+        color: '#a12622',
         borderColor: '#ebccd1',
-        color: '#A12622',
         '& .MuiAlert-icon': {
-          color: '#A12622'
+          color: '#a12622'
         }
       },
       standardSuccess: {
+        color: '#2d4821',
         backgroundColor: '#dff0d8',
         borderColor: '#c0dcb3',
         '& .MuiAlert-icon': {
@@ -118,10 +128,13 @@ const appTheme = createMuiTheme({
       root: {
         textTransform: 'none',
         borderRadius: '5px',
-        fontSize: '0.9rem'
+        fontSize: '0.9rem',
+        '&:focus': {
+          outline: '3px solid #3B99FC',
+          outlineOffset: '-1px'
+        }
       },
       startIcon: {
-        marginTop: '1px',
         marginBottom: '1px'
       },
       sizeLarge: {
@@ -143,20 +156,8 @@ const appTheme = createMuiTheme({
     },
     MuiChip: {
       root: {
+        minWidth: '6rem',
         fontWeight: 700
-      },
-      colorPrimary: {
-        color: '#003366',
-        backgroundColor: '#DCEBFB',
-        textTransform: 'uppercase',
-        fontSize: '12px',
-        '&.colorSuccess': {
-          color: '#2D4821',
-          backgroundColor: '#DFF0D8'
-        }
-      },
-      colorSecondary: {
-        backgroundColor: 'red'
       }
     },
     MuiContainer: {
@@ -188,11 +189,24 @@ const appTheme = createMuiTheme({
         fontSize: '0.875rem'
       }
     },
+    MuiIconButton: {
+      root: {
+        '&:focus': {
+          outline: '3px solid #3B99FC',
+          outlineOffset: '-3px'
+        }
+      }
+    },
     MuiLink: {
       root: {
         textAlign: 'left',
         color: '#1a5a96',
-        cursor: 'pointer'
+        borderRadius: '1px',
+        cursor: 'pointer',
+        '&:focus': {
+          outline: '2px solid #3B99FC',
+          outlineOffset: '2px'
+        }
       }
     },
     MuiLinearProgress: {
@@ -251,6 +265,9 @@ const appTheme = createMuiTheme({
     }
   },
   props: {
+    MuiButton: {
+      disableElevation: true
+    },
     MuiButtonBase: {
       disableRipple: true
     }

@@ -638,7 +638,7 @@ export class PlatformService extends DBService {
    *
    * @param {string} dataPackageId The dataPackageId for the artifact submission
    * @param {number} surveyId The ID of the survey
-   * @return {*}  {Promise<{ survey_summary_submission_publish_id: number }[]>} The IDs of all the artifact records in
+   * @return {*}  {Promise<{ survey_summary_submission_publish_id: number } | undefined>} The IDs of all the artifact records in
    * BioHub
    *
    * @memberof PlatformService
@@ -646,27 +646,29 @@ export class PlatformService extends DBService {
   async submitSurveySummarySubmissionToBioHub(
     dataPackageId: string,
     surveyId: number
-  ): Promise<{ survey_summary_submission_publish_id: number }> {
+  ): Promise<{ survey_summary_submission_publish_id: number } | undefined> {
     const summaryService = new SummaryService(this.connection);
 
     const surveySummarySubmissionData = await summaryService.getLatestSurveySummarySubmission(surveyId);
 
-    // Build artifact object
-    const summaryArtifact = await this._makeArtifactFromSurveySummarySubmission(
-      dataPackageId,
-      surveySummarySubmissionData
-    );
+    if (surveySummarySubmissionData) {
+      // Build artifact object
+      const summaryArtifact = await this._makeArtifactFromSurveySummarySubmission(
+        dataPackageId,
+        surveySummarySubmissionData
+      );
 
-    // Submit artifact to BioHub
-    const { artifact_id } = await this._submitArtifactToBioHub(summaryArtifact);
+      // Submit artifact to BioHub
+      const { artifact_id } = await this._submitArtifactToBioHub(summaryArtifact);
 
-    // Insert publish history record
-    const summarySubmissionPublishRecord = await this.historyPublishService.insertSurveySummaryPublishRecord({
-      survey_summary_submission_id: surveySummarySubmissionData.survey_summary_submission_id,
-      artifact_id: artifact_id
-    });
+      // Insert publish history record
+      const summarySubmissionPublishRecord = await this.historyPublishService.insertSurveySummaryPublishRecord({
+        survey_summary_submission_id: surveySummarySubmissionData.survey_summary_submission_id,
+        artifact_id: artifact_id
+      });
 
-    return summarySubmissionPublishRecord;
+      return summarySubmissionPublishRecord;
+    }
   }
 
   /**

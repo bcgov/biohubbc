@@ -7,6 +7,8 @@ export interface IPublishDialogs {
   finishSubmissionMessage: string;
   finishSubmission: boolean;
   setFinishSubmission: (isEmpty: boolean) => void;
+  noSubmissionTitle: string;
+  noSubmissionMessage: string;
   noSubmissionData: boolean;
   setNoSubmissionData: (isFinished: boolean) => void;
 }
@@ -22,6 +24,8 @@ const PublishDialogs: React.FC<IPublishDialogs> = (props) => {
     finishSubmissionMessage,
     finishSubmission,
     setFinishSubmission,
+    noSubmissionTitle,
+    noSubmissionMessage,
     noSubmissionData,
     setNoSubmissionData
   } = props;
@@ -38,14 +42,12 @@ const PublishDialogs: React.FC<IPublishDialogs> = (props) => {
       </ComponentDialog>
 
       <ComponentDialog
-        dialogTitle="Submit Survey Information"
+        dialogTitle={noSubmissionTitle}
         open={noSubmissionData}
         onClose={() => {
           setNoSubmissionData(false);
         }}>
-        <DialogContentText id="alert-dialog-description">
-          You have not imported or uploaded any information to this survey to submit.
-        </DialogContentText>
+        <DialogContentText id="alert-dialog-description">{noSubmissionMessage}</DialogContentText>
       </ComponentDialog>
     </>
   );

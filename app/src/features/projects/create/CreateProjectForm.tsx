@@ -66,6 +66,19 @@ export const validationProjectYupSchema = ProjectCoordinatorYupSchema.concat(Pro
   .concat(ProjectFundingFormYupSchema)
   .concat(ProjectPartnershipsFormYupSchema);
 
+//Fuction to get the list of coordinator agencies from the codeset
+export const getCoordinatorAgencyOptions = (codes: IGetAllCodeSetsResponse) => {
+  const coordinatorAgency = codes?.coordinator_agency?.map((item) => {
+    return item.name;
+  });
+
+  const firstNations = codes?.first_nations?.map((item) => {
+    return item.name;
+  });
+
+  return [...coordinatorAgency, ...firstNations].sort();
+};
+
 /**
  * Form for creating a new project.
  *
@@ -149,13 +162,7 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
           title="Project Coordinator"
           summary="Provide the Project Coordinator's contact and agency information."
           component={
-            <ProjectCoordinatorForm
-              coordinator_agency={
-                codes?.coordinator_agency?.map((item) => {
-                  return item.name;
-                }) || []
-              }
-            />
+            <ProjectCoordinatorForm coordinator_agency={getCoordinatorAgencyOptions(codes)} />
           }></HorizontalSplitFormComponent>
 
         <Divider className={classes.sectionDivider} />

@@ -68,9 +68,10 @@ const useObservationApi = (axios: AxiosInstance) => {
    * @param {number} occurrenceSubmissionId
    * @returns {*} {Promise<ISpatialData[]>}
    */
-  const getOccurrencesForView = async (occurrenceSubmissionId: number): Promise<ISpatialData[]> => {
+  const getOccurrencesForView = async (projectId: number, occurrenceSubmissionId: number): Promise<ISpatialData[]> => {
     const { data } = await axios.post(`/api/dwc/view-occurrences`, {
-      occurrence_submission_id: occurrenceSubmissionId
+      occurrence_submission_id: occurrenceSubmissionId,
+      project_id: projectId
     });
 
     return data;

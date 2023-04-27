@@ -7,13 +7,11 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Divider from '@material-ui/core/Divider';
-import IconButton from '@material-ui/core/IconButton';
-import Link from '@material-ui/core/Link';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
-import { mdiAccountCircle, mdiHelpCircleOutline, mdiLoginVariant } from '@mdi/js';
+import { mdiAccountCircle, mdiLoginVariant } from '@mdi/js';
 import Icon from '@mdi/react';
 import headerImageLarge from 'assets/images/gov-bc-logo-horiz.png';
 import headerImageSmall from 'assets/images/gov-bc-logo-vert.png';
@@ -30,7 +28,10 @@ const useStyles = makeStyles((theme: Theme) => ({
     backgroundColor: '#003366'
   },
   govHeaderToolbar: {
-    height: '80px'
+    height: '80px',
+    '& a:focus': {
+      outline: '3px solid #3B99FC'
+    }
   },
   brand: {
     display: 'flex',
@@ -40,6 +41,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     textDecoration: 'none',
     fontSize: '1.25rem',
     fontWeight: 700,
+    borderRadius: '2px',
     '& img': {
       verticalAlign: 'middle',
       marginBottom: '4px'
@@ -51,14 +53,17 @@ const useStyles = makeStyles((theme: Theme) => ({
       textDecoration: 'none'
     },
     '&:focus': {
-      outlineOffset: '6px'
+      outlineOffset: '3px'
     }
   },
   '@media (max-width: 1000px)': {
     brand: {
-      fontSize: '1rem',
+      fontSize: '14px',
       '& picture': {
         marginRight: '1rem'
+      },
+      '& span': {
+        marginTop: '-4px'
       }
     },
     wrapText: {
@@ -74,21 +79,26 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   userProfile: {
     color: theme.palette.primary.contrastText,
-    fontSize: '1rem',
     '& hr': {
       backgroundColor: '#ffffff',
       height: '1.25rem'
     },
     '& a': {
+      padding: '8px',
       color: 'inherit',
-      textDecoration: 'none'
+      textDecoration: 'none',
+      borderRadius: '6px'
     },
     '& a:hover': {
       textDecoration: 'underline'
+    },
+    '& a:focus': {
+      outlineOffset: '-1px'
     }
   },
-  govHeaderIconButton: {
-    color: '#ffffff'
+  supportButton: {
+    color: '#ffffff',
+    fontSize: '14px'
   },
   mainNav: {
     backgroundColor: '#38598a'
@@ -99,18 +109,18 @@ const useStyles = makeStyles((theme: Theme) => ({
       padding: theme.spacing(2),
       color: 'inherit',
       fontSize: '1rem',
-      textDecoration: 'none'
+      textDecoration: 'none',
+      borderRadius: '4px'
     },
     '& a:hover': {
       textDecoration: 'underline'
     },
+    '& a:focus': {
+      outline: '3px solid #3B99FC',
+      outlineOffset: '-3px'
+    },
     '& a:first-child': {
       marginLeft: theme.spacing(-2)
-    }
-  },
-  '.MuiDialogContent-root': {
-    '& p + p': {
-      marginTop: theme.spacing(2)
     }
   }
 }));
@@ -130,20 +140,22 @@ const Header: React.FC = () => {
       .join('/');
 
     return (
-      <Box display="flex" className={classes.userProfile} my="auto" alignItems="center">
-        <IconButton aria-label="need help" className={classes.govHeaderIconButton} onClick={showSupportDialog}>
-          <Icon path={mdiHelpCircleOutline} size={1.12} />
-        </IconButton>
-        <Box className={classes.userProfile} display="flex" alignItems="center" ml={2}>
-          <Icon path={mdiAccountCircle} size={1.12} />
-          <Box ml={1}>{formattedUsername}</Box>
+      <Box display="flex" alignItems="center">
+        <Button aria-label="need help" className={classes.supportButton} onClick={showSupportDialog}>
+          Contact Support
+        </Button>
+        <Box display="flex" alignItems="center" my="auto" ml={2} className={classes.userProfile}>
+          <Box className={classes.userProfile} display="flex" alignItems="center">
+            <Icon path={mdiAccountCircle} size={1.12} />
+            <Box ml={1}>{formattedUsername}</Box>
+          </Box>
+          <Box pl={1.5} pr={0.5}>
+            <Divider orientation="vertical" />
+          </Box>
+          <RouterLink to="/logout" data-testid="menu_log_out">
+            Log Out
+          </RouterLink>
         </Box>
-        <Box px={2}>
-          <Divider orientation="vertical" />
-        </Box>
-        <RouterLink to="/logout" data-testid="menu_log_out">
-          Log Out
-        </RouterLink>
       </Box>
     );
   };
@@ -152,9 +164,9 @@ const Header: React.FC = () => {
   const PublicViewUser = () => {
     return (
       <Box display="flex" className={classes.userProfile} alignItems="center" my="auto">
-        <IconButton className={classes.govHeaderIconButton} onClick={showSupportDialog}>
-          <Icon path={mdiHelpCircleOutline} size={1.12} />
-        </IconButton>
+        <Button className={classes.supportButton} onClick={showSupportDialog}>
+          Contact Support
+        </Button>
         <Button
           onClick={() => keycloakWrapper?.keycloak?.login()}
           type="submit"
@@ -244,20 +256,15 @@ const Header: React.FC = () => {
       </AppBar>
 
       <Dialog open={open}>
-        <DialogTitle>Need Help?</DialogTitle>
+        <DialogTitle>Contact Support</DialogTitle>
         <DialogContent>
-          <Typography variant="body1" component="div" color="textSecondary" gutterBottom>
-            For technical support or questions about this application, please contact:&nbsp;
-            <Link
-              component={RouterLink}
-              to="mailto:biohub@gov.bc.ca?subject=BioHub - Secure Document Access Request"
-              underline="always">
+          <Typography variant="body1" component="div" color="textSecondary">
+            For technical support or questions about this application, please email&nbsp;
+            <a href="mailto:biohub@gov.bc.ca?subject=Support Request - Species Inventory Management System">
+              {' '}
               biohub@gov.bc.ca
-            </Link>
+            </a>
             .
-          </Typography>
-          <Typography variant="body1" color="textSecondary">
-            A support representative will respond to your request shortly.
           </Typography>
         </DialogContent>
         <DialogActions>

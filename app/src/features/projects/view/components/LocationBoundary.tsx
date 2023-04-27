@@ -14,12 +14,13 @@ import InferredLocationDetails, { IInferredLayers } from 'components/boundary/In
 import EditDialog from 'components/dialog/EditDialog';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import MapContainer from 'components/map/MapContainer';
+import { ProjectRoleGuard } from 'components/security/Guards';
 import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
 import { EditLocationBoundaryI18N } from 'constants/i18n';
-import { CodesContext } from 'contexts/codesContext';
+import { PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
 import { DialogContext } from 'contexts/dialogContext';
 import { ProjectContext } from 'contexts/projectContext';
-import {
+import ProjectLocationForm, {
   IProjectLocationForm,
   ProjectLocationFormInitialValues,
   ProjectLocationFormYupSchema
@@ -31,7 +32,6 @@ import { IGetProjectForUpdateResponseLocation, UPDATE_GET_ENTITIES } from 'inter
 import { LatLngBoundsExpression } from 'leaflet';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
-import ProjectStepComponents from 'utils/ProjectStepComponents';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -69,15 +69,11 @@ const LocationBoundary = () => {
 
   const biohubApi = useBiohubApi();
 
-  const codesContext = useContext(CodesContext);
   const projectContext = useContext(ProjectContext);
 
-  // Codes data must be loaded by a parent before this component is rendered
-  assert(codesContext.codesDataLoader.data);
   // Project data must be loaded by a parent before this component is rendered
   assert(projectContext.projectDataLoader.data);
 
-  const codes = codesContext.codesDataLoader.data;
   const projectData = projectContext.projectDataLoader.data.projectData;
 
   const dialogContext = useContext(DialogContext);
@@ -190,7 +186,7 @@ const LocationBoundary = () => {
         dialogTitle={EditLocationBoundaryI18N.editTitle}
         open={openEditDialog}
         component={{
-          element: <ProjectStepComponents component="ProjectLocation" codes={codes} />,
+          element: <ProjectLocationForm />,
           initialValues: locationFormData,
           validationSchema: ProjectLocationFormYupSchema
         }}
@@ -219,9 +215,16 @@ const LocationBoundary = () => {
         label="Project Location"
         buttonLabel="Edit"
         buttonTitle="Edit Project Location"
-        buttonStartIcon={<Icon path={mdiPencilOutline} size={0.8} />}
+        buttonStartIcon={<Icon path={mdiPencilOutline} size={1} />}
         buttonOnClick={() => handleDialogEditOpen()}
         buttonProps={{ variant: 'text' }}
+        renderButton={(buttonProps) => (
+          <ProjectRoleGuard
+            validProjectRoles={[PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR]}
+            validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+            <Button {...buttonProps} />
+          </ProjectRoleGuard>
+        )}
       />
 
       <Box px={3} pb={3}>

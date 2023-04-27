@@ -25,7 +25,7 @@ const IUCNClassification = () => {
   const projectData = projectContext.projectDataLoader.data.projectData;
 
   const hasIucnClassifications =
-    projectData.iucn.classificationDetails && projectData.iucn.classificationDetails.length;
+    projectData.iucn.classificationDetails && projectData.iucn.classificationDetails.length > 0;
 
   return (
     <>

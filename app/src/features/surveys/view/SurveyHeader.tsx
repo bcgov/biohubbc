@@ -20,10 +20,10 @@ import {
 import Icon from '@mdi/react';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import PublishSurveyButton from 'components/publish/PublishSurveyButton';
-import { SystemRoleGuard } from 'components/security/Guards';
+import { ProjectRoleGuard, SystemRoleGuard } from 'components/security/Guards';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { DeleteSurveyI18N } from 'constants/i18n';
-import { SYSTEM_ROLE } from 'constants/roles';
+import { PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
 import { AuthStateContext } from 'contexts/authStateContext';
 import { DialogContext } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
@@ -31,6 +31,7 @@ import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import React, { useContext } from 'react';
 import { useHistory } from 'react-router';
+import { BrowserRouter, Link } from 'react-router-dom';
 import { getFormattedDateRangeString } from 'utils/Utils';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -164,12 +165,15 @@ const SurveyHeader = () => {
         <Container maxWidth="xl">
           <Box py={4}>
             <Box mt={-1} ml={-0.5} mb={0.5}>
-              <Button
-                color="primary"
-                startIcon={<Icon path={mdiArrowLeft} size={0.9} />}
-                onClick={() => history.push(`/admin/projects/${surveyContext.projectId}/surveys`)}>
-                <strong>Back to Project</strong>
-              </Button>
+              <BrowserRouter forceRefresh={true}>
+                <Button
+                  component={Link}
+                  to={`/admin/projects/${surveyContext.projectId}/details`}
+                  color="primary"
+                  startIcon={<Icon path={mdiArrowLeft} size={0.8} />}>
+                  <strong>Back to Project</strong>
+                </Button>
+              </BrowserRouter>
             </Box>
             <Box display="flex" justifyContent="space-between">
               <Box className={classes.pageTitleContainer}>
@@ -196,19 +200,23 @@ const SurveyHeader = () => {
                 <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
                   <PublishSurveyButton />
                 </SystemRoleGuard>
-                <Button
-                  id="survey_settings_button"
-                  aria-label="Survey Settings"
-                  aria-controls="surveySettingsMenu"
-                  aria-haspopup="true"
-                  variant="outlined"
-                  color="primary"
-                  startIcon={<Icon path={mdiCogOutline} size={1} />}
-                  endIcon={<Icon path={mdiChevronDown} size={1} />}
-                  onClick={openSurveyMenu}
-                  style={{ marginLeft: '0.5rem' }}>
-                  Settings
-                </Button>
+                <ProjectRoleGuard
+                  validProjectRoles={[PROJECT_ROLE.PROJECT_EDITOR, PROJECT_ROLE.PROJECT_LEAD]}
+                  validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+                  <Button
+                    id="survey_settings_button"
+                    aria-label="Survey Settings"
+                    aria-controls="surveySettingsMenu"
+                    aria-haspopup="true"
+                    variant="outlined"
+                    color="primary"
+                    startIcon={<Icon path={mdiCogOutline} size={1} />}
+                    endIcon={<Icon path={mdiChevronDown} size={1} />}
+                    onClick={openSurveyMenu}
+                    style={{ marginLeft: '0.5rem' }}>
+                    Settings
+                  </Button>
+                </ProjectRoleGuard>
                 <Menu
                   id="surveySettingsMenu"
                   aria-labelledby="survey_settings_button"
@@ -226,12 +234,7 @@ const SurveyHeader = () => {
                   getContentAnchorEl={null}
                   open={Boolean(anchorEl)}
                   onClose={closeSurveyMenu}>
-                  <MenuItem
-                    onClick={() => {
-                      history.push(
-                        `/admin/projects/${surveyContext.projectId}/survey/edit?surveyId=${surveyWithDetails.surveyData.survey_details.id}`
-                      );
-                    }}>
+                  <MenuItem onClick={() => history.push('edit')}>
                     <ListItemIcon>
                       <Icon path={mdiPencilOutline} size={1} />
                     </ListItemIcon>

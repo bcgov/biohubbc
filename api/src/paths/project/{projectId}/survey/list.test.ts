@@ -2,16 +2,16 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import * as db from '../../../database/db';
-import { HTTPError } from '../../../errors/http-error';
-import { SurveyObject } from '../../../models/survey-view';
-import { SurveyService } from '../../../services/survey-service';
-import { getMockDBConnection } from '../../../__mocks__/db';
-import * as surveys from './surveys';
+import * as db from '../../../../database/db';
+import { HTTPError } from '../../../../errors/http-error';
+import { SurveyObject } from '../../../../models/survey-view';
+import { SurveyService } from '../../../../services/survey-service';
+import { getMockDBConnection } from '../../../../__mocks__/db';
+import * as surveys from './list';
 
 chai.use(sinonChai);
 
-describe('surveys', () => {
+describe('survey list', () => {
   afterEach(() => {
     sinon.restore();
   });
@@ -70,8 +70,12 @@ describe('surveys', () => {
       .resolves([{ id: 1 }]);
 
     const getSurveysByIdsStub = sinon
-      .stub(SurveyService.prototype, 'getSurveysByIds')
-      .resolves([({ survey_details: { id: 1 } } as unknown) as SurveyObject]);
+      .stub(SurveyService.prototype, 'getSurveyById')
+      .resolves(({ survey_details: { id: 1 } } as unknown) as SurveyObject);
+
+    const getSurveysPublishStub = sinon
+      .stub(SurveyService.prototype, 'doesSurveyHaveUnpublishedContent')
+      .resolves(true);
 
     const sampleReq = {
       keycloak_token: {},
@@ -81,7 +85,12 @@ describe('surveys', () => {
       }
     } as any;
 
-    const expectedResponse = [{ survey_details: { id: 1 } }];
+    const expectedResponse = [
+      {
+        surveyData: { survey_details: { id: 1 } },
+        surveySupplementaryData: { has_unpublished_content: true }
+      }
+    ];
 
     let actualResult: any = null;
     const sampleRes = {
@@ -101,5 +110,6 @@ describe('surveys', () => {
     expect(actualResult).to.eql(expectedResponse);
     expect(getSurveyIdsByProjectIdStub).to.be.calledOnce;
     expect(getSurveysByIdsStub).to.be.calledOnce;
+    expect(getSurveysPublishStub).to.be.calledOnce;
   });
 });

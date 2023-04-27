@@ -23,9 +23,7 @@ const ProjectCoordinator = () => {
       <Typography component="div">
         {projectData.coordinator.first_name} {projectData.coordinator.last_name}
       </Typography>
-      <Typography component="div" color="textSecondary">
-        {projectData.coordinator.coordinator_agency}
-      </Typography>
+      <Typography component="div">{projectData.coordinator.coordinator_agency}</Typography>
       <Typography component="div">
         <Link href={`mailto:${projectData.coordinator.email_address}`}>{projectData.coordinator.email_address}</Link>
       </Typography>

@@ -3,6 +3,9 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
+import ProjectSubmissionAlertBar from 'components/publish/ProjectSubmissionAlertBar';
+import { SystemRoleGuard } from 'components/security/Guards';
+import { SYSTEM_ROLE } from 'constants/roles';
 import { CodesContext } from 'contexts/codesContext';
 import { ProjectContext } from 'contexts/projectContext';
 import ProjectAttachments from 'features/projects/view/ProjectAttachments';
@@ -11,6 +14,8 @@ import React, { useContext, useEffect } from 'react';
 import LocationBoundary from './components/LocationBoundary';
 import ProjectDetails from './ProjectDetails';
 import ProjectHeader from './ProjectHeader';
+
+//TODO: PRODUCTION_BANDAGE: Remove <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
 
 /**
  * Page to display a single Project.
@@ -28,16 +33,22 @@ const ProjectPage = () => {
     projectContext.projectId
   ]);
 
-  if (!codesContext.codesDataLoader.data || !projectContext.projectDataLoader.data) {
+  if (
+    !codesContext.codesDataLoader.data ||
+    !projectContext.projectDataLoader.data ||
+    !projectContext.surveysListDataLoader.data
+  ) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
   return (
     <>
       <ProjectHeader />
-
       <Container maxWidth="xl">
         <Box py={3}>
+          <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
+            <ProjectSubmissionAlertBar />
+          </SystemRoleGuard>
           <Grid container spacing={3}>
             <Grid item md={12} lg={4}>
               <Paper elevation={0}>

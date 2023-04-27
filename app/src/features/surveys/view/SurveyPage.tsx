@@ -3,13 +3,13 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
-import SubmissionAlertBar from 'components/publish/SubmissionAlertBar';
+import SurveySubmissionAlertBar from 'components/publish/SurveySubmissionAlertBar';
 import { SystemRoleGuard } from 'components/security/Guards';
 import { SYSTEM_ROLE } from 'constants/roles';
 import { CodesContext } from 'contexts/codesContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import SurveyDetails from 'features/surveys/view/SurveyDetails';
-import React, { useContext, useEffect } from 'react';
+import React, { useContext } from 'react';
 import SurveyStudyArea from './components/SurveyStudyArea';
 import SurveySummaryResults from './summary-results/SurveySummaryResults';
 import SurveyObservations from './survey-observations/SurveyObservations';
@@ -27,12 +27,7 @@ const SurveyPage: React.FC = () => {
   const codesContext = useContext(CodesContext);
   const surveyContext = useContext(SurveyContext);
 
-  useEffect(() => codesContext.codesDataLoader.load(), [codesContext.codesDataLoader]);
-  useEffect(() => surveyContext.surveyDataLoader.load(surveyContext.projectId, surveyContext.surveyId), [
-    surveyContext.surveyDataLoader,
-    surveyContext.projectId,
-    surveyContext.surveyId
-  ]);
+  codesContext.codesDataLoader.load();
 
   if (!codesContext.codesDataLoader.data || !surveyContext.surveyDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
@@ -44,7 +39,7 @@ const SurveyPage: React.FC = () => {
       <Container maxWidth="xl">
         <Box my={3}>
           <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
-            <SubmissionAlertBar />
+            <SurveySubmissionAlertBar />
           </SystemRoleGuard>
           <Grid container spacing={3}>
             <Grid item md={12} lg={4}>
@@ -54,10 +49,14 @@ const SurveyPage: React.FC = () => {
             </Grid>
             <Grid item md={12} lg={8}>
               <Box mb={3}>
-                <SurveyObservations />
+                <Paper elevation={0}>
+                  <SurveyObservations />
+                </Paper>
               </Box>
               <Box mb={3}>
-                <SurveySummaryResults />
+                <Paper elevation={0}>
+                  <SurveySummaryResults />
+                </Paper>
               </Box>
               <Box mb={3}>
                 <Paper elevation={0}>

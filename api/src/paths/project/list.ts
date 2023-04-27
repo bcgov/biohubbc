@@ -2,7 +2,6 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection } from '../../database/db';
-import { projectIdResponseObject } from '../../openapi/schemas/project';
 import { authorizeRequestHandler, userHasValidRole } from '../../request-handlers/security/authorization';
 import { ProjectService } from '../../services/project-service';
 import { getLogger } from '../../utils/logger';
@@ -95,7 +94,47 @@ GET.apiDoc = {
           schema: {
             type: 'array',
             items: {
-              ...(projectIdResponseObject as object)
+              title: 'Survey get response object, for view purposes',
+              type: 'object',
+              required: ['projectData', 'projectSupplementaryData'],
+              properties: {
+                projectData: {
+                  type: 'object',
+                  required: ['id', 'name', 'project_type', 'start_date', 'end_date', 'completion_status'],
+                  properties: {
+                    id: {
+                      type: 'number'
+                    },
+                    name: {
+                      type: 'string'
+                    },
+                    project_type: {
+                      type: 'string'
+                    },
+                    start_date: {
+                      oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
+                      description: 'ISO 8601 date string for the funding end_date'
+                    },
+                    end_date: {
+                      oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
+                      nullable: true,
+                      description: 'ISO 8601 date string for the funding end_date'
+                    },
+                    completion_status: {
+                      type: 'string'
+                    }
+                  }
+                },
+                projectSupplementaryData: {
+                  type: 'object',
+                  required: ['has_unpublished_content'],
+                  properties: {
+                    has_unpublished_content: {
+                      type: 'boolean'
+                    }
+                  }
+                }
+              }
             }
           }
         }
@@ -142,9 +181,20 @@ export function getProjectList(): RequestHandler {
 
       const projects = await projectService.getProjectList(isUserAdmin, systemUserId, filterFields);
 
+      const projectListWithStatus = await Promise.all(
+        projects.map(async (project: any) => {
+          const status = await projectService.doesProjectHaveUnpublishedContent(project.id);
+
+          return {
+            projectData: project,
+            projectSupplementaryData: { has_unpublished_content: status }
+          };
+        })
+      );
+
       await connection.commit();
 
-      return res.status(200).json(projects);
+      return res.status(200).json(projectListWithStatus);
     } catch (error) {
       defaultLog.error({ label: 'getProjectList', message: 'error', error });
       throw error;

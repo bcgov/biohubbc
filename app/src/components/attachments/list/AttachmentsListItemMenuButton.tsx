@@ -5,7 +5,9 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import { mdiDotsVertical, mdiInformationOutline, mdiTrashCanOutline, mdiTrayArrowDown } from '@mdi/js';
 import Icon from '@mdi/react';
+import { ProjectRoleGuard } from 'components/security/Guards';
 import { AttachmentType } from 'constants/attachments';
+import { PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
 import { IGetProjectAttachment } from 'interfaces/useProjectApi.interface';
 import { IGetSurveyAttachment } from 'interfaces/useSurveyApi.interface';
 import React, { useState } from 'react';
@@ -36,7 +38,11 @@ const AttachmentsListItemMenuButton = <T extends IGetProjectAttachment | IGetSur
     <>
       <Box my={-1}>
         <Box>
-          <IconButton aria-label="Document actions" onClick={handleClick} data-testid="attachment-action-menu">
+          <IconButton
+            aria-label="Document actions"
+            onClick={handleClick}
+            data-testid="attachment-action-menu"
+            tabIndex={0}>
             <Icon path={mdiDotsVertical} size={1} />
           </IconButton>
           <Menu
@@ -80,17 +86,21 @@ const AttachmentsListItemMenuButton = <T extends IGetProjectAttachment | IGetSur
                 View Details
               </MenuItem>
             )}
-            <MenuItem
-              onClick={() => {
-                props.handleDeleteFile(props.attachment);
-                setAnchorEl(null);
-              }}
-              data-testid="attachment-action-menu-delete">
-              <ListItemIcon>
-                <Icon path={mdiTrashCanOutline} size={1} />
-              </ListItemIcon>
-              Delete
-            </MenuItem>
+            <ProjectRoleGuard
+              validProjectRoles={[PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR]}
+              validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+              <MenuItem
+                onClick={() => {
+                  props.handleDeleteFile(props.attachment);
+                  setAnchorEl(null);
+                }}
+                data-testid="attachment-action-menu-delete">
+                <ListItemIcon>
+                  <Icon path={mdiTrashCanOutline} size={1} />
+                </ListItemIcon>
+                Delete
+              </MenuItem>
+            </ProjectRoleGuard>
           </Menu>
         </Box>
       </Box>

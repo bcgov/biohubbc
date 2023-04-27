@@ -1,5 +1,6 @@
 import chai, { expect } from 'chai';
 import { describe } from 'mocha';
+import { QueryResult } from 'pg';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import {
@@ -13,8 +14,10 @@ import {
   SurveyReportPublish,
   SurveySummarySubmissionPublish
 } from '../repositories/history-publish-repository';
+import { ISurveySummaryDetails } from '../repositories/summary-repository';
 import { getMockDBConnection } from '../__mocks__/db';
 import { HistoryPublishService } from './history-publish-service';
+import { SummaryService } from './summary-service';
 
 chai.use(sinonChai);
 
@@ -328,6 +331,271 @@ describe('HistoryPublishService', () => {
 
       expect(repositoryStub).to.be.calledOnce;
       expect(response).to.eql(mockResponse);
+    });
+  });
+
+  describe('hasUnpublishedSurveyAttachments', () => {
+    it('returns true for unpublished records', async () => {
+      const dbConnection = getMockDBConnection();
+      const service = new HistoryPublishService(dbConnection);
+
+      const repositoryStub = sinon
+        .stub(HistoryPublishRepository.prototype, 'getCountSurveyUnpublishedAttachments')
+        .resolves(({ rows: [{ count: 2 }], rowCount: 1 } as unknown) as QueryResult);
+
+      const response = await service.hasUnpublishedSurveyAttachments(20);
+
+      expect(repositoryStub).to.be.calledOnce;
+      expect(repositoryStub).to.be.calledWith(20);
+      expect(response).to.eql(true);
+    });
+
+    it('returns false for published records', async () => {
+      const dbConnection = getMockDBConnection();
+      const service = new HistoryPublishService(dbConnection);
+
+      const repositoryStub = sinon
+        .stub(HistoryPublishRepository.prototype, 'getCountSurveyUnpublishedAttachments')
+        .resolves(({ rows: [{ count: 0 }], rowCount: 1 } as unknown) as QueryResult);
+
+      const response = await service.hasUnpublishedSurveyAttachments(20);
+
+      expect(repositoryStub).to.be.calledOnce;
+      expect(repositoryStub).to.be.calledWith(20);
+      expect(response).to.eql(false);
+    });
+  });
+
+  describe('hasUnpublishedSurveyReports', () => {
+    it('returns true for unpublished records', async () => {
+      const dbConnection = getMockDBConnection();
+      const service = new HistoryPublishService(dbConnection);
+
+      const repositoryStub = sinon
+        .stub(HistoryPublishRepository.prototype, 'getCountSurveyUnpublishedReports')
+        .resolves(({ rows: [{ count: 2 }], rowCount: 1 } as unknown) as QueryResult);
+
+      const response = await service.hasUnpublishedSurveyReports(20);
+
+      expect(repositoryStub).to.be.calledOnce;
+      expect(repositoryStub).to.be.calledWith(20);
+      expect(response).to.eql(true);
+    });
+
+    it('returns false for published records', async () => {
+      const dbConnection = getMockDBConnection();
+      const service = new HistoryPublishService(dbConnection);
+
+      const repositoryStub = sinon
+        .stub(HistoryPublishRepository.prototype, 'getCountSurveyUnpublishedReports')
+        .resolves(({ rows: [{ count: 0 }], rowCount: 1 } as unknown) as QueryResult);
+
+      const response = await service.hasUnpublishedSurveyReports(20);
+
+      expect(repositoryStub).to.be.calledOnce;
+      expect(repositoryStub).to.be.calledWith(20);
+      expect(response).to.eql(false);
+    });
+  });
+
+  describe('hasUnpublishedObservation', () => {
+    it('returns false for published occurrence records', async () => {
+      const dbConnection = getMockDBConnection();
+      const service = new HistoryPublishService(dbConnection);
+
+      const observationStub = sinon
+        .stub(HistoryPublishRepository.prototype, 'getLatestUndeletedObservationRecordId')
+        .resolves(({ rows: [{ occurrence_submission_id: 2 }], rowCount: 1 } as unknown) as QueryResult);
+
+      const observationPublishStub = sinon
+        .stub(HistoryPublishRepository.prototype, 'getOccurrenceSubmissionPublishRecord')
+        .resolves(({
+          rows: [{ occurrence_submission_publish_id: 4 }],
+          rowCount: 1
+        } as unknown) as OccurrenceSubmissionPublish);
+
+      const response = await service.hasUnpublishedObservation(20);
+
+      expect(observationStub).to.be.calledOnce;
+      expect(observationStub).to.be.calledWith(20);
+      expect(observationPublishStub).to.be.calledOnce;
+      expect(observationPublishStub).to.be.calledWith(2);
+      expect(response).to.eql(false);
+    });
+
+    it('returns false for no occurrence records', async () => {
+      const dbConnection = getMockDBConnection();
+      const service = new HistoryPublishService(dbConnection);
+
+      const observationStub = sinon
+        .stub(HistoryPublishRepository.prototype, 'getLatestUndeletedObservationRecordId')
+        .resolves(({ rows: [], rowCount: 0 } as unknown) as QueryResult);
+
+      const response = await service.hasUnpublishedObservation(20);
+
+      expect(observationStub).to.be.calledOnce;
+      expect(observationStub).to.be.calledWith(20);
+      expect(response).to.eql(false);
+    });
+
+    it('returns true for unpublished occurrence record', async () => {
+      const dbConnection = getMockDBConnection();
+      const service = new HistoryPublishService(dbConnection);
+
+      const observationStub = sinon
+        .stub(HistoryPublishRepository.prototype, 'getLatestUndeletedObservationRecordId')
+        .resolves(({ rows: [{ occurrence_submission_id: 2 }], rowCount: 1 } as unknown) as QueryResult);
+
+      const observationPublishStub = sinon
+        .stub(HistoryPublishRepository.prototype, 'getOccurrenceSubmissionPublishRecord')
+        .resolves(null);
+
+      const response = await service.hasUnpublishedObservation(20);
+
+      expect(observationStub).to.be.calledOnce;
+      expect(observationStub).to.be.calledWith(20);
+      expect(observationPublishStub).to.be.calledOnce;
+      expect(observationPublishStub).to.be.calledWith(2);
+      expect(response).to.eql(true);
+    });
+  });
+
+  describe('hasUnpublishedSummaryResults', () => {
+    it('returns false for published summary results records', async () => {
+      const dbConnection = getMockDBConnection();
+      const service = new HistoryPublishService(dbConnection);
+
+      const summaryStub = sinon.stub(SummaryService.prototype, 'getLatestSurveySummarySubmission').resolves(({
+        survey_summary_submission_id: 4,
+        key: '1',
+        uuid: '',
+        file_name: '',
+        delete_timestamp: null,
+        submission_message_type_id: 1,
+        message: '',
+        submission_message_type_name: '',
+        summary_submission_message_class_id: 1,
+        submission_message_class_name: ''
+      } as unknown) as ISurveySummaryDetails);
+
+      const summaryPublishStub = sinon
+        .stub(HistoryPublishRepository.prototype, 'getSurveySummarySubmissionPublishRecord')
+        .resolves(({ survey_summary_submission_publish_id: 4 } as unknown) as SurveySummarySubmissionPublish);
+
+      const response = await service.hasUnpublishedSummaryResults(20);
+
+      expect(summaryStub).to.be.calledOnce;
+      expect(summaryStub).to.be.calledWith(20);
+      expect(summaryPublishStub).to.be.calledOnce;
+      expect(summaryPublishStub).to.be.calledWith(4);
+      expect(response).to.eql(false);
+    });
+
+    it('returns false for no summary results records', async () => {
+      const dbConnection = getMockDBConnection();
+      const service = new HistoryPublishService(dbConnection);
+
+      const summaryStub = sinon.stub(SummaryService.prototype, 'getLatestSurveySummarySubmission').resolves(undefined);
+
+      const response = await service.hasUnpublishedSummaryResults(20);
+
+      expect(summaryStub).to.be.calledOnce;
+      expect(summaryStub).to.be.calledWith(20);
+      expect(response).to.eql(false);
+    });
+
+    it('returns true for unpublished summary results records', async () => {
+      const dbConnection = getMockDBConnection();
+      const service = new HistoryPublishService(dbConnection);
+
+      const summaryStub = sinon.stub(SummaryService.prototype, 'getLatestSurveySummarySubmission').resolves(({
+        survey_summary_submission_id: 1,
+        key: 1,
+        uuid: 1,
+        file_name: '',
+        delete_timestamp: null,
+        submission_message_type_id: 1,
+        message: '',
+        submission_message_type_name: '',
+        summary_submission_message_class_id: 1,
+        submission_message_class_name: ''
+      } as unknown) as ISurveySummaryDetails);
+
+      const summaryPublishStub = sinon
+        .stub(HistoryPublishRepository.prototype, 'getSurveySummarySubmissionPublishRecord')
+        .resolves(null);
+
+      const response = await service.hasUnpublishedSummaryResults(20);
+
+      expect(summaryStub).to.be.calledOnce;
+      expect(summaryStub).to.be.calledWith(20);
+      expect(summaryPublishStub).to.be.calledOnce;
+      expect(summaryPublishStub).to.be.calledWith(1);
+      expect(response).to.eql(true);
+    });
+  });
+
+  describe('hasUnpublishedProjectAttachments', () => {
+    it('returns true for unpublished records', async () => {
+      const dbConnection = getMockDBConnection();
+      const service = new HistoryPublishService(dbConnection);
+
+      const repositoryStub = sinon
+        .stub(HistoryPublishRepository.prototype, 'getCountProjectUnpublishedAttachments')
+        .resolves(({ rows: [{ count: 2 }], rowCount: 1 } as unknown) as QueryResult);
+
+      const response = await service.hasUnpublishedProjectAttachments(20);
+
+      expect(repositoryStub).to.be.calledOnce;
+      expect(repositoryStub).to.be.calledWith(20);
+      expect(response).to.eql(true);
+    });
+
+    it('returns false for published records', async () => {
+      const dbConnection = getMockDBConnection();
+      const service = new HistoryPublishService(dbConnection);
+
+      const repositoryStub = sinon
+        .stub(HistoryPublishRepository.prototype, 'getCountProjectUnpublishedAttachments')
+        .resolves(({ rows: [{ count: 0 }], rowCount: 1 } as unknown) as QueryResult);
+
+      const response = await service.hasUnpublishedProjectAttachments(20);
+
+      expect(repositoryStub).to.be.calledOnce;
+      expect(repositoryStub).to.be.calledWith(20);
+      expect(response).to.eql(false);
+    });
+  });
+
+  describe('hasUnpublishedProjectReports', () => {
+    it('returns true for unpublished records', async () => {
+      const dbConnection = getMockDBConnection();
+      const service = new HistoryPublishService(dbConnection);
+
+      const repositoryStub = sinon
+        .stub(HistoryPublishRepository.prototype, 'getCountProjectUnpublishedReports')
+        .resolves(({ rows: [{ count: 2 }], rowCount: 1 } as unknown) as QueryResult);
+
+      const response = await service.hasUnpublishedProjectReports(20);
+
+      expect(repositoryStub).to.be.calledOnce;
+      expect(repositoryStub).to.be.calledWith(20);
+      expect(response).to.eql(true);
+    });
+
+    it('returns false for published records', async () => {
+      const dbConnection = getMockDBConnection();
+      const service = new HistoryPublishService(dbConnection);
+
+      const repositoryStub = sinon
+        .stub(HistoryPublishRepository.prototype, 'getCountProjectUnpublishedReports')
+        .resolves(({ rows: [{ count: 0 }], rowCount: 1 } as unknown) as QueryResult);
+
+      const response = await service.hasUnpublishedProjectReports(20);
+
+      expect(repositoryStub).to.be.calledOnce;
+      expect(repositoryStub).to.be.calledWith(20);
+      expect(response).to.eql(false);
     });
   });
 });

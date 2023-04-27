@@ -37,8 +37,8 @@ export const ensureProtocol = (url: string, protocol: 'http://' | 'https://' = '
  * @param pageName The name of the page, e.g. 'Projects'
  * @returns The content to be rendered in the <title> tag
  */
-export const getTitle = (pageName: string) => {
-  return `SIMS - ${pageName}`;
+export const getTitle = (pageName?: string) => {
+  return pageName ? `SIMS - ${pageName}` : 'SIMS';
 };
 
 /**
