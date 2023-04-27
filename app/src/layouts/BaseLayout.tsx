@@ -9,21 +9,21 @@ import { DialogContextProvider } from 'contexts/dialogContext';
 import React, { PropsWithChildren } from 'react';
 
 interface IBaseLayoutProps {
-  className?: string
+  className?: string;
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
   baseLayoutContainer: {
-    height: "100vh",
-    display: "flex",
-    flexDirection: "column"
+    height: '100vh',
+    display: 'flex',
+    flexDirection: 'column'
   },
   alert: {
-    borderRadius: 0,
+    borderRadius: 0
   },
   globalAlert: {
     color: theme.palette.primary.main,
-    backgroundColor: '#fcba19',
+    backgroundColor: '#fcba19'
   }
 }));
 

@@ -35,7 +35,7 @@ export const ensureProtocol = (url: string, protocol: 'http://' | 'https://' = '
 /**
  * Builds a URL from multiple (possibly null or undefined) url parts, stripping any
  * double slashes from the resulting URL.
- * 
+ *
  * @param {(string | undefined)[]} urlParts The parts of the URL
  * @returns The built URL
  */
@@ -45,8 +45,8 @@ export const buildUrl = (...urlParts: (string | undefined)[]): string => {
     .map((urlPart) => String(urlPart).trim()) // Trim leading and trailing whitespace
     .filter(Boolean)
     .join('/')
-    .replace(/([^:]\/)\/+/g, "$1"); // Trim double slashes
-}
+    .replace(/([^:]\/)\/+/g, '$1'); // Trim double slashes
+};
 
 /**
  * Generates the <title> tag text for a React route

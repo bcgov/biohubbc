@@ -1,15 +1,15 @@
-import React, { useContext, useMemo } from 'react';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Container from '@material-ui/core/Container';
-import Typography from '@material-ui/core/Typography';
 import { makeStyles, Theme } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
+import clsx from 'clsx';
+import { AuthGuard, UnAuthGuard } from 'components/security/Guards';
+import { SYSTEM_ROLE } from 'constants/roles';
 import { AuthStateContext } from 'contexts/authStateContext';
 import BaseLayout from 'layouts/BaseLayout';
-import { AuthGuard, UnAuthGuard } from 'components/security/Guards';
+import React, { useContext, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { SYSTEM_ROLE } from 'constants/roles';
-import clsx from 'clsx';
 
 const useStyles = makeStyles((theme: Theme) => ({
   baseLayoutContainer: {
@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 
     '& > main': {
       display: 'flex',
-      marginTop: theme.spacing(-6),
+      marginTop: theme.spacing(-6)
     }
   },
   heroHeader: {
@@ -88,10 +88,13 @@ export const LandingPage = () => {
   const { keycloakWrapper } = useContext(AuthStateContext);
   const classes = useStyles();
 
-  const loginUrl = useMemo(() => keycloakWrapper?.getLoginUrl(), []);
+  const loginUrl = useMemo(() => keycloakWrapper?.getLoginUrl(), [keycloakWrapper]);
   const userIdentifier = keycloakWrapper?.getUserIdentifier() || '';
 
-  const hasAdministrativeRole = keycloakWrapper?.hasSystemRole([SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]);
+  const hasAdministrativeRole = keycloakWrapper?.hasSystemRole([
+    SYSTEM_ROLE.DATA_ADMINISTRATOR,
+    SYSTEM_ROLE.SYSTEM_ADMIN
+  ]);
 
   return (
     <BaseLayout className={classes.baseLayoutContainer}>
@@ -100,7 +103,8 @@ export const LandingPage = () => {
           Species Inventory Management System
         </Typography>
         <Typography variant="body1" className={classes.heroSubheader}>
-          Upload and submit your species inventory project data to help understand how we can better protect and preserve biodiversity in British Columbia.
+          Upload and submit your species inventory project data to help understand how we can better protect and
+          preserve biodiversity in British Columbia.
         </Typography>
         <Box className={classes.actionsContainer}>
           <UnAuthGuard>
@@ -109,52 +113,59 @@ export const LandingPage = () => {
                 To access this application, you must use a valid BC government-issued IDIR or BCeID account credential.
               </Typography>
               <Button
-                component='a'
+                component="a"
                 href={loginUrl}
-                variant='contained'
+                variant="contained"
                 className={clsx(classes.heroButton, classes.loginButton)}
-                size='large'
-              >
+                size="large">
                 Log In
               </Button>
-              <Typography variant="body2">
-                Don't have an account? <a className={classes.heroLink} href='/'>Register here.</a>
-              </Typography>
+              {/**
+                * Temporarily hiding the Register link. See: https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-30
+                <Typography variant="body2">
+                  Don't have an account? &zwnj;
+                  <a className={classes.heroLink} href="/link-to-register-an-account">
+                    Register here.
+                  </a>
+                </Typography>
+              */}
             </>
           </UnAuthGuard>
           <AuthGuard>
             <Typography variant="body1" className={classes.greeting}>
               <span>Welcome&nbsp;back</span>
               {userIdentifier && (
-                <span>,&nbsp;<strong className={classes.username}>{userIdentifier}</strong></span>
+                <span>
+                  ,&nbsp;<strong className={classes.username}>{userIdentifier}</strong>
+                </span>
               )}
             </Typography>
             <Box className={classes.actions}>
               <Button
                 component={Link}
-                to='/admin/projects'
-                variant='contained'
+                to="/admin/projects"
+                variant="contained"
                 className={classes.heroButton}
-                size='large'
+                size="large"
                 children={<>View&nbsp;Projects</>}
               />
               <Typography component="span">Or</Typography>
               {hasAdministrativeRole ? (
                 <Button
                   component={Link}
-                  to='/admin/users'
-                  variant='contained'
+                  to="/admin/users"
+                  variant="contained"
                   className={classes.heroButton}
-                  size='large'
+                  size="large"
                   children={<>Manage&nbsp;Users</>}
                 />
               ) : (
                 <Button
                   component={Link}
-                  to='/admin/projects/create'
-                  variant='contained'
+                  to="/admin/projects/create"
+                  variant="contained"
                   className={classes.heroButton}
-                  size='large'
+                  size="large"
                   children={<>Create&nbsp;a&nbsp;Project</>}
                 />
               )}

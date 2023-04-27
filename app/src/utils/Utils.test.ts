@@ -67,13 +67,13 @@ describe('buildUrl', () => {
   });
 
   it('should filter out falsey url parts', () => {
-    const url = buildUrl('a', 'b', null as unknown as string, 'd', undefined, 'f');
+    const url = buildUrl('a', 'b', (null as unknown) as string, 'd', undefined, 'f');
 
     expect(url).toEqual('a/b/d/f');
   });
 
   it('should filter out double slashes', () => {
-    const url = buildUrl('a', "\/\/", 'b', '/c', '/d/', '/f/');
+    const url = buildUrl('a', '//', 'b', '/c', '/d/', '/f/');
 
     expect(url).toEqual('a/b/c/d/f/');
   });
@@ -89,7 +89,7 @@ describe('buildUrl', () => {
 
     expect(url).toEqual('http://a/b/c/d/');
   });
-})
+});
 
 describe('getFormattedAmount', () => {
   it('returns a valid amount string when amount is valid', () => {

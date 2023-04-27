@@ -133,7 +133,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 const Header: React.FC = () => {
   const classes = useStyles();
   const { keycloakWrapper } = useContext(AuthStateContext);
-  const loginUrl = useMemo(() => keycloakWrapper?.getLoginUrl(), []);
+  const loginUrl = useMemo(() => keycloakWrapper?.getLoginUrl(), [keycloakWrapper]);
 
   // Authenticated view
   const LoggedInUser = () => {
@@ -172,7 +172,7 @@ const Header: React.FC = () => {
           Contact Support
         </Button>
         <Button
-          component='a'
+          component="a"
           href={loginUrl}
           className={classes.loginButton}
           type="submit"

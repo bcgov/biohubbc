@@ -28,8 +28,8 @@ const LoginStub = () => {
     keycloakWrapper?.keycloak?.login();
   });
 
-  return <></>
-}
+  return <></>;
+};
 
 const AppRouter: React.FC = () => {
   const location = useLocation();
@@ -102,7 +102,7 @@ const AppRouter: React.FC = () => {
         </BaseLayout>
       </RouteWithTitle>
 
-      <Route path='/login'>
+      <Route path="/login">
         <UnAuthenticatedRouteGuard>
           <LoginStub />
         </UnAuthenticatedRouteGuard>

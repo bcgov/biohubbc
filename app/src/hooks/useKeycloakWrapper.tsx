@@ -1,9 +1,9 @@
 import { useKeycloak } from '@react-keycloak/web';
 import Keycloak from 'keycloak-js';
 import { useCallback } from 'react';
+import { buildUrl } from 'utils/Utils';
 import { useBiohubApi } from './useBioHubApi';
 import useDataLoader from './useDataLoader';
-import { buildUrl } from 'utils/Utils';
 
 export enum SYSTEM_IDENTITY_SOURCE {
   BCEID_BUSINESS = 'BCEIDBUSINESS',
@@ -121,7 +121,7 @@ export interface IKeycloakWrapper {
    * @param {string} [redirectUri] Optionally URL to redirect the user to upon logging in
    * @memberof IKeycloakWrapper
    */
-  getLoginUrl: (redirectUri?: string) => string
+  getLoginUrl: (redirectUri?: string) => string;
 }
 
 /**
@@ -278,10 +278,9 @@ function useKeycloakWrapper(): IKeycloakWrapper {
     hasPendingAdministrativeActivitiesDataLoader.refresh();
   };
 
-  const getLoginUrl = (redirectUri: string = '/admin/projects'): string => {
-    return keycloak?.createLoginUrl({ redirectUri: buildUrl(window.location.origin, redirectUri) })
-      || '/login';
-  }
+  const getLoginUrl = (redirectUri = '/admin/projects'): string => {
+    return keycloak?.createLoginUrl({ redirectUri: buildUrl(window.location.origin, redirectUri) }) || '/login';
+  };
 
   return {
     keycloak,
