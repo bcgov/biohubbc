@@ -1,4 +1,4 @@
-import { Box, Paper } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
 import Link from '@material-ui/core/Link';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Table from '@material-ui/core/Table';
@@ -125,11 +125,15 @@ const SurveysList: React.FC = () => {
 function NoSurveys() {
   const classes = useStyles();
   return (
-    <Paper variant="outlined" className={classes.importFile}>
-      <Box display="flex" flex="1 1 auto" alignItems="center" justifyContent="center" p={2}>
-        <span data-testid="observations-nodata">No Surveys</span>
-      </Box>
-    </Paper>
+    <Box
+      display="flex"
+      flex="1 1 auto"
+      alignItems="center"
+      justifyContent="center"
+      p={2}
+      className={classes.importFile}>
+      <span data-testid="observations-nodata">No Surveys</span>
+    </Box>
   );
 }
 
