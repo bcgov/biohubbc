@@ -12,4 +12,4 @@ const LoginPage = () => {
   return <CircularProgress className="pageProgress" />;
 };
 
-export default LoginPage
+export default LoginPage;

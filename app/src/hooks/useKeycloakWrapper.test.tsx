@@ -22,7 +22,7 @@ const getMockTestWrapper = (userInfo?: any) => {
   const keycloak: Keycloak = ({
     authenticated: true,
     init: () => Promise.resolve(true) as KeycloakPromise<any, any>,
-    createLoginUrl: () => 'string',
+    createLoginUrl: (options: { redirectUri: string }) => `/login?my-keycloak-redirect=${options.redirectUri}`,
     createLogoutUrl: () => 'string',
     createRegisterUrl: () => 'string',
     createAccountUrl: () => 'string',
@@ -59,6 +59,34 @@ describe('useKeycloakWrapper', () => {
 
   afterEach(() => {
     cleanup();
+  });
+
+  describe('getLoginUrl', () => {
+    afterEach(() => {
+      cleanup();
+    });
+
+    it('should get a redirect URL if no redirect URI is provided', async () => {
+      const { wrapper, mockLoadUserInfo } = getMockTestWrapper();
+      const { result } = renderHook(() => useKeycloakWrapper(), { wrapper });
+
+      await act(async () => {
+        await mockLoadUserInfo;
+      });
+
+      expect(result.current.getLoginUrl()).toEqual('/login?my-keycloak-redirect=http://localhost/admin/projects');
+    });
+
+    it('should get a redirect URL if a redirect URI is provided', async () => {
+      const { wrapper, mockLoadUserInfo } = getMockTestWrapper();
+      const { result } = renderHook(() => useKeycloakWrapper(), { wrapper });
+
+      await act(async () => {
+        await mockLoadUserInfo;
+      });
+
+      expect(result.current.getLoginUrl('/test')).toEqual('/login?my-keycloak-redirect=http://localhost/test');
+    });
   });
 
   it('renders successfully', async () => {
