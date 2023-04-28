@@ -39,23 +39,24 @@ export const ProjectFundingFormArrayItemInitialValues: IProjectFundingFormArrayI
   funding_amount: ('' as unknown) as number,
   start_date: '',
   end_date: '',
-  revision_count: 0
+  revision_count: 0,
+  first_nations_id: undefined
 };
 
 export const ProjectFundingFormArrayItemYupSchema = yup.object().shape({
-  agency_id: yup
-    .number()
-    .transform((value) => (isNaN(value) && null) || value)
-    .required('Required'),
+  agency_id: yup.number().transform((value) => (isNaN(value) && null) || value),
+  first_nations_id: yup.number().transform((value) => (isNaN(value) && null) || value),
   investment_action_category: yup.number().required('Required'),
   agency_project_id: yup.string().max(50, 'Cannot exceed 50 characters').nullable(true),
-  funding_amount: yup
-    .number()
-    .transform((value) => (isNaN(value) && null) || value)
-    .typeError('Must be a number')
-    .min(0, 'Must be a positive number')
-    .max(9999999999, 'Must be less than $9,999,999,999')
-    .required('Required'),
+  funding_amount: yup.number().when('first_nations_id', {
+    is: !undefined,
+    then: yup
+      .number()
+      .transform((value) => (isNaN(value) && null) || value)
+      .typeError('Must be a number')
+      .min(0, 'Must be a positive number')
+      .max(9999999999, 'Must be less than $9,999,999,999')
+  }),
   start_date: yup.string().isValidDateString().required('Required'),
   end_date: yup.string().isValidDateString().required('Required').isEndDateAfterStartDate('start_date')
 });
@@ -103,9 +104,7 @@ export interface IProjectFundingItemFormProps {
  */
 const ProjectFundingItemForm: React.FC<IProjectFundingItemFormProps> = (props) => {
   const formikProps = useFormikContext<IProjectFundingFormArrayItem>();
-  console.log(props.sources);
   const { values, touched, errors, handleChange, handleSubmit, setFieldValue } = formikProps;
-  console.log('values', values);
 
   // Only show investment_action_category if certain agency_id values are selected
   // Toggle investment_action_category label and dropdown values based on chosen agency_id
@@ -127,45 +126,32 @@ const ProjectFundingItemForm: React.FC<IProjectFundingItemFormProps> = (props) =
                   name="agency_name"
                   label={'Agency Name'}
                   options={props.sources}
-                />
-              </Box>
-              {/* <InputLabel id="agency_id-label">Agency Name</InputLabel> */}
-              <Select
-                id="agency_id"
-                name="agency_id"
-                labelId="agency_id-label"
-                label="Agency Name"
-                value={values.agency_id}
-                onChange={(event) => {
-                  // I think this will all need to change here...
-                  console.log(values);
-                  console.log(event);
-                  handleChange(event);
-                  // investment_action_category is dependent on agency_id, so reset it if agency_id changes
-                  setFieldValue(
-                    'investment_action_category',
-                    ProjectFundingFormArrayItemInitialValues.investment_action_category
-                  );
-
-                  // If an agency_id with a `Not Applicable` investment_action_category is chosen, auto select
-                  // it for the user.
-                  if (event.target.value !== 1 && event.target.value !== 2) {
-                    console.log('LOOK AT THIS THING FIND ALL THIS STUFF MAYBE...');
+                  onChange={(event, options) => {
+                    // investment_action_category is dependent on agency_id, so reset it if agency_id changes
                     setFieldValue(
                       'investment_action_category',
-                      props.investment_action_category.find((item) => item.fs_id === event.target.value)?.value || 0
+                      ProjectFundingFormArrayItemInitialValues.investment_action_category
                     );
-                  }
-                }}
-                error={touched.agency_id && Boolean(errors.agency_id)}
-                displayEmpty
-                inputProps={{ 'aria-label': 'Agency Name', 'data-testid': 'agency-id' }}>
-                {props.sources.alphabetizeObjects('label').map((item) => (
-                  <MenuItem key={`${item.type}-${item.value}`} value={item.value}>
-                    {item.label}
-                  </MenuItem>
-                ))}
-              </Select>
+                    console.log(
+                      `Action category: ${ProjectFundingFormArrayItemInitialValues.investment_action_category}`
+                    );
+                    if (options?.type === FundingSourceType.FIRST_NATIONS) {
+                      setFieldValue('first_nations_id', options?.value);
+                    } else {
+                      setFieldValue('agency_id', options?.value);
+                      // If an agency_id with a `Not Applicable` investment_action_category is chosen, auto select
+                      // it for the user.
+                      //TODO: take a look at this logic, seems backwards
+                      if (event.target.value !== 1 && event.target.value !== 2) {
+                        setFieldValue(
+                          'investment_action_category',
+                          props.investment_action_category.find((item) => item.fs_id === event.target.value)?.value || 0
+                        );
+                      }
+                    }
+                  }}
+                />
+              </Box>
               <FormHelperText>{errors.agency_id}</FormHelperText>
             </FormControl>
           </Grid>

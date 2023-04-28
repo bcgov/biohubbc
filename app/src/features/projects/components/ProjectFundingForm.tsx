@@ -136,6 +136,7 @@ const ProjectFundingForm: React.FC<IProjectFundingFormProps> = (props) => {
                   }}
                   onCancel={() => setIsModalOpen(false)}
                   onSave={(projectFundingItemValues) => {
+                    console.log('ARE WE GETTING HERE?');
                     console.log('projectFundingItemValues', projectFundingItemValues);
                     if (currentProjectFundingFormArrayItem.index < values.funding.fundingSources.length) {
                       // Update an existing item
@@ -165,7 +166,10 @@ const ProjectFundingForm: React.FC<IProjectFundingFormProps> = (props) => {
                         <Paper variant="outlined">
                           <Toolbar>
                             <Typography className={classes.title}>
-                              {getCodeValueNameByID(props.funding_sources, fundingSource?.agency_id)}
+                              {
+                                //TODO: handle this optional value properly
+                                getCodeValueNameByID(props.funding_sources, fundingSource.agency_id || 0)
+                              }
                               {investment_action_category_label && (
                                 <span className={classes.titleDesc}>({investment_action_category_value})</span>
                               )}
@@ -205,7 +209,10 @@ const ProjectFundingForm: React.FC<IProjectFundingFormProps> = (props) => {
                                   Funding Amount
                                 </Typography>
                                 <Typography variant="body1">
-                                  {getFormattedAmount(fundingSource.funding_amount)}
+                                  {
+                                    //TODO: handle this optional value properly
+                                    getFormattedAmount(fundingSource.funding_amount || 0)
+                                  }
                                 </Typography>
                               </Grid>
                               <Grid item xs={12} sm={6} md={4}>
