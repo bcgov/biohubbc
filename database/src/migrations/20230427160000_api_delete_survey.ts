@@ -39,6 +39,8 @@ export async function up(knex: Knex): Promise<void> {
      --                  2023-03-14  1.7.0 model changes
      -- alfred.rosenthal@quartech.com
      --                  2023-03-15  added missing publish tables to survey delete
+     -- curtis.upshall@quartech.com
+     --                  2023-04-28  change order of survey delete procedure
      -- *******************************************************************
      declare
 
