@@ -8,7 +8,6 @@ exports[`Study Area Form renders correctly the empty component correctly 1`] = `
     >
       <div
         class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-        data-testid="location.survey_area_name"
       >
         <label
           class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
@@ -30,6 +29,7 @@ exports[`Study Area Form renders correctly the empty component correctly 1`] = `
           <input
             aria-invalid="false"
             class="MuiInputBase-input MuiOutlinedInput-input"
+            data-testid="location.survey_area_name"
             id="location.survey_area_name"
             name="location.survey_area_name"
             required=""
@@ -432,7 +432,6 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
     >
       <div
         class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-        data-testid="location.survey_area_name"
       >
         <label
           class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
@@ -454,6 +453,7 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
           <input
             aria-invalid="false"
             class="MuiInputBase-input MuiOutlinedInput-input"
+            data-testid="location.survey_area_name"
             id="location.survey_area_name"
             name="location.survey_area_name"
             required=""
@@ -900,7 +900,6 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
     >
       <div
         class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-        data-testid="location.survey_area_name"
       >
         <label
           class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined Mui-error Mui-error MuiFormLabel-filled Mui-required Mui-required"
@@ -923,6 +922,7 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
             aria-describedby="location.survey_area_name-helper-text"
             aria-invalid="true"
             class="MuiInputBase-input MuiOutlinedInput-input"
+            data-testid="location.survey_area_name"
             id="location.survey_area_name"
             name="location.survey_area_name"
             required=""
