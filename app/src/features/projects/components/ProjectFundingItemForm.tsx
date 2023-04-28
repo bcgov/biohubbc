@@ -69,6 +69,7 @@ export const ProjectFundingFormArrayItemYupSchema = yup.object().shape({
   4. modify the save to account for the changes
   5. Modify the fetch to account for any changes in the model
   6. create an enum or type to account for the text on the 'action' items
+  7. remove new thing and use type Props = interfaces for the auto complete thing
 
 
   Q's

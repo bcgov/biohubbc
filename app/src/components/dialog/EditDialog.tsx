@@ -103,7 +103,12 @@ export const EditDialog = <T extends FormikValues>(props: PropsWithChildren<IEdi
           <DialogContent>{props.component.element}</DialogContent>
           <DialogActions>
             <Button
-              onClick={formikProps.submitForm}
+              onClick={() => {
+                console.log('THIS IS THE EDIT BUTTON');
+                console.log(`Is Valid: ${formikProps.isValid}`);
+                console.log(`Errors: ${formikProps.errors}`);
+                formikProps.submitForm();
+              }}
               color="primary"
               variant="contained"
               autoFocus
