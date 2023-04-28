@@ -133,22 +133,19 @@ const ProjectFundingItemForm: React.FC<IProjectFundingItemFormProps> = (props) =
                       'investment_action_category',
                       ProjectFundingFormArrayItemInitialValues.investment_action_category
                     );
-                    console.log(
-                      `Action category: ${ProjectFundingFormArrayItemInitialValues.investment_action_category}`
-                    );
+
                     if (options?.type === FundingSourceType.FIRST_NATIONS) {
                       setFieldValue('first_nations_id', options?.value);
                     } else {
                       setFieldValue('agency_id', options?.value);
-                      // If an agency_id with a `Not Applicable` investment_action_category is chosen, auto select
-                      // it for the user.
-                      //TODO: take a look at this logic, seems backwards
-                      if (event.target.value !== 1 && event.target.value !== 2) {
-                        setFieldValue(
-                          'investment_action_category',
-                          props.investment_action_category.find((item) => item.fs_id === event.target.value)?.value || 0
-                        );
-                      }
+                    }
+                    // If an agency_id with a `Not Applicable` investment_action_category is chosen, auto select
+                    // it for the user.
+                    if (event.target.value !== 1 && event.target.value !== 2) {
+                      setFieldValue(
+                        'investment_action_category',
+                        props.investment_action_category.find((item) => item.fs_id === event.target.value)?.value || 0
+                      );
                     }
                   }}
                 />
