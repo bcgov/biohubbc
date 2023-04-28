@@ -4,6 +4,7 @@ import {
   UnAuthenticatedRouteGuard
 } from 'components/security/RouteGuards';
 import { SYSTEM_ROLE } from 'constants/roles';
+import { AuthStateContext } from 'contexts/authStateContext';
 import { CodesContextProvider } from 'contexts/codesContext';
 import AdminUsersRouter from 'features/admin/AdminUsersRouter';
 import ProjectsRouter from 'features/projects/ProjectsRouter';
@@ -16,10 +17,19 @@ import NotFoundPage from 'pages/404/NotFoundPage';
 import AccessRequestPage from 'pages/access/AccessRequestPage';
 import { LandingPage } from 'pages/landing/LandingPage';
 import LogOutPage from 'pages/logout/LogOutPage';
-import React from 'react';
-import { Redirect, Switch, useLocation } from 'react-router-dom';
+import React, { useContext, useEffect } from 'react';
+import { Redirect, Route, Switch, useLocation } from 'react-router-dom';
 import RouteWithTitle from 'utils/RouteWithTitle';
 import { getTitle } from 'utils/Utils';
+
+const LoginStub = () => {
+  const { keycloakWrapper } = useContext(AuthStateContext);
+  useEffect(() => {
+    keycloakWrapper?.keycloak?.login();
+  });
+
+  return <></>;
+};
 
 const AppRouter: React.FC = () => {
   const location = useLocation();
@@ -86,13 +96,17 @@ const AppRouter: React.FC = () => {
         </BaseLayout>
       </RouteWithTitle>
 
-      <RouteWithTitle path="/admin/resources" title={getTitle('Resources')}>
+      <RouteWithTitle path="/resources" title={getTitle('Resources')}>
         <BaseLayout>
-          <AuthenticatedRouteGuard>
-            <ResourcesPage />
-          </AuthenticatedRouteGuard>
+          <ResourcesPage />
         </BaseLayout>
       </RouteWithTitle>
+
+      <Route path="/login">
+        <UnAuthenticatedRouteGuard>
+          <LoginStub />
+        </UnAuthenticatedRouteGuard>
+      </Route>
 
       <RouteWithTitle path="/logout" title={getTitle('Logout')}>
         <BaseLayout>
@@ -102,10 +116,8 @@ const AppRouter: React.FC = () => {
         </BaseLayout>
       </RouteWithTitle>
 
-      <RouteWithTitle title={getTitle()} path="*">
-        <UnAuthenticatedRouteGuard>
-          <LandingPage originalPath={''} />
-        </UnAuthenticatedRouteGuard>
+      <RouteWithTitle title={getTitle()} path="/">
+        <LandingPage />
       </RouteWithTitle>
 
       <RouteWithTitle title={getTitle()} path="*">

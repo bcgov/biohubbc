@@ -19,7 +19,7 @@ import { AuthGuard, SystemRoleGuard, UnAuthGuard } from 'components/security/Gua
 import { SYSTEM_ROLE } from 'constants/roles';
 import { AuthStateContext } from 'contexts/authStateContext';
 import { SYSTEM_IDENTITY_SOURCE } from 'hooks/useKeycloakWrapper';
-import React, { useContext } from 'react';
+import React, { useContext, useMemo } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { getFormattedIdentitySource } from 'utils/Utils';
 
@@ -96,6 +96,11 @@ const useStyles = makeStyles((theme: Theme) => ({
       outlineOffset: '-1px'
     }
   },
+  loginButton: {
+    '&:hover': {
+      textDecoration: 'none !important'
+    }
+  },
   supportButton: {
     color: '#ffffff',
     fontSize: '14px'
@@ -127,9 +132,8 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 const Header: React.FC = () => {
   const classes = useStyles();
-  // const config = useContext(ConfigContext);
-
   const { keycloakWrapper } = useContext(AuthStateContext);
+  const loginUrl = useMemo(() => keycloakWrapper?.getLoginUrl(), [keycloakWrapper]);
 
   // Authenticated view
   const LoggedInUser = () => {
@@ -168,7 +172,9 @@ const Header: React.FC = () => {
           Contact Support
         </Button>
         <Button
-          onClick={() => keycloakWrapper?.keycloak?.login()}
+          component="a"
+          href={loginUrl}
+          className={classes.loginButton}
           type="submit"
           variant="contained"
           color="primary"
@@ -201,7 +207,7 @@ const Header: React.FC = () => {
         <Toolbar disableGutters className={classes.govHeaderToolbar}>
           <Container maxWidth="xl">
             <Box display="flex" justifyContent="space-between" width="100%">
-              <RouterLink to="/projects" className={classes.brand} aria-label="Go to SIMS Home">
+              <RouterLink to="/" className={classes.brand} aria-label="Go to SIMS Home">
                 <picture>
                   <source srcSet={headerImageLarge} media="(min-width: 1200px)"></source>
                   <source srcSet={headerImageSmall} media="(min-width: 600px)"></source>
@@ -224,44 +230,48 @@ const Header: React.FC = () => {
           </Container>
         </Toolbar>
 
-        <AuthGuard>
-          <Box className={classes.mainNav}>
-            <Container maxWidth="xl">
-              <Toolbar
-                variant="dense"
-                disableGutters
-                className={classes.mainNavToolbar}
-                role="navigation"
-                aria-label="Main Navigation">
+        <Box className={classes.mainNav}>
+          <Container maxWidth="xl">
+            <Toolbar
+              variant="dense"
+              disableGutters
+              className={classes.mainNavToolbar}
+              role="navigation"
+              aria-label="Main Navigation">
+              <UnAuthGuard>
+                <RouterLink to="/" id="menu_home">
+                  Home
+                </RouterLink>
+              </UnAuthGuard>
+              <AuthGuard>
                 <RouterLink to="/admin/projects" id="menu_projects">
-                  Projects
+                  My Projects
                 </RouterLink>
-                <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
-                  <RouterLink to="/admin/search" id="menu_search">
-                    Map
-                  </RouterLink>
-                </SystemRoleGuard>
-                <RouterLink to="/admin/resources" id="menu_resources">
-                  Resources
+              </AuthGuard>
+              <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
+                <RouterLink to="/admin/search" id="menu_search">
+                  Map
                 </RouterLink>
-                <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-                  <RouterLink to="/admin/users" id="menu_admin_users">
-                    Manage Users
-                  </RouterLink>
-                </SystemRoleGuard>
-              </Toolbar>
-            </Container>
-          </Box>
-        </AuthGuard>
+              </SystemRoleGuard>
+              <RouterLink to="/resources" id="menu_resources">
+                Resources
+              </RouterLink>
+              <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+                <RouterLink to="/admin/users" id="menu_admin_users">
+                  Manage Users
+                </RouterLink>
+              </SystemRoleGuard>
+            </Toolbar>
+          </Container>
+        </Box>
       </AppBar>
 
       <Dialog open={open}>
         <DialogTitle>Contact Support</DialogTitle>
         <DialogContent>
           <Typography variant="body1" component="div" color="textSecondary">
-            For technical support or questions about this application, please email&nbsp;
+            For technical support or questions about this application, please email &zwnj;
             <a href="mailto:biohub@gov.bc.ca?subject=Support Request - Species Inventory Management System">
-              {' '}
               biohub@gov.bc.ca
             </a>
             .

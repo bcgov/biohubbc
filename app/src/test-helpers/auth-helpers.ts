@@ -17,9 +17,8 @@ const SystemUserAuthState: IAuthState = {
     username: 'testusername',
     displayName: 'testdisplayname',
     email: 'test@email.com',
-    refresh: () => {
-      // do nothing
-    }
+    refresh: () => {},
+    getLoginUrl: () => '/login'
   }
 };
 
