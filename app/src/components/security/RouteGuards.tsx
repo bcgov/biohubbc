@@ -1,7 +1,7 @@
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { AuthStateContext } from 'contexts/authStateContext';
 import { ProjectAuthStateContext } from 'contexts/projectAuthStateContext';
-import qs from 'qs';
+import useRedirect from 'hooks/useRedirect';
 import React, { PropsWithChildren, useContext } from 'react';
 import { Redirect, Route, RouteProps, useLocation } from 'react-router';
 
@@ -125,20 +125,8 @@ const CheckForAuthLoginParam = (props: PropsWithChildren<Record<never, unknown>>
   const location = useLocation();
 
   if (!keycloakWrapper?.keycloak?.authenticated) {
-    const urlParams = qs.parse(location.search.replace('?', ''));
-    const authLoginUrlParam = urlParams.authLogin;
-
-    // Check for urlParam to force login
-    if (authLoginUrlParam) {
-      // Remove authLogin url param from url to stop possible loop redirect
-      const redirectUrlParams = qs.stringify(urlParams, { filter: (prefix) => prefix !== 'authLogin' });
-      const redirectUri = `${window.location.origin}${location.pathname}?${redirectUrlParams}`;
-
-      // Trigger login
-      keycloakWrapper?.keycloak?.login({ redirectUri: redirectUri });
-    }
-
-    return <Redirect to="/" />;
+    // Trigger login, then redirect to the desired route
+    return <Redirect to={`/login?next=${encodeURIComponent(location.pathname)}`} />;;
   }
 
   return <>{props.children}</>;
@@ -232,9 +220,12 @@ const CheckIfAuthenticatedUser = (props: PropsWithChildren<Record<never, unknown
  */
 const CheckIfNotAuthenticatedUser = (props: PropsWithChildren<Record<never, unknown>>) => {
   const { keycloakWrapper } = useContext(AuthStateContext);
+  const { redirect } = useRedirect('/');
 
   if (keycloakWrapper?.keycloak?.authenticated) {
-    return <Redirect to="/admin/" />;
+    redirect();
+
+    return <></>
   }
 
   return <>{props.children}</>;
