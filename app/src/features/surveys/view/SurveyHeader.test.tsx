@@ -2,6 +2,7 @@ import { cleanup, fireEvent, render, waitFor } from '@testing-library/react';
 import { SYSTEM_ROLE } from 'constants/roles';
 import { AuthStateContext, IAuthState } from 'contexts/authStateContext';
 import { DialogContextProvider } from 'contexts/dialogContext';
+import { IProjectContext, ProjectContext } from 'contexts/projectContext';
 import { ISurveyContext, SurveyContext } from 'contexts/surveyContext';
 import SurveyHeader from 'features/surveys/view/SurveyHeader';
 import { createMemoryHistory } from 'history';
@@ -81,15 +82,23 @@ describe('SurveyHeader', () => {
 
   const renderComponent = (authState: any) => {
     return render(
-      <SurveyContext.Provider value={mockSurveyContext}>
-        <AuthStateContext.Provider value={authState as IAuthState}>
-          <DialogContextProvider>
-            <Router history={history}>
-              <SurveyHeader />
-            </Router>
-          </DialogContextProvider>
-        </AuthStateContext.Provider>
-      </SurveyContext.Provider>
+      <ProjectContext.Provider
+        value={
+          ({
+            projectId: 1,
+            surveysListDataLoader: ({ refresh: jest.fn() } as unknown) as DataLoader<any, any, any>
+          } as unknown) as IProjectContext
+        }>
+        <SurveyContext.Provider value={mockSurveyContext}>
+          <AuthStateContext.Provider value={authState as IAuthState}>
+            <DialogContextProvider>
+              <Router history={history}>
+                <SurveyHeader />
+              </Router>
+            </DialogContextProvider>
+          </AuthStateContext.Provider>
+        </SurveyContext.Provider>
+      </ProjectContext.Provider>
     );
   };
 

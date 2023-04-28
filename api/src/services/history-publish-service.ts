@@ -251,6 +251,28 @@ export class HistoryPublishService extends DBService {
   }
 
   /**
+   *  Deletes a record from `project_attachment_publish` for a given attachment id.
+   *
+   * @param {number} surveyAttachmentId
+   * @return {*}  {Promise<void>}
+   * @memberof HistoryPublishService
+   */
+  async deleteProjectAttachmentPublishRecord(surveyAttachmentId: number): Promise<void> {
+    return this.historyRepository.deleteProjectAttachmentPublishRecord(surveyAttachmentId);
+  }
+
+  /**
+   * Deletes a record from `project_report_publish` for a given attachment id.
+   *
+   * @param {number} surveyReportAttachmentId
+   * @return {*}  {Promise<void>}
+   * @memberof HistoryPublishService
+   */
+  async deleteProjectReportAttachmentPublishRecord(surveyReportAttachmentId: number): Promise<void> {
+    return this.historyRepository.deleteProjectReportAttachmentPublishRecord(surveyReportAttachmentId);
+  }
+
+  /**
    *  Returns true if a given survey has any unpublished attachments and false if no unpublished attachments are found
    *
    * @param {number} surveyId
