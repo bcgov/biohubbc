@@ -166,10 +166,8 @@ const ProjectFundingForm: React.FC<IProjectFundingFormProps> = (props) => {
                         <Paper variant="outlined">
                           <Toolbar>
                             <Typography className={classes.title}>
-                              {
-                                //TODO: handle this optional value properly
-                                getCodeValueNameByID(props.funding_sources, fundingSource.agency_id || 0)
-                              }
+                              {getCodeValueNameByID(props.funding_sources, fundingSource?.agency_id) ||
+                                getCodeValueNameByID(props.first_nations, fundingSource?.first_nations_id)}
                               {investment_action_category_label && (
                                 <span className={classes.titleDesc}>({investment_action_category_value})</span>
                               )}
@@ -209,10 +207,7 @@ const ProjectFundingForm: React.FC<IProjectFundingFormProps> = (props) => {
                                   Funding Amount
                                 </Typography>
                                 <Typography variant="body1">
-                                  {
-                                    //TODO: handle this optional value properly
-                                    getFormattedAmount(fundingSource.funding_amount || 0)
-                                  }
+                                  {getFormattedAmount(fundingSource.funding_amount)}
                                 </Typography>
                               </Grid>
                               <Grid item xs={12} sm={6} md={4}>
@@ -245,10 +240,9 @@ const ProjectFundingForm: React.FC<IProjectFundingFormProps> = (props) => {
 
 export default ProjectFundingForm;
 
-export const getCodeValueNameByID = (codeSet: IMultiAutocompleteFieldOption[], codeValueId: number): string => {
+export const getCodeValueNameByID = (codeSet: IMultiAutocompleteFieldOption[], codeValueId?: number): string => {
   if (!codeSet?.length || !codeValueId) {
     return '';
   }
-
   return codeSet.find((item) => item.value === codeValueId)?.label || '';
 };

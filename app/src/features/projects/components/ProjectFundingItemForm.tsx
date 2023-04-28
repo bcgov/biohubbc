@@ -133,6 +133,9 @@ const ProjectFundingItemForm: React.FC<IProjectFundingItemFormProps> = (props) =
                       'investment_action_category',
                       ProjectFundingFormArrayItemInitialValues.investment_action_category
                     );
+                    // reset values when a change occurs
+                    setFieldValue('first_nations_id', undefined);
+                    setFieldValue('agency_id', undefined);
 
                     if (options?.type === FundingSourceType.FIRST_NATIONS) {
                       setFieldValue('first_nations_id', options?.value);
@@ -192,7 +195,12 @@ const ProjectFundingItemForm: React.FC<IProjectFundingItemFormProps> = (props) =
         <Typography component="legend">Funding Details</Typography>
         <Grid container spacing={3}>
           <Grid item xs={12}>
-            <DollarAmountField required={true} id="funding_amount" name="funding_amount" label="Funding Amount" />
+            <DollarAmountField
+              required={!formikProps.values.first_nations_id} // Funding amount is not a required field when a first nations source is selected
+              id="funding_amount"
+              name="funding_amount"
+              label="Funding Amount"
+            />
           </Grid>
           <StartEndDateFields
             formikProps={formikProps}
