@@ -4,7 +4,6 @@ import {
   UnAuthenticatedRouteGuard
 } from 'components/security/RouteGuards';
 import { SYSTEM_ROLE } from 'constants/roles';
-import { AuthStateContext } from 'contexts/authStateContext';
 import { CodesContextProvider } from 'contexts/codesContext';
 import AdminUsersRouter from 'features/admin/AdminUsersRouter';
 import ProjectsRouter from 'features/projects/ProjectsRouter';
@@ -16,20 +15,12 @@ import AccessDenied from 'pages/403/AccessDenied';
 import NotFoundPage from 'pages/404/NotFoundPage';
 import AccessRequestPage from 'pages/access/AccessRequestPage';
 import { LandingPage } from 'pages/landing/LandingPage';
-import LogOutPage from 'pages/logout/LogOutPage';
-import React, { useContext, useEffect } from 'react';
+import LogOutPage from 'pages/authentication/LogOutPage';
+import React from 'react';
 import { Redirect, Route, Switch, useLocation } from 'react-router-dom';
 import RouteWithTitle from 'utils/RouteWithTitle';
 import { getTitle } from 'utils/Utils';
-
-const LoginStub = () => {
-  const { keycloakWrapper } = useContext(AuthStateContext);
-  useEffect(() => {
-    keycloakWrapper?.keycloak?.login();
-  });
-
-  return <></>;
-};
+import LoginPage from 'pages/authentication/LoginPage';
 
 const AppRouter: React.FC = () => {
   const location = useLocation();
@@ -104,7 +95,7 @@ const AppRouter: React.FC = () => {
 
       <Route path="/login">
         <UnAuthenticatedRouteGuard>
-          <LoginStub />
+          <LoginPage />
         </UnAuthenticatedRouteGuard>
       </Route>
 
