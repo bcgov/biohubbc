@@ -349,14 +349,16 @@ const CreateProjectPage: React.FC = () => {
                   color="primary"
                   variant="contained"
                   onClick={() => formikRef.current?.submitForm()}
-                  className={classes.actionButton}>
+                  className={classes.actionButton}
+                  data-testid="submit-project-button">
                   Submit Project
                 </Button>
                 <Button
                   color="primary"
                   variant="contained"
                   onClick={() => setOpenDraftDialog(true)}
-                  className={classes.actionButton}>
+                  className={classes.actionButton}
+                  data-testid="save-draft-button">
                   Save Draft
                 </Button>
 
@@ -364,7 +366,8 @@ const CreateProjectPage: React.FC = () => {
                   color="secondary"
                   variant="outlined"
                   onClick={() => setOpenDeleteDraftDialog(true)}
-                  className={classes.actionButton}>
+                  className={classes.actionButton}
+                  data-testid="delete-draft-button">
                   Delete Draft
                 </Button>
 
