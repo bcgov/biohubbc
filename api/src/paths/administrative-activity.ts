@@ -182,7 +182,7 @@ export function createAdministrativeActivity(): RequestHandler {
 
 function sendAccessRequestEmail() {
   const gcnotifyService = new GCNotifyService();
-  const url = `${APP_HOST}/admin/users?authLogin=true`;
+  const url = `${APP_HOST}/login?next=${encodeURIComponent('admin/users')}`;
   const hrefUrl = `[click here.](${url})`;
   gcnotifyService.sendEmailGCNotification(ADMIN_EMAIL, {
     ...ACCESS_REQUEST_ADMIN_EMAIL,
