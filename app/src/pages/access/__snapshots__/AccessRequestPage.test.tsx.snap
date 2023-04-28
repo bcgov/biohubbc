@@ -130,7 +130,6 @@ exports[`AccessRequestPage renders correctly 1`] = `
                 >
                   <div
                     class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-                    data-testid="reason"
                   >
                     <label
                       class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
@@ -146,6 +145,7 @@ exports[`AccessRequestPage renders correctly 1`] = `
                       <textarea
                         aria-invalid="false"
                         class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputMultiline MuiOutlinedInput-inputMultiline"
+                        data-testid="reason"
                         id="reason"
                         name="reason"
                         rows="4"
