@@ -6,7 +6,6 @@ import Paper from '@material-ui/core/Paper';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
-import assert from 'assert';
 import EditDialog from 'components/dialog/EditDialog';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import YesNoDialog from 'components/dialog/YesNoDialog';
@@ -83,7 +82,7 @@ const CreateProjectPage: React.FC = () => {
   const codesContext = useContext(CodesContext);
 
   const codes = codesContext.codesDataLoader.data;
-  assert(codesContext.codesDataLoader.data);
+  codesContext.codesDataLoader.load();
 
   const draftId = Number(queryParams.draftId);
 
