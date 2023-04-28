@@ -82,6 +82,14 @@ const appTheme = createMuiTheme({
           color: 'inherit'
         }
       },
+      outlinedSuccess: {
+        color: '#1e4620',
+        borderColor: '#4caf50',
+        backgroundColor: 'rgb(223 240 216)',
+        '& .MuiAlert-icon': {
+          color: 'inherit'
+        }
+      },
       standardError: {
         color: '#a12622',
         borderColor: '#ebccd1',

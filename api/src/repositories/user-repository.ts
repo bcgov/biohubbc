@@ -182,9 +182,9 @@ export class UserRepository extends BaseRepository {
       ON
         uis.user_identity_source_id = su.user_identity_source_id
       WHERE
-        su.user_identifier = ${userIdentifier}
+        su.user_identifier = ${userIdentifier.toLowerCase()}
       AND
-        uis.name = ${identitySource}
+        uis.name = ${identitySource.toUpperCase()}
       GROUP BY
         su.system_user_id,
         su.record_end_date,
@@ -229,7 +229,7 @@ export class UserRepository extends BaseRepository {
         WHERE
           name = ${identitySource.toUpperCase()}
       ),
-      ${userIdentifier},
+      ${userIdentifier.toLowerCase()},
       now()
     )
     RETURNING

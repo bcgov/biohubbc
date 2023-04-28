@@ -183,7 +183,7 @@ const SurveyObservations: React.FC = () => {
 
         {/* Submission data has finished loading, but is null, no submission to display */}
         {!surveyContext.observationDataLoader.data && surveyContext.observationDataLoader.isReady && (
-          <NoObservationsCard onImport={handleOpenImportObservations} />
+          <NoObservationsCard />
         )}
 
         {/* Submission data exists, validation is running */}

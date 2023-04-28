@@ -2,8 +2,6 @@ import { act, fireEvent, render, waitFor } from '@testing-library/react';
 import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteFieldVariableSize';
 import { Formik } from 'formik';
 import React from 'react';
-import { codes } from 'test-helpers/code-helpers';
-import ProjectStepComponents from 'utils/ProjectStepComponents';
 import ProjectFundingForm, {
   IInvestmentActionCategoryOption,
   IProjectFundingForm,
@@ -93,7 +91,12 @@ describe('ProjectFundingForm', () => {
         validateOnBlur={true}
         validateOnChange={false}
         onSubmit={async () => {}}>
-        {() => <ProjectStepComponents component="ProjectFunding" codes={codes} />}
+        {() => (
+          <ProjectFundingForm
+            funding_sources={funding_sources}
+            investment_action_category={investment_action_category}
+          />
+        )}
       </Formik>
     );
 
@@ -140,7 +143,12 @@ describe('ProjectFundingForm', () => {
         validateOnBlur={true}
         validateOnChange={false}
         onSubmit={async () => {}}>
-        {() => <ProjectStepComponents component="ProjectFunding" codes={codes} />}
+        {() => (
+          <ProjectFundingForm
+            funding_sources={funding_sources}
+            investment_action_category={investment_action_category}
+          />
+        )}
       </Formik>
     );
 
@@ -182,7 +190,12 @@ describe('ProjectFundingForm', () => {
           validateOnBlur={true}
           validateOnChange={false}
           onSubmit={async () => {}}>
-          {() => <ProjectStepComponents component="ProjectFunding" codes={codes} />}
+          {() => (
+            <ProjectFundingForm
+              funding_sources={funding_sources}
+              investment_action_category={investment_action_category}
+            />
+          )}
         </Formik>
       );
 
@@ -232,7 +245,12 @@ describe('ProjectFundingForm', () => {
           validateOnBlur={true}
           validateOnChange={false}
           onSubmit={async () => {}}>
-          {() => <ProjectStepComponents component="ProjectFunding" codes={codes} />}
+          {() => (
+            <ProjectFundingForm
+              funding_sources={funding_sources}
+              investment_action_category={investment_action_category}
+            />
+          )}
         </Formik>
       );
 
