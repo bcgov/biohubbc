@@ -9,8 +9,6 @@ import ProjectLocationForm, {
   ProjectLocationFormYupSchema
 } from './ProjectLocationForm';
 
-jest.spyOn(console, 'debug').mockImplementation(() => {});
-
 describe('ProjectLocationForm', () => {
   it('renders correctly with default empty values', async () => {
     const { getByLabelText, getByText } = render(

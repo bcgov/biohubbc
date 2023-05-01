@@ -21,7 +21,7 @@ const App: React.FC = () => {
               return <CircularProgress className="pageProgress" size={40} />;
             }
 
-            const keycloak = Keycloak(config.KEYCLOAK_CONFIG);
+            const keycloak = new Keycloak(config.KEYCLOAK_CONFIG);
 
             return (
               <ReactKeycloakProvider

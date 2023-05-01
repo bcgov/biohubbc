@@ -1,25 +1,31 @@
-import { render } from '@testing-library/react';
-import { AuthStateContext } from 'contexts/authStateContext';
+import { cleanup, render } from '@testing-library/react';
 import { createMemoryHistory } from 'history';
+import { useBiohubApi } from 'hooks/useBioHubApi';
 import React from 'react';
 import { Router } from 'react-router-dom';
-import { getMockAuthState, SystemAdminAuthState } from 'test-helpers/auth-helpers';
 import SearchPage from './SearchPage';
 
 const history = createMemoryHistory();
 
-jest.spyOn(console, 'debug').mockImplementation(() => {});
+jest.mock('../../hooks/useBioHubApi');
+const mockUseBiohubApi = {
+  search: {
+    getSearchResults: jest.fn()
+  }
+};
+
+((useBiohubApi as unknown) as jest.Mock<typeof mockUseBiohubApi>).mockReturnValue(mockUseBiohubApi);
 
 describe('SearchPage', () => {
-  it('renders correctly', () => {
-    const authState = getMockAuthState({ base: SystemAdminAuthState });
+  afterEach(() => {
+    cleanup();
+  });
 
+  it('renders correctly', () => {
     const { getByText } = render(
-      <AuthStateContext.Provider value={authState}>
-        <Router history={history}>
-          <SearchPage />
-        </Router>
-      </AuthStateContext.Provider>
+      <Router history={history}>
+        <SearchPage />
+      </Router>
     );
 
     expect(getByText('Map')).toBeInTheDocument();

@@ -21,6 +21,7 @@ const getMockTestWrapper = (userInfo?: any) => {
 
   const keycloak: Keycloak = ({
     authenticated: true,
+    token: 'a token',
     init: () => Promise.resolve(true) as KeycloakPromise<any, any>,
     createLoginUrl: () => 'string',
     createLogoutUrl: () => 'string',
@@ -36,7 +37,7 @@ const getMockTestWrapper = (userInfo?: any) => {
 
   return {
     wrapper: (props: PropsWithChildren<void>) => (
-      <ReactKeycloakProvider keycloak={keycloak}>{props.children}</ReactKeycloakProvider>
+      <ReactKeycloakProvider authClient={keycloak}>{props.children}</ReactKeycloakProvider>
     ),
     mockLoadUserInfo
   };
@@ -46,15 +47,18 @@ jest.mock('./useBioHubApi');
 
 const mockBiohubApi = useBiohubApi as jest.Mock;
 
-const mockUseApi = {
+const mockUseBiohubApi = {
   user: {
     getUser: jest.fn()
+  },
+  admin: {
+    hasPendingAdministrativeActivities: jest.fn()
   }
 };
 
 describe('useKeycloakWrapper', () => {
   beforeEach(() => {
-    mockBiohubApi.mockImplementation(() => mockUseApi);
+    mockBiohubApi.mockImplementation(() => mockUseBiohubApi);
   });
 
   afterEach(() => {
