@@ -116,10 +116,11 @@ export function deleteSurvey(): RequestHandler {
       }
 
       try {
+        // Publish project metadata to BioHub (which needs to be updated now that the survey has been deleted)
         const platformService = new PlatformService(connection);
         await platformService.submitProjectDwCMetadataToBioHub(projectId);
       } catch (error) {
-        defaultLog.error({ label: 'deleteSurvey->submitDwCAMetadataPackage', message: 'error', error });
+        defaultLog.error({ label: 'deleteSurvey->submitProjectDwCMetadataToBioHub', message: 'error', error });
       }
 
       await connection.commit();
