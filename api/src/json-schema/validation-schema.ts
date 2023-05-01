@@ -118,22 +118,25 @@ export const submissionValidationSchema = {
       title: 'File/Sheet Validation',
       description: 'The validators that can be applied against a file/sheet within a submission file.',
       anyOf: [
-        //below: column header validator
         {
-          $ref: '#/$defs/file_required_columns_validator'
+          $ref: '#/$defs/file_required_columns_validator',
+          description: 'column header validator'
         },
         {
-          $ref: '#/$defs/file_recommended_columns_validator'
+          $ref: '#/$defs/file_recommended_columns_validator',
+          description: 'column header validator'
         },
         {
-          $ref: '#/$defs/file_duplicate_columns_validator'
+          $ref: '#/$defs/file_duplicate_columns_validator',
+          description: 'column header validator'
         },
         {
-          $ref: '#/$defs/file_valid_columns_validator'
+          $ref: '#/$defs/file_valid_columns_validator',
+          description: 'column header validator '
         },
-        //below: column cell validator
         {
-          $ref: '#/$defs/file_column_unique_validator'
+          $ref: '#/$defs/file_column_unique_validator',
+          description: 'column cell validator '
         }
       ]
     },
@@ -241,7 +244,7 @@ export const submissionValidationSchema = {
       additionalProperties: false
     },
     file_required_columns_validator: {
-      description: 'Validates that this file/sheet contains required columns',
+      description: 'Column header validator that checks whether the file/sheet contains required columns',
       type: 'object',
       properties: {
         file_required_columns_validator: {
@@ -267,7 +270,7 @@ export const submissionValidationSchema = {
       additionalProperties: false
     },
     file_recommended_columns_validator: {
-      description: 'Validates that this file/sheet contains recommended columns',
+      description: 'Column header validator that checks whether the file/sheet contains recommended columns',
       type: 'object',
       properties: {
         file_recommended_columns_validator: {
@@ -293,7 +296,7 @@ export const submissionValidationSchema = {
       additionalProperties: false
     },
     file_duplicate_columns_validator: {
-      description: 'Validates that this file/sheet contains recommended columns',
+      description: 'Column header validator that checks whether this file/sheet contains recommended columns',
       type: 'object',
       properties: {
         file_duplicate_columns_validator: {
@@ -312,7 +315,7 @@ export const submissionValidationSchema = {
       additionalProperties: false
     },
     file_valid_columns_validator: {
-      description: 'Validates that this file/sheet contains only valid (known) columns',
+      description: 'Column header validator that checks whether this file/sheet contains only valid (known) columns',
       type: 'object',
       properties: {
         file_valid_columns_validator: {
@@ -336,9 +339,8 @@ export const submissionValidationSchema = {
       },
       additionalProperties: false
     },
-    //for the cell to have a certain rule, pairs with format/range, etc
     column_required_validator: {
-      description: 'Validates that this column value is not empty',
+      description: 'Column cell validator that checks that this column value is not empty.',
       type: 'object',
       properties: {
         column_required_validator: {
@@ -455,7 +457,7 @@ export const submissionValidationSchema = {
       additionalProperties: false
     },
     file_column_unique_validator: {
-      description: 'Validates that the column(s) are unique',
+      description: 'Column cell validator the checks that the column(s) are unique',
       type: 'object',
       properties: {
         file_column_unique_validator: {

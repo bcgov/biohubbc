@@ -74,7 +74,7 @@ export class ValidationService extends DBService {
     defaultLog.debug({ label: 'validateFile', submissionId, surveyId });
     try {
       const submissionPrep = await this.templatePreparation(submissionId);
-      await this.occurrenceTemplateValidation(submissionPrep.xlsx, surveyId);
+      await this.templateValidation(submissionPrep.xlsx, surveyId);
 
       // insert template validated status
       await this.submissionRepository.insertSubmissionStatus(submissionId, SUBMISSION_STATUS_TYPE.TEMPLATE_VALIDATED);
@@ -158,7 +158,7 @@ export class ValidationService extends DBService {
       const submissionPrep = await this.templatePreparation(submissionId);
 
       // Run template validations
-      await this.occurrenceTemplateValidation(submissionPrep.xlsx, surveyId);
+      await this.templateValidation(submissionPrep.xlsx, surveyId);
 
       // Insert validation complete status
       await this.submissionRepository.insertSubmissionStatus(submissionId, SUBMISSION_STATUS_TYPE.TEMPLATE_VALIDATED);
@@ -264,12 +264,12 @@ export class ValidationService extends DBService {
     }
   }
 
-  async occurrenceTemplateValidation(xlsx: XLSXCSV, surveyId: number) {
+  async templateValidation(xlsx: XLSXCSV, surveyId: number) {
     defaultLog.debug({ label: 'templateValidation' });
     try {
       const schema = await this.getValidationSchema(xlsx, surveyId);
       const schemaParser = this.getValidationRules(schema);
-      const csvState = this.validateXLSX_occurrence(xlsx, schemaParser);
+      const csvState = this.validateXLSX(xlsx, schemaParser);
       await this.persistValidationResults(csvState.csv_state, csvState.media_state);
     } catch (error) {
       if (error instanceof SubmissionError) {
@@ -359,11 +359,15 @@ export class ValidationService extends DBService {
     return validationSchemaParser;
   }
 
-  validateXLSX_occurrence(file: XLSXCSV, parser: ValidationSchemaParser) {
+  validateXLSX(file: XLSXCSV, parser: ValidationSchemaParser) {
     // Run media validations
     file.validateMedia(parser);
 
     const media_state = file.getMediaState();
+
+    if (!media_state.isValid) {
+      return { csv_state: ([] as unknown) as ICsvState[], media_state };
+    }
 
     // Run CSV content validations
     file.validateContent(parser);
@@ -398,7 +402,9 @@ export class ValidationService extends DBService {
     const errors: MessageError[] = [];
 
     mediaState.fileErrors?.forEach((fileError) => {
-      errors.push(new MessageError(SUBMISSION_MESSAGE_TYPE.INVALID_MEDIA, `${fileError}`, 'Miscellaneous'));
+      errors.push(
+        new MessageError(SUBMISSION_MESSAGE_TYPE.INVALID_MEDIA, `${fileError}`, SUBMISSION_MESSAGE_TYPE.INVALID_MEDIA)
+      );
     });
 
     csvState?.forEach((csvStateItem) => {
@@ -431,12 +437,12 @@ export class ValidationService extends DBService {
           )
         );
       });
-
-      if (!mediaState.isValid || csvState?.some((item) => !item.isValid)) {
-        // At least 1 error exists, skip remaining steps
-        parseError = true;
-      }
     });
+
+    if (mediaState.fileErrors?.length || csvState?.some((item) => !item.isValid)) {
+      // At least 1 error exists, skip remaining steps
+      parseError = true;
+    }
 
     if (parseError) {
       throw new SubmissionError({ messages: errors });
