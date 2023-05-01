@@ -69,7 +69,6 @@ exports[`SurveyPermitForm renders correctly with error on the permits field due 
                 >
                   <div
                     class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-                    data-testid="permit.permits.[0].permit_number"
                   >
                     <label
                       class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
@@ -91,6 +90,7 @@ exports[`SurveyPermitForm renders correctly with error on the permits field due 
                       <input
                         aria-invalid="false"
                         class="MuiInputBase-input MuiOutlinedInput-input"
+                        data-testid="permit.permits.[0].permit_number"
                         id="permit.permits.[0].permit_number"
                         name="permit.permits.[0].permit_number"
                         required=""
@@ -239,7 +239,6 @@ exports[`SurveyPermitForm renders correctly with error on the permits field due 
                 >
                   <div
                     class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-                    data-testid="permit.permits.[1].permit_number"
                   >
                     <label
                       class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
@@ -261,6 +260,7 @@ exports[`SurveyPermitForm renders correctly with error on the permits field due 
                       <input
                         aria-invalid="false"
                         class="MuiInputBase-input MuiOutlinedInput-input"
+                        data-testid="permit.permits.[1].permit_number"
                         id="permit.permits.[1].permit_number"
                         name="permit.permits.[1].permit_number"
                         required=""
@@ -451,7 +451,6 @@ exports[`SurveyPermitForm renders correctly with errors on the permit_number and
                 >
                   <div
                     class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-                    data-testid="permit.permits.[0].permit_number"
                   >
                     <label
                       class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
@@ -473,6 +472,7 @@ exports[`SurveyPermitForm renders correctly with errors on the permit_number and
                       <input
                         aria-invalid="false"
                         class="MuiInputBase-input MuiOutlinedInput-input"
+                        data-testid="permit.permits.[0].permit_number"
                         id="permit.permits.[0].permit_number"
                         name="permit.permits.[0].permit_number"
                         required=""
@@ -621,7 +621,6 @@ exports[`SurveyPermitForm renders correctly with errors on the permit_number and
                 >
                   <div
                     class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-                    data-testid="permit.permits.[1].permit_number"
                   >
                     <label
                       class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
@@ -643,6 +642,7 @@ exports[`SurveyPermitForm renders correctly with errors on the permit_number and
                       <input
                         aria-invalid="false"
                         class="MuiInputBase-input MuiOutlinedInput-input"
+                        data-testid="permit.permits.[1].permit_number"
                         id="permit.permits.[1].permit_number"
                         name="permit.permits.[1].permit_number"
                         required=""
@@ -833,7 +833,6 @@ exports[`SurveyPermitForm renders correctly with existing permit values 1`] = `
                 >
                   <div
                     class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-                    data-testid="permit.permits.[0].permit_number"
                   >
                     <label
                       class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
@@ -855,6 +854,7 @@ exports[`SurveyPermitForm renders correctly with existing permit values 1`] = `
                       <input
                         aria-invalid="false"
                         class="MuiInputBase-input MuiOutlinedInput-input"
+                        data-testid="permit.permits.[0].permit_number"
                         id="permit.permits.[0].permit_number"
                         name="permit.permits.[0].permit_number"
                         required=""
@@ -1003,7 +1003,6 @@ exports[`SurveyPermitForm renders correctly with existing permit values 1`] = `
                 >
                   <div
                     class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-                    data-testid="permit.permits.[1].permit_number"
                   >
                     <label
                       class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
@@ -1025,6 +1024,7 @@ exports[`SurveyPermitForm renders correctly with existing permit values 1`] = `
                       <input
                         aria-invalid="false"
                         class="MuiInputBase-input MuiOutlinedInput-input"
+                        data-testid="permit.permits.[1].permit_number"
                         id="permit.permits.[1].permit_number"
                         name="permit.permits.[1].permit_number"
                         required=""
