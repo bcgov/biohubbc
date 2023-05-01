@@ -173,7 +173,9 @@ export class GetFundingData {
             start_date: item.start_date,
             end_date: item.end_date,
             agency_project_id: item.agency_project_id,
-            revision_count: item.revision_count
+            revision_count: item.revision_count,
+            first_nations_id: item.first_nations_id,
+            first_nations_name: item.first_nations_name
           };
         })) ||
       [];

@@ -23,7 +23,6 @@ const FundingSource = () => {
   const projectData = projectContext.projectDataLoader.data.projectData;
 
   const hasFundingSources = projectData.funding.fundingSources && projectData.funding.fundingSources.length > 0;
-
   return (
     <>
       <List disablePadding>
@@ -33,10 +32,11 @@ const FundingSource = () => {
               <Box flex="1 1 auto">
                 <Box pb={1.25}>
                   <Typography component="span">
-                    {item.agency_name}
-                    {item.investment_action_category_name !== 'Not Applicable' && (
-                      <Typography component="span">&nbsp;({item.investment_action_category_name})</Typography>
-                    )}
+                    {item.agency_name || item.first_nations_name}
+                    {item.investment_action_category_name &&
+                      item.investment_action_category_name !== 'Not Applicable' && (
+                        <Typography component="span">&nbsp;({item.investment_action_category_name})</Typography>
+                      )}
                   </Typography>
                 </Box>
                 <Box component="dl" m={0}>
@@ -56,10 +56,14 @@ const FundingSource = () => {
                       </Typography>
                     </Grid>
                     <Grid item sm={12}>
-                      <Typography component="dt" variant="subtitle2" color="textSecondary">
-                        Funding Amount
-                      </Typography>
-                      <Typography component="dd">{getFormattedAmount(item.funding_amount)}</Typography>
+                      {item.funding_amount && (
+                        <>
+                          <Typography component="dt" variant="subtitle2" color="textSecondary">
+                            Funding Amount
+                          </Typography>
+                          <Typography component="dd">{getFormattedAmount(item.funding_amount)}</Typography>
+                        </>
+                      )}
                     </Grid>
                   </Grid>
                 </Box>

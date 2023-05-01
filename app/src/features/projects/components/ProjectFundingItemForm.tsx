@@ -48,6 +48,7 @@ export const ProjectFundingFormArrayItemYupSchema = yup.object().shape({
   first_nations_id: yup.number().transform((value) => (isNaN(value) && null) || value),
   investment_action_category: yup.number().required('Required'),
   agency_project_id: yup.string().max(50, 'Cannot exceed 50 characters').nullable(true),
+  // funding amount is not required when a first nation is selected as the source
   funding_amount: yup.number().when('first_nations_id', {
     is: !undefined,
     then: yup
@@ -70,10 +71,6 @@ export const ProjectFundingFormArrayItemYupSchema = yup.object().shape({
   5. Modify the fetch to account for any changes in the model
   6. create an enum or type to account for the text on the 'action' items
   7. remove new thing and use type Props = interfaces for the auto complete thing
-
-
-  Q's
-  1. Does the agency name still make sense?
   
 */
 export interface IProjectFundingItemFormProps1 {
