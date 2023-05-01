@@ -16,7 +16,8 @@ import {
   GetSurveyFundingSources,
   GetSurveyLocationData,
   GetSurveyProprietorData,
-  GetSurveyPurposeAndMethodologyData
+  GetSurveyPurposeAndMethodologyData,
+  SurveyObject
 } from '../models/survey-view';
 import { PublishStatus } from '../repositories/history-publish-repository';
 import { IPermitModel } from '../repositories/permit-repository';
