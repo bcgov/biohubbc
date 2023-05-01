@@ -120,7 +120,8 @@ export class ProjectRepository extends BaseRepository {
       funding_source_project_id = ${fundingSource.agency_project_id},
       funding_amount = ${fundingSource.funding_amount},
       funding_start_date = ${fundingSource.start_date},
-      funding_end_date = ${fundingSource.end_date}
+      funding_end_date = ${fundingSource.end_date},
+      first_nations_id = ${fundingSource.first_nations_id}
     WHERE
       project_funding_source_id = ${fundingSource.id}
     RETURNING
@@ -524,7 +525,9 @@ export class ProjectRepository extends BaseRepository {
         iac.name as investment_action_category_name,
         fs.name as agency_name,
         pfs.funding_source_project_id as agency_project_id,
-        pfs.revision_count as revision_count
+        pfs.revision_count as revision_count,
+        pfs.first_nations_id,
+        fn.name as first_nations_name
       FROM
         project_funding_source as pfs
       LEFT OUTER JOIN
@@ -535,6 +538,10 @@ export class ProjectRepository extends BaseRepository {
         funding_source as fs
       ON
         iac.funding_source_id = fs.funding_source_id
+      LEFT OUTER JOIN 
+        first_nations as fn
+      ON
+        fn.first_nations_id = pfs.first_nations_id
       WHERE
         pfs.project_id = ${projectId}
       GROUP BY
@@ -547,20 +554,21 @@ export class ProjectRepository extends BaseRepository {
         iac.investment_action_category_id,
         iac.name,
         fs.name,
-        pfs.revision_count
+        pfs.revision_count,
+        pfs.first_nations_id,
+        fn.name
     `;
-
     const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
-
+  
     const result = (response && response.rows) || null;
-
+  
     if (!result) {
       throw new ApiExecuteSQLError('Failed to get project funding data', [
         'ProjectRepository->getFundingData',
         'rows was null or undefined, expected rows != null'
       ]);
     }
-
+    console.log(result);
     return new GetFundingData(result);
   }
 
@@ -753,6 +761,7 @@ export class ProjectRepository extends BaseRepository {
   }
 
   async insertFundingSource(fundingSource: PostFundingSource, project_id: number): Promise<number> {
+
     const sqlStatement = SQL`
       INSERT INTO project_funding_source (
         project_id,
@@ -760,31 +769,41 @@ export class ProjectRepository extends BaseRepository {
         funding_source_project_id,
         funding_amount,
         funding_start_date,
-        funding_end_date
+        funding_end_date,
+        first_nations_id
       ) VALUES (
         ${project_id},
         ${fundingSource.investment_action_category},
         ${fundingSource.agency_project_id},
         ${fundingSource.funding_amount},
         ${fundingSource.start_date},
-        ${fundingSource.end_date}
+        ${fundingSource.end_date},
+        ${fundingSource.first_nations_id}
       )
       RETURNING
         project_funding_source_id as id;
     `;
 
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
-
-    const result = (response && response.rows && response.rows[0]) || null;
-
-    if (!result || !result.id) {
-      throw new ApiExecuteSQLError('Failed to insert project funding data', [
-        'ProjectRepository->insertFundingSource',
-        'rows was null or undefined, expected rows != null'
-      ]);
+    try {
+      const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
+      
+      const result = (response && response.rows && response.rows[0]) || null;
+      if (!result || !result.id) {
+        throw new ApiExecuteSQLError('Failed to insert project funding data', [
+          'ProjectRepository->insertFundingSource',
+          'rows was null or undefined, expected rows != null'
+        ]);
+      }
+      return result.id;
+    } catch (error) {
+      console.log("______________")
+      console.log("______________")
+      console.log("______________")
+      console.log(error)
+      
     }
 
-    return result.id;
+    return 0;
   }
 
   async insertIndigenousNation(indigenousNationsId: number, project_id: number): Promise<number> {

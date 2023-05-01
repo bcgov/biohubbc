@@ -160,7 +160,11 @@ const EditProjectForm: React.FC<IEditProjectForm> = (props) => {
                           return { value: item.id, fs_id: item.fs_id, label: item.name };
                         }) || []
                       }
-                      first_nations={[]}
+                      first_nations={
+                        codes?.first_nations.map((item) => {
+                          return { value: item.id, label: item.name, type: FundingSourceType.FIRST_NATIONS };
+                        }) || []
+                      }
                     />
                   </Box>
                 </Box>

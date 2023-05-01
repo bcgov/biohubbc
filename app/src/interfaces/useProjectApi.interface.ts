@@ -206,13 +206,15 @@ export interface IGetProjectForUpdateResponseIUCN {
 export interface IGetProjectForUpdateResponseFundingSource {
   id: number;
   agency_id: number;
-  investment_action_category: number;
-  investment_action_category_name: string;
+  investment_action_category?: number;
+  investment_action_category_name?: string;
   agency_project_id: string | null;
-  funding_amount: number;
+  funding_amount?: number;
   start_date: string;
   end_date: string;
   revision_count: number;
+  first_nations_id?: number;
+  first_nations_name?: string;
 }
 
 export interface IGetProjectForUpdateResponseFundingData {

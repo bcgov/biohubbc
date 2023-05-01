@@ -144,8 +144,8 @@ export class GetIUCNClassificationData {
 interface IGetFundingSource {
   id: number;
   agency_id?: number;
-  investment_action_category: number;
-  investment_action_category_name: string;
+  investment_action_category?: number;
+  investment_action_category_name?: string;
   agency_name: string;
   funding_amount?: number;
   start_date: string;
