@@ -10,7 +10,6 @@ import Typography from '@material-ui/core/Typography';
 import AutocompleteFieldWithType from 'components/fields/AutocompleteFieldWithType';
 import CustomTextField from 'components/fields/CustomTextField';
 import DollarAmountField from 'components/fields/DollarAmountField';
-import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteFieldVariableSize';
 import StartEndDateFields from 'components/fields/StartEndDateFields';
 import { useFormikContext } from 'formik';
 import React from 'react';
@@ -64,19 +63,10 @@ export const ProjectFundingFormArrayItemYupSchema = yup.object().shape({
 
 /*
 
-  1. modify the items to add type
-  2. Add the first nations names to the list
-  3. Add special consideration when selecting a first nations name
-  4. modify the save to account for the changes
-  5. Modify the fetch to account for any changes in the model
   6. create an enum or type to account for the text on the 'action' items
-  7. remove new thing and use type Props = interfaces for the auto complete thing
+  8. Update the edit endpoint
   
 */
-export interface IProjectFundingItemFormProps1 {
-  funding_sources: IMultiAutocompleteFieldOption[];
-  investment_action_category: IInvestmentActionCategoryOption[];
-}
 
 export enum FundingSourceType {
   FUNDING_SOURCE,
