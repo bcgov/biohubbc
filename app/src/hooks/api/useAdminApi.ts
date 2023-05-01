@@ -93,11 +93,11 @@ const useAdminApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Has pending access requests.
+   * Checks if the user has pending access requests or belongs to any projects as a participant
    *
    * @return {*} {Promise<number>}
    */
-  const hasPendingAdministrativeActivities = async (): Promise<number> => {
+  const getAdministrativeActivityStanding = async (): Promise<number> => {
     const { data } = await axios.get('/api/administrative-activity');
 
     return data;
@@ -129,7 +129,7 @@ const useAdminApi = (axios: AxiosInstance) => {
     approveAccessRequest,
     denyAccessRequest,
     createAdministrativeActivity,
-    hasPendingAdministrativeActivities,
+    getAdministrativeActivityStanding,
     addSystemUser
   };
 };

@@ -3,10 +3,6 @@ import { Operation } from 'express-openapi';
 import { ACCESS_REQUEST_ADMIN_EMAIL } from '../constants/notifications';
 import { getAPIUserDBConnection, IDBConnection } from '../database/db';
 import { HTTP400, HTTP500 } from '../errors/http-error';
-import {
-  administrativeActivityResponseObject,
-  hasPendingAdministrativeActivitiesResponseObject
-} from '../openapi/schemas/administrative-activity';
 import { queries } from '../queries/queries';
 import { GCNotifyService } from '../services/gcnotify-service';
 import { getUserIdentifier } from '../utils/keycloak-utils';
@@ -21,7 +17,7 @@ const NODE_ENV = process.env.NODE_ENV;
 
 export const POST: Operation = [createAdministrativeActivity()];
 
-export const GET: Operation = [getPendingAccessRequestsCount()];
+export const GET: Operation = [getAdministrativeActivityStanding()];
 
 POST.apiDoc = {
   description: 'Create a new Administrative Activity.',
@@ -49,7 +45,18 @@ POST.apiDoc = {
       content: {
         'application/json': {
           schema: {
-            ...(administrativeActivityResponseObject as object)
+            title: 'Administrative Activity Response Object',
+            type: 'object',
+            required: ['id', 'date'],
+            properties: {
+              id: {
+                type: 'number'
+              },
+              date: {
+                description: 'The date this administrative activity was made',
+                oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }]
+              }
+            }
           }
         }
       }
@@ -94,11 +101,20 @@ GET.apiDoc = {
   },
   responses: {
     200: {
-      description: '`Has Pending Administrative Activities` get response object.',
+      description: 'Administrative Activity standing response object.',
       content: {
         'application/json': {
           schema: {
-            ...(hasPendingAdministrativeActivitiesResponseObject as object)
+            type: 'object',
+            required: ['hasPendingAccessRequest', 'belongsToOneOrMoreProjects'],
+            properties: {
+              hasPendingAcccessRequest: {
+                type: 'boolean'
+              },
+              belongsToOneOrMoreProjects: {
+                type: 'boolean'
+              }
+            }
           }
         }
       }
@@ -196,7 +212,7 @@ function sendAccessRequestEmail() {
  *
  * @returns {RequestHandler}
  */
-export function getPendingAccessRequestsCount(): RequestHandler {
+export function getAdministrativeActivityStanding(): RequestHandler {
   return async (req, res) => {
     const connection = getAPIUserDBConnection();
 
