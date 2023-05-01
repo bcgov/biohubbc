@@ -421,7 +421,7 @@ export class ProjectService extends DBService {
   }
 
   /**
-   * Updates the project and uploads to BioHub
+   * Updates the project and uploads affected metadata to BioHub
    *
    * @param {number} projectId
    * @param {IUpdateProject} entities
@@ -432,7 +432,15 @@ export class ProjectService extends DBService {
     await this.updateProject(projectId, entities);
 
     try {
-      await this.platformService.submitProjectDwCMetadataToBioHub(projectId);
+      // Publish project metadata
+      const publishProjectPromise = this.platformService.submitProjectDwCMetadataToBioHub(projectId);
+
+      // Publish all survey metadata (which needs to be updated now that the project metadata has changed)
+      const publishSurveysPromise = this.surveyService.getSurveyIdsByProjectId(projectId).then((surveyIds) => {
+        return surveyIds.map((item) => this.platformService.submitSurveyDwCMetadataToBioHub(item.id));
+      });
+
+      await Promise.all([publishProjectPromise, publishSurveysPromise]);
     } catch (error) {
       defaultLog.warn({ label: 'updateProjectAndUploadMetadataToBioHub', message: 'error', error });
     }
@@ -443,9 +451,10 @@ export class ProjectService extends DBService {
    *
    * @param {number} projectId
    * @param {IUpdateProject} entities
+   * @return {*}  {Promise<void>}
    * @memberof ProjectService
    */
-  async updateProject(projectId: number, entities: IUpdateProject) {
+  async updateProject(projectId: number, entities: IUpdateProject): Promise<void> {
     const promises: Promise<any>[] = [];
 
     if (entities?.partnerships) {
