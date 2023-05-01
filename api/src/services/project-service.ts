@@ -435,10 +435,9 @@ export class ProjectService extends DBService {
       const publishProjectPromise = this.platformService.submitProjectDwCMetadataToBioHub(projectId);
 
       // Publish all survey metadata (which needs to be updated now that the project metadata has changed)
-      const publishSurveysPromise = (async () => {
-        const surveyIds = await this.surveyService.getSurveyIdsByProjectId(projectId);
+      const publishSurveysPromise = this.surveyService.getSurveyIdsByProjectId(projectId).then((surveyIds) => {
         return surveyIds.map((item) => this.platformService.submitSurveyDwCMetadataToBioHub(item.id));
-      })();
+      });
 
       await Promise.all([publishProjectPromise, publishSurveysPromise]);
     } catch (error) {
