@@ -80,10 +80,6 @@ const useStyles = makeStyles((theme: Theme) => ({
  * @return {*}
  */
 const ProjectFundingForm: React.FC<IProjectFundingFormProps> = (props) => {
-  /*
-    Look into Not applicable table keys
-
-  */
   const classes = useStyles();
 
   const formikProps = useFormikContext<ICreateProjectRequest>();
