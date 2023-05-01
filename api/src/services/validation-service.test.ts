@@ -1032,6 +1032,24 @@ describe('ValidationService', () => {
       expect(response.media_state.fileErrors).is.empty;
     });
 
+    it('should return early if media_state is invalid', async () => {
+      const service = mockService();
+      const mockMediaState = {
+        fileName: 'test file',
+        isValid: false
+      } as IMediaState;
+      const xlsx = new XLSXCSV(buildFile('test file', {}));
+      const parser = new ValidationSchemaParser({});
+
+      sinon.stub(XLSXCSV.prototype, 'getMediaState').returns(mockMediaState);
+
+      const result = await service.validateXLSX(xlsx, parser);
+
+      expect(result.csv_state).to.be.eql([]);
+      expect(result.media_state.fileName).to.be.eql(mockMediaState.fileName);
+      expect(result.media_state.isValid).to.be.eql(false);
+    });
+
     it('should return valid state object with content errors', async () => {
       const service = mockService();
       const mockState = {
