@@ -208,17 +208,3 @@ export const projectUpdatePutRequestObject = {
     ...projectUpdateProperties
   }
 };
-
-/**
- * Basic response object for a project.
- */
-export const projectIdResponseObject = {
-  title: 'Project Response Object',
-  type: 'object',
-  required: ['id'],
-  properties: {
-    id: {
-      type: 'number'
-    }
-  }
-};
