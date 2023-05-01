@@ -9,7 +9,9 @@ import {
   getFormattedDateRangeString,
   getFormattedFileSize,
   getFormattedIdentitySource,
-  getLogOutUrl
+  getKeyByValue,
+  getLogOutUrl,
+  getTitle
 } from './Utils';
 
 describe('ensureProtocol', () => {
@@ -296,5 +298,63 @@ describe('getFormattedIdentitySource', () => {
     const result = getFormattedIdentitySource((null as unknown) as SYSTEM_IDENTITY_SOURCE);
 
     expect(result).toEqual(null);
+  });
+});
+
+describe('getTitle', () => {
+  it('should return a title when no pageName is given', () => {
+    const title = getTitle();
+
+    expect(title).toEqual('SIMS');
+  });
+
+  it('should return a title when empty string is given', () => {
+    const title = getTitle('');
+
+    expect(title).toEqual('SIMS');
+  });
+
+  it('should return a title when a pageName is given', () => {
+    const title = getTitle('Test Page');
+
+    expect(title).toEqual('SIMS - Test Page');
+  });
+});
+
+describe('getKeyByValue', () => {
+  it('returns undefined if the object contains no keys and the value is undefined', () => {
+    const response = getKeyByValue({}, undefined);
+
+    expect(response).toEqual(undefined);
+  });
+
+  it('returns undefined if the object contains no keys and the value is defined', () => {
+    const response = getKeyByValue({}, 'value');
+
+    expect(response).toEqual(undefined);
+  });
+
+  it('returns undefined if the object contains some keys and the value is undefined', () => {
+    const response = getKeyByValue({ name: 'Test' }, undefined);
+
+    expect(response).toEqual(undefined);
+  });
+
+  it('returns undefined if the object contains some keys and the value is defined but not in the object', () => {
+    const response = getKeyByValue({ name: 'Test' }, 'notfound');
+
+    expect(response).toEqual(undefined);
+  });
+
+  it('returns a string key if the object contains a key having the given value', () => {
+    const response = getKeyByValue({ name: 'Test' }, 'Test');
+
+    expect(response).toEqual('name');
+  });
+
+  it('returns a numeric key if the object contains a key having the given value', () => {
+    const response = getKeyByValue(['One', 'Two', 'Test'], 'Test');
+
+    expect(response).toEqual('2');
   });
 });
