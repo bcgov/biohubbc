@@ -102,6 +102,9 @@ export const projectCreatePostRequestObject = {
               agency_id: {
                 type: 'number'
               },
+              first_nations_id: {
+                type: 'number'
+              },
               investment_action_category: {
                 type: 'number'
               },
@@ -109,7 +112,8 @@ export const projectCreatePostRequestObject = {
                 type: 'string'
               },
               funding_amount: {
-                type: 'number'
+                type: 'number',
+                
               },
               start_date: {
                 type: 'string',

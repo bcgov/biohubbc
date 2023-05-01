@@ -136,8 +136,6 @@ const ProjectFundingForm: React.FC<IProjectFundingFormProps> = (props) => {
                   }}
                   onCancel={() => setIsModalOpen(false)}
                   onSave={(projectFundingItemValues) => {
-                    console.log('ARE WE GETTING HERE?');
-                    console.log('projectFundingItemValues', projectFundingItemValues);
                     if (currentProjectFundingFormArrayItem.index < values.funding.fundingSources.length) {
                       // Update an existing item
                       arrayHelpers.replace(currentProjectFundingFormArrayItem.index, projectFundingItemValues);
