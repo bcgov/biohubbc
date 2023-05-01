@@ -624,6 +624,44 @@ export class HistoryPublishRepository extends BaseRepository {
   }
 
   /**
+   * Deletes a record from `project_attachment_publish` for a given attachment id.
+   *
+   * @param {number} projectAttachmentId
+   * @return {*}  {Promise<void>}
+   * @memberof HistoryPublishRepository
+   */
+  async deleteProjectAttachmentPublishRecord(projectAttachmentId: number): Promise<void> {
+    const sqlStatement = SQL`
+      delete
+      from
+        project_attachment_publish
+      where
+        project_attachment_id = ${projectAttachmentId};
+    `;
+
+    await this.connection.sql(sqlStatement);
+  }
+
+  /**
+   * Deletes a record from `project_report_publish` for a given attachment id.
+   *
+   * @param {number} projectAttachmentId
+   * @return {*}  {Promise<void>}
+   * @memberof HistoryPublishRepository
+   */
+  async deleteProjectReportAttachmentPublishRecord(projectAttachmentId: number): Promise<void> {
+    const sqlStatement = SQL`
+      delete
+      from
+        project_report_publish
+      where
+        project_report_attachment_id = ${projectAttachmentId};
+    `;
+
+    await this.connection.sql(sqlStatement);
+  }
+
+  /**
    * Gets the count of unpublished survey attachments
    *
    * @param {number} surveyId

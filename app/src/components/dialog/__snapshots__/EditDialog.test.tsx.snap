@@ -53,7 +53,6 @@ exports[`EditDialog matches snapshot when open, with error message 1`] = `
           <form>
             <div
               class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-              data-testid="testField"
             >
               <label
                 class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
@@ -76,6 +75,7 @@ exports[`EditDialog matches snapshot when open, with error message 1`] = `
                 <textarea
                   aria-invalid="false"
                   class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputMultiline MuiOutlinedInput-inputMultiline"
+                  data-testid="testField"
                   id="testField"
                   name="testField"
                   required=""
@@ -221,7 +221,6 @@ exports[`EditDialog matches the snapshot when open, with no error message 1`] = 
           <form>
             <div
               class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-              data-testid="testField"
             >
               <label
                 class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
@@ -244,6 +243,7 @@ exports[`EditDialog matches the snapshot when open, with no error message 1`] = 
                 <textarea
                   aria-invalid="false"
                   class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputMultiline MuiOutlinedInput-inputMultiline"
+                  data-testid="testField"
                   id="testField"
                   name="testField"
                   required=""
