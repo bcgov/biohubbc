@@ -110,6 +110,9 @@ const LandingActions = () => {
             </span>
           )}
         </Typography>
+        <Typography variant="body2">
+          You have not been granted permission to access this application.
+        </Typography>
         <Box className={classes.actions}>
           {mayViewProjects && (
             <Button
