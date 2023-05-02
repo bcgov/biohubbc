@@ -9,7 +9,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   baseLayoutContainer: {
     // Contingency background, pending hero image load
     background: '#00438A linear-gradient(to bottom, #00438A, #00274D)',
-    backgroundImage: `url('/assets/hero.jpg')`,
+    backgroundImage: `url('/assets/sims-hero-banner.jpg')`,
     backgroundPosition: 'center',
     backgroundRepeat: 'no-repeat',
     backgroundSize: 'cover',

@@ -3,11 +3,10 @@ import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import clsx from 'clsx';
 import { AuthGuard, UnAuthGuard } from 'components/security/Guards';
-import { SYSTEM_ROLE } from 'constants/roles';
+import { getAllSystemRoles, SYSTEM_ROLE } from 'constants/roles';
 import { AuthStateContext } from 'contexts/authStateContext';
 import React, { useContext, useMemo } from 'react'
 import { Link } from 'react-router-dom';
-
 
 const useStyles = makeStyles((theme: Theme) => ({
   greeting: {
@@ -47,6 +46,10 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   username: {
     textTransform: 'uppercase'
+  },
+  pendingAccessRequest: {
+    color: '#fcba19',
+    marginTop: '0 !important'
   }
 }));
 
@@ -57,18 +60,17 @@ const LandingActions = () => {
   const loginUrl = useMemo(() => keycloakWrapper?.getLoginUrl(), [keycloakWrapper]);
   const userIdentifier = keycloakWrapper?.getUserIdentifier() || '';
 
-  /*
-  const hasAnyRole = keycloakWrapper?.hasSystemRole(ALL_SYSTEM_ROLES);
-
-  const hasViewerRole = keycloakWrapper?.hasSystemRole([
-    SYSTEM_ROLE.PROJECT_CREATOR
-  ])
-  */
-
+  const hasPendingAccessRequest = keycloakWrapper?.hasAccessRequest;
+  const hasAnySystemRole = keycloakWrapper?.hasSystemRole(getAllSystemRoles());
   const hasAdministrativeRole = keycloakWrapper?.hasSystemRole([
     SYSTEM_ROLE.DATA_ADMINISTRATOR,
     SYSTEM_ROLE.SYSTEM_ADMIN
   ]);
+
+  const mayBelongToOneOrMoreProjects = hasAnySystemRole || keycloakWrapper?.hasOneOrMoreProjectRoles;  
+  const hasProjectCreationRole = hasAdministrativeRole || keycloakWrapper?.hasSystemRole([SYSTEM_ROLE.PROJECT_CREATOR]);
+  const isReturningUser = hasAnySystemRole || hasPendingAccessRequest || mayBelongToOneOrMoreProjects;
+  const mayViewProjects = hasAnySystemRole || mayBelongToOneOrMoreProjects;
 
   return (
     <Box className={classes.actionsContainer}>
@@ -99,7 +101,7 @@ const LandingActions = () => {
       <AuthGuard>
         <Typography variant="body1" className={classes.greeting}>
           <span>Welcome</span>
-          {true && (
+          {isReturningUser && (
             <span>&nbsp;back</span>
           )}
           {userIdentifier && (
@@ -109,16 +111,30 @@ const LandingActions = () => {
           )}
         </Typography>
         <Box className={classes.actions}>
-          <Button
-            component={Link}
-            to="/admin/projects"
-            variant="contained"
-            className={classes.heroButton}
-            size="large"
-            children={<>View&nbsp;Projects</>}
-          />
-          <Typography component="span">Or</Typography>
-          {hasAdministrativeRole ? (
+          {mayViewProjects && (
+            <Button
+              component={Link}
+              to="/admin/projects"
+              variant="contained"
+              className={classes.heroButton}
+              size="large"
+              children={<>View&nbsp;Projects</>}
+            />
+          )}
+          {!mayViewProjects && !hasPendingAccessRequest && ( 
+            <Button
+              component={Link}
+              to="/access-request"
+              variant="contained"
+              className={classes.heroButton}
+              size="large"
+              children={<>Request&nbsp;Access</>}
+            />
+          )}
+          {(hasAdministrativeRole || (!hasAdministrativeRole && hasProjectCreationRole)) && (
+            <Typography component="span">Or</Typography>
+          )}
+          {hasAdministrativeRole && (
             <Button
               component={Link}
               to="/admin/users"
@@ -127,7 +143,8 @@ const LandingActions = () => {
               size="large"
               children={<>Manage&nbsp;Users</>}
             />
-          ) : (
+          )}
+          {!hasAdministrativeRole && hasProjectCreationRole && (
             <Button
               component={Link}
               to="/admin/projects/create"
@@ -138,6 +155,11 @@ const LandingActions = () => {
             />
           )}
         </Box>
+        {hasPendingAccessRequest && (
+          <Typography variant="body2" className={classes.pendingAccessRequest}>
+            Your access request is currently pending.
+          </Typography>
+        )}
       </AuthGuard>
     </Box>
   )

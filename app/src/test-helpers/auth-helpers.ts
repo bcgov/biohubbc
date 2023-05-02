@@ -1,7 +1,8 @@
 import { IAuthState } from 'contexts/authStateContext';
+import { IKeycloakWrapper } from 'hooks/useKeycloakWrapper';
 import Keycloak from 'keycloak-js';
 
-export const keycloakWrapper = {
+export const keycloakWrapper: IKeycloakWrapper = {
   keycloak: ({
     authenticated: true
   } as unknown) as Keycloak,
@@ -10,6 +11,7 @@ export const keycloakWrapper = {
   isSystemUser: () => false,
   hasSystemRole: () => false,
   hasAccessRequest: false,
+  hasOneOrMoreProjectRoles: false,
   getUserIdentifier: () => 'testusername',
   getIdentitySource: () => 'idir',
   getUserGuid: () => 'aaaa',

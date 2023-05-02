@@ -29,6 +29,10 @@ const AppRouter: React.FC = () => {
     <Switch>
       <Redirect from="/:url*(/+)" to={{ ...location, pathname: location.pathname.slice(0, -1) }} />
 
+      <RouteWithTitle title={getTitle()} path="/">
+        <LandingPage />
+      </RouteWithTitle>
+
       <RouteWithTitle path="/page-not-found" title={getTitle('Page Not Found')}>
         <BaseLayout>
           <NotFoundPage />
@@ -105,10 +109,6 @@ const AppRouter: React.FC = () => {
             <LogOutPage />
           </AuthenticatedRouteGuard>
         </BaseLayout>
-      </RouteWithTitle>
-
-      <RouteWithTitle title={getTitle()} path="/">
-        <LandingPage />
       </RouteWithTitle>
 
       <RouteWithTitle title={getTitle()} path="*">
