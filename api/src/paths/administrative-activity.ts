@@ -1,19 +1,12 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { ACCESS_REQUEST_ADMIN_EMAIL } from '../constants/notifications';
-import { getAPIUserDBConnection, IDBConnection } from '../database/db';
+import { getAPIUserDBConnection } from '../database/db';
 import { HTTP400, HTTP500 } from '../errors/http-error';
-import { queries } from '../queries/queries';
-import { GCNotifyService } from '../services/gcnotify-service';
 import { getUserIdentifier } from '../utils/keycloak-utils';
 import { getLogger } from '../utils/logger';
-import { ADMINISTRATIVE_ACTIVITY_STATUS_TYPE } from './administrative-activities';
+import { AdministrativeActivitiesService } from '../services/administrative-activities-service';
 
 const defaultLog = getLogger('paths/administrative-activity-request');
-
-const ADMIN_EMAIL = process.env.GCNOTIFY_ADMIN_EMAIL || '';
-const APP_HOST = process.env.APP_HOST;
-const NODE_ENV = process.env.NODE_ENV;
 
 export const POST: Operation = [createAdministrativeActivity()];
 
@@ -145,6 +138,7 @@ GET.apiDoc = {
 export function createAdministrativeActivity(): RequestHandler {
   return async (req, res) => {
     const connection = getAPIUserDBConnection();
+    const administrativeActivitiesService = new AdministrativeActivitiesService(connection);
 
     try {
       await connection.open();
@@ -155,37 +149,19 @@ export function createAdministrativeActivity(): RequestHandler {
         throw new HTTP500('Failed to identify system user ID');
       }
 
-      const postAdministrativeActivitySQLStatement = queries.administrativeActivity.postAdministrativeActivitySQL(
-        systemUserId,
-        req?.body
-      );
+      const accessRequestData = req?.body;
 
-      if (!postAdministrativeActivitySQLStatement) {
-        throw new HTTP500('Failed to build SQL insert statement');
-      }
-
-      const createAdministrativeActivityResponse = await connection.query(
-        postAdministrativeActivitySQLStatement.text,
-        postAdministrativeActivitySQLStatement.values
-      );
+      const response = await administrativeActivitiesService.postAdministrativeActivity(systemUserId, accessRequestData);
 
       await connection.commit();
 
-      const administrativeActivityResult =
-        (createAdministrativeActivityResponse &&
-          createAdministrativeActivityResponse.rows &&
-          createAdministrativeActivityResponse.rows[0]) ||
-        null;
-
-      if (!administrativeActivityResult || !administrativeActivityResult.id) {
+      if (!response) {
         throw new HTTP500('Failed to submit administrative activity');
       }
 
-      sendAccessRequestEmail();
+      administrativeActivitiesService.sendAccessRequestEmail();
 
-      return res
-        .status(200)
-        .json({ id: administrativeActivityResult.id, date: administrativeActivityResult.create_date });
+      return res.status(200).json(response);
     } catch (error) {
       defaultLog.error({ label: 'administrativeActivity', message: 'error', error });
       await connection.rollback();
@@ -196,17 +172,6 @@ export function createAdministrativeActivity(): RequestHandler {
   };
 }
 
-function sendAccessRequestEmail() {
-  const gcnotifyService = new GCNotifyService();
-  const url = `${APP_HOST}/admin/users?authLogin=true`;
-  const hrefUrl = `[click here.](${url})`;
-  gcnotifyService.sendEmailGCNotification(ADMIN_EMAIL, {
-    ...ACCESS_REQUEST_ADMIN_EMAIL,
-    subject: `${NODE_ENV}: ${ACCESS_REQUEST_ADMIN_EMAIL.subject}`,
-    body1: `${ACCESS_REQUEST_ADMIN_EMAIL.body1} ${hrefUrl}`,
-    footer: `${APP_HOST}`
-  });
-}
 /**
  * Get all projects.
  *
@@ -215,6 +180,7 @@ function sendAccessRequestEmail() {
 export function getAdministrativeActivityStanding(): RequestHandler {
   return async (req, res) => {
     const connection = getAPIUserDBConnection();
+    const administrativeActivitiesService = new AdministrativeActivitiesService(connection);
 
     try {
       const userIdentifier = getUserIdentifier(req['keycloak_token']);
@@ -223,23 +189,15 @@ export function getAdministrativeActivityStanding(): RequestHandler {
         throw new HTTP400('Missing required userIdentifier');
       }
 
-      const sqlStatement = queries.administrativeActivity.countPendingAdministrativeActivitiesSQL(userIdentifier);
-
-      if (!sqlStatement) {
-        throw new HTTP400('Failed to build SQL get statement');
-      }
-
       await connection.open();
-
-      const response = await connection.query(sqlStatement.text, sqlStatement.values);
+      
+      const response = await administrativeActivitiesService.getAdministrativeActivityStanding(userIdentifier);
 
       await connection.commit();
 
-      const result = (response && response.rowCount) || 0;
-
-      return res.status(200).json(result);
+      return res.status(200).json(response);
     } catch (error) {
-      defaultLog.error({ label: 'getPendingAccessRequestsCount', message: 'error', error });
+      defaultLog.error({ label: 'getAdministrativeActivityStanding', message: 'error', error });
 
       throw error;
     } finally {
@@ -247,33 +205,3 @@ export function getAdministrativeActivityStanding(): RequestHandler {
     }
   };
 }
-
-/**
- * Update an existing administrative activity.
- *
- * @param {number} administrativeActivityId
- * @param {ADMINISTRATIVE_ACTIVITY_STATUS_TYPE} administrativeActivityStatusTypeName
- * @param {IDBConnection} connection
- */
-export const updateAdministrativeActivity = async (
-  administrativeActivityId: number,
-  administrativeActivityStatusTypeName: ADMINISTRATIVE_ACTIVITY_STATUS_TYPE,
-  connection: IDBConnection
-) => {
-  const sqlStatement = queries.administrativeActivity.putAdministrativeActivitySQL(
-    administrativeActivityId,
-    administrativeActivityStatusTypeName
-  );
-
-  if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL put statement');
-  }
-
-  const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
-  const result = (response && response.rowCount) || null;
-
-  if (!result) {
-    throw new HTTP500('Failed to update administrative activity');
-  }
-};

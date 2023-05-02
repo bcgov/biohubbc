@@ -4,8 +4,8 @@ import { ADMINISTRATIVE_ACTIVITY_STATUS_TYPE } from '../paths/administrative-act
 import { BaseRepository } from './base-repository';
 
 export interface IAdministrativeActivityStanding {
-  hasPendingAcccessRequest: boolean;
-  belongsToOneOrMoreProjects: boolean;
+  has_pending_acccess_request: boolean;
+  has_one_or_more_project_roles: boolean;
 }
 
 export interface IAdministrativeActivity {
@@ -40,10 +40,10 @@ export class AdministrativeActivitiesRepository extends BaseRepository {
    * @param {string[]} [administrativeActivityStatusTypes]
    * @returns {SQLStatement} sql query object
    */
-  getAdministrativeActivities = async (
+  async getAdministrativeActivities (
     administrativeActivityTypeNames?: string[],
     administrativeActivityStatusTypes?: string[]
-  ): Promise<IAdministrativeActivity[]> => {
+  ): Promise<IAdministrativeActivity[]> {
     const sqlStatement = SQL`
       SELECT
         aa.administrative_activity_id as id,
@@ -107,7 +107,7 @@ export class AdministrativeActivitiesRepository extends BaseRepository {
 
     const response = await this.connection.sql<IAdministrativeActivity>(sqlStatement);
     return response.rows;
-  };
+  }
 
   /**
    * SQL query to insert a row in the administrative_activity table.
@@ -151,28 +151,52 @@ export class AdministrativeActivitiesRepository extends BaseRepository {
    * @param {number} systemUserId the ID of the user in context
    * @return {*}  {(SQLStatement | null)}
    */
-  countPendingAdministrativeActivitiesSQL(userIdentifier: string): test {
-    //getAdministrativeActivityStanding
-    if (!userIdentifier) {
-      return null;
-    }
-
+  async getAdministrativeActivityStanding(userIdentifier: string): Promise<IAdministrativeActivityStanding> {
     const sqlStatement = SQL`
-      SELECT
+      WITH
+        administrative_activity_with_status
+      AS (
+        SELECT
+          CASE
+            WHEN COUNT(*) > 0 THEN TRUE
+            ELSE FALSE
+          END AS has_pending_acccess_request
+        FROM
+          administrative_activity aa
+        LEFT OUTER JOIN
+          administrative_activity_status_type aast
+        ON
+          aa.administrative_activity_status_type_id = aast.administrative_activity_status_type_id
+        WHERE
+          (aa.data -> 'username')::text =  '"' || ${userIdentifier} || '"'
+        AND
+          aast.name = 'Pending'
+      ),
+        system_user_project_roles
+      AS (
+        SELECT
+          CASE
+            WHEN COUNT(*) > 0 THEN TRUE
+            ELSE FALSE
+          END AS has_one_or_more_project_roles
+        FROM
+          project_participation pp
+        LEFT JOIN
+          system_user su 
+        ON
+          pp.system_user_id = su.system_user_id 
+        WHERE
+          su.user_identifier = ${userIdentifier}
+      ) SELECT
         *
       FROM
-        administrative_activity aa
-      LEFT OUTER JOIN
-        administrative_activity_status_type aast
-      ON
-        aa.administrative_activity_status_type_id = aast.administrative_activity_status_type_id
-      WHERE
-        (aa.data -> 'username')::text =  '"' || ${userIdentifier} || '"'
-      AND
-        aast.name = 'Pending';
+        administrative_activity_with_status,
+        system_user_project_roles;
     `;
 
-    return;
+    const response = await this.connection.sql<IAdministrativeActivityStanding>(sqlStatement);
+
+    return response.rows[0];
   }
 
   /**
@@ -182,10 +206,10 @@ export class AdministrativeActivitiesRepository extends BaseRepository {
    * @param {ADMINISTRATIVE_ACTIVITY_STATUS_TYPE} administrativeActivityStatusTypeName
    * @return {*}  {(SQLStatement | null)}
    */
-  putAdministrativeActivitySQL(
+  async putAdministrativeActivity(
     administrativeActivityId: number,
     administrativeActivityStatusTypeName: ADMINISTRATIVE_ACTIVITY_STATUS_TYPE
-  ): test {
+  ): Promise<{ id: number }> {
     const sqlStatement = SQL`
       UPDATE
         administrative_activity
@@ -206,6 +230,8 @@ export class AdministrativeActivitiesRepository extends BaseRepository {
         id;
     `;
 
-    return;
+    const response = await this.connection.sql<{ id: number }>(sqlStatement);
+
+    return response.rows[0];
   }
 }
