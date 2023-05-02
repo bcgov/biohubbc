@@ -4,10 +4,10 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as db from '../../../../database/db';
 import { UserObject } from '../../../../models/user';
+import { AdministrativeActivitiesService } from '../../../../services/administrative-activities-service';
 import { UserService } from '../../../../services/user-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../__mocks__/db';
 import { ADMINISTRATIVE_ACTIVITY_STATUS_TYPE } from '../../../administrative-activities';
-import * as administrative_activity from '../../../administrative-activity';
 import * as approve_request from './approve';
 
 chai.use(sinonChai);
@@ -78,7 +78,7 @@ describe('approveAccessRequest', () => {
 
     const addSystemRolesStub = sinon.stub(UserService.prototype, 'addUserSystemRoles');
 
-    const updateAdministrativeActivityStub = sinon.stub(administrative_activity, 'updateAdministrativeActivity');
+    const updateAdministrativeActivityStub = sinon.stub(AdministrativeActivitiesService.prototype, 'putAdministrativeActivity');
 
     const requestHandler = approve_request.approveAccessRequest();
 
@@ -88,10 +88,6 @@ describe('approveAccessRequest', () => {
 
     expect(ensureSystemUserStub).to.have.been.calledOnce;
     expect(addSystemRolesStub).to.have.been.calledWith(systemUserId, expectedRoleIdsToAdd);
-    expect(updateAdministrativeActivityStub).to.have.been.calledWith(
-      1,
-      ADMINISTRATIVE_ACTIVITY_STATUS_TYPE.ACTIONED,
-      mockDBConnection
-    );
+    expect(updateAdministrativeActivityStub).to.have.been.calledWith(1, ADMINISTRATIVE_ACTIVITY_STATUS_TYPE.ACTIONED);
   });
 });
