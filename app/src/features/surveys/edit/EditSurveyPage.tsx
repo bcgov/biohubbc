@@ -10,6 +10,7 @@ import { EditSurveyI18N } from 'constants/i18n';
 import { CodesContext } from 'contexts/codesContext';
 import { DialogContext } from 'contexts/dialogContext';
 import { ProjectContext } from 'contexts/projectContext';
+import { SurveyContext } from 'contexts/surveyContext';
 import { FormikProps } from 'formik';
 import * as History from 'history';
 import { APIError } from 'hooks/api/useAxios';
@@ -84,6 +85,8 @@ const EditSurveyPage = () => {
     projectContext.projectId
   ]);
   const projectData = projectContext.projectDataLoader.data?.projectData;
+
+  const surveyContext = useContext(SurveyContext);
 
   const getSurveyFundingSourcesDataLoader = useDataLoader(() =>
     biohubApi.survey.getAvailableSurveyFundingSources(projectContext.projectId)
@@ -167,6 +170,8 @@ const EditSurveyPage = () => {
       }
 
       setEnableCancelCheck(false);
+
+      surveyContext.surveyDataLoader.refresh(projectContext.projectId, surveyContext.surveyId);
 
       history.push(`/admin/projects/${projectData?.project.id}/surveys/${response.id}/details`);
     } catch (error) {

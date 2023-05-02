@@ -71,7 +71,13 @@ export interface IMapContainerProps {
   onDrawChange?: IDrawControlsOnChange;
 }
 
-const MapContainer: React.FC<IMapContainerProps> = (props) => {
+/**
+ * Renders a leaflet map.
+ *
+ * @param {IMapContainerProps} props
+ * @return {*}
+ */
+const MapContainer = (props: IMapContainerProps) => {
   const {
     classes,
     mapId,

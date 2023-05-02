@@ -1,37 +1,55 @@
-import { render, waitFor } from '@testing-library/react';
-import { AuthStateContext } from 'contexts/authStateContext';
+import { cleanup, render, waitFor } from '@testing-library/react';
+import MapBoundary from 'components/boundary/MapBoundary';
 import { Formik } from 'formik';
 import React from 'react';
-import { getMockAuthState, SystemAdminAuthState } from 'test-helpers/auth-helpers';
 import ProjectLocationForm, {
   IProjectLocationForm,
   ProjectLocationFormInitialValues,
   ProjectLocationFormYupSchema
 } from './ProjectLocationForm';
 
+// Mock MapBoundary component
+jest.mock('../../../components/boundary/MapBoundary', () => jest.fn(() => <div />));
+
 describe('ProjectLocationForm', () => {
-  it('renders correctly with default empty values', async () => {
-    const { getByLabelText, getByText } = render(
+  afterEach(() => {
+    cleanup();
+  });
+
+  it('renders correctly with default values', async () => {
+    const { getByLabelText, getByTestId } = render(
       <Formik
         initialValues={ProjectLocationFormInitialValues}
         validationSchema={ProjectLocationFormYupSchema}
         validateOnBlur={true}
         validateOnChange={false}
-        onSubmit={async () => {}}>
+        onSubmit={jest.fn()}>
         {() => <ProjectLocationForm />}
       </Formik>
     );
 
     await waitFor(() => {
-      expect(getByText('Define Project Boundary', { exact: false })).toBeVisible();
+      // Assert MapBoundary was rendered with the right propsF
+      expect(MapBoundary).toHaveBeenCalledWith(
+        {
+          name: 'location.geometry',
+          title: 'Define Project Boundary',
+          mapId: 'project_location_form_map',
+          bounds: undefined,
+          formikProps: expect.objectContaining({ values: ProjectLocationFormInitialValues })
+        },
+        expect.anything()
+      );
+      // Assert description field is visible and populated correctly
       expect(getByLabelText('Location Description', { exact: false })).toBeVisible();
+      expect(getByTestId('location.location_description')).toHaveValue('');
     });
   });
 
-  it('renders correctly with existing location values', async () => {
+  it('renders correctly with non default values', async () => {
     const existingFormValues: IProjectLocationForm = {
       location: {
-        location_description: 'a location description',
+        location_description: 'this is a location description',
         geometry: [
           {
             type: 'Feature',
@@ -47,25 +65,32 @@ describe('ProjectLocationForm', () => {
       }
     };
 
-    const authState = getMockAuthState({ base: SystemAdminAuthState });
-
-    const { getByLabelText, getByText } = render(
-      <AuthStateContext.Provider value={authState}>
-        <Formik
-          initialValues={existingFormValues}
-          validationSchema={ProjectLocationFormYupSchema}
-          validateOnBlur={true}
-          validateOnChange={false}
-          onSubmit={async () => {}}>
-          {() => <ProjectLocationForm />}
-        </Formik>
-      </AuthStateContext.Provider>
+    const { getByLabelText, getByTestId } = render(
+      <Formik
+        initialValues={existingFormValues}
+        validationSchema={ProjectLocationFormYupSchema}
+        validateOnBlur={true}
+        validateOnChange={false}
+        onSubmit={jest.fn()}>
+        {() => <ProjectLocationForm />}
+      </Formik>
     );
 
     await waitFor(() => {
-      expect(getByText('Define Project Boundary', { exact: false })).toBeVisible();
+      // Assert MapBoundary was rendered with the right props
+      expect(MapBoundary).toHaveBeenCalledWith(
+        {
+          name: 'location.geometry',
+          title: 'Define Project Boundary',
+          mapId: 'project_location_form_map',
+          bounds: undefined,
+          formikProps: expect.objectContaining({ values: existingFormValues })
+        },
+        expect.anything()
+      );
+      // Assert description field is visible and populated correctly
       expect(getByLabelText('Location Description', { exact: false })).toBeVisible();
-      expect(getByText('a location description')).toBeVisible();
+      expect(getByTestId('location.location_description')).toHaveValue('this is a location description');
     });
   });
 });

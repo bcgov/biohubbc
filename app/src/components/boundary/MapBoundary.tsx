@@ -63,10 +63,10 @@ export interface IMapBoundaryProps {
 /**
  * Shared component for map boundary component
  *
- * @param {*} props
+ * @param {IMapBoundaryProps} props
  * @return {*}
  */
-const MapBoundary: React.FC<IMapBoundaryProps> = (props) => {
+const MapBoundary = (props: IMapBoundaryProps) => {
   const classes = useStyles();
 
   const { name, title, mapId, bounds, formikProps } = props;
