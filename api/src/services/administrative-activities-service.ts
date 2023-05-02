@@ -1,5 +1,10 @@
 import { IDBConnection } from '../database/db';
-import { AdministrativeActivitiesRepository, IAdministrativeActivity, IAdministrativeActivityStanding, ICreateAdministrativeActivity } from '../repositories/administrative-activities-repository';
+import {
+  AdministrativeActivitiesRepository,
+  IAdministrativeActivity,
+  IAdministrativeActivityStanding,
+  ICreateAdministrativeActivity
+} from '../repositories/administrative-activities-repository';
 import { DBService } from './db-service';
 import { GCNotifyService, IgcNotifyPostReturn } from './gcnotify-service';
 import { ACCESS_REQUEST_ADMIN_EMAIL } from '../constants/notifications';

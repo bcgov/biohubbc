@@ -86,6 +86,13 @@ export interface IKeycloakWrapper {
    */
   hasAccessRequest: boolean;
   /**
+   * True if the user has at least 1 project participant roles.
+   *
+   * @type {boolean}
+   * @memberof IKeycloakWrapper
+   */
+  hasOneOrMoreProjectRoles: boolean;
+  /**
    * Get out the username portion of the preferred_username from the token.
    *
    * @memberof IKeycloakWrapper
@@ -145,9 +152,7 @@ function useKeycloakWrapper(): IKeycloakWrapper {
 
   const userDataLoader = useDataLoader(() => biohubApi.user.getUser());
 
-  const hasPendingAdministrativeActivitiesDataLoader = useDataLoader(() =>
-    biohubApi.admin.hasPendingAdministrativeActivities()
-  );
+  const administrativeActivityStandingDataLoader = useDataLoader(biohubApi.admin.getAdministrativeActivityStanding);
 
   if (keycloak) {
     // keycloak is ready, load keycloak user info
@@ -164,7 +169,7 @@ function useKeycloakWrapper(): IKeycloakWrapper {
     ) {
       // Authenticated user either has has no roles or has been deactivated
       // Check if the user has a pending access request
-      hasPendingAdministrativeActivitiesDataLoader.load();
+      administrativeActivityStandingDataLoader.load();
     }
   }
 
@@ -275,7 +280,7 @@ function useKeycloakWrapper(): IKeycloakWrapper {
 
   const refresh = () => {
     userDataLoader.refresh();
-    hasPendingAdministrativeActivitiesDataLoader.refresh();
+    administrativeActivityStandingDataLoader.refresh();
   };
 
   const getLoginUrl = (redirectUri = '/admin/projects'): string => {
@@ -284,11 +289,12 @@ function useKeycloakWrapper(): IKeycloakWrapper {
 
   return {
     keycloak,
-    hasLoadedAllUserInfo: userDataLoader.isReady || !!hasPendingAdministrativeActivitiesDataLoader.data,
+    hasLoadedAllUserInfo: userDataLoader.isReady || !!administrativeActivityStandingDataLoader.data,
     systemRoles: getSystemRoles(),
     hasSystemRole,
     isSystemUser,
-    hasAccessRequest: !!hasPendingAdministrativeActivitiesDataLoader.data,
+    hasAccessRequest: !!administrativeActivityStandingDataLoader.data?.has_pending_acccess_request,
+    hasOneOrMoreProjectRoles: !!administrativeActivityStandingDataLoader.data?.has_one_or_more_project_roles,
     getUserIdentifier,
     getUserGuid,
     getIdentitySource,

@@ -99,12 +99,12 @@ GET.apiDoc = {
         'application/json': {
           schema: {
             type: 'object',
-            required: ['hasPendingAccessRequest', 'belongsToOneOrMoreProjects'],
+            required: ['has_pending_acccess_request', 'has_one_or_more_project_roles'],
             properties: {
-              hasPendingAcccessRequest: {
+              has_pending_acccess_request: {
                 type: 'boolean'
               },
-              belongsToOneOrMoreProjects: {
+              has_one_or_more_project_roles: {
                 type: 'boolean'
               }
             }
@@ -138,7 +138,6 @@ GET.apiDoc = {
 export function createAdministrativeActivity(): RequestHandler {
   return async (req, res) => {
     const connection = getAPIUserDBConnection();
-    const administrativeActivitiesService = new AdministrativeActivitiesService(connection);
 
     try {
       await connection.open();
@@ -149,8 +148,9 @@ export function createAdministrativeActivity(): RequestHandler {
         throw new HTTP500('Failed to identify system user ID');
       }
 
-      const accessRequestData = req?.body;
+      const administrativeActivitiesService = new AdministrativeActivitiesService(connection);
 
+      const accessRequestData = req?.body;
       const response = await administrativeActivitiesService.postAdministrativeActivity(systemUserId, accessRequestData);
 
       await connection.commit();
@@ -180,7 +180,6 @@ export function createAdministrativeActivity(): RequestHandler {
 export function getAdministrativeActivityStanding(): RequestHandler {
   return async (req, res) => {
     const connection = getAPIUserDBConnection();
-    const administrativeActivitiesService = new AdministrativeActivitiesService(connection);
 
     try {
       const userIdentifier = getUserIdentifier(req['keycloak_token']);
@@ -190,6 +189,8 @@ export function getAdministrativeActivityStanding(): RequestHandler {
       }
 
       await connection.open();
+
+      const administrativeActivitiesService = new AdministrativeActivitiesService(connection);
       
       const response = await administrativeActivitiesService.getAdministrativeActivityStanding(userIdentifier);
 

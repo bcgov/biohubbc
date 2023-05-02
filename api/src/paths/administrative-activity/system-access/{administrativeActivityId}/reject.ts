@@ -5,7 +5,7 @@ import { getDBConnection } from '../../../../database/db';
 import { authorizeRequestHandler } from '../../../../request-handlers/security/authorization';
 import { getLogger } from '../../../../utils/logger';
 import { ADMINISTRATIVE_ACTIVITY_STATUS_TYPE } from '../../../administrative-activities';
-import { updateAdministrativeActivity } from '../../../administrative-activity';
+import { AdministrativeActivitiesService } from '../../../../services/administrative-activities-service';
 
 const defaultLog = getLogger('paths/administrative-activity/system-access/{administrativeActivityId}/reject');
 
@@ -73,10 +73,11 @@ export function rejectAccessRequest(): RequestHandler {
     try {
       await connection.open();
 
-      await updateAdministrativeActivity(
+      const administrativeActivitiesService = new AdministrativeActivitiesService(connection);
+
+      await administrativeActivitiesService.putAdministrativeActivity(
         administrativeActivityId,
-        ADMINISTRATIVE_ACTIVITY_STATUS_TYPE.REJECTED,
-        connection
+        ADMINISTRATIVE_ACTIVITY_STATUS_TYPE.REJECTED
       );
 
       await connection.commit();

@@ -9,7 +9,7 @@ import { UserService } from '../../../../services/user-service';
 import { coerceUserIdentitySource } from '../../../../utils/keycloak-utils';
 import { getLogger } from '../../../../utils/logger';
 import { ADMINISTRATIVE_ACTIVITY_STATUS_TYPE } from '../../../administrative-activities';
-import { updateAdministrativeActivity } from '../../../administrative-activity';
+import { AdministrativeActivitiesService } from '../../../../services/administrative-activities-service';
 
 const defaultLog = getLogger('paths/administrative-activity/system-access/{administrativeActivityId}/approve');
 
@@ -134,6 +134,7 @@ export function approveAccessRequest(): RequestHandler {
       await connection.open();
 
       const userService = new UserService(connection);
+      const administrativeActivitiesService = new AdministrativeActivitiesService(connection);
 
       // Get the system user (adding or activating them if they already existed).
       const systemUserObject = await userService.ensureSystemUser(userGuid, userIdentifier, identitySource);
@@ -147,10 +148,9 @@ export function approveAccessRequest(): RequestHandler {
       }
 
       // Update the access request record status
-      await updateAdministrativeActivity(
+      await administrativeActivitiesService.putAdministrativeActivity(
         administrativeActivityId,
         ADMINISTRATIVE_ACTIVITY_STATUS_TYPE.ACTIONED,
-        connection
       );
 
       await connection.commit();

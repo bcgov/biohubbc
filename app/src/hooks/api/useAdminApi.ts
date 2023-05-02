@@ -4,7 +4,8 @@ import {
   IAccessRequestDataObject,
   IgcNotifyGenericMessage,
   IgcNotifyRecipient,
-  IGetAccessRequestsListResponse
+  IGetAccessRequestsListResponse,
+  IGetAdministrativeActivityStanding
 } from 'interfaces/useAdminApi.interface';
 import qs from 'qs';
 
@@ -97,7 +98,7 @@ const useAdminApi = (axios: AxiosInstance) => {
    *
    * @return {*} {Promise<number>}
    */
-  const getAdministrativeActivityStanding = async (): Promise<number> => {
+  const getAdministrativeActivityStanding = async (): Promise<IGetAdministrativeActivityStanding> => {
     const { data } = await axios.get('/api/administrative-activity');
 
     return data;

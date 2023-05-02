@@ -2,9 +2,9 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../constants/roles';
 import { getDBConnection } from '../database/db';
-import { queries } from '../queries/queries';
 import { authorizeRequestHandler } from '../request-handlers/security/authorization';
 import { getLogger } from '../utils/logger';
+import { AdministrativeActivitiesService } from '../services/administrative-activities-service';
 
 const defaultLog = getLogger('paths/administrative-activities');
 
@@ -154,20 +154,18 @@ export function getAdministrativeActivities(): RequestHandler {
       const administrativeActivityStatusTypes: string[] =
         (req.query.status as string[]) || getAllAdministrativeActivityStatusTypes();
 
-      const sqlStatement = queries.administrativeActivity.getAdministrativeActivitiesSQL(
+      await connection.open();
+
+      const administrativeActivitiesService = new AdministrativeActivitiesService(connection);
+      
+      const response = await administrativeActivitiesService.getAdministrativeActivities(
         administrativeActivityTypes,
         administrativeActivityStatusTypes
       );
 
-      await connection.open();
-
-      const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
       await connection.commit();
 
-      const result = (response && response.rowCount && response.rows) || [];
-
-      return res.status(200).json(result);
+      return res.status(200).json(response);
     } catch (error) {
       defaultLog.error({ label: 'getAdministrativeActivities', message: 'error', error });
       throw error;
