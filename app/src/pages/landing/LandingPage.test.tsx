@@ -43,14 +43,7 @@ describe('LandingPage', () => {
       cleanup();
     });
 
-    it('renders the sign in CTA', () => {
-      const mockHasSystemRole = jest.fn();
-
-      mockHasSystemRole
-        .mockReturnValueOnce(true) // Return true when the `Projects` secure link is parsed
-        .mockReturnValueOnce(true) // Return true when the `Manage Users` secure link is parsed
-        .mockReturnValueOnce(true); // Return true when the `Map` secure link is parsed
-
+    it('Case 1: Not signed in', () => {
       const authState: IAuthState = {
         keycloakWrapper: {
           keycloak: {
@@ -82,7 +75,53 @@ describe('LandingPage', () => {
       );
 
       expect(getByText('Log In')).toBeVisible();
+      
 
+      // Should see the Log in button
+
+      // Should see the BCeID message
+    });
+
+    it('Case 2: Signed in for the first time, no access requests sent', () => {
+
+
+      // Should see "Welcome, <user>" but not "Welcome back, <user>"
+      // Should see the no-access message
+      // Should see the Request Access button
+    });
+
+    it('Case 3: Signed in, has sent an access request and is awaiting approval', () => {
+      // Should see "Welcome back, <user>"
+      // Should see "your request is pending" message
+      // Should see the Log out button
+    });
+
+    it('Case 4: Signed in, is added as a project participant, but still has a pending access request', () => {
+      // Should see "Welcome back, <user>"
+      // Should see "View Projects" button
+    });
+
+    it('Case 5: Signed in, has a viewer role on some project, but not a system role that allows project creation', () => {
+      // Should see "Welcome back, <user>"
+      // Should see "View Projects" button
+    });
+
+    it('Case 6: Signed in, has the ability to view and create projects', () => {
+      // Should see "Welcome back, <user>"
+      // Should see "View Projects" button
+      // Should see "Create a Project" button
+    });
+
+    it('Case 7: Signed in, has a system admin role', () => {
+      // Should see "Welcome back, <user>"
+      // Should see "View Projects" button
+      // Should see "Manage Users" button
+    });
+
+    it('Case 8: Signed in, has a data admin role', () => {
+      // Should see "Welcome back, <user>"
+      // Should see "View Projects" button
+      // Should see "Manage Users" button
     });
   });
 });

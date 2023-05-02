@@ -159,7 +159,7 @@ export function createAdministrativeActivity(): RequestHandler {
         throw new HTTP500('Failed to submit administrative activity');
       }
 
-      administrativeActivitiesService.sendAccessRequestEmail();
+      // await administrativeActivitiesService.sendAccessRequestEmail();
 
       return res.status(200).json(response);
     } catch (error) {

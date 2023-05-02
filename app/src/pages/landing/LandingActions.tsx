@@ -3,7 +3,7 @@ import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import clsx from 'clsx';
 import { AuthGuard, UnAuthGuard } from 'components/security/Guards';
-import { getAllSystemRoles, SYSTEM_ROLE } from 'constants/roles';
+import { SYSTEM_ROLE } from 'constants/roles';
 import { AuthStateContext } from 'contexts/authStateContext';
 import React, { useContext, useMemo } from 'react'
 import { Link } from 'react-router-dom';
@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     maxWidth: '45ch',
 
     '& p': {
-      margin: '1.5rem 0 1rem'
+      margin: '1rem 0'
     }
   },
   actions: {
@@ -46,10 +46,6 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   username: {
     textTransform: 'uppercase'
-  },
-  pendingAccessRequest: {
-    color: '#fcba19',
-    marginTop: '0 !important'
   }
 }));
 
@@ -61,16 +57,19 @@ const LandingActions = () => {
   const userIdentifier = keycloakWrapper?.getUserIdentifier() || '';
 
   const hasPendingAccessRequest = keycloakWrapper?.hasAccessRequest;
-  const hasAnySystemRole = keycloakWrapper?.hasSystemRole(getAllSystemRoles());
+  const isSystemUser = keycloakWrapper?.isSystemUser();
+  //const hasAnySystemRole = keycloakWrapper?.hasSystemRole(getAllSystemRoles());
   const hasAdministrativeRole = keycloakWrapper?.hasSystemRole([
     SYSTEM_ROLE.DATA_ADMINISTRATOR,
     SYSTEM_ROLE.SYSTEM_ADMIN
   ]);
 
-  const mayBelongToOneOrMoreProjects = hasAnySystemRole || keycloakWrapper?.hasOneOrMoreProjectRoles;  
+  const mayBelongToOneOrMoreProjects = isSystemUser || keycloakWrapper?.hasOneOrMoreProjectRoles;  
   const hasProjectCreationRole = hasAdministrativeRole || keycloakWrapper?.hasSystemRole([SYSTEM_ROLE.PROJECT_CREATOR]);
-  const isReturningUser = hasAnySystemRole || hasPendingAccessRequest || mayBelongToOneOrMoreProjects;
-  const mayViewProjects = hasAnySystemRole || mayBelongToOneOrMoreProjects;
+  const isReturningUser = isSystemUser || hasPendingAccessRequest || mayBelongToOneOrMoreProjects;
+  const mayViewProjects = isSystemUser || mayBelongToOneOrMoreProjects;
+  const mayMakeAccessRequest = !mayViewProjects && !hasPendingAccessRequest;
+  const isAwaitingAccessApproval = hasPendingAccessRequest && !isSystemUser && !mayBelongToOneOrMoreProjects
 
   return (
     <Box className={classes.actionsContainer}>
@@ -105,14 +104,19 @@ const LandingActions = () => {
             <span>&nbsp;back</span>
           )}
           {userIdentifier && (
-            <span>
-              ,&nbsp;<strong className={classes.username}>{userIdentifier}</strong>
-            </span>
+            <span>,&nbsp;<strong className={classes.username}>{userIdentifier}</strong></span>
           )}
         </Typography>
-        <Typography variant="body2">
-          You have not been granted permission to access this application.
-        </Typography>
+        {mayMakeAccessRequest && (
+          <Typography variant="body2">
+            You have not been granted permission to access this application.
+          </Typography>
+        )}
+        {isAwaitingAccessApproval && (
+          <Typography variant="body2">
+            Your access request is currently pending.
+          </Typography>
+        )}
         <Box className={classes.actions}>
           {mayViewProjects && (
             <Button
@@ -124,7 +128,7 @@ const LandingActions = () => {
               children={<>View&nbsp;Projects</>}
             />
           )}
-          {!mayViewProjects && !hasPendingAccessRequest && ( 
+          {mayMakeAccessRequest && ( 
             <Button
               component={Link}
               to="/access-request"
@@ -132,6 +136,16 @@ const LandingActions = () => {
               className={classes.heroButton}
               size="large"
               children={<>Request&nbsp;Access</>}
+            />
+          )}
+          {isAwaitingAccessApproval && (
+            <Button
+              component={Link}
+              to="/logout"
+              variant="contained"
+              className={classes.heroButton}
+              size="large"
+              children={<>Log&nbsp;Out</>}
             />
           )}
           {(hasAdministrativeRole || (!hasAdministrativeRole && hasProjectCreationRole)) && (
@@ -158,11 +172,6 @@ const LandingActions = () => {
             />
           )}
         </Box>
-        {hasPendingAccessRequest && (
-          <Typography variant="body2" className={classes.pendingAccessRequest}>
-            Your access request is currently pending.
-          </Typography>
-        )}
       </AuthGuard>
     </Box>
   )
