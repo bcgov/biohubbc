@@ -92,7 +92,7 @@ const EditSurveyPage = () => {
     biohubApi.survey.getAvailableSurveyFundingSources(projectContext.projectId)
   );
   getSurveyFundingSourcesDataLoader.load();
-  const fundingSourcesData = getSurveyFundingSourcesDataLoader.data || [];
+  const fundingSourcesData = getSurveyFundingSourcesDataLoader.data ?? [];
 
   const editSurveyDL = useDataLoader((projectId: number, surveyId: number) =>
     biohubApi.survey.getSurveyForUpdate(projectId, surveyId)

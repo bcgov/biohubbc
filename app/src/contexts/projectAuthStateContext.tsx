@@ -61,7 +61,7 @@ export const ProjectAuthStateContextProvider: React.FC = (props) => {
 
   const hasSystemRole = useCallback(
     (validSystemRoles?: string[]): boolean => {
-      if (!validSystemRoles || !validSystemRoles.length) {
+      if (!validSystemRoles?.length) {
         return true;
       }
 

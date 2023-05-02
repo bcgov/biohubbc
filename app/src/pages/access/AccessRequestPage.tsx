@@ -170,9 +170,9 @@ export const AccessRequestPage: React.FC = () => {
           validationSchema={validationSchema}
           validateOnBlur={true}
           validateOnChange={false}
-          onSubmit={(values) => {
+          onSubmit={async (values) => {
             setIsSubmittingRequest(true);
-            handleSubmitAccessRequest(values);
+            await handleSubmitAccessRequest(values);
           }}>
           {({ handleSubmit }) => (
             <Box component={Paper} p={3}>

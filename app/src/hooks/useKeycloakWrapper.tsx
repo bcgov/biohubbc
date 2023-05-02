@@ -233,11 +233,11 @@ function useKeycloakWrapper(): IKeycloakWrapper {
   };
 
   const getSystemRoles = (): string[] => {
-    return userDataLoader.data?.role_names || [];
+    return userDataLoader.data?.role_names ?? [];
   };
 
   const hasSystemRole = (validSystemRoles?: string[]) => {
-    if (!validSystemRoles || !validSystemRoles.length) {
+    if (!validSystemRoles?.length) {
       return true;
     }
 

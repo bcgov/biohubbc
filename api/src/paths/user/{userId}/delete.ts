@@ -132,7 +132,7 @@ export const deleteAllProjectRoles = async (userId: number, connection: IDBConne
     throw new HTTP400('Failed to build SQL delete statement for deleting project roles');
   }
 
-  connection.query(sqlStatement.text, sqlStatement.values);
+  return connection.query(sqlStatement.text, sqlStatement.values);
 };
 
 /**

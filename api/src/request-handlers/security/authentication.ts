@@ -51,7 +51,7 @@ export const authenticateRequest = async function (req: Request): Promise<true> 
     }
 
     // Get token header kid (key id)
-    const kid = decodedToken.header && decodedToken.header.kid;
+    const kid = decodedToken.header.kid;
 
     if (!kid) {
       defaultLog.warn({ label: 'authenticate', message: 'decoded token header kid was null' });

@@ -255,6 +255,6 @@ export class TaxonomyService extends ESService {
       }
     });
 
-    return response && response.hits.hits.length ? this._formatEnrichedData(response.hits.hits[0]) : null;
+    return response?.hits.hits.length ? this._formatEnrichedData(response.hits.hits[0]) : null;
   }
 }

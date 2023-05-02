@@ -115,7 +115,7 @@ const CreateSurveyPage = () => {
   useEffect(() => {
     getSurveyFundingSourcesDataLoader.load();
   }, [getSurveyFundingSourcesDataLoader, projectContext.projectId]);
-  const fundingSourcesData = getSurveyFundingSourcesDataLoader.data || [];
+  const fundingSourcesData = getSurveyFundingSourcesDataLoader.data ?? [];
 
   const [formikRef] = useState(useRef<FormikProps<any>>(null));
 

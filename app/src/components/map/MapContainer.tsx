@@ -107,7 +107,7 @@ const MapContainer = (props: IMapContainerProps) => {
       return;
     }
 
-    onDrawChange([...(drawControls.initialFeatures || []), preDefinedGeometry]);
+    onDrawChange([...(drawControls.initialFeatures ?? []), preDefinedGeometry]);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [preDefinedGeometry]);
@@ -153,10 +153,10 @@ const MapContainer = (props: IMapContainerProps) => {
       style={{ height: '100%' }}
       id={mapId}
       center={[55, -128]}
-      zoom={zoom || 5}
+      zoom={zoom ?? 5}
       maxZoom={17}
       fullscreenControl={true}
-      scrollWheelZoom={scrollWheelZoom || false}>
+      scrollWheelZoom={scrollWheelZoom ?? false}>
       <FullScreenScrollingEventHandler bounds={bounds} scrollWheelZoom={Boolean(scrollWheelZoom)} />
 
       <SetMapBounds bounds={bounds} />
@@ -172,7 +172,7 @@ const MapContainer = (props: IMapContainerProps) => {
               draw: { ...props.drawControls?.options?.draw, circle: false, circlemarker: false, polyline: false }
             }}
             onChange={onDrawChange}
-            confirmDeletion={confirmDeletion === undefined ? true : confirmDeletion}
+            confirmDeletion={confirmDeletion ?? true}
           />
         </FeatureGroup>
       )}

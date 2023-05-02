@@ -89,16 +89,14 @@ const MapBoundary = (props: IMapBoundaryProps) => {
   }, [updatedBounds]);
 
   const boundaryUploadHandler = (): IUploadHandler => {
-    return (file) => {
+    return async (file) => {
       if (file?.type.includes('zip') || file?.name.includes('.zip')) {
-        handleShapefileUpload(file, name, formikProps);
+        await handleShapefileUpload(file, name, formikProps);
       } else if (file?.type.includes('gpx') || file?.name.includes('.gpx')) {
-        handleGPXUpload(file, name, formikProps);
+        await handleGPXUpload(file, name, formikProps);
       } else if (file?.type.includes('kml') || file?.name.includes('.kml')) {
-        handleKMLUpload(file, name, formikProps);
+        await handleKMLUpload(file, name, formikProps);
       }
-
-      return Promise.resolve();
     };
   };
 
