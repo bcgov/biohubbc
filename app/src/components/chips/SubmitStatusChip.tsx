@@ -27,20 +27,24 @@ export const SubmitStatusChip: React.FC<{ status: PublishStatus; chipProps?: Par
   const classes = useStyles();
 
   let chipLabel;
+  let chipTitle;
   let chipStatusClass;
 
   if (props.status === PublishStatus.NO_DATA) {
     chipLabel = 'No Data';
+    chipTitle = 'No data to submit';
     chipStatusClass = classes.chipNoData;
   } else if (props.status === PublishStatus.SUBMITTED) {
     chipLabel = 'Submitted';
+    chipTitle = 'All data has been submitted';
     chipStatusClass = classes.chipSubmitted;
   } else {
     chipLabel = 'Unsubmitted';
+    chipTitle = 'Data has not been submitted';
     chipStatusClass = classes.chipUnSubmitted;
   }
 
   return (
-    <Chip variant="outlined" className={clsx(classes.chip, chipStatusClass)} label={chipLabel} {...props.chipProps} />
+    <Chip title={chipTitle} variant="outlined" className={clsx(classes.chip, chipStatusClass)} label={chipLabel} {...props.chipProps} />
   );
 };
