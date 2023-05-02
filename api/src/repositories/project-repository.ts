@@ -568,7 +568,7 @@ export class ProjectRepository extends BaseRepository {
         'rows was null or undefined, expected rows != null'
       ]);
     }
-    console.log(result);
+
     return new GetFundingData(result);
   }
 

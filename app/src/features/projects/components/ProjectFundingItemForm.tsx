@@ -166,8 +166,7 @@ const ProjectFundingItemForm: React.FC<IProjectFundingItemFormProps> = (props) =
                       if (event.target.value !== 1 && event.target.value !== 2) {
                         setFieldValue(
                           'investment_action_category',
-                          props.investment_action_category.find((item) => item.fs_id === event.target.value)?.value ||
-                            50
+                          props.investment_action_category.find((item) => item.fs_id === options?.value)?.value
                         );
                       }
                     }
