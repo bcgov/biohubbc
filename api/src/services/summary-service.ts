@@ -308,7 +308,7 @@ export class SummaryService extends DBService {
 
     const media_state = file.getMediaState();
     if (!media_state.isValid) {
-      throw SummarySubmissionErrorFromMessageType(SUMMARY_SUBMISSION_MESSAGE_TYPE.INVALID_MEDIA);
+      return { csv_state: ([] as unknown) as ICsvState[], media_state };
     }
 
     // Run CSV content validations
@@ -331,7 +331,13 @@ export class SummaryService extends DBService {
     const errors: MessageError<SUMMARY_SUBMISSION_MESSAGE_TYPE>[] = [];
 
     mediaState.fileErrors?.forEach((fileError) => {
-      errors.push(new MessageError(SUMMARY_SUBMISSION_MESSAGE_TYPE.INVALID_MEDIA, `${fileError}`, 'Miscellaneous'));
+      errors.push(
+        new MessageError(
+          SUMMARY_SUBMISSION_MESSAGE_TYPE.INVALID_MEDIA,
+          `${fileError}`,
+          SUMMARY_SUBMISSION_MESSAGE_TYPE.INVALID_MEDIA
+        )
+      );
     });
 
     csvState?.forEach((csvStateItem) => {
@@ -364,12 +370,12 @@ export class SummaryService extends DBService {
           )
         );
       });
-
-      if (!mediaState.isValid || csvState?.some((item) => !item.isValid)) {
-        // At least 1 error exists, skip remaining steps
-        parseError = true;
-      }
     });
+
+    if (mediaState.fileErrors?.length || csvState?.some((item) => !item.isValid)) {
+      // At least 1 error exists, skip remaining steps
+      parseError = true;
+    }
 
     if (parseError) {
       throw new SummarySubmissionError({ messages: errors });

@@ -360,7 +360,7 @@ export class ValidationService extends DBService {
   }
 
   validateXLSX(file: XLSXCSV, parser: ValidationSchemaParser) {
-    // Run media validations
+    defaultLog.debug({ label: 'validateXLSX' });
     file.validateMedia(parser);
 
     const media_state = file.getMediaState();
@@ -369,7 +369,6 @@ export class ValidationService extends DBService {
       return { csv_state: ([] as unknown) as ICsvState[], media_state };
     }
 
-    // Run CSV content validations
     file.validateContent(parser);
     const csv_state = file.getContentState();
 
