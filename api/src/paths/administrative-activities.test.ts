@@ -5,6 +5,7 @@ import sinonChai from 'sinon-chai';
 import * as db from '../database/db';
 import { getMockDBConnection, getRequestHandlerMocks } from '../__mocks__/db';
 import * as administrative_activities from './administrative-activities';
+import { QueryResult } from 'pg';
 
 chai.use(sinonChai);
 
@@ -14,12 +15,11 @@ describe('getAdministrativeActivities', () => {
   });
 
   it('should return the rows on success (empty)', async () => {
-    const mockQuery = sinon.stub().resolves({
-      rows: null,
-      rowCount: 0
+    const mockDBConnection = getMockDBConnection({
+      sql: async () => {
+        return ({ rowCount: 0, rows: [] } as any) as Promise<QueryResult<any>>;
+      }
     });
-
-    const mockDBConnection = getMockDBConnection({ query: mockQuery });
 
     sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
@@ -50,12 +50,11 @@ describe('getAdministrativeActivities', () => {
       create_date: '2020/04/04'
     };
 
-    const mockQuery = sinon.stub().resolves({
-      rows: [data],
-      rowCount: 1
+    const mockDBConnection = getMockDBConnection({
+      sql: async () => {
+        return ({ rowCount: 1, rows: [data] } as any) as Promise<QueryResult<any>>;
+      }
     });
-
-    const mockDBConnection = getMockDBConnection({ query: mockQuery });
 
     sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
