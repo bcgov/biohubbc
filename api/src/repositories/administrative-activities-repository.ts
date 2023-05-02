@@ -67,7 +67,7 @@ export class AdministrativeActivitiesRepository extends BaseRepository {
         aa.administrative_activity_type_id = aat.administrative_activity_type_id
       WHERE
         1 = 1
-    `;
+    `; // @TODO where 1=1???
 
     if (administrativeActivityTypeNames?.length) {
       sqlStatement.append(SQL`
