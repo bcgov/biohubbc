@@ -150,11 +150,10 @@ const ProjectFundingForm: React.FC<IProjectFundingFormProps> = (props) => {
                       (fundingSource.agency_id === 1 && 'Investment Action') ||
                       (fundingSource.agency_id === 2 && 'Investment Category') ||
                       null;
-                    console.log(`Label: ${investment_action_category_label}`);
                     const investment_action_category_value = props.investment_action_category.filter(
                       (item) => item.value === fundingSource.investment_action_category
                     )?.[0]?.label;
-                    console.log(investment_action_category_value);
+
                     return (
                       <ListItem disableGutters className={classes.fundingListItem} key={index}>
                         <Paper variant="outlined">

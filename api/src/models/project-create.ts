@@ -1,5 +1,6 @@
 import { Feature } from 'geojson';
 import { getLogger } from '../utils/logger';
+import { z } from 'zod';
 
 const defaultLog = getLogger('models/project-create');
 
@@ -157,6 +158,18 @@ export class PostIUCNData {
   }
 }
 
+export const FundingSource = z.object({
+  agency_id: z.number(),
+  investment_action_category: z.number(),
+  agency_project_id: z.string(),
+  funding_amount: z.number(),
+  start_date: z.date(),
+  end_date: z.date(),
+  first_nations_id: z.number()
+});
+
+export type FundingSource = z.infer<typeof FundingSource>;
+
 /**
  * A single project funding agency.
  *
@@ -166,12 +179,14 @@ export class PostIUCNData {
  * @class PostFundingSource
  */
 export class PostFundingSource {
-  agency_id: number;
+  id?: number;
+  agency_id?: number;
   investment_action_category: number;
   agency_project_id: string;
   funding_amount: number;
   start_date: string;
   end_date: string;
+  first_nations_id?: number;
 
   constructor(obj?: any) {
     defaultLog.debug({ label: 'PostFundingSource', message: 'params', obj });
@@ -182,6 +197,7 @@ export class PostFundingSource {
     this.funding_amount = obj?.funding_amount || null;
     this.start_date = obj?.start_date || null;
     this.end_date = obj?.end_date || null;
+    this.first_nations_id = obj?.first_nations_id || null;
   }
 }
 

@@ -114,6 +114,7 @@ const ProjectFundingItemForm: React.FC<IProjectFundingItemFormProps> = (props) =
                   name="agency_name"
                   label={'Agency Name'}
                   options={props.sources}
+                  initialValue={values}
                   onChange={(event, options) => {
                     // investment_action_category is dependent on agency_id, so reset it if agency_id changes
                     setFieldValue(
