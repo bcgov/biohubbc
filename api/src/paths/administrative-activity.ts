@@ -4,7 +4,7 @@ import { getAPIUserDBConnection } from '../database/db';
 import { HTTP400, HTTP500 } from '../errors/http-error';
 import { getUserIdentifier } from '../utils/keycloak-utils';
 import { getLogger } from '../utils/logger';
-import { AdministrativeActivitiesService } from '../services/administrative-activities-service';
+import { AdministrativeActivityService } from '../services/administrative-activity-service';
 
 const defaultLog = getLogger('paths/administrative-activity-request');
 
@@ -148,10 +148,10 @@ export function createAdministrativeActivity(): RequestHandler {
         throw new HTTP500('Failed to identify system user ID');
       }
 
-      const administrativeActivitiesService = new AdministrativeActivitiesService(connection);
+      const administrativeActivityService = new AdministrativeActivityService(connection);
 
       const accessRequestData = req?.body;
-      const response = await administrativeActivitiesService.postAdministrativeActivity(systemUserId, accessRequestData);
+      const response = await administrativeActivityService.postAdministrativeActivity(systemUserId, accessRequestData);
 
       await connection.commit();
 
@@ -159,7 +159,7 @@ export function createAdministrativeActivity(): RequestHandler {
         throw new HTTP500('Failed to submit administrative activity');
       }
 
-      // await administrativeActivitiesService.sendAccessRequestEmail();
+      // await administrativeActivityService.sendAccessRequestEmail();
 
       return res.status(200).json(response);
     } catch (error) {
@@ -190,9 +190,9 @@ export function getAdministrativeActivityStanding(): RequestHandler {
 
       await connection.open();
 
-      const administrativeActivitiesService = new AdministrativeActivitiesService(connection);
+      const administrativeActivityService = new AdministrativeActivityService(connection);
       
-      const response = await administrativeActivitiesService.getAdministrativeActivityStanding(userIdentifier);
+      const response = await administrativeActivityService.getAdministrativeActivityStanding(userIdentifier);
 
       await connection.commit();
 

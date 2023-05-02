@@ -4,7 +4,7 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as db from '../../../../database/db';
 import { UserObject } from '../../../../models/user';
-import { AdministrativeActivitiesService } from '../../../../services/administrative-activities-service';
+import { AdministrativeActivityService } from '../../../../services/administrative-activity-service';
 import { UserService } from '../../../../services/user-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../__mocks__/db';
 import { ADMINISTRATIVE_ACTIVITY_STATUS_TYPE } from '../../../administrative-activities';
@@ -78,7 +78,7 @@ describe('approveAccessRequest', () => {
 
     const addSystemRolesStub = sinon.stub(UserService.prototype, 'addUserSystemRoles');
 
-    const updateAdministrativeActivityStub = sinon.stub(AdministrativeActivitiesService.prototype, 'putAdministrativeActivity');
+    const updateAdministrativeActivityStub = sinon.stub(AdministrativeActivityService.prototype, 'putAdministrativeActivity');
 
     const requestHandler = approve_request.approveAccessRequest();
 

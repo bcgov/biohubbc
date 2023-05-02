@@ -1,10 +1,10 @@
 import { IDBConnection } from '../database/db';
 import {
-  AdministrativeActivitiesRepository,
+  AdministrativeActivityRepository,
   IAdministrativeActivity,
   IAdministrativeActivityStanding,
   ICreateAdministrativeActivity
-} from '../repositories/administrative-activities-repository';
+} from '../repositories/administrative-activity-repository';
 import { DBService } from './db-service';
 import { GCNotifyService, IgcNotifyPostReturn } from './gcnotify-service';
 import { ACCESS_REQUEST_ADMIN_EMAIL } from '../constants/notifications';
@@ -13,12 +13,12 @@ import { ADMINISTRATIVE_ACTIVITY_STATUS_TYPE } from '../paths/administrative-act
 /**
  * @TODO jsdoc
  */
-export class AdministrativeActivitiesService extends DBService {
+export class AdministrativeActivityService extends DBService {
   ADMIN_EMAIL: string;
   APP_HOST: string;
   NODE_ENV: string;
 
-  administrativeActivitiesRepository: AdministrativeActivitiesRepository;
+  administrativeActivityRepository: AdministrativeActivityRepository;
 
   constructor(connection: IDBConnection) {
     super(connection);
@@ -27,7 +27,7 @@ export class AdministrativeActivitiesService extends DBService {
     this.APP_HOST = process.env.APP_HOST || '';
     this.NODE_ENV = process.env.NODE_ENV || '';
 
-    this.administrativeActivitiesRepository = new AdministrativeActivitiesRepository(connection);
+    this.administrativeActivityRepository = new AdministrativeActivityRepository(connection);
   }
 
   /**
@@ -40,7 +40,7 @@ export class AdministrativeActivitiesService extends DBService {
     administrativeActivityTypeNames?: string[],
     administrativeActivityStatusTypes?: string[]
   ): Promise<IAdministrativeActivity[]> {
-    return this.administrativeActivitiesRepository.getAdministrativeActivities(
+    return this.administrativeActivityRepository.getAdministrativeActivities(
       administrativeActivityTypeNames,
       administrativeActivityStatusTypes
     );
@@ -50,7 +50,7 @@ export class AdministrativeActivitiesService extends DBService {
    * @TODO jsdoc
    */
   async postAdministrativeActivity(systemUserId: number, data: string | object): Promise<ICreateAdministrativeActivity> {
-    return this.administrativeActivitiesRepository.postAdministrativeActivity(systemUserId, data);
+    return this.administrativeActivityRepository.postAdministrativeActivity(systemUserId, data);
   }
 
   /**
@@ -60,7 +60,7 @@ export class AdministrativeActivitiesService extends DBService {
     administrativeActivityId: number,
     administrativeActivityStatusTypeName: ADMINISTRATIVE_ACTIVITY_STATUS_TYPE
   ): Promise<{ id: number }> {
-    return this.administrativeActivitiesRepository.putAdministrativeActivity(
+    return this.administrativeActivityRepository.putAdministrativeActivity(
       administrativeActivityId,
       administrativeActivityStatusTypeName
     );
@@ -70,7 +70,7 @@ export class AdministrativeActivitiesService extends DBService {
    * @TODO jsdoc
    */
   async getAdministrativeActivityStanding(userIdentifier: string): Promise<IAdministrativeActivityStanding> {
-    return this.administrativeActivitiesRepository.getAdministrativeActivityStanding(userIdentifier);
+    return this.administrativeActivityRepository.getAdministrativeActivityStanding(userIdentifier);
   }
 
   /**

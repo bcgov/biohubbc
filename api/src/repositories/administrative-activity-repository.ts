@@ -32,7 +32,7 @@ export interface ICreateAdministrativeActivity {
  * @class PermitRepository
  * @extends {BaseRepository}
  */
-export class AdministrativeActivitiesRepository extends BaseRepository {
+export class AdministrativeActivityRepository extends BaseRepository {
   /**
    * SQL query to get a list of administrative activities.
    *
@@ -138,7 +138,7 @@ export class AdministrativeActivitiesRepository extends BaseRepository {
 
     if (!response.rows.length) {
       throw new ApiExecuteSQLError('Failed to create administrative activity record', [
-        'AdministrativeActivitiesRepository->postAdministrativeActivity'
+        'AdministrativeActivityRepository->postAdministrativeActivity'
       ]);
     }
 

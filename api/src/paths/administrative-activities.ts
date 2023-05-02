@@ -4,7 +4,7 @@ import { SYSTEM_ROLE } from '../constants/roles';
 import { getDBConnection } from '../database/db';
 import { authorizeRequestHandler } from '../request-handlers/security/authorization';
 import { getLogger } from '../utils/logger';
-import { AdministrativeActivitiesService } from '../services/administrative-activities-service';
+import { AdministrativeActivityService } from '../services/administrative-activity-service';
 
 const defaultLog = getLogger('paths/administrative-activities');
 
@@ -156,9 +156,9 @@ export function getAdministrativeActivities(): RequestHandler {
 
       await connection.open();
 
-      const administrativeActivitiesService = new AdministrativeActivitiesService(connection);
+      const administrativeActivityService = new AdministrativeActivityService(connection);
       
-      const response = await administrativeActivitiesService.getAdministrativeActivities(
+      const response = await administrativeActivityService.getAdministrativeActivities(
         administrativeActivityTypes,
         administrativeActivityStatusTypes
       );

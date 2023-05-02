@@ -3,7 +3,7 @@ import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as db from '../../../../database/db';
-import { AdministrativeActivitiesService } from '../../../../services/administrative-activities-service';
+import { AdministrativeActivityService } from '../../../../services/administrative-activity-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../__mocks__/db';
 import { ADMINISTRATIVE_ACTIVITY_STATUS_TYPE } from '../../../administrative-activities';
 import * as reject_request from './reject';
@@ -26,7 +26,7 @@ describe('rejectAccessRequest', () => {
     };
 
     const expectedError = new Error('test error');
-    sinon.stub(AdministrativeActivitiesService.prototype, 'putAdministrativeActivity').rejects(expectedError);
+    sinon.stub(AdministrativeActivityService.prototype, 'putAdministrativeActivity').rejects(expectedError);
 
     const requestHandler = reject_request.rejectAccessRequest();
 
@@ -48,7 +48,7 @@ describe('rejectAccessRequest', () => {
       administrativeActivityId: '1'
     };
 
-    const updateAdministrativeActivityStub = sinon.stub(AdministrativeActivitiesService.prototype, 'putAdministrativeActivity').resolves();
+    const updateAdministrativeActivityStub = sinon.stub(AdministrativeActivityService.prototype, 'putAdministrativeActivity').resolves();
 
     const requestHandler = reject_request.rejectAccessRequest();
 
