@@ -209,12 +209,12 @@ POST.apiDoc = {
       content: {
         'application/json': {
           schema: {
-            title: 'Survey Response Object',
             type: 'object',
             required: ['id'],
             properties: {
               id: {
-                type: 'number'
+                type: 'integer',
+                minimum: 1
               }
             }
           }

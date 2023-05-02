@@ -312,7 +312,7 @@ export class SurveyService extends DBService {
   }
 
   /**
-   * Creates a survey and uploads the metadata to Biohub
+   * Creates a survey and uploads the affected metadata to BioHub
    *
    * @param {number} projectId
    * @param {PostSurveyObject} postSurveyData
@@ -323,7 +323,13 @@ export class SurveyService extends DBService {
     const surveyId = await this.createSurvey(projectId, postSurveyData);
 
     try {
-      await this.platformService.submitSurveyDwCMetadataToBioHub(surveyId);
+      // Publish survey metadata
+      const publishSurveyPromise = this.platformService.submitSurveyDwCMetadataToBioHub(surveyId);
+
+      // Publish project metadata (which needs to be updated now that the survey metadata has changed)
+      const publishProjectPromise = this.platformService.submitProjectDwCMetadataToBioHub(projectId);
+
+      await Promise.all([publishSurveyPromise, publishProjectPromise]);
     } catch (error) {
       defaultLog.warn({ label: 'createSurveyAndUploadMetadataToBioHub', message: 'error', error });
     }
@@ -514,32 +520,43 @@ export class SurveyService extends DBService {
   }
 
   /**
-   * Updates provided survey information and submits to BioHub
+   * Updates provided survey information and submits affected metadata to BioHub
    *
+   * @param {number} projectId
    * @param {number} surveyId
    * @param {PutSurveyObject} putSurveyData
    * @returns {*} {Promise<void>}
    * @memberof SurveyService
    */
-  async updateSurveyAndUploadMetadataToBiohub(surveyId: number, putSurveyData: PutSurveyObject): Promise<void> {
+  async updateSurveyAndUploadMetadataToBiohub(
+    projectId: number,
+    surveyId: number,
+    putSurveyData: PutSurveyObject
+  ): Promise<void> {
     await this.updateSurvey(surveyId, putSurveyData);
 
     try {
-      await this.platformService.submitSurveyDwCMetadataToBioHub(surveyId);
+      // Publish survey metadata
+      const publishSurveyPromise = this.platformService.submitSurveyDwCMetadataToBioHub(surveyId);
+
+      // Publish project metadata (which needs to be updated now that the survey metadata has changed)
+      const publishProjectPromise = this.platformService.submitProjectDwCMetadataToBioHub(projectId);
+
+      await Promise.all([publishSurveyPromise, publishProjectPromise]);
     } catch (error) {
       defaultLog.warn({ label: 'updateSurveyAndUploadMetadataToBiohub', message: 'error', error });
     }
   }
 
   /**
-   * Updates provided survey information and submits to BioHub
-   *˝
+   * Updates provided survey information.
+   *
    * @param {number} surveyId
    * @param {PutSurveyObject} putSurveyData
    * @returns {*} {Promise<void>}
    * @memberof SurveyService
    */
-  async updateSurvey(surveyId: number, putSurveyData: PutSurveyObject): Promise<SurveyObject> {
+  async updateSurvey(surveyId: number, putSurveyData: PutSurveyObject): Promise<void> {
     const promises: Promise<any>[] = [];
 
     if (putSurveyData?.survey_details || putSurveyData?.purpose_and_methodology || putSurveyData?.location) {
@@ -567,8 +584,6 @@ export class SurveyService extends DBService {
     }
 
     await Promise.all(promises);
-
-    return await this.getSurveyById(surveyId);
   }
 
   /**
