@@ -1,7 +1,5 @@
 'use strict';
 
-let process = require('process');
-
 let options = require('pipeline-cli').Util.parseArguments();
 
 // The root config for common values
@@ -104,7 +102,6 @@ const phases = {
     tag: `test-${version}`,
     host: staticUrls.test,
     apiHost: staticUrlsAPI.test,
-    n8nHost: '', // staticUrlsN8N.test, // Disable until nginx is setup: https://quartech.atlassian.net/browse/BHBC-1435
     siteminderLogoutURL: config.siteminderLogoutURL.test,
     maxUploadNumFiles,
     maxUploadFileSize,
@@ -138,14 +135,8 @@ const phases = {
     memoryRequest: '100Mi',
     memoryLimit: '400Mi',
     replicas: '2',
-    replicasMax: '4'
+    replicasMax: '3'
   }
 };
-
-// This callback forces the node process to exit as failure.
-process.on('unhandledRejection', (reason, promise) => {
-  console.log('Unhandled Rejection at:', promise, 'reason:', reason);
-  process.exit(1);
-});
 
 module.exports = exports = { phases, options };

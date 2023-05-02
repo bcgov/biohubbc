@@ -1,6 +1,6 @@
 [![img](https://img.shields.io/badge/Lifecycle-Experimental-339999)](https://github.com/bcgov/repomountie/blob/master/doc/lifecycle-badges.md) [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=bcgov_biohubbc&metric=alert_status)](https://sonarcloud.io/dashboard?id=bcgov_biohubbc) [![codecov](https://codecov.io/gh/bcgov/biohubbc/branch/dev/graph/badge.svg?token=CF2ZR3T3U2)](https://codecov.io/gh/bcgov/biohubbc) [![BioHubBC](https://img.shields.io/endpoint?url=https://dashboard.cypress.io/badge/simple/w8oxci/dev&style=flat&logo=cypress)](https://dashboard.cypress.io/projects/w8oxci/runs)
 
-# BioDiversityHub BC
+# BioDiversityHub BC - updated
 
 Sub-project under the SEISM Capital project, the source of BC’s species inventory data.
 
@@ -113,18 +113,18 @@ make env
 ```
 
 Result of running `make env` for the first time:  
-![make env screenshot](readme_screenshots/running_make_env.png "Running `make env`")
+![make env screenshot](README/images/make/running_make_env.png "Running `make env`")
 
 ## Start all Applications
 
-Starts all applications (database, api, app, and n8n).
+Starts all applications (database, api, app).
 
 ```
 make web
 ```
 
 Result of running `make web` (condensed to only show the important parts):  
-![make web screenshot](readme_screenshots/running_make_start.png "Running `make web`")
+![make web screenshot](README/images/make/running_make_start.png "Running `make web`")
 
 ## Access the Running Applications
 
@@ -135,10 +135,6 @@ api:
 app:
 
 - `localhost:7100`
-
-n8n:
-
-- `localhost:5100`
 
 # Helpful Makefile Commands
 
@@ -216,7 +212,7 @@ _Note: Not all formatting issues can be auto-fixed._
 make format-fix
 ```
 
-## Shell Into a Docker Container (database, api, app, n8n, etc)
+## Shell Into a Docker Container (database, api, app, etc)
 
 See `./Makefile` for all available commands.
 
@@ -244,7 +240,7 @@ docker ps -a
 ```
 
 What a successfully built/run set of docker containers looks like:
-![make web screenshot](readme_screenshots/running_docker_ps_-a.png "Running `docker ps -a`")
+![make web screenshot](README/images/make/running_docker_ps_-a.png "Running `docker ps -a`")
 
 _Note: The exited container is correct, as that container executes database migrations and then closes_
 

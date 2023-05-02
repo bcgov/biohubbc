@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { PROJECT_ROLE } from '../../../../../../../../constants/roles';
+import { PROJECT_ROLE, SYSTEM_ROLE } from '../../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../../database/db';
 import { authorizeRequestHandler } from '../../../../../../../../request-handlers/security/authorization';
 import { AttachmentService } from '../../../../../../../../services/attachment-service';
@@ -11,11 +11,15 @@ const defaultLog = getLogger('/api/project/{projectId}/attachments/{attachmentId
 export const GET: Operation = [
   authorizeRequestHandler((req) => {
     return {
-      and: [
+      or: [
         {
           validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR, PROJECT_ROLE.PROJECT_VIEWER],
           projectId: Number(req.params.projectId),
           discriminator: 'ProjectRole'
+        },
+        {
+          validSystemRoles: [SYSTEM_ROLE.DATA_ADMINISTRATOR],
+          discriminator: 'SystemRole'
         }
       ]
     };
@@ -73,10 +77,17 @@ GET.apiDoc = {
               metadata: {
                 description: 'Report metadata general information object',
                 type: 'object',
-                required: ['id', 'title', 'last_modified', 'description', 'year_published', 'revision_count'],
+                required: [
+                  'survey_report_attachment_id',
+                  'title',
+                  'last_modified',
+                  'description',
+                  'year_published',
+                  'revision_count'
+                ],
                 properties: {
-                  id: {
-                    description: 'Report metadata attachment id',
+                  survey_report_attachment_id: {
+                    description: 'Report metadata attachment survey_report_attachment_id',
                     type: 'number'
                   },
                   title: {

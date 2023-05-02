@@ -1,28 +1,45 @@
 import { QueryResult } from 'pg';
 import SQL from 'sql-template-strings';
+import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { PostReportAttachmentMetadata, PutReportAttachmentMetadata } from '../models/project-survey-attachments';
 import { getLogger } from '../utils/logger';
 import { BaseRepository } from './base-repository';
 
-export type ISurveyAttachment = IProjectAttachment;
+export type IAttachment = ISurveyAttachment | ISurveyReportAttachment | IProjectAttachment | IProjectReportAttachment;
 
-export type ISurveyReportAttachment = IProjectReportAttachment;
+export interface IProjectAttachment extends IAttachmentData {
+  project_attachment_id: number;
+}
 
-export interface IProjectAttachment {
-  id: number;
+export interface ISurveyAttachment extends IAttachmentData {
+  survey_attachment_id: number;
+}
+
+export interface IAttachmentData {
   file_name: string;
   file_type: string;
   create_user: number;
   create_date: string;
   update_date: string;
   file_size: string;
+  uuid: string;
+  title: string | null;
+  description: string | null;
   key: string;
   revision_count: number;
 }
 
-export interface IProjectReportAttachment {
-  id: number;
+export interface ISurveyReportAttachment extends IReportAttachmentData {
+  survey_report_attachment_id: number;
+}
+
+export interface IProjectReportAttachment extends IReportAttachmentData {
+  project_report_attachment_id: number;
+}
+
+export interface IReportAttachmentData {
+  uuid: string;
   file_name: string;
   create_user: number;
   title: string;
@@ -65,9 +82,12 @@ export class AttachmentRepository extends BaseRepository {
 
     const sqlStatement = SQL`
       SELECT
-        project_attachment_id AS id,
+        project_attachment_id,
+        uuid,
         file_name,
         file_type,
+        title,
+        description,
         create_user,
         update_date,
         create_date,
@@ -104,9 +124,12 @@ export class AttachmentRepository extends BaseRepository {
 
     const sqlStatement = SQL`
       SELECT
-        project_attachment_id AS id,
+        project_attachment_id,
+        uuid,
         file_name,
         file_type,
+        title,
+        description,
         create_user,
         update_date,
         create_date,
@@ -133,6 +156,42 @@ export class AttachmentRepository extends BaseRepository {
   }
 
   /**
+   * Query to get all project attachment by the given attachment IDs
+   * @param {number} projectId The ID of the project
+   * @param {number[]} attachmentIds The ID of the attachment
+   * @return {Promise<IProjectAttachment[]>} The project attachment having the given IDs.
+   * @memberof AttachmentRepository
+   */
+  async getProjectAttachmentsByIds(projectId: number, attachmentIds: number[]): Promise<IProjectAttachment[]> {
+    defaultLog.debug({ label: 'getProjectAttachmentsByIds' });
+
+    const knex = getKnex();
+
+    const queryBuilder = knex
+      .queryBuilder()
+      .select([
+        'project_attachment_id',
+        'uuid',
+        'file_name',
+        'file_type',
+        'title',
+        'description',
+        'create_user',
+        'update_date',
+        'create_date',
+        'file_size',
+        'key'
+      ])
+      .from('project_attachment')
+      .whereIn('project_attachment_id', attachmentIds)
+      .andWhere('project_id', projectId);
+
+    const response = await this.connection.knex<IProjectAttachment>(queryBuilder);
+
+    return response.rows;
+  }
+
+  /**
    * Query to return all project report attachments belonging to the given project.
    * @param {number} projectId the ID of the project
    * @return {Promise<IProjectReportAttachment[]>} Promise resolving all of the attachments for the
@@ -144,7 +203,8 @@ export class AttachmentRepository extends BaseRepository {
 
     const sqlStatement = SQL`
       SELECT
-        project_report_attachment_id as id,
+        project_report_attachment_id,
+        uuid,
         file_name,
         create_user,
         title,
@@ -191,7 +251,8 @@ export class AttachmentRepository extends BaseRepository {
 
     const sqlStatement = SQL`
       SELECT
-        project_report_attachment_id as id,
+        project_report_attachment_id,
+        uuid,
         file_name,
         title,
         description,
@@ -225,6 +286,49 @@ export class AttachmentRepository extends BaseRepository {
   }
 
   /**
+   * Query to return the report attachments having the given IDs and belonging to the given project.
+   * @param {number} projectId the ID of the project
+   * @param {number[]} reportAttachmentIds the IDs of the report attachments
+   * @return {Promise<IProjectReportAttachment[]>} Promise resolving the report attachment
+   * @memberof AttachmentRepository
+   */
+  async getProjectReportAttachmentsByIds(
+    projectId: number,
+    reportAttachmentIds: number[]
+  ): Promise<IProjectReportAttachment[]> {
+    defaultLog.debug({ label: 'getProjectReportAttachmentsByIds' });
+
+    const knex = getKnex();
+    const queryBuilder = knex
+      .queryBuilder()
+      .select([
+        'project_report_attachment_id',
+        'uuid',
+        'file_name',
+        'title',
+        'description',
+        knex.raw('year::int as year_published'),
+        knex.raw(`
+          CASE
+            WHEN update_date IS NULL
+            THEN create_date::text
+            ELSE update_date::text
+          END AS last_modified
+        `),
+        'file_size',
+        'key',
+        'revision_count'
+      ])
+      .from('project_report_attachment')
+      .whereIn('project_report_attachment_id', reportAttachmentIds)
+      .andWhere('project_id', projectId);
+
+    const response = await this.connection.knex<IProjectReportAttachment>(queryBuilder);
+
+    return response.rows;
+  }
+
+  /**
    * SQL query to get survey attachments for a single project.
    *
    * @param {number} surveyId The survey ID
@@ -236,9 +340,12 @@ export class AttachmentRepository extends BaseRepository {
 
     const sqlStatement = SQL`
       SELECT
-        survey_attachment_id as id,
+        survey_attachment_id,
+        uuid,
         file_name,
         file_type,
+        title,
+        description,
         create_date,
         update_date,
         create_date,
@@ -263,6 +370,42 @@ export class AttachmentRepository extends BaseRepository {
   }
 
   /**
+   * SQL query to get all survey attachments for a single project with the given surveyAttachmentIds
+   *
+   * @param {number} surveyId The survey ID
+   * @param {number[]} attachmentIds The IDs of the survey attachments
+   * @return {Promise<IProjectAttachment[]>} All survey attachments having the given IDs
+   * @memberof AttachmentRepository
+   */
+  async getSurveyAttachmentsByIds(surveyId: number, attachmentIds: number[]): Promise<ISurveyAttachment[]> {
+    defaultLog.debug({ label: 'getSurveyAttachmentsByIds' });
+
+    const knex = getKnex();
+    const queryBuilder = knex
+      .queryBuilder()
+      .select([
+        'survey_attachment_id',
+        'uuid',
+        'file_name',
+        'file_type',
+        'title',
+        'description',
+        'create_date',
+        'update_date',
+        'create_date',
+        'file_size',
+        'key'
+      ])
+      .from('survey_attachment')
+      .whereIn('survey_attachment_id', attachmentIds)
+      .andWhere('survey_id', surveyId);
+
+    const response = await this.connection.knex<ISurveyAttachment>(queryBuilder);
+
+    return response.rows;
+  }
+
+  /**
    * Query to return all survey report attachments belonging to the given survey.
    * @param {number} surveyId the ID of the survey
    * @return {Promise<ISurveyReportAttachment[]>} Promise resolving all of the attachments for the
@@ -274,7 +417,8 @@ export class AttachmentRepository extends BaseRepository {
 
     const sqlStatement = SQL`
       SELECT
-        survey_report_attachment_id as id,
+        survey_report_attachment_id,
+        uuid,
         file_name,
         create_user,
         title,
@@ -318,7 +462,8 @@ export class AttachmentRepository extends BaseRepository {
 
     const sqlStatement = SQL`
       SELECT
-        survey_report_attachment_id as id,
+        survey_report_attachment_id,
+        uuid,
         file_name,
         title,
         description,
@@ -349,6 +494,49 @@ export class AttachmentRepository extends BaseRepository {
     }
 
     return response.rows[0];
+  }
+
+  /**
+   * Query to return the report attachment having the given IDs and belonging to the given survey.
+   * @param {number} surveyId the ID of the survey
+   * @param {number[]} reportAttachmentIds the IDs of the report attachments
+   * @return {Promise<ISurveyReportAttachment[]>} The survey report attachments having the given IDs
+   * @memberof AttachmentRepository
+   */
+  async getSurveyReportAttachmentsByIds(
+    surveyId: number,
+    reportAttachmentIds: number[]
+  ): Promise<ISurveyReportAttachment[]> {
+    defaultLog.debug({ label: 'getSurveyReportAttachmentsByIds' });
+
+    const knex = getKnex();
+    const queryBuilder = knex
+      .queryBuilder()
+      .select([
+        'survey_report_attachment_id',
+        'uuid',
+        'file_name',
+        'title',
+        'description',
+        knex.raw('year::int as year_published'),
+        knex.raw(`
+          CASE
+            WHEN update_date IS NULL
+            THEN create_date::text
+            ELSE update_date::text
+          END AS last_modified
+        `),
+        'file_size',
+        'key',
+        'revision_count'
+      ])
+      .from('survey_report_attachment')
+      .whereIn('survey_report_attachment_id', reportAttachmentIds)
+      .andWhere('survey_id', surveyId);
+
+    const response = await this.connection.knex<ISurveyReportAttachment>(queryBuilder);
+
+    return response.rows;
   }
 
   /**
@@ -411,12 +599,22 @@ export class AttachmentRepository extends BaseRepository {
     return response.rows;
   }
 
+  /**
+   * Insert new Project Attachment
+   *
+   * @param {Express.Multer.File} file
+   * @param {number} projectId
+   * @param {string} attachmentType
+   * @param {string} key
+   * @return {*}  {Promise<{ project_attachment_id: number; revision_count: number }>}
+   * @memberof AttachmentRepository
+   */
   async insertProjectAttachment(
     file: Express.Multer.File,
     projectId: number,
     attachmentType: string,
     key: string
-  ): Promise<{ id: number; revision_count: number }> {
+  ): Promise<{ project_attachment_id: number; revision_count: number }> {
     const sqlStatement = SQL`
     INSERT INTO project_attachment (
       project_id,
@@ -432,7 +630,7 @@ export class AttachmentRepository extends BaseRepository {
       ${key}
     )
     RETURNING
-      project_attachment_id as id,
+      project_attachment_id,
       revision_count;
   `;
 
@@ -448,11 +646,20 @@ export class AttachmentRepository extends BaseRepository {
     return response.rows[0];
   }
 
+  /**
+   * Update Project Attachment
+   *
+   * @param {string} fileName
+   * @param {number} projectId
+   * @param {string} attachmentType
+   * @return {*}  {Promise<{ project_attachment_id: number; revision_count: number }>}
+   * @memberof AttachmentRepository
+   */
   async updateProjectAttachment(
     fileName: string,
     projectId: number,
     attachmentType: string
-  ): Promise<{ id: number; revision_count: number }> {
+  ): Promise<{ project_attachment_id: number; revision_count: number }> {
     const sqlStatement = SQL`
     UPDATE
       project_attachment
@@ -464,7 +671,7 @@ export class AttachmentRepository extends BaseRepository {
     AND
       project_id = ${projectId}
     RETURNING
-      project_attachment_id as id,
+      project_attachment_id,
       revision_count;
   `;
 
@@ -480,11 +687,22 @@ export class AttachmentRepository extends BaseRepository {
     return response.rows[0];
   }
 
+  /**
+   * Get Project Atachment by filename
+   *
+   * @param {number} projectId
+   * @param {string} fileName
+   * @return {*}  {Promise<QueryResult>}
+   * @memberof AttachmentRepository
+   */
   async getProjectAttachmentByFileName(projectId: number, fileName: string): Promise<QueryResult> {
     const sqlStatement = SQL`
     SELECT
-      project_attachment_id as id,
+      project_attachment_id,
+      uuid,
       file_name,
+      title,
+      description,
       update_date,
       create_date,
       file_size
@@ -501,13 +719,24 @@ export class AttachmentRepository extends BaseRepository {
     return response;
   }
 
+  /**
+   * Insert new Project Report Attachment
+   *
+   * @param {string} fileName
+   * @param {number} fileSize
+   * @param {number} projectId
+   * @param {PostReportAttachmentMetadata} attachmentMeta
+   * @param {string} key
+   * @return {*}  {Promise<{ project_report_attachment_id: number; revision_count: number }>}
+   * @memberof AttachmentRepository
+   */
   async insertProjectReportAttachment(
     fileName: string,
     fileSize: number,
     projectId: number,
     attachmentMeta: PostReportAttachmentMetadata,
     key: string
-  ): Promise<{ id: number; revision_count: number }> {
+  ): Promise<{ project_report_attachment_id: number; revision_count: number }> {
     const sqlStatement = SQL`
     INSERT INTO project_report_attachment (
       project_id,
@@ -527,7 +756,7 @@ export class AttachmentRepository extends BaseRepository {
       ${key}
     )
     RETURNING
-      project_report_attachment_id as id,
+      project_report_attachment_id,
       revision_count;
   `;
 
@@ -543,11 +772,20 @@ export class AttachmentRepository extends BaseRepository {
     return response.rows[0];
   }
 
+  /**
+   * Update Project Report Attachment
+   *
+   * @param {string} fileName
+   * @param {number} projectId
+   * @param {PutReportAttachmentMetadata} attachmentMeta
+   * @return {*}  {Promise<{ project_report_attachment_id: number; revision_count: number }>}
+   * @memberof AttachmentRepository
+   */
   async updateProjectReportAttachment(
     fileName: string,
     projectId: number,
     attachmentMeta: PutReportAttachmentMetadata
-  ): Promise<{ id: number; revision_count: number }> {
+  ): Promise<{ project_report_attachment_id: number; revision_count: number }> {
     const sqlStatement = SQL`
     UPDATE
       project_report_attachment
@@ -561,7 +799,7 @@ export class AttachmentRepository extends BaseRepository {
     AND
       project_id = ${projectId}
     RETURNING
-      project_report_attachment_id as id,
+      project_report_attachment_id,
       revision_count;
   `;
 
@@ -577,6 +815,13 @@ export class AttachmentRepository extends BaseRepository {
     return response.rows[0];
   }
 
+  /**
+   * Delete Attachment authors on project report
+   *
+   * @param {number} attachmentId
+   * @return {*}  {Promise<QueryResult>}
+   * @memberof AttachmentRepository
+   */
   async deleteProjectReportAttachmentAuthors(attachmentId: number): Promise<QueryResult> {
     const sqlStatement = SQL`
       DELETE
@@ -590,6 +835,14 @@ export class AttachmentRepository extends BaseRepository {
     return response;
   }
 
+  /**
+   * Insert Attachment authors on project Report
+   *
+   * @param {number} attachmentId
+   * @param {{ first_name: string; last_name: string }} author
+   * @return {*}  {Promise<void>}
+   * @memberof AttachmentRepository
+   */
   async insertProjectReportAttachmentAuthor(
     attachmentId: number,
     author: { first_name: string; last_name: string }
@@ -616,11 +869,22 @@ export class AttachmentRepository extends BaseRepository {
     }
   }
 
+  /**
+   * Gets Project Report Attachment by filename
+   *
+   * @param {number} projectId
+   * @param {string} fileName
+   * @return {*}  {Promise<QueryResult>}
+   * @memberof AttachmentRepository
+   */
   async getProjectReportAttachmentByFileName(projectId: number, fileName: string): Promise<QueryResult> {
     const sqlStatement = SQL`
       SELECT
-        project_report_attachment_id as id,
+        project_report_attachment_id,
+        uuid,
         file_name,
+        title,
+        description,
         update_date,
         create_date,
         file_size
@@ -637,6 +901,14 @@ export class AttachmentRepository extends BaseRepository {
     return response;
   }
 
+  /**
+   * Get Project Attachment S3 Key
+   *
+   * @param {number} projectId
+   * @param {number} attachmentId
+   * @return {*}  {Promise<string>}
+   * @memberof AttachmentRepository
+   */
   async getProjectAttachmentS3Key(projectId: number, attachmentId: number): Promise<string> {
     const sqlStatement = SQL`
       SELECT
@@ -661,6 +933,15 @@ export class AttachmentRepository extends BaseRepository {
     return response.rows[0].key;
   }
 
+  /**
+   * Update Project Report Attachment Metadata
+   *
+   * @param {number} projectId
+   * @param {number} attachmentId
+   * @param {PutReportAttachmentMetadata} metadata
+   * @return {*}  {Promise<void>}
+   * @memberof AttachmentRepository
+   */
   async updateProjectReportAttachmentMetadata(
     projectId: number,
     attachmentId: number,
@@ -691,6 +972,14 @@ export class AttachmentRepository extends BaseRepository {
     }
   }
 
+  /**
+   * Get Project Report Attachment S3 Key
+   *
+   * @param {number} projectId
+   * @param {number} attachmentId
+   * @return {*}  {Promise<string>}
+   * @memberof AttachmentRepository
+   */
   async getProjectReportAttachmentS3Key(projectId: number, attachmentId: number): Promise<string> {
     const sqlStatement = SQL`
       SELECT
@@ -715,6 +1004,13 @@ export class AttachmentRepository extends BaseRepository {
     return response.rows[0].key;
   }
 
+  /**
+   * Delete Project Attachment by id
+   *
+   * @param {number} attachmentId
+   * @return {*}  {Promise<{ key: string }>}
+   * @memberof AttachmentRepository
+   */
   async deleteProjectAttachment(attachmentId: number): Promise<{ key: string }> {
     const sqlStatement = SQL`
       DELETE
@@ -737,6 +1033,13 @@ export class AttachmentRepository extends BaseRepository {
     return response.rows[0];
   }
 
+  /**
+   * Delete Project Report Attachment by id
+   *
+   * @param {number} attachmentId
+   * @return {*}  {Promise<{ key: string }>}
+   * @memberof AttachmentRepository
+   */
   async deleteProjectReportAttachment(attachmentId: number): Promise<{ key: string }> {
     const sqlStatement = SQL`
       DELETE
@@ -759,13 +1062,24 @@ export class AttachmentRepository extends BaseRepository {
     return response.rows[0];
   }
 
+  /**
+   * Insert Survey Report Attachment
+   *
+   * @param {string} fileName
+   * @param {number} fileSize
+   * @param {number} surveyId
+   * @param {PostReportAttachmentMetadata} attachmentMeta
+   * @param {string} key
+   * @return {*}  {Promise<{ survey_report_attachment_id: number; revision_count: number }>}
+   * @memberof AttachmentRepository
+   */
   async insertSurveyReportAttachment(
     fileName: string,
     fileSize: number,
     surveyId: number,
     attachmentMeta: PostReportAttachmentMetadata,
     key: string
-  ): Promise<{ id: number; revision_count: number }> {
+  ): Promise<{ survey_report_attachment_id: number; revision_count: number }> {
     const sqlStatement = SQL`
       INSERT INTO survey_report_attachment (
         survey_id,
@@ -785,7 +1099,7 @@ export class AttachmentRepository extends BaseRepository {
         ${key}
       )
       RETURNING
-        survey_report_attachment_id as id,
+        survey_report_attachment_id,
         revision_count;
     `;
 
@@ -801,11 +1115,20 @@ export class AttachmentRepository extends BaseRepository {
     return response.rows[0];
   }
 
+  /**
+   * Update Survey Report Attachment
+   *
+   * @param {string} fileName
+   * @param {number} surveyId
+   * @param {PutReportAttachmentMetadata} attachmentMeta
+   * @return {*}  {Promise<{ survey_report_attachment_id: number; revision_count: number }>}
+   * @memberof AttachmentRepository
+   */
   async updateSurveyReportAttachment(
     fileName: string,
     surveyId: number,
     attachmentMeta: PutReportAttachmentMetadata
-  ): Promise<{ id: number; revision_count: number }> {
+  ): Promise<{ survey_report_attachment_id: number; revision_count: number }> {
     const sqlStatement = SQL`
       UPDATE
         survey_report_attachment
@@ -819,7 +1142,7 @@ export class AttachmentRepository extends BaseRepository {
       AND
         survey_id = ${surveyId}
       RETURNING
-        survey_report_attachment_id as id,
+        survey_report_attachment_id,
         revision_count;
     `;
 
@@ -835,6 +1158,13 @@ export class AttachmentRepository extends BaseRepository {
     return response.rows[0];
   }
 
+  /**
+   * Delete Survey Report Attachment Authors
+   *
+   * @param {number} attachmentId
+   * @return {*}  {Promise<void>}
+   * @memberof AttachmentRepository
+   */
   async deleteSurveyReportAttachmentAuthors(attachmentId: number): Promise<void> {
     const sqlStatement = SQL`
       DELETE FROM
@@ -846,6 +1176,14 @@ export class AttachmentRepository extends BaseRepository {
     await this.connection.sql(sqlStatement);
   }
 
+  /**
+   * Insert Survey Report Attachment Author
+   *
+   * @param {number} attachmentId
+   * @param {{ first_name: string; last_name: string }} author
+   * @return {*}  {Promise<void>}
+   * @memberof AttachmentRepository
+   */
   async insertSurveyReportAttachmentAuthor(
     attachmentId: number,
     author: { first_name: string; last_name: string }
@@ -872,11 +1210,22 @@ export class AttachmentRepository extends BaseRepository {
     }
   }
 
+  /**
+   * Get Survey Report Attachment by Filename
+   *
+   * @param {number} surveyId
+   * @param {string} fileName
+   * @return {*}  {Promise<QueryResult>}
+   * @memberof AttachmentRepository
+   */
   async getSurveyReportAttachmentByFileName(surveyId: number, fileName: string): Promise<QueryResult> {
     const sqlStatement = SQL`
       SELECT
-        survey_report_attachment_id as id,
+        survey_report_attachment_id,
+        uuid,
         file_name,
+        title,
+        description,
         update_date,
         create_date,
         file_size
@@ -893,6 +1242,13 @@ export class AttachmentRepository extends BaseRepository {
     return response;
   }
 
+  /**
+   * Delete Survey Report Attachment
+   *
+   * @param {number} attachmentId
+   * @return {*}  {Promise<{ key: string }>}
+   * @memberof AttachmentRepository
+   */
   async deleteSurveyReportAttachment(attachmentId: number): Promise<{ key: string }> {
     const sqlStatement = SQL`
       DELETE
@@ -915,6 +1271,13 @@ export class AttachmentRepository extends BaseRepository {
     return response.rows[0];
   }
 
+  /**
+   * Delete Survey Attachment
+   *
+   * @param {number} attachmentId
+   * @return {*}  {Promise<{ key: string }>}
+   * @memberof AttachmentRepository
+   */
   async deleteSurveyAttachment(attachmentId: number): Promise<{ key: string }> {
     const sqlStatement = SQL`
       DELETE
@@ -937,6 +1300,14 @@ export class AttachmentRepository extends BaseRepository {
     return response.rows[0];
   }
 
+  /**
+   * Get Survey Attachment S3 Key
+   *
+   * @param {number} surveyId
+   * @param {number} attachmentId
+   * @return {*}  {Promise<string>}
+   * @memberof AttachmentRepository
+   */
   async getSurveyAttachmentS3Key(surveyId: number, attachmentId: number): Promise<string> {
     const sqlStatement = SQL`
       SELECT
@@ -961,6 +1332,14 @@ export class AttachmentRepository extends BaseRepository {
     return response.rows[0].key;
   }
 
+  /**
+   * Get Survey Report Attachment S3 Key
+   *
+   * @param {number} surveyId
+   * @param {number} attachmentId
+   * @return {*}  {Promise<string>}
+   * @memberof AttachmentRepository
+   */
   async getSurveyReportAttachmentS3Key(surveyId: number, attachmentId: number): Promise<string> {
     const sqlStatement = SQL`
       SELECT
@@ -985,6 +1364,15 @@ export class AttachmentRepository extends BaseRepository {
     return response.rows[0].key;
   }
 
+  /**
+   * Update Survey Report Attachment Metadata
+   *
+   * @param {number} surveyId
+   * @param {number} attachmentId
+   * @param {PutReportAttachmentMetadata} metadata
+   * @return {*}  {Promise<void>}
+   * @memberof AttachmentRepository
+   */
   async updateSurveyReportAttachmentMetadata(
     surveyId: number,
     attachmentId: number,
@@ -1015,11 +1403,20 @@ export class AttachmentRepository extends BaseRepository {
     }
   }
 
+  /**
+   * Update Survey Attachment
+   *
+   * @param {number} surveyId
+   * @param {string} fileName
+   * @param {string} fileType
+   * @return {*}  {Promise<{ survey_attachment_id: number; revision_count: number }>}
+   * @memberof AttachmentRepository
+   */
   async updateSurveyAttachment(
     surveyId: number,
     fileName: string,
     fileType: string
-  ): Promise<{ id: number; revision_count: number }> {
+  ): Promise<{ survey_attachment_id: number; revision_count: number }> {
     const sqlStatement = SQL`
       UPDATE
         survey_attachment
@@ -1031,7 +1428,7 @@ export class AttachmentRepository extends BaseRepository {
       AND
         survey_id = ${surveyId}
       RETURNING
-        survey_attachment_id as id,
+        survey_attachment_id,
         revision_count;
     `;
 
@@ -1047,13 +1444,24 @@ export class AttachmentRepository extends BaseRepository {
     return response.rows[0];
   }
 
+  /**
+   * Insert Survey Attachment
+   *
+   * @param {string} fileName
+   * @param {number} fileSize
+   * @param {string} fileType
+   * @param {number} surveyId
+   * @param {string} key
+   * @return {*}  {Promise<{ survey_attachment_id: number; revision_count: number }>}
+   * @memberof AttachmentRepository
+   */
   async insertSurveyAttachment(
     fileName: string,
     fileSize: number,
     fileType: string,
     surveyId: number,
     key: string
-  ): Promise<{ id: number; revision_count: number }> {
+  ): Promise<{ survey_attachment_id: number; revision_count: number }> {
     const sqlStatement = SQL`
     INSERT INTO survey_attachment (
       survey_id,
@@ -1069,7 +1477,7 @@ export class AttachmentRepository extends BaseRepository {
       ${key}
     )
     RETURNING
-      survey_attachment_id as id,
+      survey_attachment_id,
       revision_count;
   `;
 
@@ -1085,11 +1493,22 @@ export class AttachmentRepository extends BaseRepository {
     return response.rows[0];
   }
 
+  /**
+   * Get Survey Attachment By File Name
+   *
+   * @param {string} fileName
+   * @param {number} surveyId
+   * @return {*}  {Promise<QueryResult>}
+   * @memberof AttachmentRepository
+   */
   async getSurveyAttachmentByFileName(fileName: string, surveyId: number): Promise<QueryResult> {
     const sqlStatement = SQL`
       SELECT
-        survey_attachment_id as id,
+        survey_attachment_id,
+        uuid,
         file_name,
+        title,
+        description,
         update_date,
         create_date,
         file_size

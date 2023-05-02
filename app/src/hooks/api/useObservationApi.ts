@@ -68,9 +68,10 @@ const useObservationApi = (axios: AxiosInstance) => {
    * @param {number} occurrenceSubmissionId
    * @returns {*} {Promise<ISpatialData[]>}
    */
-  const getOccurrencesForView = async (occurrenceSubmissionId: number): Promise<ISpatialData[]> => {
+  const getOccurrencesForView = async (projectId: number, occurrenceSubmissionId: number): Promise<ISpatialData[]> => {
     const { data } = await axios.post(`/api/dwc/view-occurrences`, {
-      occurrence_submission_id: occurrenceSubmissionId
+      occurrence_submission_id: occurrenceSubmissionId,
+      project_id: projectId
     });
 
     return data;
@@ -99,6 +100,24 @@ const useObservationApi = (axios: AxiosInstance) => {
   ): Promise<number> => {
     const { data } = await axios.delete(
       `/api/project/${projectId}/survey/${surveyId}/observation/submission/${submissionId}/delete`
+    );
+
+    return data;
+  };
+
+  /**
+   * Get observation submission S3 url based on survey and submission ID
+   *
+   * @param {AxiosInstance} axios
+   * @returns {*} {Promise<string>}
+   */
+  const getObservationSubmissionSignedURL = async (
+    projectId: number,
+    surveyId: number,
+    submissionId: number
+  ): Promise<string> => {
+    const { data } = await axios.get(
+      `/api/project/${projectId}/survey/${surveyId}/observation/submission/${submissionId}/getSignedUrl`
     );
 
     return data;
@@ -157,6 +176,7 @@ const useObservationApi = (axios: AxiosInstance) => {
     uploadObservationSubmission,
     getObservationSubmission,
     deleteObservationSubmission,
+    getObservationSubmissionSignedURL,
     initiateXLSXSubmissionTransform,
     getOccurrencesForView,
     processOccurrences,

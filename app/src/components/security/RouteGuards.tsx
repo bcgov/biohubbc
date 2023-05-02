@@ -1,10 +1,11 @@
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { AuthStateContext } from 'contexts/authStateContext';
+import { ProjectAuthStateContext } from 'contexts/projectAuthStateContext';
 import qs from 'qs';
-import React, { useContext } from 'react';
+import React, { PropsWithChildren, useContext } from 'react';
 import { Redirect, Route, RouteProps, useLocation } from 'react-router';
 
-export type ISystemRoleRouteGuardProps = RouteProps & {
+export interface ISystemRoleRouteGuardProps extends RouteProps {
   /**
    * Indicates the sufficient roles needed to access this route, if any.
    *
@@ -13,7 +14,26 @@ export type ISystemRoleRouteGuardProps = RouteProps & {
    * @type {string[]}
    */
   validRoles?: string[];
-};
+}
+
+export interface IProjectRoleRouteGuardProps extends RouteProps {
+  /**
+   * Indicates the sufficient project roles needed to access this route, if any.
+   *
+   * Note: The user only needs 1 of the valid roles, when multiple are specified.
+   *
+   * @type {string[]}
+   */
+  validProjectRoles?: string[];
+  /**
+   * Indicates the sufficient system roles that will grant access to this route, if any.
+   *
+   * Note: The user only needs 1 of the valid roles, when multiple are specified.
+   *
+   * @type {string[]}
+   */
+  validSystemRoles?: string[];
+}
 
 /**
  * Route guard that requires the user to have at least 1 of the specified system roles.
@@ -23,24 +43,35 @@ export type ISystemRoleRouteGuardProps = RouteProps & {
  * @param {*} { children, validRoles, ...rest }
  * @return {*}
  */
-export const SystemRoleRouteGuard: React.FC<ISystemRoleRouteGuardProps> = ({ children, validRoles, ...rest }) => {
+export const SystemRoleRouteGuard = (props: ISystemRoleRouteGuardProps) => {
+  const { validRoles, children, ...rest } = props;
+
   return (
     <WaitForKeycloakToLoadUserInfo>
       <CheckIfUserHasSystemRole validRoles={validRoles}>
-        <Route
-          {...rest}
-          render={(props) => {
-            return (
-              <>
-                {React.Children.map(children, (child: any) => {
-                  return React.cloneElement(child, props);
-                })}
-              </>
-            );
-          }}
-        />
+        <Route {...rest}>{children}</Route>
       </CheckIfUserHasSystemRole>
     </WaitForKeycloakToLoadUserInfo>
+  );
+};
+
+/**
+ * Route guard that requires the user to have at least 1 of the specified project roles.
+ *
+ * Note: Does not check if they are already authenticated.
+ *
+ * @param {*} { children, validRoles, ...rest }
+ * @return {*}
+ */
+export const ProjectRoleRouteGuard = (props: IProjectRoleRouteGuardProps) => {
+  const { validSystemRoles, validProjectRoles, children, ...rest } = props;
+
+  return (
+    <WaitForProjectParticipantInfo>
+      <CheckIfUserHasProjectRole {...{ validSystemRoles, validProjectRoles }}>
+        <Route {...rest}>{children}</Route>
+      </CheckIfUserHasProjectRole>
+    </WaitForProjectParticipantInfo>
   );
 };
 
@@ -50,23 +81,14 @@ export const SystemRoleRouteGuard: React.FC<ISystemRoleRouteGuardProps> = ({ chi
  * @param {*} { children, ...rest }
  * @return {*}
  */
-export const AuthenticatedRouteGuard: React.FC<RouteProps> = ({ children, ...rest }) => {
+export const AuthenticatedRouteGuard = (props: RouteProps) => {
+  const { children, ...rest } = props;
+
   return (
     <CheckForAuthLoginParam>
       <WaitForKeycloakToLoadUserInfo>
         <CheckIfAuthenticatedUser>
-          <Route
-            {...rest}
-            render={(props) => {
-              return (
-                <>
-                  {React.Children.map(children, (child: any) => {
-                    return React.cloneElement(child, props);
-                  })}
-                </>
-              );
-            }}
-          />
+          <Route {...rest}>{children}</Route>
         </CheckIfAuthenticatedUser>
       </WaitForKeycloakToLoadUserInfo>
     </CheckForAuthLoginParam>
@@ -79,21 +101,12 @@ export const AuthenticatedRouteGuard: React.FC<RouteProps> = ({ children, ...res
  * @param {*} { children, ...rest }
  * @return {*}
  */
-export const UnAuthenticatedRouteGuard: React.FC<RouteProps> = ({ children, ...rest }) => {
+export const UnAuthenticatedRouteGuard = (props: RouteProps) => {
+  const { children, ...rest } = props;
+
   return (
     <CheckIfNotAuthenticatedUser>
-      <Route
-        {...rest}
-        render={(props) => {
-          return (
-            <>
-              {React.Children.map(children, (child: any) => {
-                return React.cloneElement(child, props);
-              })}
-            </>
-          );
-        }}
-      />
+      <Route {...rest}>{children}</Route>
     </CheckIfNotAuthenticatedUser>
   );
 };
@@ -106,7 +119,7 @@ export const UnAuthenticatedRouteGuard: React.FC<RouteProps> = ({ children, ...r
  * @param {*} { children }
  * @return {*}
  */
-const CheckForAuthLoginParam: React.FC = ({ children }) => {
+const CheckForAuthLoginParam = (props: PropsWithChildren<Record<never, unknown>>) => {
   const { keycloakWrapper } = useContext(AuthStateContext);
 
   const location = useLocation();
@@ -114,20 +127,21 @@ const CheckForAuthLoginParam: React.FC = ({ children }) => {
   if (!keycloakWrapper?.keycloak?.authenticated) {
     const urlParams = qs.parse(location.search.replace('?', ''));
     const authLoginUrlParam = urlParams.authLogin;
-    // check for urlParam to force login
+
+    // Check for urlParam to force login
     if (authLoginUrlParam) {
-      // remove authLogin url param from url to stop possible loop redirect
+      // Remove authLogin url param from url to stop possible loop redirect
       const redirectUrlParams = qs.stringify(urlParams, { filter: (prefix) => prefix !== 'authLogin' });
       const redirectUri = `${window.location.origin}${location.pathname}?${redirectUrlParams}`;
 
-      // trigger login
+      // Trigger login
       keycloakWrapper?.keycloak?.login({ redirectUri: redirectUri });
     }
 
     return <Redirect to="/" />;
   }
 
-  return <>{children}</>;
+  return <>{props.children}</>;
 };
 
 /**
@@ -150,6 +164,25 @@ const WaitForKeycloakToLoadUserInfo: React.FC = ({ children }) => {
 };
 
 /**
+ * Waits for the projectAuthStateContext to finish loading project participant info.
+ *
+ * Renders a spinner or the `children`.
+ *
+ * @param {*} { children }
+ * @return {*}
+ */
+const WaitForProjectParticipantInfo = (props: PropsWithChildren<Record<never, unknown>>) => {
+  const projectAuthStateContext = useContext(ProjectAuthStateContext);
+
+  if (!projectAuthStateContext.hasLoadedParticipantInfo) {
+    // Participant data has not been loaded, can not yet determine if user has sufficient roles
+    return <CircularProgress className="pageProgress" />;
+  }
+
+  return <>{props.children}</>;
+};
+
+/**
  * Checks if the user is a registered user or has a pending access request.
  *
  * Redirects the user as appropriate, or renders the `children`.
@@ -157,7 +190,7 @@ const WaitForKeycloakToLoadUserInfo: React.FC = ({ children }) => {
  * @param {*} { children }
  * @return {*}
  */
-const CheckIfAuthenticatedUser: React.FC = ({ children }) => {
+const CheckIfAuthenticatedUser = (props: PropsWithChildren<Record<never, unknown>>) => {
   const { keycloakWrapper } = useContext(AuthStateContext);
 
   const location = useLocation();
@@ -172,13 +205,21 @@ const CheckIfAuthenticatedUser: React.FC = ({ children }) => {
     } else {
       // The user does not have a pending access request, restrict them to the access-request, request-submitted or logout pages
       if (!['/access-request', '/request-submitted', '/logout'].includes(location.pathname)) {
-        // User attempted to go to restricted page
+        /**
+         * User attempted to go to restricted page. If the request to fetch user data fails, the user
+         * can never navigate away from the forbidden page unless they refetch the user data by refreshing
+         * the browser. We can preemptively re-attempt to load the user data again each time they attempt to navigate
+         * away from the forbidden page.
+         */
+        keycloakWrapper?.refresh();
+
+        // Redirect to forbidden page
         return <Redirect to="/forbidden" />;
       }
     }
   }
 
-  return <>{children}</>;
+  return <>{props.children}</>;
 };
 
 /**
@@ -189,14 +230,14 @@ const CheckIfAuthenticatedUser: React.FC = ({ children }) => {
  * @param {*} { children }
  * @return {*}
  */
-const CheckIfNotAuthenticatedUser: React.FC = ({ children }) => {
+const CheckIfNotAuthenticatedUser = (props: PropsWithChildren<Record<never, unknown>>) => {
   const { keycloakWrapper } = useContext(AuthStateContext);
 
   if (keycloakWrapper?.keycloak?.authenticated) {
     return <Redirect to="/admin/" />;
   }
 
-  return <>{children}</>;
+  return <>{props.children}</>;
 };
 
 /**
@@ -207,12 +248,31 @@ const CheckIfNotAuthenticatedUser: React.FC = ({ children }) => {
  * @param {*} { children, validRoles }
  * @return {*}
  */
-const CheckIfUserHasSystemRole: React.FC<{ validRoles?: string[] }> = ({ children, validRoles }) => {
+const CheckIfUserHasSystemRole = (props: ISystemRoleRouteGuardProps) => {
   const { keycloakWrapper } = useContext(AuthStateContext);
 
-  if (!keycloakWrapper?.hasSystemRole(validRoles)) {
+  if (!keycloakWrapper?.hasSystemRole(props.validRoles)) {
     return <Redirect to="/forbidden" />;
   }
 
-  return <>{children}</>;
+  return <>{props.children}</>;
+};
+
+/**
+ * Checks if a user has at least 1 of the specified `validRoles`.
+ *
+ * Redirects the user as appropriate, or renders the `children`.
+ *
+ * @param {*} { children, validRoles }
+ * @return {*}
+ */
+const CheckIfUserHasProjectRole = (props: IProjectRoleRouteGuardProps) => {
+  const { validProjectRoles, validSystemRoles, children } = props;
+  const { hasProjectRole, hasSystemRole } = useContext(ProjectAuthStateContext);
+
+  if (hasProjectRole(validProjectRoles) || hasSystemRole(validSystemRoles)) {
+    return <>{children}</>;
+  }
+
+  return <Redirect to="/forbidden" />;
 };

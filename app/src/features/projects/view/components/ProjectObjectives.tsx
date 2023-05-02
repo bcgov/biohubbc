@@ -1,26 +1,27 @@
+import assert from 'assert';
 import ReadMoreField from 'components/fields/ReadMoreField';
-import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
-import React from 'react';
-
-export interface IProjectObjectivesProps {
-  projectForViewData: IGetProjectForViewResponse;
-  codes: IGetAllCodeSetsResponse;
-  refresh: () => void;
-}
+import { ProjectContext } from 'contexts/projectContext';
+import React, { useContext } from 'react';
 
 /**
  * Project objectives content for a project.
  *
  * @return {*}
  */
-const ProjectObjectives: React.FC<IProjectObjectivesProps> = (props) => {
-  const {
-    projectForViewData: { objectives }
-  } = props;
+const ProjectObjectives = () => {
+  const projectContext = useContext(ProjectContext);
+
+  // Project data must be loaded by a parent before this component is rendered
+  assert(projectContext.projectDataLoader.data);
+
+  const projectData = projectContext.projectDataLoader.data.projectData;
 
   return (
-    <ReadMoreField text={objectives.objectives} maxCharLength={200} TypographyProps={{ color: 'textSecondary' }} />
+    <ReadMoreField
+      text={projectData.objectives.objectives}
+      maxCharLength={200}
+      TypographyProps={{ color: 'textSecondary' }}
+    />
   );
 };
 

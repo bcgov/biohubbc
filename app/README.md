@@ -30,7 +30,7 @@ React: https://reactjs.org/docs/getting-started.html
 - Run the unit tests in watch mode (will re-run the tests on code changes).
 
   ```
-  npm run test:watch
+  npm run test-watch
   ```
 
 - Run the unit test coverage report

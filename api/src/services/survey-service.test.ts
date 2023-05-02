@@ -16,7 +16,8 @@ import {
   GetSurveyFundingSources,
   GetSurveyLocationData,
   GetSurveyProprietorData,
-  GetSurveyPurposeAndMethodologyData
+  GetSurveyPurposeAndMethodologyData,
+  SurveyObject
 } from '../models/survey-view';
 import { IPermitModel } from '../repositories/permit-repository';
 import {
@@ -25,7 +26,9 @@ import {
   SurveyRepository
 } from '../repositories/survey-repository';
 import { getMockDBConnection } from '../__mocks__/db';
+import { HistoryPublishService } from './history-publish-service';
 import { PermitService } from './permit-service';
+import { PlatformService } from './platform-service';
 import { SurveyService } from './survey-service';
 import { TaxonomyService } from './taxonomy-service';
 
@@ -108,6 +111,9 @@ describe('SurveyService', () => {
       const updateSurveyProprietorDataStub = sinon
         .stub(SurveyService.prototype, 'updateSurveyProprietorData')
         .resolves();
+      const getSurveyByIdStub = sinon
+        .stub(SurveyService.prototype, 'getSurveyById')
+        .resolves(({ survey_details: { project_id: 1 } } as unknown) as SurveyObject);
 
       const surveyService = new SurveyService(dbConnectionObj);
 
@@ -122,6 +128,7 @@ describe('SurveyService', () => {
       expect(updateSurveyPermitDataStub).not.to.have.been.called;
       expect(updateSurveyFundingDataStub).not.to.have.been.called;
       expect(updateSurveyProprietorDataStub).not.to.have.been.called;
+      expect(getSurveyByIdStub).to.have.been.called;
     });
 
     it('updates everything when all data provided', async () => {
@@ -137,7 +144,9 @@ describe('SurveyService', () => {
       const updateSurveyProprietorDataStub = sinon
         .stub(SurveyService.prototype, 'updateSurveyProprietorData')
         .resolves();
-
+      const getSurveyByIdStub = sinon
+        .stub(SurveyService.prototype, 'getSurveyById')
+        .resolves(({ survey_details: { project_id: 1 } } as unknown) as SurveyObject);
       const surveyService = new SurveyService(dbConnectionObj);
 
       const surveyId = 2;
@@ -159,6 +168,7 @@ describe('SurveyService', () => {
       expect(updateSurveyPermitDataStub).to.have.been.calledOnce;
       expect(updateSurveyFundingDataStub).to.have.been.calledOnce;
       expect(updateSurveyProprietorDataStub).to.have.been.calledOnce;
+      expect(getSurveyByIdStub).to.have.been.called;
     });
   });
 
@@ -199,25 +209,20 @@ describe('SurveyService', () => {
       sinon.restore();
     });
 
-    it('Gets data if no errors', async () => {
-      const getOccurrenceSubmissionIdStub = sinon
-        .stub(SurveyService.prototype, 'getOccurrenceSubmissionId')
-        .resolves(({ occurrence_submission: 1 } as unknown) as any);
-
-      const getSummaryResultIdStub = sinon
-        .stub(SurveyService.prototype, 'getSummaryResultId')
-        .resolves(({ survey_summary_submission: 1 } as unknown) as any);
+    it('fetches and returns all supplementary data', async () => {
+      const getSurveyMetadataPublishRecordStub = sinon
+        .stub(HistoryPublishService.prototype, 'getSurveyMetadataPublishRecord')
+        .resolves(({ survey_metadata_publish_id: 5 } as unknown) as any);
 
       const surveyService = new SurveyService(getMockDBConnection());
 
       const response = await surveyService.getSurveySupplementaryDataById(1);
 
+      expect(getSurveyMetadataPublishRecordStub).to.be.calledOnce;
+
       expect(response).to.eql({
-        occurrence_submission: { occurrence_submission: 1 },
-        summary_result: { survey_summary_submission: 1 }
+        survey_metadata_publish: { survey_metadata_publish_id: 5 }
       });
-      expect(getOccurrenceSubmissionIdStub).to.be.calledOnce;
-      expect(getSummaryResultIdStub).to.be.calledOnce;
     });
   });
 
@@ -359,16 +364,16 @@ describe('SurveyService', () => {
     });
   });
 
-  describe('getOccurrenceSubmissionId', () => {
+  describe('getOccurrenceSubmission', () => {
     it('returns the first row on success', async () => {
       const dbConnection = getMockDBConnection();
       const service = new SurveyService(dbConnection);
 
-      const data = 1;
+      const data = { occurrence_submission_id: 1 };
 
-      const repoStub = sinon.stub(SurveyRepository.prototype, 'getOccurrenceSubmissionId').resolves(data);
+      const repoStub = sinon.stub(SurveyRepository.prototype, 'getOccurrenceSubmission').resolves(data);
 
-      const response = await service.getOccurrenceSubmissionId(1);
+      const response = await service.getOccurrenceSubmission(1);
 
       expect(repoStub).to.be.calledOnce;
       expect(response).to.eql(data);
@@ -391,16 +396,16 @@ describe('SurveyService', () => {
     });
   });
 
-  describe('getSummaryResultId', () => {
+  describe('getSurveySummarySubmission', () => {
     it('returns the first row on success', async () => {
       const dbConnection = getMockDBConnection();
       const service = new SurveyService(dbConnection);
 
-      const data = 1;
+      const data = { survey_summary_submission_id: 1 };
 
-      const repoStub = sinon.stub(SurveyRepository.prototype, 'getSummaryResultId').resolves(data);
+      const repoStub = sinon.stub(SurveyRepository.prototype, 'getSurveySummarySubmission').resolves(data);
 
-      const response = await service.getSummaryResultId(1);
+      const response = await service.getSurveySummarySubmission(1);
 
       expect(repoStub).to.be.calledOnce;
       expect(response).to.eql(data);
@@ -1061,6 +1066,113 @@ describe('SurveyService', () => {
       } catch (actualError) {
         expect((actualError as ApiGeneralError).message).to.equal('Failed to delete survey occurrence submission');
       }
+    });
+  });
+
+  describe('createSurveyAndUploadMetadataToBioHub', () => {
+    it('returns projectId on success', async () => {
+      const dbConnection = getMockDBConnection();
+      const service = new SurveyService(dbConnection);
+
+      const createSurveyStub = sinon.stub(SurveyService.prototype, 'createSurvey').resolves(1);
+      const submitSurveyDwCMetadataToBioHubStub = sinon
+        .stub(PlatformService.prototype, 'submitSurveyDwCMetadataToBioHub')
+        .resolves();
+
+      const response = await service.createSurveyAndUploadMetadataToBioHub(1, (null as unknown) as PostSurveyObject);
+
+      expect(createSurveyStub).to.be.calledOnce;
+      expect(submitSurveyDwCMetadataToBioHubStub).to.be.calledOnce;
+      expect(response).to.eql(1);
+    });
+  });
+
+  describe('updateSurveyAndUploadMetadataToBiohub', () => {
+    it('successfully updates project', async () => {
+      const dbConnection = getMockDBConnection();
+      const service = new SurveyService(dbConnection);
+
+      const updateSurveyStub = sinon.stub(SurveyService.prototype, 'updateSurvey').resolves(({
+        survey_details: {
+          survey_name: 'my survey',
+          start_date: '2020-10-10',
+          end_date: '2021-10-10',
+          biologist_last_name: 'henry',
+          biologist_first_name: 'erin',
+          revision_count: 1
+        }
+      } as unknown) as SurveyObject);
+      const submitSurveyDwCMetadataToBioHubStub = sinon
+        .stub(PlatformService.prototype, 'submitSurveyDwCMetadataToBioHub')
+        .resolves();
+
+      const response = await service.updateSurveyAndUploadMetadataToBiohub(1, (null as unknown) as PutSurveyObject);
+
+      expect(updateSurveyStub).to.be.calledOnce;
+      expect(submitSurveyDwCMetadataToBioHubStub).to.be.calledOnce;
+      expect(response).to.eql(undefined);
+    });
+  });
+
+  describe('getSurveyHasUnpublishedContent', () => {
+    it('returns false when survey has no content or when everything is published', async () => {
+      const dbConnection = getMockDBConnection();
+      //const history_service = new HistoryPublishService(dbConnection);
+      const survey_service = new SurveyService(dbConnection);
+
+      const hasUnpublishedAttachmentsStub = sinon
+        .stub(HistoryPublishService.prototype, 'hasUnpublishedSurveyAttachments')
+        .resolves(false);
+
+      const hasUnpublishedReportsStub = sinon
+        .stub(HistoryPublishService.prototype, 'hasUnpublishedSurveyReports')
+        .resolves(false);
+
+      const hasUnpublishedObservationStub = sinon
+        .stub(HistoryPublishService.prototype, 'hasUnpublishedObservation')
+        .resolves(false);
+
+      const hasUnpublishedSummaryResultsStub = sinon
+        .stub(HistoryPublishService.prototype, 'hasUnpublishedSummaryResults')
+        .resolves(false);
+
+      const response = await survey_service.doesSurveyHaveUnpublishedContent(1);
+
+      expect(hasUnpublishedAttachmentsStub).to.be.calledOnce;
+      expect(hasUnpublishedReportsStub).to.be.calledOnce;
+      expect(hasUnpublishedObservationStub).to.be.calledOnce;
+      expect(hasUnpublishedSummaryResultsStub).to.be.calledOnce;
+      expect(response).to.eql(false);
+    });
+
+    it('returns true when survey any content (observation, summary result, attachment or report) is unsubmitted ', async () => {
+      const dbConnection = getMockDBConnection();
+      //const history_service = new HistoryPublishService(dbConnection);
+      const survey_service = new SurveyService(dbConnection);
+
+      const hasUnpublishedAttachmentsStub = sinon
+        .stub(HistoryPublishService.prototype, 'hasUnpublishedSurveyAttachments')
+        .resolves(false);
+
+      const hasUnpublishedReportsStub = sinon
+        .stub(HistoryPublishService.prototype, 'hasUnpublishedSurveyReports')
+        .resolves(false);
+
+      const hasUnpublishedObservationStub = sinon
+        .stub(HistoryPublishService.prototype, 'hasUnpublishedObservation')
+        .resolves(false);
+
+      const hasUnpublishedSummaryResultsStub = sinon
+        .stub(HistoryPublishService.prototype, 'hasUnpublishedSummaryResults')
+        .resolves(true);
+
+      const response = await survey_service.doesSurveyHaveUnpublishedContent(1);
+
+      expect(hasUnpublishedAttachmentsStub).to.be.calledOnce;
+      expect(hasUnpublishedReportsStub).to.be.calledOnce;
+      expect(hasUnpublishedObservationStub).to.be.calledOnce;
+      expect(hasUnpublishedSummaryResultsStub).to.be.calledOnce;
+      expect(response).to.eql(true);
     });
   });
 });

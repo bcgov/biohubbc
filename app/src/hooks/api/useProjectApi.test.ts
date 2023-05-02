@@ -262,6 +262,22 @@ describe('useProjectApi', () => {
     expect(result).toEqual(mockResponse);
   });
 
+  it('getUserProjectParticipant works as expected', async () => {
+    const mockResponse = {
+      participant: {
+        project_id: 1,
+        system_user_id: 1,
+        project_role_ids: [1],
+        project_role_names: ['RoleA']
+      }
+    };
+    mock.onGet(`/api/project/${projectId}/participants/self`).reply(200, mockResponse);
+
+    const result = await useProjectApi(axios).getUserProjectParticipant(projectId);
+
+    expect(result).toEqual(mockResponse);
+  });
+
   it('addProjectParticipants works as expected', async () => {
     const mockResponse = { participants: [] };
     mock.onGet(`/api/project/${projectId}/participants/get`).reply(200, mockResponse);

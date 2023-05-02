@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { PROJECT_ROLE } from '../../../../../../../constants/roles';
+import { PROJECT_ROLE, SYSTEM_ROLE } from '../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../database/db';
 import { HTTP400 } from '../../../../../../../errors/http-error';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
@@ -13,11 +13,15 @@ const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/attachm
 export const POST: Operation = [
   authorizeRequestHandler((req) => {
     return {
-      and: [
+      or: [
         {
           validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR],
           projectId: Number(req.params.projectId),
           discriminator: 'ProjectRole'
+        },
+        {
+          validSystemRoles: [SYSTEM_ROLE.DATA_ADMINISTRATOR],
+          discriminator: 'SystemRole'
         }
       ]
     };
@@ -197,7 +201,9 @@ export function uploadMedia(): RequestHandler {
 
       await connection.commit();
 
-      return res.status(200).json({ attachmentId: upsertResult.id, revision_count: upsertResult.revision_count });
+      return res
+        .status(200)
+        .json({ attachmentId: upsertResult.survey_report_attachment_id, revision_count: upsertResult.revision_count });
     } catch (error) {
       defaultLog.error({ label: 'uploadMedia', message: 'error', error });
       await connection.rollback();

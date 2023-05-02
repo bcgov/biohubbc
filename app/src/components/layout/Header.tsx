@@ -7,13 +7,11 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Divider from '@material-ui/core/Divider';
-import IconButton from '@material-ui/core/IconButton';
-import OtherLink from '@material-ui/core/Link';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
-import { mdiAccountCircle, mdiHelpCircleOutline, mdiLoginVariant } from '@mdi/js';
+import { mdiAccountCircle, mdiLoginVariant } from '@mdi/js';
 import Icon from '@mdi/react';
 import headerImageLarge from 'assets/images/gov-bc-logo-horiz.png';
 import headerImageSmall from 'assets/images/gov-bc-logo-vert.png';
@@ -22,12 +20,18 @@ import { SYSTEM_ROLE } from 'constants/roles';
 import { AuthStateContext } from 'contexts/authStateContext';
 import { SYSTEM_IDENTITY_SOURCE } from 'hooks/useKeycloakWrapper';
 import React, { useContext } from 'react';
-import { Link } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
 import { getFormattedIdentitySource } from 'utils/Utils';
 
 const useStyles = makeStyles((theme: Theme) => ({
+  govHeader: {
+    backgroundColor: '#003366'
+  },
   govHeaderToolbar: {
-    height: '70px'
+    height: '80px',
+    '& a:focus': {
+      outline: '3px solid #3B99FC'
+    }
   },
   brand: {
     display: 'flex',
@@ -37,24 +41,29 @@ const useStyles = makeStyles((theme: Theme) => ({
     textDecoration: 'none',
     fontSize: '1.25rem',
     fontWeight: 700,
+    borderRadius: '2px',
     '& img': {
-      verticalAlign: 'middle'
+      verticalAlign: 'middle',
+      marginBottom: '4px'
     },
     '& picture': {
-      marginRight: '1.25rem'
+      marginRight: '1.5rem'
     },
     '&:hover': {
       textDecoration: 'none'
     },
     '&:focus': {
-      outlineOffset: '6px'
+      outlineOffset: '3px'
     }
   },
   '@media (max-width: 1000px)': {
     brand: {
-      fontSize: '1rem',
+      fontSize: '14px',
       '& picture': {
         marginRight: '1rem'
+      },
+      '& span': {
+        marginTop: '-4px'
       }
     },
     wrapText: {
@@ -70,21 +79,26 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   userProfile: {
     color: theme.palette.primary.contrastText,
-    fontSize: '1rem',
     '& hr': {
       backgroundColor: '#ffffff',
       height: '1.25rem'
     },
     '& a': {
+      padding: '8px',
       color: 'inherit',
-      textDecoration: 'none'
+      textDecoration: 'none',
+      borderRadius: '6px'
     },
     '& a:hover': {
       textDecoration: 'underline'
+    },
+    '& a:focus': {
+      outlineOffset: '-1px'
     }
   },
-  govHeaderIconButton: {
-    color: '#ffffff'
+  supportButton: {
+    color: '#ffffff',
+    fontSize: '14px'
   },
   mainNav: {
     backgroundColor: '#38598a'
@@ -95,18 +109,18 @@ const useStyles = makeStyles((theme: Theme) => ({
       padding: theme.spacing(2),
       color: 'inherit',
       fontSize: '1rem',
-      textDecoration: 'none'
+      textDecoration: 'none',
+      borderRadius: '4px'
     },
     '& a:hover': {
       textDecoration: 'underline'
     },
+    '& a:focus': {
+      outline: '3px solid #3B99FC',
+      outlineOffset: '-3px'
+    },
     '& a:first-child': {
       marginLeft: theme.spacing(-2)
-    }
-  },
-  '.MuiDialogContent-root': {
-    '& p + p': {
-      marginTop: theme.spacing(2)
     }
   }
 }));
@@ -126,20 +140,22 @@ const Header: React.FC = () => {
       .join('/');
 
     return (
-      <Box display="flex" className={classes.userProfile} my="auto" alignItems="center">
-        <IconButton aria-label="need help" className={classes.govHeaderIconButton} onClick={showSupportDialog}>
-          <Icon path={mdiHelpCircleOutline} size={1.12} />
-        </IconButton>
-        <Box className={classes.userProfile} display="flex" alignItems="center" ml={2}>
-          <Icon path={mdiAccountCircle} size={1.12} />
-          <Box ml={1}>{formattedUsername}</Box>
+      <Box display="flex" alignItems="center">
+        <Button aria-label="need help" className={classes.supportButton} onClick={showSupportDialog}>
+          Contact Support
+        </Button>
+        <Box display="flex" alignItems="center" my="auto" ml={2} className={classes.userProfile}>
+          <Box className={classes.userProfile} display="flex" alignItems="center">
+            <Icon path={mdiAccountCircle} size={1.12} />
+            <Box ml={1}>{formattedUsername}</Box>
+          </Box>
+          <Box pl={1.5} pr={0.5}>
+            <Divider orientation="vertical" />
+          </Box>
+          <RouterLink to="/logout" data-testid="menu_log_out">
+            Log Out
+          </RouterLink>
         </Box>
-        <Box px={2}>
-          <Divider orientation="vertical" />
-        </Box>
-        <Link to="/logout" data-testid="menu_log_out">
-          Log Out
-        </Link>
       </Box>
     );
   };
@@ -148,9 +164,9 @@ const Header: React.FC = () => {
   const PublicViewUser = () => {
     return (
       <Box display="flex" className={classes.userProfile} alignItems="center" my="auto">
-        <IconButton className={classes.govHeaderIconButton} onClick={showSupportDialog}>
-          <Icon path={mdiHelpCircleOutline} size={1.12} />
-        </IconButton>
+        <Button className={classes.supportButton} onClick={showSupportDialog}>
+          Contact Support
+        </Button>
         <Button
           onClick={() => keycloakWrapper?.keycloak?.login()}
           type="submit"
@@ -181,11 +197,11 @@ const Header: React.FC = () => {
 
   return (
     <>
-      <AppBar position="sticky" elevation={0}>
+      <AppBar position="relative" elevation={0} className={classes.govHeader}>
         <Toolbar disableGutters className={classes.govHeaderToolbar}>
           <Container maxWidth="xl">
             <Box display="flex" justifyContent="space-between" width="100%">
-              <Link to="/projects" className={classes.brand} aria-label="Go to SIMS Home">
+              <RouterLink to="/projects" className={classes.brand} aria-label="Go to SIMS Home">
                 <picture>
                   <source srcSet={headerImageLarge} media="(min-width: 1200px)"></source>
                   <source srcSet={headerImageSmall} media="(min-width: 600px)"></source>
@@ -197,7 +213,7 @@ const Header: React.FC = () => {
                     <BetaLabel />
                   </sup>
                 </span>
-              </Link>
+              </RouterLink>
               <UnAuthGuard>
                 <PublicViewUser />
               </UnAuthGuard>
@@ -217,19 +233,21 @@ const Header: React.FC = () => {
                 className={classes.mainNavToolbar}
                 role="navigation"
                 aria-label="Main Navigation">
-                <Link to="/admin/projects" id="menu_projects">
+                <RouterLink to="/admin/projects" id="menu_projects">
                   Projects
-                </Link>
-                <Link to="/admin/search" id="menu_search">
-                  Map
-                </Link>
-                <Link to="/admin/resources" id="menu_resources">
+                </RouterLink>
+                <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
+                  <RouterLink to="/admin/search" id="menu_search">
+                    Map
+                  </RouterLink>
+                </SystemRoleGuard>
+                <RouterLink to="/admin/resources" id="menu_resources">
                   Resources
-                </Link>
-                <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN]}>
-                  <Link to="/admin/users" id="menu_admin_users">
+                </RouterLink>
+                <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+                  <RouterLink to="/admin/users" id="menu_admin_users">
                     Manage Users
-                  </Link>
+                  </RouterLink>
                 </SystemRoleGuard>
               </Toolbar>
             </Container>
@@ -238,19 +256,15 @@ const Header: React.FC = () => {
       </AppBar>
 
       <Dialog open={open}>
-        <DialogTitle>Need Help?</DialogTitle>
+        <DialogTitle>Contact Support</DialogTitle>
         <DialogContent>
-          <Typography variant="body1" component="div" color="textSecondary" gutterBottom>
-            For technical support or questions about this application, please contact:&nbsp;
-            <OtherLink
-              href="mailto:biohub@gov.bc.ca?subject=BioHub - Secure Document Access Request"
-              underline="always">
+          <Typography variant="body1" component="div" color="textSecondary">
+            For technical support or questions about this application, please email&nbsp;
+            <a href="mailto:biohub@gov.bc.ca?subject=Support Request - Species Inventory Management System">
+              {' '}
               biohub@gov.bc.ca
-            </OtherLink>
+            </a>
             .
-          </Typography>
-          <Typography variant="body1" color="textSecondary">
-            A support representative will respond to your request shortly.
           </Typography>
         </DialogContent>
         <DialogActions>

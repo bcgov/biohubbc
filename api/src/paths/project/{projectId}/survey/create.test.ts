@@ -4,7 +4,6 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as db from '../../../../database/db';
 import { HTTPError } from '../../../../errors/http-error';
-import { PlatformService } from '../../../../services/platform-service';
 import { SurveyService } from '../../../../services/survey-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../__mocks__/db';
 import { createSurvey } from './create';
@@ -22,9 +21,7 @@ describe('survey/create', () => {
 
       sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-      sinon.stub(SurveyService.prototype, 'createSurvey').resolves(2);
-
-      sinon.stub(PlatformService.prototype, 'submitDwCAMetadataPackage').resolves();
+      sinon.stub(SurveyService.prototype, 'createSurveyAndUploadMetadataToBioHub').resolves(2);
 
       const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
@@ -48,7 +45,7 @@ describe('survey/create', () => {
 
       sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-      sinon.stub(SurveyService.prototype, 'createSurvey').rejects(new Error('a test error'));
+      sinon.stub(SurveyService.prototype, 'createSurveyAndUploadMetadataToBioHub').rejects(new Error('a test error'));
 
       const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 

@@ -1,36 +1,31 @@
 import Box from '@material-ui/core/Box';
 import Link from '@material-ui/core/Link';
 import Typography from '@material-ui/core/Typography';
-import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
-import React from 'react';
-
-export interface IProjectCoordinatorProps {
-  projectForViewData: IGetProjectForViewResponse;
-  codes: IGetAllCodeSetsResponse;
-  refresh: () => void;
-}
+import assert from 'assert';
+import { ProjectContext } from 'contexts/projectContext';
+import React, { useContext } from 'react';
 
 /**
  * Project coordinator content for a project.
  *
  * @return {*}
  */
-const ProjectCoordinator: React.FC<IProjectCoordinatorProps> = (props) => {
-  const {
-    projectForViewData: { coordinator }
-  } = props;
+const ProjectCoordinator = () => {
+  const projectContext = useContext(ProjectContext);
+
+  // Project data must be loaded by a parent before this component is rendered
+  assert(projectContext.projectDataLoader.data);
+
+  const projectData = projectContext.projectDataLoader.data.projectData;
 
   return (
     <Box>
       <Typography component="div">
-        {coordinator.first_name} {coordinator.last_name}
+        {projectData.coordinator.first_name} {projectData.coordinator.last_name}
       </Typography>
-      <Typography component="div" color="textSecondary">
-        {coordinator.coordinator_agency}
-      </Typography>
+      <Typography component="div">{projectData.coordinator.coordinator_agency}</Typography>
       <Typography component="div">
-        <Link href={'mailto:' + coordinator.email_address}>{coordinator.email_address}</Link>
+        <Link href={`mailto:${projectData.coordinator.email_address}`}>{projectData.coordinator.email_address}</Link>
       </Typography>
     </Box>
   );

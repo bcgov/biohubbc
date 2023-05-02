@@ -10,6 +10,7 @@ import EditDialog from 'components/dialog/EditDialog';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import YesNoDialog from 'components/dialog/YesNoDialog';
 import { CreateProjectDraftI18N, CreateProjectI18N, DeleteProjectDraftI18N } from 'constants/i18n';
+import { CodesContext } from 'contexts/codesContext';
 import { DialogContext } from 'contexts/dialogContext';
 import ProjectDraftForm, {
   IProjectDraftForm,
@@ -22,12 +23,18 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useQuery } from 'hooks/useQuery';
 import { ICreateProjectRequest } from 'interfaces/useProjectApi.interface';
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useRef, useState } from 'react';
 import { useHistory } from 'react-router';
 import { Prompt } from 'react-router-dom';
 import CreateProjectForm from './CreateProjectForm';
 
 const useStyles = makeStyles((theme: Theme) => ({
+  actionButton: {
+    minWidth: '6rem',
+    '& + button': {
+      marginLeft: '0.5rem'
+    }
+  },
   pageTitleContainer: {
     maxWidth: '170ch',
     overflow: 'hidden',
@@ -72,31 +79,24 @@ const CreateProjectPage: React.FC = () => {
   const [enableCancelCheck, setEnableCancelCheck] = useState(true);
 
   const dialogContext = useContext(DialogContext);
+  const codesContext = useContext(CodesContext);
 
-  const codesDataLoader = useDataLoader(() => biohubApi.codes.getAllCodeSets());
-  codesDataLoader.load();
+  const codes = codesContext.codesDataLoader.data;
+  codesContext.codesDataLoader.load();
 
-  const draftDataLoader = useDataLoader((draftId: number) => biohubApi.draft.getDraft(draftId));
+  const draftId = Number(queryParams.draftId);
 
-  if (queryParams.draftId) {
-    draftDataLoader.load(queryParams.draftId);
+  const draftDataLoader = useDataLoader(() => {
+    return biohubApi.draft.getDraft(draftId);
+  });
+
+  if (draftId) {
+    draftDataLoader.load();
   }
-
-  useEffect(() => {
-    const setFormikValues = (data: ICreateProjectRequest) => {
-      formikRef.current?.setValues(data);
-    };
-
-    if (draftDataLoader.data?.data) {
-      setFormikValues(draftDataLoader.data?.data);
-    }
-  }, [draftDataLoader.data]);
 
   // Whether or not to show the 'Save as draft' dialog
   const [openDraftDialog, setOpenDraftDialog] = useState(false);
   const [openDeleteDraftDialog, setOpenDeleteDraftDialog] = useState(false);
-
-  const [draft, setDraft] = useState({ id: 0, date: '' });
 
   const defaultCancelDialogProps = {
     dialogTitle: CreateProjectI18N.cancelTitle,
@@ -165,21 +165,11 @@ const CreateProjectPage: React.FC = () => {
       // Get the form data for all steps
       // Fetch the data from the formikRef for whichever step is the active step
       // Why? WIP changes to the active step will not yet be updated into its respective stepForms[n].stepInitialValues
-      const draftFormData = formikRef?.current?.values;
-
-      const draftId = Number(queryParams.draftId) || draft?.id;
 
       if (draftId) {
-        response = await biohubApi.draft.updateDraft(
-          draftId,
-          draftFormData?.project?.project_name || values.draft_name,
-          draftFormData
-        );
+        response = await biohubApi.draft.updateDraft(draftId, values.draft_name, formikRef.current?.values);
       } else {
-        response = await biohubApi.draft.createDraft(
-          draftFormData?.project?.project_name || values.draft_name,
-          draftFormData
-        );
+        response = await biohubApi.draft.createDraft(values.draft_name, formikRef.current?.values);
       }
 
       setOpenDraftDialog(false);
@@ -192,7 +182,6 @@ const CreateProjectPage: React.FC = () => {
         return;
       }
 
-      setDraft({ id: response.id, date: response.date });
       setEnableCancelCheck(false);
 
       history.push(`/admin/projects`);
@@ -214,8 +203,6 @@ const CreateProjectPage: React.FC = () => {
    * @returns {*}
    */
   const deleteDraft = async () => {
-    const draftId = Number(queryParams.draftId);
-
     if (!draftId) {
       return;
     }
@@ -283,7 +270,7 @@ const CreateProjectPage: React.FC = () => {
     history.push(`/admin/projects/`);
   };
 
-  if (!codesDataLoader.data) {
+  if (!codes || (draftId && !draftDataLoader.data)) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
@@ -297,7 +284,7 @@ const CreateProjectPage: React.FC = () => {
         component={{
           element: <ProjectDraftForm />,
           initialValues: {
-            draft_name: formikRef.current?.values.project.project_name || ''
+            draft_name: formikRef.current?.values.project.project_name || draftDataLoader.data?.name || ''
           },
           validationSchema: ProjectDraftFormYupSchema
         }}
@@ -333,11 +320,11 @@ const CreateProjectPage: React.FC = () => {
               <Button color="primary" variant="contained" onClick={() => setOpenDraftDialog(true)}>
                 Save Draft
               </Button>
-              {queryParams.draftId && (
+              {draftId ? (
                 <Button color="primary" variant="outlined" onClick={() => setOpenDeleteDraftDialog(true)}>
                   Delete Draft
                 </Button>
-              )}
+              ) : null}
               <Button color="primary" variant="outlined" onClick={handleCancel}>
                 Cancel
               </Button>
@@ -349,14 +336,46 @@ const CreateProjectPage: React.FC = () => {
       <Container maxWidth="xl">
         <Box py={3}>
           <Paper elevation={0}>
-            <CreateProjectForm
-              handleSubmit={createProject}
-              handleCancel={handleCancel}
-              handleDraft={setOpenDraftDialog}
-              handleDeleteDraft={setOpenDeleteDraftDialog}
-              codes={codesDataLoader.data}
-              formikRef={formikRef}
-            />
+            <Box p={5}>
+              <CreateProjectForm
+                handleSubmit={createProject}
+                codes={codes}
+                formikRef={formikRef}
+                initialValues={draftDataLoader.data?.data}
+              />
+              <Box mt={4} display="flex" justifyContent="flex-end">
+                <Button
+                  type="submit"
+                  color="primary"
+                  variant="contained"
+                  onClick={() => formikRef.current?.submitForm()}
+                  className={classes.actionButton}
+                  data-testid="submit-project-button">
+                  Submit Project
+                </Button>
+                <Button
+                  color="primary"
+                  variant="contained"
+                  onClick={() => setOpenDraftDialog(true)}
+                  className={classes.actionButton}
+                  data-testid="save-draft-button">
+                  Save Draft
+                </Button>
+
+                <Button
+                  color="secondary"
+                  variant="outlined"
+                  onClick={() => setOpenDeleteDraftDialog(true)}
+                  className={classes.actionButton}
+                  data-testid="delete-draft-button">
+                  Delete Draft
+                </Button>
+
+                <Button color="primary" variant="outlined" onClick={handleCancel} className={classes.actionButton}>
+                  Cancel
+                </Button>
+              </Box>
+            </Box>
           </Paper>
         </Box>
       </Container>

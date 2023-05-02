@@ -3,7 +3,7 @@ import { JSONPath } from 'jsonpath-plus';
 import { IDBConnection } from '../database/db';
 import { parseUTMString, utmToLatLng } from '../utils/spatial-utils';
 import { DBService } from './db-service';
-import { TaxonomyService } from './taxonomy-service';
+import { IEnrichedTaxonomyData, TaxonomyService } from './taxonomy-service';
 /**
  * Service to produce DWC data for a project.
  *
@@ -19,6 +19,43 @@ export class DwCService extends DBService {
   }
 
   /**
+   * Creates a set of all taxon IDs from the provided object
+   *
+   * @param {any} patchToPatch
+   * @return {*}  {Set<string>}
+   * @memberof DwCService
+   */
+  collectTaxonIDs(pathsToPatch: any): Set<string> {
+    const taxonSet = new Set<string>();
+    pathsToPatch.forEach((item: any) => {
+      taxonSet.add(item.value['taxonID']);
+    });
+    return taxonSet;
+  }
+
+  /**
+   * Calls elastic search taxonomy service with the given set of taxon codes
+   *
+   * @param {Set<string>} set A set of taxon IDs
+   * @return {*}  {Promise<Map<string, IEnrichedTaxonomyData>>}
+   * @memberof DwCService
+   */
+  async getEnrichedDataForSpeciesSet(set: Set<string>): Promise<Map<string, IEnrichedTaxonomyData>> {
+    const taxonomyService = new TaxonomyService();
+    const taxonLibrary: Map<string, IEnrichedTaxonomyData> = new Map();
+
+    for (const item of set) {
+      const data = await taxonomyService.getEnrichedDataForSpeciesCode(item);
+      // skip null returns
+      if (data) {
+        taxonLibrary.set(item, data);
+      }
+    }
+
+    return taxonLibrary;
+  }
+
+  /**
    * Find all nodes that contain `taxonID` and update them to include additional taxonomic information.
    *
    * @param {string} jsonObject
@@ -26,17 +63,23 @@ export class DwCService extends DBService {
    * @memberof DwCService
    */
   async decorateTaxonIDs(jsonObject: Record<any, any>): Promise<Record<any, any>> {
-    const taxonomyService = new TaxonomyService();
-
     // Find and return all nodes that contain `taxonID`
     const pathsToPatch = JSONPath({ path: '$..[taxonID]^', json: jsonObject, resultType: 'all' });
+
+    // Collect all unique taxon IDs
+    const taxonIds = this.collectTaxonIDs(pathsToPatch);
+
+    // Make a request for each unique taxon ID
+    // TODO this approach assumes that every not every row will have a unique taxon ID
+    // TODO investigate elastic search batch calls
+    const taxonData = await this.getEnrichedDataForSpeciesSet(taxonIds);
 
     const patchOperations: Operation[] = [];
 
     // Build patch operations
     await Promise.all(
       pathsToPatch.map(async (item: any) => {
-        const enrichedData = await taxonomyService.getEnrichedDataForSpeciesCode(item.value['taxonID']);
+        const enrichedData = taxonData.get(item.value['taxonID']);
 
         if (!enrichedData) {
           // No matching taxon information found for provided taxonID code

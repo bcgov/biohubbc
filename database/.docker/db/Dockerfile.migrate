@@ -21,4 +21,4 @@ COPY . .
 RUN npm install
 
 # run the database migrations only (no seeeding)
-CMD [ "npm", "run", "migrate:latest" ]
+CMD [ "npm", "run", "migrate-latest" ]

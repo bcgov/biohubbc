@@ -2,6 +2,7 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
+import { PostProjectObject } from '../models/project-create';
 import {
   GetCoordinatorData,
   GetFundingData,
@@ -11,13 +12,21 @@ import {
   GetPartnershipsData,
   GetProjectData
 } from '../models/project-view';
+import { ProjectUserObject } from '../models/user';
+import { ProjectParticipationRepository } from '../repositories/project-participation-repository';
 import { ProjectRepository } from '../repositories/project-repository';
 import { getMockDBConnection } from '../__mocks__/db';
+import { HistoryPublishService } from './history-publish-service';
+import { PlatformService } from './platform-service';
 import { ProjectService } from './project-service';
 
 chai.use(sinonChai);
 
 describe('ProjectService', () => {
+  afterEach(() => {
+    sinon.restore();
+  });
+
   describe('ensureProjectParticipant', () => {
     afterEach(() => {
       sinon.restore();
@@ -28,7 +37,7 @@ describe('ProjectService', () => {
 
       const getProjectParticipantStub = sinon
         .stub(ProjectService.prototype, 'getProjectParticipant')
-        .resolves('existing participant');
+        .resolves({} as ProjectUserObject);
 
       const addProjectParticipantStub = sinon.stub(ProjectService.prototype, 'addProjectParticipant');
 
@@ -77,9 +86,9 @@ describe('ProjectService', () => {
       const dbConnection = getMockDBConnection();
       const service = new ProjectService(dbConnection);
 
-      const data = { id: 1 };
+      const data = { project_id: 1 } as ProjectUserObject;
 
-      const repoStub = sinon.stub(ProjectRepository.prototype, 'getProjectParticipant').resolves(data);
+      const repoStub = sinon.stub(ProjectParticipationRepository.prototype, 'getProjectParticipant').resolves(data);
 
       const response = await service.getProjectParticipant(1, 1);
 
@@ -95,7 +104,7 @@ describe('ProjectService', () => {
 
       const data = [{ id: 1 }];
 
-      const repoStub = sinon.stub(ProjectRepository.prototype, 'getProjectParticipants').resolves(data);
+      const repoStub = sinon.stub(ProjectParticipationRepository.prototype, 'getProjectParticipants').resolves(data);
 
       const response = await service.getProjectParticipants(1);
 
@@ -109,12 +118,47 @@ describe('ProjectService', () => {
       const dbConnection = getMockDBConnection();
       const service = new ProjectService(dbConnection);
 
-      const repoStub = sinon.stub(ProjectRepository.prototype, 'addProjectParticipant').resolves();
+      const repoStub = sinon.stub(ProjectParticipationRepository.prototype, 'addProjectParticipant').resolves();
 
       const response = await service.addProjectParticipant(1, 1, 1);
 
       expect(repoStub).to.be.calledOnce;
       expect(response).to.eql(undefined);
+    });
+
+    describe('createProjectAndUploadMetadataToBioHub', () => {
+      it('returns projectId on success', async () => {
+        const dbConnection = getMockDBConnection();
+        const service = new ProjectService(dbConnection);
+
+        const repoStub1 = sinon.stub(ProjectService.prototype, 'createProject').resolves(1);
+        const repoStub2 = sinon.stub(PlatformService.prototype, 'submitProjectDwCMetadataToBioHub').resolves();
+
+        const response = await service.createProjectAndUploadMetadataToBioHub((null as unknown) as PostProjectObject);
+
+        expect(repoStub1).to.be.calledOnce;
+        expect(repoStub2).to.be.calledOnce;
+        expect(response).to.eql(1);
+      });
+    });
+
+    describe('updateProjectAndUploadMetadataToBioHub', () => {
+      it('successfully updates project', async () => {
+        const dbConnection = getMockDBConnection();
+        const service = new ProjectService(dbConnection);
+
+        const repoStub1 = sinon.stub(ProjectService.prototype, 'updateProject').resolves();
+        const repoStub2 = sinon.stub(PlatformService.prototype, 'submitProjectDwCMetadataToBioHub').resolves();
+
+        const response = await service.updateProjectAndUploadMetadataToBioHub(
+          1,
+          (null as unknown) as PostProjectObject
+        );
+
+        expect(repoStub1).to.be.calledOnce;
+        expect(repoStub2).to.be.calledOnce;
+        expect(response).to.eql(undefined);
+      });
     });
   });
 
@@ -156,6 +200,46 @@ describe('ProjectService', () => {
       expect(response[1].completion_status).to.equal('Completed');
     });
   });
+
+  describe('getProjectSupplementaryDataById', () => {
+    it('returns project metadata publish data', async () => {
+      const dbConnection = getMockDBConnection();
+      const service = new ProjectService(dbConnection);
+
+      const mockProjectMetadataPublish = {
+        project_metadata_publish_id: 1,
+        project_id: 1,
+        event_timestamp: new Date(),
+        queue_id: 1,
+        create_date: new Date(),
+        create_user: 1,
+        update_date: null,
+        update_user: null,
+        revision_count: 1
+      };
+
+      const repoStub = sinon
+        .stub(HistoryPublishService.prototype, 'getProjectMetadataPublishRecord')
+        .resolves(mockProjectMetadataPublish);
+
+      const response = await service.getProjectSupplementaryDataById(1);
+
+      expect(repoStub).to.be.calledOnce;
+      expect(response).to.eql({ project_metadata_publish: mockProjectMetadataPublish });
+    });
+
+    it('returns null project metadata publish data', async () => {
+      const dbConnection = getMockDBConnection();
+      const service = new ProjectService(dbConnection);
+
+      const repoStub = sinon.stub(HistoryPublishService.prototype, 'getProjectMetadataPublishRecord').resolves(null);
+
+      const response = await service.getProjectSupplementaryDataById(1);
+
+      expect(repoStub).to.be.calledOnce;
+      expect(response).to.eql({ project_metadata_publish: null });
+    });
+  });
 });
 
 describe('getProjectData', () => {
@@ -163,7 +247,7 @@ describe('getProjectData', () => {
     const dbConnection = getMockDBConnection();
     const service = new ProjectService(dbConnection);
 
-    const data = new GetProjectData({ id: 1 });
+    const data = new GetProjectData({ project_id: 1 });
 
     const repoStub = sinon.stub(ProjectRepository.prototype, 'getProjectData').resolves(data);
 

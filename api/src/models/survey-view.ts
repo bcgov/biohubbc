@@ -1,4 +1,5 @@
 import { Feature } from 'geojson';
+import { SurveyMetadataPublish } from '../repositories/history-publish-repository';
 import { IPermitModel } from '../repositories/permit-repository';
 
 export type SurveyObject = {
@@ -13,6 +14,7 @@ export type SurveyObject = {
 
 export class GetSurveyData {
   id: number;
+  project_id: number;
   uuid: string;
   survey_name: string;
   start_date: string;
@@ -25,6 +27,7 @@ export class GetSurveyData {
 
   constructor(obj?: any) {
     this.id = obj?.survey_id || null;
+    this.project_id = obj?.project_id || null;
     this.uuid = obj?.uuid || null;
     this.survey_name = obj?.name || '';
     this.start_date = obj?.start_date || null;
@@ -159,8 +162,7 @@ export class GetSurveyProprietorData {
 }
 
 export type SurveySupplementaryData = {
-  occurrence_submission: number;
-  summary_result: number;
+  survey_metadata_publish: SurveyMetadataPublish | null;
 };
 
 export class GetSurveyLocationData {

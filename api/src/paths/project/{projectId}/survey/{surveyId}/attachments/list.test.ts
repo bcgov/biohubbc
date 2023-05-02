@@ -21,7 +21,7 @@ describe('getSurveyAttachments', () => {
 
     const expectedError = new Error('cannot process request');
     const getSurveyAttachmentsStub = sinon
-      .stub(AttachmentService.prototype, 'getSurveyAttachments')
+      .stub(AttachmentService.prototype, 'getSurveyAttachmentsWithSupplementaryData')
       .rejects(expectedError);
 
     const sampleReq = {
@@ -57,10 +57,12 @@ describe('getSurveyAttachments', () => {
       }
     } as any;
 
-    const getSurveyAttachmentsStub = sinon.stub(AttachmentService.prototype, 'getSurveyAttachments').resolves([]);
+    const getSurveyAttachmentsStub = sinon
+      .stub(AttachmentService.prototype, 'getSurveyAttachmentsWithSupplementaryData')
+      .resolves([]);
 
     const getSurveyReportAttachmentsStub = sinon
-      .stub(AttachmentService.prototype, 'getSurveyReportAttachments')
+      .stub(AttachmentService.prototype, 'getSurveyReportAttachmentsWithSupplementaryData')
       .resolves([]);
 
     const expectedResult = { attachmentsList: [], reportAttachmentsList: [] };

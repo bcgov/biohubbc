@@ -28,7 +28,7 @@ export const ReadMoreField: React.FC<IReadMoreFieldProps> = (props) => {
   const willTruncateText = sanitizedText.length > maxCharLength;
 
   if (!willTruncateText) {
-    return <span>{sanitizedText}</span>;
+    return <Typography color="textSecondary">{sanitizedText}</Typography>;
   }
 
   let truncationIndex = sanitizedText.slice(0, maxCharLength).lastIndexOf(' ');
@@ -39,7 +39,7 @@ export const ReadMoreField: React.FC<IReadMoreFieldProps> = (props) => {
   const persistentTextPortion = sanitizedText.slice(0, truncationIndex);
 
   return (
-    <Box>
+    <>
       <Typography {...TypographyProps}>
         {showTruncated ? (
           <span>{sanitizedText}</span>
@@ -62,7 +62,7 @@ export const ReadMoreField: React.FC<IReadMoreFieldProps> = (props) => {
           </>
         </Button>
       </Box>
-    </Box>
+    </>
   );
 };
 

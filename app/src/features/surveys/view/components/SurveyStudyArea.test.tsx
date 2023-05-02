@@ -1,9 +1,11 @@
 import { cleanup, fireEvent, render, waitFor } from '@testing-library/react';
-import { Feature } from 'geojson';
+import { IProjectAuthStateContext, ProjectAuthStateContext } from 'contexts/projectAuthStateContext';
+import { SurveyContext } from 'contexts/surveyContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import { DataLoader } from 'hooks/useDataLoader';
 import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
 import React from 'react';
-import { getProjectForViewResponse } from 'test-helpers/project-helpers';
+import { geoJsonFeature } from 'test-helpers/spatial-helpers';
 import { getSurveyForViewResponse, surveyObject, surveySupplementaryData } from 'test-helpers/survey-helpers';
 import SurveyStudyArea from './SurveyStudyArea';
 
@@ -22,19 +24,7 @@ const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBioh
   mockUseBiohubApi
 );
 
-const mockRefresh = jest.fn();
-
-const renderContainer = () => {
-  return render(
-    <SurveyStudyArea
-      projectForViewData={getProjectForViewResponse}
-      surveyForViewData={getSurveyForViewResponse}
-      refresh={mockRefresh}
-    />
-  );
-};
-
-describe.skip('SurveyStudyArea', () => {
+describe('SurveyStudyArea', () => {
   beforeEach(() => {
     // clear mocks before each test
     mockBiohubApi().survey.getSurveyForView.mockClear();
@@ -48,73 +38,135 @@ describe.skip('SurveyStudyArea', () => {
     cleanup();
   });
 
-  const geometry: Feature[] = [
-    {
-      type: 'Feature',
-      id: 'myGeo',
-      geometry: {
-        type: 'Polygon',
-        coordinates: [
-          [
-            [-128, 55],
-            [-128, 55.5],
-            [-128, 56],
-            [-126, 58],
-            [-128, 55]
-          ]
-        ]
-      },
-      properties: {
-        name: 'Biohub Islands'
-      }
-    }
-  ];
-
   mockBiohubApi().external.post.mockResolvedValue({
     features: []
   });
 
-  it('renders correctly', async () => {
-    const { asFragment } = renderContainer();
+  it('renders correctly with no data', async () => {
+    const mockSurveyDataLoader = { data: getSurveyForViewResponse } as DataLoader<any, any, any>;
+    const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
+    const mockObservationsDataLoader = { data: null } as DataLoader<any, any, any>;
+    const mockSummaryDataLoader = { data: null } as DataLoader<any, any, any>;
+
+    const { container } = render(
+      <SurveyContext.Provider
+        value={{
+          projectId: 1,
+          surveyId: 1,
+          surveyDataLoader: mockSurveyDataLoader,
+          artifactDataLoader: mockArtifactDataLoader,
+          observationDataLoader: mockObservationsDataLoader,
+          summaryDataLoader: mockSummaryDataLoader
+        }}>
+        <SurveyStudyArea />
+      </SurveyContext.Provider>
+    );
 
     await waitFor(() => {
-      expect(asFragment()).toMatchSnapshot();
+      expect(container).toBeVisible();
     });
   });
 
-  it('editing the survey details works in the dialog', async () => {
-    mockBiohubApi().survey.getSurveyForView.mockResolvedValue({
-      surveyData: {
-        ...surveyObject,
-        survey_details: {
-          id: 1,
-          survey_name: 'survey name is this',
-          start_date: '1999-09-09',
-          end_date: '2021-01-25',
-          biologist_first_name: 'firstttt',
-          biologist_last_name: 'lastttt',
-          survey_area_name: 'study area is this',
-          geometry,
-          revision_count: 0
+  describe('zoom to initial extent button', () => {
+    it('is not rendered if there are no geometries on the map', async () => {
+      const mockSurveyDataLoader = {
+        data: {
+          ...getSurveyForViewResponse,
+          surveyData: {
+            ...getSurveyForViewResponse.surveyData,
+            survey_details: { ...getSurveyForViewResponse.surveyData.survey_details, geometry: [] }
+          }
         }
-      },
-      surveySupplementaryData: surveySupplementaryData
+      } as DataLoader<any, any, any>;
+      const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
+      const mockObservationsDataLoader = { data: null } as DataLoader<any, any, any>;
+      const mockSummaryDataLoader = { data: null } as DataLoader<any, any, any>;
+
+      const { container, queryByTestId } = render(
+        <SurveyContext.Provider
+          value={{
+            projectId: 1,
+            surveyId: 1,
+            surveyDataLoader: mockSurveyDataLoader,
+            artifactDataLoader: mockArtifactDataLoader,
+            observationDataLoader: mockObservationsDataLoader,
+            summaryDataLoader: mockSummaryDataLoader
+          }}>
+          <SurveyStudyArea />
+        </SurveyContext.Provider>
+      );
+
+      await waitFor(() => {
+        expect(container).toBeVisible();
+        expect(queryByTestId('survey_map_center_button')).not.toBeInTheDocument();
+      });
     });
 
-    const { getByText, queryByText } = renderContainer();
+    it('is rendered if there are geometries on the map', async () => {
+      const mockSurveyDataLoader = { data: getSurveyForViewResponse } as DataLoader<any, any, any>;
+      const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
+      const mockObservationsDataLoader = { data: null } as DataLoader<any, any, any>;
+      const mockSummaryDataLoader = { data: null } as DataLoader<any, any, any>;
+
+      const { container, getByTestId } = render(
+        <SurveyContext.Provider
+          value={{
+            projectId: 1,
+            surveyId: 1,
+            surveyDataLoader: mockSurveyDataLoader,
+            artifactDataLoader: mockArtifactDataLoader,
+            observationDataLoader: mockObservationsDataLoader,
+            summaryDataLoader: mockSummaryDataLoader
+          }}>
+          <SurveyStudyArea />
+        </SurveyContext.Provider>
+      );
+
+      await waitFor(() => {
+        expect(container).toBeVisible();
+        expect(getByTestId('survey_map_center_button')).toBeVisible();
+      });
+    });
+  });
+
+  it('does not display the zoom to initial extent button if there are not geometries', async () => {
+    const mockSurveyDataLoader = {
+      data: getSurveyForViewResponse,
+      refresh: (jest.fn() as unknown) as any
+    } as DataLoader<any, any, any>;
+    const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
+    const mockObservationsDataLoader = { data: null } as DataLoader<any, any, any>;
+    const mockSummaryDataLoader = { data: null } as DataLoader<any, any, any>;
+
+    const mockProjectAuthStateContext: IProjectAuthStateContext = {
+      getProjectParticipant: () => null,
+      hasProjectRole: () => true,
+      hasSystemRole: () => true,
+      getProjectId: () => 1,
+      hasLoadedParticipantInfo: true
+    };
+
+    const { getByText, queryByText } = render(
+      <ProjectAuthStateContext.Provider value={mockProjectAuthStateContext}>
+        <SurveyContext.Provider
+          value={{
+            projectId: 1,
+            surveyId: 1,
+            surveyDataLoader: mockSurveyDataLoader,
+            artifactDataLoader: mockArtifactDataLoader,
+            observationDataLoader: mockObservationsDataLoader,
+            summaryDataLoader: mockSummaryDataLoader
+          }}>
+          <SurveyStudyArea />
+        </SurveyContext.Provider>
+      </ProjectAuthStateContext.Provider>
+    );
 
     await waitFor(() => {
       expect(getByText('Study Area')).toBeVisible();
     });
 
     fireEvent.click(getByText('Edit'));
-
-    await waitFor(() => {
-      expect(mockBiohubApi().survey.getSurveyForView).toBeCalledWith(
-        1,
-        getSurveyForViewResponse.surveyData.survey_details.id
-      );
-    });
 
     await waitFor(() => {
       expect(getByText('Edit Survey Study Area')).toBeVisible();
@@ -140,76 +192,54 @@ describe.skip('SurveyStudyArea', () => {
         getSurveyForViewResponse.surveyData.survey_details.id,
         {
           location: {
-            survey_area_name: 'study area is this',
-            geometry,
-            revision_count: 0
+            geometry: [
+              {
+                geometry: {
+                  coordinates: [
+                    [
+                      [-128, 55],
+                      [-128, 55.5],
+                      [-128, 56],
+                      [-126, 58],
+                      [-128, 55]
+                    ]
+                  ],
+                  type: 'Polygon'
+                },
+                id: 'myGeo',
+                properties: {
+                  name: 'Biohub Islands'
+                },
+                type: 'Feature'
+              }
+            ],
+            revision_count: 0,
+            survey_area_name: 'study area'
           }
         }
       );
-
-      expect(mockRefresh).toBeCalledTimes(1);
-    });
-  });
-
-  it('displays an error dialog when fetching the update data fails', async () => {
-    mockBiohubApi().survey.getSurveyForView.mockResolvedValue((null as unknown) as any);
-
-    const { getByText, queryByText } = renderContainer();
-
-    await waitFor(() => {
-      expect(getByText('Study Area')).toBeVisible();
-    });
-
-    fireEvent.click(getByText('Edit'));
-
-    await waitFor(() => {
-      expect(getByText('Error Editing Survey Study Area')).toBeVisible();
-    });
-
-    fireEvent.click(getByText('Ok'));
-
-    await waitFor(() => {
-      expect(queryByText('Error Editing Survey Study Area')).not.toBeInTheDocument();
-    });
-  });
-
-  it('shows error dialog with API error message when getting survey data for update fails', async () => {
-    mockBiohubApi().survey.getSurveyForView = jest.fn(() => Promise.reject(new Error('API Error is Here')));
-
-    const { getByText, queryByText, getAllByRole } = renderContainer();
-
-    await waitFor(() => {
-      expect(getByText('Study Area')).toBeVisible();
-    });
-
-    fireEvent.click(getByText('Edit'));
-
-    await waitFor(() => {
-      expect(queryByText('API Error is Here')).toBeInTheDocument();
-    });
-
-    // Get the backdrop, then get the firstChild because this is where the event listener is attached
-    //@ts-ignore
-    fireEvent.click(getAllByRole('presentation')[0].firstChild);
-
-    await waitFor(() => {
-      expect(queryByText('API Error is Here')).toBeNull();
     });
   });
 
   it('shows error dialog with API error message when updating survey data fails', async () => {
+    const mockSurveyDataLoader = { data: getSurveyForViewResponse } as DataLoader<any, any, any>;
+    const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
+    const mockObservationsDataLoader = { data: null } as DataLoader<any, any, any>;
+    const mockSummaryDataLoader = { data: null } as DataLoader<any, any, any>;
+
     mockBiohubApi().survey.getSurveyForView.mockResolvedValue({
       surveyData: {
         ...surveyObject,
         survey_details: {
           id: 1,
+          project_id: 1,
           survey_name: 'survey name is this',
           start_date: '1999-09-09',
           end_date: '2021-01-25',
           biologist_first_name: 'firstttt',
           biologist_last_name: 'lastttt',
           survey_area_name: 'study area is this',
-          geometry,
+          geometry: [geoJsonFeature],
           revision_count: 0
         }
       },
@@ -217,20 +247,35 @@ describe.skip('SurveyStudyArea', () => {
     });
     mockBiohubApi().survey.updateSurvey = jest.fn(() => Promise.reject(new Error('API Error is Here')));
 
-    const { getByText, queryByText } = renderContainer();
+    const mockProjectAuthStateContext: IProjectAuthStateContext = {
+      getProjectParticipant: () => null,
+      hasProjectRole: () => true,
+      hasSystemRole: () => true,
+      getProjectId: () => 1,
+      hasLoadedParticipantInfo: true
+    };
+
+    const { getByText, queryByText } = render(
+      <ProjectAuthStateContext.Provider value={mockProjectAuthStateContext}>
+        <SurveyContext.Provider
+          value={{
+            projectId: 1,
+            surveyId: 1,
+            surveyDataLoader: mockSurveyDataLoader,
+            artifactDataLoader: mockArtifactDataLoader,
+            observationDataLoader: mockObservationsDataLoader,
+            summaryDataLoader: mockSummaryDataLoader
+          }}>
+          <SurveyStudyArea />
+        </SurveyContext.Provider>
+      </ProjectAuthStateContext.Provider>
+    );
 
     await waitFor(() => {
       expect(getByText('Study Area')).toBeVisible();
     });
 
     fireEvent.click(getByText('Edit'));
-
-    await waitFor(() => {
-      expect(mockBiohubApi().survey.getSurveyForView).toBeCalledWith(
-        1,
-        getSurveyForViewResponse.surveyData.survey_details.id
-      );
-    });
 
     await waitFor(() => {
       expect(getByText('Edit Survey Study Area')).toBeVisible();

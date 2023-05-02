@@ -60,14 +60,14 @@ describe('getProjectReportDetails', () => {
 
     const getProjectReportAttachmentByIdStub = sinon
       .stub(AttachmentService.prototype, 'getProjectReportAttachmentById')
-      .resolves(({ report: 1 } as unknown) as IProjectReportAttachment);
+      .resolves(({ project_report_attachment_id: 1 } as unknown) as IProjectReportAttachment);
 
     const getProjectReportAttachmentAuthorsStub = sinon
       .stub(AttachmentService.prototype, 'getProjectReportAttachmentAuthors')
       .resolves([({ author: 2 } as unknown) as IReportAttachmentAuthor]);
 
     const expectedResponse = {
-      metadata: { report: 1 },
+      metadata: { project_report_attachment_id: 1 },
       authors: [{ author: 2 }]
     };
 

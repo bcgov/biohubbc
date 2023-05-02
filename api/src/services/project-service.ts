@@ -25,23 +25,39 @@ import {
   GetPartnershipsData,
   GetProjectData,
   GetReportAttachmentsData,
-  IGetProject
+  IGetProject,
+  ProjectSupplementaryData
 } from '../models/project-view';
+import { ProjectUserObject } from '../models/user';
 import { GET_ENTITIES, IUpdateProject } from '../paths/project/{projectId}/update';
 import { ProjectRepository } from '../repositories/project-repository';
 import { deleteFileFromS3 } from '../utils/file-utils';
+import { getLogger } from '../utils/logger';
 import { AttachmentService } from './attachment-service';
 import { DBService } from './db-service';
+import { HistoryPublishService } from './history-publish-service';
+import { PlatformService } from './platform-service';
+import { ProjectParticipationService } from './project-participation-service';
 import { SurveyService } from './survey-service';
+
+const defaultLog = getLogger('services/project-service');
 
 export class ProjectService extends DBService {
   attachmentService: AttachmentService;
   projectRepository: ProjectRepository;
+  projectParticipationService: ProjectParticipationService;
+  platformService: PlatformService;
+  historyPublishService: HistoryPublishService;
+  surveyService: SurveyService;
 
   constructor(connection: IDBConnection) {
     super(connection);
     this.attachmentService = new AttachmentService(connection);
     this.projectRepository = new ProjectRepository(connection);
+    this.projectParticipationService = new ProjectParticipationService(connection);
+    this.platformService = new PlatformService(connection);
+    this.historyPublishService = new HistoryPublishService(connection);
+    this.surveyService = new SurveyService(connection);
   }
 
   /**
@@ -76,8 +92,8 @@ export class ProjectService extends DBService {
    * @return {*}  {Promise<any>}
    * @memberof ProjectService
    */
-  async getProjectParticipant(projectId: number, systemUserId: number): Promise<any> {
-    return this.projectRepository.getProjectParticipant(projectId, systemUserId);
+  async getProjectParticipant(projectId: number, systemUserId: number): Promise<ProjectUserObject | null> {
+    return this.projectParticipationService.getProjectParticipant(projectId, systemUserId);
   }
 
   /**
@@ -88,7 +104,7 @@ export class ProjectService extends DBService {
    * @memberof ProjectService
    */
   async getProjectParticipants(projectId: number): Promise<object[]> {
-    return this.projectRepository.getProjectParticipants(projectId);
+    return this.projectParticipationService.getProjectParticipants(projectId);
   }
 
   /**
@@ -107,7 +123,7 @@ export class ProjectService extends DBService {
     systemUserId: number,
     projectParticipantRoleId: number
   ): Promise<void> {
-    return this.projectRepository.addProjectParticipant(projectId, systemUserId, projectParticipantRoleId);
+    return this.projectParticipationService.addProjectParticipant(projectId, systemUserId, projectParticipantRoleId);
   }
 
   async getProjectList(isUserAdmin: boolean, systemUserId: number | null, filterFields: any): Promise<any> {
@@ -146,7 +162,6 @@ export class ProjectService extends DBService {
     ]);
 
     return {
-      id: projectId,
       project: projectData,
       objectives: objectiveData,
       coordinator: coordinatorData,
@@ -157,12 +172,21 @@ export class ProjectService extends DBService {
     };
   }
 
-  async getProjectEntitiesById(
-    projectId: number,
-    entities: string[]
-  ): Promise<Pick<IGetProject, 'id'> & Partial<Omit<IGetProject, 'id'>>> {
-    const results: Pick<IGetProject, 'id'> & Partial<Omit<IGetProject, 'id'>> = {
-      id: projectId,
+  /**
+   * Get Project supplementary data for a given project ID
+   *
+   * @param {number} projectId
+   * @returns {*} {Promise<ProjectSupplementaryData>}
+   * @memberof ProjectService
+   */
+  async getProjectSupplementaryDataById(projectId: number): Promise<ProjectSupplementaryData> {
+    const projectMetadataPublish = await this.historyPublishService.getProjectMetadataPublishRecord(projectId);
+
+    return { project_metadata_publish: projectMetadataPublish };
+  }
+
+  async getProjectEntitiesById(projectId: number, entities: string[]): Promise<Partial<IGetProject>> {
+    const results: Partial<IGetProject> = {
       coordinator: undefined,
       project: undefined,
       objectives: undefined,
@@ -283,6 +307,32 @@ export class ProjectService extends DBService {
     return this.projectRepository.getReportAttachmentsData(projectId);
   }
 
+  /**
+   *
+   *
+   * @param {PostProjectObject} postProjectData
+   * @return {*}  {Promise<number>}
+   * @memberof ProjectService
+   */
+  async createProjectAndUploadMetadataToBioHub(postProjectData: PostProjectObject): Promise<number> {
+    const projectId = await this.createProject(postProjectData);
+
+    try {
+      await this.platformService.submitProjectDwCMetadataToBioHub(projectId);
+    } catch (error) {
+      defaultLog.warn({ label: 'createProjectAndUploadMetadataToBioHub', message: 'error', error });
+    }
+
+    return projectId;
+  }
+
+  /**
+   *
+   *
+   * @param {PostProjectObject} postProjectData
+   * @return {*}  {Promise<number>}
+   * @memberof ProjectService
+   */
   async createProject(postProjectData: PostProjectObject): Promise<number> {
     const projectId = await this.insertProject(postProjectData);
 
@@ -366,9 +416,34 @@ export class ProjectService extends DBService {
   }
 
   async insertParticipantRole(projectId: number, projectParticipantRole: string): Promise<void> {
-    return this.projectRepository.insertParticipantRole(projectId, projectParticipantRole);
+    return this.projectParticipationService.insertParticipantRole(projectId, projectParticipantRole);
   }
 
+  /**
+   * Updates the project and uploads to BioHub
+   *
+   * @param {number} projectId
+   * @param {IUpdateProject} entities
+   * @return {*}  {Promise<void>}
+   * @memberof ProjectService
+   */
+  async updateProjectAndUploadMetadataToBioHub(projectId: number, entities: IUpdateProject): Promise<void> {
+    await this.updateProject(projectId, entities);
+
+    try {
+      await this.platformService.submitProjectDwCMetadataToBioHub(projectId);
+    } catch (error) {
+      defaultLog.warn({ label: 'updateProjectAndUploadMetadataToBioHub', message: 'error', error });
+    }
+  }
+
+  /**
+   * Updates the project
+   *
+   * @param {number} projectId
+   * @param {IUpdateProject} entities
+   * @memberof ProjectService
+   */
   async updateProject(projectId: number, entities: IUpdateProject) {
     const promises: Promise<any>[] = [];
 
@@ -595,6 +670,45 @@ export class ProjectService extends DBService {
   }
 
   async deleteProjectParticipationRecord(projectParticipationId: number): Promise<any> {
-    return this.projectRepository.deleteProjectParticipationRecord(projectParticipationId);
+    return this.projectParticipationService.deleteProjectParticipationRecord(projectParticipationId);
+  }
+
+  /**
+   * Returns true if a given project has unpublished content or false if everything in the project is published
+   *
+   * @param {number} projectId
+   * @returns {*} {Promise<boolean>}
+   */
+  async doesProjectHaveUnpublishedContent(projectId: number): Promise<boolean> {
+    const has_unpublished_attachments = await this.historyPublishService.hasUnpublishedProjectAttachments(projectId);
+
+    const has_unpublished_reports = await this.historyPublishService.hasUnpublishedProjectReports(projectId);
+
+    const has_unpublished_surveys = await this.hasUnpublishedSurveys(projectId);
+
+    // Returns true when one or more surveys have unpublished attachments, reports, observations or summary results
+    const surveyHasUnpublishedContent: boolean =
+      has_unpublished_attachments || has_unpublished_reports || has_unpublished_surveys;
+    return surveyHasUnpublishedContent;
+  }
+
+  /**
+   * Returns true if any surveys for a given project have unpublished data or false if all survey under a project are published
+   *
+   * @param projectId
+   * @returns {*} {Promise<boolean>}
+   */
+  async hasUnpublishedSurveys(projectId: number): Promise<boolean> {
+    const surveyIds = (await this.surveyService.getSurveyIdsByProjectId(projectId)).map((item: { id: any }) => item.id);
+
+    const surveyStatusArray = await Promise.all(
+      surveyIds.map(async (surveyId) => {
+        const surveyPublishStatus = await this.surveyService.doesSurveyHaveUnpublishedContent(surveyId);
+
+        return surveyPublishStatus;
+      })
+    );
+
+    return surveyStatusArray.some(Boolean);
   }
 }

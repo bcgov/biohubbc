@@ -504,7 +504,7 @@ export class ValidationService extends DBService {
     // Example: project/1/survey/1/submission/file_name.txt -> project/1/survey/1/submission
     const s3OutputKeyPrefix = s3InputKey.split('/').slice(0, -1).join('/');
 
-    const outputFileName = `${data.rawFile.name}_processed.zip`;
+    const outputFileName = `${data.rawFile.name}_dwc.zip`;
     const s3OutputKey = `${s3OutputKeyPrefix}/${outputFileName}`;
 
     // Upload transformed archive to s3

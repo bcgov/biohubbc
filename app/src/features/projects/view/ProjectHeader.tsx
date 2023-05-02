@@ -1,4 +1,3 @@
-import { CircularProgress } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Container from '@material-ui/core/Container';
@@ -19,16 +18,17 @@ import {
   mdiTrashCanOutline
 } from '@mdi/js';
 import Icon from '@mdi/react';
+import assert from 'assert';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
+import PublishProjectButton from 'components/publish/PublishProjectButton';
+import { ProjectRoleGuard, SystemRoleGuard } from 'components/security/Guards';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { DeleteProjectI18N } from 'constants/i18n';
-import { SYSTEM_ROLE } from 'constants/roles';
-import { AuthStateContext } from 'contexts/authStateContext';
+import { PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
 import { DialogContext } from 'contexts/dialogContext';
+import { ProjectContext } from 'contexts/projectContext';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import useDataLoader from 'hooks/useDataLoader';
-import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import React, { useContext } from 'react';
 import { useHistory } from 'react-router';
 import { getFormattedDateRangeString } from 'utils/Utils';
@@ -95,71 +95,47 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }));
 
-export interface IProjectHeaderProps {
-  projectWithDetails: IGetProjectForViewResponse;
-  refresh?: () => void;
-}
-
 /**
  * Project header for a single-project view.
  *
- * @param {*} props
  * @return {*}
  */
-const ProjectHeader: React.FC<IProjectHeaderProps> = (props) => {
-  const { projectWithDetails } = props;
-
+const ProjectHeader = () => {
   const classes = useStyles();
-  const history = useHistory();
 
+  const history = useHistory();
   const biohubApi = useBiohubApi();
+
+  const projectContext = useContext(ProjectContext);
+
+  // Project data must be loaded by a parent before this component is rendered
+  assert(projectContext.projectDataLoader.data);
+
+  const projectData = projectContext.projectDataLoader.data;
 
   const dialogContext = useContext(DialogContext);
 
-  const { keycloakWrapper } = useContext(AuthStateContext);
-
-  const codesDataLoader = useDataLoader(() => biohubApi.codes.getAllCodeSets());
-  codesDataLoader.load();
-
-  const defaultYesNoDialogProps = {
-    dialogTitle: DeleteProjectI18N.deleteTitle,
-    dialogText: DeleteProjectI18N.deleteText,
-    open: false,
-    onClose: () => dialogContext.setYesNoDialog({ open: false }),
-    onNo: () => dialogContext.setYesNoDialog({ open: false }),
-    onYes: () => dialogContext.setYesNoDialog({ open: false })
-  };
-
-  const deleteErrorDialogProps = {
-    dialogTitle: DeleteProjectI18N.deleteErrorTitle,
-    dialogText: DeleteProjectI18N.deleteErrorText,
-    open: false,
-    onClose: () => {
-      dialogContext.setErrorDialog({ open: false });
-    },
-    onOk: () => {
-      dialogContext.setErrorDialog({ open: false });
-    }
-  };
-
   const showDeleteProjectDialog = () => {
     dialogContext.setYesNoDialog({
-      ...defaultYesNoDialogProps,
+      dialogTitle: DeleteProjectI18N.deleteTitle,
+      dialogText: DeleteProjectI18N.deleteText,
+      yesButtonProps: { color: 'secondary' },
+      yesButtonLabel: 'Delete',
+      noButtonProps: { color: 'primary', variant: 'outlined' },
+      noButtonLabel: 'Cancel',
       open: true,
       onYes: () => {
         deleteProject();
         dialogContext.setYesNoDialog({ open: false });
-      }
+      },
+      onClose: () => dialogContext.setYesNoDialog({ open: false }),
+      onNo: () => dialogContext.setYesNoDialog({ open: false })
     });
   };
 
   const deleteProject = async () => {
-    if (!projectWithDetails) {
-      return;
-    }
-
     try {
-      const response = await biohubApi.project.deleteProject(projectWithDetails.id);
+      const response = await biohubApi.project.deleteProject(projectContext.projectId);
 
       if (!response) {
         showDeleteErrorDialog({ open: true });
@@ -175,15 +151,19 @@ const ProjectHeader: React.FC<IProjectHeaderProps> = (props) => {
   };
 
   const showDeleteErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
-    dialogContext.setErrorDialog({ ...deleteErrorDialogProps, ...textDialogProps, open: true });
+    dialogContext.setErrorDialog({
+      dialogTitle: DeleteProjectI18N.deleteErrorTitle,
+      dialogText: DeleteProjectI18N.deleteErrorText,
+      open: true,
+      onClose: () => {
+        dialogContext.setErrorDialog({ open: false });
+      },
+      onOk: () => {
+        dialogContext.setErrorDialog({ open: false });
+      },
+      ...textDialogProps
+    });
   };
-
-  // Show delete button if you are a system admin or a project admin
-  const showDeleteProjectButton = keycloakWrapper?.hasSystemRole([
-    SYSTEM_ROLE.SYSTEM_ADMIN,
-    SYSTEM_ROLE.PROJECT_CREATOR,
-    SYSTEM_ROLE.DATA_ADMINISTRATOR
-  ]);
 
   // Show/Hide Project Settings Menu
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -196,10 +176,6 @@ const ProjectHeader: React.FC<IProjectHeaderProps> = (props) => {
     setAnchorEl(null);
   };
 
-  if (!codesDataLoader.data) {
-    return <CircularProgress className="pageProgress" size={40} />;
-  }
-
   return (
     <Paper square={true} elevation={0}>
       <Container maxWidth="xl">
@@ -207,7 +183,7 @@ const ProjectHeader: React.FC<IProjectHeaderProps> = (props) => {
           <Box display="flex" justifyContent="space-between">
             <Box className={classes.projectTitleContainer}>
               <Typography variant="h1" className={classes.projectTitle}>
-                Project: <span>{projectWithDetails.project.project_name}</span>
+                Project: <span>{projectData?.projectData.project.project_name}</span>
               </Typography>
               <Box mt={0.75} display="flex" alignItems="center">
                 <Typography
@@ -215,14 +191,14 @@ const ProjectHeader: React.FC<IProjectHeaderProps> = (props) => {
                   variant="subtitle1"
                   color="textSecondary"
                   style={{ display: 'flex', alignItems: 'center' }}>
-                  {projectWithDetails.project.end_date ? (
+                  {projectData.projectData.project.end_date ? (
                     <>
                       <Icon path={mdiCalendarRangeOutline} size={0.9} style={{ marginRight: '0.5rem' }} />
                       Project Timeline:&nbsp;&nbsp;
                       {getFormattedDateRangeString(
                         DATE_FORMAT.ShortMediumDateFormat,
-                        projectWithDetails.project.start_date,
-                        projectWithDetails.project.end_date
+                        projectData.projectData.project.start_date,
+                        projectData.projectData.project.end_date
                       )}
                     </>
                   ) : (
@@ -231,7 +207,7 @@ const ProjectHeader: React.FC<IProjectHeaderProps> = (props) => {
                       Start Date:&nbsp;&nbsp;
                       {getFormattedDateRangeString(
                         DATE_FORMAT.ShortMediumDateFormat,
-                        projectWithDetails.project.start_date
+                        projectData.projectData.project.start_date
                       )}
                     </>
                   )}
@@ -239,18 +215,30 @@ const ProjectHeader: React.FC<IProjectHeaderProps> = (props) => {
               </Box>
             </Box>
             <Box flex="0 0 auto" className={classes.titleActions}>
-              <Button
-                variant="outlined"
-                startIcon={<Icon path={mdiCogOutline} size={0.8} />}
-                endIcon={<Icon path={mdiChevronDown} size={0.8} />}
-                aria-controls="simple-menu"
-                aria-haspopup="true"
-                onClick={handleClick}>
-                Project Settings
-              </Button>
+              <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+                <PublishProjectButton />
+              </SystemRoleGuard>
+              <ProjectRoleGuard
+                validProjectRoles={[PROJECT_ROLE.PROJECT_EDITOR, PROJECT_ROLE.PROJECT_LEAD]}
+                validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+                <Button
+                  id="project_settings-button"
+                  variant="outlined"
+                  color="primary"
+                  startIcon={<Icon path={mdiCogOutline} size={1} />}
+                  endIcon={<Icon path={mdiChevronDown} size={1} />}
+                  aria-label="Project Settings"
+                  aria-controls="projectSettingsMenu"
+                  aria-haspopup="true"
+                  style={{ marginLeft: '0.5rem' }}
+                  onClick={handleClick}>
+                  Settings
+                </Button>
+              </ProjectRoleGuard>
               <Menu
-                style={{ marginTop: '8px' }}
                 id="projectSettingsMenu"
+                aria-labelledby="project_settings_button"
+                style={{ marginTop: '8px' }}
                 anchorEl={anchorEl}
                 getContentAnchorEl={null}
                 anchorOrigin={{
@@ -264,26 +252,34 @@ const ProjectHeader: React.FC<IProjectHeaderProps> = (props) => {
                 keepMounted
                 open={Boolean(anchorEl)}
                 onClose={handleClose}>
-                <MenuItem onClick={() => history.push('users')}>
+                <ProjectRoleGuard
+                  validProjectRoles={[PROJECT_ROLE.PROJECT_LEAD]}
+                  validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+                  <>
+                    <MenuItem onClick={() => history.push('users')}>
+                      <ListItemIcon>
+                        <Icon path={mdiAccountMultipleOutline} size={1} />
+                      </ListItemIcon>
+                      <Typography variant="inherit">Manage Project Team</Typography>
+                    </MenuItem>
+                  </>
+                </ProjectRoleGuard>
+                <MenuItem onClick={() => history.push('edit')}>
                   <ListItemIcon>
-                    <Icon path={mdiAccountMultipleOutline} size={0.8} />
-                  </ListItemIcon>
-                  <Typography variant="inherit">Manage Project Team</Typography>
-                </MenuItem>
-                <MenuItem onClick={() => history.push(`/admin/projects/edit?projectId=${projectWithDetails.id}`)}>
-                  <ListItemIcon>
-                    <Icon path={mdiPencilOutline} size={0.8} />
+                    <Icon path={mdiPencilOutline} size={1} />
                   </ListItemIcon>
                   <Typography variant="inherit">Edit Project Details</Typography>
                 </MenuItem>
-                {showDeleteProjectButton && (
+                <ProjectRoleGuard
+                  validProjectRoles={[PROJECT_ROLE.PROJECT_LEAD]}
+                  validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
                   <MenuItem onClick={showDeleteProjectDialog} data-testid={'delete-project-button'}>
                     <ListItemIcon>
-                      <Icon path={mdiTrashCanOutline} size={0.8} />
+                      <Icon path={mdiTrashCanOutline} size={1} />
                     </ListItemIcon>
                     <Typography variant="inherit">Delete Project</Typography>
                   </MenuItem>
-                )}
+                </ProjectRoleGuard>
               </Menu>
             </Box>
           </Box>

@@ -9,7 +9,7 @@ const path = require('path');
  * @param {*} settings
  * @returns
  */
-const dbDeploy = (settings) => {
+const dbDeploy = async (settings) => {
   const phases = settings.phases;
   const options = settings.options;
   const phase = options.env;
@@ -46,7 +46,8 @@ const dbDeploy = (settings) => {
 
   oc.applyRecommendedLabels(objects, name, phase, changeId, instance);
   oc.importImageStreams(objects, phases[phase].tag, phases.build.namespace, phases.build.tag);
-  oc.applyAndDeploy(objects, instance);
+  
+  await oc.applyAndDeploy(objects, instance);
 };
 
 module.exports = { dbDeploy };

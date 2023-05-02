@@ -7,13 +7,14 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { EditSurveyI18N } from 'constants/i18n';
+import { CodesContext } from 'contexts/codesContext';
 import { DialogContext } from 'contexts/dialogContext';
+import { ProjectContext } from 'contexts/projectContext';
 import { FormikProps } from 'formik';
 import * as History from 'history';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
-import { useQuery } from 'hooks/useQuery';
 import { IEditSurveyRequest, SurveyUpdateObject } from 'interfaces/useSurveyApi.interface';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
@@ -59,11 +60,12 @@ const useStyles = makeStyles((theme: Theme) => ({
  * @return {*}
  */
 const EditSurveyPage = () => {
-  const urlParams = useParams();
   const classes = useStyles();
   const biohubApi = useBiohubApi();
   const history = useHistory();
-  const queryParams = useQuery();
+  const urlParams = useParams();
+
+  const surveyId = Number(urlParams['survey_id']);
 
   const [formikRef] = useState(useRef<FormikProps<IEditSurveyRequest>>(null));
 
@@ -72,23 +74,29 @@ const EditSurveyPage = () => {
 
   const dialogContext = useContext(DialogContext);
 
-  const codesDataLoader = useDataLoader(() => biohubApi.codes.getAllCodeSets());
-  codesDataLoader.load();
+  const codesContext = useContext(CodesContext);
+  useEffect(() => codesContext.codesDataLoader.load(), [codesContext.codesDataLoader]);
+  const codes = codesContext.codesDataLoader.data;
 
-  const getProjectForViewDL = useDataLoader((projectId: number) => biohubApi.project.getProjectForView(projectId));
-  getProjectForViewDL.load(urlParams['id']);
+  const projectContext = useContext(ProjectContext);
+  useEffect(() => projectContext.projectDataLoader.load(projectContext.projectId), [
+    projectContext.projectDataLoader,
+    projectContext.projectId
+  ]);
+  const projectData = projectContext.projectDataLoader.data?.projectData;
 
-  const getSurveyFundingSourcesDL = useDataLoader((projectId: number) =>
-    biohubApi.survey.getAvailableSurveyFundingSources(projectId)
+  const getSurveyFundingSourcesDataLoader = useDataLoader(() =>
+    biohubApi.survey.getAvailableSurveyFundingSources(projectContext.projectId)
   );
-  getSurveyFundingSourcesDL.load(urlParams['id']);
+  getSurveyFundingSourcesDataLoader.load();
+  const fundingSourcesData = getSurveyFundingSourcesDataLoader.data || [];
 
   const editSurveyDL = useDataLoader((projectId: number, surveyId: number) =>
     biohubApi.survey.getSurveyForUpdate(projectId, surveyId)
   );
 
-  if (!editSurveyDL.data && queryParams.surveyId) {
-    editSurveyDL.load(urlParams['id'], queryParams.surveyId);
+  if (!editSurveyDL.data && surveyId) {
+    editSurveyDL.load(projectContext.projectId, surveyId);
   }
 
   useEffect(() => {
@@ -114,13 +122,13 @@ const EditSurveyPage = () => {
     },
     onYes: () => {
       dialogContext.setYesNoDialog({ open: false });
-      history.push(`/admin/projects/${getProjectForViewDL.data?.id}/survey/${queryParams.surveyId}`);
+      history.push('details');
     }
   };
 
   const handleCancel = () => {
     dialogContext.setYesNoDialog(defaultCancelDialogProps);
-    history.push(`/admin/projects/${getProjectForViewDL.data?.id}/surveys/${queryParams.surveyId}/details`);
+    history.push('details');
   };
 
   const showEditErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
@@ -146,8 +154,8 @@ const EditSurveyPage = () => {
   const handleSubmit = async (values: IEditSurveyRequest) => {
     try {
       const response = await biohubApi.survey.updateSurvey(
-        urlParams['id'],
-        Number(queryParams.surveyId),
+        projectContext.projectId,
+        surveyId,
         (values as unknown) as SurveyUpdateObject
       );
 
@@ -160,7 +168,7 @@ const EditSurveyPage = () => {
 
       setEnableCancelCheck(false);
 
-      history.push(`/admin/projects/${getProjectForViewDL.data?.id}/surveys/${response.id}/details`);
+      history.push(`/admin/projects/${projectData?.project.id}/surveys/${response.id}/details`);
     } catch (error) {
       const apiError = error as APIError;
       showEditErrorDialog({
@@ -197,7 +205,7 @@ const EditSurveyPage = () => {
     return true;
   };
 
-  if (!codesDataLoader.data || !getProjectForViewDL.data) {
+  if (!codes || !projectData) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
@@ -228,9 +236,9 @@ const EditSurveyPage = () => {
       <Box my={3}>
         <Container maxWidth="xl">
           <EditSurveyForm
-            codes={codesDataLoader.data}
-            projectData={getProjectForViewDL.data}
-            surveyFundingSources={getSurveyFundingSourcesDL.data || []}
+            codes={codes}
+            projectData={projectData}
+            surveyFundingSources={fundingSourcesData}
             handleSubmit={handleSubmit}
             handleCancel={handleCancel}
             formikRef={formikRef}

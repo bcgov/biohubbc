@@ -161,7 +161,7 @@ describe('uploadMedia', () => {
 
     const upsertSurveyReportAttachmentStub = sinon
       .stub(AttachmentService.prototype, 'upsertSurveyReportAttachment')
-      .resolves({ id: 1, revision_count: 1, key: 'string' });
+      .resolves({ survey_report_attachment_id: 1, revision_count: 1, key: 'string' });
 
     const result = upload.uploadMedia();
 

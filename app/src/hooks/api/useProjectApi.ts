@@ -12,6 +12,7 @@ import {
   IGetProjectParticipantsResponse,
   IGetProjectsListResponse,
   IGetReportDetails,
+  IGetUserProjectParticipantResponse,
   IGetUserProjectsListResponse,
   IProjectAdvancedFilterRequest,
   IUpdateProjectRequest,
@@ -402,6 +403,12 @@ const useProjectApi = (axios: AxiosInstance) => {
     return status === 200;
   };
 
+  const getUserProjectParticipant = async (projectId: number): Promise<IGetUserProjectParticipantResponse> => {
+    const { data } = await axios.get<IGetUserProjectParticipantResponse>(`/api/project/${projectId}/participants/self`);
+
+    return data;
+  };
+
   return {
     getAllUserProjectsForView,
     getProjectsList,
@@ -423,7 +430,8 @@ const useProjectApi = (axios: AxiosInstance) => {
     removeProjectParticipant,
     updateProjectParticipantRole,
     deleteFundingSource,
-    addFundingSource
+    addFundingSource,
+    getUserProjectParticipant
   };
 };
 

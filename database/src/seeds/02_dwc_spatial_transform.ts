@@ -76,7 +76,7 @@ with submission as (select *
   from submission, jsonb_path_query(darwin_core_source, '$.location') locs)
             , location as (select jsonb_array_elements(locs) loc
   from locations)
-            , event_coord as (select st_x(pt) x, st_y(pt) y, loc
+            , event_coord as (select coalesce(st_x(pt), 0) x, coalesce(st_y(pt), 0) y, loc
   from location, ST_SetSRID(ST_MakePoint((nullif(loc->>'decimalLongitude', ''))::float, (nullif(loc->>'decimalLatitude', ''))::float), 4326) pt)
   , normal as (select distinct o.occurrence_submission_id, o.occ, ec.*, e.evn
   from occurrence o
@@ -90,7 +90,7 @@ with submission as (select *
                         , 'properties', jsonb_build_object('type', 'Occurrence', 'dwc', jsonb_build_object(
                           'type', 'PhysicalObject', 'basisOfRecord', 'Occurrence', 'datasetID', n.occurrence_submission_id, 'occurrenceID', n.occ->'occurrenceID'
                           , 'sex', n.occ->'sex', 'lifeStage', n.occ->'lifeStage', 'taxonID', n.occ->'taxonID', 'vernacularName', n.occ->'vernacularName', 'individualCount', n.occ->'individualCount'
-                          , 'eventDate', n.evn->'eventDate', 'verbatimSRS', n.evn->'verbatimSRS', 'verbatimCoordinates', n.evn->'verbatimCoordinates'
+                          , 'eventDate', n.evn->'eventDate', 'verbatimSRS', n.loc->'verbatimSRS', 'verbatimCoordinates', n.loc->'verbatimCoordinates'
                           ))))
                   )result_data
   from normal n;
