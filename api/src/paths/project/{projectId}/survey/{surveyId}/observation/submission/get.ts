@@ -272,7 +272,7 @@ export function getOccurrenceSubmission(): RequestHandler {
         surveyObservationData: {
           occurrence_submission_id: occurrenceSubmission.occurrence_submission_id,
           inputFileName: occurrenceSubmission.input_file_name,
-          status: occurrenceSubmission.submission_status_type_name || null,
+          status: occurrenceSubmission.submission_status_type_name ?? null,
           isValidating: !isDoneValidating,
           messageTypes
         },
