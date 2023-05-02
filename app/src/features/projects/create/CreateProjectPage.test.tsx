@@ -402,7 +402,7 @@ describe('CreateProjectPage', () => {
         date: '2021-01-20'
       });
 
-      const { getByText, getByTestId } = renderContainer();
+      const { getByTestId } = renderContainer();
 
       const saveDraftButton = await getByTestId('save-draft-button');
 
