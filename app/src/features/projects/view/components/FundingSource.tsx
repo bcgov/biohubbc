@@ -56,14 +56,10 @@ const FundingSource = () => {
                       </Typography>
                     </Grid>
                     <Grid item sm={12}>
-                      {item.funding_amount && (
-                        <>
-                          <Typography component="dt" variant="subtitle2" color="textSecondary">
-                            Funding Amount
-                          </Typography>
-                          <Typography component="dd">{getFormattedAmount(item.funding_amount)}</Typography>
-                        </>
-                      )}
+                      <Typography component="dt" variant="subtitle2" color="textSecondary">
+                        Funding Amount
+                      </Typography>
+                      <Typography component="dd">{getFormattedAmount(item.funding_amount)}</Typography>
                     </Grid>
                   </Grid>
                 </Box>
