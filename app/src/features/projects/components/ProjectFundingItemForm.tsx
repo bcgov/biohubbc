@@ -7,7 +7,9 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import Typography from '@material-ui/core/Typography';
-import AutocompleteFieldWithType from 'components/fields/AutocompleteFieldWithType';
+import AutocompleteFieldWithType, {
+  IAutocompleteFieldOptionWithType
+} from 'components/fields/AutocompleteFieldWithType';
 import CustomTextField from 'components/fields/CustomTextField';
 import DollarAmountField from 'components/fields/DollarAmountField';
 import StartEndDateFields from 'components/fields/StartEndDateFields';
@@ -47,16 +49,26 @@ export const ProjectFundingFormArrayItemYupSchema = yup.object().shape({
   first_nations_id: yup.number().transform((value) => (isNaN(value) && null) || value),
   investment_action_category: yup.number().required('Required'),
   agency_project_id: yup.string().max(50, 'Cannot exceed 50 characters').nullable(true),
-  // funding amount is not required when a first nation is selected as the source
-  funding_amount: yup.number().when('first_nations_id', {
-    is: !undefined,
-    then: yup
-      .number()
-      .transform((value) => (isNaN(value) && null) || value)
-      .typeError('Must be a number')
-      .min(0, 'Must be a positive number')
-      .max(9999999999, 'Must be less than $9,999,999,999')
-  }),
+  // funding amount is not required when a first nation is selected as a funding source
+  funding_amount: yup
+    .number()
+    .transform((value) => (isNaN(value) && null) || value)
+    .typeError('Must be a number')
+    .min(0, 'Must be a positive number')
+    .max(9999999999, 'Must be less than $9,999,999,999')
+    .when('first_nations_id', (val: any) => {
+      const rules = yup
+        .number()
+        .transform((value) => (isNaN(value) && null) || value)
+        .typeError('Must be a number')
+        .min(0, 'Must be a positive number')
+        .max(9999999999, 'Must be less than $9,999,999,999');
+      if (!val) {
+        return rules.required('Required');
+      }
+
+      return rules;
+    }),
   start_date: yup.string().isValidDateString().required('Required'),
   end_date: yup.string().isValidDateString().required('Required').isEndDateAfterStartDate('start_date')
 });
@@ -99,6 +111,26 @@ const ProjectFundingItemForm: React.FC<IProjectFundingItemFormProps> = (props) =
   const investment_action_category_label =
     (values.agency_id === 1 && 'Investment Action') || (values.agency_id === 2 && 'Investment Category') || null;
 
+  const findItemLabel = (id: number, type: FundingSourceType) => {
+    return props.sources.find((item) => item.value == id && item.type == type)?.label;
+  };
+
+  // find label for initial value
+  const mapInitialValue = (
+    formValues?: IProjectFundingFormArrayItem
+  ): IAutocompleteFieldOptionWithType<number> | undefined => {
+    if (formValues) {
+      const initialValue = {
+        value: formValues.agency_id ?? formValues.first_nations_id,
+        label: '',
+        type: formValues.agency_id ? FundingSourceType.FUNDING_SOURCE : FundingSourceType.FIRST_NATIONS
+      } as IAutocompleteFieldOptionWithType<number>;
+
+      initialValue.label = `${findItemLabel(initialValue.value, initialValue.type)}`;
+      return initialValue;
+    }
+  };
+
   return (
     <form data-testid="funding-item-form" onSubmit={handleSubmit}>
       <Box component="fieldset">
@@ -111,10 +143,9 @@ const ProjectFundingItemForm: React.FC<IProjectFundingItemFormProps> = (props) =
               <Box>
                 <AutocompleteFieldWithType
                   id="agency_id"
-                  name="agency_name"
                   label={'Agency Name'}
                   options={props.sources}
-                  initialValue={values}
+                  initialValue={mapInitialValue(values)}
                   onChange={(event, options) => {
                     // investment_action_category is dependent on agency_id, so reset it if agency_id changes
                     setFieldValue(
@@ -127,16 +158,18 @@ const ProjectFundingItemForm: React.FC<IProjectFundingItemFormProps> = (props) =
 
                     if (options?.type === FundingSourceType.FIRST_NATIONS) {
                       setFieldValue('first_nations_id', options?.value);
+                      setFieldValue('investment_action_category', 0);
                     } else {
                       setFieldValue('agency_id', options?.value);
-                    }
-                    // If an agency_id with a `Not Applicable` investment_action_category is chosen, auto select
-                    // it for the user.
-                    if (event.target.value !== 1 && event.target.value !== 2) {
-                      setFieldValue(
-                        'investment_action_category',
-                        props.investment_action_category.find((item) => item.fs_id === event.target.value)?.value || 0
-                      );
+                      // If an agency_id with a `Not Applicable` investment_action_category is chosen, auto select
+                      // it for the user.
+                      if (event.target.value !== 1 && event.target.value !== 2) {
+                        setFieldValue(
+                          'investment_action_category',
+                          props.investment_action_category.find((item) => item.fs_id === event.target.value)?.value ||
+                            50
+                        );
+                      }
                     }
                   }}
                 />

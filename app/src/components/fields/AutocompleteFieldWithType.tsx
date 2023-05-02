@@ -3,9 +3,9 @@ import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete
 import { FundingSourceType } from 'features/projects/components/ProjectFundingItemForm';
 import { useFormikContext } from 'formik';
 import get from 'lodash-es/get';
-import React, { ChangeEvent } from 'react';
+import React, { ChangeEvent, useEffect, useState } from 'react';
 
-export interface IAutocompleteFieldOption<T extends string | number> {
+export interface IAutocompleteFieldOptionWithType<T extends string | number> {
   value: T;
   label: string;
   type: FundingSourceType;
@@ -14,32 +14,42 @@ export interface IAutocompleteFieldOption<T extends string | number> {
 export interface IAutocompleteField<T extends string | number> {
   id: string;
   label: string;
-  name: string;
-  options: IAutocompleteFieldOption<T>[];
+  options: IAutocompleteFieldOptionWithType<T>[];
   required?: boolean;
   filterLimit?: number;
-  onChange?: (event: ChangeEvent<Record<string, unknown>>, option: IAutocompleteFieldOption<T> | null) => void;
+  initialValue?: IAutocompleteFieldOptionWithType<T>;
+  onChange?: (event: ChangeEvent<Record<string, unknown>>, option: IAutocompleteFieldOptionWithType<T> | null) => void;
 }
 
-// To be used when you want an autocomplete field with no freesolo allowed but only one option can be selected
 const AutocompleteFieldWithType: React.FC<IAutocompleteField<string | number>> = <T extends string | number>(
   props: IAutocompleteField<T>
 ) => {
-  const { touched, errors, setFieldValue, values } = useFormikContext<IAutocompleteFieldOption<T>>();
+  const { touched, errors, setFieldValue, values } = useFormikContext<IAutocompleteFieldOptionWithType<T>>();
+  const [name, setName] = useState('');
 
-  const getExistingValue = (existingValue: T): IAutocompleteFieldOption<T> => {
-    const result = props.options.find((option) => existingValue === option.value);
+  useEffect(() => {
+    if (props.initialValue) {
+      if (props.initialValue.type == FundingSourceType.FIRST_NATIONS) {
+        setName('first_nations_name');
+      } else {
+        setName('agency_name');
+      }
+    }
+  }, []);
+
+  const getExistingValue = (existingValue: T): IAutocompleteFieldOptionWithType<T> => {
+    const result = props.options.find((option) => existingValue === option.label);
 
     if (!result) {
-      return (null as unknown) as IAutocompleteFieldOption<T>;
+      return (null as unknown) as IAutocompleteFieldOptionWithType<T>;
     }
 
     return result;
   };
 
   const handleGetOptionSelected = (
-    option: IAutocompleteFieldOption<T>,
-    value: IAutocompleteFieldOption<T>
+    option: IAutocompleteFieldOptionWithType<T>,
+    value: IAutocompleteFieldOptionWithType<T>
   ): boolean => {
     if (!option?.value || !value?.value) {
       return false;
@@ -56,18 +66,24 @@ const AutocompleteFieldWithType: React.FC<IAutocompleteField<string | number>> =
       handleHomeEndKeys
       id={props.id}
       data-testid={props.id}
-      value={getExistingValue(get(values, props.name))}
+      value={getExistingValue(get(values, name))}
       options={props.options}
       getOptionLabel={(option) => option.label}
       getOptionSelected={handleGetOptionSelected}
       filterOptions={createFilterOptions({ limit: props.filterLimit })}
       onChange={(event, option) => {
+        if (option?.type === FundingSourceType.FIRST_NATIONS) {
+          setName('first_nations_name');
+        } else {
+          setName('agency_name');
+        }
+
         if (props.onChange) {
           props.onChange(event, option);
           return;
         }
 
-        setFieldValue(props.name, option?.value);
+        setFieldValue(name, option?.value);
       }}
       renderInput={(params) => (
         <TextField
@@ -76,8 +92,8 @@ const AutocompleteFieldWithType: React.FC<IAutocompleteField<string | number>> =
           label={props.label}
           variant="outlined"
           fullWidth
-          error={get(touched, props.name) && Boolean(get(errors, props.name))}
-          helperText={get(touched, props.name) && get(errors, props.name)}
+          error={get(touched, name) && Boolean(get(errors, name))}
+          helperText={get(touched, name) && get(errors, name)}
         />
       )}
     />

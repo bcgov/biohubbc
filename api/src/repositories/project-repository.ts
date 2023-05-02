@@ -784,26 +784,16 @@ export class ProjectRepository extends BaseRepository {
         project_funding_source_id as id;
     `;
 
-    try {
-      const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
-      
-      const result = (response && response.rows && response.rows[0]) || null;
-      if (!result || !result.id) {
-        throw new ApiExecuteSQLError('Failed to insert project funding data', [
-          'ProjectRepository->insertFundingSource',
-          'rows was null or undefined, expected rows != null'
-        ]);
-      }
-      return result.id;
-    } catch (error) {
-      console.log("______________")
-      console.log("______________")
-      console.log("______________")
-      console.log(error)
-      
+    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
+    
+    const result = (response && response.rows && response.rows[0]) || null;
+    if (!result || !result.id) {
+      throw new ApiExecuteSQLError('Failed to insert project funding data', [
+        'ProjectRepository->insertFundingSource',
+        'rows was null or undefined, expected rows != null'
+      ]);
     }
-
-    return 0;
+    return result.id;
   }
 
   async insertIndigenousNation(indigenousNationsId: number, project_id: number): Promise<number> {
