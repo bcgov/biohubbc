@@ -9,6 +9,10 @@ import { QueryResult } from 'pg';
 
 chai.use(sinonChai);
 
+describe('openapi schema', () => {
+  // @TODO;
+});
+
 describe('getAdministrativeActivities', () => {
   afterEach(() => {
     sinon.restore();

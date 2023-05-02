@@ -12,6 +12,10 @@ import { AdministrativeActivityRepository } from '../repositories/administrative
 
 chai.use(sinonChai);
 
+describe('openapi schema', () => {
+  // @TODO;
+});
+
 describe('createAdministrativeActivity', () => {
   afterEach(() => {
     sinon.restore();
