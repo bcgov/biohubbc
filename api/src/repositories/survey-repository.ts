@@ -235,48 +235,26 @@ export class SurveyRepository extends BaseRepository {
    */
   async getSurveyFundingSourcesData(surveyId: number): Promise<GetSurveyFundingSources> {
     const sqlStatement = SQL`
+      
       SELECT
-        sfs.project_funding_source_id,
-        fs.funding_source_id,
-        pfs.funding_source_project_id,
-        pfs.funding_amount::numeric::int,
-        pfs.funding_start_date,
-        pfs.funding_end_date,
-        iac.investment_action_category_id,
-        iac.name as investment_action_category_name,
-        fs.name as agency_name
-      FROM
-        survey as s
-      RIGHT OUTER JOIN
-        survey_funding_source as sfs
-      ON
-        sfs.survey_id = s.survey_id
-      RIGHT OUTER JOIN
-        project_funding_source as pfs
-      ON
-        pfs.project_funding_source_id = sfs.project_funding_source_id
-      RIGHT OUTER JOIN
-        investment_action_category as iac
-      ON
-        pfs.investment_action_category_id = iac.investment_action_category_id
-      RIGHT OUTER JOIN
-        funding_source as fs
-      ON
-        iac.funding_source_id = fs.funding_source_id
-      WHERE
-        s.survey_id = ${surveyId}
-      GROUP BY
-        sfs.project_funding_source_id,
-        fs.funding_source_id,
-        pfs.funding_source_project_id,
-        pfs.funding_amount,
-        pfs.funding_start_date,
-        pfs.funding_end_date,
-        iac.investment_action_category_id,
-        iac.name,
-        fs.name
-      ORDER BY
-        pfs.funding_start_date;
+          sfs.project_funding_source_id,
+          fs2.funding_source_id,
+          pfs.funding_source_project_id,
+          pfs.funding_amount::numeric::int,
+          pfs.funding_start_date,
+          pfs.funding_end_date,
+          iac.investment_action_category_id,
+          iac.name as investment_action_category_name,
+          fs2.name as agency_name,
+          pfs.first_nations_id as first_nations_id,
+          fn."name" as first_nations_name
+      FROM survey_funding_source sfs 
+      LEFT JOIN project_funding_source pfs ON sfs.project_funding_source_id = pfs.project_funding_source_id
+      LEFT JOIN investment_action_category iac ON pfs.investment_action_category_id = iac.investment_action_category_id
+      LEFT JOIN funding_source fs2 ON iac.funding_source_id = fs2.funding_source_id
+      LEFT JOIN first_nations fn ON pfs.first_nations_id = fn.first_nations_id
+      WHERE sfs.survey_id = ${surveyId}
+      ORDER BY pfs.funding_start_date ;
     `;
 
     const response = await this.connection.sql(sqlStatement);
@@ -938,7 +916,7 @@ export class SurveyRepository extends BaseRepository {
         ${funding_source_id}
       );
     `;
-    await this.connection.query(sqlStatement.text, sqlStatement.values);
+      await this.connection.query(sqlStatement.text, sqlStatement.values);
   }
 
   /**

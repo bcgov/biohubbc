@@ -108,14 +108,16 @@ export class GetSurveyPurposeAndMethodologyData {
 
 interface IGetSurveyFundingSource {
   pfs_id: number;
-  funding_amount: number;
+  funding_amount?: number;
   funding_source_id: number;
   funding_start_date: string;
   funding_end_date: string;
-  investment_action_category_id: number;
-  investment_action_category_name: string;
-  agency_name: string;
+  investment_action_category_id?: number;
+  investment_action_category_name?: string;
+  agency_name?: string;
   funding_source_project_id: string;
+  first_nations_id?: number;
+  first_nations_name?: string;
 }
 
 export class GetSurveyFundingSources {
@@ -134,7 +136,9 @@ export class GetSurveyFundingSources {
             investment_action_category_id: item.investment_action_category_id,
             investment_action_category_name: item.investment_action_category_name,
             agency_name: item.agency_name,
-            funding_source_project_id: item.funding_source_project_id
+            funding_source_project_id: item.funding_source_project_id,
+            first_nations_id: item.first_nations_id,
+            first_nations_name: item.first_nations_name
           };
         })) ||
       [];

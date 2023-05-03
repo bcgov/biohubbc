@@ -76,7 +76,7 @@ const SurveyGeneralInformation = () => {
             </Grid>
             <Grid item sm={6}>
               <Typography component="dt" color="textSecondary" variant="subtitle2">
-                Anciliary Species
+                Ancillary Species
               </Typography>
               {species.ancillary_species_names?.map((ancillarySpecies: string, index: number) => {
                 return (
@@ -87,7 +87,7 @@ const SurveyGeneralInformation = () => {
               })}
               {species.ancillary_species_names?.length <= 0 && (
                 <Typography component="dd" variant="body1">
-                  No Ancilliary Species
+                  No Ancillary Species
                 </Typography>
               )}
             </Grid>
@@ -134,7 +134,7 @@ const SurveyGeneralInformation = () => {
               <ListItem divider disableGutters key={index}>
                 <Box flex="1 1 auto">
                   <Box pb={1.25}>
-                    <Typography component="span">{item.agency_name}</Typography>
+                    <Typography component="span">{item.agency_name || item.first_nations_name}</Typography>
                   </Box>
                   <Box component="dl" m={0}>
                     <Grid container spacing={1}>
@@ -142,7 +142,9 @@ const SurveyGeneralInformation = () => {
                         <Typography component="dt" variant="subtitle2" color="textSecondary">
                           Project ID
                         </Typography>
-                        <Typography component="dd">{item.funding_source_project_id}</Typography>
+                        <Typography component="dd">
+                          {item.funding_source_project_id || 'No Agency Project ID'}
+                        </Typography>
                       </Grid>
                       <Grid item sm={6}>
                         <Typography component="dt" variant="subtitle2" color="textSecondary">
@@ -157,10 +159,14 @@ const SurveyGeneralInformation = () => {
                         </Typography>
                       </Grid>
                       <Grid item sm={12}>
-                        <Typography component="dt" variant="subtitle2" color="textSecondary">
-                          Funding Amount
-                        </Typography>
-                        <Typography component="dd">{getFormattedAmount(item.funding_amount)}</Typography>
+                        {item.funding_amount && (
+                          <>
+                            <Typography component="dt" variant="subtitle2" color="textSecondary">
+                              Funding Amount
+                            </Typography>
+                            <Typography component="dd">{getFormattedAmount(item.funding_amount)}</Typography>
+                          </>
+                        )}
                       </Grid>
                     </Grid>
                   </Box>

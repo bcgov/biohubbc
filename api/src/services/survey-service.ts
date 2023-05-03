@@ -687,6 +687,7 @@ export class SurveyService extends DBService {
    * @memberof SurveyService
    */
   async updateSurveyFundingData(surveyId: number, surveyData: PutSurveyObject) {
+    console.log(surveyData)
     await this.deleteSurveyFundingSourcesData(surveyId);
 
     const promises: Promise<any>[] = [];
