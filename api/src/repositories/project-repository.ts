@@ -153,14 +153,16 @@ export class ProjectRepository extends BaseRepository {
       funding_source_project_id,
       funding_amount,
       funding_start_date,
-      funding_end_date
+      funding_end_date,
+      first_nations_id
     ) VALUES (
       ${projectId},
       ${fundingSource.investment_action_category},
       ${fundingSource.agency_project_id},
       ${fundingSource.funding_amount},
       ${fundingSource.start_date},
-      ${fundingSource.end_date}
+      ${fundingSource.end_date},
+      ${fundingSource.first_nations_id}
     )
     RETURNING
       project_funding_source_id;

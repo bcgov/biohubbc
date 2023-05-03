@@ -205,7 +205,8 @@ export interface IGetProjectForUpdateResponseIUCN {
 
 export interface IGetProjectForUpdateResponseFundingSource {
   id: number;
-  agency_id: number;
+  agency_id?: number;
+  agency_name?: string;
   investment_action_category?: number;
   investment_action_category_name?: string;
   agency_project_id: string | null;

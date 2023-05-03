@@ -333,9 +333,9 @@ const CreateSurveyPage = () => {
                         fundingSourcesData?.map((item) => {
                           return {
                             value: item.id,
-                            label: `${
-                              codes.funding_source.find((fundingCode) => fundingCode.id === item.agency_id)?.name
-                            } | ${getFormattedAmount(item.funding_amount)} | ${getFormattedDateRangeString(
+                            label: `${item.agency_name || item.first_nations_name} | ${getFormattedAmount(
+                              item.funding_amount
+                            )} | ${getFormattedDateRangeString(
                               DATE_FORMAT.ShortMediumDateFormat,
                               item.start_date,
                               item.end_date
