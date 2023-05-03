@@ -64,7 +64,7 @@ describe('createAdministrativeActivity', () => {
     });
 
     sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
-    sinon.stub(AdministrativeActivityRepository.prototype, 'postAdministrativeActivity').resolves(undefined);
+    sinon.stub(AdministrativeActivityRepository.prototype, 'createPendingAccessRequest').resolves(undefined);
 
     try {
       const result = administrative_activity.createAdministrativeActivity();

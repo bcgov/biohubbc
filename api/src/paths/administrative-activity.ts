@@ -151,7 +151,7 @@ export function createAdministrativeActivity(): RequestHandler {
       const administrativeActivityService = new AdministrativeActivityService(connection);
 
       const accessRequestData = req?.body;
-      const response = await administrativeActivityService.postAdministrativeActivity(systemUserId, accessRequestData);
+      const response = await administrativeActivityService.createPendingAccessRequest(systemUserId, accessRequestData);
 
       await connection.commit();
 

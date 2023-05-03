@@ -17,7 +17,7 @@ describe('AdministrativeActivityRepository', () => {
     // @TODO
   });
 
-  describe('postAdministrativeActivity', () => {
+  describe('createPendingAccessRequest', () => {
     // @TODO
   });
 

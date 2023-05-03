@@ -49,8 +49,8 @@ export class AdministrativeActivityService extends DBService {
   /**
    * @TODO jsdoc
    */
-  async postAdministrativeActivity(systemUserId: number, data: string | object): Promise<ICreateAdministrativeActivity> {
-    return this.administrativeActivityRepository.postAdministrativeActivity(systemUserId, data);
+  async createPendingAccessRequest(systemUserId: number, data: string | object): Promise<ICreateAdministrativeActivity> {
+    return this.administrativeActivityRepository.createPendingAccessRequest(systemUserId, data);
   }
 
   /**

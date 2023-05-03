@@ -17,7 +17,7 @@ export interface IAdministrativeActivity {
   description: string | null;
   data: string | object; // JSON data blob containing additional information about the activity record
   notes: string | null,
-  create_date: Date
+  create_date: Date | string
 }
 
 export interface ICreateAdministrativeActivity {
@@ -110,13 +110,13 @@ export class AdministrativeActivityRepository extends BaseRepository {
   }
 
   /**
-   * SQL query to insert a row in the administrative_activity table.
+   * Inserts a row in the administrative_activity table reflecting a pending access request.
    *
-   * @param {number} systemUserId the ID of the user in context
+   * @param {number} systemUserId the ID of the user in performing the insertion
    * @param {string | object} data JSON data blob
    * @return {*}  {(SQLStatement | null)}
    */
-  async postAdministrativeActivity(systemUserId: number, data: string | object): Promise<ICreateAdministrativeActivity> {
+  async createPendingAccessRequest(systemUserId: number, data: string | object): Promise<ICreateAdministrativeActivity> {
     const sqlStatement = SQL`
       INSERT INTO administrative_activity (
         reported_system_user_id,
@@ -125,8 +125,22 @@ export class AdministrativeActivityRepository extends BaseRepository {
         data
       ) VALUES (
         ${systemUserId},
-        1,
-        1,
+        (
+          SELECT
+            aat.administrative_activity_type_id
+          FROM
+            administrative_activity_type aat
+          WHERE
+            aat.name = 'System Access'
+        ),
+        (
+          SELECT
+            aast.administrative_activity_status_type_id
+          FROM
+            administrative_activity_status_type aast
+          WHERE
+            aast.name = 'Pending'
+        ),
         ${data}
       )
       RETURNING
@@ -138,7 +152,7 @@ export class AdministrativeActivityRepository extends BaseRepository {
 
     if (!response.rows.length) {
       throw new ApiExecuteSQLError('Failed to create administrative activity record', [
-        'AdministrativeActivityRepository->postAdministrativeActivity'
+        'AdministrativeActivityRepository->createPendingAccessRequest'
       ]);
     }
 
