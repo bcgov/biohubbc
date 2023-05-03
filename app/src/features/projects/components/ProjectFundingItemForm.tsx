@@ -44,41 +44,65 @@ export const ProjectFundingFormArrayItemInitialValues: IProjectFundingFormArrayI
   first_nations_id: undefined
 };
 
-export const ProjectFundingFormArrayItemYupSchema = yup.object().shape({
-  agency_id: yup.number().transform((value) => (isNaN(value) && null) || value),
-  first_nations_id: yup.number().transform((value) => (isNaN(value) && null) || value),
-  investment_action_category: yup.number().required('Required'),
-  agency_project_id: yup.string().max(50, 'Cannot exceed 50 characters').nullable(true),
-  // funding amount is not required when a first nation is selected as a funding source
-  funding_amount: yup
-    .number()
-    .transform((value) => (isNaN(value) && null) || value)
-    .typeError('Must be a number')
-    .min(0, 'Must be a positive number')
-    .max(9999999999, 'Must be less than $9,999,999,999')
-    .when('first_nations_id', (val: any) => {
-      const rules = yup
-        .number()
-        .transform((value) => (isNaN(value) && null) || value)
-        .typeError('Must be a number')
-        .min(0, 'Must be a positive number')
-        .max(9999999999, 'Must be less than $9,999,999,999');
-      if (!val) {
-        return rules.required('Required');
-      }
+export const ProjectFundingFormArrayItemYupSchema = yup.object().shape(
+  {
+    agency_id: yup
+      .number()
+      .transform((value) => (isNaN(value) ? undefined : value))
+      .nullable(true)
+      .when('first_nations_id', {
+        is: (first_nations_id: number) => !first_nations_id,
+        then: yup
+          .number()
+          .transform((value) => (isNaN(value) ? undefined : value))
+          .required('Required'),
+        otherwise: yup
+          .number()
+          .transform((value) => (isNaN(value) ? undefined : value))
+          .nullable(true)
+      }),
+    first_nations_id: yup
+      .number()
+      .transform((value) => (isNaN(value) ? undefined : value))
+      .nullable(true)
+      .when('agency_id', {
+        is: (agency_id: number) => !agency_id,
+        then: yup
+          .number()
+          .transform((value) => (isNaN(value) ? undefined : value))
+          .required('Required'),
+        otherwise: yup
+          .number()
+          .transform((value) => (isNaN(value) ? undefined : value))
+          .nullable(true)
+      }),
+    investment_action_category: yup.number().nullable(true),
+    agency_project_id: yup.string().max(50, 'Cannot exceed 50 characters').nullable(true),
+    // funding amount is not required when a first nation is selected as a funding source
+    funding_amount: yup
+      .number()
+      .transform((value) => (isNaN(value) && null) || value)
+      .typeError('Must be a number')
+      .min(0, 'Must be a positive number')
+      .max(9999999999, 'Must be less than $9,999,999,999')
+      .when('first_nations_id', (val: any) => {
+        const rules = yup
+          .number()
+          .transform((value) => (isNaN(value) && null) || value)
+          .typeError('Must be a number')
+          .min(0, 'Must be a positive number')
+          .max(9999999999, 'Must be less than $9,999,999,999');
+        if (!val) {
+          return rules.required('Required');
+        }
 
-      return rules;
-    }),
-  start_date: yup.string().isValidDateString().required('Required'),
-  end_date: yup.string().isValidDateString().required('Required').isEndDateAfterStartDate('start_date')
-});
-
-/*
-
-  6. create an enum or type to account for the text on the 'action' items
-  8. Update the edit endpoint
-  
-*/
+        return rules;
+      }),
+    start_date: yup.string().isValidDateString().required('Required'),
+    end_date: yup.string().isValidDateString().required('Required').isEndDateAfterStartDate('start_date')
+  },
+  [['agency_id', 'first_nations_id']] // this prevents a cyclical dependency
+);
 
 export enum FundingSourceType {
   FUNDING_SOURCE,
@@ -130,7 +154,7 @@ const ProjectFundingItemForm: React.FC<IProjectFundingItemFormProps> = (props) =
       return initialValue;
     }
   };
-
+  console.log(errors);
   return (
     <form data-testid="funding-item-form" onSubmit={handleSubmit}>
       <Box component="fieldset">
@@ -153,8 +177,8 @@ const ProjectFundingItemForm: React.FC<IProjectFundingItemFormProps> = (props) =
                       ProjectFundingFormArrayItemInitialValues.investment_action_category
                     );
                     // reset values when a change occurs
-                    setFieldValue('first_nations_id', undefined);
-                    setFieldValue('agency_id', undefined);
+                    setFieldValue('first_nations_id', null);
+                    setFieldValue('agency_id', null);
 
                     if (options?.type === FundingSourceType.FIRST_NATIONS) {
                       setFieldValue('first_nations_id', options?.value);
