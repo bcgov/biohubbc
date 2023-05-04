@@ -38,7 +38,7 @@ const FundingSource = (props: IFundingSourceProps) => {
               <Box flex="1 1 auto">
                 <Box pb={1.25}>
                   <Typography component="span">
-                    {item.agency_name || item.first_nations_name}
+                    {item.agency_name ?? item.first_nations_name}
                     {item.investment_action_category_name &&
                       item.investment_action_category_name !== 'Not Applicable' && (
                         <Typography component="span">&nbsp;({item.investment_action_category_name})</Typography>

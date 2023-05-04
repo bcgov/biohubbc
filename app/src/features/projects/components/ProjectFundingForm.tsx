@@ -237,5 +237,5 @@ export const getCodeValueNameByID = (codeSet: IMultiAutocompleteFieldOption[], c
   if (!codeSet?.length || !codeValueId) {
     return '';
   }
-  return codeSet.find((item) => item.value === codeValueId)?.label || '';
+  return codeSet.find((item) => item.value === codeValueId)?.label ?? '';
 };

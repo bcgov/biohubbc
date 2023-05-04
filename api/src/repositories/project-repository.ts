@@ -787,7 +787,7 @@ export class ProjectRepository extends BaseRepository {
 
     const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
 
-    const result = (response && response.rows && response.rows[0]) || null;
+    const result = response?.rows?.[0];
     if (!result?.id) {
       throw new ApiExecuteSQLError('Failed to insert project funding data', [
         'ProjectRepository->insertFundingSource',
@@ -814,7 +814,7 @@ export class ProjectRepository extends BaseRepository {
 
     const result = response?.rows?.[0];
 
-    if (!result || !result.id) {
+    if (!result?.id) {
       throw new ApiExecuteSQLError('Failed to insert project first nations partnership data', [
         'ProjectRepository->insertIndigenousNation',
         'rows was null or undefined, expected rows != null'
@@ -1021,7 +1021,7 @@ export class ProjectRepository extends BaseRepository {
 
     const result = await this.connection.query(sqlStatement.text, sqlStatement.values);
 
-    if (!result || !result.rowCount) {
+    if (!result?.rowCount) {
       throw new ApiExecuteSQLError('Failed to update stale project data', [
         'ProjectRepository->updateProjectData',
         'rows was null or undefined, expected rows != null'
