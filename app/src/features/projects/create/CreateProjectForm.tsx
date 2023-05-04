@@ -68,7 +68,7 @@ export const validationProjectYupSchema = ProjectCoordinatorYupSchema.concat(Pro
 
 //Function to get the list of coordinator agencies from the code set
 export const getCoordinatorAgencyOptions = (codes: IGetAllCodeSetsResponse): string[] => {
-  const options = [...codes?.coordinator_agency, ...codes?.first_nations];
+  const options = [...(codes?.coordinator_agency || []), ...(codes?.first_nations || [])];
 
   const sorted = options.alphabetizeObjects('name');
 
