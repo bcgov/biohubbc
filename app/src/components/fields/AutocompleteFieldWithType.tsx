@@ -29,7 +29,7 @@ const AutocompleteFieldWithType: React.FC<IAutocompleteField<string | number>> =
 
   useEffect(() => {
     if (props.initialValue) {
-      if (props.initialValue.type == FundingSourceType.FIRST_NATIONS) {
+      if (props.initialValue.type === FundingSourceType.FIRST_NATIONS) {
         setName('first_nations_name');
       } else {
         setName('agency_name');

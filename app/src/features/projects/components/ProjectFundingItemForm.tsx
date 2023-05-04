@@ -136,7 +136,7 @@ const ProjectFundingItemForm: React.FC<IProjectFundingItemFormProps> = (props) =
     (values.agency_id === 1 && 'Investment Action') || (values.agency_id === 2 && 'Investment Category') || null;
 
   const findItemLabel = (id: number, type: FundingSourceType) => {
-    return props.sources.find((item) => item.value == id && item.type == type)?.label;
+    return props.sources.find((item) => item.value === id && item.type === type)?.label;
   };
 
   // find label for initial value

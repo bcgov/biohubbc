@@ -265,6 +265,7 @@ declare global {
  * @param {string} property This function will alphabetize the array of objects on the given property
  * @returns {any[]} Returns an alphabetized array of objects
  */
+// eslint-disable-next-line no-extend-native
 Array.prototype.alphabetizeObjects = function <T extends { [key: string]: any }>(property: keyof T): T[] {
   return this.sort((a: T, b: T) => {
     const nameA = a[property].toUpperCase();
