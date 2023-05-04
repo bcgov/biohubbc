@@ -51,6 +51,12 @@ type Subset<T> = {
   [P in keyof T]?: T[P] extends Record<any, any> | undefined ? Subset<T[P]> : T[P];
 };
 
+/**
+ * Build and return a mock auth state object.
+ *
+ * @param {{ base: IAuthState; overrides?: Subset<IAuthState> }} options
+ * @return {*}  {IAuthState}
+ */
 export const getMockAuthState = (options: { base: IAuthState; overrides?: Subset<IAuthState> }): IAuthState => {
   const { base, overrides } = options;
 

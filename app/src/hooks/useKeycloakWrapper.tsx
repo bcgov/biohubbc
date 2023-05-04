@@ -109,8 +109,6 @@ export interface IKeycloakWrapper {
   /**
    * Force this keycloak wrapper to refresh its data.
    *
-   * Note: currently this only refreshes the `hasAccessRequest` property.
-   *
    * @memberof IKeycloakWrapper
    */
   refresh: () => void;
