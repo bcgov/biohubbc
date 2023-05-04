@@ -127,7 +127,7 @@ const SurveyGeneralInformation = () => {
             return {
               id: item.pfs_id,
               agency_name: item.agency_name,
-              investment_action_category_name: '',
+              investment_action_category_name: item.investment_action_category_name,
               funding_amount: item.funding_amount,
               start_date: item.funding_start_date,
               end_date: item.funding_end_date,

@@ -43,6 +43,7 @@ export interface ISurveyFundingSourceForView {
   funding_source_project_id: string;
   first_nations_name?: string;
   first_nations_id?: number;
+  investment_action_category_name?: string;
 }
 
 export type ISurveyAvailableFundingSources = IGetProjectForUpdateResponseFundingSource;
