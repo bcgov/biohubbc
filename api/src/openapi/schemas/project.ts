@@ -112,8 +112,7 @@ export const projectCreatePostRequestObject = {
                 type: 'string'
               },
               funding_amount: {
-                type: 'number',
-                
+                type: 'number'
               },
               start_date: {
                 type: 'string',

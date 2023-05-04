@@ -340,7 +340,6 @@ export function getProjectForUpdate(): RequestHandler {
       const projectService = new ProjectService(connection);
 
       const results = await projectService.getProjectEntitiesById(projectId, entities);
-      console.log(results.funding)
       await connection.commit();
 
       return res.status(200).send(results);

@@ -916,7 +916,7 @@ export class SurveyRepository extends BaseRepository {
         ${funding_source_id}
       );
     `;
-      await this.connection.query(sqlStatement.text, sqlStatement.values);
+    await this.connection.query(sqlStatement.text, sqlStatement.values);
   }
 
   /**

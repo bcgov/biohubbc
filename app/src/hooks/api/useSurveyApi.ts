@@ -47,10 +47,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
    */
   const getSurveyForView = async (projectId: number, surveyId: number): Promise<IGetSurveyForViewResponse> => {
     const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/view`);
-    console.log("_____")
-    console.log("_____")
-    console.log("_____")
-    console.log(data)
+
     return data;
   };
 

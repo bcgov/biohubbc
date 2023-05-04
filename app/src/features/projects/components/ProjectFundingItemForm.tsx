@@ -154,7 +154,7 @@ const ProjectFundingItemForm: React.FC<IProjectFundingItemFormProps> = (props) =
       return initialValue;
     }
   };
-  console.log(errors);
+
   return (
     <form data-testid="funding-item-form" onSubmit={handleSubmit}>
       <Box component="fieldset">

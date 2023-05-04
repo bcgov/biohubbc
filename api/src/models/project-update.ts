@@ -125,7 +125,7 @@ export class PutFundingSource {
     this.start_date = obj?.start_date || null;
     this.end_date = obj?.end_date || null;
     this.revision_count = obj?.revision_count ?? null;
-    this.first_nations_id = obj?.first_nations_id ?? null
+    this.first_nations_id = obj?.first_nations_id ?? null;
   }
 }
 

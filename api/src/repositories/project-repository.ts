@@ -561,9 +561,9 @@ export class ProjectRepository extends BaseRepository {
         fn.name
     `;
     const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
-  
+
     const result = (response && response.rows) || null;
-  
+
     if (!result) {
       throw new ApiExecuteSQLError('Failed to get project funding data', [
         'ProjectRepository->getFundingData',
@@ -763,7 +763,6 @@ export class ProjectRepository extends BaseRepository {
   }
 
   async insertFundingSource(fundingSource: PostFundingSource, project_id: number): Promise<number> {
-
     const sqlStatement = SQL`
       INSERT INTO project_funding_source (
         project_id,
@@ -787,7 +786,7 @@ export class ProjectRepository extends BaseRepository {
     `;
 
     const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
-    
+
     const result = (response && response.rows && response.rows[0]) || null;
     if (!result || !result.id) {
       throw new ApiExecuteSQLError('Failed to insert project funding data', [

@@ -35,7 +35,7 @@ const AutocompleteFieldWithType: React.FC<IAutocompleteField<string | number>> =
         setName('agency_name');
       }
     }
-  }, []);
+  }, [props.initialValue]);
 
   const getExistingValue = (existingValue: T): IAutocompleteFieldOptionWithType<T> => {
     const result = props.options.find((option) => existingValue === option.label);

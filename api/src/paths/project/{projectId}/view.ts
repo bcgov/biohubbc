@@ -248,7 +248,7 @@ GET.apiDoc = {
                               nullable: true
                             },
                             first_nations_name: {
-                              type:'string',
+                              type: 'string',
                               nullable: true
                             }
                           }
