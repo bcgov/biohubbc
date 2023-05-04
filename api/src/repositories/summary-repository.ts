@@ -117,6 +117,8 @@ export class SummaryRepository extends BaseRepository {
         ssmt.summary_submission_message_class_id = ssmc.summary_submission_message_class_id
       WHERE
         sss.survey_id = ${surveyId}
+      AND
+        sss.delete_timestamp IS NULL
       ORDER BY
         sss.event_timestamp DESC, sssm.event_timestamp DESC
       LIMIT 1;
