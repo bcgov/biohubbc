@@ -4,10 +4,11 @@ import Grid from '@material-ui/core/Grid';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import Typography from '@material-ui/core/Typography';
+import FundingSource, { IFundingSource } from 'components/funding-source/FundingSource';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { SurveyContext } from 'contexts/surveyContext';
 import React, { useContext } from 'react';
-import { getFormattedAmount, getFormattedDateRangeString } from 'utils/Utils';
+import { getFormattedDateRangeString } from 'utils/Utils';
 
 /**
  * General information content for a survey.
@@ -121,60 +122,20 @@ const SurveyGeneralInformation = () => {
       <Box component="section">
         <Typography component="h4">Funding Sources</Typography>
         <Divider></Divider>
-        {!funding.funding_sources.length && (
-          <List disablePadding>
-            <ListItem divider disableGutters>
-              <Typography variant="body1">No Funding Sources</Typography>
-            </ListItem>
-          </List>
-        )}
-        <List disablePadding>
-          {funding.funding_sources?.map((item, index: number) => {
-            return (
-              <ListItem divider disableGutters key={index}>
-                <Box flex="1 1 auto">
-                  <Box pb={1.25}>
-                    <Typography component="span">{item.agency_name || item.first_nations_name}</Typography>
-                  </Box>
-                  <Box component="dl" m={0}>
-                    <Grid container spacing={1}>
-                      <Grid item sm={6}>
-                        <Typography component="dt" variant="subtitle2" color="textSecondary">
-                          Project ID
-                        </Typography>
-                        <Typography component="dd">
-                          {item.funding_source_project_id || 'No Agency Project ID'}
-                        </Typography>
-                      </Grid>
-                      <Grid item sm={6}>
-                        <Typography component="dt" variant="subtitle2" color="textSecondary">
-                          Timeline
-                        </Typography>
-                        <Typography component="dd">
-                          {getFormattedDateRangeString(
-                            DATE_FORMAT.ShortMediumDateFormat,
-                            item.funding_start_date,
-                            item.funding_end_date
-                          )}
-                        </Typography>
-                      </Grid>
-                      <Grid item sm={12}>
-                        {item.funding_amount && (
-                          <>
-                            <Typography component="dt" variant="subtitle2" color="textSecondary">
-                              Funding Amount
-                            </Typography>
-                            <Typography component="dd">{getFormattedAmount(item.funding_amount)}</Typography>
-                          </>
-                        )}
-                      </Grid>
-                    </Grid>
-                  </Box>
-                </Box>
-              </ListItem>
-            );
+        <FundingSource
+          funding_sources={funding.funding_sources.map((item) => {
+            return {
+              id: item.pfs_id,
+              agency_name: item.agency_name,
+              investment_action_category_name: '',
+              funding_amount: item.funding_amount,
+              start_date: item.funding_start_date,
+              end_date: item.funding_end_date,
+              agency_project_id: item.funding_source_project_id,
+              first_nations_name: item.first_nations_name
+            } as IFundingSource;
           })}
-        </List>
+        />
       </Box>
     </>
   );
