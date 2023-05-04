@@ -124,8 +124,8 @@ const ProjectHeader = () => {
       noButtonProps: { color: 'primary', variant: 'outlined' },
       noButtonLabel: 'Cancel',
       open: true,
-      onYes: () => {
-        deleteProject();
+      onYes: async () => {
+        await deleteProject();
         dialogContext.setYesNoDialog({ open: false });
       },
       onClose: () => dialogContext.setYesNoDialog({ open: false }),

@@ -484,7 +484,7 @@ export class ProjectService extends DBService {
     const insertIUCNPromises =
       putIUCNData?.classificationDetails?.map((iucnClassification: IPutIUCN) =>
         this.insertClassificationDetail(iucnClassification.subClassification2, projectId)
-      ) || [];
+      ) ?? [];
 
     await Promise.all(insertIUCNPromises);
   }
@@ -498,12 +498,12 @@ export class ProjectService extends DBService {
     const insertIndigenousPartnershipsPromises =
       putPartnershipsData?.indigenous_partnerships?.map((indigenousPartnership: number) =>
         this.insertIndigenousNation(indigenousPartnership, projectId)
-      ) || [];
+      ) ?? [];
 
     const insertStakeholderPartnershipsPromises =
       putPartnershipsData?.stakeholder_partnerships?.map((stakeholderPartnership: string) =>
         this.insertStakeholderPartnership(stakeholderPartnership, projectId)
-      ) || [];
+      ) ?? [];
 
     await Promise.all([...insertIndigenousPartnershipsPromises, ...insertStakeholderPartnershipsPromises]);
   }
@@ -618,7 +618,7 @@ export class ProjectService extends DBService {
 
     const projectResult = await this.getProjectData(projectId);
 
-    if (!projectResult || !projectResult.uuid) {
+    if (!projectResult?.uuid) {
       throw new HTTP400('Failed to get the project');
     }
 
@@ -684,10 +684,11 @@ export class ProjectService extends DBService {
   }
 
   /**
-   * Returns true if a given project has unpublished content or false if everything in the project is published
+   * Returns publish status of a given project
    *
    * @param {number} projectId
-   * @returns {*} {Promise<boolean>}
+   * @return {*}  {Promise<PublishStatus>}
+   * @memberof ProjectService
    */
   async projectPublishStatus(projectId: number): Promise<PublishStatus> {
     const attachmentsPublishStatus = await this.historyPublishService.projectAttachmentsPublishStatus(projectId);
@@ -716,10 +717,11 @@ export class ProjectService extends DBService {
   }
 
   /**
-   * Returns publish status of a given project
+   * Returns publish status of all surveys for a project
    *
-   * @param projectId
-   * @returns {*} {Promise<boolean>}
+   * @param {number} projectId
+   * @return {*}  {Promise<PublishStatus>}
+   * @memberof ProjectService
    */
   async hasUnpublishedSurveys(projectId: number): Promise<PublishStatus> {
     const surveyIds = (await this.surveyService.getSurveyIdsByProjectId(projectId)).map((item: { id: any }) => item.id);

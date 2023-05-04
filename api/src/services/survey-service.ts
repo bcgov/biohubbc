@@ -608,7 +608,7 @@ export class SurveyService extends DBService {
    * @memberof SurveyService
    */
   async updateSurveySpeciesData(surveyId: number, surveyData: PutSurveyObject) {
-    this.deleteSurveySpeciesData(surveyId);
+    await this.deleteSurveySpeciesData(surveyId);
 
     const promises: Promise<any>[] = [];
 
