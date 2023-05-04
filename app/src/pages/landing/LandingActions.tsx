@@ -1,6 +1,10 @@
 import { makeStyles, Theme, Typography } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
+import Alert from '@material-ui/lab/Alert';
+import AlertTitle from '@material-ui/lab/AlertTitle';
+import { mdiInformationOutline } from '@mdi/js';
+import Icon from '@mdi/react';
 import clsx from 'clsx';
 import { AuthGuard, UnAuthGuard } from 'components/security/Guards';
 import { SYSTEM_ROLE } from 'constants/roles';
@@ -24,11 +28,10 @@ const useStyles = makeStyles((theme: Theme) => ({
     textTransform: 'uppercase'
   },
   actionsContainer: {
-    maxWidth: '60ch',
-
     '& p': {
       fontSize: '1em',
-      margin: '1.5em 0'
+      margin: '1.5em 0',
+      maxWidth: '60ch'
     }
   },
   actions: {
@@ -49,6 +52,22 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   username: {
     textTransform: 'uppercase'
+  },
+  pendingRequestAlert: {
+    color: theme.palette.primary.contrastText,
+    backgroundColor: '#006edc',
+    width: '100%',
+    fontSize: '0.875em',
+    lineHeight: '1.5em',
+    alignItems: 'center',
+    margin: '1em 0',
+    padding: '0.5em 1.5em'
+  },
+  pendingRequestAlertIcon: {
+    color: theme.palette.common.white
+  },
+  pendingRequestAlertTitle: {
+    marginBottom: '0.5em'
   }
 }));
 
@@ -116,9 +135,13 @@ const LandingActions = () => {
           </Typography>
         )}
         {isAwaitingAccessApproval && (
-          <Typography variant="body2">
-            Your access request is currently pending.
-          </Typography>
+          <Alert
+            severity='info'
+            className={classes.pendingRequestAlert}
+            icon={<Icon className={classes.pendingRequestAlertIcon} path={mdiInformationOutline} size={1} />}>
+            <AlertTitle className={classes.pendingRequestAlertTitle}>Access request pending</AlertTitle>
+            <span>You access request for this application is currently under review. You will be notified by email when your request has been reviewed.</span>
+          </Alert>
         )}
         <Box className={classes.actions}>
           {mayViewProjects && (
@@ -141,7 +164,7 @@ const LandingActions = () => {
               children={<>Request&nbsp;Access</>}
             />
           )}
-          {isAwaitingAccessApproval && (
+          {false && isAwaitingAccessApproval && (
             <Button
               component={Link}
               to="/logout"
