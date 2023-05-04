@@ -158,18 +158,6 @@ export class PostIUCNData {
   }
 }
 
-export const FundingSource = z.object({
-  agency_id: z.number(),
-  investment_action_category: z.number(),
-  agency_project_id: z.string(),
-  funding_amount: z.number(),
-  start_date: z.date(),
-  end_date: z.date(),
-  first_nations_id: z.number()
-});
-
-export type FundingSource = z.infer<typeof FundingSource>;
-
 /**
  * A single project funding agency.
  *
