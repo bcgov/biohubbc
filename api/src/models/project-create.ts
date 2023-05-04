@@ -1,5 +1,4 @@
 import { Feature } from 'geojson';
-import { z } from 'zod';
 import { getLogger } from '../utils/logger';
 
 const defaultLog = getLogger('models/project-create');
