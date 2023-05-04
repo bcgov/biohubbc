@@ -237,7 +237,10 @@ const FeaturePopup: React.FC<React.PropsWithChildren<{ submissionSpatialComponen
               variant="text"
               style={{ textTransform: 'uppercase' }}
               startIcon={<Icon path={mdiChevronLeft} size={1} />}
-              onClick={() => handlePrev()}
+              onClick={(event) => {
+                event.stopPropagation();
+                handlePrev();
+              }}
               className={classes.nextPrevButton}>
               Prev
             </Button>
@@ -246,7 +249,10 @@ const FeaturePopup: React.FC<React.PropsWithChildren<{ submissionSpatialComponen
               variant="text"
               style={{ textTransform: 'uppercase' }}
               endIcon={<Icon path={mdiChevronRight} size={1} />}
-              onClick={() => handleNext()}
+              onClick={(event) => {
+                event.stopPropagation();
+                handleNext();
+              }}
               className={classes.nextPrevButton}>
               Next
             </Button>

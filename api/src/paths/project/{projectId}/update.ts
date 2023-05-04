@@ -4,7 +4,7 @@ import { PROJECT_ROLE, SYSTEM_ROLE } from '../../../constants/roles';
 import { getDBConnection } from '../../../database/db';
 import { HTTP400 } from '../../../errors/http-error';
 import { geoJsonFeature } from '../../../openapi/schemas/geoJson';
-import { projectIdResponseObject, projectUpdatePutRequestObject } from '../../../openapi/schemas/project';
+import { projectUpdatePutRequestObject } from '../../../openapi/schemas/project';
 import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
 import { ProjectService } from '../../../services/project-service';
 import { getLogger } from '../../../utils/logger';
@@ -392,12 +392,18 @@ PUT.apiDoc = {
   },
   responses: {
     200: {
-      description: 'Project with matching projectId.',
+      description: 'Project response object.',
       content: {
         'application/json': {
           schema: {
-            // TODO is there any return value? or is it just an HTTP status with no content?
-            ...(projectIdResponseObject as object)
+            type: 'object',
+            required: ['id'],
+            properties: {
+              id: {
+                type: 'integer',
+                minimum: 1
+              }
+            }
           }
         }
       }
