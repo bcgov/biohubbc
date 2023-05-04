@@ -301,7 +301,7 @@ export class SummaryRepository extends BaseRepository {
 
     const response = await this.connection.query<{ delete_timestamp: string }>(sqlStatement.text, sqlStatement.values);
 
-    if (!response || !response?.rows[0]?.delete_timestamp) {
+    if (!response?.rows[0]?.delete_timestamp) {
       throw new HTTP400('Failed to soft delete survey summary submission');
     }
 
