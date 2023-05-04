@@ -7,7 +7,7 @@ import { AdministrativeActivityRepository } from '../repositories/administrative
 
 chai.use(sinonChai);
 
-describe.only('AdministrativeActivityService', () => {
+describe('AdministrativeActivityService', () => {
   it('constructs', () => {
     const mockDBConnection = getMockDBConnection();
     const aaService = new AdministrativeActivityService(mockDBConnection);
