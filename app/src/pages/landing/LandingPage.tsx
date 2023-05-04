@@ -1,3 +1,4 @@
+import Box from '@material-ui/core/Box';
 import Container from '@material-ui/core/Container';
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
@@ -18,23 +19,32 @@ const useStyles = makeStyles((theme: Theme) => ({
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
-    height: '30rem',
+    height: '30em',
 
     '& > main': {
       display: 'flex',
       marginTop: theme.spacing(-6)
     }
   },
+  heroContainer: {
+    fontSize: '1em',
+
+    [theme.breakpoints.up('xl')]: {
+      fontSize: '1.5em'
+    }
+  },
+  heroContentBox: {
+    maxWidth: '50em',
+    margin: '0 auto'
+  },
   heroHeader: {
-    maxWidth: '22ch',
-    fontSize: '3.5rem',
-    letterSpacing: '-0.03rem',
+    fontSize: '3.5em',
+    letterSpacing: '-0.03em',
     textShadow: '0px 0px 15px rgba(0,13,26,0.5)'
   },
   heroSubheader: {
-    maxWidth: '45ch',
-    margin: '2rem 0 4rem',
-    fontSize: '1.325rem',
+    margin: '2em 0',
+    fontSize: '1.5em',
     lineHeight: '1.5',
     textShadow: '0px 0px 10px rgba(0,13,26,1)'
   }
@@ -45,15 +55,17 @@ export const LandingPage = () => {
 
   return (
     <BaseLayout className={classes.baseLayoutContainer}>
-      <Container maxWidth="md">
-        <Typography variant="h1" className={classes.heroHeader}>
-          Species Inventory Management System
-        </Typography>
-        <Typography variant="body1" className={classes.heroSubheader}>
-          Upload and submit your species inventory project data to help understand how we can better protect and
-          preserve biodiversity in British Columbia.
-        </Typography>
-        <LandingActions />
+      <Container className={classes.heroContainer}>
+        <Box className={classes.heroContentBox}>
+          <Typography variant="h1" className={classes.heroHeader}>
+            Species Inventory Management System
+          </Typography>
+          <Typography variant="body1" className={classes.heroSubheader}>
+            Upload and submit your species inventory project data to help understand how we can better protect and
+            preserve biodiversity in British Columbia.
+          </Typography>
+          <LandingActions />
+        </Box>
       </Container>
     </BaseLayout>
   );

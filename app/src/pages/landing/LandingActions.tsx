@@ -10,30 +10,33 @@ import { Link } from 'react-router-dom';
 
 const useStyles = makeStyles((theme: Theme) => ({
   greeting: {
-    fontSize: '1.125rem',
+    fontSize: '1.25em',
     lineHeight: '1.5'
   },
   heroButton: {
+    fontSize: '1em',
     color: theme.palette.primary.main,
     backgroundColor: '#fcba19',
     fontWeight: 700,
-    padding: '12px 44px'
+    padding: '0.75em 3em'
   },
   loginButton: {
     textTransform: 'uppercase'
   },
   actionsContainer: {
-    maxWidth: '45ch',
+    maxWidth: '60ch',
 
     '& p': {
-      margin: '1rem 0'
+      fontSize: '1em',
+      margin: '1.5em 0'
     }
   },
   actions: {
+    fontSize: '1em',
     display: 'flex',
     flexFlow: 'row nowrap',
     alignItems: 'center',
-    gap: '1rem',
+    gap: '1em',
 
     '& > span': {
       textTransform: 'uppercase'
@@ -88,13 +91,13 @@ const LandingActions = () => {
           </Button>
           {/**
             * Temporarily hiding the Register link. See: https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-30
+            */}
             <Typography variant="body2">
               Don't have an account? &zwnj;
               <a className={classes.heroLink} href="/link-to-register-an-account">
                 Register here.
               </a>
             </Typography>
-          */}
         </>
       </UnAuthGuard>
       <AuthGuard>
