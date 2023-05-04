@@ -162,35 +162,34 @@ const ProjectParticipantsPage: React.FC = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {projectParticipantsDataLoader.data &&
-                    projectParticipantsDataLoader.data.participants
-                      .alphabetizeObjects('user_identifier')
-                      .map((participant) => (
-                        <TableRow key={participant.project_participation_id}>
-                          <TableCell scope="row">{participant.user_identifier}</TableCell>
-                          <TableCell scope="row">{participant.user_identity_source_id}</TableCell>
-                          <TableCell>
-                            <Box my={-1}>
-                              <ProjectParticipantsRoleMenu
-                                participant={participant}
-                                projectRoleCodes={codes.project_roles}
-                                refresh={projectParticipantsDataLoader.refresh}
-                              />
-                            </Box>
-                          </TableCell>
+                  {projectParticipantsDataLoader?.data?.participants
+                    ?.alphabetizeObjects('user_identifier')
+                    ?.map((participant) => (
+                      <TableRow key={participant.project_participation_id}>
+                        <TableCell scope="row">{participant.user_identifier}</TableCell>
+                        <TableCell scope="row">{participant.user_identity_source_id}</TableCell>
+                        <TableCell>
+                          <Box my={-1}>
+                            <ProjectParticipantsRoleMenu
+                              participant={participant}
+                              projectRoleCodes={codes.project_roles}
+                              refresh={projectParticipantsDataLoader.refresh}
+                            />
+                          </Box>
+                        </TableCell>
 
-                          <TableCell align="center">
-                            <Box my={-1}>
-                              <IconButton
-                                title="Remove Team Member"
-                                data-testid={'remove-project-participant-button'}
-                                onClick={() => handleDialogRemoveParticipantOpen(participant)}>
-                                <Icon path={mdiTrashCanOutline} size={1} />
-                              </IconButton>
-                            </Box>
-                          </TableCell>
-                        </TableRow>
-                      ))}
+                        <TableCell align="center">
+                          <Box my={-1}>
+                            <IconButton
+                              title="Remove Team Member"
+                              data-testid={'remove-project-participant-button'}
+                              onClick={() => handleDialogRemoveParticipantOpen(participant)}>
+                              <Icon path={mdiTrashCanOutline} size={1} />
+                            </IconButton>
+                          </Box>
+                        </TableCell>
+                      </TableRow>
+                    ))}
 
                   {!projectParticipantsDataLoader.data && (
                     <TableRow>

@@ -115,7 +115,7 @@ const CreateSurveyPage = () => {
   useEffect(() => {
     getSurveyFundingSourcesDataLoader.load();
   }, [getSurveyFundingSourcesDataLoader, projectContext.projectId]);
-  const fundingSourcesData = getSurveyFundingSourcesDataLoader.data || [];
+  const fundingSourcesData = getSurveyFundingSourcesDataLoader.data ?? [];
 
   const [formikRef] = useState(useRef<FormikProps<any>>(null));
 
@@ -333,7 +333,7 @@ const CreateSurveyPage = () => {
                         fundingSourcesData?.map((item) => {
                           return {
                             value: item.id,
-                            label: `${item.agency_name || item.first_nations_name} | ${getFormattedAmount(
+                            label: `${item.agency_name ?? item.first_nations_name} | ${getFormattedAmount(
                               item.funding_amount
                             )} | ${getFormattedDateRangeString(
                               DATE_FORMAT.ShortMediumDateFormat,
