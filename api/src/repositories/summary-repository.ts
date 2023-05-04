@@ -79,7 +79,7 @@ export class SummaryRepository extends BaseRepository {
       throw new HTTP400('Failed to query survey summary submission table');
     }
 
-    return response && response.rows && response.rows[0];
+    return response?.rows[0];
   }
 
   /**
@@ -130,7 +130,7 @@ export class SummaryRepository extends BaseRepository {
       throw new HTTP400('Failed to query survey summary submission table');
     }
 
-    return response && response.rows && response.rows[0];
+    return response?.rows[0];
   }
 
   /**
@@ -162,7 +162,7 @@ export class SummaryRepository extends BaseRepository {
       throw new HTTP400('Failed to update survey summary submission record');
     }
 
-    return response && response.rows && response.rows[0];
+    return response?.rows[0];
   }
 
   /**
@@ -202,7 +202,7 @@ export class SummaryRepository extends BaseRepository {
       throw new HTTP400('Failed to insert survey summary submission record');
     }
 
-    return response && response.rows && response.rows[0];
+    return response?.rows[0];
   }
 
   /**
@@ -278,7 +278,7 @@ export class SummaryRepository extends BaseRepository {
       throw new HTTP400('Failed to insert summary details data');
     }
 
-    return response && response.rows && response.rows[0];
+    return response?.rows[0];
   }
 
   /**
@@ -305,7 +305,7 @@ export class SummaryRepository extends BaseRepository {
       throw new HTTP400('Failed to soft delete survey summary submission');
     }
 
-    return (response && response.rowCount) || null;
+    return response?.rowCount || null;
   }
 
   /**
@@ -350,7 +350,7 @@ export class SummaryRepository extends BaseRepository {
       throw new HTTP400('Failed to query survey summary submission table');
     }
 
-    return response && response.rows;
+    return response?.rows;
   }
 
   /**
@@ -384,7 +384,7 @@ export class SummaryRepository extends BaseRepository {
       throw new HTTP400('Failed to query summary templates table');
     }
 
-    return response && response.rows && response.rows[0];
+    return response?.rows[0];
   }
 
   /**
@@ -420,7 +420,7 @@ export class SummaryRepository extends BaseRepository {
       .fromRaw('summary_template_species sts')
       .where('sts.summary_template_id', templateRow.summary_template_id)
       .andWhere((qb) => {
-        qb.whereIn('sts.wldtaxonomic_units_id', species || []);
+        qb.whereIn('sts.wldtaxonomic_units_id', species ?? []);
       })
       .orWhere('sts.wldtaxonomic_units_id', null);
 
