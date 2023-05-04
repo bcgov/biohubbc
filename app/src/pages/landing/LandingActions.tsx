@@ -58,7 +58,6 @@ const LandingActions = () => {
 
   const hasPendingAccessRequest = keycloakWrapper?.hasAccessRequest;
   const isSystemUser = keycloakWrapper?.isSystemUser();
-  //const hasAnySystemRole = keycloakWrapper?.hasSystemRole(getAllSystemRoles());
   const hasAdministrativeRole = keycloakWrapper?.hasSystemRole([
     SYSTEM_ROLE.DATA_ADMINISTRATOR,
     SYSTEM_ROLE.SYSTEM_ADMIN
@@ -79,6 +78,7 @@ const LandingActions = () => {
             To access this application, you must use a valid BC government-issued IDIR or BCeID account credential.
           </Typography>
           <Button
+            data-testid='landing_page_login_button'
             component="a"
             href={loginUrl}
             variant="contained"
@@ -98,7 +98,7 @@ const LandingActions = () => {
         </>
       </UnAuthGuard>
       <AuthGuard>
-        <Typography variant="body1" className={classes.greeting}>
+        <Typography variant="body1" className={classes.greeting} data-testid="landing_page_greeting">
           <span>Welcome</span>
           {isReturningUser && (
             <span>&nbsp;back</span>
