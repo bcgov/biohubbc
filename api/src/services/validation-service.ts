@@ -438,7 +438,7 @@ export class ValidationService extends DBService {
       });
     });
 
-    if (mediaState.fileErrors?.length || csvState?.some((item) => !item.isValid)) {
+    if (!mediaState.isValid || csvState?.some((item) => !item.isValid)) {
       // At least 1 error exists, skip remaining steps
       parseError = true;
     }
