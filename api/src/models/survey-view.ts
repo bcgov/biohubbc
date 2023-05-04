@@ -84,7 +84,7 @@ export class GetPermitData {
         permit_id: item.permit_id,
         permit_number: item.number,
         permit_type: item.type
-      })) || [];
+      })) ?? [];
   }
 }
 
@@ -125,8 +125,7 @@ export class GetSurveyFundingSources {
 
   constructor(obj?: any[]) {
     this.funding_sources =
-      (obj &&
-        obj.map((item: any) => {
+      (obj?.map((item: any) => {
           return {
             pfs_id: item.project_funding_source_id,
             funding_amount: item.funding_amount,

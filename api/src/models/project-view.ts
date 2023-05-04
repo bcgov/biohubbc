@@ -41,8 +41,7 @@ export class GetProjectData {
     this.end_date = projectData?.end_date || '';
     this.comments = projectData?.comments || '';
     this.completion_status =
-      (projectData &&
-        projectData.end_date &&
+      (projectData?.end_date &&
         moment(projectData.end_date).endOf('day').isBefore(moment()) &&
         COMPLETION_STATUS.COMPLETED) ||
       COMPLETION_STATUS.ACTIVE;
@@ -104,7 +103,7 @@ export class GetLocationData {
   revision_count: number;
 
   constructor(locationData?: any) {
-    const locationDataItem = locationData && locationData.length && locationData[0];
+    const locationDataItem = locationData?.length && locationData[0];
 
     this.location_description = locationDataItem?.location_description || '';
     this.geometry = (locationDataItem?.geometry?.length && locationDataItem.geometry) || [];
@@ -129,8 +128,7 @@ export class GetIUCNClassificationData {
 
   constructor(iucnClassificationData?: any[]) {
     this.classificationDetails =
-      (iucnClassificationData &&
-        iucnClassificationData.map((item: any) => {
+      (iucnClassificationData?.map((item: any) => {
           return {
             classification: item.classification,
             subClassification1: item.subclassification1,
@@ -161,8 +159,7 @@ export class GetFundingData {
 
   constructor(fundingData?: any[]) {
     this.fundingSources =
-      (fundingData &&
-        fundingData.map((item: any) => {
+      (fundingData?.map((item: any) => {
           return {
             id: item.id,
             agency_id: item.agency_id,

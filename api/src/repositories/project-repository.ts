@@ -51,7 +51,7 @@ export class ProjectRepository extends BaseRepository {
       project_funding_source_id: number;
     }>(sqlStatement);
 
-    const result = (response && response.rows) || null;
+    const result = response?.rows;
 
     if (!result) {
       throw new ApiExecuteSQLError('Failed to get project funding sources by Id', [
@@ -73,7 +73,7 @@ export class ProjectRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement);
 
-    const result = (response && response.rows) || null;
+    const result = response?.rows;
 
     if (!result) {
       throw new ApiExecuteSQLError('Failed to delete survey funding source by id', [
@@ -95,7 +95,7 @@ export class ProjectRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement);
 
-    const result = (response && response.rows) || null;
+    const result = response?.rows;
 
     if (!result) {
       throw new ApiExecuteSQLError('Failed to delete project funding source', [
@@ -130,7 +130,7 @@ export class ProjectRepository extends BaseRepository {
 
     const response = await this.connection.sql<{ project_funding_source_id: number }>(sqlStatement);
 
-    const result = (response && response.rows && response.rows[0]) || null;
+    const result = response?.rows?.[0];
 
     if (!result) {
       throw new ApiExecuteSQLError('Failed to update project funding source', [
@@ -170,7 +170,7 @@ export class ProjectRepository extends BaseRepository {
 
     const response = await this.connection.sql<{ project_funding_source_id: number }>(sqlStatement);
 
-    const result = (response && response.rows && response.rows[0]) || null;
+    const result = response?.rows?.[0];
 
     if (!result) {
       throw new ApiExecuteSQLError('Failed to insert project funding source', [
@@ -214,7 +214,7 @@ export class ProjectRepository extends BaseRepository {
 
     const response = await this.connection.sql<{ id: number; name: string; data: any }>(sqlStatement);
 
-    if (!response || !response?.rows?.[0]) {
+    if (!response?.rows?.[0]) {
       throw new ApiExecuteSQLError('Failed to get draft', [
         'ProjectRepository->getSingleDraft',
         'response was null or undefined, expected response != null'
@@ -298,7 +298,7 @@ export class ProjectRepository extends BaseRepository {
         sqlStatement.append(SQL` AND fs.funding_source_id = ${filterFields.agency_id}`);
       }
 
-      if (filterFields.species && filterFields.species.length) {
+      if (filterFields?.species?.length > 0) {
         sqlStatement.append(SQL` AND sp.wldtaxonomic_units_id =${filterFields.species[0]}`);
       }
 
@@ -377,8 +377,8 @@ export class ProjectRepository extends BaseRepository {
       this.connection.query(getProjectActivitiesSQLStatement.text, getProjectActivitiesSQLStatement.values)
     ]);
 
-    const projectResult = (project && project.rows && project.rows[0]) || null;
-    const activityResult = (activity && activity.rows) || null;
+    const projectResult = project?.rows?.[0]
+    const activityResult = activity?.rows;
 
     if (!projectResult || !activityResult) {
       throw new ApiExecuteSQLError('Failed to get project data', [
