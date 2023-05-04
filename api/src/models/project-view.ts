@@ -134,7 +134,7 @@ export class GetIUCNClassificationData {
             subClassification1: item.subclassification1,
             subClassification2: item.subclassification2
           };
-        })) ||
+        })) ??
       [];
   }
 }
@@ -174,7 +174,7 @@ export class GetFundingData {
             first_nations_id: item.first_nations_id,
             first_nations_name: item.first_nations_name
           };
-        })) ||
+        })) ??
       [];
   }
 }

@@ -403,7 +403,7 @@ export class ProjectRepository extends BaseRepository {
     `;
 
     const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
-    const result = (response && response.rows && response.rows[0]) || null;
+    const result = response?.rows?.[0];
 
     if (!result) {
       throw new ApiExecuteSQLError('Failed to get project objectives data', [
@@ -431,7 +431,7 @@ export class ProjectRepository extends BaseRepository {
     `;
 
     const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
-    const result = (response && response.rows && response.rows[0]) || null;
+    const result = response?.rows?.[0]
 
     if (!result) {
       throw new ApiExecuteSQLError('Failed to get project contact data', [
@@ -461,7 +461,7 @@ export class ProjectRepository extends BaseRepository {
 
     const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
 
-    const result = (response && response.rows) || null;
+    const result = response?.rows;
 
     if (!result) {
       throw new ApiExecuteSQLError('Failed to get project location data', [
@@ -503,7 +503,7 @@ export class ProjectRepository extends BaseRepository {
 
     const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
 
-    const result = (response && response.rows) || null;
+    const result = response?.rows;
 
     if (!result) {
       throw new ApiExecuteSQLError('Failed to get project IUCN Classification data', [
@@ -562,7 +562,7 @@ export class ProjectRepository extends BaseRepository {
     `;
     const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
 
-    const result = (response && response.rows) || null;
+    const result = response?.rows;
 
     if (!result) {
       throw new ApiExecuteSQLError('Failed to get project funding data', [
@@ -594,7 +594,7 @@ export class ProjectRepository extends BaseRepository {
 
     const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
 
-    const result = (response && response.rows) || null;
+    const result = response?.rows;
 
     if (!result) {
       throw new ApiExecuteSQLError('Failed to get project Indigenous Partnerships data', [
@@ -618,7 +618,7 @@ export class ProjectRepository extends BaseRepository {
 
     const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
 
-    const result = (response && response.rows) || null;
+    const result = response?.rows;
 
     if (!result) {
       throw new ApiExecuteSQLError('Failed to get project Stakeholder Partnerships data', [
@@ -642,7 +642,7 @@ export class ProjectRepository extends BaseRepository {
 
     const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
 
-    const result = (response && response.rows) || null;
+    const result = response?.rows;
 
     if (!result) {
       throw new ApiExecuteSQLError('Failed to get project Attachment data', [
@@ -682,7 +682,7 @@ export class ProjectRepository extends BaseRepository {
 
     const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
 
-    const result = (response && response.rows) || null;
+    const result = response?.rows;
 
     return new GetReportAttachmentsData(result);
   }
@@ -722,7 +722,7 @@ export class ProjectRepository extends BaseRepository {
         ${JSON.stringify(postProjectData.location.geometry)}
     `;
 
-    if (postProjectData.location.geometry && postProjectData.location.geometry.length) {
+    if (postProjectData?.location?.geometry?.length) {
       const geometryCollectionSQL = queries.spatial.generateGeometryCollectionSQL(postProjectData.location.geometry);
 
       sqlStatement.append(SQL`
@@ -750,9 +750,9 @@ export class ProjectRepository extends BaseRepository {
 
     const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
 
-    const result = (response && response.rows && response.rows[0]) || null;
+    const result = response?.rows?.[0];
 
-    if (!result || !result.id) {
+    if (!result?.id) {
       throw new ApiExecuteSQLError('Failed to insert project boundary data', [
         'ProjectRepository->insertProject',
         'rows was null or undefined, expected rows != null'
@@ -788,7 +788,7 @@ export class ProjectRepository extends BaseRepository {
     const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
 
     const result = (response && response.rows && response.rows[0]) || null;
-    if (!result || !result.id) {
+    if (!result?.id) {
       throw new ApiExecuteSQLError('Failed to insert project funding data', [
         'ProjectRepository->insertFundingSource',
         'rows was null or undefined, expected rows != null'
@@ -812,7 +812,7 @@ export class ProjectRepository extends BaseRepository {
 
     const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
 
-    const result = (response && response.rows && response.rows[0]) || null;
+    const result = response?.rows?.[0];
 
     if (!result || !result.id) {
       throw new ApiExecuteSQLError('Failed to insert project first nations partnership data', [
@@ -839,9 +839,9 @@ export class ProjectRepository extends BaseRepository {
 
     const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
 
-    const result = (response && response.rows && response.rows[0]) || null;
+    const result = response?.rows?.[0];
 
-    if (!result || !result.id) {
+    if (!result?.id) {
       throw new ApiExecuteSQLError('Failed to insert project stakeholder partnership data', [
         'ProjectRepository->insertStakeholderPartnership',
         'rows was null or undefined, expected rows != null'
@@ -866,9 +866,9 @@ export class ProjectRepository extends BaseRepository {
 
     const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
 
-    const result = (response && response.rows && response.rows[0]) || null;
+    const result = response?.rows?.[0];
 
-    if (!result || !result.id) {
+    if (!result?.id) {
       throw new ApiExecuteSQLError('Failed to insert project IUCN data', [
         'ProjectRepository->insertClassificationDetail',
         'rows was null or undefined, expected rows != null'
@@ -893,9 +893,9 @@ export class ProjectRepository extends BaseRepository {
 
     const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
 
-    const result = (response && response.rows && response.rows[0]) || null;
+    const result = response?.rows?.[0];
 
-    if (!result || !result.id) {
+    if (!result?.id) {
       throw new ApiExecuteSQLError('Failed to insert project activity data', [
         'ProjectRepository->insertClassificationDetail',
         'rows was null or undefined, expected rows != null'
@@ -971,7 +971,7 @@ export class ProjectRepository extends BaseRepository {
 
       const geometrySQLStatement = SQL`geography = `;
 
-      if (location.geometry && location.geometry.length) {
+      if (location?.geometry?.length) {
         const geometryCollectionSQL = queries.spatial.generateGeometryCollectionSQL(location.geometry);
 
         geometrySQLStatement.append(SQL`

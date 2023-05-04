@@ -139,7 +139,7 @@ export class GetSurveyFundingSources {
             first_nations_id: item.first_nations_id,
             first_nations_name: item.first_nations_name
           };
-        })) ||
+        })) ??
       [];
   }
 }
