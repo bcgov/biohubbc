@@ -121,7 +121,7 @@ export class PostLocationData {
       }
     });
 
-    this.location_description = (obj && obj.location_description) || null;
+    this.location_description = obj?.location_description;
     this.geometry = (obj?.geometry?.length && obj.geometry) || [];
   }
 }
