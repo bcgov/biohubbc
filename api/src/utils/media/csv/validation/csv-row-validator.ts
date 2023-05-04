@@ -324,7 +324,7 @@ export const getValidFormatFieldsValidator = (config?: ColumnFormatValidatorConf
         return csvWorksheet;
       }
 
-      const regexFlags = config.column_format_validator.reg_exp_flags || '';
+      const regexFlags = config.column_format_validator.reg_exp_flags ?? '';
 
       const regex = new RegExp(config.column_format_validator.reg_exp, regexFlags);
 
