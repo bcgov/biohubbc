@@ -86,8 +86,8 @@ const ProjectParticipantsPage: React.FC = () => {
       ),
       yesButtonProps: { color: 'secondary' },
       open: true,
-      onYes: () => {
-        handleRemoveProjectParticipant(participant.project_participation_id);
+      onYes: async () => {
+        await handleRemoveProjectParticipant(participant.project_participation_id);
         dialogContext.setYesNoDialog({ open: false });
         dialogContext.setSnackbar({
           open: true,

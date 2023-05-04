@@ -66,17 +66,13 @@ export const validationProjectYupSchema = ProjectCoordinatorYupSchema.concat(Pro
   .concat(ProjectFundingFormYupSchema)
   .concat(ProjectPartnershipsFormYupSchema);
 
-//Fuction to get the list of coordinator agencies from the codeset
-export const getCoordinatorAgencyOptions = (codes: IGetAllCodeSetsResponse) => {
-  const coordinatorAgency = codes?.coordinator_agency?.map((item) => {
-    return item.name;
-  });
+//Function to get the list of coordinator agencies from the code set
+export const getCoordinatorAgencyOptions = (codes: IGetAllCodeSetsResponse): string[] => {
+  const options = [...codes?.coordinator_agency, ...codes?.first_nations];
 
-  const firstNations = codes?.first_nations?.map((item) => {
-    return item.name;
-  });
+  const sorted = options.alphabetizeObjects('name');
 
-  return [...coordinatorAgency, ...firstNations].sort();
+  return sorted.map((item) => item.name);
 };
 
 /**
