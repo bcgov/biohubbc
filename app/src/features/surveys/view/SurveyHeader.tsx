@@ -26,6 +26,7 @@ import { DeleteSurveyI18N } from 'constants/i18n';
 import { PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
 import { AuthStateContext } from 'contexts/authStateContext';
 import { DialogContext } from 'contexts/dialogContext';
+import { ProjectContext } from 'contexts/projectContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -61,6 +62,8 @@ const useStyles = makeStyles((theme: Theme) => ({
  */
 const SurveyHeader = () => {
   const surveyContext = useContext(SurveyContext);
+  const projectContext = useContext(ProjectContext);
+
   const surveyWithDetails = surveyContext.surveyDataLoader.data;
 
   const classes = useStyles();
@@ -124,6 +127,7 @@ const SurveyHeader = () => {
         showDeleteErrorDialog({ open: true });
         return;
       }
+      projectContext.surveysListDataLoader.refresh(projectContext.projectId);
 
       history.push(`/admin/projects/${surveyContext.projectId}/surveys`);
     } catch (error) {

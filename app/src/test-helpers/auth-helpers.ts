@@ -1,25 +1,29 @@
 import { IAuthState } from 'contexts/authStateContext';
+import { IKeycloakWrapper } from 'hooks/useKeycloakWrapper';
 import Keycloak from 'keycloak-js';
 
+export const keycloakWrapper: IKeycloakWrapper = {
+  keycloak: ({
+    authenticated: true
+  } as unknown) as Keycloak,
+  hasLoadedAllUserInfo: true,
+  systemRoles: [],
+  isSystemUser: () => false,
+  hasSystemRole: () => false,
+  hasAccessRequest: false,
+  hasOneOrMoreProjectRoles: false,
+  getUserIdentifier: () => 'testusername',
+  getIdentitySource: () => 'idir',
+  getUserGuid: () => 'aaaa',
+  username: 'testusername',
+  displayName: 'testdisplayname',
+  email: 'test@email.com',
+  refresh: () => {},
+  getLoginUrl: () => '/login'
+};
+
 const SystemUserAuthState: IAuthState = {
-  keycloakWrapper: {
-    keycloak: ({
-      authenticated: true
-    } as unknown) as Keycloak,
-    hasLoadedAllUserInfo: true,
-    systemRoles: [],
-    isSystemUser: () => false,
-    hasSystemRole: () => false,
-    hasAccessRequest: false,
-    getUserIdentifier: () => 'testusername',
-    getIdentitySource: () => 'idir',
-    getUserGuid: () => 'aaaa',
-    username: 'testusername',
-    displayName: 'testdisplayname',
-    email: 'test@email.com',
-    refresh: () => {},
-    getLoginUrl: () => '/login'
-  }
+  keycloakWrapper: { ...keycloakWrapper }
 };
 
 // Same effect as `Partial` but applies to all levels of a nested object

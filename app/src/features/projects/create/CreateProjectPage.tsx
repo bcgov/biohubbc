@@ -6,7 +6,6 @@ import Paper from '@material-ui/core/Paper';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
-import assert from 'assert';
 import EditDialog from 'components/dialog/EditDialog';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import YesNoDialog from 'components/dialog/YesNoDialog';
@@ -83,7 +82,7 @@ const CreateProjectPage: React.FC = () => {
   const codesContext = useContext(CodesContext);
 
   const codes = codesContext.codesDataLoader.data;
-  assert(codesContext.codesDataLoader.data);
+  codesContext.codesDataLoader.load();
 
   const draftId = Number(queryParams.draftId);
 
@@ -350,14 +349,16 @@ const CreateProjectPage: React.FC = () => {
                   color="primary"
                   variant="contained"
                   onClick={() => formikRef.current?.submitForm()}
-                  className={classes.actionButton}>
+                  className={classes.actionButton}
+                  data-testid="submit-project-button">
                   Submit Project
                 </Button>
                 <Button
                   color="primary"
                   variant="contained"
                   onClick={() => setOpenDraftDialog(true)}
-                  className={classes.actionButton}>
+                  className={classes.actionButton}
+                  data-testid="save-draft-button">
                   Save Draft
                 </Button>
 
@@ -365,7 +366,8 @@ const CreateProjectPage: React.FC = () => {
                   color="secondary"
                   variant="outlined"
                   onClick={() => setOpenDeleteDraftDialog(true)}
-                  className={classes.actionButton}>
+                  className={classes.actionButton}
+                  data-testid="delete-draft-button">
                   Delete Draft
                 </Button>
 

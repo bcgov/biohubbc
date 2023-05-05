@@ -13,12 +13,14 @@ import {
   GetProjectData
 } from '../models/project-view';
 import { ProjectUserObject } from '../models/user';
+import { IUpdateProject } from '../paths/project/{projectId}/update';
 import { ProjectParticipationRepository } from '../repositories/project-participation-repository';
 import { ProjectRepository } from '../repositories/project-repository';
 import { getMockDBConnection } from '../__mocks__/db';
 import { HistoryPublishService } from './history-publish-service';
 import { PlatformService } from './platform-service';
 import { ProjectService } from './project-service';
+import { SurveyService } from './survey-service';
 
 chai.use(sinonChai);
 
@@ -147,16 +149,30 @@ describe('ProjectService', () => {
         const dbConnection = getMockDBConnection();
         const service = new ProjectService(dbConnection);
 
-        const repoStub1 = sinon.stub(ProjectService.prototype, 'updateProject').resolves();
-        const repoStub2 = sinon.stub(PlatformService.prototype, 'submitProjectDwCMetadataToBioHub').resolves();
+        const projectId = 1;
+        const projectData = (null as unknown) as IUpdateProject;
 
-        const response = await service.updateProjectAndUploadMetadataToBioHub(
-          1,
-          (null as unknown) as PostProjectObject
-        );
+        const surveyOneId = 2;
+        const surveyTwoId = 3;
 
-        expect(repoStub1).to.be.calledOnce;
-        expect(repoStub2).to.be.calledOnce;
+        const updateProjectStub = sinon.stub(ProjectService.prototype, 'updateProject').resolves();
+        const submitProjectDwCMetadataToBioHubStub = sinon
+          .stub(PlatformService.prototype, 'submitProjectDwCMetadataToBioHub')
+          .resolves();
+        const getSurveyIdsByProjectIdStub = sinon
+          .stub(SurveyService.prototype, 'getSurveyIdsByProjectId')
+          .resolves([{ id: surveyOneId }, { id: surveyTwoId }]);
+        const submitSurveyDwCMetadataToBioHubStub = sinon
+          .stub(PlatformService.prototype, 'submitSurveyDwCMetadataToBioHub')
+          .resolves();
+
+        const response = await service.updateProjectAndUploadMetadataToBioHub(projectId, projectData);
+
+        expect(updateProjectStub).to.be.calledOnceWith(projectId, projectData);
+        expect(submitProjectDwCMetadataToBioHubStub).to.be.calledOnceWith(projectId);
+        expect(getSurveyIdsByProjectIdStub).to.be.calledWith(projectId);
+        expect(submitSurveyDwCMetadataToBioHubStub).to.be.calledWith(surveyOneId);
+        expect(submitSurveyDwCMetadataToBioHubStub).to.be.calledWith(surveyTwoId);
         expect(response).to.eql(undefined);
       });
     });

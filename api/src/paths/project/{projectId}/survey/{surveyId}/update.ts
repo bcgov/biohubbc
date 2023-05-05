@@ -278,6 +278,7 @@ PUT.apiDoc = {
 
 export function updateSurvey(): RequestHandler {
   return async (req, res) => {
+    const projectId = Number(req.params.projectId);
     const surveyId = Number(req.params.surveyId);
 
     const sanitizedPutSurveyData = new PutSurveyObject(req.body);
@@ -289,7 +290,7 @@ export function updateSurvey(): RequestHandler {
 
       const surveyService = new SurveyService(connection);
 
-      await surveyService.updateSurveyAndUploadMetadataToBiohub(surveyId, sanitizedPutSurveyData);
+      await surveyService.updateSurveyAndUploadMetadataToBiohub(projectId, surveyId, sanitizedPutSurveyData);
 
       await connection.commit();
 

@@ -4,6 +4,7 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as db from '../../../../../database/db';
 import { HTTPError } from '../../../../../errors/http-error';
+import { PutSurveyObject } from '../../../../../models/survey-update';
 import { SurveyService } from '../../../../../services/survey-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../__mocks__/db';
 import { updateSurvey } from './update';
@@ -20,7 +21,9 @@ describe('updateSurvey', () => {
 
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-    sinon.stub(SurveyService.prototype, 'updateSurveyAndUploadMetadataToBiohub').resolves();
+    const updateSurveyAndUploadMetadataToBiohubStub = sinon
+      .stub(SurveyService.prototype, 'updateSurveyAndUploadMetadataToBiohub')
+      .resolves();
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
@@ -39,6 +42,11 @@ describe('updateSurvey', () => {
       expect.fail();
     }
 
+    expect(updateSurveyAndUploadMetadataToBiohubStub).to.have.been.calledOnceWith(
+      1,
+      2,
+      sinon.match(new PutSurveyObject())
+    );
     expect(mockRes.statusValue).to.equal(200);
     expect(mockRes.jsonValue).to.eql({ id: 2 });
   });
