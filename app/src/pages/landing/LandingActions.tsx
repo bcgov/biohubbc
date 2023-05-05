@@ -179,6 +179,7 @@ const LandingActions = () => {
           )}
           {hasAdministrativeRole && (
             <Button
+              data-testid='landing_page_manage_users_button'
               component={Link}
               to="/admin/users"
               variant="contained"

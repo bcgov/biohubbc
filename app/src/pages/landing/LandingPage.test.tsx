@@ -180,7 +180,8 @@ describe('LandingPage', () => {
       expect(queryByText('Log In')).not.toBeInTheDocument();
 
       // Should see "your request is pending" message
-      expect(getByText('Your access request is currently pending.')).toBeVisible();
+      expect(getByText('Access request pending')).toBeVisible();
+      expect(getByText('You access request for this application is currently under review. You will be notified by email when your request has been reviewed.')).toBeVisible();
 
       // Should see the Logout button
       const logoutButton = getByText('Log Out');
@@ -239,7 +240,7 @@ describe('LandingPage', () => {
       // Should see the View Projects button
       const viewProjectsButton = getByText('View Projects');
       expect(viewProjectsButton).toBeVisible();
-      expect(viewProjectsButton).toHaveAttribute('href', '/admin/projects');
+      expect(viewProjectsButton.parentElement).toHaveAttribute('href', '/admin/projects');
     });
 
     it('Case 5: Signed in, has a viewer role on some project, but not a system role that allows project creation', () => {
@@ -290,7 +291,7 @@ describe('LandingPage', () => {
       // Should see the View Projects button
       const viewProjectsButton = getByText('View Projects');
       expect(viewProjectsButton).toBeVisible();
-      expect(viewProjectsButton).toHaveAttribute('href', '/admin/projects');
+      expect(viewProjectsButton.parentElement).toHaveAttribute('href', '/admin/projects');
     });
 
     it('Case 6: Signed in, has the ability to view and create projects', () => {
@@ -335,12 +336,12 @@ describe('LandingPage', () => {
       // Should see the View Projects button
       const viewProjectsButton = getByText('View Projects');
       expect(viewProjectsButton).toBeVisible();
-      expect(viewProjectsButton).toHaveAttribute('href', '/admin/projects');
+      expect(viewProjectsButton.parentElement).toHaveAttribute('href', '/admin/projects');
 
       // Should see the Create Project button
-      const createProjectButton = getByText('View Projects');
+      const createProjectButton = getByText('Create a Project');
       expect(createProjectButton).toBeVisible();
-      expect(createProjectButton).toHaveAttribute('href', '/admin/projects/create');
+      expect(createProjectButton.parentElement).toHaveAttribute('href', '/admin/projects/create');
     });
 
     it('Case 7: Signed in, has an admin role', () => {
@@ -385,12 +386,15 @@ describe('LandingPage', () => {
       // Should see the View Projects button
       const viewProjectsButton = getByText('View Projects');
       expect(viewProjectsButton).toBeVisible();
-      expect(viewProjectsButton).toHaveAttribute('href', '/admin/projects');
+      expect(viewProjectsButton.parentElement).toHaveAttribute('href', '/admin/projects');
 
       // Should see the Manage Users button
-      const manageUsersButton = getByText('Manage Users');
+      const manageUsersButton = getByTestId('landing_page_manage_users_button');
+      expect(manageUsersButton).toHaveTextContent('Manage Users');
       expect(manageUsersButton).toBeVisible();
       expect(manageUsersButton).toHaveAttribute('href', '/admin/users');
+
+
     });
   });
 });
