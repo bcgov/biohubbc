@@ -132,7 +132,7 @@ describe('getSummarySubmission', () => {
   it('should return null if the survey has no summary submission, on success', async () => {
     const mockQuery = sinon.stub();
 
-    mockQuery.resolves({ rows: undefined });
+    mockQuery.resolves({ rows: [] });
 
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,

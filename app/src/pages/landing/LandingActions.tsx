@@ -110,7 +110,7 @@ const LandingActions = () => {
           </Button>
           <Typography variant="body2">
             Don't have an account? &zwnj;
-            <a className={classes.heroLink} target='_blank' href='https://www.bceid.ca/'>
+            <a className={classes.heroLink} target="_blank" href="https://www.bceid.ca/">
               Register here.
             </a>
           </Typography>
