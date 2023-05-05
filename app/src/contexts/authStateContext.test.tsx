@@ -21,7 +21,8 @@ describe('AuthStateContext', () => {
         keycloakWrapper: {
           hasLoadedAllUserInfo: false,
           systemRoles: [],
-          hasAccessRequest: false
+          hasAccessRequest: false,
+          hasOneOrMoreProjectRoles: false
         }
       })
     );
@@ -51,6 +52,7 @@ describe('AuthStateContext', () => {
           isSystemUser: () => false,
           hasSystemRole: () => false,
           hasAccessRequest: false,
+          hasOneOrMoreProjectRoles: false,
           getUserIdentifier: () => 'testusername',
           getIdentitySource: () => 'idir',
           getUserGuid: () => 'aaaa',

@@ -49,6 +49,9 @@ const mockBiohubApi = useBiohubApi as jest.Mock;
 const mockUseApi = {
   user: {
     getUser: jest.fn()
+  },
+  admin: {
+    getAdministrativeActivityStanding: jest.fn()
   }
 };
 
