@@ -108,7 +108,7 @@ export class SurveyRepository extends BaseRepository {
     `;
 
     const response = await this.connection.sql<{ id: number }>(sqlStatement);
-    const result = response?.rows
+    const result = response?.rows;
 
     if (!result) {
       throw new ApiExecuteSQLError('Failed to get project survey ids', [
@@ -139,7 +139,7 @@ export class SurveyRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement);
 
-    const result = response?.rows?.[0]
+    const result = response?.rows?.[0];
 
     if (!result) {
       throw new ApiExecuteSQLError('Failed to get project survey details data', [
@@ -325,9 +325,9 @@ export class SurveyRepository extends BaseRepository {
     const response = await this.connection.sql(sqlStatement);
 
     const result = response?.rows?.[0];
-    console.log("____")
-    console.log("____")
-    console.log("____")
+    console.log('____');
+    console.log('____');
+    console.log('____');
     console.log(result);
     if (!result) {
       return null;

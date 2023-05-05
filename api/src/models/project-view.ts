@@ -128,14 +128,13 @@ export class GetIUCNClassificationData {
 
   constructor(iucnClassificationData?: any[]) {
     this.classificationDetails =
-      (iucnClassificationData?.map((item: any) => {
-          return {
-            classification: item.classification,
-            subClassification1: item.subclassification1,
-            subClassification2: item.subclassification2
-          };
-        })) ??
-      [];
+      iucnClassificationData?.map((item: any) => {
+        return {
+          classification: item.classification,
+          subClassification1: item.subclassification1,
+          subClassification2: item.subclassification2
+        };
+      }) ?? [];
   }
 }
 
@@ -159,23 +158,22 @@ export class GetFundingData {
 
   constructor(fundingData?: any[]) {
     this.fundingSources =
-      (fundingData?.map((item: any) => {
-          return {
-            id: item.id,
-            agency_id: item.agency_id,
-            investment_action_category: item.investment_action_category,
-            investment_action_category_name: item.investment_action_category_name,
-            agency_name: item.agency_name,
-            funding_amount: item.funding_amount,
-            start_date: item.start_date,
-            end_date: item.end_date,
-            agency_project_id: item.agency_project_id,
-            revision_count: item.revision_count,
-            first_nations_id: item.first_nations_id,
-            first_nations_name: item.first_nations_name
-          };
-        })) ??
-      [];
+      fundingData?.map((item: any) => {
+        return {
+          id: item.id,
+          agency_id: item.agency_id,
+          investment_action_category: item.investment_action_category,
+          investment_action_category_name: item.investment_action_category_name,
+          agency_name: item.agency_name,
+          funding_amount: item.funding_amount,
+          start_date: item.start_date,
+          end_date: item.end_date,
+          agency_project_id: item.agency_project_id,
+          revision_count: item.revision_count,
+          first_nations_id: item.first_nations_id,
+          first_nations_name: item.first_nations_name
+        };
+      }) ?? [];
   }
 }
 

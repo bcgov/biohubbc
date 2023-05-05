@@ -136,15 +136,13 @@ export const getFormattedAmount = (amount?: number): string => {
  * @return {*}  {(string | undefined)}
  */
 export const getLogOutUrl = (config: IConfig): string | undefined => {
-  if (!config ?? !config.KEYCLOAK_CONFIG?.url ?? !config.KEYCLOAK_CONFIG?.realm ?? !config.SITEMINDER_LOGOUT_URL) {
-    return;
+  if (config && config.KEYCLOAK_CONFIG.url && config.KEYCLOAK_CONFIG.realm && config.SITEMINDER_LOGOUT_URL) {
+    const localRedirectURL = `${window.location.origin}/`;
+
+    const keycloakLogoutRedirectURL = `${config.KEYCLOAK_CONFIG.url}/realms/${config.KEYCLOAK_CONFIG.realm}/protocol/openid-connect/logout?redirect_uri=${localRedirectURL}`;
+
+    return `${config.SITEMINDER_LOGOUT_URL}?returl=${keycloakLogoutRedirectURL}&retnow=1`;
   }
-
-  const localRedirectURL = `${window.location.origin}/`;
-
-  const keycloakLogoutRedirectURL = `${config.KEYCLOAK_CONFIG.url}/realms/${config.KEYCLOAK_CONFIG.realm}/protocol/openid-connect/logout?redirect_uri=${localRedirectURL}`;
-
-  return `${config.SITEMINDER_LOGOUT_URL}?returl=${keycloakLogoutRedirectURL}&retnow=1`;
 };
 
 export const getFormattedFileSize = (fileSize: number) => {

@@ -125,22 +125,21 @@ export class GetSurveyFundingSources {
 
   constructor(obj?: any[]) {
     this.funding_sources =
-      (obj?.map((item: any) => {
-          return {
-            pfs_id: item.project_funding_source_id,
-            funding_amount: item.funding_amount,
-            funding_source_id: item.funding_source_id,
-            funding_start_date: item.funding_start_date,
-            funding_end_date: item.funding_end_date,
-            investment_action_category_id: item.investment_action_category_id,
-            investment_action_category_name: item.investment_action_category_name,
-            agency_name: item.agency_name,
-            funding_source_project_id: item.funding_source_project_id,
-            first_nations_id: item.first_nations_id,
-            first_nations_name: item.first_nations_name
-          };
-        })) ??
-      [];
+      obj?.map((item: any) => {
+        return {
+          pfs_id: item.project_funding_source_id,
+          funding_amount: item.funding_amount,
+          funding_source_id: item.funding_source_id,
+          funding_start_date: item.funding_start_date,
+          funding_end_date: item.funding_end_date,
+          investment_action_category_id: item.investment_action_category_id,
+          investment_action_category_name: item.investment_action_category_name,
+          agency_name: item.agency_name,
+          funding_source_project_id: item.funding_source_project_id,
+          first_nations_id: item.first_nations_id,
+          first_nations_name: item.first_nations_name
+        };
+      }) ?? [];
   }
 }
 

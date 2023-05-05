@@ -377,7 +377,7 @@ export class ProjectRepository extends BaseRepository {
       this.connection.query(getProjectActivitiesSQLStatement.text, getProjectActivitiesSQLStatement.values)
     ]);
 
-    const projectResult = project?.rows?.[0]
+    const projectResult = project?.rows?.[0];
     const activityResult = activity?.rows;
 
     if (!projectResult || !activityResult) {
@@ -431,7 +431,7 @@ export class ProjectRepository extends BaseRepository {
     `;
 
     const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
-    const result = response?.rows?.[0]
+    const result = response?.rows?.[0];
 
     if (!result) {
       throw new ApiExecuteSQLError('Failed to get project contact data', [
