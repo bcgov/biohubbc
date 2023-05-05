@@ -1,4 +1,5 @@
 import SQL from 'sql-template-strings';
+import { z } from 'zod';
 import {
   ADMINISTRATIVE_ACTIVITY_STATUS_TYPE,
   ADMINISTRATIVE_ACTIVITY_TYPE
@@ -6,27 +7,41 @@ import {
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { BaseRepository } from './base-repository';
 
-export interface IAdministrativeActivityStanding {
-  has_pending_acccess_request: boolean;
-  has_one_or_more_project_roles: boolean;
-}
+// Defines a Zod Schema for a valid JSON value
+const literalSchema = z.union([z.string(), z.number(), z.boolean(), z.null()]);
+type Literal = z.infer<typeof literalSchema>;
+type Json = Literal | { [key: string]: Json } | Json[];
+export const JsonSchema: z.ZodType<Json> = z.lazy(() =>
+  z.union([literalSchema, z.array(JsonSchema), z.record(JsonSchema)])
+);
 
-export interface IAdministrativeActivity {
-  id: number;
-  type: number;
-  type_name: string;
-  status: number;
-  status_name: string;
-  description: string | null;
-  data: string | object; // JSON data blob containing additional information about the activity record
-  notes: string | null;
-  create_date: Date | string;
-}
+export const IAdministrativeActivityStanding = z.object({
+  has_pending_acccess_request: z.boolean(),
+  has_one_or_more_project_roles: z.boolean()
+});
 
-export interface ICreateAdministrativeActivity {
-  id: number;
-  date: Date;
-}
+export type IAdministrativeActivityStanding = z.infer<typeof IAdministrativeActivityStanding>;
+
+export const IAdministrativeActivity = z.object({
+  id: z.number(),
+  type: z.number(),
+  type_name: z.string(),
+  status: z.number(),
+  status_name: z.string(),
+  description: z.string().nullable(),
+  data: JsonSchema,
+  notes: z.string().nullable(),
+  create_date: z.union([z.date(), z.string()])
+});
+
+export type IAdministrativeActivity = z.infer<typeof IAdministrativeActivity>;
+
+export const ICreateAdministrativeActivity = z.object({
+  id: z.number(),
+  date: z.date()
+});
+
+export type ICreateAdministrativeActivity = z.infer<typeof ICreateAdministrativeActivity>;
 
 /**
  * A repository class for accessing administrative activity data.
@@ -109,7 +124,7 @@ export class AdministrativeActivityRepository extends BaseRepository {
 
     sqlStatement.append(`;`);
 
-    const response = await this.connection.sql<IAdministrativeActivity>(sqlStatement);
+    const response = await this.connection.sql(sqlStatement, IAdministrativeActivity);
     return response.rows;
   }
 
@@ -156,7 +171,7 @@ export class AdministrativeActivityRepository extends BaseRepository {
         create_date::timestamptz AS date
     `;
 
-    const response = await this.connection.sql<ICreateAdministrativeActivity>(sqlStatement);
+    const response = await this.connection.sql(sqlStatement, ICreateAdministrativeActivity);
 
     if (!response.rows.length) {
       throw new ApiExecuteSQLError('Failed to create administrative activity record', [
@@ -217,7 +232,7 @@ export class AdministrativeActivityRepository extends BaseRepository {
         system_user_project_roles;
     `;
 
-    const response = await this.connection.sql<IAdministrativeActivityStanding>(sqlStatement);
+    const response = await this.connection.sql(sqlStatement, IAdministrativeActivityStanding);
 
     return response.rows[0];
   }
@@ -250,7 +265,7 @@ export class AdministrativeActivityRepository extends BaseRepository {
         administrative_activity_id = ${administrativeActivityId};
     `;
 
-    const response = await this.connection.sql<{ administrative_activity_id: number }>(sqlStatement);
+    const response = await this.connection.sql(sqlStatement, z.never());
 
     if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to update administrative activity record', [
