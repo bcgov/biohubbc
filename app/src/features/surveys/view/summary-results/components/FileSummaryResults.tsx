@@ -11,15 +11,16 @@ import {
   mdiFileAlertOutline,
   mdiFileOutline,
   mdiInformationOutline,
+  mdiLockOutline,
   mdiTrashCanOutline,
   mdiTrayArrowDown
 } from '@mdi/js';
 import Icon from '@mdi/react';
 import clsx from 'clsx';
 import { SubmitStatusChip } from 'components/chips/SubmitStatusChip';
-import { ProjectRoleGuard, SystemRoleGuard } from 'components/security/Guards';
-import { BioHubSubmittedStatusType } from 'constants/misc';
-import { PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
+import { SystemRoleGuard } from 'components/security/Guards';
+import { PublishStatus } from 'constants/attachments';
+import { SYSTEM_ROLE } from 'constants/roles';
 import { IGetSummaryResultsResponse } from 'interfaces/useSummaryResultsApi.interface';
 import React from 'react';
 
@@ -70,12 +71,8 @@ const FileSummaryResults = (props: IFileResultsProps) => {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
-  const checkSubmissionStatus = (data: IGetSummaryResultsResponse): BioHubSubmittedStatusType => {
-    if (data.surveySummarySupplementaryData?.event_timestamp) {
-      return BioHubSubmittedStatusType.SUBMITTED;
-    }
-    return BioHubSubmittedStatusType.UNSUBMITTED;
-  };
+  const status =
+    (fileData.surveySummarySupplementaryData?.event_timestamp && PublishStatus.SUBMITTED) || PublishStatus.UNSUBMITTED;
 
   let icon: string = mdiFileOutline;
   let severity: 'error' | 'info' | 'success' | 'warning' = 'info';
@@ -88,6 +85,8 @@ const FileSummaryResults = (props: IFileResultsProps) => {
     severity = 'warning';
   } else if (fileData.surveySummaryData.messages.some((item) => item.class.toUpperCase() === 'INFO')) {
     icon = mdiInformationOutline;
+  } else if (status === PublishStatus.SUBMITTED) {
+    icon = mdiLockOutline;
   }
 
   return (
@@ -108,7 +107,7 @@ const FileSummaryResults = (props: IFileResultsProps) => {
           <Box flex="0 0 auto" display="flex" alignItems="center">
             <Box mr={2}>
               <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
-                <SubmitStatusChip status={checkSubmissionStatus(fileData)} />
+                <SubmitStatusChip status={status} />
               </SystemRoleGuard>
             </Box>
             <Box>
@@ -146,9 +145,7 @@ const FileSummaryResults = (props: IFileResultsProps) => {
                   </ListItemIcon>
                   Download
                 </MenuItem>
-                <ProjectRoleGuard
-                  validProjectRoles={[PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR]}
-                  validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+                <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
                   <MenuItem
                     onClick={() => {
                       showDelete();
@@ -159,7 +156,7 @@ const FileSummaryResults = (props: IFileResultsProps) => {
                     </ListItemIcon>
                     Delete
                   </MenuItem>
-                </ProjectRoleGuard>
+                </SystemRoleGuard>
               </Menu>
             </Box>
           </Box>

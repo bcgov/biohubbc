@@ -1,3 +1,4 @@
+import { PublishStatus } from 'constants/attachments';
 import { IAgreementsForm } from 'features/surveys/components/AgreementsForm';
 import { IGeneralInformationForm } from 'features/surveys/components/GeneralInformationForm';
 import { IProprietaryDataForm } from 'features/surveys/components/ProprietaryDataForm';
@@ -183,7 +184,7 @@ export interface SurveySupplementaryData {
  * @interface ISurveySupplementaryData
  */
 export interface ISurveySupplementaryData {
-  has_unpublished_content: boolean;
+  publishStatus: PublishStatus;
 }
 
 /**

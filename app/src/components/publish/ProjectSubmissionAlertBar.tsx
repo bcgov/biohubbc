@@ -64,15 +64,15 @@ const ProjectSubmissionAlertBar = () => {
 };
 
 function getSurveyDataSubmissionStatus(surveyData?: IGetSurveyForListResponse[]) {
-  if (!surveyData?.length) {
+  if (!surveyData?.length || surveyData.every((item) => item.surveySupplementaryData.publishStatus === 'NO_DATA')) {
     return 'NO_DATA';
   }
 
-  if (surveyData.every((item) => !item.surveySupplementaryData?.has_unpublished_content)) {
-    return 'SUBMITTED';
+  if (surveyData.some((item) => item.surveySupplementaryData?.publishStatus === 'UNSUBMITTED')) {
+    return 'UNSUBMITTED';
   }
 
-  return 'UNSUBMITTED';
+  return 'SUBMITTED';
 }
 
 function getAttachmentDataSubmissionStatus(projectAttachmentsData?: IGetProjectAttachmentsResponse) {
