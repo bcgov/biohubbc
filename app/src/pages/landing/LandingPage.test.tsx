@@ -1,14 +1,13 @@
-import { cleanup, render, waitFor } from "@testing-library/react";
+import { cleanup, fireEvent, render, waitFor } from '@testing-library/react';
+import { SYSTEM_ROLE } from 'constants/roles';
 // import { SYSTEM_ROLE } from "constants/roles";
-import { AuthStateContext, IAuthState } from "contexts/authStateContext";
+import { AuthStateContext, IAuthState } from 'contexts/authStateContext';
 // import { SYSTEM_IDENTITY_SOURCE } from "hooks/useKeycloakWrapper";
 import { createMemoryHistory } from 'history';
-import Keycloak from "keycloak-js";
+import Keycloak from 'keycloak-js';
 import React from 'react';
 import { Router } from 'react-router-dom';
-import { LandingPage } from "./LandingPage";
-import { fireEvent } from "@testing-library/react";
-import { SYSTEM_ROLE } from "constants/roles";
+import { LandingPage } from './LandingPage';
 
 //import { useBiohubApi } from "hooks/useBioHubApi";
 
@@ -63,7 +62,7 @@ describe('LandingPage', () => {
           username: undefined,
           displayName: undefined,
           email: undefined,
-          refresh: () => { },
+          refresh: () => {},
           getLoginUrl: () => '/my-test-login'
         }
       };
@@ -77,8 +76,11 @@ describe('LandingPage', () => {
       );
 
       // Should see the BCeID message
-      expect(getByText('To access this application, you must use a valid BC government-issued IDIR or BCeID account credential.'))
-        .toBeVisible();
+      expect(
+        getByText(
+          'To access this application, you must use a valid BC government-issued IDIR or BCeID account credential.'
+        )
+      ).toBeVisible();
 
       // Should see the Log in button
       const loginButton = getByTestId('landing_page_login_button');
@@ -105,7 +107,7 @@ describe('LandingPage', () => {
           username: 'testuser',
           displayName: 'Test User',
           email: 'testuser@example.com',
-          refresh: () => { },
+          refresh: () => {},
           getLoginUrl: () => '/test-1-login-endpoint'
         }
       };
@@ -119,8 +121,8 @@ describe('LandingPage', () => {
       );
 
       // Should see "Welcome, <user>" but not "Welcome back, <user>"
-      const greeting = getByTestId('landing_page_greeting')
-      expect(greeting).toBeVisible(); 
+      const greeting = getByTestId('landing_page_greeting');
+      expect(greeting).toBeVisible();
       expect(greeting).toHaveTextContent('Welcome, testuser');
 
       // Should not see the Log In button
@@ -132,7 +134,7 @@ describe('LandingPage', () => {
       // Should see the Request Access button
       const requestAccessButton = getByText('Request Access');
       expect(requestAccessButton).toBeVisible();
-      
+
       // Should go to the request access page
       fireEvent.click(requestAccessButton);
       await waitFor(() => {
@@ -158,7 +160,7 @@ describe('LandingPage', () => {
           username: 'testuser',
           displayName: 'Test User',
           email: 'testuser@example.com',
-          refresh: () => { },
+          refresh: () => {},
           getLoginUrl: () => '/test-1-login-endpoint'
         }
       };
@@ -172,8 +174,8 @@ describe('LandingPage', () => {
       );
 
       // Should see "Welcome back, <user>"
-      const greeting = getByTestId('landing_page_greeting')
-      expect(greeting).toBeVisible(); 
+      const greeting = getByTestId('landing_page_greeting');
+      expect(greeting).toBeVisible();
       expect(greeting).toHaveTextContent('Welcome back, testuser');
 
       // Should not see the Log In button
@@ -181,7 +183,11 @@ describe('LandingPage', () => {
 
       // Should see "your request is pending" message
       expect(getByText('Access request pending')).toBeVisible();
-      expect(getByText('You access request for this application is currently under review. You will be notified by email when your request has been reviewed.')).toBeVisible();
+      expect(
+        getByText(
+          'You access request for this application is currently under review. You will be notified by email when your request has been reviewed.'
+        )
+      ).toBeVisible();
 
       // Should see the Logout button
       const logoutButton = getByText('Log Out');
@@ -210,7 +216,7 @@ describe('LandingPage', () => {
           username: 'testuser',
           displayName: 'Test User',
           email: 'testuser@example.com',
-          refresh: () => { },
+          refresh: () => {},
           getLoginUrl: () => '/test-1-login-endpoint'
         }
       };
@@ -224,8 +230,8 @@ describe('LandingPage', () => {
       );
 
       // Should see "Welcome back, <user>"
-      const greeting = getByTestId('landing_page_greeting')
-      expect(greeting).toBeVisible(); 
+      const greeting = getByTestId('landing_page_greeting');
+      expect(greeting).toBeVisible();
       expect(greeting).toHaveTextContent('Welcome back, testuser');
 
       // Should not see the Log In button
@@ -261,7 +267,7 @@ describe('LandingPage', () => {
           username: 'testuser',
           displayName: 'Test User',
           email: 'testuser@example.com',
-          refresh: () => { },
+          refresh: () => {},
           getLoginUrl: () => '/test-1-login-endpoint'
         }
       };
@@ -275,8 +281,8 @@ describe('LandingPage', () => {
       );
 
       // Should see "Welcome back, <user>"
-      const greeting = getByTestId('landing_page_greeting')
-      expect(greeting).toBeVisible(); 
+      const greeting = getByTestId('landing_page_greeting');
+      expect(greeting).toBeVisible();
       expect(greeting).toHaveTextContent('Welcome back, testuser');
 
       // Should not see the Log In button
@@ -312,7 +318,7 @@ describe('LandingPage', () => {
           username: 'testuser',
           displayName: 'Test User',
           email: 'testuser@example.com',
-          refresh: () => { },
+          refresh: () => {},
           getLoginUrl: () => '/test-1-login-endpoint'
         }
       };
@@ -326,8 +332,8 @@ describe('LandingPage', () => {
       );
 
       // Should see "Welcome back, <user>"
-      const greeting = getByTestId('landing_page_greeting')
-      expect(greeting).toBeVisible(); 
+      const greeting = getByTestId('landing_page_greeting');
+      expect(greeting).toBeVisible();
       expect(greeting).toHaveTextContent('Welcome back, testuser');
 
       // Should not see the Log In button
@@ -362,7 +368,7 @@ describe('LandingPage', () => {
           username: 'testuser',
           displayName: 'Test User',
           email: 'testuser@example.com',
-          refresh: () => { },
+          refresh: () => {},
           getLoginUrl: () => '/test-1-login-endpoint'
         }
       };
@@ -376,8 +382,8 @@ describe('LandingPage', () => {
       );
 
       // Should see "Welcome back, <user>"
-      const greeting = getByTestId('landing_page_greeting')
-      expect(greeting).toBeVisible(); 
+      const greeting = getByTestId('landing_page_greeting');
+      expect(greeting).toBeVisible();
       expect(greeting).toHaveTextContent('Welcome back, testuser');
 
       // Should not see the Log In button
@@ -393,8 +399,6 @@ describe('LandingPage', () => {
       expect(manageUsersButton).toHaveTextContent('Manage Users');
       expect(manageUsersButton).toBeVisible();
       expect(manageUsersButton).toHaveAttribute('href', '/admin/users');
-
-
     });
   });
 });

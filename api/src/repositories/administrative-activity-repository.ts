@@ -29,7 +29,7 @@ export interface ICreateAdministrativeActivity {
 }
 
 /**
- * A repository class for accessing permit data.
+ * A repository class for accessing administrative activity data.
  *
  * @export
  * @class AdministrativeActivityRepository

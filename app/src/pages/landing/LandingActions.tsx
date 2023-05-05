@@ -9,7 +9,7 @@ import clsx from 'clsx';
 import { AuthGuard, UnAuthGuard } from 'components/security/Guards';
 import { SYSTEM_ROLE } from 'constants/roles';
 import { AuthStateContext } from 'contexts/authStateContext';
-import React, { useContext, useMemo } from 'react'
+import React, { useContext, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -85,12 +85,12 @@ const LandingActions = () => {
     SYSTEM_ROLE.SYSTEM_ADMIN
   ]);
 
-  const mayBelongToOneOrMoreProjects = isSystemUser || keycloakWrapper?.hasOneOrMoreProjectRoles;  
+  const mayBelongToOneOrMoreProjects = isSystemUser || keycloakWrapper?.hasOneOrMoreProjectRoles;
   const hasProjectCreationRole = hasAdministrativeRole || keycloakWrapper?.hasSystemRole([SYSTEM_ROLE.PROJECT_CREATOR]);
   const isReturningUser = isSystemUser || hasPendingAccessRequest || mayBelongToOneOrMoreProjects;
   const mayViewProjects = isSystemUser || mayBelongToOneOrMoreProjects;
   const mayMakeAccessRequest = !mayViewProjects && !hasPendingAccessRequest;
-  const isAwaitingAccessApproval = hasPendingAccessRequest && !isSystemUser && !mayBelongToOneOrMoreProjects
+  const isAwaitingAccessApproval = hasPendingAccessRequest && !isSystemUser && !mayBelongToOneOrMoreProjects;
 
   return (
     <Box className={classes.actionsContainer}>
@@ -100,7 +100,7 @@ const LandingActions = () => {
             To access this application, you must use a valid BC government-issued IDIR or BCeID account credential.
           </Typography>
           <Button
-            data-testid='landing_page_login_button'
+            data-testid="landing_page_login_button"
             component="a"
             href={loginUrl}
             variant="contained"
@@ -109,38 +109,39 @@ const LandingActions = () => {
             Log In
           </Button>
           {/**
-            * Temporarily hiding the Register link. See: https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-30
-            */}
-            <Typography variant="body2">
-              Don't have an account? &zwnj;
-              <a className={classes.heroLink} href="/link-to-register-an-account">
-                Register here.
-              </a>
-            </Typography>
+           * Temporarily hiding the Register link. See: https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-30
+           */}
+          <Typography variant="body2">
+            Don't have an account? &zwnj;
+            <a className={classes.heroLink} href="/link-to-register-an-account">
+              Register here.
+            </a>
+          </Typography>
         </>
       </UnAuthGuard>
       <AuthGuard>
         <Typography variant="body1" className={classes.greeting} data-testid="landing_page_greeting">
           <span>Welcome</span>
-          {isReturningUser && (
-            <span>&nbsp;back</span>
-          )}
+          {isReturningUser && <span>&nbsp;back</span>}
           {userIdentifier && (
-            <span>,&nbsp;<strong className={classes.username}>{userIdentifier}</strong></span>
+            <span>
+              ,&nbsp;<strong className={classes.username}>{userIdentifier}</strong>
+            </span>
           )}
         </Typography>
         {mayMakeAccessRequest && (
-          <Typography variant="body2">
-            You have not been granted permission to access this application.
-          </Typography>
+          <Typography variant="body2">You have not been granted permission to access this application.</Typography>
         )}
         {isAwaitingAccessApproval && (
           <Alert
-            severity='info'
+            severity="info"
             className={classes.pendingRequestAlert}
             icon={<Icon className={classes.pendingRequestAlertIcon} path={mdiInformationOutline} size={1} />}>
             <AlertTitle className={classes.pendingRequestAlertTitle}>Access request pending</AlertTitle>
-            <span>You access request for this application is currently under review. You will be notified by email when your request has been reviewed.</span>
+            <span>
+              You access request for this application is currently under review. You will be notified by email when your
+              request has been reviewed.
+            </span>
           </Alert>
         )}
         <Box className={classes.actions}>
@@ -154,7 +155,7 @@ const LandingActions = () => {
               children={<>View&nbsp;Projects</>}
             />
           )}
-          {mayMakeAccessRequest && ( 
+          {mayMakeAccessRequest && (
             <Button
               component={Link}
               to="/access-request"
@@ -179,7 +180,7 @@ const LandingActions = () => {
           )}
           {hasAdministrativeRole && (
             <Button
-              data-testid='landing_page_manage_users_button'
+              data-testid="landing_page_manage_users_button"
               component={Link}
               to="/admin/users"
               variant="contained"
@@ -201,7 +202,7 @@ const LandingActions = () => {
         </Box>
       </AuthGuard>
     </Box>
-  )
-}
+  );
+};
 
-export default LandingActions
+export default LandingActions;
