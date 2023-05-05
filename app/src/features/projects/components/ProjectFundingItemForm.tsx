@@ -129,7 +129,6 @@ export interface IProjectFundingItemFormProps {
 const ProjectFundingItemForm: React.FC<IProjectFundingItemFormProps> = (props) => {
   const formikProps = useFormikContext<IProjectFundingFormArrayItem>();
   const { values, touched, errors, handleChange, handleSubmit, setFieldValue } = formikProps;
-
   // Only show investment_action_category if certain agency_id values are selected
   // Toggle investment_action_category label and dropdown values based on chosen agency_id
   const investment_action_category_label =
@@ -179,12 +178,16 @@ const ProjectFundingItemForm: React.FC<IProjectFundingItemFormProps> = (props) =
                     // reset values when a change occurs
                     setFieldValue('first_nations_id', null);
                     setFieldValue('agency_id', null);
+                    setFieldValue('first_nations_name', null);
+                    setFieldValue('agency_name', null);
 
                     if (options?.type === FundingSourceType.FIRST_NATIONS) {
                       setFieldValue('first_nations_id', options?.value);
+                      setFieldValue('first_nations_name', options?.label);
                       setFieldValue('investment_action_category', 0);
                     } else {
                       setFieldValue('agency_id', options?.value);
+                      setFieldValue('agency_name', options?.label);
                       // If an agency_id with a `Not Applicable` investment_action_category is chosen, auto select
                       // it for the user.
                       if (event.target.value !== 1 && event.target.value !== 2) {
