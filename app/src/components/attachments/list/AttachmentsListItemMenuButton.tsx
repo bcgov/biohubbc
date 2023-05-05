@@ -5,9 +5,9 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import { mdiDotsVertical, mdiInformationOutline, mdiTrashCanOutline, mdiTrayArrowDown } from '@mdi/js';
 import Icon from '@mdi/react';
-import { ProjectRoleGuard } from 'components/security/Guards';
+import { SystemRoleGuard } from 'components/security/Guards';
 import { AttachmentType } from 'constants/attachments';
-import { PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
+import { SYSTEM_ROLE } from 'constants/roles';
 import { IGetProjectAttachment } from 'interfaces/useProjectApi.interface';
 import { IGetSurveyAttachment } from 'interfaces/useSurveyApi.interface';
 import React, { useState } from 'react';
@@ -86,9 +86,7 @@ const AttachmentsListItemMenuButton = <T extends IGetProjectAttachment | IGetSur
                 View Details
               </MenuItem>
             )}
-            <ProjectRoleGuard
-              validProjectRoles={[PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR]}
-              validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+            <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
               <MenuItem
                 onClick={() => {
                   props.handleDeleteFile(props.attachment);
@@ -100,7 +98,7 @@ const AttachmentsListItemMenuButton = <T extends IGetProjectAttachment | IGetSur
                 </ListItemIcon>
                 Delete
               </MenuItem>
-            </ProjectRoleGuard>
+            </SystemRoleGuard>
           </Menu>
         </Box>
       </Box>
