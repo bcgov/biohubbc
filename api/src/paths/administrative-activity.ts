@@ -2,9 +2,9 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { getAPIUserDBConnection } from '../database/db';
 import { HTTP400, HTTP500 } from '../errors/http-error';
+import { AdministrativeActivityService } from '../services/administrative-activity-service';
 import { getUserIdentifier } from '../utils/keycloak-utils';
 import { getLogger } from '../utils/logger';
-import { AdministrativeActivityService } from '../services/administrative-activity-service';
 
 const defaultLog = getLogger('paths/administrative-activity-request');
 
@@ -80,18 +80,6 @@ GET.apiDoc = {
       Bearer: []
     }
   ],
-  requestBody: {
-    description: 'Administrative Activity get request object.',
-    content: {
-      'application/json': {
-        schema: {
-          title: 'Administrative Activity request object',
-          type: 'object',
-          properties: {}
-        }
-      }
-    }
-  },
   responses: {
     200: {
       description: 'Administrative Activity standing response object.',
@@ -131,7 +119,7 @@ GET.apiDoc = {
 };
 
 /**
- * Creates a new access request record.
+ * Creates a new administrative activity for an access request.
  *
  * @returns {RequestHandler}
  */
@@ -155,11 +143,7 @@ export function createAdministrativeActivity(): RequestHandler {
 
       await connection.commit();
 
-      if (!response) {
-        throw new HTTP500('Failed to submit administrative activity');
-      }
-
-      // await administrativeActivityService.sendAccessRequestEmail();
+      await administrativeActivityService.sendAccessRequestNotificationEmailToAdmin();
 
       return res.status(200).json(response);
     } catch (error) {
@@ -173,7 +157,7 @@ export function createAdministrativeActivity(): RequestHandler {
 }
 
 /**
- * Get all projects.
+ * Fetches all administrative activities for the current user based on their keycloak token.
  *
  * @returns {RequestHandler}
  */
@@ -191,7 +175,7 @@ export function getAdministrativeActivityStanding(): RequestHandler {
       await connection.open();
 
       const administrativeActivityService = new AdministrativeActivityService(connection);
-      
+
       const response = await administrativeActivityService.getAdministrativeActivityStanding(userIdentifier);
 
       await connection.commit();
@@ -199,7 +183,6 @@ export function getAdministrativeActivityStanding(): RequestHandler {
       return res.status(200).json(response);
     } catch (error) {
       defaultLog.error({ label: 'getAdministrativeActivityStanding', message: 'error', error });
-
       throw error;
     } finally {
       connection.release();

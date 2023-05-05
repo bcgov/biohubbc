@@ -1,6 +1,9 @@
 import SQL from 'sql-template-strings';
+import {
+  ADMINISTRATIVE_ACTIVITY_STATUS_TYPE,
+  ADMINISTRATIVE_ACTIVITY_TYPE
+} from '../constants/administrative-activity';
 import { ApiExecuteSQLError } from '../errors/api-error';
-import { ADMINISTRATIVE_ACTIVITY_STATUS_TYPE } from '../paths/administrative-activities';
 import { BaseRepository } from './base-repository';
 
 export interface IAdministrativeActivityStanding {
@@ -16,8 +19,8 @@ export interface IAdministrativeActivity {
   status_name: string;
   description: string | null;
   data: string | object; // JSON data blob containing additional information about the activity record
-  notes: string | null,
-  create_date: Date | string
+  notes: string | null;
+  create_date: Date | string;
 }
 
 export interface ICreateAdministrativeActivity {
@@ -29,7 +32,7 @@ export interface ICreateAdministrativeActivity {
  * A repository class for accessing permit data.
  *
  * @export
- * @class PermitRepository
+ * @class AdministrativeActivityRepository
  * @extends {BaseRepository}
  */
 export class AdministrativeActivityRepository extends BaseRepository {
@@ -38,9 +41,10 @@ export class AdministrativeActivityRepository extends BaseRepository {
    *
    * @param {string[]} [administrativeActivityTypeNames]
    * @param {string[]} [administrativeActivityStatusTypes]
-   * @returns {SQLStatement} sql query object
+   * @return {*}  {Promise<IAdministrativeActivity[]>}
+   * @memberof AdministrativeActivityRepository
    */
-  async getAdministrativeActivities (
+  async getAdministrativeActivities(
     administrativeActivityTypeNames?: string[],
     administrativeActivityStatusTypes?: string[]
   ): Promise<IAdministrativeActivity[]> {
@@ -112,11 +116,15 @@ export class AdministrativeActivityRepository extends BaseRepository {
   /**
    * Inserts a row in the administrative_activity table reflecting a pending access request.
    *
-   * @param {number} systemUserId the ID of the user in performing the insertion
-   * @param {string | object} data JSON data blob
-   * @return {*}  {(SQLStatement | null)}
+   * @param {number} systemUserId
+   * @param {(string | object)} data
+   * @return {*}  {Promise<ICreateAdministrativeActivity>}
+   * @memberof AdministrativeActivityRepository
    */
-  async createPendingAccessRequest(systemUserId: number, data: string | object): Promise<ICreateAdministrativeActivity> {
+  async createPendingAccessRequest(
+    systemUserId: number,
+    data: string | object
+  ): Promise<ICreateAdministrativeActivity> {
     const sqlStatement = SQL`
       INSERT INTO administrative_activity (
         reported_system_user_id,
@@ -131,7 +139,7 @@ export class AdministrativeActivityRepository extends BaseRepository {
           FROM
             administrative_activity_type aat
           WHERE
-            aat.name = 'System Access'
+            aat.name = ${ADMINISTRATIVE_ACTIVITY_TYPE.SYSTEM_ACCESS}
         ),
         (
           SELECT
@@ -162,8 +170,9 @@ export class AdministrativeActivityRepository extends BaseRepository {
   /**
    * SQL query to count pending records in the administrative_activity table.
    *
-   * @param {number} systemUserId the ID of the user in context
-   * @return {*}  {(SQLStatement | null)}
+   * @param {string} userIdentifier
+   * @return {*}  {(Promise<IAdministrativeActivityStanding>)}
+   * @memberof AdministrativeActivityRepository
    */
   async getAdministrativeActivityStanding(userIdentifier: string): Promise<IAdministrativeActivityStanding> {
     const sqlStatement = SQL`
@@ -218,12 +227,13 @@ export class AdministrativeActivityRepository extends BaseRepository {
    *
    * @param {number} administrativeActivityId
    * @param {ADMINISTRATIVE_ACTIVITY_STATUS_TYPE} administrativeActivityStatusTypeName
-   * @return {*}  {(SQLStatement | null)}
+   * @return {*}  {Promise<void>}
+   * @memberof AdministrativeActivityRepository
    */
   async putAdministrativeActivity(
     administrativeActivityId: number,
     administrativeActivityStatusTypeName: ADMINISTRATIVE_ACTIVITY_STATUS_TYPE
-  ): Promise<{ id: number }> {
+  ): Promise<void> {
     const sqlStatement = SQL`
       UPDATE
         administrative_activity
@@ -237,15 +247,15 @@ export class AdministrativeActivityRepository extends BaseRepository {
             name = ${administrativeActivityStatusTypeName}
         )
       WHERE
-        administrative_activity_id = ${administrativeActivityId}
-      RETURNING
-        administrative_activity_id
-      AS
-        id;
+        administrative_activity_id = ${administrativeActivityId};
     `;
 
-    const response = await this.connection.sql<{ id: number }>(sqlStatement);
+    const response = await this.connection.sql<{ administrative_activity_id: number }>(sqlStatement);
 
-    return response.rows[0];
+    if (!response.rowCount) {
+      throw new ApiExecuteSQLError('Failed to update administrative activity record', [
+        'AdministrativeActivityRepository->putAdministrativeActivity'
+      ]);
+    }
   }
 }

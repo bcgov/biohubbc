@@ -1,16 +1,23 @@
+import Ajv from 'ajv';
 import chai, { expect } from 'chai';
 import { describe } from 'mocha';
+import { QueryResult } from 'pg';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as db from '../database/db';
 import { getMockDBConnection, getRequestHandlerMocks } from '../__mocks__/db';
-import * as administrative_activities from './administrative-activities';
-import { QueryResult } from 'pg';
+import { GET, getAdministrativeActivities } from './administrative-activities';
 
 chai.use(sinonChai);
 
 describe('openapi schema', () => {
-  // @TODO;
+  const ajv = new Ajv();
+
+  describe('GET', () => {
+    it('is valid openapi v3 schema', () => {
+      expect(ajv.validateSchema((GET.apiDoc as unknown) as object)).to.be.true;
+    });
+  });
 });
 
 describe('getAdministrativeActivities', () => {
@@ -34,7 +41,7 @@ describe('getAdministrativeActivities', () => {
       status: ['status']
     };
 
-    const requestHandler = administrative_activities.getAdministrativeActivities();
+    const requestHandler = getAdministrativeActivities();
 
     await requestHandler(mockReq, mockRes, mockNext);
 
@@ -69,7 +76,7 @@ describe('getAdministrativeActivities', () => {
       status: ['status']
     };
 
-    const requestHandler = administrative_activities.getAdministrativeActivities();
+    const requestHandler = getAdministrativeActivities();
 
     await requestHandler(mockReq, mockRes, mockNext);
 

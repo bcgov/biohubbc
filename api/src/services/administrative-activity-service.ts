@@ -1,3 +1,5 @@
+import { ADMINISTRATIVE_ACTIVITY_STATUS_TYPE } from '../constants/administrative-activity';
+import { ACCESS_REQUEST_ADMIN_NOTIFICATION_EMAIL } from '../constants/notifications';
 import { IDBConnection } from '../database/db';
 import {
   AdministrativeActivityRepository,
@@ -7,11 +9,15 @@ import {
 } from '../repositories/administrative-activity-repository';
 import { DBService } from './db-service';
 import { GCNotifyService, IgcNotifyPostReturn } from './gcnotify-service';
-import { ACCESS_REQUEST_ADMIN_EMAIL } from '../constants/notifications';
-import { ADMINISTRATIVE_ACTIVITY_STATUS_TYPE } from '../paths/administrative-activities';
 
 /**
- * @TODO jsdoc
+ * Service for working with administrative activity records.
+ *
+ * An administrative activity record is essentially a TODO item for an administrator.
+ *
+ * @export
+ * @class AdministrativeActivityService
+ * @extends {DBService}
  */
 export class AdministrativeActivityService extends DBService {
   ADMIN_EMAIL: string;
@@ -31,12 +37,14 @@ export class AdministrativeActivityService extends DBService {
   }
 
   /**
-   * @TODO jsdoc
-   * @param administrativeActivityTypeNames 
-   * @param administrativeActivityStatusTypes 
-   * @returns 
+   * Fetches all administrative activity records that match the provided type and status criteria.
+   *
+   * @param {string[]} [administrativeActivityTypeNames]
+   * @param {string[]} [administrativeActivityStatusTypes]
+   * @return {*}  {Promise<IAdministrativeActivity[]>}
+   * @memberof AdministrativeActivityService
    */
-  async getAdministrativeActivities (
+  async getAdministrativeActivities(
     administrativeActivityTypeNames?: string[],
     administrativeActivityStatusTypes?: string[]
   ): Promise<IAdministrativeActivity[]> {
@@ -47,19 +55,32 @@ export class AdministrativeActivityService extends DBService {
   }
 
   /**
-   * @TODO jsdoc
+   * Create a new administrative activity record with type "System Access" and status "Pending".
+   *
+   * @param {number} systemUserId
+   * @param {(string | object)} data
+   * @return {*}  {Promise<ICreateAdministrativeActivity>}
+   * @memberof AdministrativeActivityService
    */
-  async createPendingAccessRequest(systemUserId: number, data: string | object): Promise<ICreateAdministrativeActivity> {
+  async createPendingAccessRequest(
+    systemUserId: number,
+    data: string | object
+  ): Promise<ICreateAdministrativeActivity> {
     return this.administrativeActivityRepository.createPendingAccessRequest(systemUserId, data);
   }
 
   /**
-   * @TODO jsdoc
+   * Update the status of an existing administrative activity record.
+   *
+   * @param {number} administrativeActivityId
+   * @param {ADMINISTRATIVE_ACTIVITY_STATUS_TYPE} administrativeActivityStatusTypeName
+   * @return {*}  {Promise<void>}
+   * @memberof AdministrativeActivityService
    */
   async putAdministrativeActivity(
     administrativeActivityId: number,
     administrativeActivityStatusTypeName: ADMINISTRATIVE_ACTIVITY_STATUS_TYPE
-  ): Promise<{ id: number }> {
+  ): Promise<void> {
     return this.administrativeActivityRepository.putAdministrativeActivity(
       administrativeActivityId,
       administrativeActivityStatusTypeName
@@ -67,24 +88,31 @@ export class AdministrativeActivityService extends DBService {
   }
 
   /**
-   * @TODO jsdoc
+   * Fetch an existing administrative activity record for a user, based on their user identifier.
+   *
+   * @param {string} userIdentifier
+   * @return {*}  {(Promise<IAdministrativeActivityStanding>)}
+   * @memberof AdministrativeActivityService
    */
   async getAdministrativeActivityStanding(userIdentifier: string): Promise<IAdministrativeActivityStanding> {
     return this.administrativeActivityRepository.getAdministrativeActivityStanding(userIdentifier);
   }
 
   /**
-   * @TODO jsdoc
+   * Send an email notification to a user about their access request being received.
+   *
+   * @return {*}  {Promise<IgcNotifyPostReturn>}
+   * @memberof AdministrativeActivityService
    */
-  async sendAccessRequestEmail(): Promise<IgcNotifyPostReturn> {
+  async sendAccessRequestNotificationEmailToAdmin(): Promise<IgcNotifyPostReturn> {
     const gcnotifyService = new GCNotifyService();
     const url = `${this.APP_HOST}/admin/users?authLogin=true`;
     const hrefUrl = `[click here.](${url})`;
 
     return gcnotifyService.sendEmailGCNotification(this.ADMIN_EMAIL, {
-      ...ACCESS_REQUEST_ADMIN_EMAIL,
-      subject: `${this.NODE_ENV}: ${ACCESS_REQUEST_ADMIN_EMAIL.subject}`,
-      body1: `${ACCESS_REQUEST_ADMIN_EMAIL.body1} ${hrefUrl}`,
+      ...ACCESS_REQUEST_ADMIN_NOTIFICATION_EMAIL,
+      subject: `${this.NODE_ENV}: ${ACCESS_REQUEST_ADMIN_NOTIFICATION_EMAIL.subject}`,
+      body1: `${ACCESS_REQUEST_ADMIN_NOTIFICATION_EMAIL.body1} ${hrefUrl}`,
       footer: `${this.APP_HOST}`
     });
   }

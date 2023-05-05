@@ -1,11 +1,11 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
+import { ADMINISTRATIVE_ACTIVITY_STATUS_TYPE } from '../../../../constants/administrative-activity';
 import { SYSTEM_ROLE } from '../../../../constants/roles';
 import { getDBConnection } from '../../../../database/db';
 import { authorizeRequestHandler } from '../../../../request-handlers/security/authorization';
-import { getLogger } from '../../../../utils/logger';
-import { ADMINISTRATIVE_ACTIVITY_STATUS_TYPE } from '../../../administrative-activities';
 import { AdministrativeActivityService } from '../../../../services/administrative-activity-service';
+import { getLogger } from '../../../../utils/logger';
 
 const defaultLog = getLogger('paths/administrative-activity/system-access/{administrativeActivityId}/reject');
 
