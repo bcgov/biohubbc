@@ -325,9 +325,12 @@ export class SurveyRepository extends BaseRepository {
     const response = await this.connection.sql(sqlStatement);
 
     const result = response?.rows?.[0];
-
+    console.log("____")
+    console.log("____")
+    console.log("____")
+    console.log(result);
     if (!result) {
-      return result;
+      return null;
     }
 
     return new GetSurveyProprietorData(result);
@@ -436,7 +439,7 @@ export class SurveyRepository extends BaseRepository {
 
     const response = await this.connection.sql<IGetLatestSurveyOccurrenceSubmission>(sqlStatement);
 
-    const result = response?.rows?.[0];
+    const result = response?.rows[0] || null;
 
     return result;
   }

@@ -74,7 +74,7 @@ export class PutLocationData {
       }
     });
 
-    this.location_description = obj.location_description;
+    this.location_description = obj?.location_description;
     this.geometry = (obj?.geometry?.length && obj.geometry) || [];
     this.revision_count = obj?.revision_count ?? null;
   }

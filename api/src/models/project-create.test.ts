@@ -468,7 +468,7 @@ describe('PostLocationData', () => {
     });
 
     it('sets location_description', function () {
-      expect(projectLocationData.location_description).to.equal(null);
+      expect(projectLocationData.location_description).to.be.undefined
     });
 
     it('sets geometry', function () {

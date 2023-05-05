@@ -217,7 +217,7 @@ describe('PutLocationData', () => {
     });
 
     it('sets location_description', () => {
-      expect(data.location_description).to.equal(null);
+      expect(data.location_description).to.undefined;
     });
 
     it('sets geometry', () => {
