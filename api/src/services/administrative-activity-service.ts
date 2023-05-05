@@ -13,7 +13,7 @@ import { GCNotifyService, IgcNotifyPostReturn } from './gcnotify-service';
 /**
  * Service for working with administrative activity records.
  *
- * An administrative activity record is essentially a TODO item for an administrator.
+ * An administrative activity record is essentially a "to-do" item for an administrator.
  *
  * @export
  * @class AdministrativeActivityService

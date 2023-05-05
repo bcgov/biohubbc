@@ -165,16 +165,6 @@ const LandingActions = () => {
               children={<>Request&nbsp;Access</>}
             />
           )}
-          {false && isAwaitingAccessApproval && (
-            <Button
-              component={Link}
-              to="/logout"
-              variant="contained"
-              className={classes.heroButton}
-              size="large"
-              children={<>Log&nbsp;Out</>}
-            />
-          )}
           {(hasAdministrativeRole || (!hasAdministrativeRole && hasProjectCreationRole)) && (
             <Typography component="span">Or</Typography>
           )}
