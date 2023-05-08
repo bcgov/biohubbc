@@ -158,7 +158,7 @@ describe('ValidationService', () => {
       const getValidation = sinon.stub(ValidationService.prototype, 'getValidationSchema').resolves('');
       const getRules = sinon.stub(ValidationService.prototype, 'getValidationRules').resolves('');
       const validate = sinon.stub(ValidationService.prototype, 'validateXLSX').resolves({});
-      const persistResults = sinon.stub(ValidationService.prototype, 'persistValidationResults').resolves(true);
+      const persistResults = sinon.stub(ValidationService.prototype, 'persistValidationResults').resolves();
 
       const service = mockService();
       await service.templateValidation(xlsxCsv, 1);
@@ -177,7 +177,7 @@ describe('ValidationService', () => {
       sinon.stub(ValidationService.prototype, 'getValidationSchema').throws(new SubmissionError({}));
       sinon.stub(ValidationService.prototype, 'getValidationRules').resolves({});
       sinon.stub(ValidationService.prototype, 'validateXLSX').resolves({});
-      sinon.stub(ValidationService.prototype, 'persistValidationResults').resolves(true);
+      sinon.stub(ValidationService.prototype, 'persistValidationResults').resolves();
 
       try {
         const dbConnection = getMockDBConnection();
@@ -389,16 +389,24 @@ describe('ValidationService', () => {
       }
     });
 
-    it('should return false if no errors are present', async () => {
+    it('should pass if no errors are thrown', async () => {
       const service = mockService();
-      const csvState: ICsvState[] = [];
+      const csvState: ICsvState[] = [
+        {
+          fileName: '',
+          isValid: true,
+          keyErrors: [],
+          headerErrors: [],
+          rowErrors: []
+        }
+      ];
       const mediaState: IMediaState = {
         fileName: 'Test.xlsx',
         isValid: true
       };
+
       const response = await service.persistValidationResults(csvState, mediaState);
-      // no errors found, data is valid
-      expect(response).to.be.false;
+      expect(response).to.be.undefined;
     });
   });
 

@@ -397,10 +397,9 @@ export class ValidationService extends DBService {
     return normalized;
   }
 
-  async persistValidationResults(csvState: ICsvState[], mediaState: IMediaState): Promise<boolean> {
+  async persistValidationResults(csvState: ICsvState[], mediaState: IMediaState): Promise<void> {
     defaultLog.debug({ label: 'persistValidationResults', message: 'validationResults' });
 
-    const parseError = false;
     const errors: MessageError[] = [];
 
     mediaState.fileErrors?.forEach((fileError) => {
@@ -445,8 +444,6 @@ export class ValidationService extends DBService {
       // At least 1 error exists, skip remaining steps
       throw new SubmissionError({ messages: errors });
     }
-
-    return parseError;
   }
 
   async getTransformationSchema(file: XLSXCSV, surveyId: number): Promise<TransformSchema> {

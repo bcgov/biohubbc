@@ -327,7 +327,6 @@ export class SummaryService extends DBService {
   async persistSummaryValidationResults(csvState: ICsvState[], mediaState: IMediaState): Promise<void> {
     defaultLog.debug({ label: 'persistSummaryValidationResults', message: 'validationResults' });
 
-    let parseError = false;
     const errors: MessageError<SUMMARY_SUBMISSION_MESSAGE_TYPE>[] = [];
 
     mediaState.fileErrors?.forEach((fileError) => {
@@ -372,12 +371,8 @@ export class SummaryService extends DBService {
       });
     });
 
-    if (mediaState.fileErrors?.length || csvState?.some((item) => !item.isValid)) {
+    if (!mediaState.isValid || csvState?.some((item) => !item.isValid)) {
       // At least 1 error exists, skip remaining steps
-      parseError = true;
-    }
-
-    if (parseError) {
       throw new SummarySubmissionError({ messages: errors });
     }
   }
