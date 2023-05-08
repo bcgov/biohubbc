@@ -66,7 +66,7 @@ export const LandingPage = () => {
               Species Inventory Management System
             </Typography>
             <Typography className={classes.heroSubtitle}>
-              Upload and submit your species inventory project data to help understand how we can better protect and
+              Upload and submit your species inventory project data to help us understand how we can better protect and
               preserve biodiversity in British Columbia.
             </Typography>
             <LandingActions />
