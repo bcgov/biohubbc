@@ -25,10 +25,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     backgroundPosition: 'center',
     backgroundRepeat: 'no-repeat',
     backgroundSize: 'cover',
-    fontSize: '1rem',
-    [theme.breakpoints.up('md')]: {
-      fontSize: '1.25rem'
-    },
+    fontSize: '1.25rem',
     [theme.breakpoints.up('lg')]: {
       fontSize: '1.5rem'
     },
@@ -38,7 +35,9 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   heroContainerInner: {
     [theme.breakpoints.up('xs')]: {
-      margin: '0 auto',
+      marginRight: 'auto',
+      marginBottom: theme.spacing(3),
+      marginLeft: 'auto',
       maxWidth: '80%'
     }
   },

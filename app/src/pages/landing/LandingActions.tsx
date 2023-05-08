@@ -13,14 +13,9 @@ import React, { useContext, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 
 const useStyles = makeStyles((theme: Theme) => ({
-  greeting: {
-    fontSize: '1.25em',
-    lineHeight: '1.5'
-  },
   actionsContainer: {
     '& p': {
-      fontSize: '0.75em',
-      maxWidth: '60ch'
+      maxWidth: '80ch'
     }
   },
   heroActions: {
@@ -32,7 +27,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     gap: '1em'
   },
   heroButton: {
-    padding: '0.75em 1.5em',
+    padding: '0.5em 1.5em',
     fontSize: '0.75em',
     color: theme.palette.primary.main,
     backgroundColor: '#fcba19',
@@ -52,14 +47,15 @@ const useStyles = makeStyles((theme: Theme) => ({
     backgroundColor: '#006edc',
     lineHeight: '1.5em',
     margin: '1em 0',
-    padding: '0.5em 1.5em',
-    fontSize: '0.75em',
     '& .MuiAlertTitle-root': {
-      fontSize: '1em'
+      marginBottom: '0.25em',
+      fontSize: '1rem'
     },
     '& .MuiAlert-icon': {
-      marginRight: '22px',
       color: theme.palette.common.white
+    },
+    '& .MuiAlert-message': {
+      padding: '4px 0'
     }
   }
 }));
@@ -90,7 +86,7 @@ const LandingActions = () => {
       <UnAuthGuard>
         <>
           <Typography>
-            To access this application, you must use a valid BC government-issued IDIR or BCeID account credential.
+            To access this application, you must use a valid government-issued IDIR or BCeID account.
           </Typography>
           <Box className={classes.heroActions}>
             <Button
@@ -105,15 +101,14 @@ const LandingActions = () => {
           </Box>
           <Typography>
             Don't have an account? &zwnj;
-            <a className={classes.heroLink} target="_blank" href="https://www.bceid.ca/os/?7652&SkipTo=Basic">
+            <a className={classes.heroLink} title="Register a BCeID Account" target="_blank" href="https://www.bceid.ca/os/?7652&SkipTo=Basic">
               Register here
             </a>
-            .
           </Typography>
         </>
       </UnAuthGuard>
       <AuthGuard>
-        <Typography variant="body1" className={classes.greeting} data-testid="landing_page_greeting">
+        <Typography variant="body1" data-testid="landing_page_greeting">
           <span>Welcome</span>
           {isReturningUser && <span>&nbsp;back</span>}
           {userIdentifier && (
@@ -129,7 +124,7 @@ const LandingActions = () => {
           <Alert
             severity="info"
             className={classes.pendingRequestAlert}
-            icon={<Icon path={mdiInformationOutline} size={1.15} />}>
+            icon={<Icon path={mdiInformationOutline} size={1.25} />}>
             <AlertTitle>Access request pending</AlertTitle>
             Your request is currently pending a review by an administrator.
           </Alert>
