@@ -3,6 +3,7 @@ import { IConfig } from 'contexts/configContext';
 import { Feature, Polygon } from 'geojson';
 import { SYSTEM_IDENTITY_SOURCE } from 'hooks/useKeycloakWrapper';
 import { LatLngBounds } from 'leaflet';
+import _ from 'lodash';
 import moment from 'moment';
 
 /**
@@ -251,24 +252,15 @@ export const getFormattedIdentitySource = (identitySource: SYSTEM_IDENTITY_SOURC
       return null;
   }
 };
-declare global {
-  interface Array<T> {
-    alphabetizeObjects(property: keyof T): T[];
-  }
-}
 
 /**
  * For a given property, alphabetize an array of objects
  *
- * @param {string} property This function will alphabetize the array of objects on the given property
+ * @param {T[]} data an array of objects to be alphabetize
+ * @param {string} property a key property to alphabetize the data array on
  * @returns {any[]} Returns an alphabetized array of objects
  */
-// eslint-disable-next-line no-extend-native
-Array.prototype.alphabetizeObjects = function <T extends { [key: string]: any }>(property: keyof T): T[] {
-  return this.sort((a: T, b: T) => {
-    const nameA = a[property].toUpperCase();
-    const nameB = b[property].toUpperCase();
+export const alphabetizeObjects = <T extends { [key: string]: any }>(data: T[], property: string) => {
+  return _.sortBy(data, property);
+}
 
-    return nameB - nameA
-  });
-};

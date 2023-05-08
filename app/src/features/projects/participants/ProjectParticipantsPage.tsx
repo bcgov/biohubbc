@@ -25,6 +25,7 @@ import useDataLoader from 'hooks/useDataLoader';
 import useDataLoaderError from 'hooks/useDataLoaderError';
 import { IGetProjectParticipantsResponseArrayItem } from 'interfaces/useProjectApi.interface';
 import React, { useCallback, useContext, useEffect } from 'react';
+import { alphabetizeObjects } from 'utils/Utils';
 import ProjectParticipantsHeader from './ProjectParticipantsHeader';
 import ProjectParticipantsRoleMenu from './ProjectParticipantsRoleMenu';
 
@@ -162,9 +163,8 @@ const ProjectParticipantsPage: React.FC = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {projectParticipantsDataLoader?.data?.participants
-                    ?.alphabetizeObjects('user_identifier')
-                    ?.map((participant) => (
+                  {alphabetizeObjects(projectParticipantsDataLoader?.data?.participants ?? [], 'user_identifier').map(
+                    (participant) => (
                       <TableRow key={participant.project_participation_id}>
                         <TableCell scope="row">{participant.user_identifier}</TableCell>
                         <TableCell scope="row">{participant.user_identity_source_id}</TableCell>
@@ -189,7 +189,8 @@ const ProjectParticipantsPage: React.FC = () => {
                           </Box>
                         </TableCell>
                       </TableRow>
-                    ))}
+                    )
+                  )}
 
                   {!projectParticipantsDataLoader.data && (
                     <TableRow>
