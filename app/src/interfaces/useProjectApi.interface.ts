@@ -1,3 +1,4 @@
+import { PublishStatus } from 'constants/attachments';
 import { PROJECT_ROLE } from 'constants/roles';
 import { IProjectCoordinatorForm } from 'features/projects/components/ProjectCoordinatorForm';
 import { IProjectDetailsForm } from 'features/projects/components/ProjectDetailsForm';
@@ -90,7 +91,7 @@ export interface IGetUserProjectsListResponse {
  * @interface IProjectSupplementaryData
  */
 export interface IProjectSupplementaryData {
-  has_unpublished_content: boolean;
+  publishStatus: PublishStatus;
 }
 
 /**

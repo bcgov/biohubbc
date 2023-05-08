@@ -127,10 +127,11 @@ GET.apiDoc = {
                 },
                 projectSupplementaryData: {
                   type: 'object',
-                  required: ['has_unpublished_content'],
+                  required: ['publishStatus'],
                   properties: {
-                    has_unpublished_content: {
-                      type: 'boolean'
+                    publishStatus: {
+                      type: 'string',
+                      enum: ['NO_DATA', 'UNSUBMITTED', 'SUBMITTED']
                     }
                   }
                 }
@@ -183,11 +184,11 @@ export function getProjectList(): RequestHandler {
 
       const projectListWithStatus = await Promise.all(
         projects.map(async (project: any) => {
-          const status = await projectService.doesProjectHaveUnpublishedContent(project.id);
+          const status = await projectService.projectPublishStatus(project.id);
 
           return {
             projectData: project,
-            projectSupplementaryData: { has_unpublished_content: status }
+            projectSupplementaryData: { publishStatus: status }
           };
         })
       );

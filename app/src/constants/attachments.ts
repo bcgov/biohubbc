@@ -10,6 +10,12 @@ export enum AttachmentStatus {
   SUBMITTED = 'SUBMITTED'
 }
 
+export enum PublishStatus {
+  NO_DATA = 'NO_DATA',
+  UNSUBMITTED = 'UNSUBMITTED',
+  SUBMITTED = 'SUBMITTED'
+}
+
 export enum ProjectSurveyAttachmentValidExtensions {
   AUDIO = '.wav, .mp3, .mp4, .wma',
   DATA = '.txt, .xls, .xlsx, .xlsm, .xlsb, .accdb, .mdb, .ods, .csv',
