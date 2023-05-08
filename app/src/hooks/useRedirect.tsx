@@ -11,8 +11,8 @@ export default function useRedirect(fallback?: string): Redirect {
   const queryParams = useQuery();
 
   const redirectUri = useMemo(() => (
-    queryParams['next']
-      ? buildUrl(window.location.origin, decodeURIComponent(queryParams['next']))
+    queryParams['redirect']
+      ? buildUrl(window.location.origin, decodeURIComponent(queryParams['redirect']))
       : undefined
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
