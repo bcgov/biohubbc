@@ -16,6 +16,7 @@ export interface IAutocompleteField<T extends string | number> {
   options: IAutocompleteFieldOption<T>[];
   required?: boolean;
   filterLimit?: number;
+  optionFilter?: 'value' | 'label';
   onChange?: (event: ChangeEvent<Record<string, unknown>>, option: IAutocompleteFieldOption<T> | null) => void;
 }
 
@@ -27,7 +28,7 @@ const AutocompleteField: React.FC<IAutocompleteField<string | number>> = <T exte
   const { touched, errors, setFieldValue, values } = useFormikContext<IAutocompleteFieldOption<T>>();
 
   const getExistingValue = (existingValue: T): IAutocompleteFieldOption<T> => {
-    const result = props.options.find((option) => existingValue === option.value);
+    const result = props.options.find((option) => existingValue === option[`${props.optionFilter || 'value'}`]);
 
     if (!result) {
       return (null as unknown) as IAutocompleteFieldOption<T>;

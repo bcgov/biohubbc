@@ -7,12 +7,12 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import Typography from '@material-ui/core/Typography';
-import AutocompleteFieldWithType, {
-  IAutocompleteFieldOptionWithType
-} from 'components/fields/AutocompleteFieldWithType';
 import CustomTextField from 'components/fields/CustomTextField';
 import DollarAmountField from 'components/fields/DollarAmountField';
 import StartEndDateFields from 'components/fields/StartEndDateFields';
+import FundingSourceAutocomplete, {
+  IAutocompleteFieldOptionWithType
+} from 'features/projects/components/AutocompleteFieldWithType';
 import { useFormikContext } from 'formik';
 import React from 'react';
 import yup from 'utils/YupSchema';
@@ -164,7 +164,7 @@ const ProjectFundingItemForm: React.FC<IProjectFundingItemFormProps> = (props) =
           <Grid item xs={12}>
             <FormControl variant="outlined" required={true} style={{ width: '100%' }}>
               <Box>
-                <AutocompleteFieldWithType
+                <FundingSourceAutocomplete
                   id="agency_id"
                   label={'Agency Name'}
                   options={props.sources}
