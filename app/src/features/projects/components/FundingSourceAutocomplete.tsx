@@ -2,6 +2,11 @@ import { FundingSourceType } from 'features/projects/components/ProjectFundingIt
 import React, { ChangeEvent, useEffect, useState } from 'react';
 import AutocompleteField from '../../../components/fields/AutocompleteField';
 
+/**
+ * Encapsulates an auto complete option with a funding source type.
+ * Type is added because the `FundingSourceAutocomplete` component takes both
+ * Agencies and First Nations groups as options and we need a way to differentiate them
+ */
 export interface IAutocompleteFieldOptionWithType<T extends string | number> {
   value: T;
   label: string;
@@ -44,7 +49,7 @@ const FundingSourceAutocomplete: React.FC<IFundingSourceAutocompleteProps<string
       options={props.options}
       required={props.required}
       filterLimit={props.filterLimit}
-      optionFilter="label"
+      optionFilter="label" // this assumes funding source agencies AND first nations groups have unique names to filter on
       onChange={(event, option: any) => {
         if (option?.type === FundingSourceType.FIRST_NATIONS) {
           setName('first_nations_name');

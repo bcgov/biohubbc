@@ -46,6 +46,7 @@ export const ProjectFundingFormArrayItemInitialValues: IProjectFundingFormArrayI
 
 export const ProjectFundingFormArrayItemYupSchema = yup.object().shape(
   {
+    // if agency_id is present, first_nations_id is no longer required
     agency_id: yup
       .number()
       .transform((value) => (isNaN(value) ? undefined : value))
@@ -61,6 +62,7 @@ export const ProjectFundingFormArrayItemYupSchema = yup.object().shape(
           .transform((value) => (isNaN(value) ? undefined : value))
           .nullable(true)
       }),
+    // if first_nations_id is present, agency_id is no longer required
     first_nations_id: yup
       .number()
       .transform((value) => (isNaN(value) ? undefined : value))
@@ -175,7 +177,8 @@ const ProjectFundingItemForm: React.FC<IProjectFundingItemFormProps> = (props) =
                       'investment_action_category',
                       ProjectFundingFormArrayItemInitialValues.investment_action_category
                     );
-                    // reset values when a change occurs
+                    // first_nations_id AND agency_id cannot be present on the same funding source
+                    // reset values when a change occurs to prevent that from happening
                     setFieldValue('first_nations_id', null);
                     setFieldValue('agency_id', null);
                     setFieldValue('first_nations_name', null);
@@ -184,7 +187,7 @@ const ProjectFundingItemForm: React.FC<IProjectFundingItemFormProps> = (props) =
                     if (options?.type === FundingSourceType.FIRST_NATIONS) {
                       setFieldValue('first_nations_id', options?.value);
                       setFieldValue('first_nations_name', options?.label);
-                      setFieldValue('investment_action_category', 0);
+                      setFieldValue('investment_action_category', 0); // first nations do not have an investment category
                     } else {
                       setFieldValue('agency_id', options?.value);
                       setFieldValue('agency_name', options?.label);
