@@ -25,9 +25,7 @@ const AccessDenied = () => {
       <Box pt={6} textAlign="center">
         <Icon path={mdiAlertCircleOutline} size={2} color="#ff5252" />
         <h1>Access Denied</h1>
-        <Typography>
-          You do not have permission to access this page.
-        </Typography>
+        <Typography>You do not have permission to access this page.</Typography>
         <Box pt={4}>
           {!userHasARole && (
             <Button
