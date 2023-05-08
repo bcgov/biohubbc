@@ -17,57 +17,50 @@ const useStyles = makeStyles((theme: Theme) => ({
     fontSize: '1.25em',
     lineHeight: '1.5'
   },
-  heroButton: {
-    fontSize: '1em',
-    color: theme.palette.primary.main,
-    backgroundColor: '#fcba19',
-    fontWeight: 700,
-    padding: '0.75em 3em'
-  },
-  loginButton: {
-    textTransform: 'uppercase'
-  },
   actionsContainer: {
     '& p': {
-      fontSize: '1em',
-      margin: '1.5em 0',
+      fontSize: '0.75em',
       maxWidth: '60ch'
     }
   },
-  actions: {
+  heroActions: {
+    margin: '0.75em 0',
     fontSize: '1em',
     display: 'flex',
     flexFlow: 'row nowrap',
     alignItems: 'center',
-    gap: '1em',
-
-    '& > span': {
-      textTransform: 'uppercase'
-    }
+    gap: '1em'
+  },
+  heroButton: {
+    padding: '0.75em 1.5em',
+    fontSize: '0.75em',
+    color: theme.palette.primary.main,
+    backgroundColor: '#fcba19',
+    fontWeight: 700
   },
   heroLink: {
     color: '#fcba19',
-    fontWeight: 700,
-    textDecoration: 'none'
+    fontWeight: 700
   },
   username: {
     textTransform: 'uppercase'
   },
   pendingRequestAlert: {
+    alignItems: 'center',
+    maxWidth: '63ch',
     color: theme.palette.primary.contrastText,
     backgroundColor: '#006edc',
-    width: '100%',
-    fontSize: '0.875em',
     lineHeight: '1.5em',
-    alignItems: 'center',
     margin: '1em 0',
-    padding: '0.5em 1.5em'
-  },
-  pendingRequestAlertIcon: {
-    color: theme.palette.common.white
-  },
-  pendingRequestAlertTitle: {
-    marginBottom: '0.5em'
+    padding: '0.5em 1.5em',
+    fontSize: '0.75em',
+    '& .MuiAlertTitle-root': {
+      fontSize: '1em'
+    },
+    '& .MuiAlert-icon': {
+      marginRight: '22px',
+      color: theme.palette.common.white
+    }
   }
 }));
 
@@ -96,23 +89,26 @@ const LandingActions = () => {
     <Box className={classes.actionsContainer}>
       <UnAuthGuard>
         <>
-          <Typography variant="body2">
+          <Typography>
             To access this application, you must use a valid BC government-issued IDIR or BCeID account credential.
           </Typography>
-          <Button
-            data-testid="landing_page_login_button"
-            component="a"
-            href={loginUrl}
-            variant="contained"
-            className={clsx(classes.heroButton, classes.loginButton)}
-            size="large">
-            Log In
-          </Button>
-          <Typography variant="body2">
+          <Box className={classes.heroActions}>
+            <Button
+              data-testid="landing_page_login_button"
+              component="a"
+              href={loginUrl}
+              variant="contained"
+              className={clsx(classes.heroButton, classes.heroButton)}
+              size="large">
+              Log In
+            </Button>
+          </Box>
+          <Typography>
             Don't have an account? &zwnj;
-            <a className={classes.heroLink} target="_blank" href="https://www.bceid.ca/">
-              Register here.
+            <a className={classes.heroLink} target="_blank" href="https://www.bceid.ca/os/?7652&SkipTo=Basic">
+              Register here
             </a>
+            .
           </Typography>
         </>
       </UnAuthGuard>
@@ -133,15 +129,12 @@ const LandingActions = () => {
           <Alert
             severity="info"
             className={classes.pendingRequestAlert}
-            icon={<Icon className={classes.pendingRequestAlertIcon} path={mdiInformationOutline} size={1} />}>
-            <AlertTitle className={classes.pendingRequestAlertTitle}>Access request pending</AlertTitle>
-            <span>
-              You access request for this application is currently under review. You will be notified by email when your
-              request has been reviewed.
-            </span>
+            icon={<Icon path={mdiInformationOutline} size={1.15} />}>
+            <AlertTitle>Access request pending</AlertTitle>
+            Your request is currently pending a review by an administrator.
           </Alert>
         )}
-        <Box className={classes.actions}>
+        <Box className={classes.heroActions}>
           {mayViewProjects && (
             <Button
               component={Link}
@@ -163,7 +156,7 @@ const LandingActions = () => {
             />
           )}
           {(hasAdministrativeRole || (!hasAdministrativeRole && hasProjectCreationRole)) && (
-            <Typography component="span">Or</Typography>
+            <Typography component="span">OR</Typography>
           )}
           {hasAdministrativeRole && (
             <Button

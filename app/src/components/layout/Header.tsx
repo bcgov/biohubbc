@@ -171,18 +171,20 @@ const Header: React.FC = () => {
         <Button className={classes.supportButton} onClick={showSupportDialog}>
           Contact Support
         </Button>
-        <Button
-          component="a"
-          href={loginUrl}
-          className={classes.loginButton}
-          type="submit"
-          variant="contained"
-          color="primary"
-          disableElevation
-          startIcon={<Icon path={mdiLoginVariant} size={1.12} />}
-          data-testid="login">
-          Log In
-        </Button>
+        <Box pl={1.5}>
+          <Button
+            component="a"
+            href={loginUrl}
+            className={classes.loginButton}
+            type="submit"
+            variant="contained"
+            color="primary"
+            disableElevation
+            startIcon={<Icon path={mdiLoginVariant} size={1.12} />}
+            data-testid="login">
+            Log In
+          </Button>
+        </Box>
       </Box>
     );
   };
@@ -245,7 +247,7 @@ const Header: React.FC = () => {
               </UnAuthGuard>
               <AuthGuard>
                 <RouterLink to="/admin/projects" id="menu_projects">
-                  My Projects
+                  Projects
                 </RouterLink>
               </AuthGuard>
               <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
