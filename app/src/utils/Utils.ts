@@ -269,12 +269,6 @@ Array.prototype.alphabetizeObjects = function <T extends { [key: string]: any }>
     const nameA = a[property].toUpperCase();
     const nameB = b[property].toUpperCase();
 
-    if (nameA < nameB) {
-      return -1;
-    } else if (nameA > nameB) {
-      return 1;
-    } else {
-      return 0;
-    }
+    return nameB - nameA
   });
 };

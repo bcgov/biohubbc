@@ -145,13 +145,15 @@ const ProjectFundingItemForm: React.FC<IProjectFundingItemFormProps> = (props) =
     formValues?: IProjectFundingFormArrayItem
   ): IAutocompleteFieldOptionWithType<number> | undefined => {
     if (formValues) {
+      const id = formValues.agency_id ?? formValues.first_nations_id ?? 0;
+      const type = formValues.agency_id ? FundingSourceType.FUNDING_SOURCE : FundingSourceType.FIRST_NATIONS;
+
       const initialValue = {
-        value: formValues.agency_id ?? formValues.first_nations_id,
-        label: '',
-        type: formValues.agency_id ? FundingSourceType.FUNDING_SOURCE : FundingSourceType.FIRST_NATIONS
+        value: id,
+        type: type,
+        label: String(findItemLabel(id, type))
       } as IAutocompleteFieldOptionWithType<number>;
 
-      initialValue.label = `${findItemLabel(initialValue.value, initialValue.type)}`;
       return initialValue;
     }
   };

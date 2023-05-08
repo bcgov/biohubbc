@@ -61,7 +61,8 @@ GET.apiDoc = {
                   type: 'number'
                 },
                 agency_id: {
-                  type: 'number',
+                  type: 'integer',
+                  minimum: 1,
                   nullable: true
                 },
                 investment_action_category: {
@@ -98,7 +99,8 @@ GET.apiDoc = {
                   type: 'number'
                 },
                 first_nations_id: {
-                  type: 'number',
+                  type: 'integer',
+                  minimum: 1,
                   nullable: true
                 },
                 first_nations_name: {
