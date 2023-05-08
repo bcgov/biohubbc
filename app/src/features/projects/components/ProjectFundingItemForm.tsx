@@ -12,7 +12,7 @@ import DollarAmountField from 'components/fields/DollarAmountField';
 import StartEndDateFields from 'components/fields/StartEndDateFields';
 import FundingSourceAutocomplete, {
   IAutocompleteFieldOptionWithType
-} from 'features/projects/components/AutocompleteFieldWithType';
+} from 'features/projects/components/FundingSourceAutocomplete';
 import { useFormikContext } from 'formik';
 import React from 'react';
 import yup from 'utils/YupSchema';
