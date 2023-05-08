@@ -366,7 +366,10 @@ export class ValidationService extends DBService {
     const media_state = file.getMediaState();
 
     if (!media_state.isValid) {
-      return { csv_state: ([] as unknown) as ICsvState[], media_state };
+      return {
+        csv_state: [],
+        media_state
+      };
     }
 
     file.validateContent(parser);
@@ -397,7 +400,7 @@ export class ValidationService extends DBService {
   async persistValidationResults(csvState: ICsvState[], mediaState: IMediaState): Promise<boolean> {
     defaultLog.debug({ label: 'persistValidationResults', message: 'validationResults' });
 
-    let parseError = false;
+    const parseError = false;
     const errors: MessageError[] = [];
 
     mediaState.fileErrors?.forEach((fileError) => {
@@ -440,10 +443,6 @@ export class ValidationService extends DBService {
 
     if (!mediaState.isValid || csvState?.some((item) => !item.isValid)) {
       // At least 1 error exists, skip remaining steps
-      parseError = true;
-    }
-
-    if (parseError) {
       throw new SubmissionError({ messages: errors });
     }
 

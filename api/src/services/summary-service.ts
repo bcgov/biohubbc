@@ -308,7 +308,7 @@ export class SummaryService extends DBService {
 
     const media_state = file.getMediaState();
     if (!media_state.isValid) {
-      return { csv_state: ([] as unknown) as ICsvState[], media_state };
+      return { csv_state: [], media_state };
     }
 
     // Run CSV content validations

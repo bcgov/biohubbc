@@ -135,17 +135,17 @@ export class XLSXTransform {
     const worksheetJSONWithKey: RowObject[] = [];
 
     for (let i = 0; i < numberOfRows; i++) {
-      const primaryKey = this._getKeyForRowObject(worksheetJSON[i], templateMetaSchema.primaryKey, i);
+      const primaryKey = this._getKeyForRowObject(worksheetJSON[i], templateMetaSchema.primaryKey);
 
       if (!primaryKey) {
         continue;
       }
 
-      const parentKey = this._getKeyForRowObject(worksheetJSON[i], templateMetaSchema.parentKey, i);
+      const parentKey = this._getKeyForRowObject(worksheetJSON[i], templateMetaSchema.parentKey);
 
       const childKeys = templateMetaSchema.foreignKeys
         .map((foreignKeys: { sheetName: TemplateColumnName; primaryKey: string[] }) => {
-          return this._getKeyForRowObject(worksheetJSON[i], foreignKeys.primaryKey, i);
+          return this._getKeyForRowObject(worksheetJSON[i], foreignKeys.primaryKey);
         })
         .filter((item): item is string => !!item);
 
@@ -164,7 +164,7 @@ export class XLSXTransform {
     return worksheetJSONWithKey;
   }
 
-  _getKeyForRowObject(RowObject: Record<TemplateColumnName, any>, keyColumnNames: string[], rowNumber: number): string {
+  _getKeyForRowObject(RowObject: Record<TemplateColumnName, any>, keyColumnNames: string[]): string {
     if (!keyColumnNames.length) {
       return '';
     }
@@ -178,9 +178,7 @@ export class XLSXTransform {
         return RowObject[columnName];
       })
       .filter((value) => !isNaN || value)
-      .join(':')
-      .concat(':')
-      .concat(rowNumber.toString());
+      .join(':');
 
     return primaryKey;
   }
