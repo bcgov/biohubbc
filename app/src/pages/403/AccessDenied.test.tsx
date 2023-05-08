@@ -178,7 +178,7 @@ describe('AccessDenied', () => {
       </AuthStateContext.Provider>
     );
 
-    expect(getByText('You do not have permission to access this application.')).toBeVisible();
+    expect(getByText('You do not have permission to access this page.')).toBeVisible();
     expect(getByTestId('request_access')).toBeVisible();
 
     fireEvent.click(getByText('Request Access'));
