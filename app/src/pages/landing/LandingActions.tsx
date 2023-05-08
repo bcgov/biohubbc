@@ -101,7 +101,11 @@ const LandingActions = () => {
           </Box>
           <Typography>
             Don't have an account? &zwnj;
-            <a className={classes.heroLink} title="Register a BCeID Account" target="_blank" href="https://www.bceid.ca/os/?7652&SkipTo=Basic">
+            <a
+              className={classes.heroLink}
+              title="Register a BCeID Account"
+              target="_blank"
+              href="https://www.bceid.ca/os/?7652&SkipTo=Basic">
               Register here
             </a>
           </Typography>
