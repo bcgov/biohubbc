@@ -11,15 +11,16 @@ import {
   mdiFileAlertOutline,
   mdiFileOutline,
   mdiInformationOutline,
+  mdiLockOutline,
   mdiTrashCanOutline,
   mdiTrayArrowDown
 } from '@mdi/js';
 import Icon from '@mdi/react';
 import clsx from 'clsx';
 import { SubmitStatusChip } from 'components/chips/SubmitStatusChip';
-import { ProjectRoleGuard, SystemRoleGuard } from 'components/security/Guards';
-import { BioHubSubmittedStatusType } from 'constants/misc';
-import { PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
+import { SystemRoleGuard } from 'components/security/Guards';
+import { PublishStatus } from 'constants/attachments';
+import { SYSTEM_ROLE } from 'constants/roles';
 import { IGetObservationSubmissionResponse } from 'interfaces/useObservationApi.interface';
 import React from 'react';
 
@@ -76,6 +77,10 @@ const ObservationFileCard = (props: IObservationFileCardProps) => {
   let icon: string = mdiFileOutline;
   let severity: 'error' | 'info' | 'success' | 'warning' = 'info';
 
+  const status =
+    (props.observationRecord.surveyObservationSupplementaryData?.event_timestamp && PublishStatus.SUBMITTED) ||
+    PublishStatus.UNSUBMITTED;
+
   if (
     props.observationRecord.surveyObservationData.messageTypes.some(
       (messageType) => messageType.severityLabel === 'Error'
@@ -96,12 +101,9 @@ const ObservationFileCard = (props: IObservationFileCardProps) => {
     )
   ) {
     icon = mdiInformationOutline;
+  } else if (status === PublishStatus.SUBMITTED) {
+    icon = mdiLockOutline;
   }
-
-  const status =
-    (props.observationRecord.surveyObservationSupplementaryData?.event_timestamp &&
-      BioHubSubmittedStatusType.SUBMITTED) ||
-    BioHubSubmittedStatusType.UNSUBMITTED;
 
   return (
     <Paper variant="outlined" className={clsx(classes.importFile, severity)}>
@@ -151,9 +153,7 @@ const ObservationFileCard = (props: IObservationFileCardProps) => {
                 </ListItemIcon>
                 Download
               </MenuItem>
-              <ProjectRoleGuard
-                validProjectRoles={[PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR]}
-                validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+              <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
                 <MenuItem
                   onClick={() => {
                     props.onDelete();
@@ -164,7 +164,7 @@ const ObservationFileCard = (props: IObservationFileCardProps) => {
                   </ListItemIcon>
                   Delete
                 </MenuItem>
-              </ProjectRoleGuard>
+              </SystemRoleGuard>
             </Menu>
           </Box>
         </Box>

@@ -12,7 +12,6 @@ import clsx from 'clsx';
 import { SubmitStatusChip } from 'components/chips/SubmitStatusChip';
 import { SystemRoleGuard } from 'components/security/Guards';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
-import { BioHubSubmittedStatusType } from 'constants/misc';
 import { SYSTEM_ROLE } from 'constants/roles';
 import { IGetDraftsListResponse } from 'interfaces/useDraftApi.interface';
 import { IGetProjectsListResponse } from 'interfaces/useProjectApi.interface';
@@ -52,13 +51,6 @@ const ProjectsListTable: React.FC<IProjectsListTableProps> = (props) => {
   const { projects, drafts } = props;
   const hasProjects = projects.length > 0;
   const hasDrafts = drafts?.length > 0;
-
-  function getProjectSubmissionStatus(project: IGetProjectsListResponse): BioHubSubmittedStatusType {
-    if (project.projectSupplementaryData.has_unpublished_content) {
-      return BioHubSubmittedStatusType.UNSUBMITTED;
-    }
-    return BioHubSubmittedStatusType.SUBMITTED;
-  }
 
   if (!hasProjects && !hasDrafts) {
     return (
@@ -151,7 +143,7 @@ const ProjectsListTable: React.FC<IProjectsListTableProps> = (props) => {
               <TableCell>{project.projectData.project_type}</TableCell>
               <TableCell>
                 <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
-                  <SubmitStatusChip status={getProjectSubmissionStatus(project)} />
+                  <SubmitStatusChip status={project.projectSupplementaryData.publishStatus} />
                 </SystemRoleGuard>
               </TableCell>
               <TableCell>

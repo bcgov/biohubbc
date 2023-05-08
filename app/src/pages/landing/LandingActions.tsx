@@ -108,12 +108,9 @@ const LandingActions = () => {
             size="large">
             Log In
           </Button>
-          {/**
-           * Temporarily hiding the Register link. See: https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-30
-           */}
           <Typography variant="body2">
             Don't have an account? &zwnj;
-            <a className={classes.heroLink} href="/link-to-register-an-account">
+            <a className={classes.heroLink} target="_blank" href="https://www.bceid.ca/">
               Register here.
             </a>
           </Typography>
