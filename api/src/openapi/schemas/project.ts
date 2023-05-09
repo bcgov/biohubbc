@@ -2,7 +2,7 @@
 export const projectFundingSourceFirstNations = {
   title: 'Project funding source with First Nations data',
   type: 'object',
-  required: ['first_nations_id', 'start_date', 'end_date'],
+  required: ['first_nations_id'],
   properties: {
     first_nations_id: {
       type: 'integer',
@@ -25,11 +25,13 @@ export const projectFundingSourceFirstNations = {
     },
     start_date: {
       type: 'string',
-      description: 'ISO 8601 date string'
+      description: 'ISO 8601 date string',
+      nullable: true
     },
     end_date: {
       type: 'string',
-      description: 'ISO 8601 date string'
+      description: 'ISO 8601 date string',
+      nullable: true
     }
   }
 };

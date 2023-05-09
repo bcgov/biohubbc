@@ -171,8 +171,8 @@ export class PostFundingSource {
   investment_action_category: number;
   agency_project_id: string;
   funding_amount: number;
-  start_date: string;
-  end_date: string;
+  start_date?: string;
+  end_date?: string;
   first_nations_id?: number;
 
   constructor(obj?: any) {
