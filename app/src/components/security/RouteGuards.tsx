@@ -126,7 +126,7 @@ const CheckForKeycloakAuthenticated = (props: PropsWithChildren<Record<never, un
 
   if (!keycloakWrapper?.keycloak?.authenticated) {
     // Trigger login, then redirect to the desired route
-    return <Redirect to={`/login?next=${encodeURIComponent(location.pathname)}`} />;;
+    return <Redirect to={`/login?next=${encodeURIComponent(location.pathname)}`} />;
   }
 
   return <>{props.children}</>;
@@ -231,7 +231,7 @@ const CheckIfNotAuthenticatedUser = (props: PropsWithChildren<Record<never, unkn
      */
     redirect();
 
-    return <></>
+    return <></>;
   }
 
   return <>{props.children}</>;

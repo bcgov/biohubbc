@@ -7,8 +7,6 @@ import React from 'react';
 import { Router } from 'react-router-dom';
 import { LandingPage } from './LandingPage';
 
-
-
 const history = createMemoryHistory();
 
 describe('LandingPage', () => {
