@@ -1,5 +1,4 @@
 import { act, fireEvent, render, waitFor } from '@testing-library/react';
-import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteFieldVariableSize';
 import { Formik } from 'formik';
 import React from 'react';
 import ProjectFundingForm, {
@@ -8,19 +7,41 @@ import ProjectFundingForm, {
   ProjectFundingFormInitialValues,
   ProjectFundingFormYupSchema
 } from './ProjectFundingForm';
+import { FundingSourceType, IFundingSourceAutocompleteField } from './ProjectFundingItemForm';
 
-const funding_sources: IMultiAutocompleteFieldOption[] = [
+const funding_sources: IFundingSourceAutocompleteField[] = [
   {
     value: 1,
-    label: 'agency 1'
+    label: 'agency 1',
+    type: FundingSourceType.FUNDING_SOURCE
   },
   {
     value: 2,
-    label: 'agency 2'
+    label: 'agency 2',
+    type: FundingSourceType.FUNDING_SOURCE
   },
   {
     value: 3,
-    label: 'agency 3'
+    label: 'agency 3',
+    type: FundingSourceType.FUNDING_SOURCE
+  }
+];
+
+const first_nations: IFundingSourceAutocompleteField[] = [
+  {
+    value: 1,
+    label: 'First Nation 1',
+    type: FundingSourceType.FIRST_NATIONS
+  },
+  {
+    value: 2,
+    label: 'First Nation 2',
+    type: FundingSourceType.FIRST_NATIONS
+  },
+  {
+    value: 3,
+    label: 'First Nation 3',
+    type: FundingSourceType.FIRST_NATIONS
   }
 ];
 
@@ -53,6 +74,7 @@ describe('ProjectFundingForm', () => {
         onSubmit={async () => {}}>
         {() => (
           <ProjectFundingForm
+            first_nations={first_nations}
             funding_sources={funding_sources}
             investment_action_category={investment_action_category}
           />
@@ -93,6 +115,7 @@ describe('ProjectFundingForm', () => {
         onSubmit={async () => {}}>
         {() => (
           <ProjectFundingForm
+            first_nations={first_nations}
             funding_sources={funding_sources}
             investment_action_category={investment_action_category}
           />
@@ -145,6 +168,7 @@ describe('ProjectFundingForm', () => {
         onSubmit={async () => {}}>
         {() => (
           <ProjectFundingForm
+            first_nations={first_nations}
             funding_sources={funding_sources}
             investment_action_category={investment_action_category}
           />
@@ -192,6 +216,7 @@ describe('ProjectFundingForm', () => {
           onSubmit={async () => {}}>
           {() => (
             <ProjectFundingForm
+              first_nations={first_nations}
               funding_sources={funding_sources}
               investment_action_category={investment_action_category}
             />
@@ -247,6 +272,7 @@ describe('ProjectFundingForm', () => {
           onSubmit={async () => {}}>
           {() => (
             <ProjectFundingForm
+              first_nations={first_nations}
               funding_sources={funding_sources}
               investment_action_category={investment_action_category}
             />

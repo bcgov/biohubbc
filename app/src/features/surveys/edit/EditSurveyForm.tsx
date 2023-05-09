@@ -149,9 +149,9 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
                   props.surveyFundingSources?.map((item) => {
                     return {
                       value: item.id,
-                      label: `${
-                        props.codes.funding_source.find((fundingCode) => fundingCode.id === item.agency_id)?.name
-                      } | ${getFormattedAmount(item.funding_amount)} | ${getFormattedDateRangeString(
+                      label: `${item.agency_name || item.first_nations_name} | ${getFormattedAmount(
+                        item.funding_amount
+                      )} | ${getFormattedDateRangeString(
                         DATE_FORMAT.ShortMediumDateFormat,
                         item.start_date,
                         item.end_date

@@ -25,6 +25,7 @@ import useDataLoader from 'hooks/useDataLoader';
 import useDataLoaderError from 'hooks/useDataLoaderError';
 import { IGetProjectParticipantsResponseArrayItem } from 'interfaces/useProjectApi.interface';
 import React, { useCallback, useContext, useEffect } from 'react';
+import { alphabetizeObjects } from 'utils/Utils';
 import ProjectParticipantsHeader from './ProjectParticipantsHeader';
 import ProjectParticipantsRoleMenu from './ProjectParticipantsRoleMenu';
 
@@ -86,8 +87,8 @@ const ProjectParticipantsPage: React.FC = () => {
       ),
       yesButtonProps: { color: 'secondary' },
       open: true,
-      onYes: () => {
-        handleRemoveProjectParticipant(participant.project_participation_id);
+      onYes: async () => {
+        await handleRemoveProjectParticipant(participant.project_participation_id);
         dialogContext.setYesNoDialog({ open: false });
         dialogContext.setSnackbar({
           open: true,
@@ -128,22 +129,6 @@ const ProjectParticipantsPage: React.FC = () => {
     }
   };
 
-  function alphabetizeParticipants(
-    participantA: IGetProjectParticipantsResponseArrayItem,
-    participantB: IGetProjectParticipantsResponseArrayItem
-  ) {
-    // Message A is sorted before B
-    if (participantA.user_identifier < participantB.user_identifier) {
-      return -1;
-    }
-    // Message B is sorted before A
-    if (participantA.user_identifier > participantB.user_identifier) {
-      return 1;
-    }
-    // Items are already in order
-    return 0;
-  }
-
   if (!codesContext.codesDataLoader.data || !projectParticipantsDataLoader.hasLoaded) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
@@ -178,8 +163,8 @@ const ProjectParticipantsPage: React.FC = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {projectParticipantsDataLoader.data &&
-                    projectParticipantsDataLoader.data.participants.sort(alphabetizeParticipants).map((participant) => (
+                  {alphabetizeObjects(projectParticipantsDataLoader?.data?.participants ?? [], 'user_identifier').map(
+                    (participant) => (
                       <TableRow key={participant.project_participation_id}>
                         <TableCell scope="row">{participant.user_identifier}</TableCell>
                         <TableCell scope="row">{participant.user_identity_source_id}</TableCell>
@@ -204,7 +189,8 @@ const ProjectParticipantsPage: React.FC = () => {
                           </Box>
                         </TableCell>
                       </TableRow>
-                    ))}
+                    )
+                  )}
 
                   {!projectParticipantsDataLoader.data && (
                     <TableRow>

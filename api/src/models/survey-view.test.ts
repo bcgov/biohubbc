@@ -240,7 +240,9 @@ describe('GetSurveyFundingSources', () => {
         investment_action_category_id: 4,
         investment_action_category_name: 'name11',
         agency_name: 'name1',
-        funding_source_project_id: '5'
+        funding_source_project_id: '5',
+        first_nations_id: null,
+        first_nations_name: null
       },
       {
         project_funding_source_id: 6,
@@ -251,7 +253,9 @@ describe('GetSurveyFundingSources', () => {
         investment_action_category_id: 9,
         investment_action_category_name: 'name22',
         agency_name: 'name2',
-        funding_source_project_id: '10'
+        funding_source_project_id: '10',
+        first_nations_id: null,
+        first_nations_name: null
       }
     ];
 
@@ -270,7 +274,9 @@ describe('GetSurveyFundingSources', () => {
           investment_action_category_id: 4,
           investment_action_category_name: 'name11',
           agency_name: 'name1',
-          funding_source_project_id: '5'
+          funding_source_project_id: '5',
+          first_nations_id: null,
+          first_nations_name: null
         },
         {
           pfs_id: 6,
@@ -281,7 +287,9 @@ describe('GetSurveyFundingSources', () => {
           investment_action_category_id: 9,
           investment_action_category_name: 'name22',
           agency_name: 'name2',
-          funding_source_project_id: '10'
+          funding_source_project_id: '10',
+          first_nations_id: null,
+          first_nations_name: null
         }
       ]);
     });

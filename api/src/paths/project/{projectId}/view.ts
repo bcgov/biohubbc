@@ -207,19 +207,24 @@ GET.apiDoc = {
                               type: 'number'
                             },
                             agency_id: {
-                              type: 'number'
+                              type: 'number',
+                              nullable: true
                             },
                             investment_action_category: {
-                              type: 'number'
+                              type: 'number',
+                              nullable: true
                             },
                             investment_action_category_name: {
-                              type: 'string'
+                              type: 'string',
+                              nullable: true
                             },
                             agency_name: {
-                              type: 'string'
+                              type: 'string',
+                              nullable: true
                             },
                             funding_amount: {
-                              type: 'number'
+                              type: 'number',
+                              nullable: true
                             },
                             start_date: {
                               type: 'string',
@@ -237,6 +242,14 @@ GET.apiDoc = {
                             },
                             revision_count: {
                               type: 'number'
+                            },
+                            first_nations_id: {
+                              type: 'number',
+                              nullable: true
+                            },
+                            first_nations_name: {
+                              type: 'string',
+                              nullable: true
                             }
                           }
                         }

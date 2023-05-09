@@ -3,6 +3,7 @@ import { IConfig } from 'contexts/configContext';
 import { Feature, Polygon } from 'geojson';
 import { SYSTEM_IDENTITY_SOURCE } from 'hooks/useKeycloakWrapper';
 import { LatLngBounds } from 'leaflet';
+import _ from 'lodash';
 import moment from 'moment';
 
 /**
@@ -129,7 +130,12 @@ export const getFormattedTime = (timeFormat: TIME_FORMAT, date: string): string 
  * @param {number} amount
  * @return {string} formatted amount string (rounded to the nearest integer), or an empty string if unable to parse the amount
  */
-export const getFormattedAmount = (amount: number): string => {
+export const getFormattedAmount = (amount?: number): string => {
+  if (!amount && amount !== 0) {
+    //amount was invalid
+    return '';
+  }
+
   const formatter = new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
@@ -137,10 +143,6 @@ export const getFormattedAmount = (amount: number): string => {
     maximumFractionDigits: 0
   });
 
-  if (!amount && amount !== 0) {
-    //amount was invalid
-    return '';
-  }
   return formatter.format(amount);
 };
 
@@ -151,15 +153,13 @@ export const getFormattedAmount = (amount: number): string => {
  * @return {*}  {(string | undefined)}
  */
 export const getLogOutUrl = (config: IConfig): string | undefined => {
-  if (!config?.KEYCLOAK_CONFIG?.url || !config.KEYCLOAK_CONFIG?.realm || !config.SITEMINDER_LOGOUT_URL) {
-    return;
+  if (config?.KEYCLOAK_CONFIG.url && config?.KEYCLOAK_CONFIG.realm && config?.SITEMINDER_LOGOUT_URL) {
+    const localRedirectURL = `${window.location.origin}/`;
+
+    const keycloakLogoutRedirectURL = `${config.KEYCLOAK_CONFIG.url}/realms/${config.KEYCLOAK_CONFIG.realm}/protocol/openid-connect/logout?redirect_uri=${localRedirectURL}`;
+
+    return `${config.SITEMINDER_LOGOUT_URL}?returl=${keycloakLogoutRedirectURL}&retnow=1`;
   }
-
-  const localRedirectURL = `${window.location.origin}/`;
-
-  const keycloakLogoutRedirectURL = `${config.KEYCLOAK_CONFIG.url}/realms/${config.KEYCLOAK_CONFIG.realm}/protocol/openid-connect/logout?redirect_uri=${localRedirectURL}`;
-
-  return `${config.SITEMINDER_LOGOUT_URL}?returl=${keycloakLogoutRedirectURL}&retnow=1`;
 };
 
 export const getFormattedFileSize = (fileSize: number) => {
@@ -267,4 +267,15 @@ export const getFormattedIdentitySource = (identitySource: SYSTEM_IDENTITY_SOURC
     default:
       return null;
   }
+};
+
+/**
+ * For a given property, alphabetize an array of objects
+ *
+ * @param {T[]} data an array of objects to be alphabetize
+ * @param {string} property a key property to alphabetize the data array on
+ * @returns {any[]} Returns an alphabetized array of objects
+ */
+export const alphabetizeObjects = <T extends { [key: string]: any }>(data: T[], property: string) => {
+  return _.sortBy(data, property);
 };
