@@ -34,7 +34,7 @@ const RequestSubmitted = () => {
       <Box pt={6} textAlign="center">
         <Icon path={mdiCheck} size={2} color="#4caf50" />
         <h1>Access Request Submitted</h1>
-        <Typography>Your access request has been submitted for review.</Typography>
+        <Typography>Your request is currently pending a review by an administrator.</Typography>
         <Box pt={4}>
           <Button
             onClick={() => {
