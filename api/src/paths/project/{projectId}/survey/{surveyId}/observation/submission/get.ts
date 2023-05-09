@@ -242,6 +242,7 @@ export function getOccurrenceSubmission(): RequestHandler {
           SUBMISSION_STATUS_TYPE.SYSTEM_ERROR,
           SUBMISSION_STATUS_TYPE.FAILED_OCCURRENCE_PREPARATION,
           SUBMISSION_STATUS_TYPE.FAILED_VALIDATION,
+          SUBMISSION_STATUS_TYPE.INVALID_MEDIA,
           SUBMISSION_STATUS_TYPE.FAILED_TRANSFORMED,
           SUBMISSION_STATUS_TYPE.FAILED_PROCESSING_OCCURRENCE_DATA,
           SUBMISSION_STATUS_TYPE['AWAITING CURRATION'],
@@ -271,7 +272,7 @@ export function getOccurrenceSubmission(): RequestHandler {
         surveyObservationData: {
           occurrence_submission_id: occurrenceSubmission.occurrence_submission_id,
           inputFileName: occurrenceSubmission.input_file_name,
-          status: occurrenceSubmission.submission_status_type_name || null,
+          status: occurrenceSubmission.submission_status_type_name ?? null,
           isValidating: !isDoneValidating,
           messageTypes
         },

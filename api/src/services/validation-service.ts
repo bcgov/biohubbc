@@ -360,15 +360,18 @@ export class ValidationService extends DBService {
   }
 
   validateXLSX(file: XLSXCSV, parser: ValidationSchemaParser) {
-    // Run media validations
+    defaultLog.debug({ label: 'validateXLSX' });
     file.validateMedia(parser);
 
     const media_state = file.getMediaState();
+
     if (!media_state.isValid) {
-      throw SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.INVALID_MEDIA);
+      return {
+        csv_state: [],
+        media_state
+      };
     }
 
-    // Run CSV content validations
     file.validateContent(parser);
     const csv_state = file.getContentState();
 
@@ -394,14 +397,15 @@ export class ValidationService extends DBService {
     return normalized;
   }
 
-  async persistValidationResults(csvState: ICsvState[], mediaState: IMediaState): Promise<boolean> {
+  async persistValidationResults(csvState: ICsvState[], mediaState: IMediaState): Promise<void> {
     defaultLog.debug({ label: 'persistValidationResults', message: 'validationResults' });
 
-    let parseError = false;
     const errors: MessageError[] = [];
 
     mediaState.fileErrors?.forEach((fileError) => {
-      errors.push(new MessageError(SUBMISSION_MESSAGE_TYPE.INVALID_MEDIA, `${fileError}`, 'Miscellaneous'));
+      errors.push(
+        new MessageError(SUBMISSION_MESSAGE_TYPE.INVALID_MEDIA, `${fileError}`, SUBMISSION_MESSAGE_TYPE.INVALID_MEDIA)
+      );
     });
 
     csvState?.forEach((csvStateItem) => {
@@ -434,18 +438,12 @@ export class ValidationService extends DBService {
           )
         );
       });
-
-      if (!mediaState.isValid || csvState?.some((item) => !item.isValid)) {
-        // At least 1 error exists, skip remaining steps
-        parseError = true;
-      }
     });
 
-    if (parseError) {
+    if (!mediaState.isValid || csvState?.some((item) => !item.isValid)) {
+      // At least 1 error exists, skip remaining steps
       throw new SubmissionError({ messages: errors });
     }
-
-    return parseError;
   }
 
   async getTransformationSchema(file: XLSXCSV, surveyId: number): Promise<TransformSchema> {
