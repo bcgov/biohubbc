@@ -163,7 +163,7 @@ export const projectCreatePostRequestObject = {
         fundingSources: {
           type: 'array',
           items: {
-            anyOf: [{...projectFundingSourceAgency}, {...projectFundingSourceFirstNations}]
+            anyOf: [{ ...projectFundingSourceAgency }, { ...projectFundingSourceFirstNations }]
           }
         }
       }
@@ -227,14 +227,17 @@ const projectUpdateProperties = {
       }
     }
   },
-  funding: { type: 'object', properties: {
-    fundingSources: {
-      type: 'array',
-      items: {
-        anyOf: [{...projectFundingSourceAgency}, {...projectFundingSourceFirstNations}]
+  funding: {
+    type: 'object',
+    properties: {
+      fundingSources: {
+        type: 'array',
+        items: {
+          anyOf: [{ ...projectFundingSourceAgency }, { ...projectFundingSourceFirstNations }]
+        }
       }
     }
-  } },
+  },
   partnerships: { type: 'object', properties: {} }
 };
 

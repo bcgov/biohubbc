@@ -262,5 +262,4 @@ export const getFormattedIdentitySource = (identitySource: SYSTEM_IDENTITY_SOURC
  */
 export const alphabetizeObjects = <T extends { [key: string]: any }>(data: T[], property: string) => {
   return _.sortBy(data, property);
-}
-
+};
