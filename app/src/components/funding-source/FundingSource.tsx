@@ -12,8 +12,8 @@ export interface IFundingSource {
   agency_name?: string;
   investment_action_category_name?: string;
   funding_amount?: number;
-  start_date: string;
-  end_date: string;
+  start_date?: string;
+  end_date?: string;
   agency_project_id: string;
   first_nations_name?: string;
 }
@@ -54,12 +54,20 @@ const FundingSource = (props: IFundingSourceProps) => {
                       <Typography component="dd">{item.agency_project_id || 'No Agency Project ID'}</Typography>
                     </Grid>
                     <Grid item sm={6}>
-                      <Typography component="dt" variant="subtitle2" color="textSecondary">
-                        Timeline
-                      </Typography>
-                      <Typography component="dd">
-                        {getFormattedDateRangeString(DATE_FORMAT.ShortMediumDateFormat, item.start_date, item.end_date)}
-                      </Typography>
+                      {item.start_date && item.end_date && (
+                        <>
+                          <Typography component="dt" variant="subtitle2" color="textSecondary">
+                            Timeline
+                          </Typography>
+                          <Typography component="dd">
+                            {getFormattedDateRangeString(
+                              DATE_FORMAT.ShortMediumDateFormat,
+                              item.start_date,
+                              item.end_date
+                            )}
+                          </Typography>
+                        </>
+                      )}
                     </Grid>
                     <Grid item sm={12}>
                       {item.funding_amount && (

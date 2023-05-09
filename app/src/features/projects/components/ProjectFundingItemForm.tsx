@@ -98,21 +98,21 @@ export const ProjectFundingFormArrayItemYupSchema = yup.object().shape(
           return rules.required('Required');
         }
 
-        return rules;
+        return rules.nullable(true);
       }),
     start_date: yup.string().when('first_nations_id', (val: any) => {
       const rules = yup.string().isValidDateString();
       if (!val) {
         return rules.required('Required');
       }
-      return rules;
+      return rules.nullable(true);
     }),
     end_date: yup.string().when('first_nations_id', (val: any) => {
       const rules = yup.string().isValidDateString().isEndDateAfterStartDate('start_date');
       if (!val) {
         return rules.required('Required');
       }
-      return rules;
+      return rules.nullable(true);
     })
   },
   [['agency_id', 'first_nations_id']] // this prevents a cyclical dependency
