@@ -85,24 +85,6 @@ const LandingActions = () => {
     <Box className={classes.actionsContainer}>
       <UnAuthGuard>
         <>
-<<<<<<< HEAD
-          <Typography variant="body2">
-            To access this application, you must use a valid BC government-issued IDIR or BCeID account credential.
-          </Typography>
-          <Button
-            data-testid="landing_page_login_button"
-            component="a"
-            href={loginUrl}
-            variant="contained"
-            className={clsx(classes.heroButton, classes.loginButton)}
-            size="large">
-            Log In
-          </Button>
-          <Typography variant="body2">
-            Don't have an account? &zwnj;
-            <a className={classes.heroLink} target="_blank" href="https://www.bceid.ca/">
-              Register here.
-=======
           <Typography>
             To access this application, you must use a valid government-issued IDIR or BCeID account.
           </Typography>
@@ -125,17 +107,12 @@ const LandingActions = () => {
               target="_blank"
               href="https://www.bceid.ca/os/?7652&SkipTo=Basic">
               Register here
->>>>>>> dev
             </a>
           </Typography>
         </>
       </UnAuthGuard>
       <AuthGuard>
-<<<<<<< HEAD
-        <Typography variant="body1" className={classes.greeting} data-testid="landing_page_greeting">
-=======
         <Typography variant="body1" data-testid="landing_page_greeting">
->>>>>>> dev
           <span>Welcome</span>
           {isReturningUser && <span>&nbsp;back</span>}
           {userIdentifier && (
@@ -151,24 +128,12 @@ const LandingActions = () => {
           <Alert
             severity="info"
             className={classes.pendingRequestAlert}
-<<<<<<< HEAD
-            icon={<Icon className={classes.pendingRequestAlertIcon} path={mdiInformationOutline} size={1} />}>
-            <AlertTitle className={classes.pendingRequestAlertTitle}>Access request pending</AlertTitle>
-            <span>
-              You access request for this application is currently under review. You will be notified by email when your
-              request has been reviewed.
-            </span>
-          </Alert>
-        )}
-        <Box className={classes.actions}>
-=======
             icon={<Icon path={mdiInformationOutline} size={1.25} />}>
             <AlertTitle>Access request pending</AlertTitle>
             Your request is currently pending a review by an administrator.
           </Alert>
         )}
         <Box className={classes.heroActions}>
->>>>>>> dev
           {mayViewProjects && (
             <Button
               component={Link}
@@ -190,11 +155,7 @@ const LandingActions = () => {
             />
           )}
           {(hasAdministrativeRole || (!hasAdministrativeRole && hasProjectCreationRole)) && (
-<<<<<<< HEAD
-            <Typography component="span">Or</Typography>
-=======
             <Typography component="span">OR</Typography>
->>>>>>> dev
           )}
           {hasAdministrativeRole && (
             <Button

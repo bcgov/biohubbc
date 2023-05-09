@@ -49,7 +49,7 @@ describe('Header', () => {
       </AuthStateContext.Provider>
     );
 
-    expect(getByText('My Projects')).toBeVisible();
+    expect(getByText('Projects')).toBeVisible();
     expect(getByText('Map')).toBeVisible();
     expect(getByText('Manage Users')).toBeVisible();
   });
@@ -95,7 +95,7 @@ describe('Header', () => {
       </AuthStateContext.Provider>
     );
 
-    expect(getByText('My Projects')).toBeVisible();
+    expect(getByText('Projects')).toBeVisible();
     expect(getByText('Map')).toBeVisible();
     expect(getByText('Manage Users')).toBeVisible();
     expect(getByText('Resources')).toBeVisible();
