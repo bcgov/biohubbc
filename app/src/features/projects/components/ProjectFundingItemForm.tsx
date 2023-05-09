@@ -37,7 +37,7 @@ export const ProjectFundingFormArrayItemInitialValues: IProjectFundingFormArrayI
   investment_action_category: ('' as unknown) as number,
   investment_action_category_name: '',
   agency_project_id: '',
-  funding_amount: ('' as unknown) as number,
+  funding_amount: undefined,
   start_date: '',
   end_date: '',
   revision_count: 0,

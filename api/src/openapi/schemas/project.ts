@@ -1,3 +1,70 @@
+// A funding source object requiring first nations specific data (first_nations_id)
+export const projectFundingSourceFirstNations = {
+  title: 'Project funding source with First Nations data',
+  type: 'object',
+  required: ['first_nations_id', 'start_date', 'end_date'],
+  properties: {
+    first_nations_id: {
+      type: 'integer',
+      minimum: 1
+    },
+    agency_id: {
+      type: 'integer',
+      nullable: true
+    },
+    investment_action_category: {
+      type: 'integer',
+      nullable: true
+    },
+    agency_project_id: {
+      type: 'string',
+      nullable: true
+    },
+    funding_amount: {
+      type: 'number'
+    },
+    start_date: {
+      type: 'string',
+      description: 'ISO 8601 date string'
+    },
+    end_date: {
+      type: 'string',
+      description: 'ISO 8601 date string'
+    }
+  }
+};
+
+// A funding source object requiring agency specific data (agency_id, funding_amount)
+export const projectFundingSourceAgency = {
+  title: 'Project funding source with Agency data',
+  type: 'object',
+  required: ['agency_id', 'investment_action_category', 'start_date', 'end_date', 'funding_amount'],
+  properties: {
+    agency_id: {
+      type: 'integer',
+      minimum: 1
+    },
+    investment_action_category: {
+      type: 'number',
+      nullable: false
+    },
+    agency_project_id: {
+      type: 'string',
+      nullable: true
+    },
+    funding_amount: {
+      type: 'number'
+    },
+    start_date: {
+      type: 'string',
+      description: 'ISO 8601 date string'
+    },
+    end_date: {
+      type: 'string',
+      description: 'ISO 8601 date string'
+    }
+  }
+};
 /**
  * Request Object for project create POST request
  */
@@ -93,36 +160,10 @@ export const projectCreatePostRequestObject = {
       title: 'Project funding sources',
       type: 'object',
       properties: {
-        funding_sources: {
+        fundingSources: {
           type: 'array',
           items: {
-            title: 'Project funding agency',
-            type: 'object',
-            properties: {
-              agency_id: {
-                type: 'number'
-              },
-              first_nations_id: {
-                type: 'number'
-              },
-              investment_action_category: {
-                type: 'number'
-              },
-              agency_project_id: {
-                type: 'string'
-              },
-              funding_amount: {
-                type: 'number'
-              },
-              start_date: {
-                type: 'string',
-                description: 'ISO 8601 date string'
-              },
-              end_date: {
-                type: 'string',
-                description: 'ISO 8601 date string'
-              }
-            }
+            anyOf: [{...projectFundingSourceAgency}, {...projectFundingSourceFirstNations}]
           }
         }
       }
@@ -186,7 +227,14 @@ const projectUpdateProperties = {
       }
     }
   },
-  funding: { type: 'object', properties: {} },
+  funding: { type: 'object', properties: {
+    fundingSources: {
+      type: 'array',
+      items: {
+        anyOf: [{...projectFundingSourceAgency}, {...projectFundingSourceFirstNations}]
+      }
+    }
+  } },
   partnerships: { type: 'object', properties: {} }
 };
 
