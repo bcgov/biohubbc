@@ -74,7 +74,7 @@ export class PutLocationData {
       }
     });
 
-    this.location_description = (obj && obj.location_description) || null;
+    this.location_description = obj?.location_description;
     this.geometry = (obj?.geometry?.length && obj.geometry) || [];
     this.revision_count = obj?.revision_count ?? null;
   }
@@ -106,13 +106,14 @@ export class PutIUCNData {
 }
 
 export class PutFundingSource {
-  id: number;
-  investment_action_category: number;
-  agency_project_id: string;
-  funding_amount: number;
+  id?: number;
+  investment_action_category?: number;
+  agency_project_id?: string;
+  funding_amount?: number;
   start_date: string;
   end_date: string;
   revision_count: number;
+  first_nations_id?: number;
 
   constructor(obj?: any) {
     defaultLog.debug({ label: 'PutFundingSource', message: 'params', obj });
@@ -124,6 +125,7 @@ export class PutFundingSource {
     this.start_date = obj?.start_date || null;
     this.end_date = obj?.end_date || null;
     this.revision_count = obj?.revision_count ?? null;
+    this.first_nations_id = obj?.first_nations_id ?? null;
   }
 }
 

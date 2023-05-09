@@ -385,7 +385,9 @@ describe('GetFundingData', () => {
         start_date: Date.now().toString(),
         end_date: Date.now().toString(),
         agency_project_id: '12',
-        revision_count: 1
+        revision_count: 1,
+        first_nations_name: null,
+        first_nations_id: null
       }
     ];
 

@@ -22,6 +22,7 @@ import React, { useState } from 'react';
 import { getFormattedAmount, getFormattedDateRangeString } from 'utils/Utils';
 import yup from 'utils/YupSchema';
 import ProjectFundingItemForm, {
+  IFundingSourceAutocompleteField,
   IProjectFundingFormArrayItem,
   ProjectFundingFormArrayItemInitialValues,
   ProjectFundingFormArrayItemYupSchema
@@ -46,8 +47,9 @@ export interface IInvestmentActionCategoryOption extends IMultiAutocompleteField
 }
 
 export interface IProjectFundingFormProps {
-  funding_sources: IMultiAutocompleteFieldOption[];
+  funding_sources: IFundingSourceAutocompleteField[];
   investment_action_category: IInvestmentActionCategoryOption[];
+  first_nations: IFundingSourceAutocompleteField[];
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -121,7 +123,7 @@ const ProjectFundingForm: React.FC<IProjectFundingFormProps> = (props) => {
                   component={{
                     element: (
                       <ProjectFundingItemForm
-                        funding_sources={props.funding_sources}
+                        sources={[...props.funding_sources, ...props.first_nations]}
                         investment_action_category={props.investment_action_category}
                       />
                     ),
@@ -148,7 +150,6 @@ const ProjectFundingForm: React.FC<IProjectFundingFormProps> = (props) => {
                       (fundingSource.agency_id === 1 && 'Investment Action') ||
                       (fundingSource.agency_id === 2 && 'Investment Category') ||
                       null;
-
                     const investment_action_category_value = props.investment_action_category.filter(
                       (item) => item.value === fundingSource.investment_action_category
                     )?.[0]?.label;
@@ -158,7 +159,8 @@ const ProjectFundingForm: React.FC<IProjectFundingFormProps> = (props) => {
                         <Paper variant="outlined">
                           <Toolbar>
                             <Typography className={classes.title}>
-                              {getCodeValueNameByID(props.funding_sources, fundingSource.agency_id)}
+                              {getCodeValueNameByID(props.funding_sources, fundingSource?.agency_id) ||
+                                getCodeValueNameByID(props.first_nations, fundingSource?.first_nations_id)}
                               {investment_action_category_label && (
                                 <span className={classes.titleDesc}>({investment_action_category_value})</span>
                               )}
@@ -231,10 +233,9 @@ const ProjectFundingForm: React.FC<IProjectFundingFormProps> = (props) => {
 
 export default ProjectFundingForm;
 
-export const getCodeValueNameByID = (codeSet: IMultiAutocompleteFieldOption[], codeValueId: number): string => {
+export const getCodeValueNameByID = (codeSet: IMultiAutocompleteFieldOption[], codeValueId?: number): string => {
   if (!codeSet?.length || !codeValueId) {
     return '';
   }
-
-  return codeSet.find((item) => item.value === codeValueId)?.label || '';
+  return codeSet.find((item) => item.value === codeValueId)?.label ?? '';
 };

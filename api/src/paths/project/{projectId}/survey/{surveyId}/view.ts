@@ -207,6 +207,14 @@ GET.apiDoc = {
                               type: 'string',
                               nullable: true,
                               description: 'ISO 8601 date string'
+                            },
+                            first_nations_id: {
+                              type: 'number',
+                              nullable: true
+                            },
+                            first_nations_name: {
+                              type: 'string',
+                              nullable: true
                             }
                           }
                         }
