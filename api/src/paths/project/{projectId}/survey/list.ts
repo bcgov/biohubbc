@@ -305,10 +305,11 @@ GET.apiDoc = {
                 },
                 surveySupplementaryData: {
                   type: 'object',
-                  required: ['has_unpublished_content'],
+                  required: ['publishStatus'],
                   properties: {
-                    has_unpublished_content: {
-                      type: 'boolean'
+                    publishStatus: {
+                      type: 'string',
+                      enum: ['NO_DATA', 'UNSUBMITTED', 'SUBMITTED']
                     }
                   }
                 }
@@ -360,11 +361,11 @@ export function getSurveyList(): RequestHandler {
       const surveys = await Promise.all(
         surveyIds.map(async (surveyId) => {
           const survey = await surveyService.getSurveyById(surveyId);
-          const surveyPublishStatus = await surveyService.doesSurveyHaveUnpublishedContent(surveyId);
+          const surveyPublishStatus = await surveyService.surveyPublishStatus(surveyId);
 
           return {
             surveyData: survey,
-            surveySupplementaryData: { has_unpublished_content: surveyPublishStatus }
+            surveySupplementaryData: { publishStatus: surveyPublishStatus }
           };
         })
       );

@@ -11,11 +11,9 @@ import Typography from '@material-ui/core/Typography';
 import assert from 'assert';
 import { SubmitStatusChip } from 'components/chips/SubmitStatusChip';
 import { SystemRoleGuard } from 'components/security/Guards';
-import { BioHubSubmittedStatusType } from 'constants/misc';
 import { SYSTEM_ROLE } from 'constants/roles';
 import { CodesContext } from 'contexts/codesContext';
 import { ProjectContext } from 'contexts/projectContext';
-import { IGetSurveyForListResponse } from 'interfaces/useSurveyApi.interface';
 import React, { useContext, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 
@@ -47,13 +45,6 @@ const SurveysList: React.FC = () => {
 
   const [rowsPerPage] = useState(30);
   const [page] = useState(0);
-
-  function getSurveySubmissionStatus(survey: IGetSurveyForListResponse): BioHubSubmittedStatusType {
-    if (survey.surveySupplementaryData.has_unpublished_content) {
-      return BioHubSubmittedStatusType.UNSUBMITTED;
-    }
-    return BioHubSubmittedStatusType.SUBMITTED;
-  }
 
   if (!surveys.length) {
     return <NoSurveys />;
@@ -100,7 +91,7 @@ const SurveysList: React.FC = () => {
                   </TableCell>
                   <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
                     <TableCell>
-                      <SubmitStatusChip status={getSurveySubmissionStatus(row)} />
+                      <SubmitStatusChip status={row.surveySupplementaryData.publishStatus} />
                     </TableCell>
                   </SystemRoleGuard>
                 </TableRow>
