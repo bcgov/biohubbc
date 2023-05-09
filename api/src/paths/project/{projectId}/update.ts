@@ -247,11 +247,13 @@ GET.apiDoc = {
                         start_date: {
                           type: 'string',
                           format: 'date',
+                          nullable: true,
                           description: 'ISO 8601 date string for the funding start date'
                         },
                         end_date: {
                           type: 'string',
                           format: 'date',
+                          nullable: true,
                           description: 'ISO 8601 date string for the funding end_date'
                         },
                         agency_project_id: {

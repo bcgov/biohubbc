@@ -25,8 +25,8 @@ export interface IProjectFundingFormArrayItem {
   investment_action_category_name: string;
   agency_project_id: string;
   funding_amount?: number;
-  start_date: string;
-  end_date: string;
+  start_date?: string;
+  end_date?: string;
   revision_count: number;
   first_nations_id?: number;
 }
@@ -38,8 +38,8 @@ export const ProjectFundingFormArrayItemInitialValues: IProjectFundingFormArrayI
   investment_action_category_name: '',
   agency_project_id: '',
   funding_amount: undefined,
-  start_date: '',
-  end_date: '',
+  start_date: undefined,
+  end_date: undefined,
   revision_count: 0,
   first_nations_id: undefined
 };
@@ -98,10 +98,22 @@ export const ProjectFundingFormArrayItemYupSchema = yup.object().shape(
           return rules.required('Required');
         }
 
-        return rules;
+        return rules.nullable(true);
       }),
-    start_date: yup.string().isValidDateString().required('Required'),
-    end_date: yup.string().isValidDateString().required('Required').isEndDateAfterStartDate('start_date')
+    start_date: yup.string().when('first_nations_id', (val: any) => {
+      const rules = yup.string().isValidDateString();
+      if (!val) {
+        return rules.required('Required');
+      }
+      return rules.nullable(true);
+    }),
+    end_date: yup.string().when('first_nations_id', (val: any) => {
+      const rules = yup.string().isValidDateString().isEndDateAfterStartDate('start_date');
+      if (!val) {
+        return rules.required('Required');
+      }
+      return rules.nullable(true);
+    })
   },
   [['agency_id', 'first_nations_id']] // this prevents a cyclical dependency
 );
@@ -258,8 +270,8 @@ const ProjectFundingItemForm: React.FC<IProjectFundingItemFormProps> = (props) =
             formikProps={formikProps}
             startName="start_date"
             endName="end_date"
-            startRequired={true}
-            endRequired={true}
+            startRequired={!formikProps.values.first_nations_id} // Start and End date are not required fields when a first nations source is selected
+            endRequired={!formikProps.values.first_nations_id}
           />
         </Grid>
       </Box>

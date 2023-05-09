@@ -69,11 +69,11 @@ export const getTitle = (pageName?: string) => {
  */
 export const getFormattedDateRangeString = (
   dateFormat: DATE_FORMAT,
-  startDate: string,
+  startDate?: string,
   endDate?: string,
   dateSeparator = '-'
 ): string => {
-  const startDateFormatted = getFormattedDate(dateFormat, startDate);
+  const startDateFormatted = getFormattedDate(dateFormat, startDate ?? '');
 
   const endDateFormatted = getFormattedDate(dateFormat, endDate ?? '');
 
