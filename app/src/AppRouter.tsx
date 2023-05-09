@@ -14,10 +14,11 @@ import RequestSubmitted from 'pages/200/RequestSubmitted';
 import AccessDenied from 'pages/403/AccessDenied';
 import NotFoundPage from 'pages/404/NotFoundPage';
 import AccessRequestPage from 'pages/access/AccessRequestPage';
+import LoginPage from 'pages/authentication/LoginPage';
+import LogOutPage from 'pages/authentication/LogOutPage';
 import { LandingPage } from 'pages/landing/LandingPage';
-import LogOutPage from 'pages/logout/LogOutPage';
 import React from 'react';
-import { Redirect, Switch, useLocation } from 'react-router-dom';
+import { Redirect, Route, Switch, useLocation } from 'react-router-dom';
 import RouteWithTitle from 'utils/RouteWithTitle';
 import { getTitle } from 'utils/Utils';
 
@@ -86,13 +87,17 @@ const AppRouter: React.FC = () => {
         </BaseLayout>
       </RouteWithTitle>
 
-      <RouteWithTitle path="/admin/resources" title={getTitle('Resources')}>
+      <RouteWithTitle path="/resources" title={getTitle('Resources')}>
         <BaseLayout>
-          <AuthenticatedRouteGuard>
-            <ResourcesPage />
-          </AuthenticatedRouteGuard>
+          <ResourcesPage />
         </BaseLayout>
       </RouteWithTitle>
+
+      <Route path="/login">
+        <UnAuthenticatedRouteGuard>
+          <LoginPage />
+        </UnAuthenticatedRouteGuard>
+      </Route>
 
       <RouteWithTitle path="/logout" title={getTitle('Logout')}>
         <BaseLayout>
@@ -102,10 +107,8 @@ const AppRouter: React.FC = () => {
         </BaseLayout>
       </RouteWithTitle>
 
-      <RouteWithTitle title={getTitle()} path="*">
-        <UnAuthenticatedRouteGuard>
-          <LandingPage originalPath={''} />
-        </UnAuthenticatedRouteGuard>
+      <RouteWithTitle title={getTitle()} path="/">
+        <LandingPage />
       </RouteWithTitle>
 
       <RouteWithTitle title={getTitle()} path="*">

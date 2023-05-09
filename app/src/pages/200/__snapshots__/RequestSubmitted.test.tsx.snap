@@ -48,7 +48,7 @@ exports[`RequestSubmitted renders correctly when user has no role but has a pend
       <p
         class="MuiTypography-root MuiTypography-body1"
       >
-        Your access request has been submitted for review.
+        Your request is currently pending a review by an administrator.
       </p>
       <div
         class="MuiBox-root MuiBox-root-2"

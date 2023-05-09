@@ -33,6 +33,22 @@ export const ensureProtocol = (url: string, protocol: 'http://' | 'https://' = '
 };
 
 /**
+ * Builds a URL from multiple (possibly null or undefined) url parts, stripping any
+ * double slashes from the resulting URL.
+ *
+ * @param {(string | undefined)[]} urlParts The parts of the URL
+ * @returns The built URL
+ */
+export const buildUrl = (...urlParts: (string | undefined)[]): string => {
+  return urlParts
+    .filter((urlPart): urlPart is string => Boolean(urlPart))
+    .map((urlPart) => String(urlPart).trim()) // Trim leading and trailing whitespace
+    .filter(Boolean)
+    .join('/')
+    .replace(/([^:]\/)\/+/g, '$1'); // Trim double slashes
+};
+
+/**
  * Generates the <title> tag text for a React route
  * @param pageName The name of the page, e.g. 'Projects'
  * @returns The content to be rendered in the <title> tag
@@ -58,7 +74,7 @@ export const getFormattedDateRangeString = (
 ): string => {
   const startDateFormatted = getFormattedDate(dateFormat, startDate);
 
-  const endDateFormatted = getFormattedDate(dateFormat, endDate || '');
+  const endDateFormatted = getFormattedDate(dateFormat, endDate ?? '');
 
   if (!startDateFormatted || (endDate && !endDateFormatted)) {
     return '';
@@ -135,7 +151,7 @@ export const getFormattedAmount = (amount: number): string => {
  * @return {*}  {(string | undefined)}
  */
 export const getLogOutUrl = (config: IConfig): string | undefined => {
-  if (!config || !config.KEYCLOAK_CONFIG?.url || !config.KEYCLOAK_CONFIG?.realm || !config.SITEMINDER_LOGOUT_URL) {
+  if (!config?.KEYCLOAK_CONFIG?.url || !config.KEYCLOAK_CONFIG?.realm || !config.SITEMINDER_LOGOUT_URL) {
     return;
   }
 
