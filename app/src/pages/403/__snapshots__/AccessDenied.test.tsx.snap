@@ -24,7 +24,7 @@ exports[`AccessDenied renders a spinner when user is authenticated and \`hasLoad
       <p
         class="MuiTypography-root MuiTypography-body1"
       >
-        You do not have permission to access this application.
+        You do not have permission to access this page.
       </p>
       <div
         class="MuiBox-root MuiBox-root-4"

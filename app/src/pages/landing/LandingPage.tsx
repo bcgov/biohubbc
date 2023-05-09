@@ -8,44 +8,48 @@ import LandingActions from './LandingActions';
 
 const useStyles = makeStyles((theme: Theme) => ({
   baseLayoutContainer: {
-    // Contingency background, pending hero image load
+    minHeight: '100vh',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center'
+  },
+  heroContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    height: '100%',
+    paddingTop: theme.spacing(6),
+    paddingBottom: theme.spacing(6),
+    color: theme.palette.primary.contrastText,
     background: '#00438A linear-gradient(to bottom, #00438A, #00274D)',
     backgroundImage: `url('/assets/sims-hero-banner.jpg')`,
     backgroundPosition: 'center',
     backgroundRepeat: 'no-repeat',
     backgroundSize: 'cover',
-    color: theme.palette.primary.contrastText,
-    minHeight: '100vh',
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    height: '30em',
-
-    '& > main': {
-      display: 'flex',
-      marginTop: theme.spacing(-6)
-    }
-  },
-  heroContainer: {
-    fontSize: '1em',
-
+    fontSize: '1.25rem',
+    [theme.breakpoints.up('lg')]: {
+      fontSize: '1.5rem'
+    },
     [theme.breakpoints.up('xl')]: {
-      fontSize: '1.5em'
+      fontSize: '1.75rem'
     }
   },
-  heroContentBox: {
-    maxWidth: '50em',
-    margin: '0 auto'
+  heroContainerInner: {
+    [theme.breakpoints.up('xs')]: {
+      marginRight: 'auto',
+      marginBottom: theme.spacing(3),
+      marginLeft: 'auto',
+      maxWidth: '80%'
+    }
   },
-  heroHeader: {
-    fontSize: '3.5em',
-    letterSpacing: '-0.03em',
+  heroTitle: {
+    maxWidth: '19ch',
+    fontSize: '2.25em',
     textShadow: '0px 0px 15px rgba(0,13,26,0.5)'
   },
-  heroSubheader: {
-    margin: '2em 0',
-    fontSize: '1.5em',
-    lineHeight: '1.5',
+  heroSubtitle: {
+    margin: '1.75em 0 2em 0',
+    maxWidth: '50ch',
+    fontSize: '1em',
     textShadow: '0px 0px 10px rgba(0,13,26,1)'
   }
 }));
@@ -55,18 +59,20 @@ export const LandingPage = () => {
 
   return (
     <BaseLayout className={classes.baseLayoutContainer}>
-      <Container className={classes.heroContainer}>
-        <Box className={classes.heroContentBox}>
-          <Typography variant="h1" className={classes.heroHeader}>
-            Species Inventory Management System
-          </Typography>
-          <Typography variant="body1" className={classes.heroSubheader}>
-            Upload and submit your species inventory project data to help understand how we can better protect and
-            preserve biodiversity in British Columbia.
-          </Typography>
-          <LandingActions />
-        </Box>
-      </Container>
+      <Box className={classes.heroContainer}>
+        <Container maxWidth="xl">
+          <Box className={classes.heroContainerInner}>
+            <Typography variant="h1" className={classes.heroTitle}>
+              Species Inventory Management System
+            </Typography>
+            <Typography className={classes.heroSubtitle}>
+              Upload and submit your species inventory project data to help us understand how we can better protect and
+              preserve biodiversity in British Columbia.
+            </Typography>
+            <LandingActions />
+          </Box>
+        </Container>
+      </Box>
     </BaseLayout>
   );
 };
