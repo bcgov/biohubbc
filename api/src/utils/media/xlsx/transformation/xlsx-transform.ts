@@ -45,7 +45,7 @@ export type RowObject = {
   _data: { [key: string]: NonObjectPrimitive };
   _name: string;
   _key: string;
-  _parentKey: string | '';
+  _parentKey: string;
   _type: 'root' | 'leaf' | '';
   _row: number;
   _childKeys: string[];
@@ -386,7 +386,7 @@ export class XLSXTransform {
 
       const fields = mapSchemaItem.fields;
 
-      if (fields && fields.length) {
+      if (fields?.length) {
         // For each item in the `fields` array
         for (const fieldsItem of fields) {
           // The final computed cell value for this particular schema field element
@@ -421,7 +421,7 @@ export class XLSXTransform {
               let pathValue = '';
               if (Array.isArray(pathValues)) {
                 // cell value is the concatenation of multiple values
-                pathValue = (pathValues.length && pathValues.flat(Infinity).join(columnValueItem.join || ':')) || '';
+                pathValue = (pathValues.length && pathValues.flat(Infinity).join(columnValueItem.join ?? ':')) || '';
               } else {
                 // cell value is a single value
                 pathValue = pathValues || '';
@@ -448,20 +448,20 @@ export class XLSXTransform {
                   if (Array.isArray(postfixPathValues)) {
                     // postfix value is the concatenation of multiple values
                     postfixValue =
-                      (postfixPathValues.length && postfixPathValues.join(columnValueItem.join || ':')) || '';
+                      (postfixPathValues.length && postfixPathValues.join(columnValueItem.join ?? ':')) || '';
                   } else {
                     // postfix value is a single value
                     postfixValue = postfixPathValues || '';
                   }
                 }
 
-                cellValue = `${cellValue}${columnValueItem.join || ':'}${postfixValue}`;
+                cellValue = `${cellValue}${columnValueItem.join ?? ':'}${postfixValue}`;
               }
             }
 
             // Check for `add` additions at the field level
             const columnValueItemAdd = columnValueItem.add;
-            if (columnValueItemAdd && columnValueItemAdd.length) {
+            if (columnValueItemAdd?.length) {
               for (const columnValueItemAddItem of columnValueItemAdd) {
                 mapSchema.push(columnValueItemAddItem);
               }
@@ -483,7 +483,7 @@ export class XLSXTransform {
 
       // Check for additions at the sheet level
       const sheetAdds = mapSchemaItem.add;
-      if (sheetAdds && sheetAdds.length) {
+      if (sheetAdds?.length) {
         for (const sheetAddsItem of sheetAdds) {
           mapSchema.push(sheetAddsItem);
         }
@@ -525,7 +525,7 @@ export class XLSXTransform {
   _processIfNotEmptyCondition(check: IfNotEmptyCheck, rowObjects: RowObject[]): boolean {
     const pathValues = this._processPaths([check.ifNotEmpty], rowObjects);
 
-    if (!pathValues || !pathValues.length) {
+    if (!pathValues?.length) {
       // condition failed
       return false;
     }
