@@ -77,9 +77,7 @@ describe('LandingPage', () => {
 
       // Should see the BCeID message
       expect(
-        getByText(
-          'To access this application, you must use a valid BC government-issued IDIR or BCeID account credential.'
-        )
+        getByText('To access this application, you must use a valid government-issued IDIR or BCeID account.')
       ).toBeVisible();
 
       // Should see the Log in button
@@ -183,11 +181,7 @@ describe('LandingPage', () => {
 
       // Should see "your request is pending" message
       expect(getByText('Access request pending')).toBeVisible();
-      expect(
-        getByText(
-          'You access request for this application is currently under review. You will be notified by email when your request has been reviewed.'
-        )
-      ).toBeVisible();
+      expect(getByText('Your request is currently pending a review by an administrator.')).toBeVisible();
 
       // Should see the Logout button
       const logoutButton = getByText('Log Out');
