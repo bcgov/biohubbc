@@ -324,7 +324,7 @@ export const getValidFormatFieldsValidator = (config?: ColumnFormatValidatorConf
         return csvWorksheet;
       }
 
-      const regexFlags = config.column_format_validator.reg_exp_flags || '';
+      const regexFlags = config.column_format_validator.reg_exp_flags ?? '';
 
       const regex = new RegExp(config.column_format_validator.reg_exp, regexFlags);
 
@@ -387,9 +387,11 @@ export const getUniqueColumnsValidator = (config?: FileColumnUniqueValidatorConf
         csvWorksheet.csvValidation.addRowErrors([
           {
             errorCode: SUBMISSION_MESSAGE_TYPE.NON_UNIQUE_KEY,
-            message: `Duplicate key(s): ${key} found in column(s): ${config.file_column_unique_validator.column_names.join(
+            message: `Row ${
+              rowIndex + 2
+            } has duplicate values (${key}) to another row.  The combination of values in columns: ${config.file_column_unique_validator.column_names.join(
               ', '
-            )}. Keys must be unique for proper template transformation`,
+            )} must be unique across rows.  Details: `,
             col: key,
             row: rowIndex + 2
           }
