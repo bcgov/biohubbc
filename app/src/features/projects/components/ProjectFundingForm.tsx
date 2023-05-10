@@ -186,37 +186,55 @@ const ProjectFundingForm: React.FC<IProjectFundingFormProps> = (props) => {
                               <Icon path={mdiTrashCanOutline} size={1} />
                             </IconButton>
                           </Toolbar>
-                          <Divider></Divider>
-                          <Box p={3}>
-                            <Grid container spacing={3}>
-                              <Grid item xs={12} sm={6} md={4}>
-                                <Typography variant="body2" color="textSecondary">
-                                  Agency Project ID
-                                </Typography>
-                                <Typography variant="body1">{fundingSource.agency_project_id}</Typography>
-                              </Grid>
-                              <Grid item xs={12} sm={6} md={4}>
-                                <Typography variant="body2" color="textSecondary">
-                                  Funding Amount
-                                </Typography>
-                                <Typography variant="body1">
-                                  {getFormattedAmount(fundingSource.funding_amount)}
-                                </Typography>
-                              </Grid>
-                              <Grid item xs={12} sm={6} md={4}>
-                                <Typography variant="body2" color="textSecondary">
-                                  Start / End Date
-                                </Typography>
-                                <Typography variant="body1">
-                                  {getFormattedDateRangeString(
-                                    DATE_FORMAT.ShortMediumDateFormat,
-                                    fundingSource.start_date,
-                                    fundingSource.end_date
+                          {(fundingSource.agency_project_id ||
+                            fundingSource.funding_amount ||
+                            (fundingSource.start_date && fundingSource.end_date)) && (
+                            <>
+                              <Divider></Divider>
+                              <Box p={3}>
+                                <Grid container spacing={3}>
+                                  {fundingSource.agency_project_id && (
+                                    <>
+                                      <Grid item xs={12} sm={6} md={4}>
+                                        <Typography variant="body2" color="textSecondary">
+                                          Agency Project ID
+                                        </Typography>
+                                        <Typography variant="body1">{fundingSource.agency_project_id}</Typography>
+                                      </Grid>
+                                    </>
                                   )}
-                                </Typography>
-                              </Grid>
-                            </Grid>
-                          </Box>
+                                  {fundingSource.funding_amount && (
+                                    <>
+                                      <Grid item xs={12} sm={6} md={4}>
+                                        <Typography variant="body2" color="textSecondary">
+                                          Funding Amount
+                                        </Typography>
+                                        <Typography variant="body1">
+                                          {getFormattedAmount(fundingSource.funding_amount)}
+                                        </Typography>
+                                      </Grid>
+                                    </>
+                                  )}
+                                  {fundingSource.start_date && fundingSource.end_date && (
+                                    <>
+                                      <Grid item xs={12} sm={6} md={4}>
+                                        <Typography variant="body2" color="textSecondary">
+                                          Start / End Date
+                                        </Typography>
+                                        <Typography variant="body1">
+                                          {getFormattedDateRangeString(
+                                            DATE_FORMAT.ShortMediumDateFormat,
+                                            fundingSource.start_date,
+                                            fundingSource.end_date
+                                          )}
+                                        </Typography>
+                                      </Grid>
+                                    </>
+                                  )}
+                                </Grid>
+                              </Box>
+                            </>
+                          )}
                         </Paper>
                       </ListItem>
                     );
