@@ -1,14 +1,14 @@
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+import CardHeader from '@material-ui/core/CardHeader';
+import { grey } from '@material-ui/core/colors';
 import Divider from '@material-ui/core/Divider';
 import Grid from '@material-ui/core/Grid';
 import IconButton from '@material-ui/core/IconButton';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import Paper from '@material-ui/core/Paper';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import { mdiPencilOutline, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
@@ -67,9 +67,14 @@ const useStyles = makeStyles((theme: Theme) => ({
     marginLeft: theme.spacing(1),
     fontWeight: 400
   },
-  fundingListItem: {
-    '& .MuiPaper-root': {
-      width: '100%'
+  fundingSourceItem: {
+    marginTop: theme.spacing(2),
+    borderColor: grey[400],
+    '& .MuiCardHeader-action': {
+      margin: '-8px 0'
+    },
+    '& .MuiCardContent-root:last-child': {
+      paddingBottom: theme.spacing(2)
     }
   }
 }));
@@ -144,7 +149,7 @@ const ProjectFundingForm: React.FC<IProjectFundingFormProps> = (props) => {
                     setIsModalOpen(false);
                   }}
                 />
-                <List disablePadding>
+                <Box>
                   {values.funding.fundingSources.map((fundingSource, index) => {
                     const investment_action_category_label =
                       (fundingSource.agency_id === 1 && 'Investment Action') ||
@@ -155,9 +160,9 @@ const ProjectFundingForm: React.FC<IProjectFundingFormProps> = (props) => {
                     )?.[0]?.label;
 
                     return (
-                      <ListItem disableGutters className={classes.fundingListItem} key={index}>
-                        <Paper variant="outlined">
-                          <Toolbar>
+                      <Card key={index} variant="outlined" className={classes.fundingSourceItem}>
+                        <CardHeader
+                          title={
                             <Typography className={classes.title}>
                               {getCodeValueNameByID(props.funding_sources, fundingSource?.agency_id) ||
                                 getCodeValueNameByID(props.first_nations, fundingSource?.first_nations_id)}
@@ -165,81 +170,85 @@ const ProjectFundingForm: React.FC<IProjectFundingFormProps> = (props) => {
                                 <span className={classes.titleDesc}>({investment_action_category_value})</span>
                               )}
                             </Typography>
-                            <IconButton
-                              data-testid={'edit-button-' + index}
-                              title="Edit Funding Source"
-                              aria-label="Edit Funding Source"
-                              onClick={() => {
-                                setCurrentProjectFundingFormArrayItem({
-                                  index: index,
-                                  values: values.funding.fundingSources[index]
-                                });
-                                setIsModalOpen(true);
-                              }}>
-                              <Icon path={mdiPencilOutline} size={1} />
-                            </IconButton>
-                            <IconButton
-                              data-testid={'delete-button-' + index}
-                              title="Remove Funding Source"
-                              aria-label="Remove Funding Source"
-                              onClick={() => arrayHelpers.remove(index)}>
-                              <Icon path={mdiTrashCanOutline} size={1} />
-                            </IconButton>
-                          </Toolbar>
-                          {(fundingSource.agency_project_id ||
-                            fundingSource.funding_amount ||
-                            (fundingSource.start_date && fundingSource.end_date)) && (
-                            <>
-                              <Divider></Divider>
-                              <Box p={3}>
-                                <Grid container spacing={3}>
-                                  {fundingSource.agency_project_id && (
-                                    <>
-                                      <Grid item xs={12} sm={6} md={4}>
-                                        <Typography variant="body2" color="textSecondary">
-                                          Agency Project ID
-                                        </Typography>
-                                        <Typography variant="body1">{fundingSource.agency_project_id}</Typography>
-                                      </Grid>
-                                    </>
-                                  )}
-                                  {fundingSource.funding_amount && (
-                                    <>
-                                      <Grid item xs={12} sm={6} md={4}>
-                                        <Typography variant="body2" color="textSecondary">
-                                          Funding Amount
-                                        </Typography>
-                                        <Typography variant="body1">
-                                          {getFormattedAmount(fundingSource.funding_amount)}
-                                        </Typography>
-                                      </Grid>
-                                    </>
-                                  )}
-                                  {fundingSource.start_date && fundingSource.end_date && (
-                                    <>
-                                      <Grid item xs={12} sm={6} md={4}>
-                                        <Typography variant="body2" color="textSecondary">
-                                          Start / End Date
-                                        </Typography>
-                                        <Typography variant="body1">
-                                          {getFormattedDateRangeString(
-                                            DATE_FORMAT.ShortMediumDateFormat,
-                                            fundingSource.start_date,
-                                            fundingSource.end_date
-                                          )}
-                                        </Typography>
-                                      </Grid>
-                                    </>
-                                  )}
-                                </Grid>
-                              </Box>
-                            </>
-                          )}
-                        </Paper>
-                      </ListItem>
+                          }
+                          action={
+                            <Box>
+                              <IconButton
+                                data-testid={'edit-button-' + index}
+                                title="Edit Funding Source"
+                                aria-label="Edit Funding Source"
+                                onClick={() => {
+                                  setCurrentProjectFundingFormArrayItem({
+                                    index: index,
+                                    values: values.funding.fundingSources[index]
+                                  });
+                                  setIsModalOpen(true);
+                                }}>
+                                <Icon path={mdiPencilOutline} size={1} />
+                              </IconButton>
+                              <IconButton
+                                data-testid={'delete-button-' + index}
+                                title="Remove Funding Source"
+                                aria-label="Remove Funding Source"
+                                onClick={() => arrayHelpers.remove(index)}>
+                                <Icon path={mdiTrashCanOutline} size={1} />
+                              </IconButton>
+                            </Box>
+                          }></CardHeader>
+
+                        {(fundingSource.agency_project_id ||
+                          fundingSource.funding_amount ||
+                          (fundingSource.start_date && fundingSource.end_date)) && (
+                          <>
+                            <Divider></Divider>
+                            <CardContent>
+                              <Grid container spacing={2}>
+                                {fundingSource.agency_project_id && (
+                                  <>
+                                    <Grid item xs={12} sm={6} md={4}>
+                                      <Typography variant="body2" color="textSecondary">
+                                        Agency Project ID
+                                      </Typography>
+                                      <Typography variant="body1">{fundingSource.agency_project_id}</Typography>
+                                    </Grid>
+                                  </>
+                                )}
+                                {fundingSource.funding_amount && (
+                                  <>
+                                    <Grid item xs={12} sm={6} md={4}>
+                                      <Typography variant="body2" color="textSecondary">
+                                        Funding Amount
+                                      </Typography>
+                                      <Typography variant="body1">
+                                        {getFormattedAmount(fundingSource.funding_amount)}
+                                      </Typography>
+                                    </Grid>
+                                  </>
+                                )}
+                                {fundingSource.start_date && fundingSource.end_date && (
+                                  <>
+                                    <Grid item xs={12} sm={6} md={4}>
+                                      <Typography variant="body2" color="textSecondary">
+                                        Start / End Date
+                                      </Typography>
+                                      <Typography variant="body1">
+                                        {getFormattedDateRangeString(
+                                          DATE_FORMAT.ShortMediumDateFormat,
+                                          fundingSource.start_date,
+                                          fundingSource.end_date
+                                        )}
+                                      </Typography>
+                                    </Grid>
+                                  </>
+                                )}
+                              </Grid>
+                            </CardContent>
+                          </>
+                        )}
+                      </Card>
                     );
                   })}
-                </List>
+                </Box>
               </Box>
             )}
           />
