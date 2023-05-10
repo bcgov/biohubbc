@@ -106,7 +106,7 @@ export class AdministrativeActivityService extends DBService {
    */
   async sendAccessRequestNotificationEmailToAdmin(): Promise<IgcNotifyPostReturn> {
     const gcnotifyService = new GCNotifyService();
-    const url = `${this.APP_HOST}/admin/users?authLogin=true`;
+    const url = `${this.APP_HOST}/login?redirect=${encodeURIComponent('admin/users')}`;
     const hrefUrl = `[click here.](${url})`;
 
     return gcnotifyService.sendEmailGCNotification(this.ADMIN_EMAIL, {
