@@ -105,7 +105,8 @@ const LandingActions = () => {
               className={classes.heroLink}
               title="Register a BCeID Account"
               target="_blank"
-              href="https://www.bceid.ca/os/?7652&SkipTo=Basic">
+              rel="noopener noreferrer"
+              href="https://www.bceid.ca/directories/bluepages/details.aspx?serviceId=7494&eServiceType=all">
               Register here
             </a>
           </Typography>
