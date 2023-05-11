@@ -57,7 +57,7 @@ const SurveysList: React.FC = () => {
           <TableHead>
             <TableRow>
               <TableCell>Name</TableCell>
-              <TableCell>Species</TableCell>
+              <TableCell>Focal Species</TableCell>
               <TableCell>Purpose</TableCell>
               <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
                 <TableCell width="200">Status</TableCell>
@@ -77,12 +77,7 @@ const SurveysList: React.FC = () => {
                       {row.surveyData.survey_details.survey_name}
                     </Link>
                   </TableCell>
-                  <TableCell>
-                    {[
-                      ...row.surveyData.species.focal_species_names,
-                      ...row.surveyData.species.ancillary_species_names
-                    ].join(', ')}
-                  </TableCell>
+                  <TableCell>{row.surveyData.species.focal_species_names.join(', ')}</TableCell>
                   <TableCell>
                     {row.surveyData.purpose_and_methodology.intended_outcome_id &&
                       codes?.intended_outcomes?.find(
