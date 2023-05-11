@@ -53,39 +53,39 @@ const ProjectAttachmentsList = () => {
     setCurrentAttachment(null);
   };
 
-  const handleDelete = (attachment: IGetProjectAttachment) => {
-    dialogContext.setYesNoDialog({
-      open: true,
-      dialogTitle: 'Delete Document?',
-      dialogText: 'Are you sure you want to permanently delete this document? This action cannot be undone.',
-      yesButtonProps: { color: 'secondary' },
-      onYes: async () => {
-        try {
-          // Delete attachment
-          await biohubApi.project.deleteProjectAttachment(projectContext.projectId, attachment.id, attachment.fileType);
+  // const handleDelete = (attachment: IGetProjectAttachment) => {
+  //   dialogContext.setYesNoDialog({
+  //     open: true,
+  //     dialogTitle: 'Delete Document?',
+  //     dialogText: 'Are you sure you want to permanently delete this document? This action cannot be undone.',
+  //     yesButtonProps: { color: 'secondary' },
+  //     onYes: async () => {
+  //       try {
+  //         // Delete attachment
+  //         await biohubApi.project.deleteProjectAttachment(projectContext.projectId, attachment.id, attachment.fileType);
 
-          // Refresh attachments list
-          projectContext.artifactDataLoader.refresh(projectContext.projectId);
-        } catch (error) {
-          const apiError = error as APIError;
-          // Show error dialog
-          dialogContext.setErrorDialog({
-            open: true,
-            dialogTitle: AttachmentsI18N.deleteErrorTitle,
-            dialogText: AttachmentsI18N.deleteErrorText,
-            dialogErrorDetails: apiError.errors,
-            onOk: () => dialogContext.setErrorDialog({ open: false }),
-            onClose: () => dialogContext.setErrorDialog({ open: false })
-          });
-        } finally {
-          // Close delete dialog
-          dialogContext.setYesNoDialog({ open: false });
-        }
-      },
-      onNo: () => dialogContext.setYesNoDialog({ open: false }),
-      onClose: () => dialogContext.setYesNoDialog({ open: false })
-    });
-  };
+  //         // Refresh attachments list
+  //         projectContext.artifactDataLoader.refresh(projectContext.projectId);
+  //       } catch (error) {
+  //         const apiError = error as APIError;
+  //         // Show error dialog
+  //         dialogContext.setErrorDialog({
+  //           open: true,
+  //           dialogTitle: AttachmentsI18N.deleteErrorTitle,
+  //           dialogText: AttachmentsI18N.deleteErrorText,
+  //           dialogErrorDetails: apiError.errors,
+  //           onOk: () => dialogContext.setErrorDialog({ open: false }),
+  //           onClose: () => dialogContext.setErrorDialog({ open: false })
+  //         });
+  //       } finally {
+  //         // Close delete dialog
+  //         dialogContext.setYesNoDialog({ open: false });
+  //       }
+  //     },
+  //     onNo: () => dialogContext.setYesNoDialog({ open: false }),
+  //     onClose: () => dialogContext.setYesNoDialog({ open: false })
+  //   });
+  // };
 
   const attachmentsList = useMemo(() => {
     return [
@@ -105,7 +105,7 @@ const ProjectAttachmentsList = () => {
       <AttachmentsList<IGetProjectAttachment>
         attachments={attachmentsList}
         handleDownload={handleDownload}
-        handleDelete={handleDelete}
+        // handleDelete={handleDelete}
         handleViewDetails={handleViewDetailsOpen}
       />
     </>

@@ -5,6 +5,7 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import { mdiDotsVertical, mdiInformationOutline, mdiTrashCanOutline, mdiTrayArrowDown } from '@mdi/js';
 import Icon from '@mdi/react';
+import RemoveOrResubmitDialog from 'components/publish/components/RemoveOrResubmitDialog';
 import { SystemRoleGuard } from 'components/security/Guards';
 import { AttachmentType } from 'constants/attachments';
 import { SYSTEM_ROLE } from 'constants/roles';
@@ -15,7 +16,7 @@ import React, { useState } from 'react';
 interface IAttachmentsListItemMenuButtonProps<T extends IGetProjectAttachment | IGetSurveyAttachment> {
   attachment: T;
   handleDownloadFile: (attachment: T) => void;
-  handleDeleteFile: (attachment: T) => void;
+  // handleRemoveOrResubmitFile: (attachment: T) => void;
   handleViewDetails: (attachment: T) => void;
 }
 
@@ -34,8 +35,16 @@ const AttachmentsListItemMenuButton = <T extends IGetProjectAttachment | IGetSur
     setAnchorEl(null);
   };
 
+  const [openRemoveOrResubmitDialog, setOpenRemoveOrResubmitDialog] = useState(false);
+  const [RemoveOrResubmitDialogFile, setRemoveOrResubmitDialogFile] = useState<T | null>(null);
+
   return (
     <>
+      <RemoveOrResubmitDialog
+        file={RemoveOrResubmitDialogFile}
+        open={openRemoveOrResubmitDialog}
+        onClose={() => setOpenRemoveOrResubmitDialog(false)}
+      />
       <Box my={-1}>
         <Box>
           <IconButton
@@ -71,7 +80,7 @@ const AttachmentsListItemMenuButton = <T extends IGetProjectAttachment | IGetSur
               <ListItemIcon>
                 <Icon path={mdiTrayArrowDown} size={1} />
               </ListItemIcon>
-              Download
+              Download File
             </MenuItem>
             {props.attachment.fileType === AttachmentType.REPORT && (
               <MenuItem
@@ -89,14 +98,16 @@ const AttachmentsListItemMenuButton = <T extends IGetProjectAttachment | IGetSur
             <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
               <MenuItem
                 onClick={() => {
-                  props.handleDeleteFile(props.attachment);
+                  // props.handleRemoveOrResubmitFile(props.attachment);
+                  setRemoveOrResubmitDialogFile(props.attachment);
+                  setOpenRemoveOrResubmitDialog(true);
                   setAnchorEl(null);
                 }}
                 data-testid="attachment-action-menu-delete">
                 <ListItemIcon>
                   <Icon path={mdiTrashCanOutline} size={1} />
                 </ListItemIcon>
-                Delete
+                Remove or Resubmit
               </MenuItem>
             </SystemRoleGuard>
           </Menu>

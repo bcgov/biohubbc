@@ -54,46 +54,46 @@ const SurveyAttachmentsList: React.FC = () => {
     setCurrentAttachment(attachment);
   };
 
-  const handleDelete = (attachment: IGetSurveyAttachment) => {
-    dialogContext.setYesNoDialog({
-      open: true,
-      dialogTitle: 'Delete Document?',
-      dialogText: 'Are you sure you want to delete this document? This action cannot be undone.',
-      yesButtonProps: { color: 'secondary' },
-      yesButtonLabel: 'Delete',
-      noButtonLabel: 'Cancel',
-      onYes: async () => {
-        try {
-          // Delete attachment
-          await biohubApi.survey.deleteSurveyAttachment(
-            surveyContext.projectId,
-            surveyContext.surveyId,
-            attachment.id,
-            attachment.fileType
-          );
+  // const handleDelete = (attachment: IGetSurveyAttachment) => {
+  //   dialogContext.setYesNoDialog({
+  //     open: true,
+  //     dialogTitle: 'Delete Document?',
+  //     dialogText: 'Are you sure you want to delete this document? This action cannot be undone.',
+  //     yesButtonProps: { color: 'secondary' },
+  //     yesButtonLabel: 'Delete',
+  //     noButtonLabel: 'Cancel',
+  //     onYes: async () => {
+  //       try {
+  //         // Delete attachment
+  //         await biohubApi.survey.deleteSurveyAttachment(
+  //           surveyContext.projectId,
+  //           surveyContext.surveyId,
+  //           attachment.id,
+  //           attachment.fileType
+  //         );
 
-          // Refresh attachments list
-          surveyContext.artifactDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
-        } catch (error) {
-          const apiError = error as APIError;
-          // Show error dialog
-          dialogContext.setErrorDialog({
-            open: true,
-            dialogTitle: AttachmentsI18N.deleteErrorTitle,
-            dialogText: AttachmentsI18N.deleteErrorText,
-            dialogErrorDetails: apiError.errors,
-            onOk: () => dialogContext.setErrorDialog({ open: false }),
-            onClose: () => dialogContext.setErrorDialog({ open: false })
-          });
-        } finally {
-          // Close delete dialog
-          dialogContext.setYesNoDialog({ open: false });
-        }
-      },
-      onNo: () => dialogContext.setYesNoDialog({ open: false }),
-      onClose: () => dialogContext.setYesNoDialog({ open: false })
-    });
-  };
+  //         // Refresh attachments list
+  //         surveyContext.artifactDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+  //       } catch (error) {
+  //         const apiError = error as APIError;
+  //         // Show error dialog
+  //         dialogContext.setErrorDialog({
+  //           open: true,
+  //           dialogTitle: AttachmentsI18N.deleteErrorTitle,
+  //           dialogText: AttachmentsI18N.deleteErrorText,
+  //           dialogErrorDetails: apiError.errors,
+  //           onOk: () => dialogContext.setErrorDialog({ open: false }),
+  //           onClose: () => dialogContext.setErrorDialog({ open: false })
+  //         });
+  //       } finally {
+  //         // Close delete dialog
+  //         dialogContext.setYesNoDialog({ open: false });
+  //       }
+  //     },
+  //     onNo: () => dialogContext.setYesNoDialog({ open: false }),
+  //     onClose: () => dialogContext.setYesNoDialog({ open: false })
+  //   });
+  // };
 
   return (
     <>
@@ -110,7 +110,7 @@ const SurveyAttachmentsList: React.FC = () => {
           ...(surveyContext.artifactDataLoader.data?.reportAttachmentsList || [])
         ]}
         handleDownload={handleDownload}
-        handleDelete={handleDelete}
+        // handleDelete={handleDelete}
         handleViewDetails={handleViewDetails}
       />
     </>

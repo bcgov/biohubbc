@@ -54,14 +54,14 @@ const useStyles = makeStyles((theme: Theme) => ({
 export interface IAttachmentsListProps<T extends IGetProjectAttachment | IGetSurveyAttachment> {
   attachments: T[];
   handleDownload: (attachment: T) => void;
-  handleDelete: (attachment: T) => void;
+  // handleDelete: (attachment: T) => void;
   handleViewDetails: (attachment: T) => void;
 }
 
 const AttachmentsList = <T extends IGetProjectAttachment | IGetSurveyAttachment>(props: IAttachmentsListProps<T>) => {
   const classes = useStyles();
 
-  const { attachments, handleDownload, handleDelete, handleViewDetails } = props;
+  const { attachments, handleDownload, handleViewDetails } = props;
 
   const [rowsPerPage] = useState(10);
   const [page] = useState(0);
@@ -90,7 +90,7 @@ const AttachmentsList = <T extends IGetProjectAttachment | IGetSurveyAttachment>
                 key={`${row.fileType}-${row.id}`}
                 attachment={row}
                 handleDownload={handleDownload}
-                handleDelete={handleDelete}
+                // handleDelete={handleDelete}
                 handleViewDetails={handleViewDetails}
               />
             );
@@ -104,11 +104,11 @@ const AttachmentsList = <T extends IGetProjectAttachment | IGetSurveyAttachment>
 function AttachmentsTableRow<T extends IGetProjectAttachment | IGetSurveyAttachment>(props: {
   attachment: T;
   handleDownload: (attachment: T) => void;
-  handleDelete: (attachment: T) => void;
+  // handleDelete: (attachment: T) => void;
   handleViewDetails: (attachment: T) => void;
 }) {
   const classes = useStyles();
-  const { attachment, handleDownload, handleDelete, handleViewDetails } = props;
+  const { attachment, handleDownload, handleViewDetails } = props;
 
   const status =
     (attachment.supplementaryAttachmentData?.event_timestamp && PublishStatus.SUBMITTED) || PublishStatus.UNSUBMITTED;
@@ -143,7 +143,7 @@ function AttachmentsTableRow<T extends IGetProjectAttachment | IGetSurveyAttachm
         <AttachmentsListItemMenuButton
           attachment={attachment}
           handleDownloadFile={() => handleDownload(attachment)}
-          handleDeleteFile={() => handleDelete(attachment)}
+          // handleRemoveOrResubmitFile={() => handleDelete(attachment)}
           handleViewDetails={() => handleViewDetails(attachment)}
         />
       </TableCell>
