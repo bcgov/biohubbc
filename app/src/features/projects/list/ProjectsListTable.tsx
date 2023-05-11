@@ -8,9 +8,11 @@ import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import clsx from 'clsx';
 import { SubmitStatusChip } from 'components/chips/SubmitStatusChip';
 import { SystemRoleGuard } from 'components/security/Guards';
+import { PublishStatus } from 'constants/attachments';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { SYSTEM_ROLE } from 'constants/roles';
 import { IGetDraftsListResponse } from 'interfaces/useDraftApi.interface';
@@ -43,14 +45,128 @@ export interface IProjectsListTableProps {
   drafts: IGetDraftsListResponse[];
 }
 
+interface IProjectsListTableEntry {
+  id?: number;
+  isDraft: boolean;
+  name: string;
+  status?: PublishStatus;
+  type?: string;
+  startDate?: string;
+  endDate?: string;
+}
+
 //TODO: PRODUCTION_BANDAGE: Remove <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
 
-const ProjectsListTable: React.FC<IProjectsListTableProps> = (props) => {
+const ProjectsListTable = (props: IProjectsListTableProps) => {
   const classes = useStyles();
+
+  const columns: GridColDef<IProjectsListTableEntry>[] = [
+    {
+      field: 'name',
+      headerName: 'Name',
+      flex: 2,
+      disableColumnMenu: true,
+      renderCell: (params) => (
+        <Link
+          className={classes.linkButton}
+          data-testid={params.row.name}
+          underline="always"
+          component={RouterLink}
+          to={params.row.isDraft
+            ? `/admin/projects/create?draftId=${params.row.id}`
+            : `/admin/projects/${params.row.id}`
+          }
+          children={params.row.name}
+        />
+      )
+    },
+    {
+      field: 'type',
+      headerName: 'Type',
+      flex: 1
+    },
+    {
+      field: 'status',
+      headerName: 'Status',
+      flex: 1,
+      renderCell: (params) => {
+        if (params.row.isDraft) {
+          return (
+            <Chip variant="outlined" className={clsx(classes.chip, classes.chipDraft)} label={'Draft'} />
+          )
+        }
+
+        if (!params.row.status) {
+          return <></>;
+        }
+
+        return (
+          <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
+            <SubmitStatusChip status={params.row.status} />
+          </SystemRoleGuard>
+        )
+      }
+    },
+    {
+      field: 'startDate',
+      headerName: 'Start Date',
+      valueGetter: ({ value }) => value && new Date(value),
+      valueFormatter: ({ value }) => getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, value),
+      flex: 1
+    },
+    {
+      field: 'endDate',
+      headerName: 'End Date',
+      valueGetter: ({ value }) => value && new Date(value),
+      valueFormatter: ({ value }) => getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, value),
+      flex: 1
+    },
+  ];
 
   const { projects, drafts } = props;
   const hasProjects = projects.length > 0;
   const hasDrafts = drafts?.length > 0;
+
+  return (
+    <DataGrid
+      autoHeight
+      rows={[
+        ...drafts.map((draft: IGetDraftsListResponse) => ({
+          id: draft.id,
+          name: draft.name,
+          isDraft: true
+        })),
+        ...projects.map((project: IGetProjectsListResponse) => ({
+          id: project.projectData.id,
+          name: project.projectData.name,
+          status: project.projectSupplementaryData.publishStatus,
+          startDate: project.projectData.start_date,
+          endDate: project.projectData.end_date,
+          isDraft: false
+        }))
+      ]}
+      columns={columns}
+      pageSizeOptions={[5]}
+      checkboxSelection
+      disableRowSelectionOnClick
+      disableColumnSelector
+      disableColumnFilter
+      disableColumnMenu
+      sortingOrder={['asc', 'desc']}
+      initialState={{
+        pagination: {
+          paginationModel: {
+            pageSize: 5
+          }
+        }
+      }}
+      /*
+      slots={{
+        noRowsOverlay: NoArtifactRowsOverlay
+      }}
+      */
+    />
+  )
 
   if (!hasProjects && !hasDrafts) {
     return (
