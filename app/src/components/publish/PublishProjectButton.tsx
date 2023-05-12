@@ -1,7 +1,9 @@
 import { Button } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
+import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import SubmitBiohubDialog from 'components/dialog/SubmitBiohubDialog';
+import { PublishInformationI18N } from 'constants/i18n';
 import { ProjectContext } from 'contexts/projectContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import {
@@ -32,6 +34,22 @@ const PublishProjectButton: React.FC = () => {
   const [finishSubmission, setFinishSubmission] = useState(false);
   const [noSubmissionData, setNoSubmissionData] = useState(false);
   const [openSubmitProjectDialog, setOpenSubmitProjectDialog] = useState(false);
+
+  const [errorDialogProps, setErrorDialogProps] = useState<IErrorDialogProps>({
+    dialogTitle: PublishInformationI18N.publishProjectErrorTitle,
+    dialogText: PublishInformationI18N.publishProjectErrorText,
+    open: false,
+    onClose: () => {
+      setErrorDialogProps({ ...errorDialogProps, open: false });
+    },
+    onOk: () => {
+      setErrorDialogProps({ ...errorDialogProps, open: false });
+    }
+  });
+
+  const showErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
+    setErrorDialogProps({ ...errorDialogProps, ...textDialogProps, open: true });
+  };
 
   const refreshContext = (values: any) => {
     // we only want the data loaders with changes to refresh
@@ -74,16 +92,24 @@ const PublishProjectButton: React.FC = () => {
         setNoSubmissionData={setNoSubmissionData}
       />
 
+      <ErrorDialog {...errorDialogProps} />
+
       <SubmitBiohubDialog
         dialogTitle="Submit Project Information"
         open={openSubmitProjectDialog}
         onClose={() => setOpenSubmitProjectDialog(!openSubmitProjectDialog)}
-        onSubmit={async (values: IProjectSubmitForm) => {
+        onSubmit={(values: IProjectSubmitForm) => {
           if (projectDataLoader.data) {
-            await biohubApi.publish.publishProject(projectContext.projectId, values);
+            biohubApi.publish.publishProject(projectContext.projectId, values)
+              .then()
+              .catch(() => {
+                showErrorDialog();
+              })
+              .finally(() => {
+                refreshContext(values);
+                setFinishSubmission(true);
+              });
           }
-          refreshContext(values);
-          setFinishSubmission(true);
         }}
         formikProps={{
           initialValues: ProjectSubmitFormInitialValues,
