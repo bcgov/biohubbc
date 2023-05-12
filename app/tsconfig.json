@@ -16,7 +16,6 @@
     "forceConsistentCasingInFileNames": true,
     "noImplicitThis": true,
     "noImplicitAny": true,
-    "suppressImplicitAnyIndexErrors": true,
     "allowSyntheticDefaultImports": true,
     "noUnusedLocals": true,
     "esModuleInterop": true,
@@ -31,6 +30,9 @@
     "typeRoots": [
       "node_modules/@types"
     ],
+    "paths": {
+      "react": ["./node_modules/@types/react"],
+    }
   },
   "include": [
     "src"
