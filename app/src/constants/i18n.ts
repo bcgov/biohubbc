@@ -274,7 +274,9 @@ export const SystemUserI18N = {
     'An error has occurred while attempting to remove the user from the team, please try again. If the error persists, please contact your system administrator.'
 };
 
-export const PublishInformationI18N = {
-  publishProjectErrorTitle: 'An error has occurred',
-  publishProjectErrorText: 'An error has occurred while attempting to submit your information. Please try again later.'
+export const SubmitBiohubI18N = {
+  submitBiohubErrorTitle: 'An error has occurred',
+  submitBiohubErrorText: 'An error has occurred while attempting to submit your information. Please try again later.',
+  noInformationDialogTitle: 'No Information to Submit',
+  noInformationDialogText: 'No information has been uploaded to Biohub for submission.'
 }
