@@ -1,9 +1,7 @@
 import { Button } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
-import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import SubmitBiohubDialog from 'components/dialog/SubmitBiohubDialog';
-import { PublishInformationI18N } from 'constants/i18n';
 import { ProjectContext } from 'contexts/projectContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import {
@@ -24,7 +22,7 @@ import PublishProjectSections, {
  *
  * @return {*}
  */
-const PublishProjectButton: React.FC = () => {
+const PublishProjectButton = () => {
   const biohubApi = useBiohubApi();
   const projectContext = useContext(ProjectContext);
 
@@ -35,23 +33,7 @@ const PublishProjectButton: React.FC = () => {
   const [noSubmissionData, setNoSubmissionData] = useState(false);
   const [openSubmitProjectDialog, setOpenSubmitProjectDialog] = useState(false);
 
-  const [errorDialogProps, setErrorDialogProps] = useState<IErrorDialogProps>({
-    dialogTitle: PublishInformationI18N.publishProjectErrorTitle,
-    dialogText: PublishInformationI18N.publishProjectErrorText,
-    open: false,
-    onClose: () => {
-      setErrorDialogProps({ ...errorDialogProps, open: false });
-    },
-    onOk: () => {
-      setErrorDialogProps({ ...errorDialogProps, open: false });
-    }
-  });
-
-  const showErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
-    setErrorDialogProps({ ...errorDialogProps, ...textDialogProps, open: true });
-  };
-
-  const refreshContext = (values: any) => {
+  const refreshContext = (values: IProjectSubmitForm) => {
     // we only want the data loaders with changes to refresh
     if (values.attachments.length > 0 || values.reports.length > 0) {
       projectContext.artifactDataLoader.refresh(projectContext.projectId);
@@ -92,22 +74,18 @@ const PublishProjectButton: React.FC = () => {
         setNoSubmissionData={setNoSubmissionData}
       />
 
-      <ErrorDialog {...errorDialogProps} />
-
-      <SubmitBiohubDialog
+      <SubmitBiohubDialog<IProjectSubmitForm>
         dialogTitle="Submit Project Information"
         open={openSubmitProjectDialog}
         onClose={() => setOpenSubmitProjectDialog(!openSubmitProjectDialog)}
-        onSubmit={(values: IProjectSubmitForm) => {
+        onSubmit={async (values) => {
           if (projectDataLoader.data) {
-            biohubApi.publish.publishProject(projectContext.projectId, values)
-              .then()
-              .catch(() => {
-                showErrorDialog();
+            return biohubApi.publish.publishProject(projectContext.projectId, values)
+              .then(() => {
+                setFinishSubmission(true);
               })
               .finally(() => {
                 refreshContext(values);
-                setFinishSubmission(true);
               });
           }
         }}
