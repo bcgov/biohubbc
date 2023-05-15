@@ -1,6 +1,6 @@
 import { cleanup, fireEvent, render, waitFor } from '@testing-library/react';
 import { SYSTEM_ROLE } from 'constants/roles';
-import { AuthStateContext, IAuthState } from 'contexts/authStateContext';
+import { AuthStateContext } from 'contexts/authStateContext';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { Feature } from 'geojson';
 import { createMemoryHistory } from 'history';
@@ -9,6 +9,7 @@ import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import React from 'react';
 import { Router } from 'react-router';
+import { getMockAuthState, SystemAdminAuthState, SystemUserAuthState } from 'test-helpers/auth-helpers';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import ProjectPage from './ProjectPage';
 
@@ -169,16 +170,10 @@ describe.skip('ProjectPage', () => {
       ]
     });
 
-    const authState = {
-      keycloakWrapper: {
-        ...defaultAuthState.keycloakWrapper,
-        systemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN] as string[],
-        hasSystemRole: () => true
-      }
-    };
+    const authState = getMockAuthState({ base: SystemAdminAuthState });
 
     const { getByTestId, findByText, getByText } = render(
-      <AuthStateContext.Provider value={(authState as unknown) as IAuthState}>
+      <AuthStateContext.Provider value={authState}>
         <DialogContextProvider>
           <Router history={history}>
             <ProjectPage />
@@ -221,16 +216,10 @@ describe.skip('ProjectPage', () => {
       ]
     });
 
-    const authState = {
-      keycloakWrapper: {
-        ...defaultAuthState.keycloakWrapper,
-        systemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN] as string[],
-        hasSystemRole: () => true
-      }
-    };
+    const authState = getMockAuthState({ base: SystemAdminAuthState });
 
     const { getAllByRole, queryByText, getByText, findByText, getByTestId } = render(
-      <AuthStateContext.Provider value={(authState as unknown) as IAuthState}>
+      <AuthStateContext.Provider value={authState}>
         <DialogContextProvider>
           <Router history={history}>
             <ProjectPage />
@@ -281,16 +270,10 @@ describe.skip('ProjectPage', () => {
       ]
     });
 
-    const authState = {
-      keycloakWrapper: {
-        ...defaultAuthState.keycloakWrapper,
-        systemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN] as string[],
-        hasSystemRole: () => true
-      }
-    };
+    const authState = getMockAuthState({ base: SystemAdminAuthState });
 
     const { getAllByRole, queryByText, getByText, findByText, getByTestId } = render(
-      <AuthStateContext.Provider value={(authState as unknown) as IAuthState}>
+      <AuthStateContext.Provider value={authState}>
         <DialogContextProvider>
           <Router history={history}>
             <ProjectPage />
@@ -341,16 +324,10 @@ describe.skip('ProjectPage', () => {
       ]
     });
 
-    const authState = {
-      keycloakWrapper: {
-        ...defaultAuthState.keycloakWrapper,
-        systemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN] as string[],
-        hasSystemRole: () => true
-      }
-    };
+    const authState = getMockAuthState({ base: SystemAdminAuthState });
 
     const { getByTestId, findByText } = render(
-      <AuthStateContext.Provider value={(authState as unknown) as IAuthState}>
+      <AuthStateContext.Provider value={authState}>
         <DialogContextProvider>
           <Router history={history}>
             <ProjectPage />
@@ -380,16 +357,10 @@ describe.skip('ProjectPage', () => {
       ]
     });
 
-    const authState = {
-      keycloakWrapper: {
-        ...defaultAuthState.keycloakWrapper,
-        systemRoles: ['Non Admin User'] as string[],
-        hasSystemRole: () => false
-      }
-    };
+    const authState = getMockAuthState({ base: SystemUserAuthState });
 
     const { queryByTestId, findByText } = render(
-      <AuthStateContext.Provider value={(authState as unknown) as IAuthState}>
+      <AuthStateContext.Provider value={authState}>
         <DialogContextProvider>
           <Router history={history}>
             <ProjectPage />

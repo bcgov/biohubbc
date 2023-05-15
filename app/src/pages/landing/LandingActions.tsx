@@ -90,12 +90,12 @@ const LandingActions = () => {
           </Typography>
           <Box className={classes.heroActions}>
             <Button
-              data-testid="landing_page_login_button"
               component="a"
               href={loginUrl}
               variant="contained"
               className={clsx(classes.heroButton, classes.heroButton)}
-              size="large">
+              size="large"
+              data-testid="landing_page_login_button">
               Log In
             </Button>
           </Box>
@@ -143,6 +143,7 @@ const LandingActions = () => {
               className={classes.heroButton}
               size="large"
               children={<>View&nbsp;Projects</>}
+              data-testid="landing_page_projects_button"
             />
           )}
           {mayMakeAccessRequest && (
@@ -153,6 +154,7 @@ const LandingActions = () => {
               className={classes.heroButton}
               size="large"
               children={<>Request&nbsp;Access</>}
+              data-testid="landing_page_request_access_button"
             />
           )}
           {(hasAdministrativeRole || (!hasAdministrativeRole && hasProjectCreationRole)) && (
@@ -160,13 +162,13 @@ const LandingActions = () => {
           )}
           {hasAdministrativeRole && (
             <Button
-              data-testid="landing_page_manage_users_button"
               component={Link}
               to="/admin/users"
               variant="contained"
               className={classes.heroButton}
               size="large"
               children={<>Manage&nbsp;Users</>}
+              data-testid="landing_page_manage_users_button"
             />
           )}
           {!hasAdministrativeRole && hasProjectCreationRole && (
@@ -177,6 +179,7 @@ const LandingActions = () => {
               className={classes.heroButton}
               size="large"
               children={<>Create&nbsp;a&nbsp;Project</>}
+              data-testid="landing_page_create_project_button"
             />
           )}
         </Box>
