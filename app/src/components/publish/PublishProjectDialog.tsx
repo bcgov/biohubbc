@@ -12,15 +12,11 @@ import yup from 'utils/YupSchema';
 import SelectAllButton from './SelectAllButton';
 import SubmitSection from './SubmitSection';
 import { SubmitProjectBiohubI18N } from 'constants/i18n';
+import { IProjectSubmitForm } from 'interfaces/usePublishApi.interface';
 
 export interface ISubmitProject {
   unSubmittedReports: IGetProjectReportAttachment[];
   unSubmittedAttachments: IGetProjectAttachment[];
-}
-
-export interface IProjectSubmitForm {
-  reports: IGetProjectReportAttachment[];
-  attachments: IGetProjectAttachment[];
 }
 
 export interface IPublishProjectDialogProps {

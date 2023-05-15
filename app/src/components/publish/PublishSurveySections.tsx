@@ -7,6 +7,7 @@ import { default as React } from 'react';
 import yup from 'utils/YupSchema';
 import SelectAllButton from './SelectAllButton';
 import SubmitSection from './SubmitSection';
+import { ISurveySubmitForm } from 'interfaces/usePublishApi.interface';
 
 export interface ISubmitSurvey {
   unSubmittedObservation: ISurveyObservationData[];
@@ -14,12 +15,7 @@ export interface ISubmitSurvey {
   unSubmittedReports: IGetSurveyReportAttachment[];
   unSubmittedAttachments: IGetSurveyAttachment[];
 }
-export interface ISurveySubmitForm {
-  observations: ISurveyObservationData[];
-  summary: ISurveySummaryData[];
-  reports: IGetSurveyReportAttachment[];
-  attachments: IGetSurveyAttachment[];
-}
+
 
 export const SurveySubmitFormInitialValues: ISurveySubmitForm = {
   observations: [],
