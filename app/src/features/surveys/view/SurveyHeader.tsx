@@ -19,7 +19,7 @@ import {
 } from '@mdi/js';
 import Icon from '@mdi/react';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
-import PublishSurveyButton from 'components/publish/PublishSurveyButton';
+import PublishSurveyDialog from 'components/publish/PublishSurveyDialog';
 import { ProjectRoleGuard, SystemRoleGuard } from 'components/security/Guards';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { DeleteSurveyI18N } from 'constants/i18n';
@@ -202,7 +202,14 @@ const SurveyHeader = () => {
               </Box>
               <Box display="flex" alignItems="flex-start" flex="0 0 auto" className={classes.pageTitleActions}>
                 <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-                  <PublishSurveyButton />
+                  <Button
+                    title="Submit Survey Data and Documents"
+                    color="primary"
+                    variant="contained"
+                    onClick={() => setPublishSurveyDialogOpen(true)}
+                    style={{ minWidth: '8rem' }}>
+                    <strong>Submit</strong>
+                  </Button>
                 </SystemRoleGuard>
                 <ProjectRoleGuard
                   validProjectRoles={[PROJECT_ROLE.PROJECT_EDITOR, PROJECT_ROLE.PROJECT_LEAD]}
