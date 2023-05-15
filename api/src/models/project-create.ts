@@ -121,7 +121,7 @@ export class PostLocationData {
       }
     });
 
-    this.location_description = (obj && obj.location_description) || null;
+    this.location_description = obj?.location_description;
     this.geometry = (obj?.geometry?.length && obj.geometry) || [];
   }
 }
@@ -166,12 +166,14 @@ export class PostIUCNData {
  * @class PostFundingSource
  */
 export class PostFundingSource {
-  agency_id: number;
+  id?: number;
+  agency_id?: number;
   investment_action_category: number;
   agency_project_id: string;
   funding_amount: number;
-  start_date: string;
-  end_date: string;
+  start_date?: string;
+  end_date?: string;
+  first_nations_id?: number;
 
   constructor(obj?: any) {
     defaultLog.debug({ label: 'PostFundingSource', message: 'params', obj });
@@ -182,6 +184,7 @@ export class PostFundingSource {
     this.funding_amount = obj?.funding_amount || null;
     this.start_date = obj?.start_date || null;
     this.end_date = obj?.end_date || null;
+    this.first_nations_id = obj?.first_nations_id || null;
   }
 }
 

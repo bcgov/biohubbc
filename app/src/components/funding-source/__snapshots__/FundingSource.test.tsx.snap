@@ -17,12 +17,7 @@ exports[`FundingSource renders correctly 1`] = `
           <span
             class="MuiTypography-root MuiTypography-body1"
           >
-            agency name
-            <span
-              class="MuiTypography-root MuiTypography-body1"
-            >
-               (investment action)
-            </span>
+            First Nations
           </span>
         </div>
         <dl
@@ -42,7 +37,7 @@ exports[`FundingSource renders correctly 1`] = `
               <dd
                 class="MuiTypography-root MuiTypography-body1"
               >
-                ABC123
+                Project ID
               </dd>
             </div>
             <div
@@ -56,7 +51,63 @@ exports[`FundingSource renders correctly 1`] = `
               <dd
                 class="MuiTypography-root MuiTypography-body1"
               >
-                Apr 14, 2000 - Apr 13, 2021
+                Jan 1, 1900 - Jan 1, 2050
+              </dd>
+            </div>
+            <div
+              class="MuiGrid-root MuiGrid-item MuiGrid-grid-sm-12"
+            />
+          </div>
+        </dl>
+      </div>
+    </li>
+    <li
+      class="MuiListItem-root MuiListItem-divider"
+    >
+      <div
+        class="MuiBox-root MuiBox-root-4"
+      >
+        <div
+          class="MuiBox-root MuiBox-root-5"
+        >
+          <span
+            class="MuiTypography-root MuiTypography-body1"
+          >
+            Agency
+          </span>
+        </div>
+        <dl
+          class="MuiBox-root MuiBox-root-6"
+        >
+          <div
+            class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-1"
+          >
+            <div
+              class="MuiGrid-root MuiGrid-item MuiGrid-grid-sm-6"
+            >
+              <dt
+                class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+              >
+                Project ID
+              </dt>
+              <dd
+                class="MuiTypography-root MuiTypography-body1"
+              >
+                1230
+              </dd>
+            </div>
+            <div
+              class="MuiGrid-root MuiGrid-item MuiGrid-grid-sm-6"
+            >
+              <dt
+                class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+              >
+                Timeline
+              </dt>
+              <dd
+                class="MuiTypography-root MuiTypography-body1"
+              >
+                Jan 1, 1900 - Feb 2, 1900
               </dd>
             </div>
             <div
@@ -70,7 +121,7 @@ exports[`FundingSource renders correctly 1`] = `
               <dd
                 class="MuiTypography-root MuiTypography-body1"
               >
-                $333
+                $500
               </dd>
             </div>
           </div>

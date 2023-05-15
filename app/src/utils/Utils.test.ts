@@ -2,13 +2,16 @@ import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { IConfig } from 'contexts/configContext';
 import { SYSTEM_IDENTITY_SOURCE } from 'hooks/useKeycloakWrapper';
 import {
+  buildUrl,
   ensureProtocol,
   getFormattedAmount,
   getFormattedDate,
   getFormattedDateRangeString,
   getFormattedFileSize,
   getFormattedIdentitySource,
-  getLogOutUrl
+  getKeyByValue,
+  getLogOutUrl,
+  getTitle
 } from './Utils';
 
 describe('ensureProtocol', () => {
@@ -49,6 +52,44 @@ describe('ensureProtocol', () => {
     const url = 'someurl.com';
     const urlWithProtocol = ensureProtocol(url, 'http://');
     expect(urlWithProtocol).toEqual(`http://${url}`);
+  });
+});
+
+describe('buildUrl', () => {
+  it('should build a basic URL', () => {
+    const url = buildUrl('a', 'b', 'c', 'd');
+
+    expect(url).toEqual('a/b/c/d');
+  });
+
+  it('should build a URL to the app root', () => {
+    const url = buildUrl('/');
+
+    expect(url).toEqual('/');
+  });
+
+  it('should filter out falsey url parts', () => {
+    const url = buildUrl('a', 'b', (null as unknown) as string, 'd', undefined, 'f');
+
+    expect(url).toEqual('a/b/d/f');
+  });
+
+  it('should filter out double slashes', () => {
+    const url = buildUrl('a', '//', 'b', '/c', '/d/', '/f/');
+
+    expect(url).toEqual('a/b/c/d/f/');
+  });
+
+  it('should filter out whitespace', () => {
+    const url = buildUrl('a', '     ', '   c  ', ' /d ', '/e/ ', ' /f');
+
+    expect(url).toEqual('a/c/d/e/f');
+  });
+
+  it('should respect HTTP(S) protocol', () => {
+    const url = buildUrl('http://a', '/b', 'c', '/d/');
+
+    expect(url).toEqual('http://a/b/c/d/');
   });
 });
 
@@ -257,5 +298,63 @@ describe('getFormattedIdentitySource', () => {
     const result = getFormattedIdentitySource((null as unknown) as SYSTEM_IDENTITY_SOURCE);
 
     expect(result).toEqual(null);
+  });
+});
+
+describe('getTitle', () => {
+  it('should return a title when no pageName is given', () => {
+    const title = getTitle();
+
+    expect(title).toEqual('SIMS');
+  });
+
+  it('should return a title when empty string is given', () => {
+    const title = getTitle('');
+
+    expect(title).toEqual('SIMS');
+  });
+
+  it('should return a title when a pageName is given', () => {
+    const title = getTitle('Test Page');
+
+    expect(title).toEqual('SIMS - Test Page');
+  });
+});
+
+describe('getKeyByValue', () => {
+  it('returns undefined if the object contains no keys and the value is undefined', () => {
+    const response = getKeyByValue({}, undefined);
+
+    expect(response).toEqual(undefined);
+  });
+
+  it('returns undefined if the object contains no keys and the value is defined', () => {
+    const response = getKeyByValue({}, 'value');
+
+    expect(response).toEqual(undefined);
+  });
+
+  it('returns undefined if the object contains some keys and the value is undefined', () => {
+    const response = getKeyByValue({ name: 'Test' }, undefined);
+
+    expect(response).toEqual(undefined);
+  });
+
+  it('returns undefined if the object contains some keys and the value is defined but not in the object', () => {
+    const response = getKeyByValue({ name: 'Test' }, 'notfound');
+
+    expect(response).toEqual(undefined);
+  });
+
+  it('returns a string key if the object contains a key having the given value', () => {
+    const response = getKeyByValue({ name: 'Test' }, 'Test');
+
+    expect(response).toEqual('name');
+  });
+
+  it('returns a numeric key if the object contains a key having the given value', () => {
+    const response = getKeyByValue(['One', 'Two', 'Test'], 'Test');
+
+    expect(response).toEqual('2');
   });
 });

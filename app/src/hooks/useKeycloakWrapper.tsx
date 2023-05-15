@@ -1,6 +1,7 @@
 import { useKeycloak } from '@react-keycloak/web';
 import Keycloak from 'keycloak-js';
 import { useCallback } from 'react';
+import { buildUrl } from 'utils/Utils';
 import { useBiohubApi } from './useBioHubApi';
 import useDataLoader from './useDataLoader';
 
@@ -85,6 +86,13 @@ export interface IKeycloakWrapper {
    */
   hasAccessRequest: boolean;
   /**
+   * True if the user has at least 1 project participant roles.
+   *
+   * @type {boolean}
+   * @memberof IKeycloakWrapper
+   */
+  hasOneOrMoreProjectRoles: boolean;
+  /**
    * Get out the username portion of the preferred_username from the token.
    *
    * @memberof IKeycloakWrapper
@@ -112,6 +120,13 @@ export interface IKeycloakWrapper {
    * @memberof IKeycloakWrapper
    */
   refresh: () => void;
+  /**
+   * Generates the URL to sign in using Keycloak.
+   *
+   * @param {string} [redirectUri] Optionally URL to redirect the user to upon logging in
+   * @memberof IKeycloakWrapper
+   */
+  getLoginUrl: (redirectUri?: string) => string;
 }
 
 /**
@@ -135,9 +150,7 @@ function useKeycloakWrapper(): IKeycloakWrapper {
 
   const userDataLoader = useDataLoader(() => biohubApi.user.getUser());
 
-  const hasPendingAdministrativeActivitiesDataLoader = useDataLoader(() =>
-    biohubApi.admin.hasPendingAdministrativeActivities()
-  );
+  const administrativeActivityStandingDataLoader = useDataLoader(biohubApi.admin.getAdministrativeActivityStanding);
 
   if (keycloak) {
     // keycloak is ready, load keycloak user info
@@ -154,7 +167,7 @@ function useKeycloakWrapper(): IKeycloakWrapper {
     ) {
       // Authenticated user either has has no roles or has been deactivated
       // Check if the user has a pending access request
-      hasPendingAdministrativeActivitiesDataLoader.load();
+      administrativeActivityStandingDataLoader.load();
     }
   }
 
@@ -265,23 +278,29 @@ function useKeycloakWrapper(): IKeycloakWrapper {
 
   const refresh = () => {
     userDataLoader.refresh();
-    hasPendingAdministrativeActivitiesDataLoader.refresh();
+    administrativeActivityStandingDataLoader.refresh();
+  };
+
+  const getLoginUrl = (redirectUri = '/admin/projects'): string => {
+    return keycloak?.createLoginUrl({ redirectUri: buildUrl(window.location.origin, redirectUri) }) || '/login';
   };
 
   return {
     keycloak,
-    hasLoadedAllUserInfo: userDataLoader.isReady || !!hasPendingAdministrativeActivitiesDataLoader.data,
+    hasLoadedAllUserInfo: userDataLoader.isReady || !!administrativeActivityStandingDataLoader.data,
     systemRoles: getSystemRoles(),
     hasSystemRole,
     isSystemUser,
-    hasAccessRequest: !!hasPendingAdministrativeActivitiesDataLoader.data,
+    hasAccessRequest: !!administrativeActivityStandingDataLoader.data?.has_pending_acccess_request,
+    hasOneOrMoreProjectRoles: !!administrativeActivityStandingDataLoader.data?.has_one_or_more_project_roles,
     getUserIdentifier,
     getUserGuid,
     getIdentitySource,
     username: username(),
     email: email(),
     displayName: displayName(),
-    refresh
+    refresh,
+    getLoginUrl
   };
 }
 

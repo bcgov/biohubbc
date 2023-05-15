@@ -41,8 +41,7 @@ export class GetProjectData {
     this.end_date = projectData?.end_date || '';
     this.comments = projectData?.comments || '';
     this.completion_status =
-      (projectData &&
-        projectData.end_date &&
+      (projectData?.end_date &&
         moment(projectData.end_date).endOf('day').isBefore(moment()) &&
         COMPLETION_STATUS.COMPLETED) ||
       COMPLETION_STATUS.ACTIVE;
@@ -104,7 +103,7 @@ export class GetLocationData {
   revision_count: number;
 
   constructor(locationData?: any) {
-    const locationDataItem = locationData && locationData.length && locationData[0];
+    const locationDataItem = locationData?.length && locationData[0];
 
     this.location_description = locationDataItem?.location_description || '';
     this.geometry = (locationDataItem?.geometry?.length && locationDataItem.geometry) || [];
@@ -129,28 +128,28 @@ export class GetIUCNClassificationData {
 
   constructor(iucnClassificationData?: any[]) {
     this.classificationDetails =
-      (iucnClassificationData &&
-        iucnClassificationData.map((item: any) => {
-          return {
-            classification: item.classification,
-            subClassification1: item.subclassification1,
-            subClassification2: item.subclassification2
-          };
-        })) ||
-      [];
+      iucnClassificationData?.map((item: any) => {
+        return {
+          classification: item.classification,
+          subClassification1: item.subclassification1,
+          subClassification2: item.subclassification2
+        };
+      }) ?? [];
   }
 }
 
 interface IGetFundingSource {
   id: number;
-  agency_id: number;
-  investment_action_category: number;
-  investment_action_category_name: string;
+  agency_id?: number;
+  investment_action_category?: number;
+  investment_action_category_name?: string;
   agency_name: string;
-  funding_amount: number;
+  funding_amount?: number;
   start_date: string;
   end_date: string;
   agency_project_id: string;
+  first_nations_id?: number;
+  first_nations_name?: string;
   revision_count: number;
 }
 
@@ -159,22 +158,22 @@ export class GetFundingData {
 
   constructor(fundingData?: any[]) {
     this.fundingSources =
-      (fundingData &&
-        fundingData.map((item: any) => {
-          return {
-            id: item.id,
-            agency_id: item.agency_id,
-            investment_action_category: item.investment_action_category,
-            investment_action_category_name: item.investment_action_category_name,
-            agency_name: item.agency_name,
-            funding_amount: item.funding_amount,
-            start_date: item.start_date,
-            end_date: item.end_date,
-            agency_project_id: item.agency_project_id,
-            revision_count: item.revision_count
-          };
-        })) ||
-      [];
+      fundingData?.map((item: any) => {
+        return {
+          id: item.id,
+          agency_id: item.agency_id,
+          investment_action_category: item.investment_action_category,
+          investment_action_category_name: item.investment_action_category_name,
+          agency_name: item.agency_name,
+          funding_amount: item.funding_amount,
+          start_date: item.start_date,
+          end_date: item.end_date,
+          agency_project_id: item.agency_project_id,
+          revision_count: item.revision_count,
+          first_nations_id: item.first_nations_id,
+          first_nations_name: item.first_nations_name
+        };
+      }) ?? [];
   }
 }
 

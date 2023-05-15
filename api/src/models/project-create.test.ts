@@ -468,7 +468,7 @@ describe('PostLocationData', () => {
     });
 
     it('sets location_description', function () {
-      expect(projectLocationData.location_description).to.equal(null);
+      expect(projectLocationData.location_description).to.be.undefined;
     });
 
     it('sets geometry', function () {
@@ -570,7 +570,8 @@ describe('PostFundingData', () => {
           agency_project_id: 'agency project id',
           funding_amount: 12,
           start_date: '2020/04/03',
-          end_date: '2020/05/05'
+          end_date: '2020/05/05',
+          first_nations_id: null
         }
       ]
     };
