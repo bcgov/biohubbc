@@ -37,11 +37,14 @@ export interface ISurveyFundingSources {
 
 export interface ISurveyFundingSourceForView {
   pfs_id: number;
-  funding_amount: number;
+  funding_amount?: number;
   funding_start_date: string;
   funding_end_date: string;
-  agency_name: string;
+  agency_name?: string;
   funding_source_project_id: string;
+  first_nations_name?: string;
+  first_nations_id?: number;
+  investment_action_category_name?: string;
 }
 
 export type ISurveyAvailableFundingSources = IGetProjectForUpdateResponseFundingSource;

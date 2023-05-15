@@ -34,6 +34,7 @@ export async function seed(knex: Knex): Promise<void> {
       ${insertSurveyPermitData()}
       ${insertSurveySpeciesData()}
       ${insertSurveyFundingData()}
+      ${insertProjectFundingDataFirstNations()}
       ${insertSurveyProprietorData()}
       ${insertSurveyVantageData()}
     `);
@@ -243,6 +244,18 @@ const insertProjectFundingData = () => `
     ( investment_action_category_id, project_id, funding_source_project_id, funding_amount, funding_start_date, funding_end_date )
   VALUES
     ( 50, 1, 'AGENCY PROJECT ID', '$123,456,789.00', '2023-01-02', '2023-01-30' )
+  ;
+`;
+
+/**
+ * SQL to insert Project Funding data for First Nations
+ *
+ */
+const insertProjectFundingDataFirstNations = () => `
+  INSERT into project_funding_source
+    ( first_nations_id, project_id, funding_start_date, funding_end_date )
+  VALUES
+    ( 1, 1, '2023-01-02', '2023-01-30' )
   ;
 `;
 

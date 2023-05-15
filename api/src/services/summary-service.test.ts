@@ -601,36 +601,22 @@ describe('SummaryService', () => {
       }
     });
 
-    it('should throw INVALID_MEDIA error if validateXLSX fails with invalid media', async () => {
+    it('should return early if media_state is invalid', async () => {
       const service = mockService();
-      const file = new MediaFile('test.txt', 'text/plain', Buffer.of(0));
-      const xlsxCsv = new XLSXCSV(file);
-      const validation = 'test-template-validation-schema';
-      const mockSchemaParser = { validationSchema: validation };
+      const mockMediaState = {
+        fileName: 'test file',
+        isValid: false
+      } as IMediaState;
+      const xlsx = new XLSXCSV(buildFile('test file', {}));
+      const parser = new ValidationSchemaParser({});
 
-      sinon.stub(XLSXCSV.prototype, 'validateMedia');
-      sinon.stub(XLSXCSV.prototype, 'getMediaState').returns({
-        isValid: false,
-        fileName: 'test filename'
-      });
+      sinon.stub(XLSXCSV.prototype, 'getMediaState').returns(mockMediaState);
 
-      const getValidation = sinon.stub(service, 'getValidationRules').resolves(mockSchemaParser);
-      sinon.stub(FileUtils, 'getFileFromS3').resolves('file from s3' as any);
-      sinon
-        .stub(service, 'getSummaryTemplateSpeciesRecords')
-        .resolves([{ ...makeMockTemplateSpeciesRecord(1), validation }]);
+      const result = await service.validateXLSX(xlsx, parser);
 
-      try {
-        await service.summaryTemplateValidation(xlsxCsv, 1);
-        expect.fail();
-      } catch (error) {
-        expect(getValidation).to.be.calledWith('test-template-validation-schema');
-        expect(error).to.be.instanceOf(SummarySubmissionError);
-        if (error instanceof SummarySubmissionError) {
-          expect(error.summarySubmissionMessages.length).to.equal(1);
-          expect(error.summarySubmissionMessages[0].type).to.equal(SUMMARY_SUBMISSION_MESSAGE_TYPE.INVALID_MEDIA);
-        }
-      }
+      expect(result.csv_state).to.be.eql([]);
+      expect(result.media_state.fileName).to.be.eql(mockMediaState.fileName);
+      expect(result.media_state.isValid).to.be.eql(false);
     });
   });
 

@@ -1,5 +1,6 @@
 import TextField from '@material-ui/core/TextField';
 import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
+import { IAutocompleteFieldOptionWithType } from 'features/projects/components/FundingSourceAutocomplete';
 import { useFormikContext } from 'formik';
 import get from 'lodash-es/get';
 import React, { ChangeEvent } from 'react';
@@ -13,10 +14,14 @@ export interface IAutocompleteField<T extends string | number> {
   id: string;
   label: string;
   name: string;
-  options: IAutocompleteFieldOption<T>[];
+  options: IAutocompleteFieldOption<T>[] | IAutocompleteFieldOptionWithType<T>[];
   required?: boolean;
   filterLimit?: number;
-  onChange?: (event: ChangeEvent<Record<string, unknown>>, option: IAutocompleteFieldOption<T> | null) => void;
+  optionFilter?: 'value' | 'label'; // added so options can filter based on different datasets
+  onChange?: (
+    event: ChangeEvent<Record<string, unknown>>,
+    option: IAutocompleteFieldOption<T> | IAutocompleteFieldOptionWithType<T> | null
+  ) => void;
 }
 
 // To be used when you want an autocomplete field with no freesolo allowed but only one option can be selected
@@ -27,7 +32,7 @@ const AutocompleteField: React.FC<IAutocompleteField<string | number>> = <T exte
   const { touched, errors, setFieldValue, values } = useFormikContext<IAutocompleteFieldOption<T>>();
 
   const getExistingValue = (existingValue: T): IAutocompleteFieldOption<T> => {
-    const result = props.options.find((option) => existingValue === option.value);
+    const result = props.options.find((option) => existingValue === option[props.optionFilter ?? 'value']);
 
     if (!result) {
       return (null as unknown) as IAutocompleteFieldOption<T>;
