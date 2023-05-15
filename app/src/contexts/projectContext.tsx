@@ -57,7 +57,7 @@ export const ProjectContextProvider = (props: PropsWithChildren<Record<never, an
   const projectDataLoader = useDataLoader(biohubApi.project.getProjectForView);
   const surveysListDataLoader = useDataLoader(biohubApi.survey.getSurveysList);
   const artifactDataLoader = useDataLoader(biohubApi.project.getProjectAttachments);
-  const urlParams = useParams();
+  const urlParams: Record<string, string | number | undefined> = useParams();
 
   if (!urlParams['id']) {
     throw new Error(

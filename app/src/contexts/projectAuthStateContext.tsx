@@ -28,8 +28,8 @@ export const ProjectAuthStateContextProvider: React.FC = (props) => {
   );
   const { keycloakWrapper } = useContext(AuthStateContext);
 
-  const urlParams = useParams();
-  const projectId: string | number | null = urlParams['id'];
+  const urlParams: Record<string, string | number | undefined> = useParams();
+  const projectId: string | number | undefined = urlParams['id'];
 
   const getProjectId = useCallback(() => {
     return Number(projectId);

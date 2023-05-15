@@ -85,7 +85,7 @@ export const SurveyContextProvider = (props: PropsWithChildren<Record<never, any
   const observationDataLoader = useDataLoader(biohubApi.observation.getObservationSubmission);
   const summaryDataLoader = useDataLoader(biohubApi.survey.getSurveySummarySubmission);
   const artifactDataLoader = useDataLoader(biohubApi.survey.getSurveyAttachments);
-  const urlParams = useParams();
+  const urlParams: Record<string, string | number | undefined> = useParams();
 
   if (!urlParams['id']) {
     throw new Error(

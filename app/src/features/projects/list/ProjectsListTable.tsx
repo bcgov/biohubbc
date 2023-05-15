@@ -46,7 +46,7 @@ export interface IProjectsListTableProps {
 }
 
 interface IProjectsListTableEntry {
-  id?: number;
+  id: number;
   isDraft: boolean;
   name: string;
   status?: PublishStatus;

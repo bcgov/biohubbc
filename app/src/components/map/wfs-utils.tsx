@@ -198,7 +198,7 @@ export const createGetFeatureDetails = (
   - Parks and NRM regions use the key SHAPE
   - ENV regions and WMU use the key GEOMETRY
 */
-export const layerGeoFilterTypeMappings = {
+export const layerGeoFilterTypeMappings: Record<string, string> = {
   'pub:WHSE_TANTALIS.TA_PARK_ECORES_PA_SVW': 'SHAPE',
   'pub:WHSE_ADMIN_BOUNDARIES.ADM_NR_REGIONS_SPG': 'SHAPE',
   'pub:WHSE_ADMIN_BOUNDARIES.EADM_WLAP_REGION_BND_AREA_SVW': 'GEOMETRY',
@@ -216,7 +216,7 @@ export const wfsInferredLayers = [
   Because there is not a 1:1 mapping between the ENV and NRM regions
   As can be seen, there are 2 ENV regions that map to the same NRM region
 */
-export const envToNrmRegionsMapping = {
+export const envToNrmRegionsMapping: Record<string, string> = {
   '1- Vancouver Island': 'West Coast Natural Resource Region',
   '2- Lower Mainland': 'South Coast Natural Resource Region',
   '3- Thompson': 'Thompson-Okanagan Natural Resource Region',
@@ -228,7 +228,7 @@ export const envToNrmRegionsMapping = {
   '9- Peace': 'Northeast Natural Resource Region'
 };
 
-export const layerContentHandlers = {
+export const layerContentHandlers: Record<string, any> = {
   'pub:WHSE_WILDLIFE_MANAGEMENT.WAA_WILDLIFE_MGMT_UNITS_SVW': {
     featureKeyHandler: (feature: Feature) => feature?.properties?.OBJECTID,
     popupContentHandler: (feature: Feature) => {

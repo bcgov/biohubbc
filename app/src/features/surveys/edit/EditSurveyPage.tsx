@@ -63,7 +63,7 @@ const EditSurveyPage = () => {
   const classes = useStyles();
   const biohubApi = useBiohubApi();
   const history = useHistory();
-  const urlParams = useParams();
+  const urlParams: Record<string, string | number | undefined> = useParams();
 
   const surveyId = Number(urlParams['survey_id']);
 
