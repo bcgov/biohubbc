@@ -5,10 +5,12 @@ import React from 'react';
 export interface IPublishDialogs {
   finishSubmissionTitle: string;
   finishSubmissionMessage: string;
+  finishSubmissionBody?: string;
   finishSubmission: boolean;
   setFinishSubmission: (isEmpty: boolean) => void;
   noSubmissionTitle: string;
   noSubmissionMessage: string;
+  noSubmissionBody?: string;
   noSubmissionData: boolean;
   setNoSubmissionData: (isFinished: boolean) => void;
 }
@@ -22,10 +24,12 @@ const PublishDialogs: React.FC<IPublishDialogs> = (props) => {
   const {
     finishSubmissionTitle,
     finishSubmissionMessage,
+    finishSubmissionBody,
     finishSubmission,
     setFinishSubmission,
     noSubmissionTitle,
     noSubmissionMessage,
+    noSubmissionBody,
     noSubmissionData,
     setNoSubmissionData
   } = props;
@@ -39,6 +43,7 @@ const PublishDialogs: React.FC<IPublishDialogs> = (props) => {
           setFinishSubmission(false);
         }}>
         <DialogContentText id="alert-dialog-description">{finishSubmissionMessage}</DialogContentText>
+        <DialogContentText id="alert-dialog-description">{finishSubmissionBody}</DialogContentText>
       </ComponentDialog>
 
       <ComponentDialog
@@ -48,6 +53,7 @@ const PublishDialogs: React.FC<IPublishDialogs> = (props) => {
           setNoSubmissionData(false);
         }}>
         <DialogContentText id="alert-dialog-description">{noSubmissionMessage}</DialogContentText>
+        <DialogContentText id="alert-dialog-description">{noSubmissionBody}</DialogContentText>
       </ComponentDialog>
     </>
   );

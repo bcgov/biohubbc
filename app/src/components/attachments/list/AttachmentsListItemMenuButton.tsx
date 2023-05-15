@@ -43,6 +43,7 @@ const AttachmentsListItemMenuButton = <T extends IGetProjectAttachment | IGetSur
       <RemoveOrResubmitDialog
         file={RemoveOrResubmitDialogFile}
         open={openRemoveOrResubmitDialog}
+        setOpen={setOpenRemoveOrResubmitDialog}
         onClose={() => setOpenRemoveOrResubmitDialog(false)}
       />
       <Box my={-1}>

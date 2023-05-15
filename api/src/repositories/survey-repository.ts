@@ -235,7 +235,7 @@ export class SurveyRepository extends BaseRepository {
    */
   async getSurveyFundingSourcesData(surveyId: number): Promise<GetSurveyFundingSources> {
     const sqlStatement = SQL`
-      
+
       SELECT
           sfs.project_funding_source_id,
           fs2.funding_source_id,
@@ -248,7 +248,7 @@ export class SurveyRepository extends BaseRepository {
           fs2.name as agency_name,
           pfs.first_nations_id as first_nations_id,
           fn."name" as first_nations_name
-      FROM survey_funding_source sfs 
+      FROM survey_funding_source sfs
       LEFT JOIN project_funding_source pfs ON sfs.project_funding_source_id = pfs.project_funding_source_id
       LEFT JOIN investment_action_category iac ON pfs.investment_action_category_id = iac.investment_action_category_id
       LEFT JOIN funding_source fs2 ON iac.funding_source_id = fs2.funding_source_id
@@ -325,10 +325,6 @@ export class SurveyRepository extends BaseRepository {
     const response = await this.connection.sql(sqlStatement);
 
     const result = response?.rows?.[0];
-    console.log('____');
-    console.log('____');
-    console.log('____');
-    console.log(result);
     if (!result) {
       return null;
     }

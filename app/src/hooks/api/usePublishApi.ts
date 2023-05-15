@@ -1,6 +1,9 @@
 import { AxiosInstance } from 'axios';
+import { IRemoveOrResubmitForm } from 'components/publish/components/RemoveOrResubmitForm';
 import { IProjectSubmitForm } from 'components/publish/PublishProjectSections';
 import { ISurveySubmitForm } from 'components/publish/PublishSurveySections';
+import { IGetProjectAttachment } from 'interfaces/useProjectApi.interface';
+import { IGetSurveyAttachment } from 'interfaces/useSurveyApi.interface';
 
 /**
  * Returns a list of all resources
@@ -50,9 +53,26 @@ const usePublishApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  const resubmitAttachment = async (
+    file: IGetProjectAttachment | IGetSurveyAttachment,
+    formValues: IRemoveOrResubmitForm
+  ): Promise<{ data: string }> => {
+    const sendData = {
+      file: file,
+      formValues: formValues
+    };
+
+    console.log('sendData', sendData);
+
+    const { data } = await axios.post('/api/publish/attachment/resubmit', sendData);
+
+    return data;
+  };
+
   return {
     publishSurvey,
-    publishProject
+    publishProject,
+    resubmitAttachment
   };
 };
 

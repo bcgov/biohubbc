@@ -11,7 +11,11 @@ import {
   useTheme
 } from '@material-ui/core';
 import { Formik, FormikProps } from 'formik';
-import React, { useRef } from 'react';
+import { useBiohubApi } from 'hooks/useBioHubApi';
+import { IGetProjectAttachment } from 'interfaces/useProjectApi.interface';
+import { IGetSurveyAttachment } from 'interfaces/useSurveyApi.interface';
+import React, { useRef, useState } from 'react';
+import PublishDialogs from '../PublishDialogs';
 import AttachmentsFileCard from './AttachmentsFileCard';
 import RemoveOrResubmitForm, {
   IRemoveOrResubmitForm,
@@ -20,8 +24,9 @@ import RemoveOrResubmitForm, {
 } from './RemoveOrResubmitForm';
 
 export interface IRemoveOrResubmitDialog {
-  file: any;
+  file: IGetProjectAttachment | IGetSurveyAttachment | null;
   open: boolean;
+  setOpen: (isOpen: boolean) => void;
   onClose: () => void;
 }
 
@@ -34,16 +39,47 @@ const RemoveOrResubmitDialog: React.FC<IRemoveOrResubmitDialog> = (props) => {
   const { file, open, onClose } = props;
 
   const theme = useTheme();
+  const biohubApi = useBiohubApi();
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
+
+  const [finishResubmission, setFinishResubmission] = useState(false);
+  const [resubmissionFailed, setResubmissionFailed] = useState(false);
 
   const formikRef = useRef<FormikProps<IRemoveOrResubmitForm>>(null);
 
   const handleSubmit = async (values: IRemoveOrResubmitForm) => {
-    console.log('handleSubmit', values);
+    try {
+      onClose();
+      if (file) {
+        await biohubApi.publish.resubmitAttachment(file, values);
+        setFinishResubmission(true);
+      }
+    } catch (error) {
+      console.log(error);
+      onClose();
+      setResubmissionFailed(true);
+    }
   };
+
+  if (!file) {
+    return <></>;
+  }
 
   return (
     <>
+      <PublishDialogs
+        finishSubmissionTitle="Project documents submitted"
+        finishSubmissionMessage="Thank you for submitting your project data to Biohub."
+        finishSubmissionBody="A BioHub Administrator will contact you shortly."
+        finishSubmission={finishResubmission}
+        setFinishSubmission={setFinishResubmission}
+        noSubmissionTitle="No documents to submit"
+        noSubmissionMessage="An error occurred while attempting to submit your request."
+        noSubmissionBody="If you continue to have difficulties submitting your request, please contact BioHub Support at biohub@gov.bc.ca."
+        noSubmissionData={resubmissionFailed}
+        setNoSubmissionData={setResubmissionFailed}
+      />
+
       <Dialog
         fullScreen={fullScreen}
         maxWidth="xl"
