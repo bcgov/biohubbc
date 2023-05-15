@@ -28,6 +28,7 @@ import BCeIDRequestForm, {
   BCeIDBusinessRequestFormYupSchema
 } from './BCeIDRequestForm';
 import IDIRRequestForm, { IDIRRequestFormInitialValues, IDIRRequestFormYupSchema } from './IDIRRequestForm';
+import LoadingButton from 'components/buttons/LoadingButton';
 
 const useStyles = makeStyles(() => ({
   actionButton: {
@@ -186,24 +187,15 @@ export const AccessRequestPage: React.FC = () => {
                 <form onSubmit={handleSubmit}>
                   {requestForm}
                   <Box mt={4} display="flex" justifyContent="flex-end">
-                    <Box className="buttonWrapper" mr={1}>
-                      <Button
-                        type="submit"
-                        variant="contained"
-                        color="primary"
-                        className={classes.actionButton}
-                        disabled={isSubmittingRequest}>
-                        <strong>Submit Request</strong>
-                      </Button>
-                      {isSubmittingRequest && (
-                        <CircularProgress
-                          className="buttonProgress"
-                          variant="indeterminate"
-                          size={20}
-                          color="primary"
-                        />
-                      )}
-                    </Box>
+                    <LoadingButton
+                      loading={isSubmittingRequest}
+                      type="submit"
+                      variant="contained"
+                      color="primary"
+                      className={classes.actionButton}
+                      disabled={isSubmittingRequest}>
+                      <strong>Submit Request</strong>
+                    </LoadingButton>
                     <Button
                       variant="outlined"
                       color="primary"

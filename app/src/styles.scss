@@ -56,18 +56,6 @@ h3.MuiTypography-root + p {
   list-style-type: none;
 }
 
-.buttonWrapper {
-  position: relative;
-}
-
-.buttonProgress {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  margin-left: -10px;
-  margin-top: -10px;
-}
-
 .pageProgress {
   position: fixed;
   top: 50%;
