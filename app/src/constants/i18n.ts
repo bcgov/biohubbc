@@ -280,3 +280,11 @@ export const SubmitBiohubI18N = {
   noInformationDialogTitle: 'No Information to Submit',
   noInformationDialogText: 'No information has been uploaded to Biohub for submission.'
 }
+
+export const SubmitProjectBiohubI18N = {
+  submitProjectBiohubDialogTitle: 'Submit Project Information',
+  submitProjectBiohubSuccessDialogTitle: 'Project documents submitted',
+  submitProjectBiohubSuccessDialogText: 'Thank you for submitting your project data to Biohub.',
+  submitProjectBiohubNoSubmissionDataDialogTitle: 'No documents to submit',
+  submitProjectBiohubNoSubmissionDataDialogText: 'No new documents have been added to this project to submit.'
+}
