@@ -7,14 +7,14 @@ interface Redirect {
   redirect: () => void;
 }
 
-export default function useRedirect(fallback?: string): Redirect {
+export default function useRedirect(fallback: string): Redirect {
   const queryParams = useQuery();
 
   const redirectUri = useMemo(
     () =>
       queryParams['redirect']
         ? buildUrl(window.location.origin, decodeURIComponent(queryParams['redirect']))
-        : undefined,
+        : fallback,
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [queryParams]
