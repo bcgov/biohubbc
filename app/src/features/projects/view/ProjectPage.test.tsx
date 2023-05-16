@@ -1,5 +1,4 @@
 import { cleanup, fireEvent, render, waitFor } from '@testing-library/react';
-import { SYSTEM_ROLE } from 'constants/roles';
 import { AuthStateContext } from 'contexts/authStateContext';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { Feature } from 'geojson';
@@ -36,26 +35,6 @@ const mockUseBiohubApi = {
 const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBiohubApi>).mockReturnValue(
   mockUseBiohubApi
 );
-
-const defaultAuthState = {
-  keycloakWrapper: {
-    keycloak: {
-      authenticated: true
-    },
-    hasLoadedAllUserInfo: true,
-    systemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN] as string[],
-    getUserIdentifier: () => 'testuser',
-    hasAccessRequest: false,
-    hasSystemRole: () => true,
-    getIdentitySource: () => 'idir',
-    username: 'testusername',
-    displayName: 'testdisplayname',
-    email: 'test@email.com',
-    firstName: 'testfirst',
-    lastName: 'testlast',
-    refresh: () => {}
-  }
-};
 
 describe.skip('ProjectPage', () => {
   beforeEach(() => {

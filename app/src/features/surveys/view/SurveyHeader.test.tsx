@@ -1,5 +1,4 @@
 import { cleanup, fireEvent, render, waitFor } from '@testing-library/react';
-import { SYSTEM_ROLE } from 'constants/roles';
 import { AuthStateContext, IAuthState } from 'contexts/authStateContext';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { IProjectContext, ProjectContext } from 'contexts/projectContext';
@@ -8,7 +7,6 @@ import SurveyHeader from 'features/surveys/view/SurveyHeader';
 import { createMemoryHistory } from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { DataLoader } from 'hooks/useDataLoader';
-import { SYSTEM_IDENTITY_SOURCE } from 'hooks/useKeycloakWrapper';
 import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
 import React from 'react';
 import { Router } from 'react-router';
@@ -45,26 +43,6 @@ const mockSurveyContext: ISurveyContext = {
 const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBiohubApi>).mockReturnValue(
   mockUseBiohubApi
 );
-
-const defaultAuthState = {
-  keycloakWrapper: {
-    keycloak: {
-      authenticated: true
-    },
-    hasLoadedAllUserInfo: true,
-    systemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN] as string[],
-    getUserIdentifier: () => 'testuser',
-    hasAccessRequest: false,
-    hasSystemRole: () => true,
-    getIdentitySource: () => SYSTEM_IDENTITY_SOURCE.IDIR,
-    username: 'testusername',
-    displayName: 'testdisplayname',
-    email: 'test@email.com',
-    firstName: 'testfirst',
-    lastName: 'testlast',
-    refresh: () => {}
-  }
-};
 
 const surveyForView = getSurveyForViewResponse;
 const refresh = jest.fn();
