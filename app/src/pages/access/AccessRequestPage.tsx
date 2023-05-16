@@ -192,8 +192,7 @@ export const AccessRequestPage: React.FC = () => {
                       type="submit"
                       variant="contained"
                       color="primary"
-                      className={classes.actionButton}
-                      disabled={isSubmittingRequest}>
+                      className={classes.actionButton}>
                       <strong>Submit Request</strong>
                     </LoadingButton>
                     <Button

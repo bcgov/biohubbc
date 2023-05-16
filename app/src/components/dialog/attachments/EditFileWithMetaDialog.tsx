@@ -120,7 +120,7 @@ const EditFileWithMetaDialog: React.FC<IEditFileWithMetaDialogProps> = (props) =
               </Box>
             </DialogContent>
             <DialogActions>
-              <LoadingButton loading={isSaving} onClick={formikProps.submitForm} color="primary" variant="contained" disabled={isSaving}>
+              <LoadingButton loading={isSaving} onClick={formikProps.submitForm} color="primary" variant="contained">
                 <strong>Save</strong>
               </LoadingButton>
               <Button onClick={props.onClose} color="primary" variant="outlined" disabled={isSaving}>

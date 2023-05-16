@@ -121,7 +121,7 @@ const FileUploadWithMetaDialog: React.FC<IFileUploadWithMetaDialogProps> = (prop
             </DialogContent>
             <DialogActions>
               {props.attachmentType === AttachmentType.REPORT && (
-                <LoadingButton loading={isFinishing} onClick={formikProps.submitForm} color="primary" variant="contained" disabled={isFinishing}>
+                <LoadingButton loading={isFinishing} onClick={formikProps.submitForm} color="primary" variant="contained">
                   <strong>Finish</strong>
                 </LoadingButton>
               )}
