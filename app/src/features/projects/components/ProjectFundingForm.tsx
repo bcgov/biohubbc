@@ -160,7 +160,10 @@ const ProjectFundingForm: React.FC<IProjectFundingFormProps> = (props) => {
                     )?.[0]?.label;
 
                     return (
-                      <Card key={index} variant="outlined" className={classes.fundingSourceItem}>
+                      <Card
+                        key={`${index}-${fundingSource.id}-${fundingSource.first_nations_id}-${fundingSource.agency_id}`}
+                        variant="outlined"
+                        className={classes.fundingSourceItem}>
                         <CardHeader
                           title={
                             <Typography className={classes.title}>
