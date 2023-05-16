@@ -19,17 +19,17 @@ export interface ISubmitProject {
   unSubmittedAttachments: IGetProjectAttachment[];
 }
 
-export interface IPublishProjectDialogProps {
+interface IPublishProjectDialogProps {
   open: boolean
   onClose: () => void
 }
 
-export const ProjectSubmitFormInitialValues: IProjectSubmitForm = {
+const projectSubmitFormInitialValues: IProjectSubmitForm = {
   reports: [],
   attachments: []
 };
 
-export const ProjectSubmitFormYupSchema = yup.object().shape({
+const projectSubmitFormYupSchema = yup.object().shape({
   reports: yup.array(),
   attachments: yup.array()
 });
@@ -68,15 +68,14 @@ const PublishProjectDialog = (props: IPublishProjectDialogProps) => {
             biohubApi.publish.publishProject(projectContext.projectId, values).then(() => {
               projectContext.projectDataLoader.refresh(projectContext.projectId);
               if (values.attachments.length > 0 || values.reports.length > 0) {
-                // we only want the data loaders with changes to refresh
                 projectContext.artifactDataLoader.refresh(projectContext.projectId);
               }
             });
           }
         }}
         formikProps={{
-          initialValues: ProjectSubmitFormInitialValues,
-          validationSchema: ProjectSubmitFormYupSchema
+          initialValues: projectSubmitFormInitialValues,
+          validationSchema: projectSubmitFormYupSchema
         }}>
         <Box mb={2}>
           <Typography variant="body1" color="textSecondary">

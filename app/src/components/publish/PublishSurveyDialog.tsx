@@ -1,20 +1,21 @@
-import { Button } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import Typography from '@material-ui/core/Typography';
 import SubmitBiohubDialog from 'components/dialog/SubmitBiohubDialog';
 import { SubmitSurveyBiohubI18N } from 'constants/i18n';
 import { SUBMISSION_STATUS_TYPE } from 'constants/submissions';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { IGetObservationSubmissionResponse, ISurveyObservationData } from 'interfaces/useObservationApi.interface';
+import { ISurveyObservationData } from 'interfaces/useObservationApi.interface';
 import { ISurveySubmitForm } from 'interfaces/usePublishApi.interface';
-import { IGetSummaryResultsResponse, ISurveySummaryData } from 'interfaces/useSummaryResultsApi.interface';
+import { ISurveySummaryData } from 'interfaces/useSummaryResultsApi.interface';
 import {
   IGetSurveyAttachment,
-  IGetSurveyAttachmentsResponse,
   IGetSurveyReportAttachment
 } from 'interfaces/useSurveyApi.interface';
-import React, { useContext, useState } from 'react';
+import React, { useContext } from 'react';
 import yup from 'utils/YupSchema';
 import SubmitSection from './SubmitSection';
+import SelectAllButton from './SelectAllButton';
 
 export interface ISubmitSurvey {
   unSubmittedObservation: ISurveyObservationData[];
@@ -23,27 +24,35 @@ export interface ISubmitSurvey {
   unSubmittedAttachments: IGetSurveyAttachment[];
 }
 
+interface IPublishSurveyDialogProps {
+  open: boolean
+  onClose: () => void
+}
 
-export const SurveySubmitFormInitialValues: ISurveySubmitForm = {
+const surveySubmitFormInitialValues: ISurveySubmitForm = {
   observations: [],
   summary: [],
   reports: [],
   attachments: []
 };
 
-export const SurveySubmitFormYupSchema = yup.object().shape({
+const surveySubmitFormYupSchema = yup.object().shape({
   observations: yup.array(),
   summary: yup.array(),
   reports: yup.array(),
   attachments: yup.array()
 });
 
+const excludesArtifactRevisionId = (item: IGetSurveyReportAttachment | IGetSurveyAttachment) => {
+  return !item.supplementaryAttachmentData?.artifact_revision_id
+}
+
 /**
  * Survey Publish button.
  *
  * @return {*}
  */
-const PublishSurveyDialog: React.FC = (props) => {
+const PublishSurveyDialog = (props: IPublishSurveyDialogProps) => {
   const biohubApi = useBiohubApi();
   const surveyContext = useContext(SurveyContext);
 
@@ -56,19 +65,35 @@ const PublishSurveyDialog: React.FC = (props) => {
     projectId
   } = surveyContext;
 
+  const unsubmittedObservations: ISurveyObservationData[] = [];
+  const unsubmittedSummaryResults: ISurveySummaryData[] = [];
+  const unsubmittedReports: IGetSurveyReportAttachment[] = artifactDataLoader.data?.reportAttachmentsList.filter(excludesArtifactRevisionId) ?? [];
+  const unsubmittedAttachments: IGetSurveyAttachment[] = artifactDataLoader.data?.attachmentsList.filter(excludesArtifactRevisionId) ?? [];
+  
+  if (
+    observationDataLoader.data &&
+    observationDataLoader.data.surveyObservationData &&
+    !observationDataLoader.data.surveyObservationSupplementaryData?.occurrence_submission_id &&
+    observationDataLoader.data.surveyObservationData.status === SUBMISSION_STATUS_TYPE.TEMPLATE_TRANSFORMED
+  ) {
+    unsubmittedObservations.push(observationDataLoader.data.surveyObservationData);
+  }
+  
+  if (
+    summaryDataLoader.data &&
+    summaryDataLoader.data.surveySummaryData &&
+    !summaryDataLoader.data.surveySummarySupplementaryData?.survey_summary_submission_id &&
+    summaryDataLoader.data.surveySummaryData.messages.length === 0
+  ) {
+    unsubmittedSummaryResults.push(summaryDataLoader.data.surveySummaryData);
+  }
 
-  const checkUnsubmittedData = () => {
-    const observation: ISurveyObservationData[] = unSubmittedObservation(observationDataLoader.data);
-    const summary: ISurveySummaryData[] = unSubmittedSummary(summaryDataLoader.data);
-    const reports: IGetSurveyReportAttachment[] = unSubmittedReports(artifactDataLoader.data);
-    const attachments: IGetSurveyAttachment[] = unSubmittedAttachments(artifactDataLoader.data);
-
-    if (observation.length === 0 && summary.length === 0 && reports.length === 0 && attachments.length === 0) {
-      setNoSubmissionData(true);
-      return;
-    }
-    setOpenSubmitSurveyDialog(true);
-  };
+  const hasSubmissionData = Boolean(
+    unsubmittedObservations.length > 0 ||
+    unsubmittedSummaryResults.length > 0 ||
+    unsubmittedReports.length > 0 ||
+    unsubmittedAttachments.length > 0
+  );
 
   return (
     <>
@@ -89,7 +114,6 @@ const PublishSurveyDialog: React.FC = (props) => {
               values
             ).then(() => {
               surveyDataLoader.refresh(projectId, surveyId);
-              // we only want the data loaders with changes to refresh
               if (values.observations.length > 0) {
                 surveyContext.observationDataLoader.refresh(projectId, surveyId);
               }
@@ -103,15 +127,9 @@ const PublishSurveyDialog: React.FC = (props) => {
           }
         }}
         formikProps={{
-          initialValues: SurveySubmitFormInitialValues,
-          validationSchema: SurveySubmitFormYupSchema
+          initialValues: surveySubmitFormInitialValues,
+          validationSchema: surveySubmitFormYupSchema
         }}>
-        <PublishSurveySections
-          unSubmittedObservation={unSubmittedObservation(observationDataLoader.data)}
-          unSubmittedSummary={unSubmittedSummary(summaryDataLoader.data)}
-          unSubmittedReports={unSubmittedReports(artifactDataLoader.data)}
-          unSubmittedAttachments={unSubmittedAttachments(artifactDataLoader.data)}
-        />
 
         <Box mb={2}>
           <Typography variant="body1" color="textSecondary">
@@ -124,61 +142,61 @@ const PublishSurveyDialog: React.FC = (props) => {
           formikData={[
             {
               key: 'observations',
-              value: unSubmittedObservation
+              value: unsubmittedObservations
             },
             {
               key: 'summary',
-              value: unSubmittedSummary
+              value: unsubmittedSummaryResults
             },
             {
               key: 'reports',
-              value: unSubmittedReports
+              value: unsubmittedReports
             },
             {
               key: 'attachments',
-              value: unSubmittedAttachments
+              value: unsubmittedAttachments
             }
           ]}
         />
 
-        {unSubmittedObservation.length !== 0 && (
+        {unsubmittedObservations.length !== 0 && (
           <SubmitSection
             subHeader="Observations"
             formikName="observations"
-            data={unSubmittedObservation}
+            data={unsubmittedObservations}
             getName={(item: ISurveyObservationData) => {
               return item.inputFileName;
             }}
           />
         )}
 
-        {unSubmittedSummary.length !== 0 && (
+        {unsubmittedSummaryResults.length !== 0 && (
           <SubmitSection
             subHeader="Summary Results"
             formikName="summary"
-            data={unSubmittedSummary}
+            data={unsubmittedSummaryResults}
             getName={(item: ISurveySummaryData) => {
               return item.fileName;
             }}
           />
         )}
 
-        {unSubmittedReports.length !== 0 && (
+        {unsubmittedReports.length !== 0 && (
           <SubmitSection
             subHeader="Reports"
             formikName="reports"
-            data={unSubmittedReports}
+            data={unsubmittedReports}
             getName={(item: IGetSurveyReportAttachment) => {
               return item.fileName;
             }}
           />
         )}
 
-        {unSubmittedAttachments.length !== 0 && (
+        {unsubmittedAttachments.length !== 0 && (
           <SubmitSection
             subHeader="Other Documents"
             formikName="attachments"
-            data={unSubmittedAttachments}
+            data={unsubmittedAttachments}
             getName={(item: IGetSurveyAttachment) => {
               return item.fileName;
             }}
@@ -190,39 +208,3 @@ const PublishSurveyDialog: React.FC = (props) => {
 };
 
 export default PublishSurveyDialog;
-
-export const unSubmittedObservation = (
-  data: IGetObservationSubmissionResponse | undefined
-): ISurveyObservationData[] => {
-  if (
-    data &&
-    data.surveyObservationData &&
-    !data.surveyObservationSupplementaryData?.occurrence_submission_id &&
-    data.surveyObservationData.status === SUBMISSION_STATUS_TYPE.TEMPLATE_TRANSFORMED
-  ) {
-    return [data.surveyObservationData];
-  }
-  return [];
-};
-
-const unSubmittedSummary = (data: IGetSummaryResultsResponse | undefined): ISurveySummaryData[] => {
-  if (
-    data &&
-    data.surveySummaryData &&
-    !data.surveySummarySupplementaryData?.survey_summary_submission_id &&
-    data.surveySummaryData.messages.length === 0
-  ) {
-    return [data.surveySummaryData];
-  }
-  return [];
-};
-
-const unSubmittedReports = (data: IGetSurveyAttachmentsResponse | undefined): IGetSurveyReportAttachment[] => {
-  return data
-    ? data.reportAttachmentsList.filter((item) => !item.supplementaryAttachmentData?.artifact_revision_id)
-    : [];
-};
-
-const unSubmittedAttachments = (data: IGetSurveyAttachmentsResponse | undefined): IGetSurveyAttachment[] => {
-  return data ? data.attachmentsList.filter((item) => !item.supplementaryAttachmentData?.artifact_revision_id) : [];
-};

@@ -30,7 +30,7 @@ import { ProjectContext } from 'contexts/projectContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { useHistory } from 'react-router';
 import { BrowserRouter, Link } from 'react-router-dom';
 import { getFormattedDateRangeString } from 'utils/Utils';
@@ -109,7 +109,7 @@ const SurveyHeader = () => {
         dialogContext.setYesNoDialog({ open: false });
       }
     });
-    setAnchorEl(null);
+    setMenuAnchorEl(null);
   };
 
   const deleteSurvey = async () => {
@@ -148,16 +148,8 @@ const SurveyHeader = () => {
     SYSTEM_ROLE.PROJECT_CREATOR
   ]);
 
-  // Show/Hide Project Settings Menu
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-
-  const openSurveyMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const closeSurveyMenu = () => {
-    setAnchorEl(null);
-  };
+  const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
+  const [publishSurveyDialogOpen, setPublishSurveyDialogOpen] = useState<boolean>(false);
 
   if (!surveyWithDetails) {
     return <CircularProgress className="pageProgress" size={40} />;
@@ -223,7 +215,7 @@ const SurveyHeader = () => {
                     color="primary"
                     startIcon={<Icon path={mdiCogOutline} size={1} />}
                     endIcon={<Icon path={mdiChevronDown} size={1} />}
-                    onClick={openSurveyMenu}
+                    onClick={(event: React.MouseEvent<HTMLButtonElement>) => setMenuAnchorEl(event.currentTarget)}
                     style={{ marginLeft: '0.5rem' }}>
                     Settings
                   </Button>
@@ -241,10 +233,10 @@ const SurveyHeader = () => {
                     horizontal: 'right'
                   }}
                   keepMounted
-                  anchorEl={anchorEl}
+                  anchorEl={menuAnchorEl}
                   getContentAnchorEl={null}
-                  open={Boolean(anchorEl)}
-                  onClose={closeSurveyMenu}>
+                  open={Boolean(menuAnchorEl)}
+                  onClose={() => setMenuAnchorEl(null)}>
                   <MenuItem onClick={() => history.push('edit')}>
                     <ListItemIcon>
                       <Icon path={mdiPencilOutline} size={1} />
@@ -268,6 +260,8 @@ const SurveyHeader = () => {
           </Box>
         </Container>
       </Paper>
+
+      <PublishSurveyDialog open={publishSurveyDialogOpen} onClose={() => setPublishSurveyDialogOpen(false)}/>
     </>
   );
 };
