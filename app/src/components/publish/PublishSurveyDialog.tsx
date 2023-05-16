@@ -78,8 +78,7 @@ const PublishSurveyDialog = (props: IPublishSurveyDialogProps) => {
   }
 
   if (
-    summaryDataLoader.data &&
-    summaryDataLoader.data.surveySummaryData &&
+    summaryDataLoader.data?.surveySummaryData &&
     !summaryDataLoader.data.surveySummarySupplementaryData?.survey_summary_submission_id &&
     summaryDataLoader.data.surveySummaryData.messages.length === 0
   ) {
