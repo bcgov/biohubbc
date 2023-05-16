@@ -161,7 +161,7 @@ const ProjectFundingForm: React.FC<IProjectFundingFormProps> = (props) => {
 
                     return (
                       <Card
-                        key={`${index}-${fundingSource.id}-${fundingSource.first_nations_id}-${fundingSource.agency_id}`}
+                        key={`${fundingSource.id}-${fundingSource.first_nations_id}-${fundingSource.agency_id}`}
                         variant="outlined"
                         className={classes.fundingSourceItem}>
                         <CardHeader
