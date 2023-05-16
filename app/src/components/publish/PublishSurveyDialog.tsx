@@ -71,8 +71,7 @@ const PublishSurveyDialog = (props: IPublishSurveyDialogProps) => {
   const unsubmittedAttachments: IGetSurveyAttachment[] = artifactDataLoader.data?.attachmentsList.filter(excludesArtifactRevisionId) ?? [];
   
   if (
-    observationDataLoader.data &&
-    observationDataLoader.data.surveyObservationData &&
+    observationDataLoader.data?.surveyObservationData &&
     !observationDataLoader.data.surveyObservationSupplementaryData?.occurrence_submission_id &&
     observationDataLoader.data.surveyObservationData.status === SUBMISSION_STATUS_TYPE.TEMPLATE_TRANSFORMED
   ) {

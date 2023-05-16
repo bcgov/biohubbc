@@ -7,6 +7,8 @@ import React from 'react';
 import { Router } from 'react-router';
 import { getMockAuthState } from 'test-helpers/auth-helpers';
 import AccessRequestPage from './AccessRequestPage';
+import appTheme from 'themes/appTheme';
+import { ThemeProvider } from '@material-ui/styles';
 
 const history = createMemoryHistory();
 
@@ -46,13 +48,15 @@ const renderContainer = () => {
   });
 
   return render(
-    <AuthStateContext.Provider value={authState as any}>
-      <DialogContextProvider>
-        <Router history={history}>
-          <AccessRequestPage />
-        </Router>
-      </DialogContextProvider>
-    </AuthStateContext.Provider>
+    <ThemeProvider theme={appTheme}>
+      <AuthStateContext.Provider value={authState as any}>
+        <DialogContextProvider>
+          <Router history={history}>
+            <AccessRequestPage />
+          </Router>
+        </DialogContextProvider>
+      </AuthStateContext.Provider>
+    </ThemeProvider>
   );
 };
 
@@ -108,11 +112,13 @@ describe('AccessRequestPage', () => {
       });
 
       const { getByText } = render(
-        <AuthStateContext.Provider value={authState as any}>
-          <Router history={history}>
-            <AccessRequestPage />
-          </Router>
-        </AuthStateContext.Provider>
+        <ThemeProvider theme={appTheme}>
+          <AuthStateContext.Provider value={authState as any}>
+            <Router history={history}>
+              <AccessRequestPage />
+            </Router>
+          </AuthStateContext.Provider>
+        </ThemeProvider>
       );
 
       fireEvent.click(getByText('Log out'));
@@ -177,11 +183,13 @@ describe('AccessRequestPage', () => {
     });
 
     render(
-      <AuthStateContext.Provider value={authState as any}>
-        <Router history={history}>
-          <AccessRequestPage />
-        </Router>
-      </AuthStateContext.Provider>
+      <ThemeProvider theme={appTheme}>
+        <AuthStateContext.Provider value={authState as any}>
+          <Router history={history}>
+            <AccessRequestPage />
+          </Router>
+        </AuthStateContext.Provider>
+      </ThemeProvider>
     );
 
     await waitFor(() => {
