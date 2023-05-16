@@ -65,7 +65,7 @@ const PublishProjectDialog = (props: IPublishProjectDialogProps) => {
         onClose={props.onClose}
         onSubmit={async (values: IProjectSubmitForm) => {
           if (projectDataLoader.data) {
-            biohubApi.publish.publishProject(projectContext.projectId, values).then(() => {
+            return biohubApi.publish.publishProject(projectContext.projectId, values).then(() => {
               projectContext.projectDataLoader.refresh(projectContext.projectId);
               if (values.attachments.length > 0 || values.reports.length > 0) {
                 projectContext.artifactDataLoader.refresh(projectContext.projectId);

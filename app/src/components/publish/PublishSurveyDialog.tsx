@@ -108,7 +108,7 @@ const PublishSurveyDialog = (props: IPublishSurveyDialogProps) => {
         onClose={props.onClose}
         onSubmit={async (values: ISurveySubmitForm) => {
           if (surveyDataLoader.data) {
-            biohubApi.publish.publishSurvey(
+            return biohubApi.publish.publishSurvey(
               projectId,
               surveyDataLoader.data.surveyData.survey_details.id,
               values
