@@ -77,7 +77,7 @@ const SurveysList: React.FC = () => {
                       {row.surveyData.survey_details.survey_name}
                     </Link>
                   </TableCell>
-                  <TableCell>{row.surveyData.species.focal_species_names.join(', ')}</TableCell>
+                  <TableCell>{row.surveyData.species.focal_species_names.join('; ')}</TableCell>
                   <TableCell>
                     {row.surveyData.purpose_and_methodology.intended_outcome_id &&
                       codes?.intended_outcomes?.find(
