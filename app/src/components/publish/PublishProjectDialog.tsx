@@ -1,18 +1,15 @@
 import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import SubmitBiohubDialog from 'components/dialog/SubmitBiohubDialog';
+import { SubmitProjectBiohubI18N } from 'constants/i18n';
 import { ProjectContext } from 'contexts/projectContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import {
-  IGetProjectAttachment,
-  IGetProjectReportAttachment
-} from 'interfaces/useProjectApi.interface';
+import { IGetProjectAttachment, IGetProjectReportAttachment } from 'interfaces/useProjectApi.interface';
+import { IProjectSubmitForm } from 'interfaces/usePublishApi.interface';
 import React, { useContext } from 'react';
 import yup from 'utils/YupSchema';
 import SelectAllButton from './SelectAllButton';
 import SubmitSection from './SubmitSection';
-import { SubmitProjectBiohubI18N } from 'constants/i18n';
-import { IProjectSubmitForm } from 'interfaces/usePublishApi.interface';
 
 export interface ISubmitProject {
   unSubmittedReports: IGetProjectReportAttachment[];
@@ -20,8 +17,8 @@ export interface ISubmitProject {
 }
 
 interface IPublishProjectDialogProps {
-  open: boolean
-  onClose: () => void
+  open: boolean;
+  onClose: () => void;
 }
 
 const projectSubmitFormInitialValues: IProjectSubmitForm = {
@@ -35,8 +32,8 @@ const projectSubmitFormYupSchema = yup.object().shape({
 });
 
 const excludesArtifactRevisionId = (item: IGetProjectReportAttachment | IGetProjectAttachment) => {
-  return !item.supplementaryAttachmentData?.artifact_revision_id
-}
+  return !item.supplementaryAttachmentData?.artifact_revision_id;
+};
 
 /**
  * Project publish button.
@@ -124,4 +121,3 @@ const PublishProjectDialog = (props: IPublishProjectDialogProps) => {
 };
 
 export default PublishProjectDialog;
-

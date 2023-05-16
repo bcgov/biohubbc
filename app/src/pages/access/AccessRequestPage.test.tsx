@@ -1,3 +1,4 @@
+import { ThemeProvider } from '@material-ui/styles';
 import { cleanup, fireEvent, render, waitFor, within } from '@testing-library/react';
 import { AuthStateContext } from 'contexts/authStateContext';
 import { DialogContextProvider } from 'contexts/dialogContext';
@@ -6,9 +7,8 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import React from 'react';
 import { Router } from 'react-router';
 import { getMockAuthState } from 'test-helpers/auth-helpers';
-import AccessRequestPage from './AccessRequestPage';
 import appTheme from 'themes/appTheme';
-import { ThemeProvider } from '@material-ui/styles';
+import AccessRequestPage from './AccessRequestPage';
 
 const history = createMemoryHistory();
 

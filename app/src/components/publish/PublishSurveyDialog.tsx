@@ -8,14 +8,11 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { ISurveyObservationData } from 'interfaces/useObservationApi.interface';
 import { ISurveySubmitForm } from 'interfaces/usePublishApi.interface';
 import { ISurveySummaryData } from 'interfaces/useSummaryResultsApi.interface';
-import {
-  IGetSurveyAttachment,
-  IGetSurveyReportAttachment
-} from 'interfaces/useSurveyApi.interface';
+import { IGetSurveyAttachment, IGetSurveyReportAttachment } from 'interfaces/useSurveyApi.interface';
 import React, { useContext } from 'react';
 import yup from 'utils/YupSchema';
-import SubmitSection from './SubmitSection';
 import SelectAllButton from './SelectAllButton';
+import SubmitSection from './SubmitSection';
 
 export interface ISubmitSurvey {
   unSubmittedObservation: ISurveyObservationData[];
@@ -25,8 +22,8 @@ export interface ISubmitSurvey {
 }
 
 interface IPublishSurveyDialogProps {
-  open: boolean
-  onClose: () => void
+  open: boolean;
+  onClose: () => void;
 }
 
 const surveySubmitFormInitialValues: ISurveySubmitForm = {
@@ -44,8 +41,8 @@ const surveySubmitFormYupSchema = yup.object().shape({
 });
 
 const excludesArtifactRevisionId = (item: IGetSurveyReportAttachment | IGetSurveyAttachment) => {
-  return !item.supplementaryAttachmentData?.artifact_revision_id
-}
+  return !item.supplementaryAttachmentData?.artifact_revision_id;
+};
 
 /**
  * Survey Publish button.
@@ -67,9 +64,11 @@ const PublishSurveyDialog = (props: IPublishSurveyDialogProps) => {
 
   const unsubmittedObservations: ISurveyObservationData[] = [];
   const unsubmittedSummaryResults: ISurveySummaryData[] = [];
-  const unsubmittedReports: IGetSurveyReportAttachment[] = artifactDataLoader.data?.reportAttachmentsList.filter(excludesArtifactRevisionId) ?? [];
-  const unsubmittedAttachments: IGetSurveyAttachment[] = artifactDataLoader.data?.attachmentsList.filter(excludesArtifactRevisionId) ?? [];
-  
+  const unsubmittedReports: IGetSurveyReportAttachment[] =
+    artifactDataLoader.data?.reportAttachmentsList.filter(excludesArtifactRevisionId) ?? [];
+  const unsubmittedAttachments: IGetSurveyAttachment[] =
+    artifactDataLoader.data?.attachmentsList.filter(excludesArtifactRevisionId) ?? [];
+
   if (
     observationDataLoader.data?.surveyObservationData &&
     !observationDataLoader.data.surveyObservationSupplementaryData?.occurrence_submission_id &&
@@ -77,7 +76,7 @@ const PublishSurveyDialog = (props: IPublishSurveyDialogProps) => {
   ) {
     unsubmittedObservations.push(observationDataLoader.data.surveyObservationData);
   }
-  
+
   if (
     summaryDataLoader.data &&
     summaryDataLoader.data.surveySummaryData &&
@@ -89,9 +88,9 @@ const PublishSurveyDialog = (props: IPublishSurveyDialogProps) => {
 
   const hasSubmissionData = Boolean(
     unsubmittedObservations.length > 0 ||
-    unsubmittedSummaryResults.length > 0 ||
-    unsubmittedReports.length > 0 ||
-    unsubmittedAttachments.length > 0
+      unsubmittedSummaryResults.length > 0 ||
+      unsubmittedReports.length > 0 ||
+      unsubmittedAttachments.length > 0
   );
 
   return (
@@ -107,33 +106,30 @@ const PublishSurveyDialog = (props: IPublishSurveyDialogProps) => {
         onClose={props.onClose}
         onSubmit={async (values: ISurveySubmitForm) => {
           if (surveyDataLoader.data) {
-            return biohubApi.publish.publishSurvey(
-              projectId,
-              surveyDataLoader.data.surveyData.survey_details.id,
-              values
-            ).then(() => {
-              surveyDataLoader.refresh(projectId, surveyId);
-              if (values.observations.length > 0) {
-                surveyContext.observationDataLoader.refresh(projectId, surveyId);
-              }
-              if (values.summary.length > 0) {
-                surveyContext.summaryDataLoader.refresh(projectId, surveyId);
-              }
-              if (values.attachments.length > 0 || values.reports.length > 0) {
-                surveyContext.artifactDataLoader.refresh(projectId, surveyId);
-              }
-            })
+            return biohubApi.publish
+              .publishSurvey(projectId, surveyDataLoader.data.surveyData.survey_details.id, values)
+              .then(() => {
+                surveyDataLoader.refresh(projectId, surveyId);
+                if (values.observations.length > 0) {
+                  surveyContext.observationDataLoader.refresh(projectId, surveyId);
+                }
+                if (values.summary.length > 0) {
+                  surveyContext.summaryDataLoader.refresh(projectId, surveyId);
+                }
+                if (values.attachments.length > 0 || values.reports.length > 0) {
+                  surveyContext.artifactDataLoader.refresh(projectId, surveyId);
+                }
+              });
           }
         }}
         formikProps={{
           initialValues: surveySubmitFormInitialValues,
           validationSchema: surveySubmitFormYupSchema
         }}>
-
         <Box mb={2}>
           <Typography variant="body1" color="textSecondary">
-            <strong>Please Note:</strong> Submitted data cannot be modified. You will need to contact an administrator if
-            you need to modify submitted information.
+            <strong>Please Note:</strong> Submitted data cannot be modified. You will need to contact an administrator
+            if you need to modify submitted information.
           </Typography>
         </Box>
 

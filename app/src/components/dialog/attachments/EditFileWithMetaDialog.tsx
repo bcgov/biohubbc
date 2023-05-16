@@ -6,6 +6,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import useTheme from '@material-ui/core/styles/useTheme';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
+import LoadingButton from 'components/buttons/LoadingButton';
 import { Formik, FormikProps } from 'formik';
 import { IGetReportDetails } from 'interfaces/useProjectApi.interface';
 import React, { useRef, useState } from 'react';
@@ -14,7 +15,6 @@ import EditReportMetaForm, {
   EditReportMetaFormYupSchema,
   IEditReportMetaForm
 } from '../../attachments/EditReportMetaForm';
-import LoadingButton from 'components/buttons/LoadingButton';
 
 /**
  *

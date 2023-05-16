@@ -5,13 +5,13 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import useTheme from '@material-ui/core/styles/useTheme';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
+import LoadingButton from 'components/buttons/LoadingButton';
+import { SubmitBiohubI18N } from 'constants/i18n';
 import { Formik, FormikProps, FormikValues } from 'formik';
 import React, { PropsWithChildren, useRef, useState } from 'react';
 import yup from 'utils/YupSchema';
-import { ErrorDialog, IErrorDialogProps } from './ErrorDialog';
-import { SubmitBiohubI18N } from 'constants/i18n';
-import LoadingButton from 'components/buttons/LoadingButton';
 import ComponentDialog from './ComponentDialog';
+import { ErrorDialog, IErrorDialogProps } from './ErrorDialog';
 
 /**
  *
@@ -107,7 +107,8 @@ const SubmitBiohubDialog = <V extends FormikValues>(props: PropsWithChildren<ISu
     }
 
     setIsSubmitting(true);
-    props.onSubmit(values)
+    props
+      .onSubmit(values)
       .then(() => {
         setShowSuccessDialog(true);
       })
@@ -132,18 +133,14 @@ const SubmitBiohubDialog = <V extends FormikValues>(props: PropsWithChildren<ISu
         dialogTitle={props.submissionSuccessDialogTitle}
         open={showSuccessDialog}
         onClose={() => setShowSuccessDialog(false)}>
-        <DialogContentText id="alert-dialog-description">
-          {props.submissionSuccessDialogText}
-        </DialogContentText>
+        <DialogContentText id="alert-dialog-description">{props.submissionSuccessDialogText}</DialogContentText>
       </ComponentDialog>
 
       <ComponentDialog
         dialogTitle={props.noSubmissionDataDialogTitle}
         open={showNoInformationDialog}
         onClose={() => setShowNoInformationDialog(false)}>
-        <DialogContentText id="alert-dialog-description">
-          {props.noSubmissionDataDialogText}
-        </DialogContentText>
+        <DialogContentText id="alert-dialog-description">{props.noSubmissionDataDialogText}</DialogContentText>
       </ComponentDialog>
 
       <Dialog

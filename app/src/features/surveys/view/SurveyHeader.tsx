@@ -261,7 +261,7 @@ const SurveyHeader = () => {
         </Container>
       </Paper>
 
-      <PublishSurveyDialog open={publishSurveyDialogOpen} onClose={() => setPublishSurveyDialogOpen(false)}/>
+      <PublishSurveyDialog open={publishSurveyDialogOpen} onClose={() => setPublishSurveyDialogOpen(false)} />
     </>
   );
 };

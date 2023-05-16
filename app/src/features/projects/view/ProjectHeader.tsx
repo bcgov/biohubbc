@@ -108,7 +108,7 @@ const ProjectHeader = () => {
 
   const projectContext = useContext(ProjectContext);
 
-  const [publishProjectDialogOpen, setPublishProjectDialogOpen] = useState<boolean>(false)
+  const [publishProjectDialogOpen, setPublishProjectDialogOpen] = useState<boolean>(false);
 
   // Project data must be loaded by a parent before this component is rendered
   assert(projectContext.projectDataLoader.data);
@@ -282,7 +282,7 @@ const ProjectHeader = () => {
         </Container>
       </Paper>
 
-      <PublishProjectDialog open={publishProjectDialogOpen} onClose={() => setPublishProjectDialogOpen(false)}/>
+      <PublishProjectDialog open={publishProjectDialogOpen} onClose={() => setPublishProjectDialogOpen(false)} />
     </>
   );
 };

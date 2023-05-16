@@ -6,6 +6,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import useTheme from '@material-ui/core/styles/useTheme';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import FileUploadWithMeta from 'components/attachments/FileUploadWithMeta';
+import LoadingButton from 'components/buttons/LoadingButton';
 import { IFileHandler, IUploadHandler } from 'components/file-upload/FileUploadItem';
 import { AttachmentType } from 'constants/attachments';
 import { Formik, FormikProps } from 'formik';
@@ -15,7 +16,6 @@ import {
   ReportMetaFormInitialValues,
   ReportMetaFormYupSchema
 } from '../../attachments/ReportMetaForm';
-import LoadingButton from 'components/buttons/LoadingButton';
 
 /**
  *
@@ -121,7 +121,11 @@ const FileUploadWithMetaDialog: React.FC<IFileUploadWithMetaDialogProps> = (prop
             </DialogContent>
             <DialogActions>
               {props.attachmentType === AttachmentType.REPORT && (
-                <LoadingButton loading={isFinishing} onClick={formikProps.submitForm} color="primary" variant="contained">
+                <LoadingButton
+                  loading={isFinishing}
+                  onClick={formikProps.submitForm}
+                  color="primary"
+                  variant="contained">
                   <strong>Finish</strong>
                 </LoadingButton>
               )}

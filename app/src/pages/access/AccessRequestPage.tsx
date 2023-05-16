@@ -5,6 +5,7 @@ import Container from '@material-ui/core/Container';
 import Paper from '@material-ui/core/Paper';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
+import LoadingButton from 'components/buttons/LoadingButton';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { AccessRequestI18N } from 'constants/i18n';
 import { AuthStateContext } from 'contexts/authStateContext';
@@ -28,7 +29,6 @@ import BCeIDRequestForm, {
   BCeIDBusinessRequestFormYupSchema
 } from './BCeIDRequestForm';
 import IDIRRequestForm, { IDIRRequestFormInitialValues, IDIRRequestFormYupSchema } from './IDIRRequestForm';
-import LoadingButton from 'components/buttons/LoadingButton';
 
 const useStyles = makeStyles(() => ({
   actionButton: {
