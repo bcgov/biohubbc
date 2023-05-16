@@ -7,11 +7,12 @@ import useTheme from '@material-ui/core/styles/useTheme';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import LoadingButton from 'components/buttons/LoadingButton';
 import { SubmitBiohubI18N } from 'constants/i18n';
+import { DialogContext } from 'contexts/dialogContext';
 import { Formik, FormikProps, FormikValues } from 'formik';
-import React, { PropsWithChildren, useRef, useState } from 'react';
+import React, { PropsWithChildren, useContext, useRef, useState } from 'react';
 import yup from 'utils/YupSchema';
 import ComponentDialog from './ComponentDialog';
-import { ErrorDialog, IErrorDialogProps } from './ErrorDialog';
+import { IErrorDialogProps } from './ErrorDialog';
 
 /**
  *
@@ -74,26 +75,24 @@ const SubmitBiohubDialog = <V extends FormikValues>(props: PropsWithChildren<ISu
 
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
+  const dialogContext = useContext(DialogContext);
+
+  const defaultErrorDialogProps = {
+    onClose: () => {
+      dialogContext.setErrorDialog({ open: false });
+    },
+    onOk: () => {
+      dialogContext.setErrorDialog({ open: false });
+    }
+  };
 
   const [formikRef] = useState(useRef<FormikProps<any>>(null));
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
   const [showNoInformationDialog, setShowNoInformationDialog] = useState(false);
 
-  const [errorDialogProps, setErrorDialogProps] = useState<IErrorDialogProps>({
-    dialogTitle: SubmitBiohubI18N.noInformationDialogText,
-    dialogText: SubmitBiohubI18N.noInformationDialogText,
-    open: false,
-    onClose: () => {
-      setErrorDialogProps({ ...errorDialogProps, open: false });
-    },
-    onOk: () => {
-      setErrorDialogProps({ ...errorDialogProps, open: false });
-    }
-  });
-
   const showErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
-    setErrorDialogProps({ ...errorDialogProps, ...textDialogProps, open: true });
+    dialogContext.setErrorDialog({ ...defaultErrorDialogProps, ...textDialogProps, open: true });
   };
 
   const handleSubmit = (values: V) => {
@@ -127,8 +126,6 @@ const SubmitBiohubDialog = <V extends FormikValues>(props: PropsWithChildren<ISu
 
   return (
     <>
-      <ErrorDialog {...errorDialogProps} />
-
       <ComponentDialog
         dialogTitle={props.submissionSuccessDialogTitle}
         open={showSuccessDialog}
