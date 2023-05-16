@@ -19,8 +19,8 @@ describe('GCNotifyService', () => {
     const message = {
       subject: 'message.subject',
       header: 'message.header',
-      body1: 'message.body1',
-      body2: 'message.body2',
+      main_body1: 'message.main_body1',
+      main_body2: 'message.main_body2',
       footer: 'message.footer'
     };
 
@@ -71,8 +71,8 @@ describe('GCNotifyService', () => {
     const message = {
       subject: 'message.subject',
       header: 'message.header',
-      body1: 'message.body1',
-      body2: 'message.body2',
+      main_body1: 'message.main_body1',
+      main_body2: 'message.main_body2',
       footer: 'message.footer'
     };
 

@@ -10,11 +10,11 @@ import {
   useMediaQuery,
   useTheme
 } from '@material-ui/core';
+import { PublishStatus } from 'constants/attachments';
 import { Formik, FormikProps } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { IGetProjectAttachment } from 'interfaces/useProjectApi.interface';
-import { IGetSurveyAttachment } from 'interfaces/useSurveyApi.interface';
 import React, { useRef, useState } from 'react';
+import { useHistory } from 'react-router';
 import PublishDialogs from '../PublishDialogs';
 import AttachmentsFileCard from './AttachmentsFileCard';
 import RemoveOrResubmitForm, {
@@ -24,7 +24,9 @@ import RemoveOrResubmitForm, {
 } from './RemoveOrResubmitForm';
 
 export interface IRemoveOrResubmitDialog {
-  file: IGetProjectAttachment | IGetSurveyAttachment | null;
+  fileName: string;
+  status: PublishStatus;
+  size: number;
   open: boolean;
   setOpen: (isOpen: boolean) => void;
   onClose: () => void;
@@ -36,11 +38,13 @@ export interface IRemoveOrResubmitDialog {
  * @return {*}
  */
 const RemoveOrResubmitDialog: React.FC<IRemoveOrResubmitDialog> = (props) => {
-  const { file, open, onClose } = props;
+  const { fileName, status, size, open, onClose } = props;
 
   const theme = useTheme();
   const biohubApi = useBiohubApi();
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
+
+  const router = useHistory();
 
   const [finishResubmission, setFinishResubmission] = useState(false);
   const [resubmissionFailed, setResubmissionFailed] = useState(false);
@@ -50,30 +54,25 @@ const RemoveOrResubmitDialog: React.FC<IRemoveOrResubmitDialog> = (props) => {
   const handleSubmit = async (values: IRemoveOrResubmitForm) => {
     try {
       onClose();
-      if (file) {
-        await biohubApi.publish.resubmitAttachment(file, values);
-        setFinishResubmission(true);
-      }
+      await biohubApi.publish.resubmitAttachment(fileName, values, router.location.pathname);
+      setFinishResubmission(true);
     } catch (error) {
+      //TODO: finish error handler
       console.log(error);
       onClose();
       setResubmissionFailed(true);
     }
   };
 
-  if (!file) {
-    return <></>;
-  }
-
   return (
     <>
       <PublishDialogs
-        finishSubmissionTitle="Project documents submitted"
-        finishSubmissionMessage="Thank you for submitting your project data to Biohub."
+        finishSubmissionTitle="Request Submitted"
+        finishSubmissionMessage="Your request to remove or resubmit information has been submitted."
         finishSubmissionBody="A BioHub Administrator will contact you shortly."
         finishSubmission={finishResubmission}
         setFinishSubmission={setFinishResubmission}
-        noSubmissionTitle="No documents to submit"
+        noSubmissionTitle="An Error Occurred"
         noSubmissionMessage="An error occurred while attempting to submit your request."
         noSubmissionBody="If you continue to have difficulties submitting your request, please contact BioHub Support at biohub@gov.bc.ca."
         noSubmissionData={resubmissionFailed}
@@ -101,7 +100,7 @@ const RemoveOrResubmitDialog: React.FC<IRemoveOrResubmitDialog> = (props) => {
               <strong>File Details</strong>
             </Typography>
             <Box py={2}>
-              <AttachmentsFileCard attachment={file} />
+              <AttachmentsFileCard fileName={fileName} status={status} size={size} />
             </Box>
           </Box>
 

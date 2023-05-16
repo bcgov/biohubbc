@@ -18,9 +18,10 @@ import {
 import Icon from '@mdi/react';
 import clsx from 'clsx';
 import { SubmitStatusChip } from 'components/chips/SubmitStatusChip';
-import { SystemRoleGuard } from 'components/security/Guards';
+import RemoveOrResubmitDialog from 'components/publish/components/RemoveOrResubmitDialog';
+import { ProjectRoleGuard, SystemRoleGuard } from 'components/security/Guards';
 import { PublishStatus } from 'constants/attachments';
-import { SYSTEM_ROLE } from 'constants/roles';
+import { PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
 import { IGetSummaryResultsResponse } from 'interfaces/useSummaryResultsApi.interface';
 import React from 'react';
 
@@ -71,6 +72,11 @@ const FileSummaryResults = (props: IFileResultsProps) => {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
+  const [openRemoveOrResubmitDialog, setOpenRemoveOrResubmitDialog] = React.useState(false);
+  const [RemoveOrResubmitDialogFile, setRemoveOrResubmitDialogFile] = React.useState<IGetSummaryResultsResponse | null>(
+    null
+  );
+
   const status =
     (fileData.surveySummarySupplementaryData?.event_timestamp && PublishStatus.SUBMITTED) || PublishStatus.UNSUBMITTED;
 
@@ -91,6 +97,18 @@ const FileSummaryResults = (props: IFileResultsProps) => {
 
   return (
     <>
+      <RemoveOrResubmitDialog
+        fileName={RemoveOrResubmitDialogFile?.surveySummaryData.fileName || ''}
+        size={0}
+        status={
+          (RemoveOrResubmitDialogFile?.surveySummarySupplementaryData && PublishStatus.SUBMITTED) ||
+          PublishStatus.UNSUBMITTED
+        }
+        open={openRemoveOrResubmitDialog}
+        setOpen={setOpenRemoveOrResubmitDialog}
+        onClose={() => setOpenRemoveOrResubmitDialog(false)}
+      />
+
       <Paper variant="outlined" className={clsx(classes.importFile, severity)}>
         <Box display="flex" alignItems="center" flex="1 1 auto" style={{ overflow: 'hidden' }}>
           <Box display="flex" alignItems="center" flex="1 1 auto" style={{ overflow: 'hidden' }}>
@@ -157,6 +175,26 @@ const FileSummaryResults = (props: IFileResultsProps) => {
                     Delete
                   </MenuItem>
                 </SystemRoleGuard>
+                <ProjectRoleGuard
+                  validProjectRoles={[PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR]}
+                  validSystemRoles={[
+                    SYSTEM_ROLE.SYSTEM_ADMIN,
+                    SYSTEM_ROLE.DATA_ADMINISTRATOR,
+                    SYSTEM_ROLE.PROJECT_CREATOR
+                  ]}>
+                  <MenuItem
+                    onClick={() => {
+                      setRemoveOrResubmitDialogFile(props.fileData);
+                      setOpenRemoveOrResubmitDialog(true);
+                      setAnchorEl(null);
+                    }}
+                    data-testid="attachment-action-menu-delete">
+                    <ListItemIcon>
+                      <Icon path={mdiTrashCanOutline} size={1} />
+                    </ListItemIcon>
+                    Remove or Resubmit
+                  </MenuItem>
+                </ProjectRoleGuard>
               </Menu>
             </Box>
           </Box>

@@ -6,9 +6,9 @@ import MenuItem from '@material-ui/core/MenuItem';
 import { mdiDotsVertical, mdiInformationOutline, mdiTrashCanOutline, mdiTrayArrowDown } from '@mdi/js';
 import Icon from '@mdi/react';
 import RemoveOrResubmitDialog from 'components/publish/components/RemoveOrResubmitDialog';
-import { SystemRoleGuard } from 'components/security/Guards';
-import { AttachmentType } from 'constants/attachments';
-import { SYSTEM_ROLE } from 'constants/roles';
+import { ProjectRoleGuard, SystemRoleGuard } from 'components/security/Guards';
+import { AttachmentType, PublishStatus } from 'constants/attachments';
+import { PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
 import { IGetProjectAttachment } from 'interfaces/useProjectApi.interface';
 import { IGetSurveyAttachment } from 'interfaces/useSurveyApi.interface';
 import React, { useState } from 'react';
@@ -16,7 +16,7 @@ import React, { useState } from 'react';
 interface IAttachmentsListItemMenuButtonProps<T extends IGetProjectAttachment | IGetSurveyAttachment> {
   attachment: T;
   handleDownloadFile: (attachment: T) => void;
-  // handleRemoveOrResubmitFile: (attachment: T) => void;
+  handleDeleteFile: (attachment: T) => void;
   handleViewDetails: (attachment: T) => void;
 }
 
@@ -24,6 +24,8 @@ const AttachmentsListItemMenuButton = <T extends IGetProjectAttachment | IGetSur
   props: IAttachmentsListItemMenuButtonProps<T>
 ) => {
   const [anchorEl, setAnchorEl] = useState(null);
+  const [openRemoveOrResubmitDialog, setOpenRemoveOrResubmitDialog] = useState(false);
+  const [RemoveOrResubmitDialogFile, setRemoveOrResubmitDialogFile] = useState<T | null>(null);
 
   const open = Boolean(anchorEl);
 
@@ -35,13 +37,15 @@ const AttachmentsListItemMenuButton = <T extends IGetProjectAttachment | IGetSur
     setAnchorEl(null);
   };
 
-  const [openRemoveOrResubmitDialog, setOpenRemoveOrResubmitDialog] = useState(false);
-  const [RemoveOrResubmitDialogFile, setRemoveOrResubmitDialogFile] = useState<T | null>(null);
-
   return (
     <>
       <RemoveOrResubmitDialog
-        file={RemoveOrResubmitDialogFile}
+        fileName={RemoveOrResubmitDialogFile?.fileName || ''}
+        size={RemoveOrResubmitDialogFile?.size || 0}
+        status={
+          (RemoveOrResubmitDialogFile?.supplementaryAttachmentData && PublishStatus.SUBMITTED) ||
+          PublishStatus.UNSUBMITTED
+        }
         open={openRemoveOrResubmitDialog}
         setOpen={setOpenRemoveOrResubmitDialog}
         onClose={() => setOpenRemoveOrResubmitDialog(false)}
@@ -99,7 +103,25 @@ const AttachmentsListItemMenuButton = <T extends IGetProjectAttachment | IGetSur
             <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
               <MenuItem
                 onClick={() => {
-                  // props.handleRemoveOrResubmitFile(props.attachment);
+                  props.handleDeleteFile(props.attachment);
+                  setAnchorEl(null);
+                }}
+                data-testid="attachment-action-menu-delete">
+                <ListItemIcon>
+                  <Icon path={mdiTrashCanOutline} size={1} />
+                </ListItemIcon>
+                Delete
+              </MenuItem>
+            </SystemRoleGuard>
+            <ProjectRoleGuard
+              validProjectRoles={[PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR]}
+              validSystemRoles={[
+                SYSTEM_ROLE.SYSTEM_ADMIN,
+                SYSTEM_ROLE.DATA_ADMINISTRATOR,
+                SYSTEM_ROLE.PROJECT_CREATOR
+              ]}>
+              <MenuItem
+                onClick={() => {
                   setRemoveOrResubmitDialogFile(props.attachment);
                   setOpenRemoveOrResubmitDialog(true);
                   setAnchorEl(null);
@@ -110,7 +132,7 @@ const AttachmentsListItemMenuButton = <T extends IGetProjectAttachment | IGetSur
                 </ListItemIcon>
                 Remove or Resubmit
               </MenuItem>
-            </SystemRoleGuard>
+            </ProjectRoleGuard>
           </Menu>
         </Box>
       </Box>

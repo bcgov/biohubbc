@@ -3,6 +3,7 @@ import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../../constants/roles';
 import { getDBConnection } from '../../../database/db';
 import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
+import { GCNotifyService, IgcNotifyRequestRemovalMessage } from '../../../services/gcnotify-service';
 import { getLogger } from '../../../utils/logger';
 
 const defaultLog = getLogger('/api/publish/attachment/resubmit');
@@ -35,32 +36,10 @@ POST.apiDoc = {
       'application/json': {
         schema: {
           type: 'object',
-          required: ['file', 'formValues'],
+          required: ['fileName', 'formValues', 'path'],
           properties: {
-            file: {
-              required: ['id', 'fileName', 'fileType', 'size', 'lastModified', 'supplementaryAttachmentData'],
-              properties: {
-                id: {
-                  type: 'integer'
-                },
-                fileName: {
-                  type: 'string'
-                },
-                fileType: {
-                  type: 'string'
-                },
-                size: {
-                  type: 'integer'
-                },
-                lastModified: {
-                  type: 'string'
-                },
-                supplementaryAttachmentData: {
-                  type: 'object',
-                  nullable: true,
-                  properties: {}
-                }
-              }
+            fileName: {
+              type: 'string'
             },
             formValues: {
               required: ['full_name', 'email_address', 'phone_number', 'description'],
@@ -78,6 +57,9 @@ POST.apiDoc = {
                   type: 'string'
                 }
               }
+            },
+            path: {
+              type: 'string'
             }
           }
         }
@@ -127,11 +109,43 @@ export function resubmitAttachment(): RequestHandler {
   return async (req, res) => {
     const connection = getDBConnection(req['keycloak_token']);
 
-    const attachmentData = req.body;
-    console.log('attachmentData', attachmentData);
+    const resubmitData = req.body;
+    const url = `${process.env.APP_HOST}/login?redirect=${encodeURIComponent(resubmitData.path)}`;
+    const hrefUrl = `[click here.](${url})`;
+
+    const message: IgcNotifyRequestRemovalMessage = {
+      subject: '',
+      header: '',
+      date: new Date().toLocaleString(),
+      file_name: resubmitData.fileName,
+      link: hrefUrl,
+      description: resubmitData.formValues.description,
+      full_name: resubmitData.formValues.full_name,
+      email: resubmitData.formValues.email_address,
+      phone: resubmitData.formValues.phone_number
+    };
+
+    const submitterMessage: IgcNotifyRequestRemovalMessage = {
+      ...message,
+      subject: 'Species Inventory Management System - Your Request to Remove or Resubmit Has Been Sent',
+      header: `Your request to remove or resubmit data has been sent.
+
+      A BioHub Administrator should be in contact with you shortly to discuss your request.`
+    };
+
+    const adminEmail = process.env.GCNOTIFY_ADMIN_EMAIL || '';
+    const adminMessage: IgcNotifyRequestRemovalMessage = {
+      ...message,
+      subject: 'Species Inventory Management System -  Request to Remove or Resubmit',
+      header: ''
+    };
 
     try {
       await connection.open();
+
+      const gcNotifyService = new GCNotifyService();
+      await gcNotifyService.requestRemovalEmailNotification(resubmitData.formValues.email_address, submitterMessage);
+      await gcNotifyService.requestRemovalEmailNotification(adminEmail, adminMessage);
 
       await connection.commit();
 

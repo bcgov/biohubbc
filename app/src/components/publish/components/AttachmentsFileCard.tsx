@@ -3,8 +3,6 @@ import { makeStyles, Theme } from '@material-ui/core/styles';
 import { mdiFileOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import { PublishStatus } from 'constants/attachments';
-import { IGetProjectAttachment } from 'interfaces/useProjectApi.interface';
-import { IGetSurveyAttachment } from 'interfaces/useSurveyApi.interface';
 import React from 'react';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -54,18 +52,14 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }));
 
-export interface IAttachmentsFileCardProps<T extends IGetProjectAttachment | IGetSurveyAttachment> {
-  attachment: T;
+export interface IAttachmentsFileCardProps {
+  fileName: string;
+  status: PublishStatus;
+  size: number;
 }
 
-const AttachmentsFileCard = <T extends IGetProjectAttachment | IGetSurveyAttachment>(
-  props: IAttachmentsFileCardProps<T>
-) => {
+const AttachmentsFileCard = (props: IAttachmentsFileCardProps) => {
   const classes = useStyles();
-  const { attachment } = props;
-  console.log('attachment', attachment);
-
-  const status = (props.attachment.supplementaryAttachmentData && PublishStatus.SUBMITTED) || PublishStatus.UNSUBMITTED;
 
   return (
     <Paper variant="outlined" className={classes.importFile}>
@@ -75,19 +69,19 @@ const AttachmentsFileCard = <T extends IGetProjectAttachment | IGetSurveyAttachm
             <Icon path={mdiFileOutline} size={1} />
           </Box>
           <Box mr={2} flex="1 1 auto" style={{ overflow: 'hidden' }}>
-            <strong>{props.attachment.fileName}</strong>
+            <strong>{props.fileName}</strong>
             <Typography data-testid="observations-nodata" variant="body2" color="textSecondary">
-              {props.attachment.size} KB
+              {props.size} KB
             </Typography>
           </Box>
         </Box>
 
         <Box flex="0 0 auto" display="flex" alignItems="center">
           <Chip
-            title={status === PublishStatus.SUBMITTED ? 'SUBMITTED' : 'UNSUBMITTED'}
+            title={props.status === PublishStatus.SUBMITTED ? 'SUBMITTED' : 'UNSUBMITTED'}
             variant="outlined"
             className={classes.chip}
-            label={status === PublishStatus.SUBMITTED ? 'SUBMITTED: YYYY-MM-DD' : 'UNSUBMITTED'}
+            label={props.status === PublishStatus.SUBMITTED ? 'SUBMITTED: YYYY-MM-DD' : 'UNSUBMITTED'}
           />
         </Box>
       </Box>
