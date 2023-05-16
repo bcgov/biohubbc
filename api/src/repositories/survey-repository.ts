@@ -325,10 +325,7 @@ export class SurveyRepository extends BaseRepository {
     const response = await this.connection.sql(sqlStatement);
 
     const result = response?.rows?.[0];
-    console.log('____');
-    console.log('____');
-    console.log('____');
-    console.log(result);
+
     if (!result) {
       return null;
     }
