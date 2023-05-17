@@ -190,11 +190,13 @@ exports[`AccessRequestPage renders correctly 1`] = `
                   />
                 </button>
               </div>
-              <button
+              <a
+                aria-disabled="false"
                 class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-actionButton-1 MuiButton-outlinedPrimary"
                 data-testid="logout-button"
+                href="/logout"
+                role="button"
                 tabindex="0"
-                type="button"
               >
                 <span
                   class="MuiButton-label"
@@ -204,7 +206,7 @@ exports[`AccessRequestPage renders correctly 1`] = `
                 <span
                   class="MuiTouchRipple-root"
                 />
-              </button>
+              </a>
             </div>
           </form>
         </div>
