@@ -1,12 +1,12 @@
 import { cleanup, fireEvent, render, waitFor } from '@testing-library/react';
-import { SYSTEM_ROLE } from 'constants/roles';
-import { AuthStateContext, IAuthState } from 'contexts/authStateContext';
+import { AuthStateContext } from 'contexts/authStateContext';
 import { CodesContext, ICodesContext } from 'contexts/codesContext';
 import { createMemoryHistory } from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { DataLoader } from 'hooks/useDataLoader';
 import React from 'react';
 import { MemoryRouter, Router } from 'react-router-dom';
+import { getMockAuthState, SystemAdminAuthState } from 'test-helpers/auth-helpers';
 import ProjectsListPage from './ProjectsListPage';
 
 const history = createMemoryHistory();
@@ -42,24 +42,7 @@ describe('ProjectsListPage', () => {
     mockBiohubApi().project.getProjectsList.mockResolvedValue([]);
     mockBiohubApi().draft.getDraftsList.mockResolvedValue([]);
 
-    const authState = ({
-      keycloakWrapper: {
-        hasLoadedAllUserInfo: true,
-        systemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN],
-        hasAccessRequest: false,
-        hasSystemRole: () => true,
-
-        keycloak: {},
-        getUserIdentifier: jest.fn(),
-        getIdentitySource: jest.fn(),
-        username: 'testusername',
-        displayName: 'testdisplayname',
-        email: 'test@email.com',
-        firstName: 'testfirst',
-        lastName: 'testlast',
-        refresh: () => {}
-      }
-    } as unknown) as IAuthState;
+    const authState = getMockAuthState({ base: SystemAdminAuthState });
 
     const mockCodesContext: ICodesContext = ({
       codesDataLoader: ({
@@ -149,24 +132,7 @@ describe('ProjectsListPage', () => {
   test('navigating to the create project page works', async () => {
     mockBiohubApi().project.getProjectsList.mockResolvedValue([]);
 
-    const authState = ({
-      keycloakWrapper: {
-        hasLoadedAllUserInfo: true,
-        systemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN],
-        hasAccessRequest: false,
-        hasSystemRole: () => true,
-
-        keycloak: {},
-        getUserIdentifier: jest.fn(),
-        getIdentitySource: jest.fn(),
-        username: 'testusername',
-        displayName: 'testdisplayname',
-        email: 'test@email.com',
-        firstName: 'testfirst',
-        lastName: 'testlast',
-        refresh: () => {}
-      }
-    } as unknown) as IAuthState;
+    const authState = getMockAuthState({ base: SystemAdminAuthState });
 
     const mockCodesContext: ICodesContext = ({
       codesDataLoader: ({

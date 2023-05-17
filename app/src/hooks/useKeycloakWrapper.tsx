@@ -48,10 +48,10 @@ export interface IKeycloakWrapper {
   /**
    * Original raw keycloak object.
    *
-   * @type {(Keycloak | undefined)}
+   * @type {(Keycloak)}
    * @memberof IKeycloakWrapper
    */
-  keycloak: Keycloak | undefined;
+  keycloak: Keycloak;
   /**
    * Returns `true` if the user's information has finished being loaded, false otherwise.
    *
@@ -117,8 +117,6 @@ export interface IKeycloakWrapper {
   /**
    * Force this keycloak wrapper to refresh its data.
    *
-   * Note: currently this only refreshes the `hasAccessRequest` property.
-   *
    * @memberof IKeycloakWrapper
    */
   refresh: () => void;
@@ -144,7 +142,7 @@ function useKeycloakWrapper(): IKeycloakWrapper {
 
   const keycloakUserDataLoader = useDataLoader(async () => {
     return (
-      (keycloak &&
+      (keycloak.token &&
         ((keycloak.loadUserInfo() as unknown) as IIDIRUserInfo | IBCEIDBasicUserInfo | IBCEIDBusinessUserInfo)) ||
       undefined
     );
@@ -159,7 +157,7 @@ function useKeycloakWrapper(): IKeycloakWrapper {
     keycloakUserDataLoader.load();
   }
 
-  if (keycloak?.authenticated) {
+  if (keycloak.authenticated) {
     // keycloak user is authenticated, load system user info
     userDataLoader.load();
 

@@ -1,111 +1,7 @@
 import winston from 'winston';
-import { ApiError } from '../errors/api-error';
-import { HTTPError } from '../errors/http-error';
 
 /**
- * Logger input.
- *
- * @export
- * @interface ILoggerMessage
- * @extends {winston.Logform.TransformableInfo}
- */
-export interface ILoggerMessage extends winston.Logform.TransformableInfo {
-  timestamp?: string; // Optionally overwrite the default timestamp
-  label?: string; // Add a label to this message (generally the name of the parent function)
-  error?: Error; // An optional error to display
-}
-
-/**
- * Checks if the value provided is an object.
- *
- * @param {*} obj
- * @returns {boolean} True if the value is an object, false otherwise.
- */
-export const isObject = (item: any): boolean => {
-  return !!(item && typeof item === 'object');
-};
-
-/**
- * Checks if the value provided is an object with enumerable keys (ignores symbols).
- *
- * @param {*} obj
- * @returns {boolean} True if the value is an object with enumerable keys, false otherwise.
- */
-export const isObjectWithkeys = (item: any): boolean => {
-  return isObject(item) && !!Object.keys(item).length;
-};
-
-/**
- * Pretty stringify.
- *
- * @param {any} item
- * @return {*}  {string}
- */
-export const prettyPrint = (item: any): string => {
-  return JSON.stringify(item, undefined, 2);
-};
-
-/**
- * Pretty stringify an item of unknown type.
- *
- * @param {*} item
- * @return {*}  {string}
- */
-export const prettyPrintUnknown = (item: any): string => {
-  if (!item) {
-    return '';
-  }
-
-  if (item instanceof HTTPError) {
-    return `${item.status} ${item.stack}` + ((item.errors?.length && `\n${prettyPrintUnknown(item.errors)}`) || '');
-  }
-
-  if (item instanceof ApiError) {
-    return `${item.stack}` + ((item.errors?.length && `\n${prettyPrintUnknown(item.errors)}`) || '');
-  }
-
-  if (item instanceof Error) {
-    return `${item.stack}`;
-  }
-
-  if (isObjectWithkeys(item)) {
-    return prettyPrint(item);
-  }
-
-  if (isObject(item)) {
-    // is an object, but has no real properties, so print nothing
-    return '';
-  }
-
-  return item;
-};
-
-/**
- * Returns a printf function.
- *
- * @param {string} logLabel
- * @return {*}  {((args: ILoggerMessage) => string)}
- */
-export const getPrintfFunction = (logLabel: string): ((args: ILoggerMessage) => string) => {
-  return ({ timestamp, level, label, message, error, ...other }: ILoggerMessage) => {
-    const optionalLabel = (label && ` ${label} -`) || '';
-
-    const logMessage = (message && prettyPrintUnknown(message)) || '';
-
-    const optionalError = (error && prettyPrintUnknown(error)) || '';
-
-    const optionalOther = (other && prettyPrintUnknown(other)) || '';
-
-    return (
-      `[${timestamp}] (${level}) (${logLabel}):${optionalLabel} ${logMessage}` +
-      (optionalError && `\n${optionalError}`) +
-      (optionalOther && `\n${optionalOther}`)
-    );
-  };
-};
-
-/**
- * Get or create a logger for the given logLabel.
+ * Get or create a logger for the given `logLabel`.
  *
  * Centralized logger that uses Winston 3.x.
  *
@@ -159,10 +55,13 @@ export const getLogger = function (logLabel: string) {
       new winston.transports.Console({
         level: process.env.LOG_LEVEL || 'info',
         format: winston.format.combine(
+          winston.format((info) => {
+            const { timestamp, level, ...rest } = info;
+            // Return the properties of info in a specific order
+            return { timestamp, level, logger: logLabel, ...rest };
+          })(),
           winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
-          winston.format.errors({ stack: true }),
-          winston.format.colorize(),
-          winston.format.printf(getPrintfFunction(logLabel))
+          winston.format.prettyPrint({ colorize: true, depth: 5 })
         )
       })
     ]
@@ -179,6 +78,10 @@ export type WinstonLogLevel = typeof WinstonLogLevels[number];
  * @param {WinstonLogLevel} logLevel
  */
 export const setLogLevel = (logLevel: WinstonLogLevel) => {
+  // Update env var for future loggers
+  process.env.LOG_LEVEL = logLevel;
+
+  // Update existing loggers
   winston.loggers.loggers.forEach((logger) => {
     logger.transports[0].level = logLevel;
   });

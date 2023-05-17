@@ -30,12 +30,12 @@ const AccessDenied = () => {
           {!userHasARole && (
             <Button
               onClick={() => {
-                if (keycloakWrapper?.keycloak?.authenticated) {
+                if (keycloakWrapper?.keycloak.authenticated) {
                   history.push('/access-request');
                 } else {
                   // setting page to return to after login
                   history.push('/access-request');
-                  keycloakWrapper?.keycloak?.login();
+                  keycloakWrapper?.keycloak.login();
                 }
               }}
               type="submit"

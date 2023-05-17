@@ -91,7 +91,7 @@ const dbSetupDeploy = async (settings) => {
 
   // Deploy the db setup pod
   oc.applyRecommendedLabels(objects, isName, phase, `${changeId}`, instance);
-  oc.applyAndDeploy(objects, phases[phase].instance);
+  await oc.applyAndDeploy(objects, phases[phase].instance);
 
   // Wait to confirm if the db setup pod deployed successfully
   await waitForResourceToMeetCondition(() => getResourceByName(`pod/${name}`, oc), isResourceComplete, 30, 5, 0);
