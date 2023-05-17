@@ -1,4 +1,4 @@
-import { cleanup, cleanup, render, waitFor } from 'test-helpers/test-utils';
+import { cleanup, render, waitFor } from 'test-helpers/test-utils';
 import { CodesContext, ICodesContext } from 'contexts/codesContext';
 import { IProjectAuthStateContext, ProjectAuthStateContext } from 'contexts/projectAuthStateContext';
 import { IProjectContext, ProjectContext } from 'contexts/projectContext';
@@ -16,19 +16,18 @@ import SurveysListPage from './SurveysListPage';
 const history = createMemoryHistory();
 
 jest.mock('../../../hooks/useBioHubApi');
-const mockUseBiohubApi = {
+const mockBiohubApi = useBiohubApi as jest.Mock;
+
+const mockUseApi = {
   survey: {
     getSurveysList: jest.fn()
   }
 };
 
-const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBiohubApi>).mockReturnValue(
-  mockUseBiohubApi
-);
-
 describe('SurveysListPage', () => {
   beforeEach(() => {
-    mockBiohubApi().survey.getSurveysList.mockClear();
+    mockBiohubApi.mockImplementation(() => mockUseApi);
+    mockUseApi.survey.getSurveysList.mockClear();
   });
 
   afterEach(() => {
@@ -58,7 +57,7 @@ describe('SurveysListPage', () => {
       hasLoadedParticipantInfo: true
     };
 
-    mockBiohubApi().survey.getSurveysList.mockResolvedValue([]);
+    mockUseApi.survey.getSurveysList.mockResolvedValue([]);
 
     const { getByText } = render(
       <Router history={history}>

@@ -1,4 +1,4 @@
-import { cleanup, cleanup, render, waitFor } from 'test-helpers/test-utils';
+import { cleanup, render, waitFor } from 'test-helpers/test-utils';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import React from 'react';
 import { MapContainer } from 'react-leaflet';
@@ -6,20 +6,18 @@ import { SetMapBounds } from './components/Bounds';
 import WFSFeatureGroup from './WFSFeatureGroup';
 
 jest.mock('../../hooks/useBioHubApi');
-const mockUseBiohubApi = {
+const mockBiohubApi = useBiohubApi as jest.Mock;
+
+const mockUseApi = {
   external: {
     get: jest.fn()
   }
 };
 
-const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBiohubApi>).mockReturnValue(
-  mockUseBiohubApi
-);
-
 describe('WFSFeatureGroup', () => {
   beforeEach(() => {
-    // clear mocks before each test
-    mockBiohubApi().external.get.mockClear();
+    mockBiohubApi.mockImplementation(() => mockUseApi);
+    mockUseApi.external.get.mockClear();
 
     jest.spyOn(console, 'debug').mockImplementation(() => {});
   });
@@ -48,7 +46,7 @@ describe('WFSFeatureGroup', () => {
     }
   };
 
-  mockBiohubApi().external.get.mockResolvedValue({
+  mockUseApi.external.get.mockResolvedValue({
     features: [feature]
   });
 

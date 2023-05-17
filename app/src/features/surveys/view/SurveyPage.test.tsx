@@ -16,7 +16,9 @@ import SurveyPage from './SurveyPage';
 const history = createMemoryHistory({ initialEntries: ['/admin/projects/1/surveys/1'] });
 
 jest.mock('../../../hooks/useBioHubApi');
-const mockUseBiohubApi = {
+const mockBiohubApi = useBiohubApi as jest.Mock;
+
+const mockUseApi = {
   project: {
     getProjectForView: jest.fn<Promise<IGetProjectForViewResponse>, []>()
   },
@@ -34,18 +36,14 @@ const mockUseBiohubApi = {
   }
 };
 
-const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBiohubApi>).mockReturnValue(
-  mockUseBiohubApi
-);
-
 describe.skip('SurveyPage', () => {
   beforeEach(() => {
-    // clear mocks before each test
-    mockBiohubApi().project.getProjectForView.mockClear();
-    mockBiohubApi().survey.getSurveyForView.mockClear();
-    mockBiohubApi().observation.getObservationSubmission.mockClear();
-    mockBiohubApi().codes.getAllCodeSets.mockClear();
-    mockBiohubApi().external.post.mockClear();
+    mockBiohubApi.mockImplementation(() => mockUseApi);
+    mockUseApi.project.getProjectForView.mockClear();
+    mockUseApi.survey.getSurveyForView.mockClear();
+    mockUseApi.observation.getObservationSubmission.mockClear();
+    mockUseApi.codes.getAllCodeSets.mockClear();
+    mockUseApi.external.post.mockClear();
 
     jest.spyOn(console, 'debug').mockImplementation(() => {});
   });
@@ -67,8 +65,8 @@ describe.skip('SurveyPage', () => {
   };
 
   it('renders a spinner if no project is loaded', async () => {
-    mockBiohubApi().survey.getSurveyForView.mockResolvedValue(getSurveyForViewResponse);
-    mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+    mockUseApi.survey.getSurveyForView.mockResolvedValue(getSurveyForViewResponse);
+    mockUseApi.codes.getAllCodeSets.mockResolvedValue({
       activity: [{ id: 1, name: 'activity 1' }]
     } as any);
 
@@ -82,8 +80,8 @@ describe.skip('SurveyPage', () => {
   });
 
   it('renders a spinner if no codes is loaded', async () => {
-    mockBiohubApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
-    mockBiohubApi().survey.getSurveyForView.mockResolvedValue(getSurveyForViewResponse);
+    mockUseApi.project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
+    mockUseApi.survey.getSurveyForView.mockResolvedValue(getSurveyForViewResponse);
 
     const authState = getMockAuthState({ base: SystemAdminAuthState });
 
@@ -95,8 +93,8 @@ describe.skip('SurveyPage', () => {
   });
 
   it('renders a spinner if no survey is loaded', async () => {
-    mockBiohubApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
-    mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+    mockUseApi.project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
+    mockUseApi.codes.getAllCodeSets.mockResolvedValue({
       activity: [{ id: 1, name: 'activity 1' }]
     } as any);
 
@@ -110,9 +108,9 @@ describe.skip('SurveyPage', () => {
   });
 
   it('renders survey page when survey is loaded', async () => {
-    mockBiohubApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
-    mockBiohubApi().survey.getSurveyForView.mockResolvedValue(getSurveyForViewResponse);
-    mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+    mockUseApi.project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
+    mockUseApi.survey.getSurveyForView.mockResolvedValue(getSurveyForViewResponse);
+    mockUseApi.codes.getAllCodeSets.mockResolvedValue({
       activity: [{ id: 1, name: 'activity 1' }]
     } as any);
 
@@ -129,8 +127,8 @@ describe.skip('SurveyPage', () => {
   });
 
   it('renders correctly with no end date', async () => {
-    mockBiohubApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
-    mockBiohubApi().survey.getSurveyForView.mockResolvedValue({
+    mockUseApi.project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
+    mockUseApi.survey.getSurveyForView.mockResolvedValue({
       ...getSurveyForViewResponse,
       surveyData: {
         ...getSurveyForViewResponse.surveyData,
@@ -140,7 +138,7 @@ describe.skip('SurveyPage', () => {
         }
       }
     });
-    mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+    mockUseApi.codes.getAllCodeSets.mockResolvedValue({
       activity: [{ id: 1, name: 'activity 1' }]
     } as any);
 

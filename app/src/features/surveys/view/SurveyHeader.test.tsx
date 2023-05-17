@@ -16,7 +16,9 @@ import { getSurveyForViewResponse } from 'test-helpers/survey-helpers';
 const history = createMemoryHistory({ initialEntries: ['/admin/projects/1/surveys/1'] });
 
 jest.mock('../../../hooks/useBioHubApi');
-const mockUseBiohubApi = {
+const mockBiohubApi = useBiohubApi as jest.Mock;
+
+const mockUseApi = {
   survey: {
     publishSurvey: jest.fn(),
     deleteSurvey: jest.fn()

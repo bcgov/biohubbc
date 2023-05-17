@@ -14,7 +14,9 @@ jest.mock('../../components/map/MapContainer', () => jest.fn(() => <div />));
 
 // Mock useBioHubApi
 jest.mock('../../hooks/useBioHubApi');
-const mockUseBiohubApi = {
+const mockBiohubApi = useBiohubApi as jest.Mock;
+
+const mockUseApi = {
   search: {
     getSearchResults: jest.fn()
   },
@@ -23,11 +25,11 @@ const mockUseBiohubApi = {
   }
 };
 
-const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBiohubApi>).mockReturnValue(
-  mockUseBiohubApi
-);
-
 describe('SearchPage', () => {
+  beforeEach(() => {
+    mockBiohubApi.mockImplementation(() => mockUseApi);
+  });
+
   afterEach(() => {
     cleanup();
   });
@@ -50,7 +52,7 @@ describe('SearchPage', () => {
       }
     ];
 
-    mockBiohubApi().search.getSearchResults.mockResolvedValue(mockSearchResponse);
+    mockUseApi.search.getSearchResults.mockResolvedValue(mockSearchResponse);
 
     const { getByText } = render(
       <Router history={history}>

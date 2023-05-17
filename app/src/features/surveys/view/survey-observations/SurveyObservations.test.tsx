@@ -1,4 +1,4 @@
-import { cleanup, cleanup, render, waitFor } from 'test-helpers/test-utils';
+import { cleanup, render, waitFor } from 'test-helpers/test-utils';
 import { ISurveyContext, SurveyContext } from 'contexts/surveyContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { DataLoader } from 'hooks/useDataLoader';
@@ -8,7 +8,9 @@ import { getObservationSubmissionResponse } from 'test-helpers/survey-helpers';
 import SurveyObservations from './SurveyObservations';
 
 jest.mock('../../../../hooks/useBioHubApi');
-const mockUseBiohubApi = {
+const mockBiohubApi = useBiohubApi as jest.Mock;
+
+const mockUseApi = {
   observation: {
     uploadObservationSubmission: jest.fn(),
     processDWCFile: jest.fn(),

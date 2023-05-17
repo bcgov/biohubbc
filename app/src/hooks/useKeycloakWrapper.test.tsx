@@ -47,7 +47,7 @@ jest.mock('./useBioHubApi');
 
 const mockBiohubApi = useBiohubApi as jest.Mock;
 
-const mockUseBiohubApi = {
+const mockUseApi = {
   user: {
     getUser: jest.fn()
   },
@@ -58,7 +58,7 @@ const mockUseBiohubApi = {
 
 describe('useKeycloakWrapper', () => {
   beforeEach(() => {
-    mockBiohubApi.mockImplementation(() => mockUseBiohubApi);
+    mockBiohubApi.mockImplementation(() => mockUseApi);
   });
 
   afterEach(() => {

@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, cleanup, render, waitFor } from 'test-helpers/test-utils';
+import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
 import bbox from '@turf/bbox';
 import { Feature } from 'geojson';
 import { createMemoryHistory } from 'history';
@@ -10,16 +10,14 @@ import MapContainer, { INonEditableGeometries } from './MapContainer';
 import { SearchFeaturePopup } from './SearchFeaturePopup';
 
 jest.mock('../../hooks/useBioHubApi');
-const mockUseBiohubApi = {
+const mockBiohubApi = useBiohubApi as jest.Mock;
+
+const mockUseApi = {
   external: {
     get: jest.fn(),
     post: jest.fn()
   }
 };
-
-const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBiohubApi>).mockReturnValue(
-  mockUseBiohubApi
-);
 
 const history = createMemoryHistory();
 
@@ -28,9 +26,9 @@ describe('MapContainer', () => {
   console.warn = jest.fn();
 
   beforeEach(() => {
-    // clear mocks before each test
-    mockBiohubApi().external.get.mockClear();
-    mockBiohubApi().external.post.mockClear();
+    mockBiohubApi.mockImplementation(() => mockUseApi);
+    mockUseApi.external.get.mockClear();
+    mockUseApi.external.post.mockClear();
 
     jest.spyOn(console, 'debug').mockImplementation(() => {});
   });
@@ -71,10 +69,10 @@ describe('MapContainer', () => {
   ];
   const onDrawChange = jest.fn();
 
-  mockBiohubApi().external.get.mockResolvedValue({
+  mockUseApi.external.get.mockResolvedValue({
     features: []
   });
-  mockBiohubApi().external.post.mockResolvedValue({
+  mockUseApi.external.post.mockResolvedValue({
     features: []
   });
 

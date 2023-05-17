@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, cleanup, render, waitFor } from 'test-helpers/test-utils';
+import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
 import { IProjectAuthStateContext, ProjectAuthStateContext } from 'contexts/projectAuthStateContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -10,7 +10,9 @@ import { getSurveyForViewResponse, surveyObject, surveySupplementaryData } from 
 import SurveyStudyArea from './SurveyStudyArea';
 
 jest.mock('../../../../hooks/useBioHubApi');
-const mockUseBiohubApi = {
+const mockBiohubApi = useBiohubApi as jest.Mock;
+
+const mockUseApi = {
   survey: {
     getSurveyForView: jest.fn<Promise<IGetSurveyForViewResponse>, []>(),
     updateSurvey: jest.fn()
@@ -20,16 +22,12 @@ const mockUseBiohubApi = {
   }
 };
 
-const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBiohubApi>).mockReturnValue(
-  mockUseBiohubApi
-);
-
 describe('SurveyStudyArea', () => {
   beforeEach(() => {
-    // clear mocks before each test
-    mockBiohubApi().survey.getSurveyForView.mockClear();
-    mockBiohubApi().survey.updateSurvey.mockClear();
-    mockBiohubApi().external.post.mockClear();
+    mockBiohubApi.mockImplementation(() => mockUseApi);
+    mockUseApi.survey.getSurveyForView.mockClear();
+    mockUseApi.survey.updateSurvey.mockClear();
+    mockUseApi.external.post.mockClear();
 
     jest.spyOn(console, 'debug').mockImplementation(() => {});
   });
@@ -38,7 +36,7 @@ describe('SurveyStudyArea', () => {
     cleanup();
   });
 
-  mockBiohubApi().external.post.mockResolvedValue({
+  mockUseApi.external.post.mockResolvedValue({
     features: []
   });
 
@@ -187,7 +185,7 @@ describe('SurveyStudyArea', () => {
     fireEvent.click(getByText('Save Changes'));
 
     await waitFor(() => {
-      expect(mockBiohubApi().survey.updateSurvey).toBeCalledWith(
+      expect(mockUseApi.survey.updateSurvey).toBeCalledWith(
         1,
         getSurveyForViewResponse.surveyData.survey_details.id,
         {
@@ -227,7 +225,7 @@ describe('SurveyStudyArea', () => {
     const mockObservationsDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockSummaryDataLoader = { data: null } as DataLoader<any, any, any>;
 
-    mockBiohubApi().survey.getSurveyForView.mockResolvedValue({
+    mockUseApi.survey.getSurveyForView.mockResolvedValue({
       surveyData: {
         ...surveyObject,
         survey_details: {
@@ -245,7 +243,7 @@ describe('SurveyStudyArea', () => {
       },
       surveySupplementaryData: surveySupplementaryData
     });
-    mockBiohubApi().survey.updateSurvey = jest.fn(() => Promise.reject(new Error('API Error is Here')));
+    mockUseApi.survey.updateSurvey = jest.fn(() => Promise.reject(new Error('API Error is Here')));
 
     const mockProjectAuthStateContext: IProjectAuthStateContext = {
       getProjectParticipant: () => null,

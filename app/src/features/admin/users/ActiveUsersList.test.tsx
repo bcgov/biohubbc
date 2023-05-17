@@ -9,7 +9,9 @@ import ActiveUsersList, { IActiveUsersListProps } from './ActiveUsersList';
 const history = createMemoryHistory();
 
 jest.mock('../../../hooks/useBioHubApi');
-const mockUseBiohubApi = {
+const mockBiohubApi = useBiohubApi as jest.Mock;
+
+const mockUseApi = {
   user: {
     updateSystemUserRoles: jest.fn(),
     deleteSystemUser: jest.fn()

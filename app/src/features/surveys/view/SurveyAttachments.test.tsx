@@ -18,7 +18,9 @@ import { getMockAuthState, SystemAdminAuthState } from 'test-helpers/auth-helper
 import SurveyAttachments from './SurveyAttachments';
 
 jest.mock('../../../hooks/useBioHubApi');
-const mockUseBiohubApi = {
+const mockBiohubApi = useBiohubApi as jest.Mock;
+
+const mockUseApi = {
   survey: {
     getSurveyForView: jest.fn(),
     getSurveySummarySubmission: jest.fn(),
@@ -30,15 +32,11 @@ const mockUseBiohubApi = {
   }
 };
 
-const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBiohubApi>).mockReturnValue(
-  mockUseBiohubApi
-);
-
 describe('SurveyAttachments', () => {
   beforeEach(() => {
-    // clear mocks before each test
-    mockBiohubApi().survey.getSurveyAttachments.mockClear();
-    mockBiohubApi().survey.deleteSurveyAttachment.mockClear();
+    mockBiohubApi.mockImplementation(() => mockUseApi);
+    mockUseApi.survey.getSurveyAttachments.mockClear();
+    mockUseApi.survey.deleteSurveyAttachment.mockClear();
   });
 
   afterEach(() => {
@@ -145,7 +143,7 @@ describe('SurveyAttachments', () => {
       hasLoadedParticipantInfo: true
     };
 
-    mockBiohubApi().survey.getSurveyAttachments.mockResolvedValue({});
+    mockUseApi.survey.getSurveyAttachments.mockResolvedValue({});
 
     const { getByText } = render(
       <ProjectAuthStateContext.Provider value={mockProjectAuthStateContext}>
@@ -161,7 +159,7 @@ describe('SurveyAttachments', () => {
   });
 
   it('deletes an attachment from the attachments list as expected', async () => {
-    mockBiohubApi().survey.deleteSurveyAttachment.mockResolvedValue(1);
+    mockUseApi.survey.deleteSurveyAttachment.mockResolvedValue(1);
 
     const mockSurveyContext: ISurveyContext = ({
       artifactDataLoader: ({
@@ -239,7 +237,7 @@ describe('SurveyAttachments', () => {
   });
 
   it('does not delete an attachment from the attachments when user selects no from dialog', async () => {
-    mockBiohubApi().survey.deleteSurveyAttachment.mockResolvedValue(1);
+    mockUseApi.survey.deleteSurveyAttachment.mockResolvedValue(1);
 
     const mockSurveyContext: ISurveyContext = ({
       artifactDataLoader: ({
@@ -286,7 +284,7 @@ describe('SurveyAttachments', () => {
       expect(queryByText('filename.test')).toBeInTheDocument();
     });
 
-    mockBiohubApi().survey.getSurveyAttachments.mockResolvedValue({
+    mockUseApi.survey.getSurveyAttachments.mockResolvedValue({
       attachmentsList: []
     });
 
@@ -310,7 +308,7 @@ describe('SurveyAttachments', () => {
   });
 
   it('does not delete an attachment from the attachments when user clicks outside the dialog', async () => {
-    mockBiohubApi().survey.deleteSurveyAttachment.mockResolvedValue(1);
+    mockUseApi.survey.deleteSurveyAttachment.mockResolvedValue(1);
     const mockSurveyContext: ISurveyContext = ({
       artifactDataLoader: ({
         data: {
@@ -356,7 +354,7 @@ describe('SurveyAttachments', () => {
       expect(queryByText('filename.test')).toBeInTheDocument();
     });
 
-    mockBiohubApi().survey.getSurveyAttachments.mockResolvedValue({
+    mockUseApi.survey.getSurveyAttachments.mockResolvedValue({
       attachmentsList: []
     });
 

@@ -1,4 +1,4 @@
-import { render, waitFor, fireEvent } from 'test-helpers/test-utils';
+import { render } from 'test-helpers/test-utils';
 import { AuthStateContext } from 'contexts/authStateContext';
 import { createMemoryHistory } from 'history';
 import React from 'react';
@@ -112,11 +112,7 @@ describe('RequestSubmitted', () => {
         </AuthStateContext.Provider>
       );
 
-      fireEvent.click(getByTestId('logout-button'));
-
-      waitFor(() => {
-        expect(history.location.pathname).toEqual('/logout');
-      });
+      expect(getByTestId('logout-button')).toHaveAttribute('href', '/logout');
     });
   });
 });

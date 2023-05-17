@@ -18,7 +18,9 @@ import { getMockAuthState, SystemAdminAuthState } from 'test-helpers/auth-helper
 import ProjectAttachments from './ProjectAttachments';
 
 jest.mock('../../../hooks/useBioHubApi');
-const mockUseBiohubApi = {
+const mockBiohubApi = useBiohubApi as jest.Mock;
+
+const mockUseApi = {
   project: {
     getProjectForView: jest.fn(),
     getProjectAttachments: jest.fn(),
@@ -26,15 +28,11 @@ const mockUseBiohubApi = {
   }
 };
 
-const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBiohubApi>).mockReturnValue(
-  mockUseBiohubApi
-);
-
 describe('ProjectAttachments', () => {
   beforeEach(() => {
-    // clear mocks before each test
-    mockBiohubApi().project.getProjectAttachments.mockClear();
-    mockBiohubApi().project.deleteProjectAttachment.mockClear();
+    mockBiohubApi.mockImplementation(() => mockUseApi);
+    mockUseApi.project.getProjectAttachments.mockClear();
+    mockUseApi.project.deleteProjectAttachment.mockClear();
   });
 
   afterEach(() => {
@@ -151,7 +149,7 @@ describe('ProjectAttachments', () => {
   });
 
   it('deletes an attachment from the attachments list as expected', async () => {
-    const deleteProjectAttachmentStub = mockBiohubApi().project.deleteProjectAttachment.mockResolvedValue(1);
+    const deleteProjectAttachmentStub = mockUseApi.project.deleteProjectAttachment.mockResolvedValue(1);
     const mockProjectContext: IProjectContext = ({
       artifactDataLoader: ({
         data: {
@@ -226,7 +224,7 @@ describe('ProjectAttachments', () => {
   });
 
   it('does not delete an attachment from the attachments when user selects no from dialog', async () => {
-    mockBiohubApi().project.deleteProjectAttachment.mockResolvedValue(1);
+    mockUseApi.project.deleteProjectAttachment.mockResolvedValue(1);
     const mockProjectContext: IProjectContext = ({
       artifactDataLoader: ({
         data: {
@@ -270,7 +268,7 @@ describe('ProjectAttachments', () => {
       expect(queryByText('filename.test')).toBeInTheDocument();
     });
 
-    mockBiohubApi().project.getProjectAttachments.mockResolvedValue({
+    mockUseApi.project.getProjectAttachments.mockResolvedValue({
       attachmentsList: []
     });
 
@@ -294,7 +292,7 @@ describe('ProjectAttachments', () => {
   });
 
   it('does not delete an attachment from the attachments when user clicks outside the dialog', async () => {
-    mockBiohubApi().project.deleteProjectAttachment.mockResolvedValue(1);
+    mockUseApi.project.deleteProjectAttachment.mockResolvedValue(1);
     const mockProjectContext: IProjectContext = ({
       artifactDataLoader: ({
         data: {
@@ -338,7 +336,7 @@ describe('ProjectAttachments', () => {
       expect(queryByText('filename.test')).toBeInTheDocument();
     });
 
-    mockBiohubApi().project.getProjectAttachments.mockResolvedValue({
+    mockUseApi.project.getProjectAttachments.mockResolvedValue({
       attachmentsList: []
     });
 

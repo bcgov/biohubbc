@@ -12,7 +12,9 @@ import ProjectsListPage from './ProjectsListPage';
 const history = createMemoryHistory();
 
 jest.mock('../../../hooks/useBioHubApi');
-const mockUseBiohubApi = {
+const mockBiohubApi = useBiohubApi as jest.Mock;
+
+const mockUseApi = {
   project: {
     getProjectsList: jest.fn()
   },
@@ -24,14 +26,11 @@ const mockUseBiohubApi = {
   }
 };
 
-const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBiohubApi>).mockReturnValue(
-  mockUseBiohubApi
-);
-
 describe('ProjectsListPage', () => {
   beforeEach(() => {
-    mockBiohubApi().project.getProjectsList.mockClear();
-    mockBiohubApi().draft.getDraftsList.mockClear();
+    mockBiohubApi.mockImplementation(() => mockUseApi);
+    mockUseApi.project.getProjectsList.mockClear();
+    mockUseApi.draft.getDraftsList.mockClear();
   });
 
   afterEach(() => {
@@ -39,8 +38,8 @@ describe('ProjectsListPage', () => {
   });
 
   test('renders with the create project button', async () => {
-    mockBiohubApi().project.getProjectsList.mockResolvedValue([]);
-    mockBiohubApi().draft.getDraftsList.mockResolvedValue([]);
+    mockUseApi.project.getProjectsList.mockResolvedValue([]);
+    mockUseApi.draft.getDraftsList.mockResolvedValue([]);
 
     const authState = getMockAuthState({ base: SystemAdminAuthState });
 
@@ -70,8 +69,8 @@ describe('ProjectsListPage', () => {
   });
 
   test('renders with the open advanced filters button', async () => {
-    mockBiohubApi().project.getProjectsList.mockResolvedValue([]);
-    mockBiohubApi().draft.getDraftsList.mockResolvedValue([]);
+    mockUseApi.project.getProjectsList.mockResolvedValue([]);
+    mockUseApi.draft.getDraftsList.mockResolvedValue([]);
 
     const mockCodesContext: ICodesContext = ({
       codesDataLoader: ({
@@ -97,13 +96,13 @@ describe('ProjectsListPage', () => {
   });
 
   test('renders with a list of drafts', async () => {
-    mockBiohubApi().draft.getDraftsList.mockResolvedValue([
+    mockUseApi.draft.getDraftsList.mockResolvedValue([
       {
         id: 1,
         name: 'Draft 1'
       }
     ]);
-    mockBiohubApi().project.getProjectsList.mockResolvedValue([]);
+    mockUseApi.project.getProjectsList.mockResolvedValue([]);
 
     const mockCodesContext: ICodesContext = ({
       codesDataLoader: ({
@@ -130,7 +129,7 @@ describe('ProjectsListPage', () => {
   });
 
   test('navigating to the create project page works', async () => {
-    mockBiohubApi().project.getProjectsList.mockResolvedValue([]);
+    mockUseApi.project.getProjectsList.mockResolvedValue([]);
 
     const authState = getMockAuthState({ base: SystemAdminAuthState });
 
@@ -167,7 +166,7 @@ describe('ProjectsListPage', () => {
   });
 
   test('navigating to the create project page works on draft projects', async () => {
-    mockBiohubApi().draft.getDraftsList.mockResolvedValue([
+    mockUseApi.draft.getDraftsList.mockResolvedValue([
       {
         id: 1,
         name: 'Draft 1'
@@ -205,7 +204,7 @@ describe('ProjectsListPage', () => {
   });
 
   test('navigating to the project works', async () => {
-    mockBiohubApi().project.getProjectsList.mockResolvedValue([
+    mockUseApi.project.getProjectsList.mockResolvedValue([
       {
         projectData: {
           id: 1,
@@ -221,7 +220,7 @@ describe('ProjectsListPage', () => {
       }
     ]);
 
-    mockBiohubApi().draft.getDraftsList.mockResolvedValue([]);
+    mockUseApi.draft.getDraftsList.mockResolvedValue([]);
 
     const mockCodesContext: ICodesContext = ({
       codesDataLoader: ({

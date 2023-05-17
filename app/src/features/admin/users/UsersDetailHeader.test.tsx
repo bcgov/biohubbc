@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, cleanup, render, waitFor } from 'test-helpers/test-utils';
+import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { createMemoryHistory } from 'history';
 import React from 'react';
@@ -10,15 +10,13 @@ const history = createMemoryHistory();
 
 jest.mock('../../../hooks/useBioHubApi');
 
-const mockUseBiohubApi = {
+const mockBiohubApi = useBiohubApi as jest.Mock;
+
+const mockUseApi = {
   user: {
     deleteSystemUser: jest.fn<Promise<number>, []>()
   }
 };
-
-const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBiohubApi>).mockReturnValue(
-  mockUseBiohubApi
-);
 
 const mockUser = {
   id: 1,
@@ -91,7 +89,7 @@ describe('UsersDetailHeader', () => {
     });
 
     it('deletes the user and routes user back to Manage Users page', async () => {
-      mockBiohubApi().user.deleteSystemUser.mockResolvedValue({
+      mockUseApi.user.deleteSystemUser.mockResolvedValue({
         response: 200
       } as any);
 
