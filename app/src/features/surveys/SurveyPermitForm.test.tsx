@@ -1,4 +1,4 @@
-import { fireEvent, render, waitFor } from 'test-helpers/test-utils';
+import { fireEvent, cleanup, render, waitFor } from 'test-helpers/test-utils';
 import { Formik } from 'formik';
 import React from 'react';
 import SurveyPermitForm, {

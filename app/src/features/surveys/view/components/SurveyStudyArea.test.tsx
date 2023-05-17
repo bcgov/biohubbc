@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
+import { cleanup, fireEvent, cleanup, render, waitFor } from 'test-helpers/test-utils';
 import { IProjectAuthStateContext, ProjectAuthStateContext } from 'contexts/projectAuthStateContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';

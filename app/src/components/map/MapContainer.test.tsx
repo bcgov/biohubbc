@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
+import { cleanup, fireEvent, cleanup, render, waitFor } from 'test-helpers/test-utils';
 import bbox from '@turf/bbox';
 import { Feature } from 'geojson';
 import { createMemoryHistory } from 'history';

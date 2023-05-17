@@ -1,4 +1,4 @@
-import { render, waitFor } from 'test-helpers/test-utils';
+import { cleanup, render, waitFor } from 'test-helpers/test-utils';
 import StudyAreaForm, {
   IStudyAreaForm,
   StudyAreaInitialValues,

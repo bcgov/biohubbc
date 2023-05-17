@@ -1,4 +1,4 @@
-import { render, waitFor } from 'test-helpers/test-utils';
+import { cleanup, render, waitFor } from 'test-helpers/test-utils';
 import { Formik } from 'formik';
 import React from 'react';
 import ProjectLocationForm, {

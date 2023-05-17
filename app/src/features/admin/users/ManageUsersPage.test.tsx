@@ -1,4 +1,4 @@
-import { cleanup, render, waitFor } from 'test-helpers/test-utils';
+import { cleanup, cleanup, render, waitFor } from 'test-helpers/test-utils';
 import { createMemoryHistory } from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import React from 'react';

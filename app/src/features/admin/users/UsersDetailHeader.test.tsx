@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
+import { cleanup, fireEvent, cleanup, render, waitFor } from 'test-helpers/test-utils';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { createMemoryHistory } from 'history';
 import React from 'react';

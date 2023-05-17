@@ -1,4 +1,4 @@
-import { fireEvent, render, waitFor } from 'test-helpers/test-utils';
+import { fireEvent, cleanup, render, waitFor } from 'test-helpers/test-utils';
 import { APIError } from 'hooks/api/useAxios';
 import React from 'react';
 import FileUploadItem, { IFileUploadItemProps } from './FileUploadItem';

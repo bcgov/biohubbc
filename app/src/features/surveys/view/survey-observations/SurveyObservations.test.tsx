@@ -1,4 +1,4 @@
-import { cleanup, render, waitFor } from 'test-helpers/test-utils';
+import { cleanup, cleanup, render, waitFor } from 'test-helpers/test-utils';
 import { ISurveyContext, SurveyContext } from 'contexts/surveyContext';
 import { DataLoader } from 'hooks/useDataLoader';
 import React from 'react';
