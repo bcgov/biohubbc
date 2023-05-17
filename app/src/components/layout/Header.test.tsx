@@ -1,4 +1,4 @@
-import { fireEvent, render, waitFor } from '@testing-library/react';
+import { render } from 'test-helpers/test-utils';
 import { SYSTEM_ROLE } from 'constants/roles';
 import { AuthStateContext, IAuthState } from 'contexts/authStateContext';
 import { createMemoryHistory } from 'history';
@@ -173,11 +173,7 @@ describe('Header', () => {
         </AuthStateContext.Provider>
       );
 
-      fireEvent.click(getByTestId('menu_log_out'));
-
-      waitFor(() => {
-        expect(history.location.pathname).toEqual('/logout');
-      });
+      expect(getByTestId('menu_log_out')).toHaveAttribute('href', '/logout');
     });
   });
 });

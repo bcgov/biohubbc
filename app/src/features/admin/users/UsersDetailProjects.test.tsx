@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, waitFor } from '@testing-library/react';
+import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { createMemoryHistory } from 'history';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';

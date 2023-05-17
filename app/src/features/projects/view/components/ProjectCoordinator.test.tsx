@@ -1,4 +1,4 @@
-import { cleanup, render } from '@testing-library/react';
+import { cleanup, render } from 'test-helpers/test-utils';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { IProjectContext, ProjectContext } from 'contexts/projectContext';
 import { DataLoader } from 'hooks/useDataLoader';

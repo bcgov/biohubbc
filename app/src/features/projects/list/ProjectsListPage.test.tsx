@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, waitFor } from '@testing-library/react';
+import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
 import { SYSTEM_ROLE } from 'constants/roles';
 import { AuthStateContext, IAuthState } from 'contexts/authStateContext';
 import { CodesContext, ICodesContext } from 'contexts/codesContext';

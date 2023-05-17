@@ -1,4 +1,4 @@
-import { cleanup, render, waitFor } from '@testing-library/react';
+import { cleanup, render, waitFor } from 'test-helpers/test-utils';
 import { CodesContext, ICodesContext } from 'contexts/codesContext';
 import { IProjectAuthStateContext, ProjectAuthStateContext } from 'contexts/projectAuthStateContext';
 import { IProjectContext, ProjectContext } from 'contexts/projectContext';

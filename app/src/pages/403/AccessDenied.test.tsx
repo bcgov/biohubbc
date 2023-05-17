@@ -1,4 +1,4 @@
-import { fireEvent, render } from '@testing-library/react';
+import { fireEvent, render } from 'test-helpers/test-utils';
 import { SYSTEM_ROLE } from 'constants/roles';
 import { AuthStateContext, IAuthState } from 'contexts/authStateContext';
 import { createMemoryHistory } from 'history';

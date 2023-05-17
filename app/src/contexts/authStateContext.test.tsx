@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen } from 'test-helpers/test-utils';
 import Keycloak from 'keycloak-js';
 import React from 'react';
 import { keycloakWrapper } from 'test-helpers/auth-helpers';

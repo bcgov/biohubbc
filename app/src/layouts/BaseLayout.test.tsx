@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react';
+import { render } from 'test-helpers/test-utils';
 import { createMemoryHistory } from 'history';
 import React from 'react';
 import { Router } from 'react-router-dom';

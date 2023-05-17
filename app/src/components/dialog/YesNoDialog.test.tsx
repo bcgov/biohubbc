@@ -1,4 +1,4 @@
-import { fireEvent, render, waitFor } from '@testing-library/react';
+import { fireEvent, render, waitFor } from 'test-helpers/test-utils';
 import YesNoDialog from 'components/dialog/YesNoDialog';
 import React from 'react';
 

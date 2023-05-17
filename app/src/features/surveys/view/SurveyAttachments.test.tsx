@@ -5,7 +5,7 @@ import {
   queryByTestId as rawQueryByTestId,
   render,
   waitFor
-} from '@testing-library/react';
+} from 'test-helpers/test-utils';
 import { AttachmentType } from 'constants/attachments';
 import { AuthStateContext, IAuthState } from 'contexts/authStateContext';
 import { DialogContextProvider } from 'contexts/dialogContext';

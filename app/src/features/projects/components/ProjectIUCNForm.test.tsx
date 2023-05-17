@@ -1,4 +1,4 @@
-import { fireEvent, render, waitFor, within } from '@testing-library/react';
+import { fireEvent, render, waitFor, within } from 'test-helpers/test-utils';
 import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteFieldVariableSize';
 import { Formik } from 'formik';
 import React from 'react';

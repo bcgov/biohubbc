@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, waitFor, within } from '@testing-library/react';
+import { cleanup, fireEvent, render, waitFor, within } from 'test-helpers/test-utils';
 import { AuthStateContext } from 'contexts/authStateContext';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { createMemoryHistory } from 'history';

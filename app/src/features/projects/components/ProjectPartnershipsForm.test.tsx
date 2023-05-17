@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react';
+import { render } from 'test-helpers/test-utils';
 import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteFieldVariableSize';
 import { Formik } from 'formik';
 import React from 'react';

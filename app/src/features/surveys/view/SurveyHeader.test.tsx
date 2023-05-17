@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, waitFor } from '@testing-library/react';
+import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
 import { SYSTEM_ROLE } from 'constants/roles';
 import { AuthStateContext, IAuthState } from 'contexts/authStateContext';
 import { DialogContextProvider } from 'contexts/dialogContext';
@@ -41,9 +41,7 @@ const mockSurveyContext: ISurveyContext = {
   projectId: 1
 };
 
-const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBiohubApi>).mockReturnValue(
-  mockUseBiohubApi
-);
+const mockBiohubApi = useBiohubApi as jest.Mock;
 
 const defaultAuthState = {
   keycloakWrapper: {
@@ -66,14 +64,10 @@ const defaultAuthState = {
 };
 
 const surveyForView = getSurveyForViewResponse;
-const refresh = jest.fn();
 
 describe('SurveyHeader', () => {
   beforeEach(() => {
-    // clear mocks before each test
-    mockBiohubApi().survey.publishSurvey.mockClear();
-    mockBiohubApi().survey.deleteSurvey.mockClear();
-    refresh.mockClear();
+    mockBiohubApi.mockImplementation(() => mockUseBiohubApi);
   });
 
   afterEach(() => {
@@ -103,7 +97,7 @@ describe('SurveyHeader', () => {
   };
 
   it('deletes survey and takes user to the surveys list page when user is a system administrator', async () => {
-    mockBiohubApi().survey.deleteSurvey.mockResolvedValue(true);
+    mockUseBiohubApi.survey.deleteSurvey.mockResolvedValue(true);
 
     const authState = {
       keycloakWrapper: {

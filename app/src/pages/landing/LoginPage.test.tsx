@@ -1,4 +1,4 @@
-import { cleanup, render } from '@testing-library/react';
+import { cleanup, render } from 'test-helpers/test-utils';
 import { AuthStateContext, IAuthState } from 'contexts/authStateContext';
 import { createMemoryHistory } from 'history';
 import Keycloak from 'keycloak-js';

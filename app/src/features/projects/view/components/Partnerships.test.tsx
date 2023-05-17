@@ -1,4 +1,4 @@
-import { cleanup, render } from '@testing-library/react';
+import { cleanup, render } from 'test-helpers/test-utils';
 import { CodesContext, ICodesContext } from 'contexts/codesContext';
 import { IProjectContext, ProjectContext } from 'contexts/projectContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';

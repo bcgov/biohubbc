@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react';
+import { render } from 'test-helpers/test-utils';
 import { Formik } from 'formik';
 import { SYSTEM_IDENTITY_SOURCE } from 'hooks/useKeycloakWrapper';
 import React from 'react';

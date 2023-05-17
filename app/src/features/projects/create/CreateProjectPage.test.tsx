@@ -5,7 +5,7 @@ import {
   getByText as rawGetByText,
   render,
   waitFor
-} from '@testing-library/react';
+} from 'test-helpers/test-utils';
 import { CodesContext, ICodesContext } from 'contexts/codesContext';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { ProjectDetailsFormInitialValues } from 'features/projects/components/ProjectDetailsForm';

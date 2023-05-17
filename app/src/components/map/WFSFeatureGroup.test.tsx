@@ -1,4 +1,4 @@
-import { cleanup, render, waitFor } from '@testing-library/react';
+import { cleanup, render, waitFor } from 'test-helpers/test-utils';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import React from 'react';
 import { MapContainer } from 'react-leaflet';

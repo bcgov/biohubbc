@@ -1,4 +1,4 @@
-import { cleanup, render } from '@testing-library/react';
+import { cleanup, render } from 'test-helpers/test-utils';
 import { ConfigContext, IConfig } from 'contexts/configContext';
 import { createMemoryHistory } from 'history';
 import React from 'react';
