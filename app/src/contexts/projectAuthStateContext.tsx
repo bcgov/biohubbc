@@ -36,12 +36,12 @@ export const ProjectAuthStateContextProvider: React.FC = (props) => {
   }, [projectId]);
 
   const getProjectParticipant = useCallback(() => {
-    return participantDataLoader.data?.participant || null;
+    return participantDataLoader.data?.participant ?? null;
   }, [participantDataLoader.data]);
 
   const hasProjectRole = useCallback(
     (validProjectRoles?: string[]): boolean => {
-      if (!validProjectRoles || !validProjectRoles.length) {
+      if (!validProjectRoles?.length) {
         return true;
       }
 
@@ -61,7 +61,7 @@ export const ProjectAuthStateContextProvider: React.FC = (props) => {
 
   const hasSystemRole = useCallback(
     (validSystemRoles?: string[]): boolean => {
-      if (!validSystemRoles || !validSystemRoles.length) {
+      if (!validSystemRoles?.length) {
         return true;
       }
 

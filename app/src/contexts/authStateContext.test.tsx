@@ -1,68 +1,72 @@
-import { render, screen } from 'test-helpers/test-utils';
+import { cleanup, render, waitFor } from 'test-helpers/test-utils';
 import Keycloak from 'keycloak-js';
 import React from 'react';
-import { keycloakWrapper } from 'test-helpers/auth-helpers';
+import { getMockAuthState, SystemUserAuthState, UnauthenticatedUserAuthState } from 'test-helpers/auth-helpers';
 import { AuthStateContext, AuthStateContextProvider } from './authStateContext';
 
+jest.mock('@react-keycloak/web', () => ({
+  useKeycloak: jest.fn(() => ({
+    initialized: true,
+    keycloak: ({
+      authenticated: false
+    } as unknown) as Keycloak
+  }))
+}));
+
 describe('AuthStateContext', () => {
-  it('renders with default value', () => {
+  afterAll(() => {
+    cleanup();
+  });
+
+  it('renders with default value', async () => {
+    const captureAuthStateValue = jest.fn();
+
+    const authState = getMockAuthState({ base: UnauthenticatedUserAuthState });
+
     render(
       <AuthStateContextProvider>
         <AuthStateContext.Consumer>
-          {(value) => <div data-testid="context-value">{JSON.stringify(value)}</div>}
+          {(value) => {
+            captureAuthStateValue(value);
+            return <></>;
+          }}
         </AuthStateContext.Consumer>
       </AuthStateContextProvider>
     );
 
-    const contextValue = screen.getByTestId('context-value');
-
-    expect(contextValue).toHaveTextContent(
-      JSON.stringify({
+    await waitFor(() => {
+      expect(captureAuthStateValue).toHaveBeenCalledWith({
+        ...authState,
         keycloakWrapper: {
-          hasLoadedAllUserInfo: false,
-          systemRoles: [],
-          hasAccessRequest: false,
-          hasOneOrMoreProjectRoles: false
+          ...authState.keycloakWrapper,
+          getIdentitySource: expect.any(Function),
+          getUserIdentifier: expect.any(Function),
+          getUserGuid: expect.any(Function),
+          refresh: expect.any(Function),
+          hasSystemRole: expect.any(Function),
+          getLoginUrl: expect.any(Function),
+          isSystemUser: expect.any(Function)
         }
-      })
-    );
+      });
+    });
   });
 
   it('renders with provided value', () => {
-    const testKeycloakWrapper = { ...keycloakWrapper };
+    const captureAuthStateValue = jest.fn();
+
+    const authState = getMockAuthState({ base: SystemUserAuthState });
 
     render(
-      <AuthStateContext.Provider value={{ keycloakWrapper: testKeycloakWrapper }}>
+      <AuthStateContext.Provider value={authState}>
         <AuthStateContext.Consumer>
-          {(value) => <div data-testid="context-value">{JSON.stringify(value)}</div>}
+          {(value) => {
+            captureAuthStateValue(value);
+            return <></>;
+          }}
         </AuthStateContext.Consumer>
       </AuthStateContext.Provider>
     );
 
-    const contextValue = screen.getByTestId('context-value');
-
-    expect(contextValue).toHaveTextContent(
-      JSON.stringify({
-        keycloakWrapper: {
-          keycloak: ({
-            authenticated: true
-          } as unknown) as Keycloak,
-          hasLoadedAllUserInfo: true,
-          systemRoles: [],
-          isSystemUser: () => false,
-          hasSystemRole: () => false,
-          hasAccessRequest: false,
-          hasOneOrMoreProjectRoles: false,
-          getUserIdentifier: () => 'testusername',
-          getIdentitySource: () => 'idir',
-          getUserGuid: () => 'aaaa',
-          username: 'testusername',
-          displayName: 'testdisplayname',
-          email: 'test@email.com',
-          refresh: () => {},
-          getLoginUrl: () => '/login'
-        }
-      })
-    );
+    expect(captureAuthStateValue).toHaveBeenCalledWith(authState);
   });
 });

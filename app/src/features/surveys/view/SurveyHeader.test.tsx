@@ -1,5 +1,4 @@
-import { cleanup, fireEvent, cleanup, render, waitFor } from 'test-helpers/test-utils';
-import { SYSTEM_ROLE } from 'constants/roles';
+import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
 import { AuthStateContext, IAuthState } from 'contexts/authStateContext';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { IProjectContext, ProjectContext } from 'contexts/projectContext';
@@ -8,10 +7,10 @@ import SurveyHeader from 'features/surveys/view/SurveyHeader';
 import { createMemoryHistory } from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { DataLoader } from 'hooks/useDataLoader';
-import { SYSTEM_IDENTITY_SOURCE } from 'hooks/useKeycloakWrapper';
 import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
 import React from 'react';
 import { Router } from 'react-router';
+import { getMockAuthState, SystemAdminAuthState, SystemUserAuthState } from 'test-helpers/auth-helpers';
 import { getSurveyForViewResponse } from 'test-helpers/survey-helpers';
 
 const history = createMemoryHistory({ initialEntries: ['/admin/projects/1/surveys/1'] });
@@ -43,26 +42,6 @@ const mockSurveyContext: ISurveyContext = {
 
 const mockBiohubApi = useBiohubApi as jest.Mock;
 
-const defaultAuthState = {
-  keycloakWrapper: {
-    keycloak: {
-      authenticated: true
-    },
-    hasLoadedAllUserInfo: true,
-    systemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN] as string[],
-    getUserIdentifier: () => 'testuser',
-    hasAccessRequest: false,
-    hasSystemRole: () => true,
-    getIdentitySource: () => SYSTEM_IDENTITY_SOURCE.IDIR,
-    username: 'testusername',
-    displayName: 'testdisplayname',
-    email: 'test@email.com',
-    firstName: 'testfirst',
-    lastName: 'testlast',
-    refresh: () => {}
-  }
-};
-
 const surveyForView = getSurveyForViewResponse;
 
 describe('SurveyHeader', () => {
@@ -74,7 +53,7 @@ describe('SurveyHeader', () => {
     cleanup();
   });
 
-  const renderComponent = (authState: any) => {
+  const renderComponent = (authState: IAuthState) => {
     return render(
       <ProjectContext.Provider
         value={
@@ -84,7 +63,7 @@ describe('SurveyHeader', () => {
           } as unknown) as IProjectContext
         }>
         <SurveyContext.Provider value={mockSurveyContext}>
-          <AuthStateContext.Provider value={authState as IAuthState}>
+          <AuthStateContext.Provider value={authState}>
             <DialogContextProvider>
               <Router history={history}>
                 <SurveyHeader />
@@ -99,13 +78,7 @@ describe('SurveyHeader', () => {
   it('deletes survey and takes user to the surveys list page when user is a system administrator', async () => {
     mockUseBiohubApi.survey.deleteSurvey.mockResolvedValue(true);
 
-    const authState = {
-      keycloakWrapper: {
-        ...defaultAuthState.keycloakWrapper,
-        systemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN] as string[],
-        hasSystemRole: () => true
-      }
-    };
+    const authState = getMockAuthState({ base: SystemAdminAuthState });
 
     const { getByTestId, findByText, getByText } = renderComponent(authState);
 
@@ -130,13 +103,7 @@ describe('SurveyHeader', () => {
   });
 
   it('does not see the delete button when accessing survey as non admin user', async () => {
-    const authState = {
-      keycloakWrapper: {
-        ...defaultAuthState.keycloakWrapper,
-        systemRoles: ['Non Admin User'] as string[],
-        hasSystemRole: () => false
-      }
-    };
+    const authState = getMockAuthState({ base: SystemUserAuthState });
 
     const { queryByTestId, findByText } = renderComponent(authState);
 

@@ -1,10 +1,15 @@
 import { cleanup, fireEvent, cleanup, render, waitFor } from 'test-helpers/test-utils';
 import { SYSTEM_ROLE } from 'constants/roles';
-import { AuthStateContext, IAuthState } from 'contexts/authStateContext';
+import { AuthStateContext } from 'contexts/authStateContext';
 import { createMemoryHistory } from 'history';
-import Keycloak from 'keycloak-js';
 import React from 'react';
 import { Router } from 'react-router-dom';
+import {
+  getMockAuthState,
+  SystemAdminAuthState,
+  SystemUserAuthState,
+  UnauthenticatedUserAuthState
+} from 'test-helpers/auth-helpers';
 import { LandingPage } from './LandingPage';
 
 const history = createMemoryHistory();
@@ -16,27 +21,7 @@ describe('LandingPage', () => {
     });
 
     it('Case 1: Not signed in', async () => {
-      const authState: IAuthState = {
-        keycloakWrapper: {
-          keycloak: {
-            authenticated: false
-          } as Keycloak,
-          isSystemUser: () => false,
-          hasLoadedAllUserInfo: false,
-          hasOneOrMoreProjectRoles: false,
-          systemRoles: [],
-          getUserIdentifier: () => null,
-          hasAccessRequest: false,
-          hasSystemRole: () => false,
-          getIdentitySource: () => null,
-          getUserGuid: () => null,
-          username: undefined,
-          displayName: undefined,
-          email: undefined,
-          refresh: () => {},
-          getLoginUrl: () => '/my-test-login'
-        }
-      };
+      const authState = getMockAuthState({ base: UnauthenticatedUserAuthState });
 
       const { getByText, getByTestId } = render(
         <AuthStateContext.Provider value={authState}>
@@ -55,31 +40,14 @@ describe('LandingPage', () => {
       const loginButton = getByTestId('landing_page_login_button');
       expect(loginButton).toBeVisible();
       expect(loginButton).toHaveTextContent('Log In');
-      expect(loginButton).toHaveAttribute('href', '/my-test-login');
+      expect(loginButton).toHaveAttribute('href', '/login');
     });
 
     it('Case 2: Signed in for the first time, no access requests sent', async () => {
-      const authState: IAuthState = {
-        keycloakWrapper: {
-          keycloak: {
-            authenticated: true
-          } as Keycloak,
-          isSystemUser: () => false,
-          hasLoadedAllUserInfo: true,
-          hasOneOrMoreProjectRoles: false,
-          systemRoles: [],
-          getUserIdentifier: () => 'testuser',
-          hasAccessRequest: false,
-          hasSystemRole: () => false,
-          getIdentitySource: () => null,
-          getUserGuid: () => 'testuserguid',
-          username: 'testuser',
-          displayName: 'Test User',
-          email: 'testuser@example.com',
-          refresh: () => {},
-          getLoginUrl: () => '/test-1-login-endpoint'
-        }
-      };
+      const authState = getMockAuthState({
+        base: SystemUserAuthState,
+        overrides: { keycloakWrapper: { isSystemUser: () => false } }
+      });
 
       const { getByText, getByTestId, queryByText } = render(
         <AuthStateContext.Provider value={authState}>
@@ -92,7 +60,7 @@ describe('LandingPage', () => {
       // Should see "Welcome, <user>" but not "Welcome back, <user>"
       const greeting = getByTestId('landing_page_greeting');
       expect(greeting).toBeVisible();
-      expect(greeting).toHaveTextContent('Welcome, testuser');
+      expect(greeting).toHaveTextContent('Welcome, testusername');
 
       // Should not see the Log In button
       expect(queryByText('Log In')).not.toBeInTheDocument();
@@ -101,7 +69,7 @@ describe('LandingPage', () => {
       expect(getByText('You have not been granted permission to access this application.')).toBeVisible();
 
       // Should see the Request Access button
-      const requestAccessButton = getByText('Request Access');
+      const requestAccessButton = getByTestId('landing_page_request_access_button');
       expect(requestAccessButton).toBeVisible();
 
       // Should go to the request access page
@@ -112,27 +80,10 @@ describe('LandingPage', () => {
     });
 
     it('Case 3: Signed in, has sent an access request and is awaiting approval', () => {
-      const authState: IAuthState = {
-        keycloakWrapper: {
-          keycloak: {
-            authenticated: true
-          } as Keycloak,
-          isSystemUser: () => false,
-          hasLoadedAllUserInfo: true,
-          hasOneOrMoreProjectRoles: false,
-          systemRoles: [],
-          getUserIdentifier: () => 'testuser',
-          hasAccessRequest: true,
-          hasSystemRole: () => false,
-          getIdentitySource: () => null,
-          getUserGuid: () => 'testuserguid',
-          username: 'testuser',
-          displayName: 'Test User',
-          email: 'testuser@example.com',
-          refresh: () => {},
-          getLoginUrl: () => '/test-1-login-endpoint'
-        }
-      };
+      const authState = getMockAuthState({
+        base: SystemUserAuthState,
+        overrides: { keycloakWrapper: { isSystemUser: () => false, hasAccessRequest: true } }
+      });
 
       const { getByText, getByTestId, queryByText } = render(
         <AuthStateContext.Provider value={authState}>
@@ -145,7 +96,7 @@ describe('LandingPage', () => {
       // Should see "Welcome back, <user>"
       const greeting = getByTestId('landing_page_greeting');
       expect(greeting).toBeVisible();
-      expect(greeting).toHaveTextContent('Welcome back, testuser');
+      expect(greeting).toHaveTextContent('Welcome back, testusername');
 
       // Should not see the Log In button
       expect(queryByText('Log In')).not.toBeInTheDocument();
@@ -155,7 +106,7 @@ describe('LandingPage', () => {
       expect(getByText('Your request is currently pending a review by an administrator.')).toBeVisible();
 
       // Should see the Logout button
-      const logoutButton = getByText('Log Out');
+      const logoutButton = getByTestId('menu_log_out');
       expect(logoutButton).toBeVisible();
       expect(logoutButton).toHaveAttribute('href', '/logout');
 
@@ -164,29 +115,12 @@ describe('LandingPage', () => {
     });
 
     it('Case 4: Signed in, is added as a project participant, but still has a pending access request', () => {
-      const authState: IAuthState = {
-        keycloakWrapper: {
-          keycloak: {
-            authenticated: true
-          } as Keycloak,
-          isSystemUser: () => true,
-          hasLoadedAllUserInfo: true,
-          hasOneOrMoreProjectRoles: true,
-          systemRoles: [],
-          getUserIdentifier: () => 'testuser',
-          hasAccessRequest: true,
-          hasSystemRole: () => false,
-          getIdentitySource: () => null,
-          getUserGuid: () => 'testuserguid',
-          username: 'testuser',
-          displayName: 'Test User',
-          email: 'testuser@example.com',
-          refresh: () => {},
-          getLoginUrl: () => '/test-1-login-endpoint'
-        }
-      };
+      const authState = getMockAuthState({
+        base: SystemUserAuthState,
+        overrides: { keycloakWrapper: { hasAccessRequest: true, hasOneOrMoreProjectRoles: true } }
+      });
 
-      const { getByText, getByTestId, queryByText } = render(
+      const { getByTestId, queryByText } = render(
         <AuthStateContext.Provider value={authState}>
           <Router history={history}>
             <LandingPage />
@@ -209,35 +143,18 @@ describe('LandingPage', () => {
       expect(queryByText('Your access request is currently pending.')).not.toBeInTheDocument();
 
       // Should see the View Projects button
-      const viewProjectsButton = getByText('View Projects');
+      const viewProjectsButton = getByTestId('landing_page_projects_button');
       expect(viewProjectsButton).toBeVisible();
-      expect(viewProjectsButton.parentElement).toHaveAttribute('href', '/admin/projects');
+      expect(viewProjectsButton).toHaveAttribute('href', '/admin/projects');
     });
 
     it('Case 5: Signed in, has a viewer role on some project, but not a system role that allows project creation', () => {
-      const authState: IAuthState = {
-        keycloakWrapper: {
-          keycloak: {
-            authenticated: true
-          } as Keycloak,
-          isSystemUser: () => true,
-          hasLoadedAllUserInfo: true,
-          hasOneOrMoreProjectRoles: true,
-          systemRoles: [],
-          getUserIdentifier: () => 'testuser',
-          hasAccessRequest: false,
-          hasSystemRole: () => false,
-          getIdentitySource: () => null,
-          getUserGuid: () => 'testuserguid',
-          username: 'testuser',
-          displayName: 'Test User',
-          email: 'testuser@example.com',
-          refresh: () => {},
-          getLoginUrl: () => '/test-1-login-endpoint'
-        }
-      };
+      const authState = getMockAuthState({
+        base: SystemUserAuthState,
+        overrides: { keycloakWrapper: { hasOneOrMoreProjectRoles: true } }
+      });
 
-      const { getByText, getByTestId, queryByText } = render(
+      const { getByTestId, queryByText } = render(
         <AuthStateContext.Provider value={authState}>
           <Router history={history}>
             <LandingPage />
@@ -260,35 +177,23 @@ describe('LandingPage', () => {
       expect(queryByText('Your access request is currently pending.')).not.toBeInTheDocument();
 
       // Should see the View Projects button
-      const viewProjectsButton = getByText('View Projects');
+      const viewProjectsButton = getByTestId('landing_page_projects_button');
       expect(viewProjectsButton).toBeVisible();
-      expect(viewProjectsButton.parentElement).toHaveAttribute('href', '/admin/projects');
+      expect(viewProjectsButton).toHaveAttribute('href', '/admin/projects');
     });
 
     it('Case 6: Signed in, has the ability to view and create projects', () => {
-      const authState: IAuthState = {
-        keycloakWrapper: {
-          keycloak: {
-            authenticated: true
-          } as Keycloak,
-          isSystemUser: () => true,
-          hasLoadedAllUserInfo: true,
-          hasOneOrMoreProjectRoles: true,
-          systemRoles: [],
-          getUserIdentifier: () => 'testuser',
-          hasAccessRequest: false,
-          hasSystemRole: (systemRoles) => Boolean(systemRoles?.includes(SYSTEM_ROLE.PROJECT_CREATOR)),
-          getIdentitySource: () => null,
-          getUserGuid: () => 'testuserguid',
-          username: 'testuser',
-          displayName: 'Test User',
-          email: 'testuser@example.com',
-          refresh: () => {},
-          getLoginUrl: () => '/test-1-login-endpoint'
+      const authState = getMockAuthState({
+        base: SystemUserAuthState,
+        overrides: {
+          keycloakWrapper: {
+            hasOneOrMoreProjectRoles: true,
+            hasSystemRole: (systemRoles?: string[]) => Boolean(systemRoles?.includes(SYSTEM_ROLE.PROJECT_CREATOR))
+          }
         }
-      };
+      });
 
-      const { getByText, getByTestId, queryByText } = render(
+      const { getByTestId, queryByText } = render(
         <AuthStateContext.Provider value={authState}>
           <Router history={history}>
             <LandingPage />
@@ -305,40 +210,20 @@ describe('LandingPage', () => {
       expect(queryByText('Log In')).not.toBeInTheDocument();
 
       // Should see the View Projects button
-      const viewProjectsButton = getByText('View Projects');
+      const viewProjectsButton = getByTestId('landing_page_projects_button');
       expect(viewProjectsButton).toBeVisible();
-      expect(viewProjectsButton.parentElement).toHaveAttribute('href', '/admin/projects');
+      expect(viewProjectsButton).toHaveAttribute('href', '/admin/projects');
 
       // Should see the Create Project button
-      const createProjectButton = getByText('Create a Project');
+      const createProjectButton = getByTestId('landing_page_create_project_button');
       expect(createProjectButton).toBeVisible();
-      expect(createProjectButton.parentElement).toHaveAttribute('href', '/admin/projects/create');
+      expect(createProjectButton).toHaveAttribute('href', '/admin/projects/create');
     });
 
     it('Case 7: Signed in, has an admin role', () => {
-      const authState: IAuthState = {
-        keycloakWrapper: {
-          keycloak: {
-            authenticated: true
-          } as Keycloak,
-          isSystemUser: () => true,
-          hasLoadedAllUserInfo: true,
-          hasOneOrMoreProjectRoles: true,
-          systemRoles: [],
-          getUserIdentifier: () => 'testuser',
-          hasAccessRequest: false,
-          hasSystemRole: (systemRoles) => Boolean(systemRoles?.includes(SYSTEM_ROLE.SYSTEM_ADMIN)),
-          getIdentitySource: () => null,
-          getUserGuid: () => 'testuserguid',
-          username: 'testuser',
-          displayName: 'Test User',
-          email: 'testuser@example.com',
-          refresh: () => {},
-          getLoginUrl: () => '/test-1-login-endpoint'
-        }
-      };
+      const authState = getMockAuthState({ base: SystemAdminAuthState });
 
-      const { getByText, getByTestId, queryByText } = render(
+      const { getByTestId, queryByText } = render(
         <AuthStateContext.Provider value={authState}>
           <Router history={history}>
             <LandingPage />
@@ -349,15 +234,15 @@ describe('LandingPage', () => {
       // Should see "Welcome back, <user>"
       const greeting = getByTestId('landing_page_greeting');
       expect(greeting).toBeVisible();
-      expect(greeting).toHaveTextContent('Welcome back, testuser');
+      expect(greeting).toHaveTextContent('Welcome back, admin-username');
 
       // Should not see the Log In button
       expect(queryByText('Log In')).not.toBeInTheDocument();
 
       // Should see the View Projects button
-      const viewProjectsButton = getByText('View Projects');
+      const viewProjectsButton = getByTestId('landing_page_projects_button');
       expect(viewProjectsButton).toBeVisible();
-      expect(viewProjectsButton.parentElement).toHaveAttribute('href', '/admin/projects');
+      expect(viewProjectsButton).toHaveAttribute('href', '/admin/projects');
 
       // Should see the Manage Users button
       const manageUsersButton = getByTestId('landing_page_manage_users_button');

@@ -29,7 +29,6 @@ const systemUsers = [
     roleId: SYSTEM_USER_ROLE_ID.SYSTEM_ADMINISTRATOR,
     user_guid: 'DF86C48FAD244498B0881AF8DBB7645F'
   },
-
   {
     identifier: 'cgarrett',
     type: SYSTEM_IDENTITY_SOURCE.IDIR,

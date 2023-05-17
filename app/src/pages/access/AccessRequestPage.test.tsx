@@ -5,7 +5,7 @@ import { createMemoryHistory } from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import React from 'react';
 import { Router } from 'react-router';
-import { getMockAuthState } from 'test-helpers/auth-helpers';
+import { getMockAuthState, SystemAdminAuthState } from 'test-helpers/auth-helpers';
 import AccessRequestPage from './AccessRequestPage';
 
 const history = createMemoryHistory();
@@ -25,28 +25,10 @@ const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBioh
 );
 
 const renderContainer = () => {
-  const authState = getMockAuthState({
-    keycloakWrapper: {
-      keycloak: {
-        authenticated: true
-      },
-      hasLoadedAllUserInfo: true,
-      hasAccessRequest: false,
-
-      systemRoles: [],
-      getUserIdentifier: jest.fn(),
-      hasSystemRole: jest.fn(),
-      getIdentitySource: jest.fn(),
-      username: 'testusername',
-      displayName: 'testdisplayname',
-      email: 'test@email.com',
-      refresh: () => {},
-      getLoginUrl: () => '/login'
-    }
-  });
+  const authState = getMockAuthState({ base: SystemAdminAuthState });
 
   return render(
-    <AuthStateContext.Provider value={authState as any}>
+    <AuthStateContext.Provider value={authState}>
       <DialogContextProvider>
         <Router history={history}>
           <AccessRequestPage />
@@ -87,28 +69,10 @@ describe('AccessRequestPage', () => {
         system_roles: [{ id: 1, name: 'Creator' }]
       });
 
-      const authState = getMockAuthState({
-        keycloakWrapper: {
-          keycloak: {
-            authenticated: true
-          },
-          hasLoadedAllUserInfo: true,
-          hasAccessRequest: false,
-
-          systemRoles: [],
-          getUserIdentifier: jest.fn(),
-          hasSystemRole: jest.fn(),
-          getIdentitySource: jest.fn(),
-          username: 'testusername',
-          displayName: 'testdisplayname',
-          email: 'test@email.com',
-          refresh: () => {},
-          getLoginUrl: () => '/login'
-        }
-      });
+      const authState = getMockAuthState({ base: SystemAdminAuthState });
 
       const { getByText } = render(
-        <AuthStateContext.Provider value={authState as any}>
+        <AuthStateContext.Provider value={authState}>
           <Router history={history}>
             <AccessRequestPage />
           </Router>
@@ -156,28 +120,10 @@ describe('AccessRequestPage', () => {
       system_roles: [{ id: 1, name: 'Creator' }]
     });
 
-    const authState = getMockAuthState({
-      keycloakWrapper: {
-        keycloak: {
-          authenticated: true
-        },
-        hasLoadedAllUserInfo: true,
-        hasAccessRequest: false,
-
-        systemRoles: [],
-        getUserIdentifier: jest.fn(),
-        hasSystemRole: jest.fn(),
-        getIdentitySource: jest.fn(),
-        username: '',
-        displayName: '',
-        email: '',
-        refresh: () => {},
-        getLoginUrl: () => '/login'
-      }
-    });
+    const authState = getMockAuthState({ base: SystemAdminAuthState });
 
     render(
-      <AuthStateContext.Provider value={authState as any}>
+      <AuthStateContext.Provider value={authState}>
         <Router history={history}>
           <AccessRequestPage />
         </Router>

@@ -1,32 +1,17 @@
-import { cleanup, render, waitFor } from 'test-helpers/test-utils';
-import { SYSTEM_ROLE } from 'constants/roles';
-import { AuthStateContext, IAuthState } from 'contexts/authStateContext';
+import { render, waitFor, fireEvent } from 'test-helpers/test-utils';
+import { AuthStateContext } from 'contexts/authStateContext';
 import { createMemoryHistory } from 'history';
-import Keycloak from 'keycloak-js';
 import React from 'react';
 import { Router } from 'react-router';
+import { getMockAuthState, SystemAdminAuthState, SystemUserAuthState } from 'test-helpers/auth-helpers';
 import RequestSubmitted from './RequestSubmitted';
 
 describe('RequestSubmitted', () => {
   it('renders a spinner when `hasLoadedAllUserInfo` is false', () => {
-    const authState: IAuthState = {
-      keycloakWrapper: {
-        hasLoadedAllUserInfo: false,
-        systemRoles: [],
-        hasAccessRequest: false,
-        isSystemUser: () => false,
-        getUserGuid: () => 'aaaa',
-        keycloak: {} as Keycloak,
-        getUserIdentifier: jest.fn(),
-        hasSystemRole: jest.fn(),
-        getIdentitySource: jest.fn(),
-        username: 'testusername',
-        displayName: 'testdisplayname',
-        email: 'test@email.com',
-
-        refresh: () => {}
-      }
-    };
+    const authState = getMockAuthState({
+      base: SystemUserAuthState,
+      overrides: { keycloakWrapper: { hasLoadedAllUserInfo: false } }
+    });
 
     const history = createMemoryHistory();
 
@@ -48,23 +33,7 @@ describe('RequestSubmitted', () => {
   });
 
   it('redirects to `/admin/projects` when user has at least 1 system role', () => {
-    const authState: IAuthState = {
-      keycloakWrapper: {
-        hasLoadedAllUserInfo: true,
-        systemRoles: [SYSTEM_ROLE.PROJECT_CREATOR],
-        hasAccessRequest: false,
-        isSystemUser: () => false,
-        getUserGuid: () => 'aaaa',
-        keycloak: {} as Keycloak,
-        getUserIdentifier: jest.fn(),
-        hasSystemRole: jest.fn(),
-        getIdentitySource: jest.fn(),
-        username: 'testusername',
-        displayName: 'testdisplayname',
-        email: 'test@email.com',
-        refresh: () => {}
-      }
-    };
+    const authState = getMockAuthState({ base: SystemAdminAuthState });
 
     const history = createMemoryHistory();
 
@@ -82,23 +51,7 @@ describe('RequestSubmitted', () => {
   });
 
   it('redirects to `/` when user has no pending access request', () => {
-    const authState: IAuthState = {
-      keycloakWrapper: {
-        hasLoadedAllUserInfo: true,
-        systemRoles: [],
-        hasAccessRequest: false,
-        isSystemUser: () => false,
-        getUserGuid: () => 'aaaa',
-        keycloak: {} as Keycloak,
-        getUserIdentifier: jest.fn(),
-        hasSystemRole: jest.fn(),
-        getIdentitySource: jest.fn(),
-        username: 'testusername',
-        displayName: 'testdisplayname',
-        email: 'test@email.com',
-        refresh: () => {}
-      }
-    };
+    const authState = getMockAuthState({ base: SystemUserAuthState });
 
     const history = createMemoryHistory();
 
@@ -116,23 +69,10 @@ describe('RequestSubmitted', () => {
   });
 
   it('renders correctly when user has no role but has a pending access requests', () => {
-    const authState: IAuthState = {
-      keycloakWrapper: {
-        hasLoadedAllUserInfo: true,
-        systemRoles: [],
-        hasAccessRequest: true,
-        isSystemUser: () => false,
-        getUserGuid: () => 'aaaa',
-        keycloak: {} as Keycloak,
-        getUserIdentifier: jest.fn(),
-        hasSystemRole: jest.fn(),
-        getIdentitySource: jest.fn(),
-        username: 'testusername',
-        displayName: 'testdisplayname',
-        email: 'test@email.com',
-        refresh: () => {}
-      }
-    };
+    const authState = getMockAuthState({
+      base: SystemUserAuthState,
+      overrides: { keycloakWrapper: { hasAccessRequest: true } }
+    });
 
     const history = createMemoryHistory();
 
@@ -159,23 +99,10 @@ describe('RequestSubmitted', () => {
     const history = createMemoryHistory();
 
     it('should redirect to `/logout`', async () => {
-      const authState: IAuthState = {
-        keycloakWrapper: {
-          hasLoadedAllUserInfo: true,
-          systemRoles: [],
-          hasAccessRequest: true,
-          isSystemUser: () => false,
-          getUserGuid: () => 'aaaa',
-          keycloak: {} as Keycloak,
-          getUserIdentifier: jest.fn(),
-          hasSystemRole: jest.fn(),
-          getIdentitySource: jest.fn(),
-          username: 'testusername',
-          displayName: 'testdisplayname',
-          email: 'test@email.com',
-          refresh: () => {}
-        }
-      };
+      const authState = getMockAuthState({
+        base: SystemUserAuthState,
+        overrides: { keycloakWrapper: { hasAccessRequest: true } }
+      });
 
       const { getByTestId } = render(
         <AuthStateContext.Provider value={authState}>

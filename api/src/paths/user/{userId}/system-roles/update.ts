@@ -2,7 +2,6 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../../../constants/roles';
 import { getDBConnection } from '../../../../database/db';
-import { HTTP400 } from '../../../../errors/http-error';
 import { authorizeRequestHandler } from '../../../../request-handlers/security/authorization';
 import { UserService } from '../../../../services/user-service';
 import { getLogger } from '../../../../utils/logger';
@@ -36,7 +35,8 @@ PATCH.apiDoc = {
       in: 'path',
       name: 'userId',
       schema: {
-        type: 'number'
+        type: 'integer',
+        minimum: 1
       },
       required: true
     }
@@ -52,9 +52,11 @@ PATCH.apiDoc = {
             roles: {
               type: 'array',
               items: {
-                type: 'number'
+                type: 'integer',
+                minimum: 1
               },
-              description: 'An array of role ids'
+              minItems: 1,
+              description: 'An array of one or more role ids'
             }
           }
         }
@@ -92,14 +94,6 @@ export function updateSystemRolesHandler(): RequestHandler {
       req_body: req.body
     });
 
-    if (!req.params || !req.params.userId) {
-      throw new HTTP400('Missing required path param: userId');
-    }
-
-    if (!req.body || !req.body.roles || !req.body.roles.length) {
-      throw new HTTP400('Missing required body param: roles');
-    }
-
     const userId = Number(req.params.userId);
     const roles: number[] = req.body.roles;
     const connection = getDBConnection(req['keycloak_token']);
@@ -110,10 +104,6 @@ export function updateSystemRolesHandler(): RequestHandler {
       const userService = new UserService(connection);
 
       const userObject = await userService.getUserById(userId);
-
-      if (!userObject) {
-        throw new HTTP400('Failed to get system user');
-      }
 
       if (userObject.role_ids.length) {
         await userService.deleteUserSystemRoles(userId);

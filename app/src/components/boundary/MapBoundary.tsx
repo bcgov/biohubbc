@@ -63,10 +63,10 @@ export interface IMapBoundaryProps {
 /**
  * Shared component for map boundary component
  *
- * @param {*} props
+ * @param {IMapBoundaryProps} props
  * @return {*}
  */
-const MapBoundary: React.FC<IMapBoundaryProps> = (props) => {
+const MapBoundary = (props: IMapBoundaryProps) => {
   const classes = useStyles();
 
   const { name, title, mapId, bounds, formikProps } = props;
@@ -89,16 +89,14 @@ const MapBoundary: React.FC<IMapBoundaryProps> = (props) => {
   }, [updatedBounds]);
 
   const boundaryUploadHandler = (): IUploadHandler => {
-    return (file) => {
+    return async (file) => {
       if (file?.type.includes('zip') || file?.name.includes('.zip')) {
         handleShapefileUpload(file, name, formikProps);
       } else if (file?.type.includes('gpx') || file?.name.includes('.gpx')) {
-        handleGPXUpload(file, name, formikProps);
+        await handleGPXUpload(file, name, formikProps);
       } else if (file?.type.includes('kml') || file?.name.includes('.kml')) {
-        handleKMLUpload(file, name, formikProps);
+        await handleKMLUpload(file, name, formikProps);
       }
-
-      return Promise.resolve();
     };
   };
 

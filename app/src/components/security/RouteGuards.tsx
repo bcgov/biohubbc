@@ -124,9 +124,9 @@ const CheckForKeycloakAuthenticated = (props: PropsWithChildren<Record<never, un
 
   const location = useLocation();
 
-  if (!keycloakWrapper?.keycloak?.authenticated) {
+  if (!keycloakWrapper?.keycloak.authenticated) {
     // Trigger login, then redirect to the desired route
-    return <Redirect to={`/login?next=${encodeURIComponent(location.pathname)}`} />;
+    return <Redirect to={`/login?redirect=${encodeURIComponent(location.pathname)}`} />;
   }
 
   return <>{props.children}</>;
@@ -222,7 +222,7 @@ const CheckIfNotAuthenticatedUser = (props: PropsWithChildren<Record<never, unkn
   const { keycloakWrapper } = useContext(AuthStateContext);
   const { redirect } = useRedirect('/');
 
-  if (keycloakWrapper?.keycloak?.authenticated) {
+  if (keycloakWrapper?.keycloak.authenticated) {
     /**
      * If the user happens to be authenticated, rather than just redirecting them to `/`, we can
      * check if the URL contains a redirect query param, and send them there instead (for
