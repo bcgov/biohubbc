@@ -47,9 +47,7 @@ export interface ISendGCNotifySMSMessage {
 }
 
 const EMAIL_TEMPLATE = process.env.GCNOTIFY_ONBOARDING_REQUEST_EMAIL_TEMPLATE || '';
-//TODO: ENV var not catching
-const REQUEST_REMOVAL_TEMPLATE =
-  process.env.GCNOTIFY_REQUEST_REMOVAL_TEMPLATE || 'c973da33-1f2b-435a-9429-d8ab4fd273c5';
+const REQUEST_REMOVAL_TEMPLATE = process.env.GCNOTIFY_REQUEST_REMOVAL_TEMPLATE || '';
 const SMS_TEMPLATE = process.env.GCNOTIFY_ONBOARDING_REQUEST_SMS_TEMPLATE || '';
 const EMAIL_URL = process.env.GCNOTIFY_EMAIL_URL || '';
 const SMS_URL = process.env.GCNOTIFY_SMS_URL || '';
@@ -131,8 +129,6 @@ export class GCNotifyService {
       }
     };
     console.log('REQUEST_REMOVAL_TEMPLATE', REQUEST_REMOVAL_TEMPLATE);
-    console.log('process.env', process.env);
-
     console.log('data', data);
     console.log('EMAIL_URL', EMAIL_URL);
     console.log('config', config);
@@ -140,6 +136,7 @@ export class GCNotifyService {
     const response = await axios.post(EMAIL_URL, data, config);
 
     const result = (response && response.data) || null;
+    console.log('result', result);
 
     if (!result) {
       throw new ApiError(ApiErrorType.UNKNOWN, 'Failed to send Notification');

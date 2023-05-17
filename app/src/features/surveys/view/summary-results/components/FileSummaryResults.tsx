@@ -95,6 +95,7 @@ const FileSummaryResults = (props: IFileResultsProps) => {
     icon = mdiLockOutline;
   }
 
+  //TODO: get file size
   return (
     <>
       <RemoveOrResubmitDialog
@@ -104,6 +105,7 @@ const FileSummaryResults = (props: IFileResultsProps) => {
           (RemoveOrResubmitDialogFile?.surveySummarySupplementaryData && PublishStatus.SUBMITTED) ||
           PublishStatus.UNSUBMITTED
         }
+        submittedDate={RemoveOrResubmitDialogFile?.surveySummarySupplementaryData?.event_timestamp || ''}
         open={openRemoveOrResubmitDialog}
         setOpen={setOpenRemoveOrResubmitDialog}
         onClose={() => setOpenRemoveOrResubmitDialog(false)}

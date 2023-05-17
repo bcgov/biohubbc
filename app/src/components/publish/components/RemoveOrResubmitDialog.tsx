@@ -27,6 +27,7 @@ export interface IRemoveOrResubmitDialog {
   fileName: string;
   status: PublishStatus;
   size: number;
+  submittedDate?: string;
   open: boolean;
   setOpen: (isOpen: boolean) => void;
   onClose: () => void;
@@ -38,7 +39,7 @@ export interface IRemoveOrResubmitDialog {
  * @return {*}
  */
 const RemoveOrResubmitDialog: React.FC<IRemoveOrResubmitDialog> = (props) => {
-  const { fileName, status, size, open, onClose } = props;
+  const { fileName, status, size, submittedDate, open, onClose } = props;
 
   const theme = useTheme();
   const biohubApi = useBiohubApi();
@@ -100,7 +101,7 @@ const RemoveOrResubmitDialog: React.FC<IRemoveOrResubmitDialog> = (props) => {
               <strong>File Details</strong>
             </Typography>
             <Box py={2}>
-              <AttachmentsFileCard fileName={fileName} status={status} size={size} />
+              <AttachmentsFileCard fileName={fileName} status={status} size={size} submittedDate={submittedDate} />
             </Box>
           </Box>
 

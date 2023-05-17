@@ -46,6 +46,7 @@ const AttachmentsListItemMenuButton = <T extends IGetProjectAttachment | IGetSur
           (RemoveOrResubmitDialogFile?.supplementaryAttachmentData && PublishStatus.SUBMITTED) ||
           PublishStatus.UNSUBMITTED
         }
+        submittedDate={RemoveOrResubmitDialogFile?.supplementaryAttachmentData?.event_timestamp || ''}
         open={openRemoveOrResubmitDialog}
         setOpen={setOpenRemoveOrResubmitDialog}
         onClose={() => setOpenRemoveOrResubmitDialog(false)}

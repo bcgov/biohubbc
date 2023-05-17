@@ -2,6 +2,7 @@ import { Box, Chip, Paper, Typography } from '@material-ui/core';
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import { mdiFileOutline } from '@mdi/js';
 import Icon from '@mdi/react';
+import clsx from 'clsx';
 import { PublishStatus } from 'constants/attachments';
 import React from 'react';
 
@@ -56,11 +57,17 @@ export interface IAttachmentsFileCardProps {
   fileName: string;
   status: PublishStatus;
   size: number;
+  submittedDate?: string;
 }
 
 const AttachmentsFileCard = (props: IAttachmentsFileCardProps) => {
   const classes = useStyles();
 
+  let submittedDate = 'YYYY-MM-DD';
+
+  if (props.submittedDate) {
+    submittedDate = new Date(props.submittedDate).toISOString().split('T')[0];
+  }
   return (
     <Paper variant="outlined" className={classes.importFile}>
       <Box display="flex" alignItems="center" flex="1 1 auto" style={{ overflow: 'hidden' }}>
@@ -80,8 +87,12 @@ const AttachmentsFileCard = (props: IAttachmentsFileCardProps) => {
           <Chip
             title={props.status === PublishStatus.SUBMITTED ? 'SUBMITTED' : 'UNSUBMITTED'}
             variant="outlined"
-            className={classes.chip}
-            label={props.status === PublishStatus.SUBMITTED ? 'SUBMITTED: YYYY-MM-DD' : 'UNSUBMITTED'}
+            className={
+              props.status === PublishStatus.SUBMITTED
+                ? clsx(classes.chip, classes.chipSubmitted)
+                : clsx(classes.chip, classes.chipUnSubmitted)
+            }
+            label={props.status === PublishStatus.SUBMITTED ? `SUBMITTED: ${submittedDate}` : 'UNSUBMITTED'}
           />
         </Box>
       </Box>

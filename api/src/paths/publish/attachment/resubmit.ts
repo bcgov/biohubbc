@@ -72,12 +72,8 @@ POST.apiDoc = {
       content: {
         'application/json': {
           schema: {
-            type: 'object',
-            properties: {
-              data: {
-                type: 'string'
-              }
-            }
+            title: 'email sent response',
+            type: 'boolean'
           }
         }
       }
@@ -144,12 +140,15 @@ export function resubmitAttachment(): RequestHandler {
       await connection.open();
 
       const gcNotifyService = new GCNotifyService();
-      await gcNotifyService.requestRemovalEmailNotification(resubmitData.formValues.email_address, submitterMessage);
-      await gcNotifyService.requestRemovalEmailNotification(adminEmail, adminMessage);
+      const responseUser = await gcNotifyService.requestRemovalEmailNotification(
+        resubmitData.formValues.email_address,
+        submitterMessage
+      );
+      const responseAdmin = await gcNotifyService.requestRemovalEmailNotification(adminEmail, adminMessage);
 
       await connection.commit();
 
-      return res.status(200).json({ data: 'ok' });
+      return res.status(200).json(responseUser.id && responseAdmin.id && true);
     } catch (error) {
       defaultLog.error({ label: 'publishProject', message: 'error', error });
       await connection.rollback();
