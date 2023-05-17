@@ -1,4 +1,3 @@
-import { Client } from '@elastic/elasticsearch';
 import {
   AggregationsAggregate,
   QueryDslBoolQuery,
@@ -7,6 +6,7 @@ import {
   SearchResponse
 } from '@elastic/elasticsearch/lib/api/types';
 import { getLogger } from '../utils/logger';
+import { ElasticSearchIndices, ESService } from './es-service';
 
 const defaultLog = getLogger('services/taxonomy-service');
 
@@ -21,6 +21,8 @@ export interface ITaxonomySource {
   english_name: string;
   note: string | null;
   end_date: string | null;
+  parent_id: number | null;
+  parent_hierarchy: { id: number; level: string }[];
 }
 
 export interface IEnrichedTaxonomyData {
@@ -29,25 +31,29 @@ export interface IEnrichedTaxonomyData {
 }
 
 /**
+ * Service for retrieving and processing taxonomic data from Elasticsearch.
  *
- * Service for retreiving and processing taxonomic data from Elasticsearch.
+ * @export
+ * @class TaxonomyService
+ * @extends {ESService}
  */
-export class TaxonomyService {
+export class TaxonomyService extends ESService {
   /**
-   *
    * Performs a query in Elasticsearch based on the given search criteria
+   *
    * @param {SearchRequest} searchRequest The Elastic search request object
-   * @returns {Promise<SearchResponse<ITaxonomySource, Record<string, AggregationsAggregate>> | undefined>}
+   * @return {*}  {(Promise<SearchResponse<ITaxonomySource, Record<string, AggregationsAggregate>> | undefined>)}
    * Promise resolving the search results from Elasticsearch
+   * @memberof TaxonomyService
    */
-  async _elasticSearch(
+  async elasticSearch(
     searchRequest: SearchRequest
   ): Promise<SearchResponse<ITaxonomySource, Record<string, AggregationsAggregate>> | undefined> {
     try {
-      const client = new Client({ node: process.env.ELASTICSEARCH_URL });
+      const esClient = await this.getEsClient();
 
-      return client.search({
-        index: process.env.ELASTICSEARCH_TAXONOMY_INDEX,
+      return esClient.search({
+        index: ElasticSearchIndices.TAXONOMY,
         ...searchRequest
       });
     } catch (error) {
@@ -56,10 +62,10 @@ export class TaxonomyService {
   }
 
   /**
-   *
    * Sanitizes species data retrieved from Elasticsearch.
+   *
    * @param {SearchHit<ITaxonomySource>[]} data The data response from ElasticSearch
-   * @returns {{ id: string, label: string }[]} An ID and label pair for each taxonomic code
+   * @return {*}  {{ id: string; label: string }[]} An ID and label pair for each taxonomic code
    * @memberof TaxonomyService
    */
   _sanitizeSpeciesData = (data: SearchHit<ITaxonomySource>[]): { id: string; label: string }[] => {
@@ -81,8 +87,8 @@ export class TaxonomyService {
   };
 
   /**
-   *
    * Searches the taxonomy Elasticsearch index by taxonomic code IDs
+   *
    * @param {string[] | number[]} ids The array of taxonomic code IDs
    * @return {Promise<SearchHit<ITaxonomySource>[]>} The response from Elasticsearch
    * @memberof TaxonomyService
@@ -90,7 +96,7 @@ export class TaxonomyService {
   async getTaxonomyFromIds(ids: string[] | number[]): Promise<SearchHit<ITaxonomySource>[]> {
     defaultLog.debug({ label: 'getTaxonomyFromIds' });
 
-    const response = await this._elasticSearch({
+    const response = await this.elasticSearch({
       query: {
         terms: {
           _id: ids
@@ -106,14 +112,14 @@ export class TaxonomyService {
   }
 
   /**
-   *
    * Searches the taxonomy Elasticsearch index by taxonomic code IDs and santizes the response
+   *
    * @param {string[] | number[]} ids The array of taxonomic code IDs
    * @returns {Promise<{ id: string, label: string}[]>} Promise resolving an ID and label pair for each taxonomic code
    * @memberof TaxonomyService
    */
   async getSpeciesFromIds(ids: string[] | number[]): Promise<{ id: string; label: string }[]> {
-    const response = await this._elasticSearch({
+    const response = await this.elasticSearch({
       query: {
         terms: {
           _id: ids
@@ -125,7 +131,6 @@ export class TaxonomyService {
   }
 
   /**
-   *
    * Maps a taxonomic search term to an Elasticsearch query, then performs the query and sanitizes the response.
    * The query also includes a boolean match to only include records whose `end_date` field is either
    * undefined/null or is a date that hasn't occurred yet. This filtering is not done on similar ES queries,
@@ -140,7 +145,7 @@ export class TaxonomyService {
 
     const splitTerms = term.split(' ');
 
-    splitTerms.forEach((item: string) => {
+    splitTerms.forEach((item) => {
       searchConfig.push({
         wildcard: {
           english_name: { value: `*${item}*`, boost: 4.0, case_insensitive: true }
@@ -161,7 +166,7 @@ export class TaxonomyService {
       });
     });
 
-    const response = await this._elasticSearch({
+    const response = await this.elasticSearch({
       query: {
         bool: {
           must: [
@@ -217,7 +222,7 @@ export class TaxonomyService {
    * @memberof TaxonomyService
    */
   async getEnrichedDataForSpeciesCode(taxonCode: string): Promise<IEnrichedTaxonomyData | null> {
-    const response = await this._elasticSearch({
+    const response = await this.elasticSearch({
       query: {
         bool: {
           must: [
@@ -247,6 +252,6 @@ export class TaxonomyService {
       }
     });
 
-    return response && response.hits.hits.length ? this._formatEnrichedData(response.hits.hits[0]) : null;
+    return response?.hits.hits.length ? this._formatEnrichedData(response.hits.hits[0]) : null;
   }
 }

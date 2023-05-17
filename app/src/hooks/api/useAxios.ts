@@ -30,7 +30,7 @@ const useAxios = (baseUrl?: string): AxiosInstance => {
   return useMemo(() => {
     const instance = axios.create({
       headers: {
-        Authorization: `Bearer ${keycloak?.token}`
+        Authorization: `Bearer ${keycloak.token}`
       },
       baseURL: baseUrl && ensureProtocol(baseUrl)
     });
@@ -46,7 +46,7 @@ const useAxios = (baseUrl?: string): AxiosInstance => {
 
     return instance;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [keycloak, keycloak?.token]);
+  }, [keycloak, keycloak.token]);
 };
 
 export default useAxios;

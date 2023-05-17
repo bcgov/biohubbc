@@ -1,9 +1,9 @@
 import { cleanup, render } from '@testing-library/react';
-import { AuthStateContext, IAuthState } from 'contexts/authStateContext';
+import { AuthStateContext } from 'contexts/authStateContext';
 import { createMemoryHistory } from 'history';
-import Keycloak from 'keycloak-js';
 import React from 'react';
 import { Router } from 'react-router-dom';
+import { getMockAuthState, UnauthenticatedUserAuthState } from 'test-helpers/auth-helpers';
 import LoginPage from './LoginPage';
 
 const history = createMemoryHistory();
@@ -16,30 +16,18 @@ describe('LoginPage', () => {
   it('Should call keycloak login', async () => {
     const mockLoginFunction = jest.fn();
 
-    const authState: IAuthState = {
-      keycloakWrapper: {
-        keycloak: {
-          authenticated: false,
-          login: () => {
-            mockLoginFunction();
+    const authState = getMockAuthState({
+      base: UnauthenticatedUserAuthState,
+      overrides: {
+        keycloakWrapper: {
+          keycloak: {
+            login: () => {
+              mockLoginFunction();
+            }
           }
-        } as Keycloak,
-        isSystemUser: () => false,
-        hasLoadedAllUserInfo: false,
-        hasOneOrMoreProjectRoles: false,
-        systemRoles: [],
-        getUserIdentifier: () => null,
-        hasAccessRequest: false,
-        hasSystemRole: () => false,
-        getIdentitySource: () => null,
-        getUserGuid: () => null,
-        username: undefined,
-        displayName: undefined,
-        email: undefined,
-        refresh: () => {},
-        getLoginUrl: () => '/my-test-login'
+        }
       }
-    };
+    });
 
     render(
       <AuthStateContext.Provider value={authState}>

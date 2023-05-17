@@ -7,14 +7,14 @@ import {
   waitFor
 } from '@testing-library/react';
 import { AttachmentType } from 'constants/attachments';
-import { AuthStateContext, IAuthState } from 'contexts/authStateContext';
+import { AuthStateContext } from 'contexts/authStateContext';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { IProjectAuthStateContext, ProjectAuthStateContext } from 'contexts/projectAuthStateContext';
 import { IProjectContext, ProjectContext } from 'contexts/projectContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { DataLoader } from 'hooks/useDataLoader';
-import { IKeycloakWrapper } from 'hooks/useKeycloakWrapper';
 import React from 'react';
+import { getMockAuthState, SystemAdminAuthState } from 'test-helpers/auth-helpers';
 import ProjectAttachments from './ProjectAttachments';
 
 jest.mock('../../../hooks/useBioHubApi');
@@ -186,12 +186,10 @@ describe('ProjectAttachments', () => {
       hasLoadedParticipantInfo: true
     };
 
-    const mockAuthStateContext: IAuthState = {
-      keycloakWrapper: ({ hasSystemRole: () => true } as unknown) as IKeycloakWrapper
-    };
+    const authState = getMockAuthState({ base: SystemAdminAuthState });
 
     const { baseElement, queryByText, getByTestId, getAllByTestId, queryByTestId } = render(
-      <AuthStateContext.Provider value={mockAuthStateContext}>
+      <AuthStateContext.Provider value={authState}>
         <ProjectAuthStateContext.Provider value={mockProjectAuthStateContext}>
           <DialogContextProvider>
             <ProjectContext.Provider value={mockProjectContext}>
@@ -254,12 +252,10 @@ describe('ProjectAttachments', () => {
       hasLoadedParticipantInfo: true
     };
 
-    const mockAuthStateContext: IAuthState = {
-      keycloakWrapper: ({ hasSystemRole: () => true } as unknown) as IKeycloakWrapper
-    };
+    const authState = getMockAuthState({ base: SystemAdminAuthState });
 
     const { baseElement, queryByText, getByTestId, queryByTestId, getAllByTestId } = render(
-      <AuthStateContext.Provider value={mockAuthStateContext}>
+      <AuthStateContext.Provider value={authState}>
         <ProjectAuthStateContext.Provider value={mockProjectAuthStateContext}>
           <DialogContextProvider>
             <ProjectContext.Provider value={mockProjectContext}>
@@ -324,12 +320,10 @@ describe('ProjectAttachments', () => {
       hasLoadedParticipantInfo: true
     };
 
-    const mockAuthStateContext: IAuthState = {
-      keycloakWrapper: ({ hasSystemRole: () => true } as unknown) as IKeycloakWrapper
-    };
+    const authState = getMockAuthState({ base: SystemAdminAuthState });
 
     const { baseElement, queryByText, getAllByRole, queryByTestId, getAllByTestId } = render(
-      <AuthStateContext.Provider value={mockAuthStateContext}>
+      <AuthStateContext.Provider value={authState}>
         <ProjectAuthStateContext.Provider value={mockProjectAuthStateContext}>
           <DialogContextProvider>
             <ProjectContext.Provider value={mockProjectContext}>

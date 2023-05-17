@@ -115,7 +115,7 @@ export const AccessRequestPage: React.FC = () => {
     }
   };
 
-  if (!keycloakWrapper?.keycloak?.authenticated) {
+  if (!keycloakWrapper?.keycloak.authenticated) {
     // User is not logged in
     return <Redirect to={{ pathname: '/' }} />;
   }
@@ -170,9 +170,9 @@ export const AccessRequestPage: React.FC = () => {
           validationSchema={validationSchema}
           validateOnBlur={true}
           validateOnChange={false}
-          onSubmit={(values) => {
+          onSubmit={async (values) => {
             setIsSubmittingRequest(true);
-            handleSubmitAccessRequest(values);
+            await handleSubmitAccessRequest(values);
           }}>
           {({ handleSubmit }) => (
             <Box component={Paper} p={3}>
