@@ -21,7 +21,6 @@ import { ICreateProjectRequest } from 'interfaces/useProjectApi.interface';
 import React, { useState } from 'react';
 import { getFormattedAmount, getFormattedDateRangeString } from 'utils/Utils';
 import yup from 'utils/YupSchema';
-import { v4 as uuidv4 } from 'uuid';
 import ProjectFundingItemForm, {
   IFundingSourceAutocompleteField,
   IProjectFundingFormArrayItem,
@@ -159,9 +158,13 @@ const ProjectFundingForm: React.FC<IProjectFundingFormProps> = (props) => {
                     const investment_action_category_value = props.investment_action_category.filter(
                       (item) => item.value === fundingSource.investment_action_category
                     )?.[0]?.label;
-
+                    const key = [
+                      getCodeValueNameByID(props.first_nations, fundingSource.first_nations_id) ||
+                        getCodeValueNameByID(props.funding_sources, fundingSource.agency_id),
+                      index
+                    ].join('-');
                     return (
-                      <Card key={uuidv4()} variant="outlined" className={classes.fundingSourceItem}>
+                      <Card key={key} variant="outlined" className={classes.fundingSourceItem}>
                         <CardHeader
                           title={
                             <Typography className={classes.title}>
