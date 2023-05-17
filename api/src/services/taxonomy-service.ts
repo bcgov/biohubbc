@@ -73,18 +73,15 @@ export class TaxonomyService extends ESService {
       const { _id: id, _source } = item;
 
       const label = [
-        _source?.code,
         [
-          [_source?.tty_kingdom, _source?.tty_name].filter(Boolean).join(' '),
-          [_source?.unit_name1, _source?.unit_name2, _source?.unit_name3].filter(Boolean).join(' '),
-          _source?.english_name
+          _source?.english_name,
+          [_source?.unit_name1, _source?.unit_name2, _source?.unit_name3].filter(Boolean).join(' ')
         ]
           .filter(Boolean)
           .join(', ')
       ]
         .filter(Boolean)
         .join(': ');
-
       return { id, label };
     });
   };
