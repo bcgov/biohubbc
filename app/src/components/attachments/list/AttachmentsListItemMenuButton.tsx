@@ -120,9 +120,7 @@ const AttachmentsListItemMenuButton = <T extends IGetProjectAttachment | IGetSur
             </SystemRoleGuard>
             <ProjectRoleGuard
               validProjectRoles={[PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR]}
-              validSystemRoles={[
-                SYSTEM_ROLE.PROJECT_CREATOR
-              ]}>
+              validSystemRoles={[SYSTEM_ROLE.PROJECT_CREATOR]}>
               <MenuItem
                 onClick={() => {
                   setRemoveOrResubmitDialogFile(props.attachment);
