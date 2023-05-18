@@ -6,23 +6,10 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import { IBaseDialogProps } from 'contexts/dialogContext';
 import React from 'react';
 
-export interface IErrorDialogProps {
-  /**
-   * The dialog window title text.
-   *
-   * @type {string}
-   * @memberof IErrorDialogProps
-   */
-  dialogTitle: string;
-  /**
-   * The dialog window body text.
-   *
-   * @type {string}
-   * @memberof IErrorDialogProps
-   */
-  dialogText: string;
+export interface IErrorDialogProps extends IBaseDialogProps {
   /**
    * The dialog window human friendly error (optional).
    *
@@ -37,19 +24,6 @@ export interface IErrorDialogProps {
    * @memberof IErrorDialogProps
    */
   dialogErrorDetails?: (string | object)[];
-  /**
-   * Set to `true` to open the dialog, `false` to close the dialog.
-   *
-   * @type {boolean}
-   * @memberof IErrorDialogProps
-   */
-  open: boolean;
-  /**
-   * Callback fired if the dialog is closed.
-   *
-   * @memberof IErrorDialogProps
-   */
-  onClose: () => void;
   /**
    * Callback fired if the 'Ok' button is clicked.
    *

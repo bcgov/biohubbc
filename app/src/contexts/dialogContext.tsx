@@ -6,17 +6,47 @@ import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import YesNoDialog, { IYesNoDialogProps } from 'components/dialog/YesNoDialog';
 import React, { createContext, ReactNode, useState } from 'react';
 
+export interface IBaseDialogProps {
+  /**
+   * The dialog window title text.
+   *
+   * @type {string}
+   * @memberof IYesNoDialogProps
+   */
+  dialogTitle: string;
+  /**
+   * The dialog window body text.
+   *
+   * @type {string}
+   * @memberof IYesNoDialogProps
+   */
+  dialogText: string;
+  /**
+   * Set to `true` to open the dialog, `false` to close the dialog.
+   *
+   * @type {boolean}
+   * @memberof IYesNoDialogProps
+   */
+  open: boolean;
+  /**
+   * Callback fired if the dialog is closed.
+   *
+   * @memberof IYesNoDialogProps
+   */
+  onClose: () => void;
+}
+
 export interface IDialogContext {
   /**
-   * Set the yes no dialog props.
+   * Set the yes-no dialog props.
    *
    * Note: Any props that are not provided, will default to whatever value was previously set (or the default value)
    *
    * @memberof IDialogContext
    */
-  setYesNoDialog: (props: Partial<IYesNoDialogProps>) => void;
+  showYesNoDialog: (props: Partial<IYesNoDialogProps>) => void;
   /**
-   * The current yes no dialog props.
+   * The current yes-no dialog props.
    *
    * @type {IYesNoDialogProps}
    * @memberof IDialogContext
@@ -29,7 +59,7 @@ export interface IDialogContext {
    *
    * @memberof IDialogContext
    */
-  setErrorDialog: (props: Partial<IErrorDialogProps>) => void;
+  showErrorDialog: (props: Partial<IErrorDialogProps>) => void;
   /**
    * The current error dialog props.
    *
@@ -44,7 +74,7 @@ export interface IDialogContext {
    *
    * @memberof IDialogContext
    */
-  setSnackbar: (props: Partial<ISnackbarProps>) => void;
+  showSnackbar: (props: Partial<ISnackbarProps>) => void;
   /**
    * The current snackbar props.
    *
@@ -52,6 +82,12 @@ export interface IDialogContext {
    * @memberof IDialogContext
    */
   snackbarProps: ISnackbarProps;
+  /**
+   * Closes all dialogs
+   * 
+   * @memberof IDialogContext
+   */
+  hideDialog: () => void;
 }
 
 export interface ISnackbarProps {
@@ -98,18 +134,21 @@ export const defaultSnackbarProps: ISnackbarProps = {
 };
 
 export const DialogContext = createContext<IDialogContext>({
-  setYesNoDialog: () => {
+  showYesNoDialog: () => {
     // default do nothing
   },
   yesNoDialogProps: defaultYesNoDialogProps,
-  setErrorDialog: () => {
+  showErrorDialog: () => {
     // default do nothing
   },
   errorDialogProps: defaultErrorDialogProps,
-  setSnackbar: () => {
+  showSnackbar: () => {
     // default do nothing
   },
-  snackbarProps: defaultSnackbarProps
+  snackbarProps: defaultSnackbarProps,
+  hideDialog: () => {
+    // default do nothing
+  }
 });
 
 /**
@@ -119,33 +158,43 @@ export const DialogContext = createContext<IDialogContext>({
  * @return {*}
  */
 export const DialogContextProvider: React.FC = (props) => {
-  const [yesNoDialogProps, setYesNoDialogProps] = useState<IYesNoDialogProps>(defaultYesNoDialogProps);
+  const [yesNoDialogProps, setYesNoDialogProps] = useState<IYesNoDialogProps>({
+    ...defaultYesNoDialogProps,
+    onYes: () => hideDialog()
+  });
+
+  const hideDialog = () => {
+    setYesNoDialogProps({ ...yesNoDialogProps, open: false });
+    setErrorDialogProps({ ...errorDialogProps, open: false });
+    setSnackbarProps({ ...snackbarProps, open: false });
+  }
 
   const [errorDialogProps, setErrorDialogProps] = useState<IErrorDialogProps>(defaultErrorDialogProps);
 
   const [snackbarProps, setSnackbarProps] = useState<ISnackbarProps>(defaultSnackbarProps);
 
-  const setYesNoDialog = function (partialProps: Partial<IYesNoDialogProps>) {
-    setYesNoDialogProps({ ...yesNoDialogProps, ...partialProps });
+  const showYesNoDialog = function (partialProps: Partial<IYesNoDialogProps>) {
+    setYesNoDialogProps({ ...yesNoDialogProps, ...partialProps, open: true });
   };
 
-  const setSnackbar = function (partialProps: Partial<ISnackbarProps>) {
-    setSnackbarProps({ ...snackbarProps, ...partialProps });
+  const showSnackbar = function (partialProps: Partial<ISnackbarProps>) {
+    setSnackbarProps({ ...snackbarProps, ...partialProps, open: true });
   };
 
-  const setErrorDialog = function (partialProps: Partial<IErrorDialogProps>) {
-    setErrorDialogProps({ ...errorDialogProps, ...partialProps });
+  const showErrorDialog = function (partialProps: Partial<IErrorDialogProps>) {
+    setErrorDialogProps({ ...errorDialogProps, ...partialProps, open: true });
   };
 
   return (
     <DialogContext.Provider
       value={{
-        setYesNoDialog,
+        showYesNoDialog,
         yesNoDialogProps,
-        setErrorDialog,
+        showErrorDialog,
         errorDialogProps,
-        setSnackbar,
-        snackbarProps
+        showSnackbar,
+        snackbarProps,
+        hideDialog
       }}>
       {props.children}
       <YesNoDialog {...yesNoDialogProps} />
@@ -157,11 +206,11 @@ export const DialogContextProvider: React.FC = (props) => {
         }}
         open={snackbarProps.open}
         autoHideDuration={6000}
-        onClose={() => setSnackbar({ open: false })}
+        onClose={hideDialog}
         message={snackbarProps.snackbarMessage}
         action={
           <React.Fragment>
-            <IconButton size="small" aria-label="close" color="inherit" onClick={() => setSnackbar({ open: false })}>
+            <IconButton size="small" aria-label="close" color="inherit" onClick={hideDialog}>
               <CloseIcon fontSize="small" />
             </IconButton>
           </React.Fragment>

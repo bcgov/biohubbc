@@ -4,43 +4,10 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import { IBaseDialogProps } from 'contexts/dialogContext';
 import React, { ReactNode } from 'react';
 
-export interface IYesNoDialogProps {
-  /**
-   * optional component to render underneath the dialog text.
-   *
-   * @type {ReactNode}
-   * @memberof IYesNoDialogProps
-   */
-  dialogContent?: ReactNode;
-  /**
-   * The dialog window title text.
-   *
-   * @type {string}
-   * @memberof IYesNoDialogProps
-   */
-  dialogTitle: string;
-  /**
-   * The dialog window body text.
-   *
-   * @type {string}
-   * @memberof IYesNoDialogProps
-   */
-  dialogText: string;
-  /**
-   * Set to `true` to open the dialog, `false` to close the dialog.
-   *
-   * @type {boolean}
-   * @memberof IYesNoDialogProps
-   */
-  open: boolean;
-  /**
-   * Callback fired if the dialog is closed.
-   *
-   * @memberof IYesNoDialogProps
-   */
-  onClose: () => void;
+export interface IYesNoDialogProps extends IBaseDialogProps {
   /**
    * Callback fired if the 'No' button is clicked.
    *
@@ -85,6 +52,14 @@ export interface IYesNoDialogProps {
    * @memberof IYesNoDialogProps
    */
   noButtonProps?: Partial<ButtonProps>;
+
+  /**
+   * optional component to render underneath the dialog text.
+   *
+   * @type {ReactNode}
+   * @memberof IYesNoDialogProps
+   */
+  dialogContent?: ReactNode;
 }
 
 /**
@@ -94,11 +69,7 @@ export interface IYesNoDialogProps {
  * @param {*} props
  * @return {*}
  */
-const YesNoDialog: React.FC<IYesNoDialogProps> = (props) => {
-  if (!props.open) {
-    return <></>;
-  }
-
+const YesNoDialog = (props: IYesNoDialogProps) => {
   return (
     <Dialog
       fullWidth
