@@ -1,4 +1,4 @@
-import { KeycloakProvider } from '@react-keycloak/web';
+import { ReactKeycloakProvider } from '@react-keycloak/web';
 import { cleanup, renderHook } from '@testing-library/react-hooks';
 import Keycloak, { KeycloakPromise } from 'keycloak-js';
 import React, { PropsWithChildren } from 'react';
@@ -21,6 +21,7 @@ const getMockTestWrapper = (userInfo?: any) => {
 
   const keycloak: Keycloak = ({
     authenticated: true,
+    token: 'a token',
     init: () => Promise.resolve(true) as KeycloakPromise<any, any>,
     createLoginUrl: (options: { redirectUri: string }) => `/login?my-keycloak-redirect=${options.redirectUri}`,
     createLogoutUrl: () => 'string',
@@ -36,7 +37,7 @@ const getMockTestWrapper = (userInfo?: any) => {
 
   return {
     wrapper: (props: PropsWithChildren<void>) => (
-      <KeycloakProvider keycloak={keycloak}>{props.children}</KeycloakProvider>
+      <ReactKeycloakProvider authClient={keycloak}>{props.children}</ReactKeycloakProvider>
     ),
     mockLoadUserInfo
   };
@@ -46,7 +47,7 @@ jest.mock('./useBioHubApi');
 
 const mockBiohubApi = useBiohubApi as jest.Mock;
 
-const mockUseApi = {
+const mockUseBiohubApi = {
   user: {
     getUser: jest.fn()
   },
@@ -57,7 +58,7 @@ const mockUseApi = {
 
 describe('useKeycloakWrapper', () => {
   beforeEach(() => {
-    mockBiohubApi.mockImplementation(() => mockUseApi);
+    mockBiohubApi.mockImplementation(() => mockUseBiohubApi);
   });
 
   afterEach(() => {
