@@ -27,19 +27,15 @@ export const RemoveOrResubmitFormYupSchema = yup.object().shape({
     .email('Must be a valid email address')
     .required('Email Address is Required'),
   phone_number: yup.string().max(300, 'Cannot exceed 300 characters').required('Phone Number is Required'),
-  description: yup.string().max(3000, 'Cannot exceed 3000 characters').required('Description is required')
+  description: yup.string().max(3000, 'Cannot exceed 3000 characters').required('Description is Required')
 });
-
-export interface IRemoveOrResubmitFormProps {}
 
 /**
  * Publish button.
  *
  * @return {*}
  */
-const RemoveOrResubmitForm: React.FC<IRemoveOrResubmitFormProps> = (props) => {
-  const {} = props;
-
+const RemoveOrResubmitForm = () => {
   return (
     <>
       <Typography variant="body1">
@@ -75,20 +71,20 @@ const RemoveOrResubmitForm: React.FC<IRemoveOrResubmitFormProps> = (props) => {
               }}
             />
           </Grid>
-
-          <Grid item xs={12}>
-            <Typography variant="body1">
-              <strong>DESCRIPTION OF REQUEST</strong>
-            </Typography>
-            <Box py={2}>
-              <CustomTextField
-                name="description"
-                label="Description"
-                other={{ multiline: true, required: true, rows: 4 }}
-              />
-            </Box>
-          </Grid>
         </Grid>
+      </Box>
+
+      <Box mt={2}>
+        <Typography variant="body1">
+          <strong>DESCRIPTION OF REQUEST</strong>
+        </Typography>
+        <Box py={2}>
+          <CustomTextField
+            name="description"
+            label="Description"
+            other={{ multiline: true, required: true, rows: 4 }}
+          />
+        </Box>
       </Box>
     </>
   );

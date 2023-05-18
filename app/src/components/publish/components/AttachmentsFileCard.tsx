@@ -1,4 +1,4 @@
-import { Box, Chip, Paper, Typography } from '@material-ui/core';
+import { Box, Chip, Paper } from '@material-ui/core';
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import { mdiFileOutline } from '@mdi/js';
 import Icon from '@mdi/react';
@@ -9,8 +9,8 @@ import React from 'react';
 const useStyles = makeStyles((theme: Theme) => ({
   importFile: {
     display: 'flex',
-    paddingTop: theme.spacing(1),
-    paddingBottom: theme.spacing(1),
+    paddingTop: theme.spacing(2),
+    paddingBottom: theme.spacing(2),
     paddingRight: theme.spacing(2),
     paddingLeft: '20px',
     overflow: 'hidden',
@@ -56,7 +56,6 @@ const useStyles = makeStyles((theme: Theme) => ({
 export interface IAttachmentsFileCardProps {
   fileName: string;
   status: PublishStatus;
-  size: number;
   submittedDate?: string;
 }
 
@@ -75,11 +74,8 @@ const AttachmentsFileCard = (props: IAttachmentsFileCardProps) => {
           <Box display="flex" alignItems="center" flex="0 0 auto" mr={2} className="importFile-icon">
             <Icon path={mdiFileOutline} size={1} />
           </Box>
-          <Box mr={2} flex="1 1 auto" style={{ overflow: 'hidden' }}>
+          <Box mr={2} flex="1 1 auto" style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
             <strong>{props.fileName}</strong>
-            <Typography data-testid="observations-nodata" variant="body2" color="textSecondary">
-              {props.size} KB
-            </Typography>
           </Box>
         </Box>
 

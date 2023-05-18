@@ -36,9 +36,12 @@ POST.apiDoc = {
       'application/json': {
         schema: {
           type: 'object',
-          required: ['fileName', 'formValues', 'path'],
+          required: ['fileName', 'parentName', 'formValues', 'path'],
           properties: {
             fileName: {
+              type: 'string'
+            },
+            parentName: {
               type: 'string'
             },
             formValues: {
@@ -68,7 +71,7 @@ POST.apiDoc = {
   },
   responses: {
     200: {
-      description: 'Upload OK',
+      description: 'Resubmit OK',
       content: {
         'application/json': {
           schema: {
@@ -107,7 +110,7 @@ export function resubmitAttachment(): RequestHandler {
 
     const resubmitData = req.body;
     const url = `${process.env.APP_HOST}/login?redirect=${encodeURIComponent(resubmitData.path)}`;
-    const hrefUrl = `[click here.](${url})`;
+    const hrefUrl = `[${resubmitData.parentName}](${url})`;
 
     const message: IgcNotifyRequestRemovalMessage = {
       subject: '',
@@ -148,7 +151,7 @@ export function resubmitAttachment(): RequestHandler {
 
       await connection.commit();
 
-      return res.status(200).json(responseUser.id && responseAdmin.id && true);
+      return res.status(200).json(Boolean(responseUser.id && responseAdmin.id));
     } catch (error) {
       defaultLog.error({ label: 'publishProject', message: 'error', error });
       await connection.rollback();

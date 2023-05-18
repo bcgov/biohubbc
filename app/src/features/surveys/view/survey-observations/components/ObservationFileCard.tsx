@@ -22,6 +22,7 @@ import RemoveOrResubmitDialog from 'components/publish/components/RemoveOrResubm
 import { ProjectRoleGuard, SystemRoleGuard } from 'components/security/Guards';
 import { PublishStatus } from 'constants/attachments';
 import { PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
+import { SurveyContext } from 'contexts/surveyContext';
 import { IGetObservationSubmissionResponse } from 'interfaces/useObservationApi.interface';
 import React, { useState } from 'react';
 
@@ -70,6 +71,9 @@ export interface IObservationFileCardProps {
 const ObservationFileCard = (props: IObservationFileCardProps) => {
   const classes = useStyles();
 
+  const surveyContext = React.useContext(SurveyContext);
+  const surveyName = surveyContext.surveyDataLoader.data?.surveyData.survey_details.survey_name;
+
   const [openRemoveOrResubmitDialog, setOpenRemoveOrResubmitDialog] = useState(false);
   const [
     RemoveOrResubmitDialogFile,
@@ -112,12 +116,11 @@ const ObservationFileCard = (props: IObservationFileCardProps) => {
     icon = mdiLockOutline;
   }
 
-  //TODO: FILE SIZE
   return (
     <>
       <RemoveOrResubmitDialog
         fileName={RemoveOrResubmitDialogFile?.surveyObservationData.inputFileName || ''}
-        size={0}
+        parentName={surveyName || ''}
         status={
           (RemoveOrResubmitDialogFile?.surveyObservationSupplementaryData && PublishStatus.SUBMITTED) ||
           PublishStatus.UNSUBMITTED
@@ -190,8 +193,6 @@ const ObservationFileCard = (props: IObservationFileCardProps) => {
                 <ProjectRoleGuard
                   validProjectRoles={[PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR]}
                   validSystemRoles={[
-                    SYSTEM_ROLE.SYSTEM_ADMIN,
-                    SYSTEM_ROLE.DATA_ADMINISTRATOR,
                     SYSTEM_ROLE.PROJECT_CREATOR
                   ]}>
                   <MenuItem

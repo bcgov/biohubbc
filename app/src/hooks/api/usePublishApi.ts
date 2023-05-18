@@ -61,11 +61,13 @@ const usePublishApi = (axios: AxiosInstance) => {
    */
   const resubmitAttachment = async (
     fileName: string,
+    parentName: string,
     formValues: IRemoveOrResubmitForm,
     path: string
   ): Promise<{ data: string }> => {
     const sendData = {
       fileName: fileName,
+      parentName: parentName,
       formValues: formValues,
       path: path
     };

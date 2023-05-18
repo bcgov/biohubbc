@@ -22,6 +22,7 @@ import RemoveOrResubmitDialog from 'components/publish/components/RemoveOrResubm
 import { ProjectRoleGuard, SystemRoleGuard } from 'components/security/Guards';
 import { PublishStatus } from 'constants/attachments';
 import { PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
+import { SurveyContext } from 'contexts/surveyContext';
 import { IGetSummaryResultsResponse } from 'interfaces/useSummaryResultsApi.interface';
 import React from 'react';
 
@@ -70,8 +71,11 @@ const useStyles = makeStyles((theme: Theme) => ({
 const FileSummaryResults = (props: IFileResultsProps) => {
   const { fileData, downloadFile, showDelete } = props;
   const classes = useStyles();
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
+  const surveyContext = React.useContext(SurveyContext);
+  const surveyName = surveyContext.surveyDataLoader.data?.surveyData.survey_details.survey_name;
+
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [openRemoveOrResubmitDialog, setOpenRemoveOrResubmitDialog] = React.useState(false);
   const [RemoveOrResubmitDialogFile, setRemoveOrResubmitDialogFile] = React.useState<IGetSummaryResultsResponse | null>(
     null
@@ -95,12 +99,11 @@ const FileSummaryResults = (props: IFileResultsProps) => {
     icon = mdiLockOutline;
   }
 
-  //TODO: get file size
   return (
     <>
       <RemoveOrResubmitDialog
         fileName={RemoveOrResubmitDialogFile?.surveySummaryData.fileName || ''}
-        size={0}
+        parentName={surveyName || ''}
         status={
           (RemoveOrResubmitDialogFile?.surveySummarySupplementaryData && PublishStatus.SUBMITTED) ||
           PublishStatus.UNSUBMITTED
@@ -180,8 +183,6 @@ const FileSummaryResults = (props: IFileResultsProps) => {
                 <ProjectRoleGuard
                   validProjectRoles={[PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR]}
                   validSystemRoles={[
-                    SYSTEM_ROLE.SYSTEM_ADMIN,
-                    SYSTEM_ROLE.DATA_ADMINISTRATOR,
                     SYSTEM_ROLE.PROJECT_CREATOR
                   ]}>
                   <MenuItem

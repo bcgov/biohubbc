@@ -128,15 +128,9 @@ export class GCNotifyService {
         phone: message.phone
       }
     };
-    console.log('REQUEST_REMOVAL_TEMPLATE', REQUEST_REMOVAL_TEMPLATE);
-    console.log('data', data);
-    console.log('EMAIL_URL', EMAIL_URL);
-    console.log('config', config);
 
     const response = await axios.post(EMAIL_URL, data, config);
-
-    const result = (response && response.data) || null;
-    console.log('result', result);
+    const result = response.data || null;
 
     if (!result) {
       throw new ApiError(ApiErrorType.UNKNOWN, 'Failed to send Notification');

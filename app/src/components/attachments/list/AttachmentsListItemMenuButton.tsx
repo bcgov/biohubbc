@@ -9,6 +9,7 @@ import RemoveOrResubmitDialog from 'components/publish/components/RemoveOrResubm
 import { ProjectRoleGuard, SystemRoleGuard } from 'components/security/Guards';
 import { AttachmentType, PublishStatus } from 'constants/attachments';
 import { PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
+import { ProjectContext } from 'contexts/projectContext';
 import { IGetProjectAttachment } from 'interfaces/useProjectApi.interface';
 import { IGetSurveyAttachment } from 'interfaces/useSurveyApi.interface';
 import React, { useState } from 'react';
@@ -23,6 +24,9 @@ interface IAttachmentsListItemMenuButtonProps<T extends IGetProjectAttachment | 
 const AttachmentsListItemMenuButton = <T extends IGetProjectAttachment | IGetSurveyAttachment>(
   props: IAttachmentsListItemMenuButtonProps<T>
 ) => {
+  const projectContext = React.useContext(ProjectContext);
+  const projectName = projectContext.projectDataLoader.data?.projectData.project.project_name;
+
   const [anchorEl, setAnchorEl] = useState(null);
   const [openRemoveOrResubmitDialog, setOpenRemoveOrResubmitDialog] = useState(false);
   const [RemoveOrResubmitDialogFile, setRemoveOrResubmitDialogFile] = useState<T | null>(null);
@@ -41,7 +45,7 @@ const AttachmentsListItemMenuButton = <T extends IGetProjectAttachment | IGetSur
     <>
       <RemoveOrResubmitDialog
         fileName={RemoveOrResubmitDialogFile?.fileName || ''}
-        size={RemoveOrResubmitDialogFile?.size || 0}
+        parentName={projectName || ''}
         status={
           (RemoveOrResubmitDialogFile?.supplementaryAttachmentData && PublishStatus.SUBMITTED) ||
           PublishStatus.UNSUBMITTED
@@ -117,8 +121,6 @@ const AttachmentsListItemMenuButton = <T extends IGetProjectAttachment | IGetSur
             <ProjectRoleGuard
               validProjectRoles={[PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR]}
               validSystemRoles={[
-                SYSTEM_ROLE.SYSTEM_ADMIN,
-                SYSTEM_ROLE.DATA_ADMINISTRATOR,
                 SYSTEM_ROLE.PROJECT_CREATOR
               ]}>
               <MenuItem

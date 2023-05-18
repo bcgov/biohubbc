@@ -26,7 +26,7 @@ import RemoveOrResubmitForm, {
 export interface IRemoveOrResubmitDialog {
   fileName: string;
   status: PublishStatus;
-  size: number;
+  parentName: string;
   submittedDate?: string;
   open: boolean;
   setOpen: (isOpen: boolean) => void;
@@ -39,7 +39,7 @@ export interface IRemoveOrResubmitDialog {
  * @return {*}
  */
 const RemoveOrResubmitDialog: React.FC<IRemoveOrResubmitDialog> = (props) => {
-  const { fileName, status, size, submittedDate, open, onClose } = props;
+  const { fileName, status, parentName, submittedDate, open, onClose } = props;
 
   const theme = useTheme();
   const biohubApi = useBiohubApi();
@@ -55,11 +55,9 @@ const RemoveOrResubmitDialog: React.FC<IRemoveOrResubmitDialog> = (props) => {
   const handleSubmit = async (values: IRemoveOrResubmitForm) => {
     try {
       onClose();
-      await biohubApi.publish.resubmitAttachment(fileName, values, router.location.pathname);
+      await biohubApi.publish.resubmitAttachment(fileName, parentName, values, router.location.pathname);
       setFinishResubmission(true);
     } catch (error) {
-      //TODO: finish error handler
-      console.log(error);
       onClose();
       setResubmissionFailed(true);
     }
@@ -98,14 +96,14 @@ const RemoveOrResubmitDialog: React.FC<IRemoveOrResubmitDialog> = (props) => {
 
           <Box py={2}>
             <Typography variant="body1">
-              <strong>File Details</strong>
+              <strong>FILE DETAILS</strong>
             </Typography>
             <Box py={2}>
-              <AttachmentsFileCard fileName={fileName} status={status} size={size} submittedDate={submittedDate} />
+              <AttachmentsFileCard fileName={fileName} status={status} submittedDate={submittedDate} />
             </Box>
           </Box>
 
-          <Box py={2}>
+          <Box>
             <Formik
               innerRef={formikRef}
               initialValues={RemoveOrResubmitFormInitialValues}
@@ -122,7 +120,7 @@ const RemoveOrResubmitDialog: React.FC<IRemoveOrResubmitDialog> = (props) => {
           <Button onClick={() => formikRef.current?.submitForm()} color="primary" variant="contained" autoFocus>
             Submit Request
           </Button>
-          <Button onClick={onClose} color="secondary" variant="contained" autoFocus>
+          <Button onClick={onClose} color="primary" variant="outlined" autoFocus>
             Cancel
           </Button>
         </DialogActions>
