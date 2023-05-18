@@ -1,15 +1,14 @@
 import { cleanup, render, waitFor } from '@testing-library/react';
-import { SYSTEM_ROLE } from 'constants/roles';
 import { AuthStateContext, IAuthState } from 'contexts/authStateContext';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { createMemoryHistory } from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { SYSTEM_IDENTITY_SOURCE } from 'hooks/useKeycloakWrapper';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
 import React from 'react';
 import { Router } from 'react-router';
+import { getMockAuthState, SystemAdminAuthState } from 'test-helpers/auth-helpers';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import { getSurveyForViewResponse } from 'test-helpers/survey-helpers';
 import SurveyPage from './SurveyPage';
@@ -39,26 +38,6 @@ const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBioh
   mockUseBiohubApi
 );
 
-const defaultAuthState = {
-  keycloakWrapper: {
-    keycloak: {
-      authenticated: true
-    },
-    hasLoadedAllUserInfo: true,
-    systemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN] as string[],
-    getUserIdentifier: () => 'testuser',
-    hasAccessRequest: false,
-    hasSystemRole: () => true,
-    getIdentitySource: () => SYSTEM_IDENTITY_SOURCE.IDIR,
-    username: 'testusername',
-    displayName: 'testdisplayname',
-    email: 'test@email.com',
-    firstName: 'testfirst',
-    lastName: 'testlast',
-    refresh: () => {}
-  }
-};
-
 describe.skip('SurveyPage', () => {
   beforeEach(() => {
     // clear mocks before each test
@@ -75,9 +54,9 @@ describe.skip('SurveyPage', () => {
     cleanup();
   });
 
-  const renderComponent = (authState: any) => {
+  const renderComponent = (authState: IAuthState) => {
     return render(
-      <AuthStateContext.Provider value={authState as IAuthState}>
+      <AuthStateContext.Provider value={authState}>
         <DialogContextProvider>
           <Router history={history}>
             <SurveyPage />
@@ -93,7 +72,9 @@ describe.skip('SurveyPage', () => {
       activity: [{ id: 1, name: 'activity 1' }]
     } as any);
 
-    const { asFragment } = renderComponent(defaultAuthState);
+    const authState = getMockAuthState({ base: SystemAdminAuthState });
+
+    const { asFragment } = renderComponent(authState);
 
     await waitFor(() => {
       expect(asFragment()).toMatchSnapshot();
@@ -104,7 +85,9 @@ describe.skip('SurveyPage', () => {
     mockBiohubApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
     mockBiohubApi().survey.getSurveyForView.mockResolvedValue(getSurveyForViewResponse);
 
-    const { asFragment } = renderComponent(defaultAuthState);
+    const authState = getMockAuthState({ base: SystemAdminAuthState });
+
+    const { asFragment } = renderComponent(authState);
 
     await waitFor(() => {
       expect(asFragment()).toMatchSnapshot();
@@ -117,7 +100,9 @@ describe.skip('SurveyPage', () => {
       activity: [{ id: 1, name: 'activity 1' }]
     } as any);
 
-    const { asFragment } = renderComponent(defaultAuthState);
+    const authState = getMockAuthState({ base: SystemAdminAuthState });
+
+    const { asFragment } = renderComponent(authState);
 
     await waitFor(() => {
       expect(asFragment()).toMatchSnapshot();
@@ -131,7 +116,9 @@ describe.skip('SurveyPage', () => {
       activity: [{ id: 1, name: 'activity 1' }]
     } as any);
 
-    const { asFragment, findByText } = renderComponent(defaultAuthState);
+    const authState = getMockAuthState({ base: SystemAdminAuthState });
+
+    const { asFragment, findByText } = renderComponent(authState);
 
     const surveyHeaderText = await findByText('survey name', { selector: 'h1 span' });
 
@@ -157,7 +144,9 @@ describe.skip('SurveyPage', () => {
       activity: [{ id: 1, name: 'activity 1' }]
     } as any);
 
-    const { asFragment, findByText } = renderComponent(defaultAuthState);
+    const authState = getMockAuthState({ base: SystemAdminAuthState });
+
+    const { asFragment, findByText } = renderComponent(authState);
 
     const surveyHeaderText = await findByText('survey name', { selector: 'h1 span' });
 
