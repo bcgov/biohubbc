@@ -54,18 +54,22 @@ const usePublishApi = (axios: AxiosInstance) => {
   /**
    * Request Resubmit Attachment
    *
-   * @param {(IGetProjectAttachment | IGetSurveyAttachment)} file
+   * @param {number} projectId
+   * @param {string} fileName
+   * @param {string} parentName
    * @param {IRemoveOrResubmitForm} formValues
    * @param {string} path
-   * @return {*}  {Promise<{ data: string }>}
+   * @return {*}  {Promise<boolean>}
    */
   const resubmitAttachment = async (
+    projectId: number,
     fileName: string,
     parentName: string,
     formValues: IRemoveOrResubmitForm,
     path: string
-  ): Promise<{ data: string }> => {
+  ): Promise<boolean> => {
     const sendData = {
+      projectId: projectId,
       fileName: fileName,
       parentName: parentName,
       formValues: formValues,

@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SYSTEM_ROLE } from '../../../constants/roles';
+import { PROJECT_ROLE, SYSTEM_ROLE } from '../../../constants/roles';
 import { getDBConnection } from '../../../database/db';
 import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
 import { GCNotifyService, IgcNotifyRequestRemovalMessage } from '../../../services/gcnotify-service';
@@ -9,12 +9,17 @@ import { getLogger } from '../../../utils/logger';
 const defaultLog = getLogger('/api/publish/attachment/resubmit');
 
 export const POST: Operation = [
-  authorizeRequestHandler(() => {
+  authorizeRequestHandler((req) => {
     return {
       or: [
         {
-          validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR],
+          validSystemRoles: [SYSTEM_ROLE.PROJECT_CREATOR],
           discriminator: 'SystemRole'
+        },
+        {
+          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR],
+          projectId: Number(req.body.projectId),
+          discriminator: 'ProjectRole'
         }
       ]
     };
@@ -36,8 +41,12 @@ POST.apiDoc = {
       'application/json': {
         schema: {
           type: 'object',
-          required: ['fileName', 'parentName', 'formValues', 'path'],
+          required: ['projectId', 'fileName', 'parentName', 'formValues', 'path'],
           properties: {
+            projectId: {
+              type: 'number',
+              minimum: 1
+            },
             fileName: {
               type: 'string'
             },

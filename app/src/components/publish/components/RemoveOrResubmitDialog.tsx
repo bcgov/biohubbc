@@ -24,6 +24,7 @@ import RemoveOrResubmitForm, {
 } from './RemoveOrResubmitForm';
 
 export interface IRemoveOrResubmitDialog {
+  projectId: number;
   fileName: string;
   status: PublishStatus;
   parentName: string;
@@ -39,7 +40,7 @@ export interface IRemoveOrResubmitDialog {
  * @return {*}
  */
 const RemoveOrResubmitDialog: React.FC<IRemoveOrResubmitDialog> = (props) => {
-  const { fileName, status, parentName, submittedDate, open, onClose } = props;
+  const { projectId, fileName, status, parentName, submittedDate, open, onClose } = props;
 
   const theme = useTheme();
   const biohubApi = useBiohubApi();
@@ -55,7 +56,7 @@ const RemoveOrResubmitDialog: React.FC<IRemoveOrResubmitDialog> = (props) => {
   const handleSubmit = async (values: IRemoveOrResubmitForm) => {
     try {
       onClose();
-      await biohubApi.publish.resubmitAttachment(fileName, parentName, values, router.location.pathname);
+      await biohubApi.publish.resubmitAttachment(projectId, fileName, parentName, values, router.location.pathname);
       setFinishResubmission(true);
     } catch (error) {
       onClose();

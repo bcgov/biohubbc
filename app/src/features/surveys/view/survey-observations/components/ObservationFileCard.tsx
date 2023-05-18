@@ -119,6 +119,7 @@ const ObservationFileCard = (props: IObservationFileCardProps) => {
   return (
     <>
       <RemoveOrResubmitDialog
+        projectId={surveyContext.projectId}
         fileName={RemoveOrResubmitDialogFile?.surveyObservationData.inputFileName || ''}
         parentName={surveyName || ''}
         status={

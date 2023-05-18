@@ -10,6 +10,7 @@ import { ProjectRoleGuard, SystemRoleGuard } from 'components/security/Guards';
 import { AttachmentType, PublishStatus } from 'constants/attachments';
 import { PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
 import { ProjectContext } from 'contexts/projectContext';
+import { SurveyContext } from 'contexts/surveyContext';
 import { IGetProjectAttachment } from 'interfaces/useProjectApi.interface';
 import { IGetSurveyAttachment } from 'interfaces/useSurveyApi.interface';
 import React, { useState } from 'react';
@@ -24,8 +25,11 @@ interface IAttachmentsListItemMenuButtonProps<T extends IGetProjectAttachment | 
 const AttachmentsListItemMenuButton = <T extends IGetProjectAttachment | IGetSurveyAttachment>(
   props: IAttachmentsListItemMenuButtonProps<T>
 ) => {
+  const surveyContext = React.useContext(SurveyContext);
   const projectContext = React.useContext(ProjectContext);
-  const projectName = projectContext.projectDataLoader.data?.projectData.project.project_name;
+  const parentName =
+    surveyContext.surveyDataLoader.data?.surveyData.survey_details.survey_name ||
+    projectContext.projectDataLoader.data?.projectData.project.project_name;
 
   const [anchorEl, setAnchorEl] = useState(null);
   const [openRemoveOrResubmitDialog, setOpenRemoveOrResubmitDialog] = useState(false);
@@ -44,8 +48,9 @@ const AttachmentsListItemMenuButton = <T extends IGetProjectAttachment | IGetSur
   return (
     <>
       <RemoveOrResubmitDialog
+        projectId={projectContext.projectId}
         fileName={RemoveOrResubmitDialogFile?.fileName || ''}
-        parentName={projectName || ''}
+        parentName={parentName || ''}
         status={
           (RemoveOrResubmitDialogFile?.supplementaryAttachmentData && PublishStatus.SUBMITTED) ||
           PublishStatus.UNSUBMITTED

@@ -102,6 +102,7 @@ const FileSummaryResults = (props: IFileResultsProps) => {
   return (
     <>
       <RemoveOrResubmitDialog
+        projectId={surveyContext.projectId}
         fileName={RemoveOrResubmitDialogFile?.surveySummaryData.fileName || ''}
         parentName={surveyName || ''}
         status={
