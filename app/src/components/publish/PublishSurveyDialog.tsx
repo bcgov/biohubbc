@@ -11,8 +11,7 @@ import { ISurveySummaryData } from 'interfaces/useSummaryResultsApi.interface';
 import { IGetSurveyAttachment, IGetSurveyReportAttachment } from 'interfaces/useSurveyApi.interface';
 import React, { useContext } from 'react';
 import yup from 'utils/YupSchema';
-import SelectAllButton from './SelectAllButton';
-import SubmitSection from './SubmitSection';
+import SubmitSections from './SubmitSections';
 
 export interface ISubmitSurvey {
   unSubmittedObservation: ISurveyObservationData[];
@@ -96,10 +95,22 @@ const PublishSurveyDialog = (props: IPublishSurveyDialogProps) => {
     <>
       <SubmitBiohubDialog<ISurveySubmitForm>
         dialogTitle={SubmitSurveyBiohubI18N.submitSurveyBiohubDialogTitle}
+
+        /*
         submissionSuccessDialogTitle={SubmitSurveyBiohubI18N.submitSurveyBiohubSuccessDialogTitle}
         submissionSuccessDialogText={SubmitSurveyBiohubI18N.submitSurveyBiohubSuccessDialogTitle}
         noSubmissionDataDialogTitle={SubmitSurveyBiohubI18N.submitSurveyBiohubNoSubmissionDataDialogTitle}
         noSubmissionDataDialogText={SubmitSurveyBiohubI18N.submitSurveyBiohubNoSubmissionDataDialogText}
+        */
+
+        onSuccess={() => {
+          throw new Error('Not implemented')
+        }}
+
+        onEmptySubmit={() => {
+          throw new Error('Not implemented')
+        }}
+
         hasSubmissionData={hasSubmissionData}
         open={props.open}
         onClose={props.onClose}
@@ -132,70 +143,36 @@ const PublishSurveyDialog = (props: IPublishSurveyDialogProps) => {
           </Typography>
         </Box>
 
-        <SelectAllButton
-          formikData={[
+        <SubmitSections
+          sections={[
             {
-              key: 'observations',
-              value: unsubmittedObservations
+              formikKey: 'observations',
+              label: 'Observations',
+              formikData: unsubmittedObservations,
+              getName: (item: ISurveyObservationData) => item.inputFileName
             },
             {
-              key: 'summary',
-              value: unsubmittedSummaryResults
+              formikKey: 'summary',
+              label: 'Summary Results',
+              formikData: unsubmittedSummaryResults,
+              getName: (item: ISurveySummaryData) => {
+                return item.fileName;
+              }
             },
             {
-              key: 'reports',
-              value: unsubmittedReports
+              formikKey: 'reports',
+              label: 'Reports',
+              formikData: unsubmittedReports,
+              getName: (item: IGetSurveyReportAttachment) => item.fileName
             },
             {
-              key: 'attachments',
-              value: unsubmittedAttachments
+              formikKey: 'attachments',
+              label: 'Attachments',
+              formikData: unsubmittedAttachments,
+              getName: (item: IGetSurveyAttachment) => item.fileName
             }
           ]}
         />
-
-        {unsubmittedObservations.length !== 0 && (
-          <SubmitSection
-            subHeader="Observations"
-            formikName="observations"
-            data={unsubmittedObservations}
-            getName={(item: ISurveyObservationData) => {
-              return item.inputFileName;
-            }}
-          />
-        )}
-
-        {unsubmittedSummaryResults.length !== 0 && (
-          <SubmitSection
-            subHeader="Summary Results"
-            formikName="summary"
-            data={unsubmittedSummaryResults}
-            getName={(item: ISurveySummaryData) => {
-              return item.fileName;
-            }}
-          />
-        )}
-
-        {unsubmittedReports.length !== 0 && (
-          <SubmitSection
-            subHeader="Reports"
-            formikName="reports"
-            data={unsubmittedReports}
-            getName={(item: IGetSurveyReportAttachment) => {
-              return item.fileName;
-            }}
-          />
-        )}
-
-        {unsubmittedAttachments.length !== 0 && (
-          <SubmitSection
-            subHeader="Other Documents"
-            formikName="attachments"
-            data={unsubmittedAttachments}
-            getName={(item: IGetSurveyAttachment) => {
-              return item.fileName;
-            }}
-          />
-        )}
       </SubmitBiohubDialog>
     </>
   );

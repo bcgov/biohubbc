@@ -1,4 +1,4 @@
-import { DialogContent, DialogContentText } from '@material-ui/core';
+import { DialogContent } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -11,7 +11,6 @@ import { DialogContext } from 'contexts/dialogContext';
 import { Formik, FormikProps, FormikValues } from 'formik';
 import React, { PropsWithChildren, useContext, useRef, useState } from 'react';
 import yup from 'utils/YupSchema';
-import ComponentDialog from './ComponentDialog';
 import { IErrorDialogProps } from './ErrorDialog';
 
 /**
@@ -20,7 +19,7 @@ import { IErrorDialogProps } from './ErrorDialog';
  * @export
  * @interface ISubmitBiohubDialogProps
  */
-export interface ISubmitBiohubDialogProps<V> {
+export interface ISubmitBiohubDialogProps<Values> {
   /**
    * The dialog window title text.
    *
@@ -46,20 +45,21 @@ export interface ISubmitBiohubDialogProps<V> {
    *
    * @memberof ISubmitBiohubDialogProps
    */
-  onSubmit: (values: V) => Promise<void>;
+  onSubmit: (values: Values) => Promise<void>;
+
+  onSuccess: () => void;
+
+  onEmptySubmit: () => void;
+
+  hasSubmissionData: boolean;
+
   /**
    * Formik props for setup
    *
-   * @type {{ initialValues: V; validationSchema: yup.ObjectSchema<any> }}
+   * @type {{ initialValues: Values; validationSchema: yup.ObjectSchema<any> }}
    * @memberof ISubmitBiohubDialogProps
    */
-  formikProps: { initialValues: V; validationSchema: yup.ObjectSchema<any> };
-
-  submissionSuccessDialogTitle: string;
-  submissionSuccessDialogText: string;
-  noSubmissionDataDialogTitle: string;
-  noSubmissionDataDialogText: string;
-  hasSubmissionData: boolean;
+  formikProps: { initialValues: Values; validationSchema: yup.ObjectSchema<any> };
 }
 
 /**
@@ -70,7 +70,7 @@ export interface ISubmitBiohubDialogProps<V> {
  * @param {*} props
  * @return {*}
  */
-const SubmitBiohubDialog = <V extends FormikValues>(props: PropsWithChildren<ISubmitBiohubDialogProps<V>>) => {
+const SubmitBiohubDialog = <Values extends FormikValues>(props: PropsWithChildren<ISubmitBiohubDialogProps<Values>>) => {
   const { initialValues, validationSchema } = props.formikProps;
 
   const theme = useTheme();
@@ -88,19 +88,25 @@ const SubmitBiohubDialog = <V extends FormikValues>(props: PropsWithChildren<ISu
 
   const [formikRef] = useState(useRef<FormikProps<any>>(null));
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  /*
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
   const [showNoInformationDialog, setShowNoInformationDialog] = useState(false);
+  */
 
   const showErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
     dialogContext.setErrorDialog({ ...defaultErrorDialogProps, ...textDialogProps, open: true });
   };
 
-  const handleSubmit = (values: V) => {
+  const handleSubmit = (values: Values) => {
     if (JSON.stringify(values) === JSON.stringify(initialValues)) {
+      props.onEmptySubmit();
+      /*
       showErrorDialog({
         dialogTitle: SubmitBiohubI18N.noInformationDialogTitle,
         dialogText: SubmitBiohubI18N.noInformationDialogText
       });
+      */
 
       return;
     }
@@ -109,10 +115,11 @@ const SubmitBiohubDialog = <V extends FormikValues>(props: PropsWithChildren<ISu
     props
       .onSubmit(values)
       .then(() => {
-        setShowSuccessDialog(true);
+        // setShowSuccessDialog(true);
+        props.onSuccess();
       })
       .catch(() => {
-        setShowSuccessDialog(false);
+        // setShowSuccessDialog(false);
         showErrorDialog({
           dialogTitle: SubmitBiohubI18N.submitBiohubErrorTitle,
           dialogText: SubmitBiohubI18N.submitBiohubErrorText
@@ -126,6 +133,7 @@ const SubmitBiohubDialog = <V extends FormikValues>(props: PropsWithChildren<ISu
 
   return (
     <>
+      {/*
       <ComponentDialog
         dialogTitle={props.submissionSuccessDialogTitle}
         open={showSuccessDialog}
@@ -139,6 +147,7 @@ const SubmitBiohubDialog = <V extends FormikValues>(props: PropsWithChildren<ISu
         onClose={() => setShowNoInformationDialog(false)}>
         <DialogContentText id="alert-dialog-description">{props.noSubmissionDataDialogText}</DialogContentText>
       </ComponentDialog>
+      */}
 
       <Dialog
         fullScreen={fullScreen}
@@ -146,7 +155,7 @@ const SubmitBiohubDialog = <V extends FormikValues>(props: PropsWithChildren<ISu
         open={props.open}
         aria-labelledby="component-dialog-title"
         aria-describedby="component-dialog-description">
-        <Formik<V>
+        <Formik<Values>
           innerRef={formikRef}
           initialValues={initialValues}
           validationSchema={validationSchema}

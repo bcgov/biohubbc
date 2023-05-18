@@ -8,8 +8,7 @@ import { IGetProjectAttachment, IGetProjectReportAttachment } from 'interfaces/u
 import { IProjectSubmitForm } from 'interfaces/usePublishApi.interface';
 import React, { useContext } from 'react';
 import yup from 'utils/YupSchema';
-import SelectAllButton from './SelectAllButton';
-import SubmitSection from './SubmitSection';
+import SubmitSections from './SubmitSections';
 
 export interface ISubmitProject {
   unSubmittedReports: IGetProjectReportAttachment[];
@@ -53,10 +52,21 @@ const PublishProjectDialog = (props: IPublishProjectDialogProps) => {
     <>
       <SubmitBiohubDialog<IProjectSubmitForm>
         dialogTitle={SubmitProjectBiohubI18N.submitProjectBiohubDialogTitle}
+        /*
         submissionSuccessDialogTitle={SubmitProjectBiohubI18N.submitProjectBiohubSuccessDialogTitle}
         submissionSuccessDialogText={SubmitProjectBiohubI18N.submitProjectBiohubSuccessDialogTitle}
         noSubmissionDataDialogTitle={SubmitProjectBiohubI18N.submitProjectBiohubNoSubmissionDataDialogTitle}
         noSubmissionDataDialogText={SubmitProjectBiohubI18N.submitProjectBiohubNoSubmissionDataDialogText}
+        */
+
+        onSuccess={() => {
+          throw new Error('Not implemented')
+        }}
+
+        onEmptySubmit={() => {
+          throw new Error('Not implemented')
+        }}
+
         hasSubmissionData={hasSubmissionData}
         open={props.open}
         onClose={props.onClose}
@@ -81,40 +91,22 @@ const PublishProjectDialog = (props: IPublishProjectDialogProps) => {
           </Typography>
         </Box>
 
-        <SelectAllButton
-          formikData={[
+        <SubmitSections
+          sections={[
             {
-              key: 'reports',
-              value: unsubmittedReports
+              formikKey: 'reports',
+              label: 'Reports',
+              formikData: unsubmittedReports,
+              getName: (item: IGetProjectReportAttachment) => item.fileName
             },
             {
-              key: 'attachments',
-              value: unsubmittedAttachments
+              formikKey: 'attachments',
+              label: 'Attachments',
+              formikData: unsubmittedAttachments,
+              getName: (item: IGetProjectAttachment) => item.fileName
             }
           ]}
         />
-
-        {unsubmittedReports.length > 0 && (
-          <SubmitSection
-            subHeader="Reports"
-            formikName="reports"
-            data={unsubmittedReports}
-            getName={(item: IGetProjectReportAttachment) => {
-              return item.fileName;
-            }}
-          />
-        )}
-
-        {unsubmittedAttachments.length > 0 && (
-          <SubmitSection
-            subHeader="Other Documents"
-            formikName="attachments"
-            data={unsubmittedAttachments}
-            getName={(item: IGetProjectAttachment) => {
-              return item.fileName;
-            }}
-          />
-        )}
       </SubmitBiohubDialog>
     </>
   );
