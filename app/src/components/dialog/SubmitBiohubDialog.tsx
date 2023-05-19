@@ -11,7 +11,6 @@ import { DialogContext } from 'contexts/dialogContext';
 import { Formik, FormikProps, FormikValues } from 'formik';
 import React, { PropsWithChildren, useContext, useRef, useState } from 'react';
 import yup from 'utils/YupSchema';
-import { IErrorDialogProps } from './ErrorDialog';
 
 /**
  *
@@ -77,26 +76,8 @@ const SubmitBiohubDialog = <Values extends FormikValues>(props: PropsWithChildre
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
   const dialogContext = useContext(DialogContext);
 
-  const defaultErrorDialogProps = {
-    onClose: () => {
-      dialogContext.setErrorDialog({ open: false });
-    },
-    onOk: () => {
-      dialogContext.setErrorDialog({ open: false });
-    }
-  };
-
   const [formikRef] = useState(useRef<FormikProps<any>>(null));
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  /*
-  const [showSuccessDialog, setShowSuccessDialog] = useState(false);
-  const [showNoInformationDialog, setShowNoInformationDialog] = useState(false);
-  */
-
-  const showErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
-    dialogContext.setErrorDialog({ ...defaultErrorDialogProps, ...textDialogProps, open: true });
-  };
 
   const handleSubmit = (values: Values) => {
     if (JSON.stringify(values) === JSON.stringify(initialValues)) {
@@ -120,7 +101,7 @@ const SubmitBiohubDialog = <Values extends FormikValues>(props: PropsWithChildre
       })
       .catch(() => {
         // setShowSuccessDialog(false);
-        showErrorDialog({
+        dialogContext.showErrorDialog({
           dialogTitle: SubmitBiohubI18N.submitBiohubErrorTitle,
           dialogText: SubmitBiohubI18N.submitBiohubErrorText
         });
