@@ -9,6 +9,13 @@ import React, { ReactNode } from 'react';
 
 export interface IYesNoDialogProps extends IBaseDialogProps {
   /**
+   * The dialog window body text.
+   *
+   * @type {string}
+   * @memberof IBaseDialogProps
+   */
+    dialogText: string;
+  /**
    * Callback fired if the 'No' button is clicked.
    *
    * @memberof IYesNoDialogProps

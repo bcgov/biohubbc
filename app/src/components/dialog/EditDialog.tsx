@@ -78,10 +78,6 @@ export const EditDialog = <T extends FormikValues>(props: PropsWithChildren<IEdi
 
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
-  if (!props.open) {
-    return <></>;
-  }
-
   return (
     <Formik
       initialValues={props.component.initialValues}

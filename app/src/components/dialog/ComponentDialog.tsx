@@ -5,29 +5,10 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import useTheme from '@material-ui/core/styles/useTheme';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
+import { IBaseDialogProps } from 'contexts/dialogContext';
 import React from 'react';
 
-export interface IComponentDialogProps {
-  /**
-   * The dialog window title text.
-   *
-   * @type {string}
-   * @memberof IComponentDialogProps
-   */
-  dialogTitle: string;
-  /**
-   * Set to `true` to open the dialog, `false` to close the dialog.
-   *
-   * @type {boolean}
-   * @memberof IComponentDialogProps
-   */
-  open: boolean;
-  /**
-   * Callback fired if the dialog is closed.
-   *
-   * @memberof IComponentDialogProps
-   */
-  onClose: () => void;
+export interface IComponentDialogProps extends IBaseDialogProps {
   /**
    * `Dialog` props passthrough.
    *
@@ -50,10 +31,6 @@ const ComponentDialog: React.FC<IComponentDialogProps> = (props) => {
 
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
-  if (!props.open) {
-    return <></>;
-  }
-
   return (
     <Dialog
       fullScreen={fullScreen}
@@ -63,6 +40,7 @@ const ComponentDialog: React.FC<IComponentDialogProps> = (props) => {
       aria-describedby="component-dialog-description"
       {...props.dialogProps}>
       <DialogTitle id="component-dialog-title">{props.dialogTitle}</DialogTitle>
+      
       <DialogContent>{props.children}</DialogContent>
       <DialogActions>
         <Button onClick={props.onClose} color="primary" variant="contained" autoFocus>

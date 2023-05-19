@@ -11,6 +11,13 @@ import React from 'react';
 
 export interface IErrorDialogProps extends IBaseDialogProps {
   /**
+   * The dialog window body text.
+   *
+   * @type {string}
+   * @memberof IBaseDialogProps
+   */
+    dialogText: string;
+  /**
    * The dialog window human friendly error (optional).
    *
    * @type {string}
@@ -39,7 +46,7 @@ export interface IErrorDialogProps extends IBaseDialogProps {
  * @param {*} props
  * @return {*}
  */
-export const ErrorDialog: React.FC<IErrorDialogProps> = (props) => {
+export const ErrorDialog = (props: IErrorDialogProps) => {
   const [isExpanded, setIsExpanded] = React.useState(false);
 
   const ErrorDetailsList = (errorProps: { errors: (string | object)[] }) => {

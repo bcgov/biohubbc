@@ -3,6 +3,8 @@ import Snackbar from '@material-ui/core/Snackbar';
 import CloseIcon from '@material-ui/icons/Close';
 import { Color } from '@material-ui/lab/Alert';
 import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
+import { IInfoDialogProps, InfoDialog } from 'components/dialog/InfoDialog';
+import { ISuccessDialogProps, SuccessDialog } from 'components/dialog/SuccessDialog';
 import YesNoDialog, { IYesNoDialogProps } from 'components/dialog/YesNoDialog';
 import React, { createContext, ReactNode, useState } from 'react';
 
@@ -11,27 +13,20 @@ export interface IBaseDialogProps {
    * The dialog window title text.
    *
    * @type {string}
-   * @memberof IYesNoDialogProps
+   * @memberof IBaseDialogProps
    */
   dialogTitle: string;
-  /**
-   * The dialog window body text.
-   *
-   * @type {string}
-   * @memberof IYesNoDialogProps
-   */
-  dialogText: string;
   /**
    * Set to `true` to open the dialog, `false` to close the dialog.
    *
    * @type {boolean}
-   * @memberof IYesNoDialogProps
+   * @memberof IBaseDialogProps
    */
   open: boolean;
   /**
    * Callback fired if the dialog is closed.
    *
-   * @memberof IYesNoDialogProps
+   * @memberof IBaseDialogProps
    */
   onClose: () => void;
 }
@@ -68,6 +63,36 @@ export interface IDialogContext {
    */
   errorDialogProps: IErrorDialogProps;
   /**
+   * Set the success dialog props.
+   *
+   * Note: Any props that are not provided, will default to whatever value was previously set (or the default value)
+   *
+   * @memberof IDialogContext
+   */
+  showSuccessDialog: (props: Partial<ISuccessDialogProps>) => void;
+  /**
+   * The current success dialog props.
+   *
+   * @type {ISuccessDialogProps}
+   * @memberof IDialogContext
+   */
+  successDialogProps: ISuccessDialogProps;
+  /**
+   * Set the info dialog props.
+   *
+   * Note: Any props that are not provided, will default to whatever value was previously set (or the default value)
+   *
+   * @memberof IDialogContext
+   */
+  showInfoDialog: (props: Partial<IInfoDialogProps>) => void;
+  /**
+   * The current error dialog props.
+   *
+   * @type {IErrorDialogProps}
+   * @memberof IDialogContext
+   */
+  infoDialogProps: IInfoDialogProps;
+  /**
    * Set the snackbar props.
    *
    * Note: Any props that are not provided, will default to whatever value was previously set (or the default value)
@@ -98,13 +123,17 @@ export interface ISnackbarProps {
   snackbarMessage: ReactNode;
 }
 
-export const defaultYesNoDialogProps: IYesNoDialogProps = {
+const defaultBaseDialogProps: IBaseDialogProps = {
   dialogTitle: '',
-  dialogText: '',
   open: false,
   onClose: () => {
     // default do nothing
-  },
+  }
+}
+
+export const defaultYesNoDialogProps: IYesNoDialogProps = {
+  ...defaultBaseDialogProps,
+  dialogText: '',
   onNo: () => {
     // default do nothing
   },
@@ -114,16 +143,23 @@ export const defaultYesNoDialogProps: IYesNoDialogProps = {
 };
 
 export const defaultErrorDialogProps: IErrorDialogProps = {
-  dialogTitle: '',
+  ...defaultBaseDialogProps,
   dialogText: '',
-  open: false,
-  onClose: () => {
-    // default do nothing
-  },
   onOk: () => {
     // default do nothing
   }
 };
+
+export const defaultSuccessDialogProps: ISuccessDialogProps = {
+  ...defaultBaseDialogProps,
+  dialogText: ''
+};
+
+export const defaultInfoDialogProps: IInfoDialogProps = {
+  ...defaultBaseDialogProps,
+  dialogText: ''
+};
+
 
 export const defaultSnackbarProps: ISnackbarProps = {
   snackbarMessage: '',
@@ -134,21 +170,17 @@ export const defaultSnackbarProps: ISnackbarProps = {
 };
 
 export const DialogContext = createContext<IDialogContext>({
-  showYesNoDialog: () => {
-    // default do nothing
-  },
+  showYesNoDialog: () => {},
   yesNoDialogProps: defaultYesNoDialogProps,
-  showErrorDialog: () => {
-    // default do nothing
-  },
+  showErrorDialog: () => {},
   errorDialogProps: defaultErrorDialogProps,
-  showSnackbar: () => {
-    // default do nothing
-  },
+  showSuccessDialog: () => {},
+  successDialogProps: defaultSuccessDialogProps,
+  showInfoDialog: () => {},
+  infoDialogProps: defaultInfoDialogProps,
+  showSnackbar: () => {},
   snackbarProps: defaultSnackbarProps,
-  hideDialog: () => {
-    // default do nothing
-  }
+  hideDialog: () => {}
 });
 
 /**
@@ -163,27 +195,41 @@ export const DialogContextProvider: React.FC = (props) => {
     onYes: () => hideDialog()
   });
 
-  const hideDialog = () => {
-    setYesNoDialogProps({ ...yesNoDialogProps, open: false });
-    setErrorDialogProps({ ...errorDialogProps, open: false });
-    setSnackbarProps({ ...snackbarProps, open: false });
-  }
-
   const [errorDialogProps, setErrorDialogProps] = useState<IErrorDialogProps>(defaultErrorDialogProps);
+
+  const [successDialogProps, setSuccessDialogProps] = useState<ISuccessDialogProps>(defaultSuccessDialogProps);
+
+  const [infoDialogProps, setInfoDialogProps] = useState<IInfoDialogProps>(defaultInfoDialogProps);
 
   const [snackbarProps, setSnackbarProps] = useState<ISnackbarProps>(defaultSnackbarProps);
 
+  const hideDialog = () => {
+    setYesNoDialogProps({ ...yesNoDialogProps, open: false });
+    setErrorDialogProps({ ...errorDialogProps, open: false });
+    setSuccessDialogProps({ ...successDialogProps, open: false });
+    setInfoDialogProps({ ...infoDialogProps, open: false });
+    setSnackbarProps({ ...snackbarProps, open: false });
+  }
+
   const showYesNoDialog = function (partialProps: Partial<IYesNoDialogProps>) {
-    setYesNoDialogProps({ ...yesNoDialogProps, ...partialProps,  });
+    setYesNoDialogProps({ ...yesNoDialogProps, ...partialProps, open: true });
   };
 
   const showSnackbar = function (partialProps: Partial<ISnackbarProps>) {
-    setSnackbarProps({ ...snackbarProps, ...partialProps,  });
+    setSnackbarProps({ ...snackbarProps, ...partialProps, open: true  });
   };
 
   const showErrorDialog = function (partialProps: Partial<IErrorDialogProps>) {
-    setErrorDialogProps({ ...errorDialogProps, ...partialProps,  });
+    setErrorDialogProps({ ...errorDialogProps, ...partialProps, open: true });
   };
+
+  const showSuccessDialog = function (partialProps: Partial<ISuccessDialogProps>) {
+    setSuccessDialogProps({ ...successDialogProps, ...partialProps, open: true })
+  }
+
+  const showInfoDialog = function (partialProps: Partial<IInfoDialogProps>) {
+    setInfoDialogProps({ ...infoDialogProps, ...partialProps, open: true })
+  }
 
   return (
     <DialogContext.Provider
@@ -192,6 +238,10 @@ export const DialogContextProvider: React.FC = (props) => {
         yesNoDialogProps,
         showErrorDialog,
         errorDialogProps,
+        showSuccessDialog,
+        successDialogProps,
+        showInfoDialog,
+        infoDialogProps,
         showSnackbar,
         snackbarProps,
         hideDialog
@@ -199,6 +249,8 @@ export const DialogContextProvider: React.FC = (props) => {
       {props.children}
       <YesNoDialog {...yesNoDialogProps} />
       <ErrorDialog {...errorDialogProps} />
+      <SuccessDialog {...successDialogProps} />
+      <InfoDialog {...infoDialogProps} />
       <Snackbar
         anchorOrigin={{
           vertical: 'bottom',
