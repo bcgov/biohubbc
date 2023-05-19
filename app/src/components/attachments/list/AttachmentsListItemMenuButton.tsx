@@ -132,7 +132,7 @@ const AttachmentsListItemMenuButton = <T extends IGetProjectAttachment | IGetSur
                   setOpenRemoveOrResubmitDialog(true);
                   setAnchorEl(null);
                 }}
-                data-testid="attachment-action-menu-delete">
+                data-testid="attachment-action-menu-resubmit">
                 <ListItemIcon>
                   <Icon path={mdiTrashCanOutline} size={1} />
                 </ListItemIcon>

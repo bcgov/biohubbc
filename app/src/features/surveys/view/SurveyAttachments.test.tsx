@@ -10,10 +10,13 @@ import { AttachmentType } from 'constants/attachments';
 import { AuthStateContext } from 'contexts/authStateContext';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { IProjectAuthStateContext, ProjectAuthStateContext } from 'contexts/projectAuthStateContext';
+import { IProjectContext, ProjectContext } from 'contexts/projectContext';
 import { ISurveyContext, SurveyContext } from 'contexts/surveyContext';
+import { createMemoryHistory } from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { DataLoader } from 'hooks/useDataLoader';
 import React from 'react';
+import { Router } from 'react-router';
 import { getMockAuthState, SystemAdminAuthState } from 'test-helpers/auth-helpers';
 import SurveyAttachments from './SurveyAttachments';
 
@@ -34,6 +37,8 @@ const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBioh
   mockUseBiohubApi
 );
 
+const history = createMemoryHistory({ initialEntries: ['/admin/projects/1'] });
+
 describe('SurveyAttachments', () => {
   beforeEach(() => {
     // clear mocks before each test
@@ -52,7 +57,11 @@ describe('SurveyAttachments', () => {
         load: jest.fn()
       } as unknown) as DataLoader<any, any, any>,
       surveyId: 1,
-      projectId: 1
+      projectId: 1,
+      surveyDataLoader: ({
+        data: { surveyData: { survey_details: { survey_name: 'name' } } },
+        load: jest.fn()
+      } as unknown) as DataLoader<any, any, any>
     } as unknown) as ISurveyContext;
 
     const mockProjectAuthStateContext: IProjectAuthStateContext = {
@@ -63,12 +72,28 @@ describe('SurveyAttachments', () => {
       hasLoadedParticipantInfo: true
     };
 
+    const mockProjectContext: IProjectContext = ({
+      artifactDataLoader: ({
+        data: null,
+        load: jest.fn()
+      } as unknown) as DataLoader<any, any, any>,
+      projectId: 1,
+      projectDataLoader: ({
+        data: { projectData: { project: { project_name: 'name' } } },
+        load: jest.fn()
+      } as unknown) as DataLoader<any, any, any>
+    } as unknown) as IProjectContext;
+
     const { getByText, queryByText } = render(
-      <ProjectAuthStateContext.Provider value={mockProjectAuthStateContext}>
-        <SurveyContext.Provider value={mockSurveyContext}>
-          <SurveyAttachments />
-        </SurveyContext.Provider>
-      </ProjectAuthStateContext.Provider>
+      <Router history={history}>
+        <ProjectAuthStateContext.Provider value={mockProjectAuthStateContext}>
+          <ProjectContext.Provider value={mockProjectContext}>
+            <SurveyContext.Provider value={mockSurveyContext}>
+              <SurveyAttachments />
+            </SurveyContext.Provider>
+          </ProjectContext.Provider>
+        </ProjectAuthStateContext.Provider>
+      </Router>
     );
     await waitFor(() => {
       expect(getByText('Upload')).toBeInTheDocument();
@@ -95,7 +120,11 @@ describe('SurveyAttachments', () => {
         load: jest.fn()
       } as unknown) as DataLoader<any, any, any>,
       surveyId: 1,
-      projectId: 1
+      projectId: 1,
+      surveyDataLoader: ({
+        data: { surveyData: { survey_details: { survey_name: 'name' } } },
+        load: jest.fn()
+      } as unknown) as DataLoader<any, any, any>
     } as unknown) as ISurveyContext;
 
     const mockProjectAuthStateContext: IProjectAuthStateContext = {
@@ -106,12 +135,28 @@ describe('SurveyAttachments', () => {
       hasLoadedParticipantInfo: true
     };
 
+    const mockProjectContext: IProjectContext = ({
+      artifactDataLoader: ({
+        data: null,
+        load: jest.fn()
+      } as unknown) as DataLoader<any, any, any>,
+      projectId: 1,
+      projectDataLoader: ({
+        data: { projectData: { project: { project_name: 'name' } } },
+        load: jest.fn()
+      } as unknown) as DataLoader<any, any, any>
+    } as unknown) as IProjectContext;
+
     const { getByText } = render(
-      <ProjectAuthStateContext.Provider value={mockProjectAuthStateContext}>
-        <SurveyContext.Provider value={mockSurveyContext}>
-          <SurveyAttachments />
-        </SurveyContext.Provider>
-      </ProjectAuthStateContext.Provider>
+      <Router history={history}>
+        <ProjectAuthStateContext.Provider value={mockProjectAuthStateContext}>
+          <ProjectContext.Provider value={mockProjectContext}>
+            <SurveyContext.Provider value={mockSurveyContext}>
+              <SurveyAttachments />
+            </SurveyContext.Provider>
+          </ProjectContext.Provider>
+        </ProjectAuthStateContext.Provider>
+      </Router>
     );
     await waitFor(() => {
       expect(getByText('No Documents')).toBeInTheDocument();
@@ -134,7 +179,11 @@ describe('SurveyAttachments', () => {
         load: jest.fn()
       } as unknown) as DataLoader<any, any, any>,
       surveyId: 1,
-      projectId: 1
+      projectId: 1,
+      surveyDataLoader: ({
+        data: { surveyData: { survey_details: { survey_name: 'name' } } },
+        load: jest.fn()
+      } as unknown) as DataLoader<any, any, any>
     } as unknown) as ISurveyContext;
 
     const mockProjectAuthStateContext: IProjectAuthStateContext = {
@@ -145,14 +194,30 @@ describe('SurveyAttachments', () => {
       hasLoadedParticipantInfo: true
     };
 
+    const mockProjectContext: IProjectContext = ({
+      artifactDataLoader: ({
+        data: null,
+        load: jest.fn()
+      } as unknown) as DataLoader<any, any, any>,
+      projectId: 1,
+      projectDataLoader: ({
+        data: { projectData: { project: { project_name: 'name' } } },
+        load: jest.fn()
+      } as unknown) as DataLoader<any, any, any>
+    } as unknown) as IProjectContext;
+
     mockBiohubApi().survey.getSurveyAttachments.mockResolvedValue({});
 
     const { getByText } = render(
-      <ProjectAuthStateContext.Provider value={mockProjectAuthStateContext}>
-        <SurveyContext.Provider value={mockSurveyContext}>
-          <SurveyAttachments />
-        </SurveyContext.Provider>
-      </ProjectAuthStateContext.Provider>
+      <Router history={history}>
+        <ProjectAuthStateContext.Provider value={mockProjectAuthStateContext}>
+          <ProjectContext.Provider value={mockProjectContext}>
+            <SurveyContext.Provider value={mockSurveyContext}>
+              <SurveyAttachments />
+            </SurveyContext.Provider>
+          </ProjectContext.Provider>
+        </ProjectAuthStateContext.Provider>
+      </Router>
     );
 
     await waitFor(() => {
@@ -186,7 +251,11 @@ describe('SurveyAttachments', () => {
         load: jest.fn()
       } as unknown) as DataLoader<any, any, any>,
       surveyId: 1,
-      projectId: 1
+      projectId: 1,
+      surveyDataLoader: ({
+        data: { surveyData: { survey_details: { survey_name: 'name' } } },
+        load: jest.fn()
+      } as unknown) as DataLoader<any, any, any>
     } as unknown) as ISurveyContext;
 
     const mockProjectAuthStateContext: IProjectAuthStateContext = {
@@ -197,18 +266,34 @@ describe('SurveyAttachments', () => {
       hasLoadedParticipantInfo: true
     };
 
+    const mockProjectContext: IProjectContext = ({
+      artifactDataLoader: ({
+        data: null,
+        load: jest.fn()
+      } as unknown) as DataLoader<any, any, any>,
+      projectId: 1,
+      projectDataLoader: ({
+        data: { projectData: { project: { project_name: 'name' } } },
+        load: jest.fn()
+      } as unknown) as DataLoader<any, any, any>
+    } as unknown) as IProjectContext;
+
     const authState = getMockAuthState({ base: SystemAdminAuthState });
 
     const { baseElement, queryByText, getByTestId, getAllByTestId, queryByTestId } = render(
-      <AuthStateContext.Provider value={authState}>
-        <ProjectAuthStateContext.Provider value={mockProjectAuthStateContext}>
-          <DialogContextProvider>
-            <SurveyContext.Provider value={mockSurveyContext}>
-              <SurveyAttachments />
-            </SurveyContext.Provider>
-          </DialogContextProvider>
-        </ProjectAuthStateContext.Provider>
-      </AuthStateContext.Provider>
+      <Router history={history}>
+        <AuthStateContext.Provider value={authState}>
+          <ProjectAuthStateContext.Provider value={mockProjectAuthStateContext}>
+            <DialogContextProvider>
+              <ProjectContext.Provider value={mockProjectContext}>
+                <SurveyContext.Provider value={mockSurveyContext}>
+                  <SurveyAttachments />
+                </SurveyContext.Provider>
+              </ProjectContext.Provider>
+            </DialogContextProvider>
+          </ProjectAuthStateContext.Provider>
+        </AuthStateContext.Provider>
+      </Router>
     );
 
     await waitFor(() => {
@@ -257,7 +342,11 @@ describe('SurveyAttachments', () => {
         load: jest.fn()
       } as unknown) as DataLoader<any, any, any>,
       surveyId: 1,
-      projectId: 1
+      projectId: 1,
+      surveyDataLoader: ({
+        data: { surveyData: { survey_details: { survey_name: 'name' } } },
+        load: jest.fn()
+      } as unknown) as DataLoader<any, any, any>
     } as unknown) as ISurveyContext;
 
     const mockProjectAuthStateContext: IProjectAuthStateContext = {
@@ -268,18 +357,34 @@ describe('SurveyAttachments', () => {
       hasLoadedParticipantInfo: true
     };
 
+    const mockProjectContext: IProjectContext = ({
+      artifactDataLoader: ({
+        data: null,
+        load: jest.fn()
+      } as unknown) as DataLoader<any, any, any>,
+      projectId: 1,
+      projectDataLoader: ({
+        data: { projectData: { project: { project_name: 'name' } } },
+        load: jest.fn()
+      } as unknown) as DataLoader<any, any, any>
+    } as unknown) as IProjectContext;
+
     const authState = getMockAuthState({ base: SystemAdminAuthState });
 
     const { baseElement, queryByText, getByTestId, getAllByTestId, queryByTestId } = render(
-      <AuthStateContext.Provider value={authState}>
-        <ProjectAuthStateContext.Provider value={mockProjectAuthStateContext}>
-          <DialogContextProvider>
-            <SurveyContext.Provider value={mockSurveyContext}>
-              <SurveyAttachments />
-            </SurveyContext.Provider>
-          </DialogContextProvider>
-        </ProjectAuthStateContext.Provider>
-      </AuthStateContext.Provider>
+      <Router history={history}>
+        <AuthStateContext.Provider value={authState}>
+          <ProjectAuthStateContext.Provider value={mockProjectAuthStateContext}>
+            <DialogContextProvider>
+              <ProjectContext.Provider value={mockProjectContext}>
+                <SurveyContext.Provider value={mockSurveyContext}>
+                  <SurveyAttachments />
+                </SurveyContext.Provider>
+              </ProjectContext.Provider>
+            </DialogContextProvider>
+          </ProjectAuthStateContext.Provider>
+        </AuthStateContext.Provider>
+      </Router>
     );
 
     await waitFor(() => {
@@ -327,8 +432,24 @@ describe('SurveyAttachments', () => {
         load: jest.fn()
       } as unknown) as DataLoader<any, any, any>,
       surveyId: 1,
-      projectId: 1
+      projectId: 1,
+      surveyDataLoader: ({
+        data: { surveyData: { survey_details: { survey_name: 'name' } } },
+        load: jest.fn()
+      } as unknown) as DataLoader<any, any, any>
     } as unknown) as ISurveyContext;
+
+    const mockProjectContext: IProjectContext = ({
+      artifactDataLoader: ({
+        data: null,
+        load: jest.fn()
+      } as unknown) as DataLoader<any, any, any>,
+      projectId: 1,
+      projectDataLoader: ({
+        data: { projectData: { project: { project_name: 'name' } } },
+        load: jest.fn()
+      } as unknown) as DataLoader<any, any, any>
+    } as unknown) as IProjectContext;
 
     const mockProjectAuthStateContext: IProjectAuthStateContext = {
       getProjectParticipant: () => null,
@@ -341,15 +462,19 @@ describe('SurveyAttachments', () => {
     const authState = getMockAuthState({ base: SystemAdminAuthState });
 
     const { baseElement, queryByText, getAllByTestId, queryByTestId, getAllByRole } = render(
-      <AuthStateContext.Provider value={authState}>
-        <ProjectAuthStateContext.Provider value={mockProjectAuthStateContext}>
-          <DialogContextProvider>
-            <SurveyContext.Provider value={mockSurveyContext}>
-              <SurveyAttachments />
-            </SurveyContext.Provider>
-          </DialogContextProvider>
-        </ProjectAuthStateContext.Provider>
-      </AuthStateContext.Provider>
+      <Router history={history}>
+        <AuthStateContext.Provider value={authState}>
+          <ProjectAuthStateContext.Provider value={mockProjectAuthStateContext}>
+            <DialogContextProvider>
+              <ProjectContext.Provider value={mockProjectContext}>
+                <SurveyContext.Provider value={mockSurveyContext}>
+                  <SurveyAttachments />
+                </SurveyContext.Provider>
+              </ProjectContext.Provider>
+            </DialogContextProvider>
+          </ProjectAuthStateContext.Provider>
+        </AuthStateContext.Provider>
+      </Router>
     );
 
     await waitFor(() => {
