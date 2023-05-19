@@ -79,9 +79,9 @@ const SurveyHeader = () => {
     dialogTitle: 'Delete Survey?',
     dialogText: 'Are you sure you want to delete this survey? This action cannot be undone.',
     open: false,
-    onClose: () => dialogContext.setYesNoDialog({ open: false }),
-    onNo: () => dialogContext.setYesNoDialog({ open: false }),
-    onYes: () => dialogContext.setYesNoDialog({ open: false })
+    onClose: () => dialogContext.hideDialog(),
+    onNo: () => dialogContext.hideDialog(),
+    onYes: () => dialogContext.hideDialog()
   };
 
   const deleteErrorDialogProps = {
@@ -89,24 +89,23 @@ const SurveyHeader = () => {
     dialogText: DeleteSurveyI18N.deleteErrorText,
     open: false,
     onClose: () => {
-      dialogContext.setErrorDialog({ open: false });
+      dialogContext.hideDialog();
     },
     onOk: () => {
-      dialogContext.setErrorDialog({ open: false });
+      dialogContext.hideDialog();
     }
   };
 
   const showDeleteSurveyDialog = () => {
-    dialogContext.setYesNoDialog({
+    dialogContext.showYesNoDialog({
       ...defaultYesNoDialogProps,
-      open: true,
       yesButtonProps: { color: 'secondary' },
       yesButtonLabel: 'Delete',
       noButtonProps: { color: 'primary', variant: 'outlined' },
       noButtonLabel: 'Cancel',
       onYes: () => {
         deleteSurvey();
-        dialogContext.setYesNoDialog({ open: false });
+        dialogContext.hideDialog();
       }
     });
     setMenuAnchorEl(null);
@@ -124,7 +123,7 @@ const SurveyHeader = () => {
       );
 
       if (!response) {
-        showDeleteErrorDialog({ open: true });
+        showDeleteErrorDialog({  });
         return;
       }
       projectContext.surveysListDataLoader.refresh(projectContext.projectId);
@@ -132,13 +131,13 @@ const SurveyHeader = () => {
       history.push(`/admin/projects/${surveyContext.projectId}/surveys`);
     } catch (error) {
       const apiError = error as APIError;
-      showDeleteErrorDialog({ dialogText: apiError.message, open: true });
+      showDeleteErrorDialog({ dialogText: apiError.message,  });
       return error;
     }
   };
 
   const showDeleteErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
-    dialogContext.setErrorDialog({ ...deleteErrorDialogProps, ...textDialogProps, open: true });
+    dialogContext.showErrorDialog({ ...deleteErrorDialogProps, ...textDialogProps,  });
   };
 
   // Enable delete button if you a system admin or a project admin

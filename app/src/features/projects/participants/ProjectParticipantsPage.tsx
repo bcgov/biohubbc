@@ -66,10 +66,9 @@ const ProjectParticipantsPage: React.FC = () => {
 
   const openErrorDialog = useCallback(
     (errorDialogProps?: Partial<IErrorDialogProps>) => {
-      dialogContext.setErrorDialog({
-        open: true,
-        onClose: () => dialogContext.setErrorDialog({ open: false }),
-        onOk: () => dialogContext.setErrorDialog({ open: false }),
+      dialogContext.showErrorDialog({
+        onClose: () => dialogContext.hideDialog(),
+        onOk: () => dialogContext.hideDialog(),
         ...errorDialogProps
       });
     },
@@ -77,7 +76,7 @@ const ProjectParticipantsPage: React.FC = () => {
   );
 
   const handleDialogRemoveParticipantOpen = (participant: IGetProjectParticipantsResponseArrayItem) => {
-    dialogContext.setYesNoDialog({
+    dialogContext.showYesNoDialog({
       dialogTitle: ProjectParticipantsI18N.removeParticipantTitle,
       dialogContent: (
         <Typography variant="body1" component="div" color="textSecondary">
@@ -86,12 +85,10 @@ const ProjectParticipantsPage: React.FC = () => {
         </Typography>
       ),
       yesButtonProps: { color: 'secondary' },
-      open: true,
       onYes: async () => {
         await handleRemoveProjectParticipant(participant.project_participation_id);
-        dialogContext.setYesNoDialog({ open: false });
-        dialogContext.setSnackbar({
-          open: true,
+        dialogContext.hideDialog();
+        dialogContext.showSnackbar({
           snackbarMessage: (
             <Typography variant="body2" component="div">
               User <strong>{participant.user_identifier}</strong> removed from project.
@@ -99,8 +96,8 @@ const ProjectParticipantsPage: React.FC = () => {
           )
         });
       },
-      onClose: () => dialogContext.setYesNoDialog({ open: false }),
-      onNo: () => dialogContext.setYesNoDialog({ open: false })
+      onClose: () => dialogContext.hideDialog(),
+      onNo: () => dialogContext.hideDialog()
     });
   };
 

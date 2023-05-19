@@ -6,7 +6,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import Typography from '@material-ui/core/Typography';
 import { IEditReportMetaForm } from 'components/attachments/EditReportMetaForm';
 import { AttachmentsI18N } from 'constants/i18n';
-import { defaultErrorDialogProps, DialogContext } from 'contexts/dialogContext';
+import { DialogContext } from 'contexts/dialogContext';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
@@ -14,7 +14,6 @@ import { IGetProjectAttachment } from 'interfaces/useProjectApi.interface';
 import React, { useContext, useEffect } from 'react';
 import { getFormattedFileSize } from 'utils/Utils';
 import { AttachmentType } from '../../../../constants/attachments';
-import { IErrorDialogProps } from '../../ErrorDialog';
 import ReportAttachmentDetails from '../ReportAttachmentDetails';
 
 export interface IProjectReportAttachmentDialogProps {
@@ -40,10 +39,6 @@ const ProjectReportAttachmentDialog: React.FC<IProjectReportAttachmentDialogProp
     biohubApi.project.getProjectReportDetails(props.projectId, _attachmentId)
   );
 
-  const showErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
-    dialogContext.setErrorDialog({ ...defaultErrorDialogProps, ...textDialogProps, open: true });
-  };
-
   const openAttachment = async (attachment: IGetProjectAttachment) => {
     try {
       const response = await biohubApi.project.getAttachmentSignedURL(
@@ -59,11 +54,10 @@ const ProjectReportAttachmentDialog: React.FC<IProjectReportAttachmentDialogProp
       window.open(response);
     } catch (error) {
       const apiError = error as APIError;
-      showErrorDialog({
+      dialogContext.showErrorDialog({
         dialogTitle: AttachmentsI18N.downloadErrorTitle,
         dialogText: AttachmentsI18N.downloadErrorText,
-        dialogErrorDetails: apiError.errors,
-        open: true
+        dialogErrorDetails: apiError.errors
       });
       return;
     }
@@ -94,7 +88,7 @@ const ProjectReportAttachmentDialog: React.FC<IProjectReportAttachmentDialogProp
       }
     } catch (error) {
       const apiError = error as APIError;
-      showErrorDialog({ dialogText: apiError.message, dialogErrorDetails: apiError.errors, open: true });
+      dialogContext.showErrorDialog({ dialogText: apiError.message, dialogErrorDetails: apiError.errors });
     }
   };
 

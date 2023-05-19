@@ -55,17 +55,16 @@ const ProjectPermits: React.FC<IProjectPermitsProps> = (props) => {
   const defaultErrorDialogProps = {
     dialogTitle: EditPermitI18N.editErrorTitle,
     dialogText: EditPermitI18N.editErrorText,
-    open: false,
     onClose: () => {
-      dialogContext.setErrorDialog({ open: false });
+      dialogContext.hideDialog();
     },
     onOk: () => {
-      dialogContext.setErrorDialog({ open: false });
+      dialogContext.hideDialog();
     }
   };
 
   const showErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
-    dialogContext.setErrorDialog({ ...defaultErrorDialogProps, ...textDialogProps, open: true });
+    dialogContext.showErrorDialog({ ...defaultErrorDialogProps, ...textDialogProps });
   };
 
   const [openEditDialog, setOpenEditDialog] = useState(false);
@@ -87,7 +86,7 @@ const ProjectPermits: React.FC<IProjectPermitsProps> = (props) => {
       ]);
 
       if (!projectForUpdateResponse?.permit || !projectForUpdateResponse?.coordinator || !existingPermitsResponse) {
-        showErrorDialog({ open: true });
+        showErrorDialog();
         return;
       }
 
@@ -96,7 +95,7 @@ const ProjectPermits: React.FC<IProjectPermitsProps> = (props) => {
       existingPermitsResponseData = existingPermitsResponse;
     } catch (error) {
       const apiError = error as APIError;
-      showErrorDialog({ dialogText: apiError.message, open: true });
+      showErrorDialog({ dialogText: apiError.message });
       return;
     }
 
@@ -116,7 +115,7 @@ const ProjectPermits: React.FC<IProjectPermitsProps> = (props) => {
       await biohubApi.project.updateProject(id, projectData);
     } catch (error) {
       const apiError = error as APIError;
-      showErrorDialog({ dialogText: apiError.message, open: true });
+      showErrorDialog({ dialogText: apiError.message,  });
       return;
     } finally {
       setOpenEditDialog(false);

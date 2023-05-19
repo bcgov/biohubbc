@@ -49,29 +49,29 @@ const UsersDetailHeader: React.FC<IUsersHeaderProps> = (props) => {
   const dialogContext = useContext(DialogContext);
 
   const defaultErrorDialogProps: Partial<IErrorDialogProps> = {
-    onClose: () => dialogContext.setErrorDialog({ open: false }),
-    onOk: () => dialogContext.setErrorDialog({ open: false })
+    onClose: () => dialogContext.hideDialog(),
+    onOk: () => dialogContext.hideDialog()
   };
 
   const defaultYesNoDialogProps: Partial<IYesNoDialogProps> = {
-    onClose: () => dialogContext.setYesNoDialog({ open: false }),
-    onNo: () => dialogContext.setYesNoDialog({ open: false })
+    onClose: () => dialogContext.hideDialog(),
+    onNo: () => dialogContext.hideDialog()
   };
 
   const openYesNoDialog = (yesNoDialogProps?: Partial<IYesNoDialogProps>) => {
-    dialogContext.setYesNoDialog({
+    dialogContext.showYesNoDialog({
       ...defaultYesNoDialogProps,
       ...yesNoDialogProps,
-      open: true
+      
     });
   };
 
   const openErrorDialog = useCallback(
     (errorDialogProps?: Partial<IErrorDialogProps>) => {
-      dialogContext.setErrorDialog({
+      dialogContext.showErrorDialog({
         ...defaultErrorDialogProps,
         ...errorDialogProps,
-        open: true
+        
       });
     },
     [defaultErrorDialogProps, dialogContext]
@@ -84,15 +84,14 @@ const UsersDetailHeader: React.FC<IUsersHeaderProps> = (props) => {
     try {
       await biohubApi.user.deleteSystemUser(user.id);
 
-      dialogContext.setSnackbar({
+      dialogContext.showSnackbar({
         snackbarMessage: (
           <>
             <Typography variant="body2" component="div">
               User <strong>{user.user_identifier}</strong> removed from application.
             </Typography>
           </>
-        ),
-        open: true
+        )
       });
 
       history.push('/admin/users');
@@ -156,7 +155,7 @@ const UsersDetailHeader: React.FC<IUsersHeaderProps> = (props) => {
                     yesButtonProps: { color: 'secondary' },
                     onYes: () => {
                       deActivateSystemUser(userDetails);
-                      dialogContext.setYesNoDialog({ open: false });
+                      dialogContext.hideDialog();
                     }
                   })
                 }>

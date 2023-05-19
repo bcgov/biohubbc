@@ -103,58 +103,55 @@ const CreateProjectPage: React.FC = () => {
     dialogText: CreateProjectI18N.cancelText,
     open: false,
     onClose: () => {
-      dialogContext.setYesNoDialog({ open: false });
+      dialogContext.hideDialog();
     },
     onNo: () => {
-      dialogContext.setYesNoDialog({ open: false });
+      dialogContext.hideDialog();
     },
     onYes: () => {
-      dialogContext.setYesNoDialog({ open: false });
+      dialogContext.hideDialog();
       history.push('/admin/projects');
     }
   };
 
   const defaultErrorDialogProps = {
     onClose: () => {
-      dialogContext.setErrorDialog({ open: false });
+      dialogContext.hideDialog();
     },
     onOk: () => {
-      dialogContext.setErrorDialog({ open: false });
+      dialogContext.hideDialog();
     }
   };
 
   const showDeleteDraftErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
-    dialogContext.setErrorDialog({
+    dialogContext.showErrorDialog({
       dialogTitle: DeleteProjectDraftI18N.draftErrorTitle,
       dialogText: DeleteProjectDraftI18N.draftErrorText,
       ...defaultErrorDialogProps,
-      ...textDialogProps,
-      open: true
+      ...textDialogProps
     });
   };
 
   const showDraftErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
-    dialogContext.setErrorDialog({
+    dialogContext.showErrorDialog({
       dialogTitle: CreateProjectDraftI18N.draftErrorTitle,
       dialogText: CreateProjectDraftI18N.draftErrorText,
       ...defaultErrorDialogProps,
-      ...textDialogProps,
-      open: true
+      ...textDialogProps
     });
   };
 
   const showCreateErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
-    dialogContext.setErrorDialog({
+    dialogContext.showErrorDialog({
       dialogTitle: CreateProjectI18N.createErrorTitle,
       dialogText: CreateProjectI18N.createErrorText,
       ...defaultErrorDialogProps,
-      ...textDialogProps,
-      open: true
+      ...textDialogProps
     });
   };
 
   const handleCancel = () => {
-    dialogContext.setYesNoDialog(defaultCancelDialogProps);
+    dialogContext.hideDialog();
     history.push('/admin/projects');
   };
 
@@ -247,13 +244,12 @@ const CreateProjectPage: React.FC = () => {
   const handleLocationChange = (location: History.Location, action: History.Action) => {
     if (!dialogContext.yesNoDialogProps.open) {
       // If the cancel dialog is not open: open it
-      dialogContext.setYesNoDialog({
+      dialogContext.showYesNoDialog({
         ...defaultCancelDialogProps,
         onYes: () => {
-          dialogContext.setYesNoDialog({ open: false });
+          dialogContext.hideDialog();
           history.push(location.pathname);
-        },
-        open: true
+        }
       });
       return false;
     }

@@ -174,15 +174,15 @@ export const DialogContextProvider: React.FC = (props) => {
   const [snackbarProps, setSnackbarProps] = useState<ISnackbarProps>(defaultSnackbarProps);
 
   const showYesNoDialog = function (partialProps: Partial<IYesNoDialogProps>) {
-    setYesNoDialogProps({ ...yesNoDialogProps, ...partialProps, open: true });
+    setYesNoDialogProps({ ...yesNoDialogProps, ...partialProps,  });
   };
 
   const showSnackbar = function (partialProps: Partial<ISnackbarProps>) {
-    setSnackbarProps({ ...snackbarProps, ...partialProps, open: true });
+    setSnackbarProps({ ...snackbarProps, ...partialProps,  });
   };
 
   const showErrorDialog = function (partialProps: Partial<IErrorDialogProps>) {
-    setErrorDialogProps({ ...errorDialogProps, ...partialProps, open: true });
+    setErrorDialogProps({ ...errorDialogProps, ...partialProps,  });
   };
 
   return (

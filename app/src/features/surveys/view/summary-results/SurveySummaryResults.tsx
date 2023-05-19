@@ -56,16 +56,15 @@ const SurveySummaryResults = () => {
   const showUploadDialog = () => {
     if (summaryData) {
       // already have summary data, prompt user to confirm override
-      dialogContext.setYesNoDialog({
+      dialogContext.showYesNoDialog({
         dialogTitle: 'Import New Summary Results Data',
         dialogText:
           'Importing a new file will overwrite the existing summary results data. Are you sure you want to proceed?',
-        onClose: () => dialogContext.setYesNoDialog({ open: false }),
-        onNo: () => dialogContext.setYesNoDialog({ open: false }),
-        open: true,
+        onClose: () => dialogContext.hideDialog(),
+        onNo: () => dialogContext.hideDialog(),
         onYes: () => {
           setOpenImportSummaryResults(true);
-          dialogContext.setYesNoDialog({ open: false });
+          dialogContext.hideDialog();
         }
       });
     } else {
@@ -75,7 +74,7 @@ const SurveySummaryResults = () => {
 
   const showDeleteDialog = () => {
     if (summaryData) {
-      dialogContext.setYesNoDialog({
+      dialogContext.showYesNoDialog({
         dialogTitle: 'Delete Summary Results Data?',
         dialogText:
           'Are you sure you want to delete the summary results data for this survey? This action cannot be undone.',
@@ -83,14 +82,13 @@ const SurveySummaryResults = () => {
         yesButtonLabel: 'Delete',
         noButtonProps: { color: 'primary' },
         noButtonLabel: 'Cancel',
-        open: true,
         onYes: async () => {
           await biohubApi.survey.deleteSummarySubmission(projectId, surveyId, summaryData.survey_summary_submission_id);
           surveyContext.summaryDataLoader.refresh(projectId, surveyId);
-          dialogContext.setYesNoDialog({ open: false });
+          dialogContext.hideDialog();
         },
-        onClose: () => dialogContext.setYesNoDialog({ open: false }),
-        onNo: () => dialogContext.setYesNoDialog({ open: false })
+        onClose: () => dialogContext.hideDialog(),
+        onNo: () => dialogContext.hideDialog()
       });
     }
   };

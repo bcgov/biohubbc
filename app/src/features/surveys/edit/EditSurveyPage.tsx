@@ -118,34 +118,33 @@ const EditSurveyPage = () => {
     dialogText: EditSurveyI18N.cancelText,
     open: false,
     onClose: () => {
-      dialogContext.setYesNoDialog({ open: false });
+      dialogContext.hideDialog();
     },
     onNo: () => {
-      dialogContext.setYesNoDialog({ open: false });
+      dialogContext.hideDialog();
     },
     onYes: () => {
-      dialogContext.setYesNoDialog({ open: false });
+      dialogContext.hideDialog();
       history.push('details');
     }
   };
 
   const handleCancel = () => {
-    dialogContext.setYesNoDialog(defaultCancelDialogProps);
+    dialogContext.showYesNoDialog(defaultCancelDialogProps);
     history.push('details');
   };
 
   const showEditErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
-    dialogContext.setErrorDialog({
+    dialogContext.showErrorDialog({
       dialogTitle: EditSurveyI18N.createErrorTitle,
       dialogText: EditSurveyI18N.createErrorText,
       onClose: () => {
-        dialogContext.setErrorDialog({ open: false });
+        dialogContext.hideDialog();
       },
       onOk: () => {
-        dialogContext.setErrorDialog({ open: false });
+        dialogContext.hideDialog();
       },
-      ...textDialogProps,
-      open: true
+      ...textDialogProps
     });
   };
 
@@ -195,13 +194,12 @@ const EditSurveyPage = () => {
   const handleLocationChange = (location: History.Location, action: History.Action) => {
     if (!dialogContext.yesNoDialogProps.open) {
       // If the cancel dialog is not open: open it
-      dialogContext.setYesNoDialog({
+      dialogContext.showYesNoDialog({
         ...defaultCancelDialogProps,
         onYes: () => {
-          dialogContext.setYesNoDialog({ open: false });
+          dialogContext.hideDialog();
           history.push(location.pathname);
-        },
-        open: true
+        }
       });
       return false;
     }

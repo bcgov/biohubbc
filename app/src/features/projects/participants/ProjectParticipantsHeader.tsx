@@ -72,15 +72,14 @@ const ProjectParticipantsHeader = (props: IProjectParticipantsHeaderProps) => {
   const [openAddParticipantsDialog, setOpenAddParticipantsDialog] = useState(false);
 
   const defaultErrorDialogProps: Partial<IErrorDialogProps> = {
-    onClose: () => dialogContext.setErrorDialog({ open: false }),
-    onOk: () => dialogContext.setErrorDialog({ open: false })
+    onClose: () => dialogContext.hideDialog(),
+    onOk: () => dialogContext.hideDialog()
   };
 
   const openErrorDialog = (errorDialogProps?: Partial<IErrorDialogProps>) => {
-    dialogContext.setErrorDialog({
+    dialogContext.showErrorDialog({
       ...defaultErrorDialogProps,
-      ...errorDialogProps,
-      open: true
+      ...errorDialogProps
     });
   };
 
@@ -164,8 +163,7 @@ const ProjectParticipantsHeader = (props: IProjectParticipantsHeaderProps) => {
         onSave={(values) => {
           handleAddProjectParticipantsSave(values);
           setOpenAddParticipantsDialog(false);
-          dialogContext.setSnackbar({
-            open: true,
+          dialogContext.showSnackbar({
             snackbarMessage: (
               <Typography variant="body2" component="div">
                 {values.participants.length} team {values.participants.length > 1 ? 'members' : 'member'} added.

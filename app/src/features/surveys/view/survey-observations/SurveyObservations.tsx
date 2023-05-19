@@ -87,17 +87,16 @@ const SurveyObservations: React.FC = () => {
   function showUploadDialog() {
     if (occurrenceSubmission) {
       // An observation submission already exists, warn user about overriding existing submission
-      dialogContext.setYesNoDialog({
+      dialogContext.showYesNoDialog({
         dialogTitle: 'Import New Observation Data',
         dialogText:
           'Importing a new file will overwrite the existing observations data. Are you sure you want to proceed?',
-        open: true,
         onYes: () => {
           handleOpenImportObservations();
-          dialogContext.setYesNoDialog({ open: false });
+          dialogContext.hideDialog();
         },
-        onClose: () => dialogContext.setYesNoDialog({ open: false }),
-        onNo: () => dialogContext.setYesNoDialog({ open: false })
+        onClose: () => dialogContext.hideDialog(),
+        onNo: () => dialogContext.hideDialog()
       });
     } else {
       // Observation submission does not exist, prompt user to import an observation file
@@ -110,14 +109,13 @@ const SurveyObservations: React.FC = () => {
       return;
     }
 
-    dialogContext.setYesNoDialog({
+    dialogContext.showYesNoDialog({
       dialogTitle: 'Delete Observations?',
       dialogText: 'Are you sure you want to delete observation data from this survey? This action cannot be undone.',
       yesButtonProps: { color: 'secondary' },
       yesButtonLabel: 'Delete',
       noButtonProps: { color: 'primary' },
       noButtonLabel: 'Cancel',
-      open: true,
       onYes: async () => {
         await biohubApi.observation.deleteObservationSubmission(
           projectId,
@@ -125,10 +123,10 @@ const SurveyObservations: React.FC = () => {
           occurrenceSubmission.occurrence_submission_id
         );
         surveyContext.observationDataLoader.refresh(projectId, surveyId);
-        dialogContext.setYesNoDialog({ open: false });
+        dialogContext.hideDialog();
       },
-      onClose: () => dialogContext.setYesNoDialog({ open: false }),
-      onNo: () => dialogContext.setYesNoDialog({ open: false })
+      onClose: () => dialogContext.hideDialog(),
+      onNo: () => dialogContext.hideDialog()
     });
   }
 

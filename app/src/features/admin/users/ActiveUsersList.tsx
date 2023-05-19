@@ -74,11 +74,11 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
   const [openAddUserDialog, setOpenAddUserDialog] = useState(false);
 
   const showSnackBar = (textDialogProps?: Partial<ISnackbarProps>) => {
-    dialogContext.setSnackbar({ ...textDialogProps, open: true });
+    dialogContext.showSnackbar({ ...textDialogProps });
   };
 
   const handleRemoveUserClick = (row: IGetUserResponse) => {
-    dialogContext.setYesNoDialog({
+    dialogContext.showYesNoDialog({
       dialogTitle: 'Remove User?',
       dialogContent: (
         <Typography variant="body1" component="div" color="textSecondary">
@@ -90,15 +90,14 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
       noButtonLabel: 'Cancel',
       yesButtonProps: { color: 'secondary' },
       onClose: () => {
-        dialogContext.setYesNoDialog({ open: false });
+        dialogContext.hideDialog();
       },
       onNo: () => {
-        dialogContext.setYesNoDialog({ open: false });
+        dialogContext.hideDialog();
       },
-      open: true,
       onYes: () => {
         deActivateSystemUser(row);
-        dialogContext.setYesNoDialog({ open: false });
+        dialogContext.hideDialog();
       }
     });
   };
@@ -118,31 +117,30 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
             </Typography>
           </>
         ),
-        open: true
+        
       });
 
       props.refresh();
     } catch (error) {
       const apiError = error as APIError;
 
-      dialogContext.setErrorDialog({
-        open: true,
+      dialogContext.showErrorDialog({
         dialogTitle: DeleteSystemUserI18N.deleteUserErrorTitle,
         dialogText: DeleteSystemUserI18N.deleteUserErrorText,
         dialogError: apiError.message,
         dialogErrorDetails: apiError.errors,
         onClose: () => {
-          dialogContext.setErrorDialog({ open: false });
+          dialogContext.hideDialog();
         },
         onOk: () => {
-          dialogContext.setErrorDialog({ open: false });
+          dialogContext.hideDialog();
         }
       });
     }
   };
 
   const handleChangeUserPermissionsClick = (row: IGetUserResponse, newRoleName: any, newRoleId: number) => {
-    dialogContext.setYesNoDialog({
+    dialogContext.showYesNoDialog({
       dialogTitle: 'Change User Role?',
       dialogContent: (
         <Typography variant="body1" color="textSecondary">
@@ -153,15 +151,14 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
       noButtonLabel: 'Cancel',
       yesButtonProps: { color: 'primary' },
       onClose: () => {
-        dialogContext.setYesNoDialog({ open: false });
+        dialogContext.hideDialog();
       },
       onNo: () => {
-        dialogContext.setYesNoDialog({ open: false });
+        dialogContext.hideDialog();
       },
-      open: true,
       onYes: () => {
         changeSystemUserRole(row, newRoleId, newRoleName);
-        dialogContext.setYesNoDialog({ open: false });
+        dialogContext.hideDialog();
       }
     });
   };
@@ -183,23 +180,22 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
             </Typography>
           </>
         ),
-        open: true
+        
       });
 
       props.refresh();
     } catch (error) {
       const apiError = error as APIError;
-      dialogContext.setErrorDialog({
-        open: true,
+      dialogContext.showErrorDialog({
         dialogTitle: UpdateSystemUserI18N.updateUserErrorTitle,
         dialogText: UpdateSystemUserI18N.updateUserErrorText,
         dialogError: apiError.message,
         dialogErrorDetails: apiError.errors,
         onClose: () => {
-          dialogContext.setErrorDialog({ open: false });
+          dialogContext.hideDialog();
         },
         onOk: () => {
-          dialogContext.setErrorDialog({ open: false });
+          dialogContext.hideDialog();
         }
       });
     }
@@ -219,8 +215,7 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
 
       props.refresh();
 
-      dialogContext.setSnackbar({
-        open: true,
+      dialogContext.showSnackbar({
         snackbarMessage: (
           <Typography variant="body2" component="div">
             {values.systemUsers.length} system {values.systemUsers.length > 1 ? 'users' : 'user'} added.
@@ -229,17 +224,16 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
       });
     } catch (error) {
       const apiError = error as APIError;
-      dialogContext.setErrorDialog({
-        open: true,
+      dialogContext.showErrorDialog({
         dialogTitle: AddSystemUserI18N.addUserErrorTitle,
         dialogText: AddSystemUserI18N.addUserErrorText,
         dialogError: apiError.message,
         dialogErrorDetails: apiError.errors,
         onClose: () => {
-          dialogContext.setErrorDialog({ open: false });
+          dialogContext.hideDialog();
         },
         onOk: () => {
-          dialogContext.setErrorDialog({ open: false });
+          dialogContext.hideDialog();
         }
       });
     }

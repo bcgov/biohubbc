@@ -82,6 +82,7 @@ export const ScrollToFormikError: React.FC<IScrollToFormikErrorProps> = (props) 
       return { open: false, msg: currentState.msg };
     });
 
+  // TODO make this component consume the dialogContext and show the snackbar that way,
   return (
     <>
       <Snackbar

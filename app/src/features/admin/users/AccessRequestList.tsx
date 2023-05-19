@@ -59,6 +59,7 @@ const AccessRequestList: React.FC<IAccessRequestListProps> = (props) => {
   const classes = useStyles();
   const biohubApi = useBiohubApi();
 
+  // TODO: Make this component consume the DialogContext
   const [activeReviewDialog, setActiveReviewDialog] = useState<{
     open: boolean;
     request: IGetAccessRequestsListResponse | any;
@@ -74,10 +75,10 @@ const AccessRequestList: React.FC<IAccessRequestListProps> = (props) => {
     dialogText: ReviewAccessRequestI18N.reviewErrorText,
     open: false,
     onClose: () => {
-      dialogContext.setErrorDialog({ open: false });
+      dialogContext.hideDialog();
     },
     onOk: () => {
-      dialogContext.setErrorDialog({ open: false });
+      dialogContext.hideDialog();
     }
   };
 
@@ -86,10 +87,10 @@ const AccessRequestList: React.FC<IAccessRequestListProps> = (props) => {
     dialogText: AccessApprovalDispatchI18N.reviewErrorText,
     open: false,
     onClose: () => {
-      dialogContext.setErrorDialog({ open: false });
+      dialogContext.hideDialog();
     },
     onOk: () => {
-      dialogContext.setErrorDialog({ open: false });
+      dialogContext.hideDialog();
     }
   };
 
@@ -98,10 +99,10 @@ const AccessRequestList: React.FC<IAccessRequestListProps> = (props) => {
     dialogText: AccessDenialDispatchI18N.reviewErrorText,
     open: false,
     onClose: () => {
-      dialogContext.setErrorDialog({ open: false });
+      dialogContext.hideDialog();
     },
     onOk: () => {
-      dialogContext.setErrorDialog({ open: false });
+      dialogContext.hideDialog();
     }
   };
 
@@ -135,18 +136,16 @@ const AccessRequestList: React.FC<IAccessRequestListProps> = (props) => {
           }
         );
       } catch (error) {
-        dialogContext.setErrorDialog({
+        dialogContext.showErrorDialog({
           ...dispatchApprovalErrorDialogProps,
-          open: true,
           dialogErrorDetails: (error as APIError).errors
         });
       } finally {
         refresh();
       }
     } catch (error) {
-      dialogContext.setErrorDialog({
+      dialogContext.showErrorDialog({
         ...defaultErrorDialogProps,
-        open: true,
         dialogErrorDetails: (error as APIError).errors
       });
     }
@@ -176,18 +175,16 @@ const AccessRequestList: React.FC<IAccessRequestListProps> = (props) => {
           }
         );
       } catch (error) {
-        dialogContext.setErrorDialog({
+        dialogContext.showErrorDialog({
           ...dispatchDenialErrorDialogProps,
-          open: true,
           dialogErrorDetails: (error as APIError).errors
         });
       } finally {
         refresh();
       }
     } catch (error) {
-      dialogContext.setErrorDialog({
+      dialogContext.showErrorDialog({
         ...defaultErrorDialogProps,
-        open: true,
         dialogErrorDetails: (error as APIError).errors
       });
     }

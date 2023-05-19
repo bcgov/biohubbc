@@ -34,13 +34,12 @@ const ProjectAttachmentsList = () => {
     } catch (error) {
       const apiError = error as APIError;
       // SHow error dialog
-      dialogContext.setErrorDialog({
-        open: true,
+      dialogContext.showErrorDialog({
         dialogTitle: AttachmentsI18N.downloadErrorTitle,
         dialogText: AttachmentsI18N.downloadErrorText,
         dialogErrorDetails: apiError.errors,
-        onOk: () => dialogContext.setErrorDialog({ open: false }),
-        onClose: () => dialogContext.setErrorDialog({ open: false })
+        onOk: () => dialogContext.hideDialog(),
+        onClose: () => dialogContext.hideDialog()
       });
     }
   };
@@ -54,8 +53,7 @@ const ProjectAttachmentsList = () => {
   };
 
   const handleDelete = (attachment: IGetProjectAttachment) => {
-    dialogContext.setYesNoDialog({
-      open: true,
+    dialogContext.showYesNoDialog({
       dialogTitle: 'Delete Document?',
       dialogText: 'Are you sure you want to permanently delete this document? This action cannot be undone.',
       yesButtonProps: { color: 'secondary' },
@@ -69,21 +67,20 @@ const ProjectAttachmentsList = () => {
         } catch (error) {
           const apiError = error as APIError;
           // Show error dialog
-          dialogContext.setErrorDialog({
-            open: true,
+          dialogContext.showErrorDialog({
             dialogTitle: AttachmentsI18N.deleteErrorTitle,
             dialogText: AttachmentsI18N.deleteErrorText,
             dialogErrorDetails: apiError.errors,
-            onOk: () => dialogContext.setErrorDialog({ open: false }),
-            onClose: () => dialogContext.setErrorDialog({ open: false })
+            onOk: () => dialogContext.hideDialog(),
+            onClose: () => dialogContext.hideDialog()
           });
         } finally {
           // Close delete dialog
-          dialogContext.setYesNoDialog({ open: false });
+          dialogContext.hideDialog();
         }
       },
-      onNo: () => dialogContext.setYesNoDialog({ open: false }),
-      onClose: () => dialogContext.setYesNoDialog({ open: false })
+      onNo: () => dialogContext.hideDialog(),
+      onClose: () => dialogContext.hideDialog()
     });
   };
 

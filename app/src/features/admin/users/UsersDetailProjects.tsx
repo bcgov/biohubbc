@@ -117,8 +117,7 @@ const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
         return;
       }
 
-      dialogContext.setSnackbar({
-        open: true,
+      dialogContext.showSnackbar({
         snackbarMessage: (
           <Typography variant="body2" component="div">
             User <strong>{userDetails.user_identifier}</strong> removed from project.
@@ -138,29 +137,27 @@ const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
   };
 
   const defaultErrorDialogProps: Partial<IErrorDialogProps> = {
-    onClose: () => dialogContext.setErrorDialog({ open: false }),
-    onOk: () => dialogContext.setErrorDialog({ open: false })
+    onClose: () => dialogContext.hideDialog(),
+    onOk: () => dialogContext.hideDialog()
   };
 
   const defaultYesNoDialogProps: Partial<IYesNoDialogProps> = {
-    onClose: () => dialogContext.setYesNoDialog({ open: false }),
-    onNo: () => dialogContext.setYesNoDialog({ open: false })
+    onClose: () => dialogContext.hideDialog(),
+    onNo: () => dialogContext.hideDialog()
   };
 
   const openYesNoDialog = (yesNoDialogProps?: Partial<IYesNoDialogProps>) => {
-    dialogContext.setYesNoDialog({
+    dialogContext.showYesNoDialog({
       ...defaultYesNoDialogProps,
-      ...yesNoDialogProps,
-      open: true
+      ...yesNoDialogProps
     });
   };
 
   const openErrorDialog = useCallback(
     (errorDialogProps?: Partial<IErrorDialogProps>) => {
-      dialogContext.setErrorDialog({
+      dialogContext.showErrorDialog({
         ...defaultErrorDialogProps,
-        ...errorDialogProps,
-        open: true
+        ...errorDialogProps
       });
     },
     [defaultErrorDialogProps, dialogContext]
@@ -240,7 +237,7 @@ const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
                             yesButtonProps: { color: 'secondary' },
                             onYes: () => {
                               handleRemoveProjectParticipant(row.project_id, row.project_participation_id);
-                              dialogContext.setYesNoDialog({ open: false });
+                              dialogContext.hideDialog();
                             }
                           })
                         }>
@@ -286,19 +283,19 @@ const ChangeProjectRoleMenu: React.FC<IChangeProjectRoleMenuProps> = (props) => 
     dialogText: ProjectParticipantsI18N.updateParticipantRoleErrorText,
     open: false,
     onClose: () => {
-      dialogContext.setErrorDialog({ open: false });
+      dialogContext.hideDialog();
     },
     onOk: () => {
-      dialogContext.setErrorDialog({ open: false });
+      dialogContext.hideDialog();
     }
   };
 
   const displayErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
-    dialogContext.setErrorDialog({ ...errorDialogProps, ...textDialogProps, open: true });
+    dialogContext.showErrorDialog({ ...errorDialogProps, ...textDialogProps,  });
   };
 
   const handleChangeUserPermissionsClick = (item: IGetUserProjectsListResponse, newRole: string, newRoleId: number) => {
-    dialogContext.setYesNoDialog({
+    dialogContext.showYesNoDialog({
       dialogTitle: 'Change Project Role?',
       dialogContent: (
         <>
@@ -310,16 +307,15 @@ const ChangeProjectRoleMenu: React.FC<IChangeProjectRoleMenuProps> = (props) => 
       yesButtonLabel: 'Change Role',
       noButtonLabel: 'Cancel',
       yesButtonProps: { color: 'primary' },
-      open: true,
       onClose: () => {
-        dialogContext.setYesNoDialog({ open: false });
+        dialogContext.hideDialog();
       },
       onNo: () => {
-        dialogContext.setYesNoDialog({ open: false });
+        dialogContext.hideDialog();
       },
       onYes: () => {
         changeProjectParticipantRole(item, newRole, newRoleId);
-        dialogContext.setYesNoDialog({ open: false });
+        dialogContext.hideDialog();
       }
     });
   };
@@ -345,8 +341,7 @@ const ChangeProjectRoleMenu: React.FC<IChangeProjectRoleMenuProps> = (props) => 
         return;
       }
 
-      dialogContext.setSnackbar({
-        open: true,
+      dialogContext.showSnackbar({
         snackbarMessage: (
           <Typography variant="body2" component="div">
             User <strong>{user_identifier}</strong>'s role changed to <strong>{newRole}</strong>.

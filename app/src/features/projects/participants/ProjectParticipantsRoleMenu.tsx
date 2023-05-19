@@ -24,15 +24,14 @@ const ProjectParticipantsRoleMenu: React.FC<IChangeProjectRoleMenuProps> = (prop
   const biohubApi = useBiohubApi();
 
   const showErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
-    dialogContext.setErrorDialog({
+    dialogContext.showErrorDialog({
       dialogTitle: ProjectParticipantsI18N.updateParticipantRoleErrorTitle,
       dialogText: ProjectParticipantsI18N.updateParticipantRoleErrorText,
-      open: true,
       onClose: () => {
-        dialogContext.setErrorDialog({ open: false });
+        dialogContext.hideDialog();
       },
       onOk: () => {
-        dialogContext.setErrorDialog({ open: false });
+        dialogContext.hideDialog();
       },
       ...textDialogProps
     });
@@ -43,7 +42,7 @@ const ProjectParticipantsRoleMenu: React.FC<IChangeProjectRoleMenuProps> = (prop
     newRole: string,
     newRoleId: number
   ) => {
-    dialogContext.setYesNoDialog({
+    dialogContext.showYesNoDialog({
       dialogTitle: 'Change Project Role?',
       dialogContent: (
         <Typography variant="body1" color="textSecondary">
@@ -53,16 +52,15 @@ const ProjectParticipantsRoleMenu: React.FC<IChangeProjectRoleMenuProps> = (prop
       yesButtonLabel: 'Change Role',
       noButtonLabel: 'Cancel',
       yesButtonProps: { color: 'primary' },
-      open: true,
       onClose: () => {
-        dialogContext.setYesNoDialog({ open: false });
+        dialogContext.hideDialog();
       },
       onNo: () => {
-        dialogContext.setYesNoDialog({ open: false });
+        dialogContext.hideDialog();
       },
       onYes: () => {
         changeProjectParticipantRole(item, newRole, newRoleId);
-        dialogContext.setYesNoDialog({ open: false });
+        dialogContext.hideDialog();
       }
     });
   };
@@ -88,8 +86,7 @@ const ProjectParticipantsRoleMenu: React.FC<IChangeProjectRoleMenuProps> = (prop
         return;
       }
 
-      dialogContext.setSnackbar({
-        open: true,
+      dialogContext.showSnackbar({
         snackbarMessage: (
           <Typography variant="body2" component="div">
             User <strong>{item.user_identifier}</strong>'s role changed to <strong>{newRole}</strong>.

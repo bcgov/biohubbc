@@ -118,20 +118,19 @@ const ProjectHeader = () => {
   const dialogContext = useContext(DialogContext);
 
   const showDeleteProjectDialog = () => {
-    dialogContext.setYesNoDialog({
+    dialogContext.showYesNoDialog({
       dialogTitle: DeleteProjectI18N.deleteTitle,
       dialogText: DeleteProjectI18N.deleteText,
       yesButtonProps: { color: 'secondary' },
       yesButtonLabel: 'Delete',
       noButtonProps: { color: 'primary', variant: 'outlined' },
       noButtonLabel: 'Cancel',
-      open: true,
       onYes: async () => {
         await deleteProject();
-        dialogContext.setYesNoDialog({ open: false });
+        dialogContext.hideDialog();
       },
-      onClose: () => dialogContext.setYesNoDialog({ open: false }),
-      onNo: () => dialogContext.setYesNoDialog({ open: false })
+      onClose: () => dialogContext.hideDialog(),
+      onNo: () => dialogContext.hideDialog()
     });
   };
 
@@ -140,28 +139,27 @@ const ProjectHeader = () => {
       const response = await biohubApi.project.deleteProject(projectContext.projectId);
 
       if (!response) {
-        showDeleteErrorDialog({ open: true });
+        showDeleteErrorDialog({  });
         return;
       }
 
       history.push(`/admin/projects`);
     } catch (error) {
       const apiError = error as APIError;
-      showDeleteErrorDialog({ dialogText: apiError.message, open: true });
+      showDeleteErrorDialog({ dialogText: apiError.message,  });
       return error;
     }
   };
 
   const showDeleteErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
-    dialogContext.setErrorDialog({
+    dialogContext.showErrorDialog({
       dialogTitle: DeleteProjectI18N.deleteErrorTitle,
       dialogText: DeleteProjectI18N.deleteErrorText,
-      open: true,
       onClose: () => {
-        dialogContext.setErrorDialog({ open: false });
+        dialogContext.hideDialog();
       },
       onOk: () => {
-        dialogContext.setErrorDialog({ open: false });
+        dialogContext.hideDialog();
       },
       ...textDialogProps
     });

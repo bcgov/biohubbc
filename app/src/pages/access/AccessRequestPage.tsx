@@ -58,10 +58,10 @@ export const AccessRequestPage: React.FC = () => {
     dialogText: AccessRequestI18N.requestText,
     open: false,
     onClose: () => {
-      dialogContext.setErrorDialog({ open: false });
+      dialogContext.hideDialog();
     },
     onOk: () => {
-      dialogContext.setErrorDialog({ open: false });
+      dialogContext.hideDialog();
     }
   };
 
@@ -71,12 +71,11 @@ export const AccessRequestPage: React.FC = () => {
   codesDataLoader.load();
 
   const showAccessRequestErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
-    dialogContext.setErrorDialog({
+    dialogContext.showErrorDialog({
       ...defaultErrorDialogProps,
       dialogTitle: AccessRequestI18N.requestTitle,
       dialogText: AccessRequestI18N.requestText,
-      ...textDialogProps,
-      open: true
+      ...textDialogProps
     });
   };
 

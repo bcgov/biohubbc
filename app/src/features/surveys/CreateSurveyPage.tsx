@@ -129,13 +129,13 @@ const CreateSurveyPage = () => {
     dialogText: CreateSurveyI18N.cancelText,
     open: false,
     onClose: () => {
-      dialogContext.setYesNoDialog({ open: false });
+      dialogContext.hideDialog();
     },
     onNo: () => {
-      dialogContext.setYesNoDialog({ open: false });
+      dialogContext.hideDialog();
     },
     onYes: () => {
-      dialogContext.setYesNoDialog({ open: false });
+      dialogContext.hideDialog();
       history.push(`/admin/projects/${projectData?.project.id}/surveys`);
     }
   };
@@ -190,22 +190,21 @@ const CreateSurveyPage = () => {
     .concat(AgreementsYupSchema);
 
   const handleCancel = () => {
-    dialogContext.setYesNoDialog(defaultCancelDialogProps);
+    dialogContext.showYesNoDialog(defaultCancelDialogProps);
     history.push(`/admin/projects/${projectData?.project.id}/surveys`);
   };
 
   const showCreateErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
-    dialogContext.setErrorDialog({
+    dialogContext.showErrorDialog({
       dialogTitle: CreateSurveyI18N.createErrorTitle,
       dialogText: CreateSurveyI18N.createErrorText,
       onClose: () => {
-        dialogContext.setErrorDialog({ open: false });
+        dialogContext.hideDialog();
       },
       onOk: () => {
-        dialogContext.setErrorDialog({ open: false });
+        dialogContext.hideDialog();
       },
-      ...textDialogProps,
-      open: true
+      ...textDialogProps
     });
   };
 
@@ -249,13 +248,12 @@ const CreateSurveyPage = () => {
   const handleLocationChange = (location: History.Location, action: History.Action) => {
     if (!dialogContext.yesNoDialogProps.open) {
       // If the cancel dialog is not open: open it
-      dialogContext.setYesNoDialog({
+      dialogContext.showYesNoDialog({
         ...defaultCancelDialogProps,
         onYes: () => {
-          dialogContext.setYesNoDialog({ open: false });
+          dialogContext.hideDialog();
           history.push(location.pathname);
-        },
-        open: true
+        }
       });
       return false;
     }

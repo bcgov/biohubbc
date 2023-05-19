@@ -12,7 +12,6 @@ import assert from 'assert';
 import FullScreenViewMapDialog from 'components/boundary/FullScreenViewMapDialog';
 import InferredLocationDetails, { IInferredLayers } from 'components/boundary/InferredLocationDetails';
 import EditDialog from 'components/dialog/EditDialog';
-import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { IMarkerLayer } from 'components/map/components/MarkerCluster';
 import { IStaticLayer } from 'components/map/components/StaticLayers';
 import MapContainer from 'components/map/MapContainer';
@@ -20,6 +19,7 @@ import { ProjectRoleGuard } from 'components/security/Guards';
 import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
 import { EditSurveyStudyAreaI18N } from 'constants/i18n';
 import { PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
+import { DialogContext } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import StudyAreaForm, {
   IStudyAreaForm,
@@ -69,7 +69,7 @@ const useStyles = makeStyles((theme: Theme) =>
 const SurveyStudyArea = () => {
   const classes = useStyles();
   const biohubApi = useBiohubApi();
-
+  const dialogContext = useContext(DialogContext);
   const surveyContext = useContext(SurveyContext);
 
   // Survey data must be loaded by the parent before this component is rendered
@@ -139,23 +139,6 @@ const SurveyStudyArea = () => {
     zoomToBoundaryExtent();
   }, [surveyGeometry, occurrence_submission_id, setNonEditableGeometries, zoomToBoundaryExtent]);
 
-  // TODO: This component should not define error dialog props in state and should instead consume the dialog context.
-  const [errorDialogProps, setErrorDialogProps] = useState<IErrorDialogProps>({
-    dialogTitle: EditSurveyStudyAreaI18N.editErrorTitle,
-    dialogText: EditSurveyStudyAreaI18N.editErrorText,
-    open: false,
-    onClose: () => {
-      setErrorDialogProps({ ...errorDialogProps, open: false });
-    },
-    onOk: () => {
-      setErrorDialogProps({ ...errorDialogProps, open: false });
-    }
-  });
-
-  const showErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
-    setErrorDialogProps({ ...errorDialogProps, ...textDialogProps, open: true });
-  };
-
   const handleDialogEditOpen = () => {
     if (!survey_details) {
       return;
@@ -188,7 +171,7 @@ const SurveyStudyArea = () => {
       await biohubApi.survey.updateSurvey(surveyContext.projectId, surveyContext.surveyId, surveyData);
     } catch (error) {
       const apiError = error as APIError;
-      showErrorDialog({ dialogText: apiError.message, dialogErrorDetails: apiError.errors, open: true });
+      dialogContext.showErrorDialog({ dialogText: apiError.message, dialogErrorDetails: apiError.errors });
       return;
     } finally {
       setOpenEditDialog(false);
@@ -238,8 +221,6 @@ const SurveyStudyArea = () => {
         backButtonTitle={'Back To Survey'}
         mapTitle={'Study Area'}
       />
-
-      <ErrorDialog {...errorDialogProps} />
 
       <H2ButtonToolbar
         label="Study Area"

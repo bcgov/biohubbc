@@ -27,15 +27,14 @@ const SearchPage: React.FC = () => {
 
   const showFilterErrorDialog = useCallback(
     (textDialogProps?: Partial<IErrorDialogProps>) => {
-      dialogContext.setErrorDialog({
+      dialogContext.showErrorDialog({
         onClose: () => {
-          dialogContext.setErrorDialog({ open: false });
+          dialogContext.hideDialog();
         },
         onOk: () => {
-          dialogContext.setErrorDialog({ open: false });
+          dialogContext.hideDialog();
         },
-        ...textDialogProps,
-        open: true
+        ...textDialogProps
       });
     },
     [dialogContext]
