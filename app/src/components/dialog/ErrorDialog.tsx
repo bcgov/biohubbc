@@ -31,12 +31,6 @@ export interface IErrorDialogProps extends IBaseDialogProps {
    * @memberof IErrorDialogProps
    */
   dialogErrorDetails?: (string | object)[];
-  /**
-   * Callback fired if the 'Ok' button is clicked.
-   *
-   * @memberof IErrorDialogProps
-   */
-  onOk: () => void;
 }
 
 /**
@@ -47,6 +41,7 @@ export interface IErrorDialogProps extends IBaseDialogProps {
  * @return {*}
  */
 export const ErrorDialog = (props: IErrorDialogProps) => {
+  console.log({ props })
   const [isExpanded, setIsExpanded] = React.useState(false);
 
   const ErrorDetailsList = (errorProps: { errors: (string | object)[] }) => {
@@ -60,10 +55,6 @@ export const ErrorDialog = (props: IErrorDialogProps) => {
 
     return <ul>{items}</ul>;
   };
-
-  if (!props.open) {
-    return <></>;
-  }
 
   return (
     <Box>
@@ -92,7 +83,7 @@ export const ErrorDialog = (props: IErrorDialogProps) => {
           </DialogContent>
         )}
         <DialogActions>
-          <Button onClick={props.onOk} color="primary" variant="contained" autoFocus>
+          <Button onClick={props.onClose} color="primary" variant="contained" autoFocus>
             Ok
           </Button>
         </DialogActions>

@@ -6,6 +6,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import { mdiCheck, mdiWindowClose } from '@mdi/js';
 import Icon from '@mdi/react';
+import { IBaseDialogProps } from 'contexts/dialogContext';
 import { Formik } from 'formik';
 import React from 'react';
 
@@ -15,7 +16,7 @@ export interface IRequestDialogComponent {
   validationSchema: any;
 }
 
-export interface IRequestDialog {
+export interface IRequestDialog extends IBaseDialogProps {
   /**
    * The Formik compatible component to render in the dialog content body.
    *
@@ -23,26 +24,6 @@ export interface IRequestDialog {
    * @memberof IRequestDialog
    */
   component: IRequestDialogComponent;
-  /**
-   * The dialog window title text.
-   *
-   * @type {string}
-   * @memberof IRequestDialog
-   */
-  dialogTitle: string;
-  /**
-   * Set to `true` to open the dialog, `false` to close the dialog.
-   *
-   * @type {boolean}
-   * @memberof IRequestDialog
-   */
-  open: boolean;
-  /**
-   * Callback fired if the dialog is closed.
-   *
-   * @memberof IRequestDialog
-   */
-  onClose: () => void;
   /**
    * Callback fired if the 'Deny' button is clicked.
    *

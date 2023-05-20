@@ -67,9 +67,8 @@ const ProjectParticipantsPage: React.FC = () => {
   const openErrorDialog = useCallback(
     (errorDialogProps?: Partial<IErrorDialogProps>) => {
       dialogContext.showErrorDialog({
-        onClose: () => dialogContext.hideDialog(),
-        onOk: () => dialogContext.hideDialog(),
-        ...errorDialogProps
+        ...errorDialogProps,
+        onClose: () => dialogContext.hideDialog()
       });
     },
     [dialogContext]

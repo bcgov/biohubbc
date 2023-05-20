@@ -27,12 +27,7 @@ const ProjectParticipantsRoleMenu: React.FC<IChangeProjectRoleMenuProps> = (prop
     dialogContext.showErrorDialog({
       dialogTitle: ProjectParticipantsI18N.updateParticipantRoleErrorTitle,
       dialogText: ProjectParticipantsI18N.updateParticipantRoleErrorText,
-      onClose: () => {
-        dialogContext.hideDialog();
-      },
-      onOk: () => {
-        dialogContext.hideDialog();
-      },
+      onClose: () => dialogContext.hideDialog(),
       ...textDialogProps
     });
   };
@@ -52,12 +47,8 @@ const ProjectParticipantsRoleMenu: React.FC<IChangeProjectRoleMenuProps> = (prop
       yesButtonLabel: 'Change Role',
       noButtonLabel: 'Cancel',
       yesButtonProps: { color: 'primary' },
-      onClose: () => {
-        dialogContext.hideDialog();
-      },
-      onNo: () => {
-        dialogContext.hideDialog();
-      },
+      onClose: () => dialogContext.hideDialog(),
+      onNo: () => dialogContext.hideDialog(),
       onYes: () => {
         changeProjectParticipantRole(item, newRole, newRoleId);
         dialogContext.hideDialog();

@@ -82,12 +82,7 @@ const LocationBoundary = () => {
     dialogContext.showErrorDialog({
       dialogTitle: EditLocationBoundaryI18N.editErrorTitle,
       dialogText: EditLocationBoundaryI18N.editErrorText,
-      onClose: () => {
-        dialogContext.hideDialog();
-      },
-      onOk: () => {
-        dialogContext.hideDialog();
-      },
+      onClose: () => dialogContext.hideDialog(),
       ...textDialogProps
     });
   };

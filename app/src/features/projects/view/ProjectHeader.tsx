@@ -155,12 +155,7 @@ const ProjectHeader = () => {
     dialogContext.showErrorDialog({
       dialogTitle: DeleteProjectI18N.deleteErrorTitle,
       dialogText: DeleteProjectI18N.deleteErrorText,
-      onClose: () => {
-        dialogContext.hideDialog();
-      },
-      onOk: () => {
-        dialogContext.hideDialog();
-      },
+      onClose: () => dialogContext.hideDialog(),
       ...textDialogProps
     });
   };

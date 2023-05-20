@@ -82,12 +82,11 @@ const SubmitBiohubDialog = <Values extends FormikValues>(props: PropsWithChildre
   const handleSubmit = (values: Values) => {
     if (JSON.stringify(values) === JSON.stringify(initialValues)) {
       props.onEmptySubmit();
-      /*
-      showErrorDialog({
+
+      dialogContext.showInfoDialog({
         dialogTitle: SubmitBiohubI18N.noInformationDialogTitle,
         dialogText: SubmitBiohubI18N.noInformationDialogText
       });
-      */
 
       return;
     }
@@ -100,7 +99,6 @@ const SubmitBiohubDialog = <Values extends FormikValues>(props: PropsWithChildre
         props.onSuccess();
       })
       .catch(() => {
-        // setShowSuccessDialog(false);
         dialogContext.showErrorDialog({
           dialogTitle: SubmitBiohubI18N.submitBiohubErrorTitle,
           dialogText: SubmitBiohubI18N.submitBiohubErrorText

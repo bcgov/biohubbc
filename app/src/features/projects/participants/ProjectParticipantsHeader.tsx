@@ -72,8 +72,7 @@ const ProjectParticipantsHeader = (props: IProjectParticipantsHeaderProps) => {
   const [openAddParticipantsDialog, setOpenAddParticipantsDialog] = useState(false);
 
   const defaultErrorDialogProps: Partial<IErrorDialogProps> = {
-    onClose: () => dialogContext.hideDialog(),
-    onOk: () => dialogContext.hideDialog()
+    onClose: () => dialogContext.hideDialog()
   };
 
   const openErrorDialog = (errorDialogProps?: Partial<IErrorDialogProps>) => {

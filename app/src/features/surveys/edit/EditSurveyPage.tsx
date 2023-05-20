@@ -138,12 +138,7 @@ const EditSurveyPage = () => {
     dialogContext.showErrorDialog({
       dialogTitle: EditSurveyI18N.createErrorTitle,
       dialogText: EditSurveyI18N.createErrorText,
-      onClose: () => {
-        dialogContext.hideDialog();
-      },
-      onOk: () => {
-        dialogContext.hideDialog();
-      },
+      onClose: () => dialogContext.hideDialog(),
       ...textDialogProps
     });
   };

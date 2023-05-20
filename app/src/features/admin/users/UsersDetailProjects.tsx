@@ -137,8 +137,7 @@ const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
   };
 
   const defaultErrorDialogProps: Partial<IErrorDialogProps> = {
-    onClose: () => dialogContext.hideDialog(),
-    onOk: () => dialogContext.hideDialog()
+    onClose: () => dialogContext.hideDialog()
   };
 
   const defaultYesNoDialogProps: Partial<IYesNoDialogProps> = {
@@ -307,12 +306,8 @@ const ChangeProjectRoleMenu: React.FC<IChangeProjectRoleMenuProps> = (props) => 
       yesButtonLabel: 'Change Role',
       noButtonLabel: 'Cancel',
       yesButtonProps: { color: 'primary' },
-      onClose: () => {
-        dialogContext.hideDialog();
-      },
-      onNo: () => {
-        dialogContext.hideDialog();
-      },
+      onClose: () => dialogContext.hideDialog(),
+      onNo: () => dialogContext.hideDialog(),
       onYes: () => {
         changeProjectParticipantRole(item, newRole, newRoleId);
         dialogContext.hideDialog();

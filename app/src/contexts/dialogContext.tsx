@@ -126,28 +126,19 @@ export interface ISnackbarProps {
 const defaultBaseDialogProps: IBaseDialogProps = {
   dialogTitle: '',
   open: false,
-  onClose: () => {
-    // default do nothing
-  }
+  onClose: () => {}
 }
 
 export const defaultYesNoDialogProps: IYesNoDialogProps = {
   ...defaultBaseDialogProps,
   dialogText: '',
-  onNo: () => {
-    // default do nothing
-  },
-  onYes: () => {
-    // default do nothing
-  }
+  onNo: () => {},
+  onYes: () => {}
 };
 
 export const defaultErrorDialogProps: IErrorDialogProps = {
   ...defaultBaseDialogProps,
-  dialogText: '',
-  onOk: () => {
-    // default do nothing
-  }
+  dialogText: ''
 };
 
 export const defaultSuccessDialogProps: ISuccessDialogProps = {
@@ -192,20 +183,37 @@ export const DialogContext = createContext<IDialogContext>({
 export const DialogContextProvider: React.FC = (props) => {
   const [yesNoDialogProps, setYesNoDialogProps] = useState<IYesNoDialogProps>({
     ...defaultYesNoDialogProps,
-    onYes: () => hideDialog()
+    onNo: () => hideDialog(),
+    onYes: () => hideDialog(),
+    onClose: () => hideDialog()
   });
 
-  const [errorDialogProps, setErrorDialogProps] = useState<IErrorDialogProps>(defaultErrorDialogProps);
+  const [errorDialogProps, setErrorDialogProps] = useState<IErrorDialogProps>({
+    ...defaultErrorDialogProps,
+    onClose: () => hideDialog()
+  });
 
-  const [successDialogProps, setSuccessDialogProps] = useState<ISuccessDialogProps>(defaultSuccessDialogProps);
+  const [successDialogProps, setSuccessDialogProps] = useState<ISuccessDialogProps>({
+    ...defaultSuccessDialogProps,
+    onClose: () => hideDialog()
+  });
 
-  const [infoDialogProps, setInfoDialogProps] = useState<IInfoDialogProps>(defaultInfoDialogProps);
+  const [infoDialogProps, setInfoDialogProps] = useState<IInfoDialogProps>({
+    ...defaultInfoDialogProps,
+    onClose: () => hideDialog()
+  });
 
-  const [snackbarProps, setSnackbarProps] = useState<ISnackbarProps>(defaultSnackbarProps);
+  const [snackbarProps, setSnackbarProps] = useState<ISnackbarProps>({
+    ...defaultSnackbarProps,
+    onClose: () => hideDialog()
+  });
+
+  console.log({ errorDialogProps })
 
   const hideDialog = () => {
+    console.log('hideDialog()', { errorDialogProps });
     setYesNoDialogProps({ ...yesNoDialogProps, open: false });
-    setErrorDialogProps({ ...errorDialogProps, open: false });
+    // setErrorDialogProps({ ...errorDialogProps, open: false });
     setSuccessDialogProps({ ...successDialogProps, open: false });
     setInfoDialogProps({ ...infoDialogProps, open: false });
     setSnackbarProps({ ...snackbarProps, open: false });

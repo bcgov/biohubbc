@@ -31,9 +31,6 @@ const SearchPage: React.FC = () => {
         onClose: () => {
           dialogContext.hideDialog();
         },
-        onOk: () => {
-          dialogContext.hideDialog();
-        },
         ...textDialogProps
       });
     },

@@ -33,10 +33,6 @@ export default function useDataLoaderError<AFArgs extends any[], AFResponse = un
         'An unexpected error has occurred while attempting to load data, please try again. If the error persists, please contact your system administrator.',
       dialogError: (dataLoader.error as APIError).message,
       dialogErrorDetails: (dataLoader.error as APIError).errors,
-      onOk: () => {
-        dataLoader.clearError();
-        dialogContext.hideDialog();
-      },
       onClose: () => {
         dataLoader.clearError();
         dialogContext.hideDialog();

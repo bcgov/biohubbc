@@ -49,8 +49,7 @@ const UsersDetailHeader: React.FC<IUsersHeaderProps> = (props) => {
   const dialogContext = useContext(DialogContext);
 
   const defaultErrorDialogProps: Partial<IErrorDialogProps> = {
-    onClose: () => dialogContext.hideDialog(),
-    onOk: () => dialogContext.hideDialog()
+    onClose: () => dialogContext.hideDialog()
   };
 
   const defaultYesNoDialogProps: Partial<IYesNoDialogProps> = {

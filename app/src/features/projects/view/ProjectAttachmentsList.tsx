@@ -38,7 +38,6 @@ const ProjectAttachmentsList = () => {
         dialogTitle: AttachmentsI18N.downloadErrorTitle,
         dialogText: AttachmentsI18N.downloadErrorText,
         dialogErrorDetails: apiError.errors,
-        onOk: () => dialogContext.hideDialog(),
         onClose: () => dialogContext.hideDialog()
       });
     }
@@ -71,7 +70,6 @@ const ProjectAttachmentsList = () => {
             dialogTitle: AttachmentsI18N.deleteErrorTitle,
             dialogText: AttachmentsI18N.deleteErrorText,
             dialogErrorDetails: apiError.errors,
-            onOk: () => dialogContext.hideDialog(),
             onClose: () => dialogContext.hideDialog()
           });
         } finally {

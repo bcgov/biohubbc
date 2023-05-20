@@ -198,12 +198,7 @@ const CreateSurveyPage = () => {
     dialogContext.showErrorDialog({
       dialogTitle: CreateSurveyI18N.createErrorTitle,
       dialogText: CreateSurveyI18N.createErrorText,
-      onClose: () => {
-        dialogContext.hideDialog();
-      },
-      onOk: () => {
-        dialogContext.hideDialog();
-      },
+      onClose: () => dialogContext.hideDialog(),
       ...textDialogProps
     });
   };

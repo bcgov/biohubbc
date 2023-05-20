@@ -89,12 +89,8 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
       yesButtonLabel: 'Remove',
       noButtonLabel: 'Cancel',
       yesButtonProps: { color: 'secondary' },
-      onClose: () => {
-        dialogContext.hideDialog();
-      },
-      onNo: () => {
-        dialogContext.hideDialog();
-      },
+      onClose: () => dialogContext.hideDialog(),
+      onNo: () => dialogContext.hideDialog(),
       onYes: () => {
         deActivateSystemUser(row);
         dialogContext.hideDialog();
@@ -131,9 +127,6 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
         dialogErrorDetails: apiError.errors,
         onClose: () => {
           dialogContext.hideDialog();
-        },
-        onOk: () => {
-          dialogContext.hideDialog();
         }
       });
     }
@@ -150,12 +143,8 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
       yesButtonLabel: 'Change Role',
       noButtonLabel: 'Cancel',
       yesButtonProps: { color: 'primary' },
-      onClose: () => {
-        dialogContext.hideDialog();
-      },
-      onNo: () => {
-        dialogContext.hideDialog();
-      },
+      onClose: () => dialogContext.hideDialog(),
+      onNo: () => dialogContext.hideDialog(),
       onYes: () => {
         changeSystemUserRole(row, newRoleId, newRoleName);
         dialogContext.hideDialog();
@@ -193,9 +182,6 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
         dialogErrorDetails: apiError.errors,
         onClose: () => {
           dialogContext.hideDialog();
-        },
-        onOk: () => {
-          dialogContext.hideDialog();
         }
       });
     }
@@ -230,9 +216,6 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
         dialogError: apiError.message,
         dialogErrorDetails: apiError.errors,
         onClose: () => {
-          dialogContext.hideDialog();
-        },
-        onOk: () => {
           dialogContext.hideDialog();
         }
       });

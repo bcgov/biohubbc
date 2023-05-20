@@ -37,8 +37,6 @@ const SubmitSections = <Values extends FormikValues>(props: ISubmitSectionProps)
   const allSelected = props.sections.every((section) => section.formikData.length === formikContext.values[section.formikKey].length);
   const someSelected = props.sections.some((section) => formikContext.values[section.formikKey].length > 0);
 
-  console.log(formikContext.values)
-
   return (
     <>
       <List disablePadding>
