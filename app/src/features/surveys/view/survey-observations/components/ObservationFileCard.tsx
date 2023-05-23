@@ -26,7 +26,7 @@ import { SurveyContext } from 'contexts/surveyContext';
 import { IGetObservationSubmissionResponse } from 'interfaces/useObservationApi.interface';
 import React, { useState } from 'react';
 
-//TODO: PRODUCTION_BANDAGE: Remove <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
+//TODO: PRODUCTION_BANDAGE: Remove <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}> from `SubmitStatusChip` and `Remove or Resubmit` button
 
 const useStyles = makeStyles((theme: Theme) => ({
   importFile: {
@@ -191,20 +191,22 @@ const ObservationFileCard = (props: IObservationFileCardProps) => {
                     Delete
                   </MenuItem>
                 </SystemRoleGuard>
-                <ProjectRoleGuard validProjectRoles={[PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR]}>
-                  <MenuItem
-                    onClick={() => {
-                      setRemoveOrResubmitDialogFile(props.observationRecord);
-                      setOpenRemoveOrResubmitDialog(true);
-                      setContextMenuAnchorEl(null);
-                    }}
-                    data-testid="attachment-action-menu-delete">
-                    <ListItemIcon>
-                      <Icon path={mdiTrashCanOutline} size={1} />
-                    </ListItemIcon>
-                    Remove or Resubmit
-                  </MenuItem>
-                </ProjectRoleGuard>
+                <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+                  <ProjectRoleGuard validProjectRoles={[PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR]}>
+                    <MenuItem
+                      onClick={() => {
+                        setRemoveOrResubmitDialogFile(props.observationRecord);
+                        setOpenRemoveOrResubmitDialog(true);
+                        setContextMenuAnchorEl(null);
+                      }}
+                      data-testid="attachment-action-menu-delete">
+                      <ListItemIcon>
+                        <Icon path={mdiTrashCanOutline} size={1} />
+                      </ListItemIcon>
+                      Remove or Resubmit
+                    </MenuItem>
+                  </ProjectRoleGuard>
+                </SystemRoleGuard>
               </Menu>
             </Box>
           </Box>

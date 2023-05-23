@@ -15,6 +15,8 @@ import { IGetProjectAttachment } from 'interfaces/useProjectApi.interface';
 import { IGetSurveyAttachment } from 'interfaces/useSurveyApi.interface';
 import React, { useState } from 'react';
 
+//TODO: PRODUCTION_BANDAGE: Remove <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}> from `Remove or Resubmit` button.
+
 interface IAttachmentsListItemMenuButtonProps<T extends IGetProjectAttachment | IGetSurveyAttachment> {
   attachment: T;
   handleDownloadFile: (attachment: T) => void;
@@ -123,20 +125,22 @@ const AttachmentsListItemMenuButton = <T extends IGetProjectAttachment | IGetSur
                 Delete
               </MenuItem>
             </SystemRoleGuard>
-            <ProjectRoleGuard validProjectRoles={[PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR]}>
-              <MenuItem
-                onClick={() => {
-                  setRemoveOrResubmitDialogFile(props.attachment);
-                  setOpenRemoveOrResubmitDialog(true);
-                  setAnchorEl(null);
-                }}
-                data-testid="attachment-action-menu-resubmit">
-                <ListItemIcon>
-                  <Icon path={mdiTrashCanOutline} size={1} />
-                </ListItemIcon>
-                Remove or Resubmit
-              </MenuItem>
-            </ProjectRoleGuard>
+            <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+              <ProjectRoleGuard validProjectRoles={[PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR]}>
+                <MenuItem
+                  onClick={() => {
+                    setRemoveOrResubmitDialogFile(props.attachment);
+                    setOpenRemoveOrResubmitDialog(true);
+                    setAnchorEl(null);
+                  }}
+                  data-testid="attachment-action-menu-resubmit">
+                  <ListItemIcon>
+                    <Icon path={mdiTrashCanOutline} size={1} />
+                  </ListItemIcon>
+                  Remove or Resubmit
+                </MenuItem>
+              </ProjectRoleGuard>
+            </SystemRoleGuard>
           </Menu>
         </Box>
       </Box>

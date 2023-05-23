@@ -26,7 +26,7 @@ import { SurveyContext } from 'contexts/surveyContext';
 import { IGetSummaryResultsResponse } from 'interfaces/useSummaryResultsApi.interface';
 import React from 'react';
 
-//TODO: PRODUCTION_BANDAGE: Remove <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
+//TODO: PRODUCTION_BANDAGE: Remove <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}> from `SubmitStatusChip` and `Remove or Resubmit` button
 
 interface IFileResultsProps {
   fileData: IGetSummaryResultsResponse;
@@ -181,20 +181,22 @@ const FileSummaryResults = (props: IFileResultsProps) => {
                     Delete
                   </MenuItem>
                 </SystemRoleGuard>
-                <ProjectRoleGuard validProjectRoles={[PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR]}>
-                  <MenuItem
-                    onClick={() => {
-                      setRemoveOrResubmitDialogFile(props.fileData);
-                      setOpenRemoveOrResubmitDialog(true);
-                      setAnchorEl(null);
-                    }}
-                    data-testid="attachment-action-menu-delete">
-                    <ListItemIcon>
-                      <Icon path={mdiTrashCanOutline} size={1} />
-                    </ListItemIcon>
-                    Remove or Resubmit
-                  </MenuItem>
-                </ProjectRoleGuard>
+                <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+                  <ProjectRoleGuard validProjectRoles={[PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR]}>
+                    <MenuItem
+                      onClick={() => {
+                        setRemoveOrResubmitDialogFile(props.fileData);
+                        setOpenRemoveOrResubmitDialog(true);
+                        setAnchorEl(null);
+                      }}
+                      data-testid="attachment-action-menu-delete">
+                      <ListItemIcon>
+                        <Icon path={mdiTrashCanOutline} size={1} />
+                      </ListItemIcon>
+                      Remove or Resubmit
+                    </MenuItem>
+                  </ProjectRoleGuard>
+                </SystemRoleGuard>
               </Menu>
             </Box>
           </Box>
