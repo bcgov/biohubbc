@@ -17,6 +17,7 @@ import { MemoryRouter, Router } from 'react-router';
 import { codes } from 'test-helpers/code-helpers';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import CreateSurveyPage from './CreateSurveyPage';
+import { getSurveyForListResponse } from 'test-helpers/survey-helpers';
 
 const history = createMemoryHistory();
 
@@ -64,6 +65,7 @@ const renderContainer = () => {
       data: getProjectForViewResponse
     } as DataLoader<any, any, any>,
     artifactDataLoader: { data: null } as DataLoader<any, any, any>,
+    surveysListDataLoader: { data: getSurveyForListResponse } as DataLoader<any, any, any>,
     projectId: 1
   };
 

@@ -7,6 +7,7 @@ import React from 'react';
 import { codes } from 'test-helpers/code-helpers';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import Partnerships from './Partnerships';
+import { getSurveyForListResponse } from 'test-helpers/survey-helpers';
 
 jest.mock('../../../../hooks/useBioHubApi');
 const mockBiohubApi = useBiohubApi as jest.Mock;
@@ -48,6 +49,7 @@ describe('Partnerships', () => {
           }
         }
       } as DataLoader<any, any, any>,
+      surveysListDataLoader: { data: getSurveyForListResponse } as DataLoader<any, any, any>,
       artifactDataLoader: { data: null } as DataLoader<any, any, any>,
       projectId: 1
     };
@@ -82,6 +84,7 @@ describe('Partnerships', () => {
           }
         }
       } as DataLoader<any, any, any>,
+      surveysListDataLoader: { data: getSurveyForListResponse } as DataLoader<any, any, any>,
       artifactDataLoader: { data: null } as DataLoader<any, any, any>,
       projectId: 1
     };
@@ -108,6 +111,7 @@ describe('Partnerships', () => {
         data: getProjectForViewResponse
       } as DataLoader<any, any, any>,
       artifactDataLoader: { data: null } as DataLoader<any, any, any>,
+      surveysListDataLoader: { data: getSurveyForListResponse } as DataLoader<any, any, any>,
       projectId: 1
     };
 

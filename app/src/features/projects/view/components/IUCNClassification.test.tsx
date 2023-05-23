@@ -6,6 +6,7 @@ import React from 'react';
 import { codes } from 'test-helpers/code-helpers';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import IUCNClassification from './IUCNClassification';
+import { getSurveyForListResponse } from 'test-helpers/survey-helpers';
 
 describe('IUCNClassification', () => {
   afterEach(() => {
@@ -30,6 +31,7 @@ describe('IUCNClassification', () => {
           }
         }
       } as DataLoader<any, any, any>,
+      surveysListDataLoader: { data: getSurveyForListResponse } as DataLoader<any, any, any>,
       artifactDataLoader: { data: null } as DataLoader<any, any, any>,
       projectId: 1
     };
@@ -56,6 +58,7 @@ describe('IUCNClassification', () => {
         data: getProjectForViewResponse
       } as DataLoader<any, any, any>,
       artifactDataLoader: { data: null } as DataLoader<any, any, any>,
+      surveysListDataLoader: { data: getSurveyForListResponse } as DataLoader<any, any, any>,
       projectId: 1
     };
 

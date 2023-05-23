@@ -5,10 +5,6 @@ import { AttachmentType } from '../../../constants/attachments';
 import AttachmentsList from './AttachmentsList';
 
 describe('AttachmentsList', () => {
-  beforeEach(() => {
-    mockBiohubApi.mockImplementation(() => mockUseApi);
-  });
-
   afterEach(() => {
     cleanup();
   });

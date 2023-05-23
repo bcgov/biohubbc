@@ -29,7 +29,9 @@ const mockUser = {
   id: 1,
   user_record_end_date: 'ending',
   user_identifier: 'testUser',
-  role_names: ['system']
+  role_names: ['system'],
+  user_guid: '1111',
+  identity_source: 'idir'
 };
 
 describe('UsersDetailProjects', () => {

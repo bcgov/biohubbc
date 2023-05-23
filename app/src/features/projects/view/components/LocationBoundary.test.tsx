@@ -10,6 +10,7 @@ import { codes } from 'test-helpers/code-helpers';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import { geoJsonFeature } from 'test-helpers/spatial-helpers';
 import LocationBoundary from './LocationBoundary';
+import { getSurveyForListResponse } from 'test-helpers/survey-helpers';
 
 jest.mock('../../../../hooks/useBioHubApi');
 const mockBiohubApi = useBiohubApi as jest.Mock;
@@ -66,6 +67,7 @@ describe.skip('LocationBoundary', () => {
         }
       } as DataLoader<any, any, any>,
       artifactDataLoader: { data: null } as DataLoader<any, any, any>,
+      surveysListDataLoader: { data: getSurveyForListResponse } as DataLoader<any, any, any>,
       projectId: 1
     };
 
@@ -98,6 +100,7 @@ describe.skip('LocationBoundary', () => {
           }
         }
       } as DataLoader<any, any, any>,
+      surveysListDataLoader: { data: getSurveyForListResponse } as DataLoader<any, any, any>,
       artifactDataLoader: { data: null } as DataLoader<any, any, any>,
       projectId: 1
     };
@@ -132,6 +135,7 @@ describe.skip('LocationBoundary', () => {
         }
       } as DataLoader<any, any, any>,
       artifactDataLoader: { data: null } as DataLoader<any, any, any>,
+      surveysListDataLoader: { data: getSurveyForListResponse } as DataLoader<any, any, any>,
       projectId: 1
     };
 
@@ -159,6 +163,7 @@ describe.skip('LocationBoundary', () => {
         data: getProjectForViewResponse
       } as DataLoader<any, any, any>,
       artifactDataLoader: { data: null } as DataLoader<any, any, any>,
+      surveysListDataLoader: { data: getSurveyForListResponse } as DataLoader<any, any, any>,
       projectId: 1
     };
 
@@ -234,6 +239,7 @@ describe.skip('LocationBoundary', () => {
         data: getProjectForViewResponse
       } as DataLoader<any, any, any>,
       artifactDataLoader: { data: null } as DataLoader<any, any, any>,
+      surveysListDataLoader: { data: getSurveyForListResponse } as DataLoader<any, any, any>,
       projectId: 1
     };
 
@@ -279,6 +285,7 @@ describe.skip('LocationBoundary', () => {
         data: getProjectForViewResponse
       } as DataLoader<any, any, any>,
       artifactDataLoader: { data: null } as DataLoader<any, any, any>,
+      surveysListDataLoader: { data: getSurveyForListResponse } as DataLoader<any, any, any>,
       projectId: 1
     };
 
@@ -322,6 +329,7 @@ describe.skip('LocationBoundary', () => {
         data: getProjectForViewResponse
       } as DataLoader<any, any, any>,
       artifactDataLoader: { data: null } as DataLoader<any, any, any>,
+      surveysListDataLoader: { data: getSurveyForListResponse } as DataLoader<any, any, any>,
       projectId: 1
     };
 

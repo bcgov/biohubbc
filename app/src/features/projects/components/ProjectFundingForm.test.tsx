@@ -1,4 +1,4 @@
-import { act, fireEvent, cleanup, render, waitFor } from 'test-helpers/test-utils';
+import { act, fireEvent, render, waitFor } from 'test-helpers/test-utils';
 import { Formik } from 'formik';
 import React from 'react';
 import ProjectFundingForm, {

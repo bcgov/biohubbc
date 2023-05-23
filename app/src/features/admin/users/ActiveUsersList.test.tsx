@@ -21,8 +21,6 @@ const mockUseApi = {
   }
 };
 
-((useBiohubApi as unknown) as jest.Mock<typeof mockUseBiohubApi>).mockReturnValue(mockUseBiohubApi);
-
 const renderContainer = (props: IActiveUsersListProps) => {
   return render(
     <Router history={history}>
@@ -32,6 +30,10 @@ const renderContainer = (props: IActiveUsersListProps) => {
 };
 
 describe('ActiveUsersList', () => {
+  beforeEach(() => {
+    mockBiohubApi.mockImplementation(() => mockUseApi);
+  });
+
   afterEach(() => {
     cleanup();
   });
@@ -56,7 +58,8 @@ describe('ActiveUsersList', () => {
           user_identifier: 'username',
           user_guid: 'user-guid',
           user_record_end_date: '2020-10-10',
-          role_names: ['role 1', 'role 2']
+          role_names: ['role 1', 'role 2'],
+          identity_source: 'idir'
         }
       ],
       codes: codes,
@@ -77,7 +80,8 @@ describe('ActiveUsersList', () => {
           user_identifier: 'username',
           user_guid: 'user-guid',
           user_record_end_date: '2020-10-10',
-          role_names: []
+          role_names: [],
+          identity_source: 'idir'
         }
       ],
       codes: codes,

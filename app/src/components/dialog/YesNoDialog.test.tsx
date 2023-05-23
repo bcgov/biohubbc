@@ -1,4 +1,4 @@
-import { fireEvent, cleanup, render, waitFor } from 'test-helpers/test-utils';
+import { fireEvent, render, waitFor } from 'test-helpers/test-utils';
 import YesNoDialog from 'components/dialog/YesNoDialog';
 import React from 'react';
 

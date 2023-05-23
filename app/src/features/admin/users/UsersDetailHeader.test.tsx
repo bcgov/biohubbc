@@ -23,10 +23,15 @@ const mockUser = {
   user_record_end_date: 'ending',
   user_guid: '123',
   user_identifier: 'testUser',
-  role_names: ['system']
+  role_names: ['system'],
+  identity_source: 'idir'
 };
 
 describe('UsersDetailHeader', () => {
+  beforeEach(() => {
+    mockBiohubApi.mockImplementation(() => mockUseApi);
+  });
+
   afterEach(() => {
     cleanup();
   });

@@ -1,4 +1,4 @@
-import { cleanup, render, waitFor } from 'test-helpers/test-utils';
+import { render, waitFor } from 'test-helpers/test-utils';
 import { IAutocompleteFieldOptionWithType } from 'features/projects/components/FundingSourceAutocomplete';
 import { Formik } from 'formik';
 import React from 'react';

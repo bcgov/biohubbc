@@ -1,4 +1,4 @@
-import { fireEvent, cleanup, render, waitFor } from 'test-helpers/test-utils';
+import { fireEvent, render, waitFor } from 'test-helpers/test-utils';
 import { useFormikContext } from 'formik';
 import React from 'react';
 import RequestDialog from './RequestDialog';

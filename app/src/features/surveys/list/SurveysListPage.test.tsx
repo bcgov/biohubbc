@@ -5,14 +5,12 @@ import { IProjectContext, ProjectContext } from 'contexts/projectContext';
 import { createMemoryHistory } from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { DataLoader } from 'hooks/useDataLoader';
-import { IGetSurveyForListResponse } from 'interfaces/useSurveyApi.interface';
 import React from 'react';
 import { Router } from 'react-router';
 import { codes } from 'test-helpers/code-helpers';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
-import { surveyObject } from 'test-helpers/survey-helpers';
+import { getSurveyForListResponse } from 'test-helpers/survey-helpers';
 import SurveysListPage from './SurveysListPage';
-import { PublishStatus } from 'constants/attachments';
 
 const history = createMemoryHistory();
 
@@ -94,54 +92,11 @@ describe('SurveysListPage', () => {
       hasLoadedParticipantInfo: true
     };
 
-    const surveysList: IGetSurveyForListResponse[] = [
-      {
-        surveyData: {
-          ...surveyObject,
-          survey_details: {
-            ...surveyObject.survey_details,
-            survey_name: 'Moose Survey 1',
-            start_date: '2021-04-09 11:53:53',
-            end_date: '2021-05-09 11:53:53'
-          },
-          species: {
-            focal_species: [1],
-            focal_species_names: ['species 1'],
-            ancillary_species: [2],
-            ancillary_species_names: ['species 2']
-          }
-        },
-        surveySupplementaryData: {
-          publishStatus: PublishStatus.NO_DATA
-        }
-      },
-      {
-        surveyData: {
-          ...surveyObject,
-          survey_details: {
-            ...surveyObject.survey_details,
-            survey_name: 'Moose Survey 2',
-            start_date: '2021-04-09 11:53:53',
-            end_date: '2021-06-10 11:53:53'
-          },
-          species: {
-            focal_species: [3],
-            focal_species_names: ['species 3'],
-            ancillary_species: [4],
-            ancillary_species_names: ['species 4']
-          }
-        },
-        surveySupplementaryData: {
-          publishStatus: PublishStatus.NO_DATA
-        }
-      }
-    ];
-
     const mockProjectContext: IProjectContext = {
       projectDataLoader: {
         data: getProjectForViewResponse
       } as DataLoader<any, any, any>,
-      surveysListDataLoader: { data: surveysList } as DataLoader<any, any, any>,
+      surveysListDataLoader: { data: getSurveyForListResponse } as DataLoader<any, any, any>,
       artifactDataLoader: { data: null } as DataLoader<any, any, any>,
       projectId: 1
     };
