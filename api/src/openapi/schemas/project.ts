@@ -21,7 +21,8 @@ export const projectFundingSourceFirstNations = {
       nullable: true
     },
     funding_amount: {
-      type: 'number'
+      type: 'number',
+      nullable: true
     },
     start_date: {
       type: 'string',
