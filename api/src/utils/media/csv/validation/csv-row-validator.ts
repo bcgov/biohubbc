@@ -389,7 +389,7 @@ export const getUniqueColumnsValidator = (config?: FileColumnUniqueValidatorConf
             errorCode: SUBMISSION_MESSAGE_TYPE.NON_UNIQUE_KEY,
             message: `Row ${
               rowIndex + 2
-            } has duplicate values (${key}) to another row.  The combination of values in columns: ${config.file_column_unique_validator.column_names.join(
+            } has duplicate values ${key} to another row.  The combination of values in columns: ${config.file_column_unique_validator.column_names.join(
               ', '
             )} must be unique across rows.  Details: `,
             col: key,

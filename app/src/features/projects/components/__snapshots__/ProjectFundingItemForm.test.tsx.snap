@@ -194,8 +194,8 @@ exports[`ProjectFundingItemForm auto selection of investment action category wor
             class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
           >
             <label
-              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined Mui-required Mui-required"
-              data-shrink="true"
+              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
+              data-shrink="false"
               for="funding_amount"
               id="funding_amount-label"
             >
@@ -226,7 +226,7 @@ exports[`ProjectFundingItemForm auto selection of investment action category wor
                 class="PrivateNotchedOutline-root-35 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-37 PrivateNotchedOutline-legendNotched-38"
+                  class="PrivateNotchedOutline-legendLabelled-37"
                 >
                   <span>
                     Funding Amount *
@@ -547,8 +547,8 @@ exports[`ProjectFundingItemForm auto selection of investment action category wor
             class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
           >
             <label
-              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined Mui-required Mui-required"
-              data-shrink="true"
+              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
+              data-shrink="false"
               for="funding_amount"
               id="funding_amount-label"
             >
@@ -579,7 +579,7 @@ exports[`ProjectFundingItemForm auto selection of investment action category wor
                 class="PrivateNotchedOutline-root-43 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-45 PrivateNotchedOutline-legendNotched-46"
+                  class="PrivateNotchedOutline-legendLabelled-45"
                 >
                   <span>
                     Funding Amount *
@@ -2101,8 +2101,8 @@ exports[`ProjectFundingItemForm renders correctly with default empty values 1`] 
             class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
           >
             <label
-              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined Mui-required Mui-required"
-              data-shrink="true"
+              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
+              data-shrink="false"
               for="funding_amount"
               id="funding_amount-label"
             >
@@ -2133,7 +2133,7 @@ exports[`ProjectFundingItemForm renders correctly with default empty values 1`] 
                 class="PrivateNotchedOutline-root-3 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-5 PrivateNotchedOutline-legendNotched-6"
+                  class="PrivateNotchedOutline-legendLabelled-5"
                 >
                   <span>
                     Funding Amount *
