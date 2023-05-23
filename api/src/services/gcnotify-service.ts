@@ -180,17 +180,7 @@ export class GCNotifyService {
     const data: ISendGCNotifyEmailMessage = {
       email_address: emailAddress,
       template_id: REQUEST_RESUBMIT_TEMPLATE,
-      personalisation: {
-        subject: message.subject,
-        header: message.header,
-        date: message.date,
-        file_name: message.file_name,
-        link: message.link,
-        description: message.description,
-        full_name: message.full_name,
-        email: message.email,
-        phone: message.phone
-      }
+      personalisation: { ...message }
     };
 
     const response = await axios.post(EMAIL_URL, data, config);

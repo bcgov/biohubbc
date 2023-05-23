@@ -33,7 +33,7 @@ const AttachmentsListItemMenuButton = <T extends IGetProjectAttachment | IGetSur
 
   const [anchorEl, setAnchorEl] = useState(null);
   const [openRemoveOrResubmitDialog, setOpenRemoveOrResubmitDialog] = useState(false);
-  const [RemoveOrResubmitDialogFile, setRemoveOrResubmitDialogFile] = useState<T | null>(null);
+  const [removeOrResubmitDialogFile, setRemoveOrResubmitDialogFile] = useState<T | null>(null);
 
   const open = Boolean(anchorEl);
 
@@ -49,13 +49,13 @@ const AttachmentsListItemMenuButton = <T extends IGetProjectAttachment | IGetSur
     <>
       <RemoveOrResubmitDialog
         projectId={projectContext.projectId}
-        fileName={RemoveOrResubmitDialogFile?.fileName || ''}
+        fileName={removeOrResubmitDialogFile?.fileName || ''}
         parentName={parentName || ''}
         status={
-          (RemoveOrResubmitDialogFile?.supplementaryAttachmentData && PublishStatus.SUBMITTED) ||
+          (removeOrResubmitDialogFile?.supplementaryAttachmentData && PublishStatus.SUBMITTED) ||
           PublishStatus.UNSUBMITTED
         }
-        submittedDate={RemoveOrResubmitDialogFile?.supplementaryAttachmentData?.event_timestamp || ''}
+        submittedDate={removeOrResubmitDialogFile?.supplementaryAttachmentData?.event_timestamp || ''}
         open={openRemoveOrResubmitDialog}
         setOpen={setOpenRemoveOrResubmitDialog}
         onClose={() => setOpenRemoveOrResubmitDialog(false)}

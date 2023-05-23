@@ -62,11 +62,10 @@ export interface IAttachmentsFileCardProps {
 const AttachmentsFileCard = (props: IAttachmentsFileCardProps) => {
   const classes = useStyles();
 
-  let submittedDate = 'YYYY-MM-DD';
+  const submittedDate: Date | string = props.submittedDate
+    ? new Date(props.submittedDate).toISOString().split('T')[0]
+    : 'YYYY-MM-DD';
 
-  if (props.submittedDate) {
-    submittedDate = new Date(props.submittedDate).toISOString().split('T')[0];
-  }
   return (
     <Paper variant="outlined" className={classes.importFile}>
       <Box display="flex" alignItems="center" flex="1 1 auto" style={{ overflow: 'hidden' }}>
@@ -83,11 +82,10 @@ const AttachmentsFileCard = (props: IAttachmentsFileCardProps) => {
           <Chip
             title={props.status === PublishStatus.SUBMITTED ? 'SUBMITTED' : 'UNSUBMITTED'}
             variant="outlined"
-            className={
-              props.status === PublishStatus.SUBMITTED
-                ? clsx(classes.chip, classes.chipSubmitted)
-                : clsx(classes.chip, classes.chipUnSubmitted)
-            }
+            className={clsx(
+              classes.chip,
+              props.status === PublishStatus.SUBMITTED ? classes.chipSubmitted : classes.chipUnSubmitted
+            )}
             label={props.status === PublishStatus.SUBMITTED ? `SUBMITTED: ${submittedDate}` : 'UNSUBMITTED'}
           />
         </Box>

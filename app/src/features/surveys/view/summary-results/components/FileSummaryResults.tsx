@@ -77,7 +77,7 @@ const FileSummaryResults = (props: IFileResultsProps) => {
 
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [openRemoveOrResubmitDialog, setOpenRemoveOrResubmitDialog] = React.useState(false);
-  const [RemoveOrResubmitDialogFile, setRemoveOrResubmitDialogFile] = React.useState<IGetSummaryResultsResponse | null>(
+  const [removeOrResubmitDialogFile, setRemoveOrResubmitDialogFile] = React.useState<IGetSummaryResultsResponse | null>(
     null
   );
 
@@ -103,13 +103,13 @@ const FileSummaryResults = (props: IFileResultsProps) => {
     <>
       <RemoveOrResubmitDialog
         projectId={surveyContext.projectId}
-        fileName={RemoveOrResubmitDialogFile?.surveySummaryData.fileName || ''}
+        fileName={removeOrResubmitDialogFile?.surveySummaryData.fileName || ''}
         parentName={surveyName || ''}
         status={
-          (RemoveOrResubmitDialogFile?.surveySummarySupplementaryData && PublishStatus.SUBMITTED) ||
+          (removeOrResubmitDialogFile?.surveySummarySupplementaryData && PublishStatus.SUBMITTED) ||
           PublishStatus.UNSUBMITTED
         }
-        submittedDate={RemoveOrResubmitDialogFile?.surveySummarySupplementaryData?.event_timestamp || ''}
+        submittedDate={removeOrResubmitDialogFile?.surveySummarySupplementaryData?.event_timestamp || ''}
         open={openRemoveOrResubmitDialog}
         setOpen={setOpenRemoveOrResubmitDialog}
         onClose={() => setOpenRemoveOrResubmitDialog(false)}
