@@ -19,9 +19,11 @@ const mockUseApi = {
   }
 };
 
-((useBiohubApi as unknown) as jest.Mock<typeof mockUseBiohubApi>).mockReturnValue(mockUseBiohubApi);
-
 describe('SurveyObservations', () => {
+  beforeEach(() => {
+    mockBiohubApi.mockImplementation(() => mockUseApi);
+  });
+
   afterEach(() => {
     cleanup();
     jest.clearAllMocks();

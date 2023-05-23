@@ -12,6 +12,7 @@ import { codes } from 'test-helpers/code-helpers';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import { surveyObject } from 'test-helpers/survey-helpers';
 import SurveysListPage from './SurveysListPage';
+import { PublishStatus } from 'constants/attachments';
 
 const history = createMemoryHistory();
 
@@ -111,7 +112,7 @@ describe('SurveysListPage', () => {
           }
         },
         surveySupplementaryData: {
-          has_unpublished_content: false
+          publishStatus: PublishStatus.NO_DATA
         }
       },
       {
@@ -131,7 +132,7 @@ describe('SurveysListPage', () => {
           }
         },
         surveySupplementaryData: {
-          has_unpublished_content: false
+          publishStatus: PublishStatus.NO_DATA
         }
       }
     ];

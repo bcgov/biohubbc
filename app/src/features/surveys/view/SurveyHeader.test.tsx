@@ -42,13 +42,11 @@ const mockSurveyContext: ISurveyContext = {
   projectId: 1
 };
 
-const mockBiohubApi = useBiohubApi as jest.Mock;
-
 const surveyForView = getSurveyForViewResponse;
 
 describe('SurveyHeader', () => {
   beforeEach(() => {
-    mockBiohubApi.mockImplementation(() => mockUseBiohubApi);
+    mockBiohubApi.mockImplementation(() => mockUseApi);
   });
 
   afterEach(() => {
@@ -78,7 +76,7 @@ describe('SurveyHeader', () => {
   };
 
   it('deletes survey and takes user to the surveys list page when user is a system administrator', async () => {
-    mockUseBiohubApi.survey.deleteSurvey.mockResolvedValue(true);
+    mockUseApi.survey.deleteSurvey.mockResolvedValue(true);
 
     const authState = getMockAuthState({ base: SystemAdminAuthState });
 

@@ -65,7 +65,7 @@ describe('LogOutPage', () => {
         clientId: ''
       },
       SITEMINDER_LOGOUT_URL: 'https://www.siteminderlogout.com'
-    };
+    } as IConfig;
 
     const { getByText } = render(
       <ConfigContext.Provider value={config}>
@@ -94,7 +94,7 @@ describe('LogOutPage', () => {
         clientId: ''
       },
       SITEMINDER_LOGOUT_URL: 'https://www.siteminderlogout.com'
-    };
+    } as IConfig;
 
     const { getByText } = render(
       <ConfigContext.Provider value={config}>
