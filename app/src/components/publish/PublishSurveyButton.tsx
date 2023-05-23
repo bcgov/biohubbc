@@ -79,14 +79,14 @@ const PublishSurveyButton: React.FC = (props) => {
         successTitle="Survey data submitted"
         successMessage="Thank you for submitting your survey data to Biohub."
         open={successSubmission}
-        setOpen={setSuccessSubmission}
+        onClose={() => setSuccessSubmission(false)}
       />
 
       <FailureDialog
         failureTitle="No survey data to submit"
         failureMessage="No new data or information has been added to this survey to submit."
         open={failureSubmission}
-        setOpen={setFailureSubmission}
+        onClose={() => setFailureSubmission(false)}
       />
 
       <SubmitBiohubDialog

@@ -7,7 +7,7 @@ export interface IPublishDialogs {
   failureMessage: string;
   failureBody?: string;
   open: boolean;
-  setOpen: (isEmpty: boolean) => void;
+  onClose: () => void;
 }
 
 /**
@@ -16,7 +16,7 @@ export interface IPublishDialogs {
  * @return {*}
  */
 const FailureDialog: React.FC<IPublishDialogs> = (props) => {
-  const { failureTitle, failureMessage, failureBody, open, setOpen } = props;
+  const { failureTitle, failureMessage, failureBody, open, onClose } = props;
 
   if (!open) {
     return <></>;
@@ -28,7 +28,7 @@ const FailureDialog: React.FC<IPublishDialogs> = (props) => {
         dialogTitle={failureTitle}
         open={open}
         onClose={() => {
-          setOpen(false);
+          onClose();
         }}>
         <DialogContentText id="alert-dialog-description">{failureMessage}</DialogContentText>
         <DialogContentText id="alert-dialog-description">{failureBody}</DialogContentText>

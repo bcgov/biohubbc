@@ -68,14 +68,14 @@ const PublishProjectButton: React.FC = () => {
         successTitle="Project documents submitted"
         successMessage="Thank you for submitting your project data to Biohub."
         open={successSubmission}
-        setOpen={setSuccessSubmission}
+        onClose={() => setSuccessSubmission(false)}
       />
 
       <FailureDialog
         failureTitle="No documents to submit"
         failureMessage="No new documents have been added to this project to submit."
         open={failureSubmission}
-        setOpen={setFailureSubmission}
+        onClose={() => setFailureSubmission(false)}
       />
 
       <SubmitBiohubDialog

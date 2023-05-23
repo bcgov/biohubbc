@@ -7,7 +7,7 @@ export interface IPublishDialogs {
   successMessage: string;
   successBody?: string;
   open: boolean;
-  setOpen: (isEmpty: boolean) => void;
+  onClose: () => void;
 }
 
 /**
@@ -16,7 +16,7 @@ export interface IPublishDialogs {
  * @return {*}
  */
 const SuccessDialog: React.FC<IPublishDialogs> = (props) => {
-  const { successTitle, successMessage, successBody, open, setOpen } = props;
+  const { successTitle, successMessage, successBody, open, onClose } = props;
 
   if (!open) {
     return <></>;
@@ -28,7 +28,7 @@ const SuccessDialog: React.FC<IPublishDialogs> = (props) => {
         dialogTitle={successTitle}
         open={open}
         onClose={() => {
-          setOpen(false);
+          onClose();
         }}>
         <DialogContentText id="alert-dialog-description">{successMessage}</DialogContentText>
         <DialogContentText id="alert-dialog-description">{successBody}</DialogContentText>

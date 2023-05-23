@@ -72,7 +72,7 @@ const RemoveOrResubmitDialog: React.FC<IRemoveOrResubmitDialog> = (props) => {
         successMessage="Your request to remove or resubmit information has been submitted."
         successBody="A BioHub Administrator will contact you shortly."
         open={successSubmission}
-        setOpen={setSuccessSubmission}
+        onClose={() => setSuccessSubmission(false)}
       />
 
       <FailureDialog
@@ -80,7 +80,7 @@ const RemoveOrResubmitDialog: React.FC<IRemoveOrResubmitDialog> = (props) => {
         failureMessage="An error occurred while attempting to submit your request."
         failureBody="If you continue to have difficulties submitting your request, please contact BioHub Support at biohub@gov.bc.ca."
         open={failureSubmission}
-        setOpen={setFailureSubmission}
+        onClose={() => setFailureSubmission(false)}
       />
 
       <Dialog
