@@ -181,9 +181,7 @@ const FileSummaryResults = (props: IFileResultsProps) => {
                     Delete
                   </MenuItem>
                 </SystemRoleGuard>
-                <ProjectRoleGuard
-                  validProjectRoles={[PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR]}
-                  validSystemRoles={[SYSTEM_ROLE.PROJECT_CREATOR]}>
+                <ProjectRoleGuard validProjectRoles={[PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR]}>
                   <MenuItem
                     onClick={() => {
                       setRemoveOrResubmitDialogFile(props.fileData);

@@ -1,5 +1,7 @@
 import { Button } from '@material-ui/core';
+import FailureDialog from 'components/dialog/FailureDialog';
 import SubmitBiohubDialog from 'components/dialog/SubmitBiohubDialog';
+import SuccessDialog from 'components/dialog/SuccessDialog';
 import PublishSurveySections, {
   ISurveySubmitForm,
   SurveySubmitFormInitialValues,
@@ -16,7 +18,6 @@ import {
   IGetSurveyReportAttachment
 } from 'interfaces/useSurveyApi.interface';
 import React, { useContext, useState } from 'react';
-import PublishDialogs from './PublishDialogs';
 
 /**
  * Survey Publish button.
@@ -32,8 +33,8 @@ const PublishSurveyButton: React.FC = (props) => {
   const artifactDataLoader = surveyContext.artifactDataLoader;
   const summaryDataLoader = surveyContext.summaryDataLoader;
 
-  const [finishSubmission, setFinishSubmission] = useState(false);
-  const [noSubmissionData, setNoSubmissionData] = useState(false);
+  const [successSubmission, setSuccessSubmission] = useState(false);
+  const [failureSubmission, setFailureSubmission] = useState(false);
   const [openSubmitSurveyDialog, setOpenSubmitSurveyDialog] = useState(false);
 
   const refreshContext = (values: ISurveySubmitForm) => {
@@ -57,7 +58,7 @@ const PublishSurveyButton: React.FC = (props) => {
     const attachments: IGetSurveyAttachment[] = unSubmittedAttachments(artifactDataLoader.data);
 
     if (observation.length === 0 && summary.length === 0 && reports.length === 0 && attachments.length === 0) {
-      setNoSubmissionData(true);
+      setFailureSubmission(true);
       return;
     }
     setOpenSubmitSurveyDialog(true);
@@ -74,15 +75,18 @@ const PublishSurveyButton: React.FC = (props) => {
         <strong>Submit</strong>
       </Button>
 
-      <PublishDialogs
-        finishSubmissionMessage="Thank you for submitting your survey data to Biohub."
-        finishSubmissionTitle="Survey data submitted"
-        finishSubmission={finishSubmission}
-        setFinishSubmission={setFinishSubmission}
-        noSubmissionTitle="No survey data to submit"
-        noSubmissionMessage="No new data or information has been added to this survey to submit."
-        noSubmissionData={noSubmissionData}
-        setNoSubmissionData={setNoSubmissionData}
+      <SuccessDialog
+        successTitle="Survey data submitted"
+        successMessage="Thank you for submitting your survey data to Biohub."
+        open={successSubmission}
+        setOpen={setSuccessSubmission}
+      />
+
+      <FailureDialog
+        failureTitle="No survey data to submit"
+        failureMessage="No new data or information has been added to this survey to submit."
+        open={failureSubmission}
+        setOpen={setFailureSubmission}
       />
 
       <SubmitBiohubDialog
@@ -98,7 +102,7 @@ const PublishSurveyButton: React.FC = (props) => {
             );
           }
           refreshContext(values);
-          setFinishSubmission(true);
+          setSuccessSubmission(true);
         }}
         formikProps={{
           initialValues: SurveySubmitFormInitialValues,

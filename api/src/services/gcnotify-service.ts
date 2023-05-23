@@ -46,12 +46,26 @@ export interface ISendGCNotifySMSMessage {
   };
 }
 
+export interface IgcNotifyRequestRemovalFormValues {
+  projectId: number;
+  fileName: string;
+  parentName: string;
+  path: string;
+  formValues: {
+    full_name: string;
+    email_address: string;
+    phone_number: string;
+    description: string;
+  };
+}
+
 const EMAIL_TEMPLATE = process.env.GCNOTIFY_ONBOARDING_REQUEST_EMAIL_TEMPLATE || '';
-const REQUEST_REMOVAL_TEMPLATE = process.env.GCNOTIFY_REQUEST_REMOVAL_TEMPLATE || '';
+const REQUEST_RESUBMIT_TEMPLATE = process.env.GCNOTIFY_REQUEST_RESUBMIT_TEMPLATE || '';
 const SMS_TEMPLATE = process.env.GCNOTIFY_ONBOARDING_REQUEST_SMS_TEMPLATE || '';
 const EMAIL_URL = process.env.GCNOTIFY_EMAIL_URL || '';
 const SMS_URL = process.env.GCNOTIFY_SMS_URL || '';
 const API_KEY = process.env.GCNOTIFY_SECRET_API_KEY || '';
+const adminEmail = process.env.GCNOTIFY_ADMIN_EMAIL || '';
 
 const config = {
   headers: {
@@ -102,6 +116,56 @@ export class GCNotifyService {
   }
 
   /**
+   * Send Both emails for requesting removal of a file.
+   *
+   * @param {IgcNotifyRequestRemovalFormValues} resubmitData
+   * @return {*}  {Promise<boolean>}
+   * @memberof GCNotifyService
+   */
+  async sendNotificationForResubmit(resubmitData: IgcNotifyRequestRemovalFormValues): Promise<boolean> {
+    const url = `${process.env.APP_HOST}/login?redirect=${encodeURIComponent(resubmitData.path)}`;
+    const hrefUrl = `[${resubmitData.parentName}](${url})`;
+
+    const message: IgcNotifyRequestRemovalMessage = {
+      subject: '',
+      header: '',
+      date: new Date().toLocaleString(),
+      file_name: resubmitData.fileName,
+      link: hrefUrl,
+      description: resubmitData.formValues.description,
+      full_name: resubmitData.formValues.full_name,
+      email: resubmitData.formValues.email_address,
+      phone: resubmitData.formValues.phone_number
+    };
+
+    const submitterMessage: IgcNotifyRequestRemovalMessage = {
+      ...message,
+      subject: 'Species Inventory Management System - Your Request to Remove or Resubmit Has Been Sent',
+      header: `Your request to remove or resubmit data has been sent.
+
+      A BioHub Administrator should be in contact with you shortly to discuss your request.`
+    };
+
+    const adminMessage: IgcNotifyRequestRemovalMessage = {
+      ...message,
+      subject: 'Species Inventory Management System -  Request to Remove or Resubmit',
+      header: ''
+    };
+
+    const submitterEmailResponse = await this.requestRemovalEmailNotification(
+      resubmitData.formValues.email_address,
+      submitterMessage
+    );
+    const adminEmailResponse = await this.requestRemovalEmailNotification(adminEmail, adminMessage);
+
+    if (!submitterEmailResponse || !adminEmailResponse) {
+      throw new ApiError(ApiErrorType.UNKNOWN, 'Failed to send Notification');
+    }
+
+    return Boolean(submitterEmailResponse && adminEmailResponse);
+  }
+
+  /**
    * Send Email Notification to a recipient for requesting removal of a file.
    *
    * @param {string} emailAddress
@@ -115,7 +179,7 @@ export class GCNotifyService {
   ): Promise<IgcNotifyPostReturn> {
     const data: ISendGCNotifyEmailMessage = {
       email_address: emailAddress,
-      template_id: REQUEST_REMOVAL_TEMPLATE,
+      template_id: REQUEST_RESUBMIT_TEMPLATE,
       personalisation: {
         subject: message.subject,
         header: message.header,

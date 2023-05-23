@@ -10,12 +10,13 @@ import {
   useMediaQuery,
   useTheme
 } from '@material-ui/core';
+import FailureDialog from 'components/dialog/FailureDialog';
+import SuccessDialog from 'components/dialog/SuccessDialog';
 import { PublishStatus } from 'constants/attachments';
 import { Formik, FormikProps } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import React, { useRef, useState } from 'react';
 import { useHistory } from 'react-router';
-import PublishDialogs from '../PublishDialogs';
 import AttachmentsFileCard from './AttachmentsFileCard';
 import RemoveOrResubmitForm, {
   IRemoveOrResubmitForm,
@@ -48,8 +49,8 @@ const RemoveOrResubmitDialog: React.FC<IRemoveOrResubmitDialog> = (props) => {
 
   const router = useHistory();
 
-  const [finishResubmission, setFinishResubmission] = useState(false);
-  const [resubmissionFailed, setResubmissionFailed] = useState(false);
+  const [successSubmission, setSuccessSubmission] = useState(false);
+  const [failureSubmission, setFailureSubmission] = useState(false);
 
   const formikRef = useRef<FormikProps<IRemoveOrResubmitForm>>(null);
 
@@ -57,26 +58,29 @@ const RemoveOrResubmitDialog: React.FC<IRemoveOrResubmitDialog> = (props) => {
     try {
       onClose();
       await biohubApi.publish.resubmitAttachment(projectId, fileName, parentName, values, router.location.pathname);
-      setFinishResubmission(true);
+      setSuccessSubmission(true);
     } catch (error) {
       onClose();
-      setResubmissionFailed(true);
+      setFailureSubmission(true);
     }
   };
 
   return (
     <>
-      <PublishDialogs
-        finishSubmissionTitle="Request Submitted"
-        finishSubmissionMessage="Your request to remove or resubmit information has been submitted."
-        finishSubmissionBody="A BioHub Administrator will contact you shortly."
-        finishSubmission={finishResubmission}
-        setFinishSubmission={setFinishResubmission}
-        noSubmissionTitle="An Error Occurred"
-        noSubmissionMessage="An error occurred while attempting to submit your request."
-        noSubmissionBody="If you continue to have difficulties submitting your request, please contact BioHub Support at biohub@gov.bc.ca."
-        noSubmissionData={resubmissionFailed}
-        setNoSubmissionData={setResubmissionFailed}
+      <SuccessDialog
+        successTitle="Request Submitted"
+        successMessage="Your request to remove or resubmit information has been submitted."
+        successBody="A BioHub Administrator will contact you shortly."
+        open={successSubmission}
+        setOpen={setSuccessSubmission}
+      />
+
+      <FailureDialog
+        failureTitle="An Error Occurred"
+        failureMessage="An error occurred while attempting to submit your request."
+        failureBody="If you continue to have difficulties submitting your request, please contact BioHub Support at biohub@gov.bc.ca."
+        open={failureSubmission}
+        setOpen={setFailureSubmission}
       />
 
       <Dialog

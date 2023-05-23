@@ -112,7 +112,7 @@ describe('AttachmentsList', () => {
               handleDownload={jest.fn()}
               handleDelete={jest.fn()}
               handleViewDetails={jest.fn()}
-            />{' '}
+            />
           </SurveyContext.Provider>
         </ProjectContext.Provider>
       </Router>
@@ -152,7 +152,7 @@ describe('AttachmentsList', () => {
               handleDownload={handleDownload}
               handleDelete={jest.fn()}
               handleViewDetails={jest.fn()}
-            />{' '}
+            />
           </SurveyContext.Provider>
         </ProjectContext.Provider>
       </Router>
@@ -195,7 +195,7 @@ describe('AttachmentsList', () => {
               handleDownload={handleDownload}
               handleDelete={jest.fn()}
               handleViewDetails={jest.fn()}
-            />{' '}
+            />
           </SurveyContext.Provider>
         </ProjectContext.Provider>
       </Router>
