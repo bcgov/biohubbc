@@ -129,8 +129,8 @@ const AccessRequestList: React.FC<IAccessRequestListProps> = (props) => {
           {
             subject: 'SIMS: Your request for access has been approved.',
             header: 'Your request for access to the Species Inventory Management System has been approved.',
-            body1: 'This is an automated message from the BioHub Species Inventory Management System',
-            body2: '',
+            main_body1: 'This is an automated message from the BioHub Species Inventory Management System',
+            main_body2: '',
             footer: ''
           }
         );
@@ -170,8 +170,8 @@ const AccessRequestList: React.FC<IAccessRequestListProps> = (props) => {
           {
             subject: 'SIMS: Your request for access has been denied.',
             header: 'Your request for access to the Species Inventory Management System has been denied.',
-            body1: 'This is an automated message from the BioHub Species Inventory Management System',
-            body2: '',
+            main_body1: 'This is an automated message from the BioHub Species Inventory Management System',
+            main_body2: '',
             footer: ''
           }
         );

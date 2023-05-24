@@ -112,7 +112,7 @@ export class AdministrativeActivityService extends DBService {
     return gcnotifyService.sendEmailGCNotification(this.ADMIN_EMAIL, {
       ...ACCESS_REQUEST_ADMIN_NOTIFICATION_EMAIL,
       subject: `${this.NODE_ENV}: ${ACCESS_REQUEST_ADMIN_NOTIFICATION_EMAIL.subject}`,
-      body1: `${ACCESS_REQUEST_ADMIN_NOTIFICATION_EMAIL.body1} ${hrefUrl}`,
+      main_body1: `${ACCESS_REQUEST_ADMIN_NOTIFICATION_EMAIL.main_body1} ${hrefUrl}`,
       footer: `${this.APP_HOST}`
     });
   }

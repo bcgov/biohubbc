@@ -40,8 +40,8 @@ export interface IGetAdministrativeActivityStanding {
 export interface IgcNotifyGenericMessage {
   subject: string;
   header: string;
-  body1: string;
-  body2: string;
+  main_body1: string;
+  main_body2: string;
   footer: string;
 }
 

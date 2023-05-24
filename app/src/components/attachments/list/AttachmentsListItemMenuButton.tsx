@@ -5,12 +5,17 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import { mdiDotsVertical, mdiInformationOutline, mdiTrashCanOutline, mdiTrayArrowDown } from '@mdi/js';
 import Icon from '@mdi/react';
-import { SystemRoleGuard } from 'components/security/Guards';
-import { AttachmentType } from 'constants/attachments';
-import { SYSTEM_ROLE } from 'constants/roles';
+import RemoveOrResubmitDialog from 'components/publish/components/RemoveOrResubmitDialog';
+import { ProjectRoleGuard, SystemRoleGuard } from 'components/security/Guards';
+import { AttachmentType, PublishStatus } from 'constants/attachments';
+import { PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
+import { ProjectContext } from 'contexts/projectContext';
+import { SurveyContext } from 'contexts/surveyContext';
 import { IGetProjectAttachment } from 'interfaces/useProjectApi.interface';
 import { IGetSurveyAttachment } from 'interfaces/useSurveyApi.interface';
 import React, { useState } from 'react';
+
+//TODO: PRODUCTION_BANDAGE: Remove <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}> from `Remove or Resubmit` button.
 
 interface IAttachmentsListItemMenuButtonProps<T extends IGetProjectAttachment | IGetSurveyAttachment> {
   attachment: T;
@@ -22,7 +27,15 @@ interface IAttachmentsListItemMenuButtonProps<T extends IGetProjectAttachment | 
 const AttachmentsListItemMenuButton = <T extends IGetProjectAttachment | IGetSurveyAttachment>(
   props: IAttachmentsListItemMenuButtonProps<T>
 ) => {
+  const surveyContext = React.useContext(SurveyContext);
+  const projectContext = React.useContext(ProjectContext);
+  const parentName =
+    surveyContext.surveyDataLoader.data?.surveyData.survey_details.survey_name ||
+    projectContext.projectDataLoader.data?.projectData.project.project_name;
+
   const [anchorEl, setAnchorEl] = useState(null);
+  const [openRemoveOrResubmitDialog, setOpenRemoveOrResubmitDialog] = useState(false);
+  const [removeOrResubmitDialogFile, setRemoveOrResubmitDialogFile] = useState<T | null>(null);
 
   const open = Boolean(anchorEl);
 
@@ -36,6 +49,19 @@ const AttachmentsListItemMenuButton = <T extends IGetProjectAttachment | IGetSur
 
   return (
     <>
+      <RemoveOrResubmitDialog
+        projectId={projectContext.projectId}
+        fileName={removeOrResubmitDialogFile?.fileName || ''}
+        parentName={parentName || ''}
+        status={
+          (removeOrResubmitDialogFile?.supplementaryAttachmentData && PublishStatus.SUBMITTED) ||
+          PublishStatus.UNSUBMITTED
+        }
+        submittedDate={removeOrResubmitDialogFile?.supplementaryAttachmentData?.event_timestamp || ''}
+        open={openRemoveOrResubmitDialog}
+        setOpen={setOpenRemoveOrResubmitDialog}
+        onClose={() => setOpenRemoveOrResubmitDialog(false)}
+      />
       <Box my={-1}>
         <Box>
           <IconButton
@@ -71,7 +97,7 @@ const AttachmentsListItemMenuButton = <T extends IGetProjectAttachment | IGetSur
               <ListItemIcon>
                 <Icon path={mdiTrayArrowDown} size={1} />
               </ListItemIcon>
-              Download
+              Download File
             </MenuItem>
             {props.attachment.fileType === AttachmentType.REPORT && (
               <MenuItem
@@ -98,6 +124,22 @@ const AttachmentsListItemMenuButton = <T extends IGetProjectAttachment | IGetSur
                 </ListItemIcon>
                 Delete
               </MenuItem>
+            </SystemRoleGuard>
+            <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+              <ProjectRoleGuard validProjectRoles={[PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR]}>
+                <MenuItem
+                  onClick={() => {
+                    setRemoveOrResubmitDialogFile(props.attachment);
+                    setOpenRemoveOrResubmitDialog(true);
+                    setAnchorEl(null);
+                  }}
+                  data-testid="attachment-action-menu-resubmit">
+                  <ListItemIcon>
+                    <Icon path={mdiTrashCanOutline} size={1} />
+                  </ListItemIcon>
+                  Remove or Resubmit
+                </MenuItem>
+              </ProjectRoleGuard>
             </SystemRoleGuard>
           </Menu>
         </Box>
