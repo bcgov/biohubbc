@@ -1,7 +1,9 @@
 import { Button } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
+import FailureDialog from 'components/dialog/FailureDialog';
 import SubmitBiohubDialog from 'components/dialog/SubmitBiohubDialog';
+import SuccessDialog from 'components/dialog/SuccessDialog';
 import { ProjectContext } from 'contexts/projectContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import {
@@ -10,7 +12,6 @@ import {
   IGetProjectReportAttachment
 } from 'interfaces/useProjectApi.interface';
 import React, { useContext, useState } from 'react';
-import PublishDialogs from './PublishDialogs';
 import PublishProjectSections, {
   IProjectSubmitForm,
   ProjectSubmitFormInitialValues,
@@ -29,8 +30,8 @@ const PublishProjectButton: React.FC = () => {
   const projectDataLoader = projectContext.projectDataLoader;
   const artifactDataLoader = projectContext.artifactDataLoader;
 
-  const [finishSubmission, setFinishSubmission] = useState(false);
-  const [noSubmissionData, setNoSubmissionData] = useState(false);
+  const [successSubmission, setSuccessSubmission] = useState(false);
+  const [failureSubmission, setFailureSubmission] = useState(false);
   const [openSubmitProjectDialog, setOpenSubmitProjectDialog] = useState(false);
 
   const refreshContext = (values: any) => {
@@ -46,7 +47,7 @@ const PublishProjectButton: React.FC = () => {
     const attachments: IGetProjectAttachment[] = unSubmittedAttachments(artifactDataLoader.data);
 
     if (reports.length === 0 && attachments.length === 0) {
-      setNoSubmissionData(true);
+      setFailureSubmission(true);
       return;
     }
     setOpenSubmitProjectDialog(true);
@@ -63,15 +64,18 @@ const PublishProjectButton: React.FC = () => {
         <strong>Submit</strong>
       </Button>
 
-      <PublishDialogs
-        finishSubmissionMessage="Thank you for submitting your project data to Biohub."
-        finishSubmissionTitle="Project documents submitted"
-        finishSubmission={finishSubmission}
-        setFinishSubmission={setFinishSubmission}
-        noSubmissionTitle="No documents to submit"
-        noSubmissionMessage="No new documents have been added to this project to submit."
-        noSubmissionData={noSubmissionData}
-        setNoSubmissionData={setNoSubmissionData}
+      <SuccessDialog
+        successTitle="Project documents submitted"
+        successMessage="Thank you for submitting your project data to Biohub."
+        open={successSubmission}
+        onClose={() => setSuccessSubmission(false)}
+      />
+
+      <FailureDialog
+        failureTitle="No documents to submit"
+        failureMessage="No new documents have been added to this project to submit."
+        open={failureSubmission}
+        onClose={() => setFailureSubmission(false)}
       />
 
       <SubmitBiohubDialog
@@ -83,7 +87,7 @@ const PublishProjectButton: React.FC = () => {
             await biohubApi.publish.publishProject(projectContext.projectId, values);
           }
           refreshContext(values);
-          setFinishSubmission(true);
+          setSuccessSubmission(true);
         }}
         formikProps={{
           initialValues: ProjectSubmitFormInitialValues,

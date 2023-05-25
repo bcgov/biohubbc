@@ -41,8 +41,9 @@ export const ProjectAuthStateContextProvider: React.FC = (props) => {
 
   const hasProjectRole = useCallback(
     (validProjectRoles?: string[]): boolean => {
+      //If no Project role is provided then return false
       if (!validProjectRoles?.length) {
-        return true;
+        return false;
       }
 
       const participant = getProjectParticipant();
@@ -61,8 +62,9 @@ export const ProjectAuthStateContextProvider: React.FC = (props) => {
 
   const hasSystemRole = useCallback(
     (validSystemRoles?: string[]): boolean => {
+      //If no System role is provided then return false
       if (!validSystemRoles?.length) {
-        return true;
+        return false;
       }
 
       return !!keycloakWrapper && keycloakWrapper.hasSystemRole(validSystemRoles);

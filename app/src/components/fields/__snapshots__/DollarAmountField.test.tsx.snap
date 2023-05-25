@@ -6,8 +6,8 @@ exports[`DollarAmountField matches the snapshot with error 1`] = `
     class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
   >
     <label
-      class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined Mui-error Mui-error Mui-required Mui-required"
-      data-shrink="true"
+      class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-error Mui-error Mui-required Mui-required"
+      data-shrink="false"
       for="amount"
       id="amount-label"
     >
@@ -39,7 +39,7 @@ exports[`DollarAmountField matches the snapshot with error 1`] = `
         class="PrivateNotchedOutline-root-5 MuiOutlinedInput-notchedOutline"
       >
         <legend
-          class="PrivateNotchedOutline-legendLabelled-7 PrivateNotchedOutline-legendNotched-8"
+          class="PrivateNotchedOutline-legendLabelled-7"
         >
           <span>
             amount *
@@ -63,8 +63,8 @@ exports[`DollarAmountField matches the snapshot without error 1`] = `
     class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
   >
     <label
-      class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined Mui-required Mui-required"
-      data-shrink="true"
+      class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
+      data-shrink="false"
       for="amount"
       id="amount-label"
     >
@@ -95,7 +95,7 @@ exports[`DollarAmountField matches the snapshot without error 1`] = `
         class="PrivateNotchedOutline-root-1 MuiOutlinedInput-notchedOutline"
       >
         <legend
-          class="PrivateNotchedOutline-legendLabelled-3 PrivateNotchedOutline-legendNotched-4"
+          class="PrivateNotchedOutline-legendLabelled-3"
         >
           <span>
             amount *

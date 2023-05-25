@@ -223,23 +223,23 @@ describe('ProjectFundingForm', () => {
           )}
         </Formik>
       );
-
       const editButton = await getByTestId('edit-button-0');
       expect(editButton).toBeInTheDocument();
 
       fireEvent.click(editButton);
 
+      const saveButton = await queryByText('Save Changes');
+
+      expect(saveButton).toBeInTheDocument();
       expect(await queryByText('Agency Details')).toBeInTheDocument();
 
       const cancelButton = await getByText('Cancel');
       expect(cancelButton).toBeInTheDocument();
-      fireEvent.click(cancelButton);
-      expect(await queryByText('Cancel')).not.toBeInTheDocument();
 
+      fireEvent.click(cancelButton);
+
+      expect(await queryByText('Cancel')).not.toBeInTheDocument();
       fireEvent.click(editButton);
-      const saveButton = await getByText('Save Changes');
-      expect(saveButton).toBeInTheDocument();
-      fireEvent.click(saveButton);
     });
   });
 

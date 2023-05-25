@@ -3,9 +3,11 @@ import { AuthStateContext } from 'contexts/authStateContext';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { IProjectAuthStateContext, ProjectAuthStateContext } from 'contexts/projectAuthStateContext';
 import { IProjectContext, ProjectContext } from 'contexts/projectContext';
+import { createMemoryHistory } from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { DataLoader } from 'hooks/useDataLoader';
 import React from 'react';
+import { Router } from 'react-router';
 import { getMockAuthState, SystemAdminAuthState } from 'test-helpers/auth-helpers';
 import {
   cleanup,
@@ -28,6 +30,8 @@ const mockUseApi = {
   }
 };
 
+const history = createMemoryHistory({ initialEntries: ['/admin/projects/1'] });
+
 describe('ProjectAttachments', () => {
   beforeEach(() => {
     mockBiohubApi.mockImplementation(() => mockUseApi);
@@ -45,7 +49,11 @@ describe('ProjectAttachments', () => {
         data: null,
         load: jest.fn()
       } as unknown as DataLoader<any, any, any>,
-      projectId: 1
+      projectId: 1,
+      projectDataLoader: ({
+        data: { projectData: { project: { project_name: 'name' } } },
+        load: jest.fn()
+      } as unknown) as DataLoader<any, any, any>
     } as unknown as IProjectContext;
 
     const mockProjectAuthStateContext: IProjectAuthStateContext = {
@@ -57,11 +65,13 @@ describe('ProjectAttachments', () => {
     };
 
     const { getByText, queryByText } = render(
-      <ProjectAuthStateContext.Provider value={mockProjectAuthStateContext}>
-        <ProjectContext.Provider value={mockProjectContext}>
-          <ProjectAttachments />
-        </ProjectContext.Provider>
-      </ProjectAuthStateContext.Provider>
+      <Router history={history}>
+        <ProjectAuthStateContext.Provider value={mockProjectAuthStateContext}>
+          <ProjectContext.Provider value={mockProjectContext}>
+            <ProjectAttachments />
+          </ProjectContext.Provider>
+        </ProjectAuthStateContext.Provider>
+      </Router>
     );
 
     await waitFor(() => {
@@ -86,7 +96,11 @@ describe('ProjectAttachments', () => {
         data: null,
         load: jest.fn()
       } as unknown as DataLoader<any, any, any>,
-      projectId: 1
+      projectId: 1,
+      projectDataLoader: ({
+        data: { projectData: { project: { project_name: 'name' } } },
+        load: jest.fn()
+      } as unknown) as DataLoader<any, any, any>
     } as unknown as IProjectContext;
 
     const mockProjectAuthStateContext: IProjectAuthStateContext = {
@@ -98,11 +112,13 @@ describe('ProjectAttachments', () => {
     };
 
     const { getByText } = render(
-      <ProjectAuthStateContext.Provider value={mockProjectAuthStateContext}>
-        <ProjectContext.Provider value={mockProjectContext}>
-          <ProjectAttachments />
-        </ProjectContext.Provider>
-      </ProjectAuthStateContext.Provider>
+      <Router history={history}>
+        <ProjectAuthStateContext.Provider value={mockProjectAuthStateContext}>
+          <ProjectContext.Provider value={mockProjectContext}>
+            <ProjectAttachments />
+          </ProjectContext.Provider>
+        </ProjectAuthStateContext.Provider>
+      </Router>
     );
     await waitFor(() => {
       expect(getByText('No Documents')).toBeInTheDocument();
@@ -124,7 +140,11 @@ describe('ProjectAttachments', () => {
         },
         load: jest.fn()
       } as unknown as DataLoader<any, any, any>,
-      projectId: 1
+      projectId: 1,
+      projectDataLoader: ({
+        data: { projectData: { project: { project_name: 'name' } } },
+        load: jest.fn()
+      } as unknown) as DataLoader<any, any, any>
     } as unknown as IProjectContext;
 
     const mockProjectAuthStateContext: IProjectAuthStateContext = {
@@ -136,11 +156,13 @@ describe('ProjectAttachments', () => {
     };
 
     const { getByText } = render(
-      <ProjectAuthStateContext.Provider value={mockProjectAuthStateContext}>
-        <ProjectContext.Provider value={mockProjectContext}>
-          <ProjectAttachments />
-        </ProjectContext.Provider>
-      </ProjectAuthStateContext.Provider>
+      <Router history={history}>
+        <ProjectAuthStateContext.Provider value={mockProjectAuthStateContext}>
+          <ProjectContext.Provider value={mockProjectContext}>
+            <ProjectAttachments />
+          </ProjectContext.Provider>
+        </ProjectAuthStateContext.Provider>
+      </Router>
     );
 
     await waitFor(() => {
@@ -173,7 +195,11 @@ describe('ProjectAttachments', () => {
         load: jest.fn(),
         refresh: jest.fn()
       } as unknown as DataLoader<any, any, any>,
-      projectId: 1
+      projectId: 1,
+      projectDataLoader: ({
+        data: { projectData: { project: { project_name: 'name' } } },
+        load: jest.fn()
+      } as unknown) as DataLoader<any, any, any>
     } as unknown as IProjectContext;
 
     const mockProjectAuthStateContext: IProjectAuthStateContext = {
@@ -187,15 +213,17 @@ describe('ProjectAttachments', () => {
     const authState = getMockAuthState({ base: SystemAdminAuthState });
 
     const { baseElement, queryByText, getByTestId, getAllByTestId, queryByTestId } = render(
-      <AuthStateContext.Provider value={authState}>
-        <ProjectAuthStateContext.Provider value={mockProjectAuthStateContext}>
-          <DialogContextProvider>
-            <ProjectContext.Provider value={mockProjectContext}>
-              <ProjectAttachments />
-            </ProjectContext.Provider>
-          </DialogContextProvider>
-        </ProjectAuthStateContext.Provider>
-      </AuthStateContext.Provider>
+      <Router history={history}>
+        <AuthStateContext.Provider value={authState}>
+          <ProjectAuthStateContext.Provider value={mockProjectAuthStateContext}>
+            <DialogContextProvider>
+              <ProjectContext.Provider value={mockProjectContext}>
+                <ProjectAttachments />
+              </ProjectContext.Provider>
+            </DialogContextProvider>
+          </ProjectAuthStateContext.Provider>
+        </AuthStateContext.Provider>
+      </Router>
     );
 
     await waitFor(() => {
@@ -239,7 +267,11 @@ describe('ProjectAttachments', () => {
         },
         load: jest.fn()
       } as unknown as DataLoader<any, any, any>,
-      projectId: 1
+      projectId: 1,
+      projectDataLoader: ({
+        data: { projectData: { project: { project_name: 'name' } } },
+        load: jest.fn()
+      } as unknown) as DataLoader<any, any, any>
     } as unknown as IProjectContext;
 
     const mockProjectAuthStateContext: IProjectAuthStateContext = {
@@ -253,15 +285,17 @@ describe('ProjectAttachments', () => {
     const authState = getMockAuthState({ base: SystemAdminAuthState });
 
     const { baseElement, queryByText, getByTestId, queryByTestId, getAllByTestId } = render(
-      <AuthStateContext.Provider value={authState}>
-        <ProjectAuthStateContext.Provider value={mockProjectAuthStateContext}>
-          <DialogContextProvider>
-            <ProjectContext.Provider value={mockProjectContext}>
-              <ProjectAttachments />
-            </ProjectContext.Provider>
-          </DialogContextProvider>
-        </ProjectAuthStateContext.Provider>
-      </AuthStateContext.Provider>
+      <Router history={history}>
+        <AuthStateContext.Provider value={authState}>
+          <ProjectAuthStateContext.Provider value={mockProjectAuthStateContext}>
+            <DialogContextProvider>
+              <ProjectContext.Provider value={mockProjectContext}>
+                <ProjectAttachments />
+              </ProjectContext.Provider>
+            </DialogContextProvider>
+          </ProjectAuthStateContext.Provider>
+        </AuthStateContext.Provider>
+      </Router>
     );
 
     await waitFor(() => {
@@ -307,7 +341,11 @@ describe('ProjectAttachments', () => {
         },
         load: jest.fn()
       } as unknown as DataLoader<any, any, any>,
-      projectId: 1
+      projectId: 1,
+      projectDataLoader: ({
+        data: { projectData: { project: { project_name: 'name' } } },
+        load: jest.fn()
+      } as unknown) as DataLoader<any, any, any>
     } as unknown as IProjectContext;
 
     const mockProjectAuthStateContext: IProjectAuthStateContext = {
@@ -321,15 +359,17 @@ describe('ProjectAttachments', () => {
     const authState = getMockAuthState({ base: SystemAdminAuthState });
 
     const { baseElement, queryByText, getAllByRole, queryByTestId, getAllByTestId } = render(
-      <AuthStateContext.Provider value={authState}>
-        <ProjectAuthStateContext.Provider value={mockProjectAuthStateContext}>
-          <DialogContextProvider>
-            <ProjectContext.Provider value={mockProjectContext}>
-              <ProjectAttachments />
-            </ProjectContext.Provider>
-          </DialogContextProvider>
-        </ProjectAuthStateContext.Provider>
-      </AuthStateContext.Provider>
+      <Router history={history}>
+        <AuthStateContext.Provider value={authState}>
+          <ProjectAuthStateContext.Provider value={mockProjectAuthStateContext}>
+            <DialogContextProvider>
+              <ProjectContext.Provider value={mockProjectContext}>
+                <ProjectAttachments />
+              </ProjectContext.Provider>
+            </DialogContextProvider>
+          </ProjectAuthStateContext.Provider>
+        </AuthStateContext.Provider>
+      </Router>
     );
 
     await waitFor(() => {
