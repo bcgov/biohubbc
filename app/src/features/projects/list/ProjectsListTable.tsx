@@ -8,6 +8,7 @@ import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+import { grey } from '@mui/material/colors';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import clsx from 'clsx';
 import { SubmitStatusChip } from 'components/chips/SubmitStatusChip';
@@ -37,6 +38,31 @@ const useStyles = makeStyles((theme: Theme) => ({
   chipDraft: {
     borderColor: '#afd3ee',
     backgroundColor: 'rgb(232, 244, 253)'
+  },
+  MuiDataGrid: {
+    fontSize: '0.9rem',
+    border: '0 !important',
+    fontFamily: 'inherit !important',
+    '& .MuiDataGrid-columnHeaders': {
+      fontSize: '0.875rem',
+      fontWeight: 700,
+      color: grey[600]
+    },
+    '& .MuiDataGrid-columnHeaderTitle': {
+      textTransform: 'uppercase',
+      fontWeight: '700 !important',
+      letterSpacing: '0.02rem'
+    },
+    '& .MuiLink-root': {
+      fontFamily: 'inherit',
+      fontSize: 'inherit'
+    },
+    '& .MuiDataGrid-cell:focus-within, & .MuiDataGrid-cellCheckbox:focus-within, & .MuiDataGrid-columnHeader:focus-within': {
+      outline: 'none !important'
+    },
+    '& .MuiDataGrid-row:hover': {
+      backgroundColor: 'transparent !important'
+    }
   }
 }));
 
@@ -64,7 +90,7 @@ const ProjectsListTable = (props: IProjectsListTableProps) => {
     {
       field: 'name',
       headerName: 'Name',
-      flex: 2,
+      flex: 3,
       disableColumnMenu: true,
       renderCell: (params) => (
         <Link
@@ -82,7 +108,7 @@ const ProjectsListTable = (props: IProjectsListTableProps) => {
     {
       field: 'type',
       headerName: 'Type',
-      flex: 1
+      flex: 3
     },
     {
       field: 'status',
@@ -126,6 +152,7 @@ const ProjectsListTable = (props: IProjectsListTableProps) => {
 
   return (
     <DataGrid
+      className={classes.MuiDataGrid}
       autoHeight
       rows={[
         ...drafts.map((draft: IGetDraftsListResponse) => ({
@@ -137,6 +164,7 @@ const ProjectsListTable = (props: IProjectsListTableProps) => {
           id: project.projectData.id,
           name: project.projectData.name,
           status: project.projectSupplementaryData.publishStatus,
+          type: project.projectData.project_type,
           startDate: project.projectData.start_date,
           endDate: project.projectData.end_date,
           isDraft: false
@@ -144,7 +172,8 @@ const ProjectsListTable = (props: IProjectsListTableProps) => {
       ]}
       columns={columns}
       pageSizeOptions={[5]}
-      checkboxSelection
+      rowSelection={false}
+      checkboxSelection={false}
       disableRowSelectionOnClick
       disableColumnSelector
       disableColumnFilter
