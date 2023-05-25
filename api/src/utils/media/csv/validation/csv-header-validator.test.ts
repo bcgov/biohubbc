@@ -38,7 +38,7 @@ describe('getDuplicateHeadersValidator', () => {
   it('adds errors for each header that is a duplicate', () => {
     const validator = getDuplicateHeadersValidator();
 
-    const xlsxWorkSheet = xlsx.utils.aoa_to_sheet([['Header1', 'Header2', 'Header1', 'Header3', 'Header2', 'Header4']]);
+    const xlsxWorkSheet = xlsx.utils.aoa_to_sheet([['HEADER1', 'Header2', 'header1', 'Header3', 'Header2', 'Header4']]);
 
     const csvWorkSheet = new CSVWorksheet('Sheet1', xlsxWorkSheet);
 
@@ -47,7 +47,7 @@ describe('getDuplicateHeadersValidator', () => {
     expect(csvWorkSheet.csvValidation.headerErrors).to.eql([
       {
         errorCode: SUBMISSION_MESSAGE_TYPE.DUPLICATE_HEADER,
-        col: 'Header1',
+        col: 'header1',
         message: 'Duplicate Header'
       },
       {

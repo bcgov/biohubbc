@@ -1,4 +1,4 @@
-export const submissionValidationSchema = {
+export const validationConfigJSONSchema = {
   description: 'Occurrence Submission Validation Schema',
   type: 'object',
   properties: {
