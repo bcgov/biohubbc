@@ -67,7 +67,7 @@ export interface CustomFieldArrayProps<ValueType = unknown> {
  * @param {*} props
  * @return {*}
  */
-const CustomFieldArray = <ValueType extends any>(props: CustomFieldArrayProps<ValueType>) => {
+const CustomFieldArray = <ValueType,>(props: CustomFieldArrayProps<ValueType>) => {
   const classes = useStyles();
 
   const formikProps = useFormikContext();

@@ -71,9 +71,9 @@ const ProjectPermits: React.FC<IProjectPermitsProps> = (props) => {
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [permitFormData, setPermitFormData] = useState(ProjectPermitFormInitialValues);
   const [coordinatorData, setCoordinatorData] = useState<IGetProjectForUpdateResponseCoordinator>(
-    (null as unknown) as IGetProjectForUpdateResponseCoordinator
+    null as unknown as IGetProjectForUpdateResponseCoordinator
   );
-  const [nonSamplingPermits, setNonSamplingPermits] = useState<IGetNonSamplingPermit[]>((null as unknown) as []);
+  const [nonSamplingPermits, setNonSamplingPermits] = useState<IGetNonSamplingPermit[]>(null as unknown as []);
 
   const handleDialogEditOpen = async () => {
     let permitResponseData;

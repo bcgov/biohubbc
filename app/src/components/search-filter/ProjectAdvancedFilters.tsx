@@ -82,6 +82,8 @@ const ProjectAdvancedFilters: React.FC<IProjectAdvancedFiltersProps> = (props) =
       },
       500
     ),
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
 
