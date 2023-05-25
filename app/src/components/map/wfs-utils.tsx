@@ -1,6 +1,6 @@
 import { Feature, Geometry, MultiPolygon, Point, Polygon, Position } from 'geojson';
 import React from 'react';
-import { ReProjector } from 'reproj-helper';
+import { ReProjector } from './reprojector';
 import {
   getInferredLayersInfoByProjectedGeometry,
   getInferredLayersInfoByWFSFeature,
