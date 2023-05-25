@@ -1,4 +1,3 @@
-import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
 import { AuthStateContext, IAuthState } from 'contexts/authStateContext';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { IProjectContext, ProjectContext } from 'contexts/projectContext';
@@ -12,6 +11,7 @@ import React from 'react';
 import { Router } from 'react-router';
 import { getMockAuthState, SystemAdminAuthState, SystemUserAuthState } from 'test-helpers/auth-helpers';
 import { getSurveyForViewResponse } from 'test-helpers/survey-helpers';
+import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
 
 const history = createMemoryHistory({ initialEntries: ['/admin/projects/1/surveys/1'] });
 
@@ -57,10 +57,10 @@ describe('SurveyHeader', () => {
     return render(
       <ProjectContext.Provider
         value={
-          ({
+          {
             projectId: 1,
-            surveysListDataLoader: ({ refresh: jest.fn() } as unknown) as DataLoader<any, any, any>
-          } as unknown) as IProjectContext
+            surveysListDataLoader: { refresh: jest.fn() } as unknown as DataLoader<any, any, any>
+          } as unknown as IProjectContext
         }>
         <SurveyContext.Provider value={mockSurveyContext}>
           <AuthStateContext.Provider value={authState}>

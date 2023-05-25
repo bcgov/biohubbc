@@ -1,7 +1,7 @@
 import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
-import { render } from 'test-helpers/test-utils';
 import React from 'react';
+import { render } from 'test-helpers/test-utils';
 import HorizontalSplitFormComponent from './HorizontalSplitFormComponent';
 
 describe('HorizontalSplitFormComponent', () => {

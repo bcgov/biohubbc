@@ -1,4 +1,3 @@
-import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
 import { SYSTEM_ROLE } from 'constants/roles';
 import { AuthStateContext } from 'contexts/authStateContext';
 import { createMemoryHistory } from 'history';
@@ -10,6 +9,7 @@ import {
   SystemUserAuthState,
   UnauthenticatedUserAuthState
 } from 'test-helpers/auth-helpers';
+import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
 import { LandingPage } from './LandingPage';
 
 const history = createMemoryHistory();

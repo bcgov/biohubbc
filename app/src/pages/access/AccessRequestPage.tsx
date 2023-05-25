@@ -209,7 +209,7 @@ export const AccessRequestPage: React.FC = () => {
                       variant="outlined"
                       color="primary"
                       component={Link}
-                      to='/logout'
+                      to="/logout"
                       className={classes.actionButton}
                       data-testid="logout-button">
                       Log out

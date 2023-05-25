@@ -1,4 +1,3 @@
-import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
 import bbox from '@turf/bbox';
 import { Feature } from 'geojson';
 import { createMemoryHistory } from 'history';
@@ -6,6 +5,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { LatLngBoundsExpression } from 'leaflet';
 import React from 'react';
 import { Router } from 'react-router-dom';
+import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
 import MapContainer, { INonEditableGeometries } from './MapContainer';
 import { SearchFeaturePopup } from './SearchFeaturePopup';
 

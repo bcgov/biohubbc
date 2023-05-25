@@ -32,8 +32,8 @@ export const ReportMetaFormInitialValues: IReportMetaForm = {
   title: '',
   authors: [ReportMetaFormArrayItemInitialValues],
   description: '',
-  year_published: ('' as unknown) as number,
-  attachmentFile: (undefined as unknown) as File
+  year_published: '' as unknown as number,
+  attachmentFile: undefined as unknown as File
 };
 
 export const ReportMetaFormYupSchema = yup.object().shape({

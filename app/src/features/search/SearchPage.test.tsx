@@ -1,10 +1,10 @@
-import { cleanup, render, waitFor } from 'test-helpers/test-utils';
 import MapContainer from 'components/map/MapContainer';
 import { createMemoryHistory } from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetSearchResultsResponse } from 'interfaces/useSearchApi.interface';
 import React from 'react';
 import { Router } from 'react-router-dom';
+import { cleanup, render, waitFor } from 'test-helpers/test-utils';
 import SearchPage from './SearchPage';
 
 const history = createMemoryHistory();

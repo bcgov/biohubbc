@@ -1,4 +1,3 @@
-import { render, waitFor } from 'test-helpers/test-utils';
 import GeneralInformationForm, {
   GeneralInformationInitialValues,
   GeneralInformationYupSchema,
@@ -8,6 +7,7 @@ import { Formik } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import React from 'react';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
+import { render, waitFor } from 'test-helpers/test-utils';
 
 jest.mock('../../../hooks/useBioHubApi');
 const mockBiohubApi = useBiohubApi as jest.Mock;

@@ -200,8 +200,10 @@ const FeaturePopup: React.FC<React.PropsWithChildren<{ submissionSpatialComponen
   const metadata = data[currentIndex];
   const type = metadata?.type;
   const dwc: Record<string, any> = metadata?.dwc || {};
-  const filteredMetadata
-    = Object.entries(COMMON_METADATA_PROPERTIES).filter(([key]) => Boolean(dwc[key])) as [keyof typeof COMMON_METADATA_PROPERTIES, COMMON_METADATA_PROPERTIES][]
+  const filteredMetadata = Object.entries(COMMON_METADATA_PROPERTIES).filter(([key]) => Boolean(dwc[key])) as [
+    keyof typeof COMMON_METADATA_PROPERTIES,
+    COMMON_METADATA_PROPERTIES
+  ][];
 
   if (!dwc || !Object.keys(dwc).length) {
     return (

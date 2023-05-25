@@ -1,8 +1,8 @@
-import { cleanup, render } from 'test-helpers/test-utils';
 import { ConfigContext, IConfig } from 'contexts/configContext';
 import { createMemoryHistory } from 'history';
 import React from 'react';
 import { Router } from 'react-router-dom';
+import { cleanup, render } from 'test-helpers/test-utils';
 import * as utils from 'utils/Utils';
 import LogOutPage from './LogOutPage';
 
@@ -39,7 +39,7 @@ describe('LogOutPage', () => {
     getLogOutUrlSpy = jest.spyOn(utils, 'getLogOutUrl').mockReturnValue('https://testLogOutURL.com');
 
     const { getByText } = render(
-      <ConfigContext.Provider value={(null as unknown) as IConfig}>
+      <ConfigContext.Provider value={null as unknown as IConfig}>
         <Router history={history}>
           <LogOutPage />
         </Router>

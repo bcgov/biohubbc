@@ -1,3 +1,4 @@
+import { PublishStatus } from 'constants/attachments';
 import { IGetObservationSubmissionResponse } from 'interfaces/useObservationApi.interface';
 import {
   IGetSurveyForListResponse,
@@ -6,7 +7,6 @@ import {
   SurveyViewObject
 } from 'interfaces/useSurveyApi.interface';
 import { geoJsonFeature } from './spatial-helpers';
-import { PublishStatus } from 'constants/attachments';
 
 export const surveyObject: SurveyViewObject = {
   survey_details: {

@@ -1,12 +1,12 @@
-import { cleanup, render } from 'test-helpers/test-utils';
 import { CodesContext, ICodesContext } from 'contexts/codesContext';
 import { IProjectContext, ProjectContext } from 'contexts/projectContext';
 import { DataLoader } from 'hooks/useDataLoader';
 import React from 'react';
 import { codes } from 'test-helpers/code-helpers';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
-import ProjectDetails from './GeneralInformation';
 import { getSurveyForListResponse } from 'test-helpers/survey-helpers';
+import { cleanup, render } from 'test-helpers/test-utils';
+import ProjectDetails from './GeneralInformation';
 
 describe('ProjectDetails', () => {
   afterEach(() => {
@@ -25,7 +25,7 @@ describe('ProjectDetails', () => {
           ...getProjectForViewResponse,
           projectData: {
             ...getProjectForViewResponse.projectData,
-            project: { ...getProjectForViewResponse.projectData.project, end_date: (null as unknown) as string }
+            project: { ...getProjectForViewResponse.projectData.project, end_date: null as unknown as string }
           }
         }
       } as DataLoader<any, any, any>,

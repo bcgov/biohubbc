@@ -63,7 +63,7 @@ describe('Deffered', () => {
     deferred.resolve('resolve2');
     await deferred.promise
       .then((value) => {
-      throw new Error(`Rejected promise should not resolve:' ${value as any}`);
+        throw new Error(`Rejected promise should not resolve:' ${value as any}`);
       })
       .catch((error: any) => {
         expect(error).toEqual('reject2');

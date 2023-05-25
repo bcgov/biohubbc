@@ -199,16 +199,16 @@ describe('useProjectApi', () => {
   });
 
   it('createProject works as expected', async () => {
-    const projectData = ({
-      coordinator: (null as unknown) as IProjectCoordinatorForm,
-      permit: (null as unknown) as ISurveyPermitForm,
-      project: (null as unknown) as IProjectDetailsForm,
-      objectives: (null as unknown) as IProjectObjectivesForm,
-      location: (null as unknown) as IProjectLocationForm,
-      iucn: (null as unknown) as IProjectIUCNForm,
-      funding: (null as unknown) as IProjectFundingForm,
-      partnerships: (null as unknown) as IProjectPartnershipsForm
-    } as unknown) as ICreateProjectRequest;
+    const projectData = {
+      coordinator: null as unknown as IProjectCoordinatorForm,
+      permit: null as unknown as ISurveyPermitForm,
+      project: null as unknown as IProjectDetailsForm,
+      objectives: null as unknown as IProjectObjectivesForm,
+      location: null as unknown as IProjectLocationForm,
+      iucn: null as unknown as IProjectIUCNForm,
+      funding: null as unknown as IProjectFundingForm,
+      partnerships: null as unknown as IProjectPartnershipsForm
+    } as unknown as ICreateProjectRequest;
 
     mock.onPost('/api/project/create').reply(200, {
       id: 1

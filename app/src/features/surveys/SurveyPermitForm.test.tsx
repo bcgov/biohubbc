@@ -1,6 +1,6 @@
-import { fireEvent, render, waitFor } from 'test-helpers/test-utils';
 import { Formik } from 'formik';
 import React from 'react';
+import { fireEvent, render, waitFor } from 'test-helpers/test-utils';
 import SurveyPermitForm, {
   ISurveyPermitForm,
   SurveyPermitFormInitialValues,

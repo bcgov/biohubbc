@@ -1,5 +1,5 @@
-import { fireEvent, render, waitFor } from 'test-helpers/test-utils';
 import React from 'react';
+import { fireEvent, render, waitFor } from 'test-helpers/test-utils';
 import DropZone from './DropZone';
 
 const onFiles = jest.fn();

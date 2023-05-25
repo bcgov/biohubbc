@@ -1,4 +1,3 @@
-import { cleanup, render, waitFor } from 'test-helpers/test-utils';
 import { AuthStateContext, IAuthState } from 'contexts/authStateContext';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { createMemoryHistory } from 'history';
@@ -11,6 +10,7 @@ import { Router } from 'react-router';
 import { getMockAuthState, SystemAdminAuthState } from 'test-helpers/auth-helpers';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import { getSurveyForViewResponse } from 'test-helpers/survey-helpers';
+import { cleanup, render, waitFor } from 'test-helpers/test-utils';
 import SurveyPage from './SurveyPage';
 
 const history = createMemoryHistory({ initialEntries: ['/admin/projects/1/surveys/1'] });
@@ -134,7 +134,7 @@ describe.skip('SurveyPage', () => {
         ...getSurveyForViewResponse.surveyData,
         survey_details: {
           ...getSurveyForViewResponse.surveyData.survey_details,
-          end_date: (null as unknown) as string
+          end_date: null as unknown as string
         }
       }
     });

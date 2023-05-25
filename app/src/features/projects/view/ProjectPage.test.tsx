@@ -1,4 +1,3 @@
-import { cleanup, render, waitFor, fireEvent } from 'test-helpers/test-utils';
 import { AuthStateContext } from 'contexts/authStateContext';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { Feature } from 'geojson';
@@ -10,6 +9,7 @@ import React from 'react';
 import { Router } from 'react-router';
 import { getMockAuthState, SystemAdminAuthState, SystemUserAuthState } from 'test-helpers/auth-helpers';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
+import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
 import ProjectPage from './ProjectPage';
 
 const history = createMemoryHistory({ initialEntries: ['/admin/projects/1'] });
@@ -359,7 +359,7 @@ describe.skip('ProjectPage', () => {
         ...getProjectForViewResponse.projectData,
         project: {
           ...getProjectForViewResponse.projectData.project,
-          end_date: (null as unknown) as string
+          end_date: null as unknown as string
         }
       }
     });

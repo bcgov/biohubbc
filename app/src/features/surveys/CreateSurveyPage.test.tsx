@@ -1,4 +1,3 @@
-import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
 import { CodesContext, ICodesContext } from 'contexts/codesContext';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { IProjectContext, ProjectContext } from 'contexts/projectContext';
@@ -16,8 +15,9 @@ import React from 'react';
 import { MemoryRouter, Router } from 'react-router';
 import { codes } from 'test-helpers/code-helpers';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
-import CreateSurveyPage from './CreateSurveyPage';
 import { getSurveyForListResponse } from 'test-helpers/survey-helpers';
+import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
+import CreateSurveyPage from './CreateSurveyPage';
 
 const history = createMemoryHistory();
 

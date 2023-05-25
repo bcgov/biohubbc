@@ -1,8 +1,8 @@
-import { cleanup, render, waitFor } from 'test-helpers/test-utils';
 import { createMemoryHistory } from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import React from 'react';
 import { Router } from 'react-router';
+import { cleanup, render, waitFor } from 'test-helpers/test-utils';
 import ManageUsersPage from './ManageUsersPage';
 
 const history = createMemoryHistory();

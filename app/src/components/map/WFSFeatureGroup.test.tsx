@@ -1,7 +1,7 @@
-import { cleanup, render, waitFor } from 'test-helpers/test-utils';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import React from 'react';
 import { MapContainer } from 'react-leaflet';
+import { cleanup, render, waitFor } from 'test-helpers/test-utils';
 import { SetMapBounds } from './components/Bounds';
 import WFSFeatureGroup from './WFSFeatureGroup';
 

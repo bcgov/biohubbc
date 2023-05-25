@@ -72,9 +72,8 @@ const ProjectsListTable = (props: IProjectsListTableProps) => {
           data-testid={params.row.name}
           underline="always"
           component={RouterLink}
-          to={params.row.isDraft
-            ? `/admin/projects/create?draftId=${params.row.id}`
-            : `/admin/projects/${params.row.id}`
+          to={
+            params.row.isDraft ? `/admin/projects/create?draftId=${params.row.id}` : `/admin/projects/${params.row.id}`
           }
           children={params.row.name}
         />
@@ -91,9 +90,7 @@ const ProjectsListTable = (props: IProjectsListTableProps) => {
       flex: 1,
       renderCell: (params) => {
         if (params.row.isDraft) {
-          return (
-            <Chip variant="outlined" className={clsx(classes.chip, classes.chipDraft)} label={'Draft'} />
-          )
+          return <Chip variant="outlined" className={clsx(classes.chip, classes.chipDraft)} label={'Draft'} />;
         }
 
         if (!params.row.status) {
@@ -104,7 +101,7 @@ const ProjectsListTable = (props: IProjectsListTableProps) => {
           <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
             <SubmitStatusChip status={params.row.status} />
           </SystemRoleGuard>
-        )
+        );
       }
     },
     {
@@ -120,7 +117,7 @@ const ProjectsListTable = (props: IProjectsListTableProps) => {
       valueGetter: ({ value }) => value && new Date(value),
       valueFormatter: ({ value }) => getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, value),
       flex: 1
-    },
+    }
   ];
 
   const { projects, drafts } = props;
@@ -166,7 +163,7 @@ const ProjectsListTable = (props: IProjectsListTableProps) => {
       }}
       */
     />
-  )
+  );
 
   if (!hasProjects && !hasDrafts) {
     return (

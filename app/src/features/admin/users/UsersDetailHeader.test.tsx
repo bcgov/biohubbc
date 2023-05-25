@@ -1,8 +1,8 @@
-import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { createMemoryHistory } from 'history';
 import React from 'react';
 import { Router } from 'react-router';
+import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
 import { useBiohubApi } from '../../../hooks/useBioHubApi';
 import UsersDetailHeader from './UsersDetailHeader';
 

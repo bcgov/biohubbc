@@ -1,6 +1,6 @@
-import { render } from 'test-helpers/test-utils';
 import { Formik } from 'formik';
 import React from 'react';
+import { render } from 'test-helpers/test-utils';
 import MultiAutocompleteField from './MultiAutocompleteField';
 
 describe('MultiAutocompleteField', () => {

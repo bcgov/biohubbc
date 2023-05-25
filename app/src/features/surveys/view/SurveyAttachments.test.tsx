@@ -1,11 +1,3 @@
-import {
-  cleanup,
-  fireEvent,
-  getByTestId as rawGetByTestId,
-  queryByTestId as rawQueryByTestId,
-  render,
-  waitFor
-} from 'test-helpers/test-utils';
 import { AttachmentType } from 'constants/attachments';
 import { AuthStateContext } from 'contexts/authStateContext';
 import { DialogContextProvider } from 'contexts/dialogContext';
@@ -15,6 +7,14 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { DataLoader } from 'hooks/useDataLoader';
 import React from 'react';
 import { getMockAuthState, SystemAdminAuthState } from 'test-helpers/auth-helpers';
+import {
+  cleanup,
+  fireEvent,
+  getByTestId as rawGetByTestId,
+  queryByTestId as rawQueryByTestId,
+  render,
+  waitFor
+} from 'test-helpers/test-utils';
 import SurveyAttachments from './SurveyAttachments';
 
 jest.mock('../../../hooks/useBioHubApi');
@@ -44,14 +44,14 @@ describe('SurveyAttachments', () => {
   });
 
   it('correctly opens and closes the file upload dialog', async () => {
-    const mockSurveyContext: ISurveyContext = ({
-      artifactDataLoader: ({
+    const mockSurveyContext: ISurveyContext = {
+      artifactDataLoader: {
         data: null,
         load: jest.fn()
-      } as unknown) as DataLoader<any, any, any>,
+      } as unknown as DataLoader<any, any, any>,
       surveyId: 1,
       projectId: 1
-    } as unknown) as ISurveyContext;
+    } as unknown as ISurveyContext;
 
     const mockProjectAuthStateContext: IProjectAuthStateContext = {
       getProjectParticipant: () => null,
@@ -87,14 +87,14 @@ describe('SurveyAttachments', () => {
   });
 
   it('renders correctly with no attachments', async () => {
-    const mockSurveyContext: ISurveyContext = ({
-      artifactDataLoader: ({
+    const mockSurveyContext: ISurveyContext = {
+      artifactDataLoader: {
         data: null,
         load: jest.fn()
-      } as unknown) as DataLoader<any, any, any>,
+      } as unknown as DataLoader<any, any, any>,
       surveyId: 1,
       projectId: 1
-    } as unknown) as ISurveyContext;
+    } as unknown as ISurveyContext;
 
     const mockProjectAuthStateContext: IProjectAuthStateContext = {
       getProjectParticipant: () => null,
@@ -117,8 +117,8 @@ describe('SurveyAttachments', () => {
   });
 
   it('renders correctly with attachments', async () => {
-    const mockSurveyContext: ISurveyContext = ({
-      artifactDataLoader: ({
+    const mockSurveyContext: ISurveyContext = {
+      artifactDataLoader: {
         data: {
           attachmentsList: [
             {
@@ -130,10 +130,10 @@ describe('SurveyAttachments', () => {
           ]
         },
         load: jest.fn()
-      } as unknown) as DataLoader<any, any, any>,
+      } as unknown as DataLoader<any, any, any>,
       surveyId: 1,
       projectId: 1
-    } as unknown) as ISurveyContext;
+    } as unknown as ISurveyContext;
 
     const mockProjectAuthStateContext: IProjectAuthStateContext = {
       getProjectParticipant: () => null,
@@ -161,8 +161,8 @@ describe('SurveyAttachments', () => {
   it('deletes an attachment from the attachments list as expected', async () => {
     mockUseApi.survey.deleteSurveyAttachment.mockResolvedValue(1);
 
-    const mockSurveyContext: ISurveyContext = ({
-      artifactDataLoader: ({
+    const mockSurveyContext: ISurveyContext = {
+      artifactDataLoader: {
         data: {
           attachmentsList: [
             {
@@ -182,10 +182,10 @@ describe('SurveyAttachments', () => {
           ]
         },
         load: jest.fn()
-      } as unknown) as DataLoader<any, any, any>,
+      } as unknown as DataLoader<any, any, any>,
       surveyId: 1,
       projectId: 1
-    } as unknown) as ISurveyContext;
+    } as unknown as ISurveyContext;
 
     const mockProjectAuthStateContext: IProjectAuthStateContext = {
       getProjectParticipant: () => null,
@@ -239,8 +239,8 @@ describe('SurveyAttachments', () => {
   it('does not delete an attachment from the attachments when user selects no from dialog', async () => {
     mockUseApi.survey.deleteSurveyAttachment.mockResolvedValue(1);
 
-    const mockSurveyContext: ISurveyContext = ({
-      artifactDataLoader: ({
+    const mockSurveyContext: ISurveyContext = {
+      artifactDataLoader: {
         data: {
           attachmentsList: [
             {
@@ -253,10 +253,10 @@ describe('SurveyAttachments', () => {
           ]
         },
         load: jest.fn()
-      } as unknown) as DataLoader<any, any, any>,
+      } as unknown as DataLoader<any, any, any>,
       surveyId: 1,
       projectId: 1
-    } as unknown) as ISurveyContext;
+    } as unknown as ISurveyContext;
 
     const mockProjectAuthStateContext: IProjectAuthStateContext = {
       getProjectParticipant: () => null,
@@ -309,8 +309,8 @@ describe('SurveyAttachments', () => {
 
   it('does not delete an attachment from the attachments when user clicks outside the dialog', async () => {
     mockUseApi.survey.deleteSurveyAttachment.mockResolvedValue(1);
-    const mockSurveyContext: ISurveyContext = ({
-      artifactDataLoader: ({
+    const mockSurveyContext: ISurveyContext = {
+      artifactDataLoader: {
         data: {
           attachmentsList: [
             {
@@ -323,10 +323,10 @@ describe('SurveyAttachments', () => {
           ]
         },
         load: jest.fn()
-      } as unknown) as DataLoader<any, any, any>,
+      } as unknown as DataLoader<any, any, any>,
       surveyId: 1,
       projectId: 1
-    } as unknown) as ISurveyContext;
+    } as unknown as ISurveyContext;
 
     const mockProjectAuthStateContext: IProjectAuthStateContext = {
       getProjectParticipant: () => null,

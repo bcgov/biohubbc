@@ -1,6 +1,6 @@
-import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
 import { IGetSurveyAttachment } from 'interfaces/useSurveyApi.interface';
 import React from 'react';
+import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
 import { AttachmentType } from '../../../constants/attachments';
 import AttachmentsList from './AttachmentsList';
 

@@ -1,15 +1,15 @@
-import { cleanup, render, waitFor } from 'test-helpers/test-utils';
 import Keycloak from 'keycloak-js';
 import React from 'react';
 import { getMockAuthState, SystemUserAuthState, UnauthenticatedUserAuthState } from 'test-helpers/auth-helpers';
+import { cleanup, render, waitFor } from 'test-helpers/test-utils';
 import { AuthStateContext, AuthStateContextProvider } from './authStateContext';
 
 jest.mock('@react-keycloak/web', () => ({
   useKeycloak: jest.fn(() => ({
     initialized: true,
-    keycloak: ({
+    keycloak: {
       authenticated: false
-    } as unknown) as Keycloak
+    } as unknown as Keycloak
   }))
 }));
 

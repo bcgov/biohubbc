@@ -1,4 +1,3 @@
-import { cleanup, render } from 'test-helpers/test-utils';
 import { CodesContext, ICodesContext } from 'contexts/codesContext';
 import { IProjectContext, ProjectContext } from 'contexts/projectContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -6,8 +5,9 @@ import { DataLoader } from 'hooks/useDataLoader';
 import React from 'react';
 import { codes } from 'test-helpers/code-helpers';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
-import Partnerships from './Partnerships';
 import { getSurveyForListResponse } from 'test-helpers/survey-helpers';
+import { cleanup, render } from 'test-helpers/test-utils';
+import Partnerships from './Partnerships';
 
 jest.mock('../../../../hooks/useBioHubApi');
 const mockBiohubApi = useBiohubApi as jest.Mock;
@@ -78,8 +78,8 @@ describe('Partnerships', () => {
           projectData: {
             ...getProjectForViewResponse.projectData,
             partnerships: {
-              indigenous_partnerships: (null as unknown) as number[],
-              stakeholder_partnerships: (null as unknown) as string[]
+              indigenous_partnerships: null as unknown as number[],
+              stakeholder_partnerships: null as unknown as string[]
             }
           }
         }

@@ -1,4 +1,3 @@
-import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
 import { IProjectAuthStateContext, ProjectAuthStateContext } from 'contexts/projectAuthStateContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -7,6 +6,7 @@ import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
 import React from 'react';
 import { geoJsonFeature } from 'test-helpers/spatial-helpers';
 import { getSurveyForViewResponse, surveyObject, surveySupplementaryData } from 'test-helpers/survey-helpers';
+import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
 import SurveyStudyArea from './SurveyStudyArea';
 
 jest.mock('../../../../hooks/useBioHubApi');
@@ -130,7 +130,7 @@ describe('SurveyStudyArea', () => {
   it('does not display the zoom to initial extent button if there are not geometries', async () => {
     const mockSurveyDataLoader = {
       data: getSurveyForViewResponse,
-      refresh: (jest.fn() as unknown) as any
+      refresh: jest.fn() as unknown as any
     } as DataLoader<any, any, any>;
     const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockObservationsDataLoader = { data: null } as DataLoader<any, any, any>;
@@ -185,37 +185,33 @@ describe('SurveyStudyArea', () => {
     fireEvent.click(getByText('Save Changes'));
 
     await waitFor(() => {
-      expect(mockUseApi.survey.updateSurvey).toBeCalledWith(
-        1,
-        getSurveyForViewResponse.surveyData.survey_details.id,
-        {
-          location: {
-            geometry: [
-              {
-                geometry: {
-                  coordinates: [
-                    [
-                      [-128, 55],
-                      [-128, 55.5],
-                      [-128, 56],
-                      [-126, 58],
-                      [-128, 55]
-                    ]
-                  ],
-                  type: 'Polygon'
-                },
-                id: 'myGeo',
-                properties: {
-                  name: 'Biohub Islands'
-                },
-                type: 'Feature'
-              }
-            ],
-            revision_count: 0,
-            survey_area_name: 'study area'
-          }
+      expect(mockUseApi.survey.updateSurvey).toBeCalledWith(1, getSurveyForViewResponse.surveyData.survey_details.id, {
+        location: {
+          geometry: [
+            {
+              geometry: {
+                coordinates: [
+                  [
+                    [-128, 55],
+                    [-128, 55.5],
+                    [-128, 56],
+                    [-126, 58],
+                    [-128, 55]
+                  ]
+                ],
+                type: 'Polygon'
+              },
+              id: 'myGeo',
+              properties: {
+                name: 'Biohub Islands'
+              },
+              type: 'Feature'
+            }
+          ],
+          revision_count: 0,
+          survey_area_name: 'study area'
         }
-      );
+      });
     });
   });
 

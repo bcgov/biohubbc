@@ -1,4 +1,3 @@
-import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
 import { CodesContext, ICodesContext } from 'contexts/codesContext';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { IProjectContext, ProjectContext } from 'contexts/projectContext';
@@ -9,8 +8,9 @@ import React from 'react';
 import { codes } from 'test-helpers/code-helpers';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import { geoJsonFeature } from 'test-helpers/spatial-helpers';
-import LocationBoundary from './LocationBoundary';
 import { getSurveyForListResponse } from 'test-helpers/survey-helpers';
+import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
+import LocationBoundary from './LocationBoundary';
 
 jest.mock('../../../../hooks/useBioHubApi');
 const mockBiohubApi = useBiohubApi as jest.Mock;
@@ -62,7 +62,7 @@ describe.skip('LocationBoundary', () => {
           ...getProjectForViewResponse.projectData,
           location: {
             ...getProjectForViewResponse.projectData.location,
-            location_description: (null as unknown) as string
+            location_description: null as unknown as string
           }
         }
       } as DataLoader<any, any, any>,
@@ -190,10 +190,9 @@ describe.skip('LocationBoundary', () => {
     fireEvent.click(getByText('Edit'));
 
     await waitFor(() => {
-      expect(mockUseApi.project.getProjectForUpdate).toBeCalledWith(
-        getProjectForViewResponse.projectData.project.id,
-        [UPDATE_GET_ENTITIES.location]
-      );
+      expect(mockUseApi.project.getProjectForUpdate).toBeCalledWith(getProjectForViewResponse.projectData.project.id, [
+        UPDATE_GET_ENTITIES.location
+      ]);
     });
 
     await waitFor(() => {
@@ -359,10 +358,9 @@ describe.skip('LocationBoundary', () => {
     fireEvent.click(getByText('Edit'));
 
     await waitFor(() => {
-      expect(mockUseApi.project.getProjectForUpdate).toBeCalledWith(
-        getProjectForViewResponse.projectData.project.id,
-        [UPDATE_GET_ENTITIES.location]
-      );
+      expect(mockUseApi.project.getProjectForUpdate).toBeCalledWith(getProjectForViewResponse.projectData.project.id, [
+        UPDATE_GET_ENTITIES.location
+      ]);
     });
 
     await waitFor(() => {

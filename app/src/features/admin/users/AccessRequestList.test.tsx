@@ -1,4 +1,3 @@
-import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
 import AccessRequestList from 'features/admin/users/AccessRequestList';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { SYSTEM_IDENTITY_SOURCE } from 'hooks/useKeycloakWrapper';
@@ -6,6 +5,7 @@ import { IAccessRequestDataObject, IGetAccessRequestsListResponse } from 'interf
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import React from 'react';
 import { codes } from 'test-helpers/code-helpers';
+import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
 
 jest.mock('../../../hooks/useBioHubApi');
 const mockBiohubApi = useBiohubApi as jest.Mock;
@@ -163,7 +163,7 @@ describe('AccessRequestList', () => {
           status_name: 'Pending',
           description: 'test description',
           notes: 'test notes',
-          data: (null as unknown) as IAccessRequestDataObject,
+          data: null as unknown as IAccessRequestDataObject,
           create_date: '2020-04-20'
         }
       ],

@@ -1,11 +1,11 @@
-import { cleanup, render } from 'test-helpers/test-utils';
 import { SurveyContext } from 'contexts/surveyContext';
 import { DataLoader } from 'hooks/useDataLoader';
+import { IGetObservationSubmissionResponse } from 'interfaces/useObservationApi.interface';
 import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
 import React from 'react';
 import { getObservationSubmissionResponse, getSurveyForViewResponse } from 'test-helpers/survey-helpers';
+import { cleanup, render } from 'test-helpers/test-utils';
 import SurveyGeneralInformation from './SurveyGeneralInformation';
-import { IGetObservationSubmissionResponse } from 'interfaces/useObservationApi.interface';
 
 describe('SurveyGeneralInformation', () => {
   afterEach(() => {
@@ -15,7 +15,11 @@ describe('SurveyGeneralInformation', () => {
   it('renders correctly with end date', () => {
     const mockSurveyDataLoader = { data: getSurveyForViewResponse } as DataLoader<any, IGetSurveyForViewResponse, any>;
     const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
-    const mockObservationDataLoader = { data: getObservationSubmissionResponse  } as DataLoader<any, IGetObservationSubmissionResponse, any>;
+    const mockObservationDataLoader = { data: getObservationSubmissionResponse } as DataLoader<
+      any,
+      IGetObservationSubmissionResponse,
+      any
+    >;
     const mockSummaryDataLoader = { data: null } as DataLoader<any, any, any>;
 
     const { getByTestId } = render(
@@ -43,13 +47,17 @@ describe('SurveyGeneralInformation', () => {
           ...getSurveyForViewResponse.surveyData,
           survey_details: {
             ...getSurveyForViewResponse.surveyData.survey_details,
-            end_date: (null as unknown) as string // no end date
+            end_date: null as unknown as string // no end date
           }
         }
       }
     } as DataLoader<any, IGetSurveyForViewResponse, any>;
     const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
-    const mockObservationDataLoader = { data: getObservationSubmissionResponse  } as DataLoader<any, IGetObservationSubmissionResponse, any>;
+    const mockObservationDataLoader = { data: getObservationSubmissionResponse } as DataLoader<
+      any,
+      IGetObservationSubmissionResponse,
+      any
+    >;
     const mockSummaryDataLoader = { data: null } as DataLoader<any, any, any>;
 
     const { getByTestId } = render(
@@ -72,7 +80,11 @@ describe('SurveyGeneralInformation', () => {
   it('renders an empty fragment if survey data has not loaded or is undefined', () => {
     const mockSurveyDataLoader = { data: undefined } as DataLoader<any, IGetSurveyForViewResponse, any>;
     const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
-    const mockObservationDataLoader = { data: getObservationSubmissionResponse  } as DataLoader<any, IGetObservationSubmissionResponse, any>;
+    const mockObservationDataLoader = { data: getObservationSubmissionResponse } as DataLoader<
+      any,
+      IGetObservationSubmissionResponse,
+      any
+    >;
     const mockSummaryDataLoader = { data: null } as DataLoader<any, any, any>;
 
     const { container } = render(

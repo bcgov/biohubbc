@@ -1,11 +1,3 @@
-import {
-  cleanup,
-  findByText as rawFindByText,
-  fireEvent,
-  getByText as rawGetByText,
-  render,
-  waitFor
-} from 'test-helpers/test-utils';
 import { CodesContext, ICodesContext } from 'contexts/codesContext';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { ProjectDetailsFormInitialValues } from 'features/projects/components/ProjectDetailsForm';
@@ -22,6 +14,14 @@ import { DataLoader } from 'hooks/useDataLoader';
 import React from 'react';
 import { MemoryRouter, Router } from 'react-router';
 import { codes } from 'test-helpers/code-helpers';
+import {
+  cleanup,
+  findByText as rawFindByText,
+  fireEvent,
+  getByText as rawGetByText,
+  render,
+  waitFor
+} from 'test-helpers/test-utils';
 
 const history = createMemoryHistory();
 
@@ -516,7 +516,7 @@ describe('CreateProjectPage', () => {
           },
           project: {
             project_name: '',
-            project_type: ('' as unknown) as number,
+            project_type: '' as unknown as number,
             project_activities: [],
             start_date: '',
             end_date: ''
@@ -593,7 +593,7 @@ describe('CreateProjectPage', () => {
           },
           project: {
             project_name: '',
-            project_type: ('' as unknown) as number,
+            project_type: '' as unknown as number,
             project_activities: [],
             start_date: '',
             end_date: ''

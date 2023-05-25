@@ -1,5 +1,5 @@
-import { render } from 'test-helpers/test-utils';
 import React from 'react';
+import { render } from 'test-helpers/test-utils';
 import ProjectsLayout from './ProjectsLayout';
 
 describe('ProjectsLayout', () => {

@@ -35,7 +35,7 @@ export const ProjectAdvancedFiltersInitialValues: IProjectAdvancedFilters = {
   end_date: '',
   keyword: '',
   project_name: '',
-  agency_id: ('' as unknown) as number,
+  agency_id: '' as unknown as number,
   agency_project_id: '',
   species: []
 };

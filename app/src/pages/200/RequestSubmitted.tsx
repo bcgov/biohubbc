@@ -37,7 +37,7 @@ const RequestSubmitted = () => {
         <Box pt={4}>
           <Button
             component={Link}
-            to='/logout'
+            to="/logout"
             type="submit"
             size="large"
             variant="contained"

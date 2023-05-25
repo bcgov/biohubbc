@@ -1,4 +1,3 @@
-import { fireEvent, render, screen, waitFor, within } from 'test-helpers/test-utils';
 import ProprietaryDataForm, {
   IProprietaryDataForm,
   ProprietaryDataInitialValues,
@@ -7,6 +6,7 @@ import ProprietaryDataForm, {
 import { Formik } from 'formik';
 import React from 'react';
 import { codes } from 'test-helpers/code-helpers';
+import { fireEvent, render, screen, waitFor, within } from 'test-helpers/test-utils';
 
 const handleSaveAndNext = jest.fn();
 
