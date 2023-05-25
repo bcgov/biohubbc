@@ -25,6 +25,10 @@ const mockUseApi = {
 describe('SurveyStudyArea', () => {
   beforeEach(() => {
     mockBiohubApi.mockImplementation(() => mockUseApi);
+    mockUseApi.external.post.mockResolvedValue({
+      features: []
+    });
+
     mockUseApi.survey.getSurveyForView.mockClear();
     mockUseApi.survey.updateSurvey.mockClear();
     mockUseApi.external.post.mockClear();
@@ -34,10 +38,6 @@ describe('SurveyStudyArea', () => {
 
   afterEach(() => {
     cleanup();
-  });
-
-  mockUseApi.external.post.mockResolvedValue({
-    features: []
   });
 
   it('renders correctly with no data', async () => {
