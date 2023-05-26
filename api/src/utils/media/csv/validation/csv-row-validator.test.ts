@@ -647,6 +647,26 @@ describe('getValidFormatFieldsValidator', () => {
       expect(csvWorkSheet.csvValidation.rowErrors).to.be.empty;
     });
 
+    it('adds no errors when key cells are empty', () => {
+      const config: FileColumnUniqueValidatorConfig = {
+        file_column_unique_validator: {
+          column_names: ['Header1', 'Header2']
+        }
+      };
+      const validator = getUniqueColumnsValidator(config);
+      const worksheet = xlsx.utils.aoa_to_sheet([
+        ['Header1', 'Header2', 'Header3'],
+        [, , 3],
+        [, , 3],
+        [, , 3]
+      ]);
+      const csvWorkSheet = new CSVWorksheet('Sheet', worksheet);
+
+      validator(csvWorkSheet);
+
+      expect(csvWorkSheet.csvValidation.rowErrors).to.be.empty;
+    });
+
     it('adds no errors when all keys specified are unique', () => {
       const config: FileColumnUniqueValidatorConfig = {
         file_column_unique_validator: {
@@ -677,8 +697,29 @@ describe('getValidFormatFieldsValidator', () => {
       const worksheet = xlsx.utils.aoa_to_sheet([
         ['Header1', 'Header2', 'Header3'],
         [1, 2, 3],
-        [2, 2, 3],
-        [2, 2, 3]
+        [2, 2, 3], // produces key: `2|2`
+        [2, 2, 3] // produces duplicate key: `2|2`
+      ]);
+      const csvWorkSheet = new CSVWorksheet('Sheet', worksheet);
+
+      validator(csvWorkSheet);
+
+      expect(csvWorkSheet.csvValidation.rowErrors).to.not.be.empty;
+      expect(csvWorkSheet.csvValidation.rowErrors[0].errorCode).to.be.eql(SUBMISSION_MESSAGE_TYPE.NON_UNIQUE_KEY);
+    });
+
+    it('adds errors when not all keys are unique and some are empty', () => {
+      const config: FileColumnUniqueValidatorConfig = {
+        file_column_unique_validator: {
+          column_names: ['Header1', 'Header2']
+        }
+      };
+      const validator = getUniqueColumnsValidator(config);
+      const worksheet = xlsx.utils.aoa_to_sheet([
+        ['Header1', 'Header2', 'Header3'],
+        [1, , 3],
+        [, 2, 3], // produces key: `2`
+        [2, , 3] // produces duplicate key: `2`
       ]);
       const csvWorkSheet = new CSVWorksheet('Sheet', worksheet);
 
