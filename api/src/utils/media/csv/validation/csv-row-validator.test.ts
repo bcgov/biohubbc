@@ -697,8 +697,8 @@ describe('getValidFormatFieldsValidator', () => {
       const worksheet = xlsx.utils.aoa_to_sheet([
         ['Header1', 'Header2', 'Header3'],
         [1, 2, 3],
-        [2, 2, 3], // produces key: `2|2`
-        [2, 2, 3] // produces duplicate key: `2|2`
+        [2, 2, 3], // produces key: `2, 2`
+        [2, 2, 3] // produces duplicate key: `2, 2`
       ]);
       const csvWorkSheet = new CSVWorksheet('Sheet', worksheet);
 
