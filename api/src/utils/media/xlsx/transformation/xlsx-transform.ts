@@ -177,7 +177,7 @@ export class XLSXTransform {
       .map((columnName: string) => {
         return RowObject[columnName];
       })
-      .filter((value) => !isNaN || value)
+      .filter(Boolean)
       .join(':');
 
     return primaryKey;
