@@ -351,6 +351,35 @@ export type FileColumnUniqueValidatorConfig = {
   };
 };
 
+/**
+ * Checks for duplicate key values between rows, an adds an error for each duplicate found.
+ *
+ * Note: A key is one or more columns combined into a single string.
+ * Note: Empty cells are ignored when performing this check.
+ *
+ * @example
+ * // Valid
+ * | Col1 | Col2 |
+ * |------|------|
+ * | A    | B    | // key = 'A, B'
+ * | A    |      | // key = 'A'
+ * | B    | A    | // key = 'B, A'
+ *
+ * // Invalid
+ * | Col1 | Col2 |
+ * |------|------|
+ * | A    | B    | // key = 'A, B'
+ * | A    | B    | // key = 'A, B'
+ *
+ * // Invalid
+ * | Col1 | Col2 |
+ * |------|------|
+ * | A    |      | // key = 'A'
+ * |      | A    | // key = 'A'
+ *
+ * @param {FileColumnUniqueValidatorConfig} [config]
+ * @return {*}  {CSVValidator}
+ */
 export const getUniqueColumnsValidator = (config?: FileColumnUniqueValidatorConfig): CSVValidator => {
   return (csvWorksheet) => {
     if (!config) {
