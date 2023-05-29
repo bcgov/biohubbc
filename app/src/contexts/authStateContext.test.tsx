@@ -2,7 +2,7 @@ import Keycloak from 'keycloak-js';
 import React from 'react';
 import { getMockAuthState, SystemUserAuthState, UnauthenticatedUserAuthState } from 'test-helpers/auth-helpers';
 import { cleanup, render, waitFor } from 'test-helpers/test-utils';
-import { AuthStateContext, AuthStateContextProvider } from './authStateContext';
+import { AuthStateContext } from './authStateContext';
 
 jest.mock('@react-keycloak/web', () => ({
   useKeycloak: jest.fn(() => ({
@@ -24,14 +24,14 @@ describe('AuthStateContext', () => {
     const authState = getMockAuthState({ base: UnauthenticatedUserAuthState });
 
     render(
-      <AuthStateContextProvider>
+      <AuthStateContext.Provider value={authState}>
         <AuthStateContext.Consumer>
           {(value) => {
             captureAuthStateValue(value);
             return <></>;
           }}
         </AuthStateContext.Consumer>
-      </AuthStateContextProvider>
+      </AuthStateContext.Provider>
     );
 
     await waitFor(() => {

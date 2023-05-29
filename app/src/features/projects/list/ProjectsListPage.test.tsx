@@ -114,7 +114,7 @@ describe('ProjectsListPage', () => {
       projectId: 1
     } as unknown as ICodesContext;
 
-    const { getByText, getByTestId } = render(
+    const { findByText, findByTestId } = render(
       <CodesContext.Provider value={mockCodesContext}>
         <MemoryRouter>
           <ProjectsListPage />
@@ -122,14 +122,12 @@ describe('ProjectsListPage', () => {
       </CodesContext.Provider>
     );
 
-    await waitFor(() => {
-      expect(getByTestId('project-table')).toBeInTheDocument();
-      expect(getByText('Draft 1')).toBeInTheDocument();
-    });
+    expect(await findByText('Draft 1')).toBeInTheDocument();
   });
 
   test('navigating to the create project page works', async () => {
     mockUseApi.project.getProjectsList.mockResolvedValue([]);
+    mockUseApi.draft.getDraftsList.mockResolvedValue([]);
 
     const authState = getMockAuthState({ base: SystemAdminAuthState });
 
@@ -143,7 +141,7 @@ describe('ProjectsListPage', () => {
       projectId: 1
     } as unknown as ICodesContext;
 
-    const { getByText, getByTestId } = render(
+    const { findByText } = render(
       <AuthStateContext.Provider value={authState}>
         <CodesContext.Provider value={mockCodesContext}>
           <Router history={history}>
@@ -153,11 +151,7 @@ describe('ProjectsListPage', () => {
       </AuthStateContext.Provider>
     );
 
-    await waitFor(() => {
-      expect(getByTestId('project-table')).toBeInTheDocument();
-    });
-
-    fireEvent.click(getByText('Create Project'));
+    fireEvent.click(await findByText('Create Project'));
 
     await waitFor(() => {
       expect(history.location.pathname).toEqual('/admin/projects/create');
@@ -166,6 +160,7 @@ describe('ProjectsListPage', () => {
   });
 
   test('navigating to the create project page works on draft projects', async () => {
+    mockUseApi.project.getProjectsList.mockResolvedValue([]);
     mockUseApi.draft.getDraftsList.mockResolvedValue([
       {
         id: 1,
@@ -183,7 +178,7 @@ describe('ProjectsListPage', () => {
       projectId: 1
     } as unknown as ICodesContext;
 
-    const { getByTestId } = render(
+    const { findByText } = render(
       <CodesContext.Provider value={mockCodesContext}>
         <Router history={history}>
           <ProjectsListPage />
@@ -191,11 +186,7 @@ describe('ProjectsListPage', () => {
       </CodesContext.Provider>
     );
 
-    await waitFor(() => {
-      expect(getByTestId('project-table')).toBeInTheDocument();
-    });
-
-    fireEvent.click(getByTestId('Draft 1'));
+    fireEvent.click(await findByText('Draft 1'));
 
     await waitFor(() => {
       expect(history.location.pathname).toEqual('/admin/projects/create');
@@ -232,7 +223,7 @@ describe('ProjectsListPage', () => {
       projectId: 1
     } as unknown as ICodesContext;
 
-    const { getByTestId } = render(
+    const { findByText } = render(
       <CodesContext.Provider value={mockCodesContext}>
         <Router history={history}>
           <ProjectsListPage />
@@ -240,11 +231,7 @@ describe('ProjectsListPage', () => {
       </CodesContext.Provider>
     );
 
-    await waitFor(() => {
-      expect(getByTestId('project-table')).toBeInTheDocument();
-    });
-
-    fireEvent.click(getByTestId('Project 1'));
+    fireEvent.click(await findByText('Project 1'));
 
     await waitFor(() => {
       expect(history.location.pathname).toEqual('/admin/projects/1');

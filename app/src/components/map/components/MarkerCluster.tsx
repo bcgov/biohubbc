@@ -1,6 +1,5 @@
 import { createLayerComponent } from '@react-leaflet/core';
 import L, { LatLngTuple } from 'leaflet';
-import 'leaflet.markercluster';
 import React, { ReactElement } from 'react';
 import { FeatureGroup, LayersControl, MarkerProps, Popup, PopupProps, Tooltip, TooltipProps } from 'react-leaflet';
 
