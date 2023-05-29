@@ -27,8 +27,12 @@ describe('MapContainer', () => {
 
   beforeEach(() => {
     mockBiohubApi.mockImplementation(() => mockUseApi);
-    mockUseApi.external.get.mockClear();
-    mockUseApi.external.post.mockClear();
+    mockUseApi.external.get.mockResolvedValue({
+      features: []
+    });
+    mockUseApi.external.post.mockResolvedValue({
+      features: []
+    });
 
     jest.spyOn(console, 'debug').mockImplementation(() => {});
   });
@@ -68,13 +72,6 @@ describe('MapContainer', () => {
     }
   ];
   const onDrawChange = jest.fn();
-
-  mockUseApi.external.get.mockResolvedValue({
-    features: []
-  });
-  mockUseApi.external.post.mockResolvedValue({
-    features: []
-  });
 
   test('matches the snapshot with geometries being passed in', () => {
     const { asFragment } = render(
