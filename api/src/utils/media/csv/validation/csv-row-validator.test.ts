@@ -708,7 +708,7 @@ describe('getValidFormatFieldsValidator', () => {
       expect(csvWorkSheet.csvValidation.rowErrors[0].errorCode).to.be.eql(SUBMISSION_MESSAGE_TYPE.NON_UNIQUE_KEY);
     });
 
-    it('adds errors when not all keys are unique and some are empty', () => {
+    it('adds errors when not all keys are unique and some columns are empty', () => {
       const config: FileColumnUniqueValidatorConfig = {
         file_column_unique_validator: {
           column_names: ['Header1', 'Header2']
