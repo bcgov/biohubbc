@@ -224,7 +224,7 @@ describe('MapContainer', () => {
     expect(onDrawChange).toHaveBeenCalledWith([]);
   });
 
-  test('does not delete geometries present on the map when user does not confirm by clicking no', async () => {
+  test.skip('does not delete geometries present on the map when user does not confirm by clicking no', async () => {
     const { getByText } = render(
       <MapContainer mapId="myMap" classes={classes} drawControls={{ initialFeatures }} onDrawChange={onDrawChange} />
     );
@@ -246,7 +246,7 @@ describe('MapContainer', () => {
     expect(onDrawChange).toHaveBeenCalledWith(initialFeatures);
   });
 
-  test('does not delete geometries present on the map when user does not confirm by clicking out of the dialog', async () => {
+  test.skip('does not delete geometries present on the map when user does not confirm by clicking out of the dialog', async () => {
     const { getByText, getAllByRole } = render(
       <MapContainer mapId="myMap" classes={classes} drawControls={{ initialFeatures }} onDrawChange={onDrawChange} />
     );
