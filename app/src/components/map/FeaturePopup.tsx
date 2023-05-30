@@ -225,7 +225,7 @@ const FeaturePopup: React.FC<React.PropsWithChildren<{ submissionSpatialComponen
               return (
                 <TableRow key={key}>
                   <TableCell>{propertyName}</TableCell>
-                  <TableCell>{(formatMetadataProperty[key] || String)(dwc[key])}</TableCell>
+                  <TableCell>{(formatMetadataProperty[key] ?? String)(dwc[key])}</TableCell>
                 </TableRow>
               );
             })}

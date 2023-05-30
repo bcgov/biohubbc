@@ -79,6 +79,12 @@ interface IProjectsListTableEntry {
   endDate?: string;
 }
 
+const NoRowsOverlay = (props: { className: string }) => (
+  <GridOverlay>
+    <Typography className={props.className}>No Results</Typography>
+  </GridOverlay>
+)
+
 const ProjectsListTable = (props: IProjectsListTableProps) => {
   const classes = useStyles();
 
@@ -175,11 +181,7 @@ const ProjectsListTable = (props: IProjectsListTableProps) => {
       disableColumnMenu
       sortingOrder={['asc', 'desc']}
       components={{
-        NoRowsOverlay: () => (
-          <GridOverlay>
-            <Typography className={classes.noDataText}>No Results</Typography>
-          </GridOverlay>
-        )
+        NoRowsOverlay: () => <NoRowsOverlay className={classes.noDataText} />
       }}
     />
   );
