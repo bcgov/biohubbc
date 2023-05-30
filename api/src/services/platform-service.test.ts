@@ -196,6 +196,59 @@ describe('PlatformService', () => {
     });
   });
 
+  describe('submitProjectDataToBioHub', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('throws an error if BioHub intake is not enabled', async () => {
+      process.env.BACKBONE_INTAKE_ENABLED = 'false';
+
+      const mockDBConnection = getMockDBConnection();
+      const platformService = new PlatformService(mockDBConnection);
+
+      try {
+        await platformService.submitProjectDataToBioHub(1, {
+          reports: [],
+          attachments: []
+        });
+        expect.fail();
+      } catch (error) {
+        expect((error as Error).message).to.equal('BioHub intake is not enabled');
+      }
+    });
+
+    it('builds eml and submits data', async () => {
+      process.env.BACKBONE_INTAKE_ENABLED = 'true';
+
+      const mockDBConnection = getMockDBConnection();
+      const platformService = new PlatformService(mockDBConnection);
+
+      const emlPackageMock = new EmlPackage({ packageId: '123-456-789' });
+      const buildProjectEmlPackageStub = sinon
+        .stub(EmlService.prototype, 'buildProjectEmlPackage')
+        .resolves(emlPackageMock);
+
+      const submitProjectReportAttachmentsToBioHubStub = sinon
+        .stub(PlatformService.prototype, 'submitProjectReportAttachmentsToBioHub')
+        .resolves();
+
+      const submitProjectAttachmentsToBioHubStub = sinon
+        .stub(PlatformService.prototype, 'submitProjectAttachmentsToBioHub')
+        .resolves();
+
+      const response = await platformService.submitProjectDataToBioHub(1, {
+        reports: ([{ id: 3 }, { id: 4 }] as unknown) as IGetSurveyReportAttachment[],
+        attachments: ([{ id: 5 }, { id: 6 }] as unknown) as IGetSurveyAttachment[]
+      });
+
+      expect(buildProjectEmlPackageStub).to.have.been.calledOnceWith({ projectId: 1 });
+      expect(submitProjectReportAttachmentsToBioHubStub).to.have.been.calledOnceWith('123-456-789', 1, [3, 4]);
+      expect(submitProjectAttachmentsToBioHubStub).to.have.been.calledOnceWith('123-456-789', 1, [5, 6]);
+      expect(response).to.eql({ uuid: '123-456-789' });
+    });
+  });
+
   describe('submitSurveyDataToBioHub', () => {
     afterEach(() => {
       sinon.restore();
