@@ -17,37 +17,36 @@ const mockUseApi = {
 describe('WFSFeatureGroup', () => {
   beforeEach(() => {
     mockBiohubApi.mockImplementation(() => mockUseApi);
-    mockUseApi.external.get.mockClear();
+    
+    const feature = {
+      type: 'Feature',
+      geometry: {
+        type: 'Polygon',
+        coordinates: [
+          [
+            [-124.044265, 48.482268],
+            [-124.044265, 49.140633],
+            [-122.748143, 49.140633],
+            [-122.748143, 48.482268],
+            [-124.044265, 48.482268]
+          ]
+        ]
+      },
+      properties: {
+        OBJECTID: 332,
+        REGION_RESPONSIBLE_NAME: 'region'
+      }
+    };
+  
+    mockUseApi.external.get.mockResolvedValue({
+      features: [feature]
+    });
 
     jest.spyOn(console, 'debug').mockImplementation(() => {});
   });
 
   afterEach(() => {
     cleanup();
-  });
-
-  const feature = {
-    type: 'Feature',
-    geometry: {
-      type: 'Polygon',
-      coordinates: [
-        [
-          [-124.044265, 48.482268],
-          [-124.044265, 49.140633],
-          [-122.748143, 49.140633],
-          [-122.748143, 48.482268],
-          [-124.044265, 48.482268]
-        ]
-      ]
-    },
-    properties: {
-      OBJECTID: 332,
-      REGION_RESPONSIBLE_NAME: 'region'
-    }
-  };
-
-  mockUseApi.external.get.mockResolvedValue({
-    features: [feature]
   });
 
   test('matches the snapshot with wildlife management units layer showing', async () => {
