@@ -645,12 +645,12 @@ export class PlatformService extends DBService {
   async submitSurveyObservationInputDataToBiohub(surveyId: number, dataPackageId: string) {
     const surveyService = new SurveyService(this.connection);
     const occurrenceSubmissionData = await surveyService.getLatestSurveyOccurrenceSubmission(surveyId);
-    console.log('occurrenceSubmissionData', occurrenceSubmissionData);
+
     if (!occurrenceSubmissionData?.output_key) {
       throw new ApiGeneralError('Failed to submit survey to BioHub', ['Occurrence record has invalid s3 output key']);
     }
     const s3File = await getFileFromS3(occurrenceSubmissionData.output_key);
-    console.log('s3File:', s3File);
+
     if (!s3File) {
       throw new ApiGeneralError('Failed to submit survey to BioHub', ['Failed to fetch occurrence file form S3']);
     }
@@ -661,11 +661,9 @@ export class PlatformService extends DBService {
         dataPackageId,
         occurrenceSubmissionData
       );
-      console.log('observationArtifact', observationArtifact);
 
       //Submit artifact to BioHub
       const { artifact_id } = await this._submitArtifactToBioHub(observationArtifact);
-      console.log('artifact_id', artifact_id);
 
       //Insert publish history record
       await this.historyPublishService.insertOccurrenceSubmissionPublishRecord({

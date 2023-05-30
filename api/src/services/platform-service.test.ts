@@ -994,52 +994,40 @@ describe('PlatformService', () => {
     });
   });
 
-  // describe('_makeArtifactFromObservationInputData', () => {
-  //   it('should make an artifact from the given data', async () => {
-  //     const mockDBConnection = getMockDBConnection();
+  describe('_makeArtifactFromObservationInputData', () => {
+    it('should make an artifact from the given data', async () => {
+      const mockDBConnection = getMockDBConnection();
 
-  //     const platformService = new PlatformService(mockDBConnection);
+      const platformService = new PlatformService(mockDBConnection);
 
-  //     const testData = {
-  //       survey_summary_submission_id: 1,
-  //       key: 'test-key',
-  //       uuid: 'test-uuid',
-  //       file_name: 'test-filename.txt',
-  //       delete_timestamp: null,
-  //       submission_message_type_id: 1,
-  //       message: 'test-message',
-  //       submission_message_type_name: 'test-message-type',
-  //       summary_submission_message_class_id: 1,
-  //       submission_message_class_name: MESSAGE_CLASS_NAME.NOTICE
-  //     } as ISurveySummaryDetails;
+      const testData = {
+        occurrence_submission_id: 1,
+        input_file_name: 'test-filename.txt',
+        input_key: 'input-test-key',
+        output_key: 'output-test-key',
+        message: 'message'
+      } as IGetLatestSurveyOccurrenceSubmission;
 
-  //     const testArtifactZip = new AdmZip();
-  //     testArtifactZip.addFile('test-filename.txt', Buffer.from('hello-world'));
+      const testArtifactZip = new AdmZip();
+      testArtifactZip.addFile('test-filename.txt', Buffer.from('hello-world'));
 
-  //     const s3FileStub = sinon.stub(file_utils, 'getFileFromS3').resolves({
-  //       Body: 'hello-world'
-  //     });
+      const s3FileStub = sinon.stub(file_utils, 'getFileFromS3').resolves({
+        Body: 'hello-world'
+      });
 
-  //     const artifact = await platformService._makeArtifactFromSurveySummarySubmission('aaaa', testData);
+      const artifact = await platformService._makeArtifactFromObservationInputData('aaaa', testData);
 
-  //     expect(s3FileStub).to.be.calledWith('test-key');
-  //     expect(artifact).to.eql({
-  //       dataPackageId: 'aaaa',
-  //       archiveFile: {
-  //         data: testArtifactZip.toBuffer(),
-  //         fileName: `${testData.uuid}.zip`,
-  //         mimeType: 'application/zip'
-  //       },
-  //       metadata: {
-  //         file_name: testData.file_name,
-  //         file_size: 'undefined',
-  //         file_type: 'Summary Results',
-  //         title: testData.file_name,
-  //         description: testData.message
-  //       }
-  //     });
-  //   });
-  // });
+      expect(s3FileStub).to.be.calledWith(testData.input_key);
+      expect(artifact.dataPackageId).to.eql('aaaa');
+      expect(artifact.metadata).to.eql({
+        file_name: 'test-filename.txt',
+        file_size: 'undefined',
+        file_type: 'Observations',
+        title: 'test-filename.txt',
+        description: 'message'
+      });
+    });
+  });
 
   describe('submitSurveySummarySubmissionToBioHub', () => {
     it('should upload survey summary submission to biohub successfully', async () => {
