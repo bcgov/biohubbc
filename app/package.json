@@ -101,7 +101,7 @@
     "@types/shpjs": "^3.4.0",
     "@types/uuid": "~8.3.0",
     "@typescript-eslint/eslint-plugin": "^5.33.1",
-    "@typescript-eslint/parser": "^5.44.1",
+    "@typescript-eslint/parser": "^5.33.1",
     "assert": "^2.0.0",
     "axios-mock-adapter": "~1.19.0",
     "eslint": "^8.22.0",
@@ -113,9 +113,6 @@
     "prettier": "~2.7.1",
     "prettier-plugin-organize-imports": "~3.1.0",
     "react-scripts": "^5.0.1"
-  },
-  "resolutions": {
-    "@types/react": "^17.0.59"
   },
   "browserslist": {
     "production": [

@@ -62,7 +62,9 @@ const DatasetPopup: React.FC<React.PropsWithChildren<{ submissionSpatialComponen
   const { isLoading, isReady } = dataLoader;
   const data = (dataLoader.data || []) as BoundaryCentroidFeatureProperties[];
 
-  const ModalContentWrapper: React.FC<any> = ({ children }) => <div className={classes.modalContent}>{children}</div>;
+  const ModalContentWrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
+    <div className={classes.modalContent}>{children}</div>
+  );
 
   const MetadataHeader: React.FC<React.PropsWithChildren<{ title: string }>> = (props) => (
     <Box mb={1}>

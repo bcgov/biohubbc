@@ -10,7 +10,8 @@ import SearchPage from './SearchPage';
 const history = createMemoryHistory();
 
 // Mock MapContainer component
-jest.mock('../../components/map/MapContainer', () => jest.fn(() => <div />));
+jest.mock('../../components/map/MapContainer');
+const mockMapContainer = MapContainer as jest.Mock;
 
 // Mock useBioHubApi
 jest.mock('../../hooks/useBioHubApi');
@@ -28,6 +29,7 @@ const mockUseApi = {
 describe('SearchPage', () => {
   beforeEach(() => {
     mockBiohubApi.mockImplementation(() => mockUseApi);
+    mockMapContainer.mockImplementation(() => <div />);
   });
 
   afterEach(() => {

@@ -9,9 +9,14 @@ import ProjectLocationForm, {
 } from './ProjectLocationForm';
 
 // Mock MapBoundary component
-jest.mock('../../../components/boundary/MapBoundary', () => jest.fn(() => <div />));
+jest.mock('../../../components/boundary/MapBoundary');
+const mockMapBoundary = MapBoundary as jest.Mock;
 
 describe('ProjectLocationForm', () => {
+  beforeEach(() => {
+    mockMapBoundary.mockImplementation(() => <div />);
+  });
+
   afterEach(() => {
     cleanup();
   });
