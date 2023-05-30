@@ -636,23 +636,21 @@ export class PlatformService extends DBService {
   }
 
   /**
-   * Uploads the given survey occurrence input file to BioHub.
+   * Uploads the given survey occurrence input file to BioHub
    *
-   * @param {string} dataPackageId The dataPackageId for the artifact submission
-   * @param {number} surveyId The ID of the survey
-   * @return {*}  {Promise<{ survey_summary_submission_publish_id: number } | undefined>} The IDs of all the artifact records in
-   * BioHub
-   *
+   * @param {number} surveyId
+   * @param {string} dataPackageId
    * @memberof PlatformService
    */
   async submitSurveyObservationInputDataToBiohub(surveyId: number, dataPackageId: string) {
-    // Get DwC occurrence data
     const surveyService = new SurveyService(this.connection);
     const occurrenceSubmissionData = await surveyService.getLatestSurveyOccurrenceSubmission(surveyId);
-    if (!occurrenceSubmissionData || !occurrenceSubmissionData.output_key) {
+    console.log('occurrenceSubmissionData', occurrenceSubmissionData);
+    if (!occurrenceSubmissionData?.output_key) {
       throw new ApiGeneralError('Failed to submit survey to BioHub', ['Occurrence record has invalid s3 output key']);
     }
     const s3File = await getFileFromS3(occurrenceSubmissionData.output_key);
+    console.log('s3File:', s3File);
     if (!s3File) {
       throw new ApiGeneralError('Failed to submit survey to BioHub', ['Failed to fetch occurrence file form S3']);
     }
@@ -663,9 +661,11 @@ export class PlatformService extends DBService {
         dataPackageId,
         occurrenceSubmissionData
       );
+      console.log('observationArtifact', observationArtifact);
 
       //Submit artifact to BioHub
       const { artifact_id } = await this._submitArtifactToBioHub(observationArtifact);
+      console.log('artifact_id', artifact_id);
 
       //Insert publish history record
       await this.historyPublishService.insertOccurrenceSubmissionPublishRecord({

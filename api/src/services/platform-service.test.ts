@@ -235,6 +235,10 @@ describe('PlatformService', () => {
         .stub(PlatformService.prototype, 'submitSurveyDwCArchiveToBioHub')
         .resolves();
 
+      const submitSurveyObservationInputDataToBiohubStub = sinon
+        .stub(PlatformService.prototype, 'submitSurveyObservationInputDataToBiohub')
+        .resolves();
+
       const submitSurveySummarySubmissionToBioHubStub = sinon
         .stub(PlatformService.prototype, 'submitSurveySummarySubmissionToBioHub')
         .resolves();
@@ -256,6 +260,7 @@ describe('PlatformService', () => {
 
       expect(buildSurveyEmlPackageStub).to.have.been.calledOnceWith({ surveyId: 1 });
       expect(submitSurveyDwCArchiveToBioHubStub).to.have.been.calledOnceWith(1, emlPackageMock);
+      expect(submitSurveyObservationInputDataToBiohubStub).to.have.been.calledOnceWith(1, emlPackageMock.packageId);
       expect(submitSurveySummarySubmissionToBioHubStub).to.have.been.calledOnceWith('123-456-789', 1);
       expect(submitSurveyReportAttachmentsToBioHubStub).to.have.been.calledOnceWith('123-456-789', 1, [3, 4]);
       expect(submitSurveyAttachmentsToBioHubStub).to.have.been.calledOnceWith('123-456-789', 1, [5, 6]);
@@ -902,6 +907,140 @@ describe('PlatformService', () => {
     });
   });
 
+  describe('submitSurveyObservationInputDataToBiohub', () => {
+    it('should upload the input data for a survey observation submission to biohub successfully', async () => {
+      const mockDBConnection = getMockDBConnection();
+      const platformService = new PlatformService(mockDBConnection);
+
+      const surveyOccurrenceSubmissionMock = ({
+        occurrence_submission_id: 2,
+        output_key: '/key/test.csv'
+      } as unknown) as IGetLatestSurveyOccurrenceSubmission;
+
+      sinon
+        .stub(SurveyService.prototype, 'getLatestSurveyOccurrenceSubmission')
+        .resolves(surveyOccurrenceSubmissionMock);
+
+      const s3FileStub = sinon.stub(file_utils, 'getFileFromS3').resolves({
+        Body: 'hello-world'
+      });
+
+      const observationArtifactMock = { dataPackageId: 'test' } as IArtifact;
+
+      const _makeArtifactFromObservationInputDataStub = sinon
+        .stub(PlatformService.prototype, '_makeArtifactFromObservationInputData')
+        .resolves(observationArtifactMock);
+
+      const _submitArtifactToBioHubStub = sinon
+        .stub(PlatformService.prototype, '_submitArtifactToBioHub')
+        .resolves({ artifact_id: 3 });
+
+      const insertOccurrenceSubmissionPublishRecordStub = sinon
+        .stub(HistoryPublishService.prototype, 'insertOccurrenceSubmissionPublishRecord')
+        .resolves();
+
+      await platformService.submitSurveyObservationInputDataToBiohub(1, '123-456-789');
+
+      expect(_makeArtifactFromObservationInputDataStub).to.be.calledWith('123-456-789', surveyOccurrenceSubmissionMock);
+      expect(s3FileStub).to.have.been.calledOnce;
+      expect(_submitArtifactToBioHubStub).to.be.calledWith(observationArtifactMock);
+      expect(insertOccurrenceSubmissionPublishRecordStub).to.be.calledWith({
+        occurrence_submission_id: 2,
+        queue_id: 3
+      });
+    });
+    it('should throw an error if occurrenceSubmissionData is incorrect', async () => {
+      const mockDBConnection = getMockDBConnection();
+      const platformService = new PlatformService(mockDBConnection);
+
+      const surveyOccurrenceSubmissionMock = ({
+        occurrence_submission_id: 2,
+        output_key: null
+      } as unknown) as IGetLatestSurveyOccurrenceSubmission;
+
+      sinon
+        .stub(SurveyService.prototype, 'getLatestSurveyOccurrenceSubmission')
+        .resolves(surveyOccurrenceSubmissionMock);
+
+      try {
+        await platformService.submitSurveyObservationInputDataToBiohub(1, '123-456-789');
+      } catch (error) {
+        expect((error as Error).message).to.equal('Failed to submit survey to BioHub');
+      }
+    });
+    it('should throw an error if thew system fails to fetch the file from S3', async () => {
+      const mockDBConnection = getMockDBConnection();
+      const platformService = new PlatformService(mockDBConnection);
+
+      const surveyOccurrenceSubmissionMock = ({
+        occurrence_submission_id: 2,
+        output_key: '/key/test.csv'
+      } as unknown) as IGetLatestSurveyOccurrenceSubmission;
+
+      const getLatestSurveyOccurrenceSubmissionStub = sinon
+        .stub(SurveyService.prototype, 'getLatestSurveyOccurrenceSubmission')
+        .resolves(surveyOccurrenceSubmissionMock);
+      const s3FileStub = sinon.stub(file_utils, 'getFileFromS3').resolves();
+
+      try {
+        await platformService.submitSurveyObservationInputDataToBiohub(1, '123-456-789');
+        expect.fail();
+      } catch (error) {
+        expect(getLatestSurveyOccurrenceSubmissionStub).to.have.been.calledWith(1);
+        expect(s3FileStub).to.have.been.calledOnce;
+        expect((error as ApiGeneralError).message).to.equal('Failed to submit survey to BioHub');
+        expect((error as ApiGeneralError).errors).to.eql(['Failed to fetch occurrence file form S3']);
+      }
+    });
+  });
+
+  // describe('_makeArtifactFromObservationInputData', () => {
+  //   it('should make an artifact from the given data', async () => {
+  //     const mockDBConnection = getMockDBConnection();
+
+  //     const platformService = new PlatformService(mockDBConnection);
+
+  //     const testData = {
+  //       survey_summary_submission_id: 1,
+  //       key: 'test-key',
+  //       uuid: 'test-uuid',
+  //       file_name: 'test-filename.txt',
+  //       delete_timestamp: null,
+  //       submission_message_type_id: 1,
+  //       message: 'test-message',
+  //       submission_message_type_name: 'test-message-type',
+  //       summary_submission_message_class_id: 1,
+  //       submission_message_class_name: MESSAGE_CLASS_NAME.NOTICE
+  //     } as ISurveySummaryDetails;
+
+  //     const testArtifactZip = new AdmZip();
+  //     testArtifactZip.addFile('test-filename.txt', Buffer.from('hello-world'));
+
+  //     const s3FileStub = sinon.stub(file_utils, 'getFileFromS3').resolves({
+  //       Body: 'hello-world'
+  //     });
+
+  //     const artifact = await platformService._makeArtifactFromSurveySummarySubmission('aaaa', testData);
+
+  //     expect(s3FileStub).to.be.calledWith('test-key');
+  //     expect(artifact).to.eql({
+  //       dataPackageId: 'aaaa',
+  //       archiveFile: {
+  //         data: testArtifactZip.toBuffer(),
+  //         fileName: `${testData.uuid}.zip`,
+  //         mimeType: 'application/zip'
+  //       },
+  //       metadata: {
+  //         file_name: testData.file_name,
+  //         file_size: 'undefined',
+  //         file_type: 'Summary Results',
+  //         title: testData.file_name,
+  //         description: testData.message
+  //       }
+  //     });
+  //   });
+  // });
+
   describe('submitSurveySummarySubmissionToBioHub', () => {
     it('should upload survey summary submission to biohub successfully', async () => {
       const mockDBConnection = getMockDBConnection();
@@ -983,7 +1122,7 @@ describe('PlatformService', () => {
         metadata: {
           file_name: testData.file_name,
           file_size: 'undefined',
-          file_type: 'Summary',
+          file_type: 'Summary Results',
           title: testData.file_name,
           description: testData.message
         }
