@@ -50,10 +50,10 @@ describe('ProjectAttachments', () => {
         load: jest.fn()
       } as unknown as DataLoader<any, any, any>,
       projectId: 1,
-      projectDataLoader: ({
+      projectDataLoader: {
         data: { projectData: { project: { project_name: 'name' } } },
         load: jest.fn()
-      } as unknown) as DataLoader<any, any, any>
+      } as unknown as DataLoader<any, any, any>
     } as unknown as IProjectContext;
 
     const mockProjectAuthStateContext: IProjectAuthStateContext = {
@@ -97,10 +97,10 @@ describe('ProjectAttachments', () => {
         load: jest.fn()
       } as unknown as DataLoader<any, any, any>,
       projectId: 1,
-      projectDataLoader: ({
+      projectDataLoader: {
         data: { projectData: { project: { project_name: 'name' } } },
         load: jest.fn()
-      } as unknown) as DataLoader<any, any, any>
+      } as unknown as DataLoader<any, any, any>
     } as unknown as IProjectContext;
 
     const mockProjectAuthStateContext: IProjectAuthStateContext = {
@@ -141,10 +141,10 @@ describe('ProjectAttachments', () => {
         load: jest.fn()
       } as unknown as DataLoader<any, any, any>,
       projectId: 1,
-      projectDataLoader: ({
+      projectDataLoader: {
         data: { projectData: { project: { project_name: 'name' } } },
         load: jest.fn()
-      } as unknown) as DataLoader<any, any, any>
+      } as unknown as DataLoader<any, any, any>
     } as unknown as IProjectContext;
 
     const mockProjectAuthStateContext: IProjectAuthStateContext = {
@@ -196,10 +196,10 @@ describe('ProjectAttachments', () => {
         refresh: jest.fn()
       } as unknown as DataLoader<any, any, any>,
       projectId: 1,
-      projectDataLoader: ({
+      projectDataLoader: {
         data: { projectData: { project: { project_name: 'name' } } },
         load: jest.fn()
-      } as unknown) as DataLoader<any, any, any>
+      } as unknown as DataLoader<any, any, any>
     } as unknown as IProjectContext;
 
     const mockProjectAuthStateContext: IProjectAuthStateContext = {
@@ -268,10 +268,10 @@ describe('ProjectAttachments', () => {
         load: jest.fn()
       } as unknown as DataLoader<any, any, any>,
       projectId: 1,
-      projectDataLoader: ({
+      projectDataLoader: {
         data: { projectData: { project: { project_name: 'name' } } },
         load: jest.fn()
-      } as unknown) as DataLoader<any, any, any>
+      } as unknown as DataLoader<any, any, any>
     } as unknown as IProjectContext;
 
     const mockProjectAuthStateContext: IProjectAuthStateContext = {
@@ -342,10 +342,10 @@ describe('ProjectAttachments', () => {
         load: jest.fn()
       } as unknown as DataLoader<any, any, any>,
       projectId: 1,
-      projectDataLoader: ({
+      projectDataLoader: {
         data: { projectData: { project: { project_name: 'name' } } },
         load: jest.fn()
-      } as unknown) as DataLoader<any, any, any>
+      } as unknown as DataLoader<any, any, any>
     } as unknown as IProjectContext;
 
     const mockProjectAuthStateContext: IProjectAuthStateContext = {

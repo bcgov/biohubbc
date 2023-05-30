@@ -17,7 +17,7 @@ const mockUseApi = {
 describe('WFSFeatureGroup', () => {
   beforeEach(() => {
     mockBiohubApi.mockImplementation(() => mockUseApi);
-    
+
     const feature = {
       type: 'Feature',
       geometry: {
@@ -37,7 +37,7 @@ describe('WFSFeatureGroup', () => {
         REGION_RESPONSIBLE_NAME: 'region'
       }
     };
-  
+
     mockUseApi.external.get.mockResolvedValue({
       features: [feature]
     });

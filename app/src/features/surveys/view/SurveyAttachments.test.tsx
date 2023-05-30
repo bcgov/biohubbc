@@ -56,10 +56,10 @@ describe('SurveyAttachments', () => {
       } as unknown as DataLoader<any, any, any>,
       surveyId: 1,
       projectId: 1,
-      surveyDataLoader: ({
+      surveyDataLoader: {
         data: { surveyData: { survey_details: { survey_name: 'name' } } },
         load: jest.fn()
-      } as unknown) as DataLoader<any, any, any>
+      } as unknown as DataLoader<any, any, any>
     } as unknown as ISurveyContext;
 
     const mockProjectAuthStateContext: IProjectAuthStateContext = {
@@ -70,17 +70,17 @@ describe('SurveyAttachments', () => {
       hasLoadedParticipantInfo: true
     };
 
-    const mockProjectContext: IProjectContext = ({
-      artifactDataLoader: ({
+    const mockProjectContext: IProjectContext = {
+      artifactDataLoader: {
         data: null,
         load: jest.fn()
-      } as unknown) as DataLoader<any, any, any>,
+      } as unknown as DataLoader<any, any, any>,
       projectId: 1,
-      projectDataLoader: ({
+      projectDataLoader: {
         data: { projectData: { project: { project_name: 'name' } } },
         load: jest.fn()
-      } as unknown) as DataLoader<any, any, any>
-    } as unknown) as IProjectContext;
+      } as unknown as DataLoader<any, any, any>
+    } as unknown as IProjectContext;
 
     const { getByText, queryByText } = render(
       <Router history={history}>
@@ -119,10 +119,10 @@ describe('SurveyAttachments', () => {
       } as unknown as DataLoader<any, any, any>,
       surveyId: 1,
       projectId: 1,
-      surveyDataLoader: ({
+      surveyDataLoader: {
         data: { surveyData: { survey_details: { survey_name: 'name' } } },
         load: jest.fn()
-      } as unknown) as DataLoader<any, any, any>
+      } as unknown as DataLoader<any, any, any>
     } as unknown as ISurveyContext;
 
     const mockProjectAuthStateContext: IProjectAuthStateContext = {
@@ -133,17 +133,17 @@ describe('SurveyAttachments', () => {
       hasLoadedParticipantInfo: true
     };
 
-    const mockProjectContext: IProjectContext = ({
-      artifactDataLoader: ({
+    const mockProjectContext: IProjectContext = {
+      artifactDataLoader: {
         data: null,
         load: jest.fn()
-      } as unknown) as DataLoader<any, any, any>,
+      } as unknown as DataLoader<any, any, any>,
       projectId: 1,
-      projectDataLoader: ({
+      projectDataLoader: {
         data: { projectData: { project: { project_name: 'name' } } },
         load: jest.fn()
-      } as unknown) as DataLoader<any, any, any>
-    } as unknown) as IProjectContext;
+      } as unknown as DataLoader<any, any, any>
+    } as unknown as IProjectContext;
 
     const { getByText } = render(
       <Router history={history}>
@@ -178,10 +178,10 @@ describe('SurveyAttachments', () => {
       } as unknown as DataLoader<any, any, any>,
       surveyId: 1,
       projectId: 1,
-      surveyDataLoader: ({
+      surveyDataLoader: {
         data: { surveyData: { survey_details: { survey_name: 'name' } } },
         load: jest.fn()
-      } as unknown) as DataLoader<any, any, any>
+      } as unknown as DataLoader<any, any, any>
     } as unknown as ISurveyContext;
 
     const mockProjectAuthStateContext: IProjectAuthStateContext = {
@@ -194,17 +194,17 @@ describe('SurveyAttachments', () => {
 
     mockUseApi.survey.getSurveyAttachments.mockResolvedValue({});
 
-    const mockProjectContext: IProjectContext = ({
-      artifactDataLoader: ({
+    const mockProjectContext: IProjectContext = {
+      artifactDataLoader: {
         data: null,
         load: jest.fn()
-      } as unknown) as DataLoader<any, any, any>,
+      } as unknown as DataLoader<any, any, any>,
       projectId: 1,
-      projectDataLoader: ({
+      projectDataLoader: {
         data: { projectData: { project: { project_name: 'name' } } },
         load: jest.fn()
-      } as unknown) as DataLoader<any, any, any>
-    } as unknown) as IProjectContext;
+      } as unknown as DataLoader<any, any, any>
+    } as unknown as IProjectContext;
 
     const { getByText } = render(
       <Router history={history}>
@@ -250,10 +250,10 @@ describe('SurveyAttachments', () => {
       } as unknown as DataLoader<any, any, any>,
       surveyId: 1,
       projectId: 1,
-      surveyDataLoader: ({
+      surveyDataLoader: {
         data: { surveyData: { survey_details: { survey_name: 'name' } } },
         load: jest.fn()
-      } as unknown) as DataLoader<any, any, any>
+      } as unknown as DataLoader<any, any, any>
     } as unknown as ISurveyContext;
 
     const mockProjectAuthStateContext: IProjectAuthStateContext = {
@@ -264,17 +264,17 @@ describe('SurveyAttachments', () => {
       hasLoadedParticipantInfo: true
     };
 
-    const mockProjectContext: IProjectContext = ({
-      artifactDataLoader: ({
+    const mockProjectContext: IProjectContext = {
+      artifactDataLoader: {
         data: null,
         load: jest.fn()
-      } as unknown) as DataLoader<any, any, any>,
+      } as unknown as DataLoader<any, any, any>,
       projectId: 1,
-      projectDataLoader: ({
+      projectDataLoader: {
         data: { projectData: { project: { project_name: 'name' } } },
         load: jest.fn()
-      } as unknown) as DataLoader<any, any, any>
-    } as unknown) as IProjectContext;
+      } as unknown as DataLoader<any, any, any>
+    } as unknown as IProjectContext;
 
     const authState = getMockAuthState({ base: SystemAdminAuthState });
 
@@ -341,10 +341,10 @@ describe('SurveyAttachments', () => {
       } as unknown as DataLoader<any, any, any>,
       surveyId: 1,
       projectId: 1,
-      surveyDataLoader: ({
+      surveyDataLoader: {
         data: { surveyData: { survey_details: { survey_name: 'name' } } },
         load: jest.fn()
-      } as unknown) as DataLoader<any, any, any>
+      } as unknown as DataLoader<any, any, any>
     } as unknown as ISurveyContext;
 
     const mockProjectAuthStateContext: IProjectAuthStateContext = {
@@ -355,17 +355,17 @@ describe('SurveyAttachments', () => {
       hasLoadedParticipantInfo: true
     };
 
-    const mockProjectContext: IProjectContext = ({
-      artifactDataLoader: ({
+    const mockProjectContext: IProjectContext = {
+      artifactDataLoader: {
         data: null,
         load: jest.fn()
-      } as unknown) as DataLoader<any, any, any>,
+      } as unknown as DataLoader<any, any, any>,
       projectId: 1,
-      projectDataLoader: ({
+      projectDataLoader: {
         data: { projectData: { project: { project_name: 'name' } } },
         load: jest.fn()
-      } as unknown) as DataLoader<any, any, any>
-    } as unknown) as IProjectContext;
+      } as unknown as DataLoader<any, any, any>
+    } as unknown as IProjectContext;
 
     const authState = getMockAuthState({ base: SystemAdminAuthState });
 
@@ -431,23 +431,23 @@ describe('SurveyAttachments', () => {
       } as unknown as DataLoader<any, any, any>,
       surveyId: 1,
       projectId: 1,
-      surveyDataLoader: ({
+      surveyDataLoader: {
         data: { surveyData: { survey_details: { survey_name: 'name' } } },
         load: jest.fn()
-      } as unknown) as DataLoader<any, any, any>
+      } as unknown as DataLoader<any, any, any>
     } as unknown as ISurveyContext;
 
-    const mockProjectContext: IProjectContext = ({
-      artifactDataLoader: ({
+    const mockProjectContext: IProjectContext = {
+      artifactDataLoader: {
         data: null,
         load: jest.fn()
-      } as unknown) as DataLoader<any, any, any>,
+      } as unknown as DataLoader<any, any, any>,
       projectId: 1,
-      projectDataLoader: ({
+      projectDataLoader: {
         data: { projectData: { project: { project_name: 'name' } } },
         load: jest.fn()
-      } as unknown) as DataLoader<any, any, any>
-    } as unknown) as IProjectContext;
+      } as unknown as DataLoader<any, any, any>
+    } as unknown as IProjectContext;
 
     const mockProjectAuthStateContext: IProjectAuthStateContext = {
       getProjectParticipant: () => null,

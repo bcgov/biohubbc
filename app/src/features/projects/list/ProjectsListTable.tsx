@@ -130,15 +130,15 @@ const ProjectsListTable = (props: IProjectsListTableProps) => {
     {
       field: 'startDate',
       headerName: 'Start Date',
-      valueGetter: ({ value }) => value ? new Date(value) : undefined,
-      valueFormatter: ({ value }) => value ? getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, value) : undefined,
+      valueGetter: ({ value }) => (value ? new Date(value) : undefined),
+      valueFormatter: ({ value }) => (value ? getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, value) : undefined),
       flex: 1
     },
     {
       field: 'endDate',
       headerName: 'End Date',
-      valueGetter: ({ value }) => value ? new Date(value) : undefined,
-      valueFormatter: ({ value }) => value ? getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, value) : undefined,
+      valueGetter: ({ value }) => (value ? new Date(value) : undefined),
+      valueFormatter: ({ value }) => (value ? getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, value) : undefined),
       flex: 1
     }
   ];
@@ -163,7 +163,7 @@ const ProjectsListTable = (props: IProjectsListTableProps) => {
           isDraft: false
         }))
       ]}
-      getRowId={(row) => row.isDraft ? `draft-${row.id}` : `project-${row.id}`}
+      getRowId={(row) => (row.isDraft ? `draft-${row.id}` : `project-${row.id}`)}
       columns={columns}
       pageSizeOptions={[5]}
       rowSelection={false}
