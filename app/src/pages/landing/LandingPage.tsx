@@ -36,8 +36,8 @@ const useStyles = makeStyles((theme: Theme) => ({
   heroContainerInner: {
     [theme.breakpoints.up('xs')]: {
       marginRight: 'auto',
-      marginBottom: theme.spacing(3),
       marginLeft: 'auto',
+      paddingBottom: theme.spacing(4),
       maxWidth: '80%'
     }
   },
@@ -47,9 +47,9 @@ const useStyles = makeStyles((theme: Theme) => ({
     textShadow: '0px 0px 15px rgba(0,13,26,0.5)'
   },
   heroSubtitle: {
-    margin: '1.75em 0 2em 0',
+    margin: '1.6em 0 2em 0',
     maxWidth: '50ch',
-    fontSize: '1em',
+    fontSize: '0.9em',
     textShadow: '0px 0px 10px rgba(0,13,26,1)'
   }
 }));
