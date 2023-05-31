@@ -967,16 +967,12 @@ describe('PlatformService', () => {
 
       const surveyOccurrenceSubmissionMock = ({
         occurrence_submission_id: 2,
-        output_key: '/key/test.csv'
+        input_key: '/key/test.csv'
       } as unknown) as IGetLatestSurveyOccurrenceSubmission;
 
       sinon
         .stub(SurveyService.prototype, 'getLatestSurveyOccurrenceSubmission')
         .resolves(surveyOccurrenceSubmissionMock);
-
-      const s3FileStub = sinon.stub(file_utils, 'getFileFromS3').resolves({
-        Body: 'hello-world'
-      });
 
       const observationArtifactMock = { dataPackageId: 'test' } as IArtifact;
 
@@ -995,7 +991,6 @@ describe('PlatformService', () => {
       await platformService.submitSurveyObservationInputDataToBiohub(1, '123-456-789');
 
       expect(_makeArtifactFromObservationInputDataStub).to.be.calledWith('123-456-789', surveyOccurrenceSubmissionMock);
-      expect(s3FileStub).to.have.been.calledOnce;
       expect(_submitArtifactToBioHubStub).to.be.calledWith(observationArtifactMock);
       expect(insertOccurrenceSubmissionPublishRecordStub).to.be.calledWith({
         occurrence_submission_id: 2,
@@ -1008,7 +1003,7 @@ describe('PlatformService', () => {
 
       const surveyOccurrenceSubmissionMock = ({
         occurrence_submission_id: 2,
-        output_key: null
+        input_key: null
       } as unknown) as IGetLatestSurveyOccurrenceSubmission;
 
       sinon
@@ -1019,30 +1014,6 @@ describe('PlatformService', () => {
         await platformService.submitSurveyObservationInputDataToBiohub(1, '123-456-789');
       } catch (error) {
         expect((error as Error).message).to.equal('Failed to submit survey to BioHub');
-      }
-    });
-    it('should throw an error if thew system fails to fetch the file from S3', async () => {
-      const mockDBConnection = getMockDBConnection();
-      const platformService = new PlatformService(mockDBConnection);
-
-      const surveyOccurrenceSubmissionMock = ({
-        occurrence_submission_id: 2,
-        output_key: '/key/test.csv'
-      } as unknown) as IGetLatestSurveyOccurrenceSubmission;
-
-      const getLatestSurveyOccurrenceSubmissionStub = sinon
-        .stub(SurveyService.prototype, 'getLatestSurveyOccurrenceSubmission')
-        .resolves(surveyOccurrenceSubmissionMock);
-      const s3FileStub = sinon.stub(file_utils, 'getFileFromS3').resolves();
-
-      try {
-        await platformService.submitSurveyObservationInputDataToBiohub(1, '123-456-789');
-        expect.fail();
-      } catch (error) {
-        expect(getLatestSurveyOccurrenceSubmissionStub).to.have.been.calledWith(1);
-        expect(s3FileStub).to.have.been.calledOnce;
-        expect((error as ApiGeneralError).message).to.equal('Failed to submit survey to BioHub');
-        expect((error as ApiGeneralError).errors).to.eql(['Failed to fetch occurrence file form S3']);
       }
     });
   });
