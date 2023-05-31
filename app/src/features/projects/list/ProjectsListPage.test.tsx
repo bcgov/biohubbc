@@ -43,15 +43,15 @@ describe('ProjectsListPage', () => {
 
     const authState = getMockAuthState({ base: SystemAdminAuthState });
 
-    const mockCodesContext: ICodesContext = {
-      codesDataLoader: {
+    const mockCodesContext: ICodesContext = ({
+      codesDataLoader: ({
         data: [],
         load: jest.fn(),
         refresh: jest.fn()
-      } as unknown as DataLoader<any, any, any>,
+      } as unknown) as DataLoader<any, any, any>,
       surveyId: 1,
       projectId: 1
-    } as unknown as ICodesContext;
+    } as unknown) as ICodesContext;
 
     const { getByText } = render(
       <AuthStateContext.Provider value={authState}>
@@ -72,15 +72,15 @@ describe('ProjectsListPage', () => {
     mockUseApi.project.getProjectsList.mockResolvedValue([]);
     mockUseApi.draft.getDraftsList.mockResolvedValue([]);
 
-    const mockCodesContext: ICodesContext = {
-      codesDataLoader: {
+    const mockCodesContext: ICodesContext = ({
+      codesDataLoader: ({
         data: [],
         load: jest.fn(),
         refresh: jest.fn()
-      } as unknown as DataLoader<any, any, any>,
+      } as unknown) as DataLoader<any, any, any>,
       surveyId: 1,
       projectId: 1
-    } as unknown as ICodesContext;
+    } as unknown) as ICodesContext;
 
     const { getByText } = render(
       <CodesContext.Provider value={mockCodesContext}>
@@ -104,17 +104,17 @@ describe('ProjectsListPage', () => {
     ]);
     mockUseApi.project.getProjectsList.mockResolvedValue([]);
 
-    const mockCodesContext: ICodesContext = {
-      codesDataLoader: {
+    const mockCodesContext: ICodesContext = ({
+      codesDataLoader: ({
         data: [],
         load: jest.fn(),
         refresh: jest.fn()
-      } as unknown as DataLoader<any, any, any>,
+      } as unknown) as DataLoader<any, any, any>,
       surveyId: 1,
       projectId: 1
-    } as unknown as ICodesContext;
+    } as unknown) as ICodesContext;
 
-    const { findByText, findByTestId } = render(
+    const { findByText } = render(
       <CodesContext.Provider value={mockCodesContext}>
         <MemoryRouter>
           <ProjectsListPage />
@@ -131,15 +131,15 @@ describe('ProjectsListPage', () => {
 
     const authState = getMockAuthState({ base: SystemAdminAuthState });
 
-    const mockCodesContext: ICodesContext = {
-      codesDataLoader: {
+    const mockCodesContext: ICodesContext = ({
+      codesDataLoader: ({
         data: [],
         load: jest.fn(),
         refresh: jest.fn()
-      } as unknown as DataLoader<any, any, any>,
+      } as unknown) as DataLoader<any, any, any>,
       surveyId: 1,
       projectId: 1
-    } as unknown as ICodesContext;
+    } as unknown) as ICodesContext;
 
     const { findByText } = render(
       <AuthStateContext.Provider value={authState}>
@@ -168,15 +168,15 @@ describe('ProjectsListPage', () => {
       }
     ]);
 
-    const mockCodesContext: ICodesContext = {
-      codesDataLoader: {
+    const mockCodesContext: ICodesContext = ({
+      codesDataLoader: ({
         data: [],
         load: jest.fn(),
         refresh: jest.fn()
-      } as unknown as DataLoader<any, any, any>,
+      } as unknown) as DataLoader<any, any, any>,
       surveyId: 1,
       projectId: 1
-    } as unknown as ICodesContext;
+    } as unknown) as ICodesContext;
 
     const { findByText } = render(
       <CodesContext.Provider value={mockCodesContext}>
@@ -213,15 +213,15 @@ describe('ProjectsListPage', () => {
 
     mockUseApi.draft.getDraftsList.mockResolvedValue([]);
 
-    const mockCodesContext: ICodesContext = {
-      codesDataLoader: {
+    const mockCodesContext: ICodesContext = ({
+      codesDataLoader: ({
         data: [],
         load: jest.fn(),
         refresh: jest.fn()
-      } as unknown as DataLoader<any, any, any>,
+      } as unknown) as DataLoader<any, any, any>,
       surveyId: 1,
       projectId: 1
-    } as unknown as ICodesContext;
+    } as unknown) as ICodesContext;
 
     const { findByText } = render(
       <CodesContext.Provider value={mockCodesContext}>

@@ -53,7 +53,7 @@ describe('ProjectPartnershipsForm', () => {
     const existingFormValues: IProjectPartnershipsForm = {
       partnerships: {
         indigenous_partnerships: [1, 2],
-        stakeholder_partnerships: [1 as unknown as string]
+        stakeholder_partnerships: [(1 as unknown) as string]
       }
     };
 

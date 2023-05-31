@@ -33,8 +33,8 @@ export interface IProjectFundingFormArrayItem {
 
 export const ProjectFundingFormArrayItemInitialValues: IProjectFundingFormArrayItem = {
   id: 0,
-  agency_id: '' as unknown as number,
-  investment_action_category: '' as unknown as number,
+  agency_id: ('' as unknown) as number,
+  investment_action_category: ('' as unknown) as number,
   investment_action_category_name: '',
   agency_project_id: '',
   funding_amount: undefined,

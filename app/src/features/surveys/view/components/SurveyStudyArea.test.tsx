@@ -130,7 +130,7 @@ describe('SurveyStudyArea', () => {
   it('does not display the zoom to initial extent button if there are not geometries', async () => {
     const mockSurveyDataLoader = {
       data: getSurveyForViewResponse,
-      refresh: jest.fn() as unknown as any
+      refresh: (jest.fn() as unknown) as any
     } as DataLoader<any, any, any>;
     const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockObservationsDataLoader = { data: null } as DataLoader<any, any, any>;

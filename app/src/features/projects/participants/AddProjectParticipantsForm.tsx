@@ -27,7 +27,7 @@ export interface IAddProjectParticipantsForm {
 export const AddProjectParticipantsFormArrayItemInitialValues: IAddProjectParticipantsFormArrayItem = {
   userIdentifier: '',
   identitySource: '',
-  roleId: '' as unknown as number
+  roleId: ('' as unknown) as number
 };
 
 export const AddProjectParticipantsFormInitialValues: IAddProjectParticipantsForm = {

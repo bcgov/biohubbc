@@ -52,7 +52,9 @@ export interface CustomFieldArrayProps<ValueType = unknown> {
    *
    * @memberof CustomFieldArrayProps
    */
-  getLabelForValue: (value: ValueType) => {
+  getLabelForValue: (
+    value: ValueType
+  ) => {
     primaryLabel: string;
     secondaryLabel?: string;
   };

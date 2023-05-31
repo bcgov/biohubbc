@@ -47,7 +47,7 @@ describe('SurveyGeneralInformation', () => {
           ...getSurveyForViewResponse.surveyData,
           survey_details: {
             ...getSurveyForViewResponse.surveyData.survey_details,
-            end_date: null as unknown as string // no end date
+            end_date: (null as unknown) as string // no end date
           }
         }
       }

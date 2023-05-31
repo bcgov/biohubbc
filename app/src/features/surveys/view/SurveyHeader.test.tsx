@@ -57,10 +57,10 @@ describe('SurveyHeader', () => {
     return render(
       <ProjectContext.Provider
         value={
-          {
+          ({
             projectId: 1,
-            surveysListDataLoader: { refresh: jest.fn() } as unknown as DataLoader<any, any, any>
-          } as unknown as IProjectContext
+            surveysListDataLoader: ({ refresh: jest.fn() } as unknown) as DataLoader<any, any, any>
+          } as unknown) as IProjectContext
         }>
         <SurveyContext.Provider value={mockSurveyContext}>
           <AuthStateContext.Provider value={authState}>

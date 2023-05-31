@@ -19,7 +19,7 @@ const getMockTestWrapper = (userInfo?: any) => {
     }
   );
 
-  const keycloak: Keycloak = {
+  const keycloak: Keycloak = ({
     authenticated: true,
     token: 'a token',
     init: () => Promise.resolve(true) as KeycloakPromise<any, any>,
@@ -33,7 +33,7 @@ const getMockTestWrapper = (userInfo?: any) => {
     hasRealmRole: () => true,
     hasResourceRole: () => true,
     loadUserInfo: () => mockLoadUserInfo
-  } as unknown as Keycloak;
+  } as unknown) as Keycloak;
 
   return {
     wrapper: (props: PropsWithChildren<void>) => (

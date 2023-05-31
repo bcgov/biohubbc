@@ -45,7 +45,7 @@ export interface ISurveyPermitForm {
 }
 
 export const SurveyPermitFormArrayItemInitialValues: ISurveyPermitFormArrayItem = {
-  permit_id: null as unknown as number,
+  permit_id: (null as unknown) as number,
   permit_number: '',
   permit_type: ''
 };

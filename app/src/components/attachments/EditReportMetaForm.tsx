@@ -33,7 +33,7 @@ export const EditReportMetaFormInitialValues: IEditReportMetaForm = {
   title: '',
   authors: [EditReportMetaFormArrayItemInitialValues],
   description: '',
-  year_published: '' as unknown as number,
+  year_published: ('' as unknown) as number,
   revision_count: 0
 };
 

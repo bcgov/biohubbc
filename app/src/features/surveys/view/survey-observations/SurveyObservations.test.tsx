@@ -31,14 +31,14 @@ describe('SurveyObservations', () => {
 
   it('renders correctly', async () => {
     const mockSurveyContext: ISurveyContext = {
-      observationDataLoader: {
+      observationDataLoader: ({
         data: getObservationSubmissionResponse,
         load: jest.fn(),
         refresh: jest.fn()
-      } as unknown as DataLoader<any, any, any>,
-      artifactDataLoader: {} as unknown as DataLoader<any, any, any>,
-      surveyDataLoader: {} as unknown as DataLoader<any, any, any>,
-      summaryDataLoader: {} as unknown as DataLoader<any, any, any>,
+      } as unknown) as DataLoader<any, any, any>,
+      artifactDataLoader: ({} as unknown) as DataLoader<any, any, any>,
+      surveyDataLoader: ({} as unknown) as DataLoader<any, any, any>,
+      summaryDataLoader: ({} as unknown) as DataLoader<any, any, any>,
       surveyId: 1,
       projectId: 1
     };

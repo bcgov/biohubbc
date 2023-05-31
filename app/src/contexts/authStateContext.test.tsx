@@ -7,9 +7,9 @@ import { AuthStateContext } from './authStateContext';
 jest.mock('@react-keycloak/web', () => ({
   useKeycloak: jest.fn(() => ({
     initialized: true,
-    keycloak: {
+    keycloak: ({
       authenticated: false
-    } as unknown as Keycloak
+    } as unknown) as Keycloak
   }))
 }));
 

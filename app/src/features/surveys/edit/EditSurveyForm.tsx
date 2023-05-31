@@ -61,28 +61,28 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
     ...GeneralInformationInitialValues,
     ...{
       purpose_and_methodology: {
-        intended_outcome_id: '' as unknown as number,
+        intended_outcome_id: ('' as unknown) as number,
         additional_details: '',
-        field_method_id: '' as unknown as number,
-        ecological_season_id: '' as unknown as number,
+        field_method_id: ('' as unknown) as number,
+        ecological_season_id: ('' as unknown) as number,
         vantage_code_ids: []
       }
     },
     ...StudyAreaInitialValues,
     ...{
       proprietor: {
-        survey_data_proprietary: '' as unknown as StringBoolean,
+        survey_data_proprietary: ('' as unknown) as StringBoolean,
         proprietary_data_category: 0,
         proprietor_name: '',
         first_nations_id: 0,
         category_rationale: '',
-        disa_required: '' as unknown as StringBoolean
+        disa_required: ('' as unknown) as StringBoolean
       }
     },
     ...{
       agreements: {
-        sedis_procedures_accepted: 'true' as unknown as StringBoolean,
-        foippa_requirements_accepted: 'true' as unknown as StringBoolean
+        sedis_procedures_accepted: ('true' as unknown) as StringBoolean,
+        foippa_requirements_accepted: ('true' as unknown) as StringBoolean
       }
     }
   });

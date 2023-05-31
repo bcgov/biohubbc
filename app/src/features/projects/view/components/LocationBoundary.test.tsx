@@ -62,7 +62,7 @@ describe.skip('LocationBoundary', () => {
           ...getProjectForViewResponse.projectData,
           location: {
             ...getProjectForViewResponse.projectData.location,
-            location_description: null as unknown as string
+            location_description: (null as unknown) as string
           }
         }
       } as DataLoader<any, any, any>,

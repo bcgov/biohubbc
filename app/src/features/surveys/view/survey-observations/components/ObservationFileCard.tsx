@@ -75,8 +75,10 @@ const ObservationFileCard = (props: IObservationFileCardProps) => {
   const surveyName = surveyContext.surveyDataLoader.data?.surveyData.survey_details.survey_name;
 
   const [openRemoveOrResubmitDialog, setOpenRemoveOrResubmitDialog] = useState(false);
-  const [RemoveOrResubmitDialogFile, setRemoveOrResubmitDialogFile] =
-    useState<IGetObservationSubmissionResponse | null>(null);
+  const [
+    RemoveOrResubmitDialogFile,
+    setRemoveOrResubmitDialogFile
+  ] = useState<IGetObservationSubmissionResponse | null>(null);
 
   const [contextMenuAnchorEl, setContextMenuAnchorEl] = React.useState<null | HTMLElement>(null);
   const handleOpenContextMenu = (event: React.MouseEvent<HTMLButtonElement>) =>

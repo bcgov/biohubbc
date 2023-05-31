@@ -25,7 +25,7 @@ describe('ProjectDetails', () => {
           ...getProjectForViewResponse,
           projectData: {
             ...getProjectForViewResponse.projectData,
-            project: { ...getProjectForViewResponse.projectData.project, end_date: null as unknown as string }
+            project: { ...getProjectForViewResponse.projectData.project, end_date: (null as unknown) as string }
           }
         }
       } as DataLoader<any, any, any>,

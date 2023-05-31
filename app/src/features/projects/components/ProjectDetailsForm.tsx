@@ -27,7 +27,7 @@ export interface IProjectDetailsForm {
 export const ProjectDetailsFormInitialValues: IProjectDetailsForm = {
   project: {
     project_name: '',
-    project_type: '' as unknown as number,
+    project_type: ('' as unknown) as number,
     project_activities: [],
     start_date: '',
     end_date: ''

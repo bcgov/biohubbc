@@ -143,7 +143,7 @@ function useKeycloakWrapper(): IKeycloakWrapper {
   const keycloakUserDataLoader = useDataLoader(async () => {
     return (
       (keycloak.token &&
-        (keycloak.loadUserInfo() as unknown as IIDIRUserInfo | IBCEIDBasicUserInfo | IBCEIDBusinessUserInfo)) ||
+        ((keycloak.loadUserInfo() as unknown) as IIDIRUserInfo | IBCEIDBasicUserInfo | IBCEIDBusinessUserInfo)) ||
       undefined
     );
   });

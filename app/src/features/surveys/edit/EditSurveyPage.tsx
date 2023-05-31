@@ -80,10 +80,10 @@ const EditSurveyPage = () => {
   const codes = codesContext.codesDataLoader.data;
 
   const projectContext = useContext(ProjectContext);
-  useEffect(
-    () => projectContext.projectDataLoader.load(projectContext.projectId),
-    [projectContext.projectDataLoader, projectContext.projectId]
-  );
+  useEffect(() => projectContext.projectDataLoader.load(projectContext.projectId), [
+    projectContext.projectDataLoader,
+    projectContext.projectId
+  ]);
   const projectData = projectContext.projectDataLoader.data?.projectData;
 
   const surveyContext = useContext(SurveyContext);
@@ -108,7 +108,7 @@ const EditSurveyPage = () => {
     };
 
     if (editSurveyDL.data) {
-      setFormikValues(editSurveyDL.data.surveyData as unknown as IEditSurveyRequest);
+      setFormikValues((editSurveyDL.data.surveyData as unknown) as IEditSurveyRequest);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editSurveyDL]);
@@ -159,7 +159,7 @@ const EditSurveyPage = () => {
       const response = await biohubApi.survey.updateSurvey(
         projectContext.projectId,
         surveyId,
-        values as unknown as SurveyUpdateObject
+        (values as unknown) as SurveyUpdateObject
       );
 
       if (!response?.id) {

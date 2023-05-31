@@ -44,17 +44,17 @@ describe('ProjectAttachments', () => {
   });
 
   it('correctly opens and closes the file upload dialog', async () => {
-    const mockProjectContext: IProjectContext = {
-      artifactDataLoader: {
+    const mockProjectContext: IProjectContext = ({
+      artifactDataLoader: ({
         data: null,
         load: jest.fn()
-      } as unknown as DataLoader<any, any, any>,
+      } as unknown) as DataLoader<any, any, any>,
       projectId: 1,
-      projectDataLoader: {
+      projectDataLoader: ({
         data: { projectData: { project: { project_name: 'name' } } },
         load: jest.fn()
-      } as unknown as DataLoader<any, any, any>
-    } as unknown as IProjectContext;
+      } as unknown) as DataLoader<any, any, any>
+    } as unknown) as IProjectContext;
 
     const mockProjectAuthStateContext: IProjectAuthStateContext = {
       getProjectParticipant: () => null,
@@ -91,17 +91,17 @@ describe('ProjectAttachments', () => {
   });
 
   it('renders correctly with no attachments', async () => {
-    const mockProjectContext: IProjectContext = {
-      artifactDataLoader: {
+    const mockProjectContext: IProjectContext = ({
+      artifactDataLoader: ({
         data: null,
         load: jest.fn()
-      } as unknown as DataLoader<any, any, any>,
+      } as unknown) as DataLoader<any, any, any>,
       projectId: 1,
-      projectDataLoader: {
+      projectDataLoader: ({
         data: { projectData: { project: { project_name: 'name' } } },
         load: jest.fn()
-      } as unknown as DataLoader<any, any, any>
-    } as unknown as IProjectContext;
+      } as unknown) as DataLoader<any, any, any>
+    } as unknown) as IProjectContext;
 
     const mockProjectAuthStateContext: IProjectAuthStateContext = {
       getProjectParticipant: () => null,
@@ -126,8 +126,8 @@ describe('ProjectAttachments', () => {
   });
 
   it('renders correctly with attachments', async () => {
-    const mockProjectContext: IProjectContext = {
-      artifactDataLoader: {
+    const mockProjectContext: IProjectContext = ({
+      artifactDataLoader: ({
         data: {
           attachmentsList: [
             {
@@ -139,13 +139,13 @@ describe('ProjectAttachments', () => {
           ]
         },
         load: jest.fn()
-      } as unknown as DataLoader<any, any, any>,
+      } as unknown) as DataLoader<any, any, any>,
       projectId: 1,
-      projectDataLoader: {
+      projectDataLoader: ({
         data: { projectData: { project: { project_name: 'name' } } },
         load: jest.fn()
-      } as unknown as DataLoader<any, any, any>
-    } as unknown as IProjectContext;
+      } as unknown) as DataLoader<any, any, any>
+    } as unknown) as IProjectContext;
 
     const mockProjectAuthStateContext: IProjectAuthStateContext = {
       getProjectParticipant: () => null,
@@ -172,8 +172,8 @@ describe('ProjectAttachments', () => {
 
   it('deletes an attachment from the attachments list as expected', async () => {
     const deleteProjectAttachmentStub = mockUseApi.project.deleteProjectAttachment.mockResolvedValue(1);
-    const mockProjectContext: IProjectContext = {
-      artifactDataLoader: {
+    const mockProjectContext: IProjectContext = ({
+      artifactDataLoader: ({
         data: {
           attachmentsList: [
             {
@@ -194,13 +194,13 @@ describe('ProjectAttachments', () => {
         },
         load: jest.fn(),
         refresh: jest.fn()
-      } as unknown as DataLoader<any, any, any>,
+      } as unknown) as DataLoader<any, any, any>,
       projectId: 1,
-      projectDataLoader: {
+      projectDataLoader: ({
         data: { projectData: { project: { project_name: 'name' } } },
         load: jest.fn()
-      } as unknown as DataLoader<any, any, any>
-    } as unknown as IProjectContext;
+      } as unknown) as DataLoader<any, any, any>
+    } as unknown) as IProjectContext;
 
     const mockProjectAuthStateContext: IProjectAuthStateContext = {
       getProjectParticipant: () => null,
@@ -253,8 +253,8 @@ describe('ProjectAttachments', () => {
 
   it('does not delete an attachment from the attachments when user selects no from dialog', async () => {
     mockUseApi.project.deleteProjectAttachment.mockResolvedValue(1);
-    const mockProjectContext: IProjectContext = {
-      artifactDataLoader: {
+    const mockProjectContext: IProjectContext = ({
+      artifactDataLoader: ({
         data: {
           attachmentsList: [
             {
@@ -266,13 +266,13 @@ describe('ProjectAttachments', () => {
           ]
         },
         load: jest.fn()
-      } as unknown as DataLoader<any, any, any>,
+      } as unknown) as DataLoader<any, any, any>,
       projectId: 1,
-      projectDataLoader: {
+      projectDataLoader: ({
         data: { projectData: { project: { project_name: 'name' } } },
         load: jest.fn()
-      } as unknown as DataLoader<any, any, any>
-    } as unknown as IProjectContext;
+      } as unknown) as DataLoader<any, any, any>
+    } as unknown) as IProjectContext;
 
     const mockProjectAuthStateContext: IProjectAuthStateContext = {
       getProjectParticipant: () => null,
@@ -327,8 +327,8 @@ describe('ProjectAttachments', () => {
 
   it('does not delete an attachment from the attachments when user clicks outside the dialog', async () => {
     mockUseApi.project.deleteProjectAttachment.mockResolvedValue(1);
-    const mockProjectContext: IProjectContext = {
-      artifactDataLoader: {
+    const mockProjectContext: IProjectContext = ({
+      artifactDataLoader: ({
         data: {
           attachmentsList: [
             {
@@ -340,13 +340,13 @@ describe('ProjectAttachments', () => {
           ]
         },
         load: jest.fn()
-      } as unknown as DataLoader<any, any, any>,
+      } as unknown) as DataLoader<any, any, any>,
       projectId: 1,
-      projectDataLoader: {
+      projectDataLoader: ({
         data: { projectData: { project: { project_name: 'name' } } },
         load: jest.fn()
-      } as unknown as DataLoader<any, any, any>
-    } as unknown as IProjectContext;
+      } as unknown) as DataLoader<any, any, any>
+    } as unknown) as IProjectContext;
 
     const mockProjectAuthStateContext: IProjectAuthStateContext = {
       getProjectParticipant: () => null,

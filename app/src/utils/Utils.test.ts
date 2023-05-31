@@ -69,7 +69,7 @@ describe('buildUrl', () => {
   });
 
   it('should filter out falsey url parts', () => {
-    const url = buildUrl('a', 'b', null as unknown as string, 'd', undefined, 'f');
+    const url = buildUrl('a', 'b', (null as unknown) as string, 'd', undefined, 'f');
 
     expect(url).toEqual('a/b/d/f');
   });
@@ -100,7 +100,7 @@ describe('getFormattedAmount', () => {
   });
 
   it('returns empty string when amount is invalid', () => {
-    expect(getFormattedAmount(null as unknown as number)).toEqual('');
+    expect(getFormattedAmount((null as unknown) as number)).toEqual('');
   });
 });
 
@@ -165,7 +165,7 @@ describe('getFormattedDateRangeString', () => {
 
 describe('getLogOutUrl', () => {
   it('returns null when config is null', () => {
-    expect(getLogOutUrl(null as unknown as IConfig)).toBeUndefined();
+    expect(getLogOutUrl((null as unknown) as IConfig)).toBeUndefined();
   });
 
   it('returns null when config is missing `KEYCLOAK_CONFIG.url`', () => {
@@ -249,7 +249,7 @@ describe('getLogOutUrl', () => {
 
 describe('getFormattedFileSize', () => {
   it('returns `0 KB` if no file size exists', async () => {
-    const formattedFileSize = getFormattedFileSize(null as unknown as number);
+    const formattedFileSize = getFormattedFileSize((null as unknown) as number);
     expect(formattedFileSize).toEqual('0 KB');
   });
 
@@ -295,7 +295,7 @@ describe('getFormattedIdentitySource', () => {
   });
 
   it('returns null for null identity source', () => {
-    const result = getFormattedIdentitySource(null as unknown as SYSTEM_IDENTITY_SOURCE);
+    const result = getFormattedIdentitySource((null as unknown) as SYSTEM_IDENTITY_SOURCE);
 
     expect(result).toEqual(null);
   });
