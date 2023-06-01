@@ -21,7 +21,7 @@ export const ProjectAuthStateContext = React.createContext<IProjectAuthStateCont
   hasLoadedParticipantInfo: false
 });
 
-export const ProjectAuthStateContextProvider: React.FC = (props) => {
+export const ProjectAuthStateContextProvider: React.FC<React.PropsWithChildren> = (props) => {
   const biohubApi = useBiohubApi();
   const participantDataLoader = useDataLoader((projectId: number) =>
     biohubApi.project.getUserProjectParticipant(projectId)

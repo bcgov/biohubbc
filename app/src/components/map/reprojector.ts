@@ -1,5 +1,4 @@
 import { Feature, FeatureCollection, Geometry, Position } from 'geojson';
-import https from 'https';
 import { cloneDeep } from 'lodash-es';
 import proj4 from 'proj4';
 

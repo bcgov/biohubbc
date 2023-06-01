@@ -59,7 +59,8 @@ export const FileUploadWithMeta: React.FC<IFileUploadWithMetaProps> = (props) =>
           />
           {errors?.attachmentFile && (
             <Box>
-              <Typography style={{ fontSize: '12px', color: '#f44336' }}>{errors.attachmentFile}</Typography>
+              {/* TODO is errors.attachmentFile correct here? (added `as string` to appease compile warning) */}
+              <Typography style={{ fontSize: '12px', color: '#f44336' }}>{errors.attachmentFile as string}</Typography>
             </Box>
           )}
         </Box>

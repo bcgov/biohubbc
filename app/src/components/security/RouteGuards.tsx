@@ -140,7 +140,7 @@ const CheckForKeycloakAuthenticated = (props: PropsWithChildren<Record<never, un
  * @param {*} { children }
  * @return {*}
  */
-const WaitForKeycloakToLoadUserInfo: React.FC = ({ children }) => {
+const WaitForKeycloakToLoadUserInfo: React.FC<React.PropsWithChildren> = ({ children }) => {
   const { keycloakWrapper } = useContext(AuthStateContext);
 
   if (!keycloakWrapper?.hasLoadedAllUserInfo) {

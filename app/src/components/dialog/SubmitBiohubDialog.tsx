@@ -78,7 +78,7 @@ export interface ISubmitBiohubDialogProps {
  * @param {*} props
  * @return {*}
  */
-const SubmitBiohubDialog: React.FC<ISubmitBiohubDialogProps> = (props) => {
+const SubmitBiohubDialog: React.FC<React.PropsWithChildren<ISubmitBiohubDialogProps>> = (props) => {
   const theme = useTheme();
 
   const classes = useStyles();
