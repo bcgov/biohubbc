@@ -1,5 +1,6 @@
 import { AxiosInstance } from 'axios';
 import { IProjectSubmitForm, ISurveySubmitForm } from 'interfaces/usePublishApi.interface';
+import { IRemoveOrResubmitForm } from 'components/publish/components/RemoveOrResubmitForm';
 
 /**
  * Returns a list of all resources
@@ -49,9 +50,40 @@ const usePublishApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  /**
+   * Request Resubmit Attachment
+   *
+   * @param {number} projectId
+   * @param {string} fileName
+   * @param {string} parentName
+   * @param {IRemoveOrResubmitForm} formValues
+   * @param {string} path
+   * @return {*}  {Promise<boolean>}
+   */
+  const resubmitAttachment = async (
+    projectId: number,
+    fileName: string,
+    parentName: string,
+    formValues: IRemoveOrResubmitForm,
+    path: string
+  ): Promise<boolean> => {
+    const sendData = {
+      projectId: projectId,
+      fileName: fileName,
+      parentName: parentName,
+      formValues: formValues,
+      path: path
+    };
+
+    const { data } = await axios.post('/api/publish/attachment/resubmit', sendData);
+
+    return data;
+  };
+
   return {
     publishSurvey,
-    publishProject
+    publishProject,
+    resubmitAttachment
   };
 };
 

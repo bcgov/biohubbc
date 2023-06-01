@@ -19,16 +19,16 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
   },
   heroActions: {
-    margin: '0.75em 0',
+    margin: '0.6em 0',
     fontSize: '1em',
     display: 'flex',
     flexFlow: 'row nowrap',
     alignItems: 'center',
-    gap: '1em'
+    gap: '0.5em'
   },
   heroButton: {
-    padding: '0.5em 1.5em',
-    fontSize: '0.75em',
+    minWidth: '120px',
+    padding: '0.75em 1.5em',
     color: theme.palette.primary.main,
     backgroundColor: '#fcba19',
     fontWeight: 700

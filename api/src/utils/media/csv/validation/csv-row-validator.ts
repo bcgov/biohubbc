@@ -351,6 +351,35 @@ export type FileColumnUniqueValidatorConfig = {
   };
 };
 
+/**
+ * Checks for duplicate key values between rows, an adds an error for each duplicate found.
+ *
+ * Note: A key is one or more columns combined into a single string.
+ * Note: Empty cells are ignored when performing this check.
+ *
+ * @example
+ * // Valid
+ * | Col1 | Col2 |
+ * |------|------|
+ * | A    | B    | // key = 'A, B'
+ * | A    |      | // key = 'A'
+ * | B    | A    | // key = 'B, A'
+ *
+ * // Invalid
+ * | Col1 | Col2 |
+ * |------|------|
+ * | A    | B    | // key = 'A, B'
+ * | A    | B    | // key = 'A, B'
+ *
+ * // Invalid
+ * | Col1 | Col2 |
+ * |------|------|
+ * | A    |      | // key = 'A'
+ * |      | A    | // key = 'A'
+ *
+ * @param {FileColumnUniqueValidatorConfig} [config]
+ * @return {*}  {CSVValidator}
+ */
 export const getUniqueColumnsValidator = (config?: FileColumnUniqueValidatorConfig): CSVValidator => {
   return (csvWorksheet) => {
     if (!config) {
@@ -377,8 +406,16 @@ export const getUniqueColumnsValidator = (config?: FileColumnUniqueValidatorConf
 
     rows.forEach((row, rowIndex) => {
       const key = config.file_column_unique_validator.column_names
-        .map((columnIndex) => `${row[columnIndex] || ''}`.trim().toLowerCase())
+        .map((columnName) => `${row[columnName] || ''}`.trim().toLowerCase())
+        .filter(Boolean)
         .join(', ');
+
+      if (!key) {
+        // If key is empty, ignore this check.
+        // It is the job of a separate validation rule to ensure non-empty (required) cells
+        return;
+      }
+
       // check if key exists already
       if (!keySet.has(key)) {
         keySet.add(key);
@@ -389,15 +426,16 @@ export const getUniqueColumnsValidator = (config?: FileColumnUniqueValidatorConf
             errorCode: SUBMISSION_MESSAGE_TYPE.NON_UNIQUE_KEY,
             message: `Row ${
               rowIndex + 2
-            } has duplicate values (${key}) to another row.  The combination of values in columns: ${config.file_column_unique_validator.column_names.join(
+            } has duplicate values ${key} to another row. The combination of values in columns: ${config.file_column_unique_validator.column_names.join(
               ', '
-            )} must be unique across rows.  Details: `,
+            )} must be unique across rows. Details: `,
             col: key,
             row: rowIndex + 2
           }
         ]);
       }
     });
+
     return csvWorksheet;
   };
 };
