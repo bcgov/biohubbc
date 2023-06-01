@@ -1,11 +1,11 @@
 import { Feature, FeatureCollection, Geometry, Position } from 'geojson';
+import https from 'https';
 import { cloneDeep } from 'lodash-es';
 import proj4 from 'proj4';
 
 /**
  * NOTE: This file is borrowed from the `reproj-helper` library, because the polyfills for `reproj-helper` are currently broken.
  * See: https://github.com/dhlevi/reproj-helper/blob/3e0bc47d6bd9e0adb8f3bae9ba87002110665a1d/src/reprojector.ts
- *
  */
 
 /**
@@ -46,12 +46,11 @@ export class ReProjector {
    * Useful if you intend on chaining, ie:
    * ReProjector.instance().feature({...}).from('EPSG:3005').to('EPSG:3579').project();
    */
-  public static instance(): ReProjector {
+  public static instance() {
     return new ReProjector();
   }
 
   private init(): void {
-    console.debug('Initializing ReProjector');
     // Load any preset projections
     // BC Albers
     proj4.defs(
@@ -101,8 +100,7 @@ export class ReProjector {
    * @param code Your desired code
    * @param definition The proj4 definition string
    */
-  public addDefinition(code: string, definition: string): ReProjector {
-    console.debug(`Adding definition ${code} - ${definition}`);
+  public addDefinition(code: string, definition: string): this {
     proj4.defs(code, definition);
     return this;
   }
@@ -112,8 +110,7 @@ export class ReProjector {
    * The original feature passed in will be untouched.
    * @param feature Feature Type
    */
-  public feature(feature: FeatureCollection | Feature | Geometry): ReProjector {
-    console.debug('Source Feature set');
+  public feature(feature: FeatureCollection | Feature | Geometry): this {
     this.sourceFeature = feature;
     return this;
   }
@@ -122,7 +119,7 @@ export class ReProjector {
    * Projection code to use on the "from" projection
    * @param from Code (usually an EPSG Code)
    */
-  public from(from: string): ReProjector {
+  public from(from: string): this {
     this.fromProjection = from;
     return this;
   }
@@ -131,7 +128,7 @@ export class ReProjector {
    * Projection code to use on the "To" projection
    * @param from Code (usually an EPSG Code)
    */
-  public to(to: string): ReProjector {
+  public to(to: string): this {
     this.toProjection = to;
     return this;
   }
@@ -147,8 +144,6 @@ export class ReProjector {
    * Your source feature will be deep cloned and not modified by this process
    */
   public async project(): Promise<FeatureCollection | Feature | Geometry | null> {
-    console.debug('Starting projection');
-
     if (!this.sourceFeature) {
       console.error('No feature to project! Stopping');
       throw new Error('Invalid Source Feature');
