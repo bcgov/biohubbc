@@ -650,22 +650,20 @@ export class PlatformService extends DBService {
       throw new ApiGeneralError('Failed to submit survey to BioHub', ['Occurrence record has invalid s3 output key']);
     }
 
-    if (occurrenceSubmissionData) {
-      // Build artifact object
-      const observationArtifact = await this._makeArtifactFromObservationInputData(
-        dataPackageId,
-        occurrenceSubmissionData
-      );
+    // Build artifact object
+    const observationArtifact = await this._makeArtifactFromObservationInputData(
+      dataPackageId,
+      occurrenceSubmissionData
+    );
 
-      //Submit artifact to BioHub
-      const { artifact_id } = await this._submitArtifactToBioHub(observationArtifact);
+    //Submit artifact to BioHub
+    const { artifact_id } = await this._submitArtifactToBioHub(observationArtifact);
 
-      //Insert publish history record
-      await this.historyPublishService.insertOccurrenceSubmissionPublishRecord({
-        occurrence_submission_id: occurrenceSubmissionData.occurrence_submission_id,
-        queue_id: artifact_id
-      });
-    }
+    //Insert publish history record
+    await this.historyPublishService.insertOccurrenceSubmissionPublishRecord({
+      occurrence_submission_id: occurrenceSubmissionData.occurrence_submission_id,
+      queue_id: artifact_id
+    });
   }
 
   /**
