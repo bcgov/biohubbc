@@ -359,7 +359,7 @@ describe.skip('ProjectPage', () => {
         ...getProjectForViewResponse.projectData,
         project: {
           ...getProjectForViewResponse.projectData.project,
-          end_date: (null as unknown) as string
+          end_date: null as unknown as string
         }
       }
     });

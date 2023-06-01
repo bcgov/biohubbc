@@ -30,9 +30,9 @@ describe('ResourcesPage', () => {
   });
 
   it("shows 'No Resources Available' when there are no active users", async () => {
-    mockUseApi.resources.listResources.mockResolvedValue(({
+    mockUseApi.resources.listResources.mockResolvedValue({
       files: []
-    } as unknown) as IListResourcesResponse);
+    } as unknown as IListResourcesResponse);
 
     const { getByText } = renderContainer();
 
@@ -44,7 +44,7 @@ describe('ResourcesPage', () => {
   });
 
   it('renders the initial default page correctly', async () => {
-    mockUseApi.resources.listResources.mockResolvedValue(({
+    mockUseApi.resources.listResources.mockResolvedValue({
       files: [
         {
           fileName: 'key1',
@@ -69,7 +69,7 @@ describe('ResourcesPage', () => {
           }
         }
       ]
-    } as unknown) as IListResourcesResponse);
+    } as unknown as IListResourcesResponse);
 
     const { getByText, queryByText, getAllByText, getByTestId } = renderContainer();
 
@@ -90,7 +90,7 @@ describe('ResourcesPage', () => {
   });
 
   it('renders templates with missing metadata', async () => {
-    mockUseApi.resources.listResources.mockResolvedValue(({
+    mockUseApi.resources.listResources.mockResolvedValue({
       files: [
         {
           fileName: 'key1',
@@ -107,7 +107,7 @@ describe('ResourcesPage', () => {
           metadata: {}
         }
       ]
-    } as unknown) as IListResourcesResponse);
+    } as unknown as IListResourcesResponse);
 
     const { getByText, getAllByText, getByTestId } = renderContainer();
 

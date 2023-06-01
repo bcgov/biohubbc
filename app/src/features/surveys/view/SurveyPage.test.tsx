@@ -134,7 +134,7 @@ describe.skip('SurveyPage', () => {
         ...getSurveyForViewResponse.surveyData,
         survey_details: {
           ...getSurveyForViewResponse.surveyData.survey_details,
-          end_date: (null as unknown) as string
+          end_date: null as unknown as string
         }
       }
     });

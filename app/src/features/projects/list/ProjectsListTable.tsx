@@ -54,9 +54,10 @@ const useStyles = makeStyles((theme: Theme) => ({
       fontFamily: 'inherit',
       fontSize: 'inherit'
     },
-    '& .MuiDataGrid-cell:focus-within, & .MuiDataGrid-cellCheckbox:focus-within, & .MuiDataGrid-columnHeader:focus-within': {
-      outline: 'none !important'
-    },
+    '& .MuiDataGrid-cell:focus-within, & .MuiDataGrid-cellCheckbox:focus-within, & .MuiDataGrid-columnHeader:focus-within':
+      {
+        outline: 'none !important'
+      },
     '& .MuiDataGrid-row:hover': {
       backgroundColor: 'transparent !important'
     }

@@ -19,16 +19,16 @@ describe('ProjectDetails', () => {
       } as DataLoader<any, any, any>
     };
 
-    const mockProjectContext: IProjectContext = ({
+    const mockProjectContext: IProjectContext = {
       projectDataLoader: {
         data: getProjectForViewResponse
       } as DataLoader<any, any, any>,
-      artifactDataLoader: ({
+      artifactDataLoader: {
         data: null,
         load: jest.fn()
-      } as unknown) as DataLoader<any, any, any>,
+      } as unknown as DataLoader<any, any, any>,
       projectId: 1
-    } as unknown) as IProjectContext;
+    } as unknown as IProjectContext;
 
     const { asFragment } = render(
       <CodesContext.Provider value={mockCodesContext}>

@@ -39,7 +39,7 @@ describe('LogOutPage', () => {
     getLogOutUrlSpy = jest.spyOn(utils, 'getLogOutUrl').mockReturnValue('https://testLogOutURL.com');
 
     const { getByText } = render(
-      <ConfigContext.Provider value={(null as unknown) as IConfig}>
+      <ConfigContext.Provider value={null as unknown as IConfig}>
         <Router history={history}>
           <LogOutPage />
         </Router>

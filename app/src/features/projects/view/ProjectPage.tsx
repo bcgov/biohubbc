@@ -28,10 +28,10 @@ const ProjectPage = () => {
 
   useEffect(() => codesContext.codesDataLoader.load(), [codesContext.codesDataLoader]);
 
-  useEffect(() => projectContext.projectDataLoader.load(projectContext.projectId), [
-    projectContext.projectDataLoader,
-    projectContext.projectId
-  ]);
+  useEffect(
+    () => projectContext.projectDataLoader.load(projectContext.projectId),
+    [projectContext.projectDataLoader, projectContext.projectId]
+  );
 
   if (
     !codesContext.codesDataLoader.data ||

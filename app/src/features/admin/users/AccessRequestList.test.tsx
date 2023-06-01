@@ -163,7 +163,7 @@ describe('AccessRequestList', () => {
           status_name: 'Pending',
           description: 'test description',
           notes: 'test notes',
-          data: (null as unknown) as IAccessRequestDataObject,
+          data: null as unknown as IAccessRequestDataObject,
           create_date: '2020-04-20'
         }
       ],

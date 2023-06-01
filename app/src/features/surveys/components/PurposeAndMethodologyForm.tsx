@@ -21,10 +21,10 @@ export interface IPurposeAndMethodologyForm {
 
 export const PurposeAndMethodologyInitialValues: IPurposeAndMethodologyForm = {
   purpose_and_methodology: {
-    intended_outcome_id: ('' as unknown) as number,
+    intended_outcome_id: '' as unknown as number,
     additional_details: '',
-    field_method_id: ('' as unknown) as number,
-    ecological_season_id: ('' as unknown) as number,
+    field_method_id: '' as unknown as number,
+    ecological_season_id: '' as unknown as number,
     vantage_code_ids: []
   }
 };
