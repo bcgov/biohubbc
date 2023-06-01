@@ -646,8 +646,6 @@ export class PlatformService extends DBService {
     const surveyService = new SurveyService(this.connection);
     const occurrenceSubmissionData = await surveyService.getLatestSurveyOccurrenceSubmission(surveyId);
 
-    console.log('occurrenceSubmissionData:', occurrenceSubmissionData);
-
     if (!occurrenceSubmissionData?.input_key) {
       throw new ApiGeneralError('Failed to submit survey to BioHub', ['Occurrence record has invalid s3 output key']);
     }
