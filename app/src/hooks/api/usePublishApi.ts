@@ -1,7 +1,6 @@
 import { AxiosInstance } from 'axios';
 import { IRemoveOrResubmitForm } from 'components/publish/components/RemoveOrResubmitForm';
-import { IProjectSubmitForm } from 'components/publish/PublishProjectSections';
-import { ISurveySubmitForm } from 'components/publish/PublishSurveySections';
+import { IProjectSubmitForm, ISurveySubmitForm } from 'interfaces/usePublishApi.interface';
 
 /**
  * Returns a list of all resources

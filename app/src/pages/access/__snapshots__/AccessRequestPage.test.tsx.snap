@@ -171,10 +171,10 @@ exports[`AccessRequestPage renders correctly 1`] = `
               class="MuiBox-root MuiBox-root-14"
             >
               <div
-                class="MuiBox-root MuiBox-root-15 buttonWrapper"
+                class="MuiBox-root MuiBox-root-17 makeStyles-wrapper-15"
               >
                 <button
-                  class="MuiButtonBase-root MuiButton-root MuiButton-contained makeStyles-actionButton-1 MuiButton-containedPrimary"
+                  class="MuiButtonBase-root MuiButton-root MuiButton-contained makeStyles-actionButton-1 MuiButton-containedPrimary MuiButton-disableElevation"
                   tabindex="0"
                   type="submit"
                 >
@@ -185,14 +185,10 @@ exports[`AccessRequestPage renders correctly 1`] = `
                       Submit Request
                     </strong>
                   </span>
-                  <span
-                    class="MuiTouchRipple-root"
-                  />
                 </button>
               </div>
-              <a
-                aria-disabled="false"
-                class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-actionButton-1 MuiButton-outlinedPrimary"
+              <button
+                class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-actionButton-1 MuiButton-outlinedPrimary MuiButton-disableElevation"
                 data-testid="logout-button"
                 href="/logout"
                 role="button"
@@ -203,10 +199,7 @@ exports[`AccessRequestPage renders correctly 1`] = `
                 >
                   Log out
                 </span>
-                <span
-                  class="MuiTouchRipple-root"
-                />
-              </a>
+              </button>
             </div>
           </form>
         </div>
