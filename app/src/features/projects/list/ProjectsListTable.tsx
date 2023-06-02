@@ -149,6 +149,8 @@ const ProjectsListTable = (props: IProjectsListTableProps) => {
     }
   ];
 
+  const NoRowsOverlayElementConstructor = () => <NoRowsOverlay className={classes.noDataText} />;
+
   return (
     <DataGrid
       className={classes.dataGrid}
@@ -181,7 +183,7 @@ const ProjectsListTable = (props: IProjectsListTableProps) => {
       disableColumnMenu
       sortingOrder={['asc', 'desc']}
       components={{
-        NoRowsOverlay: () => <NoRowsOverlay className={classes.noDataText} />
+        NoRowsOverlay: NoRowsOverlayElementConstructor
       }}
     />
   );

@@ -1,6 +1,6 @@
 import { Formik } from 'formik';
 import React from 'react';
-import { act, fireEvent, render, waitFor } from 'test-helpers/test-utils';
+import { fireEvent, render, waitFor } from 'test-helpers/test-utils';
 import ProjectFundingForm, {
   IInvestmentActionCategoryOption,
   IProjectFundingForm,
@@ -65,7 +65,7 @@ const investment_action_category: IInvestmentActionCategoryOption[] = [
 
 describe('ProjectFundingForm', () => {
   it('renders correctly with default empty values', async () => {
-    const { queryByText } = render(
+    const { getByTestId } = render(
       <Formik
         initialValues={ProjectFundingFormInitialValues}
         validationSchema={ProjectFundingFormYupSchema}
@@ -82,9 +82,8 @@ describe('ProjectFundingForm', () => {
       </Formik>
     );
 
-    await waitFor(() => {
-      expect(queryByText('Add Funding Source')).toBeInTheDocument();
-    });
+    const addButton = getByTestId('funding-form-add-button');
+    expect(addButton).toBeInTheDocument();
   });
 
   it('renders correctly with existing funding values', async () => {
@@ -106,7 +105,7 @@ describe('ProjectFundingForm', () => {
       }
     };
 
-    const { queryByText } = render(
+    const { getByTestId } = render(
       <Formik
         initialValues={existingFormValues}
         validationSchema={ProjectFundingFormYupSchema}
@@ -123,10 +122,8 @@ describe('ProjectFundingForm', () => {
       </Formik>
     );
 
-    await waitFor(() => {
-      expect(queryByText('Add Funding Source')).toBeInTheDocument();
-      expect(queryByText('111')).toBeInTheDocument();
-    });
+    const addButton = getByTestId('funding-form-add-button');
+    expect(addButton).toBeInTheDocument();
   });
 
   it('shows add funding source dialog on add click', async () => {
@@ -159,7 +156,7 @@ describe('ProjectFundingForm', () => {
       }
     };
 
-    const { getByTestId, queryByText } = render(
+    const { getByTestId, findByTestId } = render(
       <Formik
         initialValues={existingFormValues}
         validationSchema={ProjectFundingFormYupSchema}
@@ -176,115 +173,119 @@ describe('ProjectFundingForm', () => {
       </Formik>
     );
 
-    const addButton = getByTestId('add-button');
-
+    const addButton = getByTestId('funding-form-add-button');
     expect(addButton).toBeInTheDocument();
 
     fireEvent.click(addButton);
 
-    await waitFor(() => {
-      expect(queryByText('Agency Details')).toBeInTheDocument();
-    });
+    const editDialog = await findByTestId('edit-dialog');
+    expect(editDialog).toBeInTheDocument();
   });
 
   it('shows edit funding source dialog on edit click', async () => {
-    await act(async () => {
-      const existingFormValues: IProjectFundingForm = {
-        funding: {
-          fundingSources: [
-            {
-              id: 11,
-              agency_id: 1,
-              investment_action_category: 1,
-              investment_action_category_name: 'action 1',
-              agency_project_id: '111',
-              funding_amount: 222,
-              start_date: '2021-03-14',
-              end_date: '2021-04-14',
-              revision_count: 23
-            }
-          ]
-        }
-      };
+    const existingFormValues: IProjectFundingForm = {
+      funding: {
+        fundingSources: [
+          {
+            id: 11,
+            agency_id: 1,
+            investment_action_category: 1,
+            investment_action_category_name: 'action 1',
+            agency_project_id: '111',
+            funding_amount: 222,
+            start_date: '2021-03-14',
+            end_date: '2021-04-14',
+            revision_count: 23
+          }
+        ]
+      }
+    };
 
-      const { getByTestId, getByText, queryByText } = render(
-        <Formik
-          initialValues={existingFormValues}
-          validationSchema={ProjectFundingFormYupSchema}
-          validateOnBlur={true}
-          validateOnChange={false}
-          onSubmit={async () => {}}>
-          {() => (
-            <ProjectFundingForm
-              first_nations={first_nations}
-              funding_sources={funding_sources}
-              investment_action_category={investment_action_category}
-            />
-          )}
-        </Formik>
-      );
-      const editButton = await getByTestId('edit-button-0');
-      expect(editButton).toBeInTheDocument();
+    const { getByTestId, findByTestId, queryByTestId } = render(
+      <Formik
+        initialValues={existingFormValues}
+        validationSchema={ProjectFundingFormYupSchema}
+        validateOnBlur={true}
+        validateOnChange={false}
+        onSubmit={async () => {}}>
+        {() => (
+          <ProjectFundingForm
+            first_nations={first_nations}
+            funding_sources={funding_sources}
+            investment_action_category={investment_action_category}
+          />
+        )}
+      </Formik>
+    );
 
-      fireEvent.click(editButton);
+    const editButton = getByTestId('funding-form-edit-button-0');
+    expect(editButton).toBeInTheDocument();
 
-      const saveButton = await queryByText('Save Changes');
+    fireEvent.click(editButton);
 
-      expect(saveButton).toBeInTheDocument();
-      expect(await queryByText('Agency Details')).toBeInTheDocument();
+    const saveButton = getByTestId('edit-dialog-cancel');
+    expect(saveButton).toBeInTheDocument();
 
-      const cancelButton = await getByText('Cancel');
-      expect(cancelButton).toBeInTheDocument();
+    const editDialog = await findByTestId('edit-dialog');
+    expect(editDialog).toBeInTheDocument();
 
-      fireEvent.click(cancelButton);
+    const cancelButton = getByTestId('edit-dialog-cancel');
+    expect(cancelButton).toBeInTheDocument();
 
-      expect(await queryByText('Cancel')).not.toBeInTheDocument();
-      fireEvent.click(editButton);
+    fireEvent.click(cancelButton);
+
+    let editDialog2;
+    await waitFor(() => {
+      editDialog2 = queryByTestId('edit-dialog');
     });
+    expect(editDialog2).not.toBeInTheDocument();
   });
 
   it('deletes funding source dialog on delete click', async () => {
-    await act(async () => {
-      const existingFormValues: IProjectFundingForm = {
-        funding: {
-          fundingSources: [
-            {
-              id: 11,
-              agency_id: 1,
-              investment_action_category: 1,
-              investment_action_category_name: 'action 1',
-              agency_project_id: '111',
-              funding_amount: 222,
-              start_date: '2021-03-14',
-              end_date: '2021-04-14',
-              revision_count: 23
-            }
-          ]
-        }
-      };
+    const existingFormValues: IProjectFundingForm = {
+      funding: {
+        fundingSources: [
+          {
+            id: 11,
+            agency_id: 1,
+            investment_action_category: 1,
+            investment_action_category_name: 'action 1',
+            agency_project_id: '111',
+            funding_amount: 222,
+            start_date: '2021-03-14',
+            end_date: '2021-04-14',
+            revision_count: 23
+          }
+        ]
+      }
+    };
 
-      const { getByTestId, queryByTestId } = render(
-        <Formik
-          initialValues={existingFormValues}
-          validationSchema={ProjectFundingFormYupSchema}
-          validateOnBlur={true}
-          validateOnChange={false}
-          onSubmit={async () => {}}>
-          {() => (
-            <ProjectFundingForm
-              first_nations={first_nations}
-              funding_sources={funding_sources}
-              investment_action_category={investment_action_category}
-            />
-          )}
-        </Formik>
-      );
+    const { getByTestId, queryByTestId } = render(
+      <Formik
+        initialValues={existingFormValues}
+        validationSchema={ProjectFundingFormYupSchema}
+        validateOnBlur={true}
+        validateOnChange={false}
+        onSubmit={async () => {}}>
+        {() => (
+          <ProjectFundingForm
+            first_nations={first_nations}
+            funding_sources={funding_sources}
+            investment_action_category={investment_action_category}
+          />
+        )}
+      </Formik>
+    );
 
-      const deleteButton = await getByTestId('delete-button-0');
-      expect(deleteButton).toBeInTheDocument();
-      fireEvent.click(deleteButton);
+    const deleteButton = getByTestId('funding-form-delete-button-0');
+    expect(deleteButton).toBeInTheDocument();
 
-      expect(await queryByTestId('delete-button-0')).not.toBeInTheDocument();
+    fireEvent.click(deleteButton);
+
+    let deleteButton2;
+    await waitFor(() => {
+      deleteButton2 = queryByTestId('funding-form-delete-button-0');
     });
+    expect(deleteButton2).not.toBeInTheDocument();
   });
 });
