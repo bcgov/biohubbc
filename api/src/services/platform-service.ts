@@ -2,6 +2,7 @@ import AdmZip from 'adm-zip';
 import axios from 'axios';
 import FormData from 'form-data';
 import { URL } from 'url';
+import { v4 as uuidv4 } from 'uuid';
 import { IDBConnection } from '../database/db';
 import { ApiGeneralError } from '../errors/api-error';
 import {
@@ -11,7 +12,7 @@ import {
   ISurveyReportAttachment
 } from '../repositories/attachment-repository';
 import { ISurveySummaryDetails } from '../repositories/summary-repository';
-import { ISurveyProprietorModel } from '../repositories/survey-repository';
+import { IGetLatestSurveyOccurrenceSubmission, ISurveyProprietorModel } from '../repositories/survey-repository';
 import { getFileFromS3 } from '../utils/file-utils';
 import { getLogger } from '../utils/logger';
 import { AttachmentService } from './attachment-service';
@@ -293,6 +294,7 @@ export class PlatformService extends DBService {
      */
     if (data.observations.length) {
       await this.submitSurveyDwCArchiveToBioHub(surveyId, emlPackage);
+      await this.submitSurveyObservationInputDataToBiohub(surveyId, emlPackage.packageId);
     }
 
     /**
@@ -634,6 +636,73 @@ export class PlatformService extends DBService {
   }
 
   /**
+   * Uploads the given survey occurrence input file to BioHub
+   *
+   * @param {number} surveyId
+   * @param {string} dataPackageId
+   * @memberof PlatformService
+   */
+  async submitSurveyObservationInputDataToBiohub(surveyId: number, dataPackageId: string) {
+    const surveyService = new SurveyService(this.connection);
+    const occurrenceSubmissionData = await surveyService.getLatestSurveyOccurrenceSubmission(surveyId);
+
+    if (!occurrenceSubmissionData?.input_key) {
+      throw new ApiGeneralError('Failed to submit survey to BioHub', ['Occurrence record has invalid s3 output key']);
+    }
+
+    // Build artifact object
+    const observationArtifact = await this._makeArtifactFromObservationInputData(
+      dataPackageId,
+      occurrenceSubmissionData
+    );
+
+    //Submit artifact to BioHub
+    const { artifact_id } = await this._submitArtifactToBioHub(observationArtifact);
+
+    //Insert publish history record
+    await this.historyPublishService.insertOccurrenceSubmissionPublishRecord({
+      occurrence_submission_id: occurrenceSubmissionData.occurrence_submission_id,
+      queue_id: artifact_id
+    });
+  }
+
+  /**
+   *  Makes artifact objects from the given survey occurrence submission input data.
+   *
+   * @param {string} dataPackageId
+   * @param {IGetLatestSurveyOccurrenceSubmission} observationSubmissionData
+   * @return {*}  {Promise<IArtifact>}
+   * @memberof PlatformService
+   */
+  async _makeArtifactFromObservationInputData(
+    dataPackageId: string,
+    observationSubmissionData: IGetLatestSurveyOccurrenceSubmission
+  ): Promise<IArtifact> {
+    const s3File = await getFileFromS3(observationSubmissionData.input_key);
+
+    const artifactZip = new AdmZip();
+    artifactZip.addFile(observationSubmissionData.input_file_name, s3File.Body as Buffer);
+
+    const artifact: IArtifact = {
+      dataPackageId,
+      archiveFile: {
+        data: artifactZip.toBuffer(),
+        fileName: `${uuidv4()}.zip`,
+        mimeType: 'application/zip'
+      },
+      metadata: {
+        file_name: observationSubmissionData.input_file_name,
+        file_size: String(s3File.ContentLength),
+        file_type: 'Observations',
+        title: observationSubmissionData.input_file_name,
+        description: observationSubmissionData.message
+      }
+    };
+
+    return artifact;
+  }
+
+  /**
    * Uploads the given survey summary submission to BioHub.
    *
    * @param {string} dataPackageId The dataPackageId for the artifact submission
@@ -698,7 +767,7 @@ export class PlatformService extends DBService {
       metadata: {
         file_name: surveySummarySubmissionData.file_name,
         file_size: String(s3File.ContentLength),
-        file_type: 'Summary',
+        file_type: 'Summary Results',
         title: surveySummarySubmissionData.file_name,
         description: surveySummarySubmissionData.message
       }
