@@ -54,7 +54,7 @@ const PublishProjectDialog = (props: IPublishProjectDialogProps) => {
       <SubmitBiohubDialog<IProjectSubmitForm>
         dialogTitle={SubmitProjectBiohubI18N.submitProjectBiohubDialogTitle}
         submissionSuccessDialogTitle={SubmitProjectBiohubI18N.submitProjectBiohubSuccessDialogTitle}
-        submissionSuccessDialogText={SubmitProjectBiohubI18N.submitProjectBiohubSuccessDialogTitle}
+        submissionSuccessDialogText={SubmitProjectBiohubI18N.submitProjectBiohubSuccessDialogText}
         noSubmissionDataDialogTitle={SubmitProjectBiohubI18N.submitProjectBiohubNoSubmissionDataDialogTitle}
         noSubmissionDataDialogText={SubmitProjectBiohubI18N.submitProjectBiohubNoSubmissionDataDialogText}
         hasSubmissionData={hasSubmissionData}

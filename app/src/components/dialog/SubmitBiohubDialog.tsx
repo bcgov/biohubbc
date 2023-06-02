@@ -70,7 +70,9 @@ export interface ISubmitBiohubDialogProps<Values> {
  * @param {*} props
  * @return {*}
  */
-const SubmitBiohubDialog = <Values extends FormikValues>(props: PropsWithChildren<ISubmitBiohubDialogProps<Values>>) => {
+const SubmitBiohubDialog = <Values extends FormikValues>(
+  props: PropsWithChildren<ISubmitBiohubDialogProps<Values>>
+) => {
   const { initialValues, validationSchema } = props.formikProps;
 
   const theme = useTheme();

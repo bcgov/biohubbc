@@ -97,7 +97,7 @@ const PublishSurveyDialog = (props: IPublishSurveyDialogProps) => {
       <SubmitBiohubDialog<ISurveySubmitForm>
         dialogTitle={SubmitSurveyBiohubI18N.submitSurveyBiohubDialogTitle}
         submissionSuccessDialogTitle={SubmitSurveyBiohubI18N.submitSurveyBiohubSuccessDialogTitle}
-        submissionSuccessDialogText={SubmitSurveyBiohubI18N.submitSurveyBiohubSuccessDialogTitle}
+        submissionSuccessDialogText={SubmitSurveyBiohubI18N.submitSurveyBiohubSuccessDialogText}
         noSubmissionDataDialogTitle={SubmitSurveyBiohubI18N.submitSurveyBiohubNoSubmissionDataDialogTitle}
         noSubmissionDataDialogText={SubmitSurveyBiohubI18N.submitSurveyBiohubNoSubmissionDataDialogText}
         hasSubmissionData={hasSubmissionData}
