@@ -45,11 +45,7 @@ export interface IComponentDialogProps {
  * @param {*} props
  * @return {*}
  */
-<<<<<<< HEAD
-const ComponentDialog: React.FC<React.PropsWithChildren<IComponentDialogProps>> = (props) => {
-=======
 const ComponentDialog: React.FC<PropsWithChildren<IComponentDialogProps>> = (props) => {
->>>>>>> dev
   const theme = useTheme();
 
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
