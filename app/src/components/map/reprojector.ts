@@ -214,14 +214,14 @@ export class ReProjector {
   }
 
   private projectPolygon(polygon: Position[][]): void {
-    for (let i = 0; i < polygon.length; i++) {
-      this.projectLineString(polygon[i]);
+    for (const item of polygon) {
+      this.projectLineString(item);
     }
   }
 
   private projectLineString(lineString: Position[]): void {
-    for (let i = 0; i < lineString.length; i++) {
-      this.projectPoint(lineString[i]);
+    for (const item of lineString) {
+      this.projectPoint(item);
     }
   }
 
