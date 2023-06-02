@@ -1,4 +1,3 @@
-import { cleanup, fireEvent, render, waitFor } from '@testing-library/react';
 import { AuthStateContext } from 'contexts/authStateContext';
 import { CodesContext, ICodesContext } from 'contexts/codesContext';
 import { createMemoryHistory } from 'history';
@@ -7,12 +6,15 @@ import { DataLoader } from 'hooks/useDataLoader';
 import React from 'react';
 import { MemoryRouter, Router } from 'react-router-dom';
 import { getMockAuthState, SystemAdminAuthState } from 'test-helpers/auth-helpers';
+import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
 import ProjectsListPage from './ProjectsListPage';
 
 const history = createMemoryHistory();
 
 jest.mock('../../../hooks/useBioHubApi');
-const mockUseBiohubApi = {
+const mockBiohubApi = useBiohubApi as jest.Mock;
+
+const mockUseApi = {
   project: {
     getProjectsList: jest.fn()
   },
@@ -24,14 +26,11 @@ const mockUseBiohubApi = {
   }
 };
 
-const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBiohubApi>).mockReturnValue(
-  mockUseBiohubApi
-);
-
 describe('ProjectsListPage', () => {
   beforeEach(() => {
-    mockBiohubApi().project.getProjectsList.mockClear();
-    mockBiohubApi().draft.getDraftsList.mockClear();
+    mockBiohubApi.mockImplementation(() => mockUseApi);
+    mockUseApi.project.getProjectsList.mockClear();
+    mockUseApi.draft.getDraftsList.mockClear();
   });
 
   afterEach(() => {
@@ -39,20 +38,20 @@ describe('ProjectsListPage', () => {
   });
 
   test('renders with the create project button', async () => {
-    mockBiohubApi().project.getProjectsList.mockResolvedValue([]);
-    mockBiohubApi().draft.getDraftsList.mockResolvedValue([]);
+    mockUseApi.project.getProjectsList.mockResolvedValue([]);
+    mockUseApi.draft.getDraftsList.mockResolvedValue([]);
 
     const authState = getMockAuthState({ base: SystemAdminAuthState });
 
-    const mockCodesContext: ICodesContext = ({
-      codesDataLoader: ({
+    const mockCodesContext: ICodesContext = {
+      codesDataLoader: {
         data: [],
         load: jest.fn(),
         refresh: jest.fn()
-      } as unknown) as DataLoader<any, any, any>,
+      } as unknown as DataLoader<any, any, any>,
       surveyId: 1,
       projectId: 1
-    } as unknown) as ICodesContext;
+    } as unknown as ICodesContext;
 
     const { getByText } = render(
       <AuthStateContext.Provider value={authState}>
@@ -70,18 +69,18 @@ describe('ProjectsListPage', () => {
   });
 
   test('renders with the open advanced filters button', async () => {
-    mockBiohubApi().project.getProjectsList.mockResolvedValue([]);
-    mockBiohubApi().draft.getDraftsList.mockResolvedValue([]);
+    mockUseApi.project.getProjectsList.mockResolvedValue([]);
+    mockUseApi.draft.getDraftsList.mockResolvedValue([]);
 
-    const mockCodesContext: ICodesContext = ({
-      codesDataLoader: ({
+    const mockCodesContext: ICodesContext = {
+      codesDataLoader: {
         data: [],
         load: jest.fn(),
         refresh: jest.fn()
-      } as unknown) as DataLoader<any, any, any>,
+      } as unknown as DataLoader<any, any, any>,
       surveyId: 1,
       projectId: 1
-    } as unknown) as ICodesContext;
+    } as unknown as ICodesContext;
 
     const { getByText } = render(
       <CodesContext.Provider value={mockCodesContext}>
@@ -97,25 +96,25 @@ describe('ProjectsListPage', () => {
   });
 
   test('renders with a list of drafts', async () => {
-    mockBiohubApi().draft.getDraftsList.mockResolvedValue([
+    mockUseApi.draft.getDraftsList.mockResolvedValue([
       {
         id: 1,
         name: 'Draft 1'
       }
     ]);
-    mockBiohubApi().project.getProjectsList.mockResolvedValue([]);
+    mockUseApi.project.getProjectsList.mockResolvedValue([]);
 
-    const mockCodesContext: ICodesContext = ({
-      codesDataLoader: ({
+    const mockCodesContext: ICodesContext = {
+      codesDataLoader: {
         data: [],
         load: jest.fn(),
         refresh: jest.fn()
-      } as unknown) as DataLoader<any, any, any>,
+      } as unknown as DataLoader<any, any, any>,
       surveyId: 1,
       projectId: 1
-    } as unknown) as ICodesContext;
+    } as unknown as ICodesContext;
 
-    const { getByText, getByTestId } = render(
+    const { findByText } = render(
       <CodesContext.Provider value={mockCodesContext}>
         <MemoryRouter>
           <ProjectsListPage />
@@ -123,28 +122,26 @@ describe('ProjectsListPage', () => {
       </CodesContext.Provider>
     );
 
-    await waitFor(() => {
-      expect(getByTestId('project-table')).toBeInTheDocument();
-      expect(getByText('Draft 1')).toBeInTheDocument();
-    });
+    expect(await findByText('Draft 1')).toBeInTheDocument();
   });
 
   test('navigating to the create project page works', async () => {
-    mockBiohubApi().project.getProjectsList.mockResolvedValue([]);
+    mockUseApi.project.getProjectsList.mockResolvedValue([]);
+    mockUseApi.draft.getDraftsList.mockResolvedValue([]);
 
     const authState = getMockAuthState({ base: SystemAdminAuthState });
 
-    const mockCodesContext: ICodesContext = ({
-      codesDataLoader: ({
+    const mockCodesContext: ICodesContext = {
+      codesDataLoader: {
         data: [],
         load: jest.fn(),
         refresh: jest.fn()
-      } as unknown) as DataLoader<any, any, any>,
+      } as unknown as DataLoader<any, any, any>,
       surveyId: 1,
       projectId: 1
-    } as unknown) as ICodesContext;
+    } as unknown as ICodesContext;
 
-    const { getByText, getByTestId } = render(
+    const { findByText } = render(
       <AuthStateContext.Provider value={authState}>
         <CodesContext.Provider value={mockCodesContext}>
           <Router history={history}>
@@ -154,11 +151,7 @@ describe('ProjectsListPage', () => {
       </AuthStateContext.Provider>
     );
 
-    await waitFor(() => {
-      expect(getByTestId('project-table')).toBeInTheDocument();
-    });
-
-    fireEvent.click(getByText('Create Project'));
+    fireEvent.click(await findByText('Create Project'));
 
     await waitFor(() => {
       expect(history.location.pathname).toEqual('/admin/projects/create');
@@ -167,24 +160,25 @@ describe('ProjectsListPage', () => {
   });
 
   test('navigating to the create project page works on draft projects', async () => {
-    mockBiohubApi().draft.getDraftsList.mockResolvedValue([
+    mockUseApi.project.getProjectsList.mockResolvedValue([]);
+    mockUseApi.draft.getDraftsList.mockResolvedValue([
       {
         id: 1,
         name: 'Draft 1'
       }
     ]);
 
-    const mockCodesContext: ICodesContext = ({
-      codesDataLoader: ({
+    const mockCodesContext: ICodesContext = {
+      codesDataLoader: {
         data: [],
         load: jest.fn(),
         refresh: jest.fn()
-      } as unknown) as DataLoader<any, any, any>,
+      } as unknown as DataLoader<any, any, any>,
       surveyId: 1,
       projectId: 1
-    } as unknown) as ICodesContext;
+    } as unknown as ICodesContext;
 
-    const { getByTestId } = render(
+    const { findByText } = render(
       <CodesContext.Provider value={mockCodesContext}>
         <Router history={history}>
           <ProjectsListPage />
@@ -192,11 +186,7 @@ describe('ProjectsListPage', () => {
       </CodesContext.Provider>
     );
 
-    await waitFor(() => {
-      expect(getByTestId('project-table')).toBeInTheDocument();
-    });
-
-    fireEvent.click(getByTestId('Draft 1'));
+    fireEvent.click(await findByText('Draft 1'));
 
     await waitFor(() => {
       expect(history.location.pathname).toEqual('/admin/projects/create');
@@ -205,7 +195,7 @@ describe('ProjectsListPage', () => {
   });
 
   test('navigating to the project works', async () => {
-    mockBiohubApi().project.getProjectsList.mockResolvedValue([
+    mockUseApi.project.getProjectsList.mockResolvedValue([
       {
         projectData: {
           id: 1,
@@ -221,19 +211,19 @@ describe('ProjectsListPage', () => {
       }
     ]);
 
-    mockBiohubApi().draft.getDraftsList.mockResolvedValue([]);
+    mockUseApi.draft.getDraftsList.mockResolvedValue([]);
 
-    const mockCodesContext: ICodesContext = ({
-      codesDataLoader: ({
+    const mockCodesContext: ICodesContext = {
+      codesDataLoader: {
         data: [],
         load: jest.fn(),
         refresh: jest.fn()
-      } as unknown) as DataLoader<any, any, any>,
+      } as unknown as DataLoader<any, any, any>,
       surveyId: 1,
       projectId: 1
-    } as unknown) as ICodesContext;
+    } as unknown as ICodesContext;
 
-    const { getByTestId } = render(
+    const { findByText } = render(
       <CodesContext.Provider value={mockCodesContext}>
         <Router history={history}>
           <ProjectsListPage />
@@ -241,11 +231,7 @@ describe('ProjectsListPage', () => {
       </CodesContext.Provider>
     );
 
-    await waitFor(() => {
-      expect(getByTestId('project-table')).toBeInTheDocument();
-    });
-
-    fireEvent.click(getByTestId('Project 1'));
+    fireEvent.click(await findByText('Project 1'));
 
     await waitFor(() => {
       expect(history.location.pathname).toEqual('/admin/projects/1');

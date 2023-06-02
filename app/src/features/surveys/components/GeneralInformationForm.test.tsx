@@ -1,4 +1,3 @@
-import { render, waitFor } from '@testing-library/react';
 import GeneralInformationForm, {
   GeneralInformationInitialValues,
   GeneralInformationYupSchema,
@@ -8,18 +7,17 @@ import { Formik } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import React from 'react';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
+import { render, waitFor } from 'test-helpers/test-utils';
 
 jest.mock('../../../hooks/useBioHubApi');
-const mockUseBiohubApi = {
+const mockBiohubApi = useBiohubApi as jest.Mock;
+
+const mockUseApi = {
   taxonomy: {
     searchSpecies: jest.fn().mockResolvedValue({ searchResponse: [] }),
     getSpeciesFromIds: jest.fn().mockResolvedValue({ searchResponse: [] })
   }
 };
-
-const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBiohubApi>).mockReturnValue(
-  mockUseBiohubApi
-);
 
 const handleSaveAndNext = jest.fn();
 
@@ -50,8 +48,9 @@ const generalInformationFilledValues: IGeneralInformationForm = {
 
 describe('General Information Form', () => {
   beforeEach(() => {
-    mockBiohubApi().taxonomy.searchSpecies.mockResolvedValue({ searchResponse: [] });
-    mockBiohubApi().taxonomy.getSpeciesFromIds.mockResolvedValue({ searchResponse: [] });
+    mockBiohubApi.mockImplementation(() => mockUseApi);
+    mockUseApi.taxonomy.searchSpecies.mockResolvedValue({ searchResponse: [] });
+    mockUseApi.taxonomy.getSpeciesFromIds.mockResolvedValue({ searchResponse: [] });
   });
 
   it('renders correctly the empty component correctly', async () => {

@@ -144,6 +144,8 @@ const MapContainer = (props: IMapContainerProps) => {
         setInferredLayersInfo(inferredLayers);
       }
     }, 300),
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [drawControls?.initialFeatures, nonEditableGeometries]
   );
 

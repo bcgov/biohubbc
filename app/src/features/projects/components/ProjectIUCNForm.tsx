@@ -27,9 +27,9 @@ export interface IProjectIUCNForm {
 }
 
 export const ProjectIUCNFormArrayItemInitialValues: IProjectIUCNFormArrayItem = {
-  classification: ('' as unknown) as number,
-  subClassification1: ('' as unknown) as number,
-  subClassification2: ('' as unknown) as number
+  classification: '' as unknown as number,
+  subClassification1: '' as unknown as number,
+  subClassification2: '' as unknown as number
 };
 
 export const ProjectIUCNFormInitialValues: IProjectIUCNForm = {
@@ -104,8 +104,8 @@ const ProjectIUCNForm: React.FC<IProjectIUCNFormProps> = (props) => {
                         label="Classification"
                         value={classificationDetail.classification}
                         onChange={(e: any) => {
-                          classificationDetail.subClassification1 = ('' as unknown) as number;
-                          classificationDetail.subClassification2 = ('' as unknown) as number;
+                          classificationDetail.subClassification1 = '' as unknown as number;
+                          classificationDetail.subClassification2 = '' as unknown as number;
                           handleChange(e);
                         }}
                         error={classificationMeta.touched && Boolean(classificationMeta.error)}
@@ -132,7 +132,7 @@ const ProjectIUCNForm: React.FC<IProjectIUCNFormProps> = (props) => {
                         label="Sub-classification"
                         value={classificationDetail.subClassification1}
                         onChange={(e: any) => {
-                          classificationDetail.subClassification2 = ('' as unknown) as number;
+                          classificationDetail.subClassification2 = '' as unknown as number;
                           handleChange(e);
                         }}
                         disabled={!classificationDetail.classification}

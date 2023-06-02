@@ -53,14 +53,8 @@ const PublishSurveyDialog = (props: IPublishSurveyDialogProps) => {
   const biohubApi = useBiohubApi();
   const surveyContext = useContext(SurveyContext);
 
-  const {
-    surveyDataLoader,
-    observationDataLoader,
-    artifactDataLoader,
-    summaryDataLoader,
-    surveyId,
-    projectId
-  } = surveyContext;
+  const { surveyDataLoader, observationDataLoader, artifactDataLoader, summaryDataLoader, surveyId, projectId } =
+    surveyContext;
 
   const unsubmittedObservations: ISurveyObservationData[] = [];
   const unsubmittedSummaryResults: ISurveySummaryData[] = [];

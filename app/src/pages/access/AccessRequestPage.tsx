@@ -22,6 +22,7 @@ import {
 } from 'interfaces/useAdminApi.interface';
 import React, { ReactElement, useContext, useState } from 'react';
 import { Redirect, useHistory } from 'react-router';
+import { Link } from 'react-router-dom';
 import BCeIDRequestForm, {
   BCeIDBasicRequestFormInitialValues,
   BCeIDBasicRequestFormYupSchema,
@@ -198,9 +199,8 @@ export const AccessRequestPage: React.FC = () => {
                     <Button
                       variant="outlined"
                       color="primary"
-                      onClick={() => {
-                        history.push('/logout');
-                      }}
+                      component={Link}
+                      to="/logout"
                       className={classes.actionButton}
                       data-testid="logout-button">
                       Log out

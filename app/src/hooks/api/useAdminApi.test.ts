@@ -22,8 +22,8 @@ describe('useAdminApi', () => {
     mock.onPost('/api/gcnotify/send').reply(200);
 
     const result = await useAdminApi(axios).sendGCNotification(
-      ({ emailAddress: 'test@@email.com' } as unknown) as IgcNotifyRecipient,
-      ({ body: 'test' } as unknown) as IgcNotifyGenericMessage
+      { emailAddress: 'test@@email.com' } as unknown as IgcNotifyRecipient,
+      { body: 'test' } as unknown as IgcNotifyGenericMessage
     );
 
     expect(result).toEqual(true);
@@ -57,9 +57,9 @@ describe('useAdminApi', () => {
       date: '2020/04/04'
     });
 
-    const result = await useAdminApi(axios).createAdministrativeActivity(({
+    const result = await useAdminApi(axios).createAdministrativeActivity({
       key: 'value'
-    } as unknown) as IAccessRequestDataObject);
+    } as unknown as IAccessRequestDataObject);
 
     expect(result).toEqual({
       id: 2,

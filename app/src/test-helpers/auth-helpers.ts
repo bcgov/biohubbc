@@ -8,9 +8,9 @@ import Keycloak from 'keycloak-js';
  */
 export const UnauthenticatedUserAuthState: IAuthState = {
   keycloakWrapper: {
-    keycloak: ({
+    keycloak: {
       authenticated: false
-    } as unknown) as Keycloak,
+    } as unknown as Keycloak,
     hasLoadedAllUserInfo: false,
     systemRoles: [],
     isSystemUser: () => false,
@@ -39,9 +39,9 @@ export const UnauthenticatedUserAuthState: IAuthState = {
  */
 export const SystemUserAuthState: IAuthState = {
   keycloakWrapper: {
-    keycloak: ({
+    keycloak: {
       authenticated: true
-    } as unknown) as Keycloak,
+    } as unknown as Keycloak,
     hasLoadedAllUserInfo: true,
     systemRoles: [],
     isSystemUser: () => true,
@@ -70,9 +70,9 @@ export const SystemUserAuthState: IAuthState = {
  */
 export const SystemAdminAuthState: IAuthState = {
   keycloakWrapper: {
-    keycloak: ({
+    keycloak: {
       authenticated: true
-    } as unknown) as Keycloak,
+    } as unknown as Keycloak,
     hasLoadedAllUserInfo: true,
     systemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN],
     isSystemUser: () => true,
@@ -106,7 +106,7 @@ type Subset<T> = {
 export const getMockAuthState = (options: { base: IAuthState; overrides?: Subset<IAuthState> }): IAuthState => {
   const { base, overrides } = options;
 
-  return ({
+  return {
     ...base,
     ...overrides,
     keycloakWrapper: {
@@ -117,5 +117,5 @@ export const getMockAuthState = (options: { base: IAuthState; overrides?: Subset
         ...overrides?.keycloakWrapper?.keycloak
       }
     }
-  } as unknown) as IAuthState;
+  } as unknown as IAuthState;
 };

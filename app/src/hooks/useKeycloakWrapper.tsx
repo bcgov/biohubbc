@@ -143,7 +143,7 @@ function useKeycloakWrapper(): IKeycloakWrapper {
   const keycloakUserDataLoader = useDataLoader(async () => {
     return (
       (keycloak.token &&
-        ((keycloak.loadUserInfo() as unknown) as IIDIRUserInfo | IBCEIDBasicUserInfo | IBCEIDBusinessUserInfo)) ||
+        (keycloak.loadUserInfo() as unknown as IIDIRUserInfo | IBCEIDBasicUserInfo | IBCEIDBusinessUserInfo)) ||
       undefined
     );
   });
@@ -229,7 +229,7 @@ function useKeycloakWrapper(): IKeycloakWrapper {
    */
   const getIdentitySource = useCallback((): SYSTEM_IDENTITY_SOURCE | null => {
     const userIdentitySource =
-      userDataLoader.data?.['identity_source'] ||
+      userDataLoader.data?.['identity_source'] ??
       keycloakUserDataLoader.data?.['preferred_username']?.split('@')?.[1].toUpperCase();
 
     if (!userIdentitySource) {

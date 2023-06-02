@@ -1,9 +1,9 @@
-import { fireEvent, render, waitFor } from '@testing-library/react';
 import { AuthStateContext } from 'contexts/authStateContext';
 import { createMemoryHistory } from 'history';
 import React from 'react';
 import { Router } from 'react-router';
 import { getMockAuthState, SystemAdminAuthState, SystemUserAuthState } from 'test-helpers/auth-helpers';
+import { render } from 'test-helpers/test-utils';
 import RequestSubmitted from './RequestSubmitted';
 
 describe('RequestSubmitted', () => {
@@ -112,11 +112,7 @@ describe('RequestSubmitted', () => {
         </AuthStateContext.Provider>
       );
 
-      fireEvent.click(getByTestId('logout-button'));
-
-      waitFor(() => {
-        expect(history.location.pathname).toEqual('/logout');
-      });
+      expect(getByTestId('logout-button')).toHaveAttribute('href', '/logout');
     });
   });
 });

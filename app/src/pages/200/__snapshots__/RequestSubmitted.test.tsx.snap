@@ -53,11 +53,13 @@ exports[`RequestSubmitted renders correctly when user has no role but has a pend
       <div
         class="MuiBox-root MuiBox-root-2"
       >
-        <button
+        <a
+          aria-disabled="false"
           class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-containedSizeLarge MuiButton-sizeLarge"
           data-testid="logout-button"
+          href="/logout"
+          role="button"
           tabindex="0"
-          type="submit"
         >
           <span
             class="MuiButton-label"
@@ -67,7 +69,7 @@ exports[`RequestSubmitted renders correctly when user has no role but has a pend
           <span
             class="MuiTouchRipple-root"
           />
-        </button>
+        </a>
       </div>
     </div>
   </div>

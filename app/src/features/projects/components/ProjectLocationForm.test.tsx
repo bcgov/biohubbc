@@ -1,7 +1,7 @@
-import { cleanup, render, waitFor } from '@testing-library/react';
 import MapBoundary from 'components/boundary/MapBoundary';
 import { Formik } from 'formik';
 import React from 'react';
+import { cleanup, render, waitFor } from 'test-helpers/test-utils';
 import ProjectLocationForm, {
   IProjectLocationForm,
   ProjectLocationFormInitialValues,
@@ -9,9 +9,14 @@ import ProjectLocationForm, {
 } from './ProjectLocationForm';
 
 // Mock MapBoundary component
-jest.mock('../../../components/boundary/MapBoundary', () => jest.fn(() => <div />));
+jest.mock('../../../components/boundary/MapBoundary');
+const mockMapBoundary = MapBoundary as jest.Mock;
 
 describe('ProjectLocationForm', () => {
+  beforeEach(() => {
+    mockMapBoundary.mockImplementation(() => <div />);
+  });
+
   afterEach(() => {
     cleanup();
   });

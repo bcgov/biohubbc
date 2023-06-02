@@ -15,7 +15,7 @@ export interface IReviewAccessRequestForm {
 }
 
 export const ReviewAccessRequestFormInitialValues: IReviewAccessRequestForm = {
-  system_role: ('' as unknown) as number
+  system_role: '' as unknown as number
 };
 
 export const ReviewAccessRequestFormYupSchema = yup.object().shape({

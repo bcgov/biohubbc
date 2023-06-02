@@ -1,20 +1,23 @@
-import { cleanup, render, waitFor } from '@testing-library/react';
 import MapContainer from 'components/map/MapContainer';
 import { createMemoryHistory } from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetSearchResultsResponse } from 'interfaces/useSearchApi.interface';
 import React from 'react';
 import { Router } from 'react-router-dom';
+import { cleanup, render, waitFor } from 'test-helpers/test-utils';
 import SearchPage from './SearchPage';
 
 const history = createMemoryHistory();
 
 // Mock MapContainer component
-jest.mock('../../components/map/MapContainer', () => jest.fn(() => <div />));
+jest.mock('../../components/map/MapContainer');
+const mockMapContainer = MapContainer as jest.Mock;
 
 // Mock useBioHubApi
 jest.mock('../../hooks/useBioHubApi');
-const mockUseBiohubApi = {
+const mockBiohubApi = useBiohubApi as jest.Mock;
+
+const mockUseApi = {
   search: {
     getSearchResults: jest.fn()
   },
@@ -23,11 +26,12 @@ const mockUseBiohubApi = {
   }
 };
 
-const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBiohubApi>).mockReturnValue(
-  mockUseBiohubApi
-);
-
 describe('SearchPage', () => {
+  beforeEach(() => {
+    mockBiohubApi.mockImplementation(() => mockUseApi);
+    mockMapContainer.mockImplementation(() => <div />);
+  });
+
   afterEach(() => {
     cleanup();
   });
@@ -50,7 +54,7 @@ describe('SearchPage', () => {
       }
     ];
 
-    mockBiohubApi().search.getSearchResults.mockResolvedValue(mockSearchResponse);
+    mockUseApi.search.getSearchResults.mockResolvedValue(mockSearchResponse);
 
     const { getByText } = render(
       <Router history={history}>

@@ -94,6 +94,7 @@ export const EditDialog = <T extends FormikValues>(props: PropsWithChildren<IEdi
       }}>
       {(formikProps) => (
         <Dialog
+          data-testid="edit-dialog"
           fullScreen={fullScreen}
           maxWidth="xl"
           open={props.open}

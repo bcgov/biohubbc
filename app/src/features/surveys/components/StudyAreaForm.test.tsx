@@ -1,4 +1,4 @@
-import { render, waitFor } from '@testing-library/react';
+import { cleanup } from '@testing-library/react-hooks';
 import MapBoundary from 'components/boundary/MapBoundary';
 import StudyAreaForm, {
   IStudyAreaForm,
@@ -7,11 +7,21 @@ import StudyAreaForm, {
 } from 'features/surveys/components/StudyAreaForm';
 import { Formik } from 'formik';
 import React from 'react';
+import { render, waitFor } from 'test-helpers/test-utils';
 
 // Mock MapBoundary component
-jest.mock('../../../components/boundary/MapBoundary', () => jest.fn(() => <div />));
+jest.mock('../../../components/boundary/MapBoundary');
+const mockMapBoundary = MapBoundary as jest.Mock;
 
 describe('Study Area Form', () => {
+  beforeEach(() => {
+    mockMapBoundary.mockImplementation(() => <div />);
+  });
+
+  afterEach(() => {
+    cleanup();
+  });
+
   it('renders correctly with default values', async () => {
     const { getByLabelText, getByTestId } = render(
       <Formik
