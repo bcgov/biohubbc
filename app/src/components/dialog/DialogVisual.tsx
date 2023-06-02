@@ -1,10 +1,10 @@
 import Avatar from '@material-ui/core/Avatar';
-import { mdiAlert, mdiCheck, mdiExclamation, mdiFileCheckOutline } from '@mdi/js';
-import Icon from '@mdi/react';
-import React from 'react'
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
+import { mdiAlert, mdiCheck, mdiExclamation, mdiFileCheckOutline } from '@mdi/js';
+import Icon from '@mdi/react';
 import clsx from 'clsx';
+import React from 'react';
 
 const useStyles = makeStyles((theme: Theme) => ({
   dialogVisual: {
@@ -30,15 +30,14 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }));
 
-
 type Severity = 'error' | 'info' | 'success' | 'warning';
 
 const defaultIcons: Record<Severity, string> = {
-  'error': mdiExclamation,
-  'info': mdiFileCheckOutline,
-  'success': mdiCheck,
-  'warning': mdiAlert
-}
+  error: mdiExclamation,
+  info: mdiFileCheckOutline,
+  success: mdiCheck,
+  warning: mdiAlert
+};
 
 interface IDialogVisualProps {
   severity?: Severity;
@@ -51,10 +50,10 @@ const DialogVisual = (props: IDialogVisualProps) => {
   const severity: Severity = props.severity || 'info';
 
   return (
-    <Avatar className={clsx(classes.dialogVisual, classes[severity])} color='error'>
+    <Avatar className={clsx(classes.dialogVisual, classes[severity])} color="error">
       <Icon path={props.icon || defaultIcons[severity]} size={2} />
     </Avatar>
-  )
-}
+  );
+};
 
-export default DialogVisual
+export default DialogVisual;

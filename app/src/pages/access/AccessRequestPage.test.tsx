@@ -6,8 +6,8 @@ import { createMemoryHistory } from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import React from 'react';
 import { Router } from 'react-router';
-import appTheme from 'themes/appTheme';
 import { getMockAuthState, SystemAdminAuthState } from 'test-helpers/auth-helpers';
+import appTheme from 'themes/appTheme';
 import AccessRequestPage from './AccessRequestPage';
 
 const history = createMemoryHistory();
