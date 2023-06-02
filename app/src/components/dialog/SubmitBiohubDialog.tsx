@@ -20,7 +20,7 @@ import { IErrorDialogProps } from './ErrorDialog';
  * @export
  * @interface ISubmitBiohubDialogProps
  */
-export interface ISubmitBiohubDialogProps<V> {
+export interface ISubmitBiohubDialogProps<Values> {
   /**
    * The dialog window title text.
    *
@@ -46,14 +46,14 @@ export interface ISubmitBiohubDialogProps<V> {
    *
    * @memberof ISubmitBiohubDialogProps
    */
-  onSubmit: (values: V) => Promise<void>;
+  onSubmit: (values: Values) => Promise<void>;
   /**
    * Formik props for setup
    *
-   * @type {{ initialValues: V; validationSchema: yup.ObjectSchema<any> }}
+   * @type {{ initialValues: Values; validationSchema: yup.ObjectSchema<any> }}
    * @memberof ISubmitBiohubDialogProps
    */
-  formikProps: { initialValues: V; validationSchema: yup.ObjectSchema<any> };
+  formikProps: { initialValues: Values; validationSchema: yup.ObjectSchema<any> };
 
   submissionSuccessDialogTitle: string;
   submissionSuccessDialogText: string;
@@ -70,7 +70,7 @@ export interface ISubmitBiohubDialogProps<V> {
  * @param {*} props
  * @return {*}
  */
-const SubmitBiohubDialog = <V extends FormikValues>(props: PropsWithChildren<ISubmitBiohubDialogProps<V>>) => {
+const SubmitBiohubDialog = <Values extends FormikValues>(props: PropsWithChildren<ISubmitBiohubDialogProps<Values>>) => {
   const { initialValues, validationSchema } = props.formikProps;
 
   const theme = useTheme();
@@ -95,7 +95,7 @@ const SubmitBiohubDialog = <V extends FormikValues>(props: PropsWithChildren<ISu
     dialogContext.setErrorDialog({ ...defaultErrorDialogProps, ...textDialogProps, open: true });
   };
 
-  const handleSubmit = (values: V) => {
+  const handleSubmit = (values: Values) => {
     if (JSON.stringify(values) === JSON.stringify(initialValues)) {
       showErrorDialog({
         dialogTitle: SubmitBiohubI18N.noInformationDialogTitle,
@@ -146,7 +146,7 @@ const SubmitBiohubDialog = <V extends FormikValues>(props: PropsWithChildren<ISu
         open={props.open}
         aria-labelledby="component-dialog-title"
         aria-describedby="component-dialog-description">
-        <Formik<V>
+        <Formik<Values>
           innerRef={formikRef}
           initialValues={initialValues}
           validationSchema={validationSchema}
