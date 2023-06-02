@@ -139,6 +139,7 @@ const SurveyStudyArea = () => {
     zoomToBoundaryExtent();
   }, [surveyGeometry, occurrence_submission_id, setNonEditableGeometries, zoomToBoundaryExtent]);
 
+  // TODO: This component should not define error dialog props in state and should instead consume the dialog context.
   const [errorDialogProps, setErrorDialogProps] = useState<IErrorDialogProps>({
     dialogTitle: EditSurveyStudyAreaI18N.editErrorTitle,
     dialogText: EditSurveyStudyAreaI18N.editErrorText,
@@ -237,6 +238,7 @@ const SurveyStudyArea = () => {
         backButtonTitle={'Back To Survey'}
         mapTitle={'Study Area'}
       />
+
       <ErrorDialog {...errorDialogProps} />
 
       <H2ButtonToolbar

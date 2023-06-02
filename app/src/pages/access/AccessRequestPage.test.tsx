@@ -1,3 +1,4 @@
+import { ThemeProvider } from '@material-ui/styles';
 import { cleanup, fireEvent, render, waitFor, within } from '@testing-library/react';
 import { AuthStateContext } from 'contexts/authStateContext';
 import { DialogContextProvider } from 'contexts/dialogContext';
@@ -6,6 +7,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import React from 'react';
 import { Router } from 'react-router';
 import { getMockAuthState, SystemAdminAuthState } from 'test-helpers/auth-helpers';
+import appTheme from 'themes/appTheme';
 import AccessRequestPage from './AccessRequestPage';
 
 const history = createMemoryHistory();
@@ -28,13 +30,15 @@ const renderContainer = () => {
   const authState = getMockAuthState({ base: SystemAdminAuthState });
 
   return render(
-    <AuthStateContext.Provider value={authState}>
-      <DialogContextProvider>
-        <Router history={history}>
-          <AccessRequestPage />
-        </Router>
-      </DialogContextProvider>
-    </AuthStateContext.Provider>
+    <ThemeProvider theme={appTheme}>
+      <AuthStateContext.Provider value={authState}>
+        <DialogContextProvider>
+          <Router history={history}>
+            <AccessRequestPage />
+          </Router>
+        </DialogContextProvider>
+      </AuthStateContext.Provider>
+    </ThemeProvider>
   );
 };
 
@@ -72,11 +76,13 @@ describe('AccessRequestPage', () => {
       const authState = getMockAuthState({ base: SystemAdminAuthState });
 
       const { getByText } = render(
-        <AuthStateContext.Provider value={authState}>
-          <Router history={history}>
-            <AccessRequestPage />
-          </Router>
-        </AuthStateContext.Provider>
+        <ThemeProvider theme={appTheme}>
+          <AuthStateContext.Provider value={authState}>
+            <Router history={history}>
+              <AccessRequestPage />
+            </Router>
+          </AuthStateContext.Provider>
+        </ThemeProvider>
       );
 
       fireEvent.click(getByText('Log out'));
@@ -123,11 +129,13 @@ describe('AccessRequestPage', () => {
     const authState = getMockAuthState({ base: SystemAdminAuthState });
 
     render(
-      <AuthStateContext.Provider value={authState}>
-        <Router history={history}>
-          <AccessRequestPage />
-        </Router>
-      </AuthStateContext.Provider>
+      <ThemeProvider theme={appTheme}>
+        <AuthStateContext.Provider value={authState}>
+          <Router history={history}>
+            <AccessRequestPage />
+          </Router>
+        </AuthStateContext.Provider>
+      </ThemeProvider>
     );
 
     await waitFor(() => {
