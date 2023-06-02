@@ -12,7 +12,7 @@ import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { SYSTEM_ROLE } from 'constants/roles';
 import { IGetDraftsListResponse } from 'interfaces/useDraftApi.interface';
 import { IGetProjectsListResponse } from 'interfaces/useProjectApi.interface';
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { getFormattedDate } from 'utils/Utils';
 
@@ -149,7 +149,7 @@ const ProjectsListTable = (props: IProjectsListTableProps) => {
     }
   ];
 
-  const NoRowsOverlayElementConstructor = () => <NoRowsOverlay className={classes.noDataText} />;
+  const NoRowsOverlayStyled = useCallback(() => <NoRowsOverlay className={classes.noDataText} />, [classes.noDataText]);
 
   return (
     <DataGrid
@@ -183,7 +183,7 @@ const ProjectsListTable = (props: IProjectsListTableProps) => {
       disableColumnMenu
       sortingOrder={['asc', 'desc']}
       components={{
-        NoRowsOverlay: NoRowsOverlayElementConstructor
+        NoRowsOverlay: NoRowsOverlayStyled
       }}
     />
   );
