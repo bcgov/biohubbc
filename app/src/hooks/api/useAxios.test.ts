@@ -13,7 +13,7 @@ describe('APIError', () => {
       }
     } as Partial<AxiosError>;
 
-    const apiError = new APIError((error as unknown) as AxiosError);
+    const apiError = new APIError(error as unknown as AxiosError);
 
     expect(apiError).not.toBe(null);
 

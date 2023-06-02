@@ -1,4 +1,3 @@
-import { cleanup, fireEvent, render, waitFor } from '@testing-library/react';
 import { IProjectContext, ProjectContext } from 'contexts/projectContext';
 import { ISurveyContext, SurveyContext } from 'contexts/surveyContext';
 import { createMemoryHistory } from 'history';
@@ -6,16 +5,13 @@ import { DataLoader } from 'hooks/useDataLoader';
 import { IGetSurveyAttachment } from 'interfaces/useSurveyApi.interface';
 import React from 'react';
 import { Router } from 'react-router';
+import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
 import { AttachmentType } from '../../../constants/attachments';
 import AttachmentsList from './AttachmentsList';
 
 jest.mock('../../../hooks/useBioHubApi');
 
 describe('AttachmentsList', () => {
-  beforeEach(() => {
-    // clear mocks before each test
-  });
-
   afterEach(() => {
     cleanup();
   });
@@ -52,21 +48,21 @@ describe('AttachmentsList', () => {
   const history = createMemoryHistory({ initialEntries: ['/admin/projects/1'] });
 
   it('renders correctly with no Documents', () => {
-    const mockSurveyContext: ISurveyContext = ({
+    const mockSurveyContext: ISurveyContext = {
       projectId: 1,
-      surveyDataLoader: ({
+      surveyDataLoader: {
         data: { surveyData: { survey_details: { survey_name: 'name' } } },
         load: jest.fn()
-      } as unknown) as DataLoader<any, any, any>
-    } as unknown) as ISurveyContext;
+      } as unknown as DataLoader<any, any, any>
+    } as unknown as ISurveyContext;
 
-    const mockProjectContext: IProjectContext = ({
+    const mockProjectContext: IProjectContext = {
       projectId: 1,
-      projectDataLoader: ({
+      projectDataLoader: {
         data: { projectData: { project: { project_name: 'name' } } },
         load: jest.fn()
-      } as unknown) as DataLoader<any, any, any>
-    } as unknown) as IProjectContext;
+      } as unknown as DataLoader<any, any, any>
+    } as unknown as IProjectContext;
 
     const { getByText } = render(
       <Router history={history}>
@@ -87,21 +83,21 @@ describe('AttachmentsList', () => {
   });
 
   it('renders correctly with attachments (of various sizes)', async () => {
-    const mockSurveyContext: ISurveyContext = ({
+    const mockSurveyContext: ISurveyContext = {
       projectId: 1,
-      surveyDataLoader: ({
+      surveyDataLoader: {
         data: { surveyData: { survey_details: { survey_name: 'name' } } },
         load: jest.fn()
-      } as unknown) as DataLoader<any, any, any>
-    } as unknown) as ISurveyContext;
+      } as unknown as DataLoader<any, any, any>
+    } as unknown as ISurveyContext;
 
-    const mockProjectContext: IProjectContext = ({
+    const mockProjectContext: IProjectContext = {
       projectId: 1,
-      projectDataLoader: ({
+      projectDataLoader: {
         data: { projectData: { project: { project_name: 'name' } } },
         load: jest.fn()
-      } as unknown) as DataLoader<any, any, any>
-    } as unknown) as IProjectContext;
+      } as unknown as DataLoader<any, any, any>
+    } as unknown as IProjectContext;
 
     const { getByText } = render(
       <Router history={history}>
@@ -126,21 +122,21 @@ describe('AttachmentsList', () => {
   it('viewing file contents in new tab works as expected for project attachments', async () => {
     window.open = jest.fn();
 
-    const mockSurveyContext: ISurveyContext = ({
+    const mockSurveyContext: ISurveyContext = {
       projectId: 1,
-      surveyDataLoader: ({
+      surveyDataLoader: {
         data: { surveyData: { survey_details: { survey_name: 'name' } } },
         load: jest.fn()
-      } as unknown) as DataLoader<any, any, any>
-    } as unknown) as ISurveyContext;
+      } as unknown as DataLoader<any, any, any>
+    } as unknown as ISurveyContext;
 
-    const mockProjectContext: IProjectContext = ({
+    const mockProjectContext: IProjectContext = {
       projectId: 1,
-      projectDataLoader: ({
+      projectDataLoader: {
         data: { projectData: { project: { project_name: 'name' } } },
         load: jest.fn()
-      } as unknown) as DataLoader<any, any, any>
-    } as unknown) as IProjectContext;
+      } as unknown as DataLoader<any, any, any>
+    } as unknown as IProjectContext;
 
     const handleDownload = jest.fn();
     const { getByText } = render(
@@ -168,21 +164,21 @@ describe('AttachmentsList', () => {
   });
 
   it('viewing file contents in new tab works as expected for survey attachments', async () => {
-    const mockSurveyContext: ISurveyContext = ({
+    const mockSurveyContext: ISurveyContext = {
       projectId: 1,
-      surveyDataLoader: ({
+      surveyDataLoader: {
         data: { surveyData: { survey_details: { survey_name: 'name' } } },
         load: jest.fn()
-      } as unknown) as DataLoader<any, any, any>
-    } as unknown) as ISurveyContext;
+      } as unknown as DataLoader<any, any, any>
+    } as unknown as ISurveyContext;
 
-    const mockProjectContext: IProjectContext = ({
+    const mockProjectContext: IProjectContext = {
       projectId: 1,
-      projectDataLoader: ({
+      projectDataLoader: {
         data: { projectData: { project: { project_name: 'name' } } },
         load: jest.fn()
-      } as unknown) as DataLoader<any, any, any>
-    } as unknown) as IProjectContext;
+      } as unknown as DataLoader<any, any, any>
+    } as unknown as IProjectContext;
 
     window.open = jest.fn();
     const handleDownload = jest.fn();

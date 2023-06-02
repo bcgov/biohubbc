@@ -1,23 +1,21 @@
-import { cleanup, render } from '@testing-library/react';
 import { IProjectContext, ProjectContext } from 'contexts/projectContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { DataLoader } from 'hooks/useDataLoader';
 import React from 'react';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
+import { cleanup, render } from 'test-helpers/test-utils';
 import FundingSource, { IFundingSource } from './FundingSource';
 jest.mock('../../hooks/useBioHubApi');
 
-const mockUseBiohubApi = {
+const mockBiohubApi = useBiohubApi as jest.Mock;
+
+const mockUseApi = {
   project: {
     updateProject: jest.fn(),
     addFundingSource: jest.fn(),
     deleteFundingSource: jest.fn()
   }
 };
-
-const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBiohubApi>).mockReturnValue(
-  mockUseBiohubApi
-);
 
 const funding_sources: IFundingSource[] = [
   {
@@ -40,10 +38,10 @@ const funding_sources: IFundingSource[] = [
 
 describe('FundingSource', () => {
   beforeEach(() => {
-    // clear mocks before each test
-    mockBiohubApi().project.updateProject.mockClear();
-    mockBiohubApi().project.addFundingSource.mockClear();
-    mockBiohubApi().project.deleteFundingSource.mockClear();
+    mockBiohubApi.mockImplementation(() => mockUseApi);
+    mockUseApi.project.updateProject.mockClear();
+    mockUseApi.project.addFundingSource.mockClear();
+    mockUseApi.project.deleteFundingSource.mockClear();
   });
 
   afterEach(() => {

@@ -1,11 +1,11 @@
 import { Feature, Geometry, MultiPolygon, Point, Polygon, Position } from 'geojson';
 import React from 'react';
-import { ReProjector } from 'reproj-helper';
 import {
   getInferredLayersInfoByProjectedGeometry,
   getInferredLayersInfoByWFSFeature,
   getLayerTypesToSkipByProjectedGeometry
 } from 'utils/mapLayersHelpers';
+import { ReProjector } from './reprojector';
 import { defaultWFSParams, IWFSParams } from './WFSFeatureGroup';
 
 /**
@@ -130,75 +130,75 @@ export interface IWFSFeatureDetails {
 	Function to get WFS feature details based on the existing map geometries
 	and layer types/filter criteria
 */
-export const createGetFeatureDetails = (
-  externalApiPost: (url: string, body: any) => Promise<{ features?: Feature[] }>
-) => async (typeNames: string[], mapGeometries: Feature[], wfsParams?: IWFSParams): Promise<IWFSFeatureDetails> => {
-  const parksInfo: Set<string> = new Set(); // Parks and Eco-Reserves
-  const nrmInfo: Set<string> = new Set(); // NRM Regions
-  const envInfo: Set<string> = new Set(); // ENV Regions
-  const wmuInfo: Set<string> = new Set(); // Wildlife Management Units
-  let inferredLayersInfo = {
-    parksInfo,
-    nrmInfo,
-    envInfo,
-    wmuInfo
-  };
+export const createGetFeatureDetails =
+  (externalApiPost: (url: string, body: any) => Promise<{ features?: Feature[] }>) =>
+  async (typeNames: string[], mapGeometries: Feature[], wfsParams?: IWFSParams): Promise<IWFSFeatureDetails> => {
+    const parksInfo: Set<string> = new Set(); // Parks and Eco-Reserves
+    const nrmInfo: Set<string> = new Set(); // NRM Regions
+    const envInfo: Set<string> = new Set(); // ENV Regions
+    const wmuInfo: Set<string> = new Set(); // Wildlife Management Units
+    let inferredLayersInfo = {
+      parksInfo,
+      nrmInfo,
+      envInfo,
+      wmuInfo
+    };
 
-  // Convert all geometries to BC Albers projection
-  const reprojectedGeometries = await Promise.all(changeProjections(mapGeometries));
+    // Convert all geometries to BC Albers projection
+    const reprojectedGeometries = await Promise.all(changeProjections(mapGeometries));
 
-  const wfsPromises: Promise<{ features?: Feature[] }>[] = [];
-  reprojectedGeometries.forEach((projectedGeo) => {
-    let filterCriteria = '';
-    const coordinatesString = generateCoordinatesString(projectedGeo.geometry);
+    const wfsPromises: Promise<{ features?: Feature[] }>[] = [];
+    reprojectedGeometries.forEach((projectedGeo) => {
+      let filterCriteria = '';
+      const coordinatesString = generateCoordinatesString(projectedGeo.geometry);
 
-    filterCriteria = `${projectedGeo.geometry.type}${coordinatesString}`;
-    inferredLayersInfo = getInferredLayersInfoByProjectedGeometry(projectedGeo, inferredLayersInfo);
-    const layerTypesToSkip = getLayerTypesToSkipByProjectedGeometry(projectedGeo);
+      filterCriteria = `${projectedGeo.geometry.type}${coordinatesString}`;
+      inferredLayersInfo = getInferredLayersInfoByProjectedGeometry(projectedGeo, inferredLayersInfo);
+      const layerTypesToSkip = getLayerTypesToSkipByProjectedGeometry(projectedGeo);
 
-    // Make Open Maps API call to retrieve intersecting features based on geometry and filter criteria
-    typeNames.forEach((typeName: string) => {
-      if (!layerTypesToSkip.includes(typeName)) {
-        const url = buildWFSURL(typeName, wfsParams);
-        const geoFilterType = layerGeoFilterTypeMappings[typeName];
-        const filterData = `INTERSECTS(${geoFilterType}, ${filterCriteria})`;
+      // Make Open Maps API call to retrieve intersecting features based on geometry and filter criteria
+      typeNames.forEach((typeName: string) => {
+        if (!layerTypesToSkip.includes(typeName)) {
+          const url = buildWFSURL(typeName, wfsParams);
+          const geoFilterType = layerGeoFilterTypeMappings[typeName];
+          const filterData = `INTERSECTS(${geoFilterType}, ${filterCriteria})`;
 
-        const requestBody = new URLSearchParams();
-        requestBody.append('CQL_FILTER', filterData);
+          const requestBody = new URLSearchParams();
+          requestBody.append('CQL_FILTER', filterData);
 
-        wfsPromises.push(
-          /* catch and ignore errors */
-          externalApiPost(url, requestBody).catch(() => {}) as Promise<{ features?: Feature[] }>
-        );
-      }
+          wfsPromises.push(
+            /* catch and ignore errors */
+            externalApiPost(url, requestBody).catch(() => {}) as Promise<{ features?: Feature[] }>
+          );
+        }
+      });
     });
-  });
-  const wfsResult = await Promise.all(wfsPromises);
+    const wfsResult = await Promise.all(wfsPromises);
 
-  wfsResult.forEach((item: { features?: Feature[] }) => {
-    item?.features?.forEach((feature: Feature) => {
-      inferredLayersInfo = getInferredLayersInfoByWFSFeature(feature, inferredLayersInfo);
+    wfsResult.forEach((item: { features?: Feature[] }) => {
+      item?.features?.forEach((feature: Feature) => {
+        inferredLayersInfo = getInferredLayersInfoByWFSFeature(feature, inferredLayersInfo);
+      });
     });
-  });
 
-  if (!inferredLayersInfo) {
-    return {};
-  }
+    if (!inferredLayersInfo) {
+      return {};
+    }
 
-  return {
-    parks: Array.from(inferredLayersInfo.parksInfo),
-    nrm: Array.from(inferredLayersInfo.nrmInfo),
-    env: Array.from(inferredLayersInfo.envInfo),
-    wmu: Array.from(inferredLayersInfo.wmuInfo)
+    return {
+      parks: Array.from(inferredLayersInfo.parksInfo),
+      nrm: Array.from(inferredLayersInfo.nrmInfo),
+      env: Array.from(inferredLayersInfo.envInfo),
+      wmu: Array.from(inferredLayersInfo.wmuInfo)
+    };
   };
-};
 
 /*
   Because different OpenMaps layers are identified using different keys
   - Parks and NRM regions use the key SHAPE
   - ENV regions and WMU use the key GEOMETRY
 */
-export const layerGeoFilterTypeMappings = {
+export const layerGeoFilterTypeMappings: Record<string, string> = {
   'pub:WHSE_TANTALIS.TA_PARK_ECORES_PA_SVW': 'SHAPE',
   'pub:WHSE_ADMIN_BOUNDARIES.ADM_NR_REGIONS_SPG': 'SHAPE',
   'pub:WHSE_ADMIN_BOUNDARIES.EADM_WLAP_REGION_BND_AREA_SVW': 'GEOMETRY',
@@ -216,7 +216,7 @@ export const wfsInferredLayers = [
   Because there is not a 1:1 mapping between the ENV and NRM regions
   As can be seen, there are 2 ENV regions that map to the same NRM region
 */
-export const envToNrmRegionsMapping = {
+export const envToNrmRegionsMapping: Record<string, string> = {
   '1- Vancouver Island': 'West Coast Natural Resource Region',
   '2- Lower Mainland': 'South Coast Natural Resource Region',
   '3- Thompson': 'Thompson-Okanagan Natural Resource Region',
@@ -228,7 +228,7 @@ export const envToNrmRegionsMapping = {
   '9- Peace': 'Northeast Natural Resource Region'
 };
 
-export const layerContentHandlers = {
+export const layerContentHandlers: Record<string, any> = {
   'pub:WHSE_WILDLIFE_MANAGEMENT.WAA_WILDLIFE_MGMT_UNITS_SVW': {
     featureKeyHandler: (feature: Feature) => feature?.properties?.OBJECTID,
     popupContentHandler: (feature: Feature) => {

@@ -118,7 +118,7 @@ export const DialogContext = createContext<IDialogContext>({
  * @param {*} props
  * @return {*}
  */
-export const DialogContextProvider: React.FC = (props) => {
+export const DialogContextProvider: React.FC<React.PropsWithChildren> = (props) => {
   const [yesNoDialogProps, setYesNoDialogProps] = useState<IYesNoDialogProps>(defaultYesNoDialogProps);
 
   const [errorDialogProps, setErrorDialogProps] = useState<IErrorDialogProps>(defaultErrorDialogProps);

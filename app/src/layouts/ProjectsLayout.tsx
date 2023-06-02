@@ -21,7 +21,7 @@ const useStyles = makeStyles(() => ({
  * @param {*} props
  * @return {*}
  */
-const ProjectsLayout: React.FC = (props) => {
+const ProjectsLayout: React.FC<React.PropsWithChildren> = (props) => {
   const classes = useStyles();
 
   return (

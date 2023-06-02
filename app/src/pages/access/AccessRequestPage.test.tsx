@@ -1,5 +1,4 @@
 import { ThemeProvider } from '@material-ui/styles';
-import { cleanup, fireEvent, render, waitFor, within } from '@testing-library/react';
 import { AuthStateContext } from 'contexts/authStateContext';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { createMemoryHistory } from 'history';
@@ -7,13 +6,16 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import React from 'react';
 import { Router } from 'react-router';
 import { getMockAuthState, SystemAdminAuthState } from 'test-helpers/auth-helpers';
+import { cleanup, fireEvent, render, waitFor, within } from 'test-helpers/test-utils';
 import appTheme from 'themes/appTheme';
 import AccessRequestPage from './AccessRequestPage';
 
 const history = createMemoryHistory();
 
 jest.mock('../../hooks/useBioHubApi');
-const mockUseBiohubApi = {
+const mockBiohubApi = useBiohubApi as jest.Mock;
+
+const mockUseApi = {
   codes: {
     getAllCodeSets: jest.fn<Promise<object>, []>()
   },
@@ -21,10 +23,6 @@ const mockUseBiohubApi = {
     createAdministrativeActivity: jest.fn()
   }
 };
-
-const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBiohubApi>).mockReturnValue(
-  mockUseBiohubApi
-);
 
 const renderContainer = () => {
   const authState = getMockAuthState({ base: SystemAdminAuthState });
@@ -44,9 +42,9 @@ const renderContainer = () => {
 
 describe('AccessRequestPage', () => {
   beforeEach(() => {
-    // clear mocks before each test
-    mockBiohubApi().codes.getAllCodeSets.mockClear();
-    mockBiohubApi().admin.createAdministrativeActivity.mockClear();
+    mockBiohubApi.mockImplementation(() => mockUseApi);
+    mockUseApi.codes.getAllCodeSets.mockClear();
+    mockUseApi.admin.createAdministrativeActivity.mockClear();
   });
 
   afterEach(() => {
@@ -54,7 +52,7 @@ describe('AccessRequestPage', () => {
   });
 
   it('renders correctly', async () => {
-    mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+    mockUseApi.codes.getAllCodeSets.mockResolvedValue({
       system_roles: [{ id: 1, name: 'Creator' }]
     });
 
@@ -69,7 +67,7 @@ describe('AccessRequestPage', () => {
     const history = createMemoryHistory();
 
     it('should redirect to `/logout`', async () => {
-      mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+      mockUseApi.codes.getAllCodeSets.mockResolvedValue({
         system_roles: [{ id: 1, name: 'Creator' }]
       });
 
@@ -94,11 +92,11 @@ describe('AccessRequestPage', () => {
   });
 
   it('processes a successful request submission', async () => {
-    mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+    mockUseApi.codes.getAllCodeSets.mockResolvedValue({
       system_roles: [{ id: 1, name: 'Creator' }]
     });
 
-    mockBiohubApi().admin.createAdministrativeActivity.mockResolvedValue({
+    mockUseApi.admin.createAdministrativeActivity.mockResolvedValue({
       id: 1
     });
 
@@ -122,7 +120,7 @@ describe('AccessRequestPage', () => {
   });
 
   it('takes the user to the request-submitted page immediately if they already have an access request', async () => {
-    mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+    mockUseApi.codes.getAllCodeSets.mockResolvedValue({
       system_roles: [{ id: 1, name: 'Creator' }]
     });
 
@@ -144,11 +142,11 @@ describe('AccessRequestPage', () => {
   });
 
   it('shows error dialog with api error message when submission fails', async () => {
-    mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+    mockUseApi.codes.getAllCodeSets.mockResolvedValue({
       system_roles: [{ id: 1, name: 'Creator' }]
     });
 
-    mockBiohubApi().admin.createAdministrativeActivity = jest.fn(() => Promise.reject(new Error('API Error is Here')));
+    mockUseApi.admin.createAdministrativeActivity = jest.fn(() => Promise.reject(new Error('API Error is Here')));
 
     const { getByText, getAllByRole, getByRole, queryByText } = renderContainer();
 
@@ -176,11 +174,11 @@ describe('AccessRequestPage', () => {
   });
 
   it('shows error dialog with default error message when response from createAdministrativeActivity is invalid', async () => {
-    mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+    mockUseApi.codes.getAllCodeSets.mockResolvedValue({
       system_roles: [{ id: 1, name: 'Creator' }]
     });
 
-    mockBiohubApi().admin.createAdministrativeActivity.mockResolvedValue({
+    mockUseApi.admin.createAdministrativeActivity.mockResolvedValue({
       id: null
     });
 

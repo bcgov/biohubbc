@@ -171,7 +171,7 @@ const MapBoundary = (props: IMapBoundaryProps) => {
           </Box>
           {get(errors, name) && (
             <Box mt={1} mb={3} ml={2}>
-              <Typography style={{ fontSize: '12px', color: '#f44336' }}>{get(errors, name)}</Typography>
+              <Typography style={{ fontSize: '12px', color: '#f44336' }}>{get(errors, name) as string}</Typography>
             </Box>
           )}
         </Box>

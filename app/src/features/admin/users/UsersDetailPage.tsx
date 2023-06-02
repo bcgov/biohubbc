@@ -14,7 +14,7 @@ import UsersDetailProjects from './UsersDetailProjects';
  * @return {*}
  */
 const UsersDetailPage: React.FC = (props) => {
-  const urlParams = useParams();
+  const urlParams: Record<string, string | number | undefined> = useParams();
   const biohubApi = useBiohubApi();
 
   const [selectedUser, setSelectedUser] = useState<IGetUserResponse | null>(null);

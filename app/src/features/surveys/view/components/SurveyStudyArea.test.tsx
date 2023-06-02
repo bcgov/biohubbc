@@ -1,4 +1,3 @@
-import { cleanup, fireEvent, render, waitFor } from '@testing-library/react';
 import { IProjectAuthStateContext, ProjectAuthStateContext } from 'contexts/projectAuthStateContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -7,10 +6,13 @@ import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
 import React from 'react';
 import { geoJsonFeature } from 'test-helpers/spatial-helpers';
 import { getSurveyForViewResponse, surveyObject, surveySupplementaryData } from 'test-helpers/survey-helpers';
+import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
 import SurveyStudyArea from './SurveyStudyArea';
 
 jest.mock('../../../../hooks/useBioHubApi');
-const mockUseBiohubApi = {
+const mockBiohubApi = useBiohubApi as jest.Mock;
+
+const mockUseApi = {
   survey: {
     getSurveyForView: jest.fn<Promise<IGetSurveyForViewResponse>, []>(),
     updateSurvey: jest.fn()
@@ -20,26 +22,22 @@ const mockUseBiohubApi = {
   }
 };
 
-const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBiohubApi>).mockReturnValue(
-  mockUseBiohubApi
-);
-
 describe('SurveyStudyArea', () => {
   beforeEach(() => {
-    // clear mocks before each test
-    mockBiohubApi().survey.getSurveyForView.mockClear();
-    mockBiohubApi().survey.updateSurvey.mockClear();
-    mockBiohubApi().external.post.mockClear();
+    mockBiohubApi.mockImplementation(() => mockUseApi);
+    mockUseApi.external.post.mockResolvedValue({
+      features: []
+    });
+
+    mockUseApi.survey.getSurveyForView.mockClear();
+    mockUseApi.survey.updateSurvey.mockClear();
+    mockUseApi.external.post.mockClear();
 
     jest.spyOn(console, 'debug').mockImplementation(() => {});
   });
 
   afterEach(() => {
     cleanup();
-  });
-
-  mockBiohubApi().external.post.mockResolvedValue({
-    features: []
   });
 
   it('renders correctly with no data', async () => {
@@ -132,7 +130,7 @@ describe('SurveyStudyArea', () => {
   it('does not display the zoom to initial extent button if there are not geometries', async () => {
     const mockSurveyDataLoader = {
       data: getSurveyForViewResponse,
-      refresh: (jest.fn() as unknown) as any
+      refresh: jest.fn() as unknown as any
     } as DataLoader<any, any, any>;
     const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockObservationsDataLoader = { data: null } as DataLoader<any, any, any>;
@@ -187,37 +185,33 @@ describe('SurveyStudyArea', () => {
     fireEvent.click(getByText('Save Changes'));
 
     await waitFor(() => {
-      expect(mockBiohubApi().survey.updateSurvey).toBeCalledWith(
-        1,
-        getSurveyForViewResponse.surveyData.survey_details.id,
-        {
-          location: {
-            geometry: [
-              {
-                geometry: {
-                  coordinates: [
-                    [
-                      [-128, 55],
-                      [-128, 55.5],
-                      [-128, 56],
-                      [-126, 58],
-                      [-128, 55]
-                    ]
-                  ],
-                  type: 'Polygon'
-                },
-                id: 'myGeo',
-                properties: {
-                  name: 'Biohub Islands'
-                },
-                type: 'Feature'
-              }
-            ],
-            revision_count: 0,
-            survey_area_name: 'study area'
-          }
+      expect(mockUseApi.survey.updateSurvey).toBeCalledWith(1, getSurveyForViewResponse.surveyData.survey_details.id, {
+        location: {
+          geometry: [
+            {
+              geometry: {
+                coordinates: [
+                  [
+                    [-128, 55],
+                    [-128, 55.5],
+                    [-128, 56],
+                    [-126, 58],
+                    [-128, 55]
+                  ]
+                ],
+                type: 'Polygon'
+              },
+              id: 'myGeo',
+              properties: {
+                name: 'Biohub Islands'
+              },
+              type: 'Feature'
+            }
+          ],
+          revision_count: 0,
+          survey_area_name: 'study area'
         }
-      );
+      });
     });
   });
 
@@ -227,7 +221,7 @@ describe('SurveyStudyArea', () => {
     const mockObservationsDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockSummaryDataLoader = { data: null } as DataLoader<any, any, any>;
 
-    mockBiohubApi().survey.getSurveyForView.mockResolvedValue({
+    mockUseApi.survey.getSurveyForView.mockResolvedValue({
       surveyData: {
         ...surveyObject,
         survey_details: {
@@ -245,7 +239,7 @@ describe('SurveyStudyArea', () => {
       },
       surveySupplementaryData: surveySupplementaryData
     });
-    mockBiohubApi().survey.updateSurvey = jest.fn(() => Promise.reject(new Error('API Error is Here')));
+    mockUseApi.survey.updateSurvey = jest.fn(() => Promise.reject(new Error('API Error is Here')));
 
     const mockProjectAuthStateContext: IProjectAuthStateContext = {
       getProjectParticipant: () => null,

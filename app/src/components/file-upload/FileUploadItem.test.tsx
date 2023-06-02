@@ -1,6 +1,6 @@
-import { fireEvent, render, waitFor } from '@testing-library/react';
 import { APIError } from 'hooks/api/useAxios';
 import React from 'react';
+import { fireEvent, render, waitFor } from 'test-helpers/test-utils';
 import FileUploadItem, { IFileUploadItemProps } from './FileUploadItem';
 
 const renderContainer = (props: IFileUploadItemProps) => {

@@ -23,7 +23,7 @@ const CustomTextField: React.FC<ICustomTextField> = (props) => {
       value={get(values, name)}
       fullWidth={true}
       error={get(touched, name) && Boolean(get(errors, name))}
-      helperText={get(touched, name) && get(errors, name)}
+      helperText={get(touched, name) && (get(errors, name) as string)}
       inputProps={{
         'data-testid': name
       }}

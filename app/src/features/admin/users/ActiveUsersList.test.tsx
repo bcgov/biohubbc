@@ -1,15 +1,17 @@
-import { cleanup, render, waitFor } from '@testing-library/react';
 import { createMemoryHistory } from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import React from 'react';
 import { Router } from 'react-router';
 import { codes } from 'test-helpers/code-helpers';
+import { cleanup, render, waitFor } from 'test-helpers/test-utils';
 import ActiveUsersList, { IActiveUsersListProps } from './ActiveUsersList';
 
 const history = createMemoryHistory();
 
 jest.mock('../../../hooks/useBioHubApi');
-const mockUseBiohubApi = {
+const mockBiohubApi = useBiohubApi as jest.Mock;
+
+const mockUseApi = {
   user: {
     updateSystemUserRoles: jest.fn(),
     deleteSystemUser: jest.fn()
@@ -18,8 +20,6 @@ const mockUseBiohubApi = {
     addSystemUser: jest.fn()
   }
 };
-
-((useBiohubApi as unknown) as jest.Mock<typeof mockUseBiohubApi>).mockReturnValue(mockUseBiohubApi);
 
 const renderContainer = (props: IActiveUsersListProps) => {
   return render(
@@ -30,6 +30,10 @@ const renderContainer = (props: IActiveUsersListProps) => {
 };
 
 describe('ActiveUsersList', () => {
+  beforeEach(() => {
+    mockBiohubApi.mockImplementation(() => mockUseApi);
+  });
+
   afterEach(() => {
     cleanup();
   });
@@ -54,7 +58,8 @@ describe('ActiveUsersList', () => {
           user_identifier: 'username',
           user_guid: 'user-guid',
           user_record_end_date: '2020-10-10',
-          role_names: ['role 1', 'role 2']
+          role_names: ['role 1', 'role 2'],
+          identity_source: 'idir'
         }
       ],
       codes: codes,
@@ -75,7 +80,8 @@ describe('ActiveUsersList', () => {
           user_identifier: 'username',
           user_guid: 'user-guid',
           user_record_end_date: '2020-10-10',
-          role_names: []
+          role_names: [],
+          identity_source: 'idir'
         }
       ],
       codes: codes,

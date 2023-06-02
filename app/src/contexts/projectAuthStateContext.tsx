@@ -21,15 +21,15 @@ export const ProjectAuthStateContext = React.createContext<IProjectAuthStateCont
   hasLoadedParticipantInfo: false
 });
 
-export const ProjectAuthStateContextProvider: React.FC = (props) => {
+export const ProjectAuthStateContextProvider: React.FC<React.PropsWithChildren> = (props) => {
   const biohubApi = useBiohubApi();
   const participantDataLoader = useDataLoader((projectId: number) =>
     biohubApi.project.getUserProjectParticipant(projectId)
   );
   const { keycloakWrapper } = useContext(AuthStateContext);
 
-  const urlParams = useParams();
-  const projectId: string | number | null = urlParams['id'];
+  const urlParams: Record<string, string | number | undefined> = useParams();
+  const projectId: string | number | undefined = urlParams['id'];
 
   const getProjectId = useCallback(() => {
     return Number(projectId);

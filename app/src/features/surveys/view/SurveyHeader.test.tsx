@@ -1,4 +1,3 @@
-import { cleanup, fireEvent, render, waitFor } from '@testing-library/react';
 import { AuthStateContext, IAuthState } from 'contexts/authStateContext';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { IProjectContext, ProjectContext } from 'contexts/projectContext';
@@ -12,11 +11,14 @@ import React from 'react';
 import { Router } from 'react-router';
 import { getMockAuthState, SystemAdminAuthState, SystemUserAuthState } from 'test-helpers/auth-helpers';
 import { getSurveyForViewResponse } from 'test-helpers/survey-helpers';
+import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
 
 const history = createMemoryHistory({ initialEntries: ['/admin/projects/1/surveys/1'] });
 
 jest.mock('../../../hooks/useBioHubApi');
-const mockUseBiohubApi = {
+const mockBiohubApi = useBiohubApi as jest.Mock;
+
+const mockUseApi = {
   survey: {
     publishSurvey: jest.fn(),
     deleteSurvey: jest.fn()
@@ -40,19 +42,11 @@ const mockSurveyContext: ISurveyContext = {
   projectId: 1
 };
 
-const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBiohubApi>).mockReturnValue(
-  mockUseBiohubApi
-);
-
 const surveyForView = getSurveyForViewResponse;
-const refresh = jest.fn();
 
 describe('SurveyHeader', () => {
   beforeEach(() => {
-    // clear mocks before each test
-    mockBiohubApi().survey.publishSurvey.mockClear();
-    mockBiohubApi().survey.deleteSurvey.mockClear();
-    refresh.mockClear();
+    mockBiohubApi.mockImplementation(() => mockUseApi);
   });
 
   afterEach(() => {
@@ -63,10 +57,10 @@ describe('SurveyHeader', () => {
     return render(
       <ProjectContext.Provider
         value={
-          ({
+          {
             projectId: 1,
-            surveysListDataLoader: ({ refresh: jest.fn() } as unknown) as DataLoader<any, any, any>
-          } as unknown) as IProjectContext
+            surveysListDataLoader: { refresh: jest.fn() } as unknown as DataLoader<any, any, any>
+          } as unknown as IProjectContext
         }>
         <SurveyContext.Provider value={mockSurveyContext}>
           <AuthStateContext.Provider value={authState}>
@@ -82,7 +76,7 @@ describe('SurveyHeader', () => {
   };
 
   it('deletes survey and takes user to the surveys list page when user is a system administrator', async () => {
-    mockBiohubApi().survey.deleteSurvey.mockResolvedValue(true);
+    mockUseApi.survey.deleteSurvey.mockResolvedValue(true);
 
     const authState = getMockAuthState({ base: SystemAdminAuthState });
 

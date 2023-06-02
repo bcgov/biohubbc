@@ -63,7 +63,7 @@ const EditProjectForm: React.FC<IEditProjectForm> = (props) => {
     <Box p={5}>
       <Formik
         innerRef={formikRef}
-        initialValues={(initialProjectFieldData as unknown) as IUpdateProjectRequest}
+        initialValues={initialProjectFieldData as unknown as IUpdateProjectRequest}
         validationSchema={validationProjectYupSchema}
         validateOnBlur={true}
         validateOnChange={false}

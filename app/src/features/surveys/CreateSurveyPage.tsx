@@ -103,10 +103,10 @@ const CreateSurveyPage = () => {
   const codes = codesContext.codesDataLoader.data;
 
   const projectContext = useContext(ProjectContext);
-  useEffect(() => projectContext.projectDataLoader.load(projectContext.projectId), [
-    projectContext.projectDataLoader,
-    projectContext.projectId
-  ]);
+  useEffect(
+    () => projectContext.projectDataLoader.load(projectContext.projectId),
+    [projectContext.projectDataLoader, projectContext.projectId]
+  );
   const projectData = projectContext.projectDataLoader.data?.projectData;
 
   const getSurveyFundingSourcesDataLoader = useDataLoader(() =>

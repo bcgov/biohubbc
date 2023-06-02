@@ -94,6 +94,7 @@ describe('useObservationApi', () => {
   });
 
   it('getOccurrencesForView works as expected', async () => {
+    const project_id = 1;
     const observation_submission_id = 1;
     const data = {
       geometry: null,
@@ -109,7 +110,7 @@ describe('useObservationApi', () => {
 
     mock.onPost(`/api/dwc/view-occurrences`).reply(200, data);
 
-    const result = await useObservationApi(axios).getOccurrencesForView(observation_submission_id);
+    const result = await useObservationApi(axios).getOccurrencesForView(project_id, observation_submission_id);
 
     expect(result).toEqual(data);
   });

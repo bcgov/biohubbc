@@ -1,7 +1,7 @@
-import { render, waitFor } from '@testing-library/react';
 import { IAutocompleteFieldOptionWithType } from 'features/projects/components/FundingSourceAutocomplete';
 import { Formik } from 'formik';
 import React from 'react';
+import { render, waitFor } from 'test-helpers/test-utils';
 import { IInvestmentActionCategoryOption } from './ProjectFundingForm';
 import ProjectFundingItemForm, {
   FundingSourceType,

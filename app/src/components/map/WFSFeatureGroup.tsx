@@ -74,6 +74,8 @@ const WFSFeatureGroup: React.FC<IWFSFeatureGroupProps> = (props) => {
 
       setBounds(newBounds);
     }, 300),
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
 

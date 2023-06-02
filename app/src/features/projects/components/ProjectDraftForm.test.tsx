@@ -1,4 +1,3 @@
-import { render, waitFor } from '@testing-library/react';
 import ProjectDraftForm, {
   IProjectDraftForm,
   ProjectDraftFormInitialValues,
@@ -6,6 +5,7 @@ import ProjectDraftForm, {
 } from 'features/projects/components/ProjectDraftForm';
 import { Formik } from 'formik';
 import React from 'react';
+import { render, waitFor } from 'test-helpers/test-utils';
 
 const handleSaveAndNext = jest.fn();
 

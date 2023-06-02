@@ -7,11 +7,10 @@ import { mdiCheck } from '@mdi/js';
 import Icon from '@mdi/react';
 import { AuthStateContext } from 'contexts/authStateContext';
 import React, { useContext } from 'react';
-import { Redirect, useHistory } from 'react-router';
+import { Redirect } from 'react-router';
+import { Link } from 'react-router-dom';
 
 const RequestSubmitted = () => {
-  const history = useHistory();
-
   const { keycloakWrapper } = useContext(AuthStateContext);
 
   if (!keycloakWrapper?.hasLoadedAllUserInfo) {
@@ -37,9 +36,8 @@ const RequestSubmitted = () => {
         <Typography>Your request is currently pending a review by an administrator.</Typography>
         <Box pt={4}>
           <Button
-            onClick={() => {
-              history.push('/logout');
-            }}
+            component={Link}
+            to="/logout"
             type="submit"
             size="large"
             variant="contained"
