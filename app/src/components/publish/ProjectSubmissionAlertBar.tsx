@@ -7,7 +7,7 @@ import Icon from '@mdi/react';
 import { ProjectContext } from 'contexts/projectContext';
 import { IGetProjectAttachmentsResponse } from 'interfaces/useProjectApi.interface';
 import { IGetSurveyForListResponse } from 'interfaces/useSurveyApi.interface';
-import React, { useContext, useState } from 'react';
+import { useContext, useState } from 'react';
 
 const ProjectSubmissionAlertBar = () => {
   const projectContext = useContext(ProjectContext);

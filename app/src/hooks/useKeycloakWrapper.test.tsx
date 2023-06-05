@@ -1,7 +1,7 @@
 import { ReactKeycloakProvider } from '@react-keycloak/web';
 import { cleanup, renderHook } from '@testing-library/react-hooks';
 import Keycloak, { KeycloakPromise } from 'keycloak-js';
-import React, { PropsWithChildren } from 'react';
+import { PropsWithChildren } from 'react';
 import { act } from 'react-dom/test-utils';
 import { useBiohubApi } from './useBioHubApi';
 import useKeycloakWrapper, { SYSTEM_IDENTITY_SOURCE } from './useKeycloakWrapper';

@@ -7,7 +7,7 @@ import Typography from '@material-ui/core/Typography';
 import FundingSource, { IFundingSource } from 'components/funding-source/FundingSource';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { SurveyContext } from 'contexts/surveyContext';
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 import { getFormattedDateRangeString } from 'utils/Utils';
 
 /**

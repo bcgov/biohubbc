@@ -6,7 +6,7 @@ import { ProjectContext } from 'contexts/projectContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetProjectAttachment, IGetProjectReportAttachment } from 'interfaces/useProjectApi.interface';
 import { IProjectSubmitForm } from 'interfaces/usePublishApi.interface';
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 import yup from 'utils/YupSchema';
 import SelectAllButton from './SelectAllButton';
 import SubmitSection from './SubmitSection';

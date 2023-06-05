@@ -5,7 +5,7 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 import { mdiArrowRight, mdiDoorClosedLock, mdiDoorOpen } from '@mdi/js';
 import Icon from '@mdi/react';
 import { ConfigContext } from 'contexts/configContext';
-import React, { useContext, useEffect } from 'react';
+import { useContext, useEffect } from 'react';
 import { getLogOutUrl } from 'utils/Utils';
 
 const useStyles = makeStyles((theme: Theme) => ({

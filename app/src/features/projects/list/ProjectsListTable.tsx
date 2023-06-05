@@ -12,7 +12,7 @@ import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { SYSTEM_ROLE } from 'constants/roles';
 import { IGetDraftsListResponse } from 'interfaces/useDraftApi.interface';
 import { IGetProjectsListResponse } from 'interfaces/useProjectApi.interface';
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { getFormattedDate } from 'utils/Utils';
 
@@ -54,9 +54,10 @@ const useStyles = makeStyles((theme: Theme) => ({
       fontFamily: 'inherit',
       fontSize: 'inherit'
     },
-    '& .MuiDataGrid-cell:focus-within, & .MuiDataGrid-cellCheckbox:focus-within, & .MuiDataGrid-columnHeader:focus-within': {
-      outline: 'none !important'
-    },
+    '& .MuiDataGrid-cell:focus-within, & .MuiDataGrid-cellCheckbox:focus-within, & .MuiDataGrid-columnHeader:focus-within':
+      {
+        outline: 'none !important'
+      },
     '& .MuiDataGrid-row:hover': {
       backgroundColor: 'transparent !important'
     }

@@ -22,7 +22,7 @@ import { FormikContextType } from 'formik';
 import { Feature } from 'geojson';
 import { LatLngBoundsExpression } from 'leaflet';
 import get from 'lodash-es/get';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   calculateUpdatedMapBounds,
   handleGPXUpload,

@@ -3,7 +3,7 @@ import useDataLoader, { DataLoader } from 'hooks/useDataLoader';
 import { IGetObservationSubmissionResponse } from 'interfaces/useObservationApi.interface';
 import { IGetSummaryResultsResponse } from 'interfaces/useSummaryResultsApi.interface';
 import { IGetSurveyAttachmentsResponse, IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
-import React, { createContext, PropsWithChildren, useEffect, useMemo } from 'react';
+import { createContext, PropsWithChildren, useEffect, useMemo } from 'react';
 import { useParams } from 'react-router';
 
 /**

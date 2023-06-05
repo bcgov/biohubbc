@@ -9,7 +9,7 @@ import clsx from 'clsx';
 import { AuthGuard, UnAuthGuard } from 'components/security/Guards';
 import { SYSTEM_ROLE } from 'constants/roles';
 import { AuthStateContext } from 'contexts/authStateContext';
-import React, { useContext, useMemo } from 'react';
+import { useContext, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 
 const useStyles = makeStyles((theme: Theme) => ({

@@ -5,7 +5,7 @@ import Typography from '@material-ui/core/Typography';
 import { mdiAlertCircleOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import { AuthStateContext } from 'contexts/authStateContext';
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 import { Redirect, useHistory } from 'react-router';
 
 const AccessDenied = () => {

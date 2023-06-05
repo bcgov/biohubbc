@@ -5,7 +5,7 @@ import Typography from '@material-ui/core/Typography';
 import assert from 'assert';
 import { CodesContext } from 'contexts/codesContext';
 import { ProjectContext } from 'contexts/projectContext';
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 
 /**
  * IUCN Classification content for a project.
