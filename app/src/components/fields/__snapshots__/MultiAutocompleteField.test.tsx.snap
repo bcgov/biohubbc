@@ -64,9 +64,6 @@ exports[`MultiAutocompleteField matches the snapshot 1`] = `
                 />
               </svg>
             </span>
-            <span
-              class="MuiTouchRipple-root"
-            />
           </button>
           <button
             aria-label="Open"
@@ -89,9 +86,6 @@ exports[`MultiAutocompleteField matches the snapshot 1`] = `
                 />
               </svg>
             </span>
-            <span
-              class="MuiTouchRipple-root"
-            />
           </button>
         </div>
         <fieldset

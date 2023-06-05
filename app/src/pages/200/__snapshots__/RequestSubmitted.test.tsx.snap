@@ -55,7 +55,7 @@ exports[`RequestSubmitted renders correctly when user has no role but has a pend
       >
         <a
           aria-disabled="false"
-          class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-containedSizeLarge MuiButton-sizeLarge"
+          class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-containedSizeLarge MuiButton-sizeLarge MuiButton-disableElevation"
           data-testid="logout-button"
           href="/logout"
           role="button"
@@ -66,9 +66,6 @@ exports[`RequestSubmitted renders correctly when user has no role but has a pend
           >
             Log Out
           </span>
-          <span
-            class="MuiTouchRipple-root"
-          />
         </a>
       </div>
     </div>
