@@ -230,7 +230,6 @@ export class XLSXTransform {
         return RowObject[columnName];
       })
       .filter(Boolean)
-      .filter(Boolean)
       .join(':');
 
     return primaryKey;
