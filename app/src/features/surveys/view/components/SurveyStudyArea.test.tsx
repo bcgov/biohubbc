@@ -3,7 +3,6 @@ import { SurveyContext } from 'contexts/surveyContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { DataLoader } from 'hooks/useDataLoader';
 import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
-import React from 'react';
 import { geoJsonFeature } from 'test-helpers/spatial-helpers';
 import { getSurveyForViewResponse, surveyObject, surveySupplementaryData } from 'test-helpers/survey-helpers';
 import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';

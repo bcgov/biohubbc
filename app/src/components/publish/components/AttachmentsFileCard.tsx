@@ -4,7 +4,6 @@ import { mdiFileOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import clsx from 'clsx';
 import { PublishStatus } from 'constants/attachments';
-import React from 'react';
 
 const useStyles = makeStyles((theme: Theme) => ({
   importFile: {

@@ -1,5 +1,4 @@
 import { Feature, Geometry, MultiPolygon, Point, Polygon, Position } from 'geojson';
-import React from 'react';
 import {
   getInferredLayersInfoByProjectedGeometry,
   getInferredLayersInfoByWFSFeature,

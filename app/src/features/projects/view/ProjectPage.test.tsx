@@ -5,7 +5,6 @@ import { createMemoryHistory } from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
-import React from 'react';
 import { Router } from 'react-router';
 import { getMockAuthState, SystemAdminAuthState, SystemUserAuthState } from 'test-helpers/auth-helpers';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';

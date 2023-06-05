@@ -4,7 +4,6 @@ import Container from '@material-ui/core/Container';
 import Typography from '@material-ui/core/Typography';
 import { mdiHelpCircleOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import React from 'react';
 import { useHistory } from 'react-router';
 
 const NotFoundPage = () => {

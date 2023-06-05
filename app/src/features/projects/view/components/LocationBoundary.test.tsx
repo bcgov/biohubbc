@@ -4,7 +4,6 @@ import { IProjectContext, ProjectContext } from 'contexts/projectContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { DataLoader } from 'hooks/useDataLoader';
 import { UPDATE_GET_ENTITIES } from 'interfaces/useProjectApi.interface';
-import React from 'react';
 import { codes } from 'test-helpers/code-helpers';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import { geoJsonFeature } from 'test-helpers/spatial-helpers';

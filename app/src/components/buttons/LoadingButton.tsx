@@ -3,11 +3,8 @@ import Button, { ButtonProps } from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import React from 'react';
 
 const useStyles = makeStyles((theme: Theme) => {
-  console.log(theme);
-  console.log(theme.palette.primary);
   return {
     wrapper: {
       position: 'relative'

@@ -1,5 +1,4 @@
 import { createMemoryHistory } from 'history';
-import React from 'react';
 import { Router } from 'react-router-dom';
 import { fireEvent, render } from 'test-helpers/test-utils';
 import NotFoundPage from './NotFoundPage';

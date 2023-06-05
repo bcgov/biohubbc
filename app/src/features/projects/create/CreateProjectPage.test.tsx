@@ -11,7 +11,6 @@ import { Feature } from 'geojson';
 import { createMemoryHistory } from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { DataLoader } from 'hooks/useDataLoader';
-import React from 'react';
 import { MemoryRouter, Router } from 'react-router';
 import { codes } from 'test-helpers/code-helpers';
 import {

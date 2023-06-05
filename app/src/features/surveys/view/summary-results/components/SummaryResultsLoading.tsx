@@ -6,7 +6,6 @@ import Typography from '@material-ui/core/Typography';
 import { mdiFileOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import clsx from 'clsx';
-import React from 'react';
 
 const useStyles = makeStyles((theme: Theme) => ({
   importFile: {

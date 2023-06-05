@@ -1,5 +1,4 @@
 import { Formik } from 'formik';
-import React from 'react';
 import { render } from 'test-helpers/test-utils';
 import DollarAmountField from './DollarAmountField';
 

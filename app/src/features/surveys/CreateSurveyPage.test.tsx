@@ -11,7 +11,6 @@ import {
   ISurveyAvailableFundingSources,
   ISurveyPermits
 } from 'interfaces/useSurveyApi.interface';
-import React from 'react';
 import { MemoryRouter, Router } from 'react-router';
 import { codes } from 'test-helpers/code-helpers';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';

@@ -64,7 +64,7 @@ exports[`ComponentDialog matches snapshot when open 1`] = `
           class="MuiDialogActions-root MuiDialogActions-spacing"
         >
           <button
-            class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary Mui-focusVisible Mui-focusVisible"
+            class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-disableElevation Mui-focusVisible Mui-focusVisible"
             tabindex="0"
             type="button"
           >
@@ -72,18 +72,6 @@ exports[`ComponentDialog matches snapshot when open 1`] = `
               class="MuiButton-label"
             >
               Ok
-            </span>
-            <span
-              class="MuiTouchRipple-root"
-            >
-              <span
-                class="MuiTouchRipple-ripple MuiTouchRipple-rippleVisible MuiTouchRipple-ripplePulsate"
-                style="width: 1px; height: 1px; top: -0.5px; left: -0.5px;"
-              >
-                <span
-                  class="MuiTouchRipple-child MuiTouchRipple-childPulsate"
-                />
-              </span>
             </span>
           </button>
         </div>

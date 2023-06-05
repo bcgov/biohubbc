@@ -4,7 +4,6 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import Typography from '@material-ui/core/Typography';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
-import React from 'react';
 import { getFormattedAmount, getFormattedDateRangeString } from 'utils/Utils';
 
 export interface IFundingSource {

@@ -1,7 +1,6 @@
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { IProjectContext, ProjectContext } from 'contexts/projectContext';
 import { DataLoader } from 'hooks/useDataLoader';
-import React from 'react';
 import { cleanup, fireEvent, render } from 'test-helpers/test-utils';
 import ProjectObjectives from './ProjectObjectives';
 

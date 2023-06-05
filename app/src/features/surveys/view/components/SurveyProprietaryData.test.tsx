@@ -2,7 +2,6 @@ import { SurveyContext } from 'contexts/surveyContext';
 import { DataLoader } from 'hooks/useDataLoader';
 import { IGetObservationSubmissionResponse } from 'interfaces/useObservationApi.interface';
 import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
-import React from 'react';
 import { getObservationSubmissionResponse, getSurveyForViewResponse } from 'test-helpers/survey-helpers';
 import { cleanup, render } from 'test-helpers/test-utils';
 import SurveyProprietaryData from './SurveyProprietaryData';

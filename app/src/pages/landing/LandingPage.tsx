@@ -3,7 +3,6 @@ import Container from '@material-ui/core/Container';
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import BaseLayout from 'layouts/BaseLayout';
-import React from 'react';
 import LandingActions from './LandingActions';
 
 const useStyles = makeStyles((theme: Theme) => ({

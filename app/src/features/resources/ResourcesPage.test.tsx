@@ -1,6 +1,5 @@
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IListResourcesResponse } from 'interfaces/useResourcesApi.interface';
-import React from 'react';
 import { cleanup, render, waitFor } from 'test-helpers/test-utils';
 import ResourcesPage from './ResourcesPage';
 

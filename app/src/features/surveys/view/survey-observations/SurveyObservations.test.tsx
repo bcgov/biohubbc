@@ -1,7 +1,6 @@
 import { ISurveyContext, SurveyContext } from 'contexts/surveyContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { DataLoader } from 'hooks/useDataLoader';
-import React from 'react';
 import { MemoryRouter } from 'react-router';
 import { getObservationSubmissionResponse } from 'test-helpers/survey-helpers';
 import { cleanup, render, waitFor } from 'test-helpers/test-utils';

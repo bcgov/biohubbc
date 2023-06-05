@@ -6,7 +6,6 @@ import { IProjectContext, ProjectContext } from 'contexts/projectContext';
 import { createMemoryHistory } from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { DataLoader } from 'hooks/useDataLoader';
-import React from 'react';
 import { Router } from 'react-router';
 import { getMockAuthState, SystemAdminAuthState } from 'test-helpers/auth-helpers';
 import {

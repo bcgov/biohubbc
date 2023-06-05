@@ -7,7 +7,6 @@ import Grid from '@material-ui/core/Grid';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
 import { useFormikContext } from 'formik';
-import React from 'react';
 import { StringBoolean } from 'types/misc';
 import yup from 'utils/YupSchema';
 

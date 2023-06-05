@@ -2,7 +2,6 @@ import { CodesContext, ICodesContext } from 'contexts/codesContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { DataLoader } from 'hooks/useDataLoader';
 import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
-import React from 'react';
 import { codes } from 'test-helpers/code-helpers';
 import { getSurveyForViewResponse } from 'test-helpers/survey-helpers';
 import { render, waitFor } from 'test-helpers/test-utils';
