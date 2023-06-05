@@ -3,7 +3,6 @@ import { CodesContext, ICodesContext } from 'contexts/codesContext';
 import { createMemoryHistory } from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { DataLoader } from 'hooks/useDataLoader';
-import React from 'react';
 import { MemoryRouter, Router } from 'react-router-dom';
 import { getMockAuthState, SystemAdminAuthState } from 'test-helpers/auth-helpers';
 import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';

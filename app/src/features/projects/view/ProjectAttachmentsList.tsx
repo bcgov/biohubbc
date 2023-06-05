@@ -7,7 +7,7 @@ import { ProjectContext } from 'contexts/projectContext';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetProjectAttachment } from 'interfaces/useProjectApi.interface';
-import React, { useContext, useMemo, useState } from 'react';
+import { useContext, useMemo, useState } from 'react';
 
 const ProjectAttachmentsList = () => {
   const biohubApi = useBiohubApi();

@@ -1,6 +1,5 @@
 import { createMemoryHistory } from 'history';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import React from 'react';
 import { Router } from 'react-router';
 import { cleanup, render, waitFor } from 'test-helpers/test-utils';
 import { useBiohubApi } from '../../../hooks/useBioHubApi';

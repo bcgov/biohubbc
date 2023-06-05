@@ -2,7 +2,6 @@ import { CodesContext, ICodesContext } from 'contexts/codesContext';
 import { IProjectContext, ProjectContext } from 'contexts/projectContext';
 import { createMemoryHistory } from 'history';
 import { DataLoader } from 'hooks/useDataLoader';
-import React from 'react';
 import { Router } from 'react-router';
 import { codes } from 'test-helpers/code-helpers';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';

@@ -9,7 +9,7 @@ import LoadingButton from 'components/buttons/LoadingButton';
 import { SubmitBiohubI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
 import { Formik, FormikProps, FormikValues } from 'formik';
-import React, { PropsWithChildren, useContext, useRef, useState } from 'react';
+import { PropsWithChildren, useContext, useRef, useState } from 'react';
 import yup from 'utils/YupSchema';
 import ComponentDialog from './ComponentDialog';
 import { IErrorDialogProps } from './ErrorDialog';

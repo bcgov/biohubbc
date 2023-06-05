@@ -1,6 +1,5 @@
 import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteFieldVariableSize';
 import { Formik } from 'formik';
-import React from 'react';
 import { fireEvent, render, waitFor, within } from 'test-helpers/test-utils';
 import ProjectIUCNForm, {
   IIUCNSubClassification1Option,

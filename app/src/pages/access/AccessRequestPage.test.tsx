@@ -1,9 +1,8 @@
-import { ThemeProvider } from '@material-ui/styles';
+import { ThemeProvider } from '@material-ui/core/styles';
 import { AuthStateContext } from 'contexts/authStateContext';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { createMemoryHistory } from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import React from 'react';
 import { Router } from 'react-router';
 import { getMockAuthState, SystemAdminAuthState } from 'test-helpers/auth-helpers';
 import { cleanup, fireEvent, render, waitFor, within } from 'test-helpers/test-utils';

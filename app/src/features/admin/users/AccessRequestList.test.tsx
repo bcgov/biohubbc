@@ -3,7 +3,6 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { SYSTEM_IDENTITY_SOURCE } from 'hooks/useKeycloakWrapper';
 import { IAccessRequestDataObject, IGetAccessRequestsListResponse } from 'interfaces/useAdminApi.interface';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import React from 'react';
 import { codes } from 'test-helpers/code-helpers';
 import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
 

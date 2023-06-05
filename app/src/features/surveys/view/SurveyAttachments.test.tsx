@@ -7,7 +7,6 @@ import { ISurveyContext, SurveyContext } from 'contexts/surveyContext';
 import { createMemoryHistory } from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { DataLoader } from 'hooks/useDataLoader';
-import React from 'react';
 import { Router } from 'react-router';
 import { getMockAuthState, SystemAdminAuthState } from 'test-helpers/auth-helpers';
 import {

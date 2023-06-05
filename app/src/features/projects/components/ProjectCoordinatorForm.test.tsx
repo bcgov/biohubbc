@@ -3,7 +3,6 @@ import ProjectCoordinatorForm, {
   ProjectCoordinatorYupSchema
 } from 'features/projects/components/ProjectCoordinatorForm';
 import { Formik } from 'formik';
-import React from 'react';
 import { render, waitFor } from 'test-helpers/test-utils';
 
 const handleSaveAndNext = jest.fn();

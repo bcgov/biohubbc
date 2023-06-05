@@ -13,7 +13,7 @@ import IUCNClassification from 'features/projects/view/components/IUCNClassifica
 import Partnerships from 'features/projects/view/components/Partnerships';
 import ProjectCoordinator from 'features/projects/view/components/ProjectCoordinator';
 import ProjectObjectives from 'features/projects/view/components/ProjectObjectives';
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 
 const useStyles = makeStyles((theme: Theme) => ({
   projectMetadata: {

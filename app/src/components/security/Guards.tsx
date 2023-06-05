@@ -1,7 +1,7 @@
 import { PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
 import { AuthStateContext } from 'contexts/authStateContext';
 import { ProjectAuthStateContext } from 'contexts/projectAuthStateContext';
-import React, { PropsWithChildren, ReactElement, useContext } from 'react';
+import { PropsWithChildren, ReactElement, useContext } from 'react';
 import { isAuthenticated } from 'utils/authUtils';
 
 interface IGuardProps {

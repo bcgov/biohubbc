@@ -6,7 +6,7 @@ import clsx from 'clsx';
 import Footer from 'components/layout/Footer';
 import Header from 'components/layout/Header';
 import { DialogContextProvider } from 'contexts/dialogContext';
-import React, { PropsWithChildren } from 'react';
+import { PropsWithChildren } from 'react';
 
 interface IBaseLayoutProps {
   className?: string;

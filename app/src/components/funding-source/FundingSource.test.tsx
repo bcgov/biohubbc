@@ -1,10 +1,10 @@
 import { IProjectContext, ProjectContext } from 'contexts/projectContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { DataLoader } from 'hooks/useDataLoader';
-import React from 'react';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import { cleanup, render } from 'test-helpers/test-utils';
 import FundingSource, { IFundingSource } from './FundingSource';
+
 jest.mock('../../hooks/useBioHubApi');
 
 const mockBiohubApi = useBiohubApi as jest.Mock;

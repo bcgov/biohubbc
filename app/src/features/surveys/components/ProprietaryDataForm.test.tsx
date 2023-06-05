@@ -4,7 +4,6 @@ import ProprietaryDataForm, {
   ProprietaryDataYupSchema
 } from 'features/surveys/components/ProprietaryDataForm';
 import { Formik } from 'formik';
-import React from 'react';
 import { codes } from 'test-helpers/code-helpers';
 import { fireEvent, render, screen, waitFor, within } from 'test-helpers/test-utils';
 

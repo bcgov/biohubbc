@@ -5,7 +5,6 @@ import GeneralInformationForm, {
 } from 'features/surveys/components/GeneralInformationForm';
 import { Formik } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import React from 'react';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import { render, waitFor } from 'test-helpers/test-utils';
 

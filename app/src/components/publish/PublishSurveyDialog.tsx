@@ -9,7 +9,7 @@ import { ISurveyObservationData } from 'interfaces/useObservationApi.interface';
 import { ISurveySubmitForm } from 'interfaces/usePublishApi.interface';
 import { ISurveySummaryData } from 'interfaces/useSummaryResultsApi.interface';
 import { IGetSurveyAttachment, IGetSurveyReportAttachment } from 'interfaces/useSurveyApi.interface';
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 import yup from 'utils/YupSchema';
 import SelectAllButton from './SelectAllButton';
 import SubmitSection from './SubmitSection';

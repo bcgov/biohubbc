@@ -6,7 +6,6 @@ import StudyAreaForm, {
   StudyAreaYupSchema
 } from 'features/surveys/components/StudyAreaForm';
 import { Formik } from 'formik';
-import React from 'react';
 import { render, waitFor } from 'test-helpers/test-utils';
 
 // Mock MapBoundary component

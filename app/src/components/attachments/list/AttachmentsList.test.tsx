@@ -3,7 +3,6 @@ import { ISurveyContext, SurveyContext } from 'contexts/surveyContext';
 import { createMemoryHistory } from 'history';
 import { DataLoader } from 'hooks/useDataLoader';
 import { IGetSurveyAttachment } from 'interfaces/useSurveyApi.interface';
-import React from 'react';
 import { Router } from 'react-router';
 import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
 import { AttachmentType } from '../../../constants/attachments';

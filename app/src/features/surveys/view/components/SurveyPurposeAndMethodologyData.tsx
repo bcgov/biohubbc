@@ -6,7 +6,7 @@ import Typography from '@material-ui/core/Typography';
 import assert from 'assert';
 import { CodesContext } from 'contexts/codesContext';
 import { SurveyContext } from 'contexts/surveyContext';
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 
 const useStyles = makeStyles((theme: Theme) => ({
   vantageCodes: {

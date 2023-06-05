@@ -1,7 +1,6 @@
 import { AuthStateContext } from 'contexts/authStateContext';
 import { createMemoryHistory } from 'history';
 import { SYSTEM_IDENTITY_SOURCE } from 'hooks/useKeycloakWrapper';
-import React from 'react';
 import { Router } from 'react-router-dom';
 import { getMockAuthState, SystemAdminAuthState, SystemUserAuthState } from 'test-helpers/auth-helpers';
 import { render } from 'test-helpers/test-utils';

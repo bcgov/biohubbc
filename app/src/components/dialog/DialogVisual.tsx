@@ -4,7 +4,6 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 import { mdiAlert, mdiCheck, mdiExclamation, mdiFileCheckOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import clsx from 'clsx';
-import React from 'react';
 
 const useStyles = makeStyles((theme: Theme) => ({
   dialogVisual: {

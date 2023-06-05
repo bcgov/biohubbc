@@ -1,5 +1,4 @@
 import Keycloak from 'keycloak-js';
-import React from 'react';
 import { getMockAuthState, SystemUserAuthState, UnauthenticatedUserAuthState } from 'test-helpers/auth-helpers';
 import { cleanup, render, waitFor } from 'test-helpers/test-utils';
 import { AuthStateContext } from './authStateContext';

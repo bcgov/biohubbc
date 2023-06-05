@@ -6,7 +6,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import useTheme from '@material-ui/core/styles/useTheme';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { Formik, FormikValues } from 'formik';
-import React, { PropsWithChildren } from 'react';
+import { PropsWithChildren } from 'react';
 
 export interface IEditDialogComponentProps<T> {
   element: any;

@@ -4,7 +4,6 @@ import AgreementsForm, {
   IAgreementsForm
 } from 'features/surveys/components/AgreementsForm';
 import { Formik } from 'formik';
-import React from 'react';
 import { render } from 'test-helpers/test-utils';
 
 const handleSaveAndNext = jest.fn();

@@ -1,7 +1,7 @@
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { AuthStateContext } from 'contexts/authStateContext';
 import useRedirect from 'hooks/useRedirect';
-import React, { useContext, useEffect } from 'react';
+import { useContext, useEffect } from 'react';
 
 const LoginPage = () => {
   const { keycloakWrapper } = useContext(AuthStateContext);

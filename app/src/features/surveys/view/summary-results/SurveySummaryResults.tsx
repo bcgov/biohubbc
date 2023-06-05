@@ -12,7 +12,7 @@ import { PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
 import { DialogContext } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import React, { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import FileSummaryResults from './components/FileSummaryResults';
 import NoSummaryResults from './components/NoSummaryResults';
 import SummaryResultsErrors from './components/SummaryResultsErrors';

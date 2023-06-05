@@ -26,7 +26,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { ICreateSurveyRequest } from 'interfaces/useSurveyApi.interface';
 import moment from 'moment';
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
 import { getFormattedAmount, getFormattedDate, getFormattedDateRangeString } from 'utils/Utils';

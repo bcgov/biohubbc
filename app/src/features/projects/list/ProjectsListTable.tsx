@@ -1,8 +1,8 @@
 import { makeStyles, Theme } from '@material-ui/core';
 import Chip from '@material-ui/core/Chip';
+import { grey } from '@material-ui/core/colors';
 import Link from '@material-ui/core/Link';
-import { Typography } from '@mui/material';
-import { grey } from '@mui/material/colors';
+import Typography from '@material-ui/core/Typography';
 import { DataGrid, GridColDef, GridOverlay } from '@mui/x-data-grid';
 import clsx from 'clsx';
 import { SubmitStatusChip } from 'components/chips/SubmitStatusChip';
@@ -12,7 +12,7 @@ import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { SYSTEM_ROLE } from 'constants/roles';
 import { IGetDraftsListResponse } from 'interfaces/useDraftApi.interface';
 import { IGetProjectsListResponse } from 'interfaces/useProjectApi.interface';
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { getFormattedDate } from 'utils/Utils';
 

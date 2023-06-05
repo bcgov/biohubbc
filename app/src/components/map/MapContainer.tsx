@@ -15,7 +15,7 @@ import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 import 'leaflet/dist/leaflet.css';
 import { throttle } from 'lodash-es';
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { FeatureGroup, GeoJSON, LayersControl, MapContainer as LeafletMapContainer, Marker } from 'react-leaflet';
 import MarkerClusterGroup from 'react-leaflet-cluster';
 import { determineMapGeometries } from 'utils/mapLayersHelpers';

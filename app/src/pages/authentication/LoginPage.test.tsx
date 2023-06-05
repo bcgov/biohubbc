@@ -1,7 +1,6 @@
 import { cleanup, render } from '@testing-library/react';
 import { AuthStateContext } from 'contexts/authStateContext';
 import { createMemoryHistory } from 'history';
-import React from 'react';
 import { Router } from 'react-router-dom';
 import { getMockAuthState, UnauthenticatedUserAuthState } from 'test-helpers/auth-helpers';
 import LoginPage from './LoginPage';
