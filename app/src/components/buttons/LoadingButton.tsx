@@ -2,22 +2,26 @@ import Box from '@material-ui/core/Box';
 import Button, { ButtonProps } from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
-import { makeStyles } from '@material-ui/styles';
+import makeStyles from '@material-ui/core/styles/makeStyles';
 import React from 'react';
 
-const useStyles = makeStyles((theme: Theme) => ({
-  wrapper: {
-    position: 'relative'
-  },
-  buttonProgress: {
-    color: theme.palette.primary.main,
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    marginTop: -12,
-    marginLeft: -12
-  }
-}));
+const useStyles = makeStyles((theme: Theme) => {
+  console.log(theme);
+  console.log(theme.palette.primary);
+  return {
+    wrapper: {
+      position: 'relative'
+    },
+    buttonProgress: {
+      color: theme.palette.primary.main,
+      position: 'absolute',
+      top: '50%',
+      left: '50%',
+      marginTop: -12,
+      marginLeft: -12
+    }
+  };
+});
 
 export type LoadingButtonProps = ButtonProps & { loading: boolean };
 

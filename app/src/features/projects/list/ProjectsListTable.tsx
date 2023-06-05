@@ -1,8 +1,8 @@
 import { makeStyles, Theme } from '@material-ui/core';
 import Chip from '@material-ui/core/Chip';
+import { grey } from '@material-ui/core/colors';
 import Link from '@material-ui/core/Link';
-import { Typography } from '@mui/material';
-import { grey } from '@mui/material/colors';
+import Typography from '@material-ui/core/Typography';
 import { DataGrid, GridColDef, GridOverlay } from '@mui/x-data-grid';
 import clsx from 'clsx';
 import { SubmitStatusChip } from 'components/chips/SubmitStatusChip';
@@ -54,10 +54,9 @@ const useStyles = makeStyles((theme: Theme) => ({
       fontFamily: 'inherit',
       fontSize: 'inherit'
     },
-    '& .MuiDataGrid-cell:focus-within, & .MuiDataGrid-cellCheckbox:focus-within, & .MuiDataGrid-columnHeader:focus-within':
-      {
-        outline: 'none !important'
-      },
+    '& .MuiDataGrid-cell:focus-within, & .MuiDataGrid-cellCheckbox:focus-within, & .MuiDataGrid-columnHeader:focus-within': {
+      outline: 'none !important'
+    },
     '& .MuiDataGrid-row:hover': {
       backgroundColor: 'transparent !important'
     }
