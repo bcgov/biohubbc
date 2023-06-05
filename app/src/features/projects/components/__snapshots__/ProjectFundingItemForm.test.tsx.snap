@@ -82,9 +82,6 @@ exports[`ProjectFundingItemForm auto selection of investment action category wor
                             />
                           </svg>
                         </span>
-                        <span
-                          class="MuiTouchRipple-root"
-                        />
                       </button>
                       <button
                         aria-label="Open"
@@ -107,9 +104,6 @@ exports[`ProjectFundingItemForm auto selection of investment action category wor
                             />
                           </svg>
                         </span>
-                        <span
-                          class="MuiTouchRipple-root"
-                        />
                       </button>
                     </div>
                     <fieldset
@@ -435,9 +429,6 @@ exports[`ProjectFundingItemForm auto selection of investment action category wor
                             />
                           </svg>
                         </span>
-                        <span
-                          class="MuiTouchRipple-root"
-                        />
                       </button>
                       <button
                         aria-label="Open"
@@ -460,9 +451,6 @@ exports[`ProjectFundingItemForm auto selection of investment action category wor
                             />
                           </svg>
                         </span>
-                        <span
-                          class="MuiTouchRipple-root"
-                        />
                       </button>
                     </div>
                     <fieldset
@@ -788,9 +776,6 @@ exports[`ProjectFundingItemForm renders correctly with agency 1 1`] = `
                             />
                           </svg>
                         </span>
-                        <span
-                          class="MuiTouchRipple-root"
-                        />
                       </button>
                       <button
                         aria-label="Open"
@@ -813,9 +798,6 @@ exports[`ProjectFundingItemForm renders correctly with agency 1 1`] = `
                             />
                           </svg>
                         </span>
-                        <span
-                          class="MuiTouchRipple-root"
-                        />
                       </button>
                     </div>
                     <fieldset
@@ -1212,9 +1194,6 @@ exports[`ProjectFundingItemForm renders correctly with agency 2 1`] = `
                             />
                           </svg>
                         </span>
-                        <span
-                          class="MuiTouchRipple-root"
-                        />
                       </button>
                       <button
                         aria-label="Open"
@@ -1237,9 +1216,6 @@ exports[`ProjectFundingItemForm renders correctly with agency 2 1`] = `
                             />
                           </svg>
                         </span>
-                        <span
-                          class="MuiTouchRipple-root"
-                        />
                       </button>
                     </div>
                     <fieldset
@@ -1636,9 +1612,6 @@ exports[`ProjectFundingItemForm renders correctly with any agency other than 1 o
                             />
                           </svg>
                         </span>
-                        <span
-                          class="MuiTouchRipple-root"
-                        />
                       </button>
                       <button
                         aria-label="Open"
@@ -1661,9 +1634,6 @@ exports[`ProjectFundingItemForm renders correctly with any agency other than 1 o
                             />
                           </svg>
                         </span>
-                        <span
-                          class="MuiTouchRipple-root"
-                        />
                       </button>
                     </div>
                     <fieldset
@@ -1989,9 +1959,6 @@ exports[`ProjectFundingItemForm renders correctly with default empty values 1`] 
                             />
                           </svg>
                         </span>
-                        <span
-                          class="MuiTouchRipple-root"
-                        />
                       </button>
                       <button
                         aria-label="Open"
@@ -2014,9 +1981,6 @@ exports[`ProjectFundingItemForm renders correctly with default empty values 1`] 
                             />
                           </svg>
                         </span>
-                        <span
-                          class="MuiTouchRipple-root"
-                        />
                       </button>
                     </div>
                     <fieldset
