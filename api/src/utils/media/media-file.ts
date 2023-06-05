@@ -33,11 +33,11 @@ export class MediaFile implements IMediaFile {
    * @memberof MediaFile
    */
   get name(): string {
-    const lastPeriodindex = this.fileName.lastIndexOf('.');
+    const lastPeriodIndex = this.fileName.lastIndexOf('.');
 
-    if (lastPeriodindex >= 0) {
+    if (lastPeriodIndex >= 0) {
       // strip out the file extension, if it exists
-      return this.fileName.substring(0, lastPeriodindex);
+      return this.fileName.substring(0, lastPeriodIndex);
     } else {
       return this.fileName;
     }

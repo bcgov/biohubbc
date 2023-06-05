@@ -6,10 +6,10 @@ import { SYSTEM_IDENTITY_SOURCE } from '../constants/database';
  *
  * @example getUserGuid({ preferred_username: 'aaabbaaa@idir' }) // => 'aaabbaaa'
  *
- * @param {object} keycloakToken
+ * @param {Record<string, any>} keycloakToken
  * @return {*} {(string | null)}
  */
-export const getUserGuid = (keycloakToken: object): string | null => {
+export const getUserGuid = (keycloakToken: Record<string, any>): string | null => {
   const userIdentifier = keycloakToken?.['preferred_username']?.split('@')?.[0];
 
   if (!userIdentifier) {
@@ -27,10 +27,10 @@ export const getUserGuid = (keycloakToken: object): string | null => {
  * @example getUserIdentitySource({ ...token, identity_provider: 'bceidbasic' }) => SYSTEM_IDENTITY_SOURCE.BCEID_BASIC
  * @example getUserIdentitySource({ preferred_username: 'aaaa@idir' }) => SYSTEM_IDENTITY_SOURCE.IDIR
  *
- * @param {object} keycloakToken
+ * @param {Record<string, any>} keycloakToken
  * @return {*} {SYSTEM_IDENTITY_SOURCE}
  */
-export const getUserIdentitySource = (keycloakToken: object): SYSTEM_IDENTITY_SOURCE => {
+export const getUserIdentitySource = (keycloakToken: Record<string, any>): SYSTEM_IDENTITY_SOURCE => {
   const userIdentitySource: string =
     keycloakToken?.['identity_provider'] || keycloakToken?.['preferred_username']?.split('@')?.[1];
 
@@ -75,10 +75,10 @@ export const coerceUserIdentitySource = (userIdentitySource: string | null): SYS
  *
  * @example getUserIdentifier({ ....token, bceid_username: 'jsmith@idir' }) => 'jsmith'
  *
- * @param {object} keycloakToken
+ * @param {Record<string, any>} keycloakToken
  * @return {*} {(string | null)}
  */
-export const getUserIdentifier = (keycloakToken: object): string | null => {
+export const getUserIdentifier = (keycloakToken: Record<string, any>): string | null => {
   const userIdentifier =
     keycloakToken?.['idir_username'] || keycloakToken?.['bceid_username'] || keycloakToken?.['sims_system_username'];
 

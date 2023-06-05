@@ -8,12 +8,3 @@ export const ACCESS_REQUEST_ADMIN_NOTIFICATION_EMAIL: IgcNotifyGenericMessage = 
   main_body2: 'This is an automated message from the BioHub Species Inventory Management System',
   footer: ''
 };
-
-// Email template for an access request submitter, informing them that their access request has been approved.
-export const ACCESS_REQUEST_SUBMITTER_APPROVAL_EMAIL: IgcNotifyGenericMessage = {
-  subject: 'SIMS: Your request for access has been approved.',
-  header: 'Your request for access to the Species Inventory Management System has been approved.',
-  main_body1: `To access the site, `,
-  main_body2: 'This is an automated message from the BioHub Species Inventory Management System',
-  footer: ''
-};
