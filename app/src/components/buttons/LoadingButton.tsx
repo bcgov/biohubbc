@@ -4,21 +4,19 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 
-const useStyles = makeStyles((theme: Theme) => {
-  return {
-    wrapper: {
-      position: 'relative'
-    },
-    buttonProgress: {
-      color: theme.palette.primary.main,
-      position: 'absolute',
-      top: '50%',
-      left: '50%',
-      marginTop: -12,
-      marginLeft: -12
-    }
-  };
-});
+const useStyles = makeStyles((theme: Theme) => ({
+  wrapper: {
+    position: 'relative'
+  },
+  buttonProgress: {
+    color: theme.palette.primary.main,
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    marginTop: -12,
+    marginLeft: -12
+  }
+}));
 
 export type LoadingButtonProps = ButtonProps & { loading: boolean };
 
