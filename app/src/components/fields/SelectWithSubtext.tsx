@@ -68,8 +68,7 @@ const SelectWithSubtextField: React.FC<ISelectWithSubtextField> = (props) => {
         fullWidth
         variant="outlined"
         required={props.required}
-        error={get(touched, props.name) && Boolean(get(errors, props.name))}
-      >
+        error={get(touched, props.name) && Boolean(get(errors, props.name))}>
         <InputLabel id={`${props.name}-label`}>{props.label}</InputLabel>
         <Select
           name={props.name}
@@ -95,8 +94,7 @@ const SelectWithSubtextField: React.FC<ISelectWithSubtextField> = (props) => {
               vertical: 'top',
               horizontal: 'left'
             }
-          }}
-        >
+          }}>
           {props.options.map((item) => (
             <MenuItem key={item.value} value={item.value}>
               <ListItemText primary={item.label} secondary={item.subText} />
