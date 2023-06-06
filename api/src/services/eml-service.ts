@@ -774,7 +774,7 @@ export class EmlService extends DBService {
         section: projectData.funding.fundingSources.map((fundingSource) => {
           return {
             title: 'Agency Name',
-            para: fundingSource.agency_name,
+            para: fundingSource.agency_name ?? fundingSource.first_nations_name,
             section: [
               { title: 'Funding Agency Project ID', para: fundingSource.agency_project_id },
               { title: 'Investment Action/Category', para: fundingSource.investment_action_category_name },
