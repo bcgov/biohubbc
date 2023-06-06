@@ -17,6 +17,7 @@ import FileSummaryResults from './components/FileSummaryResults';
 import NoSummaryResults from './components/NoSummaryResults';
 import SummaryResultsErrors from './components/SummaryResultsErrors';
 import SummaryResultsLoading from './components/SummaryResultsLoading';
+import { PublishStatus } from 'constants/attachments';
 
 export enum ClassGrouping {
   NOTICE = 'Notice',
@@ -41,6 +42,9 @@ const SurveySummaryResults = () => {
   }, [surveyContext.summaryDataLoader, projectId, surveyId]);
 
   const summaryData = surveyContext.summaryDataLoader.data?.surveySummaryData;
+  const summarySubmissionStatus = surveyContext.summaryDataLoader.data?.surveySummarySupplementaryData?.event_timestamp
+    ? PublishStatus.SUBMITTED
+    : PublishStatus.UNSUBMITTED;
 
   const importSummaryResults = (): IUploadHandler => {
     return (file, cancelToken, handleFileUploadProgress) => {
@@ -128,13 +132,19 @@ const SurveySummaryResults = () => {
         buttonTitle="Import Summary Results"
         buttonStartIcon={<Icon path={mdiImport} size={1} />}
         buttonOnClick={() => showUploadDialog()}
-        renderButton={(buttonProps) => (
-          <ProjectRoleGuard
-            validProjectRoles={[PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR]}
-            validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-            <Button {...buttonProps} />
-          </ProjectRoleGuard>
-        )}
+        renderButton={(buttonProps) => {
+          const { disabled, ...rest } = buttonProps;
+
+          return (
+            <ProjectRoleGuard
+              validProjectRoles={[PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR]}
+              validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+              <Button
+                {...rest}
+                disabled={disabled || summarySubmissionStatus === PublishStatus.SUBMITTED} />
+            </ProjectRoleGuard>
+          )
+        }}
       />
 
       <Divider />

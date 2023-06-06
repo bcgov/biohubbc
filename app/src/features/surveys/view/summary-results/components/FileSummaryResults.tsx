@@ -169,34 +169,38 @@ const FileSummaryResults = (props: IFileResultsProps) => {
                   </ListItemIcon>
                   Download
                 </MenuItem>
-                <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-                  <MenuItem
-                    onClick={() => {
-                      showDelete();
-                      setAnchorEl(null);
-                    }}>
-                    <ListItemIcon>
-                      <Icon path={mdiTrashCanOutline} size={1} />
-                    </ListItemIcon>
-                    Delete
-                  </MenuItem>
-                </SystemRoleGuard>
-                <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-                  <ProjectRoleGuard validProjectRoles={[PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR]}>
+                {status === PublishStatus.UNSUBMITTED && (
+                  <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
                     <MenuItem
                       onClick={() => {
-                        setRemoveOrResubmitDialogFile(props.fileData);
-                        setOpenRemoveOrResubmitDialog(true);
+                        showDelete();
                         setAnchorEl(null);
-                      }}
-                      data-testid="attachment-action-menu-delete">
+                      }}>
                       <ListItemIcon>
                         <Icon path={mdiTrashCanOutline} size={1} />
                       </ListItemIcon>
-                      Remove or Resubmit
+                      Delete
                     </MenuItem>
-                  </ProjectRoleGuard>
-                </SystemRoleGuard>
+                  </SystemRoleGuard>
+                )}
+                {status === PublishStatus.SUBMITTED && (
+                  <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+                    <ProjectRoleGuard validProjectRoles={[PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR]}>
+                      <MenuItem
+                        onClick={() => {
+                          setRemoveOrResubmitDialogFile(props.fileData);
+                          setOpenRemoveOrResubmitDialog(true);
+                          setAnchorEl(null);
+                        }}
+                        data-testid="attachment-action-menu-delete">
+                        <ListItemIcon>
+                          <Icon path={mdiTrashCanOutline} size={1} />
+                        </ListItemIcon>
+                        Remove or Resubmit
+                      </MenuItem>
+                    </ProjectRoleGuard>
+                  </SystemRoleGuard>
+                )}
               </Menu>
             </Box>
           </Box>

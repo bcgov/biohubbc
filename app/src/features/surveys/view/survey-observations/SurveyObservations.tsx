@@ -37,7 +37,7 @@ const SurveyObservations: React.FC = () => {
   }, [surveyContext.observationDataLoader, projectId, surveyId]);
 
   const occurrenceSubmission = surveyContext.observationDataLoader.data?.surveyObservationData;
-  const occurrenceSubmissionPublishStatus: PublishStatus = surveyContext.observationDataLoader.data?.surveyObservationSupplementaryData?.event_timestamp
+  const occurrenceSubmissionPublishStatus = surveyContext.observationDataLoader.data?.surveyObservationSupplementaryData?.event_timestamp
     ? PublishStatus.SUBMITTED
     : PublishStatus.UNSUBMITTED;
 
