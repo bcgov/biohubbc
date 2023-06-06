@@ -108,14 +108,14 @@ const SurveyAttachmentsList: React.FC = () => {
     <>
       <RemoveOrResubmitDialog
         projectId={surveyContext.projectId}
-        fileName={currentAttachment?.fileName || ''}
-        parentName={surveyContext.surveyDataLoader.data?.surveyData.survey_details.survey_name || ''}
+        fileName={currentAttachment?.fileName ?? ''}
+        parentName={surveyContext.surveyDataLoader.data?.surveyData.survey_details.survey_name ?? ''}
         status={
           currentAttachment?.supplementaryAttachmentData?.event_timestamp
             ? PublishStatus.SUBMITTED
             : PublishStatus.UNSUBMITTED
         }
-        submittedDate={currentAttachment?.supplementaryAttachmentData?.event_timestamp || ''}
+        submittedDate={currentAttachment?.supplementaryAttachmentData?.event_timestamp ?? ''}
         open={removeOrResubmitDialogOpen}
         onClose={() => setRemoveOrResubmitDialogOpen(false)}
       />

@@ -105,10 +105,10 @@ const FileSummaryResults = (props: IFileResultsProps) => {
     <>
       <RemoveOrResubmitDialog
         projectId={surveyContext.projectId}
-        fileName={fileData.surveySummaryData.fileName || ''}
-        parentName={surveyName || ''}
+        fileName={fileData.surveySummaryData.fileName ?? ''}
+        parentName={surveyName ?? ''}
         status={status}
-        submittedDate={fileData.surveySummarySupplementaryData?.event_timestamp || ''}
+        submittedDate={fileData.surveySummarySupplementaryData?.event_timestamp ?? ''}
         open={openRemoveOrResubmitDialog}
         onClose={() => setOpenRemoveOrResubmitDialog(false)}
       />

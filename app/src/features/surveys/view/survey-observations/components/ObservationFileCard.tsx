@@ -120,10 +120,10 @@ const ObservationFileCard = (props: IObservationFileCardProps) => {
     <>
       <RemoveOrResubmitDialog
         projectId={surveyContext.projectId}
-        fileName={props.observationRecord.surveyObservationData.inputFileName || ''}
-        parentName={surveyName || ''}
+        fileName={props.observationRecord.surveyObservationData.inputFileName ?? ''}
+        parentName={surveyName ?? ''}
         status={status}
-        submittedDate={props.observationRecord?.surveyObservationSupplementaryData?.event_timestamp || ''}
+        submittedDate={props.observationRecord?.surveyObservationSupplementaryData?.event_timestamp ?? ''}
         open={openRemoveOrResubmitDialog}
         onClose={() => setOpenRemoveOrResubmitDialog(false)}
       />

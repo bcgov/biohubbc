@@ -105,14 +105,14 @@ const ProjectAttachmentsList = () => {
     <>
       <RemoveOrResubmitDialog
         projectId={projectContext.projectId}
-        fileName={currentAttachment?.fileName || ''}
-        parentName={projectContext.projectDataLoader.data?.projectData.project.project_name || ''}
+        fileName={currentAttachment?.fileName ?? ''}
+        parentName={projectContext.projectDataLoader.data?.projectData.project.project_name ?? ''}
         status={
           currentAttachment?.supplementaryAttachmentData?.event_timestamp
             ? PublishStatus.SUBMITTED
             : PublishStatus.UNSUBMITTED
         }
-        submittedDate={currentAttachment?.supplementaryAttachmentData?.event_timestamp || ''}
+        submittedDate={currentAttachment?.supplementaryAttachmentData?.event_timestamp ?? ''}
         open={removeOrResubmitDialogOpen}
         onClose={() => setRemoveOrResubmitDialogOpen(false)}
       />
