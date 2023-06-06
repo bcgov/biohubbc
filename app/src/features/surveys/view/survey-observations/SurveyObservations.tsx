@@ -6,7 +6,7 @@ import Icon from '@mdi/react';
 import ComponentDialog from 'components/dialog/ComponentDialog';
 import FileUpload from 'components/file-upload/FileUpload';
 import { IUploadHandler } from 'components/file-upload/FileUploadItem';
-import { HasProjectorSystemRole } from 'components/security/Guards';
+import { HasProjectOrSystemRole } from 'components/security/Guards';
 import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
 import { PublishStatus } from 'constants/attachments';
 import { SYSTEM_ROLE } from 'constants/roles';
@@ -175,18 +175,15 @@ const SurveyObservations: React.FC = () => {
           const { disabled, ...rest } = buttonProps;
 
           // admins should always see this button
+          // button should only be visible if the data has not been published
           if (
-            HasProjectorSystemRole({
+            HasProjectOrSystemRole({
               validProjectRoles: [],
               validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]
-            })
+            }) ||
+            occurrenceSubmissionPublishStatus !== PublishStatus.SUBMITTED
           ) {
             return <Button {...rest} />;
-          } else {
-            // button should only be visible if the data has not been published
-            if (occurrenceSubmissionPublishStatus !== PublishStatus.SUBMITTED) {
-              <Button {...rest} />;
-            }
           }
         }}
       />
