@@ -64,7 +64,7 @@ const AttachmentsListItemMenuButton = (props: IAttachmentsListItemMenuButtonProp
             <MenuItem
               onClick={() => {
                 props.onDownloadFile();
-                setAnchorEl(null);
+                handleClose();
               }}
               data-testid="attachment-action-menu-download">
               <ListItemIcon>
@@ -76,7 +76,7 @@ const AttachmentsListItemMenuButton = (props: IAttachmentsListItemMenuButtonProp
               <MenuItem
                 onClick={() => {
                   props.onViewDetails();
-                  setAnchorEl(null);
+                  handleClose();
                 }}
                 data-testid="attachment-action-menu-details">
                 <ListItemIcon>
@@ -90,7 +90,7 @@ const AttachmentsListItemMenuButton = (props: IAttachmentsListItemMenuButtonProp
                 <MenuItem
                   onClick={() => {
                     props.onDeleteFile();
-                    setAnchorEl(null);
+                    handleClose();
                   }}
                   data-testid="attachment-action-menu-delete">
                   <ListItemIcon>
@@ -104,7 +104,10 @@ const AttachmentsListItemMenuButton = (props: IAttachmentsListItemMenuButtonProp
               <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
                 <ProjectRoleGuard validProjectRoles={[PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR]}>
                   <MenuItem
-                    onClick={() => props.onRemoveOrResubmit()}
+                    onClick={() => {
+                      props.onRemoveOrResubmit();
+                      handleClose();
+                    }}
                     data-testid="attachment-action-menu-resubmit">
                     <ListItemIcon>
                       <Icon path={mdiTrashCanOutline} size={1} />

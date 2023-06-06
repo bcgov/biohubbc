@@ -77,12 +77,14 @@ const FileSummaryResults = (props: IFileResultsProps) => {
 
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [openRemoveOrResubmitDialog, setOpenRemoveOrResubmitDialog] = React.useState(false);
-  const [removeOrResubmitDialogFile, setRemoveOrResubmitDialogFile] = React.useState<IGetSummaryResultsResponse | null>(
-    null
-  );
 
-  const status =
-    (fileData.surveySummarySupplementaryData?.event_timestamp && PublishStatus.SUBMITTED) || PublishStatus.UNSUBMITTED;
+  const handleClose = () => {
+    setAnchorEl(null);
+  }
+
+  const status = fileData.surveySummarySupplementaryData?.event_timestamp
+    ? PublishStatus.SUBMITTED
+    : PublishStatus.UNSUBMITTED;
 
   let icon: string = mdiFileOutline;
   let severity: 'error' | 'info' | 'success' | 'warning' = 'info';
@@ -103,13 +105,10 @@ const FileSummaryResults = (props: IFileResultsProps) => {
     <>
       <RemoveOrResubmitDialog
         projectId={surveyContext.projectId}
-        fileName={removeOrResubmitDialogFile?.surveySummaryData.fileName || ''}
+        fileName={fileData.surveySummaryData.fileName || ''}
         parentName={surveyName || ''}
-        status={
-          (removeOrResubmitDialogFile?.surveySummarySupplementaryData && PublishStatus.SUBMITTED) ||
-          PublishStatus.UNSUBMITTED
-        }
-        submittedDate={removeOrResubmitDialogFile?.surveySummarySupplementaryData?.event_timestamp || ''}
+        status={status}
+        submittedDate={fileData.surveySummarySupplementaryData?.event_timestamp || ''}
         open={openRemoveOrResubmitDialog}
         onClose={() => setOpenRemoveOrResubmitDialog(false)}
       />
@@ -148,7 +147,7 @@ const FileSummaryResults = (props: IFileResultsProps) => {
                 anchorEl={anchorEl}
                 open={Boolean(anchorEl)}
                 onClose={() => {
-                  setAnchorEl(null);
+                  handleClose();
                 }}
                 anchorOrigin={{
                   vertical: 'top',
@@ -161,7 +160,7 @@ const FileSummaryResults = (props: IFileResultsProps) => {
                 <MenuItem
                   onClick={() => {
                     downloadFile();
-                    setAnchorEl(null);
+                    handleClose();
                   }}>
                   <ListItemIcon>
                     <Icon path={mdiTrayArrowDown} size={1} />
@@ -173,7 +172,7 @@ const FileSummaryResults = (props: IFileResultsProps) => {
                     <MenuItem
                       onClick={() => {
                         showDelete();
-                        setAnchorEl(null);
+                        handleClose();
                       }}>
                       <ListItemIcon>
                         <Icon path={mdiTrashCanOutline} size={1} />
@@ -187,9 +186,8 @@ const FileSummaryResults = (props: IFileResultsProps) => {
                     <ProjectRoleGuard validProjectRoles={[PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR]}>
                       <MenuItem
                         onClick={() => {
-                          setRemoveOrResubmitDialogFile(props.fileData);
                           setOpenRemoveOrResubmitDialog(true);
-                          setAnchorEl(null);
+                          handleClose();
                         }}
                         data-testid="attachment-action-menu-delete">
                         <ListItemIcon>
