@@ -6,10 +6,10 @@ import Icon from '@mdi/react';
 import ComponentDialog from 'components/dialog/ComponentDialog';
 import FileUpload from 'components/file-upload/FileUpload';
 import { IUploadHandler } from 'components/file-upload/FileUploadItem';
-import { ProjectRoleGuard } from 'components/security/Guards';
+import { HasProjectorSystemRole } from 'components/security/Guards';
 import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
 import { PublishStatus } from 'constants/attachments';
-import { PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
+import { SYSTEM_ROLE } from 'constants/roles';
 import { DialogContext } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -174,13 +174,20 @@ const SurveyObservations: React.FC = () => {
         renderButton={(buttonProps) => {
           const { disabled, ...rest } = buttonProps;
 
-          return (
-            <ProjectRoleGuard
-              validProjectRoles={[PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR]}
-              validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-              <Button {...rest} disabled={disabled || occurrenceSubmissionPublishStatus === PublishStatus.SUBMITTED} />
-            </ProjectRoleGuard>
-          );
+          // admins should always see this button
+          if (
+            HasProjectorSystemRole({
+              validProjectRoles: [],
+              validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]
+            })
+          ) {
+            return <Button {...rest} />;
+          } else {
+            // button should only be visible if the data has not been published
+            if (occurrenceSubmissionPublishStatus !== PublishStatus.SUBMITTED) {
+              <Button {...rest} />;
+            }
+          }
         }}
       />
 
