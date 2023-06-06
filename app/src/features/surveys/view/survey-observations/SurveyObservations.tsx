@@ -20,6 +20,7 @@ import NoObservationsCard from './components/NoObservationsCard';
 import ObservationFileCard from './components/ObservationFileCard';
 import ObservationMessagesCard from './components/ObservationMessagesCard';
 import ValidatingObservationsCard from './components/ValidatingObservationsCard';
+import { PublishStatus } from 'constants/attachments';
 
 const SurveyObservations: React.FC = () => {
   const biohubApi = useBiohubApi();
@@ -36,6 +37,10 @@ const SurveyObservations: React.FC = () => {
   }, [surveyContext.observationDataLoader, projectId, surveyId]);
 
   const occurrenceSubmission = surveyContext.observationDataLoader.data?.surveyObservationData;
+  const occurrenceSubmissionPublishStatus: PublishStatus = surveyContext.observationDataLoader.data?.surveyObservationSupplementaryData?.event_timestamp
+    ? PublishStatus.SUBMITTED
+    : PublishStatus.UNSUBMITTED;
+
 
   const submissionPollingInterval = useInterval(
     () => surveyContext.observationDataLoader.refresh(projectId, surveyId),
@@ -166,13 +171,19 @@ const SurveyObservations: React.FC = () => {
         buttonProps={{ variant: 'contained', color: 'primary' }}
         buttonStartIcon={<Icon path={mdiImport} size={1} />}
         buttonOnClick={() => showUploadDialog()}
-        renderButton={(buttonProps) => (
-          <ProjectRoleGuard
-            validProjectRoles={[PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR]}
-            validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-            <Button {...buttonProps} />
-          </ProjectRoleGuard>
-        )}
+        renderButton={(buttonProps) => {
+          const { disabled, ...rest } = buttonProps;
+
+          return (
+           <ProjectRoleGuard
+              validProjectRoles={[PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR]}
+              validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+              <Button
+                {...rest}
+                disabled={disabled || occurrenceSubmissionPublishStatus === PublishStatus.SUBMITTED} />
+            </ProjectRoleGuard>
+          )
+        }}
       />
 
       <Divider />
