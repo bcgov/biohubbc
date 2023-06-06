@@ -19,11 +19,8 @@ import {
   SurveyReportPublish,
   SurveySummarySubmissionPublish
 } from '../repositories/history-publish-repository';
-import { getLogger } from '../utils/logger';
 import { DBService } from './db-service';
 import { SummaryService } from './summary-service';
-
-const defaultLog = getLogger('services/history-publish-service');
 
 export class HistoryPublishService extends DBService {
   historyRepository: HistoryPublishRepository;
@@ -229,12 +226,7 @@ export class HistoryPublishService extends DBService {
   async getSurveySummarySubmissionPublishRecord(
     surveySummarySubmissionId: number
   ): Promise<SurveySummarySubmissionPublish | null> {
-    const surveySummarySubmissionPublishRecord = this.historyRepository.getSurveySummarySubmissionPublishRecord(
-      surveySummarySubmissionId
-    );
-
-    defaultLog.debug({ label: 'getSurveySummarySubmissionPublishRecord', surveySummarySubmissionPublishRecord });
-    return surveySummarySubmissionPublishRecord;
+    return this.historyRepository.getSurveySummarySubmissionPublishRecord(surveySummarySubmissionId);
   }
 
   /**
