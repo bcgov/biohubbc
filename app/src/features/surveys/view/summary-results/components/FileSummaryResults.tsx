@@ -111,7 +111,6 @@ const FileSummaryResults = (props: IFileResultsProps) => {
         }
         submittedDate={removeOrResubmitDialogFile?.surveySummarySupplementaryData?.event_timestamp || ''}
         open={openRemoveOrResubmitDialog}
-        setOpen={setOpenRemoveOrResubmitDialog}
         onClose={() => setOpenRemoveOrResubmitDialog(false)}
       />
 

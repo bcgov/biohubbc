@@ -5,42 +5,24 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import { mdiDotsVertical, mdiInformationOutline, mdiTrashCanOutline, mdiTrayArrowDown } from '@mdi/js';
 import Icon from '@mdi/react';
-import RemoveOrResubmitDialog from 'components/publish/components/RemoveOrResubmitDialog';
 import { ProjectRoleGuard, SystemRoleGuard } from 'components/security/Guards';
 import { AttachmentType, PublishStatus } from 'constants/attachments';
 import { PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
-import { ProjectContext } from 'contexts/projectContext';
-import { SurveyContext } from 'contexts/surveyContext';
-import { IGetProjectAttachment } from 'interfaces/useProjectApi.interface';
-import { IGetSurveyAttachment } from 'interfaces/useSurveyApi.interface';
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 //TODO: PRODUCTION_BANDAGE: Remove <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}> from `Remove or Resubmit` button.
 
-interface IAttachmentsListItemMenuButtonProps<T extends IGetProjectAttachment | IGetSurveyAttachment> {
-  attachment: T;
-  handleDownloadFile: (attachment: T) => void;
-  handleDeleteFile: (attachment: T) => void;
-  handleViewDetails: (attachment: T) => void;
+interface IAttachmentsListItemMenuButtonProps {
+  attachmentStatus: PublishStatus;
+  attachmentFileType: string;
+  onDownloadFile: () => void;
+  onDeleteFile: () => void;
+  onViewDetails: () => void;
+  onRemoveOrResubmit: () => void;
 }
 
-const AttachmentsListItemMenuButton = <T extends IGetProjectAttachment | IGetSurveyAttachment>(
-  props: IAttachmentsListItemMenuButtonProps<T>
-) => {
-  const surveyContext = React.useContext(SurveyContext);
-  const projectContext = React.useContext(ProjectContext);
-  const parentName =
-    surveyContext.surveyDataLoader.data?.surveyData.survey_details.survey_name ||
-    projectContext.projectDataLoader.data?.projectData.project.project_name;
-
-  const status = props.attachment.supplementaryAttachmentData?.event_timestamp
-    ? PublishStatus.SUBMITTED
-    : PublishStatus.UNSUBMITTED;
-
+const AttachmentsListItemMenuButton = (props: IAttachmentsListItemMenuButtonProps) => {
   const [anchorEl, setAnchorEl] = useState(null);
-  const [openRemoveOrResubmitDialog, setOpenRemoveOrResubmitDialog] = useState(false);
-  const [removeOrResubmitDialogFile, setRemoveOrResubmitDialogFile] = useState<T | null>(null);
-
   const open = Boolean(anchorEl);
 
   const handleClick = (event: any) => {
@@ -53,19 +35,6 @@ const AttachmentsListItemMenuButton = <T extends IGetProjectAttachment | IGetSur
 
   return (
     <>
-      <RemoveOrResubmitDialog
-        projectId={projectContext.projectId}
-        fileName={removeOrResubmitDialogFile?.fileName || ''}
-        parentName={parentName || ''}
-        status={
-          (removeOrResubmitDialogFile?.supplementaryAttachmentData && PublishStatus.SUBMITTED) ||
-          PublishStatus.UNSUBMITTED
-        }
-        submittedDate={removeOrResubmitDialogFile?.supplementaryAttachmentData?.event_timestamp || ''}
-        open={openRemoveOrResubmitDialog}
-        setOpen={setOpenRemoveOrResubmitDialog}
-        onClose={() => setOpenRemoveOrResubmitDialog(false)}
-      />
       <Box my={-1}>
         <Box>
           <IconButton
@@ -94,7 +63,7 @@ const AttachmentsListItemMenuButton = <T extends IGetProjectAttachment | IGetSur
             }}>
             <MenuItem
               onClick={() => {
-                props.handleDownloadFile(props.attachment);
+                props.onDownloadFile();
                 setAnchorEl(null);
               }}
               data-testid="attachment-action-menu-download">
@@ -103,10 +72,10 @@ const AttachmentsListItemMenuButton = <T extends IGetProjectAttachment | IGetSur
               </ListItemIcon>
               Download File
             </MenuItem>
-            {props.attachment.fileType === AttachmentType.REPORT && (
+            {props.attachmentFileType === AttachmentType.REPORT && (
               <MenuItem
                 onClick={() => {
-                  props.handleViewDetails(props.attachment);
+                  props.onViewDetails();
                   setAnchorEl(null);
                 }}
                 data-testid="attachment-action-menu-details">
@@ -116,11 +85,11 @@ const AttachmentsListItemMenuButton = <T extends IGetProjectAttachment | IGetSur
                 View Details
               </MenuItem>
             )}
-            {status === PublishStatus.UNSUBMITTED && (
+            {props.attachmentStatus === PublishStatus.UNSUBMITTED && (
               <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
                 <MenuItem
                   onClick={() => {
-                    props.handleDeleteFile(props.attachment);
+                    props.onDeleteFile();
                     setAnchorEl(null);
                   }}
                   data-testid="attachment-action-menu-delete">
@@ -131,15 +100,11 @@ const AttachmentsListItemMenuButton = <T extends IGetProjectAttachment | IGetSur
                 </MenuItem>
               </SystemRoleGuard>
             )}
-            {status === PublishStatus.SUBMITTED && (
+            {props.attachmentStatus === PublishStatus.SUBMITTED && (
               <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
                 <ProjectRoleGuard validProjectRoles={[PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR]}>
                   <MenuItem
-                    onClick={() => {
-                      setRemoveOrResubmitDialogFile(props.attachment);
-                      setOpenRemoveOrResubmitDialog(true);
-                      setAnchorEl(null);
-                    }}
+                    onClick={() => props.onRemoveOrResubmit()}
                     data-testid="attachment-action-menu-resubmit">
                     <ListItemIcon>
                       <Icon path={mdiTrashCanOutline} size={1} />

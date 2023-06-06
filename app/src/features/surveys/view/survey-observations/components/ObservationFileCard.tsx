@@ -126,7 +126,6 @@ const ObservationFileCard = (props: IObservationFileCardProps) => {
         }
         submittedDate={RemoveOrResubmitDialogFile?.surveyObservationSupplementaryData?.event_timestamp || ''}
         open={openRemoveOrResubmitDialog}
-        setOpen={setOpenRemoveOrResubmitDialog}
         onClose={() => setOpenRemoveOrResubmitDialog(false)}
       />
 
