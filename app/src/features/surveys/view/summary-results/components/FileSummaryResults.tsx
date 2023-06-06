@@ -80,7 +80,7 @@ const FileSummaryResults = (props: IFileResultsProps) => {
 
   const handleClose = () => {
     setAnchorEl(null);
-  }
+  };
 
   const status = fileData.surveySummarySupplementaryData?.event_timestamp
     ? PublishStatus.SUBMITTED

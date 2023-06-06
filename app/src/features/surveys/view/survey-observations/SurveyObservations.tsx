@@ -8,6 +8,7 @@ import FileUpload from 'components/file-upload/FileUpload';
 import { IUploadHandler } from 'components/file-upload/FileUploadItem';
 import { ProjectRoleGuard } from 'components/security/Guards';
 import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
+import { PublishStatus } from 'constants/attachments';
 import { PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
 import { DialogContext } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
@@ -20,7 +21,6 @@ import NoObservationsCard from './components/NoObservationsCard';
 import ObservationFileCard from './components/ObservationFileCard';
 import ObservationMessagesCard from './components/ObservationMessagesCard';
 import ValidatingObservationsCard from './components/ValidatingObservationsCard';
-import { PublishStatus } from 'constants/attachments';
 
 const SurveyObservations: React.FC = () => {
   const biohubApi = useBiohubApi();
@@ -37,10 +37,10 @@ const SurveyObservations: React.FC = () => {
   }, [surveyContext.observationDataLoader, projectId, surveyId]);
 
   const occurrenceSubmission = surveyContext.observationDataLoader.data?.surveyObservationData;
-  const occurrenceSubmissionPublishStatus = surveyContext.observationDataLoader.data?.surveyObservationSupplementaryData?.event_timestamp
+  const occurrenceSubmissionPublishStatus = surveyContext.observationDataLoader.data?.surveyObservationSupplementaryData
+    ?.event_timestamp
     ? PublishStatus.SUBMITTED
     : PublishStatus.UNSUBMITTED;
-
 
   const submissionPollingInterval = useInterval(
     () => surveyContext.observationDataLoader.refresh(projectId, surveyId),
@@ -175,14 +175,12 @@ const SurveyObservations: React.FC = () => {
           const { disabled, ...rest } = buttonProps;
 
           return (
-           <ProjectRoleGuard
+            <ProjectRoleGuard
               validProjectRoles={[PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR]}
               validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-              <Button
-                {...rest}
-                disabled={disabled || occurrenceSubmissionPublishStatus === PublishStatus.SUBMITTED} />
+              <Button {...rest} disabled={disabled || occurrenceSubmissionPublishStatus === PublishStatus.SUBMITTED} />
             </ProjectRoleGuard>
-          )
+          );
         }}
       />
 

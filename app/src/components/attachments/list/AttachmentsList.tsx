@@ -90,15 +90,18 @@ const AttachmentsList = <T extends IGetProjectAttachment | IGetSurveyAttachment>
               ? PublishStatus.SUBMITTED
               : PublishStatus.UNSUBMITTED;
 
-            const icon: string = attachmentStatus === PublishStatus.SUBMITTED
-              ? mdiLockOutline
-              : mdiFileOutline;
+            const icon: string = attachmentStatus === PublishStatus.SUBMITTED ? mdiLockOutline : mdiFileOutline;
 
             return (
               <TableRow key={`${attachment.fileName}-${attachment.id}`}>
                 <TableCell scope="row" className={classes.attachmentNameCol}>
                   <Box display="flex" alignItems="center">
-                    <Icon path={icon} size={1} className={classes.fileIcon} style={{ marginRight: '16px', marginLeft: '4px' }} />
+                    <Icon
+                      path={icon}
+                      size={1}
+                      className={classes.fileIcon}
+                      style={{ marginRight: '16px', marginLeft: '4px' }}
+                    />
                     <Link
                       style={{ fontWeight: 'bold' }}
                       underline="always"
@@ -146,6 +149,6 @@ const NoAttachments = () => {
       <span data-testid="observations-nodata">No Documents</span>
     </Box>
   );
-}
+};
 
 export default AttachmentsList;

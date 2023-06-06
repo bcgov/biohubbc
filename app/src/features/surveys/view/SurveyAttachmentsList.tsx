@@ -61,7 +61,7 @@ const SurveyAttachmentsList: React.FC = () => {
   const handleRemoveOrResubmit = (attachment: IGetSurveyAttachment) => {
     setCurrentAttachment(attachment);
     setRemoveOrResubmitDialogOpen(true);
-  }
+  };
 
   const handleDelete = (attachment: IGetSurveyAttachment) => {
     dialogContext.setYesNoDialog({
@@ -110,9 +110,11 @@ const SurveyAttachmentsList: React.FC = () => {
         projectId={surveyContext.projectId}
         fileName={currentAttachment?.fileName || ''}
         parentName={surveyContext.surveyDataLoader.data?.surveyData.survey_details.survey_name || ''}
-        status={currentAttachment?.supplementaryAttachmentData?.event_timestamp
-          ? PublishStatus.SUBMITTED
-          : PublishStatus.UNSUBMITTED}
+        status={
+          currentAttachment?.supplementaryAttachmentData?.event_timestamp
+            ? PublishStatus.SUBMITTED
+            : PublishStatus.UNSUBMITTED
+        }
         submittedDate={currentAttachment?.supplementaryAttachmentData?.event_timestamp || ''}
         open={removeOrResubmitDialogOpen}
         onClose={() => setRemoveOrResubmitDialogOpen(false)}

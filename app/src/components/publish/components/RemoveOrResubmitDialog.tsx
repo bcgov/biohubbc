@@ -41,7 +41,7 @@ export interface IRemoveOrResubmitDialog {
  */
 const RemoveOrResubmitDialog: React.FC<IRemoveOrResubmitDialog> = (props) => {
   const { projectId, fileName, status, parentName, submittedDate, open, onClose } = props;
-  console.log({props})
+  console.log({ props });
   const theme = useTheme();
   const biohubApi = useBiohubApi();
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));

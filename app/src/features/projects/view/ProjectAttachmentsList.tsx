@@ -58,7 +58,7 @@ const ProjectAttachmentsList = () => {
   const handleRemoveOrResubmit = (attachment: IGetProjectAttachment) => {
     setCurrentAttachment(attachment);
     setRemoveOrResubmitDialogOpen(true);
-  }
+  };
 
   const handleDelete = (attachment: IGetProjectAttachment) => {
     dialogContext.setYesNoDialog({
@@ -107,9 +107,11 @@ const ProjectAttachmentsList = () => {
         projectId={projectContext.projectId}
         fileName={currentAttachment?.fileName || ''}
         parentName={projectContext.projectDataLoader.data?.projectData.project.project_name || ''}
-        status={currentAttachment?.supplementaryAttachmentData?.event_timestamp
-          ? PublishStatus.SUBMITTED
-          : PublishStatus.UNSUBMITTED}
+        status={
+          currentAttachment?.supplementaryAttachmentData?.event_timestamp
+            ? PublishStatus.SUBMITTED
+            : PublishStatus.UNSUBMITTED
+        }
         submittedDate={currentAttachment?.supplementaryAttachmentData?.event_timestamp || ''}
         open={removeOrResubmitDialogOpen}
         onClose={() => setRemoveOrResubmitDialogOpen(false)}

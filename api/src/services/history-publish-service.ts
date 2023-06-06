@@ -229,9 +229,11 @@ export class HistoryPublishService extends DBService {
   async getSurveySummarySubmissionPublishRecord(
     surveySummarySubmissionId: number
   ): Promise<SurveySummarySubmissionPublish | null> {
-    const surveySummarySubmissionPublishRecord = this.historyRepository.getSurveySummarySubmissionPublishRecord(surveySummarySubmissionId);
-    
-    defaultLog.debug({ label: 'getSurveySummarySubmissionPublishRecord', surveySummarySubmissionPublishRecord })
+    const surveySummarySubmissionPublishRecord = this.historyRepository.getSurveySummarySubmissionPublishRecord(
+      surveySummarySubmissionId
+    );
+
+    defaultLog.debug({ label: 'getSurveySummarySubmissionPublishRecord', surveySummarySubmissionPublishRecord });
     return surveySummarySubmissionPublishRecord;
   }
 

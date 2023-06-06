@@ -76,14 +76,14 @@ const ObservationFileCard = (props: IObservationFileCardProps) => {
 
   const [openRemoveOrResubmitDialog, setOpenRemoveOrResubmitDialog] = useState(false);
   const [contextMenuAnchorEl, setContextMenuAnchorEl] = React.useState<null | HTMLElement>(null);
-  
+
   const handleOpenContextMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
     setContextMenuAnchorEl(event.currentTarget);
-  }
+  };
 
   const handleCloseContextMenu = () => {
     setContextMenuAnchorEl(null);
-  }
+  };
 
   let icon: string = mdiFileOutline;
   let severity: 'error' | 'info' | 'success' | 'warning' = 'info';

@@ -8,6 +8,7 @@ import FileUpload from 'components/file-upload/FileUpload';
 import { IUploadHandler } from 'components/file-upload/FileUploadItem';
 import { ProjectRoleGuard } from 'components/security/Guards';
 import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
+import { PublishStatus } from 'constants/attachments';
 import { PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
 import { DialogContext } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
@@ -17,7 +18,6 @@ import FileSummaryResults from './components/FileSummaryResults';
 import NoSummaryResults from './components/NoSummaryResults';
 import SummaryResultsErrors from './components/SummaryResultsErrors';
 import SummaryResultsLoading from './components/SummaryResultsLoading';
-import { PublishStatus } from 'constants/attachments';
 
 export enum ClassGrouping {
   NOTICE = 'Notice',
@@ -139,11 +139,9 @@ const SurveySummaryResults = () => {
             <ProjectRoleGuard
               validProjectRoles={[PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR]}
               validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-              <Button
-                {...rest}
-                disabled={disabled || summarySubmissionStatus === PublishStatus.SUBMITTED} />
+              <Button {...rest} disabled={disabled || summarySubmissionStatus === PublishStatus.SUBMITTED} />
             </ProjectRoleGuard>
-          )
+          );
         }}
       />
 
