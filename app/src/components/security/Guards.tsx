@@ -93,7 +93,7 @@ export const ProjectRoleGuard = (props: PropsWithChildren<IProjectRoleGuardProps
  * @param roles
  * @returns {*} boolean
  */
-export const HasProjectorSystemRole = (roles: IProjectRoleGuardProps): boolean => {
+export const HasProjectOrSystemRole = (roles: IProjectRoleGuardProps): boolean => {
   const { validProjectRoles, validSystemRoles } = roles;
   const projectAuthStateContext = useContext(ProjectAuthStateContext);
 
