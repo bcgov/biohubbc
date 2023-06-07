@@ -609,36 +609,8 @@ export class EmlService extends DBService {
         }
       });
     }
-
-    if (projectData.partnerships.stakeholder_partnerships?.length) {
-      additionalMetadata.push({
-        describes: projectData.project.uuid,
-        metadata: {
-          stakeholderPartnerships: {
-            stakeholderPartnership: projectData.partnerships.stakeholder_partnerships.map((item) => {
-              return { name: item };
-            })
-          }
-        }
-      });
-    }
-
-    if (projectData.partnerships.indigenous_partnerships.length) {
-      const names = codes.first_nations
-        .filter((code) => projectData.partnerships.indigenous_partnerships.includes(code.id))
-        .map((code) => code.name);
-
-      additionalMetadata.push({
-        describes: projectData.project.uuid,
-        metadata: {
-          firstNationPartnerships: {
-            firstNationPartnership: names.map((name) => {
-              return { name };
-            })
-          }
-        }
-      });
-    }
+      
+    additionalMetadata.push(await this._buildPartnershipMetadata(projectData));
 
     // add this metadata field so biohub is aware if EML is a project or survey
     additionalMetadata.push({
@@ -651,6 +623,26 @@ export class EmlService extends DBService {
     });
 
     return additionalMetadata;
+  }
+
+  async _buildPartnershipMetadata(projectData: IGetProject): Promise<any> {
+    const stakeholders = projectData.partnerships.stakeholder_partnerships;
+    const codes = await this.codes()
+    const indigenous = projectData.partnerships.indigenous_partnerships;
+    const names = codes.first_nations
+    .filter((code) => indigenous.includes(code.id))
+    .map((code) => code.name);
+    
+    const sorted = [...names, ...stakeholders].sort()
+    
+    return {
+      describes: projectData.project.uuid,
+      metadata: {
+        partnerships: {
+          partnership: sorted.map(name => {return {name}})
+        }
+      }
+    }
   }
 
   /**
@@ -805,7 +797,7 @@ export class EmlService extends DBService {
         section: surveyData.funding.funding_sources.map((fundingSource) => {
           return {
             title: 'Agency Name',
-            para: fundingSource.agency_name,
+            para: fundingSource.agency_name ?? fundingSource.first_nations_name,
             section: [
               { title: 'Funding Agency Project ID', para: fundingSource.funding_source_project_id },
               { title: 'Investment Action/Category', para: fundingSource.investment_action_category_name },
