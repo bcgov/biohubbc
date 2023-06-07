@@ -31,7 +31,6 @@ export interface IRemoveOrResubmitDialog {
   parentName: string;
   submittedDate?: string;
   open: boolean;
-  setOpen: (isOpen: boolean) => void;
   onClose: () => void;
 }
 

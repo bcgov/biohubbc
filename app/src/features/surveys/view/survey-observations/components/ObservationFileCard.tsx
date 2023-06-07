@@ -75,20 +75,22 @@ const ObservationFileCard = (props: IObservationFileCardProps) => {
   const surveyName = surveyContext.surveyDataLoader.data?.surveyData.survey_details.survey_name;
 
   const [openRemoveOrResubmitDialog, setOpenRemoveOrResubmitDialog] = useState(false);
-  const [RemoveOrResubmitDialogFile, setRemoveOrResubmitDialogFile] =
-    useState<IGetObservationSubmissionResponse | null>(null);
-
   const [contextMenuAnchorEl, setContextMenuAnchorEl] = React.useState<null | HTMLElement>(null);
-  const handleOpenContextMenu = (event: React.MouseEvent<HTMLButtonElement>) =>
+
+  const handleOpenContextMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
     setContextMenuAnchorEl(event.currentTarget);
-  const handleCloseContextMenu = () => setContextMenuAnchorEl(null);
+  };
+
+  const handleCloseContextMenu = () => {
+    setContextMenuAnchorEl(null);
+  };
 
   let icon: string = mdiFileOutline;
   let severity: 'error' | 'info' | 'success' | 'warning' = 'info';
 
-  const status =
-    (props.observationRecord.surveyObservationSupplementaryData?.event_timestamp && PublishStatus.SUBMITTED) ||
-    PublishStatus.UNSUBMITTED;
+  const status: PublishStatus = props.observationRecord.surveyObservationSupplementaryData?.event_timestamp
+    ? PublishStatus.SUBMITTED
+    : PublishStatus.UNSUBMITTED;
 
   if (
     props.observationRecord.surveyObservationData.messageTypes.some(
@@ -118,15 +120,11 @@ const ObservationFileCard = (props: IObservationFileCardProps) => {
     <>
       <RemoveOrResubmitDialog
         projectId={surveyContext.projectId}
-        fileName={RemoveOrResubmitDialogFile?.surveyObservationData.inputFileName || ''}
-        parentName={surveyName || ''}
-        status={
-          (RemoveOrResubmitDialogFile?.surveyObservationSupplementaryData && PublishStatus.SUBMITTED) ||
-          PublishStatus.UNSUBMITTED
-        }
-        submittedDate={RemoveOrResubmitDialogFile?.surveyObservationSupplementaryData?.event_timestamp || ''}
+        fileName={props.observationRecord.surveyObservationData.inputFileName ?? ''}
+        parentName={surveyName ?? ''}
+        status={status}
+        submittedDate={props.observationRecord?.surveyObservationSupplementaryData?.event_timestamp ?? ''}
         open={openRemoveOrResubmitDialog}
-        setOpen={setOpenRemoveOrResubmitDialog}
         onClose={() => setOpenRemoveOrResubmitDialog(false)}
       />
 
@@ -177,34 +175,37 @@ const ObservationFileCard = (props: IObservationFileCardProps) => {
                   </ListItemIcon>
                   Download
                 </MenuItem>
-                <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-                  <MenuItem
-                    onClick={() => {
-                      props.onDelete();
-                      handleCloseContextMenu();
-                    }}>
-                    <ListItemIcon>
-                      <Icon path={mdiTrashCanOutline} size={1} />
-                    </ListItemIcon>
-                    Delete
-                  </MenuItem>
-                </SystemRoleGuard>
-                <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-                  <ProjectRoleGuard validProjectRoles={[PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR]}>
+                {status === PublishStatus.UNSUBMITTED && (
+                  <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
                     <MenuItem
                       onClick={() => {
-                        setRemoveOrResubmitDialogFile(props.observationRecord);
-                        setOpenRemoveOrResubmitDialog(true);
-                        setContextMenuAnchorEl(null);
-                      }}
-                      data-testid="attachment-action-menu-delete">
+                        props.onDelete();
+                        handleCloseContextMenu();
+                      }}>
                       <ListItemIcon>
                         <Icon path={mdiTrashCanOutline} size={1} />
                       </ListItemIcon>
-                      Remove or Resubmit
+                      Delete
                     </MenuItem>
-                  </ProjectRoleGuard>
-                </SystemRoleGuard>
+                  </SystemRoleGuard>
+                )}
+                {status === PublishStatus.SUBMITTED && (
+                  <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+                    <ProjectRoleGuard validProjectRoles={[PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR]}>
+                      <MenuItem
+                        onClick={() => {
+                          setOpenRemoveOrResubmitDialog(true);
+                          handleCloseContextMenu();
+                        }}
+                        data-testid="attachment-action-menu-delete">
+                        <ListItemIcon>
+                          <Icon path={mdiTrashCanOutline} size={1} />
+                        </ListItemIcon>
+                        Remove or Resubmit
+                      </MenuItem>
+                    </ProjectRoleGuard>
+                  </SystemRoleGuard>
+                )}
               </Menu>
             </Box>
           </Box>
