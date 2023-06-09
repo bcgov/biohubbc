@@ -631,7 +631,7 @@ export class EmlService extends DBService {
     const indigenous = projectData.partnerships.indigenous_partnerships;
     const names = codes.first_nations.filter((code) => indigenous.includes(code.id)).map((code) => code.name);
 
-    const sorted = [...names, ...stakeholders].sort();
+    const sorted = [...names, ...stakeholders].sort((a, b) => a.localeCompare(b));
 
     return {
       describes: projectData.project.uuid,
