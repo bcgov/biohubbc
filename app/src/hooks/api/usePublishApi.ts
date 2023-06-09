@@ -54,11 +54,14 @@ const usePublishApi = (axios: AxiosInstance) => {
   /**
    * Request Resubmit Attachment
    *
-   * @param {number} projectId
-   * @param {string} fileName
-   * @param {string} parentName
-   * @param {IRemoveOrResubmitForm} formValues
-   * @param {string} path
+   * @param {number} projectId The project ID pertaining to the given artifact
+   * @param {string} fileName The name of the artifact, such as the observation submission filename,
+   * report name, summary results submission filename, etc.
+   * @param {string} parentName The name of the parent artifact, namely the project name or
+   * survey name
+   * @param {IRemoveOrResubmitForm} formValues The particular form values to be review by the
+   * administrator
+   * @param {string} path The path to the particular artifact, e.g. '/api/projects/1'
    * @return {*}  {Promise<boolean>}
    */
   const resubmitAttachment = async (
@@ -68,15 +71,13 @@ const usePublishApi = (axios: AxiosInstance) => {
     formValues: IRemoveOrResubmitForm,
     path: string
   ): Promise<boolean> => {
-    const sendData = {
-      projectId: projectId,
-      fileName: fileName,
-      parentName: parentName,
-      formValues: formValues,
-      path: path
-    };
-
-    const { data } = await axios.post('/api/publish/attachment/resubmit', sendData);
+    const { data } = await axios.post('/api/publish/attachment/resubmit', {
+      projectId,
+      fileName,
+      parentName,
+      formValues,
+      path
+    });
 
     return data;
   };

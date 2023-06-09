@@ -6,9 +6,10 @@ import Icon from '@mdi/react';
 import ComponentDialog from 'components/dialog/ComponentDialog';
 import FileUpload from 'components/file-upload/FileUpload';
 import { IUploadHandler } from 'components/file-upload/FileUploadItem';
-import { ProjectRoleGuard } from 'components/security/Guards';
+import { HasProjectOrSystemRole } from 'components/security/Guards';
 import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
-import { PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
+import { PublishStatus } from 'constants/attachments';
+import { SYSTEM_ROLE } from 'constants/roles';
 import { DialogContext } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -41,6 +42,9 @@ const SurveySummaryResults = () => {
   }, [surveyContext.summaryDataLoader, projectId, surveyId]);
 
   const summaryData = surveyContext.summaryDataLoader.data?.surveySummaryData;
+  const summarySubmissionStatus = surveyContext.summaryDataLoader.data?.surveySummarySupplementaryData?.event_timestamp
+    ? PublishStatus.SUBMITTED
+    : PublishStatus.UNSUBMITTED;
 
   const importSummaryResults = (): IUploadHandler => {
     return (file, cancelToken, handleFileUploadProgress) => {
@@ -128,13 +132,21 @@ const SurveySummaryResults = () => {
         buttonTitle="Import Summary Results"
         buttonStartIcon={<Icon path={mdiImport} size={1} />}
         buttonOnClick={() => showUploadDialog()}
-        renderButton={(buttonProps) => (
-          <ProjectRoleGuard
-            validProjectRoles={[PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR]}
-            validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-            <Button {...buttonProps} />
-          </ProjectRoleGuard>
-        )}
+        renderButton={(buttonProps) => {
+          const { disabled, ...rest } = buttonProps;
+
+          // admins should always see this button
+          // button should only be visible if the data has not been published
+          if (
+            HasProjectOrSystemRole({
+              validProjectRoles: [],
+              validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]
+            }) ||
+            summarySubmissionStatus !== PublishStatus.SUBMITTED
+          ) {
+            return <Button {...rest} />;
+          }
+        }}
       />
 
       <Divider />

@@ -32,7 +32,7 @@ import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import React, { useContext, useState } from 'react';
 import { useHistory } from 'react-router';
-import { BrowserRouter, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { getFormattedDateRangeString } from 'utils/Utils';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -161,15 +161,13 @@ const SurveyHeader = () => {
         <Container maxWidth="xl">
           <Box py={4}>
             <Box mt={-1} ml={-0.5} mb={0.5}>
-              <BrowserRouter forceRefresh={true}>
-                <Button
-                  component={Link}
-                  to={`/admin/projects/${surveyContext.projectId}/details`}
-                  color="primary"
-                  startIcon={<Icon path={mdiArrowLeft} size={0.8} />}>
-                  <strong>Back to Project</strong>
-                </Button>
-              </BrowserRouter>
+              <Button
+                component={Link}
+                to={`/admin/projects/${surveyContext.projectId}/details`}
+                color="primary"
+                startIcon={<Icon path={mdiArrowLeft} size={0.8} />}>
+                <strong>Back to Project</strong>
+              </Button>
             </Box>
             <Box display="flex" justifyContent="space-between">
               <Box className={classes.pageTitleContainer}>
