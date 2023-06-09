@@ -609,7 +609,7 @@ export class EmlService extends DBService {
         }
       });
     }
-      
+
     additionalMetadata.push(await this._buildPartnershipMetadata(projectData));
 
     // add this metadata field so biohub is aware if EML is a project or survey
@@ -627,22 +627,22 @@ export class EmlService extends DBService {
 
   async _buildPartnershipMetadata(projectData: IGetProject): Promise<any> {
     const stakeholders = projectData.partnerships.stakeholder_partnerships;
-    const codes = await this.codes()
+    const codes = await this.codes();
     const indigenous = projectData.partnerships.indigenous_partnerships;
-    const names = codes.first_nations
-    .filter((code) => indigenous.includes(code.id))
-    .map((code) => code.name);
-    
-    const sorted = [...names, ...stakeholders].sort()
-    
+    const names = codes.first_nations.filter((code) => indigenous.includes(code.id)).map((code) => code.name);
+
+    const sorted = [...names, ...stakeholders].sort();
+
     return {
       describes: projectData.project.uuid,
       metadata: {
         partnerships: {
-          partnership: sorted.map(name => {return {name}})
+          partnership: sorted.map((name) => {
+            return { name };
+          })
         }
       }
-    }
+    };
   }
 
   /**
