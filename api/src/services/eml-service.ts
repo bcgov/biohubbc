@@ -5,6 +5,7 @@ import { AllGeoJSON, featureCollection } from '@turf/helpers';
 import { coordEach } from '@turf/meta';
 import jsonpatch from 'fast-json-patch';
 import { Feature, GeoJsonProperties, Geometry } from 'geojson';
+import _ from 'lodash';
 import xml2js from 'xml2js';
 import { IDBConnection } from '../database/db';
 import { IGetProject } from '../models/project-view';
@@ -633,7 +634,7 @@ export class EmlService extends DBService {
       .filter((code) => indigenousPartnerships.includes(code.id))
       .map((code) => code.name);
 
-    const sortedPartnerships = [...firstNationsNames, ...stakeholders].sort();
+    const sortedPartnerships = _.sortBy([...firstNationsNames, ...stakeholders]);
 
     return {
       describes: projectData.project.uuid,
