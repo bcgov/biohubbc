@@ -10,7 +10,7 @@ import { CodesContext } from 'contexts/codesContext';
 import { ProjectContext } from 'contexts/projectContext';
 import ProjectAttachments from 'features/projects/view/ProjectAttachments';
 import SurveysListPage from 'features/surveys/list/SurveysListPage';
-import React, { useContext, useEffect } from 'react';
+import { useContext, useEffect } from 'react';
 import LocationBoundary from './components/LocationBoundary';
 import ProjectDetails from './ProjectDetails';
 import ProjectHeader from './ProjectHeader';
@@ -28,10 +28,10 @@ const ProjectPage = () => {
 
   useEffect(() => codesContext.codesDataLoader.load(), [codesContext.codesDataLoader]);
 
-  useEffect(() => projectContext.projectDataLoader.load(projectContext.projectId), [
-    projectContext.projectDataLoader,
-    projectContext.projectId
-  ]);
+  useEffect(
+    () => projectContext.projectDataLoader.load(projectContext.projectId),
+    [projectContext.projectDataLoader, projectContext.projectId]
+  );
 
   if (
     !codesContext.codesDataLoader.data ||

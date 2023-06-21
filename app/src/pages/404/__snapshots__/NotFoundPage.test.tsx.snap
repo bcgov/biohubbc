@@ -30,7 +30,7 @@ exports[`NotFoundPage renders correctly 1`] = `
         class="MuiBox-root MuiBox-root-2"
       >
         <button
-          class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-containedSizeLarge MuiButton-sizeLarge"
+          class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-containedSizeLarge MuiButton-sizeLarge MuiButton-disableElevation"
           tabindex="0"
           type="submit"
         >
@@ -39,9 +39,6 @@ exports[`NotFoundPage renders correctly 1`] = `
           >
             Return Home
           </span>
-          <span
-            class="MuiTouchRipple-root"
-          />
         </button>
       </div>
     </div>

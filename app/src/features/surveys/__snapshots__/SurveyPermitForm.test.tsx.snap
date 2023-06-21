@@ -10,7 +10,7 @@ exports[`SurveyPermitForm renders correctly with default empty values 1`] = `
   >
     <button
       aria-label="add permit"
-      class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
+      class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-disableElevation"
       tabindex="0"
       type="button"
     >
@@ -33,9 +33,6 @@ exports[`SurveyPermitForm renders correctly with default empty values 1`] = `
         </span>
         Add New Permit
       </span>
-      <span
-        class="MuiTouchRipple-root"
-      />
     </button>
   </div>
 </DocumentFragment>
@@ -210,9 +207,6 @@ exports[`SurveyPermitForm renders correctly with error on the permits field due 
               />
             </svg>
           </span>
-          <span
-            class="MuiTouchRipple-root"
-          />
         </button>
       </div>
     </li>
@@ -380,9 +374,6 @@ exports[`SurveyPermitForm renders correctly with error on the permits field due 
               />
             </svg>
           </span>
-          <span
-            class="MuiTouchRipple-root"
-          />
         </button>
       </div>
     </li>
@@ -392,7 +383,7 @@ exports[`SurveyPermitForm renders correctly with error on the permits field due 
   >
     <button
       aria-label="add permit"
-      class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
+      class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-disableElevation"
       tabindex="0"
       type="button"
     >
@@ -415,9 +406,6 @@ exports[`SurveyPermitForm renders correctly with error on the permits field due 
         </span>
         Add New Permit
       </span>
-      <span
-        class="MuiTouchRipple-root"
-      />
     </button>
   </div>
 </DocumentFragment>
@@ -592,9 +580,6 @@ exports[`SurveyPermitForm renders correctly with errors on the permit_number and
               />
             </svg>
           </span>
-          <span
-            class="MuiTouchRipple-root"
-          />
         </button>
       </div>
     </li>
@@ -762,9 +747,6 @@ exports[`SurveyPermitForm renders correctly with errors on the permit_number and
               />
             </svg>
           </span>
-          <span
-            class="MuiTouchRipple-root"
-          />
         </button>
       </div>
     </li>
@@ -774,7 +756,7 @@ exports[`SurveyPermitForm renders correctly with errors on the permit_number and
   >
     <button
       aria-label="add permit"
-      class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
+      class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-disableElevation"
       tabindex="0"
       type="button"
     >
@@ -797,9 +779,6 @@ exports[`SurveyPermitForm renders correctly with errors on the permit_number and
         </span>
         Add New Permit
       </span>
-      <span
-        class="MuiTouchRipple-root"
-      />
     </button>
   </div>
 </DocumentFragment>
@@ -974,9 +953,6 @@ exports[`SurveyPermitForm renders correctly with existing permit values 1`] = `
               />
             </svg>
           </span>
-          <span
-            class="MuiTouchRipple-root"
-          />
         </button>
       </div>
     </li>
@@ -1144,9 +1120,6 @@ exports[`SurveyPermitForm renders correctly with existing permit values 1`] = `
               />
             </svg>
           </span>
-          <span
-            class="MuiTouchRipple-root"
-          />
         </button>
       </div>
     </li>
@@ -1156,7 +1129,7 @@ exports[`SurveyPermitForm renders correctly with existing permit values 1`] = `
   >
     <button
       aria-label="add permit"
-      class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
+      class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-disableElevation"
       tabindex="0"
       type="button"
     >
@@ -1179,9 +1152,6 @@ exports[`SurveyPermitForm renders correctly with existing permit values 1`] = `
         </span>
         Add New Permit
       </span>
-      <span
-        class="MuiTouchRipple-root"
-      />
     </button>
   </div>
 </DocumentFragment>

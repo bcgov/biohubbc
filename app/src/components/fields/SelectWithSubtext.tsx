@@ -5,7 +5,7 @@ import InputLabel from '@material-ui/core/InputLabel';
 import ListItemText from '@material-ui/core/ListItemText';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
-import { ThemeProvider } from '@material-ui/styles';
+import { ThemeProvider } from '@material-ui/core/styles';
 import { useFormikContext } from 'formik';
 import get from 'lodash-es/get';
 import React from 'react';
@@ -68,7 +68,8 @@ const SelectWithSubtextField: React.FC<ISelectWithSubtextField> = (props) => {
         fullWidth
         variant="outlined"
         required={props.required}
-        error={get(touched, props.name) && Boolean(get(errors, props.name))}>
+        error={get(touched, props.name) && Boolean(get(errors, props.name))}
+        style={{ width: '100%' }}>
         <InputLabel id={`${props.name}-label`}>{props.label}</InputLabel>
         <Select
           name={props.name}

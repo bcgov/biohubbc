@@ -5,7 +5,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import useTheme from '@material-ui/core/styles/useTheme';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 
 export interface IComponentDialogProps {
   /**
@@ -45,7 +45,7 @@ export interface IComponentDialogProps {
  * @param {*} props
  * @return {*}
  */
-const ComponentDialog: React.FC<IComponentDialogProps> = (props) => {
+const ComponentDialog: React.FC<PropsWithChildren<IComponentDialogProps>> = (props) => {
   const theme = useTheme();
 
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));

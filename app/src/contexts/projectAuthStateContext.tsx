@@ -21,28 +21,29 @@ export const ProjectAuthStateContext = React.createContext<IProjectAuthStateCont
   hasLoadedParticipantInfo: false
 });
 
-export const ProjectAuthStateContextProvider: React.FC = (props) => {
+export const ProjectAuthStateContextProvider: React.FC<React.PropsWithChildren> = (props) => {
   const biohubApi = useBiohubApi();
   const participantDataLoader = useDataLoader((projectId: number) =>
     biohubApi.project.getUserProjectParticipant(projectId)
   );
   const { keycloakWrapper } = useContext(AuthStateContext);
 
-  const urlParams = useParams();
-  const projectId: string | number | null = urlParams['id'];
+  const urlParams: Record<string, string | number | undefined> = useParams();
+  const projectId: string | number | undefined = urlParams['id'];
 
   const getProjectId = useCallback(() => {
     return Number(projectId);
   }, [projectId]);
 
   const getProjectParticipant = useCallback(() => {
-    return participantDataLoader.data?.participant || null;
+    return participantDataLoader.data?.participant ?? null;
   }, [participantDataLoader.data]);
 
   const hasProjectRole = useCallback(
     (validProjectRoles?: string[]): boolean => {
-      if (!validProjectRoles || !validProjectRoles.length) {
-        return true;
+      //If no Project role is provided then return false
+      if (!validProjectRoles?.length) {
+        return false;
       }
 
       const participant = getProjectParticipant();
@@ -61,8 +62,9 @@ export const ProjectAuthStateContextProvider: React.FC = (props) => {
 
   const hasSystemRole = useCallback(
     (validSystemRoles?: string[]): boolean => {
-      if (!validSystemRoles || !validSystemRoles.length) {
-        return true;
+      //If no System role is provided then return false
+      if (!validSystemRoles?.length) {
+        return false;
       }
 
       return !!keycloakWrapper && keycloakWrapper.hasSystemRole(validSystemRoles);

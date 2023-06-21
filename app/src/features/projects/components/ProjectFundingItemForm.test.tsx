@@ -1,30 +1,34 @@
-import { fireEvent, render, waitFor, within } from '@testing-library/react';
-import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteFieldVariableSize';
+import { IAutocompleteFieldOptionWithType } from 'features/projects/components/FundingSourceAutocomplete';
 import { Formik } from 'formik';
-import React from 'react';
+import { render, waitFor } from 'test-helpers/test-utils';
 import { IInvestmentActionCategoryOption } from './ProjectFundingForm';
 import ProjectFundingItemForm, {
+  FundingSourceType,
   IProjectFundingFormArrayItem,
   ProjectFundingFormArrayItemInitialValues,
   ProjectFundingFormArrayItemYupSchema
 } from './ProjectFundingItemForm';
 
-const funding_sources: IMultiAutocompleteFieldOption[] = [
+const funding_sources: IAutocompleteFieldOptionWithType<number>[] = [
   {
     value: 1,
-    label: 'agency 1'
+    label: 'agency 1',
+    type: FundingSourceType.FUNDING_SOURCE
   },
   {
     value: 2,
-    label: 'agency 2'
+    label: 'agency 2',
+    type: FundingSourceType.FUNDING_SOURCE
   },
   {
     value: 3,
-    label: 'agency 3'
+    label: 'agency 3',
+    type: FundingSourceType.FUNDING_SOURCE
   },
   {
     value: 4,
-    label: 'agency 4'
+    label: 'agency 4',
+    type: FundingSourceType.FIRST_NATIONS
   }
 ];
 
@@ -56,10 +60,7 @@ describe('ProjectFundingItemForm', () => {
         validateOnChange={false}
         onSubmit={async () => {}}>
         {() => (
-          <ProjectFundingItemForm
-            funding_sources={funding_sources}
-            investment_action_category={investment_action_category}
-          />
+          <ProjectFundingItemForm sources={funding_sources} investment_action_category={investment_action_category} />
         )}
       </Formik>
     );
@@ -88,10 +89,7 @@ describe('ProjectFundingItemForm', () => {
         validateOnChange={false}
         onSubmit={async () => {}}>
         {() => (
-          <ProjectFundingItemForm
-            funding_sources={funding_sources}
-            investment_action_category={investment_action_category}
-          />
+          <ProjectFundingItemForm sources={funding_sources} investment_action_category={investment_action_category} />
         )}
       </Formik>
     );
@@ -120,10 +118,7 @@ describe('ProjectFundingItemForm', () => {
         validateOnChange={false}
         onSubmit={async () => {}}>
         {() => (
-          <ProjectFundingItemForm
-            funding_sources={funding_sources}
-            investment_action_category={investment_action_category}
-          />
+          <ProjectFundingItemForm sources={funding_sources} investment_action_category={investment_action_category} />
         )}
       </Formik>
     );
@@ -152,10 +147,7 @@ describe('ProjectFundingItemForm', () => {
         validateOnChange={false}
         onSubmit={async () => {}}>
         {() => (
-          <ProjectFundingItemForm
-            funding_sources={funding_sources}
-            investment_action_category={investment_action_category}
-          />
+          <ProjectFundingItemForm sources={funding_sources} investment_action_category={investment_action_category} />
         )}
       </Formik>
     );
@@ -172,24 +164,17 @@ describe('ProjectFundingItemForm', () => {
         validateOnChange={false}
         onSubmit={async () => {}}>
         {() => (
-          <ProjectFundingItemForm
-            funding_sources={funding_sources}
-            investment_action_category={investment_action_category}
-          />
+          <ProjectFundingItemForm sources={funding_sources} investment_action_category={investment_action_category} />
         )}
       </Formik>
     );
 
     it('works if an agency_id with a matching NA investment action category is chosen', async () => {
-      const { asFragment, getByText, getAllByRole, getByRole } = render(component);
+      const { asFragment, getByText } = render(component);
 
       await waitFor(() => {
         expect(getByText('Agency Details')).toBeInTheDocument();
       });
-
-      fireEvent.mouseDown(getAllByRole('button')[0]);
-      const agencyNameListbox = within(getByRole('listbox'));
-      fireEvent.click(agencyNameListbox.getByText(/agency 3/i));
 
       await waitFor(() => {
         expect(asFragment()).toMatchSnapshot();
@@ -197,15 +182,11 @@ describe('ProjectFundingItemForm', () => {
     });
 
     it('works if an agency_id with a non-matching investment action category is chosen', async () => {
-      const { asFragment, getByText, getAllByRole, getByRole } = render(component);
+      const { asFragment, getByText } = render(component);
 
       await waitFor(() => {
         expect(getByText('Agency Details')).toBeInTheDocument();
       });
-
-      fireEvent.mouseDown(getAllByRole('button')[0]);
-      const agencyNameListbox = within(getByRole('listbox'));
-      fireEvent.click(agencyNameListbox.getByText(/agency 4/i));
 
       await waitFor(() => {
         expect(asFragment()).toMatchSnapshot();

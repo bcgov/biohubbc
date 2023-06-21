@@ -7,7 +7,6 @@ import { mdiFileOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import clsx from 'clsx';
 import { IGetObservationSubmissionResponse } from 'interfaces/useObservationApi.interface';
-import React from 'react';
 import BorderLinearProgress from './BorderLinearProgress';
 
 const useStyles = makeStyles((theme: Theme) => ({

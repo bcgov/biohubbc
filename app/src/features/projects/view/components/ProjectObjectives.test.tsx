@@ -1,8 +1,7 @@
-import { cleanup, fireEvent, render } from '@testing-library/react';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { IProjectContext, ProjectContext } from 'contexts/projectContext';
 import { DataLoader } from 'hooks/useDataLoader';
-import React from 'react';
+import { cleanup, fireEvent, render } from 'test-helpers/test-utils';
 import ProjectObjectives from './ProjectObjectives';
 
 describe('ProjectObjectives', () => {
@@ -24,8 +23,8 @@ describe('ProjectObjectives', () => {
     'sit amet adipiscing sem neque sed ipsum. N\n\n';
 
   it('renders correctly when objectives length is <= 850 characters', () => {
-    const mockProjectContext: IProjectContext = ({
-      projectDataLoader: ({
+    const mockProjectContext: IProjectContext = {
+      projectDataLoader: {
         data: {
           projectData: {
             objectives: {
@@ -34,9 +33,9 @@ describe('ProjectObjectives', () => {
           }
         },
         load: jest.fn()
-      } as unknown) as DataLoader<any, any, any>,
+      } as unknown as DataLoader<any, any, any>,
       projectId: 1
-    } as unknown) as IProjectContext;
+    } as unknown as IProjectContext;
 
     const { getByText } = render(
       <DialogContextProvider>
@@ -50,8 +49,8 @@ describe('ProjectObjectives', () => {
   });
 
   it('renders correctly when objectives length is > 850 characters ', () => {
-    const mockProjectContext: IProjectContext = ({
-      projectDataLoader: ({
+    const mockProjectContext: IProjectContext = {
+      projectDataLoader: {
         data: {
           projectData: {
             objectives: {
@@ -60,9 +59,9 @@ describe('ProjectObjectives', () => {
           }
         },
         load: jest.fn()
-      } as unknown) as DataLoader<any, any, any>,
+      } as unknown as DataLoader<any, any, any>,
       projectId: 1
-    } as unknown) as IProjectContext;
+    } as unknown as IProjectContext;
 
     const { getByText } = render(
       <DialogContextProvider>
@@ -76,8 +75,8 @@ describe('ProjectObjectives', () => {
   });
 
   it('toggles as expected with the Read More and Read Less buttons', () => {
-    const mockProjectContext: IProjectContext = ({
-      projectDataLoader: ({
+    const mockProjectContext: IProjectContext = {
+      projectDataLoader: {
         data: {
           projectData: {
             objectives: {
@@ -86,9 +85,9 @@ describe('ProjectObjectives', () => {
           }
         },
         load: jest.fn()
-      } as unknown) as DataLoader<any, any, any>,
+      } as unknown as DataLoader<any, any, any>,
       projectId: 1
-    } as unknown) as IProjectContext;
+    } as unknown as IProjectContext;
 
     const { getAllByText } = render(
       <DialogContextProvider>
@@ -111,8 +110,8 @@ describe('ProjectObjectives', () => {
   });
 
   it('toggles as expected if the text contains no spaces', () => {
-    const mockProjectContext: IProjectContext = ({
-      projectDataLoader: ({
+    const mockProjectContext: IProjectContext = {
+      projectDataLoader: {
         data: {
           projectData: {
             objectives: {
@@ -121,9 +120,9 @@ describe('ProjectObjectives', () => {
           }
         },
         load: jest.fn()
-      } as unknown) as DataLoader<any, any, any>,
+      } as unknown as DataLoader<any, any, any>,
       projectId: 1
-    } as unknown) as IProjectContext;
+    } as unknown as IProjectContext;
 
     const { getAllByText } = render(
       <DialogContextProvider>
@@ -146,8 +145,8 @@ describe('ProjectObjectives', () => {
   });
 
   it('does not show the Read More or Read Less buttons if text is not long enough', () => {
-    const mockProjectContext: IProjectContext = ({
-      projectDataLoader: ({
+    const mockProjectContext: IProjectContext = {
+      projectDataLoader: {
         data: {
           projectData: {
             objectives: {
@@ -156,9 +155,9 @@ describe('ProjectObjectives', () => {
           }
         },
         load: jest.fn()
-      } as unknown) as DataLoader<any, any, any>,
+      } as unknown as DataLoader<any, any, any>,
       projectId: 1
-    } as unknown) as IProjectContext;
+    } as unknown as IProjectContext;
 
     const { queryByText } = render(
       <DialogContextProvider>
@@ -176,8 +175,8 @@ describe('ProjectObjectives', () => {
   });
 
   it('does not show the Read More or Read Less buttons if text is empty', () => {
-    const mockProjectContext: IProjectContext = ({
-      projectDataLoader: ({
+    const mockProjectContext: IProjectContext = {
+      projectDataLoader: {
         data: {
           projectData: {
             objectives: {
@@ -186,9 +185,9 @@ describe('ProjectObjectives', () => {
           }
         },
         load: jest.fn()
-      } as unknown) as DataLoader<any, any, any>,
+      } as unknown as DataLoader<any, any, any>,
       projectId: 1
-    } as unknown) as IProjectContext;
+    } as unknown as IProjectContext;
 
     const { queryByText } = render(
       <DialogContextProvider>

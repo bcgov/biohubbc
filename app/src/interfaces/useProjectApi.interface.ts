@@ -1,3 +1,4 @@
+import { PublishStatus } from 'constants/attachments';
 import { PROJECT_ROLE } from 'constants/roles';
 import { IProjectCoordinatorForm } from 'features/projects/components/ProjectCoordinatorForm';
 import { IProjectDetailsForm } from 'features/projects/components/ProjectDetailsForm';
@@ -90,7 +91,7 @@ export interface IGetUserProjectsListResponse {
  * @interface IProjectSupplementaryData
  */
 export interface IProjectSupplementaryData {
-  has_unpublished_content: boolean;
+  publishStatus: PublishStatus;
 }
 
 /**
@@ -205,14 +206,17 @@ export interface IGetProjectForUpdateResponseIUCN {
 
 export interface IGetProjectForUpdateResponseFundingSource {
   id: number;
-  agency_id: number;
-  investment_action_category: number;
-  investment_action_category_name: string;
+  agency_id?: number;
+  agency_name?: string;
+  investment_action_category?: number;
+  investment_action_category_name?: string;
   agency_project_id: string | null;
-  funding_amount: number;
+  funding_amount?: number;
   start_date: string;
   end_date: string;
   revision_count: number;
+  first_nations_id?: number;
+  first_nations_name?: string;
 }
 
 export interface IGetProjectForUpdateResponseFundingData {
@@ -298,15 +302,17 @@ export interface IGetProjectForViewResponseIUCN {
 
 interface IGetProjectForViewResponseFundingSource {
   id: number;
-  agency_id: number;
-  agency_name: string;
-  investment_action_category: number;
-  investment_action_category_name: string;
-  funding_amount: number;
+  agency_id?: number;
+  agency_name?: string;
+  investment_action_category?: number;
+  investment_action_category_name?: string;
+  funding_amount?: number;
   start_date: string;
   end_date: string;
   agency_project_id: string;
   revision_count: number;
+  first_nations_id?: number;
+  first_nations_name?: string;
 }
 
 export interface IGetProjectForViewResponseFundingData {

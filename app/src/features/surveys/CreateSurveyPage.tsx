@@ -26,7 +26,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { ICreateSurveyRequest } from 'interfaces/useSurveyApi.interface';
 import moment from 'moment';
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
 import { getFormattedAmount, getFormattedDate, getFormattedDateRangeString } from 'utils/Utils';
@@ -103,10 +103,10 @@ const CreateSurveyPage = () => {
   const codes = codesContext.codesDataLoader.data;
 
   const projectContext = useContext(ProjectContext);
-  useEffect(() => projectContext.projectDataLoader.load(projectContext.projectId), [
-    projectContext.projectDataLoader,
-    projectContext.projectId
-  ]);
+  useEffect(
+    () => projectContext.projectDataLoader.load(projectContext.projectId),
+    [projectContext.projectDataLoader, projectContext.projectId]
+  );
   const projectData = projectContext.projectDataLoader.data?.projectData;
 
   const getSurveyFundingSourcesDataLoader = useDataLoader(() =>
@@ -115,7 +115,7 @@ const CreateSurveyPage = () => {
   useEffect(() => {
     getSurveyFundingSourcesDataLoader.load();
   }, [getSurveyFundingSourcesDataLoader, projectContext.projectId]);
-  const fundingSourcesData = getSurveyFundingSourcesDataLoader.data || [];
+  const fundingSourcesData = getSurveyFundingSourcesDataLoader.data ?? [];
 
   const [formikRef] = useState(useRef<FormikProps<any>>(null));
 
@@ -333,9 +333,9 @@ const CreateSurveyPage = () => {
                         fundingSourcesData?.map((item) => {
                           return {
                             value: item.id,
-                            label: `${
-                              codes.funding_source.find((fundingCode) => fundingCode.id === item.agency_id)?.name
-                            } | ${getFormattedAmount(item.funding_amount)} | ${getFormattedDateRangeString(
+                            label: `${item.agency_name ?? item.first_nations_name} | ${getFormattedAmount(
+                              item.funding_amount
+                            )} | ${getFormattedDateRangeString(
                               DATE_FORMAT.ShortMediumDateFormat,
                               item.start_date,
                               item.end_date

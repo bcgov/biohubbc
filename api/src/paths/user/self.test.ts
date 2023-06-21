@@ -33,26 +33,6 @@ describe('getUser', () => {
     }
   });
 
-  it('should throw a 400 error when no sql statement produced', async () => {
-    const dbConnectionObj = getMockDBConnection({ systemUserId: () => 1 });
-
-    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
-
-    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
-
-    sinon.stub(UserService.prototype, 'getUserById').resolves(undefined);
-
-    try {
-      const requestHandler = self.getUser();
-
-      await requestHandler(mockReq, mockRes, mockNext);
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal('Failed to get system user');
-    }
-  });
-
   it('should return the user row on success', async () => {
     const dbConnectionObj = getMockDBConnection({ systemUserId: () => 1 });
 

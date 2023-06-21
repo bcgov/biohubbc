@@ -1,9 +1,13 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
+import {
+  ADMINISTRATIVE_ACTIVITY_STATUS_TYPE,
+  ADMINISTRATIVE_ACTIVITY_TYPE
+} from '../constants/administrative-activity';
 import { SYSTEM_ROLE } from '../constants/roles';
 import { getDBConnection } from '../database/db';
-import { queries } from '../queries/queries';
 import { authorizeRequestHandler } from '../request-handlers/security/authorization';
+import { AdministrativeActivityService } from '../services/administrative-activity-service';
 import { getLogger } from '../utils/logger';
 
 const defaultLog = getLogger('paths/administrative-activities');
@@ -22,17 +26,7 @@ export const GET: Operation = [
   getAdministrativeActivities()
 ];
 
-export enum ADMINISTRATIVE_ACTIVITY_TYPE {
-  SYSTEM_ACCESS = 'System Access'
-}
-
 export const getAllAdministrativeActivityTypes = (): string[] => Object.values(ADMINISTRATIVE_ACTIVITY_TYPE);
-
-export enum ADMINISTRATIVE_ACTIVITY_STATUS_TYPE {
-  PENDING = 'Pending',
-  ACTIONED = 'Actioned',
-  REJECTED = 'Rejected'
-}
 
 export const getAllAdministrativeActivityStatusTypes = (): string[] =>
   Object.values(ADMINISTRATIVE_ACTIVITY_STATUS_TYPE);
@@ -149,25 +143,25 @@ export function getAdministrativeActivities(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
+      // Only search for specified types if provided, otherwise search all types
       const administrativeActivityTypes = (req.query.type as string[]) || getAllAdministrativeActivityTypes();
 
+      // Only search for specified status types if provided, otherwise search all status types
       const administrativeActivityStatusTypes: string[] =
         (req.query.status as string[]) || getAllAdministrativeActivityStatusTypes();
 
-      const sqlStatement = queries.administrativeActivity.getAdministrativeActivitiesSQL(
+      await connection.open();
+
+      const administrativeActivityService = new AdministrativeActivityService(connection);
+
+      const response = await administrativeActivityService.getAdministrativeActivities(
         administrativeActivityTypes,
         administrativeActivityStatusTypes
       );
 
-      await connection.open();
-
-      const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
       await connection.commit();
 
-      const result = (response && response.rowCount && response.rows) || [];
-
-      return res.status(200).json(result);
+      return res.status(200).json(response);
     } catch (error) {
       defaultLog.error({ label: 'getAdministrativeActivities', message: 'error', error });
       throw error;

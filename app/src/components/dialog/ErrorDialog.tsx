@@ -8,6 +8,8 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import React from 'react';
 
+const DEFAULT_ERROR_DIALOG_TITLE = 'Error!';
+
 export interface IErrorDialogProps {
   /**
    * The dialog window title text.
@@ -90,11 +92,14 @@ export const ErrorDialog: React.FC<IErrorDialogProps> = (props) => {
         open={props.open}
         onClose={props.onClose}
         aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description">
-        <DialogTitle id="alert-dialog-title">{props.dialogTitle}</DialogTitle>
+        aria-describedby="alert-dialog-description"
+        keepMounted={false}>
+        <DialogTitle id="alert-dialog-title">{props.dialogTitle || DEFAULT_ERROR_DIALOG_TITLE}</DialogTitle>
+
         <DialogContent>
           <DialogContentText id="alert-dialog-description">{props.dialogText}</DialogContentText>
         </DialogContent>
+
         {props.dialogError && (
           <DialogContent>
             <DialogContentText id="alert-dialog-description">{props.dialogError}</DialogContentText>

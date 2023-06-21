@@ -246,9 +246,6 @@ exports[`General Information Form renders correctly the empty component correctl
                       />
                     </svg>
                   </span>
-                  <span
-                    class="MuiTouchRipple-root"
-                  />
                 </button>
                 <button
                   aria-label="Open"
@@ -271,9 +268,6 @@ exports[`General Information Form renders correctly the empty component correctl
                       />
                     </svg>
                   </span>
-                  <span
-                    class="MuiTouchRipple-root"
-                  />
                 </button>
               </div>
               <fieldset
@@ -351,9 +345,6 @@ exports[`General Information Form renders correctly the empty component correctl
                       />
                     </svg>
                   </span>
-                  <span
-                    class="MuiTouchRipple-root"
-                  />
                 </button>
                 <button
                   aria-label="Open"
@@ -376,9 +367,6 @@ exports[`General Information Form renders correctly the empty component correctl
                       />
                     </svg>
                   </span>
-                  <span
-                    class="MuiTouchRipple-root"
-                  />
                 </button>
               </div>
               <fieldset
@@ -527,7 +515,7 @@ exports[`General Information Form renders correctly the empty component correctl
       >
         <button
           aria-label="add permit"
-          class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
+          class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-disableElevation"
           tabindex="0"
           type="button"
         >
@@ -550,9 +538,6 @@ exports[`General Information Form renders correctly the empty component correctl
             </span>
             Add New Permit
           </span>
-          <span
-            class="MuiTouchRipple-root"
-          />
         </button>
       </div>
     </div>
@@ -621,9 +606,6 @@ exports[`General Information Form renders correctly the empty component correctl
                   />
                 </svg>
               </span>
-              <span
-                class="MuiTouchRipple-root"
-              />
             </button>
             <button
               aria-label="Open"
@@ -646,9 +628,6 @@ exports[`General Information Form renders correctly the empty component correctl
                   />
                 </svg>
               </span>
-              <span
-                class="MuiTouchRipple-root"
-              />
             </button>
           </div>
           <fieldset
@@ -916,9 +895,6 @@ exports[`General Information Form renders correctly the filled component correct
                       />
                     </svg>
                   </span>
-                  <span
-                    class="MuiTouchRipple-root"
-                  />
                 </button>
                 <button
                   aria-label="Open"
@@ -941,9 +917,6 @@ exports[`General Information Form renders correctly the filled component correct
                       />
                     </svg>
                   </span>
-                  <span
-                    class="MuiTouchRipple-root"
-                  />
                 </button>
               </div>
               <fieldset
@@ -1021,9 +994,6 @@ exports[`General Information Form renders correctly the filled component correct
                       />
                     </svg>
                   </span>
-                  <span
-                    class="MuiTouchRipple-root"
-                  />
                 </button>
                 <button
                   aria-label="Open"
@@ -1046,9 +1016,6 @@ exports[`General Information Form renders correctly the filled component correct
                       />
                     </svg>
                   </span>
-                  <span
-                    class="MuiTouchRipple-root"
-                  />
                 </button>
               </div>
               <fieldset
@@ -1356,9 +1323,6 @@ exports[`General Information Form renders correctly the filled component correct
                   />
                 </svg>
               </span>
-              <span
-                class="MuiTouchRipple-root"
-              />
             </button>
           </div>
         </li>
@@ -1368,7 +1332,7 @@ exports[`General Information Form renders correctly the filled component correct
       >
         <button
           aria-label="add permit"
-          class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
+          class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-disableElevation"
           tabindex="0"
           type="button"
         >
@@ -1391,9 +1355,6 @@ exports[`General Information Form renders correctly the filled component correct
             </span>
             Add New Permit
           </span>
-          <span
-            class="MuiTouchRipple-root"
-          />
         </button>
       </div>
     </div>
@@ -1484,9 +1445,6 @@ exports[`General Information Form renders correctly the filled component correct
                   />
                 </svg>
               </span>
-              <span
-                class="MuiTouchRipple-root"
-              />
             </button>
             <button
               aria-label="Open"
@@ -1509,9 +1467,6 @@ exports[`General Information Form renders correctly the filled component correct
                   />
                 </svg>
               </span>
-              <span
-                class="MuiTouchRipple-root"
-              />
             </button>
           </div>
           <fieldset
@@ -1787,9 +1742,6 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
                       />
                     </svg>
                   </span>
-                  <span
-                    class="MuiTouchRipple-root"
-                  />
                 </button>
                 <button
                   aria-label="Open"
@@ -1812,9 +1764,6 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
                       />
                     </svg>
                   </span>
-                  <span
-                    class="MuiTouchRipple-root"
-                  />
                 </button>
               </div>
               <fieldset
@@ -1898,9 +1847,6 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
                       />
                     </svg>
                   </span>
-                  <span
-                    class="MuiTouchRipple-root"
-                  />
                 </button>
                 <button
                   aria-label="Open"
@@ -1923,9 +1869,6 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
                       />
                     </svg>
                   </span>
-                  <span
-                    class="MuiTouchRipple-root"
-                  />
                 </button>
               </div>
               <fieldset
@@ -2247,9 +2190,6 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
                   />
                 </svg>
               </span>
-              <span
-                class="MuiTouchRipple-root"
-              />
             </button>
           </div>
         </li>
@@ -2259,7 +2199,7 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
       >
         <button
           aria-label="add permit"
-          class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
+          class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-disableElevation"
           tabindex="0"
           type="button"
         >
@@ -2282,9 +2222,6 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
             </span>
             Add New Permit
           </span>
-          <span
-            class="MuiTouchRipple-root"
-          />
         </button>
       </div>
     </div>
@@ -2375,9 +2312,6 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
                   />
                 </svg>
               </span>
-              <span
-                class="MuiTouchRipple-root"
-              />
             </button>
             <button
               aria-label="Open"
@@ -2400,9 +2334,6 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
                   />
                 </svg>
               </span>
-              <span
-                class="MuiTouchRipple-root"
-              />
             </button>
           </div>
           <fieldset

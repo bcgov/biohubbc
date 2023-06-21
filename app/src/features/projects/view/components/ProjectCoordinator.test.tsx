@@ -1,8 +1,7 @@
-import { cleanup, render } from '@testing-library/react';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { IProjectContext, ProjectContext } from 'contexts/projectContext';
 import { DataLoader } from 'hooks/useDataLoader';
-import React from 'react';
+import { cleanup, render } from 'test-helpers/test-utils';
 import ProjectCoordinator from './ProjectCoordinator';
 
 describe('ProjectCoordinator', () => {
@@ -13,8 +12,8 @@ describe('ProjectCoordinator', () => {
   });
 
   it('renders correctly', async () => {
-    const mockProjectContext: IProjectContext = ({
-      projectDataLoader: ({
+    const mockProjectContext: IProjectContext = {
+      projectDataLoader: {
         data: {
           projectData: {
             coordinator: {
@@ -26,9 +25,9 @@ describe('ProjectCoordinator', () => {
           }
         },
         load: jest.fn()
-      } as unknown) as DataLoader<any, any, any>,
+      } as unknown as DataLoader<any, any, any>,
       projectId: 1
-    } as unknown) as IProjectContext;
+    } as unknown as IProjectContext;
 
     const { getByText } = render(
       <DialogContextProvider>

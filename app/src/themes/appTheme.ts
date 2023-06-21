@@ -1,9 +1,6 @@
-// import createBreakpoints from '@material-ui/core/styles/createBreakpoints'
 import { grey } from '@material-ui/core/colors';
 import { createMuiTheme } from '@material-ui/core/styles';
 import 'styles.scss';
-
-// const breakpoints = createBreakpoints({})
 
 const appTheme = createMuiTheme({
   breakpoints: {

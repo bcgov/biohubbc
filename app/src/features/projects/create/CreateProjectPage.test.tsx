@@ -1,11 +1,3 @@
-import {
-  cleanup,
-  findByText as rawFindByText,
-  fireEvent,
-  getByText as rawGetByText,
-  render,
-  waitFor
-} from '@testing-library/react';
 import { CodesContext, ICodesContext } from 'contexts/codesContext';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { ProjectDetailsFormInitialValues } from 'features/projects/components/ProjectDetailsForm';
@@ -19,14 +11,23 @@ import { Feature } from 'geojson';
 import { createMemoryHistory } from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { DataLoader } from 'hooks/useDataLoader';
-import React from 'react';
 import { MemoryRouter, Router } from 'react-router';
 import { codes } from 'test-helpers/code-helpers';
+import {
+  cleanup,
+  findByText as rawFindByText,
+  fireEvent,
+  getByText as rawGetByText,
+  render,
+  waitFor
+} from 'test-helpers/test-utils';
 
 const history = createMemoryHistory();
 
 jest.mock('../../../hooks/useBioHubApi');
-const mockUseBiohubApi = {
+const mockBiohubApi = useBiohubApi as jest.Mock;
+
+const mockUseApi = {
   draft: {
     createDraft: jest.fn<Promise<object>, []>(),
     updateDraft: jest.fn<Promise<object>, []>(),
@@ -37,10 +38,6 @@ const mockUseBiohubApi = {
     post: jest.fn<Promise<{ features?: Feature[] }>, []>()
   }
 };
-
-const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBiohubApi>).mockReturnValue(
-  mockUseBiohubApi
-);
 
 const mockCodesContext: ICodesContext = {
   codesDataLoader: {
@@ -63,10 +60,10 @@ const renderContainer = () => {
 
 describe('CreateProjectPage', () => {
   beforeEach(() => {
-    // clear mocks before each test
-    mockBiohubApi().draft.createDraft.mockClear();
-    mockBiohubApi().draft.updateDraft.mockClear();
-    mockBiohubApi().draft.getDraft.mockClear();
+    mockBiohubApi.mockImplementation(() => mockUseApi);
+    mockUseApi.draft.createDraft.mockClear();
+    mockUseApi.draft.updateDraft.mockClear();
+    mockUseApi.draft.getDraft.mockClear();
 
     jest.spyOn(console, 'debug').mockImplementation(() => {});
   });
@@ -76,7 +73,7 @@ describe('CreateProjectPage', () => {
   });
 
   it('renders the initial default page correctly', async () => {
-    mockBiohubApi().external.post.mockResolvedValue({
+    mockUseApi.external.post.mockResolvedValue({
       features: [
         {
           type: 'Feature',
@@ -164,7 +161,7 @@ describe('CreateProjectPage', () => {
 
     describe('Delete Draft Button', () => {
       it('does display delete draft button if in draft', async () => {
-        mockBiohubApi().draft.getDraft.mockResolvedValue({
+        mockUseApi.draft.getDraft.mockResolvedValue({
           id: 1,
           name: 'My draft',
           data: {
@@ -198,7 +195,7 @@ describe('CreateProjectPage', () => {
       });
 
       it('displays a Delete draft Yes/No Dialog', async () => {
-        mockBiohubApi().draft.getDraft.mockResolvedValue({
+        mockUseApi.draft.getDraft.mockResolvedValue({
           id: 1,
           name: 'My draft',
           data: {
@@ -236,7 +233,7 @@ describe('CreateProjectPage', () => {
       });
 
       it('closes dialog on No click', async () => {
-        mockBiohubApi().draft.getDraft.mockResolvedValue({
+        mockUseApi.draft.getDraft.mockResolvedValue({
           id: 1,
           name: 'My draft',
           data: {
@@ -281,7 +278,7 @@ describe('CreateProjectPage', () => {
       });
 
       it('deletes draft on Yes click', async () => {
-        mockBiohubApi().draft.getDraft.mockResolvedValue({
+        mockUseApi.draft.getDraft.mockResolvedValue({
           id: 1,
           name: 'My draft',
           data: {
@@ -321,13 +318,13 @@ describe('CreateProjectPage', () => {
         fireEvent.click(YesButton);
 
         await waitFor(() => {
-          expect(mockBiohubApi().draft.deleteDraft).toBeCalled();
+          expect(mockUseApi.draft.deleteDraft).toBeCalled();
         });
       });
     });
 
     it('preloads draft data and populates on form fields', async () => {
-      mockBiohubApi().draft.getDraft.mockResolvedValue({
+      mockUseApi.draft.getDraft.mockResolvedValue({
         id: 1,
         name: 'My draft',
         data: {
@@ -397,12 +394,12 @@ describe('CreateProjectPage', () => {
     it('calls the createDraft function and navigates to the projects list page', async () => {
       history.push('/admin/projects/create');
 
-      mockBiohubApi().draft.createDraft.mockResolvedValue({
+      mockUseApi.draft.createDraft.mockResolvedValue({
         id: 1,
         date: '2021-01-20'
       });
 
-      const { getByText, getByTestId } = renderContainer();
+      const { getByTestId } = renderContainer();
 
       const saveDraftButton = await getByTestId('save-draft-button');
 
@@ -417,7 +414,7 @@ describe('CreateProjectPage', () => {
       fireEvent.click(getByTestId('edit-dialog-save'));
 
       await waitFor(() => {
-        expect(mockBiohubApi().draft.createDraft).toHaveBeenCalledWith('draft name', expect.any(Object));
+        expect(mockUseApi.draft.createDraft).toHaveBeenCalledWith('draft name', expect.any(Object));
 
         expect(history.location.pathname).toEqual('/admin/projects');
       });
@@ -426,7 +423,7 @@ describe('CreateProjectPage', () => {
     it('calls the updateDraft function and navigates to the projects list page', async () => {
       history.push('/admin/projects/create?draftId=1');
 
-      mockBiohubApi().draft.getDraft.mockResolvedValue({
+      mockUseApi.draft.getDraft.mockResolvedValue({
         id: 1,
         name: 'My draft',
         data: {
@@ -446,7 +443,7 @@ describe('CreateProjectPage', () => {
         }
       });
 
-      mockBiohubApi().draft.updateDraft.mockResolvedValue({
+      mockUseApi.draft.updateDraft.mockResolvedValue({
         id: 1,
         date: '2021-01-20'
       });
@@ -471,7 +468,7 @@ describe('CreateProjectPage', () => {
       fireEvent.click(getByTestId('edit-dialog-save'));
 
       await waitFor(() => {
-        expect(mockBiohubApi().draft.updateDraft).toHaveBeenCalledWith(1, 'my new draft name', expect.any(Object));
+        expect(mockUseApi.draft.updateDraft).toHaveBeenCalledWith(1, 'my new draft name', expect.any(Object));
 
         expect(history.location.pathname).toEqual('/admin/projects');
       });
@@ -480,7 +477,7 @@ describe('CreateProjectPage', () => {
     it('calls the createDraft functions with WIP form data and navigates to the projects list page', async () => {
       history.push('/admin/projects/create');
 
-      mockBiohubApi().draft.createDraft.mockResolvedValue({
+      mockUseApi.draft.createDraft.mockResolvedValue({
         id: 1,
         date: '2021-01-20'
       });
@@ -508,7 +505,7 @@ describe('CreateProjectPage', () => {
       fireEvent.click(getByTestId('edit-dialog-save'));
 
       await waitFor(() => {
-        expect(mockBiohubApi().draft.createDraft).toHaveBeenCalledWith('draft name', {
+        expect(mockUseApi.draft.createDraft).toHaveBeenCalledWith('draft name', {
           coordinator: {
             first_name: 'draft first name',
             last_name: '',
@@ -518,7 +515,7 @@ describe('CreateProjectPage', () => {
           },
           project: {
             project_name: '',
-            project_type: ('' as unknown) as number,
+            project_type: '' as unknown as number,
             project_activities: [],
             start_date: '',
             end_date: ''
@@ -537,7 +534,7 @@ describe('CreateProjectPage', () => {
     it('calls the updateDraft functions with WIP form data and navigates to the projects list page', async () => {
       history.push('/admin/projects/create?draftId=1');
 
-      mockBiohubApi().draft.getDraft.mockResolvedValue({
+      mockUseApi.draft.getDraft.mockResolvedValue({
         id: 1,
         name: 'My draft',
         data: {
@@ -557,7 +554,7 @@ describe('CreateProjectPage', () => {
         }
       });
 
-      mockBiohubApi().draft.updateDraft.mockResolvedValue({
+      mockUseApi.draft.updateDraft.mockResolvedValue({
         id: 1,
         date: '2021-01-20'
       });
@@ -585,7 +582,7 @@ describe('CreateProjectPage', () => {
       fireEvent.click(getByTestId('edit-dialog-save'));
 
       await waitFor(() => {
-        expect(mockBiohubApi().draft.updateDraft).toHaveBeenCalledWith(1, 'my new draft project name', {
+        expect(mockUseApi.draft.updateDraft).toHaveBeenCalledWith(1, 'my new draft project name', {
           coordinator: {
             first_name: 'my new draft first name',
             last_name: 'Draft last name',
@@ -595,7 +592,7 @@ describe('CreateProjectPage', () => {
           },
           project: {
             project_name: '',
-            project_type: ('' as unknown) as number,
+            project_type: '' as unknown as number,
             project_activities: [],
             start_date: '',
             end_date: ''
@@ -612,7 +609,7 @@ describe('CreateProjectPage', () => {
     });
 
     it('renders an error dialog if the draft submit request fails', async () => {
-      mockBiohubApi().draft.createDraft.mockImplementation(() => {
+      mockUseApi.draft.createDraft.mockImplementation(() => {
         throw new Error('Draft failed exception!');
       });
 

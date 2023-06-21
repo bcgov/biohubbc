@@ -10,10 +10,13 @@ import XLSXTransformSchemaParser, {
   JSONPathString,
   TemplateColumnName,
   TemplateMetaSchema,
+  TemplateMetaSchemaType,
   TemplateSheetName,
   TransformSchema
 } from './xlsx-transform-schema-parser';
 import { filterDuplicateKeys, getCombinations } from './xlsx-transform-utils';
+
+export type NonObjectPrimitive = string | number | null | boolean;
 
 /**
  * Defines a type that indicates a `Partial` value, but with some exceptions.
@@ -39,16 +42,62 @@ import { filterDuplicateKeys, getCombinations } from './xlsx-transform-utils';
  */
 type AtLeast<T, K extends keyof T> = Partial<T> & Pick<T, K>;
 
-export type NonObjectPrimitive = string | number | null | boolean;
-
+/**
+ * Contains information about a single row, including information about its parent row and/or child row(s).
+ *
+ * It also includes calculated fields that are often used repeatedly, where re-calculation would be impossible or
+ * inefficient.
+ */
 export type RowObject = {
+  /**
+   * The row data.
+   *
+   * @type {{ [key: string]: NonObjectPrimitive }}
+   */
   _data: { [key: string]: NonObjectPrimitive };
+  /**
+   * The name of the source file/sheet.
+   *
+   * @type {string}
+   */
   _name: string;
+  /**
+   * The key for this row.
+   *
+   * @type {string}
+   */
   _key: string;
-  _parentKey: string | '';
-  _type: 'root' | 'leaf' | '';
+  /**
+   * The key of the parent row, if there is one.
+   *
+   * Note: All row objects will have a parent, unless they are `_type='root'`
+   *
+   * @type {string}
+   */
+  _parentKey: string;
+  /**
+   * The type of the row object.
+   *
+   * @type {TemplateMetaSchemaType}
+   */
+  _type: TemplateMetaSchemaType;
+  /**
+   * The index of the row from the source file.
+   *
+   * @type {number}
+   */
   _row: number;
+  /**
+   * The keys of all connected child rows, if any.
+   *
+   * @type {string[]}
+   */
   _childKeys: string[];
+  /**
+   * The child row objects, if any.
+   *
+   * @type {RowObject[]}
+   */
   _children: RowObject[];
 };
 
@@ -155,7 +204,10 @@ export class XLSXTransform {
         _key: primaryKey,
         _parentKey: parentKey,
         _type: templateMetaSchema.type,
-        _row: i,
+        // add 2 to _row: while the transform array index starts at 0, actual csv data (excel) starts at 1. And with the
+        // header row removed, the first real data rows start at 2. This _row value does not have to match the data row
+        // precisely, but it is convenient if they do as it better aligns with a humans understanding of the data.
+        _row: i + 2,
         _childKeys: childKeys || [],
         _children: []
       });
@@ -177,7 +229,7 @@ export class XLSXTransform {
       .map((columnName: string) => {
         return RowObject[columnName];
       })
-      .filter((value) => !isNaN || value)
+      .filter(Boolean)
       .join(':');
 
     return primaryKey;
@@ -386,7 +438,7 @@ export class XLSXTransform {
 
       const fields = mapSchemaItem.fields;
 
-      if (fields && fields.length) {
+      if (fields?.length) {
         // For each item in the `fields` array
         for (const fieldsItem of fields) {
           // The final computed cell value for this particular schema field element
@@ -421,7 +473,7 @@ export class XLSXTransform {
               let pathValue = '';
               if (Array.isArray(pathValues)) {
                 // cell value is the concatenation of multiple values
-                pathValue = (pathValues.length && pathValues.flat(Infinity).join(columnValueItem.join || ':')) || '';
+                pathValue = (pathValues.length && pathValues.flat(Infinity).join(columnValueItem.join ?? ':')) || '';
               } else {
                 // cell value is a single value
                 pathValue = pathValues || '';
@@ -448,20 +500,22 @@ export class XLSXTransform {
                   if (Array.isArray(postfixPathValues)) {
                     // postfix value is the concatenation of multiple values
                     postfixValue =
-                      (postfixPathValues.length && postfixPathValues.join(columnValueItem.join || ':')) || '';
+                      (postfixPathValues.length &&
+                        postfixPathValues.flat(Infinity).join(columnValueItem.join ?? ':')) ||
+                      '';
                   } else {
                     // postfix value is a single value
                     postfixValue = postfixPathValues || '';
                   }
                 }
 
-                cellValue = `${cellValue}${columnValueItem.join || ':'}${postfixValue}`;
+                cellValue = `${cellValue}${columnValueItem.join ?? ':'}${postfixValue}`;
               }
             }
 
             // Check for `add` additions at the field level
             const columnValueItemAdd = columnValueItem.add;
-            if (columnValueItemAdd && columnValueItemAdd.length) {
+            if (columnValueItemAdd?.length) {
               for (const columnValueItemAddItem of columnValueItemAdd) {
                 mapSchema.push(columnValueItemAddItem);
               }
@@ -483,7 +537,7 @@ export class XLSXTransform {
 
       // Check for additions at the sheet level
       const sheetAdds = mapSchemaItem.add;
-      if (sheetAdds && sheetAdds.length) {
+      if (sheetAdds?.length) {
         for (const sheetAddsItem of sheetAdds) {
           mapSchema.push(sheetAddsItem);
         }
@@ -515,22 +569,40 @@ export class XLSXTransform {
       }
     }
 
+    let result = false;
+
     if (condition.type === 'or') {
-      return conditionsMet.has(true);
+      // condition passes if at least 1 check passes (logical `or`)
+      result = conditionsMet.has(true);
+    } else {
+      // condition passes if no check fails (logical `and`)
+      result = !conditionsMet.has(false);
     }
 
-    return !conditionsMet.has(false);
+    if (condition.not) {
+      // if `true`, negate the result of the condition (logical `not`)
+      result = !result;
+    }
+
+    return result;
   }
 
   _processIfNotEmptyCondition(check: IfNotEmptyCheck, rowObjects: RowObject[]): boolean {
     const pathValues = this._processPaths([check.ifNotEmpty], rowObjects);
 
-    if (!pathValues || !pathValues.length) {
-      // condition failed
-      return false;
+    let result = false;
+
+    if (pathValues?.length) {
+      // path is not empty
+      result = true;
     }
 
-    return true;
+    if (check.not) {
+      // if `true`, negate the result of the condition (logical `not`)
+      result = !result;
+    }
+
+    return result;
   }
 
   _processPaths(paths: JSONPathString[], json: JSONPathOptions['json']): string | string[] | string[][] {

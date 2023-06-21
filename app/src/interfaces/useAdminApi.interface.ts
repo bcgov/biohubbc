@@ -32,11 +32,16 @@ export interface IGetAccessRequestsListResponse {
   data: IAccessRequestDataObject;
 }
 
+export interface IGetAdministrativeActivityStanding {
+  has_pending_acccess_request: boolean;
+  has_one_or_more_project_roles: boolean;
+}
+
 export interface IgcNotifyGenericMessage {
   subject: string;
   header: string;
-  body1: string;
-  body2: string;
+  main_body1: string;
+  main_body2: string;
   footer: string;
 }
 

@@ -96,15 +96,8 @@ const ProprietaryDataForm: React.FC<IProprietaryDataFormProps> = (props) => {
   const [openDialog, setOpenDialog] = useState(false);
   const classes = useStyles();
 
-  const {
-    values,
-    touched,
-    errors,
-    handleChange,
-    setFieldValue,
-    setFieldTouched,
-    setFieldError
-  } = useFormikContext<IProprietaryDataForm>();
+  const { values, touched, errors, handleChange, setFieldValue, setFieldTouched, setFieldError } =
+    useFormikContext<IProprietaryDataForm>();
 
   const resetField = (name: string) => {
     setFieldValue(name, get(ProprietaryDataInitialValues, name));

@@ -49,9 +49,6 @@ exports[`Agreements Form renders correctly the empty component correctly 1`] = `
                   />
                 </svg>
               </span>
-              <span
-                class="MuiTouchRipple-root"
-              />
             </span>
             <span
               class="MuiTypography-root MuiFormControlLabel-label MuiTypography-body1"
@@ -111,9 +108,6 @@ exports[`Agreements Form renders correctly the empty component correctly 1`] = `
                   />
                 </svg>
               </span>
-              <span
-                class="MuiTouchRipple-root"
-              />
             </span>
             <span
               class="MuiTypography-root MuiFormControlLabel-label MuiTypography-body1"
@@ -181,9 +175,6 @@ exports[`Agreements Form renders correctly the filled component correctly 1`] = 
                   />
                 </svg>
               </span>
-              <span
-                class="MuiTouchRipple-root"
-              />
             </span>
             <span
               class="MuiTypography-root MuiFormControlLabel-label MuiTypography-body1"
@@ -244,9 +235,6 @@ exports[`Agreements Form renders correctly the filled component correctly 1`] = 
                   />
                 </svg>
               </span>
-              <span
-                class="MuiTouchRipple-root"
-              />
             </span>
             <span
               class="MuiTypography-root MuiFormControlLabel-label MuiTypography-body1"
@@ -314,9 +302,6 @@ exports[`Agreements Form renders correctly when errors exist 1`] = `
                   />
                 </svg>
               </span>
-              <span
-                class="MuiTouchRipple-root"
-              />
             </span>
             <span
               class="MuiTypography-root MuiFormControlLabel-label MuiTypography-body1"
@@ -379,9 +364,6 @@ exports[`Agreements Form renders correctly when errors exist 1`] = `
                   />
                 </svg>
               </span>
-              <span
-                class="MuiTouchRipple-root"
-              />
             </span>
             <span
               class="MuiTypography-root MuiFormControlLabel-label MuiTypography-body1"

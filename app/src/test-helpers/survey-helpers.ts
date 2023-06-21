@@ -1,5 +1,7 @@
+import { PublishStatus } from 'constants/attachments';
 import { IGetObservationSubmissionResponse } from 'interfaces/useObservationApi.interface';
 import {
+  IGetSurveyForListResponse,
   IGetSurveyForViewResponse,
   SurveySupplementaryData,
   SurveyViewObject
@@ -123,3 +125,46 @@ export const getObservationSubmissionResponse: IGetObservationSubmissionResponse
     revision_count: 0
   }
 };
+
+export const getSurveyForListResponse: IGetSurveyForListResponse[] = [
+  {
+    surveyData: {
+      ...surveyObject,
+      survey_details: {
+        ...surveyObject.survey_details,
+        survey_name: 'Moose Survey 1',
+        start_date: '2021-04-09 11:53:53',
+        end_date: '2021-05-09 11:53:53'
+      },
+      species: {
+        focal_species: [1],
+        focal_species_names: ['species 1'],
+        ancillary_species: [2],
+        ancillary_species_names: ['species 2']
+      }
+    },
+    surveySupplementaryData: {
+      publishStatus: PublishStatus.NO_DATA
+    }
+  },
+  {
+    surveyData: {
+      ...surveyObject,
+      survey_details: {
+        ...surveyObject.survey_details,
+        survey_name: 'Moose Survey 2',
+        start_date: '2021-04-09 11:53:53',
+        end_date: '2021-06-10 11:53:53'
+      },
+      species: {
+        focal_species: [3],
+        focal_species_names: ['species 3'],
+        ancillary_species: [4],
+        ancillary_species_names: ['species 4']
+      }
+    },
+    surveySupplementaryData: {
+      publishStatus: PublishStatus.NO_DATA
+    }
+  }
+];

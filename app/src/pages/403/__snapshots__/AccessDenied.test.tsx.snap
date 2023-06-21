@@ -24,13 +24,13 @@ exports[`AccessDenied renders a spinner when user is authenticated and \`hasLoad
       <p
         class="MuiTypography-root MuiTypography-body1"
       >
-        You do not have permission to access this application.
+        You do not have permission to access this page.
       </p>
       <div
         class="MuiBox-root MuiBox-root-4"
       >
         <button
-          class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-containedSizeLarge MuiButton-sizeLarge"
+          class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-containedSizeLarge MuiButton-sizeLarge MuiButton-disableElevation"
           data-testid="request_access"
           tabindex="0"
           type="submit"
@@ -40,9 +40,6 @@ exports[`AccessDenied renders a spinner when user is authenticated and \`hasLoad
           >
             Request Access
           </span>
-          <span
-            class="MuiTouchRipple-root"
-          />
         </button>
       </div>
     </div>

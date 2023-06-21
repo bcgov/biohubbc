@@ -5,13 +5,15 @@ import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
-import FundingSource from 'features/projects/view/components/FundingSource';
+import assert from 'assert';
+import FundingSource, { IFundingSource } from 'components/funding-source/FundingSource';
+import { ProjectContext } from 'contexts/projectContext';
 import GeneralInformation from 'features/projects/view/components/GeneralInformation';
 import IUCNClassification from 'features/projects/view/components/IUCNClassification';
 import Partnerships from 'features/projects/view/components/Partnerships';
 import ProjectCoordinator from 'features/projects/view/components/ProjectCoordinator';
 import ProjectObjectives from 'features/projects/view/components/ProjectObjectives';
-import React from 'react';
+import { useContext } from 'react';
 
 const useStyles = makeStyles((theme: Theme) => ({
   projectMetadata: {
@@ -55,6 +57,22 @@ const useStyles = makeStyles((theme: Theme) => ({
  */
 const ProjectDetails = () => {
   const classes = useStyles();
+  const projectContext = useContext(ProjectContext);
+
+  // Project data must be loaded by a parent before this component is rendered
+  assert(projectContext.projectDataLoader.data);
+  const funding_sources = projectContext.projectDataLoader.data.projectData.funding.fundingSources.map((item) => {
+    return {
+      id: item.id,
+      agency_name: item.agency_name,
+      investment_action_category_name: item.investment_action_category_name,
+      funding_amount: item.funding_amount,
+      start_date: item.start_date,
+      end_date: item.end_date,
+      agency_project_id: item.agency_project_id,
+      first_nations_name: item.first_nations_name
+    } as IFundingSource;
+  });
 
   return (
     <Box>
@@ -94,7 +112,7 @@ const ProjectDetails = () => {
             Funding Sources
           </Typography>
           <Divider></Divider>
-          <FundingSource />
+          <FundingSource funding_sources={funding_sources} />
         </Box>
 
         <Box component="section">

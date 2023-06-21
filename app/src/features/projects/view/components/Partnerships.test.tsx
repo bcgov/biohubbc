@@ -1,30 +1,28 @@
-import { cleanup, render } from '@testing-library/react';
 import { CodesContext, ICodesContext } from 'contexts/codesContext';
 import { IProjectContext, ProjectContext } from 'contexts/projectContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { DataLoader } from 'hooks/useDataLoader';
-import React from 'react';
 import { codes } from 'test-helpers/code-helpers';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
+import { getSurveyForListResponse } from 'test-helpers/survey-helpers';
+import { cleanup, render } from 'test-helpers/test-utils';
 import Partnerships from './Partnerships';
 
 jest.mock('../../../../hooks/useBioHubApi');
-const mockUseBiohubApi = {
+const mockBiohubApi = useBiohubApi as jest.Mock;
+
+const mockUseApi = {
   project: {
     getProjectForUpdate: jest.fn<Promise<object>, []>(),
     updateProject: jest.fn()
   }
 };
 
-const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBiohubApi>).mockReturnValue(
-  mockUseBiohubApi
-);
-
 describe('Partnerships', () => {
   beforeEach(() => {
-    // clear mocks before each test
-    mockBiohubApi().project.getProjectForUpdate.mockClear();
-    mockBiohubApi().project.updateProject.mockClear();
+    mockBiohubApi.mockImplementation(() => mockUseApi);
+    mockUseApi.project.getProjectForUpdate.mockClear();
+    mockUseApi.project.updateProject.mockClear();
   });
 
   afterEach(() => {
@@ -50,6 +48,7 @@ describe('Partnerships', () => {
           }
         }
       } as DataLoader<any, any, any>,
+      surveysListDataLoader: { data: getSurveyForListResponse } as DataLoader<any, any, any>,
       artifactDataLoader: { data: null } as DataLoader<any, any, any>,
       projectId: 1
     };
@@ -78,12 +77,13 @@ describe('Partnerships', () => {
           projectData: {
             ...getProjectForViewResponse.projectData,
             partnerships: {
-              indigenous_partnerships: (null as unknown) as number[],
-              stakeholder_partnerships: (null as unknown) as string[]
+              indigenous_partnerships: null as unknown as number[],
+              stakeholder_partnerships: null as unknown as string[]
             }
           }
         }
       } as DataLoader<any, any, any>,
+      surveysListDataLoader: { data: getSurveyForListResponse } as DataLoader<any, any, any>,
       artifactDataLoader: { data: null } as DataLoader<any, any, any>,
       projectId: 1
     };
@@ -110,6 +110,7 @@ describe('Partnerships', () => {
         data: getProjectForViewResponse
       } as DataLoader<any, any, any>,
       artifactDataLoader: { data: null } as DataLoader<any, any, any>,
+      surveysListDataLoader: { data: getSurveyForListResponse } as DataLoader<any, any, any>,
       projectId: 1
     };
 

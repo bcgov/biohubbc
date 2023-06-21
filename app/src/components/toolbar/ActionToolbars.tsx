@@ -265,7 +265,7 @@ interface IActionToolbarProps {
   toolbarProps?: Partial<ToolbarProps>;
 }
 
-const ActionToolbar: React.FC<IActionToolbarProps> = (props) => {
+const ActionToolbar: React.FC<React.PropsWithChildren<IActionToolbarProps>> = (props) => {
   return (
     <Toolbar {...props.toolbarProps} style={{ justifyContent: 'space-between' }}>
       <Typography {...props.labelProps} color="inherit" variant="h4">

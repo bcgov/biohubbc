@@ -48,26 +48,25 @@ exports[`RequestSubmitted renders correctly when user has no role but has a pend
       <p
         class="MuiTypography-root MuiTypography-body1"
       >
-        Your access request has been submitted for review.
+        Your request is currently pending a review by an administrator.
       </p>
       <div
         class="MuiBox-root MuiBox-root-2"
       >
-        <button
-          class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-containedSizeLarge MuiButton-sizeLarge"
+        <a
+          aria-disabled="false"
+          class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-containedSizeLarge MuiButton-sizeLarge MuiButton-disableElevation"
           data-testid="logout-button"
+          href="/logout"
+          role="button"
           tabindex="0"
-          type="submit"
         >
           <span
             class="MuiButton-label"
           >
             Log Out
           </span>
-          <span
-            class="MuiTouchRipple-root"
-          />
-        </button>
+        </a>
       </div>
     </div>
   </div>

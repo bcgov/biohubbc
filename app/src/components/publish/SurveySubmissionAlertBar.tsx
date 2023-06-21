@@ -8,7 +8,7 @@ import { SurveyContext } from 'contexts/surveyContext';
 import { IGetObservationSubmissionResponse } from 'interfaces/useObservationApi.interface';
 import { IGetSummaryResultsResponse } from 'interfaces/useSummaryResultsApi.interface';
 import { IGetSurveyAttachmentsResponse } from 'interfaces/useSurveyApi.interface';
-import React, { useContext, useState } from 'react';
+import { useContext, useState } from 'react';
 
 const SurveySubmissionAlertBar = () => {
   const surveyContext = useContext(SurveyContext);

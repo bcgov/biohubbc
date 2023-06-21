@@ -2,7 +2,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader, { DataLoader } from 'hooks/useDataLoader';
 import { IGetProjectAttachmentsResponse, IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import { IGetSurveyForListResponse } from 'interfaces/useSurveyApi.interface';
-import React, { createContext, PropsWithChildren, useEffect, useMemo } from 'react';
+import { createContext, PropsWithChildren, useEffect, useMemo } from 'react';
 import { useParams } from 'react-router';
 
 /**
@@ -57,7 +57,7 @@ export const ProjectContextProvider = (props: PropsWithChildren<Record<never, an
   const projectDataLoader = useDataLoader(biohubApi.project.getProjectForView);
   const surveysListDataLoader = useDataLoader(biohubApi.survey.getSurveysList);
   const artifactDataLoader = useDataLoader(biohubApi.project.getProjectAttachments);
-  const urlParams = useParams();
+  const urlParams: Record<string, string | number | undefined> = useParams();
 
   if (!urlParams['id']) {
     throw new Error(

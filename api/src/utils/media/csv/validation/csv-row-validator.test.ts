@@ -605,87 +605,128 @@ describe('getValidFormatFieldsValidator', () => {
       }
     ]);
   });
+});
 
-  describe('getValidFormatFieldsValidator', () => {
-    it('adds no errors when no config is supplied', () => {
-      const validator = getUniqueColumnsValidator();
-      const worksheet = xlsx.utils.aoa_to_sheet([['Header1'], ['stuff']]);
-      const csvWorkSheet = new CSVWorksheet('Sheet', worksheet);
+describe('getUniqueColumnsValidator', () => {
+  it('adds no errors when no config is supplied', () => {
+    const validator = getUniqueColumnsValidator();
+    const worksheet = xlsx.utils.aoa_to_sheet([['Header1'], ['stuff']]);
+    const csvWorkSheet = new CSVWorksheet('Sheet', worksheet);
 
-      validator(csvWorkSheet);
+    validator(csvWorkSheet);
 
-      expect(csvWorkSheet.csvValidation.rowErrors).to.be.empty;
-    });
+    expect(csvWorkSheet.csvValidation.rowErrors).to.be.empty;
+  });
 
-    it('adds no errors when no columns are specified in config', () => {
-      const config: FileColumnUniqueValidatorConfig = {
-        file_column_unique_validator: {
-          column_names: ['']
-        }
-      };
-      const validator = getUniqueColumnsValidator(config);
-      const worksheet = xlsx.utils.aoa_to_sheet([['Header1'], ['stuff']]);
-      const csvWorkSheet = new CSVWorksheet('Sheet', worksheet);
+  it('adds no errors when no columns are specified in config', () => {
+    const config: FileColumnUniqueValidatorConfig = {
+      file_column_unique_validator: {
+        column_names: ['']
+      }
+    };
+    const validator = getUniqueColumnsValidator(config);
+    const worksheet = xlsx.utils.aoa_to_sheet([['Header1'], ['stuff']]);
+    const csvWorkSheet = new CSVWorksheet('Sheet', worksheet);
 
-      validator(csvWorkSheet);
+    validator(csvWorkSheet);
 
-      expect(csvWorkSheet.csvValidation.rowErrors).to.be.empty;
-    });
+    expect(csvWorkSheet.csvValidation.rowErrors).to.be.empty;
+  });
 
-    it('adds no errors when specified key column is missing from the worksheet', () => {
-      const config: FileColumnUniqueValidatorConfig = {
-        file_column_unique_validator: {
-          column_names: ['Header1', 'Header2']
-        }
-      };
-      const validator = getUniqueColumnsValidator(config);
-      const worksheet = xlsx.utils.aoa_to_sheet([['Header1'], ['stuff']]);
-      const csvWorkSheet = new CSVWorksheet('Sheet', worksheet);
+  it('adds no errors when specified key column is missing from the worksheet', () => {
+    const config: FileColumnUniqueValidatorConfig = {
+      file_column_unique_validator: {
+        column_names: ['Header1', 'Header2']
+      }
+    };
+    const validator = getUniqueColumnsValidator(config);
+    const worksheet = xlsx.utils.aoa_to_sheet([['Header1'], ['stuff']]);
+    const csvWorkSheet = new CSVWorksheet('Sheet', worksheet);
 
-      validator(csvWorkSheet);
+    validator(csvWorkSheet);
 
-      expect(csvWorkSheet.csvValidation.rowErrors).to.be.empty;
-    });
+    expect(csvWorkSheet.csvValidation.rowErrors).to.be.empty;
+  });
 
-    it('adds no errors when all keys specified are unique', () => {
-      const config: FileColumnUniqueValidatorConfig = {
-        file_column_unique_validator: {
-          column_names: ['Header1', 'Header2']
-        }
-      };
-      const validator = getUniqueColumnsValidator(config);
-      const worksheet = xlsx.utils.aoa_to_sheet([
-        ['Header1', 'Header2', 'Header3'],
-        [1, 2, 3],
-        [2, 2, 3],
-        [3, 2, 3]
-      ]);
-      const csvWorkSheet = new CSVWorksheet('Sheet', worksheet);
+  it('adds no errors when key cells are empty', () => {
+    const config: FileColumnUniqueValidatorConfig = {
+      file_column_unique_validator: {
+        column_names: ['Header1', 'Header2']
+      }
+    };
+    const validator = getUniqueColumnsValidator(config);
+    const worksheet = xlsx.utils.aoa_to_sheet([
+      ['Header1', 'Header2', 'Header3'],
+      ['', '', 3],
+      ['', '', 3],
+      ['', '', 3]
+    ]);
+    const csvWorkSheet = new CSVWorksheet('Sheet', worksheet);
 
-      validator(csvWorkSheet);
+    validator(csvWorkSheet);
 
-      expect(csvWorkSheet.csvValidation.rowErrors).to.be.empty;
-    });
+    expect(csvWorkSheet.csvValidation.rowErrors).to.be.empty;
+  });
 
-    it('adds errors when not all keys are unique', () => {
-      const config: FileColumnUniqueValidatorConfig = {
-        file_column_unique_validator: {
-          column_names: ['Header1', 'Header2']
-        }
-      };
-      const validator = getUniqueColumnsValidator(config);
-      const worksheet = xlsx.utils.aoa_to_sheet([
-        ['Header1', 'Header2', 'Header3'],
-        [1, 2, 3],
-        [2, 2, 3],
-        [2, 2, 3]
-      ]);
-      const csvWorkSheet = new CSVWorksheet('Sheet', worksheet);
+  it('adds no errors when all keys specified are unique', () => {
+    const config: FileColumnUniqueValidatorConfig = {
+      file_column_unique_validator: {
+        column_names: ['Header1', 'Header2']
+      }
+    };
+    const validator = getUniqueColumnsValidator(config);
+    const worksheet = xlsx.utils.aoa_to_sheet([
+      ['Header1', 'Header2', 'Header3'],
+      [1, 2, 3],
+      [2, 2, 3],
+      [3, 2, 3]
+    ]);
+    const csvWorkSheet = new CSVWorksheet('Sheet', worksheet);
 
-      validator(csvWorkSheet);
+    validator(csvWorkSheet);
 
-      expect(csvWorkSheet.csvValidation.rowErrors).to.not.be.empty;
-      expect(csvWorkSheet.csvValidation.rowErrors[0].errorCode).to.be.eql(SUBMISSION_MESSAGE_TYPE.NON_UNIQUE_KEY);
-    });
+    expect(csvWorkSheet.csvValidation.rowErrors).to.be.empty;
+  });
+
+  it('adds errors when not all keys are unique', () => {
+    const config: FileColumnUniqueValidatorConfig = {
+      file_column_unique_validator: {
+        column_names: ['Header1', 'Header2']
+      }
+    };
+    const validator = getUniqueColumnsValidator(config);
+    const worksheet = xlsx.utils.aoa_to_sheet([
+      ['Header1', 'Header2', 'Header3'],
+      [1, 2, 3],
+      [2, 2, 3], // produces key: `2, 2`
+      [2, 2, 3] // produces duplicate key: `2, 2`
+    ]);
+    const csvWorkSheet = new CSVWorksheet('Sheet', worksheet);
+
+    validator(csvWorkSheet);
+
+    expect(csvWorkSheet.csvValidation.rowErrors).to.not.be.empty;
+    expect(csvWorkSheet.csvValidation.rowErrors[0].errorCode).to.be.eql(SUBMISSION_MESSAGE_TYPE.NON_UNIQUE_KEY);
+  });
+
+  it('adds errors when not all keys are unique and some columns are empty', () => {
+    const config: FileColumnUniqueValidatorConfig = {
+      file_column_unique_validator: {
+        column_names: ['Header1', 'Header2']
+      }
+    };
+    const validator = getUniqueColumnsValidator(config);
+    const worksheet = xlsx.utils.aoa_to_sheet([
+      ['Header1', 'Header2', 'Header3'],
+      [1, '', 3],
+      ['', 2, 3], // produces key: `2`
+      [2, '', 3] // produces duplicate key: `2`
+    ]);
+    const csvWorkSheet = new CSVWorksheet('Sheet', worksheet);
+
+    validator(csvWorkSheet);
+
+    expect(csvWorkSheet.csvValidation.rowErrors).to.not.be.empty;
+    expect(csvWorkSheet.csvValidation.rowErrors[0].errorCode).to.be.eql(SUBMISSION_MESSAGE_TYPE.NON_UNIQUE_KEY);
   });
 });

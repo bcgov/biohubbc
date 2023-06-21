@@ -23,7 +23,7 @@ export class XLSXCSV {
     this.mediaValidation = new MediaValidation(this.rawFile.fileName);
 
     this.workbook = new CSVWorkBook(
-      // See https://www.npmjs.com/package/xlsx#parsing-options for details on parsing options
+      // See https://docs.sheetjs.com/docs/api/parse-options for details on parsing options
       xlsx.read(this.rawFile.buffer, { cellDates: true, cellNF: true, cellHTML: false, ...options })
     );
   }
@@ -111,4 +111,7 @@ export class XLSXCSV {
 
 export type XLSXCSVValidator = (xlsxCsv: XLSXCSV) => XLSXCSV;
 
-export type XLSXCSVTransformer = { pivot: string; transform: (xlsxCsv: XLSXCSV, modifiers?: object) => XLSXCSV };
+export type XLSXCSVTransformer = {
+  pivot: string;
+  transform: (xlsxCsv: XLSXCSV, modifiers?: Record<string, any>) => XLSXCSV;
+};
