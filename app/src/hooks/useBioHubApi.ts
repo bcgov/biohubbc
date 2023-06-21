@@ -1,6 +1,6 @@
 import axios from 'axios';
-import { ConfigContext } from 'contexts/configContext';
-import { useContext, useMemo } from 'react';
+import { useConfigContext } from 'hooks/useContext';
+import { useMemo } from 'react';
 import useAdminApi from './api/useAdminApi';
 import useAxios from './api/useAxios';
 import useCodesApi from './api/useCodesApi';
@@ -24,8 +24,8 @@ import useUserApi from './api/useUserApi';
  * @return {*} object whose properties are supported api methods.
  */
 export const useBiohubApi = () => {
-  const config = useContext(ConfigContext);
-  const apiAxios = useAxios(config?.API_HOST);
+  const config = useConfigContext();
+  const apiAxios = useAxios(config.API_HOST);
 
   const project = useProjectApi(apiAxios);
 

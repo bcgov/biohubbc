@@ -1,3 +1,4 @@
+import { FeatureFlagGuard } from 'components/security/Guards';
 import {
   AuthenticatedRouteGuard,
   SystemRoleRouteGuard,
@@ -5,6 +6,7 @@ import {
 } from 'components/security/RouteGuards';
 import { SYSTEM_ROLE } from 'constants/roles';
 import { AuthStateContext } from 'contexts/authStateContext';
+import { ConfigContext, IConfig } from 'contexts/configContext';
 import { createMemoryHistory } from 'history';
 import { AuthContextProps } from 'react-oidc-context';
 import { Router } from 'react-router';
@@ -678,6 +680,83 @@ describe('RouteGuards', () => {
 
         await waitFor(() => {
           expect(history.location.pathname).toEqual(expectedPath);
+        });
+      });
+    });
+  });
+
+  describe('FeatureFlagGuard', () => {
+    describe('feature flag guard specifies no flags', () => {
+      afterAll(() => {
+        cleanup();
+      });
+
+      it('renders the child component', async () => {
+        const { getByTestId } = render(
+          <ConfigContext.Provider
+            value={
+              {
+                FEATURE_FLAGS: [] as string[]
+              } as IConfig
+            }>
+            <FeatureFlagGuard featureFlags={[]} fallback={<Fail />}>
+              <Success />
+            </FeatureFlagGuard>
+          </ConfigContext.Provider>
+        );
+
+        await waitFor(() => {
+          expect(getByTestId('success-component')).toBeVisible();
+        });
+      });
+    });
+
+    describe('feature flag guard specifies no matching flags', () => {
+      afterAll(() => {
+        cleanup();
+      });
+
+      it('renders the child component', async () => {
+        const { getByTestId } = render(
+          <ConfigContext.Provider
+            value={
+              {
+                FEATURE_FLAGS: ['flag2', 'flag3']
+              } as IConfig
+            }>
+            <FeatureFlagGuard featureFlags={['flag1']} fallback={<Fail />}>
+              <Success />
+            </FeatureFlagGuard>
+          </ConfigContext.Provider>
+        );
+
+        await waitFor(() => {
+          expect(getByTestId('success-component')).toBeVisible();
+        });
+      });
+    });
+
+    describe('feature flag guard specifies a matching flag', () => {
+      afterAll(() => {
+        cleanup();
+      });
+
+      it('renders the fallback component', async () => {
+        const { getByTestId } = render(
+          <ConfigContext.Provider
+            value={
+              {
+                FEATURE_FLAGS: ['flag1']
+              } as IConfig
+            }>
+            <FeatureFlagGuard featureFlags={['flag1']} fallback={<Success />}>
+              <Fail />
+            </FeatureFlagGuard>
+          </ConfigContext.Provider>
+        );
+
+        await waitFor(() => {
+          expect(getByTestId('success-component')).toBeVisible();
         });
       });
     });

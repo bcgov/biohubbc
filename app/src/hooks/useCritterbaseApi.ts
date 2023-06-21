@@ -1,5 +1,4 @@
-import { ConfigContext } from 'contexts/configContext';
-import { useContext } from 'react';
+import { useConfigContext } from 'hooks/useContext';
 import useAxios from './api/useAxios';
 import { useAuthentication } from './cb_api/useAuthenticationApi';
 import { useFamilyApi } from './cb_api/useFamilyApi';
@@ -12,8 +11,8 @@ import { useMarkings } from './cb_api/useMarkings';
  * @return {*} object whose properties are supported api methods.
  */
 export const useCritterbaseApi = () => {
-  const config = useContext(ConfigContext);
-  const apiAxios = useAxios(config?.API_HOST);
+  const config = useConfigContext();
+  const apiAxios = useAxios(config.API_HOST);
   const markings = useMarkings(apiAxios);
   const authentication = useAuthentication(apiAxios);
   const lookup = useLookupApi(apiAxios);

@@ -8,6 +8,7 @@ import { IDBConnection } from '../database/db';
 import { ApiError, ApiErrorType, ApiGeneralError } from '../errors/api-error';
 import { PostSurveySubmissionToBioHubObject } from '../models/biohub-create';
 import { ISurveyAttachment, ISurveyReportAttachment } from '../repositories/attachment-repository';
+import { isFeatureFlagPresent } from '../utils/feature-flag-utils';
 import { getFileFromS3 } from '../utils/file-utils';
 import { getLogger } from '../utils/logger';
 import { AttachmentService } from './attachment-service';
@@ -54,7 +55,6 @@ export interface ITaxonomy {
   scientificName: string;
 }
 
-const getBackboneIntakeEnabled = () => process.env.BACKBONE_INTAKE_ENABLED === 'true' || false;
 const getBackboneInternalApiHost = () => process.env.BACKBONE_INTERNAL_API_HOST || '';
 const getBackboneArtifactIntakePath = () => process.env.BACKBONE_ARTIFACT_INTAKE_PATH || '';
 const getBackboneSurveyIntakePath = () => process.env.BACKBONE_INTAKE_PATH || '';
@@ -120,8 +120,8 @@ export class PlatformService extends DBService {
   ): Promise<{ submission_uuid: string }> {
     defaultLog.debug({ label: 'submitSurveyToBioHub', message: 'params', surveyId });
 
-    if (!getBackboneIntakeEnabled()) {
-      throw new ApiGeneralError('BioHub intake is not enabled');
+    if (isFeatureFlagPresent(['API_FF_SUBMIT_BIOHUB'])) {
+      throw new ApiGeneralError('Publishing to BioHub is not currently enabled.');
     }
 
     const keycloakService = new KeycloakService();
