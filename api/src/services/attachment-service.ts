@@ -527,7 +527,7 @@ export class AttachmentService extends DBService {
    * @return {*}  {Promise<{ key: string }>}
    * @memberof AttachmentService
    */
-  async deleteProjectAttachment(attachmentId: number): Promise<{ key: string }> {
+  async deleteProjectAttachment(attachmentId: number): Promise<{ key: string; uuid: string }> {
     return this.attachmentRepository.deleteProjectAttachment(attachmentId);
   }
 
@@ -535,10 +535,10 @@ export class AttachmentService extends DBService {
    * Delete Project Report Attachment
    *
    * @param {number} attachmentId
-   * @return {*}  {Promise<{ key: string }>}
+   * @return {*}  {Promise<{ key: string; uuid: string }>}
    * @memberof AttachmentService
    */
-  async deleteProjectReportAttachment(attachmentId: number): Promise<{ key: string }> {
+  async deleteProjectReportAttachment(attachmentId: number): Promise<{ key: string; uuid: string }> {
     return this.attachmentRepository.deleteProjectReportAttachment(attachmentId);
   }
 
@@ -683,10 +683,10 @@ export class AttachmentService extends DBService {
    * Delete Survey Report Attachment
    *
    * @param {number} attachmentId
-   * @return {*}  {Promise<{ key: string }>}
+   * @return {*}  {Promise<{ key: string; uuid: string }>}
    * @memberof AttachmentService
    */
-  async deleteSurveyReportAttachment(attachmentId: number): Promise<{ key: string }> {
+  async deleteSurveyReportAttachment(attachmentId: number): Promise<{ key: string; uuid: string }> {
     return this.attachmentRepository.deleteSurveyReportAttachment(attachmentId);
   }
 
@@ -694,10 +694,10 @@ export class AttachmentService extends DBService {
    * Delete Survey Attachment
    *
    * @param {number} attachmentId
-   * @return {*}  {Promise<{ key: string }>}
+   * @return {*}  {Promise<{ key: string; uuid: string }>}
    * @memberof AttachmentService
    */
-  async deleteSurveyAttachment(attachmentId: number): Promise<{ key: string }> {
+  async deleteSurveyAttachment(attachmentId: number): Promise<{ key: string; uuid: string }> {
     return this.attachmentRepository.deleteSurveyAttachment(attachmentId);
   }
 

@@ -85,21 +85,21 @@ const AttachmentsListItemMenuButton = (props: IAttachmentsListItemMenuButtonProp
                 View Details
               </MenuItem>
             )}
-            {props.attachmentStatus === PublishStatus.UNSUBMITTED && (
-              <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-                <MenuItem
-                  onClick={() => {
-                    props.onDeleteFile();
-                    handleClose();
-                  }}
-                  data-testid="attachment-action-menu-delete">
-                  <ListItemIcon>
-                    <Icon path={mdiTrashCanOutline} size={1} />
-                  </ListItemIcon>
-                  Delete
-                </MenuItem>
-              </SystemRoleGuard>
-            )}
+
+            <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+              <MenuItem
+                onClick={() => {
+                  props.onDeleteFile();
+                  handleClose();
+                }}
+                data-testid="attachment-action-menu-delete">
+                <ListItemIcon>
+                  <Icon path={mdiTrashCanOutline} size={1} />
+                </ListItemIcon>
+                Delete
+              </MenuItem>
+            </SystemRoleGuard>
+
             {props.attachmentStatus === PublishStatus.SUBMITTED && (
               <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
                 <ProjectRoleGuard validProjectRoles={[PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR]}>

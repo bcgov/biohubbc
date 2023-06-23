@@ -6,6 +6,7 @@ import { getDBConnection } from '../../../../../../../database/db';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
 import { AttachmentService } from '../../../../../../../services/attachment-service';
 import { HistoryPublishService } from '../../../../../../../services/history-publish-service';
+import { PlatformService } from '../../../../../../../services/platform-service';
 import { deleteFileFromS3 } from '../../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../../utils/logger';
 import { attachmentApiDocObject } from '../../../../../../../utils/shared-api-docs';
@@ -112,7 +113,7 @@ export function deleteAttachment(): RequestHandler {
       const attachmentService = new AttachmentService(connection);
       const historyPublishService = new HistoryPublishService(connection);
 
-      let deleteResult: { key: string };
+      let deleteResult: { key: string; uuid: string };
       if (req.body.attachmentType === ATTACHMENT_TYPE.REPORT) {
         await historyPublishService.deleteSurveyReportAttachmentPublishRecord(Number(req.params.attachmentId));
         await attachmentService.deleteSurveyReportAttachmentAuthors(Number(req.params.attachmentId));
@@ -122,6 +123,10 @@ export function deleteAttachment(): RequestHandler {
         await historyPublishService.deleteSurveyAttachmentPublishRecord(Number(req.params.attachmentId));
         deleteResult = await attachmentService.deleteSurveyAttachment(Number(req.params.attachmentId));
       }
+
+      const platformService = new PlatformService(connection);
+      // request BIOHUB API to delete attachment
+      await platformService.deleteAttachmentFromBiohub(deleteResult.uuid);
 
       await connection.commit();
 
