@@ -835,12 +835,17 @@ export class PlatformService extends DBService {
 
     const backboneArtifactIntakeUrl = new URL(getBackboneArtifactDeletePath(), getBackboneApiHost()).href;
 
-    const response = await axios.post<{ success: boolean }>(backboneArtifactIntakeUrl, {
-      headers: {
-        authorization: `Bearer ${token}`,
+    const response = await axios.post<{ success: boolean }>(
+      backboneArtifactIntakeUrl,
+      {
         artifactUUIDs: [artifactUUID]
+      },
+      {
+        headers: {
+          authorization: `Bearer ${token}`
+        }
       }
-    });
+    );
 
     if (!response.data.success) {
       throw new ApiError(ApiErrorType.UNKNOWN, 'Failed to delete attachment from Biohub');
