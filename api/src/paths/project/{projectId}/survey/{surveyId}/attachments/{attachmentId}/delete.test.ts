@@ -6,6 +6,7 @@ import sinonChai from 'sinon-chai';
 import * as db from '../../../../../../../database/db';
 import { HTTPError } from '../../../../../../../errors/http-error';
 import { AttachmentService } from '../../../../../../../services/attachment-service';
+import { PlatformService } from '../../../../../../../services/platform-service';
 import * as file_utils from '../../../../../../../utils/file-utils';
 import { getMockDBConnection } from '../../../../../../../__mocks__/db';
 import * as deleteAttachment from './delete';
@@ -75,7 +76,11 @@ describe('deleteAttachment', () => {
 
     const deleteSurveyReportAttachmentStub = sinon
       .stub(AttachmentService.prototype, 'deleteSurveyReportAttachment')
-      .resolves({ key: 'string' });
+      .resolves({ key: 'string', uuid: 'string' });
+
+    const deleteAttachmentFromBiohubStub = sinon
+      .stub(PlatformService.prototype, 'deleteAttachmentFromBiohub')
+      .resolves();
 
     const fileUtilsStub = sinon
       .stub(file_utils, 'deleteFileFromS3')
@@ -99,6 +104,7 @@ describe('deleteAttachment', () => {
     expect(deleteSurveyReportAttachmentAuthorsStub).to.be.calledOnce;
     expect(deleteSurveyReportAttachmentStub).to.be.calledOnce;
     expect(fileUtilsStub).to.be.calledOnce;
+    expect(deleteAttachmentFromBiohubStub).to.be.calledOnce;
   });
 
   it('should delete Survey Attachment', async () => {
@@ -121,7 +127,11 @@ describe('deleteAttachment', () => {
 
     const deleteSurveyAttachmentStub = sinon
       .stub(AttachmentService.prototype, 'deleteSurveyAttachment')
-      .resolves({ key: 'string' });
+      .resolves({ key: 'string', uuid: 'string' });
+
+    const deleteAttachmentFromBiohubStub = sinon
+      .stub(PlatformService.prototype, 'deleteAttachmentFromBiohub')
+      .resolves();
 
     const fileUtilsStub = sinon.stub(file_utils, 'deleteFileFromS3').resolves();
 
@@ -142,5 +152,6 @@ describe('deleteAttachment', () => {
     expect(actualResult).to.eql(null);
     expect(deleteSurveyAttachmentStub).to.be.calledOnce;
     expect(fileUtilsStub).to.be.calledOnce;
+    expect(deleteAttachmentFromBiohubStub).to.be.calledOnce;
   });
 });

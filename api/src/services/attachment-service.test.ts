@@ -321,7 +321,7 @@ describe('AttachmentService', () => {
           const dbConnection = getMockDBConnection();
           const service = new AttachmentService(dbConnection);
 
-          const data = { key: 'key' };
+          const data = { key: 'string', uuid: 'string' };
 
           const repoStub = sinon.stub(AttachmentRepository.prototype, 'deleteProjectAttachment').resolves(data);
 
@@ -616,7 +616,7 @@ describe('AttachmentService', () => {
           const dbConnection = getMockDBConnection();
           const service = new AttachmentService(dbConnection);
 
-          const data = { key: 'key' };
+          const data = { key: 'string', uuid: 'string' };
 
           const repoStub = sinon.stub(AttachmentRepository.prototype, 'deleteProjectReportAttachment').resolves(data);
 
@@ -668,7 +668,7 @@ describe('AttachmentService', () => {
           const dbConnection = getMockDBConnection();
           const service = new AttachmentService(dbConnection);
 
-          const data = { key: 'key' };
+          const data = { key: 'string', uuid: 'string' };
 
           const repoStub = sinon.stub(AttachmentRepository.prototype, 'deleteSurveyAttachment').resolves(data);
 
@@ -1043,7 +1043,7 @@ describe('AttachmentService', () => {
           const dbConnection = getMockDBConnection();
           const service = new AttachmentService(dbConnection);
 
-          const data = { key: 'key' };
+          const data = { key: 'string', uuid: 'string' };
 
           const repoStub = sinon.stub(AttachmentRepository.prototype, 'deleteSurveyReportAttachment').resolves(data);
 

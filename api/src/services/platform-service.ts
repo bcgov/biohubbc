@@ -110,9 +110,9 @@ export type IGetSurveyReportAttachment = IGetSurveyAttachment & { fileType: 'Rep
 
 const getBackboneIntakeEnabled = () => process.env.BACKBONE_INTAKE_ENABLED === 'true' || false;
 const getBackboneApiHost = () => process.env.BACKBONE_API_HOST || '';
+const getBackboneArtifactIntakePath = () => process.env.BACKBONE_ARTIFACT_INTAKE_PATH || '/api/artifact/intake';
 const getBackboneArtifactDeletePath = () => process.env.BACKBONE_ARTIFACT_DELETE_PATH || '/api/artifact/delete';
 const getBackboneIntakePath = () => process.env.BACKBONE_INTAKE_PATH || '/api/dwc/submission/queue';
-const getBackboneArtifactIntakePath = () => process.env.BACKBONE_ARTIFACT_INTAKE_PATH || '/api/artifact/intake';
 
 export class PlatformService extends DBService {
   attachmentService: AttachmentService;
@@ -850,7 +850,5 @@ export class PlatformService extends DBService {
     if (!response.data.success) {
       throw new ApiError(ApiErrorType.UNKNOWN, 'Failed to delete attachment from Biohub');
     }
-
-    return;
   }
 }

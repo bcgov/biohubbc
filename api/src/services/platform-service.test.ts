@@ -1197,4 +1197,41 @@ describe('PlatformService', () => {
       );
     });
   });
+
+  describe('deleteAttachmentFromBiohub', () => {
+    beforeEach(() => {
+      process.env.BACKBONE_API_HOST = 'http://backbone-host.dev/';
+      process.env.BACKBONE_ARTIFACT_DELETE_PATH = 'api/artifact/delete';
+      process.env.BACKBONE_INTAKE_ENABLED = 'true';
+      sinon.restore();
+    });
+
+    it('should delete an attachment from biohub successfully', async () => {
+      const mockDBConnection = getMockDBConnection();
+      const platformService = new PlatformService(mockDBConnection);
+
+      const keycloakServiceStub = sinon.stub(KeycloakService.prototype, 'getKeycloakToken').resolves('token');
+
+      const axiosStub = sinon.stub(axios, 'post').resolves({
+        data: {
+          success: true
+        }
+      });
+
+      await platformService.deleteAttachmentFromBiohub('uuid');
+
+      expect(keycloakServiceStub).to.have.been.calledOnce;
+      expect(axiosStub).to.have.been.calledOnceWith(
+        'http://backbone-host.dev/api/artifact/delete',
+        {
+          artifactUUIDs: ['uuid']
+        },
+        {
+          headers: {
+            authorization: `Bearer token`
+          }
+        }
+      );
+    });
+  });
 });
