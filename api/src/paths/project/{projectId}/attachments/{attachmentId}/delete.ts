@@ -1,13 +1,9 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { ATTACHMENT_TYPE } from '../../../../../constants/attachments';
 import { PROJECT_ROLE, SYSTEM_ROLE } from '../../../../../constants/roles';
 import { getDBConnection } from '../../../../../database/db';
 import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
 import { AttachmentService } from '../../../../../services/attachment-service';
-import { HistoryPublishService } from '../../../../../services/history-publish-service';
-import { PlatformService } from '../../../../../services/platform-service';
-import { deleteFileFromS3 } from '../../../../../utils/file-utils';
 import { getLogger } from '../../../../../utils/logger';
 import { attachmentApiDocObject } from '../../../../../utils/shared-api-docs';
 
@@ -105,31 +101,14 @@ export function deleteAttachment(): RequestHandler {
       await connection.open();
 
       const attachmentService = new AttachmentService(connection);
-      const historyPublishService = new HistoryPublishService(connection);
 
-      let deleteResult: { key: string; uuid: string };
-
-      if (req.body.attachmentType === ATTACHMENT_TYPE.REPORT) {
-        await historyPublishService.deleteProjectReportAttachmentPublishRecord(Number(req.params.attachmentId));
-        await attachmentService.deleteProjectReportAttachmentAuthors(Number(req.params.attachmentId));
-
-        deleteResult = await attachmentService.deleteProjectReportAttachment(Number(req.params.attachmentId));
-      } else {
-        await historyPublishService.deleteProjectAttachmentPublishRecord(Number(req.params.attachmentId));
-        deleteResult = await attachmentService.deleteProjectAttachment(Number(req.params.attachmentId));
-      }
-
-      const platformService = new PlatformService(connection);
-      // request BIOHUB API to delete attachment
-      await platformService.deleteAttachmentFromBiohub(deleteResult.uuid);
+      await attachmentService.handleDeleteProjectAttachment(
+        Number(req.params.projectId),
+        Number(req.params.attachmentId),
+        req.body.attachmentType
+      );
 
       await connection.commit();
-
-      const deleteFileResult = await deleteFileFromS3(deleteResult.key);
-
-      if (!deleteFileResult) {
-        return res.status(200).json(null);
-      }
 
       return res.status(200).send();
     } catch (error) {

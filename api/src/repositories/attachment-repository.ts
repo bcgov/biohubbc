@@ -370,6 +370,50 @@ export class AttachmentRepository extends BaseRepository {
   }
 
   /**
+   * SQL query to get a single attachment for a single survey.
+   *
+   * @param {number} surveyId
+   * @param {number} attachmentId
+   * @return {*}  {Promise<ISurveyAttachment>}
+   * @memberof AttachmentRepository
+   */
+  async getSurveyAttachmentById(surveyId: number, attachmentId: number): Promise<ISurveyAttachment> {
+    defaultLog.debug({ label: 'getProjectAttachmentById' });
+
+    const sqlStatement = SQL`
+      SELECT
+        survey_attachment_id,
+        uuid,
+        file_name,
+        file_type,
+        title,
+        description,
+        create_date,
+        update_date,
+        create_date,
+        file_size,
+        key
+      FROM
+        survey_attachment
+      WHERE
+        survey_attachment_id = ${attachmentId}
+      AND
+        survey_id = ${surveyId};
+    `;
+
+    const response = await this.connection.sql<ISurveyAttachment>(sqlStatement);
+
+    if (!response.rows) {
+      throw new ApiExecuteSQLError('Failed to get survey attachment by attachmentId', [
+        'AttachmentRepository->getSurveyAttachmentById',
+        'rows was null or undefined, expected rows != null'
+      ]);
+    }
+
+    return response.rows[0];
+  }
+
+  /**
    * SQL query to get all survey attachments for a single project with the given surveyAttachmentIds
    *
    * @param {number} surveyId The survey ID

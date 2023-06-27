@@ -1,4 +1,5 @@
 import { QueryResult } from 'pg';
+import { ATTACHMENT_TYPE } from '../constants/attachments';
 import { IDBConnection } from '../database/db';
 import {
   GetAttachmentsWithSupplementalData,
@@ -13,9 +14,16 @@ import {
   ISurveyAttachment,
   ISurveyReportAttachment
 } from '../repositories/attachment-repository';
-import { generateS3FileKey } from '../utils/file-utils';
+import {
+  ProjectAttachmentPublish,
+  ProjectReportPublish,
+  SurveyAttachmentPublish,
+  SurveyReportPublish
+} from '../repositories/history-publish-repository';
+import { deleteFileFromS3, generateS3FileKey } from '../utils/file-utils';
 import { DBService } from './db-service';
 import { HistoryPublishService } from './history-publish-service';
+import { PlatformService } from './platform-service';
 
 export interface IAttachmentType {
   id: number;
@@ -174,6 +182,18 @@ export class AttachmentService extends DBService {
    */
   async getSurveyAttachments(surveyId: number): Promise<ISurveyAttachment[]> {
     return this.attachmentRepository.getSurveyAttachments(surveyId);
+  }
+
+  /**
+   * Finds a survey attachment having the given survey ID and attachment ID
+   *
+   * @param {number} surveyId
+   * @param {number} attachmentId
+   * @return {*}  {Promise<ISurveyAttachment>}
+   * @memberof AttachmentService
+   */
+  async getSurveyAttachmentById(surveyId: number, attachmentId: number): Promise<ISurveyAttachment> {
+    return this.attachmentRepository.getSurveyAttachmentById(surveyId, attachmentId);
   }
 
   /**
@@ -827,5 +847,101 @@ export class AttachmentService extends DBService {
     }
 
     return { ...attachmentResult, key };
+  }
+
+  /**
+   * Handle deletion of Project Attachment.
+   * If attachment is a report, delete authors
+   * Otherwise, delete the publish record and the attachment.
+   * If attachment was published, delete the publish record and delete from Platform.
+   * @param {number} projectId
+   * @param {number} attachmentId
+   * @param {string} attachmentType
+   * @return {*}  {Promise<void>}
+   * @memberof AttachmentService
+   */
+  async handleDeleteProjectAttachment(projectId: number, attachmentId: number, attachmentType: string): Promise<void> {
+    const historyPublishService = new HistoryPublishService(this.connection);
+
+    let attachment: IProjectAttachment | IProjectReportAttachment | null;
+    let publishStatus: ProjectReportPublish | ProjectAttachmentPublish | null;
+
+    if (attachmentType === ATTACHMENT_TYPE.REPORT) {
+      // Get the attachment and publish record
+      attachment = await this.getProjectReportAttachmentById(projectId, attachmentId);
+      publishStatus = await historyPublishService.getProjectReportPublishRecord(
+        attachment.project_report_attachment_id
+      );
+
+      // Delete the publish record, authors, and attachment
+      await historyPublishService.deleteProjectReportAttachmentPublishRecord(attachmentId);
+      await this.deleteProjectReportAttachmentAuthors(attachmentId);
+      await this.deleteProjectReportAttachment(attachmentId);
+    } else {
+      // Get the attachment and publish record
+      attachment = await this.getProjectAttachmentById(projectId, attachmentId);
+      publishStatus = await historyPublishService.getProjectAttachmentPublishRecord(attachment.project_attachment_id);
+
+      // Delete the publish record and attachment
+      await historyPublishService.deleteProjectAttachmentPublishRecord(attachmentId);
+      await this.deleteProjectAttachment(attachmentId);
+    }
+
+    // If attachment was published, delete the attachment from Platform
+    if (publishStatus) {
+      const platformService = new PlatformService(this.connection);
+      // request BIOHUB API to delete attachment
+      await platformService.deleteAttachmentFromBiohub(attachment.uuid);
+    }
+
+    // Delete the attachment from S3
+    await deleteFileFromS3(attachment.key);
+  }
+
+  /**
+   * Handle deletion of Survey Attachment.
+   * If attachment is a report, delete authors and the publish record and the attachment
+   * Otherwise, delete the publish record and the attachment.
+   * If attachment was published, delete the publish record and delete from Platform.
+   * @param {number} surveyId
+   * @param {number} attachmentId
+   * @param {string} attachmentType
+   * @return {*}  {Promise<void>}
+   * @memberof AttachmentService
+   */
+  async handleDeleteSurveyAttachment(surveyId: number, attachmentId: number, attachmentType: string): Promise<void> {
+    const historyPublishService = new HistoryPublishService(this.connection);
+
+    let attachment: ISurveyAttachment | ISurveyReportAttachment | null;
+    let publishStatus: SurveyReportPublish | SurveyAttachmentPublish | null;
+
+    if (attachmentType === ATTACHMENT_TYPE.REPORT) {
+      // Get the attachment and publish record
+      attachment = await this.getSurveyReportAttachmentById(surveyId, attachmentId);
+      publishStatus = await historyPublishService.getSurveyReportPublishRecord(attachment.survey_report_attachment_id);
+
+      // Delete the publish record, authors, and attachment
+      await historyPublishService.deleteSurveyReportAttachmentPublishRecord(attachmentId);
+      await this.deleteSurveyReportAttachmentAuthors(attachmentId);
+      await this.deleteSurveyReportAttachment(attachmentId);
+    } else {
+      // Get the attachment and publish record
+      attachment = await this.getSurveyAttachmentById(surveyId, attachmentId);
+      publishStatus = await historyPublishService.getSurveyAttachmentPublishRecord(attachment.survey_attachment_id);
+
+      // Delete the publish record and attachment
+      await historyPublishService.deleteSurveyAttachmentPublishRecord(attachmentId);
+      await this.deleteSurveyAttachment(attachmentId);
+    }
+
+    // If attachment was published, delete the attachment from Platform
+    if (publishStatus) {
+      const platformService = new PlatformService(this.connection);
+      // request BIOHUB API to delete attachment
+      await platformService.deleteAttachmentFromBiohub(attachment.uuid);
+    }
+
+    // Delete the attachment from S3
+    await deleteFileFromS3(attachment.key);
   }
 }
