@@ -2,7 +2,11 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_ROLE, SYSTEM_ROLE } from '../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../database/db';
-import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
+import { UserObject } from '../../../../../../../models/user';
+import {
+  authorizeRequestHandler,
+  getSystemUserObject
+} from '../../../../../../../request-handlers/security/authorization';
 import { AttachmentService } from '../../../../../../../services/attachment-service';
 import { getLogger } from '../../../../../../../utils/logger';
 import { attachmentApiDocObject } from '../../../../../../../utils/shared-api-docs';
@@ -108,10 +112,14 @@ export function deleteAttachment(): RequestHandler {
 
       const attachmentService = new AttachmentService(connection);
 
+      const systemUserObject: UserObject = req['system_user'] || (await getSystemUserObject(connection));
+      const isAdmin = systemUserObject.role_names.includes(SYSTEM_ROLE.SYSTEM_ADMIN);
+
       await attachmentService.handleDeleteSurveyAttachment(
         Number(req.params.surveyId),
         Number(req.params.attachmentId),
-        req.body.attachmentType
+        req.body.attachmentType,
+        isAdmin
       );
 
       await connection.commit();

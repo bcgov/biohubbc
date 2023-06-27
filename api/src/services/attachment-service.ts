@@ -857,10 +857,16 @@ export class AttachmentService extends DBService {
    * @param {number} projectId
    * @param {number} attachmentId
    * @param {string} attachmentType
+   * @param {boolean} isAdmin
    * @return {*}  {Promise<void>}
    * @memberof AttachmentService
    */
-  async handleDeleteProjectAttachment(projectId: number, attachmentId: number, attachmentType: string): Promise<void> {
+  async handleDeleteProjectAttachment(
+    projectId: number,
+    attachmentId: number,
+    attachmentType: string,
+    isAdmin: boolean
+  ): Promise<void> {
     const historyPublishService = new HistoryPublishService(this.connection);
 
     let attachment: IProjectAttachment | IProjectReportAttachment | null;
@@ -887,8 +893,8 @@ export class AttachmentService extends DBService {
       await this.deleteProjectAttachment(attachmentId);
     }
 
-    // If attachment was published, delete the attachment from Platform
-    if (publishStatus) {
+    // If attachment was published, and isAdmin, delete the attachment from Platform
+    if (publishStatus && isAdmin) {
       const platformService = new PlatformService(this.connection);
       // request BIOHUB API to delete attachment
       await platformService.deleteAttachmentFromBiohub(attachment.uuid);
@@ -906,10 +912,16 @@ export class AttachmentService extends DBService {
    * @param {number} surveyId
    * @param {number} attachmentId
    * @param {string} attachmentType
+   * @param {boolean} isAdmin
    * @return {*}  {Promise<void>}
    * @memberof AttachmentService
    */
-  async handleDeleteSurveyAttachment(surveyId: number, attachmentId: number, attachmentType: string): Promise<void> {
+  async handleDeleteSurveyAttachment(
+    surveyId: number,
+    attachmentId: number,
+    attachmentType: string,
+    isAdmin: boolean
+  ): Promise<void> {
     const historyPublishService = new HistoryPublishService(this.connection);
 
     let attachment: ISurveyAttachment | ISurveyReportAttachment | null;
@@ -934,8 +946,8 @@ export class AttachmentService extends DBService {
       await this.deleteSurveyAttachment(attachmentId);
     }
 
-    // If attachment was published, delete the attachment from Platform
-    if (publishStatus) {
+    // If attachment was published, and isAdmin, delete the attachment from Platform
+    if (publishStatus && isAdmin) {
       const platformService = new PlatformService(this.connection);
       // request BIOHUB API to delete attachment
       await platformService.deleteAttachmentFromBiohub(attachment.uuid);
