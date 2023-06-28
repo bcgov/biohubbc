@@ -851,9 +851,16 @@ export class AttachmentService extends DBService {
 
   /**
    * Handle deletion of Project Attachment.
-   * If attachment is a report, delete authors
-   * Otherwise, delete the publish record and the attachment.
-   * If attachment was published, delete the publish record and delete from Platform.
+   * If report:
+   * - delete authors
+   * - delete publish record
+   * - delete attachment
+   * If attachment:
+   * - delete publish record
+   * - delete attachment
+   * If attachment was published:
+   * - delete from Platform.
+   *
    * @param {number} projectId
    * @param {number} attachmentId
    * @param {string} attachmentType
@@ -906,9 +913,16 @@ export class AttachmentService extends DBService {
 
   /**
    * Handle deletion of Survey Attachment.
-   * If attachment is a report, delete authors and the publish record and the attachment
-   * Otherwise, delete the publish record and the attachment.
-   * If attachment was published, delete the publish record and delete from Platform.
+   * If report:
+   * - delete authors
+   * - delete publish record
+   * - delete attachment
+   * If attachment:
+   * - delete publish record
+   * - delete attachment
+   * If attachment was published:
+   * - delete from Platform
+   *
    * @param {number} surveyId
    * @param {number} attachmentId
    * @param {string} attachmentType

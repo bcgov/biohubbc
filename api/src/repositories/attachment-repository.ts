@@ -403,7 +403,7 @@ export class AttachmentRepository extends BaseRepository {
 
     const response = await this.connection.sql<ISurveyAttachment>(sqlStatement);
 
-    if (!response.rows) {
+    if (response.rowCount === 1) {
       throw new ApiExecuteSQLError('Failed to get survey attachment by attachmentId', [
         'AttachmentRepository->getSurveyAttachmentById',
         'rows was null or undefined, expected rows != null'

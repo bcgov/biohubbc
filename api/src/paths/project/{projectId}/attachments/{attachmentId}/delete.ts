@@ -104,7 +104,9 @@ export function deleteAttachment(): RequestHandler {
       const attachmentService = new AttachmentService(connection);
 
       const systemUserObject: UserObject = req['system_user'] || (await getSystemUserObject(connection));
-      const isAdmin = systemUserObject.role_names.includes(SYSTEM_ROLE.SYSTEM_ADMIN);
+      const isAdmin =
+        systemUserObject.role_names.includes(SYSTEM_ROLE.SYSTEM_ADMIN) ||
+        systemUserObject.role_names.includes(SYSTEM_ROLE.DATA_ADMINISTRATOR);
 
       await attachmentService.handleDeleteProjectAttachment(
         Number(req.params.projectId),
