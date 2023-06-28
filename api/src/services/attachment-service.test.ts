@@ -1179,8 +1179,6 @@ describe('AttachmentService', () => {
             expect(attachmentPublishDeleteStub).to.be.not.called;
           });
         });
-
-        describe('delete published attachment', () => {});
       });
 
       describe('getSurveyAttachmentS3Key', () => {
