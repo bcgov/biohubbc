@@ -389,7 +389,7 @@ describe('AttachmentService', () => {
                 })
             } as AWS.Request<AWS.S3.DeleteObjectOutput, AWS.AWSError>);
 
-            await service.handleDeleteProjectAttachment(1, 1, ATTACHMENT_TYPE.REPORT);
+            await service.handleDeleteProjectAttachment(1, 1, ATTACHMENT_TYPE.REPORT, true);
 
             expect(getProjectReportStub).to.be.called;
             expect(getProjectReportPublishStub).to.be.called;
@@ -455,7 +455,7 @@ describe('AttachmentService', () => {
                 })
             } as AWS.Request<AWS.S3.DeleteObjectOutput, AWS.AWSError>);
 
-            await service.handleDeleteProjectAttachment(1, 1, ATTACHMENT_TYPE.REPORT);
+            await service.handleDeleteProjectAttachment(1, 1, ATTACHMENT_TYPE.REPORT, false);
 
             expect(getProjectReportStub).to.be.called;
             expect(getProjectReportPublishStub).to.be.called;
@@ -529,7 +529,7 @@ describe('AttachmentService', () => {
                 })
             } as AWS.Request<AWS.S3.DeleteObjectOutput, AWS.AWSError>);
 
-            await service.handleDeleteProjectAttachment(1, 1, ATTACHMENT_TYPE.OTHER);
+            await service.handleDeleteProjectAttachment(1, 1, ATTACHMENT_TYPE.OTHER, true);
 
             expect(getProjectAttachmentStub).to.be.called;
             expect(getProjectPublishStub).to.be.called;
@@ -597,7 +597,7 @@ describe('AttachmentService', () => {
                 })
             } as AWS.Request<AWS.S3.DeleteObjectOutput, AWS.AWSError>);
 
-            await service.handleDeleteProjectAttachment(1, 1, ATTACHMENT_TYPE.OTHER);
+            await service.handleDeleteProjectAttachment(1, 1, ATTACHMENT_TYPE.OTHER, true);
 
             expect(getProjectAttachmentStub).to.be.called;
             expect(getProjectPublishStub).to.be.called;
@@ -1023,7 +1023,7 @@ describe('AttachmentService', () => {
                 })
             } as AWS.Request<AWS.S3.DeleteObjectOutput, AWS.AWSError>);
 
-            await service.handleDeleteSurveyAttachment(1, 1, ATTACHMENT_TYPE.OTHER);
+            await service.handleDeleteSurveyAttachment(1, 1, ATTACHMENT_TYPE.OTHER, true);
 
             expect(getSurveyAttachmentStub).to.be.called;
             expect(attachmentPublishStatusStub).to.be.called;
@@ -1096,7 +1096,7 @@ describe('AttachmentService', () => {
                 })
             } as AWS.Request<AWS.S3.DeleteObjectOutput, AWS.AWSError>);
 
-            await service.handleDeleteSurveyAttachment(1, 1, ATTACHMENT_TYPE.REPORT);
+            await service.handleDeleteSurveyAttachment(1, 1, ATTACHMENT_TYPE.REPORT, true);
 
             expect(getSurveyReportStub).to.be.called;
             expect(reportPublishStatusStub).to.be.called;
@@ -1164,7 +1164,7 @@ describe('AttachmentService', () => {
                 })
             } as AWS.Request<AWS.S3.DeleteObjectOutput, AWS.AWSError>);
 
-            await service.handleDeleteSurveyAttachment(1, 1, ATTACHMENT_TYPE.REPORT);
+            await service.handleDeleteSurveyAttachment(1, 1, ATTACHMENT_TYPE.REPORT, false);
 
             expect(getSurveyReportStub).to.be.called;
             expect(reportPublishStatusStub).to.be.called;
