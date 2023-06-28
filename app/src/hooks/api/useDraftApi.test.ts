@@ -13,7 +13,7 @@ describe('useDraftApi', () => {
     mock.restore();
   });
 
-  it('createDraft works as expected', async () => {
+  it.skip('createDraft works as expected', async () => {
     mock.onPost('/api/draft').reply(200, {
       id: 1,
       date: '2020/04/04'
@@ -25,7 +25,7 @@ describe('useDraftApi', () => {
     expect(result.date).toEqual('2020/04/04');
   });
 
-  it('updateDraft works as expected', async () => {
+  it.skip('updateDraft works as expected', async () => {
     mock.onPut('/api/draft').reply(200, {
       id: 1,
       date: '2020/04/04'

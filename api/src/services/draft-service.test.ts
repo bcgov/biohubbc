@@ -8,7 +8,7 @@ import { DraftService } from './draft-service';
 
 chai.use(sinonChai);
 
-describe.only('DraftService', () => {
+describe('DraftService', () => {
   afterEach(() => {
     sinon.restore();
   });
