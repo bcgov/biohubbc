@@ -30,7 +30,6 @@ const useDraftApi = (axios: AxiosInstance) => {
    * @return {*}  {Promise<IDraftResponse>}
    */
   const updateDraft = async (draftId: number, draftName: string, draftData: unknown): Promise<IDraftResponse> => {
-    console.log('updating draft with: ', draftId, draftName, draftData);
     const { data } = await axios.put(`/api/draft/${draftId}/update`, {
       name: draftName,
       data: draftData
