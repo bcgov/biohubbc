@@ -42,10 +42,9 @@ describe('DraftService', () => {
 
       const repoStub = sinon.stub(DraftService.prototype, 'deleteDraft').rejects(expectedError);
       try {
-       await service.deleteDraft(data.draftId);
+        await service.deleteDraft(data.draftId);
         expect.fail();
       } catch (actualError) {
-        console.log('the error is: ', actualError);
         expect(repoStub).to.be.calledOnce;
         expect((actualError as ApiError).message).to.equal(expectedError.message);
       }
