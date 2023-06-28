@@ -1,9 +1,8 @@
-import { cleanup, fireEvent, render, waitFor } from '@testing-library/react';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { createMemoryHistory } from 'history';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import React from 'react';
 import { Router } from 'react-router';
+import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
 import { useBiohubApi } from '../../../hooks/useBioHubApi';
 import { IGetUserProjectsListResponse } from '../../../interfaces/useProjectApi.interface';
 import UsersDetailProjects from './UsersDetailProjects';
@@ -12,7 +11,9 @@ const history = createMemoryHistory();
 
 jest.mock('../../../hooks/useBioHubApi');
 
-const mockUseBiohubApi = {
+const mockBiohubApi = useBiohubApi as jest.Mock;
+
+const mockUseApi = {
   project: {
     getAllUserProjectsForView: jest.fn<Promise<IGetUserProjectsListResponse[]>, []>(),
     removeProjectParticipant: jest.fn<Promise<boolean>, []>(),
@@ -23,22 +24,20 @@ const mockUseBiohubApi = {
   }
 };
 
-const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBiohubApi>).mockReturnValue(
-  mockUseBiohubApi
-);
-
 const mockUser = {
   id: 1,
   user_record_end_date: 'ending',
   user_identifier: 'testUser',
-  role_names: ['system']
+  role_names: ['system'],
+  user_guid: '1111',
+  identity_source: 'idir'
 };
 
 describe('UsersDetailProjects', () => {
   beforeEach(() => {
-    // clear mocks before each test
-    mockBiohubApi().project.getAllUserProjectsForView.mockClear();
-    mockBiohubApi().codes.getAllCodeSets.mockClear();
+    mockBiohubApi.mockImplementation(() => mockUseApi);
+    mockUseApi.project.getAllUserProjectsForView.mockClear();
+    mockUseApi.codes.getAllCodeSets.mockClear();
   });
 
   afterEach(() => {
@@ -62,11 +61,11 @@ describe('UsersDetailProjects', () => {
   it('renders empty list correctly when assignedProjects empty and loaded', async () => {
     history.push('/admin/users/1');
 
-    mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+    mockUseApi.codes.getAllCodeSets.mockResolvedValue({
       coordinator_agency: [{ id: 1, name: 'agency 1' }]
     } as any);
 
-    mockBiohubApi().project.getAllUserProjectsForView.mockResolvedValue({
+    mockUseApi.project.getAllUserProjectsForView.mockResolvedValue({
       assignedProjects: []
     } as any);
 
@@ -87,12 +86,12 @@ describe('UsersDetailProjects', () => {
   it('renders list of a single project correctly when assignedProjects are loaded', async () => {
     history.push('/admin/users/1');
 
-    mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+    mockUseApi.codes.getAllCodeSets.mockResolvedValue({
       coordinator_agency: [{ id: 1, name: 'agency 1' }],
       project_roles: [{ id: 1, name: 'Project Lead' }]
     } as any);
 
-    mockBiohubApi().project.getAllUserProjectsForView.mockResolvedValue([
+    mockUseApi.project.getAllUserProjectsForView.mockResolvedValue([
       {
         project_id: 2,
         name: 'projectName',
@@ -119,12 +118,12 @@ describe('UsersDetailProjects', () => {
   it('renders list of a multiple projects correctly when assignedProjects are loaded', async () => {
     history.push('/admin/users/1');
 
-    mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+    mockUseApi.codes.getAllCodeSets.mockResolvedValue({
       coordinator_agency: [{ id: 1, name: 'agency 1' }],
       project_roles: [{ id: 1, name: 'Project Lead' }]
     } as any);
 
-    mockBiohubApi().project.getAllUserProjectsForView.mockResolvedValue([
+    mockUseApi.project.getAllUserProjectsForView.mockResolvedValue([
       {
         project_id: 1,
         name: 'projectName',
@@ -159,12 +158,12 @@ describe('UsersDetailProjects', () => {
   it('routes to project id details on click', async () => {
     history.push('/admin/users/1');
 
-    mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+    mockUseApi.codes.getAllCodeSets.mockResolvedValue({
       coordinator_agency: [{ id: 1, name: 'agency 1' }],
       project_roles: [{ id: 1, name: 'Project Lead' }]
     } as any);
 
-    mockBiohubApi().project.getAllUserProjectsForView.mockResolvedValue([
+    mockUseApi.project.getAllUserProjectsForView.mockResolvedValue([
       {
         project_id: 1,
         name: 'projectName',
@@ -195,12 +194,12 @@ describe('UsersDetailProjects', () => {
     it('does nothing if the user clicks `No` or away from the dialog', async () => {
       history.push('/admin/users/1');
 
-      mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+      mockUseApi.codes.getAllCodeSets.mockResolvedValue({
         coordinator_agency: [{ id: 1, name: 'agency 1' }],
         project_roles: [{ id: 1, name: 'Project Lead' }]
       } as any);
 
-      mockBiohubApi().project.getAllUserProjectsForView.mockResolvedValue([
+      mockUseApi.project.getAllUserProjectsForView.mockResolvedValue([
         {
           project_id: 1,
           name: 'projectName',
@@ -238,14 +237,14 @@ describe('UsersDetailProjects', () => {
     it('deletes User from project if the user clicks on `Yes` ', async () => {
       history.push('/admin/users/1');
 
-      mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+      mockUseApi.codes.getAllCodeSets.mockResolvedValue({
         coordinator_agency: [{ id: 1, name: 'agency 1' }],
         project_roles: [{ id: 1, name: 'Project Lead' }]
       } as any);
 
-      mockBiohubApi().project.removeProjectParticipant.mockResolvedValue(true);
+      mockUseApi.project.removeProjectParticipant.mockResolvedValue(true);
 
-      mockBiohubApi().project.getAllUserProjectsForView.mockResolvedValue([
+      mockUseApi.project.getAllUserProjectsForView.mockResolvedValue([
         {
           project_id: 1,
           name: 'projectName',
@@ -277,7 +276,7 @@ describe('UsersDetailProjects', () => {
         expect(getAllByText('secondProjectName').length).toEqual(1);
       });
 
-      mockBiohubApi().project.getAllUserProjectsForView.mockResolvedValue([
+      mockUseApi.project.getAllUserProjectsForView.mockResolvedValue([
         {
           project_id: 5,
           name: 'secondProjectName',
@@ -307,7 +306,7 @@ describe('UsersDetailProjects', () => {
     it('renders list of roles to change per project', async () => {
       history.push('/admin/users/1');
 
-      mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+      mockUseApi.codes.getAllCodeSets.mockResolvedValue({
         coordinator_agency: [{ id: 1, name: 'agency 1' }],
         project_roles: [
           { id: 1, name: 'Project Lead' },
@@ -316,7 +315,7 @@ describe('UsersDetailProjects', () => {
         ]
       } as any);
 
-      mockBiohubApi().project.getAllUserProjectsForView.mockResolvedValue([
+      mockUseApi.project.getAllUserProjectsForView.mockResolvedValue([
         {
           project_id: 2,
           name: 'projectName',
@@ -350,7 +349,7 @@ describe('UsersDetailProjects', () => {
     it('renders dialog pop on role selection, does nothing if user clicks `Cancel` ', async () => {
       history.push('/admin/users/1');
 
-      mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+      mockUseApi.codes.getAllCodeSets.mockResolvedValue({
         coordinator_agency: [{ id: 1, name: 'agency 1' }],
         project_roles: [
           { id: 1, name: 'Project Lead' },
@@ -359,7 +358,7 @@ describe('UsersDetailProjects', () => {
         ]
       } as any);
 
-      mockBiohubApi().project.getAllUserProjectsForView.mockResolvedValue([
+      mockUseApi.project.getAllUserProjectsForView.mockResolvedValue([
         {
           project_id: 2,
           name: 'projectName',
@@ -407,7 +406,7 @@ describe('UsersDetailProjects', () => {
     it('renders dialog pop on role selection, Changes role on click of `Change Role` ', async () => {
       history.push('/admin/users/1');
 
-      mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+      mockUseApi.codes.getAllCodeSets.mockResolvedValue({
         coordinator_agency: [{ id: 1, name: 'agency 1' }],
         project_roles: [
           { id: 1, name: 'Project Lead' },
@@ -416,7 +415,7 @@ describe('UsersDetailProjects', () => {
         ]
       } as any);
 
-      mockBiohubApi().project.getAllUserProjectsForView.mockResolvedValue([
+      mockUseApi.project.getAllUserProjectsForView.mockResolvedValue([
         {
           project_id: 2,
           name: 'projectName',
@@ -426,7 +425,7 @@ describe('UsersDetailProjects', () => {
         }
       ]);
 
-      mockBiohubApi().project.updateProjectParticipantRole.mockResolvedValue(true);
+      mockUseApi.project.updateProjectParticipantRole.mockResolvedValue(true);
 
       const { getAllByText, getByText } = render(
         <DialogContextProvider>

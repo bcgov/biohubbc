@@ -2,7 +2,7 @@ import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { SurveyContext } from 'contexts/surveyContext';
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 
 /**
  * Proprietary data content for a survey.

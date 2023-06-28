@@ -22,7 +22,7 @@ const useStyles = makeStyles(() => ({
  * @param {*} props
  * @return {*}
  */
-const AdminUsersLayout: React.FC = (props) => {
+const AdminUsersLayout: React.FC<React.PropsWithChildren> = (props) => {
   const classes = useStyles();
 
   return (

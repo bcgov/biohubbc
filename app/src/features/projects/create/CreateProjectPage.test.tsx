@@ -1,11 +1,4 @@
-import {
-  cleanup,
-  findByText as rawFindByText,
-  fireEvent,
-  getByText as rawGetByText,
-  render,
-  waitFor
-} from '@testing-library/react';
+import { CodesContext, ICodesContext } from 'contexts/codesContext';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { ProjectDetailsFormInitialValues } from 'features/projects/components/ProjectDetailsForm';
 import { ProjectFundingFormInitialValues } from 'features/projects/components/ProjectFundingForm';
@@ -17,17 +10,24 @@ import CreateProjectPage from 'features/projects/create/CreateProjectPage';
 import { Feature } from 'geojson';
 import { createMemoryHistory } from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import React from 'react';
+import { DataLoader } from 'hooks/useDataLoader';
 import { MemoryRouter, Router } from 'react-router';
+import { codes } from 'test-helpers/code-helpers';
+import {
+  cleanup,
+  findByText as rawFindByText,
+  fireEvent,
+  getByText as rawGetByText,
+  render,
+  waitFor
+} from 'test-helpers/test-utils';
 
 const history = createMemoryHistory();
 
 jest.mock('../../../hooks/useBioHubApi');
-const mockUseBiohubApi = {
-  codes: {
-    getAllCodeSets: jest.fn<Promise<IGetAllCodeSetsResponse>, []>()
-  },
+const mockBiohubApi = useBiohubApi as jest.Mock;
+
+const mockUseApi = {
   draft: {
     createDraft: jest.fn<Promise<object>, []>(),
     updateDraft: jest.fn<Promise<object>, []>(),
@@ -39,27 +39,31 @@ const mockUseBiohubApi = {
   }
 };
 
-const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBiohubApi>).mockReturnValue(
-  mockUseBiohubApi
-);
+const mockCodesContext: ICodesContext = {
+  codesDataLoader: {
+    data: codes,
+    load: () => {}
+  } as DataLoader<any, any, any>
+};
 
 const renderContainer = () => {
   return render(
-    <DialogContextProvider>
-      <Router history={history}>
-        <CreateProjectPage />,
-      </Router>
-    </DialogContextProvider>
+    <CodesContext.Provider value={mockCodesContext}>
+      <DialogContextProvider>
+        <Router history={history}>
+          <CreateProjectPage />,
+        </Router>
+      </DialogContextProvider>
+    </CodesContext.Provider>
   );
 };
 
 describe('CreateProjectPage', () => {
   beforeEach(() => {
-    // clear mocks before each test
-    mockBiohubApi().codes.getAllCodeSets.mockClear();
-    mockBiohubApi().draft.createDraft.mockClear();
-    mockBiohubApi().draft.updateDraft.mockClear();
-    mockBiohubApi().draft.getDraft.mockClear();
+    mockBiohubApi.mockImplementation(() => mockUseApi);
+    mockUseApi.draft.createDraft.mockClear();
+    mockUseApi.draft.updateDraft.mockClear();
+    mockUseApi.draft.getDraft.mockClear();
 
     jest.spyOn(console, 'debug').mockImplementation(() => {});
   });
@@ -69,11 +73,7 @@ describe('CreateProjectPage', () => {
   });
 
   it('renders the initial default page correctly', async () => {
-    mockBiohubApi().codes.getAllCodeSets.mockResolvedValue(({
-      coordinator_agency: [{ id: 1, name: 'A Rocha Canada' }]
-    } as unknown) as IGetAllCodeSetsResponse);
-
-    mockBiohubApi().external.post.mockResolvedValue({
+    mockUseApi.external.post.mockResolvedValue({
       features: [
         {
           type: 'Feature',
@@ -99,10 +99,6 @@ describe('CreateProjectPage', () => {
   });
 
   it('shows the page title', async () => {
-    mockBiohubApi().codes.getAllCodeSets.mockResolvedValue(({
-      coordinator_agency: [{ id: 1, name: 'A Rocha Canada' }]
-    } as unknown) as IGetAllCodeSetsResponse);
-
     const { findByText } = renderContainer();
     const PageTitle = await findByText('Create Project');
 
@@ -111,10 +107,6 @@ describe('CreateProjectPage', () => {
 
   describe('Are you sure? Dialog', () => {
     it('shows warning dialog if the user clicks the `Cancel and Exit` button', async () => {
-      mockBiohubApi().codes.getAllCodeSets.mockResolvedValue(({
-        coordinator_agency: [{ id: 1, name: 'A Rocha Canada' }]
-      } as unknown) as IGetAllCodeSetsResponse);
-
       history.push('/home');
       history.push('/admin/projects/create');
 
@@ -132,10 +124,6 @@ describe('CreateProjectPage', () => {
     });
 
     it('calls history.push() if the user clicks `Yes`', async () => {
-      mockBiohubApi().codes.getAllCodeSets.mockResolvedValue(({
-        coordinator_agency: [{ id: 1, name: 'A Rocha Canada' }]
-      } as unknown) as IGetAllCodeSetsResponse);
-
       history.push('/home');
       history.push('/admin/projects/create');
 
@@ -151,10 +139,6 @@ describe('CreateProjectPage', () => {
     });
 
     it('does nothing if the user clicks `No`', async () => {
-      mockBiohubApi().codes.getAllCodeSets.mockResolvedValue(({
-        coordinator_agency: [{ id: 1, name: 'A Rocha Canada' }]
-      } as unknown) as IGetAllCodeSetsResponse);
-
       history.push('/home');
       history.push('/admin/projects/create');
 
@@ -176,24 +160,8 @@ describe('CreateProjectPage', () => {
     });
 
     describe('Delete Draft Button', () => {
-      it('does not display delete draft button if not in draft', async () => {
-        const { queryByText } = render(
-          <MemoryRouter>
-            <CreateProjectPage />
-          </MemoryRouter>
-        );
-
-        await waitFor(() => {
-          expect(queryByText('Delete Draft', { exact: false })).not.toBeInTheDocument();
-        });
-      });
-
       it('does display delete draft button if in draft', async () => {
-        mockBiohubApi().codes.getAllCodeSets.mockResolvedValue(({
-          coordinator_agency: [{ id: 1, name: 'A Rocha Canada' }]
-        } as unknown) as IGetAllCodeSetsResponse);
-
-        mockBiohubApi().draft.getDraft.mockResolvedValue({
+        mockUseApi.draft.getDraft.mockResolvedValue({
           id: 1,
           name: 'My draft',
           data: {
@@ -214,9 +182,11 @@ describe('CreateProjectPage', () => {
         });
 
         const { queryAllByText } = render(
-          <MemoryRouter initialEntries={['?draftId=1']}>
-            <CreateProjectPage />
-          </MemoryRouter>
+          <CodesContext.Provider value={mockCodesContext}>
+            <MemoryRouter initialEntries={['?draftId=1']}>
+              <CreateProjectPage />
+            </MemoryRouter>
+          </CodesContext.Provider>
         );
 
         await waitFor(() => {
@@ -225,11 +195,7 @@ describe('CreateProjectPage', () => {
       });
 
       it('displays a Delete draft Yes/No Dialog', async () => {
-        mockBiohubApi().codes.getAllCodeSets.mockResolvedValue(({
-          coordinator_agency: [{ id: 1, name: 'A Rocha Canada' }]
-        } as unknown) as IGetAllCodeSetsResponse);
-
-        mockBiohubApi().draft.getDraft.mockResolvedValue({
+        mockUseApi.draft.getDraft.mockResolvedValue({
           id: 1,
           name: 'My draft',
           data: {
@@ -250,9 +216,11 @@ describe('CreateProjectPage', () => {
         });
 
         const { getByText, findAllByText } = render(
-          <MemoryRouter initialEntries={['?draftId=1']}>
-            <CreateProjectPage />
-          </MemoryRouter>
+          <CodesContext.Provider value={mockCodesContext}>
+            <MemoryRouter initialEntries={['?draftId=1']}>
+              <CreateProjectPage />
+            </MemoryRouter>
+          </CodesContext.Provider>
         );
 
         const deleteButton = await findAllByText('Delete Draft', { exact: false });
@@ -265,11 +233,7 @@ describe('CreateProjectPage', () => {
       });
 
       it('closes dialog on No click', async () => {
-        mockBiohubApi().codes.getAllCodeSets.mockResolvedValue(({
-          coordinator_agency: [{ id: 1, name: 'A Rocha Canada' }]
-        } as unknown) as IGetAllCodeSetsResponse);
-
-        mockBiohubApi().draft.getDraft.mockResolvedValue({
+        mockUseApi.draft.getDraft.mockResolvedValue({
           id: 1,
           name: 'My draft',
           data: {
@@ -290,9 +254,11 @@ describe('CreateProjectPage', () => {
         });
 
         const { getByText, findAllByText, getByTestId, queryByText } = render(
-          <MemoryRouter initialEntries={['?draftId=1']}>
-            <CreateProjectPage />
-          </MemoryRouter>
+          <CodesContext.Provider value={mockCodesContext}>
+            <MemoryRouter initialEntries={['?draftId=1']}>
+              <CreateProjectPage />
+            </MemoryRouter>
+          </CodesContext.Provider>
         );
 
         const deleteButton = await findAllByText('Delete Draft', { exact: false });
@@ -312,11 +278,7 @@ describe('CreateProjectPage', () => {
       });
 
       it('deletes draft on Yes click', async () => {
-        mockBiohubApi().codes.getAllCodeSets.mockResolvedValue(({
-          coordinator_agency: [{ id: 1, name: 'A Rocha Canada' }]
-        } as unknown) as IGetAllCodeSetsResponse);
-
-        mockBiohubApi().draft.getDraft.mockResolvedValue({
+        mockUseApi.draft.getDraft.mockResolvedValue({
           id: 1,
           name: 'My draft',
           data: {
@@ -337,9 +299,11 @@ describe('CreateProjectPage', () => {
         });
 
         const { getByText, findAllByText, getByTestId } = render(
-          <MemoryRouter initialEntries={['?draftId=1']}>
-            <CreateProjectPage />
-          </MemoryRouter>
+          <CodesContext.Provider value={mockCodesContext}>
+            <MemoryRouter initialEntries={['?draftId=1']}>
+              <CreateProjectPage />
+            </MemoryRouter>
+          </CodesContext.Provider>
         );
 
         const deleteButton = await findAllByText('Delete Draft', { exact: false });
@@ -354,17 +318,13 @@ describe('CreateProjectPage', () => {
         fireEvent.click(YesButton);
 
         await waitFor(() => {
-          expect(mockBiohubApi().draft.deleteDraft).toBeCalled();
+          expect(mockUseApi.draft.deleteDraft).toBeCalled();
         });
       });
     });
 
     it('preloads draft data and populates on form fields', async () => {
-      mockBiohubApi().codes.getAllCodeSets.mockResolvedValue(({
-        coordinator_agency: [{ id: 1, name: 'A Rocha Canada' }]
-      } as unknown) as IGetAllCodeSetsResponse);
-
-      mockBiohubApi().draft.getDraft.mockResolvedValue({
+      mockUseApi.draft.getDraft.mockResolvedValue({
         id: 1,
         name: 'My draft',
         data: {
@@ -385,9 +345,11 @@ describe('CreateProjectPage', () => {
       });
 
       const { getByDisplayValue } = render(
-        <MemoryRouter initialEntries={['?draftId=1']}>
-          <CreateProjectPage />
-        </MemoryRouter>
+        <CodesContext.Provider value={mockCodesContext}>
+          <MemoryRouter initialEntries={['?draftId=1']}>
+            <CreateProjectPage />
+          </MemoryRouter>
+        </CodesContext.Provider>
       );
 
       await waitFor(() => {
@@ -398,26 +360,26 @@ describe('CreateProjectPage', () => {
     });
 
     it('opens the save as draft and exit dialog', async () => {
-      const { getByLabelText, findAllByText } = renderContainer();
+      const { getByTestId, findAllByText } = renderContainer();
 
       const saveAsDraftButton = await findAllByText('Save Draft');
 
       fireEvent.click(saveAsDraftButton[0]);
 
       await waitFor(() => {
-        expect(getByLabelText('Draft Name *')).toBeVisible();
+        expect(getByTestId('draft_name')).toBeVisible();
       });
     });
 
     it('closes the dialog on cancel button click', async () => {
-      const { getByLabelText, findAllByText, getByRole, queryByLabelText } = renderContainer();
+      const { getByTestId, findAllByText, getByRole, queryByLabelText } = renderContainer();
 
       const saveAsDraftButton = await findAllByText('Save Draft');
 
       fireEvent.click(saveAsDraftButton[1]);
 
       await waitFor(() => {
-        expect(getByLabelText('Draft Name *')).toBeVisible();
+        expect(getByTestId('draft_name')).toBeVisible();
       });
 
       const cancelButton = rawGetByText(getByRole('dialog'), 'Cancel');
@@ -429,56 +391,98 @@ describe('CreateProjectPage', () => {
       });
     });
 
-    it.skip('calls the createDraft/updateDraft functions and closes the dialog on save button click', async () => {
-      mockBiohubApi().draft.createDraft.mockResolvedValue({
+    it('calls the createDraft function and navigates to the projects list page', async () => {
+      history.push('/admin/projects/create');
+
+      mockUseApi.draft.createDraft.mockResolvedValue({
         id: 1,
         date: '2021-01-20'
       });
 
-      const { getByText, findAllByText, queryByLabelText, getByLabelText } = renderContainer();
+      const { getByTestId } = renderContainer();
 
-      const saveAsDraftButton = await findAllByText('Save Draft');
+      const saveDraftButton = await getByTestId('save-draft-button');
 
-      fireEvent.click(saveAsDraftButton[0]);
+      fireEvent.click(saveDraftButton);
 
       await waitFor(() => {
-        expect(getByLabelText('Draft Name *')).toBeVisible();
+        expect(getByTestId('draft_name')).toBeVisible();
       });
 
-      fireEvent.change(getByLabelText('Draft Name *'), { target: { value: 'draft name' } });
+      fireEvent.change(getByTestId('draft_name'), { target: { value: 'draft name' } });
 
-      fireEvent.click(getByText('Save'));
-
-      await waitFor(() => {
-        expect(mockBiohubApi().draft.createDraft).toHaveBeenCalledWith('draft name', expect.any(Object));
-
-        expect(queryByLabelText('Draft Name *')).not.toBeInTheDocument();
-      });
-
-      fireEvent.click(saveAsDraftButton[0]);
+      fireEvent.click(getByTestId('edit-dialog-save'));
 
       await waitFor(() => {
-        expect(getByLabelText('Draft Name *')).toBeVisible();
-      });
+        expect(mockUseApi.draft.createDraft).toHaveBeenCalledWith('draft name', expect.any(Object));
 
-      fireEvent.change(getByLabelText('Draft Name *'), { target: { value: 'draft name' } });
-
-      fireEvent.click(getByText('Save'));
-
-      await waitFor(() => {
-        expect(mockBiohubApi().draft.updateDraft).toHaveBeenCalledWith(1, 'draft name', expect.any(Object));
-
-        expect(queryByLabelText('Draft Name *')).not.toBeInTheDocument();
+        expect(history.location.pathname).toEqual('/admin/projects');
       });
     });
 
-    it.skip('calls the createDraft/updateDraft functions with WIP form data', async () => {
-      mockBiohubApi().draft.createDraft.mockResolvedValue({
+    it('calls the updateDraft function and navigates to the projects list page', async () => {
+      history.push('/admin/projects/create?draftId=1');
+
+      mockUseApi.draft.getDraft.mockResolvedValue({
+        id: 1,
+        name: 'My draft',
+        data: {
+          coordinator: {
+            first_name: 'Draft first name',
+            last_name: 'Draft last name',
+            email_address: 'draftemail@example.com',
+            coordinator_agency: '',
+            share_contact_details: 'false'
+          },
+          project: ProjectDetailsFormInitialValues.project,
+          objectives: ProjectObjectivesFormInitialValues.objectives,
+          location: ProjectLocationFormInitialValues.location,
+          iucn: ProjectIUCNFormInitialValues.iucn,
+          funding: ProjectFundingFormInitialValues.funding,
+          partnerships: ProjectPartnershipsFormInitialValues.partnerships
+        }
+      });
+
+      mockUseApi.draft.updateDraft.mockResolvedValue({
         id: 1,
         date: '2021-01-20'
       });
 
-      const { getByText, findAllByText, getByLabelText, queryByLabelText } = renderContainer();
+      const { getByText, getByTestId } = renderContainer();
+
+      //wait for initial page to load
+      await waitFor(() => {
+        expect(getByText('General Information')).toBeVisible();
+      });
+
+      const saveDraftButton = await getByTestId('save-draft-button');
+
+      fireEvent.click(saveDraftButton);
+
+      await waitFor(() => {
+        expect(getByTestId('draft_name')).toBeVisible();
+      });
+
+      fireEvent.change(getByTestId('draft_name'), { target: { value: 'my new draft name' } });
+
+      fireEvent.click(getByTestId('edit-dialog-save'));
+
+      await waitFor(() => {
+        expect(mockUseApi.draft.updateDraft).toHaveBeenCalledWith(1, 'my new draft name', expect.any(Object));
+
+        expect(history.location.pathname).toEqual('/admin/projects');
+      });
+    });
+
+    it('calls the createDraft functions with WIP form data and navigates to the projects list page', async () => {
+      history.push('/admin/projects/create');
+
+      mockUseApi.draft.createDraft.mockResolvedValue({
+        id: 1,
+        date: '2021-01-20'
+      });
+
+      const { getByText, getByTestId, getByLabelText } = renderContainer();
 
       //wait for initial page to load
       await waitFor(() => {
@@ -488,20 +492,20 @@ describe('CreateProjectPage', () => {
       // update first name field
       fireEvent.change(getByLabelText('First Name *'), { target: { value: 'draft first name' } });
 
-      const saveAsDraftButton = await findAllByText('Save Draft');
+      const saveDraftButton = await getByTestId('save-draft-button');
 
-      fireEvent.click(saveAsDraftButton[0]);
+      fireEvent.click(saveDraftButton);
 
       await waitFor(() => {
-        expect(getByLabelText('Draft Name *')).toBeVisible();
+        expect(getByTestId('draft_name')).toBeVisible();
       });
 
-      fireEvent.change(getByLabelText('Draft Name *'), { target: { value: 'draft name' } });
+      fireEvent.change(getByTestId('draft_name'), { target: { value: 'draft name' } });
 
-      fireEvent.click(getByText('Save'));
+      fireEvent.click(getByTestId('edit-dialog-save'));
 
       await waitFor(() => {
-        expect(mockBiohubApi().draft.createDraft).toHaveBeenCalledWith('draft name', {
+        expect(mockUseApi.draft.createDraft).toHaveBeenCalledWith('draft name', {
           coordinator: {
             first_name: 'draft first name',
             last_name: 'Draft last name',
@@ -511,7 +515,7 @@ describe('CreateProjectPage', () => {
           },
           project: {
             project_name: '',
-            project_type: ('' as unknown) as number,
+            project_type: '' as unknown as number,
             project_activities: [],
             start_date: '',
             end_date: ''
@@ -523,34 +527,72 @@ describe('CreateProjectPage', () => {
           partnerships: { indigenous_partnerships: [], stakeholder_partnerships: [] }
         });
 
-        expect(queryByLabelText('Draft Name *')).not.toBeInTheDocument();
+        expect(history.location.pathname).toEqual('/admin/projects');
       });
+    });
 
-      // update last name field
-      fireEvent.change(getByLabelText('Last Name *'), { target: { value: 'draft last name' } });
+    it('calls the updateDraft functions with WIP form data and navigates to the projects list page', async () => {
+      history.push('/admin/projects/create?draftId=1');
 
-      fireEvent.click(saveAsDraftButton[0]);
-
-      await waitFor(() => {
-        expect(getByLabelText('Draft Name *')).toBeVisible();
-      });
-
-      fireEvent.change(getByLabelText('Draft Name *'), { target: { value: 'draft name' } });
-
-      fireEvent.click(getByText('Save'));
-
-      await waitFor(() => {
-        expect(mockBiohubApi().draft.updateDraft).toHaveBeenCalledWith(1, 'draft name', {
+      mockUseApi.draft.getDraft.mockResolvedValue({
+        id: 1,
+        name: 'My draft',
+        data: {
           coordinator: {
             first_name: 'Draft first name',
-            last_name: 'draft last name',
+            last_name: 'Draft last name',
+            email_address: 'draftemail@example.com',
+            coordinator_agency: '',
+            share_contact_details: 'false'
+          },
+          project: ProjectDetailsFormInitialValues.project,
+          objectives: ProjectObjectivesFormInitialValues.objectives,
+          location: ProjectLocationFormInitialValues.location,
+          iucn: ProjectIUCNFormInitialValues.iucn,
+          funding: ProjectFundingFormInitialValues.funding,
+          partnerships: ProjectPartnershipsFormInitialValues.partnerships
+        }
+      });
+
+      mockUseApi.draft.updateDraft.mockResolvedValue({
+        id: 1,
+        date: '2021-01-20'
+      });
+
+      const { getByTestId, getByText, getByLabelText } = renderContainer();
+
+      // wait for initial page to load
+      await waitFor(() => {
+        expect(getByText('General Information')).toBeVisible();
+      });
+
+      // update project name field
+      fireEvent.change(getByLabelText('First Name *'), { target: { value: 'my new draft first name' } });
+
+      const saveDraftButton = await getByTestId('save-draft-button');
+
+      fireEvent.click(saveDraftButton);
+
+      await waitFor(() => {
+        expect(getByTestId('draft_name')).toBeVisible();
+      });
+
+      fireEvent.change(getByTestId('draft_name'), { target: { value: 'my new draft project name' } });
+
+      fireEvent.click(getByTestId('edit-dialog-save'));
+
+      await waitFor(() => {
+        expect(mockUseApi.draft.updateDraft).toHaveBeenCalledWith(1, 'my new draft project name', {
+          coordinator: {
+            first_name: 'my new draft first name',
+            last_name: 'Draft last name',
             email_address: 'draftemail@example.com',
             coordinator_agency: '',
             share_contact_details: 'false'
           },
           project: {
             project_name: '',
-            project_type: ('' as unknown) as number,
+            project_type: '' as unknown as number,
             project_activities: [],
             start_date: '',
             end_date: ''
@@ -562,28 +604,28 @@ describe('CreateProjectPage', () => {
           partnerships: { indigenous_partnerships: [], stakeholder_partnerships: [] }
         });
 
-        expect(queryByLabelText('draft Name *')).not.toBeInTheDocument();
+        expect(history.location.pathname).toEqual('/admin/projects');
       });
     });
 
     it('renders an error dialog if the draft submit request fails', async () => {
-      mockBiohubApi().draft.createDraft.mockImplementation(() => {
+      mockUseApi.draft.createDraft.mockImplementation(() => {
         throw new Error('Draft failed exception!');
       });
 
-      const { getByText, findAllByText, getByLabelText, queryByLabelText } = renderContainer();
+      const { getByTestId, queryByLabelText } = renderContainer();
 
-      const saveAsDraftButton = await findAllByText('Save Draft');
+      const saveDraftButton = await getByTestId('save-draft-button');
 
-      fireEvent.click(saveAsDraftButton[0]);
+      fireEvent.click(saveDraftButton);
 
       await waitFor(() => {
-        expect(getByLabelText('Draft Name *')).toBeVisible();
+        expect(getByTestId('draft_name')).toBeVisible();
       });
 
-      fireEvent.change(getByLabelText('Draft Name *'), { target: { value: 'draft name' } });
+      fireEvent.change(getByTestId('draft_name'), { target: { value: 'draft name' } });
 
-      fireEvent.click(getByText('Save'));
+      fireEvent.click(getByTestId('edit-dialog-save'));
 
       await waitFor(() => {
         expect(queryByLabelText('Draft Name *')).not.toBeInTheDocument();

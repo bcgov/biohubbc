@@ -5,25 +5,24 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import { mdiDotsVertical, mdiInformationOutline, mdiTrashCanOutline, mdiTrayArrowDown } from '@mdi/js';
 import Icon from '@mdi/react';
-import { ProjectRoleGuard } from 'components/security/Guards';
-import { AttachmentType } from 'constants/attachments';
+import { ProjectRoleGuard, SystemRoleGuard } from 'components/security/Guards';
+import { AttachmentType, PublishStatus } from 'constants/attachments';
 import { PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
-import { IGetProjectAttachment } from 'interfaces/useProjectApi.interface';
-import { IGetSurveyAttachment } from 'interfaces/useSurveyApi.interface';
-import React, { useState } from 'react';
+import { useState } from 'react';
 
-interface IAttachmentsListItemMenuButtonProps<T extends IGetProjectAttachment | IGetSurveyAttachment> {
-  attachment: T;
-  handleDownloadFile: (attachment: T) => void;
-  handleDeleteFile: (attachment: T) => void;
-  handleViewDetails: (attachment: T) => void;
+//TODO: PRODUCTION_BANDAGE: Remove <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}> from `Remove or Resubmit` button.
+
+interface IAttachmentsListItemMenuButtonProps {
+  attachmentStatus: PublishStatus;
+  attachmentFileType: string;
+  onDownloadFile: () => void;
+  onDeleteFile: () => void;
+  onViewDetails: () => void;
+  onRemoveOrResubmit: () => void;
 }
 
-const AttachmentsListItemMenuButton = <T extends IGetProjectAttachment | IGetSurveyAttachment>(
-  props: IAttachmentsListItemMenuButtonProps<T>
-) => {
+const AttachmentsListItemMenuButton = (props: IAttachmentsListItemMenuButtonProps) => {
   const [anchorEl, setAnchorEl] = useState(null);
-
   const open = Boolean(anchorEl);
 
   const handleClick = (event: any) => {
@@ -64,20 +63,20 @@ const AttachmentsListItemMenuButton = <T extends IGetProjectAttachment | IGetSur
             }}>
             <MenuItem
               onClick={() => {
-                props.handleDownloadFile(props.attachment);
-                setAnchorEl(null);
+                props.onDownloadFile();
+                handleClose();
               }}
               data-testid="attachment-action-menu-download">
               <ListItemIcon>
                 <Icon path={mdiTrayArrowDown} size={1} />
               </ListItemIcon>
-              Download
+              Download File
             </MenuItem>
-            {props.attachment.fileType === AttachmentType.REPORT && (
+            {props.attachmentFileType === AttachmentType.REPORT && (
               <MenuItem
                 onClick={() => {
-                  props.handleViewDetails(props.attachment);
-                  setAnchorEl(null);
+                  props.onViewDetails();
+                  handleClose();
                 }}
                 data-testid="attachment-action-menu-details">
                 <ListItemIcon>
@@ -86,21 +85,38 @@ const AttachmentsListItemMenuButton = <T extends IGetProjectAttachment | IGetSur
                 View Details
               </MenuItem>
             )}
-            <ProjectRoleGuard
-              validProjectRoles={[PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR]}
-              validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-              <MenuItem
-                onClick={() => {
-                  props.handleDeleteFile(props.attachment);
-                  setAnchorEl(null);
-                }}
-                data-testid="attachment-action-menu-delete">
-                <ListItemIcon>
-                  <Icon path={mdiTrashCanOutline} size={1} />
-                </ListItemIcon>
-                Delete
-              </MenuItem>
-            </ProjectRoleGuard>
+            {props.attachmentStatus === PublishStatus.UNSUBMITTED && (
+              <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+                <MenuItem
+                  onClick={() => {
+                    props.onDeleteFile();
+                    handleClose();
+                  }}
+                  data-testid="attachment-action-menu-delete">
+                  <ListItemIcon>
+                    <Icon path={mdiTrashCanOutline} size={1} />
+                  </ListItemIcon>
+                  Delete
+                </MenuItem>
+              </SystemRoleGuard>
+            )}
+            {props.attachmentStatus === PublishStatus.SUBMITTED && (
+              <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+                <ProjectRoleGuard validProjectRoles={[PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR]}>
+                  <MenuItem
+                    onClick={() => {
+                      props.onRemoveOrResubmit();
+                      handleClose();
+                    }}
+                    data-testid="attachment-action-menu-resubmit">
+                    <ListItemIcon>
+                      <Icon path={mdiTrashCanOutline} size={1} />
+                    </ListItemIcon>
+                    Remove or Resubmit
+                  </MenuItem>
+                </ProjectRoleGuard>
+              </SystemRoleGuard>
+            )}
           </Menu>
         </Box>
       </Box>

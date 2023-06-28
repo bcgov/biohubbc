@@ -2,7 +2,6 @@ import chai, { expect } from 'chai';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { SYSTEM_ROLE } from '../constants/roles';
-import { ApiGeneralError } from '../errors/api-error';
 import { UserObject } from '../models/user';
 import { IPermitModel, PermitRepository } from '../repositories/permit-repository';
 import { getMockDBConnection } from '../__mocks__/db';
@@ -140,20 +139,6 @@ describe('PermitService', () => {
       expect(getPermitByUser).to.be.calledOnce;
       expect(getUserByIdStub).to.be.calledOnceWith(mockUserObject.id);
       expect(response).to.eql(mockPermitResponse);
-    });
-
-    it('throws api error if user not found', async () => {
-      const mockDBConnection = getMockDBConnection();
-      const permitService = new PermitService(mockDBConnection);
-
-      sinon.stub(UserService.prototype, 'getUserById').resolves();
-
-      try {
-        await permitService.getPermitByUser(1);
-        expect.fail();
-      } catch (actualError) {
-        expect((actualError as ApiGeneralError).message).to.equal('Failed to acquire user');
-      }
     });
   });
 

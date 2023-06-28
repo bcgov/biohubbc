@@ -1,5 +1,4 @@
-import { fireEvent, render, waitFor } from '@testing-library/react';
-import React from 'react';
+import { fireEvent, render, waitFor } from 'test-helpers/test-utils';
 import { ErrorDialog } from './ErrorDialog';
 
 describe('ErrorDialog', () => {

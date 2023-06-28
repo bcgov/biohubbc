@@ -4,7 +4,7 @@ import { PROJECT_ROLE, SYSTEM_ROLE } from '../../../constants/roles';
 import { getDBConnection } from '../../../database/db';
 import { HTTP400 } from '../../../errors/http-error';
 import { geoJsonFeature } from '../../../openapi/schemas/geoJson';
-import { projectIdResponseObject, projectUpdatePutRequestObject } from '../../../openapi/schemas/project';
+import { projectUpdatePutRequestObject } from '../../../openapi/schemas/project';
 import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
 import { ProjectService } from '../../../services/project-service';
 import { getLogger } from '../../../utils/logger';
@@ -225,28 +225,35 @@ GET.apiDoc = {
                           type: 'number'
                         },
                         agency_id: {
-                          type: 'number'
+                          type: 'number',
+                          nullable: true
                         },
                         investment_action_category: {
-                          type: 'number'
+                          type: 'number',
+                          nullable: true
                         },
                         investment_action_category_name: {
-                          type: 'string'
+                          type: 'string',
+                          nullable: true
                         },
                         agency_name: {
-                          type: 'string'
+                          type: 'string',
+                          nullable: true
                         },
                         funding_amount: {
-                          type: 'number'
+                          type: 'number',
+                          nullable: true
                         },
                         start_date: {
                           type: 'string',
                           format: 'date',
+                          nullable: true,
                           description: 'ISO 8601 date string for the funding start date'
                         },
                         end_date: {
                           type: 'string',
                           format: 'date',
+                          nullable: true,
                           description: 'ISO 8601 date string for the funding end_date'
                         },
                         agency_project_id: {
@@ -255,6 +262,14 @@ GET.apiDoc = {
                         },
                         revision_count: {
                           type: 'number'
+                        },
+                        first_nations_id: {
+                          type: 'number',
+                          nullable: true
+                        },
+                        first_nations_name: {
+                          type: 'string',
+                          nullable: true
                         }
                       }
                     }
@@ -327,7 +342,6 @@ export function getProjectForUpdate(): RequestHandler {
       const projectService = new ProjectService(connection);
 
       const results = await projectService.getProjectEntitiesById(projectId, entities);
-
       await connection.commit();
 
       return res.status(200).send(results);
@@ -380,12 +394,18 @@ PUT.apiDoc = {
   },
   responses: {
     200: {
-      description: 'Project with matching projectId.',
+      description: 'Project response object.',
       content: {
         'application/json': {
           schema: {
-            // TODO is there any return value? or is it just an HTTP status with no content?
-            ...(projectIdResponseObject as object)
+            type: 'object',
+            required: ['id'],
+            properties: {
+              id: {
+                type: 'integer',
+                minimum: 1
+              }
+            }
           }
         }
       }

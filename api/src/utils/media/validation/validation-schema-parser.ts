@@ -88,9 +88,9 @@ export const ValidationRulesRegistry = {
 };
 
 export class ValidationSchemaParser {
-  validationSchema: object;
+  validationSchema: Record<string, any>;
 
-  constructor(validationSchema: string | object) {
+  constructor(validationSchema: string | Record<string, any>) {
     if (typeof validationSchema === 'string') {
       this.validationSchema = this.parseJson(validationSchema);
     } else {
@@ -229,15 +229,15 @@ export class ValidationSchemaParser {
     return rules;
   }
 
-  getSubmissionValidationSchemas(): object[] {
+  getSubmissionValidationSchemas(): Record<string, any>[] {
     return JSONPath({ json: this.validationSchema, path: this.getSubmissionValidationsJsonPath() })?.[0] || [];
   }
 
-  getWorkbookValidationSchemas(): object[] {
+  getWorkbookValidationSchemas(): Record<string, any>[] {
     return JSONPath({ json: this.validationSchema, path: this.getWorkbookValidationsJsonPath() })?.[0] || [];
   }
 
-  getFileValidationSchemas(fileName: string): object[] {
+  getFileValidationSchemas(fileName: string): Record<string, any>[] {
     let validationSchemas =
       JSONPath({ json: this.validationSchema, path: this.getFileValidationsJsonPath(fileName) })?.[0] || [];
 
@@ -247,11 +247,11 @@ export class ValidationSchemaParser {
     return validationSchemas;
   }
 
-  getDefaultFileValidationSchemas(): object[] {
+  getDefaultFileValidationSchemas(): Record<string, any>[] {
     return JSONPath({ json: this.validationSchema, path: this.getDefaultFileValidationsJsonPath() })?.[0] || [];
   }
 
-  getColumnValidationSchemas(fileName: string, columnName: string): object[] {
+  getColumnValidationSchemas(fileName: string, columnName: string): Record<string, any>[] {
     const filevalidationSchemas =
       JSONPath({ json: this.validationSchema, path: this.getFileValidationsJsonPath(fileName) })?.[0] || [];
 
@@ -268,7 +268,7 @@ export class ValidationSchemaParser {
     return columnValidationSchemas;
   }
 
-  getDefaultColumnValidationSchemas(columnName: string): object[] {
+  getDefaultColumnValidationSchemas(columnName: string): Record<string, any>[] {
     return (
       JSONPath({ json: this.validationSchema, path: this.getDefaultColumnValidationsJsonpath(columnName) })?.[0] || []
     );
@@ -320,7 +320,7 @@ export class ValidationSchemaParser {
     return `$.defaultFile.columns[?(@.name == "${columnName}")].validations`;
   }
 
-  parseJson(json: any): object {
+  parseJson(json: any): Record<string, any> {
     try {
       return JSON.parse(json);
     } catch {

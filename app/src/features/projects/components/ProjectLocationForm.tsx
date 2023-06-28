@@ -4,7 +4,6 @@ import MapBoundary from 'components/boundary/MapBoundary';
 import CustomTextField from 'components/fields/CustomTextField';
 import { useFormikContext } from 'formik';
 import { Feature } from 'geojson';
-import React from 'react';
 import yup from 'utils/YupSchema';
 
 export interface IProjectLocationForm {

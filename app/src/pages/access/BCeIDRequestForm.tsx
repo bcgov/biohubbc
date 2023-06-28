@@ -6,7 +6,6 @@ import {
   IBCeIDBasicAccessRequestDataObject,
   IBCeIDBusinessAccessRequestDataObject
 } from 'interfaces/useAdminApi.interface';
-import React from 'react';
 import yup from 'utils/YupSchema';
 
 interface IBCeIDRequestFormProps {

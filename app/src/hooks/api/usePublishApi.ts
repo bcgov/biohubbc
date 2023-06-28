@@ -1,6 +1,6 @@
 import { AxiosInstance } from 'axios';
-import { IProjectSubmitForm } from 'components/publish/PublishProjectSections';
-import { ISurveySubmitForm } from 'components/publish/PublishSurveySections';
+import { IRemoveOrResubmitForm } from 'components/publish/components/RemoveOrResubmitForm';
+import { IProjectSubmitForm, ISurveySubmitForm } from 'interfaces/usePublishApi.interface';
 
 /**
  * Returns a list of all resources
@@ -27,6 +27,7 @@ const usePublishApi = (axios: AxiosInstance) => {
       surveyId: surveyId,
       data: dataSubmission
     };
+
     const { data } = await axios.post('/api/publish/survey', sendData);
 
     return data;
@@ -50,9 +51,41 @@ const usePublishApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  /**
+   * Request Resubmit Attachment
+   *
+   * @param {number} projectId The project ID pertaining to the given artifact
+   * @param {string} fileName The name of the artifact, such as the observation submission filename,
+   * report name, summary results submission filename, etc.
+   * @param {string} parentName The name of the parent artifact, namely the project name or
+   * survey name
+   * @param {IRemoveOrResubmitForm} formValues The particular form values to be review by the
+   * administrator
+   * @param {string} path The path to the particular artifact, e.g. '/api/projects/1'
+   * @return {*}  {Promise<boolean>}
+   */
+  const resubmitAttachment = async (
+    projectId: number,
+    fileName: string,
+    parentName: string,
+    formValues: IRemoveOrResubmitForm,
+    path: string
+  ): Promise<boolean> => {
+    const { data } = await axios.post('/api/publish/attachment/resubmit', {
+      projectId,
+      fileName,
+      parentName,
+      formValues,
+      path
+    });
+
+    return data;
+  };
+
   return {
     publishSurvey,
-    publishProject
+    publishProject,
+    resubmitAttachment
   };
 };
 

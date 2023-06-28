@@ -1,4 +1,3 @@
-import { cleanup, fireEvent, render, waitFor } from '@testing-library/react';
 import { CodesContext, ICodesContext } from 'contexts/codesContext';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { IProjectContext, ProjectContext } from 'contexts/projectContext';
@@ -12,17 +11,20 @@ import {
   ISurveyAvailableFundingSources,
   ISurveyPermits
 } from 'interfaces/useSurveyApi.interface';
-import React from 'react';
 import { MemoryRouter, Router } from 'react-router';
 import { codes } from 'test-helpers/code-helpers';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
+import { getSurveyForListResponse } from 'test-helpers/survey-helpers';
+import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
 import CreateSurveyPage from './CreateSurveyPage';
 
 const history = createMemoryHistory();
 
 jest.mock('../../hooks/useBioHubApi');
 
-const mockUseBiohubApi = {
+const mockBiohubApi = useBiohubApi as jest.Mock;
+
+const mockUseApi = {
   project: {
     getProjectForView: jest.fn<Promise<IGetProjectForViewResponse>, [number]>()
   },
@@ -51,10 +53,6 @@ const mockUseBiohubApi = {
   }
 };
 
-const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBiohubApi>).mockReturnValue(
-  mockUseBiohubApi
-);
-
 const renderContainer = () => {
   const mockCodesContext: ICodesContext = {
     codesDataLoader: {
@@ -66,6 +64,7 @@ const renderContainer = () => {
       data: getProjectForViewResponse
     } as DataLoader<any, any, any>,
     artifactDataLoader: { data: null } as DataLoader<any, any, any>,
+    surveysListDataLoader: { data: getSurveyForListResponse } as DataLoader<any, any, any>,
     projectId: 1
   };
 
@@ -84,14 +83,14 @@ const renderContainer = () => {
 
 describe.skip('CreateSurveyPage', () => {
   beforeEach(() => {
-    // clear mocks before each test
-    mockBiohubApi().project.getProjectForView.mockClear();
-    mockBiohubApi().codes.getAllCodeSets.mockClear();
-    mockBiohubApi().survey.getSurveyPermits.mockClear();
-    mockBiohubApi().survey.getAvailableSurveyFundingSources.mockClear();
-    mockBiohubApi().survey.createSurvey.mockClear();
-    mockBiohubApi().taxonomy.getSpeciesFromIds.mockClear();
-    mockBiohubApi().taxonomy.searchSpecies.mockClear();
+    mockBiohubApi.mockImplementation(() => mockUseApi);
+    mockUseApi.project.getProjectForView.mockClear();
+    mockUseApi.codes.getAllCodeSets.mockClear();
+    mockUseApi.survey.getSurveyPermits.mockClear();
+    mockUseApi.survey.getAvailableSurveyFundingSources.mockClear();
+    mockUseApi.survey.createSurvey.mockClear();
+    mockUseApi.taxonomy.getSpeciesFromIds.mockClear();
+    mockUseApi.taxonomy.searchSpecies.mockClear();
 
     jest.spyOn(console, 'debug').mockImplementation(() => {});
   });
@@ -101,12 +100,12 @@ describe.skip('CreateSurveyPage', () => {
   });
 
   it('renders the initial default page correctly', async () => {
-    mockBiohubApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
-    mockBiohubApi().codes.getAllCodeSets.mockResolvedValue(codes);
-    mockBiohubApi().survey.getSurveyPermits.mockResolvedValue({
+    mockUseApi.project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
+    mockUseApi.codes.getAllCodeSets.mockResolvedValue(codes);
+    mockUseApi.survey.getSurveyPermits.mockResolvedValue({
       permits: [{ id: 1, permit_number: 'abcd1', permit_type: 'Wildlife permit' }]
     });
-    mockBiohubApi().survey.getAvailableSurveyFundingSources.mockResolvedValue(
+    mockUseApi.survey.getAvailableSurveyFundingSources.mockResolvedValue(
       getProjectForViewResponse.projectData.funding.fundingSources
     );
 
@@ -138,31 +137,31 @@ describe.skip('CreateSurveyPage', () => {
   });
 
   it('renders correctly when codes and project data are loaded', async () => {
-    mockBiohubApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
+    mockUseApi.project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
 
-    mockBiohubApi().codes.getAllCodeSets.mockResolvedValue(codes);
+    mockUseApi.codes.getAllCodeSets.mockResolvedValue(codes);
 
-    mockBiohubApi().survey.getSurveyPermits.mockResolvedValue({
+    mockUseApi.survey.getSurveyPermits.mockResolvedValue({
       permits: [
         { id: 1, permit_number: '123', permit_type: 'Scientific' },
         { id: 2, permit_number: '456', permit_type: 'Wildlife' }
       ]
     });
 
-    mockBiohubApi().taxonomy.getSpeciesFromIds.mockResolvedValue({
+    mockUseApi.taxonomy.getSpeciesFromIds.mockResolvedValue({
       searchResponse: [
         { id: '1', label: 'species 1' },
         { id: '2', label: 'species 2' }
       ]
     });
-    mockBiohubApi().taxonomy.searchSpecies({
+    mockUseApi.taxonomy.searchSpecies({
       searchResponse: [
         { id: '1', label: 'species 1' },
         { id: '2', label: 'species 2' }
       ]
     });
 
-    mockBiohubApi().survey.getAvailableSurveyFundingSources.mockResolvedValue([
+    mockUseApi.survey.getAvailableSurveyFundingSources.mockResolvedValue([
       {
         ...getProjectForViewResponse.projectData.funding.fundingSources[0],
         funding_amount: 100,
@@ -186,15 +185,15 @@ describe.skip('CreateSurveyPage', () => {
 
   describe('Are you sure? Dialog', () => {
     it('calls history.push() if the user clicks `Yes`', async () => {
-      mockBiohubApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
-      mockBiohubApi().codes.getAllCodeSets.mockResolvedValue(codes);
-      mockBiohubApi().survey.getSurveyPermits.mockResolvedValue({
+      mockUseApi.project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
+      mockUseApi.codes.getAllCodeSets.mockResolvedValue(codes);
+      mockUseApi.survey.getSurveyPermits.mockResolvedValue({
         permits: [
           { id: 1, permit_number: '123', permit_type: 'Scientific' },
           { id: 2, permit_number: '456', permit_type: 'Wildlife' }
         ]
       });
-      mockBiohubApi().survey.getAvailableSurveyFundingSources.mockResolvedValue([
+      mockUseApi.survey.getAvailableSurveyFundingSources.mockResolvedValue([
         {
           ...getProjectForViewResponse.projectData.funding.fundingSources[0],
           funding_amount: 100,
@@ -203,13 +202,13 @@ describe.skip('CreateSurveyPage', () => {
           agency_project_id: 'agency'
         }
       ]);
-      mockBiohubApi().taxonomy.getSpeciesFromIds.mockResolvedValue({
+      mockUseApi.taxonomy.getSpeciesFromIds.mockResolvedValue({
         searchResponse: [
           { id: '1', label: 'species 1' },
           { id: '2', label: 'species 2' }
         ]
       });
-      mockBiohubApi().taxonomy.searchSpecies({
+      mockUseApi.taxonomy.searchSpecies({
         searchResponse: [
           { id: '1', label: 'species 1' },
           { id: '2', label: 'species 2' }
@@ -240,15 +239,15 @@ describe.skip('CreateSurveyPage', () => {
     });
 
     it('does nothing if the user clicks `No` or away from the dialog', async () => {
-      mockBiohubApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
-      mockBiohubApi().codes.getAllCodeSets.mockResolvedValue(codes);
-      mockBiohubApi().survey.getSurveyPermits.mockResolvedValue({
+      mockUseApi.project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
+      mockUseApi.codes.getAllCodeSets.mockResolvedValue(codes);
+      mockUseApi.survey.getSurveyPermits.mockResolvedValue({
         permits: [
           { id: 1, permit_number: '123', permit_type: 'Scientific' },
           { id: 2, permit_number: '456', permit_type: 'Wildlife' }
         ]
       });
-      mockBiohubApi().survey.getAvailableSurveyFundingSources.mockResolvedValue([
+      mockUseApi.survey.getAvailableSurveyFundingSources.mockResolvedValue([
         {
           ...getProjectForViewResponse.projectData.funding.fundingSources[0],
           funding_amount: 100,
@@ -257,13 +256,13 @@ describe.skip('CreateSurveyPage', () => {
           agency_project_id: 'agency'
         }
       ]);
-      mockBiohubApi().taxonomy.getSpeciesFromIds.mockResolvedValue({
+      mockUseApi.taxonomy.getSpeciesFromIds.mockResolvedValue({
         searchResponse: [
           { id: '1', label: 'species 1' },
           { id: '2', label: 'species 2' }
         ]
       });
-      mockBiohubApi().taxonomy.searchSpecies({
+      mockUseApi.taxonomy.searchSpecies({
         searchResponse: [
           { id: '1', label: 'species 1' },
           { id: '2', label: 'species 2' }

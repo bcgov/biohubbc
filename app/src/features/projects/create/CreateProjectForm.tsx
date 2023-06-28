@@ -7,6 +7,7 @@ import { Formik, FormikProps } from 'formik';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { ICreateProjectRequest } from 'interfaces/useProjectApi.interface';
 import React from 'react';
+import { alphabetizeObjects } from 'utils/Utils';
 import ProjectCoordinatorForm, {
   ProjectCoordinatorInitialValues,
   ProjectCoordinatorYupSchema
@@ -19,6 +20,7 @@ import ProjectFundingForm, {
   ProjectFundingFormInitialValues,
   ProjectFundingFormYupSchema
 } from '../components/ProjectFundingForm';
+import { FundingSourceType } from '../components/ProjectFundingItemForm';
 import ProjectIUCNForm, { ProjectIUCNFormInitialValues, ProjectIUCNFormYupSchema } from '../components/ProjectIUCNForm';
 import ProjectLocationForm, {
   ProjectLocationFormInitialValues,
@@ -64,6 +66,12 @@ export const validationProjectYupSchema = ProjectCoordinatorYupSchema.concat(Pro
   .concat(ProjectIUCNFormYupSchema)
   .concat(ProjectFundingFormYupSchema)
   .concat(ProjectPartnershipsFormYupSchema);
+
+//Function to get the list of coordinator agencies from the code set
+export const getCoordinatorAgencyOptions = (codes: IGetAllCodeSetsResponse): string[] => {
+  const options = [...(codes?.coordinator_agency || []), ...(codes?.first_nations || [])];
+  return alphabetizeObjects(options, 'name').map((item) => item.name);
+};
 
 /**
  * Form for creating a new project.
@@ -148,13 +156,7 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
           title="Project Coordinator"
           summary="Provide the Project Coordinator's contact and agency information."
           component={
-            <ProjectCoordinatorForm
-              coordinator_agency={
-                codes?.coordinator_agency?.map((item) => {
-                  return item.name;
-                }) || []
-              }
-            />
+            <ProjectCoordinatorForm coordinator_agency={getCoordinatorAgencyOptions(codes)} />
           }></HorizontalSplitFormComponent>
 
         <Divider className={classes.sectionDivider} />
@@ -176,12 +178,17 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
                   <ProjectFundingForm
                     funding_sources={
                       codes?.funding_source?.map((item) => {
-                        return { value: item.id, label: item.name };
+                        return { value: item.id, label: item.name, type: FundingSourceType.FUNDING_SOURCE };
                       }) || []
                     }
                     investment_action_category={
                       codes?.investment_action_category?.map((item) => {
                         return { value: item.id, fs_id: item.fs_id, label: item.name };
+                      }) || []
+                    }
+                    first_nations={
+                      codes.first_nations?.map((item) => {
+                        return { value: item.id, label: item.name, type: FundingSourceType.FIRST_NATIONS };
                       }) || []
                     }
                   />

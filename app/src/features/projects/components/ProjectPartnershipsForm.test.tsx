@@ -1,7 +1,6 @@
-import { render } from '@testing-library/react';
 import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteFieldVariableSize';
 import { Formik } from 'formik';
-import React from 'react';
+import { render } from 'test-helpers/test-utils';
 import ProjectPartnershipsForm, {
   IProjectPartnershipsForm,
   ProjectPartnershipsFormInitialValues,
@@ -53,7 +52,7 @@ describe('ProjectPartnershipsForm', () => {
     const existingFormValues: IProjectPartnershipsForm = {
       partnerships: {
         indigenous_partnerships: [1, 2],
-        stakeholder_partnerships: [(1 as unknown) as string]
+        stakeholder_partnerships: [1 as unknown as string]
       }
     };
 

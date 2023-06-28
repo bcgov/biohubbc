@@ -38,7 +38,8 @@ DELETE.apiDoc = {
       in: 'path',
       name: 'userId',
       schema: {
-        type: 'number'
+        type: 'integer',
+        minimum: 1
       },
       required: true
     }
@@ -69,11 +70,7 @@ export function removeSystemUser(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({ label: 'removeSystemUser', message: 'params', req_params: req.params });
 
-    const userId = (req.params && Number(req.params.userId)) || null;
-
-    if (!userId) {
-      throw new HTTP400('Missing required path param: userId');
-    }
+    const userId = req.params && Number(req.params.userId);
 
     const connection = getDBConnection(req['keycloak_token']);
 
@@ -85,10 +82,6 @@ export function removeSystemUser(): RequestHandler {
       const userService = new UserService(connection);
 
       const usrObject = await userService.getUserById(userId);
-
-      if (!usrObject) {
-        throw new HTTP400('Failed to get system user');
-      }
 
       if (usrObject.record_end_date) {
         throw new HTTP400('The system user is not active');
@@ -139,7 +132,7 @@ export const deleteAllProjectRoles = async (userId: number, connection: IDBConne
     throw new HTTP400('Failed to build SQL delete statement for deleting project roles');
   }
 
-  connection.query(sqlStatement.text, sqlStatement.values);
+  return connection.query(sqlStatement.text, sqlStatement.values);
 };
 
 /**

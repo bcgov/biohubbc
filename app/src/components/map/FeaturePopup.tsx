@@ -3,7 +3,7 @@ import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Collapse from '@material-ui/core/Collapse';
 import Divider from '@material-ui/core/Divider';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@material-ui/core/styles/makeStyles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -199,8 +199,11 @@ const FeaturePopup: React.FC<React.PropsWithChildren<{ submissionSpatialComponen
 
   const metadata = data[currentIndex];
   const type = metadata?.type;
-  const dwc: Record<string, unknown> = metadata?.dwc || {};
-  const filteredMetadata = Object.entries(COMMON_METADATA_PROPERTIES).filter(([key]) => Boolean(dwc[key]));
+  const dwc: Record<string, any> = metadata?.dwc || {};
+  const filteredMetadata = Object.entries(COMMON_METADATA_PROPERTIES).filter(([key]) => Boolean(dwc[key])) as [
+    keyof typeof COMMON_METADATA_PROPERTIES,
+    COMMON_METADATA_PROPERTIES
+  ][];
 
   if (!dwc || !Object.keys(dwc).length) {
     return (
@@ -222,7 +225,7 @@ const FeaturePopup: React.FC<React.PropsWithChildren<{ submissionSpatialComponen
               return (
                 <TableRow key={key}>
                   <TableCell>{propertyName}</TableCell>
-                  <TableCell>{(formatMetadataProperty[key] || String)(dwc[key])}</TableCell>
+                  <TableCell>{(formatMetadataProperty[key] ?? String)(dwc[key])}</TableCell>
                 </TableRow>
               );
             })}
@@ -237,7 +240,10 @@ const FeaturePopup: React.FC<React.PropsWithChildren<{ submissionSpatialComponen
               variant="text"
               style={{ textTransform: 'uppercase' }}
               startIcon={<Icon path={mdiChevronLeft} size={1} />}
-              onClick={() => handlePrev()}
+              onClick={(event) => {
+                event.stopPropagation();
+                handlePrev();
+              }}
               className={classes.nextPrevButton}>
               Prev
             </Button>
@@ -246,7 +252,10 @@ const FeaturePopup: React.FC<React.PropsWithChildren<{ submissionSpatialComponen
               variant="text"
               style={{ textTransform: 'uppercase' }}
               endIcon={<Icon path={mdiChevronRight} size={1} />}
-              onClick={() => handleNext()}
+              onClick={(event) => {
+                event.stopPropagation();
+                handleNext();
+              }}
               className={classes.nextPrevButton}>
               Next
             </Button>

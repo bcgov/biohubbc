@@ -5,7 +5,6 @@ import AlertTitle from '@material-ui/lab/AlertTitle';
 import { mdiAlertCircleOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import { IGetSummarySubmissionResponseMessages } from 'interfaces/useSummaryResultsApi.interface';
-import React from 'react';
 import { ClassGrouping } from '../SurveySummaryResults';
 
 interface IFileErrorResultsProps {

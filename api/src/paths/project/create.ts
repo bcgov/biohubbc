@@ -3,7 +3,7 @@ import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection } from '../../database/db';
 import { PostProjectObject } from '../../models/project-create';
-import { projectCreatePostRequestObject, projectIdResponseObject } from '../../openapi/schemas/project';
+import { projectCreatePostRequestObject } from '../../openapi/schemas/project';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
 import { ProjectService } from '../../services/project-service';
 import { getLogger } from '../../utils/logger';
@@ -34,6 +34,7 @@ POST.apiDoc = {
   ],
   requestBody: {
     description: 'Project post request object.',
+    required: true,
     content: {
       'application/json': {
         schema: {
@@ -48,7 +49,14 @@ POST.apiDoc = {
       content: {
         'application/json': {
           schema: {
-            ...(projectIdResponseObject as object)
+            type: 'object',
+            required: ['id'],
+            properties: {
+              id: {
+                type: 'integer',
+                minimum: 1
+              }
+            }
           }
         }
       }

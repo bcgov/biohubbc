@@ -9,11 +9,16 @@ import React from 'react';
 import ProjectCoordinatorForm from '../components/ProjectCoordinatorForm';
 import ProjectDetailsForm from '../components/ProjectDetailsForm';
 import ProjectFundingForm from '../components/ProjectFundingForm';
+import { FundingSourceType } from '../components/ProjectFundingItemForm';
 import ProjectIUCNForm from '../components/ProjectIUCNForm';
 import ProjectLocationForm from '../components/ProjectLocationForm';
 import ProjectObjectivesForm from '../components/ProjectObjectivesForm';
 import ProjectPartnershipsForm from '../components/ProjectPartnershipsForm';
-import { initialProjectFieldData, validationProjectYupSchema } from '../create/CreateProjectForm';
+import {
+  getCoordinatorAgencyOptions,
+  initialProjectFieldData,
+  validationProjectYupSchema
+} from '../create/CreateProjectForm';
 
 const useStyles = makeStyles((theme: Theme) => ({
   actionButton: {
@@ -58,7 +63,7 @@ const EditProjectForm: React.FC<IEditProjectForm> = (props) => {
     <Box p={5}>
       <Formik
         innerRef={formikRef}
-        initialValues={(initialProjectFieldData as unknown) as IUpdateProjectRequest}
+        initialValues={initialProjectFieldData as unknown as IUpdateProjectRequest}
         validationSchema={validationProjectYupSchema}
         validateOnBlur={true}
         validateOnChange={false}
@@ -125,13 +130,7 @@ const EditProjectForm: React.FC<IEditProjectForm> = (props) => {
             title="Project Coordinator"
             summary="Provide the Project Coordinator's contact and agency information."
             component={
-              <ProjectCoordinatorForm
-                coordinator_agency={
-                  codes?.coordinator_agency?.map((item) => {
-                    return item.name;
-                  }) || []
-                }
-              />
+              <ProjectCoordinatorForm coordinator_agency={getCoordinatorAgencyOptions(codes)} />
             }></HorizontalSplitFormComponent>
 
           <Divider className={classes.sectionDivider} />
@@ -153,12 +152,17 @@ const EditProjectForm: React.FC<IEditProjectForm> = (props) => {
                     <ProjectFundingForm
                       funding_sources={
                         codes?.funding_source?.map((item) => {
-                          return { value: item.id, label: item.name };
+                          return { value: item.id, label: item.name, type: FundingSourceType.FUNDING_SOURCE };
                         }) || []
                       }
                       investment_action_category={
                         codes?.investment_action_category?.map((item) => {
                           return { value: item.id, fs_id: item.fs_id, label: item.name };
+                        }) || []
+                      }
+                      first_nations={
+                        codes?.first_nations.map((item) => {
+                          return { value: item.id, label: item.name, type: FundingSourceType.FIRST_NATIONS };
                         }) || []
                       }
                     />

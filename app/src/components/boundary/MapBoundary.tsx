@@ -22,7 +22,7 @@ import { FormikContextType } from 'formik';
 import { Feature } from 'geojson';
 import { LatLngBoundsExpression } from 'leaflet';
 import get from 'lodash-es/get';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   calculateUpdatedMapBounds,
   handleGPXUpload,
@@ -63,10 +63,10 @@ export interface IMapBoundaryProps {
 /**
  * Shared component for map boundary component
  *
- * @param {*} props
+ * @param {IMapBoundaryProps} props
  * @return {*}
  */
-const MapBoundary: React.FC<IMapBoundaryProps> = (props) => {
+const MapBoundary = (props: IMapBoundaryProps) => {
   const classes = useStyles();
 
   const { name, title, mapId, bounds, formikProps } = props;
@@ -89,16 +89,14 @@ const MapBoundary: React.FC<IMapBoundaryProps> = (props) => {
   }, [updatedBounds]);
 
   const boundaryUploadHandler = (): IUploadHandler => {
-    return (file) => {
+    return async (file) => {
       if (file?.type.includes('zip') || file?.name.includes('.zip')) {
         handleShapefileUpload(file, name, formikProps);
       } else if (file?.type.includes('gpx') || file?.name.includes('.gpx')) {
-        handleGPXUpload(file, name, formikProps);
+        await handleGPXUpload(file, name, formikProps);
       } else if (file?.type.includes('kml') || file?.name.includes('.kml')) {
-        handleKMLUpload(file, name, formikProps);
+        await handleKMLUpload(file, name, formikProps);
       }
-
-      return Promise.resolve();
     };
   };
 
@@ -173,7 +171,7 @@ const MapBoundary: React.FC<IMapBoundaryProps> = (props) => {
           </Box>
           {get(errors, name) && (
             <Box mt={1} mb={3} ml={2}>
-              <Typography style={{ fontSize: '12px', color: '#f44336' }}>{get(errors, name)}</Typography>
+              <Typography style={{ fontSize: '12px', color: '#f44336' }}>{get(errors, name) as string}</Typography>
             </Box>
           )}
         </Box>

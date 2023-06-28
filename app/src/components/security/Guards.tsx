@@ -1,7 +1,7 @@
 import { PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
 import { AuthStateContext } from 'contexts/authStateContext';
 import { ProjectAuthStateContext } from 'contexts/projectAuthStateContext';
-import React, { PropsWithChildren, ReactElement, useContext } from 'react';
+import { PropsWithChildren, ReactElement, useContext } from 'react';
 import { isAuthenticated } from 'utils/authUtils';
 
 interface IGuardProps {
@@ -85,6 +85,21 @@ export const ProjectRoleGuard = (props: PropsWithChildren<IProjectRoleGuardProps
   }
 
   return <></>;
+};
+
+/**
+ * This function checks if the logged in user has any of the passed in roles
+ *
+ * @param roles
+ * @returns {*} boolean
+ */
+export const HasProjectOrSystemRole = (roles: IProjectRoleGuardProps): boolean => {
+  const { validProjectRoles, validSystemRoles } = roles;
+  const projectAuthStateContext = useContext(ProjectAuthStateContext);
+
+  return (
+    projectAuthStateContext.hasSystemRole(validSystemRoles) || projectAuthStateContext.hasProjectRole(validProjectRoles)
+  );
 };
 
 /**

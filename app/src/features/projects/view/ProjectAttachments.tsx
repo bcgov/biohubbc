@@ -13,7 +13,7 @@ import { PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
 import { ProjectContext } from 'contexts/projectContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IUploadAttachmentResponse } from 'interfaces/useProjectApi.interface';
-import React, { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { AttachmentType } from '../../../constants/attachments';
 import ProjectAttachmentsList from './ProjectAttachmentsList';
 

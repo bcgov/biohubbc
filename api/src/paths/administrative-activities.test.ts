@@ -1,14 +1,24 @@
+import Ajv from 'ajv';
 import chai, { expect } from 'chai';
 import { describe } from 'mocha';
+import { QueryResult } from 'pg';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import SQL from 'sql-template-strings';
 import * as db from '../database/db';
-import administrative_queries from '../queries/administrative-activity';
 import { getMockDBConnection, getRequestHandlerMocks } from '../__mocks__/db';
-import * as administrative_activities from './administrative-activities';
+import { GET, getAdministrativeActivities } from './administrative-activities';
 
 chai.use(sinonChai);
+
+describe('openapi schema', () => {
+  const ajv = new Ajv();
+
+  describe('GET', () => {
+    it('is valid openapi v3 schema', () => {
+      expect(ajv.validateSchema((GET.apiDoc as unknown) as object)).to.be.true;
+    });
+  });
+});
 
 describe('getAdministrativeActivities', () => {
   afterEach(() => {
@@ -16,14 +26,11 @@ describe('getAdministrativeActivities', () => {
   });
 
   it('should return the rows on success (empty)', async () => {
-    sinon.stub(administrative_queries, 'getAdministrativeActivitiesSQL').returns(SQL`some`);
-
-    const mockQuery = sinon.stub().resolves({
-      rows: null,
-      rowCount: 0
+    const mockDBConnection = getMockDBConnection({
+      sql: async () => {
+        return ({ rowCount: 0, rows: [] } as any) as Promise<QueryResult<any>>;
+      }
     });
-
-    const mockDBConnection = getMockDBConnection({ query: mockQuery });
 
     sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
@@ -34,7 +41,7 @@ describe('getAdministrativeActivities', () => {
       status: ['status']
     };
 
-    const requestHandler = administrative_activities.getAdministrativeActivities();
+    const requestHandler = getAdministrativeActivities();
 
     await requestHandler(mockReq, mockRes, mockNext);
 
@@ -54,12 +61,11 @@ describe('getAdministrativeActivities', () => {
       create_date: '2020/04/04'
     };
 
-    const mockQuery = sinon.stub().resolves({
-      rows: [data],
-      rowCount: 1
+    const mockDBConnection = getMockDBConnection({
+      sql: async () => {
+        return ({ rowCount: 1, rows: [data] } as any) as Promise<QueryResult<any>>;
+      }
     });
-
-    const mockDBConnection = getMockDBConnection({ query: mockQuery });
 
     sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
@@ -70,7 +76,7 @@ describe('getAdministrativeActivities', () => {
       status: ['status']
     };
 
-    const requestHandler = administrative_activities.getAdministrativeActivities();
+    const requestHandler = getAdministrativeActivities();
 
     await requestHandler(mockReq, mockRes, mockNext);
 

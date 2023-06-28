@@ -7,7 +7,6 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import SurveyProprietaryData from 'features/surveys/view/components/SurveyProprietaryData';
 import SurveyPurposeAndMethodologyData from 'features/surveys/view/components/SurveyPurposeAndMethodologyData';
-import React from 'react';
 import SurveyGeneralInformation from './components/SurveyGeneralInformation';
 
 const useStyles = makeStyles((theme: Theme) => ({

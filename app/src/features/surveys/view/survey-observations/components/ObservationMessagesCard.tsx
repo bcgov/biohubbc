@@ -8,7 +8,6 @@ import {
   IGetObservationSubmissionResponse,
   IGetObservationSubmissionResponseMessages
 } from 'interfaces/useObservationApi.interface';
-import React from 'react';
 
 export interface IObservationMessagesCardProps {
   observationRecord: IGetObservationSubmissionResponse;

@@ -79,7 +79,7 @@ export class SummaryRepository extends BaseRepository {
       throw new HTTP400('Failed to query survey summary submission table');
     }
 
-    return response && response.rows && response.rows[0];
+    return response?.rows[0];
   }
 
   /**
@@ -117,6 +117,8 @@ export class SummaryRepository extends BaseRepository {
         ssmt.summary_submission_message_class_id = ssmc.summary_submission_message_class_id
       WHERE
         sss.survey_id = ${surveyId}
+      AND
+        sss.delete_timestamp IS NULL
       ORDER BY
         sss.event_timestamp DESC, sssm.event_timestamp DESC
       LIMIT 1;
@@ -128,7 +130,7 @@ export class SummaryRepository extends BaseRepository {
       throw new HTTP400('Failed to query survey summary submission table');
     }
 
-    return response && response.rows && response.rows[0];
+    return response?.rows[0];
   }
 
   /**
@@ -160,7 +162,7 @@ export class SummaryRepository extends BaseRepository {
       throw new HTTP400('Failed to update survey summary submission record');
     }
 
-    return response && response.rows && response.rows[0];
+    return response?.rows[0];
   }
 
   /**
@@ -200,7 +202,7 @@ export class SummaryRepository extends BaseRepository {
       throw new HTTP400('Failed to insert survey summary submission record');
     }
 
-    return response && response.rows && response.rows[0];
+    return response?.rows[0];
   }
 
   /**
@@ -276,7 +278,7 @@ export class SummaryRepository extends BaseRepository {
       throw new HTTP400('Failed to insert summary details data');
     }
 
-    return response && response.rows && response.rows[0];
+    return response?.rows[0];
   }
 
   /**
@@ -299,11 +301,11 @@ export class SummaryRepository extends BaseRepository {
 
     const response = await this.connection.query<{ delete_timestamp: string }>(sqlStatement.text, sqlStatement.values);
 
-    if (!response || !response?.rows[0]?.delete_timestamp) {
+    if (!response?.rows[0]?.delete_timestamp) {
       throw new HTTP400('Failed to soft delete survey summary submission');
     }
 
-    return (response && response.rowCount) || null;
+    return response?.rowCount || null;
   }
 
   /**
@@ -348,7 +350,7 @@ export class SummaryRepository extends BaseRepository {
       throw new HTTP400('Failed to query survey summary submission table');
     }
 
-    return response && response.rows;
+    return response?.rows;
   }
 
   /**
@@ -382,7 +384,7 @@ export class SummaryRepository extends BaseRepository {
       throw new HTTP400('Failed to query summary templates table');
     }
 
-    return response && response.rows && response.rows[0];
+    return response?.rows[0];
   }
 
   /**
@@ -418,7 +420,7 @@ export class SummaryRepository extends BaseRepository {
       .fromRaw('summary_template_species sts')
       .where('sts.summary_template_id', templateRow.summary_template_id)
       .andWhere((qb) => {
-        qb.whereIn('sts.wldtaxonomic_units_id', species || []);
+        qb.whereIn('sts.wldtaxonomic_units_id', species ?? []);
       })
       .orWhere('sts.wldtaxonomic_units_id', null);
 

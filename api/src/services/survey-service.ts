@@ -17,6 +17,7 @@ import {
   SurveySupplementaryData
 } from '../models/survey-view';
 import { AttachmentRepository } from '../repositories/attachment-repository';
+import { PublishStatus } from '../repositories/history-publish-repository';
 import {
   IGetLatestSurveyOccurrenceSubmission,
   IObservationSubmissionInsertDetails,
@@ -312,7 +313,7 @@ export class SurveyService extends DBService {
   }
 
   /**
-   * Creates a survey and uploads the metadata to Biohub
+   * Creates a survey and uploads the affected metadata to BioHub
    *
    * @param {number} projectId
    * @param {PostSurveyObject} postSurveyData
@@ -323,7 +324,13 @@ export class SurveyService extends DBService {
     const surveyId = await this.createSurvey(projectId, postSurveyData);
 
     try {
-      await this.platformService.submitSurveyDwCMetadataToBioHub(surveyId);
+      // Publish survey metadata
+      const publishSurveyPromise = this.platformService.submitSurveyDwCMetadataToBioHub(surveyId);
+
+      // Publish project metadata (which needs to be updated now that the survey metadata has changed)
+      const publishProjectPromise = this.platformService.submitProjectDwCMetadataToBioHub(projectId);
+
+      await Promise.all([publishSurveyPromise, publishProjectPromise]);
     } catch (error) {
       defaultLog.warn({ label: 'createSurveyAndUploadMetadataToBioHub', message: 'error', error });
     }
@@ -514,32 +521,43 @@ export class SurveyService extends DBService {
   }
 
   /**
-   * Updates provided survey information and submits to BioHub
+   * Updates provided survey information and submits affected metadata to BioHub
    *
+   * @param {number} projectId
    * @param {number} surveyId
    * @param {PutSurveyObject} putSurveyData
    * @returns {*} {Promise<void>}
    * @memberof SurveyService
    */
-  async updateSurveyAndUploadMetadataToBiohub(surveyId: number, putSurveyData: PutSurveyObject): Promise<void> {
+  async updateSurveyAndUploadMetadataToBiohub(
+    projectId: number,
+    surveyId: number,
+    putSurveyData: PutSurveyObject
+  ): Promise<void> {
     await this.updateSurvey(surveyId, putSurveyData);
 
     try {
-      await this.platformService.submitSurveyDwCMetadataToBioHub(surveyId);
+      // Publish survey metadata
+      const publishSurveyPromise = this.platformService.submitSurveyDwCMetadataToBioHub(surveyId);
+
+      // Publish project metadata (which needs to be updated now that the survey metadata has changed)
+      const publishProjectPromise = this.platformService.submitProjectDwCMetadataToBioHub(projectId);
+
+      await Promise.all([publishSurveyPromise, publishProjectPromise]);
     } catch (error) {
       defaultLog.warn({ label: 'updateSurveyAndUploadMetadataToBiohub', message: 'error', error });
     }
   }
 
   /**
-   * Updates provided survey information and submits to BioHub
-   *˝
+   * Updates provided survey information.
+   *
    * @param {number} surveyId
    * @param {PutSurveyObject} putSurveyData
    * @returns {*} {Promise<void>}
    * @memberof SurveyService
    */
-  async updateSurvey(surveyId: number, putSurveyData: PutSurveyObject): Promise<SurveyObject> {
+  async updateSurvey(surveyId: number, putSurveyData: PutSurveyObject): Promise<void> {
     const promises: Promise<any>[] = [];
 
     if (putSurveyData?.survey_details || putSurveyData?.purpose_and_methodology || putSurveyData?.location) {
@@ -567,8 +585,6 @@ export class SurveyService extends DBService {
     }
 
     await Promise.all(promises);
-
-    return await this.getSurveyById(surveyId);
   }
 
   /**
@@ -592,7 +608,7 @@ export class SurveyService extends DBService {
    * @memberof SurveyService
    */
   async updateSurveySpeciesData(surveyId: number, surveyData: PutSurveyObject) {
-    this.deleteSurveySpeciesData(surveyId);
+    await this.deleteSurveySpeciesData(surveyId);
 
     const promises: Promise<any>[] = [];
 
@@ -818,26 +834,39 @@ export class SurveyService extends DBService {
   }
 
   /**
-   * Returns true if the survey contains unpublished attachments or reports or observations or summary results
+   * Publish status for a given survey id
    *
    * @param {number} surveyId
-   * @return {*}  {Promise<boolean>}
+   * @return {*}  {Promise<PublishStatus>}
    * @memberof SurveyService
    */
-  async doesSurveyHaveUnpublishedContent(surveyId: number): Promise<boolean> {
-    const has_unpublished_attachments = await this.historyPublishService.hasUnpublishedSurveyAttachments(surveyId);
+  async surveyPublishStatus(surveyId: number): Promise<PublishStatus> {
+    const surveyAttachmentsPublishStatus = await this.historyPublishService.surveyAttachmentsPublishStatus(surveyId);
 
-    const has_unpublished_reports = await this.historyPublishService.hasUnpublishedSurveyReports(surveyId);
+    const surveyReportsPublishStatus = await this.historyPublishService.surveyReportsPublishStatus(surveyId);
 
-    const has_unpublished_observations = await this.historyPublishService.hasUnpublishedObservation(surveyId);
+    const observationPublishStatus = await this.historyPublishService.observationPublishStatus(surveyId);
 
-    const has_unpublished_summary_results = await this.historyPublishService.hasUnpublishedSummaryResults(surveyId);
+    const summaryPublishStatus = await this.historyPublishService.summaryPublishStatus(surveyId);
 
-    const surveyHasUnpublishedContent: boolean =
-      has_unpublished_attachments ||
-      has_unpublished_reports ||
-      has_unpublished_observations ||
-      has_unpublished_summary_results;
-    return surveyHasUnpublishedContent;
+    if (
+      surveyAttachmentsPublishStatus === PublishStatus.NO_DATA &&
+      surveyReportsPublishStatus === PublishStatus.NO_DATA &&
+      observationPublishStatus === PublishStatus.NO_DATA &&
+      summaryPublishStatus === PublishStatus.NO_DATA
+    ) {
+      return PublishStatus.NO_DATA;
+    }
+
+    if (
+      surveyAttachmentsPublishStatus === PublishStatus.UNSUBMITTED ||
+      surveyReportsPublishStatus === PublishStatus.UNSUBMITTED ||
+      observationPublishStatus === PublishStatus.UNSUBMITTED ||
+      summaryPublishStatus === PublishStatus.UNSUBMITTED
+    ) {
+      return PublishStatus.UNSUBMITTED;
+    }
+
+    return PublishStatus.SUBMITTED;
   }
 }

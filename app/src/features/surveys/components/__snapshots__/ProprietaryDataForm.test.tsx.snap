@@ -19,7 +19,7 @@ exports[`Proprietary Data Form renders correctly the empty component correctly w
               Is the data captured in this survey proprietary?
             </span>
             <button
-              class="MuiButtonBase-root MuiButton-root MuiButton-text makeStyles-learnMoreBtn-2 MuiButton-textPrimary"
+              class="MuiButtonBase-root MuiButton-root MuiButton-text makeStyles-learnMoreBtn-2 MuiButton-textPrimary MuiButton-disableElevation"
               data-testid="prop-dialog-btn"
               tabindex="0"
               type="button"
@@ -33,9 +33,6 @@ exports[`Proprietary Data Form renders correctly the empty component correctly w
                   Learn more
                 </span>
               </span>
-              <span
-                class="MuiTouchRipple-root"
-              />
             </button>
           </p>
           <div
@@ -89,9 +86,6 @@ exports[`Proprietary Data Form renders correctly the empty component correctly w
                       </svg>
                     </div>
                   </span>
-                  <span
-                    class="MuiTouchRipple-root"
-                  />
                 </span>
                 <span
                   class="MuiTypography-root MuiFormControlLabel-label MuiTypography-body1"
@@ -141,9 +135,6 @@ exports[`Proprietary Data Form renders correctly the empty component correctly w
                       </svg>
                     </div>
                   </span>
-                  <span
-                    class="MuiTouchRipple-root"
-                  />
                 </span>
                 <span
                   class="MuiTypography-root MuiFormControlLabel-label MuiTypography-body1"
@@ -182,7 +173,7 @@ exports[`Proprietary Data Form renders correctly the filled component correctly 
               Is the data captured in this survey proprietary?
             </span>
             <button
-              class="MuiButtonBase-root MuiButton-root MuiButton-text makeStyles-learnMoreBtn-13 MuiButton-textPrimary"
+              class="MuiButtonBase-root MuiButton-root MuiButton-text makeStyles-learnMoreBtn-13 MuiButton-textPrimary MuiButton-disableElevation"
               data-testid="prop-dialog-btn"
               tabindex="0"
               type="button"
@@ -196,9 +187,6 @@ exports[`Proprietary Data Form renders correctly the filled component correctly 
                   Learn more
                 </span>
               </span>
-              <span
-                class="MuiTouchRipple-root"
-              />
             </button>
           </p>
           <div
@@ -251,9 +239,6 @@ exports[`Proprietary Data Form renders correctly the filled component correctly 
                       </svg>
                     </div>
                   </span>
-                  <span
-                    class="MuiTouchRipple-root"
-                  />
                 </span>
                 <span
                   class="MuiTypography-root MuiFormControlLabel-label MuiTypography-body1"
@@ -304,9 +289,6 @@ exports[`Proprietary Data Form renders correctly the filled component correctly 
                       </svg>
                     </div>
                   </span>
-                  <span
-                    class="MuiTouchRipple-root"
-                  />
                 </span>
                 <span
                   class="MuiTypography-root MuiFormControlLabel-label MuiTypography-body1"
@@ -400,9 +382,6 @@ exports[`Proprietary Data Form renders correctly the filled component correctly 
                             />
                           </svg>
                         </span>
-                        <span
-                          class="MuiTouchRipple-root"
-                        />
                       </button>
                       <button
                         aria-label="Open"
@@ -425,9 +404,6 @@ exports[`Proprietary Data Form renders correctly the filled component correctly 
                             />
                           </svg>
                         </span>
-                        <span
-                          class="MuiTouchRipple-root"
-                        />
                       </button>
                     </div>
                     <fieldset
@@ -451,7 +427,6 @@ exports[`Proprietary Data Form renders correctly the filled component correctly 
             >
               <div
                 class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-                data-testid="proprietor.proprietor_name"
               >
                 <label
                   class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
@@ -473,6 +448,7 @@ exports[`Proprietary Data Form renders correctly the filled component correctly 
                   <input
                     aria-invalid="false"
                     class="MuiInputBase-input MuiOutlinedInput-input"
+                    data-testid="proprietor.proprietor_name"
                     id="proprietor.proprietor_name"
                     name="proprietor.proprietor_name"
                     required=""
@@ -499,7 +475,6 @@ exports[`Proprietary Data Form renders correctly the filled component correctly 
             >
               <div
                 class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-                data-testid="proprietor.category_rationale"
               >
                 <label
                   class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
@@ -521,6 +496,7 @@ exports[`Proprietary Data Form renders correctly the filled component correctly 
                   <textarea
                     aria-invalid="false"
                     class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputMultiline MuiOutlinedInput-inputMultiline"
+                    data-testid="proprietor.category_rationale"
                     id="proprietor.category_rationale"
                     name="proprietor.category_rationale"
                     required=""
@@ -611,9 +587,6 @@ exports[`Proprietary Data Form renders correctly the filled component correctly 
                         </svg>
                       </div>
                     </span>
-                    <span
-                      class="MuiTouchRipple-root"
-                    />
                   </span>
                   <span
                     class="MuiTypography-root MuiFormControlLabel-label MuiTypography-body1"
@@ -664,9 +637,6 @@ exports[`Proprietary Data Form renders correctly the filled component correctly 
                         </svg>
                       </div>
                     </span>
-                    <span
-                      class="MuiTouchRipple-root"
-                    />
                   </span>
                   <span
                     class="MuiTypography-root MuiFormControlLabel-label MuiTypography-body1"
@@ -706,7 +676,7 @@ exports[`Proprietary Data Form renders correctly when errors exist when survey d
               Is the data captured in this survey proprietary?
             </span>
             <button
-              class="MuiButtonBase-root MuiButton-root MuiButton-text makeStyles-learnMoreBtn-49 MuiButton-textPrimary"
+              class="MuiButtonBase-root MuiButton-root MuiButton-text makeStyles-learnMoreBtn-49 MuiButton-textPrimary MuiButton-disableElevation"
               data-testid="prop-dialog-btn"
               tabindex="0"
               type="button"
@@ -720,9 +690,6 @@ exports[`Proprietary Data Form renders correctly when errors exist when survey d
                   Learn more
                 </span>
               </span>
-              <span
-                class="MuiTouchRipple-root"
-              />
             </button>
           </p>
           <div
@@ -775,9 +742,6 @@ exports[`Proprietary Data Form renders correctly when errors exist when survey d
                       </svg>
                     </div>
                   </span>
-                  <span
-                    class="MuiTouchRipple-root"
-                  />
                 </span>
                 <span
                   class="MuiTypography-root MuiFormControlLabel-label MuiTypography-body1"
@@ -828,9 +792,6 @@ exports[`Proprietary Data Form renders correctly when errors exist when survey d
                       </svg>
                     </div>
                   </span>
-                  <span
-                    class="MuiTouchRipple-root"
-                  />
                 </span>
                 <span
                   class="MuiTypography-root MuiFormControlLabel-label MuiTypography-body1"
@@ -927,9 +888,6 @@ exports[`Proprietary Data Form renders correctly when errors exist when survey d
                             />
                           </svg>
                         </span>
-                        <span
-                          class="MuiTouchRipple-root"
-                        />
                       </button>
                       <button
                         aria-label="Open"
@@ -952,9 +910,6 @@ exports[`Proprietary Data Form renders correctly when errors exist when survey d
                             />
                           </svg>
                         </span>
-                        <span
-                          class="MuiTouchRipple-root"
-                        />
                       </button>
                     </div>
                     <fieldset
@@ -984,7 +939,6 @@ exports[`Proprietary Data Form renders correctly when errors exist when survey d
             >
               <div
                 class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-                data-testid="proprietor.proprietor_name"
               >
                 <label
                   class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined Mui-error Mui-error MuiFormLabel-filled Mui-required Mui-required"
@@ -1007,6 +961,7 @@ exports[`Proprietary Data Form renders correctly when errors exist when survey d
                     aria-describedby="proprietor.proprietor_name-helper-text"
                     aria-invalid="true"
                     class="MuiInputBase-input MuiOutlinedInput-input"
+                    data-testid="proprietor.proprietor_name"
                     id="proprietor.proprietor_name"
                     name="proprietor.proprietor_name"
                     required=""
@@ -1039,7 +994,6 @@ exports[`Proprietary Data Form renders correctly when errors exist when survey d
             >
               <div
                 class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-                data-testid="proprietor.category_rationale"
               >
                 <label
                   class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined Mui-error Mui-error MuiFormLabel-filled Mui-required Mui-required"
@@ -1062,6 +1016,7 @@ exports[`Proprietary Data Form renders correctly when errors exist when survey d
                     aria-describedby="proprietor.category_rationale-helper-text"
                     aria-invalid="true"
                     class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputMultiline MuiOutlinedInput-inputMultiline"
+                    data-testid="proprietor.category_rationale"
                     id="proprietor.category_rationale"
                     name="proprietor.category_rationale"
                     required=""
@@ -1158,9 +1113,6 @@ exports[`Proprietary Data Form renders correctly when errors exist when survey d
                         </svg>
                       </div>
                     </span>
-                    <span
-                      class="MuiTouchRipple-root"
-                    />
                   </span>
                   <span
                     class="MuiTypography-root MuiFormControlLabel-label MuiTypography-body1"
@@ -1211,9 +1163,6 @@ exports[`Proprietary Data Form renders correctly when errors exist when survey d
                         </svg>
                       </div>
                     </span>
-                    <span
-                      class="MuiTouchRipple-root"
-                    />
                   </span>
                   <span
                     class="MuiTypography-root MuiFormControlLabel-label MuiTypography-body1"

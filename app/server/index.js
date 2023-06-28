@@ -48,12 +48,11 @@ const request = require('request');
       REACT_APP_NODE_ENV: process.env.REACT_APP_NODE_ENV || 'dev',
       VERSION: `${process.env.VERSION || 'NA'}(build #${process.env.CHANGE_VERSION || 'NA'})`,
       KEYCLOAK_CONFIG: {
-        url: process.env.REACT_APP_KEYCLOAK_HOST || 'https://dev.oidc.gov.bc.ca/auth',
-        realm: process.env.REACT_APP_KEYCLOAK_REALM || '35r1iman',
-        clientId: process.env.REACT_APP_KEYCLOAK_CLIENT_ID || 'biohubbc'
+        url: process.env.REACT_APP_KEYCLOAK_HOST,
+        realm: process.env.REACT_APP_KEYCLOAK_REALM,
+        clientId: process.env.REACT_APP_KEYCLOAK_CLIENT_ID
       },
-      SITEMINDER_LOGOUT_URL:
-        process.env.REACT_APP_SITEMINDER_LOGOUT_URL || 'https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi',
+      SITEMINDER_LOGOUT_URL: process.env.REACT_APP_SITEMINDER_LOGOUT_URL,
       MAX_UPLOAD_NUM_FILES: Number(process.env.REACT_APP_MAX_UPLOAD_NUM_FILES) || 10,
       MAX_UPLOAD_FILE_SIZE: Number(process.env.REACT_APP_MAX_UPLOAD_FILE_SIZE) || 52428800,
       S3_PUBLIC_HOST_URL: `https://${OBJECT_STORE_URL}/${OBJECT_STORE_BUCKET_NAME}`

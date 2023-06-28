@@ -5,7 +5,7 @@ import assert from 'assert';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { CodesContext } from 'contexts/codesContext';
 import { ProjectContext } from 'contexts/projectContext';
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 import { getFormattedDateRangeString } from 'utils/Utils';
 
 /**

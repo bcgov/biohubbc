@@ -1,11 +1,24 @@
-import { render, waitFor } from '@testing-library/react';
 import { createMemoryHistory } from 'history';
-import React from 'react';
+import { useBiohubApi } from 'hooks/useBioHubApi';
 import { Router } from 'react-router';
 import { codes } from 'test-helpers/code-helpers';
+import { cleanup, render, waitFor } from 'test-helpers/test-utils';
 import ActiveUsersList, { IActiveUsersListProps } from './ActiveUsersList';
 
 const history = createMemoryHistory();
+
+jest.mock('../../../hooks/useBioHubApi');
+const mockBiohubApi = useBiohubApi as jest.Mock;
+
+const mockUseApi = {
+  user: {
+    updateSystemUserRoles: jest.fn(),
+    deleteSystemUser: jest.fn()
+  },
+  admin: {
+    addSystemUser: jest.fn()
+  }
+};
 
 const renderContainer = (props: IActiveUsersListProps) => {
   return render(
@@ -16,6 +29,14 @@ const renderContainer = (props: IActiveUsersListProps) => {
 };
 
 describe('ActiveUsersList', () => {
+  beforeEach(() => {
+    mockBiohubApi.mockImplementation(() => mockUseApi);
+  });
+
+  afterEach(() => {
+    cleanup();
+  });
+
   it('shows `No Active Users` when there are no active users', async () => {
     const { getByText } = renderContainer({
       activeUsers: [],
@@ -36,7 +57,8 @@ describe('ActiveUsersList', () => {
           user_identifier: 'username',
           user_guid: 'user-guid',
           user_record_end_date: '2020-10-10',
-          role_names: ['role 1', 'role 2']
+          role_names: ['role 1', 'role 2'],
+          identity_source: 'idir'
         }
       ],
       codes: codes,
@@ -57,7 +79,8 @@ describe('ActiveUsersList', () => {
           user_identifier: 'username',
           user_guid: 'user-guid',
           user_record_end_date: '2020-10-10',
-          role_names: []
+          role_names: [],
+          identity_source: 'idir'
         }
       ],
       codes: codes,

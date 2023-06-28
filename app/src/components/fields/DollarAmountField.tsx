@@ -54,10 +54,7 @@ const DollarAmountField: React.FC<IDollarAmountFieldProps> = (props) => {
       value={get(values, name)}
       onChange={handleChange}
       error={get(touched, name) && Boolean(get(errors, name))}
-      helperText={get(touched, name) && get(errors, name)}
-      InputLabelProps={{
-        shrink: true
-      }}
+      helperText={get(touched, name) && (get(errors, name) as string)}
       InputProps={{
         inputComponent: NumberFormatCustom as any
       }}

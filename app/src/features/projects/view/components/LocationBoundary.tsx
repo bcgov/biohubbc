@@ -18,10 +18,9 @@ import { ProjectRoleGuard } from 'components/security/Guards';
 import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
 import { EditLocationBoundaryI18N } from 'constants/i18n';
 import { PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
-import { CodesContext } from 'contexts/codesContext';
 import { DialogContext } from 'contexts/dialogContext';
 import { ProjectContext } from 'contexts/projectContext';
-import {
+import ProjectLocationForm, {
   IProjectLocationForm,
   ProjectLocationFormInitialValues,
   ProjectLocationFormYupSchema
@@ -33,7 +32,6 @@ import { IGetProjectForUpdateResponseLocation, UPDATE_GET_ENTITIES } from 'inter
 import { LatLngBoundsExpression } from 'leaflet';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
-import ProjectStepComponents from 'utils/ProjectStepComponents';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -71,15 +69,11 @@ const LocationBoundary = () => {
 
   const biohubApi = useBiohubApi();
 
-  const codesContext = useContext(CodesContext);
   const projectContext = useContext(ProjectContext);
 
-  // Codes data must be loaded by a parent before this component is rendered
-  assert(codesContext.codesDataLoader.data);
   // Project data must be loaded by a parent before this component is rendered
   assert(projectContext.projectDataLoader.data);
 
-  const codes = codesContext.codesDataLoader.data;
   const projectData = projectContext.projectDataLoader.data.projectData;
 
   const dialogContext = useContext(DialogContext);
@@ -192,7 +186,7 @@ const LocationBoundary = () => {
         dialogTitle={EditLocationBoundaryI18N.editTitle}
         open={openEditDialog}
         component={{
-          element: <ProjectStepComponents component="ProjectLocation" codes={codes} />,
+          element: <ProjectLocationForm />,
           initialValues: locationFormData,
           validationSchema: ProjectLocationFormYupSchema
         }}

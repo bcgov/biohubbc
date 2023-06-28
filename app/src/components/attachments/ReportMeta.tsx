@@ -35,7 +35,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 export interface IViewReportDetailsProps {
   onEdit?: () => void;
-  onSave?: <IEditReportMetaForm>() => void;
+  onSave?: () => void;
 
   reportDetails: IGetReportDetails | null;
 }

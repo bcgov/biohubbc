@@ -14,7 +14,7 @@ import React from 'react';
 import yup from 'utils/YupSchema';
 
 export const IDIRRequestFormInitialValues: IIDIRAccessRequestDataObject = {
-  role: ('' as unknown) as number,
+  role: '' as unknown as number,
   reason: ''
 };
 

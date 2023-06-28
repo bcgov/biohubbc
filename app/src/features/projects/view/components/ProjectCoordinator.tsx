@@ -3,7 +3,7 @@ import Link from '@material-ui/core/Link';
 import Typography from '@material-ui/core/Typography';
 import assert from 'assert';
 import { ProjectContext } from 'contexts/projectContext';
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 
 /**
  * Project coordinator content for a project.

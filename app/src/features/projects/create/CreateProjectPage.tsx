@@ -10,6 +10,7 @@ import EditDialog from 'components/dialog/EditDialog';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import YesNoDialog from 'components/dialog/YesNoDialog';
 import { CreateProjectDraftI18N, CreateProjectI18N, DeleteProjectDraftI18N } from 'constants/i18n';
+import { CodesContext } from 'contexts/codesContext';
 import { DialogContext } from 'contexts/dialogContext';
 import ProjectDraftForm, {
   IProjectDraftForm,
@@ -78,9 +79,10 @@ const CreateProjectPage: React.FC = () => {
   const [enableCancelCheck, setEnableCancelCheck] = useState(true);
 
   const dialogContext = useContext(DialogContext);
+  const codesContext = useContext(CodesContext);
 
-  const codesDataLoader = useDataLoader(() => biohubApi.codes.getAllCodeSets());
-  codesDataLoader.load();
+  const codes = codesContext.codesDataLoader.data;
+  codesContext.codesDataLoader.load();
 
   const draftId = Number(queryParams.draftId);
 
@@ -268,7 +270,7 @@ const CreateProjectPage: React.FC = () => {
     history.push(`/admin/projects/`);
   };
 
-  if (!codesDataLoader.data || (draftId && !draftDataLoader.data)) {
+  if (!codes || (draftId && !draftDataLoader.data)) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
@@ -337,7 +339,7 @@ const CreateProjectPage: React.FC = () => {
             <Box p={5}>
               <CreateProjectForm
                 handleSubmit={createProject}
-                codes={codesDataLoader.data}
+                codes={codes}
                 formikRef={formikRef}
                 initialValues={draftDataLoader.data?.data}
               />
@@ -347,14 +349,16 @@ const CreateProjectPage: React.FC = () => {
                   color="primary"
                   variant="contained"
                   onClick={() => formikRef.current?.submitForm()}
-                  className={classes.actionButton}>
+                  className={classes.actionButton}
+                  data-testid="submit-project-button">
                   Submit Project
                 </Button>
                 <Button
                   color="primary"
                   variant="contained"
                   onClick={() => setOpenDraftDialog(true)}
-                  className={classes.actionButton}>
+                  className={classes.actionButton}
+                  data-testid="save-draft-button">
                   Save Draft
                 </Button>
 
@@ -362,7 +366,8 @@ const CreateProjectPage: React.FC = () => {
                   color="secondary"
                   variant="outlined"
                   onClick={() => setOpenDeleteDraftDialog(true)}
-                  className={classes.actionButton}>
+                  className={classes.actionButton}
+                  data-testid="delete-draft-button">
                   Delete Draft
                 </Button>
 

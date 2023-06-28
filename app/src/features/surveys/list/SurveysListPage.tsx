@@ -10,7 +10,7 @@ import SurveysList from 'components/surveys/SurveysList';
 import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
 import { PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
 import { ProjectContext } from 'contexts/projectContext';
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 import { useHistory } from 'react-router';
 
 /**

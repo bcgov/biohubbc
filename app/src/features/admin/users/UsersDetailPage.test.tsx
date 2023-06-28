@@ -1,8 +1,7 @@
-import { cleanup, render, waitFor } from '@testing-library/react';
 import { createMemoryHistory } from 'history';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import React from 'react';
 import { Router } from 'react-router';
+import { cleanup, render, waitFor } from 'test-helpers/test-utils';
 import { useBiohubApi } from '../../../hooks/useBioHubApi';
 import { IGetUserProjectsListResponse } from '../../../interfaces/useProjectApi.interface';
 import { IGetUserResponse } from '../../../interfaces/useUserApi.interface';
@@ -12,7 +11,9 @@ const history = createMemoryHistory();
 
 jest.mock('../../../hooks/useBioHubApi');
 
-const mockUseBiohubApi = {
+const mockBiohubApi = useBiohubApi as jest.Mock;
+
+const mockUseApi = {
   user: {
     getUserById: jest.fn<Promise<IGetUserResponse>, []>()
   },
@@ -24,14 +25,10 @@ const mockUseBiohubApi = {
   }
 };
 
-const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBiohubApi>).mockReturnValue(
-  mockUseBiohubApi
-);
-
 describe('UsersDetailPage', () => {
   beforeEach(() => {
-    // clear mocks before each test
-    mockBiohubApi().user.getUserById.mockClear();
+    mockBiohubApi.mockImplementation(() => mockUseApi);
+    mockUseApi.user.getUserById.mockClear();
   });
 
   afterEach(() => {
@@ -53,19 +50,20 @@ describe('UsersDetailPage', () => {
   it('renders correctly when selectedUser are loaded', async () => {
     history.push('/admin/users/1');
 
-    mockBiohubApi().user.getUserById.mockResolvedValue({
+    mockUseApi.user.getUserById.mockResolvedValue({
       id: 1,
       user_identifier: 'LongerUserName',
       user_record_end_date: 'end',
       role_names: ['role1', 'role2'],
-      user_guid: ''
+      user_guid: '',
+      identity_source: 'idir'
     });
 
-    mockBiohubApi().project.getAllUserProjectsForView.mockResolvedValue({
+    mockUseApi.project.getAllUserProjectsForView.mockResolvedValue({
       project: null
     } as any);
 
-    mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+    mockUseApi.codes.getAllCodeSets.mockResolvedValue({
       coordinator_agency: [{ id: 1, name: 'agency 1' }]
     } as any);
 
