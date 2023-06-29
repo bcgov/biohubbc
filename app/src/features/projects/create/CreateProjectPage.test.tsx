@@ -155,7 +155,7 @@ describe('CreateProjectPage', () => {
     });
   });
 
-  describe.only('draft project', () => {
+  describe('draft project', () => {
     afterEach(() => {
       jest.restoreAllMocks();
     });
