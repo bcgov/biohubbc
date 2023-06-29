@@ -4,7 +4,7 @@ import FormData from 'form-data';
 import { URL } from 'url';
 import { v4 as uuidv4 } from 'uuid';
 import { IDBConnection } from '../database/db';
-import { ApiGeneralError } from '../errors/api-error';
+import { ApiError, ApiErrorType, ApiGeneralError } from '../errors/api-error';
 import {
   IProjectAttachment,
   IProjectReportAttachment,
@@ -110,8 +110,9 @@ export type IGetSurveyReportAttachment = IGetSurveyAttachment & { fileType: 'Rep
 
 const getBackboneIntakeEnabled = () => process.env.BACKBONE_INTAKE_ENABLED === 'true' || false;
 const getBackboneApiHost = () => process.env.BACKBONE_API_HOST || '';
-const getBackboneIntakePath = () => process.env.BACKBONE_INTAKE_PATH || '/api/dwc/submission/queue';
 const getBackboneArtifactIntakePath = () => process.env.BACKBONE_ARTIFACT_INTAKE_PATH || '/api/artifact/intake';
+const getBackboneArtifactDeletePath = () => process.env.BACKBONE_ARTIFACT_DELETE_PATH || '/api/artifact/delete';
+const getBackboneIntakePath = () => process.env.BACKBONE_INTAKE_PATH || '/api/dwc/submission/queue';
 
 export class PlatformService extends DBService {
   attachmentService: AttachmentService;
@@ -816,5 +817,38 @@ export class PlatformService extends DBService {
     });
 
     return data;
+  }
+
+  /**
+   * Deletes the given attachment from BioHub.
+   *
+   * @param {string} artifactUUID
+   * @return {*}  {Promise<void>}
+   * @memberof PlatformService
+   */
+  async deleteAttachmentFromBiohub(artifactUUID: string): Promise<void> {
+    defaultLog.debug({ label: 'deleteAttachmentFromBiohub', message: 'params', artifactUUID });
+
+    const keycloakService = new KeycloakService();
+
+    const token = await keycloakService.getKeycloakToken();
+
+    const backboneArtifactIntakeUrl = new URL(getBackboneArtifactDeletePath(), getBackboneApiHost()).href;
+
+    const response = await axios.post<boolean>(
+      backboneArtifactIntakeUrl,
+      {
+        artifactUUIDs: [artifactUUID]
+      },
+      {
+        headers: {
+          authorization: `Bearer ${token}`
+        }
+      }
+    );
+
+    if (!response.data) {
+      throw new ApiError(ApiErrorType.UNKNOWN, 'Failed to delete attachment from Biohub');
+    }
   }
 }

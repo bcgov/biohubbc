@@ -370,6 +370,50 @@ export class AttachmentRepository extends BaseRepository {
   }
 
   /**
+   * SQL query to get a single attachment for a single survey.
+   *
+   * @param {number} surveyId
+   * @param {number} attachmentId
+   * @return {*}  {Promise<ISurveyAttachment>}
+   * @memberof AttachmentRepository
+   */
+  async getSurveyAttachmentById(surveyId: number, attachmentId: number): Promise<ISurveyAttachment> {
+    defaultLog.debug({ label: 'getProjectAttachmentById' });
+
+    const sqlStatement = SQL`
+      SELECT
+        survey_attachment_id,
+        uuid,
+        file_name,
+        file_type,
+        title,
+        description,
+        create_date,
+        update_date,
+        create_date,
+        file_size,
+        key
+      FROM
+        survey_attachment
+      WHERE
+        survey_attachment_id = ${attachmentId}
+      AND
+        survey_id = ${surveyId};
+    `;
+
+    const response = await this.connection.sql<ISurveyAttachment>(sqlStatement);
+
+    if (response.rowCount !== 1) {
+      throw new ApiExecuteSQLError('Failed to get survey attachment by attachmentId', [
+        'AttachmentRepository->getSurveyAttachmentById',
+        'rowCount was null, undefined or > 1, expected rowCount === 1'
+      ]);
+    }
+
+    return response.rows[0];
+  }
+
+  /**
    * SQL query to get all survey attachments for a single project with the given surveyAttachmentIds
    *
    * @param {number} surveyId The survey ID
@@ -1008,17 +1052,17 @@ export class AttachmentRepository extends BaseRepository {
    * Delete Project Attachment by id
    *
    * @param {number} attachmentId
-   * @return {*}  {Promise<{ key: string }>}
+   * @return {*}  {Promise<{ key: string; uuid: string }>}
    * @memberof AttachmentRepository
    */
-  async deleteProjectAttachment(attachmentId: number): Promise<{ key: string }> {
+  async deleteProjectAttachment(attachmentId: number): Promise<{ key: string; uuid: string }> {
     const sqlStatement = SQL`
       DELETE
         from project_attachment
       WHERE
         project_attachment_id = ${attachmentId}
       RETURNING
-        key;
+        key, uuid;
     `;
 
     const response = await this.connection.sql(sqlStatement);
@@ -1040,14 +1084,14 @@ export class AttachmentRepository extends BaseRepository {
    * @return {*}  {Promise<{ key: string }>}
    * @memberof AttachmentRepository
    */
-  async deleteProjectReportAttachment(attachmentId: number): Promise<{ key: string }> {
+  async deleteProjectReportAttachment(attachmentId: number): Promise<{ key: string; uuid: string }> {
     const sqlStatement = SQL`
       DELETE
         from project_report_attachment
       WHERE
         project_report_attachment_id = ${attachmentId}
       RETURNING
-        key;
+        key, uuid;
     `;
 
     const response = await this.connection.sql(sqlStatement);
@@ -1246,17 +1290,17 @@ export class AttachmentRepository extends BaseRepository {
    * Delete Survey Report Attachment
    *
    * @param {number} attachmentId
-   * @return {*}  {Promise<{ key: string }>}
+   * @return {*}  {Promise<{ key: string; uuid: string }>}
    * @memberof AttachmentRepository
    */
-  async deleteSurveyReportAttachment(attachmentId: number): Promise<{ key: string }> {
+  async deleteSurveyReportAttachment(attachmentId: number): Promise<{ key: string; uuid: string }> {
     const sqlStatement = SQL`
       DELETE
         from survey_report_attachment
       WHERE
         survey_report_attachment_id = ${attachmentId}
       RETURNING
-        key;
+        key, uuid;
     `;
 
     const response = await this.connection.sql(sqlStatement);
@@ -1275,17 +1319,17 @@ export class AttachmentRepository extends BaseRepository {
    * Delete Survey Attachment
    *
    * @param {number} attachmentId
-   * @return {*}  {Promise<{ key: string }>}
+   * @return {*}  {Promise<{ key: string; uuid: string }>}
    * @memberof AttachmentRepository
    */
-  async deleteSurveyAttachment(attachmentId: number): Promise<{ key: string }> {
+  async deleteSurveyAttachment(attachmentId: number): Promise<{ key: string; uuid: string }> {
     const sqlStatement = SQL`
       DELETE
         from survey_attachment
       WHERE
         survey_attachment_id = ${attachmentId}
       RETURNING
-        key;
+        key, uuid;
     `;
 
     const response = await this.connection.sql(sqlStatement);
