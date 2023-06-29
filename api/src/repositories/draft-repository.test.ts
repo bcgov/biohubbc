@@ -9,7 +9,7 @@ import { DraftRepository } from './draft-repository';
 
 chai.use(sinonChai);
 
-describe.only('DraftRepository', () => {
+describe('DraftRepository', () => {
   afterEach(() => {
     sinon.restore();
   });
