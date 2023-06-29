@@ -40,7 +40,7 @@ export class DraftRepository extends BaseRepository {
 
     if (!response) {
       throw new ApiExecuteSQLError('Failed to delete draft', [
-        'ProjectRepository->deleteDraft',
+        'DraftRepository->deleteDraft',
         'response was null or undefined, expected response != null'
       ]);
     }
@@ -68,12 +68,12 @@ export class DraftRepository extends BaseRepository {
 
     if (!response || !response?.rows?.[0]) {
       throw new ApiExecuteSQLError('Failed to get draft', [
-        'ProjectRepository->getSingleDraft',
+        'DraftRepository->getDraft',
         'response was null or undefined, expected response != null'
       ]);
     }
 
-    return response.rows[0] || null;
+    return response.rows[0];
   }
 
   /**
@@ -123,7 +123,14 @@ export class DraftRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement, WebformDraft);
 
-    return response.rows[0] || null;
+    if (!response || !response?.rows?.[0]) {
+      throw new ApiExecuteSQLError('Failed to create draft', [
+        'DraftRepository->createDraft',
+        'response was null or undefined, expected response != null'
+      ]);
+    }
+
+    return response.rows[0];
   }
 
   /**
@@ -149,6 +156,13 @@ export class DraftRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement, WebformDraft);
 
-    return response.rows[0] || null;
+    if (!response || !response?.rows?.[0]) {
+      throw new ApiExecuteSQLError('Failed to update draft', [
+        'DraftRepository->createDraft',
+        'response was null or undefined, expected response != null'
+      ]);
+    }
+
+    return response.rows[0];
   }
 }
