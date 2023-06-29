@@ -536,7 +536,7 @@ describe('CreateProjectPage', () => {
       });
     });
 
-    it.skip('calls the updateDraft functions with WIP form data and navigates to the projects list page', async () => {
+    it('calls the updateDraft functions with WIP form data and navigates to the projects list page', async () => {
       history.push('/admin/projects/create?draftId=1');
 
       mockUseApi.draft.getDraft.mockResolvedValue({
@@ -614,7 +614,7 @@ describe('CreateProjectPage', () => {
       });
     });
 
-    it.skip('renders an error dialog if the draft submit request fails', async () => {
+    it('renders an error dialog if the draft submit request fails', async () => {
       mockUseApi.draft.createDraft.mockImplementation(() => {
         throw new Error('Draft failed exception!');
       });
