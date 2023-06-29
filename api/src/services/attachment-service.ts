@@ -851,15 +851,17 @@ export class AttachmentService extends DBService {
 
   /**
    * Handle deletion of Project Attachment.
-   * If report:
+   *
+   * If (attachmentType = report):
    * - delete authors
    * - delete publish record
    * - delete attachment
-   * If attachment:
+   * Else (attachmentType = attachment):
    * - delete publish record
    * - delete attachment
-   * If attachment was published:
-   * - delete from Platform.
+   *
+   * If attachment was published and user is admin:
+   * - delete from Platform
    *
    * @param {number} projectId
    * @param {number} attachmentId
@@ -913,14 +915,16 @@ export class AttachmentService extends DBService {
 
   /**
    * Handle deletion of Survey Attachment.
-   * If report:
+   *
+   * If (attachmentType = report):
    * - delete authors
    * - delete publish record
    * - delete attachment
-   * If attachment:
+   * Else (attachmentType = attachment):
    * - delete publish record
    * - delete attachment
-   * If attachment was published:
+   *
+   * If attachment was published and user is admin:
    * - delete from Platform
    *
    * @param {number} surveyId
