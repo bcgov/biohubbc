@@ -60,7 +60,7 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 /**
- * Location boundary content for a project.
+ * View project - Location section
  *
  * @return {*}
  */

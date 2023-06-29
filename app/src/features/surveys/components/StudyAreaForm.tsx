@@ -27,7 +27,7 @@ export const StudyAreaYupSchema = yup.object().shape({
 });
 
 /**
- * Create survey - study area fields
+ * Create survey - Study area section
  *
  * @return {*}
  */

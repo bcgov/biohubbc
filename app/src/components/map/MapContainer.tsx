@@ -1,9 +1,4 @@
-import {
-  createGetFeatureDetails,
-  IWFSFeatureDetails,
-  layerContentHandlers,
-  wfsInferredLayers
-} from 'components/map/wfs-utils';
+import { layerContentHandlers, wfsInferredLayers } from 'components/map/wfs-utils';
 import { Feature } from 'geojson';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import L, { LatLngBoundsExpression, LeafletEventHandlerFnMap } from 'leaflet';
@@ -124,6 +119,7 @@ const MapContainer = (props: IMapContainerProps) => {
       }
     }
 
+    console.log('1111111');
     throttledGetFeatureDetails(wfsInferredLayers);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [drawControls?.initialFeatures, nonEditableGeometries]);
@@ -137,12 +133,15 @@ const MapContainer = (props: IMapContainerProps) => {
       // Get map geometries based on whether boundary is non editable or drawn/uploaded
       const mapGeometries: Feature[] = determineMapGeometries(drawControls?.initialFeatures, nonEditableGeometries);
 
-      const getFeatureDetails = createGetFeatureDetails(biohubApi.external.post);
-      const inferredLayers: IWFSFeatureDetails = await getFeatureDetails(typeNames, mapGeometries, wfsParams);
+      const getFeatureDetails = await biohubApi.spatial.getRegions(mapGeometries);
 
-      if (setInferredLayersInfo) {
-        setInferredLayersInfo(inferredLayers);
-      }
+      console.log('=====================================================');
+      console.log(getFeatureDetails);
+      //   const inferredLayers: IWFSFeatureDetails = await getFeatureDetails(typeNames, mapGeometries, wfsParams);
+
+      //   if (setInferredLayersInfo) {
+      //     setInferredLayersInfo(inferredLayers);
+      //   }
     }, 300),
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
