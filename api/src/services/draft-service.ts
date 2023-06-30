@@ -1,4 +1,3 @@
-import { QueryResult } from 'pg';
 import { IDBConnection } from '../database/db';
 import { PostPutDraftObject } from '../models/draft-create';
 import { DraftRepository, WebformDraft } from '../repositories/draft-repository';
@@ -22,7 +21,7 @@ export class DraftService extends DBService {
    * @param {number} draftId
    * @returns {*} Promise<QueryResult>
    */
-  async deleteDraft(draftId: number): Promise<QueryResult> {
+  async deleteDraft(draftId: number): Promise<{ webform_draft_id: number }> {
     defaultLog.debug({ label: 'deleteDraft' });
     return this.draftRepository.deleteDraft(draftId);
   }

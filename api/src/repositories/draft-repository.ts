@@ -1,4 +1,3 @@
-import { QueryResult } from 'pg';
 import SQL, { SQLStatement } from 'sql-template-strings';
 import { z } from 'zod';
 import { ApiExecuteSQLError } from '../errors/api-error';
@@ -30,22 +29,23 @@ export class DraftRepository extends BaseRepository {
    * @return {*}  {Promise<QueryResult>}
    * @memberof DraftRepository
    */
-  async deleteDraft(draftId: number): Promise<QueryResult> {
+  async deleteDraft(draftId: number): Promise<{ webform_draft_id: number }> {
     const sqlStatement = SQL`
       DELETE from webform_draft
-      WHERE webform_draft_id = ${draftId};
+      WHERE webform_draft_id = ${draftId}
+      RETURNING webform_draft_id;
     `;
 
-    const response = await this.connection.sql(sqlStatement);
+    const response = await this.connection.sql<{ webform_draft_id: number }>(sqlStatement);
 
-    if (!response) {
+    if (!response || !response.rows[0]) {
       throw new ApiExecuteSQLError('Failed to delete draft', [
         'DraftRepository->deleteDraft',
         'response was null or undefined, expected response != null'
       ]);
     }
 
-    return response;
+    return response.rows[0];
   }
   /**
    * Gets a draft
