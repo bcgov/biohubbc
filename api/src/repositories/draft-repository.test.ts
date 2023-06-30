@@ -187,7 +187,7 @@ describe('DraftRepository', () => {
             rows: [
               {
                 webform_draft_id: 1,
-                name: 'Draft name',
+                name: 'New Draft Name',
                 data: '{}',
                 create_date: '2023-06-29',
                 update_date: ''
