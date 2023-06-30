@@ -25,7 +25,7 @@ describe('DraftRepository', () => {
       const repo = new DraftRepository(mockConnection);
       const response = await repo.deleteDraft(1);
 
-      expect(response?.[0].webform_draft_id).to.be.eql(1);
+      expect(response.webform_draft_id).to.be.eql(1);
     });
 
     it('throws an error when delete fails', async () => {
