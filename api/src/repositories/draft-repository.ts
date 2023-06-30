@@ -38,7 +38,7 @@ export class DraftRepository extends BaseRepository {
 
     const response = await this.connection.sql<{ webform_draft_id: number }>(sqlStatement);
 
-    if (!response || !response.rows[0]) {
+    if (!response?.rows[0]) {
       throw new ApiExecuteSQLError('Failed to delete draft', [
         'DraftRepository->deleteDraft',
         'response was null or undefined, expected response != null'
@@ -66,7 +66,7 @@ export class DraftRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement, WebformDraft);
 
-    if (!response || !response?.rows?.[0]) {
+    if (!response?.rows?.[0]) {
       throw new ApiExecuteSQLError('Failed to get draft', [
         'DraftRepository->getDraft',
         'response was null or undefined, expected response != null'
@@ -123,7 +123,7 @@ export class DraftRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement, WebformDraft);
 
-    if (!response || !response?.rows?.[0]) {
+    if (!response?.rows?.[0]) {
       throw new ApiExecuteSQLError('Failed to create draft', [
         'DraftRepository->createDraft',
         'response was null or undefined, expected response != null'
@@ -156,7 +156,7 @@ export class DraftRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement, WebformDraft);
 
-    if (!response || !response?.rows?.[0]) {
+    if (!response?.rows?.[0]) {
       throw new ApiExecuteSQLError('Failed to update draft', [
         'DraftRepository->createDraft',
         'response was null or undefined, expected response != null'

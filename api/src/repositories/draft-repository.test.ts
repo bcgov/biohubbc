@@ -18,14 +18,14 @@ describe('DraftRepository', () => {
     it('should run without issue', async () => {
       const mockConnection = getMockDBConnection({
         sql: async () => {
-          return ({ rowCount: 1, rows: [] } as any) as Promise<QueryResult<any>>;
+          return ({ rowCount: 1, rows: [{ webform_draft_id: 1 }] } as any) as Promise<QueryResult<any>>;
         }
       });
 
       const repo = new DraftRepository(mockConnection);
       const response = await repo.deleteDraft(1);
 
-      expect(response.rowCount).to.be.eql(1);
+      expect(response?.[0].webform_draft_id).to.be.eql(1);
     });
 
     it('throws an error when delete fails', async () => {

@@ -60,16 +60,11 @@ describe('paths/draft/create', () => {
         create_date: ('2022-10-10' as unknown) as Date,
         update_date: null
       });
+      const requestHandler = create.createDraft();
 
-      try {
-        const requestHandler = create.createDraft();
+      mockReq.body = { name: 'draft name', data: { a: '1', b: '2' } };
 
-        mockReq.body = { name: 'draft name', data: { a: '1', b: '2' } };
-
-        await requestHandler(mockReq, mockRes, mockNext);
-      } catch (actualError) {
-        expect.fail();
-      }
+      await requestHandler(mockReq, mockRes, mockNext);
 
       expect(mockRes.statusValue).to.equal(200);
       expect(mockRes.jsonValue).to.eql({
