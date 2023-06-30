@@ -68,16 +68,12 @@ describe('paths/draft/{draftId}/update', () => {
         update_date: ('2022-10-11' as unknown) as Date
       });
 
-      try {
-        const requestHandler = update.updateDraft();
+      const requestHandler = update.updateDraft();
 
-        mockReq.body = { name: 'draft name', data: { a: '1', b: '2' } };
-        mockReq.params = { draftId: '1' };
+      mockReq.body = { name: 'draft name', data: { a: '1', b: '2' } };
+      mockReq.params = { draftId: '1' };
 
-        await requestHandler(mockReq, mockRes, mockNext);
-      } catch (actualError) {
-        expect.fail();
-      }
+      await requestHandler(mockReq, mockRes, mockNext);
 
       expect(mockRes.statusValue).to.equal(200);
       expect(mockRes.jsonValue).to.eql({

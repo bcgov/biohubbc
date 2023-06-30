@@ -62,16 +62,10 @@ describe('paths/draft/{draftId}/delete', () => {
 
       sinon.stub(DraftService.prototype, 'deleteDraft').resolves();
 
-      try {
-        const requestHandler = endpoint.deleteDraft();
+      const requestHandler = endpoint.deleteDraft();
+      mockReq.params = { draftId: '1' };
 
-        mockReq.params = { draftId: '1' };
-
-        await requestHandler(mockReq, mockRes, mockNext);
-      } catch (actualError) {
-        expect.fail();
-      }
-
+      await requestHandler(mockReq, mockRes, mockNext);
       expect(mockRes.statusValue).to.equal(200);
     });
   });
