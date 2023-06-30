@@ -60,7 +60,7 @@ describe('paths/draft/{draftId}/delete', () => {
 
       const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
-      sinon.stub(DraftService.prototype, 'deleteDraft').resolves();
+      sinon.stub(DraftService.prototype, 'deleteDraft').resolves({ webform_draft_id: 1 });
 
       const requestHandler = endpoint.deleteDraft();
       mockReq.params = { draftId: '1' };
