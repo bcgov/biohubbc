@@ -1,15 +1,19 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { Feature } from 'geojson';
-import { z } from 'zod';
-import { getDBConnection } from '../../database/db';
+import { getDBConnection, IDBConnection } from '../../database/db';
 import { GeoJSONFeature } from '../../openapi/schemas/geoJson';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
-import { BcgwEnvRegionsLayer, BcgwLayerService, BcgwNrmRegionsLayer } from '../../services/bcgw-layer-service';
+import {
+  BcgwEnvRegionsLayer,
+  BcgwLayerService,
+  BcgwNrmRegionsLayer,
+  BcgwParksAndEcoreservesLayer,
+  BcgwWildlifeManagementUnitsLayer
+} from '../../services/bcgw-layer-service';
 import { Srid3005 } from '../../services/geo-service';
 import { PostgisService } from '../../services/postgis-service';
 import { getLogger } from '../../utils/logger';
-import { GeoJSONFeatureZodSchema } from '../../zod-schema/geoJsonZodSchema';
 
 const defaultLog = getLogger('paths/spatial/regions');
 
@@ -112,41 +116,18 @@ POST.apiDoc = {
  */
 export function getRegions(): RequestHandler {
   return async (req, res) => {
+    const connection = getDBConnection(req['keycloak_token']);
+
     try {
-      const bcgwLayerService = new BcgwLayerService();
+      const features = req.body.features as Feature[];
 
-      // Collect a set of all regions, in order to remove duplicates
-      const regions = new Set<{ regionName: string; sourceLayer: string }>();
+      const regions: { regionName: string; sourceLayer: string }[] = [];
 
-      // Check the incoming geometries are valid GeoJSON features
-      const features = z.array(GeoJSONFeatureZodSchema).parse(req.body.features) as Feature[];
-
-      // Array of features that did not come from a known or supported BCGW layer
-      const unknownFeatures: Feature[] = [];
-
-      for (const feature of features) {
-        const regionDetails = bcgwLayerService.findRegionName(feature);
-
-        if (!regionDetails) {
-          // No region details exist, or could be determined, add to unknownFeatures array for further processing
-          unknownFeatures.push(feature);
-        } else {
-          // Feature was a known BCGW feature, add to regions set
-          regions.add(regionDetails);
-        }
-      }
-
-      // Convert the unknown GeoJSON geometries into their Well-Known Text (WKT) string representation in EPSG:3005 (BC Albers)
-      let unknownFeatureWktStrings: string[] = [];
-      const connection = getDBConnection(req['keycloak_token']);
       try {
         await connection.open();
 
-        const postgisService = new PostgisService(connection);
-
-        for (const unknownFeature of unknownFeatures) {
-          const result = await postgisService.getGeoJsonGeometryAsWkt(unknownFeature.geometry, Srid3005);
-          unknownFeatureWktStrings.push(result.geometry);
+        for (const feature of features) {
+          regions.concat(await getRegionsForFeature(feature, connection));
         }
 
         await connection.commit();
@@ -157,34 +138,9 @@ export function getRegions(): RequestHandler {
         connection.release();
       }
 
-      // Fetch ENV regions
-      await Promise.all(
-        unknownFeatureWktStrings.map(async (unknownFeatureWktString) => {
-          const envRegionNames = await bcgwLayerService.getEnvRegionNames(unknownFeatureWktString);
+      // Convert array to set and back to remove duplicate region information
+      const response = { regions: Array.from(new Set(regions)) };
 
-          for (const envRegionName of envRegionNames) {
-            regions.add({ regionName: envRegionName, sourceLayer: BcgwEnvRegionsLayer });
-          }
-        })
-      );
-
-      // Fetch NRM regions
-      await Promise.all(
-        unknownFeatureWktStrings.map(async (unknownFeatureWktString) => {
-          const nrmRegionNames = await bcgwLayerService.getNrmRegionNames(unknownFeatureWktString);
-
-          for (const nrmRegionName of nrmRegionNames) {
-            regions.add({ regionName: nrmRegionName, sourceLayer: BcgwNrmRegionsLayer });
-          }
-        })
-      );
-
-      // TODO add parks layer and management units layer calls?
-
-      // Convert set of regions back to an array
-      const response = { regions: Array.from(regions) };
-
-      console.log('===============================================');
       console.log(response);
 
       return res.status(200).json(response);
@@ -193,4 +149,128 @@ export function getRegions(): RequestHandler {
       throw error;
     }
   };
+}
+
+/**
+ * For a given GeoJSON Feature, fetch all region details from all supported BCGW layers.
+ *
+ * @param {Feature} feature
+ * @param {IDBConnection} connection
+ * @return {*}
+ */
+export async function getRegionsForFeature(feature: Feature, connection: IDBConnection) {
+  // Array of all matching region details for the feature
+  const regions: { regionName: string; sourceLayer: string }[] = [];
+
+  const postgisService = new PostgisService(connection);
+  // Convert the feature geometry to WKT format
+  const result = await postgisService.getGeoJsonGeometryAsWkt(feature.geometry, Srid3005);
+  const geometryWKTString = result.geometry;
+
+  const bcgwLayerService = new BcgwLayerService();
+  // Attempt to detect if the feature is a known BCGW feature
+  const regionDetails = bcgwLayerService.findRegionName(feature);
+
+  if (!regionDetails) {
+    // Feature is not a known BCGW feature
+    // Fetch region details for the feature from ALL available layers
+    regions.concat(
+      await getAllRegionDetailsForWktString(geometryWKTString, [
+        BcgwEnvRegionsLayer,
+        BcgwNrmRegionsLayer,
+        BcgwParksAndEcoreservesLayer,
+        BcgwWildlifeManagementUnitsLayer
+      ])
+    );
+  } else {
+    // Feature is a known BCGW feature, add the known region details to the array
+    regions.push(regionDetails);
+    // Fetch region details for the feature, excluding the layer whose details were already added above
+    regions.concat(
+      await getAllRegionDetailsForWktString(
+        geometryWKTString,
+        [
+          BcgwEnvRegionsLayer,
+          BcgwNrmRegionsLayer,
+          BcgwParksAndEcoreservesLayer,
+          BcgwWildlifeManagementUnitsLayer
+        ].filter((item) => item === regionDetails.sourceLayer)
+      )
+    );
+  }
+
+  return regions;
+}
+
+/**
+ * Given a geometry WKT string and array of layers to process, return an array of all matching region details for the
+ * specified layers.
+ *
+ * @param {string} geometryWktString a geometry string in Well-Known Text format
+ * @param {string[]} layersToProcess an array of supported layers to query against
+ * @return {*}
+ */
+export async function getAllRegionDetailsForWktString(geometryWktString: string, layersToProcess: string[]) {
+  const regions: { regionName: string; sourceLayer: string }[] = [];
+
+  for (const layerToProcess of layersToProcess) {
+    switch (layerToProcess) {
+      case BcgwEnvRegionsLayer:
+        regions.concat(await getEnvRegionDetails(geometryWktString));
+        break;
+      case BcgwNrmRegionsLayer:
+        regions.concat(await getNrmRegionDetails(geometryWktString));
+        break;
+      //   case BcgwParksAndEcoreservesLayer:
+      //     regions.concat(await getParkAndEcoreserveRegionDetails(geometryWktString));
+      //     break;
+      //   case BcgwWildlifeManagementUnitsLayer:
+      //     regions.concat(await getWildlifeManagementUnitRegionDetails(geometryWktString));
+      //     break;
+      default:
+        break;
+    }
+  }
+
+  return regions;
+}
+
+export async function getEnvRegionDetails(
+  geometryWktString: string
+): Promise<{ regionName: string; sourceLayer: string }[]> {
+  const bcgwLayerService = new BcgwLayerService();
+
+  const regionNames = await bcgwLayerService.getEnvRegionNames(geometryWktString);
+
+  return regionNames.map((name) => ({ regionName: name, sourceLayer: BcgwEnvRegionsLayer }));
+}
+
+export async function getNrmRegionDetails(
+  geometryWktString: string
+): Promise<{ regionName: string; sourceLayer: string }[]> {
+  const bcgwLayerService = new BcgwLayerService();
+
+  const regionNames = await bcgwLayerService.getNrmRegionNames(geometryWktString);
+
+  return regionNames.map((name) => ({ regionName: name, sourceLayer: BcgwNrmRegionsLayer }));
+}
+
+export async function getParkAndEcoreserveRegionDetails(
+  geometryWktString: string
+): Promise<{ regionName: string; sourceLayer: string }[]> {
+  const bcgwLayerService = new BcgwLayerService();
+
+  const regionNames = await bcgwLayerService.getParkAndEcoreserveRegionNames(geometryWktString);
+
+  return regionNames.map((name) => ({ regionName: name, sourceLayer: BcgwParksAndEcoreservesLayer }));
+}
+
+export async function getWildlifeManagementUnitRegionDetails(
+  geometryWktString: string
+): Promise<{ regionName: string; sourceLayer: string }[]> {
+  const bcgwLayerService = new BcgwLayerService();
+
+  const regionNames = await bcgwLayerService.getWildlifeManagementUnitRegionNames(geometryWktString);
+
+  return regionNames.map((name) => ({ regionName: name, sourceLayer: BcgwWildlifeManagementUnitsLayer }));
 }

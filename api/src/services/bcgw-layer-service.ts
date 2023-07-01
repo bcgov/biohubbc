@@ -232,7 +232,31 @@ export class BcgwLayerService {
       return { regionName: regionName, sourceLayer: BcgwNrmRegionsLayer };
     }
 
-    // TODO add parks layer and management units layer calls?
+    // check if feature is from the BCGW Parks and Ecoreserves layer
+    if ((feature.id as string).includes(BcgwParksAndEcoreservesLayer)) {
+      const regionName = feature.properties?.['PROTECTED_LANDS_NAME'];
+
+      if (!regionName) {
+        // feature has no region name property
+        return null;
+      }
+
+      // feature is a valid BCGW Parks and Ecoreserves feature
+      return { regionName: regionName, sourceLayer: BcgwParksAndEcoreservesLayer };
+    }
+
+    // check if feature is from the BCGW Wildlife Management Units layer
+    if ((feature.id as string).includes(BcgwWildlifeManagementUnitsLayer)) {
+      const regionName = feature.properties?.['WILDLIFE_MGMT_UNIT_ID'];
+
+      if (!regionName) {
+        // feature has no region name property
+        return null;
+      }
+
+      // feature is a valid BCGW Wildlife Management Units feature
+      return { regionName: regionName, sourceLayer: BcgwWildlifeManagementUnitsLayer };
+    }
 
     return null;
   }

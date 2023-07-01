@@ -19,16 +19,15 @@ export class PostgisRepository extends BaseRepository {
 
     const queryBuilder = knex
       .queryBuilder()
-      .select(knex.raw(`ST_AsText(ST_TRANSFORM(ST_GeomFromGeoJSON(${geometry}), ${srid})) as geometry`));
-
-    console.log(queryBuilder.toSQL().toNative().bindings);
-    console.log(queryBuilder.toSQL().toNative().sql);
+      .select(
+        knex.raw(`ST_AsText(ST_TRANSFORM(ST_GeomFromGeoJSON('${JSON.stringify(geometry)}'), ${srid})) as geometry`)
+      );
 
     const response = await this.connection.knex(queryBuilder, z.object({ geometry: z.string() }));
 
     if (response.rowCount !== 1) {
-      throw new ApiExecuteSQLError('Failed to convert geometry to WKT', [
-        'PostgisRepository->getGeometryAsWkt',
+      throw new ApiExecuteSQLError('Failed to convert GeoJSON geometry to WKT', [
+        'PostgisRepository->getGeoJsonGeometryAsWkt',
         'rowCount was null or undefined, expected rowCount = 1'
       ]);
     }
