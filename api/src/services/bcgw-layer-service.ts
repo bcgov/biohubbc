@@ -61,6 +61,25 @@ export const BcgwWildlifeManagementUnitsLayer: BcgwWildlifeManagementUnitsLayer 
 export const BcgwWildlifeManagementUnitsLayerGeometryField = 'GEOMETRY';
 
 /**
+ * A mapping of ENV to NRM regions, which are not necessarily 1:1.
+ *
+ * Note: some ENV regions map to multiple NRM regions.
+ */
+const envToNrmRegionsMapping = {
+  'Vancouver Island': 'West Coast Natural Resource Region',
+  'Lower Mainland': 'South Coast Natural Resource Region',
+  Thompson: 'Thompson-Okanagan Natural Resource Region',
+  Okanagan: 'Thompson-Okanagan Natural Resource Region',
+  Kootenay: 'Kootenay-Boundary Natural Resource Region',
+  Cariboo: 'Cariboo Natural Resource Region',
+  Skeena: 'Skeena Natural Resource Region',
+  Omineca: 'Omineca Natural Resource Region',
+  Peace: 'Northeast Natural Resource Region'
+};
+
+export type RegionDetails = { regionName: string; sourceLayer: string };
+
+/**
  * Service for fetching information from known BCGW layers.
  *
  * @export
@@ -87,15 +106,18 @@ export class BcgwLayerService {
   };
 
   // Zod schema used to verify the ENV and NRM region GetPropertyValue responses, after converting from XML to JSON.
-  _getGetRegionPropertyValueZodSchema = z.object({
-    'wfs:ValueCollection': z.object({
-      'wfs:member': z.array(
-        z.object({
-          'pub:REGION_NAME': z.string()
-        })
-      )
-    })
-  });
+  _getGetRegionPropertyValueZodSchema = (propertyName: string) =>
+    z.object({
+      'wfs:ValueCollection': z.object({
+        'wfs:member': z
+          .array(
+            z.object({
+              [`pub:${propertyName}`]: z.string()
+            })
+          )
+          .optional()
+      })
+    });
 
   constructor() {
     this.webFeatureService = new WebFeatureService();
@@ -119,11 +141,14 @@ export class BcgwLayerService {
       valueReference: 'REGION_NAME'
     });
 
+    // TODO handle when zod fails, as it currently crashes the frontend due to the 500 error
     // Convert XML response to JSON and verify with Zod
-    const responseObj = this._getGetRegionPropertyValueZodSchema.parse(this.xmlParser.parse(responseXml as string));
+    const responseObj = this._getGetRegionPropertyValueZodSchema('REGION_NAME').parse(
+      this.xmlParser.parse(responseXml as string)
+    );
 
     // Return array of region name values
-    return responseObj['wfs:ValueCollection']['wfs:member'].map((item) => item['pub:REGION_NAME']);
+    return responseObj['wfs:ValueCollection']['wfs:member']?.map((item) => item['pub:REGION_NAME']) || [];
   }
 
   /**
@@ -142,10 +167,12 @@ export class BcgwLayerService {
     });
 
     // Convert XML response to JSON and verify with Zod
-    const responseObj = this._getGetRegionPropertyValueZodSchema.parse(this.xmlParser.parse(responseXml as string));
+    const responseObj = this._getGetRegionPropertyValueZodSchema('REGION_NAME').parse(
+      this.xmlParser.parse(responseXml as string)
+    );
 
     // Return array of region name values
-    return responseObj['wfs:ValueCollection']['wfs:member'].map((item) => item['pub:REGION_NAME']);
+    return responseObj['wfs:ValueCollection']['wfs:member']?.map((item) => item['pub:REGION_NAME']) || [];
   }
 
   /**
@@ -160,14 +187,16 @@ export class BcgwLayerService {
       typeNames: BcgwParksAndEcoreservesLayer,
       srsName: Epsg3005,
       cql_filter: `INTERSECTS(${BcgwParksAndEcoreservesLayerGeometryField}, ${geometry})`,
-      valueReference: 'REGION_NAME'
+      valueReference: 'PROTECTED_LANDS_NAME'
     });
 
     // Convert XML response to JSON and verify with Zod
-    const responseObj = this._getGetRegionPropertyValueZodSchema.parse(this.xmlParser.parse(responseXml as string));
+    const responseObj = this._getGetRegionPropertyValueZodSchema('PROTECTED_LANDS_NAME').parse(
+      this.xmlParser.parse(responseXml as string)
+    );
 
     // Return array of region name values
-    return responseObj['wfs:ValueCollection']['wfs:member'].map((item) => item['pub:REGION_NAME']);
+    return responseObj['wfs:ValueCollection']['wfs:member']?.map((item) => item['pub:PROTECTED_LANDS_NAME']) || [];
   }
 
   /**
@@ -182,25 +211,27 @@ export class BcgwLayerService {
       typeNames: BcgwWildlifeManagementUnitsLayer,
       srsName: Epsg3005,
       cql_filter: `INTERSECTS(${BcgwWildlifeManagementUnitsLayerGeometryField}, ${geometry})`,
-      valueReference: 'REGION_NAME'
+      valueReference: 'WILDLIFE_MGMT_UNIT_ID'
     });
 
     // Convert XML response to JSON and verify with Zod
-    const responseObj = this._getGetRegionPropertyValueZodSchema.parse(this.xmlParser.parse(responseXml as string));
+    const responseObj = this._getGetRegionPropertyValueZodSchema('WILDLIFE_MGMT_UNIT_ID').parse(
+      this.xmlParser.parse(responseXml as string)
+    );
 
     // Return array of region name values
-    return responseObj['wfs:ValueCollection']['wfs:member'].map((item) => item['pub:REGION_NAME']);
+    return responseObj['wfs:ValueCollection']['wfs:member']?.map((item) => item['pub:WILDLIFE_MGMT_UNIT_ID']) || [];
   }
 
   /**
-   * Given a GeoJSON feature, attempt to determine if the feature came from a known BCGW layer, and if so, return the
-   * region name and source layer details.
+   * Given a GeoJSON feature, attempt to determine if the feature came from a known BCGW layer, and if so, return
+   * its matching region name(s) and source layer details.
    *
    * @param {Feature} feature
-   * @return {*}  {({ regionName: string; sourceLayer: string } | null)}
+   * @return {*}  {(RegionDetails | null)}
    * @memberof BcgwLayerService
    */
-  findRegionName(feature: Feature): { regionName: string; sourceLayer: string } | null {
+  findRegionDetails(feature: Feature): RegionDetails | null {
     if (!feature.id || !feature.properties) {
       // feature is missing any identifying attributes
       return null;
@@ -214,7 +245,6 @@ export class BcgwLayerService {
         // feature has no region name property
         return null;
       }
-
       // feature is a valid BCGW ENV feature
       return { regionName: regionName, sourceLayer: BcgwEnvRegionsLayer };
     }
@@ -227,7 +257,6 @@ export class BcgwLayerService {
         // feature has no region name property
         return null;
       }
-
       // feature is a valid BCGW NRM feature
       return { regionName: regionName, sourceLayer: BcgwNrmRegionsLayer };
     }
@@ -258,6 +287,58 @@ export class BcgwLayerService {
       return { regionName: regionName, sourceLayer: BcgwWildlifeManagementUnitsLayer };
     }
 
+    // feature is not a known BCGW feature from any known BCGW layer
     return null;
+  }
+
+  /**
+   * Given an array of RegionDetails items, for each item, if the item came from a known BCGW layer that has a known
+   * mapping to another BCGW layer, then include the item's matching region(s) from the other layer in the response.
+   *
+   * Note: currently this only supports ENV to NRM layer mappings (ie: for all ENV regions, return their matching NRM
+   * regions, and vice versa)
+   *
+   * Why? ENV and NRM regions can be explicitly mapped from one to the other. This allows us to return a list of
+   * matching NRM regions for a given ENV region, and nice versa, without having to query the BCGW and more importantly,
+   * without running into any inconsistent layer issues (ex: NRM Region 1 should map to ENV Region 2, but due to
+   * the polygons in the layers overlapping, NRM Region 1 will return matches for ENV Region 2 AND ENV Region 3, when
+   * it shouldn't). As a result we cannot reply fully on the layer query results alone.
+   *
+   * @param {RegionDetails[]} regionDetails
+   * @return {*}
+   * @memberof BcgwLayerService
+   */
+  getMappedRegionDetails(regionDetails: RegionDetails[]) {
+    if (!regionDetails?.length) {
+      // feature is missing any identifying attributes
+      return [];
+    }
+
+    const response = [...regionDetails];
+
+    for (const regionDetail of regionDetails) {
+      // Check if the regionDetail item came from the ENV layer
+      if (regionDetail.sourceLayer === BcgwEnvRegionsLayer) {
+        // Check if the region is a known ENV region that maps to a known NRM region
+        const matchingNrmRegion = envToNrmRegionsMapping[regionDetail.regionName];
+        if (matchingNrmRegion) {
+          // Add NRM region to response
+          response.push({ regionName: matchingNrmRegion, sourceLayer: BcgwNrmRegionsLayer });
+        }
+      }
+
+      // Check if the regionDetail item came from the NRM layer
+      if (regionDetail.sourceLayer === BcgwNrmRegionsLayer) {
+        // Check if the region is a known NRM region that maps to one or more known ENV regions
+        Object.entries(envToNrmRegionsMapping).map(([envRegion, nrmRegion]) => {
+          if (regionDetail.regionName === nrmRegion) {
+            // Return matching ENV region
+            response.push({ regionName: envRegion, sourceLayer: BcgwEnvRegionsLayer });
+          }
+        });
+      }
+    }
+
+    return response;
   }
 }

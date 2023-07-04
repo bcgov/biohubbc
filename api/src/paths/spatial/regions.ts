@@ -9,7 +9,8 @@ import {
   BcgwLayerService,
   BcgwNrmRegionsLayer,
   BcgwParksAndEcoreservesLayer,
-  BcgwWildlifeManagementUnitsLayer
+  BcgwWildlifeManagementUnitsLayer,
+  RegionDetails
 } from '../../services/bcgw-layer-service';
 import { Srid3005 } from '../../services/geo-service';
 import { PostgisService } from '../../services/postgis-service';
@@ -121,13 +122,14 @@ export function getRegions(): RequestHandler {
     try {
       const features = req.body.features as Feature[];
 
-      const regions: { regionName: string; sourceLayer: string }[] = [];
+      let regionsDetails: RegionDetails[] = [];
 
       try {
         await connection.open();
 
         for (const feature of features) {
-          regions.concat(await getRegionsForFeature(feature, connection));
+          const result = await getRegionsForFeature(feature, connection);
+          regionsDetails = regionsDetails.concat(result);
         }
 
         await connection.commit();
@@ -139,9 +141,7 @@ export function getRegions(): RequestHandler {
       }
 
       // Convert array to set and back to remove duplicate region information
-      const response = { regions: Array.from(new Set(regions)) };
-
-      console.log(response);
+      const response = { regions: Array.from(new Set(regionsDetails)) };
 
       return res.status(200).json(response);
     } catch (error) {
@@ -160,7 +160,7 @@ export function getRegions(): RequestHandler {
  */
 export async function getRegionsForFeature(feature: Feature, connection: IDBConnection) {
   // Array of all matching region details for the feature
-  const regions: { regionName: string; sourceLayer: string }[] = [];
+  let response: RegionDetails[] = [];
 
   const postgisService = new PostgisService(connection);
   // Convert the feature geometry to WKT format
@@ -169,37 +169,42 @@ export async function getRegionsForFeature(feature: Feature, connection: IDBConn
 
   const bcgwLayerService = new BcgwLayerService();
   // Attempt to detect if the feature is a known BCGW feature
-  const regionDetails = bcgwLayerService.findRegionName(feature);
+  const regionDetails = bcgwLayerService.findRegionDetails(feature);
 
   if (!regionDetails) {
     // Feature is not a known BCGW feature
     // Fetch region details for the feature from ALL available layers
-    regions.concat(
+    response = response.concat(
       await getAllRegionDetailsForWktString(geometryWKTString, [
         BcgwEnvRegionsLayer,
-        BcgwNrmRegionsLayer,
-        BcgwParksAndEcoreservesLayer,
-        BcgwWildlifeManagementUnitsLayer
+        BcgwNrmRegionsLayer
+        // BcgwParksAndEcoreservesLayer,
+        // BcgwWildlifeManagementUnitsLayer
       ])
     );
   } else {
-    // Feature is a known BCGW feature, add the known region details to the array
-    regions.push(regionDetails);
+    // Feature is a known BCGW feature, fetch any additional mapped region details, and add to the overall response
+    const mappedRegionDetails = bcgwLayerService.getMappedRegionDetails([regionDetails]);
+    response = response.concat(mappedRegionDetails);
     // Fetch region details for the feature, excluding the layer whose details were already added above
-    regions.concat(
-      await getAllRegionDetailsForWktString(
-        geometryWKTString,
-        [
-          BcgwEnvRegionsLayer,
-          BcgwNrmRegionsLayer,
-          BcgwParksAndEcoreservesLayer,
-          BcgwWildlifeManagementUnitsLayer
-        ].filter((item) => item === regionDetails.sourceLayer)
-      )
+    // Why? We want to avoid querying a layer using a feature from that same layer because the actual results will not
+    // be consistent with the expected results. (Ex: LayerA + Feature1 should return Feature1, but will often return
+    // Feature1 + Feature2 + Feature3 due to the layer features containing overlapping coordinates, when ideally they
+    // should not).
+    const layersToProcess = [
+      BcgwEnvRegionsLayer,
+      BcgwNrmRegionsLayer
+      //   BcgwParksAndEcoreservesLayer,
+      //   BcgwWildlifeManagementUnitsLayer
+    ].filter(
+      (layerToProcess) =>
+        !mappedRegionDetails.map((mappedRegionDetail) => mappedRegionDetail.sourceLayer).includes(layerToProcess)
     );
+
+    response = response.concat(await getAllRegionDetailsForWktString(geometryWKTString, layersToProcess));
   }
 
-  return regions;
+  return response;
 }
 
 /**
@@ -211,33 +216,31 @@ export async function getRegionsForFeature(feature: Feature, connection: IDBConn
  * @return {*}
  */
 export async function getAllRegionDetailsForWktString(geometryWktString: string, layersToProcess: string[]) {
-  const regions: { regionName: string; sourceLayer: string }[] = [];
+  let response: RegionDetails[] = [];
 
   for (const layerToProcess of layersToProcess) {
     switch (layerToProcess) {
       case BcgwEnvRegionsLayer:
-        regions.concat(await getEnvRegionDetails(geometryWktString));
+        response = response.concat(await getEnvRegionDetails(geometryWktString));
         break;
       case BcgwNrmRegionsLayer:
-        regions.concat(await getNrmRegionDetails(geometryWktString));
+        response = response.concat(await getNrmRegionDetails(geometryWktString));
         break;
-      //   case BcgwParksAndEcoreservesLayer:
-      //     regions.concat(await getParkAndEcoreserveRegionDetails(geometryWktString));
-      //     break;
-      //   case BcgwWildlifeManagementUnitsLayer:
-      //     regions.concat(await getWildlifeManagementUnitRegionDetails(geometryWktString));
-      //     break;
+      case BcgwParksAndEcoreservesLayer:
+        response = response.concat(await getParkAndEcoreserveRegionDetails(geometryWktString));
+        break;
+      case BcgwWildlifeManagementUnitsLayer:
+        response = response.concat(await getWildlifeManagementUnitRegionDetails(geometryWktString));
+        break;
       default:
         break;
     }
   }
 
-  return regions;
+  return response;
 }
 
-export async function getEnvRegionDetails(
-  geometryWktString: string
-): Promise<{ regionName: string; sourceLayer: string }[]> {
+export async function getEnvRegionDetails(geometryWktString: string): Promise<RegionDetails[]> {
   const bcgwLayerService = new BcgwLayerService();
 
   const regionNames = await bcgwLayerService.getEnvRegionNames(geometryWktString);
@@ -245,9 +248,7 @@ export async function getEnvRegionDetails(
   return regionNames.map((name) => ({ regionName: name, sourceLayer: BcgwEnvRegionsLayer }));
 }
 
-export async function getNrmRegionDetails(
-  geometryWktString: string
-): Promise<{ regionName: string; sourceLayer: string }[]> {
+export async function getNrmRegionDetails(geometryWktString: string): Promise<RegionDetails[]> {
   const bcgwLayerService = new BcgwLayerService();
 
   const regionNames = await bcgwLayerService.getNrmRegionNames(geometryWktString);
@@ -255,9 +256,7 @@ export async function getNrmRegionDetails(
   return regionNames.map((name) => ({ regionName: name, sourceLayer: BcgwNrmRegionsLayer }));
 }
 
-export async function getParkAndEcoreserveRegionDetails(
-  geometryWktString: string
-): Promise<{ regionName: string; sourceLayer: string }[]> {
+export async function getParkAndEcoreserveRegionDetails(geometryWktString: string): Promise<RegionDetails[]> {
   const bcgwLayerService = new BcgwLayerService();
 
   const regionNames = await bcgwLayerService.getParkAndEcoreserveRegionNames(geometryWktString);
@@ -265,9 +264,7 @@ export async function getParkAndEcoreserveRegionDetails(
   return regionNames.map((name) => ({ regionName: name, sourceLayer: BcgwParksAndEcoreservesLayer }));
 }
 
-export async function getWildlifeManagementUnitRegionDetails(
-  geometryWktString: string
-): Promise<{ regionName: string; sourceLayer: string }[]> {
+export async function getWildlifeManagementUnitRegionDetails(geometryWktString: string): Promise<RegionDetails[]> {
   const bcgwLayerService = new BcgwLayerService();
 
   const regionNames = await bcgwLayerService.getWildlifeManagementUnitRegionNames(geometryWktString);
