@@ -3,17 +3,18 @@ import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../../constants/roles';
 import { getDBConnection } from '../../../database/db';
 import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
-import { ProjectService } from '../../../services/project-service';
+import { DraftService } from '../../../services/draft-service';
 import { getLogger } from '../../../utils/logger';
 
 const defaultLog = getLogger('/api/draft/{draftId}/delete');
 
 export const DELETE: Operation = [
-  authorizeRequestHandler(() => {
+  authorizeRequestHandler((req) => {
     return {
       and: [
         {
           validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_CREATOR, SYSTEM_ROLE.DATA_ADMINISTRATOR],
+          draftId: Number(req.params.draftId),
           discriminator: 'SystemRole'
         }
       ]
@@ -79,13 +80,13 @@ export function deleteDraft(): RequestHandler {
     try {
       await connection.open();
 
-      const projectService = new ProjectService(connection);
+      const draftService = new DraftService(connection);
 
-      const response = await projectService.deleteDraft(Number(req.params.draftId));
+      const response = await draftService.deleteDraft(Number(req.params.draftId));
 
       await connection.commit();
 
-      return res.status(200).json(response && response.rowCount);
+      return res.status(200).json(response.webform_draft_id);
     } catch (error) {
       defaultLog.error({ label: 'deleteDraft', message: 'error', error });
       await connection.rollback();

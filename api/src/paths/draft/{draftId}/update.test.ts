@@ -7,20 +7,20 @@ import * as db from '../../../database/db';
 import { HTTPError } from '../../../errors/http-error';
 import { DraftService } from '../../../services/draft-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../__mocks__/db';
-import * as endpoint from './delete';
+import * as update from './update';
 
 chai.use(sinonChai);
 
-describe('paths/draft/{draftId}/delete', () => {
+describe('paths/draft/{draftId}/update', () => {
   describe('openapi schema', () => {
     const ajv = new Ajv();
 
     it('is valid openapi v3 schema', () => {
-      expect(ajv.validateSchema((endpoint.DELETE.apiDoc as unknown) as object)).to.be.true;
+      expect(ajv.validateSchema((update.PUT.apiDoc as unknown) as object)).to.be.true;
     });
   });
 
-  describe('deleteDraft', () => {
+  describe('updateDraft', () => {
     afterEach(() => {
       sinon.restore();
     });
@@ -35,12 +35,12 @@ describe('paths/draft/{draftId}/delete', () => {
       });
 
       const expectedError = new Error('cannot process request');
-      sinon.stub(DraftService.prototype, 'deleteDraft').rejects(expectedError);
+      sinon.stub(DraftService.prototype, 'updateDraft').rejects(expectedError);
 
       const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
       try {
-        const requestHandler = endpoint.deleteDraft();
+        const requestHandler = update.updateDraft();
 
         await requestHandler(mockReq, mockRes, mockNext);
         expect.fail();
@@ -49,7 +49,7 @@ describe('paths/draft/{draftId}/delete', () => {
       }
     });
 
-    it('deletes a draft', async () => {
+    it('updates a draft', async () => {
       const dbConnectionObj = getMockDBConnection();
       sinon.stub(db, 'getDBConnection').returns({
         ...dbConnectionObj,
@@ -60,13 +60,29 @@ describe('paths/draft/{draftId}/delete', () => {
 
       const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
-      sinon.stub(DraftService.prototype, 'deleteDraft').resolves({ webform_draft_id: 1 });
+      sinon.stub(DraftService.prototype, 'updateDraft').resolves({
+        webform_draft_id: 1,
+        name: 'draft object',
+        data: {},
+        create_date: ('2022-10-10' as unknown) as Date,
+        update_date: ('2022-10-11' as unknown) as Date
+      });
 
-      const requestHandler = endpoint.deleteDraft();
+      const requestHandler = update.updateDraft();
+
+      mockReq.body = { name: 'draft name', data: { a: '1', b: '2' } };
       mockReq.params = { draftId: '1' };
 
       await requestHandler(mockReq, mockRes, mockNext);
+
       expect(mockRes.statusValue).to.equal(200);
+      expect(mockRes.jsonValue).to.eql({
+        webform_draft_id: 1,
+        name: 'draft object',
+        data: {},
+        create_date: ('2022-10-10' as unknown) as Date,
+        update_date: ('2022-10-11' as unknown) as Date
+      });
     });
   });
 });
