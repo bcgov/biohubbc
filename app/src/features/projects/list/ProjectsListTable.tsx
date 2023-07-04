@@ -157,7 +157,7 @@ const ProjectsListTable = (props: IProjectsListTableProps) => {
       autoHeight
       rows={[
         ...props.drafts.map((draft: IGetDraftsListResponse) => ({
-          id: draft.id,
+          id: draft.webform_draft_id,
           name: draft.name,
           isDraft: true
         })),

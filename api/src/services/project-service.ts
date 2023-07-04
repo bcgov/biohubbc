@@ -1,5 +1,4 @@
 import moment from 'moment';
-import { QueryResult } from 'pg';
 import { PROJECT_ROLE } from '../constants/roles';
 import { COMPLETION_STATUS } from '../constants/status';
 import { IDBConnection } from '../database/db';
@@ -669,14 +668,6 @@ export class ProjectService extends DBService {
     }
 
     return true;
-  }
-
-  async deleteDraft(draftId: number): Promise<QueryResult> {
-    return this.projectRepository.deleteDraft(draftId);
-  }
-
-  async getSingleDraft(draftId: number): Promise<{ id: number; name: string; data: any }> {
-    return this.projectRepository.getSingleDraft(draftId);
   }
 
   async deleteProjectParticipationRecord(projectParticipationId: number): Promise<any> {

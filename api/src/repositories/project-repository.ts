@@ -1,5 +1,4 @@
 import { NumberOfAutoScalingGroups } from 'aws-sdk/clients/autoscaling';
-import { QueryResult } from 'pg';
 import SQL, { SQLStatement } from 'sql-template-strings';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { PostFundingSource, PostProjectObject } from '../models/project-create';
@@ -180,48 +179,6 @@ export class ProjectRepository extends BaseRepository {
     }
 
     return result;
-  }
-
-  async deleteDraft(draftId: number): Promise<QueryResult> {
-    const sqlStatement = SQL`
-      DELETE from webform_draft
-      WHERE webform_draft_id = ${draftId};
-    `;
-
-    const response = await this.connection.sql(sqlStatement);
-
-    if (!response) {
-      throw new ApiExecuteSQLError('Failed to delete draft', [
-        'ProjectRepository->deleteDraft',
-        'response was null or undefined, expected response != null'
-      ]);
-    }
-
-    return response;
-  }
-
-  async getSingleDraft(draftId: number): Promise<{ id: number; name: string; data: any }> {
-    const sqlStatement: SQLStatement = SQL`
-      SELECT
-        webform_draft_id as id,
-        name,
-        data
-      FROM
-        webform_draft
-      WHERE
-        webform_draft_id = ${draftId};
-    `;
-
-    const response = await this.connection.sql<{ id: number; name: string; data: any }>(sqlStatement);
-
-    if (!response?.rows?.[0]) {
-      throw new ApiExecuteSQLError('Failed to get draft', [
-        'ProjectRepository->getSingleDraft',
-        'response was null or undefined, expected response != null'
-      ]);
-    }
-
-    return response?.rows?.[0];
   }
 
   async getProjectList(isUserAdmin: boolean, systemUserId: number | null, filterFields: any): Promise<any[]> {

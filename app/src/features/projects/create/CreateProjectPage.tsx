@@ -174,7 +174,7 @@ const CreateProjectPage: React.FC = () => {
 
       setOpenDraftDialog(false);
 
-      if (!response?.id) {
+      if (!response?.webform_draft_id) {
         showCreateErrorDialog({
           dialogError: 'The response from the server was null, or did not contain a draft project ID.'
         });

@@ -1,47 +1,60 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SYSTEM_ROLE } from '../../../constants/roles';
-import { getDBConnection } from '../../../database/db';
-import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
-import { DraftService } from '../../../services/draft-service';
-import { getLogger } from '../../../utils/logger';
+import { SYSTEM_ROLE } from '../../constants/roles';
+import { getDBConnection } from '../../database/db';
+import { HTTP400 } from '../../errors/http-error';
+import { PostPutDraftObject } from '../../models/draft-create';
+import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
+import { DraftService } from '../../services/draft-service';
+import { getLogger } from '../../utils/logger';
 
-const defaultLog = getLogger('paths/draft/{draftId}');
+const defaultLog = getLogger('paths/draft');
 
-export const GET: Operation = [
-  authorizeRequestHandler((req) => {
+export const POST: Operation = [
+  authorizeRequestHandler(() => {
     return {
       and: [
         {
           validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_CREATOR, SYSTEM_ROLE.DATA_ADMINISTRATOR],
-          draftId: Number(req.params.draftId),
           discriminator: 'SystemRole'
         }
       ]
     };
   }),
-  getDraft()
+
+  createDraft()
 ];
 
-GET.apiDoc = {
-  description: 'Get a draft.',
+POST.apiDoc = {
+  description: 'Create a new Draft.',
   tags: ['draft'],
   security: [
     {
       Bearer: []
     }
   ],
-  parameters: [
-    {
-      in: 'path',
-      name: 'draftId',
-      schema: {
-        type: 'integer',
-        minimum: 1
-      },
-      required: true
+  requestBody: {
+    description: 'Draft post request object.',
+    content: {
+      'application/json': {
+        schema: {
+          title: 'Draft request object',
+          type: 'object',
+          required: ['name', 'data'],
+          properties: {
+            name: {
+              title: 'Draft name',
+              type: 'string'
+            },
+            data: {
+              title: 'JSON data associated with the draft',
+              type: 'object'
+            }
+          }
+        }
+      }
     }
-  ],
+  },
   responses: {
     200: {
       description: 'Draft post response object.',
@@ -94,27 +107,35 @@ GET.apiDoc = {
 };
 
 /**
- * Get a draft by its id.
+ * Creates a new draft record.
  *
  * @returns {RequestHandler}
  */
-export function getDraft(): RequestHandler {
+export function createDraft(): RequestHandler {
   return async (req, res) => {
     const connection = getDBConnection(req['keycloak_token']);
-    const draftId = Number(req.params.draftId);
+
+    const sanitizedDraft = new PostPutDraftObject(req.body);
 
     try {
       await connection.open();
 
       const draftService = new DraftService(connection);
 
-      const draftObject = await draftService.getDraft(draftId);
+      const systemUserId = connection.systemUserId();
+
+      if (!systemUserId) {
+        throw new HTTP400('Failed to identify system user ID');
+      }
+
+      const draft = await draftService.createDraft(systemUserId, sanitizedDraft);
 
       await connection.commit();
 
-      return res.status(200).json(draftObject);
+      return res.status(200).json(draft);
     } catch (error) {
-      defaultLog.error({ label: 'getSingleDraft', message: 'error', error });
+      defaultLog.error({ label: 'createDraft', message: 'error', error });
+      await connection.rollback();
       throw error;
     } finally {
       connection.release();

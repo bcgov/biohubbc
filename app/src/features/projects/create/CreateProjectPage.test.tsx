@@ -11,6 +11,7 @@ import { Feature } from 'geojson';
 import { createMemoryHistory } from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { DataLoader } from 'hooks/useDataLoader';
+import { IDraftResponse } from 'interfaces/useDraftApi.interface';
 import { MemoryRouter, Router } from 'react-router';
 import { codes } from 'test-helpers/code-helpers';
 import {
@@ -29,8 +30,8 @@ const mockBiohubApi = useBiohubApi as jest.Mock;
 
 const mockUseApi = {
   draft: {
-    createDraft: jest.fn<Promise<object>, []>(),
-    updateDraft: jest.fn<Promise<object>, []>(),
+    createDraft: jest.fn<Promise<IDraftResponse>, []>(),
+    updateDraft: jest.fn<Promise<IDraftResponse>, []>(),
     deleteDraft: jest.fn(),
     getDraft: jest.fn()
   },
@@ -395,8 +396,9 @@ describe('CreateProjectPage', () => {
       history.push('/admin/projects/create');
 
       mockUseApi.draft.createDraft.mockResolvedValue({
-        id: 1,
-        date: '2021-01-20'
+        webform_draft_id: 1,
+        create_date: '2021-01-20',
+        update_date: ''
       });
 
       const { getByTestId } = renderContainer();
@@ -415,7 +417,6 @@ describe('CreateProjectPage', () => {
 
       await waitFor(() => {
         expect(mockUseApi.draft.createDraft).toHaveBeenCalledWith('draft name', expect.any(Object));
-
         expect(history.location.pathname).toEqual('/admin/projects');
       });
     });
@@ -444,8 +445,9 @@ describe('CreateProjectPage', () => {
       });
 
       mockUseApi.draft.updateDraft.mockResolvedValue({
-        id: 1,
-        date: '2021-01-20'
+        webform_draft_id: 1,
+        create_date: '2021-01-20',
+        update_date: '2023-06-29'
       });
 
       const { getByText, getByTestId } = renderContainer();
@@ -478,8 +480,9 @@ describe('CreateProjectPage', () => {
       history.push('/admin/projects/create');
 
       mockUseApi.draft.createDraft.mockResolvedValue({
-        id: 1,
-        date: '2021-01-20'
+        webform_draft_id: 1,
+        create_date: '2021-01-20',
+        update_date: '2021-01-20'
       });
 
       const { getByText, getByTestId, getByLabelText } = renderContainer();
@@ -489,8 +492,10 @@ describe('CreateProjectPage', () => {
         expect(getByText('General Information')).toBeVisible();
       });
 
-      // update first name field
+      // update first, last and email fields
       fireEvent.change(getByLabelText('First Name *'), { target: { value: 'draft first name' } });
+      fireEvent.change(getByLabelText('Last Name *'), { target: { value: 'Draft last name' } });
+      fireEvent.change(getByLabelText('Business Email Address *'), { target: { value: 'draftemail@example.com' } });
 
       const saveDraftButton = await getByTestId('save-draft-button');
 
@@ -508,8 +513,8 @@ describe('CreateProjectPage', () => {
         expect(mockUseApi.draft.createDraft).toHaveBeenCalledWith('draft name', {
           coordinator: {
             first_name: 'draft first name',
-            last_name: '',
-            email_address: '',
+            last_name: 'Draft last name',
+            email_address: 'draftemail@example.com',
             coordinator_agency: '',
             share_contact_details: 'false'
           },
@@ -555,8 +560,9 @@ describe('CreateProjectPage', () => {
       });
 
       mockUseApi.draft.updateDraft.mockResolvedValue({
-        id: 1,
-        date: '2021-01-20'
+        webform_draft_id: 1,
+        create_date: '2021-01-20',
+        update_date: '2021-01-20'
       });
 
       const { getByTestId, getByText, getByLabelText } = renderContainer();
