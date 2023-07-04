@@ -1,9 +1,10 @@
+import { Typography } from '@mui/material';
 import AttachmentsList from 'components/attachments/list/AttachmentsList';
 import ProjectReportAttachmentDialog from 'components/dialog/attachments/project/ProjectReportAttachmentDialog';
 import RemoveOrResubmitDialog from 'components/publish/components/RemoveOrResubmitDialog';
 import { AttachmentType, PublishStatus } from 'constants/attachments';
 import { AttachmentsI18N } from 'constants/i18n';
-import { DialogContext } from 'contexts/dialogContext';
+import { DialogContext, ISnackbarProps } from 'contexts/dialogContext';
 import { ProjectContext } from 'contexts/projectContext';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -19,6 +20,10 @@ const ProjectAttachmentsList = () => {
 
   const [currentAttachment, setCurrentAttachment] = useState<IGetProjectAttachment | null>(null);
   const [removeOrResubmitDialogOpen, setRemoveOrResubmitDialogOpen] = useState<boolean>(false);
+
+  const showSnackBar = (textDialogProps?: Partial<ISnackbarProps>) => {
+    dialogContext.setSnackbar({ ...textDialogProps, open: true });
+  };
 
   const handleDownload = async (attachment: IGetProjectAttachment) => {
     try {
@@ -73,6 +78,17 @@ const ProjectAttachmentsList = () => {
 
           // Refresh attachments list
           projectContext.artifactDataLoader.refresh(projectContext.projectId);
+
+          showSnackBar({
+            snackbarMessage: (
+              <>
+                <Typography variant="body2" component="div">
+                  Attachment: <strong>{attachment.fileName}</strong> removed from application.
+                </Typography>
+              </>
+            ),
+            open: true
+          });
         } catch (error) {
           const apiError = error as APIError;
           // Show error dialog
