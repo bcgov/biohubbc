@@ -1,0 +1,4 @@
+-- generator.psql
+\i generate_project_audit_triggers.psql
+\i generate_project_dapi_views.psql
+\i generate_project_journal_triggers.psql
