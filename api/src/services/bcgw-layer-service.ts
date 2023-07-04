@@ -350,6 +350,7 @@ export class BcgwLayerService {
    * @param {Feature} feature
    * @param {IDBConnection} connection
    * @return {*}
+   * @memberof BcgwLayerService
    */
   async getRegionsForFeature(feature: Feature, connection: IDBConnection) {
     // Array of all matching region details for the feature
@@ -360,9 +361,8 @@ export class BcgwLayerService {
     const result = await postgisService.getGeoJsonGeometryAsWkt(feature.geometry, Srid3005);
     const geometryWKTString = result.geometry;
 
-    const bcgwLayerService = new BcgwLayerService();
     // Attempt to detect if the feature is a known BCGW feature
-    const regionDetails = bcgwLayerService.findRegionDetails(feature);
+    const regionDetails = this.findRegionDetails(feature);
 
     if (!regionDetails) {
       // Feature is not a known BCGW feature
@@ -377,7 +377,7 @@ export class BcgwLayerService {
       );
     } else {
       // Feature is a known BCGW feature, fetch any additional mapped region details, and add to the overall response
-      const mappedRegionDetails = bcgwLayerService.getMappedRegionDetails([regionDetails]);
+      const mappedRegionDetails = this.getMappedRegionDetails([regionDetails]);
       response = response.concat(mappedRegionDetails);
       // Fetch region details for the feature, excluding the layer whose details were already added above
       // Why? We want to avoid querying a layer using a feature from that same layer because the actual results will not
@@ -407,6 +407,7 @@ export class BcgwLayerService {
    * @param {string} geometryWktString a geometry string in Well-Known Text format
    * @param {string[]} layersToProcess an array of supported layers to query against
    * @return {*}
+   * @memberof BcgwLayerService
    */
   async getAllRegionDetailsForWktString(geometryWktString: string, layersToProcess: string[]) {
     let response: RegionDetails[] = [];
@@ -434,33 +435,25 @@ export class BcgwLayerService {
   }
 
   async getEnvRegionDetails(geometryWktString: string): Promise<RegionDetails[]> {
-    const bcgwLayerService = new BcgwLayerService();
-
-    const regionNames = await bcgwLayerService.getEnvRegionNames(geometryWktString);
+    const regionNames = await this.getEnvRegionNames(geometryWktString);
 
     return regionNames.map((name) => ({ regionName: name, sourceLayer: BcgwEnvRegionsLayer }));
   }
 
   async getNrmRegionDetails(geometryWktString: string): Promise<RegionDetails[]> {
-    const bcgwLayerService = new BcgwLayerService();
-
-    const regionNames = await bcgwLayerService.getNrmRegionNames(geometryWktString);
+    const regionNames = await this.getNrmRegionNames(geometryWktString);
 
     return regionNames.map((name) => ({ regionName: name, sourceLayer: BcgwNrmRegionsLayer }));
   }
 
   async getParkAndEcoreserveRegionDetails(geometryWktString: string): Promise<RegionDetails[]> {
-    const bcgwLayerService = new BcgwLayerService();
-
-    const regionNames = await bcgwLayerService.getParkAndEcoreserveRegionNames(geometryWktString);
+    const regionNames = await this.getParkAndEcoreserveRegionNames(geometryWktString);
 
     return regionNames.map((name) => ({ regionName: name, sourceLayer: BcgwParksAndEcoreservesLayer }));
   }
 
   async getWildlifeManagementUnitRegionDetails(geometryWktString: string): Promise<RegionDetails[]> {
-    const bcgwLayerService = new BcgwLayerService();
-
-    const regionNames = await bcgwLayerService.getWildlifeManagementUnitRegionNames(geometryWktString);
+    const regionNames = await this.getWildlifeManagementUnitRegionNames(geometryWktString);
 
     return regionNames.map((name) => ({ regionName: name, sourceLayer: BcgwWildlifeManagementUnitsLayer }));
   }
