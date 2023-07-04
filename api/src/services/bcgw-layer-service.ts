@@ -330,7 +330,7 @@ export class BcgwLayerService {
       // Check if the regionDetail item came from the NRM layer
       if (regionDetail.sourceLayer === BcgwNrmRegionsLayer) {
         // Check if the region is a known NRM region that maps to one or more known ENV regions
-        Object.entries(envToNrmRegionsMapping).map(([envRegion, nrmRegion]) => {
+        Object.entries(envToNrmRegionsMapping).forEach(([envRegion, nrmRegion]) => {
           if (regionDetail.regionName === nrmRegion) {
             // Return matching ENV region
             response.push({ regionName: envRegion, sourceLayer: BcgwEnvRegionsLayer });
