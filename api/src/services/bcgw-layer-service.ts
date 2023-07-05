@@ -368,12 +368,7 @@ export class BcgwLayerService {
       // Feature is not a known BCGW feature
       // Fetch region details for the feature from ALL available layers
       response = response.concat(
-        await this.getAllRegionDetailsForWktString(geometryWKTString, [
-          BcgwEnvRegionsLayer,
-          BcgwNrmRegionsLayer
-          // BcgwParksAndEcoreservesLayer,
-          // BcgwWildlifeManagementUnitsLayer
-        ])
+        await this.getAllRegionDetailsForWktString(geometryWKTString, [BcgwEnvRegionsLayer, BcgwNrmRegionsLayer])
       );
     } else {
       // Feature is a known BCGW feature, fetch any additional mapped region details, and add to the overall response
@@ -384,12 +379,7 @@ export class BcgwLayerService {
       // be consistent with the expected results. (Ex: LayerA + Feature1 should return Feature1, but will often return
       // Feature1 + Feature2 + Feature3 due to the layer features containing overlapping coordinates, when ideally they
       // should not).
-      const layersToProcess = [
-        BcgwEnvRegionsLayer,
-        BcgwNrmRegionsLayer
-        //   BcgwParksAndEcoreservesLayer,
-        //   BcgwWildlifeManagementUnitsLayer
-      ].filter(
+      const layersToProcess = [BcgwEnvRegionsLayer, BcgwNrmRegionsLayer].filter(
         (layerToProcess) =>
           !mappedRegionDetails.map((mappedRegionDetail) => mappedRegionDetail.sourceLayer).includes(layerToProcess)
       );
@@ -434,24 +424,54 @@ export class BcgwLayerService {
     return response;
   }
 
+  /**
+   * Given a geometry WKT string, return an array of matching region detail objects from the BCGW ENV layer.
+   *
+   * @param {string} geometryWktString
+   * @return {*}  {Promise<RegionDetails[]>}
+   * @memberof BcgwLayerService
+   */
   async getEnvRegionDetails(geometryWktString: string): Promise<RegionDetails[]> {
     const regionNames = await this.getEnvRegionNames(geometryWktString);
 
     return regionNames.map((name) => ({ regionName: name, sourceLayer: BcgwEnvRegionsLayer }));
   }
 
+  /**
+   * Given a geometry WKT string, return an array of matching region detail objects from the BCGW NRM layer.
+   *
+   * @param {string} geometryWktString
+   * @return {*}  {Promise<RegionDetails[]>}
+   * @memberof BcgwLayerService
+   */
   async getNrmRegionDetails(geometryWktString: string): Promise<RegionDetails[]> {
     const regionNames = await this.getNrmRegionNames(geometryWktString);
 
     return regionNames.map((name) => ({ regionName: name, sourceLayer: BcgwNrmRegionsLayer }));
   }
 
+  /**
+   * Given a geometry WKT string, return an array of matching region detail objects from the BCGW Parks and Ecoreserves
+   * layer.
+   *
+   * @param {string} geometryWktString
+   * @return {*}  {Promise<RegionDetails[]>}
+   * @memberof BcgwLayerService
+   */
   async getParkAndEcoreserveRegionDetails(geometryWktString: string): Promise<RegionDetails[]> {
     const regionNames = await this.getParkAndEcoreserveRegionNames(geometryWktString);
 
     return regionNames.map((name) => ({ regionName: name, sourceLayer: BcgwParksAndEcoreservesLayer }));
   }
 
+  /**
+   * Given a geometry WKT string, return an array of matching region detail objects from the BCGW Wildlife Management
+   * Units layer.
+   *
+   * @param {string} geometryWktString
+   * @return {*}  {Promise<RegionDetails[]>}
+   * @memberof BcgwLayerService
+   */
   async getWildlifeManagementUnitRegionDetails(geometryWktString: string): Promise<RegionDetails[]> {
     const regionNames = await this.getWildlifeManagementUnitRegionNames(geometryWktString);
 
